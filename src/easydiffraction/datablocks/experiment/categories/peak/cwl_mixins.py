@@ -26,8 +26,10 @@ class CwlBroadeningMixin:
             description='Gaussian broadening from sample size and resolution',
             units='degrees_squared',
             display_handler=DisplayHandler(
-                display_units='deg²',
-                latex_units=r'$^\circ{}^2$',
+                display_name='U',
+                display_units='deg^2',
+                latex_name=r'$U$',
+                latex_units=r'\mathrm{deg}^2',
             ),
             value_spec=AttributeSpec(
                 default=0.01,
@@ -43,8 +45,10 @@ class CwlBroadeningMixin:
             description='Gaussian broadening instrumental contribution',
             units='degrees_squared',
             display_handler=DisplayHandler(
-                display_units='deg²',
-                latex_units=r'$^\circ{}^2$',
+                display_name='V',
+                display_units='deg^2',
+                latex_name=r'$V$',
+                latex_units=r'\mathrm{deg}^2',
             ),
             value_spec=AttributeSpec(
                 default=-0.01,
@@ -60,8 +64,10 @@ class CwlBroadeningMixin:
             description='Gaussian broadening instrumental contribution',
             units='degrees_squared',
             display_handler=DisplayHandler(
-                display_units='deg²',
-                latex_units=r'$^\circ{}^2$',
+                display_name='W',
+                display_units='deg^2',
+                latex_name=r'$W$',
+                latex_units=r'\mathrm{deg}^2',
             ),
             value_spec=AttributeSpec(
                 default=0.02,
@@ -77,8 +83,10 @@ class CwlBroadeningMixin:
             description='Lorentzian broadening from sample strain effects',
             units='degrees',
             display_handler=DisplayHandler(
+                display_name='X',
                 display_units='deg',
-                latex_units=r'$^\circ$',
+                latex_name=r'$X$',
+                latex_units=r'\mathrm{deg}',
             ),
             value_spec=AttributeSpec(
                 default=0.0,
@@ -94,8 +102,10 @@ class CwlBroadeningMixin:
             description='Lorentzian broadening from microstructural defects',
             units='degrees',
             display_handler=DisplayHandler(
+                display_name='Y',
                 display_units='deg',
-                latex_units=r'$^\circ$',
+                latex_name=r'$Y$',
+                latex_units=r'\mathrm{deg}',
             ),
             value_spec=AttributeSpec(
                 default=0.0,
@@ -114,7 +124,7 @@ class CwlBroadeningMixin:
     @property
     def broad_gauss_u(self) -> Parameter:
         """
-        Gaussian broadening from sample size and resolution (deg²).
+        Gaussian broadening from sample size and resolution (deg^2).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -128,7 +138,7 @@ class CwlBroadeningMixin:
     @property
     def broad_gauss_v(self) -> Parameter:
         """
-        Gaussian broadening instrumental contribution (deg²).
+        Gaussian broadening instrumental contribution (deg^2).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -142,7 +152,7 @@ class CwlBroadeningMixin:
     @property
     def broad_gauss_w(self) -> Parameter:
         """
-        Gaussian broadening instrumental contribution (deg²).
+        Gaussian broadening instrumental contribution (deg^2).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.

@@ -1,11 +1,57 @@
+\PassOptionsToPackage{table}{xcolor}
 \documentclass[11pt,a4paper]{styles/iucrjournals}
 \usepackage{graphicx}
 \usepackage{siunitx}
-\sisetup{detect-all}
+\sisetup{detect-all, group-digits=false}
+\definecolor{edTableStripe}{RGB}{248,249,250}
+\newcommand{\edKeyValueRows}{\rowcolors{1}{edTableStripe}{white}}
+\newcommand{\edHeaderRows}{\rowcolors{2}{edTableStripe}{white}}
+\makeatletter
+\let\title\origtitle
+\renewcommand\section{\@startsection {section}{1}{\z@}%
+  {-3.5ex \@plus -1ex \@minus -.2ex}%
+  {2.3ex \@plus .2ex}%
+  {\normalfont\Large}}
+\renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
+  {-3.25ex\@plus -1ex \@minus -.2ex}%
+  {1.5ex \@plus .2ex}%
+  {\normalfont\large}}
+\renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
+  {-3.25ex\@plus -1ex \@minus -.2ex}%
+  {1.5ex \@plus .2ex}%
+  {\normalfont\normalsize}}
+\renewenvironment{abstract}
+ {\begin{center}
+  \abstractname\vspace{-.5em}\vspace{0pt}
+  \end{center}
+  \list{}{
+    \setlength{\leftmargin}{1cm}%
+    \setlength{\rightmargin}{\leftmargin}%
+  }%
+  \item\relax}
+ {\endlist\bigskip}
+\makeatother
 {% macro tex_field_header(field, fallback) -%}
 {% set label = (field.label or fallback) | tex_markup -%}
-{% set units = field.units | tex_markup -%}
+{% set units = field.units | tex_unit -%}
 {{ label }}{% if field.units %} ({{ units }}){% endif %}
+{%- endmacro %}
+{% macro tex_category_label(row) -%}
+{% set label = (row.latex_label or row.name) | tex_markup -%}
+{% set units = row.latex_units | tex_unit -%}
+{{ label }}{% if row.latex_units %} ({{ units }}){% endif %}
+{%- endmacro %}
+{% macro tex_category_header(column) -%}
+{% set label = (column.latex_label or column.name) | tex_markup -%}
+{% set units = column.latex_units | tex_unit -%}
+{% set header %}{{ label }}{% if column.latex_units %} ({{ units }}){% endif %}{% endset -%}
+{% if column.numeric %}\multicolumn{1}{c}{ {{- header -}} }{% else %}\multicolumn{1}{l}{ {{- header -}} }{% endif %}
+{%- endmacro %}
+{% macro tex_category_cell(cell) -%}
+{% if cell.numeric %}{{ cell.value | tex_number }}{% else %}{{ cell.value | tex }}{% endif %}
+{%- endmacro %}
+{% macro tex_category_value(row, numeric_column) -%}
+{% if row.numeric %}{{ row.value | tex_number }}{% elif numeric_column %}\multicolumn{1}{l}{ {{- row.value | tex -}} }{% else %}{{ row.value | tex }}{% endif %}
 {%- endmacro %}
 
 %----------------------------------------------------------
@@ -33,6 +79,7 @@
 \section{Project Summary}
 
 \begin{table}[H]
+\edKeyValueRows
 \begin{tabular}{ll}
 \toprule
 Short name & {{ project.name | tex }} \\
@@ -50,6 +97,7 @@ Generated & {{ metadata.generated_at | tex }} \\
 \section{Software}
 
 \begin{table}[H]
+\edHeaderRows
 \begin{tabular}{lll}
 \toprule
 Role & Name & Version \\
@@ -67,6 +115,7 @@ Minimizer & {{ software.minimizer.name | tex }} & {{ software.minimizer.version 
 \section{Refinement}
 
 \begin{table}[H]
+\edHeaderRows
 \begin{tabular}{lS}
 \toprule
 \multicolumn{1}{l}{Quantity} & \multicolumn{1}{c}{Value} \\
@@ -92,54 +141,54 @@ Weighted R factor & {{ refinement.fit_result.wr_factor_all | tex_number }} \\
 %----------
 \subsection{ {{- structure.id | tex -}} }
 
+{% for category in structure.categories %}
 %-------------
-\subsubsection{Space group and unit cell parameters}
+\subsubsection{ {{- category.title | tex -}} }
 
+{% if category.kind == "item" %}
 \begin{table}[H]
-\begin{tabular}{lS}
+\edKeyValueRows
+\begin{tabular}{l{% if category.has_numeric_values %}S{% else %}l{% endif %}}
 \toprule
-Space group & \multicolumn{1}{l}{ {{- structure.space_group | tex -}} } \\
-Crystal system & \multicolumn{1}{l}{ {{- structure.crystal_system | tex -}} } \\
-{% for key, value in structure.cell.items() %}
-{{ tex_field_header(structure.cell_latex[key], key | replace("_", " ")) }} & {{ value | tex_number }} \\
+{% for row in category.rows %}
+{{ tex_category_label(row) }} & {{ tex_category_value(row, category.has_numeric_values) }} \\
 {% endfor %}
 \bottomrule
 \end{tabular}
 \end{table}
+{% else %}
 
-{% if structure.atom_sites %}
-%-------------
-\subsubsection{Atom site parameters}
-
+{% if category.scalar_rows %}
 \begin{table}[H]
-\begin{tabular}{llSSSSS}
+\edKeyValueRows
+\begin{tabular}{l{% if category.scalar_has_numeric_values %}S{% else %}l{% endif %}}
 \toprule
-\multicolumn{1}{l}{Label} & \multicolumn{1}{l}{Type} & \multicolumn{1}{c}{$x$} & \multicolumn{1}{c}{$y$} & \multicolumn{1}{c}{$z$} & \multicolumn{1}{c}{Occ.} & \multicolumn{1}{c}{ {{- tex_field_header(structure.atom_site_latex.adp_iso, "ADP") -}} } \\
-\midrule
-{% for atom in structure.atom_sites %}
-{{ atom.label | tex }} & {{ atom.type_symbol | tex }} & {{ atom.fract_x | tex_number }} & {{ atom.fract_y | tex_number }} & {{ atom.fract_z | tex_number }} & {{ atom.occupancy | tex_number }} & {{ atom.adp_iso | tex_number }} \\
-{% endfor %}
-\bottomrule
-\end{tabular}
-\end{table}
-{% endif %}
-
-{% if structure.atom_site_aniso %}
-%-------------
-\subsubsection{Anisotropic atomic displacement parameters}
-
-\begin{table}[H]
-\begin{tabular}{lSSSSSS}
-\toprule
-\multicolumn{1}{l}{Label} & \multicolumn{1}{c}{ {{- tex_field_header(structure.atom_site_aniso_latex.adp_11, "ADP 11") -}} } & \multicolumn{1}{c}{ {{- tex_field_header(structure.atom_site_aniso_latex.adp_22, "ADP 22") -}} } & \multicolumn{1}{c}{ {{- tex_field_header(structure.atom_site_aniso_latex.adp_33, "ADP 33") -}} } & \multicolumn{1}{c}{ {{- tex_field_header(structure.atom_site_aniso_latex.adp_12, "ADP 12") -}} } & \multicolumn{1}{c}{ {{- tex_field_header(structure.atom_site_aniso_latex.adp_13, "ADP 13") -}} } & \multicolumn{1}{c}{ {{- tex_field_header(structure.atom_site_aniso_latex.adp_23, "ADP 23") -}} } \\
-\midrule
-{% for aniso in structure.atom_site_aniso %}
-{{ aniso.label | tex }} & {{ aniso.adp_11 | tex_number }} & {{ aniso.adp_22 | tex_number }} & {{ aniso.adp_33 | tex_number }} & {{ aniso.adp_12 | tex_number }} & {{ aniso.adp_13 | tex_number }} & {{ aniso.adp_23 | tex_number }} \\
+{% for row in category.scalar_rows %}
+{{ tex_category_label(row) }} & {{ tex_category_value(row, category.scalar_has_numeric_values) }} \\
 {% endfor %}
 \bottomrule
 \end{tabular}
 \end{table}
 {% endif %}
+
+{% if category.rows %}
+\begin{table}[H]
+\edHeaderRows
+\resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{
+\begin{tabular}{ {{- category.colspec -}} }
+\toprule
+{% for column in category.columns %}{{ tex_category_header(column) }}{% if not loop.last %} & {% endif %}{% endfor %} \\
+\midrule
+{% for row in category.rows %}
+{% for cell in row.cells %}{{ tex_category_cell(cell) }}{% if not loop.last %} & {% endif %}{% endfor %} \\
+{% endfor %}
+\bottomrule
+\end{tabular}
+}
+\end{table}
+{% endif %}
+{% endif %}
+{% endfor %}
 {% endfor %}
 
 %----------------------------------------------------------
@@ -153,23 +202,6 @@ Crystal system & \multicolumn{1}{l}{ {{- structure.crystal_system | tex -}} } \\
 %-----------
 \subsection{ {{- experiment.id | tex -}} }
 
-%-------------
-\subsubsection{Experiment details}
-
-\begin{table}[H]
-\begin{tabular}{lS}
-\toprule
-Sample form & \multicolumn{1}{l}{ {{- experiment.type.sample_form | tex -}} } \\
-Probe & \multicolumn{1}{l}{ {{- experiment.type.radiation_probe | tex -}} } \\
-Beam mode & \multicolumn{1}{l}{ {{- experiment.type.beam_mode | tex -}} } \\
-Scattering type & \multicolumn{1}{l}{ {{- experiment.type.scattering_type | tex -}} } \\
-Calculator & \multicolumn{1}{l}{ {{- experiment.calculator.type | tex -}} } \\
-{{ tex_field_header(experiment.diffrn_latex.ambient_temperature, "Temperature") }} & {{ experiment.diffrn.ambient_temperature | tex_number }} \\
-{{ tex_field_header(experiment.diffrn_latex.ambient_pressure, "Pressure") }} & {{ experiment.diffrn.ambient_pressure | tex_number }} \\
-\bottomrule
-\end{tabular}
-\end{table}
-
 {% if experiment.fit_data and tex.fit_figure_paths[experiment.id] %}
 %-------------
 \subsubsection{Fit quality}
@@ -180,6 +212,55 @@ Calculator & \multicolumn{1}{l}{ {{- experiment.calculator.type | tex -}} } \\
 \caption{Measured and calculated fit for {{ experiment.id | tex }}.}
 \end{figure}
 {% endif %}
+
+{% for category in experiment.categories %}
+%-------------
+\subsubsection{ {{- category.title | tex -}} }
+
+{% if category.kind == "item" %}
+\begin{table}[H]
+\edKeyValueRows
+\begin{tabular}{l{% if category.has_numeric_values %}S{% else %}l{% endif %}}
+\toprule
+{% for row in category.rows %}
+{{ tex_category_label(row) }} & {{ tex_category_value(row, category.has_numeric_values) }} \\
+{% endfor %}
+\bottomrule
+\end{tabular}
+\end{table}
+{% else %}
+
+{% if category.scalar_rows %}
+\begin{table}[H]
+\edKeyValueRows
+\begin{tabular}{l{% if category.scalar_has_numeric_values %}S{% else %}l{% endif %}}
+\toprule
+{% for row in category.scalar_rows %}
+{{ tex_category_label(row) }} & {{ tex_category_value(row, category.scalar_has_numeric_values) }} \\
+{% endfor %}
+\bottomrule
+\end{tabular}
+\end{table}
+{% endif %}
+
+{% if category.rows %}
+\begin{table}[H]
+\edHeaderRows
+\resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{
+\begin{tabular}{ {{- category.colspec -}} }
+\toprule
+{% for column in category.columns %}{{ tex_category_header(column) }}{% if not loop.last %} & {% endif %}{% endfor %} \\
+\midrule
+{% for row in category.rows %}
+{% for cell in row.cells %}{{ tex_category_cell(cell) }}{% if not loop.last %} & {% endif %}{% endfor %} \\
+{% endfor %}
+\bottomrule
+\end{tabular}
+}
+\end{table}
+{% endif %}
+{% endif %}
+{% endfor %}
 {% endfor %}
 
 %----------------------------------------------------------

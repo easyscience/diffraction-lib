@@ -4,10 +4,15 @@
 
 from __future__ import annotations
 
+import re
 from collections.abc import Iterable
 from datetime import UTC
 from datetime import datetime
 
+from easydiffraction.core.category import CategoryCollection
+from easydiffraction.core.variable import GenericDescriptorBase
+from easydiffraction.core.variable import IntegerDescriptor
+from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import Parameter
 from easydiffraction.display.plotters.base import DEFAULT_AXES_LABELS
 from easydiffraction.display.plotters.base import DEFAULT_X_AXIS
@@ -114,6 +119,18 @@ _PUBLICATION_AUTHOR_FIELDS = (
     'id_orcid',
     'id_iucr',
 )
+_EXPERIMENT_DATA_CATEGORY_CODES = frozenset({'pd_data', 'total_data', 'refln'})
+_NUMERIC_TEXT_RE = re.compile(
+    r'^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:\(\d+\))?(?:[eE][+-]?\d+)?$'
+)
+_NUMBER_PARTS_RE = re.compile(
+    r'^(?P<sign>[+-]?)'
+    r'(?:(?P<integer>\d+)(?:\.(?P<fraction>\d*))?'
+    r'|\.(?P<leading_fraction>\d+))'
+    r'(?P<uncertainty>\(\d+\))?'
+    r'(?P<exponent>[eE][+-]?\d+)?$'
+)
+_MATH_FRAGMENT_RE = re.compile(r'\$([^$]+)\$')
 
 
 class ReportDataContext:
@@ -225,9 +242,11 @@ class ReportDataContext:
                 _ATOM_SITE_ANISO_FIELDS,
                 context='latex',
             ),
+            'categories': _category_contexts(structure),
         }
 
-    def _atom_site_context(self, atom_site: object) -> dict[str, object]:
+    @staticmethod
+    def _atom_site_context(atom_site: object) -> dict[str, object]:
         """Return one atom-site row."""
         return {
             'label': _attr_value(atom_site, 'label'),
@@ -240,7 +259,8 @@ class ReportDataContext:
             'adp_iso': _attr_display_value(atom_site, 'adp_iso'),
         }
 
-    def _atom_site_aniso_context(self, aniso_site: object) -> dict[str, object]:
+    @staticmethod
+    def _atom_site_aniso_context(aniso_site: object) -> dict[str, object]:
         """Return one atom-site-aniso row."""
         return {
             'label': _attr_value(aniso_site, 'label'),
@@ -252,7 +272,8 @@ class ReportDataContext:
             'adp_23': _attr_display_value(aniso_site, 'adp_23'),
         }
 
-    def _experiment_context(self, experiment: object) -> dict[str, object]:
+    @staticmethod
+    def _experiment_context(experiment: object) -> dict[str, object]:
         """Return one experiment summary."""
         calculator = _safe_attr(experiment, 'calculator')
         diffrn = _safe_attr(experiment, 'diffrn')
@@ -287,6 +308,10 @@ class ReportDataContext:
             ),
             'measured_range': _value(_safe_attr(experiment, 'measured_range')),
             'fit_data': _fit_data_context(experiment),
+            'categories': _category_contexts(
+                experiment,
+                skip_codes=_EXPERIMENT_DATA_CATEGORY_CODES,
+            ),
         }
 
     def _refinement_context(self) -> dict[str, object]:
@@ -297,6 +322,7 @@ class ReportDataContext:
         total = fields.get('n_parameters')
         free = fields.get('n_free_parameters')
         fixed = total - free if isinstance(total, int) and isinstance(free, int) else None
+        constraints = len(list(_collection_values(_safe_attr(analysis, 'constraints'))))
         return {
             'fit_result': fields,
             'parameters': {
@@ -304,7 +330,13 @@ class ReportDataContext:
                 'free': free,
                 'fixed': fixed,
             },
-            'constraints': len(list(_collection_values(_safe_attr(analysis, 'constraints')))),
+            'constraints': constraints,
+            'rows': _refinement_rows(
+                fields=fields,
+                total=total,
+                free=free,
+                constraints=constraints,
+            ),
         }
 
     def _software_context(self) -> dict[str, object]:
@@ -428,10 +460,478 @@ def _display_field_metadata(
 def _display_metadata(value: object, *, context: str) -> dict[str, str]:
     """Return display label and units for one descriptor."""
     name_resolver = getattr(value, 'resolve_display_name', None)
-    units_resolver = getattr(value, 'resolve_display_units', None)
     label = name_resolver(context) if callable(name_resolver) else ''
-    units = units_resolver(context) if callable(units_resolver) else ''
-    return {'label': label, 'units': units}
+    units = _descriptor_units(value, context=context)
+    return {'label': label, 'units': _display_units(units)}
+
+
+def _refinement_rows(
+    *,
+    fields: dict[str, object],
+    total: object,
+    free: object,
+    constraints: int,
+) -> list[dict[str, object]]:
+    """Return refinement rows with HTML numeric-alignment metadata."""
+    rows = [
+        _value_row('Reduced chi-square', fields.get('reduced_chi_square')),
+        _value_row('Free parameters', free),
+        _value_row('Total parameters', total),
+        _value_row('Constraints', constraints),
+        _value_row('R factor', fields.get('r_factor_all')),
+        _value_row('Weighted R factor', fields.get('wr_factor_all')),
+    ]
+    _apply_row_number_alignment(rows)
+    return rows
+
+
+def _value_row(label: str, value: object) -> dict[str, object]:
+    """Return one label-value report row."""
+    return {
+        'label': label,
+        'value': value,
+        'numeric': _is_numeric_value(value),
+        'number': None,
+    }
+
+
+def _category_contexts(
+    owner: object,
+    *,
+    skip_codes: frozenset[str] | None = None,
+) -> list[dict[str, object]]:
+    """Return report rows for each public category on an owner."""
+    if skip_codes is None:
+        skip_codes = frozenset()
+    categories = getattr(owner, 'categories', ())
+    contexts = []
+    for category in categories:
+        if _skip_category(category, skip_codes):
+            continue
+        context = _category_context(category)
+        if _category_has_content(context):
+            contexts.append(context)
+    return contexts
+
+
+def _skip_category(category: object, skip_codes: frozenset[str]) -> bool:
+    """Return whether a category should be omitted from reports."""
+    category_code = _category_code(category)
+    if category_code in skip_codes:
+        return True
+
+    skip = getattr(category, '_skip_cif_serialization', None)
+    return bool(callable(skip) and skip())
+
+
+def _category_context(category: object) -> dict[str, object]:
+    """Return one generic category-rendering context."""
+    if isinstance(category, CategoryCollection):
+        return _collection_category_context(category)
+    return _item_category_context(category)
+
+
+def _item_category_context(category: object) -> dict[str, object]:
+    """Return a non-loop category context."""
+    rows = _descriptor_rows(_category_parameters(category))
+    has_numeric_values = _rows_have_numeric_values(rows)
+    return {
+        'kind': 'item',
+        'code': _category_code(category),
+        'title': _category_title(category),
+        'rows': rows,
+        'has_numeric_values': has_numeric_values,
+        'value_column_numeric': has_numeric_values,
+    }
+
+
+def _collection_category_context(category: CategoryCollection) -> dict[str, object]:
+    """Return a loop-category context."""
+    items = list(category.values())
+    columns = _collection_columns(category, items)
+    rows = [_collection_row(category, item, columns) for item in items]
+    scalar_rows = _descriptor_rows(category.scalar_descriptors)
+    _mark_numeric_columns(columns, rows)
+    _apply_cell_number_alignment(columns, rows)
+    return {
+        'kind': 'loop',
+        'code': _category_code(category),
+        'title': _category_title(category),
+        'scalar_rows': scalar_rows,
+        'scalar_has_numeric_values': _rows_have_numeric_values(scalar_rows),
+        'columns': columns,
+        'rows': rows,
+        'colspec': ''.join('S' if column['numeric'] else 'l' for column in columns),
+    }
+
+
+def _category_has_content(context: dict[str, object]) -> bool:
+    """Return whether a category context has renderable content."""
+    if context['kind'] == 'item':
+        return bool(context['rows'])
+    return bool(context['rows'] or context['scalar_rows'])
+
+
+def _collection_columns(
+    category: CategoryCollection,
+    items: list[object],
+) -> list[dict[str, object]]:
+    """Return loop column metadata from the first row item."""
+    if not items:
+        return []
+    return [
+        _column_context(parameter)
+        for parameter in _collection_loop_parameters(category, items[0])
+    ]
+
+
+def _collection_row(
+    category: CategoryCollection,
+    item: object,
+    columns: list[dict[str, object]],
+) -> dict[str, object]:
+    """Return one loop row."""
+    parameters = _collection_loop_parameters(category, item)
+    values = [_display_value(parameter) for parameter in parameters]
+    cells = [
+        {'value': value, 'numeric': column['numeric'], 'number': None}
+        for value, column in zip(values, columns, strict=True)
+    ]
+    return {'cells': cells}
+
+
+def _collection_loop_parameters(
+    category: CategoryCollection,
+    item: object,
+) -> list[GenericDescriptorBase]:
+    """Return the descriptors that define a collection row."""
+    loop_parameters = getattr(category, '_cif_loop_parameters', None)
+    if callable(loop_parameters):
+        return list(loop_parameters(item))
+    return list(item.parameters)
+
+
+def _category_parameters(category: object) -> list[GenericDescriptorBase]:
+    """Return descriptors that define a non-loop category."""
+    parameters = getattr(category, 'parameters', ())
+    return list(parameters)
+
+
+def _descriptor_rows(
+    parameters: Iterable[GenericDescriptorBase],
+) -> list[dict[str, object]]:
+    """Return key-value table rows from descriptors."""
+    rows = []
+    for parameter in parameters:
+        value = _display_value(parameter)
+        rows.append(
+            {
+                'name': parameter.name,
+                'label': _display_label(parameter, context='html'),
+                'latex_label': _display_label(parameter, context='latex'),
+                'html_label': _html_label(parameter),
+                'units': _display_units(_descriptor_units(parameter, context='html')),
+                'latex_units': _display_units(
+                    _descriptor_units(parameter, context='latex')
+                ),
+                'html_units': _html_units(parameter),
+                'value': value,
+                'numeric': _descriptor_is_numeric(parameter)
+                and _is_numeric_value(value),
+                'number': None,
+            }
+        )
+    _apply_row_number_alignment(rows)
+    return rows
+
+
+def _column_context(parameter: GenericDescriptorBase) -> dict[str, object]:
+    """Return loop-column metadata from one descriptor."""
+    return {
+        'name': parameter.name,
+        'label': _display_label(parameter, context='html'),
+        'latex_label': _display_label(parameter, context='latex'),
+        'html_label': _html_label(parameter),
+        'units': _display_units(_descriptor_units(parameter, context='html')),
+        'latex_units': _display_units(_descriptor_units(parameter, context='latex')),
+        'html_units': _html_units(parameter),
+        'numeric': False,
+        'numeric_candidate': _descriptor_is_numeric(parameter),
+    }
+
+
+def _mark_numeric_columns(
+    columns: list[dict[str, object]],
+    rows: list[dict[str, object]],
+) -> None:
+    """Mark each loop column that can use numeric alignment."""
+    for index, column in enumerate(columns):
+        column_values = [row['cells'][index]['value'] for row in rows]
+        is_numeric = bool(column['numeric_candidate']) and _values_are_numeric(
+            column_values
+        )
+        column['numeric'] = is_numeric
+        column.pop('numeric_candidate', None)
+        for row in rows:
+            row['cells'][index]['numeric'] = is_numeric
+
+
+def _apply_row_number_alignment(rows: list[dict[str, object]]) -> None:
+    """Add HTML decimal-alignment metadata to key-value rows."""
+    number_parts = [
+        _number_parts(row['value']) if row['numeric'] else None for row in rows
+    ]
+    left_ch, right_ch = _number_widths(number_parts)
+    for row, parts in zip(rows, number_parts, strict=True):
+        row['number'] = _number_context(parts, left_ch, right_ch)
+
+
+def _apply_cell_number_alignment(
+    columns: list[dict[str, object]],
+    rows: list[dict[str, object]],
+) -> None:
+    """Add HTML decimal-alignment metadata to loop cells."""
+    for index, column in enumerate(columns):
+        if not column['numeric']:
+            continue
+        number_parts = [
+            _number_parts(row['cells'][index]['value']) for row in rows
+        ]
+        left_ch, right_ch = _number_widths(number_parts)
+        column['number_left_ch'] = left_ch
+        column['number_right_ch'] = right_ch
+        for row, parts in zip(rows, number_parts, strict=True):
+            row['cells'][index]['number'] = _number_context(
+                parts,
+                left_ch,
+                right_ch,
+            )
+
+
+def _number_widths(
+    number_parts: Iterable[dict[str, object] | None],
+) -> tuple[int, int]:
+    """Return left and right character widths for numeric cells."""
+    populated = [parts for parts in number_parts if parts is not None]
+    if not populated:
+        return 0, 0
+    left_ch = max(len(str(parts['left'])) for parts in populated)
+    right_ch = max(len(str(parts['right'])) for parts in populated)
+    return left_ch, right_ch
+
+
+def _number_context(
+    parts: dict[str, object] | None,
+    left_ch: int,
+    right_ch: int,
+) -> dict[str, object] | None:
+    """Return one number context with column widths attached."""
+    if parts is None:
+        return None
+    return {
+        **parts,
+        'left_ch': max(left_ch, 1),
+        'right_ch': max(right_ch, 1),
+    }
+
+
+def _number_parts(value: object) -> dict[str, object] | None:
+    """Split one numeric display value around its decimal marker."""
+    text = _number_text(value)
+    match = _NUMBER_PARTS_RE.match(text)
+    if match is None:
+        return None
+
+    sign = match.group('sign') or ''
+    integer = match.group('integer')
+    leading_fraction = match.group('leading_fraction')
+    fraction = match.group('fraction')
+    if integer is None:
+        left = f'{sign}0'
+        right_fraction = leading_fraction or ''
+        has_decimal = True
+    else:
+        left = f'{sign}{integer}'
+        right_fraction = fraction or ''
+        has_decimal = fraction is not None
+
+    uncertainty = match.group('uncertainty') or ''
+    exponent = match.group('exponent') or ''
+    return {
+        'left': left,
+        'right': f'{right_fraction}{uncertainty}{exponent}',
+        'has_decimal': has_decimal,
+    }
+
+
+def _number_text(value: object) -> str:
+    """Return a compact text representation for alignment."""
+    if isinstance(value, (float, int)) and not isinstance(value, bool):
+        return f'{value:.6g}'
+    return str(value).strip()
+
+
+def _values_are_numeric(values: Iterable[object]) -> bool:
+    """Return whether all populated values are numeric."""
+    populated_values = [value for value in values if not _is_empty_value(value)]
+    return bool(populated_values) and all(
+        _is_numeric_value(value) for value in populated_values
+    )
+
+
+def _rows_have_numeric_values(rows: Iterable[dict[str, object]]) -> bool:
+    """Return whether any descriptor row has a numeric value."""
+    return any(row['numeric'] for row in rows)
+
+
+def _is_empty_value(value: object) -> bool:
+    """Return whether a table cell should be treated as empty."""
+    return value is None or (isinstance(value, str) and not value)
+
+
+def _is_numeric_value(value: object) -> bool:
+    """Return whether a value can be typeset as a number."""
+    if isinstance(value, bool):
+        return False
+    if isinstance(value, (float, int)):
+        return True
+    return isinstance(value, str) and bool(_NUMERIC_TEXT_RE.match(value.strip()))
+
+
+def _descriptor_is_numeric(parameter: GenericDescriptorBase) -> bool:
+    """Return whether a descriptor semantically stores numeric data."""
+    return isinstance(parameter, (IntegerDescriptor, NumericDescriptor, Parameter))
+
+
+def _display_label(parameter: GenericDescriptorBase, *, context: str) -> str:
+    """Return a display label for a descriptor."""
+    label = parameter.resolve_display_name(context)
+    return label or parameter.name
+
+
+def _display_units(units: object) -> str:
+    """Return display units, suppressing placeholder unit labels."""
+    if units is None:
+        return ''
+    units_text = str(units)
+    if units_text.lower() == 'none':
+        return ''
+    return units_text
+
+
+def _html_label(parameter: GenericDescriptorBase) -> str:
+    """Return a MathJax-capable HTML label for one descriptor."""
+    latex_label = _display_label(parameter, context='latex')
+    if _has_explicit_latex(parameter) and _is_latex_markup(latex_label):
+        return _html_markup(latex_label)
+    return _display_label(parameter, context='html')
+
+
+def _html_units(parameter: GenericDescriptorBase) -> str:
+    """Return MathJax-capable HTML units for one descriptor."""
+    latex_units = _display_units(_descriptor_units(parameter, context='latex'))
+    if not latex_units:
+        return ''
+    if _is_latex_markup(latex_units):
+        return _mathjax_text(latex_units)
+
+    html_units = _display_units(_descriptor_units(parameter, context='html'))
+    return _plain_unit_text(html_units or latex_units)
+
+
+def _has_explicit_latex(parameter: GenericDescriptorBase) -> bool:
+    """Return whether a descriptor declares LaTeX display metadata."""
+    display_handler = _safe_attr(parameter, 'display_handler')
+    return display_handler is not None and display_handler.latex_name is not None
+
+
+def _is_latex_markup(value: object) -> bool:
+    """Return whether a display string contains TeX markup."""
+    text = str(value)
+    return '$' in text or '\\' in text
+
+
+def _mathjax_text(value: object) -> str:
+    """Return inline MathJax text from a LaTeX fragment."""
+    text = _mathjax_markup(str(value).replace('$', ''))
+    return rf'\({text}\)'
+
+
+def _html_markup(value: object) -> str:
+    """Return HTML text with inline LaTeX fragments as MathJax."""
+    text = str(value)
+    if '$' in text:
+        return _MATH_FRAGMENT_RE.sub(
+            lambda match: _mathjax_text(match.group(1)),
+            text,
+        )
+    if '\\' in text:
+        return _mathjax_text(text)
+    return text
+
+
+def _mathjax_markup(value: str) -> str:
+    """Return LaTeX markup normalized for MathJax rendering."""
+    placeholder = '__EASYDIFFRACTION_ANGSTROM__'
+    text = _degree_unit_math(value)
+    text = text.replace(r'\mathrm{\AA}', placeholder)
+    text = text.replace(r'\AA', r'\mathring{\mathrm{A}}')
+    return text.replace(placeholder, r'\mathring{\mathrm{A}}')
+
+
+def _degree_unit_math(value: str) -> str:
+    """Return TeX unit markup with degree symbols named as deg."""
+    text = value
+    markers = (r'^\circ{}^2', r'^\circ{}^{2}', r'^\circ^2', r'^\circ^{2}')
+    for marker in markers:
+        text = text.replace(marker, r'\mathrm{deg}^2')
+    return text.replace(r'^\circ{}', r'\mathrm{deg}').replace(
+        r'^\circ',
+        r'\mathrm{deg}',
+    )
+
+
+def _plain_unit_text(value: str) -> str:
+    """Return plain unit text normalized for report display."""
+    return (
+        value.replace('degrees_squared', 'deg^2')
+        .replace('degree_squared', 'deg^2')
+        .replace('degrees squared', 'deg^2')
+        .replace('degree squared', 'deg^2')
+        .replace('degrees', 'deg')
+        .replace('degree', 'deg')
+        .replace('deg²', 'deg^2')
+        .replace('°²', 'deg^2')
+        .replace('°', 'deg')
+    )
+
+
+def _descriptor_units(parameter: object, *, context: str) -> str:
+    """Return descriptor units without probing missing attributes."""
+    display_handler = _safe_attr(parameter, 'display_handler')
+    if display_handler is not None:
+        if context == 'latex' and display_handler.latex_units is not None:
+            return display_handler.latex_units
+        if context != 'latex' and display_handler.display_units is not None:
+            return display_handler.display_units
+
+    units = _safe_attr(parameter, 'units')
+    return '' if units is None else str(units)
+
+
+def _category_title(category: object) -> str:
+    """Return the report title for a category."""
+    return _category_code(category) or type(category).__name__
+
+
+def _category_code(category: object) -> str | None:
+    """Return the CIF-like category code for item or collection."""
+    identity = getattr(category, '_identity', None)
+    category_code = getattr(identity, 'category_code', None)
+    if category_code is not None:
+        return category_code
+    item_type = getattr(category, '_item_type', None)
+    return getattr(item_type, '_category_code', None)
 
 
 def _software_role_context(role: object) -> dict[str, object]:

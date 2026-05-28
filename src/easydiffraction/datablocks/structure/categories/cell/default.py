@@ -5,8 +5,8 @@
 from __future__ import annotations
 
 from easydiffraction.core.category import CategoryItem
-from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.display_handler import DisplayHandler
+from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.variable import Parameter
@@ -88,10 +88,10 @@ class Cell(CategoryItem):
             description='Angle between edges b and c',
             units='degrees',
             display_handler=DisplayHandler(
-                display_name='α',
+                display_name='\N{GREEK SMALL LETTER ALPHA}',
                 display_units='deg',
                 latex_name=r'$\alpha$',
-                latex_units=r'$^\circ$',
+                latex_units=r'\mathrm{deg}',
             ),
             value_spec=AttributeSpec(
                 default=90.0,
@@ -104,10 +104,10 @@ class Cell(CategoryItem):
             description='Angle between edges a and c',
             units='degrees',
             display_handler=DisplayHandler(
-                display_name='β',
+                display_name='\N{GREEK SMALL LETTER BETA}',
                 display_units='deg',
                 latex_name=r'$\beta$',
-                latex_units=r'$^\circ$',
+                latex_units=r'\mathrm{deg}',
             ),
             value_spec=AttributeSpec(
                 default=90.0,
@@ -120,10 +120,10 @@ class Cell(CategoryItem):
             description='Angle between edges a and b',
             units='degrees',
             display_handler=DisplayHandler(
-                display_name='γ',
+                display_name='\N{GREEK SMALL LETTER GAMMA}',
                 display_units='deg',
                 latex_name=r'$\gamma$',
-                latex_units=r'$^\circ$',
+                latex_units=r'\mathrm{deg}',
             ),
             value_spec=AttributeSpec(
                 default=90.0,

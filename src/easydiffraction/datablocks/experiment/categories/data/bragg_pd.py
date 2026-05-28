@@ -9,10 +9,10 @@ import numpy as np
 
 from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.metadata import CalculatorSupport
 from easydiffraction.core.metadata import Compatibility
 from easydiffraction.core.metadata import TypeInfo
-from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.validation import RangeValidator
@@ -216,7 +216,7 @@ class PdCwlDataPointMixin:
                 display_name='2θ',
                 display_units='deg',
                 latex_name=r'$2\theta$',
-                latex_units=r'$^\circ$',
+                latex_units=r'\mathrm{deg}',
             ),
             value_spec=AttributeSpec(
                 default=0.0,

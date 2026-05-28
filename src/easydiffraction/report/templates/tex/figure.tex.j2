@@ -45,7 +45,7 @@ ylabel={ {{ y_label }} },
 legend pos=north east,
 legend style={draw=none, fill=white, fill opacity=0.5, text opacity=1, font=\footnotesize},
 ]
-\addplot+[mark=*, mark size={{ styles.meas.marker_size_pt | tex_number }}pt, color={{ styles.meas.color_name }}, line width={{ styles.meas.line_width_pt | tex_number }}pt, line join=bevel, mark options={line width={{ styles.meas.marker_line_width_pt | tex_number }}pt}] table[x=x, y=meas, col sep=comma] { {{- csv_filename -}} };
+\addplot+[mark=*, mark size={{ styles.meas.marker_size_pt | tex_number }}pt, color={{ styles.meas.color_name }}, line width={{ styles.meas.line_width_pt | tex_number }}pt, line join=bevel, mark options={fill={{ styles.meas.color_name }}, draw={{ styles.meas.color_name }}, fill opacity=1, draw opacity=1, line width={{ styles.meas.marker_line_width_pt | tex_number }}pt}] table[x=x, y=meas, col sep=comma] { {{- csv_filename -}} };
 \addlegendentry{ {{- styles.meas.name | tex -}} }
 \addplot+[color={{ styles.calc.color_name }}, line width={{ styles.calc.line_width_pt | tex_number }}pt, line join=bevel, no markers] table[x=x, y=calc, col sep=comma] { {{- csv_filename -}} };
 \addlegendentry{ {{- styles.calc.name | tex -}} }

@@ -5,8 +5,8 @@
 from __future__ import annotations
 
 from easydiffraction.core.category import CategoryItem
-from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.display_handler import DisplayHandler
+from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.variable import NumericDescriptor
@@ -36,7 +36,7 @@ class DefaultDiffrn(CategoryItem):
                 display_name='Temperature',
                 display_units='K',
                 latex_name='Temperature',
-                latex_units='K',
+                latex_units=r'\mathrm{K}',
             ),
             value_spec=AttributeSpec(
                 default=None,
@@ -54,7 +54,7 @@ class DefaultDiffrn(CategoryItem):
                 display_name='Pressure',
                 display_units='kPa',
                 latex_name='Pressure',
-                latex_units='kPa',
+                latex_units=r'\mathrm{kPa}',
             ),
             value_spec=AttributeSpec(
                 default=None,
@@ -69,8 +69,10 @@ class DefaultDiffrn(CategoryItem):
             description='Mean magnetic field during measurement',
             units='teslas',
             display_handler=DisplayHandler(
+                display_name='Magnetic field',
                 display_units='T',
-                latex_units='T',
+                latex_name='Magnetic field',
+                latex_units=r'\mathrm{T}',
             ),
             value_spec=AttributeSpec(
                 default=None,
@@ -88,7 +90,9 @@ class DefaultDiffrn(CategoryItem):
             description='Mean electric field during measurement',
             units='volts_per_metre',
             display_handler=DisplayHandler(
+                display_name='Electric field',
                 display_units='V/m',
+                latex_name='Electric field',
                 latex_units=r'\mathrm{V}/\mathrm{m}',
             ),
             value_spec=AttributeSpec(

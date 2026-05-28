@@ -11,6 +11,7 @@ from importlib.resources import files
 
 from jinja2 import Environment
 from jinja2 import PackageLoader
+from jinja2 import select_autoescape
 
 from easydiffraction.report.fit_plot import fit_bragg_tick_styles
 from easydiffraction.report.fit_plot import fit_plot_axis_styles
@@ -147,7 +148,11 @@ def _environment() -> Environment:
     """Return the Jinja environment for TeX report templates."""
     environment = Environment(
         loader=PackageLoader('easydiffraction.report', 'templates'),
-        autoescape=False,
+        autoescape=select_autoescape(
+            enabled_extensions=(),
+            default_for_string=False,
+            default=False,
+        ),
         trim_blocks=True,
         lstrip_blocks=True,
     )
@@ -155,11 +160,12 @@ def _environment() -> Environment:
     environment.filters['tex_axis_label'] = _tex_axis_label
     environment.filters['tex_markup'] = _tex_markup
     environment.filters['tex_number'] = _tex_number
+    environment.filters['tex_unit'] = _tex_unit
     return environment
 
 
 def _prepare_tex_bundle(tex_dir: pathlib.Path) -> None:
-    """Remove managed bundle subdirectories before writing TeX assets."""
+    """Remove managed bundle directories before writing TeX assets."""
     tex_dir.mkdir(parents=True, exist_ok=True)
     for dirname in ('data', 'styles', 'figures'):
         path = tex_dir / dirname
@@ -392,11 +398,45 @@ def _tex_markup(value: object) -> str:
     return _tex_escape(text)
 
 
+def _tex_unit(value: object) -> str:
+    """Return TeX-safe unit text for table labels."""
+    if value is None:
+        return ''
+    text = str(value)
+    if not text:
+        return ''
+    if '\\' in text or '$' in text:
+        return f'${_tex_unit_math(text.replace("$", ""))}$'
+    return _tex_escape(text)
+
+
+def _tex_unit_math(value: str) -> str:
+    """Return unit TeX normalized for math-mode rendering."""
+    placeholder = '__EASYDIFFRACTION_ANGSTROM__'
+    text = _tex_degree_unit_math(value)
+    text = text.replace(r'\mathrm{\AA}', placeholder)
+    text = text.replace(r'\AA', r'\mathring{\mathrm{A}}')
+    return text.replace(placeholder, r'\mathring{\mathrm{A}}')
+
+
+def _tex_degree_unit_math(value: str) -> str:
+    """Return TeX unit markup with degree symbols named as deg."""
+    text = value
+    markers = (r'^\circ{}^2', r'^\circ{}^{2}', r'^\circ^2', r'^\circ^{2}')
+    for marker in markers:
+        text = text.replace(marker, r'\mathrm{deg}^2')
+    return text.replace(r'^\circ{}', r'\mathrm{deg}').replace(
+        r'^\circ',
+        r'\mathrm{deg}',
+    )
+
+
 def _tex_axis_label(value: object) -> str:
     """Return a TeX-safe axis label from Plotly display text."""
     if value is None:
         return ''
     text = str(value)
+    text = text.replace('degree', 'deg')
     text = text.replace('⁻¹', '$^{-1}$')
     text = text.replace('²', '$^2$')
     text = text.replace('θ', r'$\theta$')

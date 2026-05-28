@@ -4,7 +4,7 @@
   --ink: #20242a;
   --muted: #5f6874;
   --rule: #20242a;
-  --light-rule: #d7dce2;
+  --row-shade: #f8f9fa;
   --link: #245a9b;
 }
 
@@ -24,6 +24,7 @@ body {
   margin: 0 auto;
   padding: 42px 52px 64px;
   background: var(--paper);
+  counter-reset: report-section;
 }
 
 .report-title {
@@ -42,30 +43,57 @@ p {
 h1 {
   margin-bottom: 0;
   font-size: 2rem;
-  font-weight: 600;
+  font-weight: 400;
   line-height: 1.2;
 }
 
 h2 {
   margin: 30px 0 12px;
   font-size: 1.35rem;
-  font-weight: 600;
+  font-weight: 400;
 }
 
 h3 {
   margin: 22px 0 10px;
   font-size: 1.1rem;
-  font-weight: 600;
+  font-weight: 400;
 }
 
 h4 {
   margin: 18px 0 8px;
   font-size: 0.98rem;
-  font-weight: 600;
+  font-weight: 400;
 }
 
 section {
   margin-top: 24px;
+}
+
+.numbered-section {
+  counter-increment: report-section;
+  counter-reset: report-subsection;
+}
+
+.numbered-section > h2::before {
+  content: counter(report-section) " ";
+}
+
+.numbered-section .record {
+  counter-increment: report-subsection;
+  counter-reset: report-subsubsection;
+}
+
+.numbered-section .record > h3::before {
+  content: counter(report-section) "." counter(report-subsection) " ";
+}
+
+.numbered-section .record > h4 {
+  counter-increment: report-subsubsection;
+}
+
+.numbered-section .record > h4::before {
+  content: counter(report-section) "." counter(report-subsection) "."
+    counter(report-subsubsection) " ";
 }
 
 .record + .record {
@@ -73,7 +101,8 @@ section {
 }
 
 table {
-  width: 100%;
+  width: max-content;
+  max-width: 100%;
   margin: 8px 0 16px;
   border-collapse: collapse;
   border-top: 2px solid var(--rule);
@@ -93,20 +122,57 @@ td {
 }
 
 th {
-  font-weight: 600;
+  font-weight: 400;
 }
 
-tbody tr + tr th,
-tbody tr + tr td {
-  border-top: 1px solid var(--light-rule);
+tbody tr:nth-child(odd) {
+  background: var(--row-shade);
 }
 
-.key-value th {
-  width: 32%;
+.numeric,
+.numeric-header {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.number {
+  display: inline-grid;
+  grid-template-columns:
+    var(--number-left, 1ch) 0.35ch
+    var(--number-right, 1ch);
+  white-space: nowrap;
+}
+
+.number-left {
+  text-align: right;
+}
+
+.number-dot {
+  text-align: center;
+}
+
+.number-dot-placeholder {
+  visibility: hidden;
+}
+
+.number-right {
+  text-align: left;
+}
+
+.key-value .key {
+  width: auto;
+  padding-right: 28px;
+  font-weight: 400;
 }
 
 .table-scroll {
+  width: fit-content;
+  max-width: 100%;
   overflow-x: auto;
+}
+
+.table-scroll table {
+  max-width: none;
 }
 
 .figure {

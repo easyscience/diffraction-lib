@@ -12,6 +12,7 @@ import numpy as np
 from scipy.interpolate import interp1d
 
 from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.metadata import CalculatorSupport
 from easydiffraction.core.metadata import Compatibility
 from easydiffraction.core.metadata import TypeInfo
@@ -51,6 +52,10 @@ class LineSegment(CategoryItem):
                 validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
             ),
             cif_handler=CifHandler(names=['_pd_background.id']),
+            display_handler=DisplayHandler(
+                display_name='ID',
+                latex_name='ID',
+            ),
         )
         self._x = NumericDescriptor(
             name='x',
@@ -65,6 +70,10 @@ class LineSegment(CategoryItem):
                     '_pd_background_line_segment_X',
                 ]
             ),
+            display_handler=DisplayHandler(
+                display_name='x',
+                latex_name='$x$',
+            ),
         )
         self._y = Parameter(
             name='y',  # TODO: rename to intensity
@@ -78,6 +87,10 @@ class LineSegment(CategoryItem):
                     '_pd_background.line_segment_intensity',
                     '_pd_background_line_segment_intensity',
                 ]
+            ),
+            display_handler=DisplayHandler(
+                display_name='Intensity',
+                latex_name='Intensity',
             ),
         )
 

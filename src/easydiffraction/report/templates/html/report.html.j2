@@ -1,6 +1,19 @@
 {% import "base.j2" as base %}
-{% macro field_header(field, fallback) -%}
-{{ field.label or fallback }}{% if field.units %} ({{ field.units }}){% endif %}
+{% macro category_label(row) -%}
+{{ row.html_label or row.label or row.name }}{% if row.html_units %} ({{ row.html_units }}){% endif %}
+{%- endmacro %}
+{% macro aligned_number(number, value) -%}
+{% if number %}
+<span class="number" role="text" aria-label="{{ base.format_number(value) }}" style="--number-left: {{ number.left_ch }}ch; --number-right: {{ number.right_ch }}ch">
+  <span class="number-left">{{ number.left }}</span><span class="number-dot{% if not number.has_decimal %} number-dot-placeholder{% endif %}">.</span><span class="number-right">{{ number.right }}</span>
+</span>
+{% else %}{{ base.format_number(value) }}{% endif %}
+{%- endmacro %}
+{% macro category_cell(cell) -%}
+{% if cell.numeric %}{{ aligned_number(cell.number, cell.value) }}{% elif cell.value is none %}{% else %}{{ cell.value }}{% endif %}
+{%- endmacro %}
+{% macro category_value(row) -%}
+{% if row.numeric %}{{ aligned_number(row.number, row.value) }}{% elif row.value is none %}{% else %}{{ row.value }}{% endif %}
 {%- endmacro %}
 <!doctype html>
 <html lang="en">
@@ -22,41 +35,41 @@
     </header>
 
     {% if project.description %}
-    <section>
+    <section class="abstract-section">
       <h2>Abstract</h2>
       <p>{{ project.description }}</p>
     </section>
     {% endif %}
 
-    <section>
+    <section class="numbered-section">
       <h2>Project Summary</h2>
       <table class="key-value">
         <tbody>
           <tr>
-            <th>Short name</th>
+            <td class="key">Short name</td>
             <td>{{ project.name }}</td>
           </tr>
           <tr>
-            <th>Title</th>
+            <td class="key">Title</td>
             <td>{{ project.title }}</td>
           </tr>
           <tr>
-            <th>Structures</th>
+            <td class="key">Structures</td>
             <td>{{ project.n_phases }}</td>
           </tr>
           <tr>
-            <th>Experiments</th>
+            <td class="key">Experiments</td>
             <td>{{ project.n_experiments }}</td>
           </tr>
           <tr>
-            <th>Generated</th>
+            <td class="key">Generated</td>
             <td>{{ metadata.generated_at }}</td>
           </tr>
         </tbody>
       </table>
     </section>
 
-    <section>
+    <section class="numbered-section">
       <h2>Software</h2>
       <table>
         <thead>
@@ -86,175 +99,141 @@
       </table>
     </section>
 
-    <section>
+    <section class="numbered-section">
       <h2>Refinement</h2>
       <table class="key-value">
         <tbody>
+          {% for row in refinement.rows %}
           <tr>
-            <th>Reduced chi-square</th>
-            <td>{{ base.format_number(refinement.fit_result.reduced_chi_square) }}</td>
+            <td class="key">{{ row.label }}</td>
+            <td{% if row.numeric %} class="numeric"{% endif %}>{{ category_value(row) }}</td>
           </tr>
-          <tr>
-            <th>Free parameters</th>
-            <td>{{ base.format_number(refinement.parameters.free) }}</td>
-          </tr>
-          <tr>
-            <th>Total parameters</th>
-            <td>{{ base.format_number(refinement.parameters.total) }}</td>
-          </tr>
-          <tr>
-            <th>Constraints</th>
-            <td>{{ base.format_number(refinement.constraints) }}</td>
-          </tr>
-          <tr>
-            <th>R factor</th>
-            <td>{{ base.format_number(refinement.fit_result.r_factor_all) }}</td>
-          </tr>
-          <tr>
-            <th>Weighted R factor</th>
-            <td>{{ base.format_number(refinement.fit_result.wr_factor_all) }}</td>
-          </tr>
+          {% endfor %}
         </tbody>
       </table>
     </section>
 
-    <section>
+    <section class="numbered-section">
       <h2>Structures</h2>
       {% for structure in structures %}
       <article class="record">
         <h3>{{ structure.id }}</h3>
 
-        <h4>Space group and unit cell parameters</h4>
+        {% for category in structure.categories %}
+        <h4>{{ category.title }}</h4>
+        {% if category.kind == "item" %}
         <table class="key-value">
           <tbody>
+            {% for row in category.rows %}
             <tr>
-              <th>Space group</th>
-              <td>{{ structure.space_group }}</td>
-            </tr>
-            <tr>
-              <th>Crystal system</th>
-              <td>{{ structure.crystal_system }}</td>
-            </tr>
-            {% for key, value in structure.cell.items() %}
-            <tr>
-              <th>{{ field_header(structure.cell_display[key], key | replace("_", " ")) }}</th>
-              <td>{{ base.format_number(value) }}</td>
+              <td class="key">{{ category_label(row) }}</td>
+              <td{% if row.numeric %} class="numeric"{% endif %}>{{ category_value(row) }}</td>
             </tr>
             {% endfor %}
           </tbody>
         </table>
-
-        {% if structure.atom_sites %}
-        <h4>Atom site parameters</h4>
+        {% else %}
+        {% if category.scalar_rows %}
+        <table class="key-value">
+          <tbody>
+            {% for row in category.scalar_rows %}
+            <tr>
+              <td class="key">{{ category_label(row) }}</td>
+              <td{% if row.numeric %} class="numeric"{% endif %}>{{ category_value(row) }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% endif %}
+        {% if category.rows %}
         <div class="table-scroll">
           <table>
             <thead>
               <tr>
-                <th>Label</th>
-                <th>Type</th>
-                <th>{{ field_header(structure.atom_site_display.fract_x, "x") }}</th>
-                <th>{{ field_header(structure.atom_site_display.fract_y, "y") }}</th>
-                <th>{{ field_header(structure.atom_site_display.fract_z, "z") }}</th>
-                <th>Occ.</th>
-                <th>{{ field_header(structure.atom_site_display.adp_iso, "ADP") }}</th>
+                {% for column in category.columns %}
+                <th{% if column.numeric %} class="numeric-header"{% endif %}>{{ category_label(column) }}</th>
+                {% endfor %}
               </tr>
             </thead>
             <tbody>
-              {% for atom in structure.atom_sites %}
+              {% for row in category.rows %}
               <tr>
-                <td>{{ atom.label }}</td>
-                <td>{{ atom.type_symbol }}</td>
-                <td>{{ base.format_number(atom.fract_x) }}</td>
-                <td>{{ base.format_number(atom.fract_y) }}</td>
-                <td>{{ base.format_number(atom.fract_z) }}</td>
-                <td>{{ base.format_number(atom.occupancy) }}</td>
-                <td>{{ base.format_number(atom.adp_iso) }}</td>
+                {% for cell in row.cells %}
+                <td{% if cell.numeric %} class="numeric"{% endif %}>{{ category_cell(cell) }}</td>
+                {% endfor %}
               </tr>
               {% endfor %}
             </tbody>
           </table>
         </div>
         {% endif %}
-
-        {% if structure.atom_site_aniso %}
-        <h4>Anisotropic atomic displacement parameters</h4>
-        <div class="table-scroll">
-          <table>
-            <thead>
-              <tr>
-                <th>Label</th>
-                <th>{{ field_header(structure.atom_site_aniso_display.adp_11, "ADP 11") }}</th>
-                <th>{{ field_header(structure.atom_site_aniso_display.adp_22, "ADP 22") }}</th>
-                <th>{{ field_header(structure.atom_site_aniso_display.adp_33, "ADP 33") }}</th>
-                <th>{{ field_header(structure.atom_site_aniso_display.adp_12, "ADP 12") }}</th>
-                <th>{{ field_header(structure.atom_site_aniso_display.adp_13, "ADP 13") }}</th>
-                <th>{{ field_header(structure.atom_site_aniso_display.adp_23, "ADP 23") }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for aniso in structure.atom_site_aniso %}
-              <tr>
-                <td>{{ aniso.label }}</td>
-                <td>{{ base.format_number(aniso.adp_11) }}</td>
-                <td>{{ base.format_number(aniso.adp_22) }}</td>
-                <td>{{ base.format_number(aniso.adp_33) }}</td>
-                <td>{{ base.format_number(aniso.adp_12) }}</td>
-                <td>{{ base.format_number(aniso.adp_13) }}</td>
-                <td>{{ base.format_number(aniso.adp_23) }}</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
         {% endif %}
+        {% endfor %}
       </article>
       {% endfor %}
     </section>
 
-    <section>
+    <section class="numbered-section">
       <h2>Experiments</h2>
       {% for experiment in experiments %}
       <article class="record">
         <h3>{{ experiment.id }}</h3>
 
-        <h4>Experiment details</h4>
-        <table class="key-value">
-          <tbody>
-            <tr>
-              <th>Sample form</th>
-              <td>{{ experiment.type.sample_form }}</td>
-            </tr>
-            <tr>
-              <th>Probe</th>
-              <td>{{ experiment.type.radiation_probe }}</td>
-            </tr>
-            <tr>
-              <th>Beam mode</th>
-              <td>{{ experiment.type.beam_mode }}</td>
-            </tr>
-            <tr>
-              <th>Scattering type</th>
-              <td>{{ experiment.type.scattering_type }}</td>
-            </tr>
-            <tr>
-              <th>Calculator</th>
-              <td>{{ experiment.calculator.type }}</td>
-            </tr>
-            <tr>
-              <th>{{ field_header(experiment.diffrn_display.ambient_temperature, "Temperature") }}</th>
-              <td>{{ base.format_number(experiment.diffrn.ambient_temperature) }}</td>
-            </tr>
-            <tr>
-              <th>{{ field_header(experiment.diffrn_display.ambient_pressure, "Pressure") }}</th>
-              <td>{{ base.format_number(experiment.diffrn.ambient_pressure) }}</td>
-            </tr>
-          </tbody>
-        </table>
-
         {% if fit_figures[experiment.id] %}
         <h4>Fit quality</h4>
         <div class="figure">{{ fit_figures[experiment.id] | safe }}</div>
         {% endif %}
+
+        {% for category in experiment.categories %}
+        <h4>{{ category.title }}</h4>
+        {% if category.kind == "item" %}
+        <table class="key-value">
+          <tbody>
+            {% for row in category.rows %}
+            <tr>
+              <td class="key">{{ category_label(row) }}</td>
+              <td{% if row.numeric %} class="numeric"{% endif %}>{{ category_value(row) }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        {% if category.scalar_rows %}
+        <table class="key-value">
+          <tbody>
+            {% for row in category.scalar_rows %}
+            <tr>
+              <td class="key">{{ category_label(row) }}</td>
+              <td{% if row.numeric %} class="numeric"{% endif %}>{{ category_value(row) }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% endif %}
+        {% if category.rows %}
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                {% for column in category.columns %}
+                <th{% if column.numeric %} class="numeric-header"{% endif %}>{{ category_label(column) }}</th>
+                {% endfor %}
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in category.rows %}
+              <tr>
+                {% for cell in row.cells %}
+                <td{% if cell.numeric %} class="numeric"{% endif %}>{{ category_cell(cell) }}</td>
+                {% endfor %}
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% endif %}
+        {% endif %}
+        {% endfor %}
       </article>
       {% endfor %}
     </section>

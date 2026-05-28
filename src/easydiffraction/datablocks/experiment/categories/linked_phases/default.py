@@ -6,6 +6,7 @@ from __future__ import annotations
 
 from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.metadata import Compatibility
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
@@ -37,6 +38,10 @@ class LinkedPhase(CategoryItem):
                 validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
             ),
             cif_handler=CifHandler(names=['_pd_phase_block.id']),
+            display_handler=DisplayHandler(
+                display_name='Phase',
+                latex_name='Phase',
+            ),
         )
         self._scale = Parameter(
             name='scale',
@@ -46,6 +51,10 @@ class LinkedPhase(CategoryItem):
                 validator=RangeValidator(ge=0.0),
             ),
             cif_handler=CifHandler(names=['_pd_phase_block.scale']),
+            display_handler=DisplayHandler(
+                display_name='Scale',
+                latex_name='Scale',
+            ),
         )
 
     # ------------------------------------------------------------------

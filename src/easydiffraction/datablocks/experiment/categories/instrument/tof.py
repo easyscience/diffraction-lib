@@ -1,10 +1,10 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
+from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.metadata import CalculatorSupport
 from easydiffraction.core.metadata import Compatibility
 from easydiffraction.core.metadata import TypeInfo
-from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.variable import Parameter
@@ -63,8 +63,10 @@ class TofPdInstrument(InstrumentBase):
             description='Detector bank position',
             units='degrees',
             display_handler=DisplayHandler(
+                display_name='2θ bank',
                 display_units='deg',
-                latex_units=r'$^\circ$',
+                latex_name=r'$2\theta$ bank',
+                latex_units=r'\mathrm{deg}',
             ),
             value_spec=AttributeSpec(
                 default=150.0,
@@ -77,7 +79,9 @@ class TofPdInstrument(InstrumentBase):
             description='TOF offset',
             units='microseconds',
             display_handler=DisplayHandler(
+                display_name='TOF offset',
                 display_units='μs',
+                latex_name='TOF offset',
                 latex_units=r'$\mu\mathrm{s}$',
             ),
             value_spec=AttributeSpec(
@@ -91,7 +95,9 @@ class TofPdInstrument(InstrumentBase):
             description='TOF linear conversion',
             units='microseconds_per_angstrom',
             display_handler=DisplayHandler(
+                display_name='TOF linear',
                 display_units='μs/Å',
+                latex_name='TOF linear',
                 latex_units=r'$\mu\mathrm{s}/\mathrm{\AA}$',
             ),
             value_spec=AttributeSpec(
@@ -105,7 +111,9 @@ class TofPdInstrument(InstrumentBase):
             description='TOF quadratic correction',
             units='microseconds_per_angstrom_squared',
             display_handler=DisplayHandler(
+                display_name='TOF quadratic',
                 display_units='μs/Å²',
+                latex_name='TOF quadratic',
                 latex_units=r'$\mu\mathrm{s}/\mathrm{\AA}^2$',
             ),
             value_spec=AttributeSpec(
@@ -119,7 +127,9 @@ class TofPdInstrument(InstrumentBase):
             description='TOF reciprocal velocity correction',
             units='microsecond_angstroms',
             display_handler=DisplayHandler(
+                display_name='TOF reciprocal',
                 display_units='μs·Å',
+                latex_name='TOF reciprocal',
                 latex_units=r'$\mu\mathrm{s}\,\mathrm{\AA}$',
             ),
             value_spec=AttributeSpec(

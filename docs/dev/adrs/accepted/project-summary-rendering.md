@@ -891,6 +891,52 @@ consistent, document-appropriate look:
   `plotly_white` template above is report-specific (the
   notebook stays theme-adaptive).
 
+**Table contents and heading styling — category-driven,
+consistent HTML and PDF.** The reports mirror the project's own
+datablock categories rather than maintaining hand-written summary
+tables:
+
+- **Category-driven sections.** `ReportDataContext` iterates each
+  structure and experiment owner's public `categories` in order.
+  Each rendered category gets its own sub-subsection. Item
+  categories render as two-column key-value tables. Collection
+  categories render scalar descriptors first as key-value tables
+  and loop items as loop tables with headers. Experiment data
+  categories (`pd_data`, `total_data`, `refln`) are skipped because
+  they are plotted or too large for report tables. The
+  fit-quality plot remains the first experiment sub-subsection, and
+  publication metadata remains source data only — it is not added
+  to HTML, TeX, or PDF reports.
+- **DisplayHandler names and units.** All table labels and units
+  use the per-context `DisplayHandler` resolution chain, so TeX
+  sees LaTeX names (`$2\theta$ offset`,
+  `$U_{\mathrm{iso}}$`), HTML sees MathJax-capable equivalents,
+  and plain values keep the readable labels (`H-M symbol`,
+  `Wavelength`, `Scale`). Units use `deg` rather than a degree
+  symbol in report labels.
+- **Normal-weight headings and table headers.** Section headings
+  (`h1`–`h4`, the document title and section / subsection /
+  sub-subsection headers) render at normal weight. Table headers
+  are normal weight as well; hierarchy comes from size, spacing,
+  and rule lines rather than bold text.
+- **Decimal-point-aligned number columns.** TeX tables use
+  `siunitx` `S` columns. HTML has no browser-native equivalent, so
+  report data carries numeric split metadata (`left`, decimal
+  marker, `right`, and per-column widths). The HTML template emits
+  `<span class="number">` with `number-left`, `number-dot`, and
+  `number-right` children, using tabular digits so values such as
+  `0.584(20)` and `3.89086937` align visually on the decimal
+  marker without changing the original value text.
+- **Automatic section numbering via CSS counters.** HTML sections
+  are numbered like the PDF (`1`, `1.1`, `1.1.1`) using CSS
+  counters. Numbers are presentation-only, so they stay correct if
+  sections are added or reordered. The document title and Abstract
+  are unnumbered, matching the LaTeX report.
+- **Three-rule tables with light zebra striping.** HTML and TeX
+  tables use only top, middle, and bottom rules. Body rows alternate
+  with a very light grey background starting at the first body row;
+  no per-row horizontal rules are drawn.
+
 `reports/` is created lazily — only when at least one format is
 configured (or an ad-hoc method is called). A user iterating on
 a fit with the default `formats = []` produces no extra files.

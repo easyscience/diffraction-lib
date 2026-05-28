@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.metadata import Compatibility
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
@@ -47,6 +48,10 @@ class LinkedCrystal(CategoryItem):
                 names=['_sc_crystal_block.id'],
                 iucr_name='_easydiffraction_sc_crystal_block.id',
             ),
+            display_handler=DisplayHandler(
+                display_name='Crystal',
+                latex_name='Crystal',
+            ),
         )
         self._scale = Parameter(
             name='scale',
@@ -58,6 +63,10 @@ class LinkedCrystal(CategoryItem):
             cif_handler=CifHandler(
                 names=['_sc_crystal_block.scale'],
                 iucr_name='_easydiffraction_sc_crystal_block.scale',
+            ),
+            display_handler=DisplayHandler(
+                display_name='Scale',
+                latex_name='Scale',
             ),
         )
 

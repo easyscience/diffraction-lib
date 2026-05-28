@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.switchable import SwitchableCategoryBase
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import MembershipValidator
@@ -31,6 +32,10 @@ class PeakBase(CategoryItem, SwitchableCategoryBase):
         self._type: StringDescriptor = StringDescriptor(
             name='type',
             description='Active peak profile type tag',
+            display_handler=DisplayHandler(
+                display_name='Type',
+                latex_name='Type',
+            ),
             value_spec=AttributeSpec(
                 default=default_tag,
                 validator=MembershipValidator(

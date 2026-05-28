@@ -1097,6 +1097,77 @@ exceptions.
   - Commit:
     `Restore pgfplots report line widths`.
 
+- [x] **P1.26 — Render category-driven reports with aligned tables (ADR §2)**
+  - Files:
+    `docs/dev/adrs/accepted/project-summary-rendering.md`,
+    `src/easydiffraction/datablocks/experiment/categories/background/base.py`,
+    `src/easydiffraction/datablocks/experiment/categories/background/line_segment.py`,
+    `src/easydiffraction/datablocks/experiment/categories/calculator/default.py`,
+    `src/easydiffraction/datablocks/experiment/categories/data/bragg_pd.py`,
+    `src/easydiffraction/datablocks/experiment/categories/diffrn/default.py`,
+    `src/easydiffraction/datablocks/experiment/categories/experiment_type/default.py`,
+    `src/easydiffraction/datablocks/experiment/categories/instrument/cwl.py`,
+    `src/easydiffraction/datablocks/experiment/categories/instrument/tof.py`,
+    `src/easydiffraction/datablocks/experiment/categories/linked_crystal/default.py`,
+    `src/easydiffraction/datablocks/experiment/categories/linked_phases/default.py`,
+    `src/easydiffraction/datablocks/experiment/categories/peak/base.py`,
+    `src/easydiffraction/datablocks/experiment/categories/peak/cwl_mixins.py`,
+    `src/easydiffraction/datablocks/experiment/categories/refln/bragg_pd.py`,
+    `src/easydiffraction/datablocks/structure/categories/atom_sites/default.py`,
+    `src/easydiffraction/datablocks/structure/categories/cell/default.py`,
+    `src/easydiffraction/datablocks/structure/categories/space_group/default.py`,
+    `src/easydiffraction/display/plotters/base.py`,
+    `src/easydiffraction/report/data_context.py`,
+    `src/easydiffraction/report/templates/html/report.html.j2`,
+    `src/easydiffraction/report/templates/html/style.css`,
+    `src/easydiffraction/report/templates/tex/figure.tex.j2`,
+    `src/easydiffraction/report/templates/tex/report.tex.j2`,
+    `src/easydiffraction/report/tex_renderer.py`.
+  - **Category-driven report content.** Replace the last
+    hand-written structure and experiment summary tables with
+    `ReportDataContext` category traversal: every public
+    structure category and every public experiment category
+    gets its own sub-subsection, item categories render as
+    two-column key-value tables, and collection loops render
+    as one-to-one loop tables. Experiment data categories
+    (`pd_data`, `total_data`, `refln`) stay out of the tabular
+    report because they are already represented by plots or
+    are too large for summary tables. The fit-quality chart
+    remains the first experiment sub-subsection.
+  - **Shared readable labels and units.** Add the missing
+    `DisplayHandler` names and units used by report tables so
+    HTML and TeX resolve the same domain labels (`H-M symbol`,
+    `$2\theta$ offset`, `Wavelength`, `Scale`,
+    `$U_{\mathrm{iso}}$`, etc.) rather than raw CIF field names
+    where a better report label exists. Normalise report angle
+    units to `deg` and avoid degree-symbol / `degree_squared`
+    labels.
+  - **Normal-weight headings and headers.** Make HTML and TeX
+    document titles, section headings, subheadings, and table
+    headers normal weight. Table hierarchy comes from spacing,
+    sizing, and rules instead of bold headers.
+  - **Decimal-point-aligned numeric columns.** Keep TeX numeric
+    columns on `siunitx` `S` columns and add HTML-side numeric
+    metadata (`left`, decimal marker, `right`, and per-column
+    widths) so `report.html.j2` emits `number-left`,
+    `number-dot`, and `number-right` spans with tabular digits.
+    This aligns values such as `0.584(20)` and `3.89086937`
+    on the decimal marker without changing the displayed text.
+  - **Matching table layout.** HTML tables shrink to their
+    content width instead of filling the report page. HTML and
+    TeX both use only top, middle, and bottom rules with very
+    light alternating body-row backgrounds starting at the first
+    body row.
+  - **Automatic HTML section numbering.** Add CSS counters so
+    HTML sections mirror the PDF numbering (`1`, `1.1`,
+    `1.1.1`) while keeping the document title and Abstract
+    unnumbered.
+  - **PDF plot legend polish.** Explicitly set the measured
+    marker fill and draw color in the pgfplots legend so the
+    legend marker matches the plotted measured points.
+  - Commit:
+    `Render category-driven reports with aligned tables`.
+
 ## Test plan (Phase 2)
 
 Per AGENTS.md §Testing, every new module, class, and bug fix
@@ -1243,6 +1314,28 @@ running the verification commands below, add or update:
   only; the no-engine branch writes the `.tex` + CSV bundle
   and returns with the install hint **without raising**; an
   engine non-zero exit raises a clear error. P1.16 surface.
+- [ ] **`tests/unit/easydiffraction/report/test_html_renderer.py`**
+  (further extend) — **HTML category tables and CSS polish
+  (P1.26).** Rendered fixtures include category-driven
+  structure and experiment tables, with experiment data
+  categories skipped and the fit-quality chart first in the
+  experiment block. Numeric cells render split into
+  `<span class="number">` with `number-left`, `number-dot`,
+  and `number-right` children while preserving the original
+  `aria-label`; non-numeric cells stay plain. The emitted CSS
+  sets `h1`–`h4` and `th` to `font-weight: 400`, fits tables
+  to content width, stripes the first body row, and defines
+  section-numbering counters on `h2`/`h3`/`h4`; the title
+  (`h1`) and Abstract carry no counter. P1.26 surface.
+- [ ] **`tests/unit/easydiffraction/report/test_tex_renderer.py`**
+  (further extend) — **TeX category tables and styling
+  (P1.26).** The main report renders structure and experiment
+  categories as separate sub-subsections, skips experiment data
+  categories, uses normal-weight titles/headings/table headers,
+  applies the first-row table striping commands, keeps numeric
+  columns on `S` alignment, emits readable labels/units, and
+  sets the measured pgfplots legend marker color explicitly.
+  P1.26 surface.
 - [ ] **Wheel-packaging verification** — run
   `pixi run dist-build` and then
   `unzip -l dist/*.whl | grep -E 'mathjax|iucrjournals.cls|harvard.sty'`
