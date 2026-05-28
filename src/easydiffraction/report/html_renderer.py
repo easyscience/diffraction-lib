@@ -284,7 +284,11 @@ def _figure_html(figure: object, *, include_plotlyjs: bool | str) -> str:
     """Return an HTML snippet for one figure-like object."""
     to_html = getattr(figure, 'to_html', None)
     if callable(to_html):
-        return to_html(full_html=False, include_plotlyjs=include_plotlyjs)
+        return PlotlyPlotter.serialize_html(
+            figure,
+            include_plotlyjs=include_plotlyjs,
+            force_template='plotly_white',
+        )
     return str(figure)
 
 

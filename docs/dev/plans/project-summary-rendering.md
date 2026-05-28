@@ -879,7 +879,7 @@ exceptions.
   - Commit:
     `Build Plotly fit figures from fit_data context`.
 
-- [ ] **P1.18 — HTML serialization parity: forced light theme + notebook modebar (ADR §2)**
+- [x] **P1.18 — HTML serialization parity: forced light theme + notebook modebar (ADR §2)**
   - Files:
     `src/easydiffraction/report/html_renderer.py`;
     `src/easydiffraction/display/plotters/plotly.py` (extract

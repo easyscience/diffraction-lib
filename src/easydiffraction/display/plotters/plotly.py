@@ -956,16 +956,47 @@ window.requestAnimationFrame(installLegendToggleButton);
         if in_pycharm() or display is None or HTML is None:
             fig.show(config=config)
         else:
-            post_script = self._html_post_script(fig)
-            html_fig = pio.to_html(
+            html_fig = self.serialize_html(
                 fig,
                 include_plotlyjs='cdn',
-                full_html=False,
-                config=config,
-                post_script=post_script,
             )
-            html_fig = self._wrap_html_figure(fig, html_fig)
             display(HTML(html_fig))
+
+    @classmethod
+    def serialize_html(
+        cls,
+        fig: object,
+        *,
+        include_plotlyjs: bool | str,
+        force_template: str | None = None,
+    ) -> str:
+        """
+        Serialize a Plotly figure with EasyDiffraction controls.
+
+        Parameters
+        ----------
+        fig : object
+            Plotly figure to serialize.
+        include_plotlyjs : bool | str
+            Plotly JavaScript inclusion mode passed to Plotly.
+        force_template : str | None, default=None
+            Optional template name applied before serialization.
+
+        Returns
+        -------
+        str
+            Inline HTML containing the figure and helper scripts.
+        """
+        if force_template is not None:
+            fig.update_layout(template=force_template)
+        html_fig = pio.to_html(
+            fig,
+            include_plotlyjs=include_plotlyjs,
+            full_html=False,
+            config=cls._get_config(),
+            post_script=cls._html_post_script(fig),
+        )
+        return cls._wrap_html_figure(fig, html_fig)
 
     @classmethod
     def _get_layout(
