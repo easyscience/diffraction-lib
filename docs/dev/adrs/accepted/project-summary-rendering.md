@@ -855,6 +855,42 @@ minified) and refreshed on the same cadence as
 `iucrjournals.cls`. No new Python dependency — it's a
 static JavaScript asset shipped with the wheel.
 
+**Plotly figures: forced light theme + the notebook
+modebar.** Two appearance rules pin the report's charts to a
+consistent, document-appropriate look:
+
+- **Light theme only.** Every figure in the HTML report
+  renders with the `plotly_white` template, regardless of
+  the author's or reader's system / notebook dark-mode
+  setting. The interactive notebook path deliberately
+  switches `plotly_white` ↔ `plotly_dark` by theme
+  (`PlotlyPlotter._default_template_name` in
+  `display/plotters/plotly.py`), but a shared or printed
+  report must not inherit a dark background. The HTML
+  renderer therefore sets the figure's `template` to
+  `plotly_white` **explicitly per figure** — not via the
+  global `pio.templates.default` — so the report's
+  appearance is independent of the ambient theme at render
+  time.
+- **Notebook modebar, not Plotly's default.** The figure
+  toolbar (zoom / pan / etc.) reuses the **same notebook
+  serialization mechanics**, which are two distinct pieces:
+  (1) the standard Plotly `config` from
+  `PlotlyPlotter._get_config()` — `displayModeBar=True`,
+  `displaylogo=False`, the curated `modeBarButtonsToRemove`
+  set (`select2d`, `lasso2d`, `zoomIn2d`, `zoomOut2d`,
+  `autoScale2d`) — passed to `fig.to_html(config=...)`; and
+  (2) the **custom legend-toggle button**, which is *not* a
+  `config` entry — it is installed by the notebook's
+  `post_script` plus the `_wrap_html_figure` wrapper. The
+  report must apply **both** (config *and* post-script +
+  wrapper) and must **not** fall back to Plotly's default
+  full modebar. These serialization mechanics have one
+  source of truth in `display/plotters/plotly.py`, shared by
+  the notebook and the HTML report; only the forced
+  `plotly_white` template above is report-specific (the
+  notebook stays theme-adaptive).
+
 `reports/` is created lazily — only when at least one format is
 configured (or an ad-hoc method is called). A user iterating on
 a fit with the default `formats = []` produces no extra files.
@@ -888,21 +924,32 @@ flag-based and "auto on every save" positions):
   LaTeX-math strings on both sides, just rendered by
   MathJax in the browser and by the TeX engine in the PDF.
 
-**Visual consistency with the PDF.** The HTML template
-applies academic-paper CSS — top/middle/bottom table rules
-that mimic `booktabs`, a serif body font, narrow margins,
-table cells in a tabular sans-serif numeric face — so a
-reader scrolling the HTML page sees roughly the same
-layout the compiled PDF gives them. Plots stay
-format-specific (Plotly interactive in HTML, pgfplots
-static in PDF), but every label, header, and unit string
-matches because both renderers consume the same
-`DisplayHandler` data per §1.5.
+**Visual consistency with the PDF.** The HTML template mirrors
+the TeX/PDF report structure rather than presenting a separate
+dashboard-style design. Section order, headings, project-title
+treatment, abstract handling, table labels, and `booktabs`-like
+top/middle/bottom rules match the PDF as closely as browser CSS
+allows. Publication metadata is intentionally not rendered in
+HTML or TeX/PDF reports; it remains source data for the IUCr CIF
+path. Plots stay format-specific (Plotly interactive in HTML,
+pgfplots static in PDF), but the HTML renderer reuses the same
+Plotly figure builder as normal EasyDiffraction plotting for the
+corresponding plot kind. For powder Bragg measured-vs-calculated
+plots that means the report HTML is the same composite layout as
+the direct Plotly view: main intensity row, Bragg tick row, and
+residual row. The TeX renderer mirrors that structure with native
+pgfplots group panels and maps the same names, colors, line
+widths, axis labels, and axis ranges where pgfplots has an
+equivalent. Measured uncertainty is **not** drawn as per-point
+error bars in the PDF (they exhaust TeX's fixed memory pool —
+see §3.3); the PDF intensity panel is measured line+markers
+and calculated line only.
 
 Content (one HTML page per project — per-project granularity matches
 the IUCr "one CIF per article" convention):
 
-- Project info — title, description, phase count, experiment count.
+- Project info — title, phase count, experiment count. The project
+  description is rendered as the report abstract when non-empty.
 - Crystal data per phase — phase id, space group, cell parameters,
   atom-sites table.
 - Data collection per experiment — experiment id, type fields,
@@ -918,17 +965,20 @@ the IUCr "one CIF per article" convention):
   LaTeX label / units, all four label forms pre-resolved at
   builder time per §1.5) and a `series` sub-dict (`meas`,
   `calc`, `diff`, optional `bkg`, each carrying values + label
-  + optional `su` uncertainty array). The descriptor-driven
+  + optional `su` uncertainty array). Powder Bragg fit data also
+  carries Bragg tick sets extracted from the same reflection data
+  used by the interactive plotter. The descriptor-driven
   `x` payload covers Bragg powder CWL `two_theta`, TOF
   `time_of_flight`, and total-scattering `r` uniformly — any
   experiment whose x-axis descriptor exposes a
-  `DisplayHandler` drops in without further ADR changes. The
-  Jinja template feeds the dict to
-  `display/plotters/plotly.py` and embeds the resulting figure
-  via `fig.to_html(include_plotlyjs=<cdn|True>)`. The same
-  `fit_data` series feeds the pgfplots CSV emitter for the
-  LaTeX renderer — one source of truth.
-- Footer — EasyDiffraction version, save timestamp.
+  `DisplayHandler` drops in without further ADR changes. The HTML
+  renderer converts this dict into the same `PowderMeasVsCalcSpec`
+  consumed by `PlotlyPlotter` for direct plotting, then embeds the
+  resulting figure via `fig.to_html(include_plotlyjs=<cdn|True>)`.
+  The same `fit_data` series feeds the pgfplots CSV emitter for
+  the LaTeX renderer, while shared report-plot helpers reuse the
+  Plotly display constants for style — one source of truth for
+  both data and visual conventions.
 
 ### 3. LaTeX + PDF — config-driven via `project.report.formats`
 
@@ -969,15 +1019,23 @@ Future `project.report.html_style` (dark mode, journal-mimicking
 HTML layout) can land separately without collision because it
 lives in the config category, not in a method signature.
 
-**Plots use `pgfplots` with external CSV data, not pre-rendered
-images.** The figure-rendering pipeline produces CSV files
-under `reports/tex/data/`; the `.tex` document references them
-with `\addplot table {data/fit_<expt>.csv};`. This removes the
+**Plots use `pgfplots`, emitted as one standalone `.tex`
+figure per experiment, compiled independently to PDF, and
+included in the main report via `\includegraphics`.** The
+figure pipeline writes, per experiment, a CSV
+(`data/fit_<expt>.csv`), a standalone pgfplots document
+(`data/fit_<expt>.tex`), and the compiled figure
+(`data/fit_<expt>.pdf`); `<project>.tex` then does
+`\includegraphics{data/fit_<expt>.pdf}`. This removes the
 Plotly + kaleido + headless-Chromium dependency chain entirely
-— the LaTeX bundle compiles to PDF using only `tectonic` (or
-another local TeX engine) plus the `pgfplots` package, which
-`tectonic` resolves on demand. See §3.3 for the figure
-emission detail.
+— figures compile to PDF using only `tectonic` (or another
+local TeX engine) plus the `pgfplots` package, which `tectonic`
+resolves on demand. Building each figure in its own compile
+also isolates its memory cost (see §3.3 — TeX's fixed main-
+memory pool caps the coordinate count a *single* document can
+hold, so per-figure isolation prevents accumulation across
+experiments). See §3.3 for the figure composition and build
+detail.
 
 #### 3.1 Folder layout
 
@@ -995,9 +1053,11 @@ Single style (`iucrjournals`) — no multi-style infrastructure.
     <project>.html                  # ← 'html' in project.report.formats (this ADR §2)
     <project>.pdf                   # ← 'pdf' in project.report.formats (this ADR §3.4)
     tex/                            # ← 'tex' or 'pdf' in project.report.formats (this ADR §3)
-      <project>.tex                 #   main document; tables + pgfplots figures
+      <project>.tex                 #   main document; tables + \includegraphics of figure PDFs
       data/
-        fit_<expt_id>.csv           #   one per experiment, plotted via pgfplots
+        fit_<expt_id>.csv           #   profile data: x, meas, calc, diff (+ meas_su)
+        fit_<expt_id>.tex           #   standalone pgfplots figure document (one per experiment)
+        fit_<expt_id>.pdf           #   built independently from the .tex; included by <project>.tex
       styles/                       #   vendored — required to compile the TeX
         iucrjournals.cls            #     IUCr unified class (CC0 1.0)
         harvard.sty                 #     IUCr companion bibliography style
@@ -1115,6 +1175,13 @@ Multi-style support (REVTeX, Elsevier `elsarticle`, …) is
 adds a style selector when there is a concrete second style
 to ship.
 
+The generated document uses the project title directly in
+`\title{...}` and emits an empty `\author{}`. If
+`project.info.description` is non-empty, that text becomes the
+document abstract; if it is empty, the abstract environment is
+omitted. Publication metadata (`project.publication.*`) is not
+included in the human-readable HTML or TeX/PDF reports.
+
 #### 3.2.1 Source provenance and bundled files
 
 The IUCr source is vendored under
@@ -1149,78 +1216,172 @@ REVTeX and other styles are **not** vendored — only
 `iucrjournals.cls` ships. See "Deferred Work" for
 multi-style addition.
 
-#### 3.3 Plot generation — `pgfplots` with external CSV data
+#### 3.3 Plot generation — standalone `pgfplots` figures, built independently, included as PDF
 
-Plots inside the LaTeX output are rendered by the
+Plots inside the LaTeX output are drawn by the
 [`pgfplots`](https://www.overleaf.com/learn/latex/Pgfplots_package)
-package directly, not by a pre-rendered raster or vector
-image. Each fit plot becomes a `\begin{tikzpicture}` block in
-`<project>.tex` that loads its data from a sibling CSV file:
+package — vector, not pre-rendered raster — but **each fit
+figure is its own standalone `.tex` document, compiled
+independently to a PDF, and pulled into the report with
+`\includegraphics`.** The main `<project>.tex` carries no
+inline pgfplots; it only includes the pre-built figure PDFs.
+
+**Per-experiment files** (`reports/tex/data/`):
+
+- `fit_<expt>.csv` — profile data, one column per series:
+  `x`, `meas`, `calc`, `diff` (and `meas_su` when measured
+  standard uncertainties exist).
+- `fit_<expt>.tex` — a `\documentclass{standalone}` pgfplots
+  document that reads `fit_<expt>.csv`.
+- `fit_<expt>.pdf` — produced by compiling `fit_<expt>.tex`
+  on its own; this is what `<project>.tex` includes.
 
 ```latex
-\begin{figure}[H]
-\centering
+% ---- data/fit_<expt>.tex (standalone, built on its own) ----
+\documentclass[border=2pt]{standalone}
+\usepackage{pgfplots}
+\usepgfplotslibrary{groupplots}
+\pgfplotsset{compat=1.18}
+\pgfplotsset{set layers}              % REQUIRED — see "Marker z-order" below
+\definecolor{ed_meas}{RGB}{31,119,180}
+\definecolor{ed_calc}{RGB}{214,39,40}
+\definecolor{ed_bragg_0}{RGB}{255,127,14}
+\definecolor{ed_diff}{RGB}{44,160,44}
+\begin{document}
 \begin{tikzpicture}
-\begin{axis}[width=\linewidth, xlabel={$2\theta$ (deg)},
-             ylabel={Intensity (arb. units)},
-             legend pos=north east]
-  \addplot[only marks, mark size=0.5pt]
-    table[x=two_theta, y=meas, col sep=comma]
-    {data/fit_<expt>.csv};
-  \addlegendentry{Measured};
-  \addplot[no markers]
-    table[x=two_theta, y=calc, col sep=comma]
-    {data/fit_<expt>.csv};
-  \addlegendentry{Calculated};
-  \addplot[no markers, dashed]
-    table[x=two_theta, y=diff, col sep=comma]
-    {data/fit_<expt>.csv};
-  \addlegendentry{Difference};
-\end{axis}
+\begin{groupplot}[group style={group size=1 by 3, vertical sep=4pt,
+                  x descriptions at=edge bottom},
+                  width=12cm, xmin=<min>, xmax=<max>,
+                  mark layer=like plot]
+  % Intensity panel — exactly TWO plots
+  \nextgroupplot[ylabel={Intensity (arb. units)}, xticklabels=\empty,
+                 legend pos=north east]
+  % (1) measured: connecting line + markers
+  \addplot+[mark=*, mark size=0.75pt, color=ed_meas, line width=0.5pt,
+            line join=bevel, mark options={line width=0pt}]
+    table[x=x, y=meas, col sep=comma] {fit_<expt>.csv};
+  \addlegendentry{Measured}
+  % (2) calculated: line, declared LAST so it draws on top
+  \addplot+[color=ed_calc, line width=0.75pt, line join=bevel, no markers]
+    table[x=x, y=calc, col sep=comma] {fit_<expt>.csv};
+  \addlegendentry{Calculated}
+  % Bragg tick row
+  \nextgroupplot[ymin=0.5, ymax=1.5, ytick=1, yticklabels={<phase>},
+                 xticklabels=\empty, ylabel={Bragg}]
+  \addplot+[color=ed_bragg_0, only marks, mark=|, mark size=5pt]
+    coordinates {(<peak-x>,1) ...};
+  % Residual panel
+  \nextgroupplot[xlabel={$2\theta$ (degree)}, ylabel={Residual}]
+  \addplot+[color=ed_diff, line width=0.5pt, line join=bevel, no markers]
+    table[x=x, y=diff, col sep=comma] {fit_<expt>.csv};
+\end{groupplot}
 \end{tikzpicture}
+\end{document}
+```
+
+```latex
+% ---- <project>.tex includes the pre-built PDF ----
+\begin{figure}[H]\centering
+\includegraphics[width=\linewidth]{data/fit_<expt>.pdf}
 \caption{Fit quality for experiment <expt>.}
 \end{figure}
 ```
 
-Data files at `reports/tex/data/fit_<expt_id>.csv` carry one
-column per series (`x`, `meas`, `calc`, `diff`, optionally
-`background`). Powder profiles with thousands of points stay
-in CSV; pgfplots reads them at compile time.
+**Intensity panel — exactly two plots: measured and
+calculated.** Measured is a connecting line with markers;
+calculated is a line drawn last (on top). The figure carries
+**no measured–calculated difference band, no per-point error
+bars, and no background curve** on the intensity axis. The
+difference is shown in its own residual panel; the background
+is omitted from report charts. Bragg tick coordinates are
+written directly into the figure `.tex` (sparse, categorical
+annotations, not a dense profile series).
 
-**Why pgfplots and not pre-rendered images.**
+**Why no per-point error bars (the core constraint).** TeX
+engines (pdfTeX/XeTeX — and therefore `tectonic`, which is
+XeTeX-based) allocate a *fixed* main-memory pool
+(`main memory size=5000000`); `tectonic` does not expose a
+knob to raise it, and the only engine that grows memory
+dynamically (LuaTeX) is not available cross-platform on
+conda-forge (no `texlive-core` for `win-64`). pgfplots holds
+an in-memory structure per plotted primitive, and per-point
+error bars (`error bars/.cd, y dir=both, y explicit`) cost a
+path *per data point* — empirically the dominant consumer.
+A measured series with markers + error bars overflowed the
+pool at ~1600 points; the same series as a line + markers,
+without error bars, compiles at full resolution (3098 points)
+in the same pool. **Measured uncertainty is therefore not
+shown as per-point error bars in the PDF report.** (An
+exploration of a single ±Nσ fill polygon as a cheaper
+uncertainty cue was prototyped and then dropped in favour of
+the simpler two-plot figure; it is not part of this decision.)
 
+**Marker z-order — `set layers` is mandatory.** pgfplots'
+default is a two-pass render: all lines first, then all
+markers on a foreground pass, so markers always paint over
+lines regardless of `\addplot` order. `mark layer=like plot`
+restores plot-order layering **but only takes effect when
+`\pgfplotsset{set layers}` is active**. Both are required so
+the calculated line (declared last) draws over the measured
+markers. With `mark layer=like plot` alone (no `set layers`)
+the calculated line renders *under* the measured markers.
+
+**Simplified measured-marker options.** A filled `mark=*`
+inherits both its fill and its border colour from the plot's
+`color=`, so `mark options={fill=…, draw=…}` is redundant
+when they match `color`. The one non-redundant piece is
+`mark options={line width=0pt}`: without it the marker border
+inherits the plot's `line width` and visibly fattens the dot.
+The canonical measured plot is therefore
+`mark=*, mark size=0.75pt, color=ed_meas, line width=0.5pt,
+line join=bevel, mark options={line width=0pt}`.
+
+**Data resolution — full up to a cap, peak-preserving
+downsample above it.** Each figure compiles in its own
+process with a fresh pool, so a single experiment's chart is
+the unit that must fit. HRPT/typical CWL (~3k points) renders
+every point; a dense CWL (~15k) or TOF bank (~30k) would
+overflow even a plain line, so above a safe cap the renderer
+downsamples with a **peak-preserving** method (min/max-per-bin
+or LTTB — never naive every-Nth striding, which can step over
+a sharp Bragg apex and flatten it). The full-fidelity data
+always remains in the CIF/CSV; the figure is a view.
+
+**Why standalone figures included as PDF, not inline
+pgfplots.**
+
+- **Memory isolation.** Each figure's pgfplots load lives in
+  its own compile; the main report never accumulates every
+  experiment's coordinates in one pool. A five-experiment
+  report that would overflow if inlined compiles fine as five
+  independent figures + a light main document.
 - **No Python image renderer needed.** Removes `kaleido` and
-  the headless-Chromium dependency chain that earlier drafts
-  carried, plus the cross-platform `chromium` packaging
-  problem on conda-forge.
-- **Editable.** A user opening the PDF source can tweak
-  axis labels, colours, legend, or marker size by editing
-  the `\begin{axis}[...]` options directly in
-  `<project>.tex`. The CSV stays untouched.
-- **Native LaTeX typography.** Axis labels, legends, and
-  captions render in the same font family as the surrounding
-  document. No font-hinting mismatch the way there would be
-  with a Plotly-rendered PNG/PDF.
-- **`pgfplots` is on every modern TeX distribution.**
-  `tectonic` resolves it on demand from CTAN; TeX Live and
-  MiKTeX ship it in their default sets. No extra
-  vendoring.
+  the headless-Chromium chain plus the cross-platform
+  `chromium` packaging problem on conda-forge. Vector
+  throughout — no rasterization.
+- **Independently rebuildable.** A figure can be regenerated
+  or hand-tweaked without recompiling the whole report; the
+  CSV and figure `.tex` stay editable.
+- **Native LaTeX typography.** Axis labels, legends, captions
+  render in the document font; no font-hinting mismatch.
+- **Shared visual conventions.** The figure `.tex` consumes
+  the same display colours and range helpers as the
+  HTML/Plotly path, mapped to TeX-native `\definecolor`,
+  `line width`, legend, and `groupplot` options.
+- **`pgfplots` and `standalone` are on every modern TeX
+  distribution.** `tectonic` resolves both on demand from
+  CTAN; TeX Live and MiKTeX ship them. No extra vendoring.
 
 **Caveats.**
 
-- Compile-time scales with the data-point count. Powder
-  patterns with ~50K points compile in seconds, not
-  milliseconds; the implementer can downsample for very
-  large patterns via a `pgfplots` `each nth point=N` option
-  if compile time becomes noticeable. This is a tuning knob
-  for the renderer, not an ADR-level decision.
-- The HTML output remains Plotly-based (interactive in the
-  browser); the LaTeX output is pgfplots-based (static in
-  the PDF). The two have **different visual styling** by
-  design — there is no shared figure-rendering library and
-  no "pixel-identical" claim. Sharing the same source data
-  (the project state via the data context) is the only
-  consistency guarantee.
+- The build now compiles N+1 documents (one per experiment
+  figure, plus the main report). The PDF compiler (§3.4)
+  drives the per-figure builds before the main document.
+- The HTML output stays Plotly-based (interactive in the
+  browser); the LaTeX output is pgfplots-based (static PDF).
+  They share the two-plot measured/calculated composition,
+  series colours, and source data, but are not pixel-
+  identical. Font-family parity is deferred.
 
 **Dependencies named by this ADR.** The implementation plan
 must name one dependency before any `/draft-impl-1` or
@@ -1837,7 +1998,8 @@ benefits every renderer (HTML, PDF, terminal, GUI) simultaneously.
   directly. The HTML output remains Plotly-based (interactive
   in the browser); the LaTeX output is pgfplots-based (static
   in the PDF). The two renderings share the underlying data
-  but not the visual styling — see §3 and §3.3 for the
+  and reuse Plotly's report-relevant styling constants wherever
+  pgfplots has an equivalent — see §3 and §3.3 for the
   rationale.
 - PDF compilation is opportunistic — works when `tectonic`,
   `latexmk`, or `pdflatex` is on `PATH`; otherwise the `.tex`
@@ -2141,15 +2303,25 @@ Refinement, Structures, Experiments) rather than imitating an
 IUCr journal-submission manuscript — "typeset Python state",
 not a ready-to-submit manuscript.
 
-Plots inside the LaTeX output are rendered by `pgfplots`
-reading the CSV data at compile time. The HTML output stays
-Plotly-based (interactive in the browser); the LaTeX output
-is pgfplots-based (static in the PDF). The two share the
-underlying data but not the visual styling — there is no
-shared figure-rendering library, no pixel-equality claim, and
+Plots inside the LaTeX output are rendered by `pgfplots` as one
+standalone figure document per experiment, compiled
+independently to PDF and included in the report via
+`\includegraphics` (§3.3). The HTML output stays Plotly-based
+(interactive in the browser) and reuses the direct
+EasyDiffraction Plotly figure builder for powder Bragg
+measured-vs-calculated plots. The LaTeX output is pgfplots-based
+(static in the PDF) and mirrors the same main-intensity / Bragg
+tick / residual row structure with native groupplots. The two
+share the underlying data and the Plotly-derived visual
+conventions that map cleanly to both backends (series names,
+colors, line widths, axis labels, ranges, and legend
+placement). Measured uncertainty is **not** drawn as per-point
+error bars in the PDF intensity panel — they exhaust TeX's
+fixed memory pool (§3.3); the PDF shows measured line+markers
+and calculated line only. There is no pixel-equality claim and
 no Python image-rendering dependency in the LaTeX path
-(`kaleido` and the browser dependency from earlier drafts are
-both gone).
+(`kaleido` and the browser dependency from earlier drafts are both
+gone).
 
 Adds an `analysis.software` Python category — three-role triple
 (framework / calculator / minimizer) matching the alignment ADR's
