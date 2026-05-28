@@ -563,7 +563,7 @@ exceptions.
   - Commit:
     `Read display labels through DisplayHandler resolution chain`.
 
-- [ ] **P1.12 — Vendor MathJax `tex-mml-chtml.js`**
+- [x] **P1.12 — Vendor MathJax `tex-mml-chtml.js`**
   - Files: new
     `src/easydiffraction/report/templates/html/vendor/mathjax-tex-mml-chtml.js`
     (Apache-2.0, ~1.5 MB minified, MathJax 3.x); new
