@@ -608,7 +608,7 @@ exceptions.
   - Commit:
     `Inline MathJax when html_offline=True`.
 
-- [ ] **P1.14 — Add `x_descriptor` + `fit_data_arrays()` on `ExperimentBase` and data categories**
+- [x] **P1.14 — Add `x_descriptor` + `fit_data_arrays()` on `ExperimentBase` and data categories**
   - Files: existing
     `src/easydiffraction/datablocks/experiment/item/base.py`
     (the experiment base — see

@@ -553,6 +553,19 @@ class PdDataBase(CategoryCollection):
             dtype=float,  # TODO: needed? DataTypes.NUMERIC?
         )
 
+    def fit_data_arrays(self) -> dict[str, np.ndarray | None]:
+        """Return arrays needed to draw the fit-data chart."""
+        meas = self.intensity_meas
+        calc = self.intensity_calc
+        return {
+            'x': self.x,
+            'meas': meas,
+            'meas_su': self.intensity_meas_su,
+            'calc': calc,
+            'diff': meas - calc,
+            'bkg': self.intensity_bkg,
+        }
+
 
 @DataFactory.register
 class PdCwlData(PdDataBase):
@@ -621,6 +634,13 @@ class PdCwlData(PdDataBase):
             (p.two_theta.value for p in self._calc_items),
             dtype=float,  # TODO: needed? DataTypes.NUMERIC?
         )
+
+    @property
+    def x_descriptor(self) -> NumericDescriptor:
+        """Descriptor that owns the 2θ x-axis metadata."""
+        if self._items:
+            return self._items[0].two_theta
+        return self._item_type().two_theta
 
     @property
     def x(self) -> np.ndarray:
@@ -702,6 +722,13 @@ class PdTofData(PdDataBase):
             (p.time_of_flight.value for p in self._calc_items),
             dtype=float,  # TODO: needed? DataTypes.NUMERIC?
         )
+
+    @property
+    def x_descriptor(self) -> NumericDescriptor:
+        """Descriptor that owns the TOF x-axis metadata."""
+        if self._items:
+            return self._items[0].time_of_flight
+        return self._item_type().time_of_flight
 
     @property
     def x(self) -> np.ndarray:

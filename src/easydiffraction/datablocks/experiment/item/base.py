@@ -36,6 +36,7 @@ from easydiffraction.utils.utils import format_bulleted_warning
 from easydiffraction.utils.utils import render_cif
 
 if TYPE_CHECKING:
+    from easydiffraction.core.variable import NumericDescriptor
     from easydiffraction.datablocks.experiment.categories.experiment_type import ExperimentType
     from easydiffraction.datablocks.structure.collection import Structures
 
@@ -505,6 +506,15 @@ class ScExperimentBase(ExperimentBase):
         """Reflection collection for this experiment."""
         return self._refln
 
+    @property
+    def x_descriptor(self) -> NumericDescriptor | None:
+        """Return None because single-crystal data has no 1-D x axis."""
+        return None
+
+    def fit_data_arrays(self) -> dict[str, np.ndarray | None]:
+        """Return no 1-D fit arrays for single-crystal experiments."""
+        return {}
+
     def _calculator_support_category(self) -> object | None:
         """
         Return the reflection collection that constrains calculators.
@@ -619,6 +629,15 @@ class PdExperimentBase(ExperimentBase):
     def data(self) -> object:
         """Data collection for this experiment."""
         return self._data
+
+    @property
+    def x_descriptor(self) -> NumericDescriptor:
+        """Descriptor that owns the powder experiment's x-axis metadata."""
+        return self.data.x_descriptor
+
+    def fit_data_arrays(self) -> dict[str, np.ndarray | None]:
+        """Return arrays needed to draw the powder fit-data chart."""
+        return self.data.fit_data_arrays()
 
     def _calculator_support_category(self) -> object | None:
         """
