@@ -19,7 +19,8 @@ Install one with:
   conda install -c conda-forge tectonic
   # or any TeX Live distribution (latexmk / pdflatex)
 Then re-run project.save() with 'pdf' in project.report.formats or
-project.report.save_pdf()."""
+project.report.save_pdf().
+The .tex, data/, and styles/ bundle remains under reports/tex/."""
 
 
 def save_pdf_report(

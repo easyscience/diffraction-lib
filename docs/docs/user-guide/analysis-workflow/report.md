@@ -73,8 +73,8 @@ project.report.save_pdf(style='iucr')
 ```
 
 `save_pdf()` always writes the TeX bundle first. If no TeX engine is on
-`PATH`, EasyDiffraction leaves the TeX files in `reports/tex/`, prints
-a short install hint, and does not raise.
+`PATH`, EasyDiffraction leaves the `.tex`, `data/`, and `styles/` files
+under `reports/tex/`, prints a short install hint, and does not raise.
 
 The command line mirrors the same split:
 

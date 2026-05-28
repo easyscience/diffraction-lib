@@ -801,7 +801,7 @@ exceptions.
   - Commit:
     `Build Plotly fit figures from fit_data context`.
 
-- [ ] **P1.18 — Clean up stale `figures/` references in code and docs**
+- [x] **P1.18 — Clean up stale `figures/` references in code and docs**
   - Files:
     `src/easydiffraction/project/categories/report/default.py`,
     `src/easydiffraction/report/tex_renderer.py`,
