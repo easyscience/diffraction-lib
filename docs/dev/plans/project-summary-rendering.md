@@ -702,7 +702,7 @@ exceptions.
   - Commit:
     `Add x_descriptor and fit_data_arrays on ExperimentBase`.
 
-- [ ] **P1.15 — Replace `fit_data` shape in `data_context()`**
+- [x] **P1.15 — Replace `fit_data` shape in `data_context()`**
   - Files: existing
     `src/easydiffraction/report/data_context.py`.
   - Replace the previous `figures.fit_per_experiment`
