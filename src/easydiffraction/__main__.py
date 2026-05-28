@@ -168,11 +168,13 @@ def _save_report_outputs(
         report_paths.append(tex_path)
     if pdf:
         if tex_path is None:
-            report_paths.append(report.save_pdf())
+            pdf_path = report.save_pdf()
         else:
             from easydiffraction.report.pdf_compiler import compile_pdf_report  # noqa: PLC0415
 
-            report_paths.append(compile_pdf_report(tex_path))
+            pdf_path = compile_pdf_report(tex_path)
+        if pdf_path.is_file():
+            report_paths.append(pdf_path)
     return report_paths
 
 

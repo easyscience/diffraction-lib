@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import csv
 import pathlib
+import shutil
 from importlib.resources import files
 
 from jinja2 import Environment
@@ -106,7 +107,7 @@ def save_tex_report(
     tex_dir = output_path.parent
     styles_dir = tex_dir / 'styles'
 
-    tex_dir.mkdir(parents=True, exist_ok=True)
+    _prepare_tex_bundle(tex_dir)
     styles_dir.mkdir(parents=True, exist_ok=True)
 
     template_context = dict(context)
@@ -135,6 +136,15 @@ def _environment() -> Environment:
     environment.filters['tex'] = _tex_escape
     environment.filters['tex_number'] = _tex_number
     return environment
+
+
+def _prepare_tex_bundle(tex_dir: pathlib.Path) -> None:
+    """Remove managed bundle subdirectories before writing TeX assets."""
+    tex_dir.mkdir(parents=True, exist_ok=True)
+    for dirname in ('data', 'styles', 'figures'):
+        path = tex_dir / dirname
+        if path.exists():
+            shutil.rmtree(path)
 
 
 def _write_fit_csvs(

@@ -13,6 +13,11 @@ from easydiffraction.report.tex_renderer import save_tex_report
 from easydiffraction.utils.logging import log
 
 _ENGINE_ORDER = ('tectonic', 'latexmk', 'pdflatex')
+_ENGINE_RUNTIME_FAILURE_MARKERS = (
+    'panicked at',
+    'event loop thread panicked',
+    'Attempted to create a NULL object',
+)
 _INSTALL_HINT = """PDF skipped: no TeX engine on PATH.
 Install one with:
   pixi add tectonic
@@ -73,29 +78,57 @@ def compile_pdf_report(tex_path: pathlib.Path) -> pathlib.Path:
         If a discovered TeX engine fails to compile the report.
     """
     pdf_path = tex_path.parent.parent / f'{tex_path.stem}.pdf'
-    engine = _find_engine()
-    if engine is None:
+    pdf_path.unlink(missing_ok=True)
+    engines = _find_engines()
+    if not engines:
         log.warning(_INSTALL_HINT)
         return pdf_path
 
-    _compile_pdf(engine, tex_path, pdf_path)
+    runtime_failures = []
+    for engine in engines:
+        runtime_failure = _compile_pdf(engine, tex_path, pdf_path)
+        if runtime_failure is None:
+            return pdf_path
+        runtime_failures.append(runtime_failure)
+    if runtime_failures:
+        _warn_engine_runtime_failure(runtime_failures)
     return pdf_path
+
+
+def _find_engines() -> list[tuple[str, str]]:
+    """Return available TeX engines in preferred order."""
+    engines = []
+    for engine_name in _ENGINE_ORDER:
+        executable = shutil.which(engine_name)
+        if executable is not None:
+            engines.append((engine_name, executable))
+    return engines
 
 
 def _find_engine() -> tuple[str, str] | None:
     """Return the first available TeX engine."""
-    for engine_name in _ENGINE_ORDER:
-        executable = shutil.which(engine_name)
-        if executable is not None:
-            return engine_name, executable
-    return None
+    engines = _find_engines()
+    if not engines:
+        return None
+    return engines[0]
+
+
+def _is_engine_runtime_failure(
+    engine_name: str,
+    result: subprocess.CompletedProcess[str],
+) -> bool:
+    """Return whether the TeX engine failed before compilation."""
+    if engine_name != 'tectonic':
+        return False
+    output = f'{result.stderr}\n{result.stdout}'
+    return any(marker in output for marker in _ENGINE_RUNTIME_FAILURE_MARKERS)
 
 
 def _compile_pdf(
     engine: tuple[str, str],
     tex_path: pathlib.Path,
     pdf_path: pathlib.Path,
-) -> None:
+) -> str | None:
     """Compile one TeX document with a discovered engine."""
     engine_name, executable = engine
     compile_tex_path = tex_path.resolve()
@@ -115,6 +148,8 @@ def _compile_pdf(
         check=False,
     )
     if result.returncode != 0:
+        if _is_engine_runtime_failure(engine_name, result):
+            return _compiler_error_message(engine_name, tex_path, result)
         msg = _compiler_error_message(engine_name, tex_path, result)
         raise RuntimeError(msg)
     if not compile_pdf_path.is_file():
@@ -123,6 +158,20 @@ def _compile_pdf(
             f"'{pdf_path}'."
         )
         raise RuntimeError(msg)
+    return None
+
+
+def _warn_engine_runtime_failure(
+    failures: list[str],
+) -> None:
+    """Warn when a TeX engine crashes before compiling LaTeX."""
+    details = '\n\n'.join(failures)
+    msg = (
+        'PDF skipped: the TeX engine failed before LaTeX compilation. '
+        'The .tex, data/, and styles/ bundle remains under reports/tex/.\n'
+        f'{details}'
+    )
+    log.warning(msg)
 
 
 def _compile_command(

@@ -88,17 +88,18 @@ def test_save_report_outputs_reuses_tex_bundle_for_pdf(tmp_path, monkeypatch):
     pdf_path = tmp_path / 'reports' / 'demo.pdf'
     calls = []
 
-    def fake_save_tex(*, style):
-        calls.append(('tex', style))
+    def fake_save_tex():
+        calls.append('tex')
         return tex_path
 
-    def fake_save_pdf(*, style):
-        del style
+    def fake_save_pdf():
         msg = 'save_pdf should not regenerate TeX when tex was already saved.'
         raise AssertionError(msg)
 
     def fake_compile_pdf_report(path):
         calls.append(('pdf', path))
+        pdf_path.parent.mkdir(parents=True, exist_ok=True)
+        pdf_path.write_text('%PDF', encoding='utf-8')
         return pdf_path
 
     project = SimpleNamespace(
@@ -117,12 +118,47 @@ def test_save_report_outputs_reuses_tex_bundle_for_pdf(tmp_path, monkeypatch):
         html=False,
         tex=True,
         pdf=True,
-        style='revtex',
         offline=False,
     )
 
     assert report_paths == [tex_path, pdf_path]
-    assert calls == [('tex', 'revtex'), ('pdf', tex_path)]
+    assert calls == ['tex', ('pdf', tex_path)]
+
+
+def test_save_report_outputs_omits_missing_compiled_pdf(tmp_path, monkeypatch):
+    import easydiffraction.__main__ as main_mod
+    from easydiffraction.report import pdf_compiler
+
+    tex_path = tmp_path / 'reports' / 'tex' / 'demo.tex'
+    pdf_path = tmp_path / 'reports' / 'demo.pdf'
+
+    def fake_save_tex():
+        return tex_path
+
+    def fake_compile_pdf_report(path):
+        assert path == tex_path
+        return pdf_path
+
+    project = SimpleNamespace(
+        report=SimpleNamespace(
+            save_cif=None,
+            save_html=None,
+            save_tex=fake_save_tex,
+            save_pdf=None,
+        )
+    )
+    monkeypatch.setattr(pdf_compiler, 'compile_pdf_report', fake_compile_pdf_report)
+
+    report_paths = main_mod._save_report_outputs(
+        project,
+        cif=False,
+        html=False,
+        tex=True,
+        pdf=True,
+        offline=False,
+    )
+
+    assert report_paths == [tex_path]
 
 
 def test_cli_project_first_argument_normalization_supports_global_data_commands():

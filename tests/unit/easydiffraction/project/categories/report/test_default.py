@@ -14,20 +14,21 @@ def test_save_configured_reuses_tex_bundle_for_pdf(tmp_path, monkeypatch):
     calls = []
     report = Report()
     report.formats = ['tex', 'pdf']
-    report.style = 'revtex'
 
-    def fake_save_tex(self, *, style):
+    def fake_save_tex(self):
         del self
-        calls.append(('tex', style))
+        calls.append('tex')
         return tex_path
 
-    def fake_save_pdf(self, *, style):
-        del self, style
+    def fake_save_pdf(self):
+        del self
         msg = 'save_pdf should not regenerate TeX when tex was already saved.'
         raise AssertionError(msg)
 
     def fake_compile_pdf_report(path):
         calls.append(('pdf', path))
+        pdf_path.parent.mkdir(parents=True, exist_ok=True)
+        pdf_path.write_text('%PDF', encoding='utf-8')
         return pdf_path
 
     monkeypatch.setattr(Report, 'save_tex', fake_save_tex)
@@ -35,4 +36,27 @@ def test_save_configured_reuses_tex_bundle_for_pdf(tmp_path, monkeypatch):
     monkeypatch.setattr(pdf_compiler, 'compile_pdf_report', fake_compile_pdf_report)
 
     assert report._save_configured() == [tex_path, pdf_path]
-    assert calls == [('tex', 'revtex'), ('pdf', tex_path)]
+    assert calls == ['tex', ('pdf', tex_path)]
+
+
+def test_save_configured_omits_missing_compiled_pdf(tmp_path, monkeypatch):
+    from easydiffraction.project.categories.report.default import Report
+    from easydiffraction.report import pdf_compiler
+
+    tex_path = tmp_path / 'reports' / 'tex' / 'demo.tex'
+    pdf_path = tmp_path / 'reports' / 'demo.pdf'
+    report = Report()
+    report.formats = ['tex', 'pdf']
+
+    def fake_save_tex(self):
+        del self
+        return tex_path
+
+    def fake_compile_pdf_report(path):
+        assert path == tex_path
+        return pdf_path
+
+    monkeypatch.setattr(Report, 'save_tex', fake_save_tex)
+    monkeypatch.setattr(pdf_compiler, 'compile_pdf_report', fake_compile_pdf_report)
+
+    assert report._save_configured() == [tex_path]

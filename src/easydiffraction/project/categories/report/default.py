@@ -506,11 +506,13 @@ class Report(CategoryItem):
                 report_paths.append(tex_path)
             elif report_format is ReportFormatEnum.PDF:
                 if tex_path is None:
-                    report_paths.append(self.save_pdf())
+                    pdf_path = self.save_pdf()
                 else:
                     from easydiffraction.report.pdf_compiler import (  # noqa: PLC0415
                         compile_pdf_report,
                     )
 
-                    report_paths.append(compile_pdf_report(tex_path))
+                    pdf_path = compile_pdf_report(tex_path)
+                if pdf_path.is_file():
+                    report_paths.append(pdf_path)
         return report_paths
