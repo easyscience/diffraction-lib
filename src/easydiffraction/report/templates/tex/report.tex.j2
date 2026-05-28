@@ -109,7 +109,7 @@ Calculator & {{ experiment.calculator.type | tex }} \\
 \begin{axis}[
 width=\linewidth,
 height=0.48\linewidth,
-xlabel={{{ experiment.fit_data.x.latex_name }}{% if experiment.fit_data.x.latex_units %} ({{ experiment.fit_data.x.latex_units }}){% endif %}},
+xlabel={ {{ experiment.fit_data.x.latex_name }}{% if experiment.fit_data.x.latex_units %} ({{ experiment.fit_data.x.latex_units }}){% endif %} },
 ylabel={Intensity},
 legend pos=north east,
 ]
