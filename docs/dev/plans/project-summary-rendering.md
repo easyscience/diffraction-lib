@@ -755,7 +755,7 @@ exceptions.
   - Commit:
     `Replace fit_data payload with descriptor-driven shape`.
 
-- [ ] **P1.16 — pgfplots CSV emitter + TeX template**
+- [x] **P1.16 — pgfplots CSV emitter + TeX template**
   - Files: existing
     `src/easydiffraction/report/tex_renderer.py`;
     renamed

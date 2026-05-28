@@ -1,5 +1,6 @@
 \documentclass{styles/iucrjournals}
-{% raw %}\graphicspath{{figures/}}{% endraw %}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
 {% macro tex_field_header(field, fallback) -%}
 {{ field.label or fallback }}{% if field.units %} ({{ field.units }}){% endif %}
 {%- endmacro %}
@@ -101,10 +102,29 @@ Calculator & {{ experiment.calculator.type | tex }} \\
 {{ tex_field_header(experiment.diffrn_latex.ambient_pressure, "Pressure") }} & {{ experiment.diffrn.ambient_pressure | tex_number }} \\
 \end{tabular}
 
-{% if tex.fit_figure_paths[experiment.id] %}
+{% if experiment.fit_data and tex.fit_csv_paths[experiment.id] %}
 \begin{figure}[H]
 \centering
-\includegraphics[width=\linewidth]{ {{- tex.fit_figure_paths[experiment.id] -}} }
+\begin{tikzpicture}
+\begin{axis}[
+width=\linewidth,
+height=0.48\linewidth,
+xlabel={{{ experiment.fit_data.x.latex_name }}{% if experiment.fit_data.x.latex_units %} ({{ experiment.fit_data.x.latex_units }}){% endif %}},
+ylabel={Intensity},
+legend pos=north east,
+]
+\addplot+[only marks, mark size=0.5pt] table[x=x, y=meas, col sep=comma] { {{- tex.fit_csv_paths[experiment.id] -}} };
+\addlegendentry{ {{- experiment.fit_data.series.meas.label | tex -}} }
+\addplot+[no markers] table[x=x, y=calc, col sep=comma] { {{- tex.fit_csv_paths[experiment.id] -}} };
+\addlegendentry{ {{- experiment.fit_data.series.calc.label | tex -}} }
+\addplot+[no markers, dashed] table[x=x, y=diff, col sep=comma] { {{- tex.fit_csv_paths[experiment.id] -}} };
+\addlegendentry{ {{- experiment.fit_data.series.diff.label | tex -}} }
+{% if experiment.fit_data.series.bkg %}
+\addplot+[no markers, dotted] table[x=x, y=bkg, col sep=comma] { {{- tex.fit_csv_paths[experiment.id] -}} };
+\addlegendentry{ {{- experiment.fit_data.series.bkg.label | tex -}} }
+{% endif %}
+\end{axis}
+\end{tikzpicture}
 \caption{Observed and calculated fit for {{ experiment.id | tex }}.}
 \end{figure}
 {% endif %}

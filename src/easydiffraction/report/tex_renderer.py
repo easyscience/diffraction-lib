@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+import csv
 import pathlib
 from importlib.resources import files
 
@@ -74,7 +75,7 @@ def render_tex_report(context: dict[str, object]) -> str:
         Complete LaTeX document.
     """
     template_context = dict(context)
-    template_context['tex'] = {'fit_figure_paths': {}}
+    template_context['tex'] = {'fit_csv_paths': _fit_csv_paths(context)}
     return _environment().get_template(_TEMPLATE_NAME).render(**template_context)
 
 
@@ -109,7 +110,7 @@ def save_tex_report(
     styles_dir.mkdir(parents=True, exist_ok=True)
 
     template_context = dict(context)
-    template_context['tex'] = {'fit_figure_paths': {}}
+    template_context['tex'] = {'fit_csv_paths': _write_fit_csvs(context, tex_dir)}
     output_path.write_text(
         _render_prepared_context(template_context),
         encoding='utf-8',
@@ -134,6 +135,117 @@ def _environment() -> Environment:
     environment.filters['tex'] = _tex_escape
     environment.filters['tex_number'] = _tex_number
     return environment
+
+
+def _write_fit_csvs(
+    context: dict[str, object],
+    out_dir: pathlib.Path,
+) -> dict[str, str]:
+    """Write fit-data CSV files and return paths for TeX."""
+    paths = {}
+    for experiment in _experiment_contexts(context):
+        fit_data = experiment.get('fit_data')
+        if fit_data is None:
+            continue
+        experiment_id = str(experiment.get('id') or 'experiment')
+        csv_path = _write_fit_csv(experiment_id, fit_data, out_dir)
+        paths[experiment_id] = f'data/{csv_path.name}'
+    return paths
+
+
+def _write_fit_csv(
+    expt_id: str,
+    fit_data: dict[str, object],
+    out_dir: pathlib.Path,
+) -> pathlib.Path:
+    """Write one fit-data CSV file under ``out_dir / 'data'``."""
+    data_dir = out_dir / 'data'
+    data_dir.mkdir(parents=True, exist_ok=True)
+    csv_path = data_dir / _fit_csv_filename(expt_id)
+    columns = _fit_csv_columns(fit_data)
+    _validate_fit_csv_columns(expt_id, columns)
+    with csv_path.open('w', newline='', encoding='utf-8') as handle:
+        writer = csv.writer(handle)
+        writer.writerow([name for name, _values in columns])
+        writer.writerows(zip(*(values for _name, values in columns), strict=True))
+    return csv_path
+
+
+def _fit_csv_paths(context: dict[str, object]) -> dict[str, str]:
+    """Return expected fit-data CSV paths for TeX rendering."""
+    paths = {}
+    for experiment in _experiment_contexts(context):
+        if experiment.get('fit_data') is None:
+            continue
+        experiment_id = str(experiment.get('id') or 'experiment')
+        paths[experiment_id] = f'data/{_fit_csv_filename(experiment_id)}'
+    return paths
+
+
+def _experiment_contexts(context: dict[str, object]) -> list[dict[str, object]]:
+    """Return experiment contexts from a report context."""
+    experiments = context.get('experiments')
+    if not isinstance(experiments, list):
+        return []
+    return [
+        experiment
+        for experiment in experiments
+        if isinstance(experiment, dict)
+    ]
+
+
+def _fit_csv_filename(expt_id: str) -> str:
+    """Return a filesystem-safe fit-data CSV filename."""
+    safe_id = ''.join(
+        char if char.isascii() and (char.isalnum() or char in {'-', '_'}) else '_'
+        for char in expt_id
+    ).strip('_')
+    if not safe_id:
+        safe_id = 'experiment'
+    return f'{safe_id}.csv'
+
+
+def _fit_csv_columns(fit_data: dict[str, object]) -> list[tuple[str, list[object]]]:
+    """Return ordered CSV columns for one fit-data payload."""
+    x_data = fit_data['x']
+    series = fit_data['series']
+    meas = series['meas']
+    calc = series['calc']
+    diff = series['diff']
+    bkg = series['bkg']
+
+    columns = [
+        ('x', list(x_data['values'])),
+        ('meas', list(meas['values'])),
+    ]
+    if meas['su'] is not None:
+        columns.append(('meas_su', list(meas['su'])))
+    columns.extend(
+        [
+            ('calc', list(calc['values'])),
+            ('diff', list(diff['values'])),
+        ]
+    )
+    if bkg is not None:
+        columns.append(('bkg', list(bkg['values'])))
+    return columns
+
+
+def _validate_fit_csv_columns(
+    expt_id: str,
+    columns: list[tuple[str, list[object]]],
+) -> None:
+    """Raise if fit-data CSV columns have inconsistent lengths."""
+    expected = len(columns[0][1])
+    for name, values in columns[1:]:
+        if len(values) == expected:
+            continue
+        msg = (
+            f"Cannot write report CSV for experiment '{expt_id}': "
+            f"column 'x' has length {expected}, but column "
+            f"'{name}' has length {len(values)}."
+        )
+        raise ValueError(msg)
 
 
 def _copy_style_files(styles_dir: pathlib.Path) -> None:
