@@ -12,11 +12,14 @@ from importlib.resources import files
 from jinja2 import Environment
 from jinja2 import PackageLoader
 
+from easydiffraction.report.downsample import MAX_FIGURE_POINTS
+from easydiffraction.report.downsample import downsample_min_max_indices
 from easydiffraction.report.fit_plot import fit_bragg_tick_styles
 from easydiffraction.report.fit_plot import fit_plot_ranges
 from easydiffraction.report.fit_plot import fit_plot_styles
 
 _TEMPLATE_NAME = 'tex/report.tex.j2'
+_FIGURE_TEMPLATE_NAME = 'tex/figure.tex.j2'
 _TEX_SPECIAL_CHARS = {
     '\\': r'\textbackslash{}',
     '&': r'\&',
@@ -29,6 +32,8 @@ _TEX_SPECIAL_CHARS = {
     '~': r'\textasciitilde{}',
     '^': r'\textasciicircum{}',
 }
+
+
 def tex_report_path(
     project: object,
     path: str | pathlib.Path | None = None,
@@ -83,6 +88,7 @@ def render_tex_report(context: dict[str, object]) -> str:
     template_context['tex'] = _tex_context(
         context,
         fit_csv_paths=_fit_csv_paths(context),
+        fit_figure_paths=_fit_figure_paths(context),
     )
     return _environment().get_template(_TEMPLATE_NAME).render(**template_context)
 
@@ -118,9 +124,11 @@ def save_tex_report(
     styles_dir.mkdir(parents=True, exist_ok=True)
 
     template_context = dict(context)
+    fit_asset_paths = _write_fit_assets(context, tex_dir)
     template_context['tex'] = _tex_context(
         context,
-        fit_csv_paths=_write_fit_csvs(context, tex_dir),
+        fit_csv_paths=fit_asset_paths['csv'],
+        fit_figure_paths=fit_asset_paths['figure'],
     )
     output_path.write_text(
         _render_prepared_context(template_context),
@@ -159,30 +167,39 @@ def _prepare_tex_bundle(tex_dir: pathlib.Path) -> None:
             shutil.rmtree(path)
 
 
-def _write_fit_csvs(
+def _write_fit_assets(
     context: dict[str, object],
     out_dir: pathlib.Path,
-) -> dict[str, str]:
-    """Write fit-data CSV files and return paths for TeX."""
-    paths = {}
+) -> dict[str, dict[str, str]]:
+    """Write fit-data CSV and figure TeX files."""
+    csv_paths: dict[str, str] = {}
+    figure_paths: dict[str, str] = {}
     for experiment in _experiment_contexts(context):
         fit_data = experiment.get('fit_data')
         if fit_data is None:
             continue
         experiment_id = str(experiment.get('id') or 'experiment')
         csv_path = _write_fit_csv(experiment_id, fit_data, out_dir)
-        paths[experiment_id] = f'data/{csv_path.name}'
-    return paths
+        figure_path = _write_fit_figure_tex(
+            experiment=experiment,
+            csv_path=csv_path,
+            out_dir=out_dir,
+        )
+        csv_paths[experiment_id] = f'data/{csv_path.name}'
+        figure_paths[experiment_id] = f'data/{figure_path.stem}.pdf'
+    return {'csv': csv_paths, 'figure': figure_paths}
 
 
 def _tex_context(
     context: dict[str, object],
     *,
     fit_csv_paths: dict[str, str],
+    fit_figure_paths: dict[str, str],
 ) -> dict[str, object]:
     """Return TeX-specific render context."""
     return {
         'fit_csv_paths': fit_csv_paths,
+        'fit_figure_paths': fit_figure_paths,
         'fit_bragg_tick_styles': fit_bragg_tick_styles(),
         'fit_plot_ranges': _fit_plot_ranges(context),
         'fit_plot_styles': fit_plot_styles(),
@@ -210,13 +227,42 @@ def _write_fit_csv(
     data_dir = out_dir / 'data'
     data_dir.mkdir(parents=True, exist_ok=True)
     csv_path = data_dir / _fit_csv_filename(expt_id)
-    columns = _fit_csv_columns(fit_data)
+    columns = _fit_csv_columns(expt_id, fit_data)
     _validate_fit_csv_columns(expt_id, columns)
     with csv_path.open('w', newline='', encoding='utf-8') as handle:
         writer = csv.writer(handle)
         writer.writerow([name for name, _values in columns])
         writer.writerows(zip(*(values for _name, values in columns), strict=True))
     return csv_path
+
+
+def _write_fit_figure_tex(
+    *,
+    experiment: dict[str, object],
+    csv_path: pathlib.Path,
+    out_dir: pathlib.Path,
+) -> pathlib.Path:
+    """Write one standalone pgfplots TeX figure."""
+    data_dir = out_dir / 'data'
+    data_dir.mkdir(parents=True, exist_ok=True)
+    experiment_id = str(experiment.get('id') or 'experiment')
+    fit_data = experiment['fit_data']
+    figure_path = data_dir / f'{_fit_asset_stem(experiment_id)}.tex'
+    template_context = {
+        'experiment': experiment,
+        'fit_data': fit_data,
+        'csv_filename': csv_path.name,
+        'ranges': fit_plot_ranges(fit_data),
+        'styles': fit_plot_styles(),
+        'bragg_styles': fit_bragg_tick_styles(),
+    }
+    figure_path.write_text(
+        _environment().get_template(_FIGURE_TEMPLATE_NAME).render(
+            **template_context,
+        ),
+        encoding='utf-8',
+    )
+    return figure_path
 
 
 def _fit_csv_paths(context: dict[str, object]) -> dict[str, str]:
@@ -227,6 +273,17 @@ def _fit_csv_paths(context: dict[str, object]) -> dict[str, str]:
             continue
         experiment_id = str(experiment.get('id') or 'experiment')
         paths[experiment_id] = f'data/{_fit_csv_filename(experiment_id)}'
+    return paths
+
+
+def _fit_figure_paths(context: dict[str, object]) -> dict[str, str]:
+    """Return expected fit-figure PDF paths for TeX rendering."""
+    paths = {}
+    for experiment in _experiment_contexts(context):
+        if experiment.get('fit_data') is None:
+            continue
+        experiment_id = str(experiment.get('id') or 'experiment')
+        paths[experiment_id] = f'data/{_fit_asset_stem(experiment_id)}.pdf'
     return paths
 
 
@@ -244,23 +301,30 @@ def _experiment_contexts(context: dict[str, object]) -> list[dict[str, object]]:
 
 def _fit_csv_filename(expt_id: str) -> str:
     """Return a filesystem-safe fit-data CSV filename."""
+    return f'{_fit_asset_stem(expt_id)}.csv'
+
+
+def _fit_asset_stem(expt_id: str) -> str:
+    """Return a filesystem-safe fit-data asset stem."""
     safe_id = ''.join(
         char if char.isascii() and (char.isalnum() or char in {'-', '_'}) else '_'
         for char in expt_id
     ).strip('_')
     if not safe_id:
         safe_id = 'experiment'
-    return f'{safe_id}.csv'
+    return f'fit_{safe_id}'
 
 
-def _fit_csv_columns(fit_data: dict[str, object]) -> list[tuple[str, list[object]]]:
+def _fit_csv_columns(
+    expt_id: str,
+    fit_data: dict[str, object],
+) -> list[tuple[str, list[object]]]:
     """Return ordered CSV columns for one fit-data payload."""
     x_data = fit_data['x']
     series = fit_data['series']
     meas = series['meas']
     calc = series['calc']
     diff = series['diff']
-    bkg = series['bkg']
 
     columns = [
         ('x', list(x_data['values'])),
@@ -274,9 +338,21 @@ def _fit_csv_columns(fit_data: dict[str, object]) -> list[tuple[str, list[object
             ('diff', list(diff['values'])),
         ]
     )
-    if bkg is not None:
-        columns.append(('bkg', list(bkg['values'])))
-    return columns
+    return _downsample_fit_csv_columns(expt_id, columns)
+
+
+def _downsample_fit_csv_columns(
+    expt_id: str,
+    columns: list[tuple[str, list[object]]],
+) -> list[tuple[str, list[object]]]:
+    """Return columns selected by measured-intensity extrema."""
+    _validate_fit_csv_columns(expt_id, columns)
+    meas_values = dict(columns)['meas']
+    indices = downsample_min_max_indices(meas_values, MAX_FIGURE_POINTS)
+    return [
+        (name, [values[index] for index in indices])
+        for name, values in columns
+    ]
 
 
 def _validate_fit_csv_columns(

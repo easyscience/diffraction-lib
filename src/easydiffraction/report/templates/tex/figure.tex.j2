@@ -1,0 +1,74 @@
+\documentclass[border=2pt]{standalone}
+\usepackage{pgfplots}
+\usepgfplotslibrary{groupplots}
+\pgfplotsset{compat=1.18}
+\pgfplotsset{set layers}
+{% for style in styles.values() %}
+\definecolor{ {{- style.color_name -}} }{RGB}{ {{- style.rgb -}} }
+{% endfor %}
+{% for style in bragg_styles %}
+\definecolor{ {{- style.color_name -}} }{RGB}{ {{- style.rgb -}} }
+{% endfor %}
+{% set axes_labels = fit_data.axes_labels | default(["", "Intensity"], true) -%}
+{% set x_label = axes_labels[0] | tex_axis_label -%}
+{% set y_label = axes_labels[1] | tex_axis_label -%}
+{% set bragg_tick_sets = fit_data.bragg_tick_sets | default([], true) -%}
+\begin{document}
+\begin{tikzpicture}
+\begin{groupplot}[
+group style={
+group size=1 by {% if bragg_tick_sets %}3{% else %}2{% endif %},
+vertical sep=4pt,
+x descriptions at=edge bottom,
+},
+width=12cm,
+xmin={{ ranges.x_min | tex_number }},
+xmax={{ ranges.x_max | tex_number }},
+mark layer=like plot,
+tick align=outside,
+]
+\nextgroupplot[
+height=4.2cm,
+ymin={{ ranges.y_min | tex_number }},
+ymax={{ ranges.y_max | tex_number }},
+xticklabels=\empty,
+ylabel={ {{ y_label }} },
+legend pos=north east,
+legend style={draw=none, fill=white, fill opacity=0.5, text opacity=1},
+]
+\addplot+[mark=*, mark size=0.75pt, color={{ styles.meas.color_name }}, line width=0.5pt, line join=bevel, mark options={line width=0pt}] table[x=x, y=meas, col sep=comma] { {{- csv_filename -}} };
+\addlegendentry{ {{- styles.meas.name | tex -}} }
+\addplot+[color={{ styles.calc.color_name }}, line width=0.75pt, line join=bevel, no markers] table[x=x, y=calc, col sep=comma] { {{- csv_filename -}} };
+\addlegendentry{ {{- styles.calc.name | tex -}} }
+{% if bragg_tick_sets %}
+\nextgroupplot[
+height=1.05cm,
+ymin=0.5,
+ymax={{ (bragg_tick_sets | length) + 0.5 }},
+y dir=reverse,
+ytick={{ "{" }}{% for tick_set in bragg_tick_sets %}{{ loop.index }}{% if not loop.last %},{% endif %}{% endfor %}{{ "}" }},
+yticklabels={{ "{" }}{% for tick_set in bragg_tick_sets %}{{ "{" }}{{ tick_set.phase_id | tex }}{{ "}" }}{% if not loop.last %},{% endif %}{% endfor %}{{ "}" }},
+xticklabels=\empty,
+ylabel={Bragg},
+]
+{% for tick_set in bragg_tick_sets %}
+{% set bragg_row = loop.index -%}
+{% set tick_style = bragg_styles[loop.index0 % (bragg_styles | length)] -%}
+\addplot+[color={{ tick_style.color_name }}, only marks, mark=|, mark size=5pt] coordinates {
+{% for x_value in tick_set.x %}
+({{ x_value | tex_number }},{{ bragg_row }})
+{% endfor %}
+};
+{% endfor %}
+{% endif %}
+\nextgroupplot[
+height=1.45cm,
+ymin={{ ranges.residual_y_min | tex_number }},
+ymax={{ ranges.residual_y_max | tex_number }},
+xlabel={ {{ x_label }} },
+ylabel={Residual},
+]
+\addplot+[color={{ styles.diff.color_name }}, line width=0.5pt, line join=bevel, no markers] table[x=x, y=diff, col sep=comma] { {{- csv_filename -}} };
+\end{groupplot}
+\end{tikzpicture}
+\end{document}

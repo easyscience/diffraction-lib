@@ -786,7 +786,7 @@ exceptions.
   - Commit:
     `Replace fit_data payload with descriptor-driven shape`.
 
-- [ ] **P1.16 — Standalone per-figure pgfplots `.tex` → PDF, included by the report**
+- [x] **P1.16 — Standalone per-figure pgfplots `.tex` → PDF, included by the report**
   (See ADR §3.3 — "standalone pgfplots figures, built
   independently, included as PDF" — for the full decision
   this step implements.)

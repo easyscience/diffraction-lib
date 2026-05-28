@@ -1,13 +1,5 @@
 \documentclass[11pt,a4paper]{styles/iucrjournals}
-\usepackage{pgfplots}
-\usepgfplotslibrary{groupplots}
-\pgfplotsset{compat=1.18}
-{% for style in tex.fit_plot_styles.values() %}
-\definecolor{ {{- style.color_name -}} }{RGB}{ {{- style.rgb -}} }
-{% endfor %}
-{% for style in tex.fit_bragg_tick_styles %}
-\definecolor{ {{- style.color_name -}} }{RGB}{ {{- style.rgb -}} }
-{% endfor %}
+\usepackage{graphicx}
 {% macro tex_field_header(field, fallback) -%}
 {% set label = (field.label or fallback) | tex_markup -%}
 {% set units = field.units | tex_markup -%}
@@ -173,85 +165,13 @@ Calculator & {{ experiment.calculator.type | tex }} \\
 \end{tabular}
 \end{table}
 
-{% if experiment.fit_data and tex.fit_csv_paths[experiment.id] %}
+{% if experiment.fit_data and tex.fit_figure_paths[experiment.id] %}
 %-------------
 \subsubsection{Fit quality}
 
 \begin{figure}[H]
 \centering
-\begin{tikzpicture}
-{% set ranges = tex.fit_plot_ranges[experiment.id] -%}
-{% set styles = tex.fit_plot_styles -%}
-{% set axes_labels = experiment.fit_data.axes_labels | default(["", "Intensity"], true) -%}
-{% set x_label = axes_labels[0] | tex_axis_label -%}
-{% set y_label = axes_labels[1] | tex_axis_label -%}
-{% set bragg_tick_sets = experiment.fit_data.bragg_tick_sets | default([], true) -%}
-{% set bragg_styles = tex.fit_bragg_tick_styles -%}
-\begin{groupplot}[
-group style={
-group size=1 by {% if bragg_tick_sets %}3{% else %}2{% endif %},
-vertical sep=0.04\linewidth,
-xlabels at=edge bottom,
-xticklabels at=edge bottom,
-},
-width=\linewidth,
-xmin={{ ranges.x_min | tex_number }},
-xmax={{ ranges.x_max | tex_number }},
-mark layer=like plot,
-tick align=outside,
-]
-\nextgroupplot[
-height=0.34\linewidth,
-ymin={{ ranges.y_min | tex_number }},
-ymax={{ ranges.y_max | tex_number }},
-xticklabels=\empty,
-ylabel={ {{ y_label }} },
-legend pos=north east,
-legend style={draw=none, fill=white, fill opacity=0.5, text opacity=1},
-]
-{% if experiment.fit_data.series.meas.su is not none %}
-\addplot+[color={{ styles.meas.color_name }}, line width={{ styles.meas.line_width | tex_number }}pt, line join=bevel, mark=*, mark size=1pt, error bars/.cd, y dir=both, y explicit] table[x=x, y=meas, y error=meas_su, col sep=comma] { {{- tex.fit_csv_paths[experiment.id] -}} };
-{% else %}
-\addplot+[color={{ styles.meas.color_name }}, line width={{ styles.meas.line_width | tex_number }}pt, line join=bevel, mark=*, mark size=1pt] table[x=x, y=meas, col sep=comma] { {{- tex.fit_csv_paths[experiment.id] -}} };
-{% endif %}
-\addlegendentry{ {{- styles.meas.name | tex -}} }
-{% if experiment.fit_data.series.bkg %}
-\addplot+[color={{ styles.bkg.color_name }}, line width={{ styles.bkg.line_width | tex_number }}pt, line join=bevel, no markers] table[x=x, y=bkg, col sep=comma] { {{- tex.fit_csv_paths[experiment.id] -}} };
-\addlegendentry{ {{- styles.bkg.name | tex -}} }
-{% endif %}
-\addplot+[color={{ styles.calc.color_name }}, line width={{ styles.calc.line_width | tex_number }}pt, line join=bevel, no markers] table[x=x, y=calc, col sep=comma] { {{- tex.fit_csv_paths[experiment.id] -}} };
-\addlegendentry{ {{- styles.calc.name | tex -}} }
-{% if bragg_tick_sets %}
-\nextgroupplot[
-height=0.10\linewidth,
-ymin=0.5,
-ymax={{ (bragg_tick_sets | length) + 0.5 }},
-y dir=reverse,
-ytick={{ "{" }}{% for tick_set in bragg_tick_sets %}{{ loop.index }}{% if not loop.last %},{% endif %}{% endfor %}{{ "}" }},
-yticklabels={{ "{" }}{% for tick_set in bragg_tick_sets %}{{ "{" }}{{ tick_set.phase_id | tex }}{{ "}" }}{% if not loop.last %},{% endif %}{% endfor %}{{ "}" }},
-xticklabels=\empty,
-ylabel={Bragg},
-]
-{% for tick_set in bragg_tick_sets %}
-{% set bragg_row = loop.index -%}
-{% set tick_style = bragg_styles[loop.index0 % (bragg_styles | length)] -%}
-\addplot+[color={{ tick_style.color_name }}, only marks, mark=|, mark size=5pt] coordinates {
-{% for x_value in tick_set.x %}
-({{ x_value | tex_number }},{{ bragg_row }})
-{% endfor %}
-};
-{% endfor %}
-{% endif %}
-\nextgroupplot[
-height=0.12\linewidth,
-ymin={{ ranges.residual_y_min | tex_number }},
-ymax={{ ranges.residual_y_max | tex_number }},
-xlabel={ {{ x_label }} },
-ylabel={Residual},
-]
-\addplot+[color={{ styles.diff.color_name }}, line width={{ styles.diff.line_width | tex_number }}pt, line join=bevel, no markers] table[x=x, y=diff, col sep=comma] { {{- tex.fit_csv_paths[experiment.id] -}} };
-\end{groupplot}
-\end{tikzpicture}
+\includegraphics[width=\linewidth]{ {{- tex.fit_figure_paths[experiment.id] -}} }
 \caption{Measured and calculated fit for {{ experiment.id | tex }}.}
 \end{figure}
 {% endif %}

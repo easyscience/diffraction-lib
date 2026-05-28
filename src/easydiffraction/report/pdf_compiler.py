@@ -86,7 +86,7 @@ def compile_pdf_report(tex_path: pathlib.Path) -> pathlib.Path:
 
     runtime_failures = []
     for engine in engines:
-        runtime_failure = _compile_pdf(engine, tex_path, pdf_path)
+        runtime_failure = _compile_report_bundle(engine, tex_path, pdf_path)
         if runtime_failure is None:
             return pdf_path
         runtime_failures.append(runtime_failure)
@@ -113,6 +113,31 @@ def _find_engine() -> tuple[str, str] | None:
     return engines[0]
 
 
+def _compile_report_bundle(
+    engine: tuple[str, str],
+    tex_path: pathlib.Path,
+    pdf_path: pathlib.Path,
+) -> str | None:
+    """Compile figure documents first, then the main report."""
+    for figure_tex_path in _figure_tex_paths(tex_path):
+        runtime_failure = _compile_pdf(
+            engine,
+            figure_tex_path,
+            figure_tex_path.with_suffix('.pdf'),
+        )
+        if runtime_failure is not None:
+            return runtime_failure
+    return _compile_pdf(engine, tex_path, pdf_path)
+
+
+def _figure_tex_paths(tex_path: pathlib.Path) -> list[pathlib.Path]:
+    """Return standalone figure TeX files for a report bundle."""
+    data_dir = tex_path.parent / 'data'
+    if not data_dir.is_dir():
+        return []
+    return sorted(data_dir.glob('fit_*.tex'))
+
+
 def _is_engine_runtime_failure(
     engine_name: str,
     result: subprocess.CompletedProcess[str],
@@ -133,6 +158,7 @@ def _compile_pdf(
     engine_name, executable = engine
     compile_tex_path = tex_path.resolve()
     compile_pdf_path = pdf_path.resolve()
+    compile_pdf_path.unlink(missing_ok=True)
     command = _compile_command(
         engine_name,
         executable,
@@ -206,6 +232,8 @@ def _compile_environment(tex_path: pathlib.Path) -> dict[str, str]:
     """Return a TeX subprocess environment with vendored styles."""
     environment = os.environ.copy()
     styles_dir = tex_path.parent / 'styles'
+    if not styles_dir.is_dir():
+        styles_dir = tex_path.parent.parent / 'styles'
     texinputs = environment.get('TEXINPUTS', '')
     environment['TEXINPUTS'] = f'{styles_dir}{os.pathsep}{texinputs}'
     return environment

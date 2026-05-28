@@ -55,9 +55,6 @@ def fit_plot_ranges(fit_data: dict[str, Any]) -> dict[str, float]:
         _numeric_values(fit_data['series']['meas']['values']),
         _numeric_values(fit_data['series']['calc']['values']),
     ]
-    bkg = fit_data['series']['bkg']
-    if bkg is not None:
-        y_series.append(_numeric_values(bkg['values']))
 
     x_min, x_max = _data_range([x_values])
     y_min, y_max = _data_range(y_series)
