@@ -843,7 +843,7 @@ exceptions.
   - Commit:
     `Update tutorials and docs for single-style report surface`.
 
-- [ ] **P1.20 — Reach Phase 1 review gate**
+- [x] **P1.20 — Reach Phase 1 review gate**
   - No-code step. Mark every `[ ]` above as `[x]`; commit
     the plan-file update alone.
   - Commit: `Reach Phase 1 review gate`.
