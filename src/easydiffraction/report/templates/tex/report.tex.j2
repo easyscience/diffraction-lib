@@ -1,5 +1,7 @@
 \documentclass[11pt,a4paper]{styles/iucrjournals}
 \usepackage{graphicx}
+\usepackage{siunitx}
+\sisetup{detect-all}
 {% macro tex_field_header(field, fallback) -%}
 {% set label = (field.label or fallback) | tex_markup -%}
 {% set units = field.units | tex_markup -%}
@@ -16,6 +18,7 @@
 % Begin document
 %----------------------------------------------------------
 \begin{document}
+\nolinenumbers
 \maketitle
 
 {% if project.description %}
@@ -64,8 +67,10 @@ Minimizer & {{ software.minimizer.name | tex }} & {{ software.minimizer.version 
 \section{Refinement}
 
 \begin{table}[H]
-\begin{tabular}{ll}
+\begin{tabular}{lS}
 \toprule
+\multicolumn{1}{l}{Quantity} & \multicolumn{1}{c}{Value} \\
+\midrule
 Reduced chi-square & {{ refinement.fit_result.reduced_chi_square | tex_number }} \\
 Free parameters & {{ refinement.parameters.free | tex_number }} \\
 Total parameters & {{ refinement.parameters.total | tex_number }} \\
@@ -91,10 +96,10 @@ Weighted R factor & {{ refinement.fit_result.wr_factor_all | tex_number }} \\
 \subsubsection{Space group and unit cell parameters}
 
 \begin{table}[H]
-\begin{tabular}{ll}
+\begin{tabular}{lS}
 \toprule
-Space group & {{ structure.space_group | tex }} \\
-Crystal system & {{ structure.crystal_system | tex }} \\
+Space group & \multicolumn{1}{l}{ {{- structure.space_group | tex -}} } \\
+Crystal system & \multicolumn{1}{l}{ {{- structure.crystal_system | tex -}} } \\
 {% for key, value in structure.cell.items() %}
 {{ tex_field_header(structure.cell_latex[key], key | replace("_", " ")) }} & {{ value | tex_number }} \\
 {% endfor %}
@@ -107,9 +112,9 @@ Crystal system & {{ structure.crystal_system | tex }} \\
 \subsubsection{Atom site parameters}
 
 \begin{table}[H]
-\begin{tabular}{llccccc}
+\begin{tabular}{llSSSSS}
 \toprule
-Label & Type & $x$ & $y$ & $z$ & Occ. & {{ tex_field_header(structure.atom_site_latex.adp_iso, "ADP") }} \\
+\multicolumn{1}{l}{Label} & \multicolumn{1}{l}{Type} & \multicolumn{1}{c}{$x$} & \multicolumn{1}{c}{$y$} & \multicolumn{1}{c}{$z$} & \multicolumn{1}{c}{Occ.} & \multicolumn{1}{c}{ {{- tex_field_header(structure.atom_site_latex.adp_iso, "ADP") -}} } \\
 \midrule
 {% for atom in structure.atom_sites %}
 {{ atom.label | tex }} & {{ atom.type_symbol | tex }} & {{ atom.fract_x | tex_number }} & {{ atom.fract_y | tex_number }} & {{ atom.fract_z | tex_number }} & {{ atom.occupancy | tex_number }} & {{ atom.adp_iso | tex_number }} \\
@@ -124,9 +129,9 @@ Label & Type & $x$ & $y$ & $z$ & Occ. & {{ tex_field_header(structure.atom_site_
 \subsubsection{Anisotropic atomic displacement parameters}
 
 \begin{table}[H]
-\begin{tabular}{lcccccc}
+\begin{tabular}{lSSSSSS}
 \toprule
-Label & {{ tex_field_header(structure.atom_site_aniso_latex.adp_11, "ADP 11") }} & {{ tex_field_header(structure.atom_site_aniso_latex.adp_22, "ADP 22") }} & {{ tex_field_header(structure.atom_site_aniso_latex.adp_33, "ADP 33") }} & {{ tex_field_header(structure.atom_site_aniso_latex.adp_12, "ADP 12") }} & {{ tex_field_header(structure.atom_site_aniso_latex.adp_13, "ADP 13") }} & {{ tex_field_header(structure.atom_site_aniso_latex.adp_23, "ADP 23") }} \\
+\multicolumn{1}{l}{Label} & \multicolumn{1}{c}{ {{- tex_field_header(structure.atom_site_aniso_latex.adp_11, "ADP 11") -}} } & \multicolumn{1}{c}{ {{- tex_field_header(structure.atom_site_aniso_latex.adp_22, "ADP 22") -}} } & \multicolumn{1}{c}{ {{- tex_field_header(structure.atom_site_aniso_latex.adp_33, "ADP 33") -}} } & \multicolumn{1}{c}{ {{- tex_field_header(structure.atom_site_aniso_latex.adp_12, "ADP 12") -}} } & \multicolumn{1}{c}{ {{- tex_field_header(structure.atom_site_aniso_latex.adp_13, "ADP 13") -}} } & \multicolumn{1}{c}{ {{- tex_field_header(structure.atom_site_aniso_latex.adp_23, "ADP 23") -}} } \\
 \midrule
 {% for aniso in structure.atom_site_aniso %}
 {{ aniso.label | tex }} & {{ aniso.adp_11 | tex_number }} & {{ aniso.adp_22 | tex_number }} & {{ aniso.adp_33 | tex_number }} & {{ aniso.adp_12 | tex_number }} & {{ aniso.adp_13 | tex_number }} & {{ aniso.adp_23 | tex_number }} \\
@@ -152,13 +157,13 @@ Label & {{ tex_field_header(structure.atom_site_aniso_latex.adp_11, "ADP 11") }}
 \subsubsection{Experiment details}
 
 \begin{table}[H]
-\begin{tabular}{ll}
+\begin{tabular}{lS}
 \toprule
-Sample form & {{ experiment.type.sample_form | tex }} \\
-Probe & {{ experiment.type.radiation_probe | tex }} \\
-Beam mode & {{ experiment.type.beam_mode | tex }} \\
-Scattering type & {{ experiment.type.scattering_type | tex }} \\
-Calculator & {{ experiment.calculator.type | tex }} \\
+Sample form & \multicolumn{1}{l}{ {{- experiment.type.sample_form | tex -}} } \\
+Probe & \multicolumn{1}{l}{ {{- experiment.type.radiation_probe | tex -}} } \\
+Beam mode & \multicolumn{1}{l}{ {{- experiment.type.beam_mode | tex -}} } \\
+Scattering type & \multicolumn{1}{l}{ {{- experiment.type.scattering_type | tex -}} } \\
+Calculator & \multicolumn{1}{l}{ {{- experiment.calculator.type | tex -}} } \\
 {{ tex_field_header(experiment.diffrn_latex.ambient_temperature, "Temperature") }} & {{ experiment.diffrn.ambient_temperature | tex_number }} \\
 {{ tex_field_header(experiment.diffrn_latex.ambient_pressure, "Pressure") }} & {{ experiment.diffrn.ambient_pressure | tex_number }} \\
 \bottomrule

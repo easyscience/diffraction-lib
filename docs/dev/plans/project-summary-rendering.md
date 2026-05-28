@@ -1065,6 +1065,28 @@ exceptions.
   - Commit:
     `Align report plot styling with Plotly output`.
 
+- [x] **P1.24 — Disable draft line numbers and align numeric tables**
+  - Files:
+    `src/easydiffraction/report/templates/tex/report.tex.j2`.
+  - Disable the `iucrjournals.cls` draft line numbering in
+    generated reports by emitting `\nolinenumbers` at the
+    start of the document. The vendored class still loads
+    `lineno`, but reports should not show line numbers by
+    default.
+  - Add `siunitx` to the report template and use `S`
+    columns for numeric report tables: refinement, unit-cell
+    numeric rows, atom-site fractional coordinates /
+    occupancies / isotropic ADPs, anisotropic ADPs, and
+    experiment temperature / pressure. Non-numeric rows in
+    mixed key-value tables are wrapped in `\multicolumn`
+    cells so `siunitx` does not parse text as a number.
+  - Parenthesized uncertainty notation such as `0.584(20)`
+    is left unwrapped in `S` cells; `siunitx` parses it as
+    numeric uncertainty notation and aligns on the decimal
+    marker.
+  - Commit:
+    `Align numeric report table columns`.
+
 ## Test plan (Phase 2)
 
 Per AGENTS.md §Testing, every new module, class, and bug fix
