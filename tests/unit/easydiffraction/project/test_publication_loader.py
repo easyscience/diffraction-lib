@@ -53,5 +53,5 @@ def test_load_publication_rejects_invalid_author_shape(tmp_path):
     path = tmp_path / 'publication.json'
     path.write_text('{"authors": [{"address": "missing name"}]}', encoding='utf-8')
 
-    with pytest.raises(ValueError, match=r"authors\[0\]\.name"):
+    with pytest.raises(ValueError, match=r'authors\[0\]\.name'):
         load_publication(Publication(), path)
