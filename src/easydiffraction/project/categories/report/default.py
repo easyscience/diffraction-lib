@@ -211,8 +211,8 @@ class Report(CategoryItem):
             columns_alignment = ['left', 'right', 'right', 'left']
             columns_data = [
                 Report._fmt_row('a', structure.cell.length_a),
-                Report._fmt_row('b', structure.cell.length_a),
-                Report._fmt_row('c', structure.cell.length_a),
+                Report._fmt_row('b', structure.cell.length_b),
+                Report._fmt_row('c', structure.cell.length_c),
                 Report._fmt_row('α', structure.cell.angle_alpha),  # noqa: RUF001
                 Report._fmt_row('β', structure.cell.angle_beta),
                 Report._fmt_row('γ', structure.cell.angle_gamma),  # noqa: RUF001
@@ -272,7 +272,7 @@ class Report(CategoryItem):
             console.print(
                 f'{expt.type.sample_form.value}, '
                 f'{expt.type.radiation_probe.value}, '
-                f'{expt.type.beam_mode.value}',
+                f'{expt.type.beam_mode.value}, '
                 f'{expt.type.scattering_type.value}',
             )
 
