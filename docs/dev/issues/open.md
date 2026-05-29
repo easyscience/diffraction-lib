@@ -1778,8 +1778,8 @@ Requirements:
   single-crystal report outputs.
 - Do **not** read `tmp/` at runtime — pass the dictionaries explicitly
   as a committed test fixture (or fetch them in test setup and pass the
-  path in). The check belongs in the test suite, not in the user's
-  write path.
+  path in). The check belongs in the test suite, not in the user's write
+  path.
 - Parse the DDLm/CIF2 form correctly: the current dictionaries use
   `save_<name>` frames with `_definition.id`, which the removed helper's
   `save__tag` regex and a plain `gemmi.cif.read_file` could not handle.

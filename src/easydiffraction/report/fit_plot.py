@@ -167,8 +167,8 @@ def fit_scatter_ranges(fit_data: dict[str, Any]) -> dict[str, float]:
     su = meas.get('su')
     if su is not None:
         su_values = _numeric_values(su)
-        y_low = [value - error for value, error in zip(y_values, su_values)]
-        y_high = [value + error for value, error in zip(y_values, su_values)]
+        y_low = [value - error for value, error in zip(y_values, su_values, strict=True)]
+        y_high = [value + error for value, error in zip(y_values, su_values, strict=True)]
     else:
         y_low = y_values
         y_high = y_values

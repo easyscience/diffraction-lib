@@ -258,7 +258,9 @@ class Refln(CategoryItem):
 
 
 class TofRefln(Refln):
-    """Single reflection for TOF single-crystal data (per-reflection wavelength)."""
+    """
+    TOF single-crystal reflection with a per-reflection wavelength.
+    """
 
     def __init__(self) -> None:
         super().__init__()
@@ -292,7 +294,9 @@ class TofRefln(Refln):
 
 
 class ReflnDataBase(CategoryCollection):
-    """Base collection of reflections for single-crystal diffraction data."""
+    """
+    Base collection of reflections for single-crystal diffraction data.
+    """
 
     _update_priority = 100
 
@@ -468,9 +472,13 @@ class ReflnDataBase(CategoryCollection):
 
 @ReflnFactory.register
 class CwlReflnData(ReflnDataBase):
-    """Collection of reflections for CWL single-crystal diffraction data."""
+    """
+    Collection of reflections for CWL single-crystal diffraction data.
+    """
 
-    type_info = TypeInfo(tag='bragg-sc-cwl', description='Bragg CWL single-crystal reflection data')
+    type_info = TypeInfo(
+        tag='bragg-sc-cwl', description='Bragg CWL single-crystal reflection data'
+    )
     compatibility = Compatibility(
         sample_form=frozenset({SampleFormEnum.SINGLE_CRYSTAL}),
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
@@ -486,9 +494,13 @@ class CwlReflnData(ReflnDataBase):
 
 @ReflnFactory.register
 class TofReflnData(ReflnDataBase):
-    """Collection of reflections for TOF single-crystal diffraction data."""
+    """
+    Collection of reflections for TOF single-crystal diffraction data.
+    """
 
-    type_info = TypeInfo(tag='bragg-sc-tof', description='Bragg TOF single-crystal reflection data')
+    type_info = TypeInfo(
+        tag='bragg-sc-tof', description='Bragg TOF single-crystal reflection data'
+    )
     compatibility = Compatibility(
         sample_form=frozenset({SampleFormEnum.SINGLE_CRYSTAL}),
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),

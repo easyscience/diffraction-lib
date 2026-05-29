@@ -395,7 +395,10 @@
 │   │   │   │   │   └── 🏷️ class PowderTofReflnData
 │   │   │   │   ├── 📄 bragg_sc.py
 │   │   │   │   │   ├── 🏷️ class Refln
-│   │   │   │   │   └── 🏷️ class ReflnData
+│   │   │   │   │   ├── 🏷️ class TofRefln
+│   │   │   │   │   ├── 🏷️ class ReflnDataBase
+│   │   │   │   │   ├── 🏷️ class CwlReflnData
+│   │   │   │   │   └── 🏷️ class TofReflnData
 │   │   │   │   └── 📄 factory.py
 │   │   │   │       └── 🏷️ class ReflnFactory
 │   │   │   └── 📄 __init__.py
