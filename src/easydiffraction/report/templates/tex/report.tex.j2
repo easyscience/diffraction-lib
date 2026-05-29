@@ -21,6 +21,7 @@
 \usepackage[table]{xcolor}  % row shading and rule colours
 \usepackage{titlesec}       % heading numbering, spacing and fonts
 \usepackage{paratype}       % PT Sans headings; bundled and portable
+\usepackage{hyperref}       % \href links for software package names
 
 % --------------------------------------------------------------------
 %  Line and paragraph spacing
@@ -86,6 +87,9 @@
 {% macro tex_category_value(row, numeric_column) -%}
 {% if row.numeric %}{{ row.value | tex_number }}{% elif numeric_column %}\multicolumn{1}{l|}{ {{- row.value | tex -}} }{% else %}{{ row.value | tex }}{% endif %}
 {%- endmacro %}
+{% macro tex_software_name(role) -%}
+{% if role.url %}\href{ {{- role.url -}} }{ {{- role.name | tex -}} }{% else %}{{ role.name | tex }}{% endif %}
+{%- endmacro %}
 
 \begin{document}
 
@@ -125,9 +129,11 @@ Generated & {{ metadata.generated_at | tex }} \\
 \end{table}
 
 % ====================================================================
-%  Software
+%  Analysis
 % ====================================================================
-\section{Software}
+\section{Analysis}
+
+\subsection*{Software}
 
 \begin{table}[H]
 \rowColorsWithHeader
@@ -135,30 +141,29 @@ Generated & {{ metadata.generated_at | tex }} \\
 \hline
 Role & Name & Version \\
 \hline
-Framework & {{ software.framework.name | tex }} & {{ software.framework.version | tex }} \\
-Calculator & {{ software.calculator.name | tex }} & {{ software.calculator.version | tex }} \\
-Minimizer & {{ software.minimizer.name | tex }} & {{ software.minimizer.version | tex }} \\
+Framework & {{ tex_software_name(analysis.software.framework) }} & {{ analysis.software.framework.version | tex }} \\
+Calculator & {{ tex_software_name(analysis.software.calculator) }} & {{ analysis.software.calculator.version | tex }} \\
+Minimizer & {{ tex_software_name(analysis.software.minimizer) }} & {{ analysis.software.minimizer.version | tex }} \\
 \hline
 \end{tabular}
 \end{table}
 
-% ====================================================================
-%  Refinement
-% ====================================================================
-\section{Refinement}
+{% for category in analysis.categories %}
+\subsection*{ {{- category.title | tex -}} }
 
+{% if category.kind == "item" %}
 \begin{table}[H]
-\rowColorsWithHeader
-\begin{tabular}{|{{ refinement.colspec }}|}
+\rowColorsWithoutHeader
+\begin{tabular}{|{{ category.colspec }}|}
 \hline
-Quantity & {Value} \\
-\hline
-{% for row in refinement.rows %}
-{{ row.label | tex }} & {% if row.numeric %}{{ row.value | tex_number }}{% else %}\multicolumn{1}{l|}{ {{- row.value | tex -}} }{% endif %} \\
+{% for row in category.rows %}
+{{ tex_category_label(row) }} & {{ tex_category_value(row, category.has_numeric_values) }} \\
 {% endfor %}
 \hline
 \end{tabular}
 \end{table}
+{% endif %}
+{% endfor %}
 
 % ====================================================================
 %  Structures

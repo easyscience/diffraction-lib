@@ -57,27 +57,6 @@ _EXPERIMENT_DIFFRN_FIELDS = (
     'ambient_temperature',
     'ambient_pressure',
 )
-_FIT_RESULT_FIELDS = (
-    'result_kind',
-    'success',
-    'message',
-    'iterations',
-    'fitting_time',
-    'reduced_chi_square',
-    'n_data_points',
-    'n_parameters',
-    'n_free_parameters',
-    'degrees_of_freedom',
-    'r_factor_all',
-    'wr_factor_all',
-    'r_factor_gt',
-    'wr_factor_gt',
-    'prof_r_factor',
-    'prof_wr_factor',
-    'prof_wr_expected',
-    'profile_function',
-    'background_function',
-)
 _PUBLICATION_JOURNAL_FIELDS = (
     'name_full',
     'year',
@@ -171,8 +150,7 @@ class ReportDataContext:
             'project': self._project_context(structures, experiments),
             'structures': [self._structure_context(structure) for structure in structures],
             'experiments': [self._experiment_context(experiment) for experiment in experiments],
-            'refinement': self._refinement_context(),
-            'software': self._software_context(),
+            'analysis': self._analysis_context(),
             'publication': self._publication_context(),
             'metadata': {
                 'easydiffraction_version': package_version('easydiffraction'),
@@ -315,31 +293,12 @@ class ReportDataContext:
             ),
         }
 
-    def _refinement_context(self) -> dict[str, object]:
-        """Return refinement summary data."""
+    def _analysis_context(self) -> dict[str, object]:
+        """Return analysis-section data for report rendering."""
         analysis = _safe_attr(self._project, 'analysis')
-        fit_result = _safe_attr(analysis, 'fit_result')
-        fields = _field_values(fit_result, _FIT_RESULT_FIELDS)
-        total = fields.get('n_parameters')
-        free = fields.get('n_free_parameters')
-        fixed = total - free if isinstance(total, int) and isinstance(free, int) else None
-        constraints = len(list(_collection_values(_safe_attr(analysis, 'constraints'))))
-        rows = _refinement_rows(
-            fields=fields,
-            total=total,
-            free=free,
-            constraints=constraints,
-        )
         return {
-            'fit_result': fields,
-            'parameters': {
-                'total': total,
-                'free': free,
-                'fixed': fixed,
-            },
-            'constraints': constraints,
-            'rows': rows,
-            'colspec': _key_value_colspec(rows),
+            'software': self._software_context(),
+            'categories': _analysis_category_contexts(analysis),
         }
 
     def _software_context(self) -> dict[str, object]:
@@ -467,34 +426,21 @@ def _display_metadata(value: object, *, context: str) -> dict[str, str]:
     return {'label': label, 'units': _display_units(units)}
 
 
-def _refinement_rows(
-    *,
-    fields: dict[str, object],
-    total: object,
-    free: object,
-    constraints: int,
-) -> list[dict[str, object]]:
-    """Return refinement rows with HTML numeric-alignment metadata."""
-    rows = [
-        _value_row('Reduced chi-square', fields.get('reduced_chi_square')),
-        _value_row('Free parameters', free),
-        _value_row('Total parameters', total),
-        _value_row('Constraints', constraints),
-        _value_row('R factor', fields.get('r_factor_all')),
-        _value_row('Weighted R factor', fields.get('wr_factor_all')),
-    ]
-    _apply_row_number_alignment(rows)
-    return rows
-
-
-def _value_row(label: str, value: object) -> dict[str, object]:
-    """Return one label-value report row."""
-    return {
-        'label': label,
-        'value': value,
-        'numeric': _is_numeric_value(value),
-        'number': None,
-    }
+def _analysis_category_contexts(analysis: object) -> list[dict[str, object]]:
+    """Return generic report contexts for analysis result categories."""
+    categories = (
+        _safe_attr(analysis, 'minimizer'),
+        _safe_attr(analysis, 'fitting_mode'),
+        _safe_attr(analysis, 'fit_result'),
+    )
+    contexts = []
+    for category in categories:
+        if category is None:
+            continue
+        context = _category_context(category)
+        if _category_has_content(context):
+            contexts.append(context)
+    return contexts
 
 
 def _category_contexts(

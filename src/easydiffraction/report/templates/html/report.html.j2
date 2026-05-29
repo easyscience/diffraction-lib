@@ -15,6 +15,9 @@
 {% macro category_value(row) -%}
 {% if row.numeric %}{{ aligned_number(row.number, row.value) }}{% elif row.value is none %}{% else %}{{ row.value }}{% endif %}
 {%- endmacro %}
+{% macro software_name(role) -%}
+{% if role.url %}<a href="{{ role.url }}">{{ role.name or "" }}</a>{% else %}{{ role.name or "" }}{% endif %}
+{%- endmacro %}
 <!doctype html>
 <html lang="en">
 <head>
@@ -84,7 +87,9 @@
     </section>
 
     <section class="numbered-section">
-      <h2>Software</h2>
+      <h2>Analysis</h2>
+
+      <h3>Software</h3>
       <table>
         <thead>
           <tr>
@@ -96,41 +101,37 @@
         <tbody>
           <tr>
             <td>Framework</td>
-            <td>{{ software.framework.name }}</td>
-            <td>{{ software.framework.version }}</td>
+            <td>{{ software_name(analysis.software.framework) }}</td>
+            <td>{{ analysis.software.framework.version or "" }}</td>
           </tr>
           <tr>
             <td>Calculator</td>
-            <td>{{ software.calculator.name }}</td>
-            <td>{{ software.calculator.version }}</td>
+            <td>{{ software_name(analysis.software.calculator) }}</td>
+            <td>{{ analysis.software.calculator.version or "" }}</td>
           </tr>
           <tr>
             <td>Minimizer</td>
-            <td>{{ software.minimizer.name }}</td>
-            <td>{{ software.minimizer.version }}</td>
+            <td>{{ software_name(analysis.software.minimizer) }}</td>
+            <td>{{ analysis.software.minimizer.version or "" }}</td>
           </tr>
         </tbody>
       </table>
-    </section>
 
-    <section class="numbered-section">
-      <h2>Refinement</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Quantity</th>
-            <th>Value</th>
-          </tr>
-        </thead>
+      {% for category in analysis.categories %}
+      <h3>{{ category.title }}</h3>
+      {% if category.kind == "item" %}
+      <table class="key-value">
         <tbody>
-          {% for row in refinement.rows %}
+          {% for row in category.rows %}
           <tr>
-            <td class="key">{{ row.label }}</td>
+            <td class="key">{{ category_label(row) }}</td>
             <td{% if row.numeric %} class="numeric"{% endif %}>{{ category_value(row) }}</td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
+      {% endif %}
+      {% endfor %}
     </section>
 
     <section class="numbered-section">
