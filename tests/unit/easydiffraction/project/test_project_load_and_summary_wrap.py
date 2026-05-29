@@ -26,7 +26,7 @@ def test_project_load_reads_project_info(tmp_path):
 
 
 def test_report_show_project_info_wraps_description(capsys):
-    from easydiffraction.report.report import Report
+    from easydiffraction.project.categories.report.default import Report
 
     long_desc = ' '.join(['desc'] * 50)  # long text to trigger wrapping
 
@@ -38,7 +38,8 @@ def test_report_show_project_info_wraps_description(capsys):
         def __init__(self):
             self.info = Info()
 
-    report = Report(Project())
+    report = Report()
+    report._parent = Project()
     report.show_project_info()
     out = capsys.readouterr().out
     # Title and Description paragraph headers present

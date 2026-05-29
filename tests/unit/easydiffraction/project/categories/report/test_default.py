@@ -7,9 +7,11 @@ from __future__ import annotations
 import pytest
 
 
-def test_report_has_no_formats_property():
+def test_report_has_no_formats_property(monkeypatch):
     from easydiffraction.project.categories.report.default import Report
+    from easydiffraction.utils.logging import Logger
 
+    monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.RAISE, raising=True)
     report = Report()
 
     with pytest.raises(AttributeError, match="Unknown attribute 'formats'"):

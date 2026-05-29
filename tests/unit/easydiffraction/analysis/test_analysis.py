@@ -784,6 +784,7 @@ def test_run_sequential_sets_mode_and_saves_project(monkeypatch, tmp_path):
 
     project = SimpleNamespace(
         info=SimpleNamespace(path=tmp_path),
+        experiments=SimpleNamespace(values=list),
         save_calls=0,
         _varname='proj',
     )

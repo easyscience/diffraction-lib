@@ -242,6 +242,8 @@ class GenericDescriptorBase(GuardedBase):
         """
         self._validate_display_context(context)
         fallback = str(getattr(self, 'units', ''))
+        if fallback == 'none':
+            fallback = ''
         if self._display_handler is None:
             return fallback
         if context == 'latex':

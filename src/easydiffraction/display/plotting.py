@@ -5853,7 +5853,11 @@ class Plotter(RendererBase):
             x_label = 'Experiment No.'
 
         # Y-axis label from descriptor
-        param_units = getattr(param_descriptor, 'units', '')
+        param_units = (
+            param_descriptor.resolve_display_units('gui')
+            if hasattr(param_descriptor, 'resolve_display_units')
+            else getattr(param_descriptor, 'units', '')
+        )
         y_label = f'Parameter value ({param_units})' if param_units else 'Parameter value'
 
         title = f"Parameter '{column_name}' across fit results"
