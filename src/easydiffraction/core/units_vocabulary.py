@@ -4,29 +4,27 @@
 
 from __future__ import annotations
 
-VALID_UNITS_CODES: frozenset[str] = frozenset(
-    {
-        'angstrom_squared',
-        'angstroms',
-        'arcminutes',
-        'degrees',
-        'degrees_squared',
-        'kelvins',
-        'kilopascals',
-        'microsecond_angstroms',
-        'microseconds',
-        'microseconds_per_angstrom',
-        'microseconds_per_angstrom_squared',
-        'microseconds_squared',
-        'microseconds_squared_per_angstrom_squared',
-        'micrometres',
-        'none',
-        'reciprocal_angstrom_squared',
-        'reciprocal_angstroms',
-        'teslas',
-        'volts_per_metre',
-    }
-)
+VALID_UNITS_CODES: frozenset[str] = frozenset({
+    'angstrom_squared',
+    'angstroms',
+    'arcminutes',
+    'degrees',
+    'degrees_squared',
+    'kelvins',
+    'kilopascals',
+    'microsecond_angstroms',
+    'microseconds',
+    'microseconds_per_angstrom',
+    'microseconds_per_angstrom_squared',
+    'microseconds_squared',
+    'microseconds_squared_per_angstrom_squared',
+    'micrometres',
+    'none',
+    'reciprocal_angstrom_squared',
+    'reciprocal_angstroms',
+    'teslas',
+    'volts_per_metre',
+})
 
 _LEGACY_UNITS_ALIASES: dict[str, str] = {
     '': 'none',

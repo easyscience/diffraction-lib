@@ -217,13 +217,10 @@ def _validate_iucr_cif(content: str) -> None:
     if dictionary_cache.load_errors:
         load_error_text = '\n'.join(dictionary_cache.load_errors)
         log.warning(
-            'Generated IUCr CIF validation skipped one or more dictionaries:\n'
-            + load_error_text
+            'Generated IUCr CIF validation skipped one or more dictionaries:\n' + load_error_text
         )
     if dictionary_cache.documents:
-        diagnostics.extend(
-            _gemmi_dictionary_errors(document, dictionary_cache.documents)
-        )
+        diagnostics.extend(_gemmi_dictionary_errors(document, dictionary_cache.documents))
         diagnostics.extend(_unknown_tag_errors(content, dictionary_cache.tags))
 
     if diagnostics:

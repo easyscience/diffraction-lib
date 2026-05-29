@@ -171,10 +171,7 @@ def _compile_pdf(
         msg = _compiler_error_message(engine_name, tex_path, result)
         raise RuntimeError(msg)
     if not compile_pdf_path.is_file():
-        msg = (
-            f"TeX engine '{engine_name}' completed but did not write "
-            f"'{pdf_path}'."
-        )
+        msg = f"TeX engine '{engine_name}' completed but did not write '{pdf_path}'."
         raise RuntimeError(msg)
     return None
 
@@ -234,7 +231,4 @@ def _compiler_error_message(
     details = (result.stderr or result.stdout).strip()
     if len(details) > 4000:
         details = details[-4000:]
-    return (
-        f"TeX engine '{engine_name}' failed while compiling '{tex_path}'.\n"
-        f'{details}'
-    )
+    return f"TeX engine '{engine_name}' failed while compiling '{tex_path}'.\n{details}"

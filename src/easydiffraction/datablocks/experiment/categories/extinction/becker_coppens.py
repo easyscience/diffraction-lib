@@ -6,10 +6,10 @@ Becker-Coppens isotropic extinction correction for single crystals.
 
 from __future__ import annotations
 
+from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.metadata import CalculatorSupport
 from easydiffraction.core.metadata import Compatibility
 from easydiffraction.core.metadata import TypeInfo
-from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.validation import RangeValidator

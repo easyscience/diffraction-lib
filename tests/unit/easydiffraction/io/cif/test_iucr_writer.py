@@ -449,10 +449,7 @@ def test_iucr_extinction_extensions_preserve_parameter_uncertainties():
     extinction.radius.free = True
     extinction.radius.uncertainty = 0.4931
     experiment = SimpleNamespace(extinction=extinction)
-    items = {
-        item.tag: item.value
-        for item in _extinction_items(experiment, extension=True)
-    }
+    items = {item.tag: item.value for item in _extinction_items(experiment, extension=True)}
     lines = []
 
     _write_item(

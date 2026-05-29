@@ -234,11 +234,7 @@ def _fit_data_figure(
             residual_height_fraction=DEFAULT_RESID_HEIGHT,
             bragg_peaks_height_fraction=DEFAULT_BRAGG_ROW,
             y_bkg=np.asarray(y_bkg, dtype=float) if y_bkg is not None else None,
-            y_meas_su=(
-                np.asarray(y_meas_su, dtype=float)
-                if y_meas_su is not None
-                else None
-            ),
+            y_meas_su=(np.asarray(y_meas_su, dtype=float) if y_meas_su is not None else None),
         )
     )
 
@@ -307,7 +303,7 @@ def _axis_title(x_data: dict[str, object]) -> str:
     """Return a display axis title for fit figures."""
     units = x_data.get('display_units')
     if units:
-        return f"{x_data.get('display_name')} ({units})"
+        return f'{x_data.get("display_name")} ({units})'
     return str(x_data.get('display_name') or '')
 
 
@@ -338,8 +334,4 @@ def _experiment_contexts(context: dict[str, object]) -> list[dict[str, object]]:
     experiments = context.get('experiments')
     if not isinstance(experiments, list):
         return []
-    return [
-        experiment
-        for experiment in experiments
-        if isinstance(experiment, dict)
-    ]
+    return [experiment for experiment in experiments if isinstance(experiment, dict)]

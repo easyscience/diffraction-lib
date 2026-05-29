@@ -4,11 +4,12 @@
 
 from __future__ import annotations
 
+
 def __getattr__(name: str) -> object:
     """Load report objects that would otherwise form import cycles."""
     if name == 'Report':
         from easydiffraction.project.categories.report.default import Report
 
         return Report
-    msg = f"module {__name__!r} has no attribute {name!r}"
+    msg = f'module {__name__!r} has no attribute {name!r}'
     raise AttributeError(msg)

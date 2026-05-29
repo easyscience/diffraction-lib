@@ -64,8 +64,7 @@ _LEGEND_RANKS = {
 def fit_plot_styles() -> dict[str, dict[str, Any]]:
     """Return Plotly-derived series styles for report figures."""
     return {
-        key: _fit_plot_style(key, source_key)
-        for key, source_key in _STYLE_SOURCE_KEYS.items()
+        key: _fit_plot_style(key, source_key) for key, source_key in _STYLE_SOURCE_KEYS.items()
     }
 
 
@@ -118,10 +117,7 @@ def fit_plot_geometry(fit_data: dict[str, Any]) -> dict[str, float]:
     height_sum = sum(row_heights)
     stack_height = _FIGURE_AXIS_WIDTH_CM * _FIGURE_AXIS_HEIGHT_TO_WIDTH
     row_area_height = stack_height * _subplot_available_height_fraction(row_count)
-    scaled_heights = [
-        row_area_height * row_height / height_sum
-        for row_height in row_heights
-    ]
+    scaled_heights = [row_area_height * row_height / height_sum for row_height in row_heights]
     return {
         'axis_width_cm': _FIGURE_AXIS_WIDTH_CM,
         'main_height_cm': scaled_heights[0],
@@ -190,12 +186,8 @@ def _non_bragg_row_heights(
     has_residual: bool,
 ) -> tuple[float, float | None]:
     plot_area_height = _composite_plot_area_height()
-    available_row_pixels = (
-        plot_area_height * _subplot_available_height_fraction(row_count)
-    )
-    baseline_bragg_pixels = (
-        _bragg_tick_symbol_height_pixels() if has_bragg_ticks else 0.0
-    )
+    available_row_pixels = plot_area_height * _subplot_available_height_fraction(row_count)
+    baseline_bragg_pixels = _bragg_tick_symbol_height_pixels() if has_bragg_ticks else 0.0
     non_bragg_pixels = max(available_row_pixels - baseline_bragg_pixels, 1.0)
 
     if not has_residual:
@@ -216,10 +208,7 @@ def _subplot_available_height_fraction(row_count: int) -> float:
 
 
 def _bragg_tick_symbol_height_pixels() -> float:
-    return (
-        BRAGG_TICK_MARKER_SIZE * BRAGG_TICK_SYMBOL_HEIGHT_SCALE
-        + BRAGG_TICK_MARKER_LINE_WIDTH
-    )
+    return BRAGG_TICK_MARKER_SIZE * BRAGG_TICK_SYMBOL_HEIGHT_SCALE + BRAGG_TICK_MARKER_LINE_WIDTH
 
 
 def _bragg_row_height_pixels(tick_set_count: int) -> float:

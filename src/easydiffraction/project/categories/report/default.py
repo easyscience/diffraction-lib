@@ -11,8 +11,8 @@ from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.variable import BoolDescriptor
-from easydiffraction.io.cif.iucr_writer import write_iucr_cif
 from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.iucr_writer import write_iucr_cif
 from easydiffraction.project.categories.report.factory import ReportFactory
 from easydiffraction.report.data_context import build_report_data_context
 from easydiffraction.report.enums import ReportFormatEnum
@@ -481,9 +481,7 @@ class Report(CategoryItem):
             if report_format is ReportFormatEnum.CIF:
                 report_paths.append(self.save_cif())
             elif report_format is ReportFormatEnum.HTML:
-                report_paths.append(
-                    self.save_html(offline=bool(self.html_offline.value))
-                )
+                report_paths.append(self.save_html(offline=bool(self.html_offline.value)))
             elif report_format is ReportFormatEnum.TEX:
                 tex_path = self.save_tex()
                 report_paths.append(tex_path)

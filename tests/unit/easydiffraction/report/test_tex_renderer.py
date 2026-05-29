@@ -225,9 +225,7 @@ def test_render_tex_report_preserves_structure_uncertainty_text():
                             ],
                         },
                     ],
-                    'colspec': (
-                        'lS[table-format=2.3(2)]S[table-format=1.5(2)]'
-                    ),
+                    'colspec': ('lS[table-format=2.3(2)]S[table-format=1.5(2)]'),
                     'table_width': 'full',
                 },
                 {
@@ -401,12 +399,16 @@ def test_save_tex_report_uses_composite_pgfplots_with_error_bars(tmp_path):
     figure_tex = (tex_path.parent / 'data' / 'hrpt.tex').read_text(
         encoding='utf-8',
     )
-    csv_header = (tex_path.parent / 'data' / 'hrpt.csv').read_text(
-        encoding='utf-8',
-    ).splitlines()[0]
+    csv_header = (
+        (tex_path.parent / 'data' / 'hrpt.csv')
+        .read_text(
+            encoding='utf-8',
+        )
+        .splitlines()[0]
+    )
     bragg_csv_header = (
-        tex_path.parent / 'data' / 'hrpt_phase-a.csv'
-    ).read_text(encoding='utf-8').splitlines()[0]
+        (tex_path.parent / 'data' / 'hrpt_phase-a.csv').read_text(encoding='utf-8').splitlines()[0]
+    )
 
     assert r'\usepackage{fourier}' in figure_tex
     assert r'\usepackage{paratype}' in figure_tex

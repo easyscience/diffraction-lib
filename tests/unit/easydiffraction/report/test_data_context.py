@@ -224,10 +224,7 @@ def test_report_category_context_keeps_numeric_string_ids_as_text():
     context = _collection_category_context(category)
 
     assert context['colspec'] == 'lS[table-format=2.0]S[table-format=1.0]'
-    assert [
-        (column['latex_label'], column['numeric'])
-        for column in context['columns']
-    ] == [
+    assert [(column['latex_label'], column['numeric']) for column in context['columns']] == [
         ('ID', False),
         ('$x$', True),
         ('Intensity', True),
@@ -318,10 +315,7 @@ def test_report_pd_data_columns_use_compact_labels():
 
     context = _collection_category_context(category)
 
-    assert [
-        (column['latex_label'], column['html_label'])
-        for column in context['columns']
-    ] == [
+    assert [(column['latex_label'], column['html_label']) for column in context['columns']] == [
         (r'$2\theta$', r'\(2\theta\)'),
         ('ID', 'ID'),
         (r'$d$', r'\(d\)'),
@@ -344,28 +338,23 @@ def test_report_powder_refln_columns_use_compact_labels():
     from easydiffraction.report.data_context import _collection_category_context
 
     category = PowderCwlReflnData()
-    category._replace_from_records(
-        [
-            PowderReflnRecord(
-                phase_id='phase',
-                d_spacing=1.0,
-                sin_theta_over_lambda=0.5,
-                index_h=1,
-                index_k=0,
-                index_l=1,
-                f_calc=2.0,
-                f_squared_calc=4.0,
-                two_theta=20.0,
-            )
-        ]
-    )
+    category._replace_from_records([
+        PowderReflnRecord(
+            phase_id='phase',
+            d_spacing=1.0,
+            sin_theta_over_lambda=0.5,
+            index_h=1,
+            index_k=0,
+            index_l=1,
+            f_calc=2.0,
+            f_squared_calc=4.0,
+            two_theta=20.0,
+        )
+    ])
 
     context = _collection_category_context(category)
 
-    assert [
-        (column['latex_label'], column['html_label'])
-        for column in context['columns']
-    ] == [
+    assert [(column['latex_label'], column['html_label']) for column in context['columns']] == [
         ('ID', 'ID'),
         ('Phase', 'Phase'),
         (r'$d$', r'\(d\)'),

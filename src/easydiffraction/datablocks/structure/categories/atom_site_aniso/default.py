@@ -12,8 +12,8 @@ from __future__ import annotations
 
 from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
-from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.display_handler import DisplayHandler
+from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.variable import Parameter

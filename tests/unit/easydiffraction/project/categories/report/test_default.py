@@ -13,7 +13,7 @@ def test_report_has_no_formats_property():
     report = Report()
 
     with pytest.raises(AttributeError, match="Unknown attribute 'formats'"):
-        report.formats  # noqa: B018
+        report.formats
 
 
 def test_report_save_without_outputs_points_to_boolean_flags():

@@ -121,15 +121,13 @@ def _author_rows(value: object) -> list[dict[str, str | None]]:
             if key not in _AUTHOR_FIELDS:
                 raise ValueError(f'authors.{key}')
 
-        rows.append(
-            {
-                'name': _required_text(f'authors[{idx}].name', row.get('name')),
-                'address': _optional_text(f'authors[{idx}].address', row.get('address')),
-                'footnote': _optional_text(f'authors[{idx}].footnote', row.get('footnote')),
-                'id_orcid': _optional_text(f'authors[{idx}].id_orcid', row.get('id_orcid')),
-                'id_iucr': _optional_text(f'authors[{idx}].id_iucr', row.get('id_iucr')),
-            }
-        )
+        rows.append({
+            'name': _required_text(f'authors[{idx}].name', row.get('name')),
+            'address': _optional_text(f'authors[{idx}].address', row.get('address')),
+            'footnote': _optional_text(f'authors[{idx}].footnote', row.get('footnote')),
+            'id_orcid': _optional_text(f'authors[{idx}].id_orcid', row.get('id_orcid')),
+            'id_iucr': _optional_text(f'authors[{idx}].id_iucr', row.get('id_iucr')),
+        })
     return rows
 
 

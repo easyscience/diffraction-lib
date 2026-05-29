@@ -311,7 +311,9 @@ def _write_fit_figure_tex(
         'bragg_styles': fit_bragg_tick_styles(),
     }
     figure_path.write_text(
-        _environment().get_template(_FIGURE_TEMPLATE_NAME).render(
+        _environment()
+        .get_template(_FIGURE_TEMPLATE_NAME)
+        .render(
             **template_context,
         ),
         encoding='utf-8',
@@ -347,10 +349,7 @@ def _project_experiments_by_id(project: object) -> dict[str, object]:
     values = getattr(experiments, 'values', None)
     if not callable(values):
         return {}
-    return {
-        str(getattr(experiment, 'name', '')): experiment
-        for experiment in values()
-    }
+    return {str(getattr(experiment, 'name', '')): experiment for experiment in values()}
 
 
 def _experiment_contexts(context: dict[str, object]) -> list[dict[str, object]]:
@@ -358,11 +357,7 @@ def _experiment_contexts(context: dict[str, object]) -> list[dict[str, object]]:
     experiments = context.get('experiments')
     if not isinstance(experiments, list):
         return []
-    return [
-        experiment
-        for experiment in experiments
-        if isinstance(experiment, dict)
-    ]
+    return [experiment for experiment in experiments if isinstance(experiment, dict)]
 
 
 def _fit_csv_filename(expt_id: str) -> str:
@@ -402,11 +397,14 @@ def _fit_csv_columns(
     row_count = len(list(x_data['values']))
 
     columns = [
-        (_FIT_X_FIELD_TAGS[x_field], _fit_csv_values(
-            category_values,
-            x_field,
-            list(x_data['values']),
-        )),
+        (
+            _FIT_X_FIELD_TAGS[x_field],
+            _fit_csv_values(
+                category_values,
+                x_field,
+                list(x_data['values']),
+            ),
+        ),
     ]
     fallback_values = {
         'point_id': [str(index + 1) for index in range(row_count)],
@@ -603,13 +601,11 @@ def _bragg_tick_sources(
         bragg_csv = bragg_csvs.get(phase_id)
         if bragg_csv is None:
             continue
-        sources.append(
-            {
-                'phase_id': phase_id,
-                'csv_filename': bragg_csv['filename'],
-                'x_column': bragg_csv['x_column'],
-            }
-        )
+        sources.append({
+            'phase_id': phase_id,
+            'csv_filename': bragg_csv['filename'],
+            'x_column': bragg_csv['x_column'],
+        })
     return sources
 
 
@@ -697,11 +693,7 @@ def _context_loop_values(category: dict[str, object]) -> dict[str, list[object]]
     """Return loop values from a prepared category context."""
     columns = category.get('columns') or []
     rows = category.get('rows') or []
-    names = [
-        str(column.get('name'))
-        for column in columns
-        if isinstance(column, dict)
-    ]
+    names = [str(column.get('name')) for column in columns if isinstance(column, dict)]
     values = {name: [] for name in names}
     for row in rows:
         if not isinstance(row, dict):

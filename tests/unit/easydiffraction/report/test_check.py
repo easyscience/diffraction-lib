@@ -48,9 +48,7 @@ def test_validate_iucr_cif_skips_unloadable_optional_dictionaries(monkeypatch):
         lambda: check_mod._DictionaryCache(
             paths=(),
             documents=(),
-            load_errors=(
-                'Failed to load CIF dictionary tmp/iucr-dicts/cif_core.dic',
-            ),
+            load_errors=('Failed to load CIF dictionary tmp/iucr-dicts/cif_core.dic',),
             tags=frozenset(),
         ),
     )
@@ -60,11 +58,6 @@ def test_validate_iucr_cif_skips_unloadable_optional_dictionaries(monkeypatch):
         staticmethod(lambda *parts: warnings.append(' '.join(parts))),
     )
 
-    check_mod._validate_iucr_cif(
-        'data_test\n_audit.creation_method EasyDiffraction\n'
-    )
+    check_mod._validate_iucr_cif('data_test\n_audit.creation_method EasyDiffraction\n')
 
-    assert (
-        'Failed to load CIF dictionary tmp/iucr-dicts/cif_core.dic'
-        in warnings[0]
-    )
+    assert 'Failed to load CIF dictionary tmp/iucr-dicts/cif_core.dic' in warnings[0]

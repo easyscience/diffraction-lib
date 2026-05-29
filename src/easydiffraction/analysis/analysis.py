@@ -611,8 +611,7 @@ class Analysis(
         if not unique_values:
             return None, None, None
         return tuple(
-            ', '.join(str(value[index]) for value in unique_values if value[index])
-            or None
+            ', '.join(str(value[index]) for value in unique_values if value[index]) or None
             for index in range(3)
         )
 

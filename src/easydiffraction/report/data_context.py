@@ -123,9 +123,7 @@ _PUBLICATION_AUTHOR_FIELDS = (
 _REPORT_LOOP_DISPLAY_LIMIT = DEFAULT_LOOP_DISPLAY_LIMIT
 _FULL_WIDTH_TABLE_CHAR_LIMIT = 40
 _TRUNCATED_DATA_CATEGORY_CODES = frozenset({'pd_data', 'total_data'})
-_NUMERIC_TEXT_RE = re.compile(
-    r'^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:\(\d+\))?(?:[eE][+-]?\d+)?$'
-)
+_NUMERIC_TEXT_RE = re.compile(r'^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:\(\d+\))?(?:[eE][+-]?\d+)?$')
 _NUMBER_PARTS_RE = re.compile(
     r'^(?P<sign>[+-]?)'
     r'(?:(?P<integer>\d+)(?:\.(?P<fraction>\d*))?'
@@ -166,9 +164,7 @@ class ReportDataContext:
         return {
             'project': self._project_context(structures, experiments),
             'structures': [self._structure_context(structure) for structure in structures],
-            'experiments': [
-                self._experiment_context(experiment) for experiment in experiments
-            ],
+            'experiments': [self._experiment_context(experiment) for experiment in experiments],
             'refinement': self._refinement_context(),
             'software': self._software_context(),
             'publication': self._publication_context(),
@@ -217,10 +213,7 @@ class ReportDataContext:
                 _STRUCTURE_CELL_FIELDS,
                 context='latex',
             ),
-            'atom_sites': [
-                self._atom_site_context(atom_site)
-                for atom_site in atom_sites
-            ],
+            'atom_sites': [self._atom_site_context(atom_site) for atom_site in atom_sites],
             'atom_site_display': _display_field_metadata(
                 atom_sites[0] if atom_sites else None,
                 _ATOM_SITE_FIELDS,
@@ -232,8 +225,7 @@ class ReportDataContext:
                 context='latex',
             ),
             'atom_site_aniso': [
-                self._atom_site_aniso_context(aniso_site)
-                for aniso_site in aniso_sites
+                self._atom_site_aniso_context(aniso_site) for aniso_site in aniso_sites
             ],
             'atom_site_aniso_display': _display_field_metadata(
                 aniso_sites[0] if aniso_sites else None,
@@ -457,8 +449,7 @@ def _display_field_metadata(
 ) -> dict[str, dict[str, str]]:
     """Return display labels and units for a fixed field list."""
     return {
-        field: _display_metadata(_safe_attr(owner, field), context=context)
-        for field in fields
+        field: _display_metadata(_safe_attr(owner, field), context=context) for field in fields
     }
 
 
@@ -569,9 +560,7 @@ def _collection_category_context(
     rows = [row for row in rows if _loop_row_has_report_values(row)]
     if truncate:
         rows = _truncate_loop_rows(rows)
-    scalar_rows = _defined_descriptor_rows(
-        _descriptor_rows(category.scalar_descriptors)
-    )
+    scalar_rows = _defined_descriptor_rows(_descriptor_rows(category.scalar_descriptors))
     _mark_numeric_columns(columns, rows)
     _apply_cell_number_alignment(columns, rows)
     return {
@@ -609,11 +598,7 @@ def _loop_row_has_report_values(row: dict[str, object]) -> bool:
 
 def _loop_row_value_count(row: dict[str, object]) -> int:
     """Return the number of populated cells in a loop row."""
-    return sum(
-        1
-        for cell in row['cells']
-        if not _is_empty_value(cell['value'])
-    )
+    return sum(1 for cell in row['cells'] if not _is_empty_value(cell['value']))
 
 
 def _truncate_loop_rows(
@@ -635,8 +620,7 @@ def _ellipsis_loop_row(reference_row: dict[str, object]) -> dict[str, object]:
     """Return an ellipsis row matching a loop row shape."""
     cells = [{'value': '...', 'numeric': False, 'number': None}]
     cells.extend(
-        {'value': '', 'numeric': False, 'number': None}
-        for _ in reference_row['cells'][1:]
+        {'value': '', 'numeric': False, 'number': None} for _ in reference_row['cells'][1:]
     )
     return {'cells': cells}
 
@@ -660,10 +644,7 @@ def _estimated_loop_table_chars(
     for index, column in enumerate(columns):
         label_width = len(_plain_table_text(_column_display_label(column)))
         value_width = max(
-            (
-                len(_plain_table_text(row['cells'][index]['value']))
-                for row in rows
-            ),
+            (len(_plain_table_text(row['cells'][index]['value'])) for row in rows),
             default=0,
         )
         widths.append(max(label_width, value_width) + 4)
@@ -694,8 +675,7 @@ def _collection_columns(
     if not items:
         return []
     return [
-        _column_context(parameter)
-        for parameter in _collection_loop_parameters(category, items[0])
+        _column_context(parameter) for parameter in _collection_loop_parameters(category, items[0])
     ]
 
 
@@ -738,23 +718,18 @@ def _descriptor_rows(
     rows = []
     for parameter in parameters:
         value = _display_value(parameter)
-        rows.append(
-            {
-                'name': parameter.name,
-                'label': _display_label(parameter, context='html'),
-                'latex_label': _display_label(parameter, context='latex'),
-                'html_label': _html_label(parameter),
-                'units': _display_units(_descriptor_units(parameter, context='html')),
-                'latex_units': _display_units(
-                    _descriptor_units(parameter, context='latex')
-                ),
-                'html_units': _html_units(parameter),
-                'value': value,
-                'numeric': _descriptor_is_numeric(parameter)
-                and _is_numeric_value(value),
-                'number': None,
-            }
-        )
+        rows.append({
+            'name': parameter.name,
+            'label': _display_label(parameter, context='html'),
+            'latex_label': _display_label(parameter, context='latex'),
+            'html_label': _html_label(parameter),
+            'units': _display_units(_descriptor_units(parameter, context='html')),
+            'latex_units': _display_units(_descriptor_units(parameter, context='latex')),
+            'html_units': _html_units(parameter),
+            'value': value,
+            'numeric': _descriptor_is_numeric(parameter) and _is_numeric_value(value),
+            'number': None,
+        })
     _apply_row_number_alignment(rows)
     return rows
 
@@ -781,9 +756,7 @@ def _mark_numeric_columns(
     """Mark each loop column that can use numeric alignment."""
     for index, column in enumerate(columns):
         column_values = [row['cells'][index]['value'] for row in rows]
-        is_numeric = bool(column['numeric_candidate']) and _values_are_numeric(
-            column_values
-        )
+        is_numeric = bool(column['numeric_candidate']) and _values_are_numeric(column_values)
         column['numeric'] = is_numeric
         if is_numeric:
             column['table_format'] = _siunitx_table_format(column_values)
@@ -867,9 +840,7 @@ def _siunitx_number_parts(value: object) -> dict[str, object] | None:
 
 def _apply_row_number_alignment(rows: list[dict[str, object]]) -> None:
     """Add HTML decimal-alignment metadata to key-value rows."""
-    number_parts = [
-        _number_parts(row['value']) if row['numeric'] else None for row in rows
-    ]
+    number_parts = [_number_parts(row['value']) if row['numeric'] else None for row in rows]
     left_ch, right_ch = _number_widths(number_parts)
     for row, parts in zip(rows, number_parts, strict=True):
         row['number'] = _number_context(parts, left_ch, right_ch)
@@ -883,9 +854,7 @@ def _apply_cell_number_alignment(
     for index, column in enumerate(columns):
         if not column['numeric']:
             continue
-        number_parts = [
-            _number_parts(row['cells'][index]['value']) for row in rows
-        ]
+        number_parts = [_number_parts(row['cells'][index]['value']) for row in rows]
         left_ch, right_ch = _number_widths(number_parts)
         column['number_left_ch'] = left_ch
         column['number_right_ch'] = right_ch
@@ -963,9 +932,7 @@ def _number_text(value: object) -> str:
 def _values_are_numeric(values: Iterable[object]) -> bool:
     """Return whether all populated values are numeric."""
     populated_values = [value for value in values if not _is_empty_value(value)]
-    return bool(populated_values) and all(
-        _is_numeric_value(value) for value in populated_values
-    )
+    return bool(populated_values) and all(_is_numeric_value(value) for value in populated_values)
 
 
 def _rows_have_numeric_values(rows: Iterable[dict[str, object]]) -> bool:
@@ -1083,7 +1050,8 @@ def _degree_unit_math(value: str) -> str:
 def _plain_unit_text(value: str) -> str:
     """Return plain unit text normalized for report display."""
     return (
-        value.replace('degrees_squared', 'deg^2')
+        value
+        .replace('degrees_squared', 'deg^2')
         .replace('degree_squared', 'deg^2')
         .replace('degrees squared', 'deg^2')
         .replace('degree squared', 'deg^2')
