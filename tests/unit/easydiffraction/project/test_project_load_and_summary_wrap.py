@@ -23,30 +23,3 @@ def test_project_load_reads_project_info(tmp_path):
     assert loaded.info.title == 'My Title'
     assert loaded.info.description == 'A description'
     assert loaded.info.path is not None
-
-
-def test_report_show_project_info_wraps_description(capsys):
-    from easydiffraction.project.categories.report.default import Report
-
-    long_desc = ' '.join(['desc'] * 50)  # long text to trigger wrapping
-
-    class Info:
-        title = 'T'
-        description = long_desc
-
-    class Project:
-        def __init__(self):
-            self.info = Info()
-
-    report = Report()
-    report._parent = Project()
-    report.show_project_info()
-    out = capsys.readouterr().out
-    # Title and Description paragraph headers present
-    assert 'PROJECT INFO' in out
-    assert 'Title' in out
-    assert 'Description' in out
-    # Ensure multiple lines of description were printed (wrapped)
-    # Keep the exact word count and verify the presence of line breaks in the description block
-    assert out.count('desc') == 50  # all words are present exactly once
-    assert '\ndesc ' in out or ' desc\n' in out  # wrapped across lines

@@ -4,31 +4,6 @@
 """Integration tests for report generation and CIF export."""
 
 
-def test_show_report(lbco_fitted_project):
-    project = lbco_fitted_project
-    project.report.show_report()
-
-
-def test_show_project_info(lbco_fitted_project):
-    project = lbco_fitted_project
-    project.report.show_project_info()
-
-
-def test_show_crystallographic_data(lbco_fitted_project):
-    project = lbco_fitted_project
-    project.report.show_crystallographic_data()
-
-
-def test_show_experimental_data(lbco_fitted_project):
-    project = lbco_fitted_project
-    project.report.show_experimental_data()
-
-
-def test_show_fitting_details(lbco_fitted_project):
-    project = lbco_fitted_project
-    project.report.show_fitting_details()
-
-
 def test_report_save(lbco_fitted_project, tmp_path):
     project = lbco_fitted_project
     project.save_as(str(tmp_path / 'proj'))

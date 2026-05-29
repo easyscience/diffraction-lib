@@ -20,19 +20,16 @@ The report includes key details such as:
 - Graphical representation – Visualization of experimental vs.
   calculated diffraction patterns.
 
-## Viewing the Report
+## Saving the Report
 
-Users can print the report using:
+Reports are written to disk rather than printed. Call a per-format
+method directly, or enable formats on `project.report` (see below) so
+the next `project.save()` writes them:
 
 ```python
-# Generate and print the report
-project.report.show_report()
+# Write an HTML report immediately
+project.report.save_html()
 ```
-
-<!--
-This command will display a structured report of the analysis results,
-including model parameters, fit statistics, and data visualizations.
--->
 
 ## Configuring Saved Reports
 

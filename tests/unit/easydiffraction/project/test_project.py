@@ -80,7 +80,6 @@ def test_project_exposes_chart_table_and_display_facades():
     assert isinstance(project.display, ProjectDisplay)
     assert isinstance(project.report, Report)
     assert hasattr(project.report, 'save')
-    assert hasattr(project.report, 'show_report')
 
 
 def test_apply_params_from_csv_resolves_relative_file_paths(tmp_path):
