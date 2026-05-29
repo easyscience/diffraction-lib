@@ -7,6 +7,7 @@ from __future__ import annotations
 import pathlib
 import re
 from dataclasses import dataclass
+from functools import cache
 from typing import TYPE_CHECKING
 from typing import NoReturn
 
@@ -34,6 +35,16 @@ class ReportCheckResult:
     def ok(self) -> bool:
         """Return whether the validation pass found no errors."""
         return not self.errors
+
+
+@dataclass(frozen=True)
+class _DictionaryCache:
+    """Parsed dictionary state for generated-CIF validation."""
+
+    paths: tuple[pathlib.Path, ...]
+    documents: tuple[gemmi.cif.Document, ...]
+    load_errors: tuple[str, ...]
+    tags: frozenset[str]
 
 
 def check_report(
@@ -156,7 +167,7 @@ def _unknown_tag_warnings(
     return [f'Unknown IUCr tag: {tag}' for tag in unknown_tags]
 
 
-def _unknown_tag_errors(content: str, known_tags: set[str]) -> list[str]:
+def _unknown_tag_errors(content: str, known_tags: frozenset[str]) -> list[str]:
     """Return unknown-tag diagnostics from CIF content."""
     if not known_tags:
         return []
@@ -179,11 +190,18 @@ def _known_dictionary_tags(dictionary_paths: tuple[pathlib.Path, ...]) -> set[st
     return tags
 
 
-_CACHED_DICTIONARY_PATHS = _dictionary_paths(None)
-_CACHED_DICTIONARY_DOCUMENTS, _CACHED_DICTIONARY_LOAD_ERRORS = (
-    _read_dictionary_documents(_CACHED_DICTIONARY_PATHS)
-)
-_CACHED_DICTIONARY_TAGS = _known_dictionary_tags(_CACHED_DICTIONARY_PATHS)
+@cache
+def _cached_dictionaries() -> _DictionaryCache:
+    """Return lazily loaded dictionary state for writer validation."""
+    dictionary_paths = _dictionary_paths(None)
+    dictionary_documents, load_errors = _read_dictionary_documents(dictionary_paths)
+    dictionary_tags = frozenset(_known_dictionary_tags(dictionary_paths))
+    return _DictionaryCache(
+        paths=dictionary_paths,
+        documents=dictionary_documents,
+        load_errors=load_errors,
+        tags=dictionary_tags,
+    )
 
 
 def _validate_iucr_cif(content: str) -> None:
@@ -194,11 +212,12 @@ def _validate_iucr_cif(content: str) -> None:
         _raise_writer_error(f'Failed to parse generated IUCr CIF: {exc}')
 
     diagnostics: list[str] = []
-    if _CACHED_DICTIONARY_DOCUMENTS:
+    dictionary_cache = _cached_dictionaries()
+    if dictionary_cache.documents:
         diagnostics.extend(
-            _gemmi_dictionary_errors(document, _CACHED_DICTIONARY_DOCUMENTS)
+            _gemmi_dictionary_errors(document, dictionary_cache.documents)
         )
-        diagnostics.extend(_unknown_tag_errors(content, _CACHED_DICTIONARY_TAGS))
+        diagnostics.extend(_unknown_tag_errors(content, dictionary_cache.tags))
 
     if diagnostics:
         _raise_writer_error('\n'.join(diagnostics))
