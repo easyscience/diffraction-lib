@@ -8,6 +8,7 @@ def test_report_save(lbco_fitted_project, tmp_path):
     project = lbco_fitted_project
     project.save_as(str(tmp_path / 'proj'))
     project.report.cif = True
+    project.report.html = False
     report_paths = project.report.save()
     report_path = report_paths[0]
 
