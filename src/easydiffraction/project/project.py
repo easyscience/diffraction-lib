@@ -27,7 +27,6 @@ from easydiffraction.project.categories.publication import Publication
 from easydiffraction.project.categories.publication import PublicationFactory
 from easydiffraction.project.display import ProjectDisplay
 from easydiffraction.project.project_config import ProjectConfig
-from easydiffraction.report import Report
 from easydiffraction.utils.enums import VerbosityEnum
 from easydiffraction.utils.environment import resolve_artifact_path
 from easydiffraction.utils.logging import console
@@ -41,6 +40,7 @@ if TYPE_CHECKING:
     from easydiffraction.project.categories.table import Table
     from easydiffraction.project.categories.verbosity import Verbosity
     from easydiffraction.project.project_info import ProjectInfo
+    from easydiffraction.report import Report
 
 
 def _apply_csv_row_to_params(

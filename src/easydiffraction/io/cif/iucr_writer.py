@@ -776,8 +776,7 @@ def _write_loop(
 
     lines.append('loop_')
     lines.extend(tag_list)
-    for row in formatted_rows:
-        lines.append(f'  {" ".join(row)}')
+    lines.extend(f'  {" ".join(row)}' for row in formatted_rows)
 
 
 def _write_item(lines: list[str], tag: str, value: object) -> None:
@@ -800,18 +799,20 @@ def _section(lines: list[str], title: str) -> None:
 def _format_item_value(value: object) -> str:
     """Format a CIF item value for report output."""
     if _is_cif_descriptor(value):
-        return _format_descriptor_value(value)
-    if not isinstance(value, str):
-        return format_value(value)
-    if value in {'?', '.'}:
-        return value
-    if '\n' in value or len(value) > _TEXT_WRAP_WIDTH:
-        return _format_text_field(value)
-    if not value.strip():
-        return '?'
-    if _needs_quotes(value):
-        return _quote_string(value)
-    return value
+        formatted = _format_descriptor_value(value)
+    elif not isinstance(value, str):
+        formatted = format_value(value)
+    elif value in {'?', '.'}:
+        formatted = value
+    elif '\n' in value or len(value) > _TEXT_WRAP_WIDTH:
+        formatted = _format_text_field(value)
+    elif not value.strip():
+        formatted = '?'
+    elif _needs_quotes(value):
+        formatted = _quote_string(value)
+    else:
+        formatted = value
+    return formatted
 
 
 def _format_descriptor_value(value: object) -> str:

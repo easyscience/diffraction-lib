@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-import subprocess
+import subprocess  # noqa: S404
 
 
 def test_compile_pdf_runs_from_tex_dir_with_absolute_output(tmp_path, monkeypatch):

@@ -12,14 +12,17 @@ from __future__ import annotations
 import os
 import re
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import numpy as np
 
 from easydiffraction.analysis.calculators.base import CalculatorBase
 from easydiffraction.analysis.calculators.factory import CalculatorFactory
 from easydiffraction.core.metadata import TypeInfo
-from easydiffraction.datablocks.experiment.item.base import ExperimentBase
-from easydiffraction.datablocks.structure.item.base import Structure
+
+if TYPE_CHECKING:
+    from easydiffraction.datablocks.experiment.item.base import ExperimentBase
+    from easydiffraction.datablocks.structure.item.base import Structure
 
 
 def _open_pdffit_devnull() -> object:

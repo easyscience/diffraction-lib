@@ -21,7 +21,7 @@ def test_report_save_without_outputs_points_to_boolean_flags():
 
     report = Report()
 
-    with pytest.raises(ValueError) as exc_info:
+    with pytest.raises(ValueError, match='no formats enabled') as exc_info:
         report.save()
 
     message = str(exc_info.value)

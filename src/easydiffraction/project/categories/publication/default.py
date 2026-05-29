@@ -4,7 +4,7 @@
 
 from __future__ import annotations
 
-import pathlib
+from typing import TYPE_CHECKING
 
 from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
@@ -16,12 +16,15 @@ from easydiffraction.io.cif.handler import CifHandler
 from easydiffraction.project.categories.publication.factory import PublicationFactory
 from easydiffraction.project.publication_loader import load_publication
 
+if TYPE_CHECKING:
+    import pathlib
+
 
 class PublicationItemBase(CategoryItem):
     """Base for optional publication metadata scalar categories."""
 
+    @staticmethod
     def _optional_string(
-        self,
         *,
         name: str,
         cif_name: str,

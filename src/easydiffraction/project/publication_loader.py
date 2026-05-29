@@ -54,16 +54,16 @@ def _read_publication_data(path: pathlib.Path) -> Mapping[str, object]:
     """Read a publication metadata file by extension."""
     ext = path.suffix.lower()
     if ext == '.toml':
-        data = tomllib.loads(path.read_text())
+        data = tomllib.loads(path.read_text(encoding='utf-8'))
     elif ext == '.json':
-        data = json.loads(path.read_text())
+        data = json.loads(path.read_text(encoding='utf-8'))
     else:
         msg = f'Unsupported publication-info format: {ext}. Use .toml or .json.'
         raise ValueError(msg)
 
     if not isinstance(data, Mapping):
         msg = 'Publication-info file must contain a top-level object.'
-        raise ValueError(msg)
+        raise TypeError(msg)
     return data
 
 
@@ -94,13 +94,13 @@ def _keywords(value: object) -> list[str]:
         return []
     if not isinstance(value, list):
         msg = "Publication-info field 'body_keywords' must be a list of strings."
-        raise ValueError(msg)
+        raise TypeError(msg)
 
     keywords: list[str] = []
     for idx, keyword in enumerate(value):
         if not isinstance(keyword, str):
             msg = f"Publication-info field 'body_keywords[{idx}]' must be a string."
-            raise ValueError(msg)
+            raise TypeError(msg)
         keywords.append(keyword)
     return keywords
 
@@ -109,17 +109,18 @@ def _author_rows(value: object) -> list[dict[str, str | None]]:
     """Validate publication author rows from the publication file."""
     if not isinstance(value, list):
         msg = "Publication-info field 'authors' must be a list of objects."
-        raise ValueError(msg)
+        raise TypeError(msg)
 
     rows: list[dict[str, str | None]] = []
     for idx, row in enumerate(value):
         if not isinstance(row, Mapping):
             msg = f"Publication-info field 'authors[{idx}]' must be an object."
-            raise ValueError(msg)
+            raise TypeError(msg)
 
         for key in row:
             if key not in _AUTHOR_FIELDS:
-                raise ValueError(f'authors.{key}')
+                msg = f'authors.{key}'
+                raise ValueError(msg)
 
         rows.append({
             'name': _required_text(f'authors[{idx}].name', row.get('name')),
@@ -190,7 +191,9 @@ def load_publication(publication: Publication, path: str | pathlib.Path) -> None
     Raises
     ------
     ValueError
-        If the file extension, top-level shape, or any key is invalid.
+        If the file extension or any key is invalid.
+    TypeError
+        If the top-level shape or nested field shape is invalid.
     """
     data = _read_publication_data(pathlib.Path(path))
     updates, keywords, authors = _validate_publication_data(data)

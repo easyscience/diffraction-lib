@@ -3,8 +3,11 @@
 
 from __future__ import annotations
 
-import pathlib
 import sys
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import pathlib
 
 # Ensure UTF-8 output on all platforms (e.g. Windows with cp1252)
 if hasattr(sys.stdout, 'reconfigure'):

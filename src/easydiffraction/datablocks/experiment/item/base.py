@@ -511,7 +511,8 @@ class ScExperimentBase(ExperimentBase):
         """Return None because single-crystal data has no 1-D x axis."""
         return None
 
-    def fit_data_arrays(self) -> dict[str, np.ndarray | None]:
+    @staticmethod
+    def fit_data_arrays() -> dict[str, np.ndarray | None]:
         """Return no 1-D fit arrays for single-crystal experiments."""
         return {}
 

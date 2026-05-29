@@ -5,12 +5,15 @@
 from __future__ import annotations
 
 import os
-import pathlib
 import shutil
-import subprocess
+import subprocess  # noqa: S404
+from typing import TYPE_CHECKING
 
 from easydiffraction.report.tex_renderer import save_tex_report
 from easydiffraction.utils.logging import log
+
+if TYPE_CHECKING:
+    import pathlib
 
 _ENGINE_ORDER = ('tectonic', 'latexmk', 'pdflatex')
 _ENGINE_RUNTIME_FAILURE_MARKERS = (
@@ -18,6 +21,7 @@ _ENGINE_RUNTIME_FAILURE_MARKERS = (
     'event loop thread panicked',
     'Attempted to create a NULL object',
 )
+_MAX_COMPILER_DETAILS_LENGTH = 4000
 _INSTALL_HINT = """PDF skipped: no TeX engine on PATH.
 Install one with:
   pixi add tectonic
@@ -157,7 +161,7 @@ def _compile_pdf(
         compile_tex_path,
         compile_pdf_path.parent,
     )
-    result = subprocess.run(
+    result = subprocess.run(  # noqa: S603
         command,
         cwd=compile_tex_path.parent,
         env=_compile_environment(),
@@ -229,6 +233,6 @@ def _compiler_error_message(
 ) -> str:
     """Return a concise compiler failure message."""
     details = (result.stderr or result.stdout).strip()
-    if len(details) > 4000:
-        details = details[-4000:]
+    if len(details) > _MAX_COMPILER_DETAILS_LENGTH:
+        details = details[-_MAX_COMPILER_DETAILS_LENGTH:]
     return f"TeX engine '{engine_name}' failed while compiling '{tex_path}'.\n{details}"

@@ -33,8 +33,200 @@ _NO_REPORT_FORMATS_MESSAGE = (
 )
 
 
+class _ReportDisplayMixin:
+    """Console display methods for report categories."""
+
+    def show_report(self) -> None:
+        """Print a full project report covering all sections."""
+        self.show_project_info()
+        self.show_crystallographic_data()
+        self.show_experimental_data()
+        self.show_fitting_details()
+
+    def show_project_info(self) -> None:
+        """Print the project title and description."""
+        console.section('Project info')
+
+        console.paragraph('Title')
+        console.print(self.project.info.title)
+
+        if self.project.info.description:
+            console.paragraph('Description')
+            # log.print('\n'.join(wrap(self.project.info.description,
+            # width=80)))
+            # TODO: Fix the following lines
+            # Ensure description wraps with explicit newlines for tests
+            desc_lines = wrap(self.project.info.description, width=60)
+            # Use plain print to avoid Left padding that would break
+            # newline adjacency checks
+            print('\n'.join(desc_lines))
+
+    def show_crystallographic_data(self) -> None:
+        """Print crystallographic data for all phases."""
+        console.section('Crystallographic data')
+
+        for structure in self.project.structures.values():
+            console.paragraph('Phase datablock')
+            console.print(f'🧩 {structure.name}')
+
+            console.paragraph('Space group')
+            console.print(structure.space_group.name_h_m.value)
+
+            columns_headers = ['Parameter', 'Value', 'Uncertainty', 'Unit']
+            columns_alignment = ['left', 'right', 'right', 'left']
+            columns_data = [
+                self._fmt_row('a', structure.cell.length_a),
+                self._fmt_row('b', structure.cell.length_b),
+                self._fmt_row('c', structure.cell.length_c),
+                self._fmt_row('α', structure.cell.angle_alpha),  # noqa: RUF001
+                self._fmt_row('β', structure.cell.angle_beta),
+                self._fmt_row('γ', structure.cell.angle_gamma),  # noqa: RUF001
+            ]
+            render_table(
+                columns_headers=columns_headers,
+                columns_alignment=columns_alignment,
+                columns_data=columns_data,
+            )
+
+            console.paragraph('Atom sites')
+            columns_headers = [
+                'label',
+                'type',
+                'x',
+                'y',
+                'z',
+                'occ',
+                'Biso',
+            ]
+            columns_alignment = [
+                'left',
+                'left',
+                'right',
+                'right',
+                'right',
+                'right',
+                'right',
+            ]
+            atom_table = [
+                [
+                    site.label.value,
+                    site.type_symbol.value,
+                    f'{site.fract_x.value:.8f}',
+                    f'{site.fract_y.value:.8f}',
+                    f'{site.fract_z.value:.8f}',
+                    f'{site.occupancy.value:.8f}',
+                    f'{site.adp_iso.value:.8f}',
+                ]
+                for site in structure.atom_sites
+            ]
+            render_table(
+                columns_headers=columns_headers,
+                columns_alignment=columns_alignment,
+                columns_data=atom_table,
+            )
+
+    def show_experimental_data(self) -> None:
+        """Print experimental data for all experiments."""
+        console.section('Experiments')
+
+        for expt in self.project.experiments.values():
+            console.paragraph('Experiment datablock')
+            console.print(f'🔬 {expt.name}')
+
+            console.paragraph('Experiment type')
+            console.print(
+                f'{expt.type.sample_form.value}, '
+                f'{expt.type.radiation_probe.value}, '
+                f'{expt.type.beam_mode.value}, '
+                f'{expt.type.scattering_type.value}',
+            )
+
+            console.paragraph('Calculation engine')
+            console.print(f'{expt.calculator.type}')
+
+            if 'instrument' in expt._public_attrs():
+                if 'setup_wavelength' in expt.instrument._public_attrs():
+                    console.paragraph('Wavelength')
+                    console.print(f'{expt.instrument.setup_wavelength.value:.5f}')
+                if 'calib_twotheta_offset' in expt.instrument._public_attrs():
+                    console.paragraph('2θ offset')
+                    console.print(f'{expt.instrument.calib_twotheta_offset.value:.5f}')
+
+            if 'peak' in expt._public_attrs():
+                console.paragraph('Profile type')
+                console.print(expt.peak.type)
+
+            if 'peak' in expt._public_attrs():
+                if 'broad_gauss_u' in expt.peak._public_attrs():
+                    console.paragraph('Peak broadening (Gaussian)')
+                    columns_headers = ['Parameter', 'Value', 'Uncertainty', 'Unit']
+                    columns_alignment = ['left', 'right', 'right', 'left']
+                    columns_data = [
+                        self._fmt_row('U', expt.peak.broad_gauss_u),
+                        self._fmt_row('V', expt.peak.broad_gauss_v),
+                        self._fmt_row('W', expt.peak.broad_gauss_w),
+                    ]
+                    render_table(
+                        columns_headers=columns_headers,
+                        columns_alignment=columns_alignment,
+                        columns_data=columns_data,
+                    )
+                if 'broad_lorentz_x' in expt.peak._public_attrs():
+                    console.paragraph('Peak broadening (Lorentzian)')
+                    # TODO: Some headers capitalize, some don't -
+                    #  be consistent
+                    columns_headers = ['Parameter', 'Value', 'Uncertainty', 'Unit']
+                    columns_alignment = ['left', 'right', 'right', 'left']
+                    columns_data = [
+                        self._fmt_row('X', expt.peak.broad_lorentz_x),
+                        self._fmt_row('Y', expt.peak.broad_lorentz_y),
+                    ]
+                    render_table(
+                        columns_headers=columns_headers,
+                        columns_alignment=columns_alignment,
+                        columns_data=columns_data,
+                    )
+                if 'asym_empir_1' in expt.peak._public_attrs():
+                    console.paragraph('Asymmetry (Empirical)')
+                    columns_headers = ['Parameter', 'Value', 'Uncertainty', 'Unit']
+                    columns_alignment = ['left', 'right', 'right', 'left']
+                    columns_data = [
+                        self._fmt_row('p1', expt.peak.asym_empir_1),
+                        self._fmt_row('p2', expt.peak.asym_empir_2),
+                        self._fmt_row('p3', expt.peak.asym_empir_3),
+                        self._fmt_row('p4', expt.peak.asym_empir_4),
+                    ]
+                    render_table(
+                        columns_headers=columns_headers,
+                        columns_alignment=columns_alignment,
+                        columns_data=columns_data,
+                    )
+
+    def show_fitting_details(self) -> None:
+        """Print fitting details including engines and metrics."""
+        console.section('Fitting')
+
+        console.paragraph('Minimization engine')
+        console.print(self.project.analysis.minimizer.type)
+
+        console.paragraph('Fit quality')
+        columns_headers = ['metric', 'value']
+        columns_alignment = ['left', 'right']
+        fit_metrics = [
+            [
+                'Goodness-of-fit (reduced χ²)',
+                f'{self.project.analysis.fit_results.reduced_chi_square:.2f}',
+            ]
+        ]
+        render_table(
+            columns_headers=columns_headers,
+            columns_alignment=columns_alignment,
+            columns_data=fit_metrics,
+        )
+
+
 @ReportFactory.register
-class Report(CategoryItem):
+class Report(_ReportDisplayMixin, CategoryItem):
     """
     Generates reports and exports results from the project.
 
@@ -167,198 +359,6 @@ class Report(CategoryItem):
         units = parameter.resolve_display_units('gui')
         return [pretty_name, value, uncertainty, units]
 
-    # ------------------------------------------
-    #  Report Generation
-    # ------------------------------------------
-
-    def show_report(self) -> None:
-        """Print a full project report covering all sections."""
-        self.show_project_info()
-        self.show_crystallographic_data()
-        self.show_experimental_data()
-        self.show_fitting_details()
-
-    def show_project_info(self) -> None:
-        """Print the project title and description."""
-        console.section('Project info')
-
-        console.paragraph('Title')
-        console.print(self.project.info.title)
-
-        if self.project.info.description:
-            console.paragraph('Description')
-            # log.print('\n'.join(wrap(self.project.info.description,
-            # width=80)))
-            # TODO: Fix the following lines
-            # Ensure description wraps with explicit newlines for tests
-            desc_lines = wrap(self.project.info.description, width=60)
-            # Use plain print to avoid Left padding that would break
-            # newline adjacency checks
-            print('\n'.join(desc_lines))
-
-    def show_crystallographic_data(self) -> None:
-        """Print crystallographic data for all phases."""
-        console.section('Crystallographic data')
-
-        for structure in self.project.structures.values():
-            console.paragraph('Phase datablock')
-            console.print(f'🧩 {structure.name}')
-
-            console.paragraph('Space group')
-            console.print(structure.space_group.name_h_m.value)
-
-            columns_headers = ['Parameter', 'Value', 'Uncertainty', 'Unit']
-            columns_alignment = ['left', 'right', 'right', 'left']
-            columns_data = [
-                Report._fmt_row('a', structure.cell.length_a),
-                Report._fmt_row('b', structure.cell.length_b),
-                Report._fmt_row('c', structure.cell.length_c),
-                Report._fmt_row('α', structure.cell.angle_alpha),  # noqa: RUF001
-                Report._fmt_row('β', structure.cell.angle_beta),
-                Report._fmt_row('γ', structure.cell.angle_gamma),  # noqa: RUF001
-            ]
-            render_table(
-                columns_headers=columns_headers,
-                columns_alignment=columns_alignment,
-                columns_data=columns_data,
-            )
-
-            console.paragraph('Atom sites')
-            columns_headers = [
-                'label',
-                'type',
-                'x',
-                'y',
-                'z',
-                'occ',
-                'Biso',
-            ]
-            columns_alignment = [
-                'left',
-                'left',
-                'right',
-                'right',
-                'right',
-                'right',
-                'right',
-            ]
-            atom_table = [
-                [
-                    site.label.value,
-                    site.type_symbol.value,
-                    f'{site.fract_x.value:.8f}',
-                    f'{site.fract_y.value:.8f}',
-                    f'{site.fract_z.value:.8f}',
-                    f'{site.occupancy.value:.8f}',
-                    f'{site.adp_iso.value:.8f}',
-                ]
-                for site in structure.atom_sites
-            ]
-            render_table(
-                columns_headers=columns_headers,
-                columns_alignment=columns_alignment,
-                columns_data=atom_table,
-            )
-
-    def show_experimental_data(self) -> None:
-        """Print experimental data for all experiments."""
-        console.section('Experiments')
-
-        for expt in self.project.experiments.values():
-            console.paragraph('Experiment datablock')
-            console.print(f'🔬 {expt.name}')
-
-            console.paragraph('Experiment type')
-            console.print(
-                f'{expt.type.sample_form.value}, '
-                f'{expt.type.radiation_probe.value}, '
-                f'{expt.type.beam_mode.value}, '
-                f'{expt.type.scattering_type.value}',
-            )
-
-            console.paragraph('Calculation engine')
-            console.print(f'{expt.calculator.type}')
-
-            if 'instrument' in expt._public_attrs():
-                if 'setup_wavelength' in expt.instrument._public_attrs():
-                    console.paragraph('Wavelength')
-                    console.print(f'{expt.instrument.setup_wavelength.value:.5f}')
-                if 'calib_twotheta_offset' in expt.instrument._public_attrs():
-                    console.paragraph('2θ offset')
-                    console.print(f'{expt.instrument.calib_twotheta_offset.value:.5f}')
-
-            if 'peak' in expt._public_attrs():
-                console.paragraph('Profile type')
-                console.print(expt.peak.type)
-
-            if 'peak' in expt._public_attrs():
-                if 'broad_gauss_u' in expt.peak._public_attrs():
-                    console.paragraph('Peak broadening (Gaussian)')
-                    columns_headers = ['Parameter', 'Value', 'Uncertainty', 'Unit']
-                    columns_alignment = ['left', 'right', 'right', 'left']
-                    columns_data = [
-                        Report._fmt_row('U', expt.peak.broad_gauss_u),
-                        Report._fmt_row('V', expt.peak.broad_gauss_v),
-                        Report._fmt_row('W', expt.peak.broad_gauss_w),
-                    ]
-                    render_table(
-                        columns_headers=columns_headers,
-                        columns_alignment=columns_alignment,
-                        columns_data=columns_data,
-                    )
-                if 'broad_lorentz_x' in expt.peak._public_attrs():
-                    console.paragraph('Peak broadening (Lorentzian)')
-                    # TODO: Some headers capitalize, some don't -
-                    #  be consistent
-                    columns_headers = ['Parameter', 'Value', 'Uncertainty', 'Unit']
-                    columns_alignment = ['left', 'right', 'right', 'left']
-                    columns_data = [
-                        Report._fmt_row('X', expt.peak.broad_lorentz_x),
-                        Report._fmt_row('Y', expt.peak.broad_lorentz_y),
-                    ]
-                    render_table(
-                        columns_headers=columns_headers,
-                        columns_alignment=columns_alignment,
-                        columns_data=columns_data,
-                    )
-                if 'asym_empir_1' in expt.peak._public_attrs():
-                    console.paragraph('Asymmetry (Empirical)')
-                    columns_headers = ['Parameter', 'Value', 'Uncertainty', 'Unit']
-                    columns_alignment = ['left', 'right', 'right', 'left']
-                    columns_data = [
-                        Report._fmt_row('p1', expt.peak.asym_empir_1),
-                        Report._fmt_row('p2', expt.peak.asym_empir_2),
-                        Report._fmt_row('p3', expt.peak.asym_empir_3),
-                        Report._fmt_row('p4', expt.peak.asym_empir_4),
-                    ]
-                    render_table(
-                        columns_headers=columns_headers,
-                        columns_alignment=columns_alignment,
-                        columns_data=columns_data,
-                    )
-
-    def show_fitting_details(self) -> None:
-        """Print fitting details including engines and metrics."""
-        console.section('Fitting')
-
-        console.paragraph('Minimization engine')
-        console.print(self.project.analysis.minimizer.type)
-
-        console.paragraph('Fit quality')
-        columns_headers = ['metric', 'value']
-        columns_alignment = ['left', 'right']
-        fit_metrics = [
-            [
-                'Goodness-of-fit (reduced χ²)',
-                f'{self.project.analysis.fit_results.reduced_chi_square:.2f}',
-            ]
-        ]
-        render_table(
-            columns_headers=columns_headers,
-            columns_alignment=columns_alignment,
-            columns_data=fit_metrics,
-        )
-
     def save_cif(self) -> pathlib.Path:
         """
         Write the IUCr submission report.
@@ -375,7 +375,7 @@ class Report(CategoryItem):
         """
         return write_iucr_cif(self.project)
 
-    def save_html(self, offline: bool = False) -> pathlib.Path:
+    def save_html(self, *, offline: bool = False) -> pathlib.Path:
         """
         Write the HTML report.
 
@@ -393,7 +393,7 @@ class Report(CategoryItem):
 
         return save_html_report(self.project, self.data_context(), offline=offline)
 
-    def as_html(self, offline: bool = False) -> str:
+    def as_html(self, *, offline: bool = False) -> str:
         """
         Render the HTML report.
 
