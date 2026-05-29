@@ -15,12 +15,12 @@
 \usepackage{fourier}        % Utopia text + matching Fourier math
 \let\utopiarm\rmdefault     % save Utopia's roman code
 \usepackage{graphicx}       % \includegraphics for fit-quality figures
-\usepackage{adjustbox}      % max-width tables without upscaling
 \usepackage{siunitx}        % S columns: align numeric data on decimal
 \usepackage{float}          % [H] float placement
 \usepackage[table]{xcolor}  % row shading and rule colours
 \usepackage{titlesec}       % heading numbering, spacing and fonts
 \usepackage{paratype}       % PT Sans headings; bundled and portable
+\usepackage{longtable}      % multi-page loop tables (e.g. reflections)
 \usepackage{hyperref}       % \href links for software package names
 
 % --------------------------------------------------------------------
@@ -89,6 +89,25 @@
 {%- endmacro %}
 {% macro tex_software_name(role) -%}
 {% if role.url %}\href{ {{- role.url -}} }{ {{- role.name | tex -}} }{% else %}{{ role.name | tex }}{% endif %}
+{%- endmacro %}
+{% macro tex_loop_table(category) -%}
+{% if category.table_width == "full" %}\begingroup
+\setlength{\tabcolsep}{\ReportWideTableColSep}
+\footnotesize
+{% endif -%}
+\rowColorsWithHeader
+\begin{longtable}{|{{ category.colspec }}|}
+\hline
+{% for column in category.columns %}{% if column.numeric %}{{ tex_numeric_header(column, loop.first, loop.last) }}{% else %}{{ tex_category_header(column) }}{% endif %}{% if not loop.last %} & {% endif %}{% endfor %} \\
+\hline
+\endhead
+{% for row in category.rows %}
+{% for cell in row.cells %}{{ tex_category_cell(cell) }}{% if not loop.last %} & {% endif %}{% endfor %} \\
+{% endfor %}
+\hline
+\end{longtable}
+{% if category.table_width == "full" %}\endgroup
+{% endif -%}
 {%- endmacro %}
 
 \begin{document}
@@ -204,31 +223,7 @@ Minimizer & {{ tex_software_name(analysis.software.minimizer) }} & {{ analysis.s
 \end{table}
 {% endif %}
 {% if category.rows %}
-\begin{table}[H]
-\rowColorsWithHeader
-{% if category.table_width == "full" %}
-\begingroup
-\setlength{\tabcolsep}{\ReportWideTableColSep}
-\begin{adjustbox}{max width=\linewidth}
-\begin{tabular}{|{{ category.colspec }}|}
-{% else %}
-\begin{tabular}{|{{ category.colspec }}|}
-{% endif %}
-\hline
-{% for column in category.columns %}{% if column.numeric %}{{ tex_numeric_header(column, loop.first, loop.last) }}{% else %}{{ tex_category_header(column) }}{% endif %}{% if not loop.last %} & {% endif %}{% endfor %} \\
-\hline
-{% for row in category.rows %}
-{% for cell in row.cells %}{{ tex_category_cell(cell) }}{% if not loop.last %} & {% endif %}{% endfor %} \\
-{% endfor %}
-\hline
-{% if category.table_width == "full" %}
-\end{tabular}
-\end{adjustbox}
-\endgroup
-{% else %}
-\end{tabular}
-{% endif %}
-\end{table}
+{{ tex_loop_table(category) }}
 {% endif %}
 {% endif %}
 {% endfor %}
@@ -283,31 +278,7 @@ Measured and calculated fit for {{ experiment.id | tex }}.
 \end{table}
 {% endif %}
 {% if category.rows %}
-\begin{table}[H]
-\rowColorsWithHeader
-{% if category.table_width == "full" %}
-\begingroup
-\setlength{\tabcolsep}{\ReportWideTableColSep}
-\begin{adjustbox}{max width=\linewidth}
-\begin{tabular}{|{{ category.colspec }}|}
-{% else %}
-\begin{tabular}{|{{ category.colspec }}|}
-{% endif %}
-\hline
-{% for column in category.columns %}{% if column.numeric %}{{ tex_numeric_header(column, loop.first, loop.last) }}{% else %}{{ tex_category_header(column) }}{% endif %}{% if not loop.last %} & {% endif %}{% endfor %} \\
-\hline
-{% for row in category.rows %}
-{% for cell in row.cells %}{{ tex_category_cell(cell) }}{% if not loop.last %} & {% endif %}{% endfor %} \\
-{% endfor %}
-\hline
-{% if category.table_width == "full" %}
-\end{tabular}
-\end{adjustbox}
-\endgroup
-{% else %}
-\end{tabular}
-{% endif %}
-\end{table}
+{{ tex_loop_table(category) }}
 {% endif %}
 {% endif %}
 {% endfor %}

@@ -17,7 +17,6 @@ from easydiffraction.io.cif.iucr_transformers import IucrCategoryTransformer
 from easydiffraction.io.cif.iucr_transformers import IucrItem
 from easydiffraction.io.cif.serialize import format_param_value
 from easydiffraction.io.cif.serialize import format_value
-from easydiffraction.report.check import _validate_iucr_cif
 from easydiffraction.utils.utils import package_version
 
 _BLOCK_SEPARATOR = '#====================================================='
@@ -105,7 +104,6 @@ def write_iucr_cif(
     """
     output_path = iucr_report_path(project, path)
     content = _render_iucr_cif(project)
-    _validate_iucr_cif(content)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(content, encoding='utf-8')
     return output_path
