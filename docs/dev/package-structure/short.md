@@ -295,7 +295,6 @@
 │   │   └── 📁 tex
 │   │       └── 📁 styles
 │   ├── 📄 __init__.py
-│   ├── 📄 check.py
 │   ├── 📄 data_context.py
 │   ├── 📄 enums.py
 │   ├── 📄 fit_plot.py

@@ -22,7 +22,9 @@ from easydiffraction.io.cif.handler import CifHandler
 
 
 def _result_display_handler(label: str) -> DisplayHandler:
-    """Return a display handler with the same label for HTML and LaTeX."""
+    """
+    Return a display handler with the same label for HTML and LaTeX.
+    """
     return DisplayHandler(display_name=label, latex_name=label)
 
 

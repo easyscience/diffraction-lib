@@ -592,11 +592,15 @@ class Analysis(
         return package_version(package_name)
 
     def _software_package_name(self, engine: object) -> str:
-        """Return an engine's package name without minimizer settings."""
+        """
+        Return an engine's package name without minimizer settings.
+        """
         return self._type_info_tag(engine).split(' (')[0]
 
     def _software_values(self, engine: object) -> tuple[str, str | None, str | None]:
-        """Return package name, version, and URL for one software engine."""
+        """
+        Return package name, version, and URL for one software engine.
+        """
         name = self._software_package_name(engine)
         return name, self._software_version(name), getattr(engine, 'url', None)
 

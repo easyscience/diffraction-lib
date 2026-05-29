@@ -568,7 +568,6 @@
 │   │   ├── 📁 report
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
-│   │   │   │   ├── 🏷️ class _ReportDisplayMixin
 │   │   │   │   └── 🏷️ class Report
 │   │   │   └── 📄 factory.py
 │   │   │       └── 🏷️ class ReportFactory
@@ -605,10 +604,6 @@
 │   │   └── 📁 tex
 │   │       └── 📁 styles
 │   ├── 📄 __init__.py
-│   ├── 📄 check.py
-│   │   ├── 🏷️ class ReportCheckResult
-│   │   ├── 🏷️ class _DictionaryCache
-│   │   └── 🏷️ class _GemmiLogger
 │   ├── 📄 data_context.py
 │   │   └── 🏷️ class ReportDataContext
 │   ├── 📄 enums.py

@@ -787,21 +787,21 @@ The IUCr writer pass differs from the default writer:
 
 #### 2.5 Submission-side validation
 
-**Superseded (2026-05-30): the runtime writer self-check described
-below was removed.** The IUCr CIF writer no longer validates its own
-output against `cif_core.dic` / `cif_pow.dic`; `reports/<project>.cif`
-is written directly. Rationale:
+**Superseded (2026-05-30): the runtime writer self-check described below
+was removed.** The IUCr CIF writer no longer validates its own output
+against `cif_core.dic` / `cif_pow.dic`; `reports/<project>.cif` is
+written directly. Rationale:
 
 - The report CIF is our own deterministic output. Checking it at write
   time and raising `EasyDiffractionWriterError` ("…file a bug") turns a
   developer-side test concern into a user-facing failure that blocks a
   scientist's report over a defect only we can fix.
 - The check resolved dictionaries from `tmp/iucr-dicts/` under the
-  repository root. That path never resolves for a pip-installed user,
-  so the self-check was a silent no-op for everyone except a developer
-  who had manually placed the dictionaries — where it only produced
-  noise, because the current COMCIFS DDLm/CIF2 dictionaries do not
-  parse under the helper's gemmi + regex approach.
+  repository root. That path never resolves for a pip-installed user, so
+  the self-check was a silent no-op for everyone except a developer who
+  had manually placed the dictionaries — where it only produced noise,
+  because the current COMCIFS DDLm/CIF2 dictionaries do not parse under
+  the helper's gemmi + regex approach.
 - Spec compliance of the emitted tag set is maintained by authoring the
   writer against the COMCIFS reference dictionaries (the dotted-tag set
   is fixed in `iucr_writer.py`); a separate IUCr-server upload remains

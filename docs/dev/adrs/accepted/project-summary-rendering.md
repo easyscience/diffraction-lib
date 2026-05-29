@@ -514,12 +514,12 @@ project.save()
 
 **Scope split — what is validated and how:**
 
-| Output                   | Validation                                                         | Failure mode                                                                       |
-| ------------------------ | ------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
-| `reports/<project>.cif`  | none at write time                                                 | n/a — the report renders the data context; an IUCr-server upload is the spec-compliance check before submission |
-| `reports/<project>.html` | none at write time                                                 | n/a — HTML is a render of the data context, not a typed format                     |
-| `reports/tex/`           | none at write time                                                 | n/a — LaTeX errors surface at PDF-compile time, with the engine's message          |
-| `reports/<project>.pdf`  | TeX engine's own compilation (returns non-zero on error)           | engine-specific message; the `.tex` and `data/` CSVs are still written             |
+| Output                   | Validation                                               | Failure mode                                                                                                    |
+| ------------------------ | -------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `reports/<project>.cif`  | none at write time                                       | n/a — the report renders the data context; an IUCr-server upload is the spec-compliance check before submission |
+| `reports/<project>.html` | none at write time                                       | n/a — HTML is a render of the data context, not a typed format                                                  |
+| `reports/tex/`           | none at write time                                       | n/a — LaTeX errors surface at PDF-compile time, with the engine's message                                       |
+| `reports/<project>.pdf`  | TeX engine's own compilation (returns non-zero on error) | engine-specific message; the `.tex` and `data/` CSVs are still written                                          |
 
 The report CIF is the writer's own deterministic output, so it is
 written without a runtime dictionary self-check, and nothing in the
