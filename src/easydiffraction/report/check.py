@@ -14,6 +14,7 @@ from typing import NoReturn
 import gemmi
 
 from easydiffraction.core.errors import EasyDiffractionWriterError
+from easydiffraction.utils.logging import log
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -213,6 +214,12 @@ def _validate_iucr_cif(content: str) -> None:
 
     diagnostics: list[str] = []
     dictionary_cache = _cached_dictionaries()
+    if dictionary_cache.load_errors:
+        load_error_text = '\n'.join(dictionary_cache.load_errors)
+        log.warning(
+            'Generated IUCr CIF validation skipped one or more dictionaries:\n'
+            + load_error_text
+        )
     if dictionary_cache.documents:
         diagnostics.extend(
             _gemmi_dictionary_errors(document, dictionary_cache.documents)

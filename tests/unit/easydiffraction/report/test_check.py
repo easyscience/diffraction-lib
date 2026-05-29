@@ -41,6 +41,7 @@ def test_check_report_warns_for_unknown_non_extension_tags(tmp_path):
 def test_validate_iucr_cif_skips_unloadable_optional_dictionaries(monkeypatch):
     from easydiffraction.report import check as check_mod
 
+    warnings = []
     monkeypatch.setattr(
         check_mod,
         '_cached_dictionaries',
@@ -53,5 +54,17 @@ def test_validate_iucr_cif_skips_unloadable_optional_dictionaries(monkeypatch):
             tags=frozenset(),
         ),
     )
+    monkeypatch.setattr(
+        check_mod.log,
+        'warning',
+        staticmethod(lambda *parts: warnings.append(' '.join(parts))),
+    )
 
-    check_mod._validate_iucr_cif('data_test\n_audit.creation_method EasyDiffraction\n')
+    check_mod._validate_iucr_cif(
+        'data_test\n_audit.creation_method EasyDiffraction\n'
+    )
+
+    assert (
+        'Failed to load CIF dictionary tmp/iucr-dicts/cif_core.dic'
+        in warnings[0]
+    )
