@@ -148,6 +148,21 @@ def _compile_pdf(
     """
     Compile one TeX document with a discovered engine.
 
+    Parameters
+    ----------
+    engine : tuple[str, str]
+        Engine name and executable path.
+    tex_path : pathlib.Path
+        Path to the TeX file to compile.
+    pdf_path : pathlib.Path
+        Expected output PDF path.
+
+    Returns
+    -------
+    str | None
+        Runtime failure message for an engine-level crash, otherwise
+        ``None`` when compilation succeeds.
+
     Raises
     ------
     RuntimeError
