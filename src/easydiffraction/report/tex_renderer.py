@@ -17,10 +17,14 @@ from easydiffraction.report.fit_plot import fit_plot_axis_styles
 from easydiffraction.report.fit_plot import fit_plot_geometry
 from easydiffraction.report.fit_plot import fit_plot_ranges
 from easydiffraction.report.fit_plot import fit_plot_styles
+from easydiffraction.report.fit_plot import fit_scatter_geometry
+from easydiffraction.report.fit_plot import fit_scatter_ranges
+from easydiffraction.report.fit_plot import fit_scatter_style
 from easydiffraction.report.style import report_style_context
 
 _TEMPLATE_NAME = 'tex/report.tex.j2'
 _FIGURE_TEMPLATE_NAME = 'tex/figure.tex.j2'
+_FIGURE_SC_TEMPLATE_NAME = 'tex/figure_sc.tex.j2'
 _TEX_SPECIAL_CHARS = {
     '\\': r'\textbackslash{}',
     '&': r'\&',
@@ -214,31 +218,36 @@ def _write_fit_assets(
         fit_data = experiment.get('fit_data')
         if fit_data is None:
             continue
-        if _is_scatter_fit_data(fit_data):
-            # Single-crystal agreement scatter: PDF figure is a follow-up.
-            continue
         experiment_id = str(experiment.get('id') or 'experiment')
         source_experiment = project_experiments.get(experiment_id)
-        csv_path = _write_fit_csv(
-            experiment_id,
-            experiment,
-            source_experiment,
-            fit_data,
-            out_dir,
-        )
-        bragg_csvs = _write_bragg_csvs(
-            experiment_id,
-            experiment,
-            source_experiment,
-            fit_data,
-            out_dir,
-        )
-        figure_path = _write_fit_figure_tex(
-            experiment=experiment,
-            csv_path=csv_path,
-            bragg_csvs=bragg_csvs,
-            out_dir=out_dir,
-        )
+        if _is_scatter_fit_data(fit_data):
+            csv_path = _write_fit_scatter_csv(experiment_id, fit_data, out_dir)
+            figure_path = _write_fit_scatter_tex(
+                experiment=experiment,
+                csv_path=csv_path,
+                out_dir=out_dir,
+            )
+        else:
+            csv_path = _write_fit_csv(
+                experiment_id,
+                experiment,
+                source_experiment,
+                fit_data,
+                out_dir,
+            )
+            bragg_csvs = _write_bragg_csvs(
+                experiment_id,
+                experiment,
+                source_experiment,
+                fit_data,
+                out_dir,
+            )
+            figure_path = _write_fit_figure_tex(
+                experiment=experiment,
+                csv_path=csv_path,
+                bragg_csvs=bragg_csvs,
+                out_dir=out_dir,
+            )
         csv_paths[experiment_id] = f'data/{csv_path.name}'
         figure_paths[experiment_id] = f'data/{figure_path.stem}.pdf'
     return {'csv': csv_paths, 'figure': figure_paths}
@@ -327,6 +336,57 @@ def _write_fit_figure_tex(
         .render(
             **template_context,
         ),
+        encoding='utf-8',
+    )
+    return figure_path
+
+
+def _write_fit_scatter_csv(
+    expt_id: str,
+    fit_data: dict[str, object],
+    out_dir: pathlib.Path,
+) -> pathlib.Path:
+    """Write the single-crystal agreement-scatter CSV file."""
+    data_dir = out_dir / 'data'
+    data_dir.mkdir(parents=True, exist_ok=True)
+    csv_path = data_dir / _fit_csv_filename(expt_id)
+    meas = fit_data['series']['meas']
+    calc_values = list(fit_data['x']['values'])
+    su = meas.get('su')
+    su_values = list(su) if su is not None else [0.0] * len(calc_values)
+    columns = [
+        ('icalc', calc_values),
+        ('imeas', list(meas['values'])),
+        ('imeas_su', su_values),
+    ]
+    _write_csv(csv_path, expt_id, columns)
+    return csv_path
+
+
+def _write_fit_scatter_tex(
+    *,
+    experiment: dict[str, object],
+    csv_path: pathlib.Path,
+    out_dir: pathlib.Path,
+) -> pathlib.Path:
+    """Write one standalone single-crystal scatter TeX figure."""
+    data_dir = out_dir / 'data'
+    data_dir.mkdir(parents=True, exist_ok=True)
+    experiment_id = str(experiment.get('id') or 'experiment')
+    fit_data = experiment['fit_data']
+    figure_path = data_dir / f'{_safe_asset_stem(experiment_id)}.tex'
+    template_context = {
+        'experiment': experiment,
+        'fit_data': fit_data,
+        'csv_filename': csv_path.name,
+        'fit_csv': {'x': 'icalc', 'meas': 'imeas', 'meas_su': 'imeas_su'},
+        'geometry': fit_scatter_geometry(),
+        'ranges': fit_scatter_ranges(fit_data),
+        'axis_styles': fit_plot_axis_styles(),
+        'style': fit_scatter_style(),
+    }
+    figure_path.write_text(
+        _environment().get_template(_FIGURE_SC_TEMPLATE_NAME).render(**template_context),
         encoding='utf-8',
     )
     return figure_path

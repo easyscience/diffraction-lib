@@ -35,6 +35,8 @@ _FIGURE_AXIS_WIDTH_CM = 12.0
 _FIGURE_AXIS_HEIGHT_TO_WIDTH = 0.70
 _PGFPLOTS_MEASURED_MARKER_SIZE_PT = 0.75
 _PGFPLOTS_MEASURED_MARKER_LINE_WIDTH_PT = 0.0
+_PGFPLOTS_SC_MARKER_SIZE_PT = 2.0
+_PGFPLOTS_SC_MARKER_LINE_WIDTH_PT = 0.5
 _STYLE_SOURCE_KEYS = {
     'meas': 'meas',
     'bkg': 'bkg',
@@ -149,6 +151,51 @@ def fit_plot_axis_styles() -> dict[str, str]:
     }
 
 
+def fit_scatter_geometry() -> dict[str, float]:
+    """Return pgfplots geometry for the single-crystal scatter plot."""
+    return {
+        'axis_width_cm': _FIGURE_AXIS_WIDTH_CM,
+        'axis_height_cm': _FIGURE_AXIS_WIDTH_CM * _FIGURE_AXIS_HEIGHT_TO_WIDTH,
+    }
+
+
+def fit_scatter_ranges(fit_data: dict[str, Any]) -> dict[str, float]:
+    """Return x/y ranges and the y=x diagonal span for an SC scatter."""
+    x_values = _numeric_values(fit_data['x']['values'])
+    meas = fit_data['series']['meas']
+    y_values = _numeric_values(meas['values'])
+    su = meas.get('su')
+    if su is not None:
+        su_values = _numeric_values(su)
+        y_low = [value - error for value, error in zip(y_values, su_values)]
+        y_high = [value + error for value, error in zip(y_values, su_values)]
+    else:
+        y_low = y_values
+        y_high = y_values
+
+    x_min, x_max = _padded_range(*_data_range([x_values]))
+    y_min, y_max = _padded_range(*_data_range([y_low, y_high]))
+    return {
+        'x_min': x_min,
+        'x_max': x_max,
+        'y_min': y_min,
+        'y_max': y_max,
+        'diag_min': min(x_min, y_min),
+        'diag_max': max(x_max, y_max),
+    }
+
+
+def fit_scatter_style() -> dict[str, Any]:
+    """Return the marker style for the single-crystal scatter plot."""
+    color = DEFAULT_COLORS['meas']
+    return {
+        'color_name': 'ed_meas',
+        'rgb': _rgb_channels(color),
+        'marker_size_pt': _PGFPLOTS_SC_MARKER_SIZE_PT,
+        'marker_line_width_pt': _PGFPLOTS_SC_MARKER_LINE_WIDTH_PT,
+    }
+
+
 def _fit_plot_style(key: str, source_key: str) -> dict[str, Any]:
     color = DEFAULT_COLORS[source_key]
     style = {
@@ -247,6 +294,14 @@ def _rgb_channels(color: str) -> str:
 def _style_rgb_channels(rgb: tuple[int, int, int]) -> str:
     """Return comma-separated channels for report style RGB colors."""
     return ','.join(str(channel) for channel in rgb)
+
+
+def _padded_range(minimum: float, maximum: float) -> tuple[float, float]:
+    """Return a range padded by the main-intensity margin fraction."""
+    margin = max(maximum - minimum, 0.0) * MAIN_INTENSITY_RANGE_MARGIN_FRACTION
+    if margin <= 0.0:
+        margin = 1.0
+    return minimum - margin, maximum + margin
 
 
 def _data_range(series_list: list[list[float]]) -> tuple[float, float]:
