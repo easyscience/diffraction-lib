@@ -208,7 +208,6 @@ class GenericDescriptorBase(GuardedBase):
         -------
         str
             Resolved display label.
-
         """
         self._validate_display_context(context)
         if self._display_handler is None:
@@ -230,7 +229,6 @@ class GenericDescriptorBase(GuardedBase):
         -------
         str
             Resolved display units.
-
         """
         self._validate_display_context(context)
         fallback = str(getattr(self, '_units', ''))

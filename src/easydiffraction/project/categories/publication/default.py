@@ -653,6 +653,5 @@ class Publication(CategoryOwner):
         ----------
         path : str | pathlib.Path
             File path ending in ``.toml`` or ``.json``.
-
         """
         load_publication(self, path)

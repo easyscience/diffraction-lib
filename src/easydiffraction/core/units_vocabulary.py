@@ -44,7 +44,6 @@ def normalize_units_code(code: str) -> str:
     -------
     str
         Canonical units code.
-
     """
     normalized = _LEGACY_UNITS_ALIASES.get(code, code)
     validate_units_code(normalized)

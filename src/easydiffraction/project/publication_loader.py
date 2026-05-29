@@ -187,7 +187,6 @@ def load_publication(publication: Publication, path: str | pathlib.Path) -> None
         Publication metadata facade to populate.
     path : str | pathlib.Path
         TOML or JSON file containing flat publication metadata keys.
-
     """
     data = _read_publication_data(pathlib.Path(path))
     updates, keywords, authors = _validate_publication_data(data)

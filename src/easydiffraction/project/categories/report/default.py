@@ -367,7 +367,6 @@ class Report(_ReportDisplayMixin, CategoryItem):
         -------
         pathlib.Path
             Path of the written report CIF.
-
         """
         return write_iucr_cif(self.project)
 
