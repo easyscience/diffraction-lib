@@ -1290,6 +1290,12 @@ the diff. Benchmark CSVs under `docs/dev/benchmarking/` produced by
 `pixi run script-tests` are untracked verification artifacts; do not
 stage them.
 
+Docstring convention for propagated exceptions: document exceptions in a
+`Raises` section where the function body raises them directly. For
+public wrappers that call lower-level helpers which may raise, keep the
+wrapper lint-clean under pydoclint's direct-raise rule and mention the
+propagation in prose only when it materially helps users.
+
 ## Suggested Pull Request
 
 **Title:**

@@ -60,6 +60,9 @@ def compile_pdf_report(tex_path: pathlib.Path) -> pathlib.Path:
     """
     Compile an existing TeX report bundle into a PDF report.
 
+    TeX compilation failures propagate from the lower-level compiler
+    helper as ``RuntimeError``.
+
     Parameters
     ----------
     tex_path : pathlib.Path
@@ -140,7 +143,15 @@ def _compile_pdf(
     tex_path: pathlib.Path,
     pdf_path: pathlib.Path,
 ) -> str | None:
-    """Compile one TeX document with a discovered engine."""
+    """
+    Compile one TeX document with a discovered engine.
+
+    Raises
+    ------
+    RuntimeError
+        If the TeX engine fails to compile the document or does not
+        write the expected PDF.
+    """
     engine_name, executable = engine
     compile_tex_path = tex_path.resolve()
     compile_pdf_path = pdf_path.resolve()
