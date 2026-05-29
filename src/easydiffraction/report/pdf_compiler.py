@@ -52,10 +52,6 @@ def save_pdf_report(
         Path of the PDF report, or the intended PDF path when no TeX
         engine is available.
 
-    Raises
-    ------
-    RuntimeError
-        If a discovered TeX engine fails to compile the report.
     """
     tex_path = save_tex_report(project, context)
     return compile_pdf_report(tex_path)
@@ -76,10 +72,6 @@ def compile_pdf_report(tex_path: pathlib.Path) -> pathlib.Path:
         Path of the PDF report, or the intended PDF path when no TeX
         engine is available.
 
-    Raises
-    ------
-    RuntimeError
-        If a discovered TeX engine fails to compile the report.
     """
     pdf_path = tex_path.parent.parent / f'{tex_path.stem}.pdf'
     pdf_path.unlink(missing_ok=True)

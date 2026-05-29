@@ -654,10 +654,5 @@ class Publication(CategoryOwner):
         path : str | pathlib.Path
             File path ending in ``.toml`` or ``.json``.
 
-        Raises
-        ------
-        ValueError
-            If the file extension, top-level shape, or any key is
-            invalid.
         """
         load_publication(self, path)

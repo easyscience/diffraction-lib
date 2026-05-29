@@ -188,12 +188,6 @@ def load_publication(publication: Publication, path: str | pathlib.Path) -> None
     path : str | pathlib.Path
         TOML or JSON file containing flat publication metadata keys.
 
-    Raises
-    ------
-    ValueError
-        If the file extension or any key is invalid.
-    TypeError
-        If the top-level shape or nested field shape is invalid.
     """
     data = _read_publication_data(pathlib.Path(path))
     updates, keywords, authors = _validate_publication_data(data)

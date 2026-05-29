@@ -45,10 +45,6 @@ def normalize_units_code(code: str) -> str:
     str
         Canonical units code.
 
-    Raises
-    ------
-    ValueError
-        If the normalized code is not a known units code.
     """
     normalized = _LEGACY_UNITS_ALIASES.get(code, code)
     validate_units_code(normalized)

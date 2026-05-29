@@ -368,10 +368,6 @@ class Report(_ReportDisplayMixin, CategoryItem):
         pathlib.Path
             Path of the written report CIF.
 
-        Raises
-        ------
-        EasyDiffractionWriterError
-            If the generated IUCr CIF fails validation.
         """
         return write_iucr_cif(self.project)
 
