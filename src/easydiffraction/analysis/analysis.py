@@ -90,14 +90,8 @@ _SOFTWARE_PACKAGE_BY_ENGINE = {
     'crysfml': 'crysfml',
     'pdffit': 'diffpy.pdffit2',
     'lmfit': 'lmfit',
-    'lmfit_leastsq': 'lmfit',
-    'lmfit_least_squares': 'lmfit',
     'dfols': 'dfols',
     'bumps': 'bumps',
-    'bumps_lm': 'bumps',
-    'bumps_amoeba': 'bumps',
-    'bumps_de': 'bumps',
-    'bumps_dream': 'bumps',
     'emcee': 'emcee',
 }
 
@@ -597,9 +591,13 @@ class Analysis(
             return None
         return package_version(package_name)
 
+    def _software_package_name(self, engine: object) -> str:
+        """Return an engine's package name without minimizer settings."""
+        return self._type_info_tag(engine).split(' (')[0]
+
     def _software_values(self, engine: object) -> tuple[str, str | None, str | None]:
-        """Return name, version, and URL for one software engine."""
-        name = self._type_info_tag(engine)
+        """Return package name, version, and URL for one software engine."""
+        name = self._software_package_name(engine)
         return name, self._software_version(name), getattr(engine, 'url', None)
 
     @staticmethod
