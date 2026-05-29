@@ -241,7 +241,7 @@ class GenericDescriptorBase(GuardedBase):
             If ``context`` is not a supported display context.
         """
         self._validate_display_context(context)
-        fallback = str(getattr(self, 'units', ''))
+        fallback = str(getattr(self, '_units', ''))
         if fallback == 'none':
             fallback = ''
         if self._display_handler is None:
