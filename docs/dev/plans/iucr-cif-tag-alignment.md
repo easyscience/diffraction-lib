@@ -389,7 +389,8 @@ generated-artifact exceptions.
     `_pd_meas.intensity_total`, `_pd_calc.intensity_total`,
     `_pd_proc.intensity_bkg_calc`, `_pd_proc_ls.weight`.
   - Powder reflections loop per §2.3d:
-    `_refln.{index_h/k/l, F_squared_meas, F_squared_calc, phase_calc, d_spacing}`.
+    `_refln.{index_h/k/l, F_squared_meas, F_squared_calc, d_spacing}`
+    plus `_pd_refln.phase_id` for the powder phase identifier.
   - Cross-block reference markers (`_pd_block_id`,
     `_pd_block_diffractogram_id`) emitted with pipe-delimited
     identifiers matching the §2.3 examples.

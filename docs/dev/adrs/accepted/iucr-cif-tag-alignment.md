@@ -640,12 +640,14 @@ _refln.index_k
 _refln.index_l
 _refln.F_squared_meas
 _refln.F_squared_calc
-_refln.phase_calc
+_pd_refln.phase_id
 _refln.d_spacing
 ```
 
 Column set adapted from the corpus content (`bal5001.cif`, `hb8206.cif`)
-with tag form taken from `cif_core.dic`.
+with tag form taken from `cif_core.dic` and `cif_pow.dic`. The phase
+identifier uses the powder dictionary's `_pd_refln.phase_id`; it is not
+the calculated structure-factor phase angle `_refln.phase_calc`.
 
 #### 2.3e Powder profile-data loop
 

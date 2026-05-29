@@ -317,6 +317,8 @@ def test_write_iucr_cif_emits_powder_cwl_blocks(tmp_path):
     assert 'data_powder_pwd_1' in text
     assert '_pd_meas.2theta_scan' in text
     assert '_pd_meas.time_of_flight' not in text
+    assert '_pd_refln.phase_id' in text
+    assert '_refln.phase_calc' not in text
     assert '_pd_proc.info_excluded_regions' in text
     assert '_easydiffraction_background.type' in text
 

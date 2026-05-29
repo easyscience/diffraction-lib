@@ -675,7 +675,7 @@ def _write_powder_refln_loop(lines: list[str], experiment: object) -> None:
             '_refln.index_l',
             '_refln.F_squared_meas',
             '_refln.F_squared_calc',
-            '_refln.phase_calc',
+            '_pd_refln.phase_id',
             '_refln.d_spacing',
         ),
         rows,
