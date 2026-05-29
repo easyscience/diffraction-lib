@@ -64,7 +64,7 @@ def test_save_configured_reuses_tex_bundle_for_pdf(tmp_path, monkeypatch):
     assert calls == ['tex', ('pdf', tex_path)]
 
 
-def test_save_configured_omits_missing_compiled_pdf(tmp_path, monkeypatch):
+def test_save_configured_returns_intended_missing_pdf(tmp_path, monkeypatch):
     from easydiffraction.project.categories.report.default import Report
     from easydiffraction.report import pdf_compiler
 
@@ -85,4 +85,4 @@ def test_save_configured_omits_missing_compiled_pdf(tmp_path, monkeypatch):
     monkeypatch.setattr(Report, 'save_tex', fake_save_tex)
     monkeypatch.setattr(pdf_compiler, 'compile_pdf_report', fake_compile_pdf_report)
 
-    assert report._save_configured() == [tex_path]
+    assert report._save_configured() == [tex_path, pdf_path]

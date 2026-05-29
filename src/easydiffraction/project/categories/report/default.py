@@ -495,6 +495,5 @@ class Report(CategoryItem):
                     )
 
                     pdf_path = compile_pdf_report(tex_path)
-                if pdf_path.is_file():
-                    report_paths.append(pdf_path)
+                report_paths.append(pdf_path)
         return report_paths
