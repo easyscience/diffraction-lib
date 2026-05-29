@@ -34,7 +34,13 @@ _NO_REPORT_FORMATS_MESSAGE = (
 
 
 class _ReportDisplayMixin:
-    """Console display methods for report categories."""
+    """
+    Console display methods separated from report persistence.
+
+    These methods stay on ``Report`` through inheritance, while the
+    persisted output configuration and file writers remain in the
+    concrete category class.
+    """
 
     def show_report(self) -> None:
         """Print a full project report covering all sections."""
