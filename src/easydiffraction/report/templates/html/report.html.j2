@@ -20,8 +20,21 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ project.title or project.name or "EasyDiffraction report" }}</title>
-  <style>{{ stylesheet | safe }}</style>
+  <title>{{ project.title or project.name or "EasyDiffraction Report" }}</title>
+  {% if not html_offline %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  {% endif %}
+  <style>
+    :root {
+      --ed-font-family: {{ report_style.html_font_family | safe }};
+      --ed-axis-color: {{ report_style.axis_hex }};
+      --ed-grid-color: {{ report_style.grid_hex }};
+      --ed-row-color: {{ report_style.row_hex }};
+    }
+    {{ stylesheet | safe }}
+  </style>
   {% if html_offline %}
   <script src="vendor/mathjax-tex-mml-chtml.js"></script>
   {% else %}
@@ -29,14 +42,15 @@
   {% endif %}
 </head>
 <body>
-  <main class="report-shell">
-    <header class="report-title">
-      <h1>{{ project.title or project.name or "EasyDiffraction report" }}</h1>
+  <main class="report-shell page">
+    <header class="report-title title">
+      <div class="t1">{{ report_style.subtitle }}</div>
+      <div class="t2">{{ project.title or project.name or "EasyDiffraction Report" }}</div>
     </header>
 
     {% if project.description %}
-    <section class="abstract-section">
-      <h2>Abstract</h2>
+    <section class="description-section">
+      <h2>Project Description</h2>
       <p>{{ project.description }}</p>
     </section>
     {% endif %}
@@ -101,7 +115,13 @@
 
     <section class="numbered-section">
       <h2>Refinement</h2>
-      <table class="key-value">
+      <table>
+        <thead>
+          <tr>
+            <th>Quantity</th>
+            <th>Value</th>
+          </tr>
+        </thead>
         <tbody>
           {% for row in refinement.rows %}
           <tr>
@@ -147,7 +167,7 @@
         {% endif %}
         {% if category.rows %}
         <div class="table-scroll">
-          <table>
+          <table{% if category.table_width == "full" %} class="wide-table"{% endif %}>
             <thead>
               <tr>
                 {% for column in category.columns %}
@@ -212,7 +232,7 @@
         {% endif %}
         {% if category.rows %}
         <div class="table-scroll">
-          <table>
+          <table{% if category.table_width == "full" %} class="wide-table"{% endif %}>
             <thead>
               <tr>
                 {% for column in category.columns %}

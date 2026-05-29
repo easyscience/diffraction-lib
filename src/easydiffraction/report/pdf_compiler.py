@@ -25,7 +25,7 @@ Install one with:
   # or any TeX Live distribution (latexmk / pdflatex)
 Then re-run project.save() with 'pdf' in project.report.formats or
 project.report.save_pdf().
-The .tex, data/, and styles/ bundle remains under reports/tex/."""
+The .tex and data/ bundle remains under reports/tex/."""
 
 
 def save_pdf_report(
@@ -135,7 +135,7 @@ def _figure_tex_paths(tex_path: pathlib.Path) -> list[pathlib.Path]:
     data_dir = tex_path.parent / 'data'
     if not data_dir.is_dir():
         return []
-    return sorted(data_dir.glob('fit_*.tex'))
+    return sorted(data_dir.glob('*.tex'))
 
 
 def _is_engine_runtime_failure(
@@ -194,7 +194,7 @@ def _warn_engine_runtime_failure(
     details = '\n\n'.join(failures)
     msg = (
         'PDF skipped: the TeX engine failed before LaTeX compilation. '
-        'The .tex, data/, and styles/ bundle remains under reports/tex/.\n'
+        'The .tex and data/ bundle remains under reports/tex/.\n'
         f'{details}'
     )
     log.warning(msg)
@@ -229,14 +229,9 @@ def _compile_command(
 
 
 def _compile_environment(tex_path: pathlib.Path) -> dict[str, str]:
-    """Return a TeX subprocess environment with vendored styles."""
-    environment = os.environ.copy()
-    styles_dir = tex_path.parent / 'styles'
-    if not styles_dir.is_dir():
-        styles_dir = tex_path.parent.parent / 'styles'
-    texinputs = environment.get('TEXINPUTS', '')
-    environment['TEXINPUTS'] = f'{styles_dir}{os.pathsep}{texinputs}'
-    return environment
+    """Return a TeX subprocess environment."""
+    del tex_path
+    return os.environ.copy()
 
 
 def _compiler_error_message(

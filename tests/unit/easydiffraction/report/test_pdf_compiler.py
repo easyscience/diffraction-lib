@@ -134,3 +134,18 @@ def test_compile_pdf_report_uses_fallback_after_runtime_failure(tmp_path, monkey
 
     assert pdf_compiler.compile_pdf_report(tex_path) == pdf_path
     assert pdf_path.is_file()
+
+
+def test_figure_tex_paths_use_experiment_named_assets(tmp_path):
+    from easydiffraction.report import pdf_compiler
+
+    tex_dir = tmp_path / 'reports' / 'tex'
+    data_dir = tex_dir / 'data'
+    data_dir.mkdir(parents=True)
+    tex_path = tex_dir / 'report.tex'
+    figure_path = data_dir / 'hrpt.tex'
+    bragg_csv_path = data_dir / 'hrpt_lbco.csv'
+    figure_path.write_text(r'\documentclass{standalone}', encoding='utf-8')
+    bragg_csv_path.write_text('_refln.two_theta\n1.0\n', encoding='utf-8')
+
+    assert pdf_compiler._figure_tex_paths(tex_path) == [figure_path]

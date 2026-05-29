@@ -41,7 +41,7 @@ class _TwoThetaDescriptor:
     @staticmethod
     def resolve_display_units(context):
         del context
-        return 'degree'
+        return 'deg'
 
 
 def _parameter(name, value, uncertainty):
@@ -156,6 +156,14 @@ def test_report_data_context_builds_fit_data():
     assert list(fit_data['series']['calc']['values']) == [10.0, 20.0]
     assert list(fit_data['series']['diff']['values']) == [1.0, -1.0]
     assert fit_data['bragg_tick_sets'] == ()
+    assert context['refinement']['rows'][3]['label'] == 'Constraints'
+    assert context['refinement']['rows'][3]['number'] == {
+        'left': '0',
+        'right': '',
+        'has_decimal': False,
+        'left_ch': 1,
+        'right_ch': 1,
+    }
 
 
 def test_report_data_context_builds_powder_bragg_tick_sets():
@@ -201,3 +209,242 @@ def test_report_data_context_preserves_structure_uncertainties():
     assert structure['atom_sites'][0]['fract_x'] == '11.985(31)'
     assert structure['atom_sites'][0]['adp_iso'] == '0.00658(14)'
     assert structure['atom_site_aniso'][0]['adp_12'] == '-0.00048(25)'
+
+
+def test_report_category_context_keeps_numeric_string_ids_as_text():
+    from easydiffraction.datablocks.experiment.categories.background.line_segment import (
+        LineSegmentBackground,
+    )
+    from easydiffraction.report.data_context import _collection_category_context
+
+    category = LineSegmentBackground()
+    category.create(id='10', x=10.0, y=2.0)
+    category.create(id='30', x=30.0, y=3.0)
+
+    context = _collection_category_context(category)
+
+    assert context['colspec'] == 'lS[table-format=2.0]S[table-format=1.0]'
+    assert [
+        (column['latex_label'], column['numeric'])
+        for column in context['columns']
+    ] == [
+        ('ID', False),
+        ('$x$', True),
+        ('Intensity', True),
+    ]
+    assert context['rows'][0]['cells'][1]['number'] == {
+        'left': '10',
+        'right': '',
+        'has_decimal': False,
+        'left_ch': 2,
+        'right_ch': 1,
+    }
+    assert context['rows'][0]['cells'][2]['number'] == {
+        'left': '2',
+        'right': '',
+        'has_decimal': True,
+        'left_ch': 1,
+        'right_ch': 1,
+    }
+
+
+def test_report_key_value_colspec_uses_numeric_table_format():
+    from easydiffraction.report.data_context import _key_value_colspec
+
+    rows = [
+        {'value': '11.985(31)', 'numeric': True},
+        {'value': '2.', 'numeric': True},
+        {'value': 'not refined', 'numeric': False},
+    ]
+
+    assert _key_value_colspec(rows) == 'lS[table-format=2.3(2)]'
+
+
+def test_report_loop_rows_skip_identifier_only_rows():
+    from easydiffraction.report.data_context import _loop_row_has_report_values
+
+    empty_row = {
+        'cells': [
+            {'value': '1'},
+            {'value': ''},
+            {'value': None},
+        ],
+    }
+    populated_row = {
+        'cells': [
+            {'value': '1'},
+            {'value': '10.5'},
+            {'value': None},
+        ],
+    }
+
+    assert not _loop_row_has_report_values(empty_row)
+    assert _loop_row_has_report_values(populated_row)
+
+
+def test_report_data_loop_rows_are_display_truncated():
+    from easydiffraction.report.data_context import _REPORT_LOOP_DISPLAY_LIMIT
+    from easydiffraction.report.data_context import _truncate_loop_rows
+
+    rows = [
+        {
+            'cells': [
+                {'value': str(index), 'numeric': False, 'number': None},
+                {'value': float(index), 'numeric': False, 'number': None},
+            ],
+        }
+        for index in range(_REPORT_LOOP_DISPLAY_LIMIT + 5)
+    ]
+
+    truncated = _truncate_loop_rows(rows)
+
+    assert len(truncated) == _REPORT_LOOP_DISPLAY_LIMIT + 1
+    assert truncated[0]['cells'][0]['value'] == '0'
+    assert truncated[9]['cells'][0]['value'] == '9'
+    assert truncated[10]['cells'][0]['value'] == '...'
+    assert truncated[10]['cells'][1]['value'] == ''
+    assert truncated[11]['cells'][0]['value'] == '15'
+    assert truncated[-1]['cells'][0]['value'] == '24'
+
+
+def test_report_pd_data_columns_use_compact_labels():
+    from easydiffraction.datablocks.experiment.categories.data.bragg_pd import (
+        PdCwlData,
+    )
+    from easydiffraction.report.data_context import _collection_category_context
+
+    category = PdCwlData()
+    category._create_items_set_xcoord_and_id(np.array([10.0]))
+
+    context = _collection_category_context(category)
+
+    assert [
+        (column['latex_label'], column['html_label'])
+        for column in context['columns']
+    ] == [
+        (r'$2\theta$', r'\(2\theta\)'),
+        ('ID', 'ID'),
+        (r'$d$', r'\(d\)'),
+        (r'$I_{\mathrm{meas}}$', r'\(I_{\mathrm{meas}}\)'),
+        (
+            r'$\sigma(I_{\mathrm{meas}})$',
+            r'\(\sigma(I_{\mathrm{meas}})\)',
+        ),
+        (r'$I_{\mathrm{calc}}$', r'\(I_{\mathrm{calc}}\)'),
+        (r'$I_{\mathrm{bkg}}$', r'\(I_{\mathrm{bkg}}\)'),
+        ('Status', 'Status'),
+    ]
+
+
+def test_report_powder_refln_columns_use_compact_labels():
+    from easydiffraction.analysis.calculators.base import PowderReflnRecord
+    from easydiffraction.datablocks.experiment.categories.refln.bragg_pd import (
+        PowderCwlReflnData,
+    )
+    from easydiffraction.report.data_context import _collection_category_context
+
+    category = PowderCwlReflnData()
+    category._replace_from_records(
+        [
+            PowderReflnRecord(
+                phase_id='phase',
+                d_spacing=1.0,
+                sin_theta_over_lambda=0.5,
+                index_h=1,
+                index_k=0,
+                index_l=1,
+                f_calc=2.0,
+                f_squared_calc=4.0,
+                two_theta=20.0,
+            )
+        ]
+    )
+
+    context = _collection_category_context(category)
+
+    assert [
+        (column['latex_label'], column['html_label'])
+        for column in context['columns']
+    ] == [
+        ('ID', 'ID'),
+        ('Phase', 'Phase'),
+        (r'$d$', r'\(d\)'),
+        (r'$\sin\theta/\lambda$', r'\(\sin\theta/\lambda\)'),
+        (r'$h$', r'\(h\)'),
+        (r'$k$', r'\(k\)'),
+        (r'$l$', r'\(l\)'),
+        (r'$F_{\mathrm{calc}}$', r'\(F_{\mathrm{calc}}\)'),
+        (r'$F^2_{\mathrm{calc}}$', r'\(F^2_{\mathrm{calc}}\)'),
+        (r'$2\theta$', r'\(2\theta\)'),
+    ]
+
+
+def test_report_number_parts_split_decimal_and_uncertainty_text():
+    from easydiffraction.report.data_context import _number_parts
+
+    assert _number_parts('0.584(20)') == {
+        'left': '0',
+        'right': '584(20)',
+        'has_decimal': True,
+    }
+    assert _number_parts('.5') == {
+        'left': '0',
+        'right': '5',
+        'has_decimal': True,
+    }
+    assert _number_parts('1.') == {
+        'left': '1',
+        'right': '',
+        'has_decimal': True,
+    }
+    assert _number_parts('1') == {
+        'left': '1',
+        'right': '',
+        'has_decimal': False,
+    }
+
+
+def test_report_descriptor_rows_normalize_angstrom_for_mathjax():
+    from easydiffraction.core.display_handler import DisplayHandler
+    from easydiffraction.core.validation import AttributeSpec
+    from easydiffraction.core.variable import Parameter
+    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.report.data_context import _descriptor_rows
+
+    parameter = Parameter(
+        name='adp_iso',
+        value_spec=AttributeSpec(default=0.0),
+        display_handler=DisplayHandler(
+            latex_name=r'$U_{\mathrm{iso}}$',
+            latex_units=r'\AA$^2$',
+        ),
+        cif_handler=CifHandler(names=['_atom_site.U_iso_or_equiv']),
+    )
+
+    rows = _descriptor_rows([parameter])
+
+    assert rows[0]['html_label'] == r'\(U_{\mathrm{iso}}\)'
+    assert rows[0]['html_units'] == r'\(\mathring{\mathrm{A}}^2\)'
+
+
+def test_report_descriptor_rows_preserve_mixed_mathjax_label_text():
+    from easydiffraction.core.display_handler import DisplayHandler
+    from easydiffraction.core.validation import AttributeSpec
+    from easydiffraction.core.variable import Parameter
+    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.report.data_context import _descriptor_rows
+
+    parameter = Parameter(
+        name='twotheta_offset',
+        value_spec=AttributeSpec(default=0.0),
+        display_handler=DisplayHandler(
+            latex_name=r'$2\theta$ offset',
+            latex_units=r'$^\circ$',
+        ),
+        cif_handler=CifHandler(names=['_instr.2theta_offset']),
+    )
+
+    rows = _descriptor_rows([parameter])
+
+    assert rows[0]['html_label'] == r'\(2\theta\) offset'
+    assert rows[0]['html_units'] == r'\(\mathrm{deg}\)'

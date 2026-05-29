@@ -17,6 +17,7 @@ from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
 from easydiffraction.display.plotters.plotly import PlotlyPlotter
 from easydiffraction.display.plotting import DEFAULT_BRAGG_ROW
 from easydiffraction.display.plotting import DEFAULT_RESID_HEIGHT
+from easydiffraction.report.style import report_style_context
 
 _TEMPLATE_NAME = 'html/report.html.j2'
 _MATHJAX_FILENAME = 'mathjax-tex-mml-chtml.js'
@@ -80,6 +81,7 @@ def render_html_report(
     """
     template_context = dict(context)
     template_context['html_offline'] = offline
+    template_context['report_style'] = report_style_context()
     template_context['stylesheet'] = _stylesheet_text()
     template_context['fit_figures'] = _fit_figure_html_context(
         context,
@@ -166,6 +168,7 @@ def _fit_figure_html_context(
 ) -> dict[str, str]:
     """Return fit figure HTML snippets by experiment id."""
     include_plotlyjs: bool | str = True if offline else 'cdn'
+    report_style = report_style_context()
     rendered: dict[str, str] = {}
     for experiment in _experiment_contexts(context):
         fit_data = experiment.get('fit_data')
@@ -176,6 +179,7 @@ def _fit_figure_html_context(
         rendered[experiment_id] = _figure_html(
             figure,
             include_plotlyjs=include_plotlyjs,
+            report_style=report_style,
         )
         include_plotlyjs = False
     return rendered
@@ -280,7 +284,12 @@ def _is_powder_bragg_context(experiment_type: object) -> bool:
     )
 
 
-def _figure_html(figure: object, *, include_plotlyjs: bool | str) -> str:
+def _figure_html(
+    figure: object,
+    *,
+    include_plotlyjs: bool | str,
+    report_style: dict[str, object],
+) -> str:
     """Return an HTML snippet for one figure-like object."""
     to_html = getattr(figure, 'to_html', None)
     if callable(to_html):
@@ -288,6 +297,8 @@ def _figure_html(figure: object, *, include_plotlyjs: bool | str) -> str:
             figure,
             include_plotlyjs=include_plotlyjs,
             force_template='plotly_white',
+            axis_frame_color=str(report_style['axis_hex']),
+            grid_color=str(report_style['chart_grid_hex']),
         )
     return str(figure)
 

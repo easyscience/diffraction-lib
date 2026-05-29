@@ -27,12 +27,12 @@ from easydiffraction.display.plotters.plotly import MEASURED_LINE_WIDTH
 from easydiffraction.display.plotters.plotly import PLOTLY_HEIGHT_PER_UNIT
 from easydiffraction.display.plotters.plotly import RESIDUAL_LINE_WIDTH
 from easydiffraction.display.plotting import DEFAULT_RESIDUAL_HEIGHT_FRACTION
+from easydiffraction.report.style import REPORT_AXIS_RGB
+from easydiffraction.report.style import REPORT_CHART_GRID_RGB
 
 _COLOR_PATTERN = re.compile(r'rgb\((\d+),\s*(\d+),\s*(\d+)\)')
 _FIGURE_AXIS_WIDTH_CM = 12.0
 _FIGURE_AXIS_HEIGHT_TO_WIDTH = 0.70
-_PLOTLY_GRID_RGB = '235,240,248'
-_PLOTLY_AXIS_RGB = '217,223,228'
 _PGFPLOTS_MEASURED_MARKER_SIZE_PT = 0.75
 _PGFPLOTS_MEASURED_MARKER_LINE_WIDTH_PT = 0.0
 _STYLE_SOURCE_KEYS = {
@@ -145,8 +145,8 @@ def fit_bragg_tick_styles() -> list[dict[str, str]]:
 def fit_plot_axis_styles() -> dict[str, str]:
     """Return Plotly-derived axis colors for report figures."""
     return {
-        'axis_rgb': _PLOTLY_AXIS_RGB,
-        'grid_rgb': _PLOTLY_GRID_RGB,
+        'axis_rgb': _style_rgb_channels(REPORT_AXIS_RGB),
+        'grid_rgb': _style_rgb_channels(REPORT_CHART_GRID_RGB),
     }
 
 
@@ -250,6 +250,11 @@ def _rgb_channels(color: str) -> str:
         msg = f"Unsupported Plotly RGB color '{color}'."
         raise ValueError(msg)
     return ','.join(match.groups())
+
+
+def _style_rgb_channels(rgb: tuple[int, int, int]) -> str:
+    """Return comma-separated channels for report style RGB colors."""
+    return ','.join(str(channel) for channel in rgb)
 
 
 def _data_range(series_list: list[list[float]]) -> tuple[float, float]:

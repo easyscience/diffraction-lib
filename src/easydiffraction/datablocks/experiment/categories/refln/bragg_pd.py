@@ -41,12 +41,20 @@ class PowderReflnBase(SingleCrystalRefln):
         self._phase_id = StringDescriptor(
             name='phase_id',
             description='Identifier of the linked phase for this reflection',
+            display_handler=DisplayHandler(
+                display_name='Phase',
+                latex_name='Phase',
+            ),
             value_spec=AttributeSpec(default=''),
             cif_handler=CifHandler(names=['_refln.phase_id']),
         )
         self._f_calc = NumericDescriptor(
             name='f_calc',
             description='Calculated structure-factor amplitude for this reflection',
+            display_handler=DisplayHandler(
+                display_name='Fcalc',
+                latex_name=r'$F_{\mathrm{calc}}$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0),
@@ -56,6 +64,10 @@ class PowderReflnBase(SingleCrystalRefln):
         self._f_squared_calc = NumericDescriptor(
             name='f_squared_calc',
             description='Calculated structure-factor amplitude squared for this reflection',
+            display_handler=DisplayHandler(
+                display_name='F^2calc',
+                latex_name=r'$F^2_{\mathrm{calc}}$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0),
@@ -139,6 +151,8 @@ class PowderTofRefln(PowderReflnBase):
             description='Calculated time-of-flight position for this reflection',
             units='microseconds',
             display_handler=DisplayHandler(
+                display_name='TOF',
+                latex_name='TOF',
                 display_units='μs',
                 latex_units=r'$\mu\mathrm{s}$',
             ),

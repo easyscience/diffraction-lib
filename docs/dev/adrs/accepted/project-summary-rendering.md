@@ -928,14 +928,37 @@ tables:
   `0.584(20)` and `3.89086937` align visually on the decimal
   marker without changing the original value text.
 - **Automatic section numbering via CSS counters.** HTML sections
-  are numbered like the PDF (`1`, `1.1`, `1.1.1`) using CSS
+  are numbered like the PDF (`1.`, `1.1.`, `1.1.1.`) using CSS
   counters. Numbers are presentation-only, so they stay correct if
-  sections are added or reordered. The document title and Abstract
-  are unnumbered, matching the LaTeX report.
-- **Three-rule tables with light zebra striping.** HTML and TeX
-  tables use only top, middle, and bottom rules. Body rows alternate
-  with a very light grey background starting at the first body row;
-  no per-row horizontal rules are drawn.
+  sections are added or reordered. The document title and Description
+  section are unnumbered, matching the LaTeX report.
+- **Framed tables with shared report colors.** HTML and TeX tables
+  have an outer frame and, for header tables, one rule below the
+  header. They do not draw separators between body rows or between
+  columns. The outer frame and the rule below header rows use the same
+  darker color as the fit-plot axis rectangle. Fit-plot inner grid
+  lines use the lighter Plotly-like grid color. The alternating row
+  background remains a separate, lighter report color. These colors are
+  defined once in report styling code and passed to HTML CSS, TeX
+  tables, and Plotly/pgfplots figures. Body rows alternate with the
+  first body row filled, regardless of whether the table has a header.
+- **Predictable table widths.** HTML and TeX key-value tables use at
+  least half of the available text width. Loop tables are classified
+  from their rendered content: compact loops use half width, while
+  wider loops use the full text width. This keeps small tables aligned
+  with each other while giving wide category loops enough room for
+  scientific values.
+- **Left-aligned report title, subtitle, and description.** Reports
+  render the project title as a left-aligned title, followed by a
+  smaller subtitle (`EasyDiffraction report`). The project
+  description is rendered as an unnumbered `Description` section,
+  not as publication metadata and not as a centered abstract block.
+- **Configurable free report font.** Report styling defines a single
+  font configuration. HTML uses a non-embedded local-font stack headed
+  by Nunito. TeX uses `fontspec` when the engine supports it, tries
+  Nunito for text and Fira Math for math, and otherwise falls back to
+  the TeX engine's bundled Latin Modern defaults. The PDF engine
+  embeds the fonts it uses.
 
 `reports/` is created lazily — only when at least one format is
 configured (or an ad-hoc method is called). A user iterating on
@@ -1415,8 +1438,8 @@ pgfplots.**
   HTML/Plotly path, mapped to TeX-native `\definecolor`,
   `line width`, legend, and `groupplot` options.
 - **`pgfplots` and `standalone` are on every modern TeX
-  distribution.** `tectonic` resolves both on demand from
-  CTAN; TeX Live and MiKTeX ship them. No extra vendoring.
+  distribution.** TeX Live and MiKTeX ship them. `tectonic` can
+  resolve them into its user cache when needed. No extra vendoring.
 
 **Caveats.**
 
@@ -1436,8 +1459,8 @@ or `pixi.lock`:
 
 - `tectonic` — pixi/conda package, lightweight TeX engine for
   §3.4 PDF compilation in the project dev environment.
-  `tectonic` auto-resolves `pgfplots` and any other
-  TeX-package dependency from CTAN on first use.
+  `tectonic` can resolve `pgfplots` and any other TeX-package
+  dependency from CTAN into its user cache.
 
 Neither `kaleido` nor a browser is a dependency. The earlier
 draft's `kaleido` + `chromium` chain is dropped wholesale.

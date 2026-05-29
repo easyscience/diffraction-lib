@@ -7,10 +7,10 @@ import numpy as np
 
 from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.metadata import CalculatorSupport
 from easydiffraction.core.metadata import Compatibility
 from easydiffraction.core.metadata import TypeInfo
-from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import RegexValidator
@@ -38,6 +38,10 @@ class Refln(CategoryItem):
         self._id = StringDescriptor(
             name='id',
             description='Identifier of the reflection',
+            display_handler=DisplayHandler(
+                display_name='ID',
+                latex_name='ID',
+            ),
             value_spec=AttributeSpec(
                 default='0',
                 # TODO: the following pattern is valid for dict key
@@ -52,7 +56,9 @@ class Refln(CategoryItem):
             description='Distance between lattice planes for this reflection',
             units='angstroms',
             display_handler=DisplayHandler(
+                display_name='d',
                 display_units='Å',
+                latex_name=r'$d$',
                 latex_units=r'\AA',
             ),
             value_spec=AttributeSpec(
@@ -66,7 +72,9 @@ class Refln(CategoryItem):
             description='The sin(θ)/λ value for this reflection',
             units='reciprocal_angstroms',
             display_handler=DisplayHandler(
+                display_name='sinθ/λ',
                 display_units='Å⁻¹',
+                latex_name=r'$\sin\theta/\lambda$',
                 latex_units=r'\AA$^{-1}$',
             ),
             value_spec=AttributeSpec(
@@ -78,6 +86,10 @@ class Refln(CategoryItem):
         self._index_h = NumericDescriptor(
             name='index_h',
             description='Miller index h of a measured reflection',
+            display_handler=DisplayHandler(
+                display_name='h',
+                latex_name=r'$h$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
@@ -87,6 +99,10 @@ class Refln(CategoryItem):
         self._index_k = NumericDescriptor(
             name='index_k',
             description='Miller index k of a measured reflection',
+            display_handler=DisplayHandler(
+                display_name='k',
+                latex_name=r'$k$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
@@ -96,6 +112,10 @@ class Refln(CategoryItem):
         self._index_l = NumericDescriptor(
             name='index_l',
             description='Miller index l of a measured reflection',
+            display_handler=DisplayHandler(
+                display_name='l',
+                latex_name=r'$l$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
@@ -105,6 +125,10 @@ class Refln(CategoryItem):
         self._intensity_meas = NumericDescriptor(
             name='intensity_meas',
             description=' The intensity of the reflection derived from the measurements.',
+            display_handler=DisplayHandler(
+                display_name='Imeas',
+                latex_name=r'$I_{\mathrm{meas}}$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0),
@@ -114,6 +138,10 @@ class Refln(CategoryItem):
         self._intensity_meas_su = NumericDescriptor(
             name='intensity_meas_su',
             description='Standard uncertainty of the measured intensity.',
+            display_handler=DisplayHandler(
+                display_name='s.u.(Imeas)',
+                latex_name=r'$\sigma(I_{\mathrm{meas}})$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0),
@@ -123,6 +151,10 @@ class Refln(CategoryItem):
         self._intensity_calc = NumericDescriptor(
             name='intensity_calc',
             description='Intensity of the reflection calculated from atom site data',
+            display_handler=DisplayHandler(
+                display_name='Icalc',
+                latex_name=r'$I_{\mathrm{calc}}$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0),
@@ -134,7 +166,9 @@ class Refln(CategoryItem):
             description='Mean wavelength of radiation for this reflection',
             units='angstroms',
             display_handler=DisplayHandler(
+                display_name='λ',
                 display_units='Å',
+                latex_name=r'$\lambda$',
                 latex_units=r'\AA',
             ),
             value_spec=AttributeSpec(

@@ -10,6 +10,7 @@ from datetime import UTC
 from datetime import datetime
 
 from easydiffraction.core.category import CategoryCollection
+from easydiffraction.core.datablock import DEFAULT_LOOP_DISPLAY_LIMIT
 from easydiffraction.core.variable import GenericDescriptorBase
 from easydiffraction.core.variable import IntegerDescriptor
 from easydiffraction.core.variable import NumericDescriptor
@@ -119,7 +120,9 @@ _PUBLICATION_AUTHOR_FIELDS = (
     'id_orcid',
     'id_iucr',
 )
-_EXPERIMENT_DATA_CATEGORY_CODES = frozenset({'pd_data', 'total_data', 'refln'})
+_REPORT_LOOP_DISPLAY_LIMIT = DEFAULT_LOOP_DISPLAY_LIMIT
+_FULL_WIDTH_TABLE_CHAR_LIMIT = 40
+_TRUNCATED_DATA_CATEGORY_CODES = frozenset({'pd_data', 'total_data'})
 _NUMERIC_TEXT_RE = re.compile(
     r'^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:\(\d+\))?(?:[eE][+-]?\d+)?$'
 )
@@ -310,7 +313,7 @@ class ReportDataContext:
             'fit_data': _fit_data_context(experiment),
             'categories': _category_contexts(
                 experiment,
-                skip_codes=_EXPERIMENT_DATA_CATEGORY_CODES,
+                truncate_codes=_TRUNCATED_DATA_CATEGORY_CODES,
             ),
         }
 
@@ -323,6 +326,12 @@ class ReportDataContext:
         free = fields.get('n_free_parameters')
         fixed = total - free if isinstance(total, int) and isinstance(free, int) else None
         constraints = len(list(_collection_values(_safe_attr(analysis, 'constraints'))))
+        rows = _refinement_rows(
+            fields=fields,
+            total=total,
+            free=free,
+            constraints=constraints,
+        )
         return {
             'fit_result': fields,
             'parameters': {
@@ -331,12 +340,8 @@ class ReportDataContext:
                 'fixed': fixed,
             },
             'constraints': constraints,
-            'rows': _refinement_rows(
-                fields=fields,
-                total=total,
-                free=free,
-                constraints=constraints,
-            ),
+            'rows': rows,
+            'colspec': _key_value_colspec(rows),
         }
 
     def _software_context(self) -> dict[str, object]:
@@ -499,16 +504,22 @@ def _category_contexts(
     owner: object,
     *,
     skip_codes: frozenset[str] | None = None,
+    truncate_codes: frozenset[str] | None = None,
 ) -> list[dict[str, object]]:
     """Return report rows for each public category on an owner."""
     if skip_codes is None:
         skip_codes = frozenset()
+    if truncate_codes is None:
+        truncate_codes = frozenset()
     categories = getattr(owner, 'categories', ())
     contexts = []
     for category in categories:
         if _skip_category(category, skip_codes):
             continue
-        context = _category_context(category)
+        context = _category_context(
+            category,
+            truncate=_category_code(category) in truncate_codes,
+        )
         if _category_has_content(context):
             contexts.append(context)
     return contexts
@@ -524,16 +535,16 @@ def _skip_category(category: object, skip_codes: frozenset[str]) -> bool:
     return bool(callable(skip) and skip())
 
 
-def _category_context(category: object) -> dict[str, object]:
+def _category_context(category: object, *, truncate: bool = False) -> dict[str, object]:
     """Return one generic category-rendering context."""
     if isinstance(category, CategoryCollection):
-        return _collection_category_context(category)
+        return _collection_category_context(category, truncate=truncate)
     return _item_category_context(category)
 
 
 def _item_category_context(category: object) -> dict[str, object]:
     """Return a non-loop category context."""
-    rows = _descriptor_rows(_category_parameters(category))
+    rows = _defined_descriptor_rows(_descriptor_rows(_category_parameters(category)))
     has_numeric_values = _rows_have_numeric_values(rows)
     return {
         'kind': 'item',
@@ -542,15 +553,25 @@ def _item_category_context(category: object) -> dict[str, object]:
         'rows': rows,
         'has_numeric_values': has_numeric_values,
         'value_column_numeric': has_numeric_values,
+        'colspec': _key_value_colspec(rows),
     }
 
 
-def _collection_category_context(category: CategoryCollection) -> dict[str, object]:
+def _collection_category_context(
+    category: CategoryCollection,
+    *,
+    truncate: bool = False,
+) -> dict[str, object]:
     """Return a loop-category context."""
     items = list(category.values())
     columns = _collection_columns(category, items)
     rows = [_collection_row(category, item, columns) for item in items]
-    scalar_rows = _descriptor_rows(category.scalar_descriptors)
+    rows = [row for row in rows if _loop_row_has_report_values(row)]
+    if truncate:
+        rows = _truncate_loop_rows(rows)
+    scalar_rows = _defined_descriptor_rows(
+        _descriptor_rows(category.scalar_descriptors)
+    )
     _mark_numeric_columns(columns, rows)
     _apply_cell_number_alignment(columns, rows)
     return {
@@ -559,9 +580,11 @@ def _collection_category_context(category: CategoryCollection) -> dict[str, obje
         'title': _category_title(category),
         'scalar_rows': scalar_rows,
         'scalar_has_numeric_values': _rows_have_numeric_values(scalar_rows),
+        'scalar_colspec': _key_value_colspec(scalar_rows),
         'columns': columns,
         'rows': rows,
-        'colspec': ''.join('S' if column['numeric'] else 'l' for column in columns),
+        'colspec': _loop_colspec(columns),
+        'table_width': _loop_table_width(columns, rows),
     }
 
 
@@ -570,6 +593,97 @@ def _category_has_content(context: dict[str, object]) -> bool:
     if context['kind'] == 'item':
         return bool(context['rows'])
     return bool(context['rows'] or context['scalar_rows'])
+
+
+def _defined_descriptor_rows(
+    rows: list[dict[str, object]],
+) -> list[dict[str, object]]:
+    """Return descriptor rows whose value column is populated."""
+    return [row for row in rows if not _is_empty_value(row['value'])]
+
+
+def _loop_row_has_report_values(row: dict[str, object]) -> bool:
+    """Return whether a loop row has more than an identifier value."""
+    return _loop_row_value_count(row) > 1
+
+
+def _loop_row_value_count(row: dict[str, object]) -> int:
+    """Return the number of populated cells in a loop row."""
+    return sum(
+        1
+        for cell in row['cells']
+        if not _is_empty_value(cell['value'])
+    )
+
+
+def _truncate_loop_rows(
+    rows: list[dict[str, object]],
+) -> list[dict[str, object]]:
+    """Return display-truncated loop rows with an ellipsis row."""
+    if len(rows) <= _REPORT_LOOP_DISPLAY_LIMIT:
+        return rows
+
+    half_limit = _REPORT_LOOP_DISPLAY_LIMIT // 2
+    return [
+        *rows[:half_limit],
+        _ellipsis_loop_row(rows[0]),
+        *rows[-half_limit:],
+    ]
+
+
+def _ellipsis_loop_row(reference_row: dict[str, object]) -> dict[str, object]:
+    """Return an ellipsis row matching a loop row shape."""
+    cells = [{'value': '...', 'numeric': False, 'number': None}]
+    cells.extend(
+        {'value': '', 'numeric': False, 'number': None}
+        for _ in reference_row['cells'][1:]
+    )
+    return {'cells': cells}
+
+
+def _loop_table_width(
+    columns: list[dict[str, object]],
+    rows: list[dict[str, object]],
+) -> str:
+    """Return the report width bucket for a loop table."""
+    if _estimated_loop_table_chars(columns, rows) > _FULL_WIDTH_TABLE_CHAR_LIMIT:
+        return 'full'
+    return 'half'
+
+
+def _estimated_loop_table_chars(
+    columns: list[dict[str, object]],
+    rows: list[dict[str, object]],
+) -> int:
+    """Return an approximate monospace width for loop content."""
+    widths = []
+    for index, column in enumerate(columns):
+        label_width = len(_plain_table_text(_column_display_label(column)))
+        value_width = max(
+            (
+                len(_plain_table_text(row['cells'][index]['value']))
+                for row in rows
+            ),
+            default=0,
+        )
+        widths.append(max(label_width, value_width) + 4)
+    return sum(widths)
+
+
+def _column_display_label(column: dict[str, object]) -> str:
+    """Return the preferred display label for width estimation."""
+    label = column.get('html_label') or column.get('label') or column.get('name')
+    units = column.get('html_units') or column.get('units')
+    if units:
+        return f'{label} ({units})'
+    return str(label)
+
+
+def _plain_table_text(value: object) -> str:
+    """Return approximate plain text for table width estimates."""
+    if value is None:
+        return ''
+    return str(value)
 
 
 def _collection_columns(
@@ -671,9 +785,84 @@ def _mark_numeric_columns(
             column_values
         )
         column['numeric'] = is_numeric
+        if is_numeric:
+            column['table_format'] = _siunitx_table_format(column_values)
         column.pop('numeric_candidate', None)
         for row in rows:
             row['cells'][index]['numeric'] = is_numeric
+
+
+def _loop_colspec(columns: list[dict[str, object]]) -> str:
+    """Return a TeX tabular column spec for loop-category tables."""
+    return ''.join(_loop_column_colspec(column) for column in columns)
+
+
+def _key_value_colspec(rows: list[dict[str, object]]) -> str:
+    """Return a TeX tabular column spec for key-value tables."""
+    if not _rows_have_numeric_values(rows):
+        return 'll'
+    values = [row['value'] for row in rows if row['numeric']]
+    return f'l{_numeric_colspec(values)}'
+
+
+def _loop_column_colspec(column: dict[str, object]) -> str:
+    """Return one TeX tabular column spec."""
+    if not column['numeric']:
+        return 'l'
+    table_format = column.get('table_format')
+    if table_format:
+        return _numeric_colspec_from_format(str(table_format))
+    return _numeric_colspec([])
+
+
+def _numeric_colspec(values: Iterable[object]) -> str:
+    """Return one compact siunitx numeric column spec."""
+    return _numeric_colspec_from_format(_siunitx_table_format(values))
+
+
+def _numeric_colspec_from_format(table_format: str) -> str:
+    """Return one siunitx column spec from a table-format value."""
+    return f'S[table-format={table_format}]'
+
+
+def _siunitx_table_format(values: Iterable[object]) -> str:
+    """Return a compact siunitx table-format for numeric values."""
+    parts = [
+        parts
+        for value in values
+        if not _is_empty_value(value)
+        for parts in [_siunitx_number_parts(value)]
+        if parts is not None
+    ]
+    if not parts:
+        return '1.0'
+
+    sign = '+' if any(part['has_sign'] for part in parts) else ''
+    integer_digits = max(int(part['integer_digits']) for part in parts)
+    fraction_digits = max(int(part['fraction_digits']) for part in parts)
+    uncertainty_digits = max(int(part['uncertainty_digits']) for part in parts)
+    table_format = f'{sign}{integer_digits}.{fraction_digits}'
+    if uncertainty_digits:
+        table_format = f'{table_format}({uncertainty_digits})'
+    return table_format
+
+
+def _siunitx_number_parts(value: object) -> dict[str, object] | None:
+    """Return table-format parts for one numeric value."""
+    match = _NUMBER_PARTS_RE.match(_number_text(value))
+    if match is None:
+        return None
+
+    integer = match.group('integer')
+    leading_fraction = match.group('leading_fraction')
+    fraction = match.group('fraction')
+    uncertainty = match.group('uncertainty') or ''
+    return {
+        'has_sign': bool(match.group('sign')),
+        'integer_digits': len(integer or '0'),
+        'fraction_digits': len(leading_fraction or fraction or ''),
+        'uncertainty_digits': len(uncertainty.strip('()')),
+    }
 
 
 def _apply_row_number_alignment(rows: list[dict[str, object]]) -> None:

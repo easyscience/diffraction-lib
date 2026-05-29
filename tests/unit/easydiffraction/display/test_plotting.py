@@ -843,7 +843,7 @@ def test_plot_posterior_predictive_summary_uses_consistent_labels_and_styles(mon
             best_sample_prediction=np.array([9.0, 10.0, 11.0]),
         ),
         y_meas=np.array([9.5, 10.5, 11.5]),
-        axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+        axes_labels=['2θ (deg)', 'Intensity (arb. units)'],
         show_band=True,
         show_draws=False,
     )
@@ -1046,7 +1046,7 @@ def test_plot_posterior_predictive_summary_routes_ascii_to_measured_and_map(monk
             draws=np.array([[8.5, 9.5, 10.5]]),
         ),
         y_meas=np.array([9.5, 10.5, 11.5]),
-        axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+        axes_labels=['2θ (deg)', 'Intensity (arb. units)'],
         show_band=True,
         show_draws=True,
         excluded_ranges=((1.2, 1.4),),

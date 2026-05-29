@@ -1168,6 +1168,56 @@ exceptions.
   - Commit:
     `Render category-driven reports with aligned tables`.
 
+- [x] **P1.27 — Harmonize report tables, colors, title, and fonts (ADR §2)**
+  - Files:
+    `docs/dev/adrs/accepted/project-summary-rendering.md`,
+    `docs/dev/plans/project-summary-rendering.md`,
+    `src/easydiffraction/display/plotters/plotly.py`,
+    `src/easydiffraction/report/data_context.py`,
+    `src/easydiffraction/report/fit_plot.py`,
+    `src/easydiffraction/report/html_renderer.py`,
+    `src/easydiffraction/report/style.py`,
+    `src/easydiffraction/report/templates/html/report.html.j2`,
+    `src/easydiffraction/report/templates/html/style.css`,
+    `src/easydiffraction/report/templates/tex/figure.tex.j2`,
+    `src/easydiffraction/report/templates/tex/report.tex.j2`,
+    `src/easydiffraction/report/tex_renderer.py`.
+  - Add report styling constants for the axis-frame color,
+    table-inner color, chart-grid color, row-fill color, subtitle,
+    HTML font stack, and TeX font choices. Feed those constants
+    into HTML CSS, Plotly report figure serialization, pgfplots
+    figures, and TeX table styles.
+  - Render HTML and TeX tables with an outer frame and, for header
+    tables, one header rule. The outer frame and header rule use the
+    darker shared axis-frame color; filled rows use the shared
+    row-fill color. Tables do not draw separators between columns or
+    between body rows.
+  - Keep the HTML and TeX row striping consistent: the first
+    body row is filled for both header and key-value tables.
+    Remove the extra TeX spacing around the line below header
+    rows by using framed tables plus a single colored header
+    rule instead of booktabs rules.
+  - Force key-value tables to occupy half of the text line. Classify
+    loop tables from their rendered content: compact loops occupy
+    half of the text line, and wider loops occupy the full text line.
+    Add `report_style` to the saved TeX report context so project
+    saves can render the configured font and color settings.
+  - Tighten HTML table line height to match the denser PDF
+    table rhythm.
+  - Add terminal dots to generated section numbers in both HTML
+    and TeX (`1.`, `1.1.`, `1.1.1.`).
+  - Render the report title and project description left-aligned.
+    Show the project description as an unnumbered `Description`
+    section, and show `EasyDiffraction report` as a smaller
+    subtitle under the main title.
+  - Configure free report fonts centrally: HTML uses a
+    non-embedded local font stack headed by Nunito; TeX uses
+    `fontspec` with Nunito and Fira Math when available, otherwise
+    leaving the engine's bundled Latin Modern defaults in place so
+    the generated PDF embeds the fonts it actually uses.
+  - Commit:
+    `Harmonize report table and title styling`.
+
 ## Test plan (Phase 2)
 
 Per AGENTS.md §Testing, every new module, class, and bug fix
@@ -1336,6 +1386,23 @@ running the verification commands below, add or update:
   columns on `S` alignment, emits readable labels/units, and
   sets the measured pgfplots legend marker color explicitly.
   P1.26 surface.
+- [ ] **`tests/unit/easydiffraction/report/test_html_renderer.py`**
+  (further extend) — **shared report styling (P1.27).**
+  Assert that the HTML report injects shared axis/grid/row color
+  CSS variables, uses dotted section-number counters, renders a
+  left-aligned subtitle and unnumbered `Description` section, emits
+  framed tables without column or body-row separators, sets compact
+  table line-height, and applies content-driven half/full table width
+  classes.
+- [ ] **`tests/unit/easydiffraction/report/test_tex_renderer.py`**
+  (further extend) — **shared report styling (P1.27).**
+  Assert that the TeX report defines the shared axis/grid/row
+  colors, uses framed half-width and full-width tables without inner
+  column separators, emits a colored header rule instead of booktabs or
+  body-row rules, adds terminal dots to section numbers, renders the
+  custom left-aligned title/subtitle and `Description` section,
+  includes the configured font setup, and passes `report_style`
+  through saved TeX report rendering.
 - [ ] **Wheel-packaging verification** — run
   `pixi run dist-build` and then
   `unzip -l dist/*.whl | grep -E 'mathjax|iucrjournals.cls|harvard.sty'`

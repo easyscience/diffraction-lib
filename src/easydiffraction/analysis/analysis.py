@@ -500,7 +500,7 @@ class _AnalysisPersistedCategoryAccessorsMixin:
 
     @property
     def software(self) -> Software:
-        """Software-provenance snapshot for the latest successful fit."""
+        """Software snapshot for the latest successful fit."""
         return self._software
 
 
@@ -1172,8 +1172,14 @@ class Analysis(
         categories.extend(self._fit_parameter_state_categories())
         if self._has_persisted_fit_state():
             categories.extend(self._fit_result_state_categories())
+        if self._has_software_provenance():
+            categories.append(self.software)
 
         return categories
+
+    def _has_software_provenance(self) -> bool:
+        """Return True when software provenance has been stamped."""
+        return any(parameter.value is not None for parameter in self.software.parameters)
 
     # ------------------------------------------------------------------
     #  Parameter helpers

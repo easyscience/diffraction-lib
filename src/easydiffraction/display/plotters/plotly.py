@@ -1002,6 +1002,8 @@ window.requestAnimationFrame(installLegendToggleButton);
         *,
         include_plotlyjs: bool | str,
         force_template: str | None = None,
+        axis_frame_color: str | None = None,
+        grid_color: str | None = None,
     ) -> str:
         """
         Serialize a Plotly figure with EasyDiffraction controls.
@@ -1014,6 +1016,10 @@ window.requestAnimationFrame(installLegendToggleButton);
             Plotly JavaScript inclusion mode passed to Plotly.
         force_template : str | None, default=None
             Optional template name applied before serialization.
+        axis_frame_color : str | None, default=None
+            Optional explicit axis-frame color.
+        grid_color : str | None, default=None
+            Optional explicit major-grid color.
 
         Returns
         -------
@@ -1022,10 +1028,15 @@ window.requestAnimationFrame(installLegendToggleButton);
         """
         if force_template is not None:
             fig.update_layout(template=force_template)
-            axis_frame_color = cls._axis_frame_color_for_template(force_template)
-            if axis_frame_color is not None:
-                fig.update_xaxes(linecolor=axis_frame_color)
-                fig.update_yaxes(linecolor=axis_frame_color)
+            resolved_axis_color = axis_frame_color
+            if resolved_axis_color is None:
+                resolved_axis_color = cls._axis_frame_color_for_template(force_template)
+            if resolved_axis_color is not None:
+                fig.update_xaxes(linecolor=resolved_axis_color)
+                fig.update_yaxes(linecolor=resolved_axis_color)
+            if grid_color is not None:
+                fig.update_xaxes(gridcolor=grid_color)
+                fig.update_yaxes(gridcolor=grid_color)
             legend_bgcolor = cls._legend_background_color_for_template(force_template)
             if legend_bgcolor is not None:
                 fig.update_layout(legend={'bgcolor': legend_bgcolor})

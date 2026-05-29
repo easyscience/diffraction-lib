@@ -11,6 +11,70 @@ def _field(label: str, units: str = '') -> dict[str, str]:
     return {'label': label, 'units': units}
 
 
+def _category_row(
+    name: str,
+    value: object,
+    *,
+    label: str | None = None,
+    html_label: str | None = None,
+    html_units: str = '',
+    numeric: bool = False,
+    number: dict[str, object] | None = None,
+) -> dict[str, object]:
+    return {
+        'name': name,
+        'label': label or name,
+        'html_label': html_label or label or name,
+        'html_units': html_units,
+        'value': value,
+        'numeric': numeric,
+        'number': number,
+    }
+
+
+def _category_column(
+    name: str,
+    *,
+    label: str | None = None,
+    html_label: str | None = None,
+    html_units: str = '',
+    numeric: bool = False,
+) -> dict[str, object]:
+    return {
+        'name': name,
+        'label': label or name,
+        'html_label': html_label or label or name,
+        'html_units': html_units,
+        'numeric': numeric,
+    }
+
+
+def _category_cell(
+    value: object,
+    *,
+    numeric: bool = False,
+    number: dict[str, object] | None = None,
+) -> dict[str, object]:
+    return {'value': value, 'numeric': numeric, 'number': number}
+
+
+def _number(
+    left: str,
+    right: str,
+    *,
+    has_decimal: bool = True,
+    left_ch: int = 1,
+    right_ch: int = 1,
+) -> dict[str, object]:
+    return {
+        'left': left,
+        'right': right,
+        'has_decimal': has_decimal,
+        'left_ch': left_ch,
+        'right_ch': right_ch,
+    }
+
+
 def _context() -> dict[str, object]:
     return {
         'project': {
@@ -38,6 +102,14 @@ def _context() -> dict[str, object]:
             },
             'parameters': {'free': 0, 'total': 0},
             'constraints': 0,
+            'rows': [
+                {
+                    'label': 'Reduced chi-square',
+                    'value': '1.23',
+                    'numeric': True,
+                    'number': _number('1', '23', right_ch=2),
+                },
+            ],
         },
         'software': {
             'framework': {'name': 'EasyDiffraction', 'version': '0.0'},
@@ -61,9 +133,9 @@ def _context() -> dict[str, object]:
                     'length_a': _field('a', 'A'),
                     'length_b': _field('b', 'A'),
                     'length_c': _field('c', 'A'),
-                    'angle_alpha': _field('alpha', 'degree'),
-                    'angle_beta': _field('beta', 'degree'),
-                    'angle_gamma': _field('gamma', 'degree'),
+                    'angle_alpha': _field('alpha', 'deg'),
+                    'angle_beta': _field('beta', 'deg'),
+                    'angle_gamma': _field('gamma', 'deg'),
                 },
                 'atom_sites': [
                     {
@@ -101,6 +173,87 @@ def _context() -> dict[str, object]:
                     'adp_13': _field('U13', 'A^2'),
                     'adp_23': _field('U23', 'A^2'),
                 },
+                'categories': [
+                    {
+                        'kind': 'item',
+                        'title': 'cell',
+                        'rows': [
+                            _category_row(
+                                'length_a',
+                                '11.985(31)',
+                                html_label='a',
+                                html_units='Å',
+                                numeric=True,
+                                number=_number(
+                                    '11',
+                                    '985(31)',
+                                    left_ch=2,
+                                    right_ch=7,
+                                ),
+                            ),
+                        ],
+                    },
+                    {
+                        'kind': 'loop',
+                        'title': 'atom_site',
+                        'scalar_rows': [],
+                        'columns': [
+                            _category_column('label'),
+                            _category_column(
+                                'adp_iso',
+                                html_label=r'\(U_{\mathrm{iso}}\)',
+                                html_units=r'\(\mathring{\mathrm{A}}^2\)',
+                                numeric=True,
+                            ),
+                        ],
+                        'rows': [
+                            {
+                                'cells': [
+                                    _category_cell('Si1'),
+                                    _category_cell(
+                                        '0.00658(14)',
+                                        numeric=True,
+                                        number=_number(
+                                            '0',
+                                            '00658(14)',
+                                            right_ch=9,
+                                        ),
+                                    ),
+                                ],
+                            },
+                        ],
+                    },
+                    {
+                        'kind': 'loop',
+                        'title': 'atom_site_aniso',
+                        'scalar_rows': [],
+                        'columns': [
+                            _category_column('label'),
+                            _category_column(
+                                'adp_12',
+                                html_label=r'\(U_{12}\)',
+                                numeric=True,
+                            ),
+                        ],
+                        'rows': [
+                            {
+                                'cells': [
+                                    _category_cell('Si1'),
+                                    _category_cell(
+                                        '-0.00048(25)',
+                                        numeric=True,
+                                        number=_number(
+                                            '-0',
+                                            '00048(25)',
+                                            left_ch=2,
+                                            right_ch=9,
+                                        ),
+                                    ),
+                                ],
+                            },
+                        ],
+                    },
+                ],
             }
         ],
         'experiments': [],
@@ -117,8 +270,16 @@ def test_render_html_report_preserves_structure_uncertainty_text():
     assert '0.00658(14)' in html
     assert '-0.00048(25)' in html
     assert '<h2>Publication</h2>' not in html
-    assert '<h2>Abstract</h2>' in html
+    assert '<h2>Project Description</h2>' in html
     assert '<h2>Project Summary</h2>' in html
+    assert '<section class="numbered-section">' in html
+    assert '<td class="key">Short name</td>' in html
+    assert '<th>Short name</th>' not in html
+    assert '--wide-colsep: 3pt;' in html
+    assert 'class="numeric"' in html
+    assert 'class="number"' in html
+    assert '--number-left: 2ch; --number-right: 7ch' in html
+    assert 'aria-label="1.23"' in html
 
 
 def test_render_html_report_uses_plotly_fit_style_order():
@@ -144,7 +305,7 @@ def test_render_html_report_uses_plotly_fit_style_order():
             },
             'fit_data': {
                 'x': {'values': [1.0, 2.0], 'display_name': '2theta'},
-                'axes_labels': ['2θ (degree)', 'Intensity (arb. units)'],
+                'axes_labels': ['2θ (deg)', 'Intensity (arb. units)'],
                 'series': {
                     'meas': {'values': [10.0, 11.0], 'su': [0.1, 0.2]},
                     'calc': {'values': [10.0, 12.0]},
