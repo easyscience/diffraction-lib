@@ -116,6 +116,31 @@ def _context() -> dict[str, object]:
             'calculator': {'name': 'cryspy', 'version': '0.0'},
             'minimizer': {'name': 'lmfit', 'version': '0.0'},
         },
+        'analysis': {
+            'software': {
+                'framework': {'name': 'EasyDiffraction', 'version': '0.0'},
+                'calculator': {'name': 'cryspy', 'version': '0.0'},
+                'minimizer': {'name': 'lmfit', 'version': '0.0'},
+            },
+            'categories': [
+                {
+                    'kind': 'item',
+                    'code': 'fit_result',
+                    'title': 'fit_result',
+                    'has_numeric_values': True,
+                    'value_column_numeric': True,
+                    'colspec': 'lS[table-format=1.2]',
+                    'rows': [
+                        {
+                            'label': 'Reduced chi-square',
+                            'value': '1.23',
+                            'numeric': True,
+                            'number': _number('1', '23', right_ch=2),
+                        },
+                    ],
+                },
+            ],
+        },
         'structures': [
             {
                 'id': 'phase',

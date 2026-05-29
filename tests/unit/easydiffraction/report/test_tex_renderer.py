@@ -61,6 +61,14 @@ def _minimal_context() -> dict[str, object]:
             'calculator': {'name': 'cryspy', 'version': '0.0'},
             'minimizer': {'name': 'lmfit', 'version': '0.0'},
         },
+        'analysis': {
+            'software': {
+                'framework': {'name': 'EasyDiffraction', 'version': '0.0'},
+                'calculator': {'name': 'cryspy', 'version': '0.0'},
+                'minimizer': {'name': 'lmfit', 'version': '0.0'},
+            },
+            'categories': [],
+        },
         'structures': [],
         'experiments': [],
         'figures': {'fit_per_experiment': {}},
@@ -137,7 +145,7 @@ def test_render_tex_report_renders_default_document():
     assert r'\documentclass[11pt]{article}' in tex
     assert r'\usepackage[margin=2.5cm]{geometry}' in tex
     assert r'\usepackage{fourier}' in tex
-    assert r'\usepackage{adjustbox}' in tex
+    assert r'\usepackage{longtable}' in tex
     assert r'\usepackage{paratype}' in tex
     assert r'\usepackage{titlesec}' in tex
     assert r'\sisetup{group-digits=false}' in tex
@@ -145,8 +153,8 @@ def test_render_tex_report_renders_default_document():
     assert r'\definecolor{tableborder}{RGB}{190,199,208}' in tex
     assert r'\arrayrulecolor{tableborder}' in tex
     assert r'\setlength{\ReportTableColSep}{0.5em}' in tex
-    assert r'\setlength{\ReportWideTableColSep}{0.5em}' in tex
     assert r'\setlength{\tabcolsep}{\ReportTableColSep}' in tex
+    assert r'\setlength{\LTleft}{0pt}' in tex
     assert (
         r'\newcommand{\rowColorsWithHeader}'
         r'{\rowcolors{1}{rowshade}{white}}'
@@ -265,10 +273,8 @@ def test_render_tex_report_preserves_structure_uncertainty_text():
     assert r'$U_{iso}$ ($\mathring{\mathrm{A}}^2$)' in tex
     assert r'\subsubsection*{atom\_site}' in tex
     assert r'\multicolumn{1}{c|}{$U_{12}$}' in tex
-    assert r'\begin{adjustbox}{max width=\linewidth}' in tex
-    assert r'\setlength{\tabcolsep}{\ReportWideTableColSep}' in tex
     assert (
-        r'\begin{tabular}{|lS[table-format=2.3(2)]'
+        r'\begin{longtable}{|lS[table-format=2.3(2)]'
         r'S[table-format=1.5(2)]|}'
     ) in tex
     assert r'\resizebox' not in tex
