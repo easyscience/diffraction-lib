@@ -135,6 +135,11 @@ _NUMBER_PARTS_RE = re.compile(
 _MATH_FRAGMENT_RE = re.compile(r'\$([^$]+)\$')
 
 
+def _format_generated_at(moment: datetime) -> str:
+    """Return a human-readable report generation timestamp."""
+    return f'{moment.day} {moment:%B %Y, %H:%M}'
+
+
 class ReportDataContext:
     """
     Build renderer-neutral report data from a project.
@@ -171,7 +176,7 @@ class ReportDataContext:
             'publication': self._publication_context(),
             'metadata': {
                 'easydiffraction_version': package_version('easydiffraction'),
-                'generated_at': datetime.now(tz=UTC).isoformat(timespec='seconds'),
+                'generated_at': _format_generated_at(datetime.now(tz=UTC)),
             },
         }
 
