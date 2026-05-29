@@ -29,7 +29,7 @@ def test_refln_data_point_defaults():
     assert pt.intensity_meas.value == 0.0
     assert pt.intensity_meas_su.value == 0.0
     assert pt.intensity_calc.value == 0.0
-    assert not hasattr(pt, 'wavelength')
+    assert not hasattr(type(pt), 'wavelength')
     assert pt._identity.category_code == 'refln'
 
 
@@ -80,8 +80,8 @@ def test_cwl_refln_data_has_no_wavelength():
     from easydiffraction.datablocks.experiment.categories.refln.bragg_sc import CwlReflnData
 
     coll = CwlReflnData()
-    assert not hasattr(coll, 'wavelength')
-    assert not hasattr(coll, '_set_wavelength')
+    assert not hasattr(type(coll), 'wavelength')
+    assert not hasattr(type(coll), '_set_wavelength')
 
 
 def test_refln_data_d_spacing_and_stol():
