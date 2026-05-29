@@ -632,7 +632,9 @@ class PdExperimentBase(ExperimentBase):
 
     @property
     def x_descriptor(self) -> NumericDescriptor:
-        """Descriptor that owns the powder experiment's x-axis metadata."""
+        """
+        Descriptor that owns the powder experiment's x-axis metadata.
+        """
         return self.data.x_descriptor
 
     def fit_data_arrays(self) -> dict[str, np.ndarray | None]:

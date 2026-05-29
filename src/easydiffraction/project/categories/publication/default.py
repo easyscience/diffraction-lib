@@ -654,6 +654,7 @@ class Publication(CategoryOwner):
         Raises
         ------
         ValueError
-            If the file extension, top-level shape, or any key is invalid.
+            If the file extension, top-level shape, or any key is
+            invalid.
         """
         load_publication(self, path)

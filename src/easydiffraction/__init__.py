@@ -9,7 +9,9 @@ import tempfile
 
 
 def _path_is_writable(path: pathlib.Path) -> bool:
-    """Return whether a directory can be used for runtime cache files."""
+    """
+    Return whether a directory can be used for runtime cache files.
+    """
     try:
         path.mkdir(parents=True, exist_ok=True)
         probe = path / '.easydiffraction-write-test'
@@ -21,7 +23,9 @@ def _path_is_writable(path: pathlib.Path) -> bool:
 
 
 def _ensure_matplotlib_config_dir() -> None:
-    """Set a stable Matplotlib cache dir when the default is unusable."""
+    """
+    Set a stable Matplotlib cache dir when the default is unusable.
+    """
     if os.environ.get('MPLCONFIGDIR'):
         return
     default_dir = pathlib.Path.home() / '.matplotlib'

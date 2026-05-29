@@ -49,7 +49,7 @@ class DatablockItem(CategoryOwner):
 
         Parameters
         ----------
-        max_loop_display : int, default=20
+        max_loop_display : int, default=DEFAULT_LOOP_DISPLAY_LIMIT
             Maximum number of rows to show per loop category.
 
         Returns

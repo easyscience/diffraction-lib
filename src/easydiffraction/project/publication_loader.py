@@ -163,7 +163,9 @@ def _apply_author_rows(
     publication: Publication,
     authors: list[dict[str, str | None]],
 ) -> None:
-    """Replace the publication author collection with normalized rows."""
+    """
+    Replace the publication author collection with normalized rows.
+    """
     publication.authors._adopt_items([])
     publication.authors._mark_parent_dirty()
     for author in authors:

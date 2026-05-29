@@ -388,7 +388,6 @@ class Report(CategoryItem):
         -------
         pathlib.Path
             Path of the written HTML report.
-
         """
         from easydiffraction.report.html_renderer import save_html_report  # noqa: PLC0415
 
@@ -445,8 +444,8 @@ class Report(CategoryItem):
         Returns
         -------
         pathlib.Path
-            Path of the PDF report, or the intended PDF path when no
-            TeX engine is available.
+            Path of the PDF report, or the intended PDF path when no TeX
+            engine is available.
         """
         from easydiffraction.report.pdf_compiler import save_pdf_report  # noqa: PLC0415
 
@@ -464,8 +463,8 @@ class Report(CategoryItem):
         Raises
         ------
         ValueError
-            If no report formats are configured. ``project.save()``
-            is the no-op-on-empty entry point.
+            If no report formats are configured. ``project.save()`` is
+            the no-op-on-empty entry point.
         """
         report_paths = self._save_configured()
         if not report_paths:
@@ -473,7 +472,9 @@ class Report(CategoryItem):
         return report_paths
 
     def _save_configured(self) -> list[pathlib.Path]:
-        """Write enabled formats, returning quietly when none are set."""
+        """
+        Write enabled formats, returning quietly when none are set.
+        """
         report_paths = []
         tex_path = None
         for report_format in self._enabled_formats():

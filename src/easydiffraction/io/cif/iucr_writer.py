@@ -179,7 +179,9 @@ def _write_computing_section(lines: list[str], project: object) -> None:
 
 
 def _write_publication_sections(lines: list[str], project: object) -> None:
-    """Append publication metadata from the project publication owner."""
+    """
+    Append publication metadata from the project publication owner.
+    """
     publication = getattr(project, 'publication', None)
     _write_publication_item_section(
         lines,
