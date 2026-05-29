@@ -57,7 +57,7 @@ class Report(CategoryItem):
         self._html = BoolDescriptor(
             name='html',
             description='Whether to write HTML reports when saving.',
-            value_spec=AttributeSpec(default=False),
+            value_spec=AttributeSpec(default=True),
             cif_handler=CifHandler(names=['_report.html']),
         )
         self._tex = BoolDescriptor(
