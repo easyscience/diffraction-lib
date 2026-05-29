@@ -6,6 +6,8 @@ from __future__ import annotations
 
 import os
 import shutil
+
+# TeX report compilation requires subprocesses; engines are discovered.
 import subprocess  # noqa: S404
 from typing import TYPE_CHECKING
 
@@ -162,6 +164,7 @@ def _compile_pdf(
         compile_tex_path,
         compile_pdf_path.parent,
     )
+    # Engine path comes from shutil.which; shell=False.
     result = subprocess.run(  # noqa: S603
         command,
         cwd=compile_tex_path.parent,
