@@ -634,6 +634,3 @@ project.report.html = True
 project.report.tex = True
 project.report.pdf = True
 project.save()
-
-# %%
-# project.report.show_report() # Need this?
