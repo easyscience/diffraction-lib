@@ -105,14 +105,6 @@ def _find_engines() -> list[tuple[str, str]]:
     return engines
 
 
-def _find_engine() -> tuple[str, str] | None:
-    """Return the first available TeX engine."""
-    engines = _find_engines()
-    if not engines:
-        return None
-    return engines[0]
-
-
 def _compile_report_bundle(
     engine: tuple[str, str],
     tex_path: pathlib.Path,
@@ -168,7 +160,7 @@ def _compile_pdf(
     result = subprocess.run(
         command,
         cwd=compile_tex_path.parent,
-        env=_compile_environment(compile_tex_path),
+        env=_compile_environment(),
         text=True,
         capture_output=True,
         check=False,
@@ -228,9 +220,8 @@ def _compile_command(
     ]
 
 
-def _compile_environment(tex_path: pathlib.Path) -> dict[str, str]:
+def _compile_environment() -> dict[str, str]:
     """Return a TeX subprocess environment."""
-    del tex_path
     return os.environ.copy()
 
 
