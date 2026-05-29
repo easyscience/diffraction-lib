@@ -214,6 +214,9 @@ def _write_fit_assets(
         fit_data = experiment.get('fit_data')
         if fit_data is None:
             continue
+        if _is_scatter_fit_data(fit_data):
+            # Single-crystal agreement scatter: PDF figure is a follow-up.
+            continue
         experiment_id = str(experiment.get('id') or 'experiment')
         source_experiment = project_experiments.get(experiment_id)
         csv_path = _write_fit_csv(
@@ -241,6 +244,12 @@ def _write_fit_assets(
     return {'csv': csv_paths, 'figure': figure_paths}
 
 
+def _is_scatter_fit_data(fit_data: dict[str, object]) -> bool:
+    """Return whether fit data is a single-crystal agreement scatter."""
+    x_data = fit_data.get('x') or {}
+    return x_data.get('name') == 'intensity_calc'
+
+
 def _tex_context(
     context: dict[str, object],
     *,
@@ -263,6 +272,8 @@ def _fit_plot_ranges(context: dict[str, object]) -> dict[str, dict[str, float]]:
     for experiment in _experiment_contexts(context):
         fit_data = experiment.get('fit_data')
         if fit_data is None:
+            continue
+        if _is_scatter_fit_data(fit_data):
             continue
         experiment_id = str(experiment.get('id') or 'experiment')
         ranges[experiment_id] = fit_plot_ranges(fit_data)

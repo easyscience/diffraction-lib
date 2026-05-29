@@ -1148,7 +1148,7 @@ def _fit_data_context(experiment: object) -> dict[str, object] | None:
     """Return descriptor-driven fit data for one experiment."""
     x_descriptor = _safe_attr(experiment, 'x_descriptor')
     if x_descriptor is None:
-        return None
+        return _single_crystal_fit_data_context(experiment)
 
     arrays = experiment.fit_data_arrays()
     axes_labels = _fit_data_axes_labels(experiment, x_descriptor)
@@ -1227,6 +1227,58 @@ def _is_powder_bragg_experiment(experiment: object) -> bool:
     sample_form = _value(_safe_attr(experiment_type, 'sample_form'))
     scattering_type = _value(_safe_attr(experiment_type, 'scattering_type'))
     return sample_form == 'powder' and scattering_type == 'bragg'
+
+
+def _is_single_crystal_bragg_experiment(experiment: object) -> bool:
+    """Return whether an experiment is single-crystal Bragg."""
+    experiment_type = _safe_attr(experiment, 'type')
+    sample_form = _value(_safe_attr(experiment_type, 'sample_form'))
+    scattering_type = _value(_safe_attr(experiment_type, 'scattering_type'))
+    return sample_form == 'single crystal' and scattering_type == 'bragg'
+
+
+def _single_crystal_fit_data_context(
+    experiment: object,
+) -> dict[str, object] | None:
+    """
+    Return measured-vs-calculated agreement data for a SC fit.
+
+    Single-crystal experiments have no profile x-axis, so the report
+    shows an I_obs-vs-I_calc scatter keyed by ``intensity_calc`` on x.
+    The HTML and TeX renderers dispatch on ``x['name']``.
+    """
+    if not _is_single_crystal_bragg_experiment(experiment):
+        return None
+
+    refln = _safe_attr(experiment, 'refln')
+    if refln is None:
+        return None
+
+    calc = _safe_attr(refln, 'intensity_calc')
+    meas = _safe_attr(refln, 'intensity_meas')
+    meas_su = _safe_attr(refln, 'intensity_meas_su')
+    if calc is None or meas is None or len(calc) == 0:
+        return None
+
+    return {
+        'x': {
+            'values': calc,
+            'name': 'intensity_calc',
+            'units': '',
+            'display_name': 'Icalc',
+            'latex_name': r'$I_{\mathrm{calc}}$',
+            'display_units': '',
+            'latex_units': '',
+        },
+        'axes_labels': ['Icalc', 'Imeas'],
+        'series': {
+            'meas': {'values': meas, 'su': meas_su, 'label': 'Measured'},
+            'calc': _series_context(calc, 'Calculated'),
+            'diff': _series_context(meas - calc, 'Difference'),
+            'bkg': None,
+        },
+        'bragg_tick_sets': (),
+    }
 
 
 def _series_context(values: object, label: str) -> dict[str, object]:
