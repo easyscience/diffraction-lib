@@ -8,6 +8,7 @@ from typing import ClassVar
 
 from easydiffraction.analysis.categories.fit_result.lsq import LeastSquaresFitResult
 from easydiffraction.analysis.categories.minimizer.base import MinimizerCategoryBase
+from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.variable import IntegerDescriptor
@@ -40,6 +41,10 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
             cif_handler=CifHandler(
                 names=['_minimizer.max_iterations'],
                 iucr_name='_easydiffraction_minimizer.max_iterations',
+            ),
+            display_handler=DisplayHandler(
+                display_name='Maximum iterations',
+                latex_name='Maximum iterations',
             ),
         )
 
