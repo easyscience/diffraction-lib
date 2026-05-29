@@ -161,22 +161,6 @@ class Refln(CategoryItem):
             ),
             cif_handler=CifHandler(names=['_refln.intensity_calc']),
         )
-        self._wavelength = NumericDescriptor(
-            name='wavelength',
-            description='Mean wavelength of radiation for this reflection',
-            units='angstroms',
-            display_handler=DisplayHandler(
-                display_name='λ',
-                display_units='Å',
-                latex_name=r'$\lambda$',
-                latex_units=r'\AA',
-            ),
-            value_spec=AttributeSpec(
-                default=0.0,
-                validator=RangeValidator(ge=0),
-            ),
-            cif_handler=CifHandler(names=['_refln.wavelength']),
-        )
 
     # ------------------------------------------------------------------
     #  Public properties
@@ -272,6 +256,30 @@ class Refln(CategoryItem):
         """
         return self._intensity_calc
 
+
+class TofRefln(Refln):
+    """Single reflection for TOF single-crystal data (per-reflection wavelength)."""
+
+    def __init__(self) -> None:
+        super().__init__()
+
+        self._wavelength = NumericDescriptor(
+            name='wavelength',
+            description='Mean wavelength of radiation for this reflection',
+            units='angstroms',
+            display_handler=DisplayHandler(
+                display_name='λ',
+                display_units='Å',
+                latex_name=r'$\lambda$',
+                latex_units=r'\AA',
+            ),
+            value_spec=AttributeSpec(
+                default=0.0,
+                validator=RangeValidator(ge=0),
+            ),
+            cif_handler=CifHandler(names=['_refln.wavelength']),
+        )
+
     @property
     def wavelength(self) -> NumericDescriptor:
         """
@@ -283,24 +291,10 @@ class Refln(CategoryItem):
         return self._wavelength
 
 
-@ReflnFactory.register
-class ReflnData(CategoryCollection):
-    """Collection of reflections for single crystal diffraction data."""
-
-    type_info = TypeInfo(tag='bragg-sc', description='Bragg single-crystal reflection data')
-    compatibility = Compatibility(
-        sample_form=frozenset({SampleFormEnum.SINGLE_CRYSTAL}),
-        scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
-        beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH, BeamModeEnum.TIME_OF_FLIGHT}),
-    )
-    calculator_support = CalculatorSupport(
-        calculators=frozenset({CalculatorEnum.CRYSPY}),
-    )
+class ReflnDataBase(CategoryCollection):
+    """Base collection of reflections for single-crystal diffraction data."""
 
     _update_priority = 100
-
-    def __init__(self) -> None:
-        super().__init__(item_type=Refln)
 
     #################
     # Private methods
@@ -345,11 +339,6 @@ class ReflnData(CategoryCollection):
         """Set standard uncertainty of measured intensity values."""
         for p, v in zip(self._items, values, strict=True):
             p.intensity_meas_su._value = v
-
-    def _set_wavelength(self, values: object) -> None:
-        """Set wavelength."""
-        for p, v in zip(self._items, values, strict=True):
-            p.wavelength._value = v
 
     # Can be set multiple times
 
@@ -475,6 +464,47 @@ class ReflnData(CategoryCollection):
             (p.intensity_calc.value for p in self._items),
             dtype=float,
         )
+
+
+@ReflnFactory.register
+class CwlReflnData(ReflnDataBase):
+    """Collection of reflections for CWL single-crystal diffraction data."""
+
+    type_info = TypeInfo(tag='bragg-sc-cwl', description='Bragg CWL single-crystal reflection data')
+    compatibility = Compatibility(
+        sample_form=frozenset({SampleFormEnum.SINGLE_CRYSTAL}),
+        scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
+        beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH}),
+    )
+    calculator_support = CalculatorSupport(
+        calculators=frozenset({CalculatorEnum.CRYSPY}),
+    )
+
+    def __init__(self) -> None:
+        super().__init__(item_type=Refln)
+
+
+@ReflnFactory.register
+class TofReflnData(ReflnDataBase):
+    """Collection of reflections for TOF single-crystal diffraction data."""
+
+    type_info = TypeInfo(tag='bragg-sc-tof', description='Bragg TOF single-crystal reflection data')
+    compatibility = Compatibility(
+        sample_form=frozenset({SampleFormEnum.SINGLE_CRYSTAL}),
+        scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
+        beam_mode=frozenset({BeamModeEnum.TIME_OF_FLIGHT}),
+    )
+    calculator_support = CalculatorSupport(
+        calculators=frozenset({CalculatorEnum.CRYSPY}),
+    )
+
+    def __init__(self) -> None:
+        super().__init__(item_type=TofRefln)
+
+    def _set_wavelength(self, values: object) -> None:
+        """Set per-reflection wavelength."""
+        for p, v in zip(self._items, values, strict=True):
+            p.wavelength._value = v
 
     @property
     def wavelength(self) -> np.ndarray:

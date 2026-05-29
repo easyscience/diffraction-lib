@@ -20,12 +20,12 @@ class ReflnFactory(FactoryBase):
             ('sample_form', SampleFormEnum.SINGLE_CRYSTAL),
             ('scattering_type', ScatteringTypeEnum.BRAGG),
             ('beam_mode', BeamModeEnum.CONSTANT_WAVELENGTH),
-        }): 'bragg-sc',
+        }): 'bragg-sc-cwl',
         frozenset({
             ('sample_form', SampleFormEnum.SINGLE_CRYSTAL),
             ('scattering_type', ScatteringTypeEnum.BRAGG),
             ('beam_mode', BeamModeEnum.TIME_OF_FLIGHT),
-        }): 'bragg-sc',
+        }): 'bragg-sc-tof',
         frozenset({
             ('sample_form', SampleFormEnum.POWDER),
             ('scattering_type', ScatteringTypeEnum.BRAGG),
