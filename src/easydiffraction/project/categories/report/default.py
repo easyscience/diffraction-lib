@@ -274,11 +274,33 @@ class Report(CategoryItem):
             elif report_format is ReportFormatEnum.PDF:
                 if tex_path is None:
                     pdf_path = self.save_pdf()
+                    report_paths.append(pdf_path)
+                    self._discard_intermediate_tex_bundle(pdf_path)
                 else:
                     from easydiffraction.report.pdf_compiler import (  # noqa: PLC0415
                         compile_pdf_report,
                     )
 
                     pdf_path = compile_pdf_report(tex_path)
-                report_paths.append(pdf_path)
+                    report_paths.append(pdf_path)
         return report_paths
+
+    def _discard_intermediate_tex_bundle(self, pdf_path: pathlib.Path) -> None:
+        """
+        Remove the TeX bundle left behind by a PDF-only build.
+
+        Compiling a PDF requires writing the ``.tex`` and ``data/``
+        bundle under ``reports/tex/``. When ``tex`` output is not
+        requested, that bundle is only a build intermediate, so delete
+        it once the PDF exists. A failed compile (no PDF) keeps the
+        bundle so it can be inspected or compiled by hand.
+        """
+        import shutil  # noqa: PLC0415
+
+        from easydiffraction.report.tex_renderer import tex_report_path  # noqa: PLC0415
+
+        if not pdf_path.exists():
+            return
+        tex_dir = tex_report_path(self.project).parent
+        if tex_dir.is_dir():
+            shutil.rmtree(tex_dir)
