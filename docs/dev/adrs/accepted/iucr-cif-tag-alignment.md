@@ -787,41 +787,40 @@ The IUCr writer pass differs from the default writer:
 
 #### 2.5 Submission-side validation
 
-The IUCr CIF writer runs generated content through `gemmi` (already a
-project dependency per `pyproject.toml`) before writing
-`reports/<project>.cif`. Public `project.report.check()` and
-`check=True` entry points are removed; dictionary compliance is a writer
-self-check, not a user choice.
+**Superseded (2026-05-30): the runtime writer self-check described
+below was removed.** The IUCr CIF writer no longer validates its own
+output against `cif_core.dic` / `cif_pow.dic`; `reports/<project>.cif`
+is written directly. Rationale:
 
-Validation checks performed by `gemmi`:
+- The report CIF is our own deterministic output. Checking it at write
+  time and raising `EasyDiffractionWriterError` ("…file a bug") turns a
+  developer-side test concern into a user-facing failure that blocks a
+  scientist's report over a defect only we can fix.
+- The check resolved dictionaries from `tmp/iucr-dicts/` under the
+  repository root. That path never resolves for a pip-installed user,
+  so the self-check was a silent no-op for everyone except a developer
+  who had manually placed the dictionaries — where it only produced
+  noise, because the current COMCIFS DDLm/CIF2 dictionaries do not
+  parse under the helper's gemmi + regex approach.
+- Spec compliance of the emitted tag set is maintained by authoring the
+  writer against the COMCIFS reference dictionaries (the dotted-tag set
+  is fixed in `iucr_writer.py`); a separate IUCr-server upload remains
+  the authoritative compliance check before submission. No part of the
+  library reads `tmp/iucr-dicts/` at runtime.
 
-- Every emitted tag exists in `cif_core.dic` or `cif_pow.dic` (the
-  shipped reference dictionaries, or fresh copies fetched on demand).
-  Unknown tags outside the project's `_easydiffraction_*` namespace
-  raise `EasyDiffractionWriterError`.
-- Value types match the dictionary's `_type.contents` declaration (Real,
-  Integer, Code, Text, …).
-- Required category keys (`_category_key.name` per `_pd_calib_d_to_tof`,
-  `_atom_site`, etc.) are present in every loop row.
-- Loop columns share the same parent category.
-- DDLm dotted form is well-formed; underscore-form aliases resolve
-  correctly.
-
-Validation does **not** cover:
-
-- Crystallographic sanity checks (bond lengths, void volumes, density
-  plausibility, missed-symmetry detection, anisotropic-ADP
-  positive-definiteness). These need a full `checkCIF` implementation,
-  which `gemmi` does not provide. Treat the internal gemmi pass as a
-  "spec compliance" pass, not a "scientific sanity" pass — a separate
-  IUCr-server upload remains the final check before submission.
-- Verifying that `?` placeholders in `_journal.*` / `_publ_*` have been
-  filled in by the user (those are valid CIF; the project cannot decide
-  which are mandatory per journal). Flagged as a separate concern.
-
-The `_easydiffraction_*` project-extension namespace is excluded from
-unknown-tag failures by a prefix-skip rule in the writer validation
-helper.
+The original decision (retained for history): the writer ran generated
+content through `gemmi` before writing, with public
+`project.report.check()` / `check=True` entry points removed so that
+dictionary compliance was an internal writer self-check rather than a
+user choice. The intended gemmi checks were tag existence in
+`cif_core.dic` / `cif_pow.dic` (unknown non-`_easydiffraction_*` tags
+raising `EasyDiffractionWriterError`), value-type matching against
+`_type.contents`, required category keys per loop row, single-category
+loop columns, and well-formed DDLm dotted form. It never covered
+crystallographic sanity checks (bond lengths, void volumes, density
+plausibility, missed-symmetry detection, ADP positive-definiteness) or
+whether `?` placeholders in `_journal.*` / `_publ_*` had been filled —
+those remain a separate IUCr-server concern.
 
 ### 3. Handler mechanism — `iucr_name` + `IucrCategoryTransformer`
 
@@ -1054,18 +1053,19 @@ Policy:
   unaffected.
 - [`project-summary-rendering.md`](project-summary-rendering.md) —
   amends this ADR's report API: public `check()` / `check=True` are
-  removed, gemmi validation moves inside CIF write paths, the
-  `_easydiffraction_software.*` triple is read from `analysis.software`,
-  and `_easydiffraction_software.fit_datetime` is added when fit
-  provenance has a timestamp.
+  removed, the `_easydiffraction_software.*` triple is read from
+  `analysis.software`, and `_easydiffraction_software.fit_datetime` is
+  added when fit provenance has a timestamp. (The write-path gemmi
+  validation this ADR introduced was later removed — see the §2.5
+  amendment.)
 
 ## Open Questions
 
 (None blocking. Dictionary-side ambiguities have all been resolved
-against `cif_core.dic` v3.4.0 / `cif_pow.dic` v2.5.0. The §2.5 gemmi
-pass surfaces any remaining spec-compliance issue at generate-time, so
-the ADR no longer relies on speculation about real-world tooling
-behaviour.)
+against `cif_core.dic` v3.4.0 / `cif_pow.dic` v2.5.0 while authoring the
+writer. The runtime gemmi self-check originally described in §2.5 was
+removed (see the §2.5 amendment); spec compliance now rests on authoring
+discipline plus a final IUCr-server upload before submission.)
 
 ## Alternatives Considered
 

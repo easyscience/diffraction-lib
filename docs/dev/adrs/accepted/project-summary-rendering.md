@@ -516,16 +516,19 @@ project.save()
 
 | Output                   | Validation                                                         | Failure mode                                                                       |
 | ------------------------ | ------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
-| `reports/<project>.cif`  | gemmi parse always; dictionary checks when local dictionaries load | `EasyDiffractionWriterError` for malformed generated CIF or dictionary diagnostics |
+| `reports/<project>.cif`  | none at write time                                                 | n/a — the report renders the data context; an IUCr-server upload is the spec-compliance check before submission |
 | `reports/<project>.html` | none at write time                                                 | n/a — HTML is a render of the data context, not a typed format                     |
 | `reports/tex/`           | none at write time                                                 | n/a — LaTeX errors surface at PDF-compile time, with the engine's message          |
 | `reports/<project>.pdf`  | TeX engine's own compilation (returns non-zero on error)           | engine-specific message; the `.tex` and `data/` CSVs are still written             |
 
-The dictionaries under `tmp/iucr-dicts/` are optional local validation
-aids, not report inputs. If Gemmi cannot load those local dictionary
-files, the writer skips dictionary-specific checks after confirming the
-generated CIF itself parses; this avoids blocking report generation on a
-stale or incompatible dictionary cache.
+The report CIF is the writer's own deterministic output, so it is
+written without a runtime dictionary self-check, and nothing in the
+library reads `tmp/iucr-dicts/`. Spec compliance of the emitted tag set
+is maintained by authoring the writer against the COMCIFS reference
+dictionaries, with a final IUCr-server upload as the authoritative check
+before submission. (This supersedes the earlier write-time gemmi
+validation; see the §2.5 amendment in
+[`iucr-cif-tag-alignment.md`](iucr-cif-tag-alignment.md).)
 
 User-input validation (e.g., "is the email address syntactically
 valid?", "is the ORCID well-formed?") happens **upstream** at the
