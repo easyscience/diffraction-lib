@@ -368,6 +368,53 @@ def test_report_powder_refln_columns_use_compact_labels():
     ]
 
 
+def test_report_atom_site_adp_column_uses_active_b_u_labels():
+    from easydiffraction.datablocks.structure.item.base import Structure
+    from easydiffraction.report.data_context import _collection_category_context
+
+    structure = Structure(name='phase')
+    structure.atom_sites.create(
+        label='Si1',
+        type_symbol='Si',
+        adp_type='Biso',
+        adp_iso=0.5,
+    )
+    structure.atom_sites.create(
+        label='O1',
+        type_symbol='O',
+        adp_type='Uiso',
+        adp_iso=0.006,
+    )
+
+    context = _collection_category_context(structure.atom_sites)
+    adp_column = next(column for column in context['columns'] if column['name'] == 'adp_iso')
+
+    assert adp_column['label'] == 'Biso / Uiso'
+    assert adp_column['html_label'] == r'\(B_{\mathrm{iso}}\) / \(U_{\mathrm{iso}}\)'
+    assert adp_column['latex_label'] == r'$B_{\mathrm{iso}}$ / $U_{\mathrm{iso}}$'
+
+
+def test_report_atom_site_aniso_adp_column_uses_active_b_label():
+    from easydiffraction.datablocks.structure.item.base import Structure
+    from easydiffraction.report.data_context import _collection_category_context
+
+    structure = Structure(name='phase')
+    structure.atom_sites.create(
+        label='Si1',
+        type_symbol='Si',
+        adp_iso=0.5,
+    )
+    structure.atom_sites['Si1'].adp_type = 'Bani'
+    structure._sync_atom_site_aniso()
+
+    context = _collection_category_context(structure.atom_site_aniso)
+    adp_column = next(column for column in context['columns'] if column['name'] == 'adp_11')
+
+    assert adp_column['label'] == 'B11'
+    assert adp_column['html_label'] == r'\(B_{11}\)'
+    assert adp_column['latex_label'] == r'$B_{11}$'
+
+
 def test_report_number_parts_split_decimal_and_uncertainty_text():
     from easydiffraction.report.data_context import _number_parts
 

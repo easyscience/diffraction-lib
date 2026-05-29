@@ -124,6 +124,7 @@ _REPORT_LOOP_DISPLAY_LIMIT = DEFAULT_LOOP_DISPLAY_LIMIT
 _FULL_WIDTH_TABLE_CHAR_LIMIT = 40
 _TRUNCATED_DATA_CATEGORY_CODES = frozenset({'pd_data', 'total_data'})
 _NUMERIC_TEXT_RE = re.compile(r'^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:\(\d+\))?(?:[eE][+-]?\d+)?$')
+_ADP_ANISO_CIF_RE = re.compile(r'^_atom_site_aniso\.([BU])_(\d{2})$')
 _NUMBER_PARTS_RE = re.compile(
     r'^(?P<sign>[+-]?)'
     r'(?:(?P<integer>\d+)(?:\.(?P<fraction>\d*))?'
@@ -674,9 +675,51 @@ def _collection_columns(
     """Return loop column metadata from the first row item."""
     if not items:
         return []
-    return [
+    columns = [
         _column_context(parameter) for parameter in _collection_loop_parameters(category, items[0])
     ]
+    _apply_collection_adp_column_labels(category, columns, items)
+    return columns
+
+
+def _apply_collection_adp_column_labels(
+    category: CategoryCollection,
+    columns: list[dict[str, object]],
+    items: list[object],
+) -> None:
+    """Set ADP column labels from active B/U CIF tag families."""
+    row_parameters = [_collection_loop_parameters(category, item) for item in items]
+    for index, column in enumerate(columns):
+        label_contexts = [
+            label_context
+            for parameters in row_parameters
+            if index < len(parameters)
+            for label_context in [_adp_label_context(parameters[index])]
+            if label_context is not None
+        ]
+        if not label_contexts:
+            continue
+        column.update(_merge_label_contexts(label_contexts))
+
+
+def _merge_label_contexts(
+    label_contexts: list[dict[str, str]],
+) -> dict[str, str]:
+    """Return merged labels, preserving the first-seen family order."""
+    return {
+        'label': _merge_label_values(context['label'] for context in label_contexts),
+        'latex_label': _merge_label_values(context['latex_label'] for context in label_contexts),
+        'html_label': _merge_label_values(context['html_label'] for context in label_contexts),
+    }
+
+
+def _merge_label_values(values: Iterable[str]) -> str:
+    """Return slash-separated unique labels."""
+    unique_values = []
+    for value in values:
+        if value not in unique_values:
+            unique_values.append(value)
+    return ' / '.join(unique_values)
 
 
 def _collection_row(
@@ -961,8 +1004,58 @@ def _descriptor_is_numeric(parameter: GenericDescriptorBase) -> bool:
 
 def _display_label(parameter: GenericDescriptorBase, *, context: str) -> str:
     """Return a display label for a descriptor."""
+    adp_label = _adp_display_label(parameter, context=context)
+    if adp_label is not None:
+        return adp_label
     label = parameter.resolve_display_name(context)
     return label or parameter.name
+
+
+def _adp_label_context(parameter: object) -> dict[str, str] | None:
+    """Return report label metadata for active ADP tag families."""
+    label = _adp_display_label(parameter, context='html')
+    latex_label = _adp_display_label(parameter, context='latex')
+    if label is None or latex_label is None:
+        return None
+    return {
+        'label': label,
+        'latex_label': latex_label,
+        'html_label': _html_markup(latex_label),
+    }
+
+
+def _adp_display_label(parameter: object, *, context: str) -> str | None:
+    """Return a B/U-aware ADP display label when applicable."""
+    cif_name = _first_cif_name(parameter)
+    if cif_name == '_atom_site.B_iso_or_equiv':
+        return _adp_iso_label('B', context=context)
+    if cif_name == '_atom_site.U_iso_or_equiv':
+        return _adp_iso_label('U', context=context)
+
+    match = _ADP_ANISO_CIF_RE.match(cif_name or '')
+    if match is None:
+        return None
+    family = match.group(1)
+    suffix = match.group(2)
+    if context == 'latex':
+        return rf'${family}_{{{suffix}}}$'
+    return f'{family}{suffix}'
+
+
+def _adp_iso_label(family: str, *, context: str) -> str:
+    """Return one isotropic ADP label."""
+    if context == 'latex':
+        return rf'${family}_{{\mathrm{{iso}}}}$'
+    return f'{family}iso'
+
+
+def _first_cif_name(parameter: object) -> str | None:
+    """Return the first CIF tag for a descriptor."""
+    cif_handler = getattr(parameter, '_cif_handler', None)
+    names = getattr(cif_handler, 'names', ())
+    if not names:
+        return None
+    return str(names[0])
 
 
 def _display_units(units: object) -> str:
