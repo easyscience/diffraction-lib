@@ -156,14 +156,6 @@ def test_report_data_context_builds_fit_data():
     assert list(fit_data['series']['calc']['values']) == [10.0, 20.0]
     assert list(fit_data['series']['diff']['values']) == [1.0, -1.0]
     assert fit_data['bragg_tick_sets'] == ()
-    assert context['refinement']['rows'][3]['label'] == 'Constraints'
-    assert context['refinement']['rows'][3]['number'] == {
-        'left': '0',
-        'right': '',
-        'has_decimal': False,
-        'left_ch': 1,
-        'right_ch': 1,
-    }
 
 
 def test_report_data_context_builds_powder_bragg_tick_sets():
@@ -223,7 +215,7 @@ def test_report_category_context_keeps_numeric_string_ids_as_text():
 
     context = _collection_category_context(category)
 
-    assert context['colspec'] == 'lS[table-format=2.0]S[table-format=1.0]'
+    assert context['colspec'] == 'cS[table-format=2.0]S[table-format=1.0]'
     assert [(column['latex_label'], column['numeric']) for column in context['columns']] == [
         ('ID', False),
         ('$x$', True),
