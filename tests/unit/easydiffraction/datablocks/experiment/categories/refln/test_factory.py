@@ -7,8 +7,11 @@ import pytest
 def test_refln_factory_default_and_errors():
     from easydiffraction.datablocks.experiment.categories.refln.factory import ReflnFactory
 
-    obj = ReflnFactory.create('bragg-sc')
-    assert obj.__class__.__name__ == 'ReflnData'
+    obj = ReflnFactory.create('bragg-sc-cwl')
+    assert obj.__class__.__name__ == 'CwlReflnData'
+
+    obj_tof = ReflnFactory.create('bragg-sc-tof')
+    assert obj_tof.__class__.__name__ == 'TofReflnData'
 
     obj2 = ReflnFactory.create('bragg-pd-refln')
     assert obj2.__class__.__name__ == 'PowderCwlReflnData'
@@ -34,14 +37,14 @@ def test_refln_factory_default_tag_resolution():
         scattering_type=ScatteringTypeEnum.BRAGG,
         beam_mode=BeamModeEnum.CONSTANT_WAVELENGTH,
     )
-    assert tag == 'bragg-sc'
+    assert tag == 'bragg-sc-cwl'
 
     tag = ReflnFactory.default_tag(
         sample_form=SampleFormEnum.SINGLE_CRYSTAL,
         scattering_type=ScatteringTypeEnum.BRAGG,
         beam_mode=BeamModeEnum.TIME_OF_FLIGHT,
     )
-    assert tag == 'bragg-sc'
+    assert tag == 'bragg-sc-tof'
 
     tag = ReflnFactory.default_tag(
         sample_form=SampleFormEnum.POWDER,
@@ -62,6 +65,7 @@ def test_refln_factory_supported_tags():
     from easydiffraction.datablocks.experiment.categories.refln.factory import ReflnFactory
 
     tags = ReflnFactory.supported_tags()
-    assert 'bragg-sc' in tags
+    assert 'bragg-sc-cwl' in tags
+    assert 'bragg-sc-tof' in tags
     assert 'bragg-pd-refln' in tags
     assert 'bragg-pd-tof-refln' in tags
