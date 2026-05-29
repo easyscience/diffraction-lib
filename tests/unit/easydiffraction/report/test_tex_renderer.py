@@ -155,7 +155,7 @@ def test_render_tex_report_renders_default_document():
         r'\newcommand{\rowColorsWithoutHeader}'
         r'{\rowcolors{1}{white}{rowshade}}'
     ) in tex
-    assert r'\titlelabel{\thetitle.\quad}' in tex
+    assert r'\titlelabel{\thetitle.\enspace}' in tex
     assert r'\titleformat*{\section}' in tex
     assert r'{\Large EasyDiffraction Report\newline}' in tex
     assert r'{\LARGE Report Project\par}' in tex

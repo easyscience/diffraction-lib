@@ -275,6 +275,7 @@ def test_render_html_report_preserves_structure_uncertainty_text():
     assert '<section class="numbered-section">' in html
     assert '<td class="key">Short name</td>' in html
     assert '<th>Short name</th>' not in html
+    assert 'margin-right: 0.5em;' in html
     assert '--wide-colsep: 3pt;' in html
     assert 'class="numeric"' in html
     assert 'class="number"' in html
