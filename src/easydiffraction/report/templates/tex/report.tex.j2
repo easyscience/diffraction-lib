@@ -44,9 +44,10 @@
 \newcommand{\rowColorsWithoutHeader}{\rowcolors{1}{white}{rowshade}}
 \newlength{\ReportTableColSep}
 \setlength{\ReportTableColSep}{0.5em}
-\newlength{\ReportWideTableColSep}
-\setlength{\ReportWideTableColSep}{0.5em}
 \setlength{\tabcolsep}{\ReportTableColSep}
+
+\setlength{\LTleft}{0pt}      % left-align longtables, like the item tables
+\setlength{\LTright}{\fill}
 
 % --------------------------------------------------------------------
 %  Section headings: numbering dot, spacing, font
@@ -85,16 +86,12 @@
 {% if cell.numeric %}{{ cell.value | tex_number }}{% else %}{ {{- cell.value | tex -}} }{% endif %}
 {%- endmacro %}
 {% macro tex_category_value(row, numeric_column) -%}
-{% if row.numeric %}{{ row.value | tex_number }}{% elif numeric_column %}\multicolumn{1}{l|}{ {{- row.value | tex -}} }{% else %}{{ row.value | tex }}{% endif %}
+{% if row.numeric %}{{ row.value | tex_number }}{% elif numeric_column %}\multicolumn{1}{c|}{ {{- row.value | tex -}} }{% else %}{{ row.value | tex }}{% endif %}
 {%- endmacro %}
 {% macro tex_software_name(role) -%}
 {% if role.url %}\href{ {{- role.url -}} }{ {{- role.name | tex -}} }{% else %}{{ role.name | tex }}{% endif %}
 {%- endmacro %}
 {% macro tex_loop_table(category) -%}
-{% if category.table_width == "full" %}\begingroup
-\setlength{\tabcolsep}{\ReportWideTableColSep}
-\footnotesize
-{% endif -%}
 \rowColorsWithHeader
 \begin{longtable}{|{{ category.colspec }}|}
 \hline
@@ -106,8 +103,6 @@
 {% endfor %}
 \hline
 \end{longtable}
-{% if category.table_width == "full" %}\endgroup
-{% endif -%}
 {%- endmacro %}
 
 \begin{document}
