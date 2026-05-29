@@ -7,8 +7,10 @@ this directory. The repository-level index is `THIRD_PARTY_LICENSES.md`.
 
 File: `mathjax-tex-mml-chtml.js`
 
-- Upstream URL: https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js
-- Local source used for vendoring: downloaded from jsdelivr on 2026-05-28
+- Upstream URL:
+  https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js
+- Local source used for vendoring: downloaded from jsdelivr on
+  2026-05-28
 - Version: MathJax 3.2.2
 - License: Apache License 2.0
 - Attribution: MathJax Consortium

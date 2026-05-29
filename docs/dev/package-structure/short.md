@@ -66,6 +66,11 @@
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
 │   │   │   └── 📄 factory.py
+│   │   ├── 📁 software
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 base.py
+│   │   │   ├── 📄 default.py
+│   │   │   └── 📄 factory.py
 │   │   └── 📄 __init__.py
 │   ├── 📁 fit_helpers
 │   │   ├── 📄 __init__.py
@@ -102,6 +107,8 @@
 │   ├── 📄 collection.py
 │   ├── 📄 datablock.py
 │   ├── 📄 diagnostic.py
+│   ├── 📄 display_handler.py
+│   ├── 📄 errors.py
 │   ├── 📄 factory.py
 │   ├── 📄 guard.py
 │   ├── 📄 identity.py
@@ -109,6 +116,7 @@
 │   ├── 📄 posterior.py
 │   ├── 📄 singleton.py
 │   ├── 📄 switchable.py
+│   ├── 📄 units_vocabulary.py
 │   ├── 📄 validation.py
 │   └── 📄 variable.py
 ├── 📁 crystallography
@@ -256,7 +264,15 @@
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
 │   │   │   └── 📄 factory.py
+│   │   ├── 📁 publication
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   └── 📄 factory.py
 │   │   ├── 📁 rendering
+│   │   ├── 📁 report
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   └── 📄 factory.py
 │   │   ├── 📁 table
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
@@ -270,11 +286,23 @@
 │   ├── 📄 display.py
 │   ├── 📄 project.py
 │   ├── 📄 project_config.py
-│   └── 📄 project_info.py
+│   ├── 📄 project_info.py
+│   └── 📄 publication_loader.py
 ├── 📁 report
+│   ├── 📁 templates
+│   │   ├── 📁 html
+│   │   │   └── 📁 vendor
+│   │   └── 📁 tex
+│   │       └── 📁 styles
 │   ├── 📄 __init__.py
 │   ├── 📄 check.py
-│   └── 📄 report.py
+│   ├── 📄 data_context.py
+│   ├── 📄 enums.py
+│   ├── 📄 fit_plot.py
+│   ├── 📄 html_renderer.py
+│   ├── 📄 pdf_compiler.py
+│   ├── 📄 style.py
+│   └── 📄 tex_renderer.py
 ├── 📁 utils
 │   ├── 📁 _vendored
 │   │   ├── 📁 jupyter_dark_detect
@@ -286,6 +314,7 @@
 │   ├── 📄 enums.py
 │   ├── 📄 environment.py
 │   ├── 📄 logging.py
+│   ├── 📄 matplotlib_config.py
 │   └── 📄 utils.py
 ├── 📄 __init__.py
 └── 📄 __main__.py

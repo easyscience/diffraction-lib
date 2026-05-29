@@ -41,13 +41,13 @@ configuration category that is saved in `project.cif`. Regular
 `project.save()` calls read this configuration and write the selected
 report formats.
 
-| Setting | Type | Meaning |
-| --- | --- | --- |
-| `project.report.cif` | `bool` | Write an IUCr submission CIF. |
-| `project.report.html` | `bool` | Write an HTML report. |
-| `project.report.tex` | `bool` | Write a TeX report bundle. |
-| `project.report.pdf` | `bool` | Write a PDF report when a TeX engine is available. |
-| `project.report.html_offline` | `bool` | Embed HTML assets instead of using CDN links. |
+| Setting                       | Type   | Meaning                                            |
+| ----------------------------- | ------ | -------------------------------------------------- |
+| `project.report.cif`          | `bool` | Write an IUCr submission CIF.                      |
+| `project.report.html`         | `bool` | Write an HTML report.                              |
+| `project.report.tex`          | `bool` | Write a TeX report bundle.                         |
+| `project.report.pdf`          | `bool` | Write a PDF report when a TeX engine is available. |
+| `project.report.html_offline` | `bool` | Embed HTML assets instead of using CDN links.      |
 
 Enable each saved report format through its boolean flag:
 

@@ -7,8 +7,8 @@
   --rowshade: var(--ed-row-color);
   --tableborder: var(--ed-axis-color);
   --bw: 0.4pt;
-  --body-font: "Utopia", "Charter", "Bitstream Charter", Georgia,
-    "Times New Roman", serif;
+  --body-font:
+    'Utopia', 'Charter', 'Bitstream Charter', Georgia, 'Times New Roman', serif;
   --head-font: var(--ed-font-family);
   --colsep: 6pt;
   --wide-colsep: 3pt;
@@ -106,7 +106,7 @@ p {
 
 .numbered-section > h2::before {
   margin-right: 0.5em;
-  content: counter(report-section) ".";
+  content: counter(report-section) '.';
 }
 
 .numbered-section .record {
@@ -115,7 +115,7 @@ p {
 
 .numbered-section .record > h3::before {
   margin-right: 0.5em;
-  content: counter(report-section) "." counter(report-subsection) ".";
+  content: counter(report-section) '.' counter(report-subsection) '.';
 }
 
 .record + .record {

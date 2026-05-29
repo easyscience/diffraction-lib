@@ -59,10 +59,10 @@ under `reports/`. The previous `project.summary` placeholder and its
 
 Expose journal-submission metadata as `project.publication`. It is a
 top-level owner with CIF-aligned sibling categories for `_journal.*`,
-`_journal_date.*`, `_journal_coeditor.*`,
-`_publ_contact_author.*`, `_publ_body.*`, and the `_publ_author.*`
-loop. These singleton publication categories persist in `project.cif`
-and feed report exports; `reports/<project>.cif` remains export-only.
+`_journal_date.*`, `_journal_coeditor.*`, `_publ_contact_author.*`,
+`_publ_body.*`, and the `_publ_author.*` loop. These singleton
+publication categories persist in `project.cif` and feed report exports;
+`reports/<project>.cif` remains export-only.
 
 Keep project information available as `project.info`. The Python name
 avoids a confusing `project.project` access path, while the persisted
@@ -91,9 +91,8 @@ it must not emit a `_project.path` CIF item.
 
 The project-level singleton categories currently persisted in
 `project.cif` are `_project.*`, `_chart.*`, `_report.*`, `_table.*`,
-`_verbosity.*`, `_journal.*`, `_journal_date.*`,
-`_journal_coeditor.*`, `_publ_contact_author.*`, `_publ_body.*`, and
-the `_publ_author.*` loop.
+`_verbosity.*`, `_journal.*`, `_journal_date.*`, `_journal_coeditor.*`,
+`_publ_contact_author.*`, `_publ_body.*`, and the `_publ_author.*` loop.
 
 ## Consequences
 
