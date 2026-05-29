@@ -82,7 +82,7 @@
 \multicolumn{{ "{" }}1{{ "}" }}{{ "{" }}{% if first %}|{% endif %}c{% if last %}|{% endif %}{{ "}" }}{{ "{" }}{{ tex_category_header(column) }}{{ "}" }}
 {%- endmacro %}
 {% macro tex_category_cell(cell) -%}
-{% if cell.numeric %}{{ cell.value | tex_number }}{% else %}{{ cell.value | tex }}{% endif %}
+{% if cell.numeric %}{{ cell.value | tex_number }}{% else %}{ {{- cell.value | tex -}} }{% endif %}
 {%- endmacro %}
 {% macro tex_category_value(row, numeric_column) -%}
 {% if row.numeric %}{{ row.value | tex_number }}{% elif numeric_column %}\multicolumn{1}{l|}{ {{- row.value | tex -}} }{% else %}{{ row.value | tex }}{% endif %}

@@ -775,7 +775,7 @@ def _key_value_colspec(rows: list[dict[str, object]]) -> str:
 def _loop_column_colspec(column: dict[str, object]) -> str:
     """Return one TeX tabular column spec."""
     if not column['numeric']:
-        return 'l'
+        return 'c'
     table_format = column.get('table_format')
     if table_format:
         return _numeric_colspec_from_format(str(table_format))
