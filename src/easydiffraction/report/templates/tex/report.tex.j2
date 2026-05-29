@@ -22,6 +22,8 @@
 \usepackage{paratype}       % PT Sans headings; bundled and portable
 \usepackage{longtable}      % multi-page loop tables (e.g. reflections)
 \usepackage{hyperref}       % \href links for software package names
+\usepackage[normalem]{ulem} % thin, font-positioned underline for links
+\renewcommand{\ULthickness}{0.4pt}
 
 % --------------------------------------------------------------------
 %  Line and paragraph spacing
@@ -38,7 +40,9 @@
 
 \definecolor{rowshade}{RGB}{ {{- report_style.row_rgb -}} }
 \definecolor{tableborder}{RGB}{ {{- report_style.axis_rgb -}} }
+\definecolor{linkblue}{RGB}{ {{- report_style.link_rgb -}} }
 \arrayrulecolor{tableborder}
+\hypersetup{colorlinks=true, urlcolor=linkblue}
 
 \newcommand{\rowColorsWithHeader}{\rowcolors{1}{rowshade}{white}}
 \newcommand{\rowColorsWithoutHeader}{\rowcolors{1}{white}{rowshade}}
@@ -89,7 +93,7 @@
 {% if row.numeric %}{{ row.value | tex_number }}{% elif numeric_column %}\multicolumn{1}{c|}{ {{- row.value | tex -}} }{% else %}{{ row.value | tex }}{% endif %}
 {%- endmacro %}
 {% macro tex_software_name(role) -%}
-{% if role.url %}\href{ {{- role.url -}} }{ {{- role.name | tex -}} }{% else %}{{ role.name | tex }}{% endif %}
+{% if role.url %}\href{ {{- role.url -}} }{\uline{ {{- role.name | tex -}} }}{% else %}{{ role.name | tex }}{% endif %}
 {%- endmacro %}
 {% macro tex_loop_table(category) -%}
 \rowColorsWithHeader
