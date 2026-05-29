@@ -623,8 +623,8 @@ project.display.pattern(expt_name='hrpt', x_min=38, x_max=41)
 #
 # This final section shows how to review the results of the analysis.
 #
-# By default, no report files are generated. Here we enable HTML and
-# TeX reports for regular project saves, then request a one-off PDF.
+# By default, no report files are generated. Here we enable CIF, HTML,
+# TeX, and PDF reports for regular project saves.
 # The generated report files will be saved in the `reports` folder of
 # the project directory.
 

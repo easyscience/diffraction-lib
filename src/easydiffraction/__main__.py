@@ -4,10 +4,6 @@
 from __future__ import annotations
 
 import sys
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    import pathlib
 
 # Ensure UTF-8 output on all platforms (e.g. Windows with cp1252)
 if hasattr(sys.stdout, 'reconfigure'):
@@ -21,7 +17,7 @@ import easydiffraction as ed
 app = typer.Typer(add_completion=False)
 
 _MIN_PROJECT_FIRST_ARG_COUNT = 2
-_PROJECT_COMMAND_NAMES = frozenset({'fit', 'display', 'undo', 'save', 'save-report'})
+_PROJECT_COMMAND_NAMES = frozenset({'fit', 'display', 'undo'})
 _GLOBAL_COMMAND_NAMES = frozenset({
     'list-data',
     'download-data',
@@ -136,49 +132,6 @@ def _display_undo_summary(
         typer.echo('✅ Cleared analysis/results.h5 (Bayesian sidecar).')
     project.save()
     typer.echo(f'✅ Saved project to {project_dir}.')
-
-
-def _selected_report_flags(
-    *,
-    cif: bool,
-    html: bool,
-    tex: bool,
-    pdf: bool,
-) -> bool:
-    """Return whether at least one report format was selected."""
-    return cif or html or tex or pdf
-
-
-def _save_report_outputs(
-    project: object,
-    *,
-    cif: bool,
-    html: bool,
-    tex: bool,
-    pdf: bool,
-    offline: bool,
-) -> list[pathlib.Path]:
-    """Write selected one-off report outputs."""
-    report = project.report
-    report_paths = []
-    tex_path = None
-    if cif:
-        report_paths.append(report.save_cif())
-    if html:
-        report_paths.append(report.save_html(offline=offline))
-    if tex:
-        tex_path = report.save_tex()
-        report_paths.append(tex_path)
-    if pdf:
-        if tex_path is None:
-            pdf_path = report.save_pdf()
-        else:
-            from easydiffraction.report.pdf_compiler import compile_pdf_report  # noqa: PLC0415
-
-            pdf_path = compile_pdf_report(tex_path)
-        if pdf_path.is_file():
-            report_paths.append(pdf_path)
-    return report_paths
 
 
 def run_cli(args: list[str] | None = None) -> None:
@@ -329,72 +282,6 @@ def undo(
     """Undo the last fit: easydiffraction PROJECT_DIR undo [--dry]."""
     project = _load_project(project_dir)
     _display_undo_summary(project=project, project_dir=project_dir, dry=dry)
-
-
-@app.command('save')
-def save(
-    project_dir: str = typer.Argument(
-        ...,
-        help='Path to the project directory (must contain project.cif).',
-    ),
-) -> None:
-    """Save a project using its persisted report configuration."""
-    project = _load_project(project_dir)
-    project.save()
-
-
-@app.command('save-report')
-def save_report(
-    project_dir: str = typer.Argument(
-        ...,
-        help='Path to the project directory (must contain project.cif).',
-    ),
-    cif: bool = typer.Option(  # noqa: FBT001
-        False,  # noqa: FBT003
-        '--cif',
-        help='Write the IUCr CIF report.',
-    ),
-    html: bool = typer.Option(  # noqa: FBT001
-        False,  # noqa: FBT003
-        '--html',
-        help='Write the HTML report.',
-    ),
-    tex: bool = typer.Option(  # noqa: FBT001
-        False,  # noqa: FBT003
-        '--tex',
-        help='Write the TeX report bundle.',
-    ),
-    pdf: bool = typer.Option(  # noqa: FBT001
-        False,  # noqa: FBT003
-        '--pdf',
-        help='Write the PDF report.',
-    ),
-    offline: bool = typer.Option(  # noqa: FBT001
-        False,  # noqa: FBT003
-        '--offline',
-        help='Embed HTML assets instead of loading them from a CDN.',
-    ),
-) -> None:
-    """Write one-off reports without changing saved configuration."""
-    if not _selected_report_flags(cif=cif, html=html, tex=tex, pdf=pdf):
-        typer.echo(
-            'No report format selected. Use --cif, --html, --tex, or --pdf; '
-            'or enable project.report.{cif,html,tex,pdf} and save the project.',
-            err=True,
-        )
-        raise typer.Exit(code=1)
-
-    project = _load_project(project_dir)
-    report_paths = _save_report_outputs(
-        project,
-        cif=cif,
-        html=html,
-        tex=tex,
-        pdf=pdf,
-        offline=offline,
-    )
-    for report_path in report_paths:
-        typer.echo(f'Saved report: {report_path}')
 
 
 if __name__ == '__main__':

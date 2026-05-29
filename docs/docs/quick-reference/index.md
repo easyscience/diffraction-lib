@@ -410,6 +410,10 @@ python -m easydiffraction lbco_hrpt undo
 python -m easydiffraction lbco_hrpt undo --dry
 ```
 
+When `project.cif` enables `_report.cif`, `_report.html`, `_report.tex`,
+or `_report.pdf`, the `fit` command writes those reports during the
+normal project save.
+
 Load a saved example project straight from `download_data()`:
 
 ```python

@@ -81,16 +81,17 @@ HTML reports load Plotly and MathJax from CDNs by default. Set
 without network access; this embeds Plotly in the HTML and copies the
 vendored MathJax bundle next to it, adding about 4.5 MB total.
 
-The command line mirrors the same split:
+The command line saves reports from the persisted project configuration
+when a fit writes the project back to disk:
 
 ```bash
-ed save path/to/project
-ed save-report path/to/project --html --tex --pdf
+python -m easydiffraction path/to/project fit
 ```
 
-`ed save` uses the persisted `project.report` configuration.
-`ed save-report` is for one-off exports and requires at least one of
-`--cif`, `--html`, `--tex`, or `--pdf`.
+If `project.cif` contains `_report.html true`, `_report.tex true`, or
+another enabled report flag, `fit` writes those reports as part of the
+normal project save. Use the Python per-format methods above for one-off
+exports without changing the saved configuration.
 
 <!--
 ## Exporting the Report

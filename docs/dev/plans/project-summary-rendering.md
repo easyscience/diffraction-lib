@@ -21,10 +21,11 @@ exceptions to those instructions.
 > This plan is the **migration delta**: the diff between the committed
 > implementation and the rewritten ADR. It does **not** re-derive the
 > surfaces already shipped (config category, per-format methods,
-> `analysis.software`, `project.publication`, CLI `ed save-report`,
-> etc.); those stay as-is. Every step below either deletes or replaces
-> something the previous implementation introduced, or adds a new
-> surface the rewritten ADR requires.
+> `analysis.software`, `project.publication`, and CLI report saving via
+> `fit`); those stay as-is except for the later approved removal of the
+> standalone `save` / `save-report` commands. Every step below either
+> deletes or replaces something the previous implementation introduced,
+> or adds a new surface the rewritten ADR requires.
 
 ## ADR cross-reference
 
@@ -162,8 +163,9 @@ re-litigate them:
   delete the `style` `StringDescriptor`; drop the `style=` parameter
   from `save_tex()`, `save_pdf()`, any `Report.save()` dispatch; update
   docstrings).
-- `src/easydiffraction/__main__.py` (existing — drop the `--style` flag
-  from `ed save-report`).
+- `src/easydiffraction/__main__.py` (existing — remove standalone
+  report-export CLI options; report saving is driven by persisted
+  `_report.*` flags during `fit`).
 - `src/easydiffraction/report/tex_renderer.py` (existing — remove style
   dispatch; emit a single template).
 - `src/easydiffraction/io/cif/serialize.py` (existing — no code change
@@ -341,7 +343,8 @@ generated-artifact exceptions.
   - Drop the `style='iucr'` kwarg from `save_tex()` and `save_pdf()`
     signatures and from any internal dispatcher / `Report.save()` call
     site.
-  - Drop the `--style` flag from `ed save-report`.
+  - Keep CLI report saving tied to the persisted `_report.*` flags used
+    during `fit`; do not add one-off report-export flags.
   - The TeX renderer's template selection collapses to a single template
     (renamed below); remove the `ReportStyleEnum`-driven dispatch.
   - Commit: `Drop style= parameter from save_tex/save_pdf and CLI`.
@@ -1091,8 +1094,9 @@ verification commands below, add or update:
       `TypeError`); the five remaining descriptors round-trip through
       `project.cif`. P1.1, P1.2 surface.
 - [ ] **`tests/unit/easydiffraction/test___main__.py`** (extend) —
-      `ed save-report --style iucr` exits with an unknown-option error;
-      `ed save-report --tex --pdf` still works. P1.2 surface.
+      standalone `save` and `save-report` commands are unknown; project-
+      first argument normalization does not treat them as saved-project
+      actions. P1.2 surface.
 - [ ] **`tests/unit/easydiffraction/core/test_display_handler.py`**
       (new) — `DisplayHandler` is frozen, slotted; all four fields
       default to `None`; constructor accepts kwargs; unspecified fields
@@ -1296,8 +1300,9 @@ stage them.
 Aligns the `project.report` rendering surface with the rewritten
 `project-summary-rendering` ADR. The visible changes for users:
 
-- **One LaTeX style — `iucrjournals`.** The `style=` argument and the
-  `--style` CLI flag are gone. Multi-style support (REVTeX, Elsevier, …)
+- **One LaTeX style — `iucrjournals`.** The `style=` argument is gone,
+  and CLI report generation now follows the report flags persisted in
+  `project.cif` during `fit`. Multi-style support (REVTeX, Elsevier, …)
   is deferred to a follow-up ADR. The vendored TeX bundle shrinks from
   12 files to 2 (`iucrjournals.cls` + `harvard.sty`, both CC0 1.0).
 - **No `kaleido`, no Chrome bootstrap.** Each fit-quality figure in the
@@ -1331,4 +1336,5 @@ without further ADR changes.
 
 **Scope label:** `[report]`. Builds on PR #184 (IUCr CIF alignment) and
 the earlier commits on this branch (`project.report` config category,
-`analysis.software`, `project.publication`, `ed save-report` CLI).
+`analysis.software`, `project.publication`, and CLI report saving via
+`fit`).

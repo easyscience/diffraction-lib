@@ -375,11 +375,11 @@ project.report.save()
 #   )
 ```
 
-The Python error matches the CLI's existing behaviour for
-`ed save-report` with no flags (§7) — both surfaces refuse to silently
-no-op when the user explicitly asked for a report. `project.save()`
-keeps the no-report default because the user asked to save the project,
-not the reports.
+The Python error applies only to the explicit report-save API:
+`project.save()` keeps the no-report default because the user asked to
+save the project, not the reports. CLI report generation happens through
+project saves (`fit`), so it follows the persisted `_report.*` booleans
+instead of offering a separate ad-hoc export command.
 
 The per-format methods (`save_cif()`, `save_html()`, etc.) never inspect
 the persisted report booleans — they always write their format
@@ -1822,37 +1822,33 @@ templates/
 GUI consumes `project.report.data_context()` directly — no CIF parsing,
 no HTML scraping. This is the consistency guarantee.
 
-### 7. CLI surface mirrors the Python split
+### 7. CLI report saving uses persisted project configuration
 
-Two subcommands match the Python `project.save()` vs
-`project.report.save_*()` split:
+The CLI keeps the project-first workflow small: `fit`, `display`, and
+`undo` are the saved-project actions. There is no standalone `save` or
+`save-report` subcommand.
 
 ```bash
-ed save                                            # project files + enabled report booleans
-ed save-report --html                              # one-off — write reports/<project>.html only
-ed save-report --cif --tex --pdf                   # one-off — full LaTeX bundle + CIF
+ed path/to/project fit
 ```
 
-`ed save-report` with no `--cif`/`--html`/`--tex`/`--pdf` exits with a
-clear error pointing the user at the report booleans. `--pdf` implies
-`--tex` so the user always gets the editable source next to the PDF.
+`fit` runs the refinement and saves the project unless `--dry` is used.
+That save uses the persisted `_report.*` configuration from
+`project.cif`, so `_report.html true` writes `reports/<project>.html`,
+`_report.tex true` writes the TeX bundle, and `_report.pdf true` writes
+the PDF when a TeX engine is available.
 
-For users who want to **persist** the choice across runs, the
-configuration category is set the usual way — by setting
-`project.report.<format> = True`, by editing `project.cif` directly, or
-programmatically — and `ed save` picks it up on every subsequent save.
+For one-off report exports without changing saved configuration, Python
+keeps explicit per-format methods. The persisted booleans remain the
+single CLI-facing source of truth:
 
-CLI flags are short (no `_report` suffix; the subcommand name
-`save-report` already scopes them). The Python and CLI surfaces stay
-symmetric:
-
-| Python (config — persisted)          | Python (ad-hoc — one-off)    | CLI (one-off subcommand) |
-| ------------------------------------ | ---------------------------- | ------------------------ |
-| `project.report.html = True`         | `project.report.save_html()` | `ed save-report --html`  |
-| `project.report.cif = True`          | `project.report.save_cif()`  | `ed save-report --cif`   |
-| `project.report.tex = True`          | `project.report.save_tex()`  | `ed save-report --tex`   |
-| `project.report.pdf = True`          | `project.report.save_pdf()`  | `ed save-report --pdf`   |
-| `project.report.html_offline = True` | `save_html(offline=True)`    | `--html --offline`       |
+| Python (config — persisted)          | Python (ad-hoc — one-off)    | CLI save path                    |
+| ------------------------------------ | ---------------------------- | -------------------------------- |
+| `project.report.html = True`         | `project.report.save_html()` | `ed path/to/project fit` save    |
+| `project.report.cif = True`          | `project.report.save_cif()`  | `ed path/to/project fit` save    |
+| `project.report.tex = True`          | `project.report.save_tex()`  | `ed path/to/project fit` save    |
+| `project.report.pdf = True`          | `project.report.save_pdf()`  | `ed path/to/project fit` save    |
+| `project.report.html_offline = True` | `save_html(offline=True)`    | persisted `_report.html_offline` |
 
 ### 8. Fields the library currently lacks
 
@@ -2135,7 +2131,7 @@ browser anyway. Deferred.
   - a `ReportStyleEnum` (per the closed-values ADR),
   - a `_report.style` config field on `project.report`,
   - a `style=` arg on `save_tex()` / `save_pdf()`,
-  - a `--style` CLI flag on `ed save-report`,
+  - CLI style-selection only if a future CLI export surface is accepted,
   - vendored class files for the new style.
 
   The renderer in v1 hardcodes `iucrjournals`; reintroducing the
@@ -2199,9 +2195,9 @@ project.save()
 
 Per-format ad-hoc methods cover one-offs without changing the persisted
 config: `project.report.save_html(offline=False)`, `save_cif()`,
-`save_tex()`, `save_pdf()`. The CLI mirrors with a new subcommand,
-`ed save-report --cif --html --tex --pdf` (also a one-off; `ed save`
-reads the persisted config).
+`save_tex()`, `save_pdf()`. The CLI writes reports through the normal
+project save performed by `ed path/to/project fit`, using the persisted
+config from `project.cif`.
 
 The LaTeX bundle ships `<project>.tex`, CSV data per experiment, and the
 `iucrjournals` vendored style under `reports/tex/`. The compiled
