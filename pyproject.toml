@@ -150,9 +150,14 @@ default-tag = 'v999.0.0'
 # https://interrogate.readthedocs.io/en/latest/
 
 [tool.interrogate]
-fail-under = 75 # Minimum docstring coverage percentage to pass
+# Minimum docstring coverage percentage to pass.
+fail-under = 75
 verbose = 1
-#exclude = ['src/**/__init__.py']
+exclude = [
+  'src/easydiffraction/report/templates/html/vendor',
+  'src/easydiffraction/report/templates/tex/styles',
+  'src/easydiffraction/utils/_vendored/jupyter_dark_detect',
+]
 
 #######################################
 # Configuration for coverage/pytest-cov
@@ -162,8 +167,15 @@ verbose = 1
 # https://coverage.readthedocs.io/en/latest/
 
 [tool.coverage.run]
-branch = true    # Measure branch coverage as well
-source = ['src'] # Limit coverage to the source code directory
+# Measure branch coverage as well.
+branch = true
+# Limit coverage to the source code directory.
+source = ['src']
+omit = [
+  'src/easydiffraction/report/templates/html/vendor/*',
+  'src/easydiffraction/report/templates/tex/styles/*',
+  'src/easydiffraction/utils/_vendored/jupyter_dark_detect/*',
+]
 
 [tool.coverage.report]
 show_missing = true  # Show missing lines
@@ -202,8 +214,8 @@ filterwarnings = [
 [tool.ruff]
 exclude = [
   'tmp',
-  # Vendored jupyter_dark_detect: keep as-is from upstream for easy updates
-  # https://github.com/OpenMined/jupyter-dark-detect/tree/main/jupyter_dark_detect
+  'src/easydiffraction/report/templates/html/vendor',
+  'src/easydiffraction/report/templates/tex/styles',
   'src/easydiffraction/utils/_vendored/jupyter_dark_detect',
 ]
 indent-width = 4
@@ -390,7 +402,8 @@ max-positional-args = 7
 
 [tool.pydoclint]
 #exclude = '\.' # Temporarily disable pydoclint until we are ready
-exclude = 'src/easydiffraction/utils/_vendored/jupyter_dark_detect' # ED only
+# ED only.
+exclude = 'src/easydiffraction/(report/templates/html/vendor|report/templates/tex/styles|utils/_vendored/jupyter_dark_detect)'
 style = 'numpy'
 check-style-mismatch = true
 check-arg-defaults = true
@@ -405,7 +418,8 @@ allow-init-docstring = true
 
 [tool.format_docstring]
 #exclude = '\.' # Temporarily disable format-docstring until we are ready
-exclude = 'src/easydiffraction/utils/_vendored/jupyter_dark_detect' # ED only
+# ED only.
+exclude = 'src/easydiffraction/(report/templates/html/vendor|report/templates/tex/styles|utils/_vendored/jupyter_dark_detect)'
 docstring_style = 'numpy'
 line_length = 72
 fix_rst_backticks = true

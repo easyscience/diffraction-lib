@@ -25,6 +25,11 @@ docs/docs/assets/
 # Node
 node_modules
 
+# Vendored snapshots
+src/easydiffraction/report/templates/html/vendor/
+src/easydiffraction/report/templates/tex/styles/
+src/easydiffraction/utils/_vendored/jupyter_dark_detect/
+
 # Misc
 .benchmarks
 .cache

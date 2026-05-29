@@ -53,6 +53,7 @@ EXCLUDED_MODULES: set[str] = {
 EXCLUDED_DIRS: set[str] = {
     '_vendored',
     '__pycache__',
+    'vendor',
 }
 
 # ---------------------------------------------------------------------------

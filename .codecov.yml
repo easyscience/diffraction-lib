@@ -4,6 +4,11 @@
 github_checks:
   annotations: true
 
+ignore:
+  - 'src/easydiffraction/report/templates/html/vendor/**'
+  - 'src/easydiffraction/report/templates/tex/styles/**'
+  - 'src/easydiffraction/utils/_vendored/jupyter_dark_detect/**'
+
 comment:
   layout: 'reach, diff, flags, files'
   behavior: default
