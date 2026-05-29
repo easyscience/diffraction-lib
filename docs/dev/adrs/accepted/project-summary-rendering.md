@@ -25,8 +25,8 @@ multi-datablock IUCr submission CIF written to
 persisted fields (`cif`, `html`, `tex`, `pdf`, `html_offline`)
 on `project.cif`, plus ad-hoc per-format methods
 (`save_html()`, `save_cif()`, `save_tex()`, `save_pdf()`). The
-Python-side `project.report.formats` is a convenience property
-view over the four format booleans. The LaTeX writer hardcodes
+Python-side API uses those same boolean descriptors directly, matching
+the persisted CIF shape. The LaTeX writer hardcodes
 `iucrjournals` as its document class — there is no style
 selector, no `_report.style` field, no `style=` arg on
 `save_tex()` / `save_pdf()`. The
@@ -148,8 +148,7 @@ In scope:
   terminal/Jupyter, HTML, and LaTeX rendering surfaces, a
   configuration category (five scalar fields —
   `project.report.{cif, html, tex, pdf, html_offline}` —
-  persisted in `project.cif`; `project.report.formats` is a
-  property view over the four format booleans), and ad-hoc
+  persisted in `project.cif`), and ad-hoc
   per-format save methods. **All report formats are opt-in via the
   configuration; every format defaults to `False` so
   `project.save()` writes nothing under `reports/` until a
@@ -181,8 +180,7 @@ Out of scope:
   cross-references.
 - The IUCr CIF submission export tag policy and multi-datablock
   layout. Covered by the alignment ADR; the output file lives at
-  `reports/<project>.cif` and is opt-in via
-  `project.report.formats = ['cif', ...]`.
+  `reports/<project>.cif` and is opt-in via `project.report.cif = True`.
 - Pre-existing project-level singleton categories (`_info.*`,
   `_chart.*`, `_table.*`, `_verbosity.*`). Covered by the
   in-flight
@@ -267,23 +265,10 @@ class (`iucrjournals`); adding another style is deferred
 work, not a v1 selector. See §3 for the reasoning behind the
 single-style choice.
 
-For convenience, `project.report.formats` is exposed as a
-**property view** — reading it returns a list of the
-currently-`True` formats; assigning a list flips the four
-booleans to match:
-
-```python
-project.report.formats               # → []
-project.report.formats = ['cif', 'html']
-project.report.cif                   # → True
-project.report.html                  # → True
-project.report.tex                   # → False
-project.report.formats               # → ['cif', 'html']
-```
-
-The list view is the more idiomatic surface for "set of enabled
-formats"; the booleans are what CIF persists. Both spellings are
-equivalent and round-trip cleanly.
+There is no separate list-style `project.report.formats` property.
+The Python API intentionally mirrors CIF and the other project-level
+configuration categories: each persisted scalar descriptor is set
+directly.
 
 ```python
 import easydiffraction as ed
@@ -292,11 +277,8 @@ project = ed.Project()
 # … set up structures, experiments, run fit …
 
 # Configure once — persisted in project.cif (see §1.3 below).
-# Either spelling works:
-project.report.formats = ['cif', 'html']
-# or, equivalently:
-#   project.report.cif = True
-#   project.report.html = True
+project.report.cif = True
+project.report.html = True
 project.report.html_offline = False
 
 # Every subsequent save now emits the configured reports too.
@@ -323,13 +305,9 @@ class ReportFormatEnum(str, Enum):
 ```
 
 The four per-format booleans (`project.report.cif`, `.html`,
-`.tex`, `.pdf`) carry one `ReportFormatEnum` member each as a
-class-level constant identifying which format they enable. The
-`formats` property view returns a list of `ReportFormatEnum`
-members (`[ReportFormatEnum.CIF, ReportFormatEnum.HTML]`),
-which compare equal to the bare string values for ergonomic
-user code (`'cif' in project.report.formats` still works
-because `(str, Enum)` inherits string equality).
+`.tex`, `.pdf`) are the public configuration API. Internal save
+dispatch may use `ReportFormatEnum` members to keep the finite
+format set explicit, but the enum is not a user-facing selector.
 
 There is no `ReportStyleEnum`. The LaTeX writer hardcodes
 `iucrjournals` as its document class (see §3); when a future
@@ -339,7 +317,7 @@ together with a new `_report.style` config field.
 #### 1.2 Ad-hoc per-format methods
 
 Each format has its own explicit write method on the facade,
-independent of `project.report.formats`. Use when a user wants
+independent of the persisted report booleans. Use when a user wants
 to produce a one-off artifact without changing the persistent
 configuration.
 
@@ -349,7 +327,7 @@ project.report.save_html(offline: bool = False)  # writes reports/<project>.html
 project.report.save_tex()                        # writes reports/tex/{<project>.tex, ...}
 project.report.save_pdf()                        # writes reports/<project>.pdf (compiles TeX too)
 
-# Convenience: write everything currently in project.report.formats.
+# Convenience: write every report enabled by project.report booleans.
 # Raises ValueError if no formats are configured (see below).
 project.report.save()                            # reads config, no flags
 
@@ -382,7 +360,7 @@ accepted IUCr `project.save(report=True)` flag is removed (see
 ADRs amended); reports are configured on `project.report.*`.
 
 ```python
-project.save()           # writes project files + whatever is in project.report.formats
+project.save()           # writes project files + enabled report booleans
 ```
 
 `Summary.as_cif()` and `summary_to_cif()` were already deleted
@@ -399,7 +377,7 @@ about reports, so calling it with nothing configured is a user
 error.
 
 ```python
-# project.report.formats == []  (default — unconfigured)
+# project.report.{cif,html,tex,pdf} == False  (default — unconfigured)
 
 project.save()
 # → writes project.cif + structures/ + experiments/ + analysis/
@@ -410,8 +388,7 @@ project.report.save()
 # → raises:
 #   ValueError(
 #       "project.report.save() called with no formats enabled. "
-#       "Set project.report.{cif,html,tex,pdf} = True (or assign a "
-#       "list via project.report.formats), or call a per-format "
+#       "Set project.report.{cif,html,tex,pdf} = True, or call a per-format "
 #       "method directly (project.report.save_html(), etc.)."
 #   )
 ```
@@ -423,7 +400,7 @@ silently no-op when the user explicitly asked for a report.
 asked to save the project, not the reports.
 
 The per-format methods (`save_cif()`, `save_html()`, etc.)
-never inspect `project.report.formats` — they always write
+never inspect the persisted report booleans — they always write
 their format unconditionally. They are explicit one-offs.
 
 #### 1.3 CIF persistence of the configuration
@@ -469,7 +446,7 @@ always a concrete CIF value, never an empty loop or missing
 block:
 
 ```text
-# Default (project.report.formats = []):
+# Default (project.report.{cif,html,tex,pdf} = False):
 _report.cif           no
 _report.html          no
 _report.tex           no
@@ -483,14 +460,13 @@ on its descriptor; the `formats` property view returns `[]`.
 The four per-format booleans give the IUCr-aware tooling
 (`gemmi`, `publCIF`) a typed, validatable view of the
 configuration — each format is a known enum item with type
-`Boolean`, not a parsed string. The Python list view
-(`project.report.formats`) is a convenience computed from these
-four booleans at access time; it has no separate CIF storage.
+`Boolean`, not a parsed string. There is no additional Python list
+view with separate storage; the booleans are the source of truth.
 
 Adding a new format in the future (e.g. `markdown`) is a
 one-line schema extension: add `_report.markdown` to the
 dictionary and a `project.report.markdown` boolean to the
-descriptor. The list property picks it up automatically.
+descriptor, then include it in the internal save dispatch.
 
 Loading a `project.cif` populates `project.report.*` per the
 project-facade-and-persistence contract; on the next
@@ -804,17 +780,17 @@ that:
 The sweep is a Phase 1 step in the implementation plan, not
 an ADR-level decision.
 
-### 2. HTML report — config-driven via `project.report.formats`
+### 2. HTML report — config-driven via `project.report.html`
 
-`'html' in project.report.formats` causes `project.save()` to
-write `reports/<project>.html`. The empty default
-(`formats = []`) keeps `reports/` from being touched at all on
-plain `project.save()`. For one-off HTML without changing the
-persistent config, call `project.report.save_html()` directly.
+`project.report.html = True` causes `project.save()` to write
+`reports/<project>.html`. The all-`False` default keeps
+`reports/` from being touched at all on plain `project.save()`.
+For one-off HTML without changing the persistent config, call
+`project.report.save_html()` directly.
 
 ```python
 # Persistent — every subsequent save writes the HTML report.
-project.report.formats = ['html']
+project.report.html = True
 project.report.html_offline = False    # CDN-Plotly (default)
 project.save()                         # → reports/<project>.html
 
@@ -962,7 +938,8 @@ tables:
 
 `reports/` is created lazily — only when at least one format is
 configured (or an ad-hoc method is called). A user iterating on
-a fit with the default `formats = []` produces no extra files.
+a fit with the default all-`False` report booleans produces no
+extra files.
 
 Rationale for the config category (replacing the earlier
 flag-based and "auto on every save" positions):
@@ -971,10 +948,10 @@ flag-based and "auto on every save" positions):
   `project.chart.type`, `project.table.type`,
   `project.verbosity.fit` follow the same pattern — set once,
   persisted in `project.cif`, applied on every save.
-- `project.save()` has one job: save the project. With
-  `formats = []` the report behaviour is unchanged from before
-  this ADR; with `formats = ['html']` HTML appears on every
-  save without needing a flag on each call.
+- `project.save()` has one job: save the project. With all report
+  booleans `False`, the report behaviour is unchanged from before
+  this ADR; with `project.report.html = True`, HTML appears on
+  every save without needing a flag on each call.
 - The GUI's Summary tab consumes `project.report.data_context()`
   in-memory, not the HTML file — so the GUI-consistency story
   does not depend on the HTML file existing at any particular
@@ -1049,10 +1026,10 @@ the IUCr "one CIF per article" convention):
   Plotly display constants for style — one source of truth for
   both data and visual conventions.
 
-### 3. LaTeX + PDF — config-driven via `project.report.formats`
+### 3. LaTeX + PDF — config-driven via booleans
 
-LaTeX is a **publish-time** artifact. `'tex'` and `'pdf'` are
-added to `project.report.formats` when the user wants them.
+LaTeX is a **publish-time** artifact. `project.report.tex` and
+`project.report.pdf` are enabled when the user wants them.
 There is no style selector: the LaTeX writer ships exactly one
 document class (`iucrjournals`); the **content layout
 deliberately does not replicate IUCr's published journal
@@ -1063,11 +1040,12 @@ rather than "ready-to-submit manuscript".
 
 ```python
 # Persistent — every save writes TeX + assets.
-project.report.formats = ['tex']
+project.report.tex = True
 project.save()                              # → reports/tex/{...}
 
 # Persistent — every save writes the compiled PDF too.
-project.report.formats = ['tex', 'pdf']
+project.report.tex = True
+project.report.pdf = True
 project.save()                              # → reports/tex/{...} + reports/<project>.pdf
 
 # One-off, ignoring config.
@@ -1078,11 +1056,11 @@ project.report.save_pdf()                   # TeX + PDF (PDF implies TeX)
 project.report.as_tex() -> str
 ```
 
-**`'pdf' in formats` implies the TeX source is also written** —
-a PDF without the editable `.tex` source is useless if the user
-wants to tweak before re-compiling. Asking for the PDF always
-writes the TeX next to it. Equivalently, `save_pdf()` writes
-the TeX assets as a side-effect.
+**`project.report.pdf = True` implies the TeX source is also
+written** — a PDF without the editable `.tex` source is useless
+if the user wants to tweak before re-compiling. Asking for the
+PDF always writes the TeX next to it. Equivalently,
+`save_pdf()` writes the TeX assets as a side-effect.
 
 Future `project.report.html_style` (dark mode, journal-mimicking
 HTML layout) can land separately without collision because it
@@ -1113,15 +1091,15 @@ Per-project filenames (`<project>.{cif,html,pdf}`) share a root in
 Single style (`iucrjournals`) — no multi-style infrastructure.
 
 **Full reports/ tree when all formats are configured.**
-`project.report.formats = ['cif', 'html', 'tex', 'pdf']`:
+`project.report.cif/html/tex/pdf = True`:
 
 ```
 <project_root>/
   reports/                          # populated by project.save() per config
-    <project>.cif                   # ← 'cif' in project.report.formats (alignment ADR §2)
-    <project>.html                  # ← 'html' in project.report.formats (this ADR §2)
-    <project>.pdf                   # ← 'pdf' in project.report.formats (this ADR §3.4)
-    tex/                            # ← 'tex' or 'pdf' in project.report.formats (this ADR §3)
+    <project>.cif                   # ← project.report.cif
+    <project>.html                  # ← project.report.html
+    <project>.pdf                   # ← project.report.pdf
+    tex/                            # ← project.report.tex or project.report.pdf
       <project>.tex                 #   main document; tables + \includegraphics of figure PDFs
       data/
         fit_<expt_id>.csv           #   profile data: x, meas, calc, diff (+ meas_su)
@@ -1135,7 +1113,7 @@ Single style (`iucrjournals`) — no multi-style infrastructure.
 
 **Examples by configuration.**
 
-`project.report.formats = []` (default — nothing written):
+`project.report.{cif,html,tex,pdf} = False` (default — nothing written):
 
 ```
 <project_root>/
@@ -1146,7 +1124,7 @@ Single style (`iucrjournals`) — no multi-style infrastructure.
   # reports/ directory does not exist
 ```
 
-`project.report.formats = ['cif']` (journal-submission CIF only):
+`project.report.cif = True` (journal-submission CIF only):
 
 ```
 <project_root>/
@@ -1158,7 +1136,7 @@ Single style (`iucrjournals`) — no multi-style infrastructure.
     <project>.cif                   # IUCr-aligned, multi-datablock (alignment ADR §2.3)
 ```
 
-`project.report.formats = ['html']` + `html_offline = True`
+`project.report.html = True` + `html_offline = True`
 (self-contained inspection page):
 
 ```
@@ -1171,7 +1149,7 @@ Single style (`iucrjournals`) — no multi-style infrastructure.
     <project>.html                  # ~3 MB, Plotly inlined
 ```
 
-`project.report.formats = ['cif', 'html', 'pdf']` (typical
+`project.report.cif/html/pdf = True` (typical
 pre-submission bundle):
 
 ```
@@ -1191,10 +1169,10 @@ pre-submission bundle):
       styles/harvard.sty
 ```
 
-`reports/` is created lazily — only when at least one format
-sits in `project.report.formats` (or an ad-hoc method is called).
+`reports/` is created lazily — only when at least one report
+boolean is enabled (or an ad-hoc method is called).
 The `tex/`, `tex/data/`, and `tex/styles/` subfolders appear
-only when `'tex'` or `'pdf'` is in `project.report.formats` (or
+only when `project.report.tex` or `project.report.pdf` is `True` (or
 `save_tex()` / `save_pdf()` is invoked).
 
 The `<project>` portion of every filename comes from
@@ -1507,8 +1485,8 @@ Behaviour:
     pixi add tectonic         # recommended (conda-forge)
     conda install -c conda-forge tectonic
     # or any TeX Live distribution (latexmk / pdflatex)
-  Then re-run project.save() (with 'pdf' in project.report.formats)
-  or project.report.save_pdf().
+  Then set project.report.pdf = True and re-run project.save(),
+  or call project.report.save_pdf().
   ```
 
 The library does not bundle a TeX distribution — TeX Live is
@@ -1680,7 +1658,7 @@ uniformly:
   populate." No warning, no exception; the report still renders
   end-to-end so users iterating on a configuration before fitting
   see the rest of the page.
-- **IUCr CIF export (`'cif' in project.report.formats`).** The
+- **IUCr CIF export (`project.report.cif = True`).** The
   `_easydiffraction_software.{framework, calculator, minimizer}`
   triple emits `?` placeholders consistent with the IUCr ADR's
   unset-field convention. The derived
@@ -1955,21 +1933,20 @@ Two subcommands match the Python `project.save()` vs
 `project.report.save_*()` split:
 
 ```bash
-ed save                                            # project files + whatever is in project.report.formats
+ed save                                            # project files + enabled report booleans
 ed save-report --html                              # one-off — write reports/<project>.html only
 ed save-report --cif --tex --pdf                   # one-off — full LaTeX bundle + CIF
 ```
 
 `ed save-report` with no `--cif`/`--html`/`--tex`/`--pdf` exits
-with a clear error pointing the user at the configuration
-category (`ed config project.report.formats html cif`).
+with a clear error pointing the user at the report booleans.
 `--pdf` implies `--tex` so the user always gets the editable
 source next to the PDF.
 
 For users who want to **persist** the choice across runs, the
-configuration category is set the usual way — interactively
-through `ed config project.report.formats html cif`, by editing
-`project.cif` directly, or programmatically — and `ed save`
+configuration category is set the usual way — by setting
+`project.report.<format> = True`, by editing `project.cif`
+directly, or programmatically — and `ed save`
 picks it up on every subsequent save.
 
 CLI flags are short (no `_report` suffix; the subcommand name
@@ -1978,10 +1955,10 @@ stay symmetric:
 
 | Python (config — persisted)               | Python (ad-hoc — one-off)            | CLI (one-off subcommand)              |
 | ----------------------------------------- | ------------------------------------ | ------------------------------------- |
-| `project.report.formats = ['html']`       | `project.report.save_html()`         | `ed save-report --html`               |
-| `project.report.formats = ['cif']`        | `project.report.save_cif()`          | `ed save-report --cif`                |
-| `project.report.formats = ['tex']`        | `project.report.save_tex()`          | `ed save-report --tex`                 |
-| `project.report.formats = ['pdf']`        | `project.report.save_pdf()`          | `ed save-report --pdf`                 |
+| `project.report.html = True`              | `project.report.save_html()`         | `ed save-report --html`               |
+| `project.report.cif = True`               | `project.report.save_cif()`          | `ed save-report --cif`                |
+| `project.report.tex = True`               | `project.report.save_tex()`          | `ed save-report --tex`                |
+| `project.report.pdf = True`               | `project.report.save_pdf()`          | `ed save-report --pdf`                |
 | `project.report.html_offline = True`      | `save_html(offline=True)`            | `--html --offline`                    |
 
 ### 8. Fields the library currently lacks
@@ -2019,8 +1996,8 @@ benefits every renderer (HTML, PDF, terminal, GUI) simultaneously.
 
 - `summary.cif` placeholder goes away (alignment ADR + this ADR
   jointly retire it); no more "To be added..." on disk.
-- HTML can be auto-regenerated on every save by adding `'html'`
-  to `project.report.formats` once (or via the GUI's "Export"
+- HTML can be auto-regenerated on every save by setting
+  `project.report.html = True` once (or via the GUI's "Export"
   panel). Zero-friction inspection for users who want it, no
   surprise file writes for users who don't.
 - LaTeX export covers the "send the refinement table to my
@@ -2040,17 +2017,16 @@ benefits every renderer (HTML, PDF, terminal, GUI) simultaneously.
 
 ### Trade-offs
 
-- All report outputs are opt-in. Default
-  `project.report.formats = []` means daily `project.save()`
-  calls write only project files — `reports/` isn't created
-  until a format is configured (or an ad-hoc method is called).
+- All report outputs are opt-in. The default all-`False` report
+  booleans mean daily `project.save()` calls write only project
+  files — `reports/` isn't created until a format is configured
+  (or an ad-hoc method is called).
 - HTML is small (~50–300 KB CDN-mode, ~few MB offline); users
-  who want it on every save add `'html'` to
-  `project.report.formats` once.
+  who want it on every save set `project.report.html = True` once.
 - LaTeX bundle (`reports/tex/` + `reports/<project>.pdf`) is a
   handful of files (`.tex`, CSV data per experiment, two
   vendored class/style files, compiled PDF) — only written
-  when `'tex'` or `'pdf'` is in `project.report.formats` (or
+  when `project.report.tex` or `project.report.pdf` is `True` (or
   an ad-hoc `save_tex()` / `save_pdf()` call is made). Total
   per-save footprint is dominated by the CSVs; the
   `tex/styles/` directory holds ~20 KB across 2 files.
@@ -2092,10 +2068,9 @@ benefits every renderer (HTML, PDF, terminal, GUI) simultaneously.
      come from the new `project.report` configuration category
      (§1.1, §1.3) — five scalar items persisted to `project.cif`
      (`_report.cif`, `_report.html`, `_report.tex`, `_report.pdf`,
-     `_report.html_offline`). The Python-side
-     `project.report.formats` is a property view over the four
-     format booleans. Set the configuration once; `project.save()`
-     applies it on every save thereafter. Replaces the flag with
+     `_report.html_offline`). Set the configuration once through
+     those booleans; `project.save()` applies it on every save
+     thereafter. Replaces the flag with
      persisted configuration, matching the existing
      `project.chart`, `project.table`, `project.verbosity`
      pattern.
@@ -2213,9 +2188,9 @@ benefits every renderer (HTML, PDF, terminal, GUI) simultaneously.
 ## Open Questions
 
 - **GUI Export panel.** Two reasonable shapes: (a) checkboxes
-  edit `project.report.formats` directly + a "Save now" button
-  that calls `project.save()` (config-driven, matches the
-  Python surface) or (b) checkboxes drive ad-hoc per-format
+  edit `project.report.{cif,html,tex,pdf}` directly + a "Save
+  now" button that calls `project.save()` (config-driven, matches
+  the Python surface) or (b) checkboxes drive ad-hoc per-format
   calls (`save_html()`, `save_pdf()`) without changing the
   persisted config (one-off ergonomics). Either fits the
   configuration / ad-hoc split in §1; the exact GUI layout
@@ -2252,9 +2227,9 @@ An earlier revision of this ADR had HTML always-on, no opt-in
 flag, the philosophy being "every artefact stays fresh".
 Rejected in favour of the configuration approach:
 `project.save()` does one job (save the project) and reads
-`project.report.formats` to decide which reports come along.
-Empty config = no reports. Users who want auto-fresh HTML add
-`'html'` to `project.report.formats` once; the GUI consumes
+the report booleans to decide which reports come along. Empty
+config = no reports. Users who want auto-fresh HTML set
+`project.report.html = True` once; the GUI consumes
 `project.report.data_context()` in-memory, not the HTML file, so
 freshness of the file does not affect GUI consistency.
 
@@ -2344,7 +2319,8 @@ configuration category on the project (persisted in
 `project.cif`) and applied automatically on every save:
 
 ```python
-project.report.formats = ['cif', 'html']    # which formats project.save() emits
+project.report.cif = True                   # emit IUCr CIF on save
+project.report.html = True                  # emit HTML on save
 project.report.html_offline = False         # Plotly via CDN (default) or inlined
 
 project.save()

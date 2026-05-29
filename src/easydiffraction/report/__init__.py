@@ -4,9 +4,6 @@
 
 from __future__ import annotations
 
-from easydiffraction.report.enums import ReportFormatEnum
-
-
 def __getattr__(name: str) -> object:
     """Load report objects that would otherwise form import cycles."""
     if name == 'Report':

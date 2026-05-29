@@ -376,7 +376,7 @@ def save_report(
     if not _selected_report_flags(cif=cif, html=html, tex=tex, pdf=pdf):
         typer.echo(
             'No report format selected. Use --cif, --html, --tex, or --pdf; '
-            'or configure project.report.formats and save the project.',
+            'or enable project.report.{cif,html,tex,pdf} and save the project.',
             err=True,
         )
         raise typer.Exit(code=1)

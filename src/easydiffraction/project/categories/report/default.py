@@ -4,7 +4,6 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterable
 from textwrap import wrap
 from typing import TYPE_CHECKING
 
@@ -29,8 +28,7 @@ if TYPE_CHECKING:
 
 _NO_REPORT_FORMATS_MESSAGE = (
     'project.report.save() called with no formats enabled. '
-    'Set project.report.{cif,html,tex,pdf} = True (or assign a '
-    'list via project.report.formats), or call a per-format '
+    'Set project.report.{cif,html,tex,pdf} = True, or call a per-format '
     'method directly (project.report.save_html(), etc.).'
 )
 
@@ -131,9 +129,8 @@ class Report(CategoryItem):
     def html_offline(self, value: bool) -> None:
         self._html_offline.value = value
 
-    @property
-    def formats(self) -> list[ReportFormatEnum]:
-        """Enabled report-output formats."""
+    def _enabled_formats(self) -> list[ReportFormatEnum]:
+        """Return report-output formats enabled by boolean flags."""
         formats = []
         if self._cif.value:
             formats.append(ReportFormatEnum.CIF)
@@ -144,21 +141,6 @@ class Report(CategoryItem):
         if self._pdf.value:
             formats.append(ReportFormatEnum.PDF)
         return formats
-
-    @formats.setter
-    def formats(
-        self,
-        formats: Iterable[ReportFormatEnum | str] | ReportFormatEnum | str,
-    ) -> None:
-        if isinstance(formats, (ReportFormatEnum, str)):
-            values = [formats]
-        else:
-            values = list(formats)
-        enabled = {ReportFormatEnum(value) for value in values}
-        self.cif = ReportFormatEnum.CIF in enabled
-        self.html = ReportFormatEnum.HTML in enabled
-        self.tex = ReportFormatEnum.TEX in enabled
-        self.pdf = ReportFormatEnum.PDF in enabled
 
     @property
     def project(self) -> object:
@@ -494,7 +476,7 @@ class Report(CategoryItem):
         """Write enabled formats, returning quietly when none are set."""
         report_paths = []
         tex_path = None
-        for report_format in self.formats:
+        for report_format in self._enabled_formats():
             if report_format is ReportFormatEnum.CIF:
                 report_paths.append(self.save_cif())
             elif report_format is ReportFormatEnum.HTML:

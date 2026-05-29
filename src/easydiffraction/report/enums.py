@@ -14,8 +14,3 @@ class ReportFormatEnum(StrEnum):
     HTML = 'html'
     TEX = 'tex'
     PDF = 'pdf'
-
-    @classmethod
-    def default(cls) -> ReportFormatEnum:
-        """Return the default report format."""
-        return cls.CIF

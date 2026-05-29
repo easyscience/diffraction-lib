@@ -145,8 +145,8 @@ observation drives the policy:
 - **Reports** — a separate `project.report` facade that pulls live
   Python state and emits journal report artifacts under `reports/`.
   The IUCr CIF one-off method is `project.report.save_cif()`; the
-  regular `project.save()` call emits configured reports from
-  `project.report.formats`. This path applies all IUCr renames,
+  regular `project.save()` call emits configured reports from the
+  `project.report.{cif,html,tex,pdf}` booleans. This path applies all IUCr renames,
   structural reshapings, multi-datablock layout, and project-extension
   namespacing (`_easydiffraction_*`). It replaces the unimplemented
   `project.summary` placeholder. **Export only — no round-trip.**
@@ -307,12 +307,12 @@ project.report.save()                   # write configured reports only
 
 `project.summary` (currently an unimplemented placeholder) is removed
 and replaced by `project.report` — a facade slot that owns journal
-report generation. `project.report.formats` controls which reports
-`project.save()` emits. Per-format methods (`save_cif()`,
-`save_html()`, `save_tex()`, `save_pdf()`) write one-off artifacts
-without changing that configuration. The no-arg `project.report.save()`
-uses `project.report.formats` and raises `ValueError` when no formats
-are enabled.
+report generation. The `project.report.{cif,html,tex,pdf}` booleans
+control which reports `project.save()` emits. Per-format methods
+(`save_cif()`, `save_html()`, `save_tex()`, `save_pdf()`) write
+one-off artifacts without changing that configuration. The no-arg
+`project.report.save()` uses those booleans and raises `ValueError`
+when no formats are enabled.
 
 #### 2.2 Output location
 
@@ -987,7 +987,7 @@ Policy:
   manual editing required: `project.report.save_cif()` produces an
   upload-ready file at `reports/<project>.cif` matching the
   multi-datablock publication convention. Users who want CIF reports on
-  every project save can set `project.report.formats = ['cif']`.
+  every project save can set `project.report.cif = True`.
 - Publication-metadata placeholders are emitted as `?` in `data_global`
   so users know where to fill in journal-required info before
   submission.
@@ -1035,7 +1035,7 @@ Policy:
 - [`project-facade-and-persistence.md`](project-facade-and-persistence.md)
   — `project.summary` facade slot is removed and replaced by
   `project.report`. The accepted `project.save(report=True)` flag is
-  superseded by `project.report.formats` for configured reports and
+  superseded by report booleans for configured reports and
   `project.report.save_cif()` for the IUCr CIF one-off path.
   `summary.cif` is no longer written by default `Project.save()`; the
   slot is repurposed for IUCr / journal report generation in

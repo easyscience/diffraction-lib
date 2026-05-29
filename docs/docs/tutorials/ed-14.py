@@ -163,11 +163,12 @@ structure.show_as_cif()
 # ## Step 6: Generate Report
 #
 # By default, no report files are generated. Here we enable HTML and
-# TeX reports for regular project saves, then request a one-off PDF.
-# The generated report files will be saved in the `reports` folder of
-# the project directory.
+# TeX reports, so that both the HTML and PDF report files are generated
+# when saving the project.
+#
+# We also support saving the report in CIF and TEX formats.
 
 # %%
-project.report.formats = ['html', 'tex']
+project.report.html = True
+project.report.pdf = True
 project.save()
-project.report.save_pdf()

@@ -55,11 +55,10 @@ project.info.show_as_cif()
 # #### Save Project
 #
 # When saving the project for the first time, you need to specify the
-# directory path. In the example below, the project is saved to a
-# temporary location defined by the system.
+# directory path.
 
 # %%
-project.save_as(dir_path='lbco_hrpt', temporary=True)
+project.save_as(dir_path='projects/lbco_hrpt')
 
 # %% [markdown]
 # #### Set Up Data Plotter
@@ -630,9 +629,11 @@ project.display.pattern(expt_name='hrpt', x_min=38, x_max=41)
 # the project directory.
 
 # %%
-project.report.formats = ['html', 'tex']
+project.report.cif = True
+project.report.html = True
+project.report.tex = True
+project.report.pdf = True
 project.save()
-project.report.save_pdf()
 
 # %%
 # project.report.show_report() # Need this?

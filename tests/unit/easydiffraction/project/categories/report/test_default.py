@@ -4,6 +4,30 @@
 
 from __future__ import annotations
 
+import pytest
+
+
+def test_report_has_no_formats_property():
+    from easydiffraction.project.categories.report.default import Report
+
+    report = Report()
+
+    with pytest.raises(AttributeError, match="Unknown attribute 'formats'"):
+        report.formats  # noqa: B018
+
+
+def test_report_save_without_outputs_points_to_boolean_flags():
+    from easydiffraction.project.categories.report.default import Report
+
+    report = Report()
+
+    with pytest.raises(ValueError) as exc_info:
+        report.save()
+
+    message = str(exc_info.value)
+    assert 'project.report.{cif,html,tex,pdf}' in message
+    assert 'project.report.formats' not in message
+
 
 def test_save_configured_reuses_tex_bundle_for_pdf(tmp_path, monkeypatch):
     from easydiffraction.project.categories.report.default import Report
@@ -13,7 +37,8 @@ def test_save_configured_reuses_tex_bundle_for_pdf(tmp_path, monkeypatch):
     pdf_path = tmp_path / 'reports' / 'demo.pdf'
     calls = []
     report = Report()
-    report.formats = ['tex', 'pdf']
+    report.tex = True
+    report.pdf = True
 
     def fake_save_tex(self):
         del self
@@ -46,7 +71,8 @@ def test_save_configured_omits_missing_compiled_pdf(tmp_path, monkeypatch):
     tex_path = tmp_path / 'reports' / 'tex' / 'demo.tex'
     pdf_path = tmp_path / 'reports' / 'demo.pdf'
     report = Report()
-    report.formats = ['tex', 'pdf']
+    report.tex = True
+    report.pdf = True
 
     def fake_save_tex(self):
         del self

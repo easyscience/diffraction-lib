@@ -49,10 +49,11 @@ report formats.
 | `project.report.pdf` | `bool` | Write a PDF report when a TeX engine is available. |
 | `project.report.html_offline` | `bool` | Embed HTML assets instead of using CDN links. |
 
-The `formats` property is a compact way to set the four format flags:
+Enable each saved report format through its boolean flag:
 
 ```python
-project.report.formats = ['html', 'cif']
+project.report.html = True
+project.report.cif = True
 project.save()
 ```
 

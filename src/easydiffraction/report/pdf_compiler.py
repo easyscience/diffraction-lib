@@ -23,7 +23,7 @@ Install one with:
   pixi add tectonic
   conda install -c conda-forge tectonic
   # or any TeX Live distribution (latexmk / pdflatex)
-Then re-run project.save() with 'pdf' in project.report.formats or
+Then set project.report.pdf = True and re-run project.save(), or call
 project.report.save_pdf().
 The .tex and data/ bundle remains under reports/tex/."""
 

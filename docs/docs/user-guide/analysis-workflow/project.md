@@ -104,8 +104,9 @@ directory, showing the contents of all files in the project.
     If you save the project right after creating it, the project directory will
     only contain the `project.cif` file. The other folders and files will be
     created as you add structures, experiments, and set up the analysis. The
-    reports folder is created only when `project.report.formats` selects
-    at least one report format before `project.save()`.
+    reports folder is created only when at least one of
+    `project.report.cif`, `project.report.html`, `project.report.tex`,
+    or `project.report.pdf` is set to `True` before `project.save()`.
 
 ### 1. <span class="orange">project.cif</span>
 
