@@ -82,6 +82,31 @@ def _radius_lookup(scene: StructureScene) -> dict[tuple[float, float, float], fl
     return lookup
 
 
+def _segment_commands(
+    p0: object,
+    p1: object,
+    project,
+    style: str,
+    *,
+    segments: int = 12,
+    arrow_tip: str = '',
+) -> list[tuple[float, str]]:
+    """Split a line into depth-sorted sub-segments so atoms can occlude it."""
+    start = np.asarray(p0, dtype=float)
+    end = np.asarray(p1, dtype=float)
+    projected = [project(start + (end - start) * (i / segments)) for i in range(segments + 1)]
+    commands = []
+    for index in range(segments):
+        x0, y0, d0 = projected[index]
+        x1, y1, d1 = projected[index + 1]
+        tip = arrow_tip if index == segments - 1 else ''
+        commands.append((
+            (d0 + d1) / 2,
+            f'\\draw[{tip}{style}] ({x0:.4f},{y0:.4f}) -- ({x1:.4f},{y1:.4f});',
+        ))
+    return commands
+
+
 class TikzStructureRenderer(StructureRendererBase):
     """Render a structure scene as a standalone TikZ/LaTeX document."""
 
@@ -91,7 +116,13 @@ class TikzStructureRenderer(StructureRendererBase):
         """Return the features the TikZ engine can draw."""
         return self.SUPPORTED
 
-    def render(self, scene: StructureScene, *, features: frozenset[str]) -> str:
+    def render(
+        self,
+        scene: StructureScene,
+        *,
+        features: frozenset[str],
+        axes_on_top: bool = False,
+    ) -> str:
         """
         Render the scene as a standalone TikZ document.
 
@@ -102,6 +133,10 @@ class TikzStructureRenderer(StructureRendererBase):
         features : frozenset[str]
             The content-resolved feature set; ``atoms``/``bonds``/``cell``/
             ``axes`` are drawn, others (moments, labels) are skipped.
+        axes_on_top : bool
+            When ``False`` (default), the axis shafts are depth-segmented so
+            atoms occlude them. When ``True``, the axis triad is drawn as an
+            always-visible reference overlay.
 
         Returns
         -------
@@ -122,7 +157,7 @@ class TikzStructureRenderer(StructureRendererBase):
         if 'cell' in features:
             drawables.extend(self._cell_commands(scene, project))
         if 'axes' in features:
-            drawables.extend(self._axis_commands(scene, project))
+            drawables.extend(self._axis_commands(scene, project, on_top=axes_on_top))
         if 'bonds' in features:
             drawables.extend(self._bond_commands(scene, project, bond_width, _radius_lookup(scene)))
         if 'atoms' in features:
@@ -152,34 +187,38 @@ class TikzStructureRenderer(StructureRendererBase):
         if scene.cell_edges is None:
             return commands
         for edge in scene.cell_edges.edges:
-            x1, y1, d1 = project(edge.start)
-            x2, y2, d2 = project(edge.end)
-            commands.append((
-                (d1 + d2) / 2,
-                f'\\draw[line width=0.4pt,black!55] ({x1:.4f},{y1:.4f}) -- ({x2:.4f},{y2:.4f});',
-            ))
+            commands.extend(
+                _segment_commands(edge.start, edge.end, project, 'line width=0.4pt,black!55')
+            )
         return commands
 
     @staticmethod
-    def _axis_commands(scene, project) -> list[tuple[float, str]]:
+    def _axis_commands(scene, project, *, on_top: bool) -> list[tuple[float, str]]:
         commands = []
         if scene.axes is None:
             return commands
         origin = np.asarray(scene.axes.origin, dtype=float)
         ox, oy, _od = project(scene.axes.origin)
+        arrow_tip = '-{Stealth[length=2.4mm]},'
         for arrow in scene.axes.axes:
             colour = _rgb(arrow.colour)
+            style = f'line width=1pt,color={colour}'
             tip = tuple(origin + np.asarray(arrow.vector, dtype=float))
-            tx, ty, td = project(tip)
-            commands.append((
-                td,
-                f'\\draw[-{{Stealth[length=2.4mm]}},line width=1pt,color={colour}] '
-                f'({ox:.4f},{oy:.4f}) -- ({tx:.4f},{ty:.4f});',
-            ))
+            tx, ty, _td = project(tip)
+            if on_top:
+                commands.append((
+                    float('inf'),
+                    f'\\draw[{arrow_tip}{style}] ({ox:.4f},{oy:.4f}) -- ({tx:.4f},{ty:.4f});',
+                ))
+            else:
+                commands.extend(
+                    _segment_commands(scene.axes.origin, tip, project, style, arrow_tip=arrow_tip)
+                )
+            # The letter always stays on top so the reference label is legible.
             lx = ox + (tx - ox) * 1.1
             ly = oy + (ty - oy) * 1.1
             commands.append((
-                td,
+                float('inf'),
                 f'\\node[color={colour},font=\\bfseries] at ({lx:.4f},{ly:.4f}) {{{arrow.letter}}};',
             ))
         return commands
