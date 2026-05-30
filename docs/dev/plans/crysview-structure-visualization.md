@@ -615,7 +615,7 @@ reach end-to-end (P1.1–P1.12) before any Three.js work (P1.13–P1.15).
     structure for availability.
   - Commit: `Add structure scene builder`.
 
-- [ ] **P1.6 — Add base + ASCII structure renderer**
+- [x] **P1.6 — Add base + ASCII structure renderer**
   - Files: new
     `src/easydiffraction/display/structure/renderers/__init__.py`,
     `renderers/base.py`, `renderers/ascii.py`.
