@@ -15,6 +15,8 @@ from easydiffraction.datablocks.structure.categories.atom_sites.enums import Adp
 from easydiffraction.datablocks.structure.categories.atom_sites.factory import AtomSitesFactory
 from easydiffraction.datablocks.structure.categories.cell import Cell
 from easydiffraction.datablocks.structure.categories.cell.factory import CellFactory
+from easydiffraction.datablocks.structure.categories.geom import Geom
+from easydiffraction.datablocks.structure.categories.geom.factory import GeomFactory
 from easydiffraction.datablocks.structure.categories.space_group import SpaceGroup
 from easydiffraction.datablocks.structure.categories.space_group.factory import SpaceGroupFactory
 from easydiffraction.utils.logging import console
@@ -39,6 +41,8 @@ class Structure(DatablockItem):
         self._atom_sites = AtomSitesFactory.create(self._atom_sites_type)
         self._atom_site_aniso_type: str = AtomSiteAnisoFactory.default_tag()
         self._atom_site_aniso = AtomSiteAnisoFactory.create(self._atom_site_aniso_type)
+        self._geom_type: str = GeomFactory.default_tag()
+        self._geom = GeomFactory.create(self._geom_type)
         self._identity.datablock_entry_name = lambda: self.name
 
     # ------------------------------------------------------------------
@@ -157,6 +161,24 @@ class Structure(DatablockItem):
             New aniso collection.
         """
         self._atom_site_aniso = new
+
+    @property
+    def geom(self) -> Geom:
+        """Bond-geometry cutoffs for this structure."""
+        return self._geom
+
+    @geom.setter
+    @typechecked
+    def geom(self, new: Geom) -> None:
+        """
+        Replace the bond-geometry cutoffs for this structure.
+
+        Parameters
+        ----------
+        new : Geom
+            New bond-geometry-cutoff category.
+        """
+        self._geom = new
 
     # ------------------------------------------------------------------
     # Private methods

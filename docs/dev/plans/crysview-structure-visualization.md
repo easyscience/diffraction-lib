@@ -762,7 +762,7 @@ reach end-to-end (P1.1–P1.12) before any Three.js work (P1.13–P1.15).
     wires the surfaces.
   - Commit: `Wire project.view and project.style with CIF persistence`.
 
-- [ ] **P1.11 — Add the per-structure `geom` bond-cutoff category**
+- [x] **P1.11 — Add the per-structure `geom` bond-cutoff category**
   - Files: new
     `src/easydiffraction/datablocks/structure/categories/geom/__init__.py`,
     `default.py`, `factory.py`; existing
