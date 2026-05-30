@@ -27,6 +27,10 @@ _LIGHT = np.array([0.42, 0.5, 0.75])  # (right, up, toward-camera)
 _LIGHT = _LIGHT / np.linalg.norm(_LIGHT)
 _FILL = np.array([-0.42, -0.25, -0.5])  # back-fill, mirrors the Three.js fill light
 _FILL = _FILL / np.linalg.norm(_FILL)
+_HALF = _LIGHT + np.array([0.0, 0.0, 1.0])  # Blinn-Phong half-vector (view = toward camera)
+_HALF = _HALF / np.linalg.norm(_HALF)
+_SHININESS = 30.0  # specular exponent (tight bright highlight, VESTA-like)
+_SPEC_STRENGTH = 0.55
 _LABEL_FRAC = 0.040  # axis-letter font size, as a fraction of the canvas
 _LEGEND_FRAC = 0.032  # legend font size, as a fraction of the canvas
 # Axis-arrow proportions, as fractions of the arrow length (match the Three.js
@@ -63,6 +67,11 @@ def _diffuse_intensity(normal: np.ndarray) -> np.ndarray:
     key = np.clip(normal @ _LIGHT, 0.0, 1.0)
     fill = 0.4 * np.clip(normal @ _FILL, 0.0, 1.0)
     return np.clip(_AMBIENT + (1.0 - _AMBIENT) * (key + fill), 0.0, 1.0)
+
+
+def _specular(normal: np.ndarray) -> np.ndarray:
+    """Blinn-Phong specular highlight for a unit surface-normal field."""
+    return _SPEC_STRENGTH * np.clip(normal @ _HALF, 0.0, 1.0) ** _SHININESS
 
 
 def _font(pixels: int) -> ImageFont.FreeTypeFont:
@@ -239,7 +248,7 @@ class RasterStructureRenderer:
         normal = np.stack((dx, -dy, nz), axis=-1)
         intensity = _diffuse_intensity(normal)[..., None]
         base_rgb = RasterStructureRenderer._base_colours(dx, dy, base, wedges)
-        shade = np.clip(base_rgb * intensity, 0, 1)
+        shade = np.clip(base_rgb * intensity + _specular(normal)[..., None], 0, 1)
         sub[update] = surf_depth[update]
         colour[y0:y1, x0:x1][update] = shade[update]
 
@@ -312,7 +321,7 @@ class RasterStructureRenderer:
         ), axis=-1)
         intensity = _diffuse_intensity(normal)[..., None]
         base_rgb = RasterStructureRenderer._base_colours(xs - cx, ys - cy, ell.colour, ell.wedges)
-        shade = np.clip(base_rgb * intensity, 0, 1)
+        shade = np.clip(base_rgb * intensity + _specular(normal)[..., None], 0, 1)
         sub[update] = surf_depth[update]
         colour[y0:y1, x0:x1][update] = shade[update]
 
