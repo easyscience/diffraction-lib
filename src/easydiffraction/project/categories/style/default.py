@@ -77,9 +77,9 @@ class Style(CategoryItem):
         )
         self._atom_scale = NumericDescriptor(
             name='atom_scale',
-            description='Ball-atom radius as a fraction of the model radius.',
+            description='Overall ball-atom size factor (square-root compressed).',
             value_spec=AttributeSpec(
-                default=0.5,
+                default=0.3,
                 validator=RangeValidator(gt=0.0, le=1.0),
             ),
             cif_handler=CifHandler(names=['_style.atom_scale']),
@@ -123,7 +123,7 @@ class Style(CategoryItem):
 
     @property
     def atom_scale(self) -> NumericDescriptor:
-        """Ball-atom radius as a fraction of the model radius (0, 1]."""
+        """Overall ball-atom size factor in (0, 1] (square-root compressed)."""
         return self._atom_scale
 
     @atom_scale.setter
@@ -140,7 +140,7 @@ class Style(CategoryItem):
         ):
             console.print(f"{setting}: {', '.join(member.value for member in enum)}")
         console.print('adp_probability: float in the open interval (0, 1)')
-        console.print('atom_scale: float in (0, 1] (1 = space-filling model radius)')
+        console.print('atom_scale: float in (0, 1] (overall ball size; sqrt-compressed)')
 
     @property
     def as_cif(self) -> str:

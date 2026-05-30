@@ -139,12 +139,17 @@ def _cartesian_u(atom, aniso, matrix: np.ndarray, cell) -> np.ndarray:
     return mn @ comps @ mn.T
 
 
+def _display_radius(model_radius: float, style) -> float:
+    """Square-root-compressed ball radius (narrows the heavy/light spread)."""
+    return style.atom_scale.value * float(np.sqrt(model_radius))
+
+
 def _atom_primitive(atom, centre, *, style, matrix, cell, aniso_collection):
     """Build the sphere/ellipsoid primitive for a single full-occupancy atom."""
     element = _element_symbol(atom.type_symbol.value)
     colour = color_for(element, style.color_scheme.value)
     radius, substituted = radius_for(element, style.radius_model.value)
-    ball_radius = radius * style.atom_scale.value
+    ball_radius = _display_radius(radius, style)
     label = atom.label.value
     adp_type = AdpTypeEnum(atom.adp_type.value)
     scale = float(chi.ppf(style.adp_probability.value, 3))
@@ -176,7 +181,7 @@ def _wedge_sphere(rows, centre, *, style):
     else:
         wedges = [OccupancyWedge(occ, colour) for _, occ, _, colour, _ in rows]
         wedges.append(OccupancyWedge(1.0 - total, VACANCY_COLOR))
-    radius = max(radius for _, _, _, _, radius in rows) * style.atom_scale.value
+    radius = _display_radius(max(radius for _, _, _, _, radius in rows), style)
     major = max(rows, key=lambda r: r[1])
     label = '/'.join(r[0].label.value for r in rows)
     primitive = OccupancyWedgeSphere(_vec3(centre), radius, tuple(wedges), label)
