@@ -48,12 +48,19 @@ CALCULATED_LINE_WIDTH = 2.0
 RESIDUAL_LINE_WIDTH = 2.0
 MEASURED_MARKER_SIZE = 6
 MEASURED_MARKER_LINE_WIDTH = 0
-MEASURED_ERROR_BAR_THICKNESS = 2
-MEASURED_ERROR_BAR_WIDTH = 4
+SINGLE_CRYSTAL_MARKER_LINE_WIDTH = 0.5
+MEASURED_ERROR_BAR_THICKNESS = 1.0
+MEASURED_ERROR_BAR_WIDTH = 3
 LIGHT_AXIS_FRAME_COLOR = 'rgba(120, 140, 160, 0.28)'
 DARK_AXIS_FRAME_COLOR = 'rgba(110, 145, 190, 0.35)'
 LIGHT_LEGEND_BACKGROUND_COLOR = 'rgba(255, 255, 255, 0.5)'
 DARK_LEGEND_BACKGROUND_COLOR = 'rgba(0, 0, 0, 0.5)'
+# Single source for the y=x reference-line colour, shared with the report
+# axis gray (report.style.REPORT_AXIS_RGB) and imported by report.fit_plot
+# so the diagonal looks identical in the Plotly and pgfplots renderers.
+DIAGONAL_LINE_RGB = (190, 199, 208)
+DIAGONAL_LINE_COLOR = f'rgb({DIAGONAL_LINE_RGB[0]}, {DIAGONAL_LINE_RGB[1]}, {DIAGONAL_LINE_RGB[2]})'
+DIAGONAL_LINE_WIDTH = 0.5
 
 BRAGG_TICK_COLORS = (
     'rgb(255, 127, 14)',
@@ -84,6 +91,91 @@ PREDICTIVE_DRAW_PLOT_CAP = 50
 PREDICTIVE_DRAW_ARRAY_NDIM = 2
 FIXED_ASPECT_WRAPPER_META_KEY = 'fixed_aspect_wrapper'
 FIXED_ASPECT_WRAPPER_CLASS_NAME = 'ed-fixed-aspect-plotly-wrapper'
+
+
+def single_crystal_axis_range(
+    x_calc: object,
+    y_meas: object,
+    y_meas_su: object,
+) -> tuple[float, float]:
+    """Return one shared (min, max) range for a single-crystal scatter.
+
+    The range spans the calculated values and the measured values widened
+    by their standard uncertainties, then pads both ends by
+    ``MAIN_INTENSITY_RANGE_MARGIN_FRACTION``. Applying the same range to
+    both axes keeps the y=x diagonal meaningful.
+
+    Parameters
+    ----------
+    x_calc : object
+        1D array-like of calculated values (x-axis).
+    y_meas : object
+        1D array-like of measured values (y-axis).
+    y_meas_su : object
+        1D array-like of measurement uncertainties, or None.
+
+    Returns
+    -------
+    tuple[float, float]
+        The padded ``(minimum, maximum)`` shared by both axes.
+    """
+    calc = [float(value) for value in x_calc]
+    meas = [float(value) for value in y_meas]
+    if y_meas_su is not None:
+        su = [float(value) for value in y_meas_su]
+        low = [value - error for value, error in zip(meas, su, strict=True)]
+        high = [value + error for value, error in zip(meas, su, strict=True)]
+    else:
+        low = meas
+        high = meas
+    candidates_low = [*calc, *low]
+    candidates_high = [*calc, *high]
+    if not candidates_low or not candidates_high:
+        return 0.0, 1.0
+    minimum = min(candidates_low)
+    maximum = max(candidates_high)
+    margin = max(maximum - minimum, 0.0) * MAIN_INTENSITY_RANGE_MARGIN_FRACTION
+    if margin <= 0.0:
+        margin = 1.0
+    return minimum - margin, maximum + margin
+
+
+def single_crystal_tick_step(
+    minimum: float,
+    maximum: float,
+    target_ticks: int = 6,
+) -> float:
+    """Return a 'nice' tick step covering ``[minimum, maximum]``.
+
+    The raw step ``span / target_ticks`` is rounded up to the nearest
+    ``DISPLAY_TICK_FRACTIONS`` value, so two axes sharing this step and the
+    same range show identical ticks.
+
+    Parameters
+    ----------
+    minimum : float
+        Lower bound of the shared axis range.
+    maximum : float
+        Upper bound of the shared axis range.
+    target_ticks : int, default=6
+        Approximate number of tick intervals to aim for.
+
+    Returns
+    -------
+    float
+        The rounded tick step.
+    """
+    span = maximum - minimum
+    if span <= 0.0 or target_ticks <= 0:
+        return 1.0
+    raw_step = span / target_ticks
+    exponent = float(np.floor(np.log10(raw_step)))
+    base = 10.0**exponent
+    fraction = raw_step / base
+    for nice_fraction in DISPLAY_TICK_FRACTIONS:
+        if fraction <= nice_fraction:
+            return nice_fraction * base
+    return DISPLAY_TICK_FRACTIONS[-1] * base
 
 
 @dataclass(frozen=True)
@@ -559,41 +651,52 @@ class PlotlyPlotter(PlotterBase):
             mode='markers',
             marker={
                 'symbol': 'circle',
-                'size': 10,
-                'line': {'width': 0.5},
+                'size': MEASURED_MARKER_SIZE,
+                'line': {'width': SINGLE_CRYSTAL_MARKER_LINE_WIDTH},
                 'color': DEFAULT_COLORS['meas'],
             },
             error_y={
                 'type': 'data',
                 'array': y_meas_su,
                 'visible': True,
+                'color': DEFAULT_COLORS['meas'],
+                'thickness': MEASURED_ERROR_BAR_THICKNESS,
+                'width': MEASURED_ERROR_BAR_WIDTH,
             },
             hovertemplate='calc: %{x}<br>meas: %{y}<br><extra></extra>',
         )
 
     @staticmethod
-    def _get_diagonal_shape() -> dict:
+    def _get_diagonal_shape(minimum: float, maximum: float) -> dict:
         """
-        Create a diagonal reference line shape.
+        Create a y=x reference line in data coordinates.
 
-        Returns a y=x diagonal line spanning the plot area using paper
-        coordinates (0,0) to (1,1).
+        The line runs from ``(minimum, minimum)`` to ``(maximum, maximum)``
+        in axis (data) coordinates, so it tracks y=x regardless of the
+        axis aspect ratio rather than the paper-rectangle diagonal.
+
+        Parameters
+        ----------
+        minimum : float
+            Lower bound of the shared axis range.
+        maximum : float
+            Upper bound of the shared axis range.
 
         Returns
         -------
         dict
-            A dict configuring a diagonal line shape.
+            A dict configuring the diagonal line shape.
         """
         return {
             'type': 'line',
-            'x0': 0,
-            'y0': 0,
-            'x1': 1,
-            'y1': 1,
-            'xref': 'paper',
-            'yref': 'paper',
+            'x0': minimum,
+            'y0': minimum,
+            'x1': maximum,
+            'y1': maximum,
+            'xref': 'x',
+            'yref': 'y',
             'layer': 'below',
-            'line': {'width': 0.5},
+            'line': {'color': DIAGONAL_LINE_COLOR, 'width': DIAGONAL_LINE_WIDTH},
         }
 
     @staticmethod
@@ -1055,6 +1158,9 @@ window.requestAnimationFrame(installLegendToggleButton);
         title: str,
         axes_labels: object,
         shapes: list | None = None,
+        *,
+        axis_range: tuple[float, float] | None = None,
+        axis_dtick: float | None = None,
     ) -> object:
         """
         Create a Plotly layout configuration.
@@ -1067,12 +1173,44 @@ window.requestAnimationFrame(installLegendToggleButton);
             Pair of strings for the x and y titles.
         shapes : list | None, default=None
             Optional list of shape dicts to overlay on the plot.
+        axis_range : tuple[float, float] | None, default=None
+            When given, the same explicit range applied to both axes.
+        axis_dtick : float | None, default=None
+            When given, the same tick step applied to both axes, so the
+            x and y ticks match.
 
         Returns
         -------
         object
             A configured :class:`plotly.graph_objects.Layout`.
         """
+        xaxis = {
+            'title': {
+                'text': axes_labels[0],
+                'font': {'size': AXIS_TITLE_FONT_SIZE},
+            },
+            'showline': True,
+            'linecolor': cls._axis_frame_color(),
+            'mirror': True,
+            'zeroline': False,
+        }
+        yaxis = {
+            'title': {
+                'text': axes_labels[1],
+                'font': {'size': AXIS_TITLE_FONT_SIZE},
+            },
+            'showline': True,
+            'linecolor': cls._axis_frame_color(),
+            'mirror': True,
+            'zeroline': False,
+        }
+        if axis_range is not None:
+            for axis in (xaxis, yaxis):
+                axis['range'] = list(axis_range)
+                axis['tick0'] = axis_range[0]
+        if axis_dtick is not None:
+            for axis in (xaxis, yaxis):
+                axis['dtick'] = axis_dtick
         return go.Layout(
             margin={
                 'autoexpand': True,
@@ -1091,26 +1229,8 @@ window.requestAnimationFrame(installLegendToggleButton);
                 'yanchor': 'top',
                 'y': 1.0,
             },
-            xaxis={
-                'title': {
-                    'text': axes_labels[0],
-                    'font': {'size': AXIS_TITLE_FONT_SIZE},
-                },
-                'showline': True,
-                'linecolor': cls._axis_frame_color(),
-                'mirror': True,
-                'zeroline': False,
-            },
-            yaxis={
-                'title': {
-                    'text': axes_labels[1],
-                    'font': {'size': AXIS_TITLE_FONT_SIZE},
-                },
-                'showline': True,
-                'linecolor': cls._axis_frame_color(),
-                'mirror': True,
-                'zeroline': False,
-            },
+            xaxis=xaxis,
+            yaxis=yaxis,
             shapes=shapes,
         )
 
@@ -1955,10 +2075,14 @@ window.requestAnimationFrame(installLegendToggleButton);
             )
         ]
 
+        axis_min, axis_max = single_crystal_axis_range(x_calc, y_meas, y_meas_su)
+        tick_step = single_crystal_tick_step(axis_min, axis_max)
         layout = self._get_layout(
             title,
             axes_labels,
-            shapes=[self._get_diagonal_shape()],
+            shapes=[self._get_diagonal_shape(axis_min, axis_max)],
+            axis_range=(axis_min, axis_max),
+            axis_dtick=tick_step,
         )
 
         return self._get_figure(data, layout)
