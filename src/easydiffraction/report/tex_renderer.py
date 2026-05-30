@@ -469,7 +469,7 @@ def _write_structure_assets(
         scene = build_scene(structure, style=style, view_range=window, features=features)
         figure_path = data_dir / f'{_structure_asset_stem(struct_id)}.tex'
         figure_path.write_text(
-            renderer.render(scene, features=features, axes_on_top=True),
+            renderer.render(scene, features=features, axes_on_top=False),
             encoding='utf-8',
         )
         figure_paths[struct_id] = f'data/{figure_path.stem}.pdf'
