@@ -680,7 +680,7 @@ reach end-to-end (P1.1–P1.12) before any Three.js work (P1.13–P1.15).
     registration convention requires.
   - Commit: `Add Viewer facade and factory with ASCII engine`.
 
-- [ ] **P1.8 — Add the plain `style` category**
+- [x] **P1.8 — Add the plain `style` category**
   - Files: existing `src/easydiffraction/core/validation.py`; new
     `src/easydiffraction/project/categories/style/__init__.py`,
     `default.py`, `factory.py`.
