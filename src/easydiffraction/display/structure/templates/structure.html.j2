@@ -92,6 +92,13 @@ const rgbCss = (rgb) => `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`;
 const elementOf = (label) => (label.match(/[A-Z][a-z]?/) || [label])[0];
 const PALETTES = SCENE.palettes || {};
 
+// Glossy Phong material so atoms show a bright specular highlight (VESTA-like).
+const SPECULAR = new THREE.Color(0.32, 0.32, 0.32);
+const solidMat = (c, doubleSide) => new THREE.MeshPhongMaterial({
+  color: c, shininess: 60, specular: SPECULAR,
+  side: doubleSide ? THREE.DoubleSide : THREE.FrontSide,
+});
+
 let width = host.clientWidth || 640;
 let height = host.clientHeight || 480;
 
@@ -126,11 +133,12 @@ for (const name of ['cell', 'axes', 'atoms', 'bonds', 'moments', 'labels']) {
 const unitSphere = new THREE.SphereGeometry(1, 24, 16);
 
 for (const a of SCENE.atoms) {
-  const mesh = new THREE.Mesh(unitSphere, new THREE.MeshStandardMaterial({ color: col(a.colour) }));
+  const mesh = new THREE.Mesh(unitSphere, solidMat(col(a.colour)));
   mesh.position.copy(vec(a.centre));
   mesh.scale.setScalar(a.radius);
   mesh.userData.label = a.label;
   mesh.userData.element = elementOf(a.label);
+  mesh.userData.asymmetric = a.asymmetric;
   groups.atoms.add(mesh);
 }
 
@@ -140,10 +148,11 @@ for (const s of SCENE.wedgeSpheres) {
   s.wedges.forEach((w, i) => {
     const span = w.fraction * Math.PI * 2;
     const geo = new THREE.SphereGeometry(s.radius, Math.max(6, Math.round(48 * w.fraction)), 16, phi, span);
-    const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: col(w.colour), side: THREE.DoubleSide }));
+    const mesh = new THREE.Mesh(geo, solidMat(col(w.colour), true));
     mesh.position.copy(vec(s.centre));
     mesh.userData.label = s.label;
     mesh.userData.element = parts[i] || null;   // null for the vacancy wedge
+    mesh.userData.asymmetric = s.asymmetric;
     groups.atoms.add(mesh);
     phi += span;
   });
@@ -159,33 +168,35 @@ for (const e of SCENE.ellipsoids) {
   wedges.forEach((w, i) => {
     const span = w.fraction * Math.PI * 2;
     const geo = new THREE.SphereGeometry(1, Math.max(6, Math.round(48 * w.fraction)), 16, phi, span);
-    const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: col(w.colour), side: THREE.DoubleSide }));
+    const mesh = new THREE.Mesh(geo, solidMat(col(w.colour), true));
     mesh.position.copy(vec(e.centre));
     mesh.scale.set(e.semiAxes[0], e.semiAxes[1], e.semiAxes[2]);
     mesh.quaternion.copy(quat);
     mesh.userData.label = e.label;
     mesh.userData.element = split ? (parts[i] || null) : elementOf(e.label);
+    mesh.userData.asymmetric = e.asymmetric;
     groups.atoms.add(mesh);
     phi += span;
   });
 }
 
-const addHalfBond = (p0, p1, colour) => {
+const addHalfBond = (p0, p1, colour, element) => {
   const direction = p1.clone().sub(p0);
   const length = direction.length();
   if (length < 1e-6) return;
   const geo = new THREE.CylinderGeometry(0.06, 0.06, length, 12);
-  const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: col(colour) }));
+  const mesh = new THREE.Mesh(geo, solidMat(col(colour)));
   mesh.position.copy(p0.clone().add(p1).multiplyScalar(0.5));
   mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.normalize());
+  mesh.userData.element = element || null;
   groups.bonds.add(mesh);
 };
 for (const b of SCENE.bonds) {
   const start = vec(b.start);
   const end = vec(b.end);
   const mid = start.clone().add(end).multiplyScalar(0.5);
-  addHalfBond(start, mid, b.startColour);
-  addHalfBond(mid, end, b.endColour);
+  addHalfBond(start, mid, b.startColour, b.startElement);
+  addHalfBond(mid, end, b.endColour, b.endElement);
 }
 
 const cellMaterial = new THREE.LineBasicMaterial({ color: new THREE.Color(FG) });
@@ -202,7 +213,7 @@ const buildArrow = (origin, v, colour) => {
   const headLen = length * 0.12;
   const headR = shaftR * 4;
   const shaftLen = Math.max(length - headLen, 1e-3);
-  const material = new THREE.MeshStandardMaterial({ color: col(colour) });
+  const material = solidMat(col(colour));
   const shaft = new THREE.Mesh(new THREE.CylinderGeometry(shaftR, shaftR, shaftLen, 16), material);
   shaft.position.y = shaftLen / 2;
   const head = new THREE.Mesh(new THREE.ConeGeometry(headR, headLen, 20), material);
@@ -278,7 +289,7 @@ let projection = 'orthographic';
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.08;
-controls.zoomSpeed = 3.0;   // larger wheel/touchpad zoom steps (tune to taste)
+controls.zoomSpeed = 20.0;   // larger wheel/touchpad zoom steps (tune to taste)
 controls.target.copy(target);
 controls.update();
 
@@ -356,6 +367,20 @@ for (const name of ['cell', 'axes', 'atoms', 'bonds', 'moments', 'labels']) {
     button.classList.toggle('on', next);
   });
 }
+// Asymmetric-unit toggle: hide symmetry-equivalent copies, keep the reference atoms.
+const hasNonAU = SCENE.atoms.some((a) => !a.asymmetric)
+  || SCENE.wedgeSpheres.some((s) => !s.asymmetric)
+  || SCENE.ellipsoids.some((e) => !e.asymmetric);
+if (hasNonAU && groups.atoms.children.length) {
+  hasFeatureToggle = true;
+  let auOnly = false;
+  const auButton = iconButton(featureGroup, 'AU', 'Asymmetric unit only', 'lt tog');
+  auButton.addEventListener('click', () => {
+    auOnly = !auOnly;
+    groups.atoms.children.forEach((m) => { m.visible = !auOnly || m.userData.asymmetric; });
+    auButton.classList.toggle('on', auOnly);
+  });
+}
 if (hasFeatureToggle) {
   const separator = document.createElement('div');
   separator.className = 'mb-sep';
@@ -390,11 +415,13 @@ if (schemeNames.length > 1 && SCENE.legend.length) {
     || schemeNames[0];
   const applyScheme = (name) => {
     const palette = PALETTES[name] || {};
-    groups.atoms.traverse((obj) => {
+    const recolor = (obj) => {
       if (obj.isMesh && palette[obj.userData.element]) {
         obj.material.color.copy(col(palette[obj.userData.element]));
       }
-    });
+    };
+    groups.atoms.traverse(recolor);
+    groups.bonds.traverse(recolor);
     for (const { symbol, el } of legendSwatches) {
       if (palette[symbol]) el.style.background = rgbCss(palette[symbol]);
     }

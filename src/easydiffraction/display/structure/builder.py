@@ -116,23 +116,26 @@ def _expand_positions(sites, ops, view_range):
     onto each equivalent site (otherwise every copy reuses one orientation).
     """
     generated = []
+    identity = np.eye(3)
     for idx, atom in enumerate(sites):
         base = np.array([atom.fract_x.value, atom.fract_y.value, atom.fract_z.value], dtype=float)
         for rot, trans in ops:
             image = rot @ base + trans
+            reference_op = bool(np.allclose(rot, identity) and np.allclose(trans, 0.0))
             for shift in _lattice_shifts(image, view_range):
-                generated.append((idx, image + shift, rot))
+                is_au = reference_op and bool(np.allclose(shift, 0.0))
+                generated.append((idx, image + shift, rot, is_au))
     return generated
 
 
 def _group_by_position(generated):
     """Dedup scene atoms (row + position) and cluster coincident positions."""
     seen: dict = {}
-    for idx, pos, rot in generated:
-        seen.setdefault((idx, _pos_key(pos)), (idx, pos, rot))
+    for idx, pos, rot, is_au in generated:
+        seen.setdefault((idx, _pos_key(pos)), (idx, pos, rot, is_au))
     clusters: dict = {}
-    for idx, pos, rot in seen.values():
-        clusters.setdefault(_pos_key(pos), []).append((idx, pos, rot))
+    for idx, pos, rot, is_au in seen.values():
+        clusters.setdefault(_pos_key(pos), []).append((idx, pos, rot, is_au))
     return clusters
 
 
@@ -192,7 +195,7 @@ def _atom_shape(atom, *, style, matrix, cell, aniso_collection, rot):
     return shape, substituted
 
 
-def _atom_primitive(atom, centre, *, style, matrix, cell, aniso_collection, rot):
+def _atom_primitive(atom, centre, *, style, matrix, cell, aniso_collection, rot, asymmetric):
     """Build a solid sphere/ellipsoid primitive for a single atom."""
     element = _element_symbol(atom.type_symbol.value)
     colour = color_for(element, style.color_scheme.value)
@@ -200,13 +203,15 @@ def _atom_primitive(atom, centre, *, style, matrix, cell, aniso_collection, rot)
         atom, style=style, matrix=matrix, cell=cell, aniso_collection=aniso_collection, rot=rot,
     )
     if shape[0] == 'ellipsoid':
-        primitive = AdpEllipsoid(_vec3(centre), shape[1], shape[2], colour, atom.label.value)
+        primitive = AdpEllipsoid(_vec3(centre), shape[1], shape[2], colour,
+                                 atom.label.value, asymmetric=asymmetric)
     else:
-        primitive = AtomSphere(_vec3(centre), shape[1], colour, atom.label.value)
+        primitive = AtomSphere(_vec3(centre), shape[1], colour, atom.label.value,
+                               asymmetric=asymmetric)
     return _SceneAtom(primitive, centre, element, colour, atom.label.value), substituted
 
 
-def _wedge_atom(rows, centre, *, style, matrix, cell, aniso_collection):
+def _wedge_atom(rows, centre, *, style, matrix, cell, aniso_collection, asymmetric):
     """Build a shared-site primitive: the major atom's ADP shape split into
     relative-proportion colour wedges (absolute occupancy ignored)."""
     total = sum(occ for _, occ, _, _, _, _ in rows) or 1.0
@@ -218,9 +223,10 @@ def _wedge_atom(rows, centre, *, style, matrix, cell, aniso_collection):
         aniso_collection=aniso_collection, rot=major_rot,
     )
     if shape[0] == 'ellipsoid':
-        primitive = AdpEllipsoid(_vec3(centre), shape[1], shape[2], major_colour, label, wedges)
+        primitive = AdpEllipsoid(_vec3(centre), shape[1], shape[2], major_colour,
+                                 label, wedges, asymmetric)
     else:
-        primitive = OccupancyWedgeSphere(_vec3(centre), shape[1], wedges, label)
+        primitive = OccupancyWedgeSphere(_vec3(centre), shape[1], wedges, label, asymmetric)
     return _SceneAtom(primitive, centre, major_element, major_colour, label)
 
 
@@ -231,19 +237,20 @@ def _build_atoms(sites, clusters, *, style, matrix, cell, aniso_collection):
     radius_model = AtomViewEnum(style.atom_view.value).radius_model()
     for members in clusters.values():
         centre = ecr.fractional_to_cartesian(members[0][1], matrix)
+        cluster_au = any(member[3] for member in members)
         if len(members) == 1:
-            idx, _pos, rot = members[0]
+            idx, _pos, rot, _au = members[0]
             atom = sites[idx]
             scene_atom, substituted = _atom_primitive(
                 atom, centre, style=style, matrix=matrix, cell=cell,
-                aniso_collection=aniso_collection, rot=rot,
+                aniso_collection=aniso_collection, rot=rot, asymmetric=cluster_au,
             )
             scene_atoms.append(scene_atom)
             if substituted:
                 substitutions.add(_element_symbol(atom.type_symbol.value))
             continue
         rows = []
-        for idx, _pos, rot in members:
+        for idx, _pos, rot, _au in members:
             atom = sites[idx]
             element = _element_symbol(atom.type_symbol.value)
             colour = color_for(element, style.color_scheme.value)
@@ -253,7 +260,7 @@ def _build_atoms(sites, clusters, *, style, matrix, cell, aniso_collection):
                 substitutions.add(element)
         scene_atoms.append(_wedge_atom(
             rows, centre, style=style, matrix=matrix, cell=cell,
-            aniso_collection=aniso_collection,
+            aniso_collection=aniso_collection, asymmetric=cluster_au,
         ))
     return scene_atoms, substitutions
 
@@ -277,7 +284,8 @@ def _build_bonds(scene_atoms, geom_min: float, geom_incr: float):
             covalent_cutoff = radii[i] + radii[j] + geom_incr
             if geom_min <= distance <= min(covalent_cutoff, shell):
                 bonds.append(Bond(_vec3(atom_i.centre), _vec3(atom_j.centre),
-                                  atom_i.colour, atom_j.colour))
+                                  atom_i.colour, atom_j.colour,
+                                  atom_i.element, atom_j.element))
     return bonds
 
 

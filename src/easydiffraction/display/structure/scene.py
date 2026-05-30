@@ -28,6 +28,7 @@ class AtomSphere:
     radius: float
     colour: Rgb
     label: str
+    asymmetric: bool = False
 
 
 @dataclass(frozen=True, slots=True)
@@ -46,6 +47,7 @@ class OccupancyWedgeSphere:
     radius: float
     wedges: tuple[OccupancyWedge, ...]
     label: str
+    asymmetric: bool = False
 
 
 @dataclass(frozen=True, slots=True)
@@ -62,6 +64,7 @@ class AdpEllipsoid:
     colour: Rgb
     label: str
     wedges: tuple[OccupancyWedge, ...] = ()
+    asymmetric: bool = False
 
 
 @dataclass(frozen=True, slots=True)
@@ -72,6 +75,8 @@ class Bond:
     end: Vec3
     start_colour: Rgb
     end_colour: Rgb
+    start_element: str = ''
+    end_element: str = ''
 
 
 @dataclass(frozen=True, slots=True)

@@ -69,7 +69,8 @@ def _scene_payload(scene: StructureScene) -> dict:
         edges = [{'start': edge.start, 'end': edge.end} for edge in scene.cell_edges.edges]
     return {
         'atoms': [
-            {'centre': a.centre, 'radius': a.radius, 'colour': a.colour, 'label': a.label}
+            {'centre': a.centre, 'radius': a.radius, 'colour': a.colour, 'label': a.label,
+             'asymmetric': a.asymmetric}
             for a in scene.atoms
         ],
         'wedgeSpheres': [
@@ -78,6 +79,7 @@ def _scene_payload(scene: StructureScene) -> dict:
                 'radius': s.radius,
                 'label': s.label,
                 'wedges': [{'fraction': w.fraction, 'colour': w.colour} for w in s.wedges],
+                'asymmetric': s.asymmetric,
             }
             for s in scene.occupancy_spheres
         ],
@@ -89,6 +91,7 @@ def _scene_payload(scene: StructureScene) -> dict:
                 'colour': e.colour,
                 'label': e.label,
                 'wedges': [{'fraction': w.fraction, 'colour': w.colour} for w in e.wedges],
+                'asymmetric': e.asymmetric,
             }
             for e in scene.ellipsoids
         ],
@@ -98,6 +101,8 @@ def _scene_payload(scene: StructureScene) -> dict:
                 'end': b.end,
                 'startColour': b.start_colour,
                 'endColour': b.end_colour,
+                'startElement': b.start_element,
+                'endElement': b.end_element,
             }
             for b in scene.bonds
         ],
