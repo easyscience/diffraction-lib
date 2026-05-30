@@ -183,16 +183,17 @@ Structure 🧩 'lbco' as cif
 ## Viewing a Model in 3D
 
 EasyDiffraction can render a defined structure as an interactive 3D view.
-The renderer engine is chosen through `project.view`. The interactive
-Three.js engine is the default; the ASCII engine prints a
-terminal-friendly schematic.
+The renderer engine is chosen through `project.view`. The default `auto`
+engine resolves to the interactive Three.js view in Jupyter and the
+terminal-friendly ASCII schematic in a console — mirroring how
+`project.chart` and `project.table` pick their environment defaults.
 
 ```python
 # List the available renderer engines
 project.view.show_supported()
 
-# Switch the active engine if desired
-project.view.type = 'threejs'
+# Override the automatic choice if desired ('auto', 'threejs', 'ascii')
+project.view.type = 'auto'
 ```
 
 Visual styling — independent of the per-element data — is configured on

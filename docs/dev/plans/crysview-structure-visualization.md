@@ -86,10 +86,11 @@ plan-level structural choices confirmed with the author at plan start.
   `threejs` (notebook + standalone HTML), shipping together exactly as
   the `asciichartpy` and `plotly` chart engines do. Qt Quick 3D is
   deferred.
-- **Switchable `view` selector** (§2): `project.view.type` (`'threejs'`
-  default-capable / `'ascii'`), CIF `_view.type`, following the
-  category-owned selector contract with a private `_swap_view` Family B
-  rebind. No `view_type` setter, no `show_supported_view_types()`.
+- **Switchable `view` selector** (§2): `project.view.type` (`'auto'`
+  default, resolving to `'threejs'` in Jupyter / `'ascii'` in a
+  terminal), CIF `_view.type`, following the category-owned selector
+  contract with a private `_swap_view` Family B rebind. No `view_type`
+  setter, no `show_supported_view_types()`.
 - **`structure()` entry point** (§3):
   `project.display.structure(struct_name=...)` parallel to
   `pattern(expt_name=...)`, with `include=` reusing the pattern
@@ -430,11 +431,13 @@ reach end-to-end (P1.1–P1.12) before any Three.js work (P1.13–P1.15).
   - Define four `(str, Enum)` classes per the Enum-Backed Closed Values
     ADR, each with a `default()` classmethod (model on
     `PlotterEngineEnum` at `display/plotting.py:50`):
-    - `ViewerEngineEnum`: `ASCII = 'ascii'`, `THREEJS = 'threejs'`
-      (default `THREEJS` — the rich engine, matching `chart`'s
-      default-to-rich-engine precedent and the ADR §8 persisted example
-      `_view.type threejs`). `project.view.type` therefore defaults to
-      `threejs`; see P1.9 and the headless note there.
+    - `ViewerEngineEnum`: `ASCII = 'ascii'`, `THREEJS = 'threejs'`, with
+      an **environment-aware `default()`** (`threejs` in Jupyter, `ascii`
+      in a terminal), matching `PlotterEngineEnum` / `TableEngineEnum`.
+      The `view` category adds an `'auto'` selector sentinel resolved
+      through `default()`, so `project.view.type` defaults to `auto` and
+      the ADR §8 persisted example is `_view.type auto`; see P1.9 and the
+      headless note there.
     - `AtomShapeEnum`: `BALL = 'ball'`, `ORTEP = 'ortep'` (default
       `ORTEP`).
     - `RadiusModelEnum`: `VDW = 'vdw'`, `COVALENT = 'covalent'`,
@@ -721,9 +724,10 @@ reach end-to-end (P1.1–P1.12) before any Three.js work (P1.13–P1.15).
     (`project/categories/chart/default.py`): `_category_code='view'`,
     `_owner_attr_name='view'`, `_swap_method_name='_swap_view'`; a
     `type` `StringDescriptor` with CIF `_view.type` validated against
-    `ViewerEngineEnum` + `ViewerFactory.descriptions()` and **defaulting
-    to `ViewerEngineEnum.default()` (`threejs`)**, matching P1.1;
-    `from_cif` calling `self._parent._swap_view`. Plus persisted
+    `['auto', *ViewerEngineEnum]` + `ViewerFactory.descriptions()` and
+    **defaulting to `'auto'`** (resolved to a concrete engine through
+    `ViewerEngineEnum.default()`, exactly as `Chart` resolves its
+    `'auto'`), matching P1.1; `from_cif` calling `self._parent._swap_view`. Plus persisted
     view-state descriptors: `show_labels` (`BoolDescriptor`, default off),
     `show_moments` (`BoolDescriptor`, default on-where-data), and the
     per-axis range as **six scalar `NumericDescriptor`s**
@@ -732,16 +736,17 @@ reach end-to-end (P1.1–P1.12) before any Three.js work (P1.13–P1.15).
     and 1, each axis validated `min < max` in the setter), mirroring the
     six scalar cell parameters; `structure()`'s `range=` tuple arg
     overrides them per call. `show_supported()` lists engines.
-  - **Headless implication of the `threejs` default.** With `threejs`
-    default, `project.display.structure(...)` returns/writes an HTML
-    string and needs **no browser**, so it runs unattended in CI,
-    `script-tests`, and notebooks out of the box. The
-    terminal/CLI/headless `ascii` engine the ADR §2 names is opt-in via
-    `project.view.type = 'ascii'`. The P1.16 tutorial and the Phase 2
+  - **Headless implication of the `auto` default.** In Jupyter (and
+    under nbmake `script-tests`, which run a Jupyter kernel) `auto`
+    resolves to `threejs`, so `project.display.structure(...)`
+    returns/writes an HTML string and needs **no browser** — it runs
+    unattended out of the box. In a bare terminal `auto` resolves to the
+    `ascii` engine the ADR §2 names; `threejs` can still be forced via
+    `project.view.type = 'threejs'`. The P1.16 tutorial and the Phase 2
     script-test coverage item therefore exercise **both** paths: the
-    default `threejs` HTML emission and an explicit
-    `view.type = 'ascii'` terminal render (see the Phase 2 "Integration
-    / script-test coverage" item).
+    `threejs` HTML emission and an explicit `view.type = 'ascii'`
+    terminal render (see the Phase 2 "Integration / script-test
+    coverage" item).
   - Register `View` in `project/categories/view/__init__.py`.
   - Commit: `Add switchable view category for renderer selection`.
 
@@ -1019,7 +1024,8 @@ coverage (configured in P1.13).
       extended `RangeValidator`); `show_supported()` lists every
       setting's accepted values; `_style.*` CIF round-trips. P1.8.
 - [ ] **`tests/unit/easydiffraction/project/categories/view/test_view.py`**
-      (new) — `type` validates against `ViewerEngineEnum`; setting
+      (new) — `type` validates against `['auto', *ViewerEngineEnum]` and
+      defaults to `'auto'`; setting
       `type` calls `_swap_view`; a `range_a_max` below `range_a_min` is
       rejected (per-axis `min < max`); `_view.type` / `_view.show_*` /
       `_view.range_a_min` … `_view.range_c_max` CIF round-trip;
@@ -1065,8 +1071,9 @@ coverage (configured in P1.13).
 - [ ] **Integration / script-test coverage** — confirm
       `pixi run script-tests` exercises the tutorial that calls
       `project.display.structure(...)` along **both** engine paths: the
-      **default `threejs`** HTML emission (no browser, runs headless in
-      CI) and an explicit `project.view.type = 'ascii'` terminal render.
+      **`auto` default** (which resolves to `threejs` under nbmake's
+      Jupyter kernel) HTML emission (no browser, runs headless in CI) and
+      an explicit `project.view.type = 'ascii'` terminal render.
       Extend a tutorial if not. P1.16.
 
 Use `pixi run test-structure-check` to confirm the unit-test layout

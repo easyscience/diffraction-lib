@@ -112,7 +112,7 @@ A switchable engine selector is added on the project owner, parallel to
 `project.chart` / `project.table`. It is named `view`:
 
 ```python
-project.view.type = 'threejs'   # or 'ascii' for the terminal
+project.view.type = 'auto'   # default: 'threejs' in Jupyter, 'ascii' in a terminal
 project.view.show_supported()
 ```
 
@@ -123,7 +123,10 @@ with CIF tag `_view.type`. The name is kept short and parallel to
 `project.view.show_supported()` lists engines. Switching `type` calls
 the owner's private `_swap_view` hook, which rebinds the active renderer
 — the same Family B rebinding the chart engine selector uses — so no
-public `view_type` setter or `show_supported_view_types()` is added.
+public `view_type` setter or `show_supported_view_types()` is added. The
+default is `auto`, which resolves at draw time to `threejs` in a Jupyter
+notebook and `ascii` in a terminal — exactly as `_chart.type` /
+`_table.type` resolve their environment defaults.
 
 ### 3. Add a `structure()` entry point on the display facade
 
@@ -464,7 +467,7 @@ persisted to CIF.
 
 ```python
 # How: renderer engine
-project.view.type = 'threejs'        # or 'ascii' for the terminal
+project.view.type = 'auto'           # default: 'threejs' in Jupyter, 'ascii' in a terminal
 project.view.show_supported()
 
 # How: standard styling models, not per-element values (visual only)
@@ -506,7 +509,7 @@ The persisted equivalent in the project CIF:
 
 ```
 # In the project CIF (project-level view + style):
-_view.type           threejs
+_view.type           auto
 _view.show_labels    false
 _view.show_moments   true
 _view.range_a_min    0
@@ -527,7 +530,8 @@ _geom.bond_distance_incr         0.4
 ```
 
 The `_view.type` tag follows `_chart.type` / `_table.type` from the
-Display UX Facade ADR; `_geom.min_bond_distance_cutoff` and
+Display UX Facade ADR, including their `auto` environment-default
+convention (resolved to `threejs` in Jupyter, `ascii` in a terminal); `_geom.min_bond_distance_cutoff` and
 `_geom.bond_distance_incr` are the **standard cif_core** bond-cutoff
 tags (`_atom_type.radius_bond` is the standard per-type bonding radius,
 used when present). The `_style.*` and `_view.*` tags are

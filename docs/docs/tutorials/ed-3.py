@@ -176,9 +176,9 @@ project.structures['lbco'].show()
 # #### View Structure in 3D
 #
 # EasyDiffraction can draw the structure that has just been defined. The
-# renderer engine is selected through `project.view`. The default
-# `threejs` engine shows an interactive 3D view inside Jupyter, while the
-# `ascii` engine prints a compact schematic that works in any terminal.
+# renderer engine is selected through `project.view`. The default `auto`
+# engine resolves to an interactive `threejs` view inside Jupyter and a
+# compact `ascii` schematic in a terminal.
 
 # %%
 project.view.show_supported()
@@ -218,15 +218,15 @@ project.display.show_structure_options(struct_name='lbco')
 project.display.structure(struct_name='lbco')
 
 # %% [markdown]
-# For a quick text schematic in any terminal, switch to the `ascii`
-# engine, then restore the interactive default.
+# For a quick text schematic, switch to the `ascii` engine explicitly,
+# then restore the automatic default.
 
 # %%
 project.view.type = 'ascii'
 project.display.structure(struct_name='lbco')
 
 # %%
-project.view.type = 'threejs'
+project.view.type = 'auto'
 
 # %% [markdown]
 # #### Save Project State
