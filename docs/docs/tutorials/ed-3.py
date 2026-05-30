@@ -195,7 +195,7 @@ project.style.color_scheme = 'jmol'
 
 # %%
 project.structures['lbco'].geom.min_bond_distance_cutoff = 0.5
-project.structures['lbco'].geom.bond_distance_incr = 0.45
+project.structures['lbco'].geom.bond_distance_incr = 0.25
 
 # %% [markdown]
 # List which features the structure data and the active engine can draw.

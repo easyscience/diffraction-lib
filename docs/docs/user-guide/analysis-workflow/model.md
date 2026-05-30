@@ -217,7 +217,7 @@ cif_core `_geom` parameters):
 ```python
 # Tune the per-structure bond-generation cutoffs (angstrom)
 project.structures['lbco'].geom.min_bond_distance_cutoff = 0.5
-project.structures['lbco'].geom.bond_distance_incr = 0.45
+project.structures['lbco'].geom.bond_distance_incr = 0.25
 ```
 
 Draw the structure through `project.display`, mirroring

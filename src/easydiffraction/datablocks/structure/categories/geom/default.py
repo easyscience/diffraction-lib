@@ -40,7 +40,7 @@ class Geom(CategoryItem):
             name='bond_distance_incr',
             description='Increment added to the summed bonding radii (angstrom).',
             value_spec=AttributeSpec(
-                default=0.4,
+                default=0.25,
                 validator=RangeValidator(ge=0.0),
             ),
             cif_handler=CifHandler(names=['_geom.bond_distance_incr']),

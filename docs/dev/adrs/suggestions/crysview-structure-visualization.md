@@ -484,7 +484,7 @@ project.style.show_supported()            # accepted values per setting
 # bond iff  min_cutoff <= d <= r_bond(i) + r_bond(j) + incr.
 structure = project.structures['lbco']
 structure.geom.min_bond_distance_cutoff = 0.0   # default 0.0 Å
-structure.geom.bond_distance_incr       = 0.4   # default 0.4 Å (documented, tunable)
+structure.geom.bond_distance_incr       = 0.25   # default 0.25 Å (documented, tunable)
 
 # What (per call): content for one view, overriding the initial defaults
 project.display.structure(struct_name='lbco')                    # 'auto'
@@ -529,7 +529,7 @@ _style.atom_scale       0.3
 
 # In the structure (sample) CIF, beside _cell / _atom_site (per-structure):
 _geom.min_bond_distance_cutoff   0.0
-_geom.bond_distance_incr         0.4
+_geom.bond_distance_incr         0.25
 ```
 
 The `_rendering_structure.type` tag follows `_rendering_plot.type` / `_rendering_table.type` from the
@@ -660,7 +660,7 @@ the final names.
 - **Per-structure bond-cutoff category — resolved (standard
   `_geom.*`).** A single-record `structure.geom` category holding the
   cif_core cutoffs `_geom.min_bond_distance_cutoff` (default `0.0` Å)
-  and `_geom.bond_distance_incr` (default `0.4` Å, documented and
+  and `_geom.bond_distance_incr` (default `0.25` Å, documented and
   tunable), in the structure datablock. A bond is drawn when
   `min_bond_distance_cutoff ≤ d ≤ r_bond(i) + r_bond(j) + bond_distance_incr`,
   with `r_bond` = `_atom_type.radius_bond` when present, else the

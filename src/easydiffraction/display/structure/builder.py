@@ -40,7 +40,7 @@ from easydiffraction.display.structure.scene import TextLabel
 # Tolerance (fractional units) for scene-atom identity and occupancy grouping.
 IDENTITY_TOL = 1e-4
 EIGHT_PI_SQ = 8.0 * np.pi**2
-DEFAULT_BOND_INCR = 0.4
+DEFAULT_BOND_INCR = 0.25
 ALL_FEATURES = ('atoms', 'bonds', 'cell', 'axes', 'moments', 'labels')
 
 

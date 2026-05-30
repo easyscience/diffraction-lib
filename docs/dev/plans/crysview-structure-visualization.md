@@ -206,7 +206,7 @@ below were verified reachable (HTTP 200).
   number each, defaults 0 and 1), mirroring the cell parameters. Structure
   CIF (per-structure): the **standard
   cif_core** bond cutoffs `_geom.min_bond_distance_cutoff` (default
-  `0.0`) and `_geom.bond_distance_incr` (default `0.4`), plus the
+  `0.0`) and `_geom.bond_distance_incr` (default `0.25`), plus the
   per-type bonding radius `_atom_type.radius_bond` when present (P1.11).
   `_rendering_structure.type` follows the Display-UX ADR (`_rendering_plot.type` /
   `_rendering_table.type`); `_style.*` and `_rendering_structure.*` are project-internal
@@ -778,7 +778,7 @@ reach end-to-end (P1.1–P1.12) before any Three.js work (P1.13–P1.15).
     the standard cif_core bond-generation cutoffs:
     - `min_bond_distance_cutoff` (float Å, default `0.0`) — CIF
       `_geom.min_bond_distance_cutoff`.
-    - `bond_distance_incr` (float Å, default `0.4`, documented and
+    - `bond_distance_incr` (float Å, default `0.25`, documented and
       tunable) — CIF `_geom.bond_distance_incr`. A bond forms between
       two in-scene atoms when
       `min_bond_distance_cutoff ≤ d ≤ r_bond(A) + r_bond(B) + bond_distance_incr`,
@@ -1038,7 +1038,7 @@ coverage (configured in P1.13).
 - [ ] **`tests/unit/easydiffraction/datablocks/structure/categories/geom/test_geom.py`**
       (new — single parent-level test if the package is only
       `default.py`/`factory.py`) — defaults are
-      `min_bond_distance_cutoff = 0.0` and `bond_distance_incr = 0.4`;
+      `min_bond_distance_cutoff = 0.0` and `bond_distance_incr = 0.25`;
       both `_geom.min_bond_distance_cutoff` and
       `_geom.bond_distance_incr` round-trip in the **structure**
       datablock; a multi-phase project keeps independent cutoffs per
