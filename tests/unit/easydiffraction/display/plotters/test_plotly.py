@@ -351,6 +351,7 @@ def test_plotly_single_crystal_trace_and_plot(monkeypatch):
     assert trace.kwargs['mode'] == 'markers'
     assert 'error_y' in trace.kwargs
     assert trace.kwargs['marker']['size'] == pp.MEASURED_MARKER_SIZE
+    assert trace.kwargs['marker']['line']['color'] == pp.DEFAULT_COLORS['meas']
     assert trace.kwargs['error_y']['thickness'] == pp.MEASURED_ERROR_BAR_THICKNESS
     assert trace.kwargs['error_y']['width'] == pp.MEASURED_ERROR_BAR_WIDTH
 
@@ -408,6 +409,9 @@ def test_single_crystal_tick_step_rounds_to_nice_value():
 
     # Span 3000 over ~6 intervals -> raw 500 -> nice 500.
     assert pp.single_crystal_tick_step(0.0, 3000.0) == pytest.approx(500.0)
+    # Padded heidi-like range (span just above the 500 threshold) rounds to
+    # 500, not 750 (regression for the old round-up logic).
+    assert pp.single_crystal_tick_step(-158.275, 2841.73) == pytest.approx(500.0)
     # Degenerate span falls back to 1.0.
     assert pp.single_crystal_tick_step(5.0, 5.0) == pytest.approx(1.0)
 
