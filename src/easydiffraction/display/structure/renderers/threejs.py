@@ -140,7 +140,7 @@ class ThreeJsStructureRenderer(StructureRendererBase):
         dark = is_dark()
         colours = theme_colors(dark)
         payload = json.dumps(_scene_payload(scene)).replace('</', '<\\/')
-        import_map = json.dumps(_import_map(offline=offline)).replace('</', '<\\/')
+        import_map = json.dumps({'imports': _import_map(offline=offline)}).replace('</', '<\\/')
         template = _environment().get_template('structure.html.j2')
         return template.render(
             container_id=f'crysview-{uuid.uuid4().hex}',
