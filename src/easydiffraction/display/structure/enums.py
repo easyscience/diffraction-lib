@@ -6,6 +6,8 @@ from __future__ import annotations
 
 from enum import StrEnum
 
+from easydiffraction.utils.environment import in_jupyter
+
 
 class ViewerEngineEnum(StrEnum):
     """Available structure-view renderer engines."""
@@ -15,8 +17,10 @@ class ViewerEngineEnum(StrEnum):
 
     @classmethod
     def default(cls) -> ViewerEngineEnum:
-        """Select the default engine (rich Three.js, headless-friendly)."""
-        return cls.THREEJS
+        """Select the default engine based on environment."""
+        if in_jupyter():
+            return cls.THREEJS
+        return cls.ASCII
 
     def description(self) -> str:
         """Human-readable description for UI listings."""

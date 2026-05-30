@@ -20,7 +20,9 @@ from easydiffraction.io.cif.parse import read_cif_str
 from easydiffraction.project.categories.view.factory import ViewFactory
 from easydiffraction.utils.logging import log
 
-VIEW_ENGINE_OPTIONS = [member.value for member in ViewerEngineEnum]
+AUTO_ENGINE = 'auto'
+AUTO_DESCRIPTION = 'Environment default structure-view engine'
+VIEW_ENGINE_OPTIONS = [AUTO_ENGINE, *[member.value for member in ViewerEngineEnum]]
 
 
 def _range_descriptor(name: str, default: float) -> NumericDescriptor:
@@ -53,7 +55,7 @@ class View(CategoryItem, SwitchableCategoryBase):
             name='type',
             description='Structure-view renderer backend type',
             value_spec=AttributeSpec(
-                default=ViewerEngineEnum.default().value,
+                default=AUTO_ENGINE,
                 validator=MembershipValidator(allowed=VIEW_ENGINE_OPTIONS),
             ),
             cif_handler=CifHandler(names=['_view.type']),
@@ -77,6 +79,12 @@ class View(CategoryItem, SwitchableCategoryBase):
         self._range_c_min = _range_descriptor('range_c_min', 0.0)
         self._range_c_max = _range_descriptor('range_c_max', 1.0)
 
+    @staticmethod
+    def _resolved_engine(value: str) -> str:
+        if value == AUTO_ENGINE:
+            return ViewerEngineEnum.default().value
+        return value
+
     def _set_type(self, value: str, *, strict: bool = True) -> None:
         if value not in VIEW_ENGINE_OPTIONS:
             msg = (
@@ -87,15 +95,16 @@ class View(CategoryItem, SwitchableCategoryBase):
                 raise ValueError(msg)
             log.warning(msg)
             return
-        if self._viewer.engine != value:
-            self._viewer.engine = value
+        resolved_engine = self._resolved_engine(value)
+        if self._viewer.engine != resolved_engine:
+            self._viewer.engine = resolved_engine
         self._type.value = value
 
     @staticmethod
     def _supported_types(filters: dict[str, object]) -> list[tuple[str, str]]:
         """Return supported structure-view renderer backends."""
         del filters
-        return ViewerFactory.descriptions()
+        return [(AUTO_ENGINE, AUTO_DESCRIPTION), *ViewerFactory.descriptions()]
 
     @property
     def viewer(self) -> Viewer:

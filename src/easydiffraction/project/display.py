@@ -606,7 +606,7 @@ class ProjectDisplay:
         from easydiffraction.display.structure.enums import ViewerEngineEnum  # noqa: PLC0415
         from easydiffraction.utils.environment import in_jupyter  # noqa: PLC0415
 
-        if self._project.view.type == ViewerEngineEnum.ASCII.value:
+        if self._project.view.viewer.engine == ViewerEngineEnum.ASCII.value:
             console.print(output)
             return
         if in_jupyter():
