@@ -596,7 +596,11 @@ reach end-to-end (P1.1–P1.12) before any Three.js work (P1.13–P1.15).
       `geom.min_bond_distance_cutoff ≤ d ≤ r_bond(A) + r_bond(B) + geom.bond_distance_incr`,
       where `r_bond` is `_atom_type.radius_bond` when the structure
       carries it, else the element's covalent radius from the bundled DB
-      (P1.4). Split-coloured at midpoint; only atoms already in the
+      (P1.4). Matches are then pruned to the first coordination shell
+      (kept only within `1.3×` the nearer atom's nearest-neighbour
+      distance, `COORDINATION_SHELL_FACTOR`) so large ionic-cation
+      covalent radii do not over-bond — a heuristic stop-gap, see open
+      issue #108. Split-coloured at midpoint; only atoms already in the
       scene (no out-of-range partners, see Open Questions). The builder
       reads the cutoffs from `structure.geom`, like cell/atom data —
       they are not styling and are independent of the display

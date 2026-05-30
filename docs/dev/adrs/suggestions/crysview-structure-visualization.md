@@ -319,7 +319,12 @@ bond is drawn between two sites when their distance `d` satisfies
 `_geom.min_bond_distance_cutoff ≤ d ≤ r_bond(i) + r_bond(j) + _geom.bond_distance_incr`,
 where the per-type bonding radius `r_bond` is `_atom_type.radius_bond`
 when the structure carries it, otherwise the element's covalent radius
-from the bundled database. These two cutoffs live on the **structure**
+from the bundled database. Matches are then pruned to the first
+coordination shell — a contact is kept only when it is within `1.3×` the
+nearer atom's nearest-neighbour distance — so the large covalent radii of
+ionic A-site cations do not bond to every surrounding anion (a heuristic
+stop-gap; see open issue #108 for the full near-neighbour approach). These
+two cutoffs live on the **structure**
 and persist in the structure's own CIF (see section 8), not in
 `project.style`. The display `radius_model` (vdw / covalent / ionic /
 atomic) changes only the rendered sphere _size_ — it never decides which
