@@ -1,15 +1,56 @@
 <div id="{{ container_id }}" class="crysview" style="position:relative;width:100%;height:480px;
      background:{{ background }};color:{{ foreground }};border:1px solid rgba(128,128,128,0.3);
-     border-radius:6px;overflow:hidden;font-family:system-ui,sans-serif;">
-  <div class="crysview-canvas" style="position:absolute;inset:0;"></div>
-  <div class="crysview-modebar" style="position:absolute;top:6px;right:6px;display:flex;gap:3px;
-       flex-wrap:wrap;justify-content:flex-end;max-width:70%;"></div>
-  <div class="crysview-legend" style="position:absolute;left:8px;bottom:6px;font-size:12px;
-       display:flex;gap:10px;flex-wrap:wrap;text-shadow:0 0 2px {{ background }};"></div>
-  <div class="crysview-tooltip" style="position:absolute;padding:2px 6px;font-size:12px;
-       background:rgba(0,0,0,0.75);color:#fff;border-radius:3px;pointer-events:none;
-       display:none;"></div>
+     border-radius:6px;overflow:hidden;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;">
+  <div class="cv-canvas" style="position:absolute;inset:0;"></div>
+  <div class="cv-modebar cv-card"></div>
+  <div class="cv-legend cv-card"></div>
+  <div class="cv-hint">drag = rotate&nbsp;&middot;&nbsp;wheel = zoom&nbsp;&middot;&nbsp;right-drag = pan</div>
+  <div class="cv-tooltip"></div>
 </div>
+
+<style>
+  #{{ container_id }} .cv-card {
+    position: absolute; z-index: 10; background: rgba(255, 255, 255, 0.94);
+    border: 1px solid #e2e2e2; border-radius: 8px;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12); font-size: 12px; color: #222;
+  }
+  #{{ container_id }} .cv-modebar {
+    top: 10px; right: 10px; display: flex; align-items: center; gap: 6px;
+    padding: 5px 7px; flex-wrap: wrap; justify-content: flex-end; max-width: 80%;
+  }
+  #{{ container_id }} .mb-grp { display: flex; gap: 4px; }
+  #{{ container_id }} .mb-sep { align-self: stretch; width: 1px; background: #e4e4e4; margin: 3px 2px; }
+  #{{ container_id }} .mb {
+    width: 32px; height: 30px; display: inline-flex; align-items: center;
+    justify-content: center; padding: 0; border: 1px solid #dcdcdc; border-radius: 6px;
+    background: #f5f5f6; color: #2a3f5f; cursor: pointer;
+    transition: background 0.12s, color 0.12s, border-color 0.12s;
+  }
+  #{{ container_id }} .mb:hover { background: #e9eaef; }
+  #{{ container_id }} .mb svg { width: 17px; height: 17px; display: block; }
+  #{{ container_id }} .mb.lt { font: 700 15px/1 Georgia, 'Times New Roman', serif; }
+  #{{ container_id }} .mb.tog { color: #b9bdc6; }
+  #{{ container_id }} .mb.tog.on { color: #2a3f5f; background: #e7ecf5; border-color: #c6d0e2; }
+  #{{ container_id }} .cv-legend { top: 10px; left: 10px; padding: 8px 11px; line-height: 1.7; white-space: nowrap; }
+  #{{ container_id }} .cv-legend .sw {
+    display: inline-block; width: 11px; height: 11px; border-radius: 50%;
+    margin-right: 7px; vertical-align: middle; border: 1px solid rgba(0, 0, 0, 0.18);
+  }
+  #{{ container_id }} .cv-hint {
+    position: absolute; z-index: 10; bottom: 8px; left: 10px; font-size: 11px;
+    color: #555; background: rgba(255, 255, 255, 0.82); padding: 5px 9px; border-radius: 6px;
+  }
+  #{{ container_id }} .cv-tooltip {
+    position: absolute; z-index: 30; pointer-events: none; display: none;
+    background: rgba(33, 42, 62, 0.92); color: #fff; padding: 3px 8px;
+    border-radius: 5px; font-size: 12px; white-space: nowrap;
+  }
+  #{{ container_id }} .cv-atom-label {
+    font-size: 11px; font-weight: 600; color: {{ foreground }};
+    text-shadow: 0 0 3px {{ background }}, 0 0 3px {{ background }}, 0 0 3px {{ background }};
+    pointer-events: none; white-space: nowrap;
+  }
+</style>
 
 <script type="importmap">{{ import_map }}</script>
 <script type="module">
@@ -21,14 +62,27 @@ const SCENE = {{ scene_json }};
 const FEATURES = {{ features_json }};
 const FG = '{{ foreground }}';
 
+const ICONS = {
+  perspective: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="15" rx="1.5"/><path d="M9 4.5 11 19.5M15 4.5 13 19.5"/></svg>',
+  orthographic: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="15" rx="1.5"/><path d="M9.5 4.5V19.5M14.5 4.5V19.5"/></svg>',
+  home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11 12 3l9 8"/><path d="M5 9.5V20h5v-6h4v6h5V9.5"/></svg>',
+  cell: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"><path d="M12 2.5 20 7v9l-8 4.5L4 16V7Z"/><path d="M4 7l8 4.5L20 7M12 11.5v9"/></svg>',
+  axes: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19V6M5 19h13M5 19l7-7"/><path d="M5 6 3.3 8.2M5 6l1.7 2.2M18 19l-2.2-1.4M18 19l-2.2 1.4"/></svg>',
+  atoms: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9.5" cy="13.5" r="5"/><circle cx="16.5" cy="8" r="3.2"/></svg>',
+  bonds: '<svg viewBox="0 0 24 24"><line x1="8" y1="16" x2="16" y2="8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><circle cx="6.7" cy="17.3" r="3.1" fill="currentColor"/><circle cx="17.3" cy="6.7" r="3.1" fill="currentColor"/></svg>',
+  moments: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V5"/><path d="M7 10l5-6 5 6"/></svg>',
+  labels: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="14" rx="2"/><path d="M9 15.5 12 8.5l3 7M10.1 13.2h3.8"/></svg>',
+};
+
 const root = document.getElementById('{{ container_id }}');
-const host = root.querySelector('.crysview-canvas');
-const modebar = root.querySelector('.crysview-modebar');
-const legend = root.querySelector('.crysview-legend');
-const tooltip = root.querySelector('.crysview-tooltip');
+const host = root.querySelector('.cv-canvas');
+const modebar = root.querySelector('.cv-modebar');
+const legend = root.querySelector('.cv-legend');
+const tooltip = root.querySelector('.cv-tooltip');
 
 const col = (rgb) => new THREE.Color(rgb[0] / 255, rgb[1] / 255, rgb[2] / 255);
 const vec = (xyz) => new THREE.Vector3(xyz[0], xyz[1], xyz[2]);
+const rgbCss = (rgb) => `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`;
 const elementOf = (label) => (label.match(/[A-Z][a-z]?/) || [label])[0];
 
 let width = host.clientWidth || 640;
@@ -47,13 +101,16 @@ labelRenderer.domElement.style.top = '0';
 labelRenderer.domElement.style.pointerEvents = 'none';
 host.appendChild(labelRenderer.domElement);
 
-scene.add(new THREE.AmbientLight(0xffffff, 0.65));
-const key = new THREE.DirectionalLight(0xffffff, 0.8);
+scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+const key = new THREE.DirectionalLight(0xffffff, 0.9);
 key.position.set(1, 1, 1);
 scene.add(key);
+const fill = new THREE.DirectionalLight(0xffffff, 0.35);
+fill.position.set(-1, -0.5, -1);
+scene.add(fill);
 
 const groups = {};
-for (const name of ['atoms', 'bonds', 'cell', 'axes', 'labels']) {
+for (const name of ['cell', 'axes', 'atoms', 'bonds', 'moments', 'labels']) {
   groups[name] = new THREE.Group();
   groups[name].visible = FEATURES.includes(name);
   scene.add(groups[name]);
@@ -124,7 +181,7 @@ if (SCENE.axes) {
     groups.axes.add(new THREE.ArrowHelper(v.clone().normalize(), origin, len, col(arrow.colour).getHex(), len * 0.12, len * 0.07));
     const div = document.createElement('div');
     div.textContent = arrow.letter;
-    div.style.color = `rgb(${arrow.colour[0]},${arrow.colour[1]},${arrow.colour[2]})`;
+    div.style.color = rgbCss(arrow.colour);
     div.style.fontWeight = 'bold';
     const tag = new CSS2DObject(div);
     tag.position.copy(origin.clone().add(v.clone().multiplyScalar(1.12)));
@@ -134,9 +191,8 @@ if (SCENE.axes) {
 
 for (const label of SCENE.labels) {
   const div = document.createElement('div');
+  div.className = 'cv-atom-label';
   div.textContent = label.text;
-  div.style.fontSize = '11px';
-  div.style.color = FG;
   const obj = new CSS2DObject(div);
   obj.position.copy(vec(label.anchor));
   groups.labels.add(obj);
@@ -159,13 +215,17 @@ const ortho = new THREE.OrthographicCamera(-radius * aspect * 1.3, radius * aspe
 perspective.position.copy(home);
 ortho.position.copy(home);
 let camera = ortho;
+let projection = 'orthographic';
 
 const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
 controls.target.copy(target);
 controls.update();
 
 const setCamera = (next) => {
   next.position.copy(camera.position);
+  next.up.copy(camera.up);
   controls.object = next;
   camera = next;
   controls.update();
@@ -175,36 +235,62 @@ const viewAlong = (axisVector) => {
   controls.update();
 };
 
-const button = (label, title, onClick) => {
+const iconButton = (parent, html, title, cls) => {
   const el = document.createElement('button');
-  el.textContent = label;
+  el.className = 'mb' + (cls ? ' ' + cls : '');
+  el.innerHTML = html;
   el.title = title;
-  el.style.cssText = 'font-size:11px;padding:2px 6px;cursor:pointer;border-radius:3px;' +
-    'border:1px solid rgba(128,128,128,0.5);background:rgba(128,128,128,0.15);color:inherit;';
-  el.addEventListener('click', onClick);
-  modebar.appendChild(el);
+  parent.appendChild(el);
   return el;
 };
 
-button('persp/ortho', 'Toggle perspective / parallel projection', () => {
-  setCamera(camera === ortho ? perspective : ortho);
+const cameraGroup = document.createElement('div');
+cameraGroup.className = 'mb-grp';
+modebar.appendChild(cameraGroup);
+
+const projButton = iconButton(cameraGroup, ICONS.orthographic, 'Parallel (orthographic) view');
+projButton.addEventListener('click', () => {
+  projection = projection === 'orthographic' ? 'perspective' : 'orthographic';
+  setCamera(projection === 'orthographic' ? ortho : perspective);
+  projButton.innerHTML = ICONS[projection];
+  projButton.title = projection === 'orthographic' ? 'Parallel (orthographic) view' : 'Perspective view';
 });
+
 const cellBasis = SCENE.axes ? SCENE.axes.arrows.map((a) => vec(a.vector)) : [];
-['a', 'b', 'c'].forEach((letter, i) => {
-  if (cellBasis[i]) button(letter, `View along ${letter}`, () => viewAlong(cellBasis[i]));
-});
-button('reset', 'Reset the view', () => {
+if (SCENE.axes) {
+  SCENE.axes.arrows.forEach((arrow, i) => {
+    const button = iconButton(cameraGroup, arrow.letter, `View along ${arrow.letter}`, 'lt');
+    button.style.color = rgbCss(arrow.colour);
+    button.addEventListener('click', () => viewAlong(cellBasis[i]));
+  });
+}
+
+const homeButton = iconButton(cameraGroup, ICONS.home, 'Reset view');
+homeButton.addEventListener('click', () => {
   camera.position.copy(home);
   controls.target.copy(target);
   controls.update();
 });
-for (const name of ['atoms', 'bonds', 'cell', 'axes', 'labels']) {
-  if (groups[name].children.length === 0) continue;
-  const btn = button(name, `Toggle ${name}`, () => {
-    groups[name].visible = !groups[name].visible;
-    btn.style.opacity = groups[name].visible ? '1' : '0.45';
+
+const featureGroup = document.createElement('div');
+featureGroup.className = 'mb-grp';
+let hasFeatureToggle = false;
+for (const name of ['cell', 'axes', 'atoms', 'bonds', 'moments', 'labels']) {
+  if (!groups[name] || groups[name].children.length === 0) continue;
+  hasFeatureToggle = true;
+  const visible = groups[name].visible;
+  const button = iconButton(featureGroup, ICONS[name], name.charAt(0).toUpperCase() + name.slice(1), 'tog' + (visible ? ' on' : ''));
+  button.addEventListener('click', () => {
+    const next = !groups[name].visible;
+    groups[name].visible = next;
+    button.classList.toggle('on', next);
   });
-  btn.style.opacity = groups[name].visible ? '1' : '0.45';
+}
+if (hasFeatureToggle) {
+  const separator = document.createElement('div');
+  separator.className = 'mb-sep';
+  modebar.appendChild(separator);
+  modebar.appendChild(featureGroup);
 }
 
 const seen = new Map();
@@ -216,17 +302,15 @@ SCENE.atoms.forEach((a) => collectLegend(a.label, a.colour));
 SCENE.ellipsoids.forEach((e) => collectLegend(e.label, e.colour));
 SCENE.wedgeSpheres.forEach((s) => s.wedges[0] && collectLegend(s.label, s.wedges[0].colour));
 for (const [element, colour] of seen) {
-  const item = document.createElement('span');
-  item.style.cssText = 'display:inline-flex;align-items:center;gap:4px;';
+  const item = document.createElement('div');
   const swatch = document.createElement('span');
-  swatch.style.cssText = `display:inline-block;width:10px;height:10px;border-radius:50%;` +
-    `background:rgb(${colour[0]},${colour[1]},${colour[2]});`;
+  swatch.className = 'sw';
+  swatch.style.background = rgbCss(colour);
   item.appendChild(swatch);
-  const text = document.createElement('span');
-  text.textContent = element;
-  item.appendChild(text);
+  item.appendChild(document.createTextNode(element));
   legend.appendChild(item);
 }
+if (seen.size === 0) legend.style.display = 'none';
 
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
