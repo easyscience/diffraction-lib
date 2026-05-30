@@ -350,12 +350,19 @@ def test_plotly_single_crystal_trace_and_plot(monkeypatch):
     assert trace.kwargs['y'] == y_meas
     assert trace.kwargs['mode'] == 'markers'
     assert 'error_y' in trace.kwargs
+    assert trace.kwargs['marker']['size'] == pp.MEASURED_MARKER_SIZE
+    assert trace.kwargs['error_y']['thickness'] == pp.MEASURED_ERROR_BAR_THICKNESS
+    assert trace.kwargs['error_y']['width'] == pp.MEASURED_ERROR_BAR_WIDTH
 
-    # Exercise _get_diagonal_shape
-    shape = plotter._get_diagonal_shape()
+    # Exercise _get_diagonal_shape (now a data-coordinate y=x line)
+    shape = plotter._get_diagonal_shape(0.0, 10.0)
     assert shape['type'] == 'line'
-    assert shape['xref'] == 'paper'
-    assert shape['yref'] == 'paper'
+    assert shape['xref'] == 'x'
+    assert shape['yref'] == 'y'
+    assert (shape['x0'], shape['y0']) == (0.0, 0.0)
+    assert (shape['x1'], shape['y1']) == (10.0, 10.0)
+    assert shape['line']['color'] == pp.DIAGONAL_LINE_COLOR
+    assert shape['line']['width'] == pp.DIAGONAL_LINE_WIDTH
 
     # Exercise plot_single_crystal
     plotter.plot_single_crystal(
@@ -368,6 +375,41 @@ def test_plotly_single_crystal_trace_and_plot(monkeypatch):
     )
     # One display call expected
     assert dummy_display_calls['count'] == 1 or shown['count'] == 1
+
+
+def test_single_crystal_axis_range_unions_calc_and_meas_with_uncertainty():
+    import easydiffraction.display.plotters.plotly as pp
+
+    minimum, maximum = pp.single_crystal_axis_range(
+        x_calc=[2.0, 8.0],
+        y_meas=[1.0, 10.0],
+        y_meas_su=[0.5, 1.0],
+    )
+    # Spans meas-su minimum (0.5) to meas+su maximum (11.0); calc 2..8 is
+    # inside. A 5% margin of the 10.5 span pads both ends symmetrically.
+    assert minimum == pytest.approx(0.5 - 0.525)
+    assert maximum == pytest.approx(11.0 + 0.525)
+
+
+def test_single_crystal_axis_range_handles_missing_uncertainty():
+    import easydiffraction.display.plotters.plotly as pp
+
+    minimum, maximum = pp.single_crystal_axis_range(
+        x_calc=[0.0, 4.0],
+        y_meas=[1.0, 3.0],
+        y_meas_su=None,
+    )
+    assert minimum < 0.0
+    assert maximum > 4.0
+
+
+def test_single_crystal_tick_step_rounds_to_nice_value():
+    import easydiffraction.display.plotters.plotly as pp
+
+    # Span 3000 over ~6 intervals -> raw 500 -> nice 500.
+    assert pp.single_crystal_tick_step(0.0, 3000.0) == pytest.approx(500.0)
+    # Degenerate span falls back to 1.0.
+    assert pp.single_crystal_tick_step(5.0, 5.0) == pytest.approx(1.0)
 
 
 def test_get_bragg_tick_trace_includes_peak_metadata():
