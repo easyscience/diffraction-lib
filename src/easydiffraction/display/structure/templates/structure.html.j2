@@ -227,10 +227,29 @@ const radius = Math.max(box.getBoundingSphere(new THREE.Sphere()).radius, 1);
 const aspect = width / height;
 const far = radius * 100;
 const distance = radius * 2.0;
-const home = target.clone().add(new THREE.Vector3(distance, distance * 0.6, distance));
+
+// Trimetric default view: c-axis up, tilted above the ab-plane and rotated
+// in azimuth so all three axes read distinctly. Falls back to a fixed angle
+// when the cell axes are not in the scene.
+const cellBasis = SCENE.axes ? SCENE.axes.arrows.map((a) => vec(a.vector)) : [];
+let viewUp;
+let viewDir;
+if (cellBasis.length === 3) {
+  const aHat = cellBasis[0].clone().normalize();
+  const bHat = cellBasis[1].clone().normalize();
+  const cHat = cellBasis[2].clone().normalize();
+  viewUp = cHat.clone();
+  viewDir = aHat.multiplyScalar(1.0).add(bHat.multiplyScalar(0.45)).add(cHat.multiplyScalar(0.55)).normalize();
+} else {
+  viewUp = new THREE.Vector3(0, 1, 0);
+  viewDir = new THREE.Vector3(1.0, 0.8, 1.5).normalize();
+}
+const home = target.clone().add(viewDir.multiplyScalar(distance));
 
 const perspective = new THREE.PerspectiveCamera(45, aspect, radius * 0.01, far);
 const ortho = new THREE.OrthographicCamera(-radius * aspect * 1.05, radius * aspect * 1.05, radius * 1.05, -radius * 1.05, -far, far);
+perspective.up.copy(viewUp);
+ortho.up.copy(viewUp);
 perspective.position.copy(home);
 ortho.position.copy(home);
 let camera = ortho;
@@ -249,7 +268,8 @@ const setCamera = (next) => {
   camera = next;
   controls.update();
 };
-const viewAlong = (axisVector) => {
+const viewAlong = (axisVector, upVector) => {
+  camera.up.copy(upVector);
   camera.position.copy(target.clone().add(axisVector.clone().normalize().multiplyScalar(distance)));
   controls.update();
 };
@@ -275,17 +295,18 @@ projButton.addEventListener('click', () => {
   projButton.title = projection === 'orthographic' ? 'Parallel (orthographic) view' : 'Perspective view';
 });
 
-const cellBasis = SCENE.axes ? SCENE.axes.arrows.map((a) => vec(a.vector)) : [];
 if (SCENE.axes) {
   SCENE.axes.arrows.forEach((arrow, i) => {
     const button = iconButton(cameraGroup, arrow.letter, `View along ${arrow.letter}`, 'lt');
     button.style.color = rgbCss(arrow.colour);
-    button.addEventListener('click', () => viewAlong(cellBasis[i]));
+    const upAxis = i === 2 ? cellBasis[1] : cellBasis[2];
+    button.addEventListener('click', () => viewAlong(cellBasis[i], upAxis));
   });
 }
 
 const homeButton = iconButton(cameraGroup, ICONS.home, 'Reset view');
 homeButton.addEventListener('click', () => {
+  camera.up.copy(viewUp);
   camera.position.copy(home);
   controls.target.copy(target);
   controls.update();
