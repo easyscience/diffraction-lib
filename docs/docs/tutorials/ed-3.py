@@ -167,12 +167,6 @@ project.structures['lbco'].atom_sites.create(
 project.structures['lbco'].show_as_cif()
 
 # %% [markdown]
-# #### Show Structure Structure
-
-# %%
-project.structures['lbco'].show()
-
-# %% [markdown]
 # #### View Structure in 3D
 #
 # EasyDiffraction can draw the structure that has just been defined. The

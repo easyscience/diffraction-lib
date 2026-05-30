@@ -241,11 +241,6 @@ class Structure(DatablockItem):
     # Public methods
     # ------------------------------------------------------------------
 
-    def show(self) -> None:
-        """Display an ASCII projection of the structure in 2D."""
-        console.paragraph(f"Structure 🧩 '{self.name}'")
-        console.print('Not implemented yet.')
-
     def show_as_cif(self) -> None:
         """Render the CIF text for this structure in the terminal."""
         console.paragraph(f"Structure 🧩 '{self.name}' as cif")
