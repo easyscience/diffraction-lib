@@ -166,14 +166,8 @@ structure.show_as_cif()
 
 # %% [markdown]
 # ## Step 6: Generate Report
-#
-# By default, no report files are generated. Here we enable HTML and
-# TeX reports, so that both the HTML and PDF report files are generated
-# when saving the project.
-#
-# We also support saving the report in CIF and TEX formats.
 
 # %%
-project.report.html = True
+# Enable PDF report generation before the last save (time consuming)
 project.report.pdf = True
 project.save()

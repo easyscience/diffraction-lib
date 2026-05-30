@@ -41,21 +41,27 @@ report formats.
 | Setting                       | Type   | Meaning                                            |
 | ----------------------------- | ------ | -------------------------------------------------- |
 | `project.report.cif`          | `bool` | Write an IUCr submission CIF.                      |
-| `project.report.html`         | `bool` | Write an HTML report.                              |
+| `project.report.html`         | `bool` | Write an HTML report (enabled by default).         |
 | `project.report.tex`          | `bool` | Write a TeX report bundle.                         |
 | `project.report.pdf`          | `bool` | Write a PDF report when a TeX engine is available. |
 | `project.report.html_offline` | `bool` | Embed HTML assets instead of using CDN links.      |
 
-Enable each saved report format through its boolean flag:
+HTML output is enabled by default, so saving a project always writes an
+HTML report unless you set `project.report.html = False`. Enable
+additional formats through their boolean flags:
 
 ```python
-project.report.html = True
 project.report.cif = True
 project.save()
 ```
 
-This writes `reports/<project>.html` and `reports/<project>.cif` inside
-the project directory.
+This writes `reports/<project>.html` (enabled by default) and
+`reports/<project>.cif` inside the project directory.
+
+When `pdf` is enabled but `tex` is not, the intermediate `reports/tex/`
+bundle is written only to build the PDF and removed once the PDF is
+produced. It is kept if no TeX engine is available so you can compile it
+by hand.
 
 ## One-Off Report Saves
 

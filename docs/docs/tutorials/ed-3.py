@@ -623,14 +623,17 @@ project.display.pattern(expt_name='hrpt', x_min=38, x_max=41)
 #
 # This final section shows how to review the results of the analysis.
 #
-# By default, no report files are generated. Here we enable CIF, HTML,
-# TeX, and PDF reports for regular project saves.
+# By default, HTML report is generated after fitting. Here we also
+# show how to activate generation of CIF, TEX and PDF reports with
+# regular project saves.
+# Keep in mind, that PDF report generation requires additional
+# dependencies and is not that fast to be generated after each fit, so
+# use it with caution.
 # The generated report files will be saved in the `reports` folder of
 # the project directory.
 
 # %%
 project.report.cif = True
-project.report.html = True
 project.report.tex = True
 project.report.pdf = True
 project.save()
