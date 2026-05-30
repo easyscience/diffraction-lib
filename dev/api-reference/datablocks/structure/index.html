@@ -3310,8 +3310,7 @@ tensor components whose physical meaning (B or U) is determined by
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/structure/categories/atom_site_aniso/default.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 26</span>
-<span class="normal"> 27</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 27</span>
 <span class="normal"> 28</span>
 <span class="normal"> 29</span>
 <span class="normal"> 30</span>
@@ -3489,7 +3488,44 @@ tensor components whose physical meaning (B or U) is determined by
 <span class="normal">202</span>
 <span class="normal">203</span>
 <span class="normal">204</span>
-<span class="normal">205</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AtomSiteAniso</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AtomSiteAniso</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Single atom site anisotropic ADP entry.</span>
 
@@ -3515,7 +3551,13 @@ tensor components whose physical meaning (B or U) is determined by
         <span class="bp">self</span><span class="o">.</span><span class="n">_adp_11</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;adp_11&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Anisotropic ADP tensor component (1,1).&#39;</span><span class="p">,</span>
-            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;Å²&#39;</span><span class="p">,</span>
+            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;angstrom_squared&#39;</span><span class="p">,</span>
+            <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+                <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;U11&#39;</span><span class="p">,</span>
+                <span class="n">display_units</span><span class="o">=</span><span class="s1">&#39;Å²&#39;</span><span class="p">,</span>
+                <span class="n">latex_name</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$U_</span><span class="si">{11}</span><span class="s1">$&#39;</span><span class="p">,</span>
+                <span class="n">latex_units</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;\AA$^2$&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mf">10.0</span><span class="p">),</span>
@@ -3530,7 +3572,13 @@ tensor components whose physical meaning (B or U) is determined by
         <span class="bp">self</span><span class="o">.</span><span class="n">_adp_22</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;adp_22&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Anisotropic ADP tensor component (2,2).&#39;</span><span class="p">,</span>
-            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;Å²&#39;</span><span class="p">,</span>
+            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;angstrom_squared&#39;</span><span class="p">,</span>
+            <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+                <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;U22&#39;</span><span class="p">,</span>
+                <span class="n">display_units</span><span class="o">=</span><span class="s1">&#39;Å²&#39;</span><span class="p">,</span>
+                <span class="n">latex_name</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$U_</span><span class="si">{22}</span><span class="s1">$&#39;</span><span class="p">,</span>
+                <span class="n">latex_units</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;\AA$^2$&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mf">10.0</span><span class="p">),</span>
@@ -3545,7 +3593,13 @@ tensor components whose physical meaning (B or U) is determined by
         <span class="bp">self</span><span class="o">.</span><span class="n">_adp_33</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;adp_33&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Anisotropic ADP tensor component (3,3).&#39;</span><span class="p">,</span>
-            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;Å²&#39;</span><span class="p">,</span>
+            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;angstrom_squared&#39;</span><span class="p">,</span>
+            <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+                <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;U33&#39;</span><span class="p">,</span>
+                <span class="n">display_units</span><span class="o">=</span><span class="s1">&#39;Å²&#39;</span><span class="p">,</span>
+                <span class="n">latex_name</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$U_</span><span class="si">{33}</span><span class="s1">$&#39;</span><span class="p">,</span>
+                <span class="n">latex_units</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;\AA$^2$&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mf">10.0</span><span class="p">),</span>
@@ -3560,7 +3614,13 @@ tensor components whose physical meaning (B or U) is determined by
         <span class="bp">self</span><span class="o">.</span><span class="n">_adp_12</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;adp_12&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Anisotropic ADP tensor component (1,2).&#39;</span><span class="p">,</span>
-            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;Å²&#39;</span><span class="p">,</span>
+            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;angstrom_squared&#39;</span><span class="p">,</span>
+            <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+                <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;U12&#39;</span><span class="p">,</span>
+                <span class="n">display_units</span><span class="o">=</span><span class="s1">&#39;Å²&#39;</span><span class="p">,</span>
+                <span class="n">latex_name</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$U_</span><span class="si">{12}</span><span class="s1">$&#39;</span><span class="p">,</span>
+                <span class="n">latex_units</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;\AA$^2$&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
@@ -3575,7 +3635,13 @@ tensor components whose physical meaning (B or U) is determined by
         <span class="bp">self</span><span class="o">.</span><span class="n">_adp_13</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;adp_13&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Anisotropic ADP tensor component (1,3).&#39;</span><span class="p">,</span>
-            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;Å²&#39;</span><span class="p">,</span>
+            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;angstrom_squared&#39;</span><span class="p">,</span>
+            <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+                <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;U13&#39;</span><span class="p">,</span>
+                <span class="n">display_units</span><span class="o">=</span><span class="s1">&#39;Å²&#39;</span><span class="p">,</span>
+                <span class="n">latex_name</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$U_</span><span class="si">{13}</span><span class="s1">$&#39;</span><span class="p">,</span>
+                <span class="n">latex_units</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;\AA$^2$&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
@@ -3590,7 +3656,13 @@ tensor components whose physical meaning (B or U) is determined by
         <span class="bp">self</span><span class="o">.</span><span class="n">_adp_23</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;adp_23&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Anisotropic ADP tensor component (2,3).&#39;</span><span class="p">,</span>
-            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;Å²&#39;</span><span class="p">,</span>
+            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;angstrom_squared&#39;</span><span class="p">,</span>
+            <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+                <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;U23&#39;</span><span class="p">,</span>
+                <span class="n">display_units</span><span class="o">=</span><span class="s1">&#39;Å²&#39;</span><span class="p">,</span>
+                <span class="n">latex_name</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$U_</span><span class="si">{23}</span><span class="s1">$&#39;</span><span class="p">,</span>
+                <span class="n">latex_units</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;\AA$^2$&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
@@ -3886,8 +3958,7 @@ tensor components whose physical meaning (B or U) is determined by
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/structure/categories/atom_site_aniso/default.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 38</span>
-<span class="normal"> 39</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 39</span>
 <span class="normal"> 40</span>
 <span class="normal"> 41</span>
 <span class="normal"> 42</span>
@@ -3986,7 +4057,44 @@ tensor components whose physical meaning (B or U) is determined by
 <span class="normal">135</span>
 <span class="normal">136</span>
 <span class="normal">137</span>
-<span class="normal">138</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialise with default zero-valued tensor components.&quot;&quot;&quot;</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
@@ -4000,7 +4108,13 @@ tensor components whose physical meaning (B or U) is determined by
     <span class="bp">self</span><span class="o">.</span><span class="n">_adp_11</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;adp_11&#39;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Anisotropic ADP tensor component (1,1).&#39;</span><span class="p">,</span>
-        <span class="n">units</span><span class="o">=</span><span class="s1">&#39;Å²&#39;</span><span class="p">,</span>
+        <span class="n">units</span><span class="o">=</span><span class="s1">&#39;angstrom_squared&#39;</span><span class="p">,</span>
+        <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+            <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;U11&#39;</span><span class="p">,</span>
+            <span class="n">display_units</span><span class="o">=</span><span class="s1">&#39;Å²&#39;</span><span class="p">,</span>
+            <span class="n">latex_name</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$U_</span><span class="si">{11}</span><span class="s1">$&#39;</span><span class="p">,</span>
+            <span class="n">latex_units</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;\AA$^2$&#39;</span><span class="p">,</span>
+        <span class="p">),</span>
         <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
             <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
             <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mf">10.0</span><span class="p">),</span>
@@ -4015,7 +4129,13 @@ tensor components whose physical meaning (B or U) is determined by
     <span class="bp">self</span><span class="o">.</span><span class="n">_adp_22</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;adp_22&#39;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Anisotropic ADP tensor component (2,2).&#39;</span><span class="p">,</span>
-        <span class="n">units</span><span class="o">=</span><span class="s1">&#39;Å²&#39;</span><span class="p">,</span>
+        <span class="n">units</span><span class="o">=</span><span class="s1">&#39;angstrom_squared&#39;</span><span class="p">,</span>
+        <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+            <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;U22&#39;</span><span class="p">,</span>
+            <span class="n">display_units</span><span class="o">=</span><span class="s1">&#39;Å²&#39;</span><span class="p">,</span>
+            <span class="n">latex_name</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$U_</span><span class="si">{22}</span><span class="s1">$&#39;</span><span class="p">,</span>
+            <span class="n">latex_units</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;\AA$^2$&#39;</span><span class="p">,</span>
+        <span class="p">),</span>
         <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
             <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
             <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mf">10.0</span><span class="p">),</span>
@@ -4030,7 +4150,13 @@ tensor components whose physical meaning (B or U) is determined by
     <span class="bp">self</span><span class="o">.</span><span class="n">_adp_33</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;adp_33&#39;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Anisotropic ADP tensor component (3,3).&#39;</span><span class="p">,</span>
-        <span class="n">units</span><span class="o">=</span><span class="s1">&#39;Å²&#39;</span><span class="p">,</span>
+        <span class="n">units</span><span class="o">=</span><span class="s1">&#39;angstrom_squared&#39;</span><span class="p">,</span>
+        <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+            <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;U33&#39;</span><span class="p">,</span>
+            <span class="n">display_units</span><span class="o">=</span><span class="s1">&#39;Å²&#39;</span><span class="p">,</span>
+            <span class="n">latex_name</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$U_</span><span class="si">{33}</span><span class="s1">$&#39;</span><span class="p">,</span>
+            <span class="n">latex_units</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;\AA$^2$&#39;</span><span class="p">,</span>
+        <span class="p">),</span>
         <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
             <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
             <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mf">10.0</span><span class="p">),</span>
@@ -4045,7 +4171,13 @@ tensor components whose physical meaning (B or U) is determined by
     <span class="bp">self</span><span class="o">.</span><span class="n">_adp_12</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;adp_12&#39;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Anisotropic ADP tensor component (1,2).&#39;</span><span class="p">,</span>
-        <span class="n">units</span><span class="o">=</span><span class="s1">&#39;Å²&#39;</span><span class="p">,</span>
+        <span class="n">units</span><span class="o">=</span><span class="s1">&#39;angstrom_squared&#39;</span><span class="p">,</span>
+        <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+            <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;U12&#39;</span><span class="p">,</span>
+            <span class="n">display_units</span><span class="o">=</span><span class="s1">&#39;Å²&#39;</span><span class="p">,</span>
+            <span class="n">latex_name</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$U_</span><span class="si">{12}</span><span class="s1">$&#39;</span><span class="p">,</span>
+            <span class="n">latex_units</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;\AA$^2$&#39;</span><span class="p">,</span>
+        <span class="p">),</span>
         <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
             <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
             <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
@@ -4060,7 +4192,13 @@ tensor components whose physical meaning (B or U) is determined by
     <span class="bp">self</span><span class="o">.</span><span class="n">_adp_13</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;adp_13&#39;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Anisotropic ADP tensor component (1,3).&#39;</span><span class="p">,</span>
-        <span class="n">units</span><span class="o">=</span><span class="s1">&#39;Å²&#39;</span><span class="p">,</span>
+        <span class="n">units</span><span class="o">=</span><span class="s1">&#39;angstrom_squared&#39;</span><span class="p">,</span>
+        <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+            <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;U13&#39;</span><span class="p">,</span>
+            <span class="n">display_units</span><span class="o">=</span><span class="s1">&#39;Å²&#39;</span><span class="p">,</span>
+            <span class="n">latex_name</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$U_</span><span class="si">{13}</span><span class="s1">$&#39;</span><span class="p">,</span>
+            <span class="n">latex_units</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;\AA$^2$&#39;</span><span class="p">,</span>
+        <span class="p">),</span>
         <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
             <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
             <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
@@ -4075,7 +4213,13 @@ tensor components whose physical meaning (B or U) is determined by
     <span class="bp">self</span><span class="o">.</span><span class="n">_adp_23</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;adp_23&#39;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Anisotropic ADP tensor component (2,3).&#39;</span><span class="p">,</span>
-        <span class="n">units</span><span class="o">=</span><span class="s1">&#39;Å²&#39;</span><span class="p">,</span>
+        <span class="n">units</span><span class="o">=</span><span class="s1">&#39;angstrom_squared&#39;</span><span class="p">,</span>
+        <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+            <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;U23&#39;</span><span class="p">,</span>
+            <span class="n">display_units</span><span class="o">=</span><span class="s1">&#39;Å²&#39;</span><span class="p">,</span>
+            <span class="n">latex_name</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$U_</span><span class="si">{23}</span><span class="s1">$&#39;</span><span class="p">,</span>
+            <span class="n">latex_units</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;\AA$^2$&#39;</span><span class="p">,</span>
+        <span class="p">),</span>
         <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
             <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
             <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
@@ -4132,40 +4276,40 @@ tensor components whose physical meaning (B or U) is determined by
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/structure/categories/atom_site_aniso/default.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">208</span>
-<span class="normal">209</span>
-<span class="normal">210</span>
-<span class="normal">211</span>
-<span class="normal">212</span>
-<span class="normal">213</span>
-<span class="normal">214</span>
-<span class="normal">215</span>
-<span class="normal">216</span>
-<span class="normal">217</span>
-<span class="normal">218</span>
-<span class="normal">219</span>
-<span class="normal">220</span>
-<span class="normal">221</span>
-<span class="normal">222</span>
-<span class="normal">223</span>
-<span class="normal">224</span>
-<span class="normal">225</span>
-<span class="normal">226</span>
-<span class="normal">227</span>
-<span class="normal">228</span>
-<span class="normal">229</span>
-<span class="normal">230</span>
-<span class="normal">231</span>
-<span class="normal">232</span>
-<span class="normal">233</span>
-<span class="normal">234</span>
-<span class="normal">235</span>
-<span class="normal">236</span>
-<span class="normal">237</span>
-<span class="normal">238</span>
-<span class="normal">239</span>
-<span class="normal">240</span>
-<span class="normal">241</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AtomSiteAnisoFactory</span><span class="o">.</span><span class="n">register</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AtomSiteAnisoFactory</span><span class="o">.</span><span class="n">register</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">AtomSiteAnisoCollection</span><span class="p">(</span><span class="n">CategoryCollection</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Collection of :class:`AtomSiteAniso` instances.&quot;&quot;&quot;</span>
 
@@ -4234,9 +4378,9 @@ tensor components whose physical meaning (B or U) is determined by
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/structure/categories/atom_site_aniso/default.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">217</span>
-<span class="normal">218</span>
-<span class="normal">219</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialise an empty aniso-ADP collection.&quot;&quot;&quot;</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">item_type</span><span class="o">=</span><span class="n">AtomSiteAniso</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -4484,8 +4628,7 @@ in crystallographic structures.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/structure/categories/atom_sites/default.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 31</span>
-<span class="normal"> 32</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 32</span>
 <span class="normal"> 33</span>
 <span class="normal"> 34</span>
 <span class="normal"> 35</span>
@@ -4952,7 +5095,46 @@ in crystallographic structures.</p>
 <span class="normal">496</span>
 <span class="normal">497</span>
 <span class="normal">498</span>
-<span class="normal">499</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AtomSite</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
+<span class="normal">499</span>
+<span class="normal">500</span>
+<span class="normal">501</span>
+<span class="normal">502</span>
+<span class="normal">503</span>
+<span class="normal">504</span>
+<span class="normal">505</span>
+<span class="normal">506</span>
+<span class="normal">507</span>
+<span class="normal">508</span>
+<span class="normal">509</span>
+<span class="normal">510</span>
+<span class="normal">511</span>
+<span class="normal">512</span>
+<span class="normal">513</span>
+<span class="normal">514</span>
+<span class="normal">515</span>
+<span class="normal">516</span>
+<span class="normal">517</span>
+<span class="normal">518</span>
+<span class="normal">519</span>
+<span class="normal">520</span>
+<span class="normal">521</span>
+<span class="normal">522</span>
+<span class="normal">523</span>
+<span class="normal">524</span>
+<span class="normal">525</span>
+<span class="normal">526</span>
+<span class="normal">527</span>
+<span class="normal">528</span>
+<span class="normal">529</span>
+<span class="normal">530</span>
+<span class="normal">531</span>
+<span class="normal">532</span>
+<span class="normal">533</span>
+<span class="normal">534</span>
+<span class="normal">535</span>
+<span class="normal">536</span>
+<span class="normal">537</span>
+<span class="normal">538</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AtomSite</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Single atom site with fractional coordinates and ADP.</span>
 
@@ -4970,6 +5152,10 @@ in crystallographic structures.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_label</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;label&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Unique identifier for the atom site.&#39;</span><span class="p">,</span>
+            <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+                <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;Label&#39;</span><span class="p">,</span>
+                <span class="n">latex_name</span><span class="o">=</span><span class="s1">&#39;Label&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=</span><span class="s1">&#39;Si&#39;</span><span class="p">,</span>
                 <span class="c1"># TODO: the following pattern is valid for dict key</span>
@@ -4982,6 +5168,10 @@ in crystallographic structures.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_type_symbol</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;type_symbol&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Chemical symbol of the atom at this site.&#39;</span><span class="p">,</span>
+            <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+                <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;Type&#39;</span><span class="p">,</span>
+                <span class="n">latex_name</span><span class="o">=</span><span class="s1">&#39;Type&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=</span><span class="s1">&#39;Tb&#39;</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">MembershipValidator</span><span class="p">(</span><span class="n">allowed</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_type_symbol_allowed_values</span><span class="p">),</span>
@@ -4991,6 +5181,10 @@ in crystallographic structures.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_fract_x</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;fract_x&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Fractional x-coordinate of the atom site within the unit cell.&#39;</span><span class="p">,</span>
+            <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+                <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span>
+                <span class="n">latex_name</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$x$&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
@@ -5000,6 +5194,10 @@ in crystallographic structures.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_fract_y</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;fract_y&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Fractional y-coordinate of the atom site within the unit cell.&#39;</span><span class="p">,</span>
+            <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+                <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span>
+                <span class="n">latex_name</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$y$&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
@@ -5009,6 +5207,10 @@ in crystallographic structures.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_fract_z</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;fract_z&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Fractional z-coordinate of the atom site within the unit cell.&#39;</span><span class="p">,</span>
+            <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+                <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;z&#39;</span><span class="p">,</span>
+                <span class="n">latex_name</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$z$&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
@@ -5019,6 +5221,10 @@ in crystallographic structures.</p>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;wyckoff_letter&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Wyckoff letter indicating the symmetry of the &#39;</span>
             <span class="s1">&#39;atom site within the space group.&#39;</span><span class="p">,</span>
+            <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+                <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;Wyckoff&#39;</span><span class="p">,</span>
+                <span class="n">latex_name</span><span class="o">=</span><span class="s1">&#39;Wyckoff&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_wyckoff_letter_default_value</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">MembershipValidator</span><span class="p">(</span><span class="n">allowed</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_wyckoff_letter_allowed_values</span><span class="p">),</span>
@@ -5035,6 +5241,10 @@ in crystallographic structures.</p>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;occupancy&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Occupancy of the atom site, representing the &#39;</span>
             <span class="s1">&#39;fraction of the site occupied by the atom type.&#39;</span><span class="p">,</span>
+            <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+                <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;Occ.&#39;</span><span class="p">,</span>
+                <span class="n">latex_name</span><span class="o">=</span><span class="s1">&#39;Occ.&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mf">1.0</span><span class="p">),</span>
@@ -5044,7 +5254,13 @@ in crystallographic structures.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_adp_iso</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;adp_iso&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Isotropic atomic displacement parameter (ADP) for the atom site.&#39;</span><span class="p">,</span>
-            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;Å²&#39;</span><span class="p">,</span>
+            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;angstrom_squared&#39;</span><span class="p">,</span>
+            <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+                <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;Uiso&#39;</span><span class="p">,</span>
+                <span class="n">display_units</span><span class="o">=</span><span class="s1">&#39;Å²&#39;</span><span class="p">,</span>
+                <span class="n">latex_name</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$U_{\mathrm</span><span class="si">{iso}</span><span class="s1">}$&#39;</span><span class="p">,</span>
+                <span class="n">latex_units</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;\AA$^2$&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mf">10.0</span><span class="p">),</span>
@@ -5060,6 +5276,10 @@ in crystallographic structures.</p>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;adp_type&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Type of atomic displacement parameter (ADP) &#39;</span>
             <span class="s1">&#39;used (e.g., Biso, Uiso, Uani, Bani).&#39;</span><span class="p">,</span>
+            <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+                <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;ADP type&#39;</span><span class="p">,</span>
+                <span class="n">latex_name</span><span class="o">=</span><span class="s1">&#39;ADP type&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=</span><span class="n">AdpTypeEnum</span><span class="o">.</span><span class="n">default</span><span class="p">(),</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">MembershipValidator</span><span class="p">(</span><span class="n">allowed</span><span class="o">=</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">AdpTypeEnum</span><span class="p">]),</span>
@@ -5766,8 +5986,7 @@ returned unchanged.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/structure/categories/atom_sites/default.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 42</span>
-<span class="normal"> 43</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 43</span>
 <span class="normal"> 44</span>
 <span class="normal"> 45</span>
 <span class="normal"> 46</span>
@@ -5868,13 +6087,56 @@ returned unchanged.</p>
 <span class="normal">141</span>
 <span class="normal">142</span>
 <span class="normal">143</span>
-<span class="normal">144</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialise the atom site with default descriptor values.&quot;&quot;&quot;</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">_label</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;label&#39;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Unique identifier for the atom site.&#39;</span><span class="p">,</span>
+        <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+            <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;Label&#39;</span><span class="p">,</span>
+            <span class="n">latex_name</span><span class="o">=</span><span class="s1">&#39;Label&#39;</span><span class="p">,</span>
+        <span class="p">),</span>
         <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
             <span class="n">default</span><span class="o">=</span><span class="s1">&#39;Si&#39;</span><span class="p">,</span>
             <span class="c1"># TODO: the following pattern is valid for dict key</span>
@@ -5887,6 +6149,10 @@ returned unchanged.</p>
     <span class="bp">self</span><span class="o">.</span><span class="n">_type_symbol</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;type_symbol&#39;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Chemical symbol of the atom at this site.&#39;</span><span class="p">,</span>
+        <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+            <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;Type&#39;</span><span class="p">,</span>
+            <span class="n">latex_name</span><span class="o">=</span><span class="s1">&#39;Type&#39;</span><span class="p">,</span>
+        <span class="p">),</span>
         <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
             <span class="n">default</span><span class="o">=</span><span class="s1">&#39;Tb&#39;</span><span class="p">,</span>
             <span class="n">validator</span><span class="o">=</span><span class="n">MembershipValidator</span><span class="p">(</span><span class="n">allowed</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_type_symbol_allowed_values</span><span class="p">),</span>
@@ -5896,6 +6162,10 @@ returned unchanged.</p>
     <span class="bp">self</span><span class="o">.</span><span class="n">_fract_x</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;fract_x&#39;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Fractional x-coordinate of the atom site within the unit cell.&#39;</span><span class="p">,</span>
+        <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+            <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span>
+            <span class="n">latex_name</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$x$&#39;</span><span class="p">,</span>
+        <span class="p">),</span>
         <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
             <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
             <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
@@ -5905,6 +6175,10 @@ returned unchanged.</p>
     <span class="bp">self</span><span class="o">.</span><span class="n">_fract_y</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;fract_y&#39;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Fractional y-coordinate of the atom site within the unit cell.&#39;</span><span class="p">,</span>
+        <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+            <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span>
+            <span class="n">latex_name</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$y$&#39;</span><span class="p">,</span>
+        <span class="p">),</span>
         <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
             <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
             <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
@@ -5914,6 +6188,10 @@ returned unchanged.</p>
     <span class="bp">self</span><span class="o">.</span><span class="n">_fract_z</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;fract_z&#39;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Fractional z-coordinate of the atom site within the unit cell.&#39;</span><span class="p">,</span>
+        <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+            <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;z&#39;</span><span class="p">,</span>
+            <span class="n">latex_name</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$z$&#39;</span><span class="p">,</span>
+        <span class="p">),</span>
         <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
             <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
             <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
@@ -5924,6 +6202,10 @@ returned unchanged.</p>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;wyckoff_letter&#39;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Wyckoff letter indicating the symmetry of the &#39;</span>
         <span class="s1">&#39;atom site within the space group.&#39;</span><span class="p">,</span>
+        <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+            <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;Wyckoff&#39;</span><span class="p">,</span>
+            <span class="n">latex_name</span><span class="o">=</span><span class="s1">&#39;Wyckoff&#39;</span><span class="p">,</span>
+        <span class="p">),</span>
         <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
             <span class="n">default</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_wyckoff_letter_default_value</span><span class="p">,</span>
             <span class="n">validator</span><span class="o">=</span><span class="n">MembershipValidator</span><span class="p">(</span><span class="n">allowed</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_wyckoff_letter_allowed_values</span><span class="p">),</span>
@@ -5940,6 +6222,10 @@ returned unchanged.</p>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;occupancy&#39;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Occupancy of the atom site, representing the &#39;</span>
         <span class="s1">&#39;fraction of the site occupied by the atom type.&#39;</span><span class="p">,</span>
+        <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+            <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;Occ.&#39;</span><span class="p">,</span>
+            <span class="n">latex_name</span><span class="o">=</span><span class="s1">&#39;Occ.&#39;</span><span class="p">,</span>
+        <span class="p">),</span>
         <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
             <span class="n">default</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
             <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mf">1.0</span><span class="p">),</span>
@@ -5949,7 +6235,13 @@ returned unchanged.</p>
     <span class="bp">self</span><span class="o">.</span><span class="n">_adp_iso</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;adp_iso&#39;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Isotropic atomic displacement parameter (ADP) for the atom site.&#39;</span><span class="p">,</span>
-        <span class="n">units</span><span class="o">=</span><span class="s1">&#39;Å²&#39;</span><span class="p">,</span>
+        <span class="n">units</span><span class="o">=</span><span class="s1">&#39;angstrom_squared&#39;</span><span class="p">,</span>
+        <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+            <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;Uiso&#39;</span><span class="p">,</span>
+            <span class="n">display_units</span><span class="o">=</span><span class="s1">&#39;Å²&#39;</span><span class="p">,</span>
+            <span class="n">latex_name</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$U_{\mathrm</span><span class="si">{iso}</span><span class="s1">}$&#39;</span><span class="p">,</span>
+            <span class="n">latex_units</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;\AA$^2$&#39;</span><span class="p">,</span>
+        <span class="p">),</span>
         <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
             <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
             <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mf">10.0</span><span class="p">),</span>
@@ -5965,6 +6257,10 @@ returned unchanged.</p>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;adp_type&#39;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Type of atomic displacement parameter (ADP) &#39;</span>
         <span class="s1">&#39;used (e.g., Biso, Uiso, Uani, Bani).&#39;</span><span class="p">,</span>
+        <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+            <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;ADP type&#39;</span><span class="p">,</span>
+            <span class="n">latex_name</span><span class="o">=</span><span class="s1">&#39;ADP type&#39;</span><span class="p">,</span>
+        <span class="p">),</span>
         <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
             <span class="n">default</span><span class="o">=</span><span class="n">AdpTypeEnum</span><span class="o">.</span><span class="n">default</span><span class="p">(),</span>
             <span class="n">validator</span><span class="o">=</span><span class="n">MembershipValidator</span><span class="p">(</span><span class="n">allowed</span><span class="o">=</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">AdpTypeEnum</span><span class="p">]),</span>
@@ -6016,46 +6312,7 @@ returned unchanged.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/structure/categories/atom_sites/default.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">502</span>
-<span class="normal">503</span>
-<span class="normal">504</span>
-<span class="normal">505</span>
-<span class="normal">506</span>
-<span class="normal">507</span>
-<span class="normal">508</span>
-<span class="normal">509</span>
-<span class="normal">510</span>
-<span class="normal">511</span>
-<span class="normal">512</span>
-<span class="normal">513</span>
-<span class="normal">514</span>
-<span class="normal">515</span>
-<span class="normal">516</span>
-<span class="normal">517</span>
-<span class="normal">518</span>
-<span class="normal">519</span>
-<span class="normal">520</span>
-<span class="normal">521</span>
-<span class="normal">522</span>
-<span class="normal">523</span>
-<span class="normal">524</span>
-<span class="normal">525</span>
-<span class="normal">526</span>
-<span class="normal">527</span>
-<span class="normal">528</span>
-<span class="normal">529</span>
-<span class="normal">530</span>
-<span class="normal">531</span>
-<span class="normal">532</span>
-<span class="normal">533</span>
-<span class="normal">534</span>
-<span class="normal">535</span>
-<span class="normal">536</span>
-<span class="normal">537</span>
-<span class="normal">538</span>
-<span class="normal">539</span>
-<span class="normal">540</span>
-<span class="normal">541</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">541</span>
 <span class="normal">542</span>
 <span class="normal">543</span>
 <span class="normal">544</span>
@@ -6170,7 +6427,46 @@ returned unchanged.</p>
 <span class="normal">653</span>
 <span class="normal">654</span>
 <span class="normal">655</span>
-<span class="normal">656</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AtomSitesFactory</span><span class="o">.</span><span class="n">register</span>
+<span class="normal">656</span>
+<span class="normal">657</span>
+<span class="normal">658</span>
+<span class="normal">659</span>
+<span class="normal">660</span>
+<span class="normal">661</span>
+<span class="normal">662</span>
+<span class="normal">663</span>
+<span class="normal">664</span>
+<span class="normal">665</span>
+<span class="normal">666</span>
+<span class="normal">667</span>
+<span class="normal">668</span>
+<span class="normal">669</span>
+<span class="normal">670</span>
+<span class="normal">671</span>
+<span class="normal">672</span>
+<span class="normal">673</span>
+<span class="normal">674</span>
+<span class="normal">675</span>
+<span class="normal">676</span>
+<span class="normal">677</span>
+<span class="normal">678</span>
+<span class="normal">679</span>
+<span class="normal">680</span>
+<span class="normal">681</span>
+<span class="normal">682</span>
+<span class="normal">683</span>
+<span class="normal">684</span>
+<span class="normal">685</span>
+<span class="normal">686</span>
+<span class="normal">687</span>
+<span class="normal">688</span>
+<span class="normal">689</span>
+<span class="normal">690</span>
+<span class="normal">691</span>
+<span class="normal">692</span>
+<span class="normal">693</span>
+<span class="normal">694</span>
+<span class="normal">695</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AtomSitesFactory</span><span class="o">.</span><span class="n">register</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">AtomSites</span><span class="p">(</span><span class="n">CategoryCollection</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Collection of :class:`AtomSite` instances.&quot;&quot;&quot;</span>
 
@@ -6360,9 +6656,9 @@ returned unchanged.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/structure/categories/atom_sites/default.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">511</span>
-<span class="normal">512</span>
-<span class="normal">513</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">550</span>
+<span class="normal">551</span>
+<span class="normal">552</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialise an empty atom-sites collection.&quot;&quot;&quot;</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">item_type</span><span class="o">=</span><span class="n">AtomSite</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -6829,8 +7125,7 @@ descriptors supporting validation, fitting and <abbr title="Crystallographic Inf
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/structure/categories/cell/default.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 17</span>
-<span class="normal"> 18</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 18</span>
 <span class="normal"> 19</span>
 <span class="normal"> 20</span>
 <span class="normal"> 21</span>
@@ -7055,7 +7350,44 @@ descriptors supporting validation, fitting and <abbr title="Crystallographic Inf
 <span class="normal">240</span>
 <span class="normal">241</span>
 <span class="normal">242</span>
-<span class="normal">243</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@CellFactory</span><span class="o">.</span><span class="n">register</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@CellFactory</span><span class="o">.</span><span class="n">register</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Cell</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Unit cell with lengths a, b, c and angles alpha, beta, gamma.</span>
@@ -7078,7 +7410,13 @@ descriptors supporting validation, fitting and <abbr title="Crystallographic Inf
         <span class="bp">self</span><span class="o">.</span><span class="n">_length_a</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;length_a&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Length of the a axis of the unit cell&#39;</span><span class="p">,</span>
-            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;Å&#39;</span><span class="p">,</span>
+            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;angstroms&#39;</span><span class="p">,</span>
+            <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+                <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span>
+                <span class="n">display_units</span><span class="o">=</span><span class="s1">&#39;Å&#39;</span><span class="p">,</span>
+                <span class="n">latex_name</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$a$&#39;</span><span class="p">,</span>
+                <span class="n">latex_units</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;\AA&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">30</span><span class="p">),</span>
@@ -7088,7 +7426,13 @@ descriptors supporting validation, fitting and <abbr title="Crystallographic Inf
         <span class="bp">self</span><span class="o">.</span><span class="n">_length_b</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;length_b&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Length of the b axis of the unit cell&#39;</span><span class="p">,</span>
-            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;Å&#39;</span><span class="p">,</span>
+            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;angstroms&#39;</span><span class="p">,</span>
+            <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+                <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span>
+                <span class="n">display_units</span><span class="o">=</span><span class="s1">&#39;Å&#39;</span><span class="p">,</span>
+                <span class="n">latex_name</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$b$&#39;</span><span class="p">,</span>
+                <span class="n">latex_units</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;\AA&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">30</span><span class="p">),</span>
@@ -7098,7 +7442,13 @@ descriptors supporting validation, fitting and <abbr title="Crystallographic Inf
         <span class="bp">self</span><span class="o">.</span><span class="n">_length_c</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;length_c&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Length of the c axis of the unit cell&#39;</span><span class="p">,</span>
-            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;Å&#39;</span><span class="p">,</span>
+            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;angstroms&#39;</span><span class="p">,</span>
+            <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+                <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;c&#39;</span><span class="p">,</span>
+                <span class="n">display_units</span><span class="o">=</span><span class="s1">&#39;Å&#39;</span><span class="p">,</span>
+                <span class="n">latex_name</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$c$&#39;</span><span class="p">,</span>
+                <span class="n">latex_units</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;\AA&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">30</span><span class="p">),</span>
@@ -7108,7 +7458,13 @@ descriptors supporting validation, fitting and <abbr title="Crystallographic Inf
         <span class="bp">self</span><span class="o">.</span><span class="n">_angle_alpha</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;angle_alpha&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Angle between edges b and c&#39;</span><span class="p">,</span>
-            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;deg&#39;</span><span class="p">,</span>
+            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;degrees&#39;</span><span class="p">,</span>
+            <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+                <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\N{GREEK SMALL LETTER ALPHA}</span><span class="s1">&#39;</span><span class="p">,</span>
+                <span class="n">display_units</span><span class="o">=</span><span class="s1">&#39;deg&#39;</span><span class="p">,</span>
+                <span class="n">latex_name</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$\alpha$&#39;</span><span class="p">,</span>
+                <span class="n">latex_units</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;\mathrm</span><span class="si">{deg}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=</span><span class="mf">90.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">180</span><span class="p">),</span>
@@ -7118,7 +7474,13 @@ descriptors supporting validation, fitting and <abbr title="Crystallographic Inf
         <span class="bp">self</span><span class="o">.</span><span class="n">_angle_beta</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;angle_beta&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Angle between edges a and c&#39;</span><span class="p">,</span>
-            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;deg&#39;</span><span class="p">,</span>
+            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;degrees&#39;</span><span class="p">,</span>
+            <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+                <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\N{GREEK SMALL LETTER BETA}</span><span class="s1">&#39;</span><span class="p">,</span>
+                <span class="n">display_units</span><span class="o">=</span><span class="s1">&#39;deg&#39;</span><span class="p">,</span>
+                <span class="n">latex_name</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$\beta$&#39;</span><span class="p">,</span>
+                <span class="n">latex_units</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;\mathrm</span><span class="si">{deg}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=</span><span class="mf">90.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">180</span><span class="p">),</span>
@@ -7128,7 +7490,13 @@ descriptors supporting validation, fitting and <abbr title="Crystallographic Inf
         <span class="bp">self</span><span class="o">.</span><span class="n">_angle_gamma</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;angle_gamma&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Angle between edges a and b&#39;</span><span class="p">,</span>
-            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;deg&#39;</span><span class="p">,</span>
+            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;degrees&#39;</span><span class="p">,</span>
+            <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+                <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\N{GREEK SMALL LETTER GAMMA}</span><span class="s1">&#39;</span><span class="p">,</span>
+                <span class="n">display_units</span><span class="o">=</span><span class="s1">&#39;deg&#39;</span><span class="p">,</span>
+                <span class="n">latex_name</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$\gamma$&#39;</span><span class="p">,</span>
+                <span class="n">latex_units</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;\mathrm</span><span class="si">{deg}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=</span><span class="mf">90.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">180</span><span class="p">),</span>
@@ -7485,77 +7853,119 @@ object. Assigning to it updates the parameter value.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/structure/categories/cell/default.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span>
-<span class="normal">87</span>
-<span class="normal">88</span>
-<span class="normal">89</span>
-<span class="normal">90</span>
-<span class="normal">91</span>
-<span class="normal">92</span>
-<span class="normal">93</span>
-<span class="normal">94</span>
-<span class="normal">95</span>
-<span class="normal">96</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
+<span class="normal"> 38</span>
+<span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
+<span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialise the unit cell with default parameter values.&quot;&quot;&quot;</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">_length_a</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;length_a&#39;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Length of the a axis of the unit cell&#39;</span><span class="p">,</span>
-        <span class="n">units</span><span class="o">=</span><span class="s1">&#39;Å&#39;</span><span class="p">,</span>
+        <span class="n">units</span><span class="o">=</span><span class="s1">&#39;angstroms&#39;</span><span class="p">,</span>
+        <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+            <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span>
+            <span class="n">display_units</span><span class="o">=</span><span class="s1">&#39;Å&#39;</span><span class="p">,</span>
+            <span class="n">latex_name</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$a$&#39;</span><span class="p">,</span>
+            <span class="n">latex_units</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;\AA&#39;</span><span class="p">,</span>
+        <span class="p">),</span>
         <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
             <span class="n">default</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
             <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">30</span><span class="p">),</span>
@@ -7565,7 +7975,13 @@ object. Assigning to it updates the parameter value.</p>
     <span class="bp">self</span><span class="o">.</span><span class="n">_length_b</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;length_b&#39;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Length of the b axis of the unit cell&#39;</span><span class="p">,</span>
-        <span class="n">units</span><span class="o">=</span><span class="s1">&#39;Å&#39;</span><span class="p">,</span>
+        <span class="n">units</span><span class="o">=</span><span class="s1">&#39;angstroms&#39;</span><span class="p">,</span>
+        <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+            <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span>
+            <span class="n">display_units</span><span class="o">=</span><span class="s1">&#39;Å&#39;</span><span class="p">,</span>
+            <span class="n">latex_name</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$b$&#39;</span><span class="p">,</span>
+            <span class="n">latex_units</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;\AA&#39;</span><span class="p">,</span>
+        <span class="p">),</span>
         <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
             <span class="n">default</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
             <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">30</span><span class="p">),</span>
@@ -7575,7 +7991,13 @@ object. Assigning to it updates the parameter value.</p>
     <span class="bp">self</span><span class="o">.</span><span class="n">_length_c</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;length_c&#39;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Length of the c axis of the unit cell&#39;</span><span class="p">,</span>
-        <span class="n">units</span><span class="o">=</span><span class="s1">&#39;Å&#39;</span><span class="p">,</span>
+        <span class="n">units</span><span class="o">=</span><span class="s1">&#39;angstroms&#39;</span><span class="p">,</span>
+        <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+            <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;c&#39;</span><span class="p">,</span>
+            <span class="n">display_units</span><span class="o">=</span><span class="s1">&#39;Å&#39;</span><span class="p">,</span>
+            <span class="n">latex_name</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$c$&#39;</span><span class="p">,</span>
+            <span class="n">latex_units</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;\AA&#39;</span><span class="p">,</span>
+        <span class="p">),</span>
         <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
             <span class="n">default</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
             <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">30</span><span class="p">),</span>
@@ -7585,7 +8007,13 @@ object. Assigning to it updates the parameter value.</p>
     <span class="bp">self</span><span class="o">.</span><span class="n">_angle_alpha</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;angle_alpha&#39;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Angle between edges b and c&#39;</span><span class="p">,</span>
-        <span class="n">units</span><span class="o">=</span><span class="s1">&#39;deg&#39;</span><span class="p">,</span>
+        <span class="n">units</span><span class="o">=</span><span class="s1">&#39;degrees&#39;</span><span class="p">,</span>
+        <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+            <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\N{GREEK SMALL LETTER ALPHA}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="n">display_units</span><span class="o">=</span><span class="s1">&#39;deg&#39;</span><span class="p">,</span>
+            <span class="n">latex_name</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$\alpha$&#39;</span><span class="p">,</span>
+            <span class="n">latex_units</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;\mathrm</span><span class="si">{deg}</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="p">),</span>
         <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
             <span class="n">default</span><span class="o">=</span><span class="mf">90.0</span><span class="p">,</span>
             <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">180</span><span class="p">),</span>
@@ -7595,7 +8023,13 @@ object. Assigning to it updates the parameter value.</p>
     <span class="bp">self</span><span class="o">.</span><span class="n">_angle_beta</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;angle_beta&#39;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Angle between edges a and c&#39;</span><span class="p">,</span>
-        <span class="n">units</span><span class="o">=</span><span class="s1">&#39;deg&#39;</span><span class="p">,</span>
+        <span class="n">units</span><span class="o">=</span><span class="s1">&#39;degrees&#39;</span><span class="p">,</span>
+        <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+            <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\N{GREEK SMALL LETTER BETA}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="n">display_units</span><span class="o">=</span><span class="s1">&#39;deg&#39;</span><span class="p">,</span>
+            <span class="n">latex_name</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$\beta$&#39;</span><span class="p">,</span>
+            <span class="n">latex_units</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;\mathrm</span><span class="si">{deg}</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="p">),</span>
         <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
             <span class="n">default</span><span class="o">=</span><span class="mf">90.0</span><span class="p">,</span>
             <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">180</span><span class="p">),</span>
@@ -7605,7 +8039,13 @@ object. Assigning to it updates the parameter value.</p>
     <span class="bp">self</span><span class="o">.</span><span class="n">_angle_gamma</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;angle_gamma&#39;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Angle between edges a and b&#39;</span><span class="p">,</span>
-        <span class="n">units</span><span class="o">=</span><span class="s1">&#39;deg&#39;</span><span class="p">,</span>
+        <span class="n">units</span><span class="o">=</span><span class="s1">&#39;degrees&#39;</span><span class="p">,</span>
+        <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+            <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\N{GREEK SMALL LETTER GAMMA}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="n">display_units</span><span class="o">=</span><span class="s1">&#39;deg&#39;</span><span class="p">,</span>
+            <span class="n">latex_name</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$\gamma$&#39;</span><span class="p">,</span>
+            <span class="n">latex_units</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;\mathrm</span><span class="si">{deg}</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="p">),</span>
         <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
             <span class="n">default</span><span class="o">=</span><span class="mf">90.0</span><span class="p">,</span>
             <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">180</span><span class="p">),</span>
@@ -7857,18 +8297,7 @@ to the first allowed value for the new group.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/structure/categories/space_group/default.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 22</span>
-<span class="normal"> 23</span>
-<span class="normal"> 24</span>
-<span class="normal"> 25</span>
-<span class="normal"> 26</span>
-<span class="normal"> 27</span>
-<span class="normal"> 28</span>
-<span class="normal"> 29</span>
-<span class="normal"> 30</span>
-<span class="normal"> 31</span>
-<span class="normal"> 32</span>
-<span class="normal"> 33</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 33</span>
 <span class="normal"> 34</span>
 <span class="normal"> 35</span>
 <span class="normal"> 36</span>
@@ -8000,7 +8429,32 @@ to the first allowed value for the new group.</p>
 <span class="normal">162</span>
 <span class="normal">163</span>
 <span class="normal">164</span>
-<span class="normal">165</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@SpaceGroupFactory</span><span class="o">.</span><span class="n">register</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@SpaceGroupFactory</span><span class="o">.</span><span class="n">register</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">SpaceGroup</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Space group with H-M symbol and IT coordinate system code.</span>
@@ -8025,6 +8479,10 @@ to the first allowed value for the new group.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_name_h_m</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;name_h_m&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Hermann-Mauguin symbol of the space group.&#39;</span><span class="p">,</span>
+            <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+                <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;H-M symbol&#39;</span><span class="p">,</span>
+                <span class="n">latex_name</span><span class="o">=</span><span class="s1">&#39;H-M symbol&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=</span><span class="s1">&#39;P 1&#39;</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">MembershipValidator</span><span class="p">(</span>
@@ -8045,6 +8503,10 @@ to the first allowed value for the new group.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_it_coordinate_system_code</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;it_coordinate_system_code&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;A qualifier identifying which setting in IT is used.&#39;</span><span class="p">,</span>
+            <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+                <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;IT code&#39;</span><span class="p">,</span>
+                <span class="n">latex_name</span><span class="o">=</span><span class="s1">&#39;IT code&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_it_coordinate_system_code_default_value</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">MembershipValidator</span><span class="p">(</span>
@@ -8144,6 +8606,12 @@ to the first allowed value for the new group.</p>
     <span class="nd">@it_coordinate_system_code</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">it_coordinate_system_code</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_it_coordinate_system_code</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">crystal_system</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Crystal system derived from the H-M symbol.&quot;&quot;&quot;</span>
+        <span class="n">it_number</span> <span class="o">=</span> <span class="n">get_it_number_by_name_hm_short</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name_h_m</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_crystal_system_from_it_number</span><span class="p">(</span><span class="n">it_number</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -8215,6 +8683,31 @@ parameter value.</p>
 
 </div>
 
+<div class="doc doc-object doc-attribute">
+
+
+
+<h6 id="easydiffraction.datablocks.structure.categories.space_group.default.SpaceGroup.crystal_system" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">crystal_system</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h6>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Crystal system derived from the H-M symbol.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
 
 
 
@@ -8237,55 +8730,67 @@ parameter value.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/structure/categories/space_group/default.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialise the space group with default values.&quot;&quot;&quot;</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">_name_h_m</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;name_h_m&#39;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Hermann-Mauguin symbol of the space group.&#39;</span><span class="p">,</span>
+        <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+            <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;H-M symbol&#39;</span><span class="p">,</span>
+            <span class="n">latex_name</span><span class="o">=</span><span class="s1">&#39;H-M symbol&#39;</span><span class="p">,</span>
+        <span class="p">),</span>
         <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
             <span class="n">default</span><span class="o">=</span><span class="s1">&#39;P 1&#39;</span><span class="p">,</span>
             <span class="n">validator</span><span class="o">=</span><span class="n">MembershipValidator</span><span class="p">(</span>
@@ -8306,6 +8811,10 @@ parameter value.</p>
     <span class="bp">self</span><span class="o">.</span><span class="n">_it_coordinate_system_code</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;it_coordinate_system_code&#39;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s1">&#39;A qualifier identifying which setting in IT is used.&#39;</span><span class="p">,</span>
+        <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+            <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;IT code&#39;</span><span class="p">,</span>
+            <span class="n">latex_name</span><span class="o">=</span><span class="s1">&#39;IT code&#39;</span><span class="p">,</span>
+        <span class="p">),</span>
         <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
             <span class="n">default</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_it_coordinate_system_code_default_value</span><span class="p">,</span>
             <span class="n">validator</span><span class="o">=</span><span class="n">MembershipValidator</span><span class="p">(</span>

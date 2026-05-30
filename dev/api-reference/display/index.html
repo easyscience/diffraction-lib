@@ -6216,7 +6216,8 @@ before delegating to a backend.</p>
 <span class="normal">65</span>
 <span class="normal">66</span>
 <span class="normal">67</span>
-<span class="normal">68</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">68</span>
+<span class="normal">69</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">PowderMeasVsCalcSpec</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Specification for one composite powder plot.</span>
@@ -6243,6 +6244,7 @@ before delegating to a backend.</p>
     <span class="n">y_calc_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">y_calc_line_dash</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">excluded_ranges</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
+    <span class="n">y_meas_su</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -6300,8 +6302,7 @@ before delegating to a backend.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/display/plotters/base.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">71</span>
-<span class="normal">72</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">72</span>
 <span class="normal">73</span>
 <span class="normal">74</span>
 <span class="normal">75</span>
@@ -6315,7 +6316,8 @@ before delegating to a backend.</p>
 <span class="normal">83</span>
 <span class="normal">84</span>
 <span class="normal">85</span>
-<span class="normal">86</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">XAxisType</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
+<span class="normal">86</span>
+<span class="normal">87</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">XAxisType</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    X-axis types for diffraction plots.</span>
 
@@ -6392,8 +6394,7 @@ calculated values (e.g., F²meas vs F²calc for single crystal).</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/display/plotters/base.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">217</span>
-<span class="normal">218</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">218</span>
 <span class="normal">219</span>
 <span class="normal">220</span>
 <span class="normal">221</span>
@@ -6546,7 +6547,8 @@ calculated values (e.g., F²meas vs F²calc for single crystal).</p>
 <span class="normal">368</span>
 <span class="normal">369</span>
 <span class="normal">370</span>
-<span class="normal">371</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PlotterBase</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="normal">371</span>
+<span class="normal">372</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PlotterBase</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Abstract base for plotting backends.</span>
 
@@ -6890,8 +6892,7 @@ against an x-axis variable (2θ, TOF, d-spacing).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotters/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">232</span>
-<span class="normal">233</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">233</span>
 <span class="normal">234</span>
 <span class="normal">235</span>
 <span class="normal">236</span>
@@ -6923,7 +6924,8 @@ against an x-axis variable (2θ, TOF, d-spacing).</p>
 <span class="normal">262</span>
 <span class="normal">263</span>
 <span class="normal">264</span>
-<span class="normal">265</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
+<span class="normal">265</span>
+<span class="normal">266</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">plot_powder</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">x</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
@@ -7025,8 +7027,7 @@ against an x-axis variable (2θ, TOF, d-spacing).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotters/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">267</span>
-<span class="normal">268</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">268</span>
 <span class="normal">269</span>
 <span class="normal">270</span>
 <span class="normal">271</span>
@@ -7037,7 +7038,8 @@ against an x-axis variable (2θ, TOF, d-spacing).</p>
 <span class="normal">276</span>
 <span class="normal">277</span>
 <span class="normal">278</span>
-<span class="normal">279</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
+<span class="normal">279</span>
+<span class="normal">280</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">plot_powder_meas_vs_calc</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">plot_spec</span><span class="p">:</span> <span class="n">PowderMeasVsCalcSpec</span><span class="p">,</span>
@@ -7210,8 +7212,7 @@ values are plotted against calculated values with error bars.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotters/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">281</span>
-<span class="normal">282</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">282</span>
 <span class="normal">283</span>
 <span class="normal">284</span>
 <span class="normal">285</span>
@@ -7240,7 +7241,8 @@ values are plotted against calculated values with error bars.</p>
 <span class="normal">308</span>
 <span class="normal">309</span>
 <span class="normal">310</span>
-<span class="normal">311</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
+<span class="normal">311</span>
+<span class="normal">312</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">plot_single_crystal</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">x_calc</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
@@ -7429,8 +7431,7 @@ values are plotted against calculated values with error bars.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotters/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">313</span>
-<span class="normal">314</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">314</span>
 <span class="normal">315</span>
 <span class="normal">316</span>
 <span class="normal">317</span>
@@ -7456,7 +7457,8 @@ values are plotted against calculated values with error bars.</p>
 <span class="normal">337</span>
 <span class="normal">338</span>
 <span class="normal">339</span>
-<span class="normal">340</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
+<span class="normal">340</span>
+<span class="normal">341</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">plot_scatter</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">x</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
@@ -7604,8 +7606,7 @@ heatmap was rendered.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotters/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">342</span>
-<span class="normal">343</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">343</span>
 <span class="normal">344</span>
 <span class="normal">345</span>
 <span class="normal">346</span>
@@ -7633,7 +7634,8 @@ heatmap was rendered.</p>
 <span class="normal">368</span>
 <span class="normal">369</span>
 <span class="normal">370</span>
-<span class="normal">371</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_correlation_heatmap</span><span class="p">(</span>
+<span class="normal">371</span>
+<span class="normal">372</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_correlation_heatmap</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">corr_df</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
     <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -7758,14 +7760,14 @@ renderer may be used depending on configuration.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/display/plotters/plotly.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span>
-<span class="normal">87</span>
-<span class="normal">88</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span>
+<span class="normal">92</span>
+<span class="normal">93</span>
+<span class="normal">94</span>
+<span class="normal">95</span>
+<span class="normal">96</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">PowderCompositeRows</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Resolved row layout for the composite powder figure.&quot;&quot;&quot;</span>
 
@@ -7828,15 +7830,7 @@ renderer may be used depending on configuration.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/display/plotters/plotly.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">  91</span>
-<span class="normal">  92</span>
-<span class="normal">  93</span>
-<span class="normal">  94</span>
-<span class="normal">  95</span>
-<span class="normal">  96</span>
-<span class="normal">  97</span>
-<span class="normal">  98</span>
-<span class="normal">  99</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">  99</span>
 <span class="normal"> 100</span>
 <span class="normal"> 101</span>
 <span class="normal"> 102</span>
@@ -9594,7 +9588,156 @@ renderer may be used depending on configuration.</p>
 <span class="normal">1854</span>
 <span class="normal">1855</span>
 <span class="normal">1856</span>
-<span class="normal">1857</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PlotlyPlotter</span><span class="p">(</span><span class="n">PlotterBase</span><span class="p">):</span>
+<span class="normal">1857</span>
+<span class="normal">1858</span>
+<span class="normal">1859</span>
+<span class="normal">1860</span>
+<span class="normal">1861</span>
+<span class="normal">1862</span>
+<span class="normal">1863</span>
+<span class="normal">1864</span>
+<span class="normal">1865</span>
+<span class="normal">1866</span>
+<span class="normal">1867</span>
+<span class="normal">1868</span>
+<span class="normal">1869</span>
+<span class="normal">1870</span>
+<span class="normal">1871</span>
+<span class="normal">1872</span>
+<span class="normal">1873</span>
+<span class="normal">1874</span>
+<span class="normal">1875</span>
+<span class="normal">1876</span>
+<span class="normal">1877</span>
+<span class="normal">1878</span>
+<span class="normal">1879</span>
+<span class="normal">1880</span>
+<span class="normal">1881</span>
+<span class="normal">1882</span>
+<span class="normal">1883</span>
+<span class="normal">1884</span>
+<span class="normal">1885</span>
+<span class="normal">1886</span>
+<span class="normal">1887</span>
+<span class="normal">1888</span>
+<span class="normal">1889</span>
+<span class="normal">1890</span>
+<span class="normal">1891</span>
+<span class="normal">1892</span>
+<span class="normal">1893</span>
+<span class="normal">1894</span>
+<span class="normal">1895</span>
+<span class="normal">1896</span>
+<span class="normal">1897</span>
+<span class="normal">1898</span>
+<span class="normal">1899</span>
+<span class="normal">1900</span>
+<span class="normal">1901</span>
+<span class="normal">1902</span>
+<span class="normal">1903</span>
+<span class="normal">1904</span>
+<span class="normal">1905</span>
+<span class="normal">1906</span>
+<span class="normal">1907</span>
+<span class="normal">1908</span>
+<span class="normal">1909</span>
+<span class="normal">1910</span>
+<span class="normal">1911</span>
+<span class="normal">1912</span>
+<span class="normal">1913</span>
+<span class="normal">1914</span>
+<span class="normal">1915</span>
+<span class="normal">1916</span>
+<span class="normal">1917</span>
+<span class="normal">1918</span>
+<span class="normal">1919</span>
+<span class="normal">1920</span>
+<span class="normal">1921</span>
+<span class="normal">1922</span>
+<span class="normal">1923</span>
+<span class="normal">1924</span>
+<span class="normal">1925</span>
+<span class="normal">1926</span>
+<span class="normal">1927</span>
+<span class="normal">1928</span>
+<span class="normal">1929</span>
+<span class="normal">1930</span>
+<span class="normal">1931</span>
+<span class="normal">1932</span>
+<span class="normal">1933</span>
+<span class="normal">1934</span>
+<span class="normal">1935</span>
+<span class="normal">1936</span>
+<span class="normal">1937</span>
+<span class="normal">1938</span>
+<span class="normal">1939</span>
+<span class="normal">1940</span>
+<span class="normal">1941</span>
+<span class="normal">1942</span>
+<span class="normal">1943</span>
+<span class="normal">1944</span>
+<span class="normal">1945</span>
+<span class="normal">1946</span>
+<span class="normal">1947</span>
+<span class="normal">1948</span>
+<span class="normal">1949</span>
+<span class="normal">1950</span>
+<span class="normal">1951</span>
+<span class="normal">1952</span>
+<span class="normal">1953</span>
+<span class="normal">1954</span>
+<span class="normal">1955</span>
+<span class="normal">1956</span>
+<span class="normal">1957</span>
+<span class="normal">1958</span>
+<span class="normal">1959</span>
+<span class="normal">1960</span>
+<span class="normal">1961</span>
+<span class="normal">1962</span>
+<span class="normal">1963</span>
+<span class="normal">1964</span>
+<span class="normal">1965</span>
+<span class="normal">1966</span>
+<span class="normal">1967</span>
+<span class="normal">1968</span>
+<span class="normal">1969</span>
+<span class="normal">1970</span>
+<span class="normal">1971</span>
+<span class="normal">1972</span>
+<span class="normal">1973</span>
+<span class="normal">1974</span>
+<span class="normal">1975</span>
+<span class="normal">1976</span>
+<span class="normal">1977</span>
+<span class="normal">1978</span>
+<span class="normal">1979</span>
+<span class="normal">1980</span>
+<span class="normal">1981</span>
+<span class="normal">1982</span>
+<span class="normal">1983</span>
+<span class="normal">1984</span>
+<span class="normal">1985</span>
+<span class="normal">1986</span>
+<span class="normal">1987</span>
+<span class="normal">1988</span>
+<span class="normal">1989</span>
+<span class="normal">1990</span>
+<span class="normal">1991</span>
+<span class="normal">1992</span>
+<span class="normal">1993</span>
+<span class="normal">1994</span>
+<span class="normal">1995</span>
+<span class="normal">1996</span>
+<span class="normal">1997</span>
+<span class="normal">1998</span>
+<span class="normal">1999</span>
+<span class="normal">2000</span>
+<span class="normal">2001</span>
+<span class="normal">2002</span>
+<span class="normal">2003</span>
+<span class="normal">2004</span>
+<span class="normal">2005</span>
+<span class="normal">2006</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PlotlyPlotter</span><span class="p">(</span><span class="n">PlotterBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Interactive plotter using Plotly for notebooks and browsers.&quot;&quot;&quot;</span>
 
     <span class="n">_supports_graphical_heatmap</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
@@ -9671,8 +9814,8 @@ renderer may be used depending on configuration.</p>
 <span class="sd">            RGBA color string tuned for the active theme.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_is_dark_mode</span><span class="p">():</span>
-            <span class="k">return</span> <span class="s1">&#39;rgba(110, 145, 190, 0.35)&#39;</span>
-        <span class="k">return</span> <span class="s1">&#39;rgba(120, 140, 160, 0.28)&#39;</span>
+            <span class="k">return</span> <span class="n">DARK_AXIS_FRAME_COLOR</span>
+        <span class="k">return</span> <span class="n">LIGHT_AXIS_FRAME_COLOR</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_axis_frame_color</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -9683,8 +9826,24 @@ renderer may be used depending on configuration.</p>
     <span class="k">def</span><span class="w"> </span><span class="nf">_legend_background_color</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a half-transparent legend background color.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_is_dark_mode</span><span class="p">():</span>
-            <span class="k">return</span> <span class="s1">&#39;rgba(0, 0, 0, 0.5)&#39;</span>
-        <span class="k">return</span> <span class="s1">&#39;rgba(255, 255, 255, 0.5)&#39;</span>
+            <span class="k">return</span> <span class="n">DARK_LEGEND_BACKGROUND_COLOR</span>
+        <span class="k">return</span> <span class="n">LIGHT_LEGEND_BACKGROUND_COLOR</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_axis_frame_color_for_template</span><span class="p">(</span><span class="n">template</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">template</span> <span class="o">==</span> <span class="s1">&#39;plotly_white&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">LIGHT_AXIS_FRAME_COLOR</span>
+        <span class="k">if</span> <span class="n">template</span> <span class="o">==</span> <span class="s1">&#39;plotly_dark&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">DARK_AXIS_FRAME_COLOR</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_legend_background_color_for_template</span><span class="p">(</span><span class="n">template</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">template</span> <span class="o">==</span> <span class="s1">&#39;plotly_white&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">LIGHT_LEGEND_BACKGROUND_COLOR</span>
+        <span class="k">if</span> <span class="n">template</span> <span class="o">==</span> <span class="s1">&#39;plotly_dark&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">DARK_LEGEND_BACKGROUND_COLOR</span>
+        <span class="k">return</span> <span class="kc">None</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">plot_correlation_heatmap</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -9934,6 +10093,14 @@ renderer may be used depending on configuration.</p>
             <span class="s1">&#39;resid&#39;</span><span class="p">:</span> <span class="n">RESIDUAL_LINE_WIDTH</span><span class="p">,</span>
         <span class="p">}[</span><span class="n">label</span><span class="p">]</span>
         <span class="n">line</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="n">color</span><span class="p">,</span> <span class="s1">&#39;width&#39;</span><span class="p">:</span> <span class="n">line_width</span><span class="p">}</span>
+        <span class="n">marker</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">label</span> <span class="o">==</span> <span class="s1">&#39;meas&#39;</span><span class="p">:</span>
+            <span class="n">marker</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;symbol&#39;</span><span class="p">:</span> <span class="s1">&#39;circle&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;size&#39;</span><span class="p">:</span> <span class="n">MEASURED_MARKER_SIZE</span><span class="p">,</span>
+                <span class="s1">&#39;line&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;width&#39;</span><span class="p">:</span> <span class="n">MEASURED_MARKER_LINE_WIDTH</span><span class="p">},</span>
+                <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="n">color</span><span class="p">,</span>
+            <span class="p">}</span>
         <span class="n">legend_rank</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;meas&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
             <span class="s1">&#39;bkg&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
@@ -9948,6 +10115,7 @@ renderer may be used depending on configuration.</p>
             <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
             <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
             <span class="n">legendrank</span><span class="o">=</span><span class="n">legend_rank</span><span class="p">,</span>
+            <span class="n">marker</span><span class="o">=</span><span class="n">marker</span><span class="p">,</span>
             <span class="n">customdata</span><span class="o">=</span><span class="n">customdata</span><span class="p">,</span>
             <span class="n">hovertemplate</span><span class="o">=</span><span class="p">(</span>
                 <span class="n">hovertemplate</span>
@@ -10462,16 +10630,65 @@ renderer may be used depending on configuration.</p>
         <span class="k">if</span> <span class="n">in_pycharm</span><span class="p">()</span> <span class="ow">or</span> <span class="n">display</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">HTML</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">post_script</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_html_post_script</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
-            <span class="n">html_fig</span> <span class="o">=</span> <span class="n">pio</span><span class="o">.</span><span class="n">to_html</span><span class="p">(</span>
+            <span class="n">html_fig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">serialize_html</span><span class="p">(</span>
                 <span class="n">fig</span><span class="p">,</span>
                 <span class="n">include_plotlyjs</span><span class="o">=</span><span class="s1">&#39;cdn&#39;</span><span class="p">,</span>
-                <span class="n">full_html</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
-                <span class="n">post_script</span><span class="o">=</span><span class="n">post_script</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="n">html_fig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrap_html_figure</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">html_fig</span><span class="p">)</span>
             <span class="n">display</span><span class="p">(</span><span class="n">HTML</span><span class="p">(</span><span class="n">html_fig</span><span class="p">))</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">serialize_html</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">fig</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">include_plotlyjs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">force_template</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">axis_frame_color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">grid_color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Serialize a Plotly figure with EasyDiffraction controls.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        fig : object</span>
+<span class="sd">            Plotly figure to serialize.</span>
+<span class="sd">        include_plotlyjs : bool | str</span>
+<span class="sd">            Plotly JavaScript inclusion mode passed to Plotly.</span>
+<span class="sd">        force_template : str | None, default=None</span>
+<span class="sd">            Optional template name applied before serialization.</span>
+<span class="sd">        axis_frame_color : str | None, default=None</span>
+<span class="sd">            Optional explicit axis-frame color.</span>
+<span class="sd">        grid_color : str | None, default=None</span>
+<span class="sd">            Optional explicit major-grid color.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str</span>
+<span class="sd">            Inline HTML containing the figure and helper scripts.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">force_template</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="n">force_template</span><span class="p">)</span>
+            <span class="n">resolved_axis_color</span> <span class="o">=</span> <span class="n">axis_frame_color</span>
+            <span class="k">if</span> <span class="n">resolved_axis_color</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">resolved_axis_color</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_axis_frame_color_for_template</span><span class="p">(</span><span class="n">force_template</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">resolved_axis_color</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">fig</span><span class="o">.</span><span class="n">update_xaxes</span><span class="p">(</span><span class="n">linecolor</span><span class="o">=</span><span class="n">resolved_axis_color</span><span class="p">)</span>
+                <span class="n">fig</span><span class="o">.</span><span class="n">update_yaxes</span><span class="p">(</span><span class="n">linecolor</span><span class="o">=</span><span class="n">resolved_axis_color</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">grid_color</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">fig</span><span class="o">.</span><span class="n">update_xaxes</span><span class="p">(</span><span class="n">gridcolor</span><span class="o">=</span><span class="n">grid_color</span><span class="p">)</span>
+                <span class="n">fig</span><span class="o">.</span><span class="n">update_yaxes</span><span class="p">(</span><span class="n">gridcolor</span><span class="o">=</span><span class="n">grid_color</span><span class="p">)</span>
+            <span class="n">legend_bgcolor</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_legend_background_color_for_template</span><span class="p">(</span><span class="n">force_template</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">legend_bgcolor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span><span class="n">legend</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;bgcolor&#39;</span><span class="p">:</span> <span class="n">legend_bgcolor</span><span class="p">})</span>
+        <span class="n">html_fig</span> <span class="o">=</span> <span class="n">pio</span><span class="o">.</span><span class="n">to_html</span><span class="p">(</span>
+            <span class="n">fig</span><span class="p">,</span>
+            <span class="n">include_plotlyjs</span><span class="o">=</span><span class="n">include_plotlyjs</span><span class="p">,</span>
+            <span class="n">full_html</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">config</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">_get_config</span><span class="p">(),</span>
+            <span class="n">post_script</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">_html_post_script</span><span class="p">(</span><span class="n">fig</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_wrap_html_figure</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">html_fig</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_layout</span><span class="p">(</span>
@@ -10900,6 +11117,26 @@ renderer may be used depending on configuration.</p>
 <span class="sd">        Bragg row is added only when tick data is available. The</span>
 <span class="sd">        residual row is added only when residual data is requested.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_powder_meas_vs_calc_figure</span><span class="p">(</span><span class="n">plot_spec</span><span class="o">=</span><span class="n">plot_spec</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_show_figure</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">build_powder_meas_vs_calc_figure</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">plot_spec</span><span class="p">:</span> <span class="n">PowderMeasVsCalcSpec</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Build a composite powder Plotly figure without displaying it.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        plot_spec : PowderMeasVsCalcSpec</span>
+<span class="sd">            Composite powder-plot inputs and layout settings.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        object</span>
+<span class="sd">            Configured :class:`plotly.graph_objects.Figure`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">layout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_powder_composite_rows</span><span class="p">(</span><span class="n">plot_spec</span><span class="p">)</span>
         <span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_composite_x_range</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">plot_spec</span><span class="o">.</span><span class="n">x</span><span class="p">))</span>
         <span class="n">main_y_min</span><span class="p">,</span> <span class="n">main_y_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_main_intensity_range</span><span class="p">(</span><span class="n">plot_spec</span><span class="p">)</span>
@@ -10938,7 +11175,7 @@ renderer may be used depending on configuration.</p>
             <span class="n">residual_limit</span><span class="o">=</span><span class="n">residual_limit</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_show_figure</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">fig</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_create_powder_composite_figure</span><span class="p">(</span><span class="n">layout</span><span class="p">:</span> <span class="n">PowderCompositeRows</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
@@ -10982,6 +11219,15 @@ renderer may be used depending on configuration.</p>
             <span class="n">customdata</span><span class="o">=</span><span class="n">hover_data</span><span class="p">,</span>
             <span class="n">hovertemplate</span><span class="o">=</span><span class="n">hover_template</span><span class="p">,</span>
         <span class="p">)</span>
+        <span class="k">if</span> <span class="n">plot_spec</span><span class="o">.</span><span class="n">y_meas_su</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">meas_trace</span><span class="o">.</span><span class="n">error_y</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;array&#39;</span><span class="p">:</span> <span class="n">plot_spec</span><span class="o">.</span><span class="n">y_meas_su</span><span class="p">,</span>
+                <span class="s1">&#39;visible&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="n">DEFAULT_COLORS</span><span class="p">[</span><span class="s1">&#39;meas&#39;</span><span class="p">],</span>
+                <span class="s1">&#39;thickness&#39;</span><span class="p">:</span> <span class="n">MEASURED_ERROR_BAR_THICKNESS</span><span class="p">,</span>
+                <span class="s1">&#39;width&#39;</span><span class="p">:</span> <span class="n">MEASURED_ERROR_BAR_WIDTH</span><span class="p">,</span>
+            <span class="p">}</span>
         <span class="n">fig</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span><span class="n">meas_trace</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">plot_spec</span><span class="o">.</span><span class="n">y_bkg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -11303,6 +11549,45 @@ renderer may be used depending on configuration.</p>
         <span class="c1"># Intentionally unused; accepted for API compatibility</span>
         <span class="k">del</span> <span class="n">height</span>
 
+        <span class="n">fig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_single_crystal_figure</span><span class="p">(</span>
+            <span class="n">x_calc</span><span class="o">=</span><span class="n">x_calc</span><span class="p">,</span>
+            <span class="n">y_meas</span><span class="o">=</span><span class="n">y_meas</span><span class="p">,</span>
+            <span class="n">y_meas_su</span><span class="o">=</span><span class="n">y_meas_su</span><span class="p">,</span>
+            <span class="n">axes_labels</span><span class="o">=</span><span class="n">axes_labels</span><span class="p">,</span>
+            <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_show_figure</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">build_single_crystal_figure</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">x_calc</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+        <span class="n">y_meas</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+        <span class="n">y_meas_su</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+        <span class="n">axes_labels</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+        <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Build a single-crystal Plotly figure without displaying it.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x_calc : object</span>
+<span class="sd">            1D array-like of calculated values (x-axis).</span>
+<span class="sd">        y_meas : object</span>
+<span class="sd">            1D array-like of measured values (y-axis).</span>
+<span class="sd">        y_meas_su : object</span>
+<span class="sd">            1D array-like of measurement uncertainties.</span>
+<span class="sd">        axes_labels : object</span>
+<span class="sd">            Pair of strings for the x and y titles.</span>
+<span class="sd">        title : str</span>
+<span class="sd">            Figure title.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        object</span>
+<span class="sd">            Configured :class:`plotly.graph_objects.Figure`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">data</span> <span class="o">=</span> <span class="p">[</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_get_single_crystal_trace</span><span class="p">(</span>
                 <span class="n">x_calc</span><span class="p">,</span>
@@ -11317,8 +11602,7 @@ renderer may be used depending on configuration.</p>
             <span class="n">shapes</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_diagonal_shape</span><span class="p">()],</span>
         <span class="p">)</span>
 
-        <span class="n">fig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_figure</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">layout</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_show_figure</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_figure</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">layout</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">plot_scatter</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -11487,31 +11771,7 @@ renderer may be used depending on configuration.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotters/plotly.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">183</span>
-<span class="normal">184</span>
-<span class="normal">185</span>
-<span class="normal">186</span>
-<span class="normal">187</span>
-<span class="normal">188</span>
-<span class="normal">189</span>
-<span class="normal">190</span>
-<span class="normal">191</span>
-<span class="normal">192</span>
-<span class="normal">193</span>
-<span class="normal">194</span>
-<span class="normal">195</span>
-<span class="normal">196</span>
-<span class="normal">197</span>
-<span class="normal">198</span>
-<span class="normal">199</span>
-<span class="normal">200</span>
-<span class="normal">201</span>
-<span class="normal">202</span>
-<span class="normal">203</span>
-<span class="normal">204</span>
-<span class="normal">205</span>
-<span class="normal">206</span>
-<span class="normal">207</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">207</span>
 <span class="normal">208</span>
 <span class="normal">209</span>
 <span class="normal">210</span>
@@ -11619,7 +11879,31 @@ renderer may be used depending on configuration.</p>
 <span class="normal">312</span>
 <span class="normal">313</span>
 <span class="normal">314</span>
-<span class="normal">315</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_correlation_heatmap</span><span class="p">(</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_correlation_heatmap</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">corr_df</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
     <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -11752,6 +12036,276 @@ renderer may be used depending on configuration.</p>
         <span class="n">layer</span><span class="o">=</span><span class="s1">&#39;above traces&#39;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_show_figure</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h5 id="easydiffraction.display.plotters.plotly.PlotlyPlotter.serialize_html" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">serialize_html</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">include_plotlyjs</span><span class="p">,</span> <span class="n">force_template</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis_frame_color</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">grid_color</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+</h5>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Serialize a Plotly figure with EasyDiffraction controls.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>fig</code>
+            </td>
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Plotly figure to serialize.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>include_plotlyjs</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span> | <span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Plotly JavaScript inclusion mode passed to Plotly.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>force_template</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Optional template name applied before serialization.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>axis_frame_color</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Optional explicit axis-frame color.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>grid_color</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Optional explicit major-grid color.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Inline HTML containing the figure and helper scripts.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/display/plotters/plotly.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 998</span>
+<span class="normal"> 999</span>
+<span class="normal">1000</span>
+<span class="normal">1001</span>
+<span class="normal">1002</span>
+<span class="normal">1003</span>
+<span class="normal">1004</span>
+<span class="normal">1005</span>
+<span class="normal">1006</span>
+<span class="normal">1007</span>
+<span class="normal">1008</span>
+<span class="normal">1009</span>
+<span class="normal">1010</span>
+<span class="normal">1011</span>
+<span class="normal">1012</span>
+<span class="normal">1013</span>
+<span class="normal">1014</span>
+<span class="normal">1015</span>
+<span class="normal">1016</span>
+<span class="normal">1017</span>
+<span class="normal">1018</span>
+<span class="normal">1019</span>
+<span class="normal">1020</span>
+<span class="normal">1021</span>
+<span class="normal">1022</span>
+<span class="normal">1023</span>
+<span class="normal">1024</span>
+<span class="normal">1025</span>
+<span class="normal">1026</span>
+<span class="normal">1027</span>
+<span class="normal">1028</span>
+<span class="normal">1029</span>
+<span class="normal">1030</span>
+<span class="normal">1031</span>
+<span class="normal">1032</span>
+<span class="normal">1033</span>
+<span class="normal">1034</span>
+<span class="normal">1035</span>
+<span class="normal">1036</span>
+<span class="normal">1037</span>
+<span class="normal">1038</span>
+<span class="normal">1039</span>
+<span class="normal">1040</span>
+<span class="normal">1041</span>
+<span class="normal">1042</span>
+<span class="normal">1043</span>
+<span class="normal">1044</span>
+<span class="normal">1045</span>
+<span class="normal">1046</span>
+<span class="normal">1047</span>
+<span class="normal">1048</span>
+<span class="normal">1049</span>
+<span class="normal">1050</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">serialize_html</span><span class="p">(</span>
+    <span class="bp">cls</span><span class="p">,</span>
+    <span class="n">fig</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">include_plotlyjs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">force_template</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">axis_frame_color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">grid_color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Serialize a Plotly figure with EasyDiffraction controls.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fig : object</span>
+<span class="sd">        Plotly figure to serialize.</span>
+<span class="sd">    include_plotlyjs : bool | str</span>
+<span class="sd">        Plotly JavaScript inclusion mode passed to Plotly.</span>
+<span class="sd">    force_template : str | None, default=None</span>
+<span class="sd">        Optional template name applied before serialization.</span>
+<span class="sd">    axis_frame_color : str | None, default=None</span>
+<span class="sd">        Optional explicit axis-frame color.</span>
+<span class="sd">    grid_color : str | None, default=None</span>
+<span class="sd">        Optional explicit major-grid color.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str</span>
+<span class="sd">        Inline HTML containing the figure and helper scripts.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">force_template</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="n">force_template</span><span class="p">)</span>
+        <span class="n">resolved_axis_color</span> <span class="o">=</span> <span class="n">axis_frame_color</span>
+        <span class="k">if</span> <span class="n">resolved_axis_color</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">resolved_axis_color</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_axis_frame_color_for_template</span><span class="p">(</span><span class="n">force_template</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">resolved_axis_color</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">update_xaxes</span><span class="p">(</span><span class="n">linecolor</span><span class="o">=</span><span class="n">resolved_axis_color</span><span class="p">)</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">update_yaxes</span><span class="p">(</span><span class="n">linecolor</span><span class="o">=</span><span class="n">resolved_axis_color</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">grid_color</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">update_xaxes</span><span class="p">(</span><span class="n">gridcolor</span><span class="o">=</span><span class="n">grid_color</span><span class="p">)</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">update_yaxes</span><span class="p">(</span><span class="n">gridcolor</span><span class="o">=</span><span class="n">grid_color</span><span class="p">)</span>
+        <span class="n">legend_bgcolor</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_legend_background_color_for_template</span><span class="p">(</span><span class="n">force_template</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">legend_bgcolor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span><span class="n">legend</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;bgcolor&#39;</span><span class="p">:</span> <span class="n">legend_bgcolor</span><span class="p">})</span>
+    <span class="n">html_fig</span> <span class="o">=</span> <span class="n">pio</span><span class="o">.</span><span class="n">to_html</span><span class="p">(</span>
+        <span class="n">fig</span><span class="p">,</span>
+        <span class="n">include_plotlyjs</span><span class="o">=</span><span class="n">include_plotlyjs</span><span class="p">,</span>
+        <span class="n">full_html</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">config</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">_get_config</span><span class="p">(),</span>
+        <span class="n">post_script</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">_html_post_script</span><span class="p">(</span><span class="n">fig</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_wrap_html_figure</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">html_fig</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -11927,56 +12481,56 @@ against an x-axis variable (2θ, TOF, d-spacing).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotters/plotly.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1035</span>
-<span class="normal">1036</span>
-<span class="normal">1037</span>
-<span class="normal">1038</span>
-<span class="normal">1039</span>
-<span class="normal">1040</span>
-<span class="normal">1041</span>
-<span class="normal">1042</span>
-<span class="normal">1043</span>
-<span class="normal">1044</span>
-<span class="normal">1045</span>
-<span class="normal">1046</span>
-<span class="normal">1047</span>
-<span class="normal">1048</span>
-<span class="normal">1049</span>
-<span class="normal">1050</span>
-<span class="normal">1051</span>
-<span class="normal">1052</span>
-<span class="normal">1053</span>
-<span class="normal">1054</span>
-<span class="normal">1055</span>
-<span class="normal">1056</span>
-<span class="normal">1057</span>
-<span class="normal">1058</span>
-<span class="normal">1059</span>
-<span class="normal">1060</span>
-<span class="normal">1061</span>
-<span class="normal">1062</span>
-<span class="normal">1063</span>
-<span class="normal">1064</span>
-<span class="normal">1065</span>
-<span class="normal">1066</span>
-<span class="normal">1067</span>
-<span class="normal">1068</span>
-<span class="normal">1069</span>
-<span class="normal">1070</span>
-<span class="normal">1071</span>
-<span class="normal">1072</span>
-<span class="normal">1073</span>
-<span class="normal">1074</span>
-<span class="normal">1075</span>
-<span class="normal">1076</span>
-<span class="normal">1077</span>
-<span class="normal">1078</span>
-<span class="normal">1079</span>
-<span class="normal">1080</span>
-<span class="normal">1081</span>
-<span class="normal">1082</span>
-<span class="normal">1083</span>
-<span class="normal">1084</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_powder</span><span class="p">(</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1117</span>
+<span class="normal">1118</span>
+<span class="normal">1119</span>
+<span class="normal">1120</span>
+<span class="normal">1121</span>
+<span class="normal">1122</span>
+<span class="normal">1123</span>
+<span class="normal">1124</span>
+<span class="normal">1125</span>
+<span class="normal">1126</span>
+<span class="normal">1127</span>
+<span class="normal">1128</span>
+<span class="normal">1129</span>
+<span class="normal">1130</span>
+<span class="normal">1131</span>
+<span class="normal">1132</span>
+<span class="normal">1133</span>
+<span class="normal">1134</span>
+<span class="normal">1135</span>
+<span class="normal">1136</span>
+<span class="normal">1137</span>
+<span class="normal">1138</span>
+<span class="normal">1139</span>
+<span class="normal">1140</span>
+<span class="normal">1141</span>
+<span class="normal">1142</span>
+<span class="normal">1143</span>
+<span class="normal">1144</span>
+<span class="normal">1145</span>
+<span class="normal">1146</span>
+<span class="normal">1147</span>
+<span class="normal">1148</span>
+<span class="normal">1149</span>
+<span class="normal">1150</span>
+<span class="normal">1151</span>
+<span class="normal">1152</span>
+<span class="normal">1153</span>
+<span class="normal">1154</span>
+<span class="normal">1155</span>
+<span class="normal">1156</span>
+<span class="normal">1157</span>
+<span class="normal">1158</span>
+<span class="normal">1159</span>
+<span class="normal">1160</span>
+<span class="normal">1161</span>
+<span class="normal">1162</span>
+<span class="normal">1163</span>
+<span class="normal">1164</span>
+<span class="normal">1165</span>
+<span class="normal">1166</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_powder</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">x</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
     <span class="n">y_series</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
@@ -12054,56 +12608,19 @@ residual row is added only when residual data is requested.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotters/plotly.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1386</span>
-<span class="normal">1387</span>
-<span class="normal">1388</span>
-<span class="normal">1389</span>
-<span class="normal">1390</span>
-<span class="normal">1391</span>
-<span class="normal">1392</span>
-<span class="normal">1393</span>
-<span class="normal">1394</span>
-<span class="normal">1395</span>
-<span class="normal">1396</span>
-<span class="normal">1397</span>
-<span class="normal">1398</span>
-<span class="normal">1399</span>
-<span class="normal">1400</span>
-<span class="normal">1401</span>
-<span class="normal">1402</span>
-<span class="normal">1403</span>
-<span class="normal">1404</span>
-<span class="normal">1405</span>
-<span class="normal">1406</span>
-<span class="normal">1407</span>
-<span class="normal">1408</span>
-<span class="normal">1409</span>
-<span class="normal">1410</span>
-<span class="normal">1411</span>
-<span class="normal">1412</span>
-<span class="normal">1413</span>
-<span class="normal">1414</span>
-<span class="normal">1415</span>
-<span class="normal">1416</span>
-<span class="normal">1417</span>
-<span class="normal">1418</span>
-<span class="normal">1419</span>
-<span class="normal">1420</span>
-<span class="normal">1421</span>
-<span class="normal">1422</span>
-<span class="normal">1423</span>
-<span class="normal">1424</span>
-<span class="normal">1425</span>
-<span class="normal">1426</span>
-<span class="normal">1427</span>
-<span class="normal">1428</span>
-<span class="normal">1429</span>
-<span class="normal">1430</span>
-<span class="normal">1431</span>
-<span class="normal">1432</span>
-<span class="normal">1433</span>
-<span class="normal">1434</span>
-<span class="normal">1435</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_powder_meas_vs_calc</span><span class="p">(</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1468</span>
+<span class="normal">1469</span>
+<span class="normal">1470</span>
+<span class="normal">1471</span>
+<span class="normal">1472</span>
+<span class="normal">1473</span>
+<span class="normal">1474</span>
+<span class="normal">1475</span>
+<span class="normal">1476</span>
+<span class="normal">1477</span>
+<span class="normal">1478</span>
+<span class="normal">1479</span>
+<span class="normal">1480</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_powder_meas_vs_calc</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">plot_spec</span><span class="p">:</span> <span class="n">PowderMeasVsCalcSpec</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -12113,6 +12630,170 @@ residual row is added only when residual data is requested.</p>
 <span class="sd">    The main row shows measured and calculated intensities. The</span>
 <span class="sd">    Bragg row is added only when tick data is available. The</span>
 <span class="sd">    residual row is added only when residual data is requested.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_powder_meas_vs_calc_figure</span><span class="p">(</span><span class="n">plot_spec</span><span class="o">=</span><span class="n">plot_spec</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_show_figure</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h5 id="easydiffraction.display.plotters.plotly.PlotlyPlotter.build_powder_meas_vs_calc_figure" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">build_powder_meas_vs_calc_figure</span><span class="p">(</span><span class="n">plot_spec</span><span class="p">)</span></code>
+
+</h5>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Build a composite powder Plotly figure without displaying it.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>plot_spec</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code&gt;PowderMeasVsCalcSpec&lt;/code&gt;
+
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.display.plotters.base.PowderMeasVsCalcSpec&lt;/code&gt;)" href="#easydiffraction.display.plotters.base.PowderMeasVsCalcSpec">PowderMeasVsCalcSpec</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Composite powder-plot inputs and layout settings.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Configured :class:<code>plotly.graph_objects.Figure</code>.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/display/plotters/plotly.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1482</span>
+<span class="normal">1483</span>
+<span class="normal">1484</span>
+<span class="normal">1485</span>
+<span class="normal">1486</span>
+<span class="normal">1487</span>
+<span class="normal">1488</span>
+<span class="normal">1489</span>
+<span class="normal">1490</span>
+<span class="normal">1491</span>
+<span class="normal">1492</span>
+<span class="normal">1493</span>
+<span class="normal">1494</span>
+<span class="normal">1495</span>
+<span class="normal">1496</span>
+<span class="normal">1497</span>
+<span class="normal">1498</span>
+<span class="normal">1499</span>
+<span class="normal">1500</span>
+<span class="normal">1501</span>
+<span class="normal">1502</span>
+<span class="normal">1503</span>
+<span class="normal">1504</span>
+<span class="normal">1505</span>
+<span class="normal">1506</span>
+<span class="normal">1507</span>
+<span class="normal">1508</span>
+<span class="normal">1509</span>
+<span class="normal">1510</span>
+<span class="normal">1511</span>
+<span class="normal">1512</span>
+<span class="normal">1513</span>
+<span class="normal">1514</span>
+<span class="normal">1515</span>
+<span class="normal">1516</span>
+<span class="normal">1517</span>
+<span class="normal">1518</span>
+<span class="normal">1519</span>
+<span class="normal">1520</span>
+<span class="normal">1521</span>
+<span class="normal">1522</span>
+<span class="normal">1523</span>
+<span class="normal">1524</span>
+<span class="normal">1525</span>
+<span class="normal">1526</span>
+<span class="normal">1527</span>
+<span class="normal">1528</span>
+<span class="normal">1529</span>
+<span class="normal">1530</span>
+<span class="normal">1531</span>
+<span class="normal">1532</span>
+<span class="normal">1533</span>
+<span class="normal">1534</span>
+<span class="normal">1535</span>
+<span class="normal">1536</span>
+<span class="normal">1537</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">build_powder_meas_vs_calc_figure</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">plot_spec</span><span class="p">:</span> <span class="n">PowderMeasVsCalcSpec</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Build a composite powder Plotly figure without displaying it.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    plot_spec : PowderMeasVsCalcSpec</span>
+<span class="sd">        Composite powder-plot inputs and layout settings.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    object</span>
+<span class="sd">        Configured :class:`plotly.graph_objects.Figure`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">layout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_powder_composite_rows</span><span class="p">(</span><span class="n">plot_spec</span><span class="p">)</span>
     <span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_composite_x_range</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">plot_spec</span><span class="o">.</span><span class="n">x</span><span class="p">))</span>
@@ -12152,7 +12833,7 @@ residual row is added only when residual data is requested.</p>
         <span class="n">residual_limit</span><span class="o">=</span><span class="n">residual_limit</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">_show_figure</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fig</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -12310,56 +12991,48 @@ a diagonal reference line.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotters/plotly.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1766</span>
-<span class="normal">1767</span>
-<span class="normal">1768</span>
-<span class="normal">1769</span>
-<span class="normal">1770</span>
-<span class="normal">1771</span>
-<span class="normal">1772</span>
-<span class="normal">1773</span>
-<span class="normal">1774</span>
-<span class="normal">1775</span>
-<span class="normal">1776</span>
-<span class="normal">1777</span>
-<span class="normal">1778</span>
-<span class="normal">1779</span>
-<span class="normal">1780</span>
-<span class="normal">1781</span>
-<span class="normal">1782</span>
-<span class="normal">1783</span>
-<span class="normal">1784</span>
-<span class="normal">1785</span>
-<span class="normal">1786</span>
-<span class="normal">1787</span>
-<span class="normal">1788</span>
-<span class="normal">1789</span>
-<span class="normal">1790</span>
-<span class="normal">1791</span>
-<span class="normal">1792</span>
-<span class="normal">1793</span>
-<span class="normal">1794</span>
-<span class="normal">1795</span>
-<span class="normal">1796</span>
-<span class="normal">1797</span>
-<span class="normal">1798</span>
-<span class="normal">1799</span>
-<span class="normal">1800</span>
-<span class="normal">1801</span>
-<span class="normal">1802</span>
-<span class="normal">1803</span>
-<span class="normal">1804</span>
-<span class="normal">1805</span>
-<span class="normal">1806</span>
-<span class="normal">1807</span>
-<span class="normal">1808</span>
-<span class="normal">1809</span>
-<span class="normal">1810</span>
-<span class="normal">1811</span>
-<span class="normal">1812</span>
-<span class="normal">1813</span>
-<span class="normal">1814</span>
-<span class="normal">1815</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_single_crystal</span><span class="p">(</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1877</span>
+<span class="normal">1878</span>
+<span class="normal">1879</span>
+<span class="normal">1880</span>
+<span class="normal">1881</span>
+<span class="normal">1882</span>
+<span class="normal">1883</span>
+<span class="normal">1884</span>
+<span class="normal">1885</span>
+<span class="normal">1886</span>
+<span class="normal">1887</span>
+<span class="normal">1888</span>
+<span class="normal">1889</span>
+<span class="normal">1890</span>
+<span class="normal">1891</span>
+<span class="normal">1892</span>
+<span class="normal">1893</span>
+<span class="normal">1894</span>
+<span class="normal">1895</span>
+<span class="normal">1896</span>
+<span class="normal">1897</span>
+<span class="normal">1898</span>
+<span class="normal">1899</span>
+<span class="normal">1900</span>
+<span class="normal">1901</span>
+<span class="normal">1902</span>
+<span class="normal">1903</span>
+<span class="normal">1904</span>
+<span class="normal">1905</span>
+<span class="normal">1906</span>
+<span class="normal">1907</span>
+<span class="normal">1908</span>
+<span class="normal">1909</span>
+<span class="normal">1910</span>
+<span class="normal">1911</span>
+<span class="normal">1912</span>
+<span class="normal">1913</span>
+<span class="normal">1914</span>
+<span class="normal">1915</span>
+<span class="normal">1916</span>
+<span class="normal">1917</span>
+<span class="normal">1918</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_single_crystal</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">x_calc</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
     <span class="n">y_meas</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
@@ -12393,6 +13066,249 @@ a diagonal reference line.</p>
     <span class="c1"># Intentionally unused; accepted for API compatibility</span>
     <span class="k">del</span> <span class="n">height</span>
 
+    <span class="n">fig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_single_crystal_figure</span><span class="p">(</span>
+        <span class="n">x_calc</span><span class="o">=</span><span class="n">x_calc</span><span class="p">,</span>
+        <span class="n">y_meas</span><span class="o">=</span><span class="n">y_meas</span><span class="p">,</span>
+        <span class="n">y_meas_su</span><span class="o">=</span><span class="n">y_meas_su</span><span class="p">,</span>
+        <span class="n">axes_labels</span><span class="o">=</span><span class="n">axes_labels</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_show_figure</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h5 id="easydiffraction.display.plotters.plotly.PlotlyPlotter.build_single_crystal_figure" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">build_single_crystal_figure</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">x_calc</span><span class="p">,</span> <span class="n">y_meas</span><span class="p">,</span> <span class="n">y_meas_su</span><span class="p">,</span> <span class="n">axes_labels</span><span class="p">,</span> <span class="n">title</span><span class="p">)</span></code>
+
+</h5>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Build a single-crystal Plotly figure without displaying it.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>x_calc</code>
+            </td>
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>1D array-like of calculated values (x-axis).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>y_meas</code>
+            </td>
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>1D array-like of measured values (y-axis).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>y_meas_su</code>
+            </td>
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>1D array-like of measurement uncertainties.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>axes_labels</code>
+            </td>
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Pair of strings for the x and y titles.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>title</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Figure title.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Configured :class:<code>plotly.graph_objects.Figure</code>.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/display/plotters/plotly.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1920</span>
+<span class="normal">1921</span>
+<span class="normal">1922</span>
+<span class="normal">1923</span>
+<span class="normal">1924</span>
+<span class="normal">1925</span>
+<span class="normal">1926</span>
+<span class="normal">1927</span>
+<span class="normal">1928</span>
+<span class="normal">1929</span>
+<span class="normal">1930</span>
+<span class="normal">1931</span>
+<span class="normal">1932</span>
+<span class="normal">1933</span>
+<span class="normal">1934</span>
+<span class="normal">1935</span>
+<span class="normal">1936</span>
+<span class="normal">1937</span>
+<span class="normal">1938</span>
+<span class="normal">1939</span>
+<span class="normal">1940</span>
+<span class="normal">1941</span>
+<span class="normal">1942</span>
+<span class="normal">1943</span>
+<span class="normal">1944</span>
+<span class="normal">1945</span>
+<span class="normal">1946</span>
+<span class="normal">1947</span>
+<span class="normal">1948</span>
+<span class="normal">1949</span>
+<span class="normal">1950</span>
+<span class="normal">1951</span>
+<span class="normal">1952</span>
+<span class="normal">1953</span>
+<span class="normal">1954</span>
+<span class="normal">1955</span>
+<span class="normal">1956</span>
+<span class="normal">1957</span>
+<span class="normal">1958</span>
+<span class="normal">1959</span>
+<span class="normal">1960</span>
+<span class="normal">1961</span>
+<span class="normal">1962</span>
+<span class="normal">1963</span>
+<span class="normal">1964</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">build_single_crystal_figure</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">x_calc</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+    <span class="n">y_meas</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+    <span class="n">y_meas_su</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+    <span class="n">axes_labels</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Build a single-crystal Plotly figure without displaying it.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x_calc : object</span>
+<span class="sd">        1D array-like of calculated values (x-axis).</span>
+<span class="sd">    y_meas : object</span>
+<span class="sd">        1D array-like of measured values (y-axis).</span>
+<span class="sd">    y_meas_su : object</span>
+<span class="sd">        1D array-like of measurement uncertainties.</span>
+<span class="sd">    axes_labels : object</span>
+<span class="sd">        Pair of strings for the x and y titles.</span>
+<span class="sd">    title : str</span>
+<span class="sd">        Figure title.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    object</span>
+<span class="sd">        Configured :class:`plotly.graph_objects.Figure`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">data</span> <span class="o">=</span> <span class="p">[</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_get_single_crystal_trace</span><span class="p">(</span>
             <span class="n">x_calc</span><span class="p">,</span>
@@ -12407,8 +13323,7 @@ a diagonal reference line.</p>
         <span class="n">shapes</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_diagonal_shape</span><span class="p">()],</span>
     <span class="p">)</span>
 
-    <span class="n">fig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_figure</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">layout</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_show_figure</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_figure</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">layout</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -12434,47 +13349,47 @@ a diagonal reference line.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotters/plotly.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1817</span>
-<span class="normal">1818</span>
-<span class="normal">1819</span>
-<span class="normal">1820</span>
-<span class="normal">1821</span>
-<span class="normal">1822</span>
-<span class="normal">1823</span>
-<span class="normal">1824</span>
-<span class="normal">1825</span>
-<span class="normal">1826</span>
-<span class="normal">1827</span>
-<span class="normal">1828</span>
-<span class="normal">1829</span>
-<span class="normal">1830</span>
-<span class="normal">1831</span>
-<span class="normal">1832</span>
-<span class="normal">1833</span>
-<span class="normal">1834</span>
-<span class="normal">1835</span>
-<span class="normal">1836</span>
-<span class="normal">1837</span>
-<span class="normal">1838</span>
-<span class="normal">1839</span>
-<span class="normal">1840</span>
-<span class="normal">1841</span>
-<span class="normal">1842</span>
-<span class="normal">1843</span>
-<span class="normal">1844</span>
-<span class="normal">1845</span>
-<span class="normal">1846</span>
-<span class="normal">1847</span>
-<span class="normal">1848</span>
-<span class="normal">1849</span>
-<span class="normal">1850</span>
-<span class="normal">1851</span>
-<span class="normal">1852</span>
-<span class="normal">1853</span>
-<span class="normal">1854</span>
-<span class="normal">1855</span>
-<span class="normal">1856</span>
-<span class="normal">1857</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_scatter</span><span class="p">(</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1966</span>
+<span class="normal">1967</span>
+<span class="normal">1968</span>
+<span class="normal">1969</span>
+<span class="normal">1970</span>
+<span class="normal">1971</span>
+<span class="normal">1972</span>
+<span class="normal">1973</span>
+<span class="normal">1974</span>
+<span class="normal">1975</span>
+<span class="normal">1976</span>
+<span class="normal">1977</span>
+<span class="normal">1978</span>
+<span class="normal">1979</span>
+<span class="normal">1980</span>
+<span class="normal">1981</span>
+<span class="normal">1982</span>
+<span class="normal">1983</span>
+<span class="normal">1984</span>
+<span class="normal">1985</span>
+<span class="normal">1986</span>
+<span class="normal">1987</span>
+<span class="normal">1988</span>
+<span class="normal">1989</span>
+<span class="normal">1990</span>
+<span class="normal">1991</span>
+<span class="normal">1992</span>
+<span class="normal">1993</span>
+<span class="normal">1994</span>
+<span class="normal">1995</span>
+<span class="normal">1996</span>
+<span class="normal">1997</span>
+<span class="normal">1998</span>
+<span class="normal">1999</span>
+<span class="normal">2000</span>
+<span class="normal">2001</span>
+<span class="normal">2002</span>
+<span class="normal">2003</span>
+<span class="normal">2004</span>
+<span class="normal">2005</span>
+<span class="normal">2006</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_scatter</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">x</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
     <span class="n">y</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
@@ -12860,8 +13775,7 @@ consistent configuration surface and engine handling.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 265</span>
-<span class="normal"> 266</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 266</span>
 <span class="normal"> 267</span>
 <span class="normal"> 268</span>
 <span class="normal"> 269</span>
@@ -18537,7 +19451,42 @@ consistent configuration surface and engine handling.</p>
 <span class="normal">5939</span>
 <span class="normal">5940</span>
 <span class="normal">5941</span>
-<span class="normal">5942</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Plotter</span><span class="p">(</span><span class="n">RendererBase</span><span class="p">):</span>
+<span class="normal">5942</span>
+<span class="normal">5943</span>
+<span class="normal">5944</span>
+<span class="normal">5945</span>
+<span class="normal">5946</span>
+<span class="normal">5947</span>
+<span class="normal">5948</span>
+<span class="normal">5949</span>
+<span class="normal">5950</span>
+<span class="normal">5951</span>
+<span class="normal">5952</span>
+<span class="normal">5953</span>
+<span class="normal">5954</span>
+<span class="normal">5955</span>
+<span class="normal">5956</span>
+<span class="normal">5957</span>
+<span class="normal">5958</span>
+<span class="normal">5959</span>
+<span class="normal">5960</span>
+<span class="normal">5961</span>
+<span class="normal">5962</span>
+<span class="normal">5963</span>
+<span class="normal">5964</span>
+<span class="normal">5965</span>
+<span class="normal">5966</span>
+<span class="normal">5967</span>
+<span class="normal">5968</span>
+<span class="normal">5969</span>
+<span class="normal">5970</span>
+<span class="normal">5971</span>
+<span class="normal">5972</span>
+<span class="normal">5973</span>
+<span class="normal">5974</span>
+<span class="normal">5975</span>
+<span class="normal">5976</span>
+<span class="normal">5977</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Plotter</span><span class="p">(</span><span class="n">RendererBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;User-facing plotting facade backed by concrete plotters.&quot;&quot;&quot;</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
@@ -23599,6 +24548,54 @@ consistent configuration surface and engine handling.</p>
             <span class="n">excluded_ranges</span><span class="o">=</span><span class="n">excluded_ranges</span><span class="p">,</span>
         <span class="p">)</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_powder_meas_vs_calc_series</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">pattern</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+        <span class="n">ctx</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">],</span>
+        <span class="n">plot_options</span><span class="p">:</span> <span class="n">_MeasVsCalcPlotOptions</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_PowderMeasVsCalcSeries</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return filtered measured/calculated powder series.&quot;&quot;&quot;</span>
+        <span class="n">y_meas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filtered_y_array</span><span class="p">(</span>
+            <span class="n">pattern</span><span class="o">.</span><span class="n">intensity_meas</span><span class="p">,</span> <span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;x_array&#39;</span><span class="p">],</span> <span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;x_min&#39;</span><span class="p">],</span> <span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;x_max&#39;</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">y_calc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filtered_y_array</span><span class="p">(</span>
+            <span class="n">pattern</span><span class="o">.</span><span class="n">intensity_calc</span><span class="p">,</span> <span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;x_array&#39;</span><span class="p">],</span> <span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;x_min&#39;</span><span class="p">],</span> <span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;x_max&#39;</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">y_meas_su</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_optional_filtered_y_array</span><span class="p">(</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="s1">&#39;intensity_meas_su&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="n">ctx</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">y_bkg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_optional_filtered_y_array</span><span class="p">(</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="s1">&#39;intensity_bkg&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="n">ctx</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_show_background_enabled</span><span class="p">(</span>
+            <span class="n">plot_options</span><span class="p">,</span>
+            <span class="n">background_available</span><span class="o">=</span><span class="n">y_bkg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">):</span>
+            <span class="n">y_bkg</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">_PowderMeasVsCalcSeries</span><span class="p">(</span>
+            <span class="n">y_meas</span><span class="o">=</span><span class="n">y_meas</span><span class="p">,</span>
+            <span class="n">y_calc</span><span class="o">=</span><span class="n">y_calc</span><span class="p">,</span>
+            <span class="n">y_meas_su</span><span class="o">=</span><span class="n">y_meas_su</span><span class="p">,</span>
+            <span class="n">y_bkg</span><span class="o">=</span><span class="n">y_bkg</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_optional_filtered_y_array</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">values</span><span class="p">:</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">ctx</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return filtered optional y values.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">values</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filtered_y_array</span><span class="p">(</span>
+            <span class="n">values</span><span class="p">,</span>
+            <span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;x_array&#39;</span><span class="p">],</span>
+            <span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;x_min&#39;</span><span class="p">],</span>
+            <span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;x_max&#39;</span><span class="p">],</span>
+        <span class="p">)</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_plot_meas_vs_calc_data</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">experiment</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
@@ -23670,26 +24667,7 @@ consistent configuration surface and engine handling.</p>
         <span class="k">if</span> <span class="n">ctx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span>
 
-        <span class="n">y_meas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filtered_y_array</span><span class="p">(</span>
-            <span class="n">pattern</span><span class="o">.</span><span class="n">intensity_meas</span><span class="p">,</span> <span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;x_array&#39;</span><span class="p">],</span> <span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;x_min&#39;</span><span class="p">],</span> <span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;x_max&#39;</span><span class="p">]</span>
-        <span class="p">)</span>
-        <span class="n">y_calc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filtered_y_array</span><span class="p">(</span>
-            <span class="n">pattern</span><span class="o">.</span><span class="n">intensity_calc</span><span class="p">,</span> <span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;x_array&#39;</span><span class="p">],</span> <span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;x_min&#39;</span><span class="p">],</span> <span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;x_max&#39;</span><span class="p">]</span>
-        <span class="p">)</span>
-        <span class="n">y_bkg_raw</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="s1">&#39;intensity_bkg&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="n">y_bkg</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_filtered_y_array</span><span class="p">(</span><span class="n">y_bkg_raw</span><span class="p">,</span> <span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;x_array&#39;</span><span class="p">],</span> <span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;x_min&#39;</span><span class="p">],</span> <span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;x_max&#39;</span><span class="p">])</span>
-            <span class="k">if</span> <span class="n">y_bkg_raw</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-            <span class="k">else</span> <span class="kc">None</span>
-        <span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_show_background_enabled</span><span class="p">(</span><span class="n">plot_options</span><span class="p">,</span> <span class="n">background_available</span><span class="o">=</span><span class="n">y_bkg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
-            <span class="n">y_bkg</span> <span class="o">=</span> <span class="kc">None</span>
-
-        <span class="n">powder_series</span> <span class="o">=</span> <span class="n">_PowderMeasVsCalcSeries</span><span class="p">(</span>
-            <span class="n">y_meas</span><span class="o">=</span><span class="n">y_meas</span><span class="p">,</span>
-            <span class="n">y_calc</span><span class="o">=</span><span class="n">y_calc</span><span class="p">,</span>
-            <span class="n">y_bkg</span><span class="o">=</span><span class="n">y_bkg</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="n">powder_series</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_powder_meas_vs_calc_series</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">plot_options</span><span class="p">)</span>
         <span class="n">excluded_ranges</span> <span class="o">=</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_excluded_ranges</span><span class="p">(</span>
                 <span class="n">experiment</span><span class="o">=</span><span class="n">experiment</span><span class="p">,</span>
@@ -23714,8 +24692,8 @@ consistent configuration surface and engine handling.</p>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_plot_line_meas_vs_calc</span><span class="p">(</span>
             <span class="n">ctx</span><span class="o">=</span><span class="n">ctx</span><span class="p">,</span>
-            <span class="n">y_meas</span><span class="o">=</span><span class="n">y_meas</span><span class="p">,</span>
-            <span class="n">y_calc</span><span class="o">=</span><span class="n">y_calc</span><span class="p">,</span>
+            <span class="n">y_meas</span><span class="o">=</span><span class="n">powder_series</span><span class="o">.</span><span class="n">y_meas</span><span class="p">,</span>
+            <span class="n">y_calc</span><span class="o">=</span><span class="n">powder_series</span><span class="o">.</span><span class="n">y_calc</span><span class="p">,</span>
             <span class="n">show_residual</span><span class="o">=</span><span class="kc">False</span>
             <span class="k">if</span> <span class="n">plot_options</span><span class="o">.</span><span class="n">show_residual</span> <span class="ow">is</span> <span class="kc">None</span>
             <span class="k">else</span> <span class="n">plot_options</span><span class="o">.</span><span class="n">show_residual</span><span class="p">,</span>
@@ -23790,6 +24768,7 @@ consistent configuration surface and engine handling.</p>
             <span class="n">height</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_composite_plot_height</span><span class="p">(),</span>
             <span class="n">y_bkg</span><span class="o">=</span><span class="n">series</span><span class="o">.</span><span class="n">y_bkg</span><span class="p">,</span>
             <span class="n">excluded_ranges</span><span class="o">=</span><span class="n">excluded_ranges</span><span class="p">,</span>
+            <span class="n">y_meas_su</span><span class="o">=</span><span class="n">series</span><span class="o">.</span><span class="n">y_meas_su</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_backend</span><span class="o">.</span><span class="n">plot_powder_meas_vs_calc</span><span class="p">(</span><span class="n">plot_spec</span><span class="o">=</span><span class="n">plot_spec</span><span class="p">)</span>
 
@@ -24097,7 +25076,11 @@ consistent configuration surface and engine handling.</p>
             <span class="n">x_label</span> <span class="o">=</span> <span class="s1">&#39;Experiment No.&#39;</span>
 
         <span class="c1"># Y-axis label from descriptor</span>
-        <span class="n">param_units</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">param_descriptor</span><span class="p">,</span> <span class="s1">&#39;units&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">param_units</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">param_descriptor</span><span class="o">.</span><span class="n">resolve_display_units</span><span class="p">(</span><span class="s1">&#39;gui&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">param_descriptor</span><span class="p">,</span> <span class="s1">&#39;resolve_display_units&#39;</span><span class="p">)</span>
+            <span class="k">else</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">param_descriptor</span><span class="p">,</span> <span class="s1">&#39;units&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="p">)</span>
         <span class="n">y_label</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Parameter value (</span><span class="si">{</span><span class="n">param_units</span><span class="si">}</span><span class="s1">)&#39;</span> <span class="k">if</span> <span class="n">param_units</span> <span class="k">else</span> <span class="s1">&#39;Parameter value&#39;</span>
 
         <span class="n">title</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Parameter &#39;</span><span class="si">{</span><span class="n">column_name</span><span class="si">}</span><span class="s2">&#39; across fit results&quot;</span>
@@ -24328,8 +25311,7 @@ consistent configuration surface and engine handling.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">581</span>
-<span class="normal">582</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">582</span>
 <span class="normal">583</span>
 <span class="normal">584</span>
 <span class="normal">585</span>
@@ -24341,7 +25323,8 @@ consistent configuration surface and engine handling.</p>
 <span class="normal">591</span>
 <span class="normal">592</span>
 <span class="normal">593</span>
-<span class="normal">594</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">594</span>
+<span class="normal">595</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Display the current plotting configuration.&quot;&quot;&quot;</span>
     <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">(</span><span class="s1">&#39;Parameter&#39;</span><span class="p">,</span> <span class="s1">&#39;left&#39;</span><span class="p">),</span>
@@ -24490,8 +25473,7 @@ consistent configuration surface and engine handling.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">596</span>
-<span class="normal">597</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">597</span>
 <span class="normal">598</span>
 <span class="normal">599</span>
 <span class="normal">600</span>
@@ -24529,7 +25511,8 @@ consistent configuration surface and engine handling.</p>
 <span class="normal">632</span>
 <span class="normal">633</span>
 <span class="normal">634</span>
-<span class="normal">635</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_meas</span><span class="p">(</span>
+<span class="normal">635</span>
+<span class="normal">636</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_meas</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">expt_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">x_min</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -24704,8 +25687,7 @@ consistent configuration surface and engine handling.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">637</span>
-<span class="normal">638</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">638</span>
 <span class="normal">639</span>
 <span class="normal">640</span>
 <span class="normal">641</span>
@@ -24743,7 +25725,8 @@ consistent configuration surface and engine handling.</p>
 <span class="normal">673</span>
 <span class="normal">674</span>
 <span class="normal">675</span>
-<span class="normal">676</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_calc</span><span class="p">(</span>
+<span class="normal">676</span>
+<span class="normal">677</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_calc</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">expt_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">x_min</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -24939,8 +25922,7 @@ historical no-residual default.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">678</span>
-<span class="normal">679</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">679</span>
 <span class="normal">680</span>
 <span class="normal">681</span>
 <span class="normal">682</span>
@@ -24976,7 +25958,8 @@ historical no-residual default.</p>
 <span class="normal">712</span>
 <span class="normal">713</span>
 <span class="normal">714</span>
-<span class="normal">715</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_meas_vs_calc</span><span class="p">(</span>
+<span class="normal">715</span>
+<span class="normal">716</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_meas_vs_calc</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">expt_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">x_min</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -25100,8 +26083,7 @@ sequence number is used instead.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">732</span>
-<span class="normal">733</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">733</span>
 <span class="normal">734</span>
 <span class="normal">735</span>
 <span class="normal">736</span>
@@ -25150,7 +26132,8 @@ sequence number is used instead.</p>
 <span class="normal">779</span>
 <span class="normal">780</span>
 <span class="normal">781</span>
-<span class="normal">782</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_param_series</span><span class="p">(</span>
+<span class="normal">782</span>
+<span class="normal">783</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_param_series</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">param</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
     <span class="n">versus</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -25266,8 +26249,7 @@ sequence number is used instead.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">814</span>
-<span class="normal">815</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">815</span>
 <span class="normal">816</span>
 <span class="normal">817</span>
 <span class="normal">818</span>
@@ -25297,7 +26279,8 @@ sequence number is used instead.</p>
 <span class="normal">842</span>
 <span class="normal">843</span>
 <span class="normal">844</span>
-<span class="normal">845</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_all_param_series</span><span class="p">(</span>
+<span class="normal">845</span>
+<span class="normal">846</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_all_param_series</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">versus</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -25457,8 +26440,7 @@ lower-triangle matrix.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 930</span>
-<span class="normal"> 931</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 931</span>
 <span class="normal"> 932</span>
 <span class="normal"> 933</span>
 <span class="normal"> 934</span>
@@ -25536,7 +26518,8 @@ lower-triangle matrix.</p>
 <span class="normal">1006</span>
 <span class="normal">1007</span>
 <span class="normal">1008</span>
-<span class="normal">1009</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_param_correlations</span><span class="p">(</span>
+<span class="normal">1009</span>
+<span class="normal">1010</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_param_correlations</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">DEFAULT_CORRELATION_THRESHOLD</span><span class="p">,</span>
     <span class="n">precision</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
@@ -25742,8 +26725,7 @@ Must be at least <code>2</code>.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1128</span>
-<span class="normal">1129</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1129</span>
 <span class="normal">1130</span>
 <span class="normal">1131</span>
 <span class="normal">1132</span>
@@ -25785,7 +26767,8 @@ Must be at least <code>2</code>.</p>
 <span class="normal">1168</span>
 <span class="normal">1169</span>
 <span class="normal">1170</span>
-<span class="normal">1171</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_posterior_pairs</span><span class="p">(</span>
+<span class="normal">1171</span>
+<span class="normal">1172</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_posterior_pairs</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">parameters</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">object</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">style</span><span class="p">:</span> <span class="n">PosteriorPairPlotStyleEnum</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;auto&#39;</span><span class="p">,</span>
@@ -25890,8 +26873,7 @@ user-facing labels.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1173</span>
-<span class="normal">1174</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1174</span>
 <span class="normal">1175</span>
 <span class="normal">1176</span>
 <span class="normal">1177</span>
@@ -25911,7 +26893,8 @@ user-facing labels.</p>
 <span class="normal">1191</span>
 <span class="normal">1192</span>
 <span class="normal">1193</span>
-<span class="normal">1194</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_param_distribution</span><span class="p">(</span>
+<span class="normal">1194</span>
+<span class="normal">1195</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_param_distribution</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">param</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -26139,8 +27122,7 @@ composite plots.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1196</span>
-<span class="normal">1197</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1197</span>
 <span class="normal">1198</span>
 <span class="normal">1199</span>
 <span class="normal">1200</span>
@@ -26198,7 +27180,8 @@ composite plots.</p>
 <span class="normal">1252</span>
 <span class="normal">1253</span>
 <span class="normal">1254</span>
-<span class="normal">1255</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_posterior_predictive</span><span class="p">(</span>
+<span class="normal">1255</span>
+<span class="normal">1256</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_posterior_predictive</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">expt_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">style</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;band&#39;</span><span class="p">,</span>
@@ -26377,42 +27360,7 @@ adds CSV output to the existing fit loop).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">5839</span>
-<span class="normal">5840</span>
-<span class="normal">5841</span>
-<span class="normal">5842</span>
-<span class="normal">5843</span>
-<span class="normal">5844</span>
-<span class="normal">5845</span>
-<span class="normal">5846</span>
-<span class="normal">5847</span>
-<span class="normal">5848</span>
-<span class="normal">5849</span>
-<span class="normal">5850</span>
-<span class="normal">5851</span>
-<span class="normal">5852</span>
-<span class="normal">5853</span>
-<span class="normal">5854</span>
-<span class="normal">5855</span>
-<span class="normal">5856</span>
-<span class="normal">5857</span>
-<span class="normal">5858</span>
-<span class="normal">5859</span>
-<span class="normal">5860</span>
-<span class="normal">5861</span>
-<span class="normal">5862</span>
-<span class="normal">5863</span>
-<span class="normal">5864</span>
-<span class="normal">5865</span>
-<span class="normal">5866</span>
-<span class="normal">5867</span>
-<span class="normal">5868</span>
-<span class="normal">5869</span>
-<span class="normal">5870</span>
-<span class="normal">5871</span>
-<span class="normal">5872</span>
-<span class="normal">5873</span>
-<span class="normal">5874</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">5874</span>
 <span class="normal">5875</span>
 <span class="normal">5876</span>
 <span class="normal">5877</span>
@@ -26447,7 +27395,42 @@ adds CSV output to the existing fit loop).</p>
 <span class="normal">5906</span>
 <span class="normal">5907</span>
 <span class="normal">5908</span>
-<span class="normal">5909</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_param_series_from_snapshots</span><span class="p">(</span>
+<span class="normal">5909</span>
+<span class="normal">5910</span>
+<span class="normal">5911</span>
+<span class="normal">5912</span>
+<span class="normal">5913</span>
+<span class="normal">5914</span>
+<span class="normal">5915</span>
+<span class="normal">5916</span>
+<span class="normal">5917</span>
+<span class="normal">5918</span>
+<span class="normal">5919</span>
+<span class="normal">5920</span>
+<span class="normal">5921</span>
+<span class="normal">5922</span>
+<span class="normal">5923</span>
+<span class="normal">5924</span>
+<span class="normal">5925</span>
+<span class="normal">5926</span>
+<span class="normal">5927</span>
+<span class="normal">5928</span>
+<span class="normal">5929</span>
+<span class="normal">5930</span>
+<span class="normal">5931</span>
+<span class="normal">5932</span>
+<span class="normal">5933</span>
+<span class="normal">5934</span>
+<span class="normal">5935</span>
+<span class="normal">5936</span>
+<span class="normal">5937</span>
+<span class="normal">5938</span>
+<span class="normal">5939</span>
+<span class="normal">5940</span>
+<span class="normal">5941</span>
+<span class="normal">5942</span>
+<span class="normal">5943</span>
+<span class="normal">5944</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_param_series_from_snapshots</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">unique_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">versus_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
@@ -26563,21 +27546,21 @@ adds CSV output to the existing fit loop).</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">5945</span>
-<span class="normal">5946</span>
-<span class="normal">5947</span>
-<span class="normal">5948</span>
-<span class="normal">5949</span>
-<span class="normal">5950</span>
-<span class="normal">5951</span>
-<span class="normal">5952</span>
-<span class="normal">5953</span>
-<span class="normal">5954</span>
-<span class="normal">5955</span>
-<span class="normal">5956</span>
-<span class="normal">5957</span>
-<span class="normal">5958</span>
-<span class="normal">5959</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PlotterFactory</span><span class="p">(</span><span class="n">RendererFactoryBase</span><span class="p">):</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">5980</span>
+<span class="normal">5981</span>
+<span class="normal">5982</span>
+<span class="normal">5983</span>
+<span class="normal">5984</span>
+<span class="normal">5985</span>
+<span class="normal">5986</span>
+<span class="normal">5987</span>
+<span class="normal">5988</span>
+<span class="normal">5989</span>
+<span class="normal">5990</span>
+<span class="normal">5991</span>
+<span class="normal">5992</span>
+<span class="normal">5993</span>
+<span class="normal">5994</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PlotterFactory</span><span class="p">(</span><span class="n">RendererFactoryBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Factory for plotter implementations.&quot;&quot;&quot;</span>
 
     <span class="nd">@classmethod</span>

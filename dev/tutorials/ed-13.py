@@ -1449,19 +1449,17 @@ project_2.display.pattern(expt_name='sim_lbco', x_min=88000, x_max=101000)
 # remain, but further improvements would require more advanced data
 # reduction and analysis, which are beyond the scope of this school.
 #
-# To review the analysis results, you can generate and print a summary
-# report using the `show_report()` method, as demonstrated in the cell
-# below. The report includes parameters related to the structure and
-# the experiment, such as the refined unit cell parameter `a` of LBCO.
+# To review the analysis results, you can generate a summary report.
+# The HTML report is written automatically when the project is saved
+# (see below). The report includes parameters related to the structure
+# and the experiment, such as the refined unit cell parameter `a` of
+# LBCO.
 #
 # Information about the crystal or magnetic structure, along with
 # experimental details, fitting quality, and other relevant data, is
 # often submitted to crystallographic journals as part of a scientific
 # publication. It can also be deposited in crystallographic databases
 # when relevant.
-
-# %%
-project_2.report.show_report()
 
 # %% [markdown]
 # Finally, we save the project to disk to preserve the current state of

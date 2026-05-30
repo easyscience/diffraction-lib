@@ -2998,6 +2998,34 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#easydiffraction.utils.matplotlib_config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        matplotlib_config
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="matplotlib_config">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#easydiffraction.utils.matplotlib_config.ensure_matplotlib_config_dir" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ensure_matplotlib_config_dir
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#easydiffraction.utils.utils" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3580,6 +3608,34 @@
     <span class="md-ellipsis">
       
         ConsolePrinter
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#easydiffraction.utils.matplotlib_config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        matplotlib_config
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="matplotlib_config">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#easydiffraction.utils.matplotlib_config.ensure_matplotlib_config_dir" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ensure_matplotlib_config_dir
       
     </span>
   </a>
@@ -9606,6 +9662,95 @@ the terminal and stripped in the HTML output.</p>
 
 </div>
 
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+<h2 id="easydiffraction.utils.matplotlib_config" class="doc doc-heading">
+            <code>matplotlib_config</code>
+
+
+</h2>
+
+    <div class="doc doc-contents ">
+
+        <p>Configure Matplotlib cache paths for restricted environments.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="easydiffraction.utils.matplotlib_config.ensure_matplotlib_config_dir" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">ensure_matplotlib_config_dir</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Set a stable Matplotlib cache dir.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/utils/matplotlib_config.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">ensure_matplotlib_config_dir</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set a stable Matplotlib cache dir.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;MPLCONFIGDIR&#39;</span><span class="p">):</span>
+        <span class="k">return</span>
+    <span class="n">default_dir</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span> <span class="o">/</span> <span class="s1">&#39;.matplotlib&#39;</span>
+    <span class="k">if</span> <span class="n">_path_is_writable</span><span class="p">(</span><span class="n">default_dir</span><span class="p">):</span>
+        <span class="k">return</span>
+    <span class="n">fallback_dir</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">gettempdir</span><span class="p">())</span> <span class="o">/</span> <span class="s1">&#39;easydiffraction-matplotlib&#39;</span>
+    <span class="k">if</span> <span class="n">_path_is_writable</span><span class="p">(</span><span class="n">fallback_dir</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;MPLCONFIGDIR&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">fallback_dir</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
 
 
 

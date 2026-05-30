@@ -3158,8 +3158,9 @@ project.</p>
 ├── 📁 analysis       - Analysis settings and optional persisted Bayesian arrays.
 │   ├── 📄 <span class="orange"><b>analysis.cif</b></span> - Settings for data analysis (minimizer, fit mode, constraints, persisted fit state).
 │   └── 📄 <span class="orange"><b>results.h5</b></span>   - Optional Bayesian sidecar with posterior and predictive arrays.
-└── 📁 reports      - Optional IUCr submission reports.
-    └── 📄 <span class="orange"><b>La0.5Ba0.5CoO3.cif</b></span> - Report written by project.save(report=True).
+└── 📁 reports      - Optional reports written from project.report config.
+    ├── 📄 <span class="orange"><b>La0.5Ba0.5CoO3.cif</b></span>  - IUCr submission report.
+    └── 📄 <span class="orange"><b>La0.5Ba0.5CoO3.html</b></span> - HTML report.
 </pre>
 </div>
 
@@ -3173,7 +3174,9 @@ directory, showing the contents of all files in the project.</p>
 <p>If you save the project right after creating it, the project directory will
 only contain the <code>project.cif</code> file. The other folders and files will be
 created as you add structures, experiments, and set up the analysis. The
-reports folder is created only when you call <code>project.save(report=True)</code>.</p>
+reports folder is created only when at least one of
+<code>project.report.cif</code>, <code>project.report.html</code>, <code>project.report.tex</code>,
+or <code>project.report.pdf</code> is set to <code>True</code> before <code>project.save()</code>.</p>
 </div>
 <h3 id="1-projectcif">1. <span class="orange">project.cif</span></h3>
 <p>This file stores project-level metadata and display configuration.</p>

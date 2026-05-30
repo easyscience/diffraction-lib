@@ -908,10 +908,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#viewing-the-report" class="md-nav__link">
+  <a href="#saving-the-report" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Viewing the Report
+        Saving the Report
       
     </span>
   </a>
@@ -919,10 +919,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#saving-a-submission-report" class="md-nav__link">
+  <a href="#configuring-saved-reports" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Saving a Submission Report
+        Configuring Saved Reports
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#one-off-report-saves" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        One-Off Report Saves
       
     </span>
   </a>
@@ -2905,10 +2916,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#viewing-the-report" class="md-nav__link">
+  <a href="#saving-the-report" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Viewing the Report
+        Saving the Report
       
     </span>
   </a>
@@ -2916,10 +2927,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#saving-a-submission-report" class="md-nav__link">
+  <a href="#configuring-saved-reports" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Saving a Submission Report
+        Configuring Saved Reports
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#one-off-report-saves" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        One-Off Report Saves
       
     </span>
   </a>
@@ -2965,23 +2987,89 @@ overview of the model refinement process and its outcomes.</p>
 <li>Graphical representation – Visualization of experimental vs.
   calculated diffraction patterns.</li>
 </ul>
-<h2 id="viewing-the-report">Viewing the Report</h2>
-<p>Users can print the report using:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="c1"># Generate and print the report</span>
-<span class="n">project</span><span class="o">.</span><span class="n">report</span><span class="o">.</span><span class="n">show_report</span><span class="p">()</span>
+<h2 id="saving-the-report">Saving the Report</h2>
+<p>Reports are written to disk rather than printed. Call a per-format
+method directly, or enable formats on <code>project.report</code> (see below) so
+the next <code>project.save()</code> writes them:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="c1"># Write an HTML report immediately</span>
+<span class="n">project</span><span class="o">.</span><span class="n">report</span><span class="o">.</span><span class="n">save_html</span><span class="p">()</span>
 </code></pre></div>
-<!--
-This command will display a structured report of the analysis results,
-including model parameters, fit statistics, and data visualizations.
--->
-
-<h2 id="saving-a-submission-report">Saving a Submission Report</h2>
-<p>Regular project saves do not write a report file. To write an <abbr title="International Union of Crystallography.">IUCr</abbr>
-journal-submission <abbr title="Crystallographic Information File.">CIF</abbr>, use:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">report</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<h2 id="configuring-saved-reports">Configuring Saved Reports</h2>
+<p>Report output is controlled by <code>project.report</code>, a project-level
+configuration category that is saved in <code>project.cif</code>. Regular
+<code>project.save()</code> calls read this configuration and write the selected
+report formats.</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Type</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>project.report.cif</code></td>
+<td><code>bool</code></td>
+<td>Write an <abbr title="International Union of Crystallography.">IUCr</abbr> submission <abbr title="Crystallographic Information File.">CIF</abbr>.</td>
+</tr>
+<tr>
+<td><code>project.report.html</code></td>
+<td><code>bool</code></td>
+<td>Write an HTML report (enabled by default).</td>
+</tr>
+<tr>
+<td><code>project.report.tex</code></td>
+<td><code>bool</code></td>
+<td>Write a TeX report bundle.</td>
+</tr>
+<tr>
+<td><code>project.report.pdf</code></td>
+<td><code>bool</code></td>
+<td>Write a PDF report when a TeX engine is available.</td>
+</tr>
+<tr>
+<td><code>project.report.html_offline</code></td>
+<td><code>bool</code></td>
+<td>Embed HTML assets instead of using CDN links.</td>
+</tr>
+</tbody>
+</table>
+<p>HTML output is enabled by default, so saving a project always writes an
+HTML report unless you set <code>project.report.html = False</code>. Enable
+additional formats through their boolean flags:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">report</span><span class="o">.</span><span class="n">cif</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">project</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
 </code></pre></div>
-<p>The report is written to <code>reports/&lt;project&gt;.cif</code> inside the saved
-project directory.</p>
+<p>This writes <code>reports/&lt;project&gt;.html</code> (enabled by default) and
+<code>reports/&lt;project&gt;.cif</code> inside the project directory.</p>
+<p>When <code>pdf</code> is enabled but <code>tex</code> is not, the intermediate <code>reports/tex/</code>
+bundle is written only to build the PDF and removed once the PDF is
+produced. It is kept if no TeX engine is available so you can compile it
+by hand.</p>
+<h2 id="one-off-report-saves">One-Off Report Saves</h2>
+<p>Per-format methods write a report without changing the saved
+configuration:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">report</span><span class="o">.</span><span class="n">save_html</span><span class="p">()</span>
+<span class="n">project</span><span class="o">.</span><span class="n">report</span><span class="o">.</span><span class="n">save_cif</span><span class="p">()</span>
+<span class="n">project</span><span class="o">.</span><span class="n">report</span><span class="o">.</span><span class="n">save_tex</span><span class="p">()</span>
+<span class="n">project</span><span class="o">.</span><span class="n">report</span><span class="o">.</span><span class="n">save_pdf</span><span class="p">()</span>
+</code></pre></div>
+<p><code>save_pdf()</code> always writes the TeX bundle first. If no TeX engine is on
+<code>PATH</code>, EasyDiffraction leaves the <code>.tex</code> and <code>data/</code> files under
+<code>reports/tex/</code>, prints a short install hint, and does not raise.</p>
+<p>HTML reports load Plotly and MathJax from CDNs by default. Set
+<code>project.report.html_offline = True</code> to make the HTML report usable
+without network access; this embeds Plotly in the HTML and copies the
+vendored MathJax bundle next to it, adding about 4.5 MB total.</p>
+<p>The command line saves reports from the persisted project configuration
+when a fit writes the project back to disk:</p>
+<div class="language-bash highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>easydiffraction<span class="w"> </span>path/to/project<span class="w"> </span>fit
+</code></pre></div>
+<p>If <code>project.cif</code> contains <code>_report.html true</code>, <code>_report.tex true</code>, or
+another enabled report flag, <code>fit</code> writes those reports as part of the
+normal project save. Use the Python per-format methods above for one-off
+exports without changing the saved configuration.</p>
 <!--
 ## Exporting the Report
 
