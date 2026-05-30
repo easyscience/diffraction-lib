@@ -566,7 +566,7 @@ def _as_cif_text(section: object) -> str:
 def project_config_to_cif(project: object) -> str:
     """Render project-level configuration to ``project.cif`` text."""
     sections: list[str] = []
-    for attr_name in ('info', 'chart', 'report'):
+    for attr_name in ('info', 'rendering_plot', 'report'):
         section = getattr(project, attr_name, None)
         if section is not None:
             sections.append(_as_cif_text(section))
@@ -575,7 +575,7 @@ def project_config_to_cif(project: object) -> str:
     if publication is not None:
         sections.append(category_owner_to_cif(publication))
 
-    for attr_name in ('table', 'verbosity'):
+    for attr_name in ('rendering_table', 'verbosity'):
         section = getattr(project, attr_name, None)
         if section is not None:
             sections.append(_as_cif_text(section))
@@ -684,9 +684,9 @@ def project_config_from_cif(project: object, cif_text: str) -> None:
 
     _populate_project_info_from_block(project.info, block)
 
-    chart = getattr(project, 'chart', None)
-    if chart is not None:
-        chart.from_cif(block)
+    rendering_plot = getattr(project, 'rendering_plot', None)
+    if rendering_plot is not None:
+        rendering_plot.from_cif(block)
 
     report = getattr(project, 'report', None)
     if report is not None:
@@ -697,17 +697,17 @@ def project_config_from_cif(project: object, cif_text: str) -> None:
     if publication is not None:
         publication.from_cif(block)
 
-    table = getattr(project, 'table', None)
-    if table is not None:
-        table.from_cif(block)
+    rendering_table = getattr(project, 'rendering_table', None)
+    if rendering_table is not None:
+        rendering_table.from_cif(block)
 
     verbosity = getattr(project, 'verbosity', None)
     if verbosity is not None:
         verbosity.from_cif(block)
 
-    view = getattr(project, 'view', None)
-    if view is not None:
-        view.from_cif(block)
+    rendering_structure = getattr(project, 'rendering_structure', None)
+    if rendering_structure is not None:
+        rendering_structure.from_cif(block)
 
     style = getattr(project, 'style', None)
     if style is not None:

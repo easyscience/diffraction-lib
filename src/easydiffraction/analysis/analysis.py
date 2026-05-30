@@ -2417,7 +2417,7 @@ class Analysis(
             self._persisted_fit_state_sidecar['predictive_datasets'] = {}
             return
 
-        plotter = self.project.chart.plotter
+        plotter = self.project.rendering_plot.plotter
         distribution_payload = self._store_posterior_distribution_cache_projection(
             plotter=plotter,
             results=results,

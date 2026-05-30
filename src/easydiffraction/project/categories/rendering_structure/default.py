@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Project structure-view category (switchable renderer + view state)."""
+"""Project structure-rendering_structure category (switchable renderer + view state)."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ from easydiffraction.display.structure.viewing import Viewer
 from easydiffraction.display.structure.viewing import ViewerFactory
 from easydiffraction.io.cif.handler import CifHandler
 from easydiffraction.io.cif.parse import read_cif_str
-from easydiffraction.project.categories.view.factory import ViewFactory
+from easydiffraction.project.categories.rendering_structure.factory import RenderingStructureFactory
 from easydiffraction.utils.logging import log
 
 AUTO_ENGINE = 'auto'
@@ -30,21 +30,21 @@ def _range_descriptor(name: str, default: float) -> NumericDescriptor:
         name=name,
         description='Per-axis fractional view-range bound.',
         value_spec=AttributeSpec(default=default),
-        cif_handler=CifHandler(names=[f'_view.{name}']),
+        cif_handler=CifHandler(names=[f'_rendering_structure.{name}']),
     )
 
 
-@ViewFactory.register
-class View(CategoryItem, SwitchableCategoryBase):
+@RenderingStructureFactory.register
+class RenderingStructure(CategoryItem, SwitchableCategoryBase):
     """Renderer engine selection and view state for a project."""
 
-    _category_code = 'view'
-    _owner_attr_name = 'view'
-    _swap_method_name = '_swap_view'
+    _category_code = 'rendering_structure'
+    _owner_attr_name = 'rendering_structure'
+    _swap_method_name = '_swap_rendering_structure'
 
     type_info = TypeInfo(
         tag='default',
-        description='Project view category',
+        description='Project rendering_structure category',
     )
 
     def __init__(self) -> None:
@@ -58,19 +58,19 @@ class View(CategoryItem, SwitchableCategoryBase):
                 default=AUTO_ENGINE,
                 validator=MembershipValidator(allowed=VIEW_ENGINE_OPTIONS),
             ),
-            cif_handler=CifHandler(names=['_view.type']),
+            cif_handler=CifHandler(names=['_rendering_structure.type']),
         )
         self._show_labels = BoolDescriptor(
             name='show_labels',
             description='Show atom labels when the view opens.',
             value_spec=AttributeSpec(default=False),
-            cif_handler=CifHandler(names=['_view.show_labels']),
+            cif_handler=CifHandler(names=['_rendering_structure.show_labels']),
         )
         self._show_moments = BoolDescriptor(
             name='show_moments',
             description='Show magnetic-moment arrows where the data exists.',
             value_spec=AttributeSpec(default=True),
-            cif_handler=CifHandler(names=['_view.show_moments']),
+            cif_handler=CifHandler(names=['_rendering_structure.show_moments']),
         )
         self._range_a_min = _range_descriptor('range_a_min', 0.0)
         self._range_a_max = _range_descriptor('range_a_max', 1.0)
@@ -88,8 +88,8 @@ class View(CategoryItem, SwitchableCategoryBase):
     def _set_type(self, value: str, *, strict: bool = True) -> None:
         if value not in VIEW_ENGINE_OPTIONS:
             msg = (
-                f"Unsupported view type '{value}'. Supported: {VIEW_ENGINE_OPTIONS}. "
-                f"For more information, use 'view.show_supported()'"
+                f"Unsupported rendering_structure type '{value}'. Supported: {VIEW_ENGINE_OPTIONS}. "
+                f"For more information, use 'rendering_structure.show_supported()'"
             )
             if strict:
                 raise ValueError(msg)
@@ -200,13 +200,13 @@ class View(CategoryItem, SwitchableCategoryBase):
         )
 
     def from_cif(self, block: object, idx: int = 0) -> None:
-        """Populate this view category from a CIF block, rebinding engine."""
+        """Populate this rendering_structure category from a CIF block, rebinding engine."""
         super().from_cif(block, idx)
-        view_type = read_cif_str(block, '_view.type')
+        view_type = read_cif_str(block, '_rendering_structure.type')
         if view_type is not None:
-            self._parent._swap_view(view_type, strict=False)
+            self._parent._swap_rendering_structure(view_type, strict=False)
 
     @property
     def as_cif(self) -> str:
-        """Return CIF representation of this view category."""
+        """Return CIF representation of this rendering_structure category."""
         return super().as_cif

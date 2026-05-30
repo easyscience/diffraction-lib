@@ -36,11 +36,11 @@ from easydiffraction.utils.utils import display_path
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from easydiffraction.project.categories.chart import Chart
+    from easydiffraction.project.categories.rendering_plot import RenderingPlot
     from easydiffraction.project.categories.style import Style
-    from easydiffraction.project.categories.table import Table
+    from easydiffraction.project.categories.rendering_table import RenderingTable
     from easydiffraction.project.categories.verbosity import Verbosity
-    from easydiffraction.project.categories.view import View
+    from easydiffraction.project.categories.rendering_structure import RenderingStructure
     from easydiffraction.project.project_info import ProjectInfo
     from easydiffraction.report import Report
 
@@ -209,10 +209,10 @@ class Project(GuardedBase):  # noqa: PLR0904
         object.__setattr__(self, '_info', self._config.info)
         self._structures = Structures()
         self._experiments = Experiments()
-        object.__setattr__(self, '_chart', self._config.chart)
-        object.__setattr__(self, '_table', self._config.table)
+        object.__setattr__(self, '_rendering_plot', self._config.rendering_plot)
+        object.__setattr__(self, '_rendering_table', self._config.rendering_table)
         object.__setattr__(self, '_verbosity', self._config.verbosity)
-        object.__setattr__(self, '_view', self._config.view)
+        object.__setattr__(self, '_rendering_structure', self._config.rendering_structure)
         object.__setattr__(self, '_style', self._config.style)
         object.__setattr__(self, '_report', self._config.report)
         self._publication = PublicationFactory.create(PublicationFactory.default_tag())
@@ -228,9 +228,9 @@ class Project(GuardedBase):  # noqa: PLR0904
         self._structures._parent = self
         self._experiments._parent = self
         self._analysis._parent = self
-        self._chart._parent = self
-        self._table._parent = self
-        self._view._parent = self
+        self._rendering_plot._parent = self
+        self._rendering_table._parent = self
+        self._rendering_structure._parent = self
         self._style._parent = self
         self._report._parent = self
         self._publication._parent = self
@@ -241,17 +241,17 @@ class Project(GuardedBase):  # noqa: PLR0904
         del category
         return {}
 
-    def _swap_chart(self, new_type: str, *, strict: bool = True) -> None:
+    def _swap_rendering_plot(self, new_type: str, *, strict: bool = True) -> None:
         """Switch the active chart renderer."""
-        self._chart._set_type(new_type, strict=strict)
+        self._rendering_plot._set_type(new_type, strict=strict)
 
-    def _swap_table(self, new_type: str, *, strict: bool = True) -> None:
+    def _swap_rendering_table(self, new_type: str, *, strict: bool = True) -> None:
         """Switch the active table renderer."""
-        self._table._set_type(new_type, strict=strict)
+        self._rendering_table._set_type(new_type, strict=strict)
 
-    def _swap_view(self, new_type: str, *, strict: bool = True) -> None:
+    def _swap_rendering_structure(self, new_type: str, *, strict: bool = True) -> None:
         """Switch the active structure-view renderer."""
-        self._view._set_type(new_type, strict=strict)
+        self._rendering_structure._set_type(new_type, strict=strict)
 
     @classmethod
     def current_project_path(cls) -> pathlib.Path | None:
@@ -323,19 +323,19 @@ class Project(GuardedBase):  # noqa: PLR0904
         self._experiments = experiments
 
     @property
-    def chart(self) -> Chart:
+    def rendering_plot(self) -> RenderingPlot:
         """Chart configuration bound to the project."""
-        return self._chart
+        return self._rendering_plot
 
     @property
-    def table(self) -> Table:
+    def rendering_table(self) -> RenderingTable:
         """Table configuration bound to the project."""
-        return self._table
+        return self._rendering_table
 
     @property
-    def view(self) -> View:
+    def rendering_structure(self) -> RenderingStructure:
         """Structure-view configuration bound to the project."""
-        return self._view
+        return self._rendering_structure
 
     @property
     def style(self) -> Style:

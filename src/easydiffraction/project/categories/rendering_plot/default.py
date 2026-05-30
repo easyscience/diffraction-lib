@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Project chart category."""
+"""Project rendering_plot category."""
 
 from __future__ import annotations
 
@@ -15,25 +15,25 @@ from easydiffraction.display.plotting import PlotterEngineEnum
 from easydiffraction.display.plotting import PlotterFactory
 from easydiffraction.io.cif.handler import CifHandler
 from easydiffraction.io.cif.parse import read_cif_str
-from easydiffraction.project.categories.chart.factory import ChartFactory
+from easydiffraction.project.categories.rendering_plot.factory import RenderingPlotFactory
 from easydiffraction.utils.logging import log
 
 AUTO_ENGINE = 'auto'
-AUTO_DESCRIPTION = 'Environment default chart engine'
+AUTO_DESCRIPTION = 'Environment default rendering_plot engine'
 CHART_ENGINE_OPTIONS = [AUTO_ENGINE, *[member.value for member in PlotterEngineEnum]]
 
 
-@ChartFactory.register
-class Chart(CategoryItem, SwitchableCategoryBase):
-    """Chart engine selection for a project."""
+@RenderingPlotFactory.register
+class RenderingPlot(CategoryItem, SwitchableCategoryBase):
+    """RenderingPlot engine selection for a project."""
 
-    _category_code = 'chart'
-    _owner_attr_name = 'chart'
-    _swap_method_name = '_swap_chart'
+    _category_code = 'rendering_plot'
+    _owner_attr_name = 'rendering_plot'
+    _swap_method_name = '_swap_rendering_plot'
 
     type_info = TypeInfo(
         tag='default',
-        description='Project chart category',
+        description='Project rendering_plot category',
     )
 
     def __init__(self) -> None:
@@ -42,14 +42,14 @@ class Chart(CategoryItem, SwitchableCategoryBase):
         self._plotter = Plotter()
         self._type = StringDescriptor(
             name='type',
-            description='Chart renderer backend type',
+            description='RenderingPlot renderer backend type',
             value_spec=AttributeSpec(
                 default=AUTO_ENGINE,
                 validator=MembershipValidator(
                     allowed=CHART_ENGINE_OPTIONS,
                 ),
             ),
-            cif_handler=CifHandler(names=['_chart.type']),
+            cif_handler=CifHandler(names=['_rendering_plot.type']),
         )
 
     @staticmethod
@@ -61,9 +61,9 @@ class Chart(CategoryItem, SwitchableCategoryBase):
     def _set_type(self, value: str, *, strict: bool = True) -> None:
         if value not in CHART_ENGINE_OPTIONS:
             msg = (
-                f"Unsupported chart type '{value}'. "
+                f"Unsupported rendering_plot type '{value}'. "
                 f'Supported: {CHART_ENGINE_OPTIONS}. '
-                f"For more information, use 'chart.show_supported()'"
+                f"For more information, use 'rendering_plot.show_supported()'"
             )
             if strict:
                 raise ValueError(msg)
@@ -87,14 +87,14 @@ class Chart(CategoryItem, SwitchableCategoryBase):
     def _supported_types(
         filters: dict[str, object],
     ) -> list[tuple[str, str]]:
-        """Return supported chart renderer backends."""
+        """Return supported rendering_plot renderer backends."""
         del filters
         return [(AUTO_ENGINE, AUTO_DESCRIPTION), *PlotterFactory.descriptions()]
 
     def from_cif(self, block: object, idx: int = 0) -> None:
-        """Populate this chart category from a CIF block."""
+        """Populate this rendering_plot category from a CIF block."""
         del idx
-        chart_type = read_cif_str(block, '_chart.type')
-        if chart_type is None:
+        rendering_plot_type = read_cif_str(block, '_rendering_plot.type')
+        if rendering_plot_type is None:
             return
-        self._parent._swap_chart(chart_type, strict=False)
+        self._parent._swap_rendering_plot(rendering_plot_type, strict=False)

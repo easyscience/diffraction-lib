@@ -5,20 +5,20 @@
 from __future__ import annotations
 
 from easydiffraction.core.category_owner import CategoryOwner
-from easydiffraction.project.categories.chart import Chart
-from easydiffraction.project.categories.chart import ChartFactory
+from easydiffraction.project.categories.rendering_plot import RenderingPlot
+from easydiffraction.project.categories.rendering_plot import RenderingPlotFactory
 from easydiffraction.project.categories.info import ProjectInfo
 from easydiffraction.project.categories.info import ProjectInfoFactory
 from easydiffraction.project.categories.report import Report
 from easydiffraction.project.categories.report import ReportFactory
-from easydiffraction.project.categories.table import Table
-from easydiffraction.project.categories.table import TableFactory
+from easydiffraction.project.categories.rendering_table import RenderingTable
+from easydiffraction.project.categories.rendering_table import RenderingTableFactory
 from easydiffraction.project.categories.style import Style
 from easydiffraction.project.categories.style import StyleFactory
 from easydiffraction.project.categories.verbosity import Verbosity
 from easydiffraction.project.categories.verbosity import VerbosityFactory
-from easydiffraction.project.categories.view import View
-from easydiffraction.project.categories.view import ViewFactory
+from easydiffraction.project.categories.rendering_structure import RenderingStructure
+from easydiffraction.project.categories.rendering_structure import RenderingStructureFactory
 
 
 class ProjectConfig(CategoryOwner):
@@ -37,11 +37,11 @@ class ProjectConfig(CategoryOwner):
             title=title,
             description=description,
         )
-        self._chart = ChartFactory.create(ChartFactory.default_tag())
+        self._rendering_plot = RenderingPlotFactory.create(RenderingPlotFactory.default_tag())
         self._report = ReportFactory.create(ReportFactory.default_tag())
-        self._table = TableFactory.create(TableFactory.default_tag())
+        self._rendering_table = RenderingTableFactory.create(RenderingTableFactory.default_tag())
         self._verbosity = VerbosityFactory.create(VerbosityFactory.default_tag())
-        self._view = ViewFactory.create(ViewFactory.default_tag())
+        self._rendering_structure = RenderingStructureFactory.create(RenderingStructureFactory.default_tag())
         self._style = StyleFactory.create(StyleFactory.default_tag())
 
     @property
@@ -50,9 +50,9 @@ class ProjectConfig(CategoryOwner):
         return self._info
 
     @property
-    def chart(self) -> Chart:
+    def rendering_plot(self) -> RenderingPlot:
         """Chart configuration category."""
-        return self._chart
+        return self._rendering_plot
 
     @property
     def report(self) -> Report:
@@ -60,9 +60,9 @@ class ProjectConfig(CategoryOwner):
         return self._report
 
     @property
-    def table(self) -> Table:
+    def rendering_table(self) -> RenderingTable:
         """Table configuration category."""
-        return self._table
+        return self._rendering_table
 
     @property
     def verbosity(self) -> Verbosity:
@@ -70,9 +70,9 @@ class ProjectConfig(CategoryOwner):
         return self._verbosity
 
     @property
-    def view(self) -> View:
+    def rendering_structure(self) -> RenderingStructure:
         """Structure-view configuration category."""
-        return self._view
+        return self._rendering_structure
 
     @property
     def style(self) -> Style:

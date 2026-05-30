@@ -83,14 +83,14 @@ class TestLoadAnalysis:
 
     def test_round_trips_display_engine_configuration(self, tmp_path):
         original = Project(name='d1')
-        original.chart.type = 'asciichartpy'
-        original.table.type = 'rich'
+        original.rendering_plot.type = 'asciichartpy'
+        original.rendering_table.type = 'rich'
         original.save_as(str(tmp_path / 'proj'))
 
         loaded = Project.load(str(tmp_path / 'proj'))
 
-        assert loaded.chart.type == 'asciichartpy'
-        assert loaded.table.type == 'rich'
+        assert loaded.rendering_plot.type == 'asciichartpy'
+        assert loaded.rendering_table.type == 'rich'
 
     def test_round_trips_constraints(self, tmp_path):
         original = Project(name='c1')

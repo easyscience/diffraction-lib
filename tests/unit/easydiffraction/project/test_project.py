@@ -67,16 +67,16 @@ def test_project_free_params_aggregate_structures_and_experiments():
 
 
 def test_project_exposes_chart_table_and_display_facades():
-    from easydiffraction.project.categories.chart import Chart
-    from easydiffraction.project.categories.table import Table
+    from easydiffraction.project.categories.rendering_plot import RenderingPlot
+    from easydiffraction.project.categories.rendering_table import RenderingTable
     from easydiffraction.project.display import ProjectDisplay
     from easydiffraction.project.project import Project
     from easydiffraction.report import Report
 
     project = Project()
 
-    assert isinstance(project.chart, Chart)
-    assert isinstance(project.table, Table)
+    assert isinstance(project.rendering_plot, RenderingPlot)
+    assert isinstance(project.rendering_table, RenderingTable)
     assert isinstance(project.display, ProjectDisplay)
     assert isinstance(project.report, Report)
     assert hasattr(project.report, 'save')

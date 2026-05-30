@@ -48,11 +48,11 @@ Relevant facts about the current codebase:
   `atom_sites` (fractional coordinates, occupancy, isotropic ADP),
   `atom_site_aniso` (anisotropic ADP), and `space_group`.
 - The 1D charting subsystem already uses a switchable-engine pattern.
-  `project.chart.type` selects a plotter engine implemented under
+  `project.rendering_plot.type` selects a plotter engine implemented under
   `src/easydiffraction/display/plotters/` (`ascii.py`, `plotly.py`), and
-  `project.table.type` selects a tabler. These follow the
-  switchable-category ADRs, with CIF tags `_chart.type` and
-  `_table.type`.
+  `project.rendering_table.type` selects a tabler. These follow the
+  switchable-category ADRs, with CIF tags `_rendering_plot.type` and
+  `_rendering_table.type`.
 - `easycrystallography` is **not** a dependency today and is not
   imported anywhere in `src/`. Any layering that places a separate
   visualization package between `easycrystallography` and
@@ -97,7 +97,7 @@ prototype already assumes.
 ### 2. Draw the scene with thin, pluggable renderers
 
 Renderers consume the scene and draw it; they hold no crystallographic
-logic. Renderer choice mirrors `project.chart.type`:
+logic. Renderer choice mirrors `project.rendering_plot.type`:
 
 - an ASCII renderer for terminal, CLI, and headless contexts;
 - a Three.js renderer for notebooks (embedded HTML/JS) and standalone
@@ -109,24 +109,24 @@ the `ascii` and `plotly` chart engines do; Qt Quick 3D follows for the
 GUI.
 
 A switchable engine selector is added on the project owner, parallel to
-`project.chart` / `project.table`. It is named `view`:
+`project.rendering_plot` / `project.rendering_table`. It is named `view`:
 
 ```python
-project.view.type = 'auto'   # default: 'threejs' in Jupyter, 'ascii' in a terminal
-project.view.show_supported()
+project.rendering_structure.type = 'auto'   # default: 'threejs' in Jupyter, 'ascii' in a terminal
+project.rendering_structure.show_supported()
 ```
 
-with CIF tag `_view.type`. The name is kept short and parallel to
+with CIF tag `_rendering_structure.type`. The name is kept short and parallel to
 `chart` / `table`, and follows the category-owned selector contract:
-`project.view` is a read-only attribute on the owner;
-`project.view.type` is the writable selector;
-`project.view.show_supported()` lists engines. Switching `type` calls
-the owner's private `_swap_view` hook, which rebinds the active renderer
+`project.rendering_structure` is a read-only attribute on the owner;
+`project.rendering_structure.type` is the writable selector;
+`project.rendering_structure.show_supported()` lists engines. Switching `type` calls
+the owner's private `_swap_rendering_structure` hook, which rebinds the active renderer
 — the same Family B rebinding the chart engine selector uses — so no
 public `view_type` setter or `show_supported_view_types()` is added. The
 default is `auto`, which resolves at draw time to `threejs` in a Jupyter
-notebook and `ascii` in a terminal — exactly as `_chart.type` /
-`_table.type` resolve their environment defaults.
+notebook and `ascii` in a terminal — exactly as `_rendering_plot.type` /
+`_rendering_table.type` resolve their environment defaults.
 
 ### 3. Add a `structure()` entry point on the display facade
 
@@ -189,8 +189,8 @@ persisted and overridable per call:
 # Persisted per-axis bounds — six scalar settings, like the cell
 # parameters (defaults 0 and 1 on each axis = the full cell, borders
 # included):
-project.view.range_a_max = 2                       # two cells along a
-project.view.range_c_min, project.view.range_c_max = -0.2, 1.2   # margin on c
+project.rendering_structure.range_a_max = 2                       # two cells along a
+project.rendering_structure.range_c_min, project.rendering_structure.range_c_max = -0.2, 1.2   # margin on c
 
 # A convenience tuple overrides the persisted range for one call only:
 project.display.structure(
@@ -467,8 +467,8 @@ persisted to CIF.
 
 ```python
 # How: renderer engine
-project.view.type = 'auto'           # default: 'threejs' in Jupyter, 'ascii' in a terminal
-project.view.show_supported()
+project.rendering_structure.type = 'auto'           # default: 'threejs' in Jupyter, 'ascii' in a terminal
+project.rendering_structure.show_supported()
 
 # How: standard styling models, not per-element values (visual only)
 project.style.atom_shape = 'ortep'        # ball | ortep
@@ -496,29 +496,29 @@ project.display.structure(
 # Three.js modebar stays active, so the user can still toggle each
 # feature live afterwards. show_moments stays inert until the structure
 # model carries moment fields (see Deferred Work).
-project.view.show_labels = False
-project.view.show_moments = True
+project.rendering_structure.show_labels = False
+project.rendering_structure.show_moments = True
 
 # What region (persisted): six per-axis fractional bounds (defaults 0 and
 # 1 = full cell, borders included), mirroring the six scalar cell
 # parameters.
-project.view.range_a_min = 0
-project.view.range_a_max = 1   # range_b_min/max and range_c_min/max likewise
+project.rendering_structure.range_a_min = 0
+project.rendering_structure.range_a_max = 1   # range_b_min/max and range_c_min/max likewise
 ```
 
 The persisted equivalent in the project CIF:
 
 ```
 # In the project CIF (project-level view + style):
-_view.type           auto
-_view.show_labels    false
-_view.show_moments   true
-_view.range_a_min    0
-_view.range_a_max    1
-_view.range_b_min    0
-_view.range_b_max    1
-_view.range_c_min    0
-_view.range_c_max    1
+_rendering_structure.type           auto
+_rendering_structure.show_labels    false
+_rendering_structure.show_moments   true
+_rendering_structure.range_a_min    0
+_rendering_structure.range_a_max    1
+_rendering_structure.range_b_min    0
+_rendering_structure.range_b_max    1
+_rendering_structure.range_c_min    0
+_rendering_structure.range_c_max    1
 
 _style.atom_shape       ortep
 _style.radius_model     covalent
@@ -531,12 +531,12 @@ _geom.min_bond_distance_cutoff   0.0
 _geom.bond_distance_incr         0.4
 ```
 
-The `_view.type` tag follows `_chart.type` / `_table.type` from the
+The `_rendering_structure.type` tag follows `_rendering_plot.type` / `_rendering_table.type` from the
 Display UX Facade ADR, including their `auto` environment-default
 convention (resolved to `threejs` in Jupyter, `ascii` in a terminal); `_geom.min_bond_distance_cutoff` and
 `_geom.bond_distance_incr` are the **standard cif_core** bond-cutoff
 tags (`_atom_type.radius_bond` is the standard per-type bonding radius,
-used when present). The `_style.*` and `_view.*` tags are
+used when present). The `_style.*` and `_rendering_structure.*` tags are
 project-internal app settings whose exact spelling is finalized in the
 implementation plan (see sections 6, 8 and Open Questions).
 
@@ -544,13 +544,13 @@ Initial visibility resolves in a fixed order, so a reopened project and
 a per-call request behave predictably:
 
 1. **An explicit `include=(...)` tuple wins outright.** The view opens
-   showing exactly those features; persisted `_view.show_*` flags are
+   showing exactly those features; persisted `_rendering_structure.show_*` flags are
    ignored for that call. So `include=('atoms',)` shows only atoms even
    when `show_labels=True` is persisted.
 2. **`include='auto'`** — the default, and what a bare `structure()`
    call uses — resolves each feature in turn from: data availability
    first (a feature with no data is off, such as moments without moment
-   fields), then the persisted `_view.show_*` flag where one exists,
+   fields), then the persisted `_rendering_structure.show_*` flag where one exists,
    then the built-in default otherwise. Version 1 persists flags only
    for the two features whose default a scientist most often flips —
    `show_labels` (off) and `show_moments` (on where data exists); atoms,
@@ -564,7 +564,7 @@ a per-call request behave predictably:
    `show_structure_options()` and at draw time.
 4. **Live modebar changes apply on top of that initial state and are
    runtime-only.** Toggling a feature in the Three.js modebar never
-   rewrites the persisted `_view.show_*` flags or the `include=` set, so
+   rewrites the persisted `_rendering_structure.show_*` flags or the `include=` set, so
    reopening the project restores the resolved initial state rather than
    the last live toggle.
 
@@ -578,8 +578,8 @@ a per-call request behave predictably:
   structure and engine is discoverable with reasons.
 - Keeping crystallography in the scene builder and out of renderers lets
   several front-ends (Three.js now, Qt Quick 3D later) share one model.
-- A new switchable `view` category (`project.view.type`, CIF
-  `_view.type`) must be added per the switchable-category and
+- A new switchable `view` category (`project.rendering_structure.type`, CIF
+  `_rendering_structure.type`) must be added per the switchable-category and
   category-owner ADRs, alongside a plain (non-switchable) `style`
   category: `style` has no factory-swapped `type`, only enum-backed
   value settings discoverable through `show_supported()`.
@@ -651,10 +651,10 @@ the final names.
 
 - **CIF tag spelling — resolved.** Project CIF: `_style.atom_shape`,
   `_style.radius_model`, `_style.color_scheme`,
-  `_style.adp_probability`, and `_view.type` / `_view.show_labels` /
-  `_view.show_moments` / `_view.range_{a,b,c}_{min,max}`. These are project-internal
-  app/settings tags (`_view.type` follows the Display-UX `_chart.type` /
-  `_table.type` precedent); the radii and colours are a bundled
+  `_style.adp_probability`, and `_rendering_structure.type` / `_rendering_structure.show_labels` /
+  `_rendering_structure.show_moments` / `_rendering_structure.range_{a,b,c}_{min,max}`. These are project-internal
+  app/settings tags (`_rendering_structure.type` follows the Display-UX `_rendering_plot.type` /
+  `_rendering_table.type` precedent); the radii and colours are a bundled
   element-database asset, not CIF-serialized.
 - **Per-structure bond-cutoff category — resolved (standard
   `_geom.*`).** A single-record `structure.geom` category holding the
@@ -676,7 +676,7 @@ the final names.
   only atoms inside the range (borders included) and bonds only between
   in-scene atoms — no out-of-range partner atoms or edge-coordination
   completion. The range is persisted as six scalar tags
-  `_view.range_{a,b,c}_{min,max}` (one number each, defaults 0 and 1),
+  `_rendering_structure.range_{a,b,c}_{min,max}` (one number each, defaults 0 and 1),
   mirroring the six scalar cell parameters; a per-call `range=` tuple on
   `structure()` overrides them for one call.
 

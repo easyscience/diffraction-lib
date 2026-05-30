@@ -143,7 +143,7 @@ class FitDisplay:
         show_diagonal: bool = True,
     ) -> None:
         """Show parameter correlations from the latest fit."""
-        self._project.chart.plotter.plot_param_correlations(
+        self._project.rendering_plot.plotter.plot_param_correlations(
             threshold=threshold,
             precision=precision,
             max_parameters=max_parameters,
@@ -165,9 +165,9 @@ class FitDisplay:
             another.
         """
         if param is None:
-            self._project.chart.plotter.plot_all_param_series(versus=versus)
+            self._project.rendering_plot.plotter.plot_all_param_series(versus=versus)
         else:
-            self._project.chart.plotter.plot_param_series(param=param, versus=versus)
+            self._project.rendering_plot.plotter.plot_param_series(param=param, versus=versus)
 
     def help(self) -> None:
         """Print available fit-display methods."""
@@ -210,7 +210,7 @@ class PosteriorDisplay:
         """Return whether predictive plotting still needs processing."""
         analysis = self._project.analysis
         experiment = self._project.experiments[expt_name]
-        plotter = self._project.chart.plotter
+        plotter = self._project.rendering_plot.plotter
         _, x_axis_name, _, _, _ = plotter._resolve_x_axis(experiment.type, x)
         x_axis_name = str(x_axis_name)
         require_draws = plotter.engine == PlotterEngineEnum.PLOTLY.value and style in {
@@ -261,7 +261,7 @@ class PosteriorDisplay:
             else nullcontext()
         )
         with indicator_context:
-            self._project.chart.plotter.plot_posterior_pairs(
+            self._project.rendering_plot.plotter.plot_posterior_pairs(
                 parameters=parameters,
                 style=style,
                 threshold=threshold,
@@ -272,7 +272,7 @@ class PosteriorDisplay:
         """
         Plot posterior distributions for one or all free parameters.
         """
-        plotter = self._project.chart.plotter
+        plotter = self._project.rendering_plot.plotter
         if param is not None:
             plotter.plot_param_distribution(param)
             return
@@ -309,7 +309,7 @@ class PosteriorDisplay:
             else nullcontext()
         )
         with indicator_context:
-            self._project.chart.plotter.plot_posterior_predictive(
+            self._project.rendering_plot.plotter.plot_posterior_predictive(
                 expt_name=expt_name,
                 style=style,
                 x_min=x_min,
@@ -385,7 +385,7 @@ class ProjectDisplay:
                     else nullcontext()
                 )
                 with indicator_context:
-                    self._project.chart.plotter._plot_posterior_predictive_request(
+                    self._project.rendering_plot.plotter._plot_posterior_predictive_request(
                         expt_name=expt_name,
                         style='band',
                         plot_options=_MeasVsCalcPlotOptions(
@@ -428,7 +428,7 @@ class ProjectDisplay:
                 else nullcontext()
             )
             with indicator_context:
-                self._project.chart.plotter._plot_posterior_predictive_request(
+                self._project.rendering_plot.plotter._plot_posterior_predictive_request(
                     expt_name=expt_name,
                     style='band',
                     plot_options=_MeasVsCalcPlotOptions(
@@ -481,7 +481,7 @@ class ProjectDisplay:
         Show a 3D structure view for one structure.
 
         Parallels :meth:`pattern`: it draws with the active
-        ``project.view`` engine and displays directly (no return value).
+        ``project.rendering_structure`` engine and displays directly (no return value).
         Feature visibility is resolved per ADR section 8; the renderer
         announces and skips any feature it cannot draw.
 
@@ -491,12 +491,12 @@ class ProjectDisplay:
             Name of the structure to draw.
         include : str | tuple[str, ...]
             ``'auto'`` (default) resolves features from data availability,
-            persisted ``project.view`` flags, then built-in defaults; an
+            persisted ``project.rendering_structure`` flags, then built-in defaults; an
             explicit tuple of ``atoms``/``bonds``/``cell``/``axes``/
             ``moments``/``labels`` wins outright.
         range : tuple | None
             Optional per-axis ``((min, max), ...)`` window overriding the
-            persisted ``project.view`` range for this call only.
+            persisted ``project.rendering_structure`` range for this call only.
         path : str | None
             When given, write the rendered view to this path instead of
             displaying it (a standalone HTML file for the Three.js engine).
@@ -509,14 +509,14 @@ class ProjectDisplay:
         structure = self._project.structures[struct_name]
         availability = structure_feature_availability(structure, style=self._project.style)
         features = self._resolve_structure_features(include, availability)
-        window = range if range is not None else self._project.view.view_range()
+        window = range if range is not None else self._project.rendering_structure.view_range()
         scene = build_scene(
             structure,
             style=self._project.style,
             view_range=window,
             features=features,
         )
-        output = self._project.view.viewer.render(scene, features=features)
+        output = self._project.rendering_structure.viewer.render(scene, features=features)
         if path is not None:
             import pathlib  # noqa: PLC0415
 
@@ -532,7 +532,7 @@ class ProjectDisplay:
 
         structure = self._project.structures[struct_name]
         availability = structure_feature_availability(structure, style=self._project.style)
-        supported = self._project.view.viewer.supported_features()
+        supported = self._project.rendering_structure.viewer.supported_features()
         auto = self._resolve_structure_features('auto', availability)
 
         rows = []
@@ -565,7 +565,7 @@ class ProjectDisplay:
         normalized = self._normalize_structure_include(include)
         if normalized != ('auto',):
             return frozenset(normalized)
-        view = self._project.view
+        view = self._project.rendering_structure
         resolved = {f for f in ('atoms', 'bonds', 'cell', 'axes') if f in availability.available}
         if 'labels' in availability.available and view.show_labels.value:
             resolved.add('labels')
@@ -606,7 +606,7 @@ class ProjectDisplay:
         from easydiffraction.display.structure.enums import ViewerEngineEnum  # noqa: PLC0415
         from easydiffraction.utils.environment import in_jupyter  # noqa: PLC0415
 
-        if self._project.view.viewer.engine == ViewerEngineEnum.ASCII.value:
+        if self._project.rendering_structure.viewer.engine == ViewerEngineEnum.ASCII.value:
             console.print(output)
             return
         if in_jupyter():
@@ -617,7 +617,7 @@ class ProjectDisplay:
             return
         console.print(
             'Three.js structure view generated as HTML. Pass path=... to save it, '
-            "or set project.view.type = 'ascii' for a terminal view.",
+            "or set project.rendering_structure.type = 'ascii' for a terminal view.",
         )
 
     @staticmethod
@@ -752,7 +752,7 @@ class ProjectDisplay:
         self._validate_requested_include(statuses, include)
         include_set = set(include)
         if include_set == {'measured'}:
-            self._project.chart.plotter.plot_meas(
+            self._project.rendering_plot.plotter.plot_meas(
                 expt_name=expt_name,
                 x_min=x_min,
                 x_max=x_max,
@@ -761,7 +761,7 @@ class ProjectDisplay:
             )
             return
         if include_set == {'measured', 'excluded'}:
-            self._project.chart.plotter.plot_meas(
+            self._project.rendering_plot.plotter.plot_meas(
                 expt_name=expt_name,
                 x_min=x_min,
                 x_max=x_max,
@@ -770,7 +770,7 @@ class ProjectDisplay:
             )
             return
         if include_set == {'calculated'}:
-            self._project.chart.plotter.plot_calc(
+            self._project.rendering_plot.plotter.plot_calc(
                 expt_name=expt_name,
                 x_min=x_min,
                 x_max=x_max,
@@ -779,7 +779,7 @@ class ProjectDisplay:
             )
             return
         if include_set == {'calculated', 'excluded'}:
-            self._project.chart.plotter.plot_calc(
+            self._project.rendering_plot.plotter.plot_calc(
                 expt_name=expt_name,
                 x_min=x_min,
                 x_max=x_max,
@@ -788,7 +788,7 @@ class ProjectDisplay:
             )
             return
         if {'measured', 'calculated'}.issubset(include_set):
-            self._project.chart.plotter._plot_meas_vs_calc_request(
+            self._project.rendering_plot.plotter._plot_meas_vs_calc_request(
                 expt_name=expt_name,
                 plot_options=_MeasVsCalcPlotOptions(
                     x_min=x_min,
@@ -810,7 +810,7 @@ class ProjectDisplay:
 
     def _pattern_option_statuses(self, expt_name: str) -> list[PatternOptionStatus]:
         """Return availability details for the requested experiment."""
-        self._project.chart.plotter._update_project_categories(expt_name)
+        self._project.rendering_plot.plotter._update_project_categories(expt_name)
         experiment = self._project.experiments[expt_name]
         pattern = intensity_category_for(experiment)
         sample_form = experiment.type.sample_form.value
@@ -1034,9 +1034,9 @@ class ProjectDisplay:
         if not posterior_predictive:
             return False, 'Posterior predictive data is unavailable.'
 
-        active_chart_engine = getattr(self._project.chart.plotter, 'engine', None)
+        active_chart_engine = getattr(self._project.rendering_plot.plotter, 'engine', None)
         if active_chart_engine is None:
-            active_chart_engine = self._project.chart.type
+            active_chart_engine = self._project.rendering_plot.type
 
         if active_chart_engine != PlotterEngineEnum.PLOTLY.value:
             return False, 'Uncertainty bands currently require the Plotly chart engine.'

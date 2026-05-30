@@ -67,13 +67,13 @@ project.save_as(dir_path='projects/lbco_hrpt')
 # Show supported plotting engines.
 
 # %%
-project.chart.show_supported()
+project.rendering_plot.show_supported()
 
 # %% [markdown]
 # Show current plotting configuration.
 
 # %%
-project.chart.show_supported()
+project.rendering_plot.show_supported()
 
 # %% [markdown]
 # ## Step 2: Define Structure
@@ -170,12 +170,12 @@ project.structures['lbco'].show_as_cif()
 # #### View Structure in 3D
 #
 # EasyDiffraction can draw the structure that has just been defined. The
-# renderer engine is selected through `project.view`. The default `auto`
+# renderer engine is selected through `project.rendering_structure`. The default `auto`
 # engine resolves to an interactive `threejs` view inside Jupyter and a
 # compact `ascii` schematic in a terminal.
 
 # %%
-project.view.show_supported()
+project.rendering_structure.show_supported()
 
 # %% [markdown]
 # Visual styling — the atom shape, per-element radius model, and colour
@@ -186,7 +186,7 @@ project.style.show_supported()
 
 # %%
 project.style.atom_shape = 'ball'
-project.style.radius_model = 'covalent'
+project.style.radius_model = 'atomic'
 project.style.color_scheme = 'jmol'
 
 # %% [markdown]
@@ -216,11 +216,11 @@ project.display.structure(struct_name='lbco')
 # then restore the automatic default.
 
 # %%
-project.view.type = 'ascii'
+project.rendering_structure.type = 'ascii'
 project.display.structure(struct_name='lbco')
 
 # %%
-project.view.type = 'auto'
+project.rendering_structure.type = 'auto'
 
 # %% [markdown]
 # #### Save Project State

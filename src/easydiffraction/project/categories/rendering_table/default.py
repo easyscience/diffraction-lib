@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Project table category."""
+"""Project rendering_table category."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ from easydiffraction.display.tables import TableRenderer
 from easydiffraction.display.tables import TableRendererFactory
 from easydiffraction.io.cif.handler import CifHandler
 from easydiffraction.io.cif.parse import read_cif_str
-from easydiffraction.project.categories.table.factory import TableFactory
+from easydiffraction.project.categories.rendering_table.factory import RenderingTableFactory
 from easydiffraction.utils.logging import log
 
 AUTO_ENGINE = 'auto'
@@ -23,17 +23,17 @@ AUTO_DESCRIPTION = 'Environment default table engine'
 TABLE_ENGINE_OPTIONS = [AUTO_ENGINE, *[member.value for member in TableEngineEnum]]
 
 
-@TableFactory.register
-class Table(CategoryItem, SwitchableCategoryBase):
+@RenderingTableFactory.register
+class RenderingTable(CategoryItem, SwitchableCategoryBase):
     """Table engine selection for a project."""
 
-    _category_code = 'table'
-    _owner_attr_name = 'table'
-    _swap_method_name = '_swap_table'
+    _category_code = 'rendering_table'
+    _owner_attr_name = 'rendering_table'
+    _swap_method_name = '_swap_rendering_table'
 
     type_info = TypeInfo(
         tag='default',
-        description='Project table category',
+        description='Project rendering_table category',
     )
 
     def __init__(self) -> None:
@@ -49,7 +49,7 @@ class Table(CategoryItem, SwitchableCategoryBase):
                     allowed=TABLE_ENGINE_OPTIONS,
                 ),
             ),
-            cif_handler=CifHandler(names=['_table.type']),
+            cif_handler=CifHandler(names=['_rendering_table.type']),
         )
 
     @staticmethod
@@ -61,9 +61,9 @@ class Table(CategoryItem, SwitchableCategoryBase):
     def _set_type(self, value: str, *, strict: bool = True) -> None:
         if value not in TABLE_ENGINE_OPTIONS:
             msg = (
-                f"Unsupported table type '{value}'. "
+                f"Unsupported rendering_table type '{value}'. "
                 f'Supported: {TABLE_ENGINE_OPTIONS}. '
-                f"For more information, use 'table.show_supported()'"
+                f"For more information, use 'rendering_table.show_supported()'"
             )
             if strict:
                 raise ValueError(msg)
@@ -89,9 +89,9 @@ class Table(CategoryItem, SwitchableCategoryBase):
         return [(AUTO_ENGINE, AUTO_DESCRIPTION), *TableRendererFactory.descriptions()]
 
     def from_cif(self, block: object, idx: int = 0) -> None:
-        """Populate this table category from a CIF block."""
+        """Populate this rendering_table category from a CIF block."""
         del idx
-        table_type = read_cif_str(block, '_table.type')
+        table_type = read_cif_str(block, '_rendering_table.type')
         if table_type is None:
             return
-        self._parent._swap_table(table_type, strict=False)
+        self._parent._swap_rendering_table(table_type, strict=False)
