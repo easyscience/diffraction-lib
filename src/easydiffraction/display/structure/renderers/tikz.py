@@ -64,6 +64,24 @@ def _scene_points(scene: StructureScene) -> np.ndarray:
     return np.array(points, dtype=float) if points else np.zeros((1, 3))
 
 
+def _key(point: object) -> tuple[float, float, float]:
+    """Return a rounded coordinate key for atom-radius lookup."""
+    p = np.asarray(point, dtype=float)
+    return (round(float(p[0]), 5), round(float(p[1]), 5), round(float(p[2]), 5))
+
+
+def _radius_lookup(scene: StructureScene) -> dict[tuple[float, float, float], float]:
+    """Map each atom centre to its drawn radius (for clipping bonds)."""
+    lookup: dict[tuple[float, float, float], float] = {}
+    for atom in scene.atoms:
+        lookup[_key(atom.centre)] = atom.radius
+    for sphere in scene.occupancy_spheres:
+        lookup[_key(sphere.centre)] = sphere.radius
+    for ellipsoid in scene.ellipsoids:
+        lookup[_key(ellipsoid.centre)] = max(ellipsoid.semi_axes)
+    return lookup
+
+
 class TikzStructureRenderer(StructureRendererBase):
     """Render a structure scene as a standalone TikZ/LaTeX document."""
 
@@ -106,7 +124,7 @@ class TikzStructureRenderer(StructureRendererBase):
         if 'axes' in features:
             drawables.extend(self._axis_commands(scene, project))
         if 'bonds' in features:
-            drawables.extend(self._bond_commands(scene, project, bond_width))
+            drawables.extend(self._bond_commands(scene, project, bond_width, _radius_lookup(scene)))
         if 'atoms' in features:
             drawables.extend(self._atom_commands(scene, project))
 
@@ -167,16 +185,31 @@ class TikzStructureRenderer(StructureRendererBase):
         return commands
 
     @staticmethod
-    def _bond_commands(scene, project, bond_width: float) -> list[tuple[float, str]]:
+    def _bond_commands(scene, project, bond_width, radius_lookup) -> list[tuple[float, str]]:
         commands = []
         for bond in scene.bonds:
-            sx, sy, sd = project(bond.start)
-            ex, ey, ed = project(bond.end)
-            mx, my = (sx + ex) / 2, (sy + ey) / 2
-            depth = (sd + ed) / 2
-            for x0, y0, x1, y1, colour in (
-                (sx, sy, mx, my, bond.start_colour),
-                (mx, my, ex, ey, bond.end_colour),
+            start = np.asarray(bond.start, dtype=float)
+            end = np.asarray(bond.end, dtype=float)
+            segment = end - start
+            length = float(np.linalg.norm(segment))
+            if length < 1e-6:
+                continue
+            direction = segment / length
+            r_start = radius_lookup.get(_key(bond.start), 0.0)
+            r_end = radius_lookup.get(_key(bond.end), 0.0)
+            if r_start + r_end >= length:
+                continue
+            # Clip the stick to the two atom surfaces so it neither crosses
+            # an atom centre nor protrudes from a sphere it is hidden behind.
+            clipped_start = start + direction * r_start
+            clipped_end = end - direction * r_end
+            mid = (clipped_start + clipped_end) / 2.0
+            sx, sy, sd = project(clipped_start)
+            ex, ey, ed = project(clipped_end)
+            mx, my, md = project(mid)
+            for x0, y0, x1, y1, depth, colour in (
+                (sx, sy, mx, my, (sd + md) / 2, bond.start_colour),
+                (mx, my, ex, ey, (md + ed) / 2, bond.end_colour),
             ):
                 commands.append((
                     depth,
