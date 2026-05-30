@@ -145,8 +145,7 @@ class RasterStructureRenderer:
                 self._sphere(colour, depth, project, scale, sphere.centre, sphere.radius,
                              (128, 128, 128), wedges=sphere.wedges)
             for ellipsoid in scene.ellipsoids:
-                self._sphere(colour, depth, project, scale, ellipsoid.centre,
-                             max(ellipsoid.semi_axes), ellipsoid.colour)
+                self._ellipsoid(colour, depth, project, scale, (right, up, view_dir), ellipsoid)
 
         downsampled = (
             colour.reshape(_CANVAS, _SUPERSAMPLE, _CANVAS, _SUPERSAMPLE, 3).mean(axis=(1, 3))
@@ -260,6 +259,61 @@ class RasterStructureRenderer:
             lo += wedge.fraction
         base_rgb[angle >= lo] = np.asarray(wedges[-1].colour, dtype=np.float32) / 255.0
         return base_rgb
+
+    @staticmethod
+    def _ellipsoid(colour, depth, project, scale, basis, ell) -> None:
+        """Z-tested, shaded oriented ADP ellipsoid (exact ray cast per pixel)."""
+        right, up, view_dir = basis
+        centre = np.asarray(ell.centre, dtype=float)
+        semi = np.maximum(np.asarray(ell.semi_axes, dtype=float), 1e-9)
+        axes = [np.asarray(vec, dtype=float) for vec in ell.orientation]
+        cx, cy, cd = project(centre)
+        half_x = scale * float(np.sqrt(sum((semi[k] * (axes[k] @ right)) ** 2 for k in range(3))))
+        half_y = scale * float(np.sqrt(sum((semi[k] * (axes[k] @ up)) ** 2 for k in range(3))))
+        size = colour.shape[0]
+        x0, x1 = max(0, int(cx - half_x)), min(size, int(cx + half_x) + 1)
+        y0, y1 = max(0, int(cy - half_y)), min(size, int(cy + half_y) + 1)
+        if x0 >= x1 or y0 >= y1:
+            return
+        # Camera-frame components of each principal axis.
+        r = [float(axes[k] @ right) for k in range(3)]
+        u = [float(axes[k] @ up) for k in range(3)]
+        v = [float(axes[k] @ view_dir) for k in range(3)]
+        a_coeff = sum((v[k] / semi[k]) ** 2 for k in range(3))
+        if a_coeff <= 0.0:
+            return
+        # Solve |S^-1 R^T (q)|^2 = 1 along the view ray q = image-plane + t*view_dir.
+        ys, xs = np.mgrid[y0:y1, x0:x1]
+        offset_right = (xs - cx) / scale
+        offset_up = -(ys - cy) / scale
+        base = [offset_right * r[k] + offset_up * u[k] for k in range(3)]
+        b_coeff = sum(2.0 * base[k] * v[k] / semi[k] ** 2 for k in range(3))
+        c_coeff = sum((base[k] / semi[k]) ** 2 for k in range(3)) - 1.0
+        disc = b_coeff * b_coeff - 4.0 * a_coeff * c_coeff
+        inside = disc >= 0.0
+        if not inside.any():
+            return
+        t = (-b_coeff + np.sqrt(np.clip(disc, 0.0, None))) / (2.0 * a_coeff)
+        surf_depth = cd + t
+        sub = depth[y0:y1, x0:x1]
+        update = inside & (surf_depth > sub)
+        if not update.any():
+            return
+        local = [(base[k] + t * v[k]) / semi[k] for k in range(3)]
+        nx = sum(local[k] / semi[k] * axes[k][0] for k in range(3))
+        ny = sum(local[k] / semi[k] * axes[k][1] for k in range(3))
+        nz = sum(local[k] / semi[k] * axes[k][2] for k in range(3))
+        norm = np.sqrt(nx * nx + ny * ny + nz * nz)
+        norm = np.where(norm > 1e-12, norm, 1.0)
+        normal = np.stack((
+            (nx * right[0] + ny * right[1] + nz * right[2]) / norm,
+            (nx * up[0] + ny * up[1] + nz * up[2]) / norm,
+            (nx * view_dir[0] + ny * view_dir[1] + nz * view_dir[2]) / norm,
+        ), axis=-1)
+        intensity = _diffuse_intensity(normal)[..., None]
+        shade = np.clip(np.asarray(ell.colour, dtype=np.float32) / 255.0 * intensity, 0, 1)
+        sub[update] = surf_depth[update]
+        colour[y0:y1, x0:x1][update] = shade[update]
 
     @staticmethod
     def _capsule(colour, depth, project, scale, p0, p1, radius, colour0, colour1) -> None:
