@@ -154,7 +154,7 @@ const addHalfBond = (p0, p1, colour) => {
   const direction = p1.clone().sub(p0);
   const length = direction.length();
   if (length < 1e-6) return;
-  const geo = new THREE.CylinderGeometry(0.12, 0.12, length, 12);
+  const geo = new THREE.CylinderGeometry(0.06, 0.06, length, 12);
   const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: col(colour) }));
   mesh.position.copy(p0.clone().add(p1).multiplyScalar(0.5));
   mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.normalize());
