@@ -4,7 +4,7 @@
   <div class="cv-canvas" style="position:absolute;inset:0;"></div>
   <div class="cv-modebar cv-card"></div>
   <div class="cv-legend cv-card"></div>
-  <div class="cv-hint">drag = rotate&nbsp;&middot;&nbsp;wheel = zoom&nbsp;&middot;&nbsp;right-drag = pan</div>
+  <div class="cv-hint">drag = rotate<br>wheel = zoom<br>right-drag = pan</div>
   <div class="cv-tooltip"></div>
 </div>
 
@@ -43,6 +43,7 @@
   #{{ container_id }} .cv-hint {
     position: absolute; z-index: 10; bottom: 8px; left: 10px; font-size: 11px;
     color: #555; background: rgba(255, 255, 255, 0.82); padding: 5px 9px; border-radius: 6px;
+    line-height: 1.5; text-align: left;
   }
   #{{ container_id }} .cv-tooltip {
     position: absolute; z-index: 30; pointer-events: none; display: none;
@@ -277,6 +278,7 @@ let projection = 'orthographic';
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.08;
+controls.zoomSpeed = 3.0;   // larger wheel/touchpad zoom steps (tune to taste)
 controls.target.copy(target);
 controls.update();
 
