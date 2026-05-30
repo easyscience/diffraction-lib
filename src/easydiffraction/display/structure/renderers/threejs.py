@@ -117,7 +117,14 @@ class ThreeJsStructureRenderer(StructureRendererBase):
         """Return the features the Three.js engine can draw."""
         return self.SUPPORTED
 
-    def render(self, scene: StructureScene, *, features: frozenset[str], offline: bool = True) -> str:
+    def render(
+        self,
+        scene: StructureScene,
+        *,
+        features: frozenset[str],
+        offline: bool = True,
+        dark: bool | None = None,
+    ) -> str:
         """
         Render the scene as a self-contained interactive HTML document.
 
@@ -131,13 +138,18 @@ class ThreeJsStructureRenderer(StructureRendererBase):
         offline : bool
             When ``True`` (default), inline the pinned Three.js assets so
             the view renders with no network; when ``False`` link the CDN.
+        dark : bool | None
+            Force the dark (``True``) or light (``False``) theme. When
+            ``None`` (default), auto-detect from the environment. Reports
+            pass ``False`` so the view matches their light page.
 
         Returns
         -------
         str
             A complete HTML document.
         """
-        dark = is_dark()
+        if dark is None:
+            dark = is_dark()
         colours = theme_colors(dark)
         payload = json.dumps(_scene_payload(scene)).replace('</', '<\\/')
         import_map = json.dumps({'imports': _import_map(offline=offline)}).replace('</', '<\\/')

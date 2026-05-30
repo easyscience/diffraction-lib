@@ -222,6 +222,7 @@ def _structure_figure_html_context(
             scene,
             features=features,
             offline=offline,
+            dark=False,
         )
     return rendered
 
