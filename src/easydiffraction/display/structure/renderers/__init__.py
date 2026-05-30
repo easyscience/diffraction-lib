@@ -7,3 +7,4 @@ from __future__ import annotations
 from easydiffraction.display.structure.renderers.ascii import AsciiStructureRenderer
 from easydiffraction.display.structure.renderers.base import StructureRendererBase
 from easydiffraction.display.structure.renderers.threejs import ThreeJsStructureRenderer
+from easydiffraction.display.structure.renderers.tikz import TikzStructureRenderer

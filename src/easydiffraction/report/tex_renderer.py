@@ -124,6 +124,7 @@ def render_tex_report(context: dict[str, object]) -> str:
         context,
         fit_csv_paths=_fit_csv_paths(context),
         fit_figure_paths=_fit_figure_paths(context),
+        structure_figure_paths=_structure_figure_paths(context),
     )
     return _environment().get_template(_TEMPLATE_NAME).render(**template_context)
 
@@ -159,10 +160,12 @@ def save_tex_report(
     template_context = dict(context)
     template_context['report_style'] = report_style_context()
     fit_asset_paths = _write_fit_assets(project, context, tex_dir)
+    structure_figure_paths = _write_structure_assets(project, context, tex_dir)
     template_context['tex'] = _tex_context(
         context,
         fit_csv_paths=fit_asset_paths['csv'],
         fit_figure_paths=fit_asset_paths['figure'],
+        structure_figure_paths=structure_figure_paths,
     )
     output_path.write_text(
         _render_prepared_context(template_context),
@@ -264,11 +267,13 @@ def _tex_context(
     *,
     fit_csv_paths: dict[str, str],
     fit_figure_paths: dict[str, str],
+    structure_figure_paths: dict[str, str],
 ) -> dict[str, object]:
     """Return TeX-specific render context."""
     return {
         'fit_csv_paths': fit_csv_paths,
         'fit_figure_paths': fit_figure_paths,
+        'structure_figure_paths': structure_figure_paths,
         'fit_bragg_tick_styles': fit_bragg_tick_styles(),
         'fit_plot_ranges': _fit_plot_ranges(context),
         'fit_plot_styles': fit_plot_styles(),
@@ -412,6 +417,60 @@ def _fit_figure_paths(context: dict[str, object]) -> dict[str, str]:
         experiment_id = str(experiment.get('id') or 'experiment')
         paths[experiment_id] = f'data/{_safe_asset_stem(experiment_id)}.pdf'
     return paths
+
+
+def _structure_asset_stem(struct_id: str) -> str:
+    """Return a filesystem-safe stem for a structure figure asset."""
+    return f'struct_{_safe_asset_stem(struct_id)}'
+
+
+def _structure_figure_paths(context: dict[str, object]) -> dict[str, str]:
+    """Return expected structure-figure PDF paths for TeX rendering."""
+    paths: dict[str, str] = {}
+    for structure in context.get('structures') or []:
+        if not isinstance(structure, dict):
+            continue
+        struct_id = str(structure.get('id') or 'structure')
+        paths[struct_id] = f'data/{_structure_asset_stem(struct_id)}.pdf'
+    return paths
+
+
+def _write_structure_assets(
+    project: object,
+    context: dict[str, object],
+    out_dir: pathlib.Path,
+) -> dict[str, str]:
+    """Write one standalone TikZ structure figure per structure."""
+    from easydiffraction.display.structure.builder import build_scene  # noqa: PLC0415
+    from easydiffraction.display.structure.builder import (  # noqa: PLC0415
+        structure_feature_availability,
+    )
+    from easydiffraction.display.structure.renderers.tikz import (  # noqa: PLC0415
+        TikzStructureRenderer,
+    )
+
+    del context
+    structures = getattr(project, 'structures', None)
+    values = getattr(structures, 'values', None)
+    if not callable(values):
+        return {}
+
+    renderer = TikzStructureRenderer()
+    window = project.rendering_structure.view_range()
+    style = project.style
+    data_dir = out_dir / 'data'
+    data_dir.mkdir(parents=True, exist_ok=True)
+
+    figure_paths: dict[str, str] = {}
+    for structure in values():
+        struct_id = str(getattr(structure, 'name', '') or 'structure')
+        availability = structure_feature_availability(structure, style=style)
+        features = project.display._resolve_structure_features('auto', availability)
+        scene = build_scene(structure, style=style, view_range=window, features=features)
+        figure_path = data_dir / f'{_structure_asset_stem(struct_id)}.tex'
+        figure_path.write_text(renderer.render(scene, features=features), encoding='utf-8')
+        figure_paths[struct_id] = f'data/{figure_path.stem}.pdf'
+    return figure_paths
 
 
 def _project_experiments_by_id(project: object) -> dict[str, object]:

@@ -459,3 +459,32 @@ def test_save_tex_report_removes_stale_managed_bundle_dirs(tmp_path):
     assert not (tex_dir / 'data').exists()
     assert not (tex_dir / 'figures').exists()
     assert not (tex_dir / 'styles').exists()
+
+
+def test_save_tex_report_writes_tikz_structure_figure(tmp_path):
+    import easydiffraction as ed
+
+    from easydiffraction.report.tex_renderer import save_tex_report
+
+    project = ed.Project(name='struct_fig')
+    project.structures.create(name='nacl')
+    structure = project.structures['nacl']
+    structure.cell.length_a = 5.64
+    structure.cell.length_b = 5.64
+    structure.cell.length_c = 5.64
+    structure.atom_sites.create(
+        label='Na', type_symbol='Na', fract_x=0, fract_y=0, fract_z=0, adp_iso=0.5, occupancy=1
+    )
+    structure.atom_sites.create(
+        label='Cl', type_symbol='Cl', fract_x=0.5, fract_y=0.5, fract_z=0.5, adp_iso=0.5, occupancy=1
+    )
+
+    tex_path = tmp_path / 'report.tex'
+    save_tex_report(project, project.report.data_context(), path=tex_path)
+
+    figure_path = tex_path.parent / 'data' / 'struct_nacl.tex'
+    assert figure_path.exists()
+    figure_text = figure_path.read_text(encoding='utf-8')
+    assert '\\begin{tikzpicture}' in figure_text
+    assert '\\shade[ball color' in figure_text
+    assert 'data/struct_nacl.pdf' in tex_path.read_text(encoding='utf-8')

@@ -194,6 +194,15 @@ Minimizer & {{ tex_software_name(analysis.software.minimizer) }} & {{ analysis.s
 % --------------------------------------------------------------------
 \subsection{ {{- structure.id | tex -}} }
 
+{% if tex.structure_figure_paths[structure.id] %}
+\subsubsection*{Structure view}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\linewidth]{ {{- tex.structure_figure_paths[structure.id] -}} }
+\end{figure}
+{% endif %}
+
 {% for category in structure.categories %}
 \subsubsection*{ {{- category.title | tex -}} }
 
