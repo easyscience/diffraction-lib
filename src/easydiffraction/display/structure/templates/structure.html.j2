@@ -31,7 +31,7 @@
   #{{ container_id }} .mb.lt { font: 700 15px/1 Georgia, 'Times New Roman', serif; }
   #{{ container_id }} .mb.tog { color: #b9bdc6; }
   #{{ container_id }} .mb.tog.on { color: #2a3f5f; background: #e7ecf5; border-color: #c6d0e2; }
-  #{{ container_id }} .cv-legend { top: 10px; left: 10px; padding: 8px 11px; line-height: 1.7; white-space: nowrap; }
+  #{{ container_id }} .cv-legend { top: 10px; left: 10px; padding: 8px 11px; line-height: 1.7; white-space: nowrap; text-align: left; }
   #{{ container_id }} .cv-legend .sw {
     display: inline-block; width: 11px; height: 11px; border-radius: 50%;
     margin-right: 7px; vertical-align: middle; border: 1px solid rgba(0, 0, 0, 0.18);
@@ -226,7 +226,7 @@ const target = box.getBoundingSphere(new THREE.Sphere()).center;
 const radius = Math.max(box.getBoundingSphere(new THREE.Sphere()).radius, 1);
 const aspect = width / height;
 const far = radius * 100;
-const distance = radius * 2.0;
+const distance = radius * 2.4;
 
 // Trimetric default view: c-axis up, tilted above the ab-plane and rotated
 // in azimuth so all three axes read distinctly. Falls back to a fixed angle
@@ -247,7 +247,7 @@ if (cellBasis.length === 3) {
 const home = target.clone().add(viewDir.multiplyScalar(distance));
 
 const perspective = new THREE.PerspectiveCamera(45, aspect, radius * 0.01, far);
-const ortho = new THREE.OrthographicCamera(-radius * aspect * 1.05, radius * aspect * 1.05, radius * 1.05, -radius * 1.05, -far, far);
+const ortho = new THREE.OrthographicCamera(-radius * aspect * 1.26, radius * aspect * 1.26, radius * 1.26, -radius * 1.26, -far, far);
 perspective.up.copy(viewUp);
 ortho.up.copy(viewUp);
 perspective.position.copy(home);
@@ -404,8 +404,8 @@ const resize = () => {
   const ratio = width / height;
   perspective.aspect = ratio;
   perspective.updateProjectionMatrix();
-  ortho.left = -radius * ratio * 1.05;
-  ortho.right = radius * ratio * 1.05;
+  ortho.left = -radius * ratio * 1.26;
+  ortho.right = radius * ratio * 1.26;
   ortho.updateProjectionMatrix();
   renderer.setSize(width, height);
   labelRenderer.setSize(width, height);
