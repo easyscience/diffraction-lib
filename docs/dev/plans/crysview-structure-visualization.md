@@ -443,7 +443,7 @@ reach end-to-end (P1.1–P1.12) before any Three.js work (P1.13–P1.15).
     later steps land modules (no `__all__`).
   - Commit: `Add crysview viewer and styling enums`.
 
-- [ ] **P1.2 — Add the renderer-neutral scene model**
+- [x] **P1.2 — Add the renderer-neutral scene model**
   - Files: new `src/easydiffraction/display/structure/scene.py`.
   - `@dataclass(frozen=True, slots=True)` primitives in Cartesian space,
     carrying only stdlib / numpy / RGB-tuple types — **no
