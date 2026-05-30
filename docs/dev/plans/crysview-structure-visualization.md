@@ -1053,7 +1053,11 @@ coverage (configured in P1.13).
       3D-only, moments gated, ionic→covalent substitution). P1.12.
 - [ ] **`tests/unit/easydiffraction/display/structure/renderers/test_threejs.py`**
       (new) — the renderer emits an HTML string containing the scene
-      JSON and the modebar controls; **offline** mode embeds the
+      JSON and the modebar controls; the emitted `<script
+      type="importmap">` parses to JSON with a top-level **`imports`**
+      key mapping `three` (regression guard: a bare specifier map with no
+      `imports` wrapper silently fails to resolve and renders blank);
+      **offline** mode embeds the
       Three.js asset text inline (no CDN URL), online mode links it; the
       standalone write path produces a self-contained file; the resolved
       dark/light theme drives the canvas/annotation colours (assert the
