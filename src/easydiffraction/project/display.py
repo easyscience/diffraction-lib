@@ -522,6 +522,7 @@ class ProjectDisplay:
 
             pathlib.Path(path).write_text(output)
             return
+        console.paragraph(f"Structure 🧩 '{struct_name}'")
         self._emit_structure_output(output)
 
     def show_structure_options(self, struct_name: str) -> None:
@@ -607,7 +608,10 @@ class ProjectDisplay:
         from easydiffraction.utils.environment import in_jupyter  # noqa: PLC0415
 
         if self._project.rendering_structure.viewer.engine == ViewerEngineEnum.ASCII.value:
-            console.print(output)
+            # Built-in print preserves the renderer's raw ANSI colour codes
+            # (Jupyter and terminals interpret them); Rich's console.print
+            # would escape and garble them. Mirrors the ASCII pattern plotter.
+            print(output)
             return
         if in_jupyter():
             from IPython.display import HTML  # noqa: PLC0415

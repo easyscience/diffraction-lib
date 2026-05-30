@@ -22,15 +22,15 @@ _CANVAS = 1800
 _SUPERSAMPLE = 2
 _MARGIN_FRAC = 0.06
 _BOND_RADIUS = 0.06
-_AMBIENT = 0.55  # matches the Three.js AmbientLight intensity
-_LIGHT = np.array([0.42, 0.5, 0.75])  # (right, up, toward-camera)
+_AMBIENT = 0.5  # broad fill so most of each atom stays bright and saturated
+_LIGHT = np.array([0.3, 0.45, 0.85])  # (right, up, toward-camera); frontal key
 _LIGHT = _LIGHT / np.linalg.norm(_LIGHT)
-_FILL = np.array([-0.42, -0.25, -0.5])  # back-fill, mirrors the Three.js fill light
+_FILL = np.array([-0.4, -0.2, -0.45])  # back-fill, mirrors the Three.js fill light
 _FILL = _FILL / np.linalg.norm(_FILL)
 _HALF = _LIGHT + np.array([0.0, 0.0, 1.0])  # Blinn-Phong half-vector (view = toward camera)
 _HALF = _HALF / np.linalg.norm(_HALF)
-_SHININESS = 30.0  # specular exponent (tight bright highlight, VESTA-like)
-_SPEC_STRENGTH = 0.55
+_SHININESS = 36.0  # specular exponent
+_SPEC_STRENGTH = 0.28  # small, subtle highlight (not a hard white spot)
 _LABEL_FRAC = 0.040  # axis-letter font size, as a fraction of the canvas
 _LEGEND_FRAC = 0.032  # legend font size, as a fraction of the canvas
 # Axis-arrow proportions, as fractions of the arrow length (match the Three.js
@@ -47,13 +47,22 @@ def _unit(vector: np.ndarray) -> np.ndarray:
 
 
 def _view_basis(scene) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """Return (view_dir, right, up) for a trimetric, c-axis-up projection."""
+    """Return (view_dir, right, up): longest axis horizontal, shortest vertical.
+
+    Mirrors the Three.js default camera: the camera sits in the
+    +longest +middle +shortest octant so the origin corner is at the far back
+    and the longest/middle axes splay toward the viewer with the shortest axis
+    up, giving the standard trimetric view in both the PDF and interactive
+    figures.
+    """
     if scene.axes is not None:
-        a_hat = _unit(np.asarray(scene.axes.axes[0].vector, dtype=float))
-        b_hat = _unit(np.asarray(scene.axes.axes[1].vector, dtype=float))
-        c_hat = _unit(np.asarray(scene.axes.axes[2].vector, dtype=float))
-        view_up = c_hat
-        view_dir = _unit(1.0 * a_hat + 0.22 * b_hat + 0.33 * c_hat)
+        vectors = [np.asarray(ax.vector, dtype=float) for ax in scene.axes.axes]
+        order = sorted(range(3), key=lambda i: np.linalg.norm(vectors[i]), reverse=True)
+        longest = _unit(vectors[order[0]])
+        middle = _unit(vectors[order[1]])
+        shortest = _unit(vectors[order[2]])
+        view_up = shortest
+        view_dir = _unit(0.82 * longest + 0.82 * middle + 0.55 * shortest)
     else:
         view_up = np.array([0.0, 1.0, 0.0])
         view_dir = _unit(np.array([1.0, 0.8, 1.5]))
@@ -393,19 +402,24 @@ class RasterStructureRenderer:
         sub[update] = tri_depth[update]
         colour[min_y:max_y, min_x:max_x][update] = shade
 
-    def _arrow(self, colour, depth, project, basis, origin, vector, rgb) -> None:
-        """Draw a shaft cylinder and head cone as 3D triangles (orientation-safe)."""
+    def _arrow(self, colour, depth, project, basis, origin, vector, rgb, ref_length) -> None:
+        """Draw a shaft cylinder and head cone as 3D triangles (orientation-safe).
+
+        Thickness and head size scale from ``ref_length`` (the longest axis),
+        not each arrow's own length, so all three axes share one uniform
+        thickness regardless of cell anisotropy.
+        """
         right, up, view_dir = basis
         length = float(np.linalg.norm(vector))
         if length < 1e-9:
             return
         axis = vector / length
-        ref = np.array([0.0, 0.0, 1.0]) if abs(axis[2]) < 0.9 else np.array([0.0, 1.0, 0.0])
-        u = _unit(np.cross(ref, axis))
+        perp = np.array([0.0, 0.0, 1.0]) if abs(axis[2]) < 0.9 else np.array([0.0, 1.0, 0.0])
+        u = _unit(np.cross(perp, axis))
         v = np.cross(axis, u)
-        shaft_r = _AXIS_SHAFT_RADIUS_FRAC * length
-        head_r = _AXIS_HEAD_RADIUS_FRAC * length
-        base = origin + axis * (length - _AXIS_HEAD_LENGTH_FRAC * length)
+        shaft_r = _AXIS_SHAFT_RADIUS_FRAC * ref_length
+        head_r = _AXIS_HEAD_RADIUS_FRAC * ref_length
+        base = origin + axis * max(length - _AXIS_HEAD_LENGTH_FRAC * ref_length, 1e-3)
         tip = origin + vector
         flat = np.asarray(rgb, dtype=np.float32) / 255.0
 
@@ -438,6 +452,7 @@ class RasterStructureRenderer:
 
     def _axes(self, colour, depth, project, basis, axes) -> None:
         origin = np.asarray(axes.origin, dtype=float)
+        ref_length = max((float(np.linalg.norm(a.vector)) for a in axes.axes), default=1.0)
         for arrow in axes.axes:
             self._arrow(colour, depth, project, basis, origin,
-                        np.asarray(arrow.vector, dtype=float), arrow.colour)
+                        np.asarray(arrow.vector, dtype=float), arrow.colour, ref_length)

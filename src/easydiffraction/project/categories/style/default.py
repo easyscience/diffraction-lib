@@ -58,7 +58,7 @@ class Style(CategoryItem):
             name='adp_probability',
             description='ORTEP probability level, a fraction in (0, 1).',
             value_spec=AttributeSpec(
-                default=0.5,
+                default=0.99,
                 validator=RangeValidator(gt=0.0, lt=1.0),
             ),
             cif_handler=CifHandler(names=['_style.adp_probability']),

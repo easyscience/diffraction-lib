@@ -11,7 +11,10 @@ from easydiffraction.display.structure.scene import StructureScene
 
 Rgb = tuple[int, int, int]
 
-GLYPH_RAMP = ('·', '•', '●', '⬤')
+# Single-width glyphs only: '⬤' (U+2B24) is absent from common monospace fonts
+# and falls back to a proportional glyph, which renders wider than one cell and
+# pushes the cell's right border out of alignment.
+GLYPH_RAMP = ('·', '•', '●')
 GRID_WIDTH = 56
 PAD = 2
 CHAR_ASPECT = 0.5  # terminal cells are roughly twice as tall as wide
@@ -49,8 +52,14 @@ class AsciiStructureRenderer(StructureRendererBase):
         atoms = _collect_atoms(scene)
         basis = np.array(scene.cell_basis, dtype=float)
         lengths = [float(np.linalg.norm(v)) for v in basis]
-        h_vec = basis[int(np.argmax(lengths))]
-        v_vec = basis[int(np.argmin(lengths))]
+        # Project onto the longest axis (horizontal) and shortest (vertical).
+        # Use the same descending, stable sort as the 3D renderers so all
+        # engines agree on which axis is up when two lengths tie (np.argmin
+        # breaks ties to the first index, the sort to the last).
+        order = sorted(range(3), key=lambda i: lengths[i], reverse=True)
+        h_idx, v_idx = order[0], order[2]
+        h_vec = basis[h_idx]
+        v_vec = basis[v_idx]
         h_hat = h_vec / (np.linalg.norm(h_vec) or 1.0)
         v_hat = v_vec / (np.linalg.norm(v_vec) or 1.0)
 
@@ -69,13 +78,18 @@ class AsciiStructureRenderer(StructureRendererBase):
 
         lines = _grid_to_lines(grid)
         if 'axes' in features:
-            lines = _annotate_axes(lines)
+            cells = [place(c) for c in corners]
+            left_col = min(c for _, c in cells)
+            bottom_row = max(r for r, _ in cells)
+            # Collapse the grid's blank top-padding rows to a single spacer
+            # between the vertical-axis label and the cell's top border.
+            while len(lines) > 1 and lines[0] == '' and lines[1] == '':
+                lines.pop(0)
+                bottom_row -= 1
+            lines = _annotate_axes(lines, left_col, bottom_row, 'abc'[v_idx], 'abc'[h_idx])
         text = '\n'.join(lines)
         if 'atoms' in features and atoms:
             text += '\n\n' + _legend(atoms)
-        notes = _announcements(scene, features, self.SUPPORTED)
-        if notes:
-            text += '\n\n' + '\n'.join(notes)
         return text
 
 
@@ -98,29 +112,41 @@ def _make_grid(points):
     return grid, place
 
 
-def _draw_line(grid, p0, p1, glyph, colour):
-    (r0, c0), (r1, c1) = p0, p1
-    steps = max(abs(r1 - r0), abs(c1 - c0)) or 1
-    for i in range(steps + 1):
-        row = round(r0 + (r1 - r0) * i / steps)
-        col = round(c0 + (c1 - c0) * i / steps)
-        grid.setdefault((row, col), (glyph, colour))
-
-
 def _draw_cell(grid, place, corners):
+    # Draw the projected cell as a clean, closed rectangle (the bounding box of
+    # the four projected corners). Integer-rounding the corners independently
+    # otherwise leaves the borders one row/column out of step. This snaps the
+    # slant of oblique cells to an upright box, which the schematic accepts.
     grey = (150, 150, 150)
-    c00, c10, c01, c11 = (place(c) for c in corners)
-    for a, b in ((c00, c10), (c01, c11)):
-        _draw_line(grid, a, b, '─', grey)
-    for a, b in ((c00, c01), (c10, c11)):
-        _draw_line(grid, a, b, '│', grey)
+    cells = [place(c) for c in corners]
+    rows = [r for r, _ in cells]
+    cols = [c for _, c in cells]
+    top, bottom = min(rows), max(rows)
+    left, right = min(cols), max(cols)
+    for col in range(left, right + 1):
+        grid.setdefault((top, col), ('─', grey))
+        grid.setdefault((bottom, col), ('─', grey))
+    for row in range(top, bottom + 1):
+        grid.setdefault((row, left), ('│', grey))
+        grid.setdefault((row, right), ('│', grey))
+    for cell, glyph in (((top, left), '╭'), ((top, right), '╮'),
+                        ((bottom, left), '╰'), ((bottom, right), '╯')):
+        grid[cell] = (glyph, grey)
 
 
 def _draw_atoms(grid, place, atoms):
     max_radius = max(a[1] for a in atoms) or 1.0
+    placed: dict = {}
     for centre, radius, colour, _label in atoms:
+        row, col = place(centre)
+        # Skip near-duplicates: a same-colour atom already in this or an
+        # adjacent cell (periodic images projecting to nearly one spot).
+        if any(placed.get((row + dr, col + dc)) == colour
+               for dr in (-1, 0, 1) for dc in (-1, 0, 1)):
+            continue
         bucket = min(len(GLYPH_RAMP) - 1, int(radius / max_radius * len(GLYPH_RAMP)))
-        grid[place(centre)] = (GLYPH_RAMP[bucket], colour)
+        grid[(row, col)] = (GLYPH_RAMP[bucket], colour)
+        placed[(row, col)] = colour
 
 
 def _grid_to_lines(grid):
@@ -135,17 +161,23 @@ def _grid_to_lines(grid):
     return lines
 
 
-def _annotate_axes(lines):
-    if lines:
-        lines[0] = '  c ↑' + lines[0][5:] if len(lines[0]) > 5 else '  c ↑'
-        lines[-1] = lines[-1] + '  → a'
-    return lines
+def _annotate_axes(lines, left_col, bottom_row, v_letter, h_letter):
+    """Stack the vertical-axis label above the cell and place the horizontal
+    label at the right end of the bottom border (ANSI-safe: no slicing).
+    """
+    indent = ' ' * left_col
+    header = ['', f'{indent}{v_letter}', f'{indent}↑']  # blank line, letter, arrow
+    body = list(lines)
+    if 0 <= bottom_row < len(body):
+        body[bottom_row] = body[bottom_row] + f'  → {h_letter}'
+    return header + body
 
 
 def _legend(atoms) -> str:
     seen: dict = {}
     for _centre, radius, colour, label in atoms:
-        element = ''.join(ch for ch in label if ch.isalpha()) or label
+        # Keep '/' so a shared site reads 'La/Ba', not 'LaBa'; drop digits.
+        element = ''.join(ch for ch in label if ch.isalpha() or ch == '/') or label
         seen.setdefault(element, (radius, colour))
     max_radius = max(r for r, _ in seen.values()) or 1.0
     items = []
@@ -153,14 +185,3 @@ def _legend(atoms) -> str:
         bucket = min(len(GLYPH_RAMP) - 1, int(radius / max_radius * len(GLYPH_RAMP)))
         items.append(_tint(colour, f'{GLYPH_RAMP[bucket]} {element}'))
     return 'Legend:  ' + '   '.join(items)
-
-
-def _announcements(scene, features, supported) -> list[str]:
-    notes = []
-    skipped = [f for f in ('bonds', 'labels', 'moments') if f in features and f not in supported]
-    if skipped:
-        notes.append('Shown only by the 3D engines: ' + ', '.join(skipped) + '.')
-    if scene.ellipsoids:
-        notes.append('ADP ellipsoids are flattened to dots; use a 3D engine for ellipsoids.')
-    notes.append('Schematic single-cell view; wider ranges are shown only by the 3D engines.')
-    return notes

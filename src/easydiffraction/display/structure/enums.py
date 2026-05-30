@@ -34,14 +34,13 @@ class ViewerEngineEnum(StrEnum):
 class AtomViewEnum(StrEnum):
     """How atoms are sized and shaped in the structure view.
 
-    The four radius models draw fixed balls; ``adp`` draws displacement
+    The radius models draw fixed balls; ``adp`` draws displacement
     surfaces (spheres for isotropic sites, ellipsoids for anisotropic).
     """
 
     VDW = 'vdw'
     COVALENT = 'covalent'
     IONIC = 'ionic'
-    ATOMIC = 'atomic'
     ADP = 'adp'
 
     @classmethod
@@ -71,7 +70,6 @@ class AtomViewEnum(StrEnum):
             AtomViewEnum.VDW: 'Van der Waals radius balls',
             AtomViewEnum.COVALENT: 'Covalent radius balls',
             AtomViewEnum.IONIC: 'Ionic (Shannon) radius balls',
-            AtomViewEnum.ATOMIC: 'Atomic (empirical) radius balls',
             AtomViewEnum.ADP: 'ADP probability surfaces (spheres / ellipsoids)',
         }
         return descriptions.get(self, '')

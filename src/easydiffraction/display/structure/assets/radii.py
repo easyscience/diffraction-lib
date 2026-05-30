@@ -23,7 +23,7 @@ def radius_for(element: str, model: str) -> tuple[float, bool]:
     element : str
         Bare element symbol, e.g. ``'Fe'``.
     model : str
-        One of ``'vdw'``, ``'covalent'``, ``'ionic'``, ``'atomic'``.
+        One of ``'vdw'``, ``'covalent'``, ``'ionic'``.
 
     Returns
     -------

@@ -280,8 +280,7 @@ charge where the model needs it):
 
 - a **radius model** turns an element into a sphere radius — van der
   Waals, ionic (Shannon; the site charge where a model carries one,
-  otherwise a documented per-element default, see below), covalent, or
-  atomic/empirical;
+  otherwise a documented per-element default, see below), or covalent;
 - a **colour scheme** is a named element-colour palette — the Jmol/CPK
   scheme, the VESTA scheme, and similar well-known sets.
 
@@ -289,7 +288,7 @@ A scientist picks one model and one scheme instead of editing dozens of
 per-element rows, which keeps the view consistent and reproducible:
 
 ```python
-project.style.atom_view = 'adp'           # vdw | covalent | ionic | atomic | adp (default adp)
+project.style.atom_view = 'adp'           # vdw | covalent | ionic | adp (default adp)
 project.style.color_scheme = 'jmol'       # jmol | vesta | ... (default jmol)
 project.style.show_supported()            # accepted values per setting
 ```
@@ -299,7 +298,7 @@ How an atom is sized and shaped is a single **display-style switch**,
 surface are alternative depictions and a view shows one of them at a
 time:
 
-- `'vdw'`, `'covalent'`, `'ionic'`, `'atomic'` draw every atom as a
+- `'vdw'`, `'covalent'`, `'ionic'` draw every atom as a
   **radius-model sphere** for the named standard radius table;
   displacement parameters do not affect size. This is the familiar
   ball-and-stick depiction and works for any structure, with or without
@@ -318,12 +317,17 @@ as covalent-radius spheres.
 > **Amendment — `atom_view` merge.** An earlier design split this into
 > two settings: `atom_shape` (`ball`/`ortep`) and `radius_model`
 > (`vdw`/`covalent`/`ionic`/`atomic`). They were merged into the single
-> `atom_view` selector `{vdw, covalent, ionic, atomic, adp}` because
-> `radius_model` was meaningful only in ball mode, so the two-field form
-> carried four degenerate `ortep`×radius-model combinations. The flat
-> list removes the dead states and matches how VESTA/Mercury present the
-> choice. The `adp` view still uses covalent radii for the ball fallback
-> and for mixed-occupancy sites. CIF field: `_style.atom_view`.
+> `atom_view` selector because `radius_model` was meaningful only in ball
+> mode, so the two-field form carried four degenerate `ortep`×radius-model
+> combinations. The flat list removes the dead states and matches how
+> VESTA/Mercury present the choice. The `atomic`/empirical option was then
+> dropped, leaving `{vdw, covalent, ionic, adp}`: its radii are within a
+> few percent of `covalent` for most elements (and identical for some), so
+> after ball-size compression it was visually indistinguishable and added
+> a redundant choice. The atomic radii remain in the element database,
+> unused by the public selector. The `adp` view still uses covalent radii
+> for the ball fallback and for mixed-occupancy sites. CIF field:
+> `_style.atom_view`.
 
 In `'adp'` the surfaces are drawn at one **probability level**,
 `adp_probability`, a fraction in the open interval (0, 1) — not a
@@ -345,8 +349,8 @@ ionic A-site cations do not bond to every surrounding anion (a heuristic
 stop-gap; see open issue #108 for the full near-neighbour approach). These
 two cutoffs live on the **structure**
 and persist in the structure's own CIF (see section 8), not in
-`project.style`. The `atom_view` radius models (vdw / covalent / ionic /
-atomic) change only the rendered sphere _size_ — they never decide which
+`project.style`. The `atom_view` radius models (vdw / covalent / ionic)
+change only the rendered sphere _size_ — they never decide which
 bonds appear; bond detection is governed solely by the `_geom` cutoffs
 and the per-type bonding radius. Version 1 draws bonds computed on the
 fly from this rule while the scene is built and persists no bond table.
@@ -497,7 +501,7 @@ project.rendering_structure.type = 'auto'           # default: 'threejs' in Jupy
 project.rendering_structure.show_supported()
 
 # How: standard styling models, not per-element values (visual only)
-project.style.atom_view = 'adp'           # vdw | covalent | ionic | atomic | adp (default adp)
+project.style.atom_view = 'adp'           # vdw | covalent | ionic | adp (default adp)
 project.style.color_scheme = 'jmol'       # jmol | vesta | ... (default jmol)
 project.style.adp_probability = 0.5       # adp only; fraction in (0, 1)
 project.style.atom_scale = 0.3            # radius-model views only; size, sqrt-compressed (0, 1]
