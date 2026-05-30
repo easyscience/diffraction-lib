@@ -792,7 +792,7 @@ reach end-to-end (P1.1–P1.12) before any Three.js work (P1.13–P1.15).
     angle/contact cutoffs are deferred (ADR Deferred Work).
   - Commit: `Add per-structure geom bond-cutoff category`.
 
-- [ ] **P1.12 — Add `display.structure()` + `show_structure_options()`**
+- [x] **P1.12 — Add `display.structure()` + `show_structure_options()`**
   - Files: existing `src/easydiffraction/project/display.py`.
   - Add to the class backing `project.display` (owner of `pattern()` /
     `show_pattern_options()`):
