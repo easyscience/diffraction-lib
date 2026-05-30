@@ -656,7 +656,7 @@ reach end-to-end (P1.1–P1.12) before any Three.js work (P1.13–P1.15).
     is testable before the facade exists.
   - Commit: `Add ASCII structure renderer`.
 
-- [ ] **P1.7 — Add the Viewer facade + factory; register ASCII**
+- [x] **P1.7 — Add the Viewer facade + factory; register ASCII**
   - Files: new `src/easydiffraction/display/structure/viewing.py`;
     update `display/structure/renderers/ascii.py` with
     `@ViewerFactory.register`; update `display/structure/__init__.py`.
