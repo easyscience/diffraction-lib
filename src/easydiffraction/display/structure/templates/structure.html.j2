@@ -1,0 +1,271 @@
+<div id="{{ container_id }}" class="crysview" style="position:relative;width:100%;height:480px;
+     background:{{ background }};color:{{ foreground }};border:1px solid rgba(128,128,128,0.3);
+     border-radius:6px;overflow:hidden;font-family:system-ui,sans-serif;">
+  <div class="crysview-canvas" style="position:absolute;inset:0;"></div>
+  <div class="crysview-modebar" style="position:absolute;top:6px;right:6px;display:flex;gap:3px;
+       flex-wrap:wrap;justify-content:flex-end;max-width:70%;"></div>
+  <div class="crysview-legend" style="position:absolute;left:8px;bottom:6px;font-size:12px;
+       display:flex;gap:10px;flex-wrap:wrap;text-shadow:0 0 2px {{ background }};"></div>
+  <div class="crysview-tooltip" style="position:absolute;padding:2px 6px;font-size:12px;
+       background:rgba(0,0,0,0.75);color:#fff;border-radius:3px;pointer-events:none;
+       display:none;"></div>
+</div>
+
+<script type="importmap">{{ import_map }}</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+
+const SCENE = {{ scene_json }};
+const FEATURES = {{ features_json }};
+const FG = '{{ foreground }}';
+
+const root = document.getElementById('{{ container_id }}');
+const host = root.querySelector('.crysview-canvas');
+const modebar = root.querySelector('.crysview-modebar');
+const legend = root.querySelector('.crysview-legend');
+const tooltip = root.querySelector('.crysview-tooltip');
+
+const col = (rgb) => new THREE.Color(rgb[0] / 255, rgb[1] / 255, rgb[2] / 255);
+const vec = (xyz) => new THREE.Vector3(xyz[0], xyz[1], xyz[2]);
+const elementOf = (label) => (label.match(/[A-Z][a-z]?/) || [label])[0];
+
+let width = host.clientWidth || 640;
+let height = host.clientHeight || 480;
+
+const scene = new THREE.Scene();
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setSize(width, height);
+host.appendChild(renderer.domElement);
+
+const labelRenderer = new CSS2DRenderer();
+labelRenderer.setSize(width, height);
+labelRenderer.domElement.style.position = 'absolute';
+labelRenderer.domElement.style.top = '0';
+labelRenderer.domElement.style.pointerEvents = 'none';
+host.appendChild(labelRenderer.domElement);
+
+scene.add(new THREE.AmbientLight(0xffffff, 0.65));
+const key = new THREE.DirectionalLight(0xffffff, 0.8);
+key.position.set(1, 1, 1);
+scene.add(key);
+
+const groups = {};
+for (const name of ['atoms', 'bonds', 'cell', 'axes', 'labels']) {
+  groups[name] = new THREE.Group();
+  groups[name].visible = FEATURES.includes(name);
+  scene.add(groups[name]);
+}
+
+const unitSphere = new THREE.SphereGeometry(1, 24, 16);
+
+for (const a of SCENE.atoms) {
+  const mesh = new THREE.Mesh(unitSphere, new THREE.MeshStandardMaterial({ color: col(a.colour) }));
+  mesh.position.copy(vec(a.centre));
+  mesh.scale.setScalar(a.radius);
+  mesh.userData.label = a.label;
+  groups.atoms.add(mesh);
+}
+
+for (const s of SCENE.wedgeSpheres) {
+  let phi = 0;
+  for (const w of s.wedges) {
+    const span = w.fraction * Math.PI * 2;
+    const geo = new THREE.SphereGeometry(s.radius, Math.max(6, Math.round(48 * w.fraction)), 16, phi, span);
+    const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: col(w.colour), side: THREE.DoubleSide }));
+    mesh.position.copy(vec(s.centre));
+    mesh.userData.label = s.label;
+    groups.atoms.add(mesh);
+    phi += span;
+  }
+}
+
+for (const e of SCENE.ellipsoids) {
+  const mesh = new THREE.Mesh(unitSphere, new THREE.MeshStandardMaterial({ color: col(e.colour) }));
+  mesh.position.copy(vec(e.centre));
+  mesh.scale.set(e.semiAxes[0], e.semiAxes[1], e.semiAxes[2]);
+  const basis = new THREE.Matrix4().makeBasis(vec(e.orientation[0]), vec(e.orientation[1]), vec(e.orientation[2]));
+  mesh.quaternion.setFromRotationMatrix(basis);
+  mesh.userData.label = e.label;
+  groups.atoms.add(mesh);
+}
+
+const addHalfBond = (p0, p1, colour) => {
+  const direction = p1.clone().sub(p0);
+  const length = direction.length();
+  if (length < 1e-6) return;
+  const geo = new THREE.CylinderGeometry(0.12, 0.12, length, 12);
+  const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: col(colour) }));
+  mesh.position.copy(p0.clone().add(p1).multiplyScalar(0.5));
+  mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.normalize());
+  groups.bonds.add(mesh);
+};
+for (const b of SCENE.bonds) {
+  const start = vec(b.start);
+  const end = vec(b.end);
+  const mid = start.clone().add(end).multiplyScalar(0.5);
+  addHalfBond(start, mid, b.startColour);
+  addHalfBond(mid, end, b.endColour);
+}
+
+const cellMaterial = new THREE.LineBasicMaterial({ color: new THREE.Color(FG) });
+for (const edge of SCENE.cellEdges) {
+  const geo = new THREE.BufferGeometry().setFromPoints([vec(edge.start), vec(edge.end)]);
+  groups.cell.add(new THREE.Line(geo, cellMaterial));
+}
+
+if (SCENE.axes) {
+  const origin = vec(SCENE.axes.origin);
+  for (const arrow of SCENE.axes.arrows) {
+    const v = vec(arrow.vector);
+    const len = v.length();
+    groups.axes.add(new THREE.ArrowHelper(v.clone().normalize(), origin, len, col(arrow.colour).getHex(), len * 0.12, len * 0.07));
+    const div = document.createElement('div');
+    div.textContent = arrow.letter;
+    div.style.color = `rgb(${arrow.colour[0]},${arrow.colour[1]},${arrow.colour[2]})`;
+    div.style.fontWeight = 'bold';
+    const tag = new CSS2DObject(div);
+    tag.position.copy(origin.clone().add(v.clone().multiplyScalar(1.12)));
+    groups.axes.add(tag);
+  }
+}
+
+for (const label of SCENE.labels) {
+  const div = document.createElement('div');
+  div.textContent = label.text;
+  div.style.fontSize = '11px';
+  div.style.color = FG;
+  const obj = new CSS2DObject(div);
+  obj.position.copy(vec(label.anchor));
+  groups.labels.add(obj);
+}
+
+const box = new THREE.Box3();
+scene.traverse((obj) => {
+  if (obj.isMesh || obj.isLine) box.expandByObject(obj);
+});
+if (box.isEmpty()) box.set(new THREE.Vector3(-1, -1, -1), new THREE.Vector3(1, 1, 1));
+const target = box.getBoundingSphere(new THREE.Sphere()).center;
+const radius = Math.max(box.getBoundingSphere(new THREE.Sphere()).radius, 1);
+const aspect = width / height;
+const far = radius * 100;
+const distance = radius * 2.6;
+const home = target.clone().add(new THREE.Vector3(distance, distance * 0.6, distance));
+
+const perspective = new THREE.PerspectiveCamera(45, aspect, radius * 0.01, far);
+const ortho = new THREE.OrthographicCamera(-radius * aspect * 1.3, radius * aspect * 1.3, radius * 1.3, -radius * 1.3, -far, far);
+perspective.position.copy(home);
+ortho.position.copy(home);
+let camera = ortho;
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.copy(target);
+controls.update();
+
+const setCamera = (next) => {
+  next.position.copy(camera.position);
+  controls.object = next;
+  camera = next;
+  controls.update();
+};
+const viewAlong = (axisVector) => {
+  camera.position.copy(target.clone().add(axisVector.clone().normalize().multiplyScalar(distance)));
+  controls.update();
+};
+
+const button = (label, title, onClick) => {
+  const el = document.createElement('button');
+  el.textContent = label;
+  el.title = title;
+  el.style.cssText = 'font-size:11px;padding:2px 6px;cursor:pointer;border-radius:3px;' +
+    'border:1px solid rgba(128,128,128,0.5);background:rgba(128,128,128,0.15);color:inherit;';
+  el.addEventListener('click', onClick);
+  modebar.appendChild(el);
+  return el;
+};
+
+button('persp/ortho', 'Toggle perspective / parallel projection', () => {
+  setCamera(camera === ortho ? perspective : ortho);
+});
+const cellBasis = SCENE.axes ? SCENE.axes.arrows.map((a) => vec(a.vector)) : [];
+['a', 'b', 'c'].forEach((letter, i) => {
+  if (cellBasis[i]) button(letter, `View along ${letter}`, () => viewAlong(cellBasis[i]));
+});
+button('reset', 'Reset the view', () => {
+  camera.position.copy(home);
+  controls.target.copy(target);
+  controls.update();
+});
+for (const name of ['atoms', 'bonds', 'cell', 'axes', 'labels']) {
+  if (groups[name].children.length === 0) continue;
+  const btn = button(name, `Toggle ${name}`, () => {
+    groups[name].visible = !groups[name].visible;
+    btn.style.opacity = groups[name].visible ? '1' : '0.45';
+  });
+  btn.style.opacity = groups[name].visible ? '1' : '0.45';
+}
+
+const seen = new Map();
+const collectLegend = (label, colour) => {
+  const element = elementOf(label);
+  if (!seen.has(element)) seen.set(element, colour);
+};
+SCENE.atoms.forEach((a) => collectLegend(a.label, a.colour));
+SCENE.ellipsoids.forEach((e) => collectLegend(e.label, e.colour));
+SCENE.wedgeSpheres.forEach((s) => s.wedges[0] && collectLegend(s.label, s.wedges[0].colour));
+for (const [element, colour] of seen) {
+  const item = document.createElement('span');
+  item.style.cssText = 'display:inline-flex;align-items:center;gap:4px;';
+  const swatch = document.createElement('span');
+  swatch.style.cssText = `display:inline-block;width:10px;height:10px;border-radius:50%;` +
+    `background:rgb(${colour[0]},${colour[1]},${colour[2]});`;
+  item.appendChild(swatch);
+  const text = document.createElement('span');
+  text.textContent = element;
+  item.appendChild(text);
+  legend.appendChild(item);
+}
+
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
+renderer.domElement.addEventListener('pointermove', (event) => {
+  const rect = renderer.domElement.getBoundingClientRect();
+  pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+  pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+  raycaster.setFromCamera(pointer, camera);
+  const hits = raycaster.intersectObjects(groups.atoms.children, false);
+  const labelled = hits.find((hit) => hit.object.userData.label);
+  if (labelled) {
+    tooltip.textContent = labelled.object.userData.label;
+    tooltip.style.left = `${event.clientX - rect.left + 8}px`;
+    tooltip.style.top = `${event.clientY - rect.top + 8}px`;
+    tooltip.style.display = 'block';
+  } else {
+    tooltip.style.display = 'none';
+  }
+});
+
+const resize = () => {
+  width = host.clientWidth || width;
+  height = host.clientHeight || height;
+  const ratio = width / height;
+  perspective.aspect = ratio;
+  perspective.updateProjectionMatrix();
+  ortho.left = -radius * ratio * 1.3;
+  ortho.right = radius * ratio * 1.3;
+  ortho.updateProjectionMatrix();
+  renderer.setSize(width, height);
+  labelRenderer.setSize(width, height);
+};
+if (window.ResizeObserver) new ResizeObserver(resize).observe(host);
+
+const animate = () => {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+  labelRenderer.render(scene, camera);
+};
+animate();
+</script>

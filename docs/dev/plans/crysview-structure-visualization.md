@@ -868,7 +868,7 @@ reach end-to-end (P1.1–P1.12) before any Three.js work (P1.13–P1.15).
     wheel check is a Phase 2 step.
   - Commit: `Vendor pinned Three.js assets`.
 
-- [ ] **P1.14 — Add the Three.js structure renderer**
+- [x] **P1.14 — Add the Three.js structure renderer**
   - Files: new
     `src/easydiffraction/display/structure/renderers/threejs.py`; new
     `src/easydiffraction/display/structure/templates/structure.html.j2`;
