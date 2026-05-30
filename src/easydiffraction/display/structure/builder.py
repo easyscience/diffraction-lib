@@ -91,7 +91,7 @@ def _reciprocal_lengths(cell) -> np.ndarray:
     al, be, ga = np.radians([alpha, beta, gamma])
     ca, cb, cg = np.cos([al, be, ga])
     omega = np.sqrt(1.0 - ca * ca - cb * cb - cg * cg + 2.0 * ca * cb * cg)
-    return np.array([np.sin(al) / (a * omega), np.sin(be) / (b * omega), np.sin(cg) / (c * omega)])
+    return np.array([np.sin(al) / (a * omega), np.sin(be) / (b * omega), np.sin(ga) / (c * omega)])
 
 
 def _lattice_shifts(pos: np.ndarray, view_range):
@@ -110,30 +110,39 @@ def _pos_key(pos: np.ndarray) -> tuple[int, int, int]:
 
 
 def _expand_positions(sites, ops, view_range):
-    """Generate (row_index, fractional position) for every in-range copy."""
+    """Generate (row_index, fractional position, rotation) for each in-range copy.
+
+    The symmetry rotation is kept so an anisotropic ADP tensor can be rotated
+    onto each equivalent site (otherwise every copy reuses one orientation).
+    """
     generated = []
     for idx, atom in enumerate(sites):
         base = np.array([atom.fract_x.value, atom.fract_y.value, atom.fract_z.value], dtype=float)
         for rot, trans in ops:
             image = rot @ base + trans
             for shift in _lattice_shifts(image, view_range):
-                generated.append((idx, image + shift))
+                generated.append((idx, image + shift, rot))
     return generated
 
 
 def _group_by_position(generated):
     """Dedup scene atoms (row + position) and cluster coincident positions."""
     seen: dict = {}
-    for idx, pos in generated:
-        seen.setdefault((idx, _pos_key(pos)), (idx, pos))
+    for idx, pos, rot in generated:
+        seen.setdefault((idx, _pos_key(pos)), (idx, pos, rot))
     clusters: dict = {}
-    for idx, pos in seen.values():
-        clusters.setdefault(_pos_key(pos), []).append((idx, pos))
+    for idx, pos, rot in seen.values():
+        clusters.setdefault(_pos_key(pos), []).append((idx, pos, rot))
     return clusters
 
 
-def _cartesian_u(atom, aniso, matrix: np.ndarray, cell) -> np.ndarray:
-    """Cartesian U tensor for an anisotropic atom (CIF U^ij convention)."""
+def _cartesian_u(atom, aniso, matrix: np.ndarray, cell, rot: np.ndarray) -> np.ndarray:
+    """Cartesian U tensor for an anisotropic atom (CIF U^ij convention).
+
+    ``rot`` is the fractional symmetry rotation that placed this copy; the
+    tensor is rotated onto the copy in Cartesian space so each equivalent
+    site shows the correctly oriented ellipsoid.
+    """
     comps = np.array([
         [aniso.adp_11.value, aniso.adp_12.value, aniso.adp_13.value],
         [aniso.adp_12.value, aniso.adp_22.value, aniso.adp_23.value],
@@ -142,7 +151,9 @@ def _cartesian_u(atom, aniso, matrix: np.ndarray, cell) -> np.ndarray:
     if AdpTypeEnum(atom.adp_type.value) is AdpTypeEnum.BANI:
         comps = comps / EIGHT_PI_SQ
     mn = matrix @ np.diag(_reciprocal_lengths(cell))
-    return mn @ comps @ mn.T
+    u_cart = mn @ comps @ mn.T
+    r_cart = matrix @ rot @ np.linalg.inv(matrix)
+    return r_cart @ u_cart @ r_cart.T
 
 
 def _display_radius(model_radius: float, style) -> float:
@@ -150,11 +161,12 @@ def _display_radius(model_radius: float, style) -> float:
     return style.atom_scale.value * float(np.sqrt(model_radius))
 
 
-def _atom_shape(atom, *, style, matrix, cell, aniso_collection):
+def _atom_shape(atom, *, style, matrix, cell, aniso_collection, rot):
     """Return an atom's ADP-driven shape and the radius-substitution flag.
 
     The shape is ``('ellipsoid', semi_axes, orientation)`` for an anisotropic
-    atom in the ADP view, otherwise ``('sphere', radius)``.
+    atom in the ADP view, otherwise ``('sphere', radius)``. ``rot`` is the
+    symmetry rotation placing this copy (identity for the reference atom).
     """
     element = _element_symbol(atom.type_symbol.value)
     view = AtomViewEnum(style.atom_view.value)
@@ -165,7 +177,7 @@ def _atom_shape(atom, *, style, matrix, cell, aniso_collection):
     scale = float(chi.ppf(style.adp_probability.value, 3))
     if view.is_adp and adp_type in {AdpTypeEnum.UANI, AdpTypeEnum.BANI} \
             and label in aniso_collection:
-        u_cart = _cartesian_u(atom, aniso_collection[label], matrix, cell)
+        u_cart = _cartesian_u(atom, aniso_collection[label], matrix, cell, rot)
         semi, orient = ecr.adp_principal_axes(u_cart)
         shape = ('ellipsoid', _vec3(semi * scale),
                  tuple(_vec3(orient[:, i]) for i in range(3)))
@@ -180,12 +192,12 @@ def _atom_shape(atom, *, style, matrix, cell, aniso_collection):
     return shape, substituted
 
 
-def _atom_primitive(atom, centre, *, style, matrix, cell, aniso_collection):
+def _atom_primitive(atom, centre, *, style, matrix, cell, aniso_collection, rot):
     """Build a solid sphere/ellipsoid primitive for a single atom."""
     element = _element_symbol(atom.type_symbol.value)
     colour = color_for(element, style.color_scheme.value)
     shape, substituted = _atom_shape(
-        atom, style=style, matrix=matrix, cell=cell, aniso_collection=aniso_collection,
+        atom, style=style, matrix=matrix, cell=cell, aniso_collection=aniso_collection, rot=rot,
     )
     if shape[0] == 'ellipsoid':
         primitive = AdpEllipsoid(_vec3(centre), shape[1], shape[2], colour, atom.label.value)
@@ -197,12 +209,13 @@ def _atom_primitive(atom, centre, *, style, matrix, cell, aniso_collection):
 def _wedge_atom(rows, centre, *, style, matrix, cell, aniso_collection):
     """Build a shared-site primitive: the major atom's ADP shape split into
     relative-proportion colour wedges (absolute occupancy ignored)."""
-    total = sum(occ for _, occ, _, _, _ in rows) or 1.0
-    wedges = tuple(OccupancyWedge(occ / total, colour) for _, occ, _, colour, _ in rows)
-    major_atom, _occ, major_element, major_colour, _radius = max(rows, key=lambda r: r[1])
+    total = sum(occ for _, occ, _, _, _, _ in rows) or 1.0
+    wedges = tuple(OccupancyWedge(occ / total, colour) for _, occ, _, colour, _, _ in rows)
+    major_atom, _occ, major_element, major_colour, _radius, major_rot = max(rows, key=lambda r: r[1])
     label = '/'.join(r[0].label.value for r in rows)
     shape, _ = _atom_shape(
-        major_atom, style=style, matrix=matrix, cell=cell, aniso_collection=aniso_collection,
+        major_atom, style=style, matrix=matrix, cell=cell,
+        aniso_collection=aniso_collection, rot=major_rot,
     )
     if shape[0] == 'ellipsoid':
         primitive = AdpEllipsoid(_vec3(centre), shape[1], shape[2], major_colour, label, wedges)
@@ -219,22 +232,23 @@ def _build_atoms(sites, clusters, *, style, matrix, cell, aniso_collection):
     for members in clusters.values():
         centre = ecr.fractional_to_cartesian(members[0][1], matrix)
         if len(members) == 1:
-            atom = sites[members[0][0]]
+            idx, _pos, rot = members[0]
+            atom = sites[idx]
             scene_atom, substituted = _atom_primitive(
                 atom, centre, style=style, matrix=matrix, cell=cell,
-                aniso_collection=aniso_collection,
+                aniso_collection=aniso_collection, rot=rot,
             )
             scene_atoms.append(scene_atom)
             if substituted:
                 substitutions.add(_element_symbol(atom.type_symbol.value))
             continue
         rows = []
-        for idx, _ in members:
+        for idx, _pos, rot in members:
             atom = sites[idx]
             element = _element_symbol(atom.type_symbol.value)
             colour = color_for(element, style.color_scheme.value)
             radius, substituted = radius_for(element, radius_model)
-            rows.append((atom, atom.occupancy.value, element, colour, radius))
+            rows.append((atom, atom.occupancy.value, element, colour, radius, rot))
             if substituted:
                 substitutions.add(element)
         scene_atoms.append(_wedge_atom(
