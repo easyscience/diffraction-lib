@@ -930,7 +930,7 @@ reach end-to-end (P1.1–P1.12) before any Three.js work (P1.13–P1.15).
     reference and a short user-guide section.
   - Commit: `Document structure view in tutorials and reference`.
 
-- [ ] **P1.17 — Reach Phase 1 review gate**
+- [x] **P1.17 — Reach Phase 1 review gate**
   - No-code step. Mark every `[ ]` above as `[x]`; commit the plan-file
     update alone.
   - Commit: `Reach Phase 1 review gate`.
