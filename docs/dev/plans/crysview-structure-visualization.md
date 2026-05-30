@@ -469,7 +469,7 @@ reach end-to-end (P1.1–P1.12) before any Three.js work (P1.13–P1.15).
   - Numpy-style docstrings ≤72-char summaries on every public class.
   - Commit: `Add renderer-neutral structure scene model`.
 
-- [ ] **P1.3 — Add crystallographic geometry helpers**
+- [x] **P1.3 — Add crystallographic geometry helpers**
   - Files: existing
     `src/easydiffraction/crystallography/crystallography.py`,
     `src/easydiffraction/crystallography/__init__.py`.
