@@ -575,7 +575,7 @@ def project_config_to_cif(project: object) -> str:
     if publication is not None:
         sections.append(category_owner_to_cif(publication))
 
-    for attr_name in ('rendering_table', 'verbosity'):
+    for attr_name in ('rendering_table', 'rendering_structure', 'style', 'verbosity'):
         section = getattr(project, attr_name, None)
         if section is not None:
             sections.append(_as_cif_text(section))

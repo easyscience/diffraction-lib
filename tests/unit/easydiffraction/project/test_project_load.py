@@ -85,12 +85,16 @@ class TestLoadAnalysis:
         original = Project(name='d1')
         original.rendering_plot.type = 'asciichartpy'
         original.rendering_table.type = 'rich'
+        original.rendering_structure.type = 'ascii'
+        original.style.atom_shape = 'ball'
         original.save_as(str(tmp_path / 'proj'))
 
         loaded = Project.load(str(tmp_path / 'proj'))
 
         assert loaded.rendering_plot.type == 'asciichartpy'
         assert loaded.rendering_table.type == 'rich'
+        assert loaded.rendering_structure.type == 'ascii'
+        assert loaded.style.atom_shape.value == 'ball'
 
     def test_round_trips_constraints(self, tmp_path):
         original = Project(name='c1')
