@@ -849,7 +849,7 @@ reach end-to-end (P1.1–P1.12) before any Three.js work (P1.13–P1.15).
   - Commit:
     `Add structure() and show_structure_options() display surface`.
 
-- [ ] **P1.13 — Vendor pinned Three.js assets + lint/coverage excludes**
+- [x] **P1.13 — Vendor pinned Three.js assets + lint/coverage excludes**
   - Files: new
     `src/easydiffraction/display/structure/renderers/vendor/threejs/three.module.js`,
     `OrbitControls.js`, `CSS2DRenderer.js`, and a sibling `LICENSES.md`;

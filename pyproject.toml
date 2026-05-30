@@ -157,6 +157,7 @@ exclude = [
   'src/easydiffraction/report/templates/html/vendor',
   'src/easydiffraction/report/templates/tex/styles',
   'src/easydiffraction/utils/_vendored/jupyter_dark_detect',
+  'src/easydiffraction/display/structure/renderers/vendor',
 ]
 
 #######################################
@@ -175,6 +176,7 @@ omit = [
   'src/easydiffraction/report/templates/html/vendor/*',
   'src/easydiffraction/report/templates/tex/styles/*',
   'src/easydiffraction/utils/_vendored/jupyter_dark_detect/*',
+  'src/easydiffraction/display/structure/renderers/vendor/*',
 ]
 
 [tool.coverage.report]
@@ -217,6 +219,7 @@ exclude = [
   'src/easydiffraction/report/templates/html/vendor',
   'src/easydiffraction/report/templates/tex/styles',
   'src/easydiffraction/utils/_vendored/jupyter_dark_detect',
+  'src/easydiffraction/display/structure/renderers/vendor',
 ]
 indent-width = 4
 line-length = 99 # See also `max-line-length` in [tool.ruff.lint.pycodestyle]
@@ -403,7 +406,7 @@ max-positional-args = 7
 [tool.pydoclint]
 #exclude = '\.' # Temporarily disable pydoclint until we are ready
 # ED only.
-exclude = 'src/easydiffraction/(report/templates/html/vendor|report/templates/tex/styles|utils/_vendored/jupyter_dark_detect)'
+exclude = 'src/easydiffraction/(report/templates/html/vendor|report/templates/tex/styles|utils/_vendored/jupyter_dark_detect|display/structure/renderers/vendor)'
 style = 'numpy'
 check-style-mismatch = true
 check-arg-defaults = true
@@ -419,7 +422,7 @@ allow-init-docstring = true
 [tool.format_docstring]
 #exclude = '\.' # Temporarily disable format-docstring until we are ready
 # ED only.
-exclude = 'src/easydiffraction/(report/templates/html/vendor|report/templates/tex/styles|utils/_vendored/jupyter_dark_detect)'
+exclude = 'src/easydiffraction/(report/templates/html/vendor|report/templates/tex/styles|utils/_vendored/jupyter_dark_detect|display/structure/renderers/vendor)'
 docstring_style = 'numpy'
 line_length = 72
 fix_rst_backticks = true
