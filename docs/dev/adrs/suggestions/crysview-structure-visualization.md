@@ -289,40 +289,51 @@ A scientist picks one model and one scheme instead of editing dozens of
 per-element rows, which keeps the view consistent and reproducible:
 
 ```python
-project.style.atom_shape = 'ortep'        # ball | ortep
-project.style.radius_model = 'covalent'   # vdw | covalent | ionic | atomic (default covalent)
+project.style.atom_view = 'adp'           # vdw | covalent | ionic | atomic | adp (default adp)
 project.style.color_scheme = 'jmol'       # jmol | vesta | ... (default jmol)
 project.style.show_supported()            # accepted values per setting
 ```
 
-How an atom is shaped is a single **display-style switch**,
-`atom_shape`, because a ball-and-stick radius and an ADP probability
-surface are different depictions and a view shows one of them at a time:
+How an atom is sized and shaped is a single **display-style switch**,
+`atom_view`, because the standard radius models and the ADP probability
+surface are alternative depictions and a view shows one of them at a
+time:
 
-- `'ball'` draws every atom as a **radius-model sphere** (the radius
-  model above); displacement parameters do not affect size. This is the
-  familiar ball-and-stick depiction and works for any structure, with or
-  without ADP.
-- `'ortep'` draws each atom as its **ADP probability surface** — a
-  sphere for an atom with only isotropic ADP, an ellipsoid (semi-axes
-  and orientation from the ADP tensor) for an anisotropic one. Atoms
-  that carry no ADP fall back to a radius-model sphere. This is the
+- `'vdw'`, `'covalent'`, `'ionic'`, `'atomic'` draw every atom as a
+  **radius-model sphere** for the named standard radius table;
+  displacement parameters do not affect size. This is the familiar
+  ball-and-stick depiction and works for any structure, with or without
+  ADP.
+- `'adp'` draws each atom as its **ADP probability surface** — a sphere
+  for an atom with only isotropic ADP, an ellipsoid (semi-axes and
+  orientation from the ADP tensor) for an anisotropic one. Atoms that
+  carry no ADP fall back to a covalent-radius sphere. This is the
   thermal-ellipsoid (ORTEP) depiction crystallographers use to inspect
   the displacement parameters a refinement adjusts.
 
-The default is `'ortep'`, because this is a refinement tool and the
-thermal ellipsoids are usually the point; a structure with no ADP simply
-renders as radius-model spheres, identical to `'ball'`.
+The default is `'adp'`, because this is a refinement tool and the thermal
+ellipsoids are usually the point; a structure with no ADP simply renders
+as covalent-radius spheres.
 
-In `'ortep'` the surfaces are drawn at one **probability level**,
+> **Amendment — `atom_view` merge.** An earlier design split this into
+> two settings: `atom_shape` (`ball`/`ortep`) and `radius_model`
+> (`vdw`/`covalent`/`ionic`/`atomic`). They were merged into the single
+> `atom_view` selector `{vdw, covalent, ionic, atomic, adp}` because
+> `radius_model` was meaningful only in ball mode, so the two-field form
+> carried four degenerate `ortep`×radius-model combinations. The flat
+> list removes the dead states and matches how VESTA/Mercury present the
+> choice. The `adp` view still uses covalent radii for the ball fallback
+> and for mixed-occupancy sites. CIF field: `_style.atom_view`.
+
+In `'adp'` the surfaces are drawn at one **probability level**,
 `adp_probability`, a fraction in the open interval (0, 1) — not a
 percentage — validated on assignment. It defaults to `0.5` (the ORTEP
 and journal 50% convention) and is freely changeable (for example
-`0.95`). It has no effect in `'ball'`.
+`0.95`). It has no effect in the radius-model views.
 
 Which bonds the view draws is **not** a styling choice — it is a
 geometric property of the structure, and it follows the **standard
-cif_core `_geom` auto-bonding model**, not the display `radius_model`. A
+cif_core `_geom` auto-bonding model**, not the display `atom_view`. A
 bond is drawn between two sites when their distance `d` satisfies
 `_geom.min_bond_distance_cutoff ≤ d ≤ r_bond(i) + r_bond(j) + _geom.bond_distance_incr`,
 where the per-type bonding radius `r_bond` is `_atom_type.radius_bond`
@@ -334,8 +345,8 @@ ionic A-site cations do not bond to every surrounding anion (a heuristic
 stop-gap; see open issue #108 for the full near-neighbour approach). These
 two cutoffs live on the **structure**
 and persist in the structure's own CIF (see section 8), not in
-`project.style`. The display `radius_model` (vdw / covalent / ionic /
-atomic) changes only the rendered sphere _size_ — it never decides which
+`project.style`. The `atom_view` radius models (vdw / covalent / ionic /
+atomic) change only the rendered sphere _size_ — they never decide which
 bonds appear; bond detection is governed solely by the `_geom` cutoffs
 and the per-type bonding radius. Version 1 draws bonds computed on the
 fly from this rule while the scene is built and persists no bond table.
@@ -344,7 +355,7 @@ and `_geom_angle` loops, with distances, angles, symmetry codes, and
 standard uncertainties — is a separate, related feature that reuses the
 same symmetry-expansion and distance math (see Deferred Work).
 
-`atom_shape`, `radius_model`, and `color_scheme` are finite, closed
+`atom_view` and `color_scheme` are finite, closed
 value sets, so each is a `(str, Enum)` validated on assignment per the
 [Enum-Backed Closed Value Sets](../../../docs/dev/adrs/accepted/enum-backed-closed-values.md)
 ADR, and `project.style.show_supported()` lists the accepted values for
@@ -353,9 +364,10 @@ give through `show_supported()`. `style` is a plain category, not a
 switchable one: it has no factory-swapped `type`, only these validated
 value settings.
 
-The defaults are the **covalent** radius model and the **Jmol/CPK**
+The defaults are the **`adp`** atom view and the **Jmol/CPK**
 colour scheme, so the view looks right with no configuration. Covalent
-is the default because it is backed by complete, well-documented
+radii — the `adp` ball fallback and the `atom_view = 'covalent'` option —
+are preferred because they are backed by complete, well-documented
 per-element data and needs no oxidation state: today's atom-site model
 carries only an element symbol — no charge, oxidation-state, or
 coordination field — so a model that depends on charge cannot be
@@ -368,7 +380,7 @@ scheme are selected. The database carries, per element, the van der
 Waals, covalent, ionic (a representative Shannon radius at a documented
 default oxidation state and coordination), and atomic/empirical radii,
 plus the Jmol/CPK and VESTA colour palettes, each value carrying a
-documented provenance. The ionic entries let `radius_model = 'ionic'`
+documented provenance. The ionic entries let `atom_view = 'ionic'`
 work today against the documented default oxidation state; when a future
 atom-site charge field exists the ionic model will prefer the site's
 charge. An element with no entry for the selected radius model falls
@@ -485,11 +497,10 @@ project.rendering_structure.type = 'auto'           # default: 'threejs' in Jupy
 project.rendering_structure.show_supported()
 
 # How: standard styling models, not per-element values (visual only)
-project.style.atom_shape = 'ortep'        # ball | ortep
-project.style.radius_model = 'covalent'   # vdw | covalent | ionic | atomic (default covalent)
+project.style.atom_view = 'adp'           # vdw | covalent | ionic | atomic | adp (default adp)
 project.style.color_scheme = 'jmol'       # jmol | vesta | ... (default jmol)
-project.style.adp_probability = 0.5       # ortep only; fraction in (0, 1)
-project.style.atom_scale = 0.3            # ball only; overall size, sqrt-compressed (0, 1]
+project.style.adp_probability = 0.5       # adp only; fraction in (0, 1)
+project.style.atom_scale = 0.3            # radius-model views only; size, sqrt-compressed (0, 1]
 project.style.show_supported()            # accepted values per setting
 
 # Which bonds exist: a per-structure geometric property, not styling.
@@ -534,8 +545,7 @@ _rendering_structure.range_b_max    1
 _rendering_structure.range_c_min    0
 _rendering_structure.range_c_max    1
 
-_style.atom_shape       ortep
-_style.radius_model     covalent
+_style.atom_view        adp
 _style.color_scheme     jmol
 _style.adp_probability  0.5
 _style.atom_scale       0.3
@@ -625,7 +635,7 @@ a per-call request behave predictably:
   per-type bonding radius (`_atom_type.radius_bond`, defaulting to the
   covalent radius), all on the structure and persisted in the structure
   CIF — not in `project.style`, and independent of the display
-  `radius_model`. Version 1 draws bonds on the fly and persists no bond
+  `atom_view`. Version 1 draws bonds on the fly and persists no bond
   table; the full computed `_geom_bond` / `_geom_angle` tables are
   deferred to a separate feature.
 - The structure view auto-detects the host's dark/light theme (reusing
@@ -663,8 +673,8 @@ All items below are now **resolved** so the implementation plan can be
 executed autonomously; the plan records the verified data sources and
 the final names.
 
-- **CIF tag spelling — resolved.** Project CIF: `_style.atom_shape`,
-  `_style.radius_model`, `_style.color_scheme`,
+- **CIF tag spelling — resolved.** Project CIF: `_style.atom_view`,
+  `_style.color_scheme`,
   `_style.adp_probability`, and `_rendering_structure.type` / `_rendering_structure.show_labels` /
   `_rendering_structure.show_moments` / `_rendering_structure.range_{a,b,c}_{min,max}`. These are project-internal
   app/settings tags (`_rendering_structure.type` follows the Display-UX `_rendering_plot.type` /

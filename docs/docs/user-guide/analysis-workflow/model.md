@@ -203,11 +203,14 @@ Visual styling — independent of the per-element data — is configured on
 # List the accepted style settings
 project.style.show_supported()
 
-# Choose how atoms are depicted, sized, and coloured
-project.style.atom_shape = 'ball'  # 'ball' or 'ortep'
-project.style.radius_model = 'covalent'  # 'vdw', 'covalent', 'ionic', 'atomic'
+# Choose how atoms are depicted, sized, and coloured.
+# atom_view picks a radius-model ball ('vdw'/'covalent'/'ionic'/'atomic')
+# or 'adp' for displacement surfaces (spheres for isotropic sites,
+# ellipsoids for anisotropic ones — driven by each atom's adp_type).
+project.style.atom_view = 'adp'  # 'vdw', 'covalent', 'ionic', 'atomic', or 'adp'
 project.style.color_scheme = 'jmol'  # 'jmol' or 'vesta'
 project.style.atom_scale = 0.3  # overall ball size (square-root compressed)
+project.style.adp_probability = 0.5  # ADP ellipsoid probability level (0–1)
 ```
 
 Bonds are generated automatically between atoms whose separation falls

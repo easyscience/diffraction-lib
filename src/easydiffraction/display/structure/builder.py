@@ -25,6 +25,7 @@ from easydiffraction.display.structure.assets.colors import AXIS_COLORS
 from easydiffraction.display.structure.assets.colors import VACANCY_COLOR
 from easydiffraction.display.structure.assets.colors import color_for
 from easydiffraction.display.structure.assets.radii import radius_for
+from easydiffraction.display.structure.enums import AtomViewEnum
 from easydiffraction.display.structure.scene import AdpEllipsoid
 from easydiffraction.display.structure.scene import AtomSphere
 from easydiffraction.display.structure.scene import AxisArrow
@@ -154,12 +155,13 @@ def _atom_primitive(atom, centre, *, style, matrix, cell, aniso_collection):
     """Build the sphere/ellipsoid primitive for a single full-occupancy atom."""
     element = _element_symbol(atom.type_symbol.value)
     colour = color_for(element, style.color_scheme.value)
-    radius, substituted = radius_for(element, style.radius_model.value)
+    view = AtomViewEnum(style.atom_view.value)
+    radius, substituted = radius_for(element, view.radius_model())
     ball_radius = _display_radius(radius, style)
     label = atom.label.value
     adp_type = AdpTypeEnum(atom.adp_type.value)
     scale = float(chi.ppf(style.adp_probability.value, 3))
-    if style.atom_shape.value == 'ortep' and adp_type in {AdpTypeEnum.UANI, AdpTypeEnum.BANI} \
+    if view.is_adp and adp_type in {AdpTypeEnum.UANI, AdpTypeEnum.BANI} \
             and label in aniso_collection:
         u_cart = _cartesian_u(atom, aniso_collection[label], matrix, cell)
         semi, orient = ecr.adp_principal_axes(u_cart)
@@ -167,7 +169,7 @@ def _atom_primitive(atom, centre, *, style, matrix, cell, aniso_collection):
             _vec3(centre), _vec3(semi * scale),
             tuple(_vec3(orient[:, i]) for i in range(3)), colour, label,
         )
-    elif style.atom_shape.value == 'ortep' and adp_type in {AdpTypeEnum.UISO, AdpTypeEnum.BISO}:
+    elif view.is_adp and adp_type in {AdpTypeEnum.UISO, AdpTypeEnum.BISO}:
         u_iso = atom.adp_iso.value
         if adp_type is AdpTypeEnum.BISO:
             u_iso = u_iso / EIGHT_PI_SQ
@@ -213,11 +215,12 @@ def _build_atoms(sites, clusters, *, style, matrix, cell, aniso_collection):
                     substitutions.add(_element_symbol(atom.type_symbol.value))
                 continue
         rows = []
+        radius_model = AtomViewEnum(style.atom_view.value).radius_model()
         for idx, _ in members:
             atom = sites[idx]
             element = _element_symbol(atom.type_symbol.value)
             colour = color_for(element, style.color_scheme.value)
-            radius, substituted = radius_for(element, style.radius_model.value)
+            radius, substituted = radius_for(element, radius_model)
             rows.append((atom, atom.occupancy.value, element, colour, radius))
             if substituted:
                 substitutions.add(element)
@@ -370,9 +373,10 @@ def structure_feature_availability(structure, *, style) -> FeatureAvailability:
     if sites:
         available |= {'atoms', 'bonds', 'labels'}
     substitutions = set()
+    radius_model = AtomViewEnum(style.atom_view.value).radius_model()
     for atom in sites:
         element = _element_symbol(atom.type_symbol.value)
-        _, substituted = radius_for(element, style.radius_model.value)
+        _, substituted = radius_for(element, radius_model)
         if substituted:
             substitutions.add(element)
     return FeatureAvailability(frozenset(available), tuple(sorted(substitutions)))

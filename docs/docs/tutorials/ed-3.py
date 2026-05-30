@@ -185,8 +185,7 @@ project.rendering_structure.show_supported()
 project.style.show_supported()
 
 # %%
-project.style.atom_shape = 'ball'
-project.style.radius_model = 'atomic'
+project.style.atom_view = 'atomic'
 project.style.color_scheme = 'jmol'
 
 # %% [markdown]

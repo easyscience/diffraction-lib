@@ -31,50 +31,50 @@ class ViewerEngineEnum(StrEnum):
         return ''
 
 
-class AtomShapeEnum(StrEnum):
-    """How each atom is depicted in the structure view."""
+class AtomViewEnum(StrEnum):
+    """How atoms are sized and shaped in the structure view.
 
-    BALL = 'ball'
-    ORTEP = 'ortep'
-
-    @classmethod
-    def default(cls) -> AtomShapeEnum:
-        """Select the default atom shape (ORTEP thermal surfaces)."""
-        return cls.ORTEP
-
-    def description(self) -> str:
-        """Human-readable description for UI listings."""
-        if self is AtomShapeEnum.BALL:
-            return 'Ball-and-stick radius-model spheres'
-        if self is AtomShapeEnum.ORTEP:
-            return 'ORTEP ADP probability surfaces (ellipsoids)'
-        return ''
-
-
-class RadiusModelEnum(StrEnum):
-    """Standard per-element radius model for atom sphere size."""
+    The four radius models draw fixed balls; ``adp`` draws displacement
+    surfaces (spheres for isotropic sites, ellipsoids for anisotropic).
+    """
 
     VDW = 'vdw'
     COVALENT = 'covalent'
     IONIC = 'ionic'
     ATOMIC = 'atomic'
+    ADP = 'adp'
 
     @classmethod
-    def default(cls) -> RadiusModelEnum:
-        """Select the default radius model (covalent; charge-free)."""
-        return cls.COVALENT
+    def default(cls) -> AtomViewEnum:
+        """Select the default atom view (ADP displacement surfaces)."""
+        return cls.ADP
+
+    @property
+    def is_adp(self) -> bool:
+        """Return whether atoms are drawn as displacement surfaces, not balls."""
+        return self is AtomViewEnum.ADP
+
+    def radius_model(self) -> str:
+        """Return the radius-table name for ball sizing.
+
+        The ``adp`` view still needs ball radii for mixed-occupancy sites
+        and as a fallback for zero-displacement atoms, where it uses
+        covalent radii.
+        """
+        if self is AtomViewEnum.ADP:
+            return AtomViewEnum.COVALENT.value
+        return self.value
 
     def description(self) -> str:
         """Human-readable description for UI listings."""
-        if self is RadiusModelEnum.VDW:
-            return 'Van der Waals radii'
-        if self is RadiusModelEnum.COVALENT:
-            return 'Covalent radii'
-        if self is RadiusModelEnum.IONIC:
-            return 'Ionic (Shannon) radii'
-        if self is RadiusModelEnum.ATOMIC:
-            return 'Atomic (empirical) radii'
-        return ''
+        descriptions = {
+            AtomViewEnum.VDW: 'Van der Waals radius balls',
+            AtomViewEnum.COVALENT: 'Covalent radius balls',
+            AtomViewEnum.IONIC: 'Ionic (Shannon) radius balls',
+            AtomViewEnum.ATOMIC: 'Atomic (empirical) radius balls',
+            AtomViewEnum.ADP: 'ADP probability surfaces (spheres / ellipsoids)',
+        }
+        return descriptions.get(self, '')
 
 
 class ColorSchemeEnum(StrEnum):

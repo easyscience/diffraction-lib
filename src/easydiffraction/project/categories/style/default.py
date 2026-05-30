@@ -11,9 +11,8 @@ from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import StringDescriptor
-from easydiffraction.display.structure.enums import AtomShapeEnum
+from easydiffraction.display.structure.enums import AtomViewEnum
 from easydiffraction.display.structure.enums import ColorSchemeEnum
-from easydiffraction.display.structure.enums import RadiusModelEnum
 from easydiffraction.io.cif.handler import CifHandler
 from easydiffraction.project.categories.style.factory import StyleFactory
 from easydiffraction.utils.logging import console
@@ -33,27 +32,16 @@ class Style(CategoryItem):
     def __init__(self) -> None:
         super().__init__()
 
-        self._atom_shape = StringDescriptor(
-            name='atom_shape',
-            description='Atom depiction mode for the structure view.',
+        self._atom_view = StringDescriptor(
+            name='atom_view',
+            description='How atoms are sized and shaped in the structure view.',
             value_spec=AttributeSpec(
-                default=AtomShapeEnum.default().value,
+                default=AtomViewEnum.default().value,
                 validator=MembershipValidator(
-                    allowed=[member.value for member in AtomShapeEnum],
+                    allowed=[member.value for member in AtomViewEnum],
                 ),
             ),
-            cif_handler=CifHandler(names=['_style.atom_shape']),
-        )
-        self._radius_model = StringDescriptor(
-            name='radius_model',
-            description='Standard per-element radius model.',
-            value_spec=AttributeSpec(
-                default=RadiusModelEnum.default().value,
-                validator=MembershipValidator(
-                    allowed=[member.value for member in RadiusModelEnum],
-                ),
-            ),
-            cif_handler=CifHandler(names=['_style.radius_model']),
+            cif_handler=CifHandler(names=['_style.atom_view']),
         )
         self._color_scheme = StringDescriptor(
             name='color_scheme',
@@ -86,22 +74,13 @@ class Style(CategoryItem):
         )
 
     @property
-    def atom_shape(self) -> StringDescriptor:
-        """Atom depiction mode (``ball`` or ``ortep``)."""
-        return self._atom_shape
+    def atom_view(self) -> StringDescriptor:
+        """How atoms are sized/shaped (``vdw``/``covalent``/``ionic``/``atomic``/``adp``)."""
+        return self._atom_view
 
-    @atom_shape.setter
-    def atom_shape(self, value: str) -> None:
-        self._atom_shape.value = AtomShapeEnum(value).value
-
-    @property
-    def radius_model(self) -> StringDescriptor:
-        """Standard per-element radius model."""
-        return self._radius_model
-
-    @radius_model.setter
-    def radius_model(self, value: str) -> None:
-        self._radius_model.value = RadiusModelEnum(value).value
+    @atom_view.setter
+    def atom_view(self, value: str) -> None:
+        self._atom_view.value = AtomViewEnum(value).value
 
     @property
     def color_scheme(self) -> StringDescriptor:
@@ -134,8 +113,7 @@ class Style(CategoryItem):
         """List the accepted values for every styling setting."""
         console.paragraph('Supported style settings')
         for setting, enum in (
-            ('atom_shape', AtomShapeEnum),
-            ('radius_model', RadiusModelEnum),
+            ('atom_view', AtomViewEnum),
             ('color_scheme', ColorSchemeEnum),
         ):
             console.print(f"{setting}: {', '.join(member.value for member in enum)}")
