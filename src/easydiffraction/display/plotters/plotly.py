@@ -49,8 +49,8 @@ RESIDUAL_LINE_WIDTH = 2.0
 MEASURED_MARKER_SIZE = 6
 MEASURED_MARKER_LINE_WIDTH = 0
 SINGLE_CRYSTAL_MARKER_LINE_WIDTH = 0.5
-MEASURED_ERROR_BAR_THICKNESS = 1.0
-MEASURED_ERROR_BAR_WIDTH = 3
+MEASURED_ERROR_BAR_THICKNESS = 0.5
+MEASURED_ERROR_BAR_WIDTH = 2
 LIGHT_AXIS_FRAME_COLOR = 'rgba(120, 140, 160, 0.28)'
 DARK_AXIS_FRAME_COLOR = 'rgba(110, 145, 190, 0.35)'
 LIGHT_LEGEND_BACKGROUND_COLOR = 'rgba(255, 255, 255, 0.5)'
@@ -147,9 +147,11 @@ def single_crystal_tick_step(
 ) -> float:
     """Return a 'nice' tick step covering ``[minimum, maximum]``.
 
-    The raw step ``span / target_ticks`` is rounded up to the nearest
-    ``DISPLAY_TICK_FRACTIONS`` value, so two axes sharing this step and the
-    same range show identical ticks.
+    The raw step ``span / target_ticks`` is rounded to the nearest 1/2/5
+    multiple of a power of ten (the classic axis-label rounding), so the
+    ticks read as round numbers and the same step gives identical x and y
+    ticks over a shared range. Combined with a tick origin of 0 this
+    reproduces Plotly's own choice (e.g. a 500 step, not 750).
 
     Parameters
     ----------
@@ -172,10 +174,15 @@ def single_crystal_tick_step(
     exponent = float(np.floor(np.log10(raw_step)))
     base = 10.0**exponent
     fraction = raw_step / base
-    for nice_fraction in DISPLAY_TICK_FRACTIONS:
-        if fraction <= nice_fraction:
-            return nice_fraction * base
-    return DISPLAY_TICK_FRACTIONS[-1] * base
+    if fraction < 1.5:
+        nice_fraction = 1.0
+    elif fraction < 3.0:
+        nice_fraction = 2.0
+    elif fraction < 7.0:
+        nice_fraction = 5.0
+    else:
+        nice_fraction = 10.0
+    return nice_fraction * base
 
 
 @dataclass(frozen=True)
@@ -652,7 +659,12 @@ class PlotlyPlotter(PlotterBase):
             marker={
                 'symbol': 'circle',
                 'size': MEASURED_MARKER_SIZE,
-                'line': {'width': SINGLE_CRYSTAL_MARKER_LINE_WIDTH},
+                # Stroke colour matches the fill (like the pgfplots PDF) so
+                # there is no contrasting ring around the markers.
+                'line': {
+                    'width': SINGLE_CRYSTAL_MARKER_LINE_WIDTH,
+                    'color': DEFAULT_COLORS['meas'],
+                },
                 'color': DEFAULT_COLORS['meas'],
             },
             error_y={
@@ -1207,9 +1219,11 @@ window.requestAnimationFrame(installLegendToggleButton);
         if axis_range is not None:
             for axis in (xaxis, yaxis):
                 axis['range'] = list(axis_range)
-                axis['tick0'] = axis_range[0]
         if axis_dtick is not None:
             for axis in (xaxis, yaxis):
+                # Anchor ticks at 0 so they read as round numbers (0, 500,
+                # 1000, ...) instead of starting at the padded minimum.
+                axis['tick0'] = 0
                 axis['dtick'] = axis_dtick
         return go.Layout(
             margin={
