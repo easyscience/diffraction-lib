@@ -207,6 +207,7 @@ project.style.show_supported()
 project.style.atom_shape = 'ball'  # 'ball' or 'ortep'
 project.style.radius_model = 'covalent'  # 'vdw', 'covalent', 'ionic', 'atomic'
 project.style.color_scheme = 'jmol'  # 'jmol' or 'vesta'
+project.style.atom_scale = 0.5  # ball radius as a fraction of the model radius
 ```
 
 Bonds are generated automatically between atoms whose separation falls

@@ -475,6 +475,7 @@ project.style.atom_shape = 'ortep'        # ball | ortep
 project.style.radius_model = 'covalent'   # vdw | covalent | ionic | atomic (default covalent)
 project.style.color_scheme = 'jmol'       # jmol | vesta | ... (default jmol)
 project.style.adp_probability = 0.5       # ortep only; fraction in (0, 1)
+project.style.atom_scale = 0.5            # ball only; radius as fraction of model radius (0, 1]
 project.style.show_supported()            # accepted values per setting
 
 # Which bonds exist: a per-structure geometric property, not styling.
@@ -523,6 +524,7 @@ _style.atom_shape       ortep
 _style.radius_model     covalent
 _style.color_scheme     jmol
 _style.adp_probability  0.5
+_style.atom_scale       0.5
 
 # In the structure (sample) CIF, beside _cell / _atom_site (per-structure):
 _geom.min_bond_distance_cutoff   0.0
