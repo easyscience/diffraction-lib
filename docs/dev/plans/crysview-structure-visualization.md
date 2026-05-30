@@ -713,7 +713,7 @@ reach end-to-end (P1.1–P1.12) before any Three.js work (P1.13–P1.15).
   - Register `Style` in `project/categories/style/__init__.py`.
   - Commit: `Add style category for structure view styling`.
 
-- [ ] **P1.9 — Add the switchable `view` category**
+- [x] **P1.9 — Add the switchable `view` category**
   - Files: new
     `src/easydiffraction/project/categories/view/__init__.py`,
     `default.py`, `factory.py`.
