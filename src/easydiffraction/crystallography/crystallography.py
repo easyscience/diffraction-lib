@@ -417,7 +417,9 @@ def _get_general_position_ops(
     """
     key = (it_number, coord_code)
     if key not in SPACE_GROUPS:
-        log.error(f'Space group ({it_number}, {coord_code!r}) not found')
+        # Not in the local SPACE_GROUPS table (e.g. P 1, where cryspy
+        # reports no coordinate-system codes). The caller falls back to
+        # the identity operator, so report no general-position ops.
         return None
 
     entry = SPACE_GROUPS[key]
