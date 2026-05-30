@@ -705,6 +705,14 @@ def project_config_from_cif(project: object, cif_text: str) -> None:
     if verbosity is not None:
         verbosity.from_cif(block)
 
+    view = getattr(project, 'view', None)
+    if view is not None:
+        view.from_cif(block)
+
+    style = getattr(project, 'style', None)
+    if style is not None:
+        style.from_cif(block)
+
 
 def analysis_from_cif(analysis: object, cif_text: str) -> None:
     """

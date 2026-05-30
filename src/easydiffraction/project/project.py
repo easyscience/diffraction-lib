@@ -37,8 +37,10 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from easydiffraction.project.categories.chart import Chart
+    from easydiffraction.project.categories.style import Style
     from easydiffraction.project.categories.table import Table
     from easydiffraction.project.categories.verbosity import Verbosity
+    from easydiffraction.project.categories.view import View
     from easydiffraction.project.project_info import ProjectInfo
     from easydiffraction.report import Report
 
@@ -210,6 +212,8 @@ class Project(GuardedBase):  # noqa: PLR0904
         object.__setattr__(self, '_chart', self._config.chart)
         object.__setattr__(self, '_table', self._config.table)
         object.__setattr__(self, '_verbosity', self._config.verbosity)
+        object.__setattr__(self, '_view', self._config.view)
+        object.__setattr__(self, '_style', self._config.style)
         object.__setattr__(self, '_report', self._config.report)
         self._publication = PublicationFactory.create(PublicationFactory.default_tag())
         self._display = ProjectDisplay(self)
@@ -226,6 +230,8 @@ class Project(GuardedBase):  # noqa: PLR0904
         self._analysis._parent = self
         self._chart._parent = self
         self._table._parent = self
+        self._view._parent = self
+        self._style._parent = self
         self._report._parent = self
         self._publication._parent = self
 
@@ -242,6 +248,10 @@ class Project(GuardedBase):  # noqa: PLR0904
     def _swap_table(self, new_type: str, *, strict: bool = True) -> None:
         """Switch the active table renderer."""
         self._table._set_type(new_type, strict=strict)
+
+    def _swap_view(self, new_type: str, *, strict: bool = True) -> None:
+        """Switch the active structure-view renderer."""
+        self._view._set_type(new_type, strict=strict)
 
     @classmethod
     def current_project_path(cls) -> pathlib.Path | None:
@@ -321,6 +331,16 @@ class Project(GuardedBase):  # noqa: PLR0904
     def table(self) -> Table:
         """Table configuration bound to the project."""
         return self._table
+
+    @property
+    def view(self) -> View:
+        """Structure-view configuration bound to the project."""
+        return self._view
+
+    @property
+    def style(self) -> Style:
+        """Structure-view styling bound to the project."""
+        return self._style
 
     @property
     def display(self) -> ProjectDisplay:

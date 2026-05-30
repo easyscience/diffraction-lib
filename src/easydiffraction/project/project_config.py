@@ -13,8 +13,12 @@ from easydiffraction.project.categories.report import Report
 from easydiffraction.project.categories.report import ReportFactory
 from easydiffraction.project.categories.table import Table
 from easydiffraction.project.categories.table import TableFactory
+from easydiffraction.project.categories.style import Style
+from easydiffraction.project.categories.style import StyleFactory
 from easydiffraction.project.categories.verbosity import Verbosity
 from easydiffraction.project.categories.verbosity import VerbosityFactory
+from easydiffraction.project.categories.view import View
+from easydiffraction.project.categories.view import ViewFactory
 
 
 class ProjectConfig(CategoryOwner):
@@ -37,6 +41,8 @@ class ProjectConfig(CategoryOwner):
         self._report = ReportFactory.create(ReportFactory.default_tag())
         self._table = TableFactory.create(TableFactory.default_tag())
         self._verbosity = VerbosityFactory.create(VerbosityFactory.default_tag())
+        self._view = ViewFactory.create(ViewFactory.default_tag())
+        self._style = StyleFactory.create(StyleFactory.default_tag())
 
     @property
     def info(self) -> ProjectInfo:
@@ -62,6 +68,16 @@ class ProjectConfig(CategoryOwner):
     def verbosity(self) -> Verbosity:
         """Verbosity configuration category."""
         return self._verbosity
+
+    @property
+    def view(self) -> View:
+        """Structure-view configuration category."""
+        return self._view
+
+    @property
+    def style(self) -> Style:
+        """Structure-view styling category."""
+        return self._style
 
     @property
     def as_cif(self) -> str:

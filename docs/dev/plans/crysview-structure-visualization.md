@@ -745,7 +745,7 @@ reach end-to-end (P1.1–P1.12) before any Three.js work (P1.13–P1.15).
   - Register `View` in `project/categories/view/__init__.py`.
   - Commit: `Add switchable view category for renderer selection`.
 
-- [ ] **P1.10 — Wire `project.view` / `project.style` + CIF
+- [x] **P1.10 — Wire `project.view` / `project.style` + CIF
       persistence**
   - Files: existing `src/easydiffraction/project/project.py`,
     `src/easydiffraction/project/project_config.py` (+ the
