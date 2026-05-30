@@ -86,11 +86,11 @@ plan-level structural choices confirmed with the author at plan start.
   `threejs` (notebook + standalone HTML), shipping together exactly as
   the `asciichartpy` and `plotly` chart engines do. Qt Quick 3D is
   deferred.
-- **Switchable `view` selector** (§2): `project.rendering_structure.type` (`'auto'`
+- **Switchable `rendering_structure` selector** (§2): `project.rendering_structure.type` (`'auto'`
   default, resolving to `'threejs'` in Jupyter / `'ascii'` in a
   terminal), CIF `_rendering_structure.type`, following the category-owned selector
-  contract with a private `_swap_rendering_structure` Family B rebind. No `view_type`
-  setter, no `show_supported_view_types()`.
+  contract with a private `_swap_rendering_structure` Family B rebind. No `rendering_structure_type`
+  setter, no `show_supported_rendering_structure_types()`.
 - **`structure()` entry point** (§3):
   `project.display.structure(struct_name=...)` parallel to
   `pattern(expt_name=...)`, with `include=` reusing the pattern
@@ -755,8 +755,8 @@ reach end-to-end (P1.1–P1.12) before any Three.js work (P1.13–P1.15).
   - Files: existing `src/easydiffraction/project/project.py`,
     `src/easydiffraction/project/project_config.py` (+ the
     project-config CIF deserializer hook).
-  - Add read-only `view` / `style` properties on `Project` (mirror
-    `chart` / `table` at `project.py:315`) and the private `_swap_rendering_structure`
+  - Add read-only `rendering_structure` / `style` properties on `Project` (mirror
+    `rendering_plot` / `rendering_table` at `project.py:315`) and the private `_swap_rendering_structure`
     hook (mirror `_swap_rendering_plot` at `project.py:238`) that rebinds the
     active `Viewer` engine.
   - Instantiate `RenderingStructureFactory` / `StyleFactory` defaults in

@@ -109,21 +109,22 @@ the `ascii` and `plotly` chart engines do; Qt Quick 3D follows for the
 GUI.
 
 A switchable engine selector is added on the project owner, parallel to
-`project.rendering_plot` / `project.rendering_table`. It is named `view`:
+`project.rendering_plot` / `project.rendering_table`. It is named
+`rendering_structure`:
 
 ```python
 project.rendering_structure.type = 'auto'   # default: 'threejs' in Jupyter, 'ascii' in a terminal
 project.rendering_structure.show_supported()
 ```
 
-with CIF tag `_rendering_structure.type`. The name is kept short and parallel to
-`chart` / `table`, and follows the category-owned selector contract:
+with CIF tag `_rendering_structure.type`. The name parallels
+`rendering_plot` / `rendering_table`, and follows the category-owned selector contract:
 `project.rendering_structure` is a read-only attribute on the owner;
 `project.rendering_structure.type` is the writable selector;
 `project.rendering_structure.show_supported()` lists engines. Switching `type` calls
 the owner's private `_swap_rendering_structure` hook, which rebinds the active renderer
-— the same Family B rebinding the chart engine selector uses — so no
-public `view_type` setter or `show_supported_view_types()` is added. The
+— the same Family B rebinding the plot engine selector uses — so no
+public `rendering_structure_type` setter or `show_supported_rendering_structure_types()` is added. The
 default is `auto`, which resolves at draw time to `threejs` in a Jupyter
 notebook and `ascii` in a terminal — exactly as `_rendering_plot.type` /
 `_rendering_table.type` resolve their environment defaults.
