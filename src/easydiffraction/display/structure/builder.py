@@ -144,6 +144,7 @@ def _atom_primitive(atom, centre, *, style, matrix, cell, aniso_collection):
     element = _element_symbol(atom.type_symbol.value)
     colour = color_for(element, style.color_scheme.value)
     radius, substituted = radius_for(element, style.radius_model.value)
+    ball_radius = radius * style.atom_scale.value
     label = atom.label.value
     adp_type = AdpTypeEnum(atom.adp_type.value)
     scale = float(chi.ppf(style.adp_probability.value, 3))
@@ -160,9 +161,9 @@ def _atom_primitive(atom, centre, *, style, matrix, cell, aniso_collection):
         if adp_type is AdpTypeEnum.BISO:
             u_iso = u_iso / EIGHT_PI_SQ
         iso_radius = float(np.sqrt(max(u_iso, 0.0))) * scale
-        primitive = AtomSphere(_vec3(centre), iso_radius or radius, colour, label)
+        primitive = AtomSphere(_vec3(centre), iso_radius or ball_radius, colour, label)
     else:
-        primitive = AtomSphere(_vec3(centre), radius, colour, label)
+        primitive = AtomSphere(_vec3(centre), ball_radius, colour, label)
     return _SceneAtom(primitive, centre, element, colour, label), substituted
 
 
@@ -175,7 +176,7 @@ def _wedge_sphere(rows, centre, *, style):
     else:
         wedges = [OccupancyWedge(occ, colour) for _, occ, _, colour, _ in rows]
         wedges.append(OccupancyWedge(1.0 - total, VACANCY_COLOR))
-    radius = max(radius for _, _, _, _, radius in rows)
+    radius = max(radius for _, _, _, _, radius in rows) * style.atom_scale.value
     major = max(rows, key=lambda r: r[1])
     label = '/'.join(r[0].label.value for r in rows)
     primitive = OccupancyWedgeSphere(_vec3(centre), radius, tuple(wedges), label)
@@ -240,11 +241,14 @@ def _cell_edges(matrix: np.ndarray) -> CellEdges:
 
 
 def _axis_triad(matrix: np.ndarray) -> AxisTriad:
-    length = 1.3 * max(float(np.linalg.norm(matrix[:, i])) for i in range(3))
+    lengths = [float(np.linalg.norm(matrix[:, i])) for i in range(3)]
+    extra = 0.3 * max(lengths)
     arrows = []
     for i, letter in enumerate('abc'):
-        direction = matrix[:, i] / float(np.linalg.norm(matrix[:, i]))
-        arrows.append(AxisArrow(_vec3(direction * length), AXIS_COLORS[letter], letter))
+        direction = matrix[:, i] / lengths[i]
+        arrows.append(
+            AxisArrow(_vec3(direction * (lengths[i] + extra)), AXIS_COLORS[letter], letter)
+        )
     return AxisTriad((0.0, 0.0, 0.0), (arrows[0], arrows[1], arrows[2]))
 
 

@@ -75,6 +75,15 @@ class Style(CategoryItem):
             ),
             cif_handler=CifHandler(names=['_style.adp_probability']),
         )
+        self._atom_scale = NumericDescriptor(
+            name='atom_scale',
+            description='Ball-atom radius as a fraction of the model radius.',
+            value_spec=AttributeSpec(
+                default=0.5,
+                validator=RangeValidator(gt=0.0, le=1.0),
+            ),
+            cif_handler=CifHandler(names=['_style.atom_scale']),
+        )
 
     @property
     def atom_shape(self) -> StringDescriptor:
@@ -112,6 +121,15 @@ class Style(CategoryItem):
     def adp_probability(self, value: float) -> None:
         self._adp_probability.value = value
 
+    @property
+    def atom_scale(self) -> NumericDescriptor:
+        """Ball-atom radius as a fraction of the model radius (0, 1]."""
+        return self._atom_scale
+
+    @atom_scale.setter
+    def atom_scale(self, value: float) -> None:
+        self._atom_scale.value = value
+
     def show_supported(self) -> None:
         """List the accepted values for every styling setting."""
         console.paragraph('Supported style settings')
@@ -122,6 +140,7 @@ class Style(CategoryItem):
         ):
             console.print(f"{setting}: {', '.join(member.value for member in enum)}")
         console.print('adp_probability: float in the open interval (0, 1)')
+        console.print('atom_scale: float in (0, 1] (1 = space-filling model radius)')
 
     @property
     def as_cif(self) -> str:
