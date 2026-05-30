@@ -31,6 +31,10 @@
   #{{ container_id }} .mb.lt { font: 700 15px/1 Georgia, 'Times New Roman', serif; }
   #{{ container_id }} .mb.tog { color: #b9bdc6; }
   #{{ container_id }} .mb.tog.on { color: #2a3f5f; background: #e7ecf5; border-color: #c6d0e2; }
+  #{{ container_id }} .mb-select {
+    height: 30px; border: 1px solid #dcdcdc; border-radius: 6px; background: #f5f5f6;
+    color: #2a3f5f; font-size: 12px; padding: 0 4px; cursor: pointer;
+  }
   #{{ container_id }} .cv-legend { top: 10px; left: 10px; padding: 8px 11px; line-height: 1.7; white-space: nowrap; text-align: left; }
   #{{ container_id }} .cv-legend .sw {
     display: inline-block; width: 11px; height: 11px; border-radius: 50%;
@@ -84,6 +88,8 @@ const tooltip = root.querySelector('.cv-tooltip');
 const col = (rgb) => new THREE.Color(rgb[0] / 255, rgb[1] / 255, rgb[2] / 255);
 const vec = (xyz) => new THREE.Vector3(xyz[0], xyz[1], xyz[2]);
 const rgbCss = (rgb) => `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`;
+const elementOf = (label) => (label.match(/[A-Z][a-z]?/) || [label])[0];
+const PALETTES = SCENE.palettes || {};
 
 let width = host.clientWidth || 640;
 let height = host.clientHeight || 480;
@@ -123,20 +129,23 @@ for (const a of SCENE.atoms) {
   mesh.position.copy(vec(a.centre));
   mesh.scale.setScalar(a.radius);
   mesh.userData.label = a.label;
+  mesh.userData.element = elementOf(a.label);
   groups.atoms.add(mesh);
 }
 
 for (const s of SCENE.wedgeSpheres) {
   let phi = 0;
-  for (const w of s.wedges) {
+  const parts = s.label.split('/');
+  s.wedges.forEach((w, i) => {
     const span = w.fraction * Math.PI * 2;
     const geo = new THREE.SphereGeometry(s.radius, Math.max(6, Math.round(48 * w.fraction)), 16, phi, span);
     const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: col(w.colour), side: THREE.DoubleSide }));
     mesh.position.copy(vec(s.centre));
     mesh.userData.label = s.label;
+    mesh.userData.element = parts[i] || null;   // null for the vacancy wedge
     groups.atoms.add(mesh);
     phi += span;
-  }
+  });
 }
 
 for (const e of SCENE.ellipsoids) {
@@ -146,6 +155,7 @@ for (const e of SCENE.ellipsoids) {
   const basis = new THREE.Matrix4().makeBasis(vec(e.orientation[0]), vec(e.orientation[1]), vec(e.orientation[2]));
   mesh.quaternion.setFromRotationMatrix(basis);
   mesh.userData.label = e.label;
+  mesh.userData.element = elementOf(e.label);
   groups.atoms.add(mesh);
 }
 
@@ -341,7 +351,8 @@ if (hasFeatureToggle) {
   modebar.appendChild(featureGroup);
 }
 
-const addLegendItem = (background, text) => {
+const legendSwatches = [];
+const addLegendItem = (background, text, symbol) => {
   const item = document.createElement('div');
   const swatch = document.createElement('span');
   swatch.className = 'sw';
@@ -349,12 +360,49 @@ const addLegendItem = (background, text) => {
   item.appendChild(swatch);
   item.appendChild(document.createTextNode(text));
   legend.appendChild(item);
+  if (symbol) legendSwatches.push({ symbol, el: swatch });
 };
 
 // One solid swatch per distinct element, mirroring the PDF report legend.
-for (const entry of SCENE.legend) addLegendItem(rgbCss(entry.colour), entry.symbol);
+for (const entry of SCENE.legend) addLegendItem(rgbCss(entry.colour), entry.symbol, entry.symbol);
 
 if (!legend.children.length) legend.style.display = 'none';
+
+// Colour-scheme selector: recolours atoms and legend swatches live. The
+// crystallography stays in Python; the JS only picks a pre-computed palette.
+const schemeNames = Object.keys(PALETTES);
+if (schemeNames.length > 1 && SCENE.legend.length) {
+  const matches = (a, b) => a && b && a[0] === b[0] && a[1] === b[1] && a[2] === b[2];
+  const first = SCENE.legend[0];
+  let current = schemeNames.find((name) => matches(PALETTES[name][first.symbol], first.colour))
+    || schemeNames[0];
+  const applyScheme = (name) => {
+    const palette = PALETTES[name] || {};
+    groups.atoms.traverse((obj) => {
+      if (obj.isMesh && palette[obj.userData.element]) {
+        obj.material.color.copy(col(palette[obj.userData.element]));
+      }
+    });
+    for (const { symbol, el } of legendSwatches) {
+      if (palette[symbol]) el.style.background = rgbCss(palette[symbol]);
+    }
+  };
+  const select = document.createElement('select');
+  select.className = 'mb-select';
+  select.title = 'Colour scheme';
+  for (const name of schemeNames) {
+    const opt = document.createElement('option');
+    opt.value = name;
+    opt.textContent = name;
+    opt.selected = name === current;
+    select.appendChild(opt);
+  }
+  select.addEventListener('change', () => applyScheme(select.value));
+  const schemeGroup = document.createElement('div');
+  schemeGroup.className = 'mb-grp';
+  schemeGroup.appendChild(select);
+  modebar.appendChild(schemeGroup);
+}
 
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();

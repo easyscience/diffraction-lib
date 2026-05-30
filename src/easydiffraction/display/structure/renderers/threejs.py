@@ -12,7 +12,9 @@ import uuid
 from jinja2 import Environment
 from jinja2 import PackageLoader
 
+from easydiffraction.display.structure.assets.colors import color_for
 from easydiffraction.display.structure.assets.colors import theme_colors
+from easydiffraction.display.structure.enums import ColorSchemeEnum
 from easydiffraction.display.structure.renderers.base import StructureRendererBase
 from easydiffraction.display.structure.scene import StructureScene
 from easydiffraction.utils._vendored.theme_detect import is_dark
@@ -102,6 +104,11 @@ def _scene_payload(scene: StructureScene) -> dict:
         'axes': axes,
         'labels': [{'anchor': label.anchor, 'text': label.text} for label in scene.labels],
         'legend': [{'symbol': entry.symbol, 'colour': entry.colour} for entry in scene.legend],
+        'palettes': {
+            scheme.value: {entry.symbol: color_for(entry.symbol, scheme.value)
+                           for entry in scene.legend}
+            for scheme in ColorSchemeEnum
+        },
     }
 
 
