@@ -421,7 +421,7 @@ exceptions.
 Ordered foundation-first: the scene model, builder, and ASCII engine
 reach end-to-end (P1.1–P1.12) before any Three.js work (P1.13–P1.15).
 
-- [ ] **P1.1 — Add viewer + styling enums**
+- [x] **P1.1 — Add viewer + styling enums**
   - Files: new `src/easydiffraction/display/structure/__init__.py`,
     `src/easydiffraction/display/structure/enums.py`.
   - Define four `(str, Enum)` classes per the Enum-Backed Closed Values
