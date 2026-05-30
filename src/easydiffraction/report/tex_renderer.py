@@ -425,13 +425,13 @@ def _structure_asset_stem(struct_id: str) -> str:
 
 
 def _structure_figure_paths(context: dict[str, object]) -> dict[str, str]:
-    """Return expected structure-figure PDF paths for TeX rendering."""
+    """Return expected structure-figure PNG paths for TeX rendering."""
     paths: dict[str, str] = {}
     for structure in context.get('structures') or []:
         if not isinstance(structure, dict):
             continue
         struct_id = str(structure.get('id') or 'structure')
-        paths[struct_id] = f'data/{_structure_asset_stem(struct_id)}.pdf'
+        paths[struct_id] = f'data/{_structure_asset_stem(struct_id)}.png'
     return paths
 
 
@@ -440,13 +440,13 @@ def _write_structure_assets(
     context: dict[str, object],
     out_dir: pathlib.Path,
 ) -> dict[str, str]:
-    """Write one standalone TikZ structure figure per structure."""
+    """Write one z-buffered PNG structure figure per structure."""
     from easydiffraction.display.structure.builder import build_scene  # noqa: PLC0415
     from easydiffraction.display.structure.builder import (  # noqa: PLC0415
         structure_feature_availability,
     )
-    from easydiffraction.display.structure.renderers.tikz import (  # noqa: PLC0415
-        TikzStructureRenderer,
+    from easydiffraction.display.structure.renderers.raster import (  # noqa: PLC0415
+        RasterStructureRenderer,
     )
 
     del context
@@ -455,7 +455,7 @@ def _write_structure_assets(
     if not callable(values):
         return {}
 
-    renderer = TikzStructureRenderer()
+    renderer = RasterStructureRenderer()
     window = project.rendering_structure.view_range()
     style = project.style
     data_dir = out_dir / 'data'
@@ -467,12 +467,9 @@ def _write_structure_assets(
         availability = structure_feature_availability(structure, style=style)
         features = project.display._resolve_structure_features('auto', availability)
         scene = build_scene(structure, style=style, view_range=window, features=features)
-        figure_path = data_dir / f'{_structure_asset_stem(struct_id)}.tex'
-        figure_path.write_text(
-            renderer.render(scene, features=features, axes_on_top=False),
-            encoding='utf-8',
-        )
-        figure_paths[struct_id] = f'data/{figure_path.stem}.pdf'
+        figure_path = data_dir / f'{_structure_asset_stem(struct_id)}.png'
+        figure_path.write_bytes(renderer.render_png(scene, features=features))
+        figure_paths[struct_id] = f'data/{figure_path.name}'
     return figure_paths
 
 

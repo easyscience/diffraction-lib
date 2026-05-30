@@ -32,6 +32,7 @@ from easydiffraction.display.structure.scene import AxisTriad
 from easydiffraction.display.structure.scene import Bond
 from easydiffraction.display.structure.scene import CellEdge
 from easydiffraction.display.structure.scene import CellEdges
+from easydiffraction.display.structure.scene import LegendEntry
 from easydiffraction.display.structure.scene import OccupancyWedge
 from easydiffraction.display.structure.scene import OccupancyWedgeSphere
 from easydiffraction.display.structure.scene import StructureScene
@@ -271,6 +272,16 @@ def _axis_triad(matrix: np.ndarray) -> AxisTriad:
     return AxisTriad((0.0, 0.0, 0.0), (arrows[0], arrows[1], arrows[2]))
 
 
+def _legend(sites, style) -> tuple[LegendEntry, ...]:
+    """Return one colour swatch per distinct element, in first-seen order."""
+    entries: dict[str, tuple[int, int, int]] = {}
+    for atom in sites:
+        element = _element_symbol(atom.type_symbol.value)
+        if element not in entries:
+            entries[element] = color_for(element, style.color_scheme.value)
+    return tuple(LegendEntry(symbol, colour) for symbol, colour in entries.items())
+
+
 def build_scene(structure, *, style, view_range, features) -> StructureScene:
     """
     Build a renderer-neutral scene from a structure and resolved features.
@@ -328,6 +339,7 @@ def build_scene(structure, *, style, view_range, features) -> StructureScene:
         axes=_axis_triad(matrix) if 'axes' in features else None,
         labels=tuple(TextLabel(_vec3(a.centre), a.label) for a in scene_atoms)
         if 'labels' in features else (),
+        legend=_legend(sites, style) if 'atoms' in features else (),
     )
 
 

@@ -101,6 +101,7 @@ def _scene_payload(scene: StructureScene) -> dict:
         'cellEdges': edges,
         'axes': axes,
         'labels': [{'anchor': label.anchor, 'text': label.text} for label in scene.labels],
+        'legend': [{'symbol': entry.symbol, 'colour': entry.colour} for entry in scene.legend],
     }
 
 

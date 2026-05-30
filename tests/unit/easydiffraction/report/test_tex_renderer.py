@@ -461,7 +461,7 @@ def test_save_tex_report_removes_stale_managed_bundle_dirs(tmp_path):
     assert not (tex_dir / 'styles').exists()
 
 
-def test_save_tex_report_writes_tikz_structure_figure(tmp_path):
+def test_save_tex_report_writes_structure_figure_png(tmp_path):
     import easydiffraction as ed
 
     from easydiffraction.report.tex_renderer import save_tex_report
@@ -482,9 +482,7 @@ def test_save_tex_report_writes_tikz_structure_figure(tmp_path):
     tex_path = tmp_path / 'report.tex'
     save_tex_report(project, project.report.data_context(), path=tex_path)
 
-    figure_path = tex_path.parent / 'data' / 'struct_nacl.tex'
+    figure_path = tex_path.parent / 'data' / 'struct_nacl.png'
     assert figure_path.exists()
-    figure_text = figure_path.read_text(encoding='utf-8')
-    assert '\\begin{tikzpicture}' in figure_text
-    assert '\\shade[ball color' in figure_text
-    assert 'data/struct_nacl.pdf' in tex_path.read_text(encoding='utf-8')
+    assert figure_path.read_bytes().startswith(b'\x89PNG\r\n\x1a\n')
+    assert 'data/struct_nacl.png' in tex_path.read_text(encoding='utf-8')

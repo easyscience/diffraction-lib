@@ -84,7 +84,6 @@ const tooltip = root.querySelector('.cv-tooltip');
 const col = (rgb) => new THREE.Color(rgb[0] / 255, rgb[1] / 255, rgb[2] / 255);
 const vec = (xyz) => new THREE.Vector3(xyz[0], xyz[1], xyz[2]);
 const rgbCss = (rgb) => `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`;
-const elementOf = (label) => (label.match(/[A-Z][a-z]?/) || [label])[0];
 
 let width = host.clientWidth || 640;
 let height = host.clientHeight || 480;
@@ -239,7 +238,7 @@ if (cellBasis.length === 3) {
   const bHat = cellBasis[1].clone().normalize();
   const cHat = cellBasis[2].clone().normalize();
   viewUp = cHat.clone();
-  viewDir = aHat.multiplyScalar(1.0).add(bHat.multiplyScalar(0.45)).add(cHat.multiplyScalar(0.55)).normalize();
+  viewDir = aHat.multiplyScalar(1.0).add(bHat.multiplyScalar(0.22)).add(cHat.multiplyScalar(0.33)).normalize();
 } else {
   viewUp = new THREE.Vector3(0, 1, 0);
   viewDir = new THREE.Vector3(1.0, 0.8, 1.5).normalize();
@@ -352,30 +351,8 @@ const addLegendItem = (background, text) => {
   legend.appendChild(item);
 };
 
-const seenElements = new Map();
-const collectElement = (label, colour) => {
-  const element = elementOf(label);
-  if (!seenElements.has(element)) seenElements.set(element, colour);
-};
-SCENE.atoms.forEach((a) => collectElement(a.label, a.colour));
-SCENE.ellipsoids.forEach((e) => collectElement(e.label, e.colour));
-for (const [element, colour] of seenElements) addLegendItem(rgbCss(colour), element);
-
-const seenWedges = new Set();
-for (const s of SCENE.wedgeSpheres) {
-  if (seenWedges.has(s.label)) continue;
-  seenWedges.add(s.label);
-  let acc = 0;
-  const stops = s.wedges.map((w) => {
-    const start = acc * 100;
-    acc += w.fraction;
-    return `${rgbCss(w.colour)} ${start.toFixed(1)}% ${(acc * 100).toFixed(1)}%`;
-  });
-  const parts = s.label.split('/');
-  const ratio = s.wedges.slice(0, parts.length).map((w) => Math.round(w.fraction * 100));
-  const text = ratio.length > 1 ? `${s.label} (${ratio.join('/')})` : s.label;
-  addLegendItem(`linear-gradient(90deg, ${stops.join(', ')})`, text);
-}
+// One solid swatch per distinct element, mirroring the PDF report legend.
+for (const entry of SCENE.legend) addLegendItem(rgbCss(entry.colour), entry.symbol);
 
 if (!legend.children.length) legend.style.display = 'none';
 

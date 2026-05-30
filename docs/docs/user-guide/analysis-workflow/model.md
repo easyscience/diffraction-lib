@@ -238,8 +238,8 @@ project.display.structure(
 ```
 
 The same view is embedded automatically in the generated reports — an
-interactive Three.js view in the HTML report and a static vector figure
-in the TeX/PDF report (see the [Report](report.md) section).
+interactive Three.js view in the HTML report and a static, depth-rendered
+image in the TeX/PDF report (see the [Report](report.md) section).
 
 ## Saving a Model
 

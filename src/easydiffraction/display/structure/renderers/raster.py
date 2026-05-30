@@ -1,0 +1,379 @@
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
+# SPDX-License-Identifier: BSD-3-Clause
+"""Raster renderer: a z-buffered PNG structure image for reports.
+
+A tiny software rasteriser with a per-pixel depth buffer, so hidden-surface
+removal is exact for any structure. Spheres, bonds, cell edges, and axis
+arrows are all depth-tested against the same numpy buffer; Pillow then draws
+the a/b/c axis labels and the element legend on top and encodes the PNG.
+"""
+
+from __future__ import annotations
+
+import io
+from typing import TYPE_CHECKING
+
+import numpy as np
+
+if TYPE_CHECKING:
+    from PIL import ImageFont
+
+_CANVAS = 1800
+_SUPERSAMPLE = 2
+_MARGIN_FRAC = 0.06
+_BOND_RADIUS = 0.06
+_AMBIENT = 0.55  # matches the Three.js AmbientLight intensity
+_LIGHT = np.array([0.42, 0.5, 0.75])  # (right, up, toward-camera)
+_LIGHT = _LIGHT / np.linalg.norm(_LIGHT)
+_FILL = np.array([-0.42, -0.25, -0.5])  # back-fill, mirrors the Three.js fill light
+_FILL = _FILL / np.linalg.norm(_FILL)
+_LABEL_FRAC = 0.040  # axis-letter font size, as a fraction of the canvas
+_LEGEND_FRAC = 0.032  # legend font size, as a fraction of the canvas
+# Axis-arrow proportions, as fractions of the arrow length (match the Three.js
+# buildArrow so the PDF and HTML axis triads look identical).
+_AXIS_SHAFT_RADIUS_FRAC = 0.012
+_AXIS_HEAD_RADIUS_FRAC = 0.048
+_AXIS_HEAD_LENGTH_FRAC = 0.12
+
+
+def _unit(vector: np.ndarray) -> np.ndarray:
+    """Return the unit vector, or the input when it has no length."""
+    length = float(np.linalg.norm(vector))
+    return vector / length if length > 1e-9 else vector
+
+
+def _view_basis(scene) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Return (view_dir, right, up) for a trimetric, c-axis-up projection."""
+    if scene.axes is not None:
+        a_hat = _unit(np.asarray(scene.axes.axes[0].vector, dtype=float))
+        b_hat = _unit(np.asarray(scene.axes.axes[1].vector, dtype=float))
+        c_hat = _unit(np.asarray(scene.axes.axes[2].vector, dtype=float))
+        view_up = c_hat
+        view_dir = _unit(1.0 * a_hat + 0.22 * b_hat + 0.33 * c_hat)
+    else:
+        view_up = np.array([0.0, 1.0, 0.0])
+        view_dir = _unit(np.array([1.0, 0.8, 1.5]))
+    right = _unit(np.cross(view_up, view_dir))
+    up = _unit(np.cross(view_dir, right))
+    return view_dir, right, up
+
+
+def _diffuse_intensity(normal: np.ndarray) -> np.ndarray:
+    """Lambertian key-plus-fill intensity for a unit surface-normal field."""
+    key = np.clip(normal @ _LIGHT, 0.0, 1.0)
+    fill = 0.4 * np.clip(normal @ _FILL, 0.0, 1.0)
+    return np.clip(_AMBIENT + (1.0 - _AMBIENT) * (key + fill), 0.0, 1.0)
+
+
+def _font(pixels: int) -> ImageFont.FreeTypeFont:
+    """Return the scalable default font at the requested pixel size."""
+    from PIL import ImageFont  # noqa: PLC0415
+
+    return ImageFont.load_default(size=pixels)
+
+
+def _scene_points(scene) -> np.ndarray:
+    """Return all 3D anchor points used to centre and scale the view."""
+    points: list[tuple[float, float, float]] = []
+    points.extend(a.centre for a in scene.atoms)
+    points.extend(s.centre for s in scene.occupancy_spheres)
+    points.extend(e.centre for e in scene.ellipsoids)
+    if scene.cell_edges is not None:
+        for edge in scene.cell_edges.edges:
+            points.append(edge.start)
+            points.append(edge.end)
+    if scene.axes is not None:
+        origin = np.asarray(scene.axes.origin, dtype=float)
+        points.append(scene.axes.origin)
+        for arrow in scene.axes.axes:
+            points.append(tuple(origin + np.asarray(arrow.vector, dtype=float)))
+    return np.array(points, dtype=float) if points else np.zeros((1, 3))
+
+
+def _max_radius(scene) -> float:
+    """Return the largest drawn atom radius (for view padding)."""
+    radii = [a.radius for a in scene.atoms]
+    radii += [s.radius for s in scene.occupancy_spheres]
+    radii += [max(e.semi_axes) for e in scene.ellipsoids]
+    return max(radii) if radii else 0.0
+
+
+class RasterStructureRenderer:
+    """Render a structure scene as a z-buffered PNG image."""
+
+    SUPPORTED = frozenset({'atoms', 'bonds', 'cell', 'axes'})
+
+    def render_png(self, scene, *, features: frozenset[str]) -> bytes:
+        """Return PNG bytes of the scene rendered with a per-pixel z-buffer."""
+        view_dir, right, up = _view_basis(scene)
+        points = _scene_points(scene)
+        target = points.mean(axis=0)
+
+        size = _CANVAS * _SUPERSAMPLE
+        relative = points - target
+        screen = np.column_stack((relative @ right, relative @ up))
+        pad = _max_radius(scene)
+        lo = screen.min(axis=0) - pad
+        hi = screen.max(axis=0) + pad
+        extent = float((hi - lo).max()) or 1.0
+        scale = (size * (1.0 - 2.0 * _MARGIN_FRAC)) / extent
+        centre2d = (lo + hi) / 2.0
+
+        def project(point: object) -> tuple[float, float, float]:
+            rel = np.asarray(point, dtype=float) - target
+            sx = (float(rel @ right) - centre2d[0]) * scale + size / 2.0
+            sy = size / 2.0 - (float(rel @ up) - centre2d[1]) * scale
+            return sx, sy, float(rel @ view_dir)
+
+        colour = np.ones((size, size, 3), dtype=np.float32)
+        depth = np.full((size, size), -np.inf, dtype=np.float32)
+
+        if 'cell' in features and scene.cell_edges is not None:
+            for edge in scene.cell_edges.edges:
+                self._capsule(colour, depth, project, scale, edge.start, edge.end,
+                              0.012, (90, 90, 90), (90, 90, 90))
+        if 'axes' in features and scene.axes is not None:
+            self._axes(colour, depth, project, (right, up, view_dir), scene.axes)
+        if 'bonds' in features:
+            for bond in scene.bonds:
+                self._capsule(colour, depth, project, scale, bond.start, bond.end,
+                              _BOND_RADIUS, bond.start_colour, bond.end_colour)
+        if 'atoms' in features:
+            for atom in scene.atoms:
+                self._sphere(colour, depth, project, scale, atom.centre, atom.radius, atom.colour)
+            for sphere in scene.occupancy_spheres:
+                self._sphere(colour, depth, project, scale, sphere.centre, sphere.radius,
+                             (128, 128, 128), wedges=sphere.wedges)
+            for ellipsoid in scene.ellipsoids:
+                self._sphere(colour, depth, project, scale, ellipsoid.centre,
+                             max(ellipsoid.semi_axes), ellipsoid.colour)
+
+        downsampled = (
+            colour.reshape(_CANVAS, _SUPERSAMPLE, _CANVAS, _SUPERSAMPLE, 3).mean(axis=(1, 3))
+        )
+        rgb = np.clip(downsampled * 255.0, 0, 255).astype(np.uint8)
+        return self._compose_png(rgb, scene, project, features)
+
+    @staticmethod
+    def _compose_png(rgb, scene, project, features) -> bytes:
+        """Draw axis labels and the legend with Pillow, then encode the PNG."""
+        from PIL import Image  # noqa: PLC0415
+        from PIL import ImageDraw  # noqa: PLC0415
+
+        image = Image.fromarray(rgb, mode='RGB')
+        draw = ImageDraw.Draw(image)
+        if 'axes' in features and scene.axes is not None:
+            RasterStructureRenderer._draw_axis_labels(draw, scene.axes, project)
+        if scene.legend:
+            RasterStructureRenderer._draw_legend(draw, scene.legend)
+        buffer = io.BytesIO()
+        image.save(buffer, format='PNG')
+        return buffer.getvalue()
+
+    @staticmethod
+    def _draw_axis_labels(draw, axes, project) -> None:
+        """Place each axis letter just beyond its arrow tip, always on top."""
+        font = _font(int(_CANVAS * _LABEL_FRAC))
+        inset = int(_CANVAS * 0.02)
+        origin = np.asarray(axes.origin, dtype=float)
+        ox, oy, _od = project(axes.origin)
+        for arrow in axes.axes:
+            tip = origin + np.asarray(arrow.vector, dtype=float)
+            tx, ty, _td = project(tuple(tip))
+            lx = float(np.clip((ox + (tx - ox) * 1.08) / _SUPERSAMPLE, inset, _CANVAS - inset))
+            ly = float(np.clip((oy + (ty - oy) * 1.08) / _SUPERSAMPLE, inset, _CANVAS - inset))
+            draw.text((lx, ly), arrow.letter, font=font, fill=tuple(arrow.colour), anchor='mm')
+
+    @staticmethod
+    def _draw_legend(draw, legend) -> None:
+        """Draw element colour swatches and symbols in a top-left panel."""
+        font = _font(int(_CANVAS * _LEGEND_FRAC))
+        margin = int(_CANVAS * 0.025)
+        pad = int(_CANVAS * 0.014)
+        radius = int(_CANVAS * 0.015)
+        pitch = int(_CANVAS * 0.048)
+        gap = int(_CANVAS * 0.012)
+        text_width = max((draw.textlength(e.symbol, font=font) for e in legend), default=0.0)
+        panel_width = 2 * pad + 2 * radius + gap + int(text_width)
+        panel_height = pad + len(legend) * pitch
+        draw.rounded_rectangle(
+            (margin, margin, margin + panel_width, margin + panel_height),
+            radius=int(_CANVAS * 0.01), fill=(255, 255, 255), outline=(170, 170, 170),
+            width=max(1, int(_CANVAS * 0.0015)),
+        )
+        for index, entry in enumerate(legend):
+            cx = margin + pad
+            cy = margin + pad + radius + index * pitch
+            draw.ellipse(
+                (cx, cy - radius, cx + 2 * radius, cy + radius),
+                fill=tuple(entry.colour), outline=(60, 60, 60), width=max(1, int(_CANVAS * 0.0012)),
+            )
+            draw.text((cx + 2 * radius + gap, cy), entry.symbol,
+                      font=font, fill=(40, 40, 40), anchor='lm')
+
+    @staticmethod
+    def _sphere(colour, depth, project, scale, centre, radius, base, *, wedges=None) -> None:
+        size = colour.shape[0]
+        cx, cy, cd = project(centre)
+        r_px = radius * scale
+        if r_px < 0.5:
+            return
+        x0, x1 = max(0, int(cx - r_px)), min(size, int(cx + r_px) + 1)
+        y0, y1 = max(0, int(cy - r_px)), min(size, int(cy + r_px) + 1)
+        if x0 >= x1 or y0 >= y1:
+            return
+        ys, xs = np.mgrid[y0:y1, x0:x1]
+        dx = (xs - cx) / r_px
+        dy = (ys - cy) / r_px
+        rho2 = dx * dx + dy * dy
+        inside = rho2 <= 1.0
+        if not inside.any():
+            return
+        nz = np.sqrt(np.clip(1.0 - rho2, 0.0, 1.0))
+        surf_depth = cd + nz * radius
+        sub = depth[y0:y1, x0:x1]
+        update = inside & (surf_depth > sub)
+        if not update.any():
+            return
+        # Matte (Lambertian) shading to match the Three.js MeshStandardMaterial:
+        # normal in (right, up, toward-camera) space; image y is down.
+        normal = np.stack((dx, -dy, nz), axis=-1)
+        intensity = _diffuse_intensity(normal)[..., None]
+        base_rgb = RasterStructureRenderer._base_colours(dx, dy, base, wedges)
+        shade = np.clip(base_rgb * intensity, 0, 1)
+        sub[update] = surf_depth[update]
+        colour[y0:y1, x0:x1][update] = shade[update]
+
+    @staticmethod
+    def _base_colours(dx, dy, base, wedges) -> np.ndarray:
+        """Per-pixel base colour: a flat tint, or azimuthal occupancy wedges."""
+        if not wedges:
+            flat = np.asarray(base, dtype=np.float32) / 255.0
+            return np.broadcast_to(flat, dx.shape + (3,))
+        # Pie slices by screen-space azimuth (image y is down, so negate dy).
+        angle = (np.arctan2(-dy, dx) / (2.0 * np.pi)) % 1.0
+        base_rgb = np.empty(dx.shape + (3,), dtype=np.float32)
+        lo = 0.0
+        for wedge in wedges:
+            mask = (angle >= lo) & (angle < lo + wedge.fraction)
+            base_rgb[mask] = np.asarray(wedge.colour, dtype=np.float32) / 255.0
+            lo += wedge.fraction
+        base_rgb[angle >= lo] = np.asarray(wedges[-1].colour, dtype=np.float32) / 255.0
+        return base_rgb
+
+    @staticmethod
+    def _capsule(colour, depth, project, scale, p0, p1, radius, colour0, colour1) -> None:
+        size = colour.shape[0]
+        ax, ay, ad = project(p0)
+        bx, by, bd = project(p1)
+        r_px = max(radius * scale, 0.6)
+        x0 = max(0, int(min(ax, bx) - r_px))
+        x1 = min(size, int(max(ax, bx) + r_px) + 1)
+        y0 = max(0, int(min(ay, by) - r_px))
+        y1 = min(size, int(max(ay, by) + r_px) + 1)
+        if x0 >= x1 or y0 >= y1:
+            return
+        ys, xs = np.mgrid[y0:y1, x0:x1]
+        seg = np.array([bx - ax, by - ay], dtype=float)
+        length2 = float(seg @ seg) or 1.0
+        t = np.clip(((xs - ax) * seg[0] + (ys - ay) * seg[1]) / length2, 0.0, 1.0)
+        proj_x = ax + t * seg[0]
+        proj_y = ay + t * seg[1]
+        dist = np.hypot(xs - proj_x, ys - proj_y)
+        inside = dist <= r_px
+        if not inside.any():
+            return
+        nz = np.sqrt(np.clip(1.0 - (dist / r_px) ** 2, 0.0, 1.0))
+        surf_depth = ad + t * (bd - ad) + nz * radius
+        sub = depth[y0:y1, x0:x1]
+        update = inside & (surf_depth > sub)
+        if not update.any():
+            return
+        # Directional cylinder shading: normal perpendicular to the projected
+        # axis (image y is down), with the bulge as the toward-camera component.
+        normal = np.stack(((xs - proj_x) / r_px, -(ys - proj_y) / r_px, nz), axis=-1)
+        intensity = _diffuse_intensity(normal)[..., None]
+        c0 = np.asarray(colour0, dtype=np.float32) / 255.0
+        c1 = np.asarray(colour1, dtype=np.float32) / 255.0
+        base = np.where((t < 0.5)[..., None], c0, c1)
+        shade = np.clip(base * intensity, 0, 1)
+        sub[update] = surf_depth[update]
+        colour[y0:y1, x0:x1][update] = shade[update]
+
+    @staticmethod
+    def _triangle(colour, depth, v0, v1, v2, shade) -> None:
+        """Z-test and fill one flat-shaded triangle from projected vertices."""
+        size = colour.shape[0]
+        (x0, y0, d0), (x1, y1, d1), (x2, y2, d2) = v0, v1, v2
+        min_x = max(0, int(min(x0, x1, x2)))
+        max_x = min(size, int(max(x0, x1, x2)) + 1)
+        min_y = max(0, int(min(y0, y1, y2)))
+        max_y = min(size, int(max(y0, y1, y2)) + 1)
+        if min_x >= max_x or min_y >= max_y:
+            return
+        denom = (y1 - y2) * (x0 - x2) + (x2 - x1) * (y0 - y2)
+        if abs(denom) < 1e-9:
+            return
+        ys, xs = np.mgrid[min_y:max_y, min_x:max_x]
+        w0 = ((y1 - y2) * (xs - x2) + (x2 - x1) * (ys - y2)) / denom
+        w1 = ((y2 - y0) * (xs - x2) + (x0 - x2) * (ys - y2)) / denom
+        w2 = 1.0 - w0 - w1
+        inside = (w0 >= 0.0) & (w1 >= 0.0) & (w2 >= 0.0)
+        if not inside.any():
+            return
+        tri_depth = w0 * d0 + w1 * d1 + w2 * d2
+        sub = depth[min_y:max_y, min_x:max_x]
+        update = inside & (tri_depth > sub)
+        if not update.any():
+            return
+        sub[update] = tri_depth[update]
+        colour[min_y:max_y, min_x:max_x][update] = shade
+
+    def _arrow(self, colour, depth, project, basis, origin, vector, rgb) -> None:
+        """Draw a shaft cylinder and head cone as 3D triangles (orientation-safe)."""
+        right, up, view_dir = basis
+        length = float(np.linalg.norm(vector))
+        if length < 1e-9:
+            return
+        axis = vector / length
+        ref = np.array([0.0, 0.0, 1.0]) if abs(axis[2]) < 0.9 else np.array([0.0, 1.0, 0.0])
+        u = _unit(np.cross(ref, axis))
+        v = np.cross(axis, u)
+        shaft_r = _AXIS_SHAFT_RADIUS_FRAC * length
+        head_r = _AXIS_HEAD_RADIUS_FRAC * length
+        base = origin + axis * (length - _AXIS_HEAD_LENGTH_FRAC * length)
+        tip = origin + vector
+        flat = np.asarray(rgb, dtype=np.float32) / 255.0
+
+        def shade_for(world_normal: np.ndarray) -> np.ndarray:
+            cam = np.array([world_normal @ right, world_normal @ up, world_normal @ view_dir])
+            return np.clip(flat * float(_diffuse_intensity(cam)), 0.0, 1.0)
+
+        segments = 32
+        ring = [np.cos(angle) * u + np.sin(angle) * v
+                for angle in (2.0 * np.pi * i / segments for i in range(segments))]
+        for i in range(segments):
+            d0 = ring[i]
+            d1 = ring[(i + 1) % segments]
+            shaft_shade = shade_for(_unit(d0 + d1))
+            o0 = project(tuple(origin + shaft_r * d0))
+            o1 = project(tuple(origin + shaft_r * d1))
+            s0 = project(tuple(base + shaft_r * d0))
+            s1 = project(tuple(base + shaft_r * d1))
+            self._triangle(colour, depth, o0, o1, s1, shaft_shade)
+            self._triangle(colour, depth, o0, s1, s0, shaft_shade)
+            b0 = base + head_r * d0
+            b1 = base + head_r * d1
+            normal = _unit(np.cross(b1 - b0, tip - b0))
+            if normal @ (d0 + d1) < 0.0:
+                normal = -normal
+            self._triangle(colour, depth, project(tuple(b0)), project(tuple(b1)),
+                           project(tuple(tip)), shade_for(normal))
+            self._triangle(colour, depth, project(tuple(base)), project(tuple(b1)),
+                           project(tuple(b0)), shade_for(-axis))
+
+    def _axes(self, colour, depth, project, basis, axes) -> None:
+        origin = np.asarray(axes.origin, dtype=float)
+        for arrow in axes.axes:
+            self._arrow(colour, depth, project, basis, origin,
+                        np.asarray(arrow.vector, dtype=float), arrow.colour)

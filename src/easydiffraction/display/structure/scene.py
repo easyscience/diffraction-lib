@@ -119,6 +119,14 @@ class TextLabel:
 
 
 @dataclass(frozen=True, slots=True)
+class LegendEntry:
+    """One element's colour swatch and symbol for the structure legend."""
+
+    symbol: str
+    colour: Rgb
+
+
+@dataclass(frozen=True, slots=True)
 class StructureScene:
     """Renderer-neutral Cartesian primitives for one structure."""
 
@@ -131,3 +139,4 @@ class StructureScene:
     cell_edges: CellEdges | None = None
     axes: AxisTriad | None = None
     labels: tuple[TextLabel, ...] = ()
+    legend: tuple[LegendEntry, ...] = ()

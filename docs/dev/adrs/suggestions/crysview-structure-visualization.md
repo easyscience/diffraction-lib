@@ -102,14 +102,18 @@ logic. Renderer choice mirrors `project.rendering_plot.type`:
 - an ASCII renderer for terminal, CLI, and headless contexts;
 - a Three.js renderer for notebooks (embedded HTML/JS) and standalone
   HTML;
-- a TikZ renderer that emits a static, vector structure figure for the
-  TeX/PDF report — a 2D trimetric projection of the same scene, depth
-  sorted with ball-shaded atoms. It is **not** a user-selectable engine
-  (it is invoked by the report, like `pgfplots` is for the fit plot);
+- a raster renderer that emits a static, z-buffered PNG image for the
+  TeX/PDF report — a trimetric projection of the same scene with a
+  per-pixel depth buffer, so hidden-surface removal is exact (atoms,
+  bonds, cell edges, and axes all occlude correctly). It is **not** a
+  user-selectable engine (it is invoked by the report, like `pgfplots`
+  is for the fit plot). The z-buffer rasterisation is plain numpy; it
+  uses `Pillow` to draw the a/b/c axis labels and the element legend
+  and to encode the PNG;
 - a Qt Quick 3D renderer for the GUI is planned.
 
 ASCII and Three.js are the initial interactive engines, shipping together
-exactly as the `ascii` and `plotly` chart engines do; the TikZ renderer
+exactly as the `ascii` and `plotly` chart engines do; the raster renderer
 serves the TeX/PDF report, and Qt Quick 3D follows for the GUI.
 
 A switchable engine selector is added on the project owner, parallel to
