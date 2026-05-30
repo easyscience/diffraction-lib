@@ -172,7 +172,7 @@ Out of scope:
   Covered by the alignment ADR; the output file lives at
   `reports/<project>.cif` and is opt-in via `project.report.cif = True`.
 - Pre-existing project-level singleton categories (`_info.*`,
-  `_chart.*`, `_table.*`, `_verbosity.*`). Covered by the in-flight
+  `_rendering_plot.*`, `_rendering_table.*`, `_verbosity.*`). Covered by the in-flight
   [`python-cif-category-correspondence.md`](python-cif-category-correspondence.md).
   This ADR **does** add one new project-level singleton category,
   `_report.*`, alongside them (see §1.3 and the ADRs-amended list); that
@@ -213,7 +213,7 @@ The alignment ADR has already created the `project.report` facade
 extends it along two axes:
 
 - A new **configuration category** on `project.report` — persisted in
-  `project.cif`, matching the existing `project.chart`, `project.table`,
+  `project.cif`, matching the existing `project.rendering_plot`, `project.rendering_table`,
   `project.verbosity` config pattern — that records _which_ report
   formats `project.save()` emits and _how_.
 - A new set of **ad-hoc per-format methods** for explicit one-off writes
@@ -242,7 +242,7 @@ read by `project.save()` thereafter:
 
 Four per-format scalar booleans (`cif`, `html`, `tex`, `pdf`) plus
 `html_offline` — **five fields total**, all single-row in CIF. Matches
-the existing `project.chart`, `project.table`, `project.verbosity`
+the existing `project.rendering_plot`, `project.rendering_table`, `project.verbosity`
 scalar-config shape verbatim. All booleans default to `False`, so an
 unconfigured project produces no `reports/` directory at all.
 
@@ -388,7 +388,7 @@ unconditionally. They are explicit one-offs.
 #### 1.3 CIF persistence of the configuration
 
 The configuration category serialises to `project.cif` next to the other
-project-level singleton categories (`_info.*`, `_chart.*`, `_table.*`,
+project-level singleton categories (`_info.*`, `_rendering_plot.*`, `_rendering_table.*`,
 `_verbosity.*`). The CIF tag prefix is `_report.*` — a Set category with
 five scalar items, no loops:
 
@@ -402,8 +402,8 @@ _info.created        2026-05-26T12:00:00
 _info.last_modified  2026-05-26T15:42:00
 
 # ---- Chart / table / verbosity selectors (existing config) ----
-_chart.type          plotly
-_table.type          plotly
+_rendering_plot.type          plotly
+_rendering_table.type          plotly
 _verbosity.fit       short
 
 # ---- Report configuration (this ADR §1.3) ----
@@ -416,7 +416,7 @@ _report.html_offline  no
 
 All five items are scalar DDLm dotted entries — the category is declared
 `_definition.class Set` so a single value per item, no loops permitted.
-Matches the existing `_chart.*`, `_table.*`, `_verbosity.*` category
+Matches the existing `_rendering_plot.*`, `_rendering_table.*`, `_verbosity.*` category
 shape exactly. The `yes`/`no` boolean encoding follows the project's
 existing CIF boolean convention.
 
@@ -463,8 +463,8 @@ The split is summarised below.
 | Slot                                 | Pattern | CIF location                             | Python shape                                         |
 | ------------------------------------ | ------- | ---------------------------------------- | ---------------------------------------------------- |
 | `project.info`                       | A       | `project.cif` (`_info.*`)                | small `CategoryItem`                                 |
-| `project.chart`                      | A       | `project.cif` (`_chart.*`)               | `CategoryItem` (one field)                           |
-| `project.table`                      | A       | `project.cif` (`_table.*`)               | `CategoryItem` (one field)                           |
+| `project.rendering_plot`                      | A       | `project.cif` (`_rendering_plot.*`)               | `CategoryItem` (one field)                           |
+| `project.rendering_table`                      | A       | `project.cif` (`_rendering_table.*`)               | `CategoryItem` (one field)                           |
 | `project.verbosity`                  | A       | `project.cif` (`_verbosity.*`)           | `CategoryItem` (one field)                           |
 | **`project.report`** (this ADR)      | **A**   | **`project.cif` (`_report.*`)**          | **`CategoryItem` (five fields) plus action methods** |
 | `project.publication` (this ADR, §5) | A       | `project.cif` (`_publ_*` / `_journal_*`) | `CategoryOwner` of six sibling categories            |
@@ -483,8 +483,8 @@ Reasons `project.report` is Pattern A, not Pattern B:
   configuration, which already share `project.cif` for the same reason —
   they are all project-level preferences, not domain data.
 
-What makes `project.report` look heavier than `project.chart` /
-`project.table` / `project.verbosity` is the action methods on the
+What makes `project.report` look heavier than `project.rendering_plot` /
+`project.rendering_table` / `project.verbosity` is the action methods on the
 facade (`save_cif()`, `save_html()`, `show_report()`, `data_context()`,
 etc.). Those live on the Python class alongside the configuration
 fields, which is the facade-hybrid amendment to
@@ -893,7 +893,7 @@ Rationale for the config category (replacing the earlier flag-based and
 "auto on every save" positions):
 
 - Reports are a _project preference_, not a per-call argument.
-  `project.chart.type`, `project.table.type`, `project.verbosity.fit`
+  `project.rendering_plot.type`, `project.rendering_table.type`, `project.verbosity.fit`
   follow the same pattern — set once, persisted in `project.cif`,
   applied on every save.
 - `project.save()` has one job: save the project. With all report
@@ -1955,7 +1955,7 @@ every renderer (HTML, PDF, terminal, GUI) simultaneously.
      `_report.html_offline`). Set the configuration once through those
      booleans; `project.save()` applies it on every save thereafter.
      Replaces the flag with persisted configuration, matching the
-     existing `project.chart`, `project.table`, `project.verbosity`
+     existing `project.rendering_plot`, `project.rendering_table`, `project.verbosity`
      pattern.
   2. **`project.report.save()` surface redesigned.** The accepted
      `project.report.save()` is now a no-argument convenience that reads
@@ -2035,7 +2035,7 @@ every renderer (HTML, PDF, terminal, GUI) simultaneously.
      `project.analysis`, `project.report`. Persisted to `project.cif`
      next to the other project-level singleton categories.
   3. **Project-level singleton category enumeration extended.** The
-     accepted ADR enumerates `_info.*`, `_chart.*`, `_table.*`,
+     accepted ADR enumerates `_info.*`, `_rendering_plot.*`, `_rendering_table.*`,
      `_verbosity.*` as the project-level singleton categories owned by
      `project.cif`. This ADR adds two more to that enumeration:
      `_report.*` (this ADR §1.3) and `_publication.*` family (this ADR

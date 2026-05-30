@@ -16,15 +16,15 @@ saved in:
 project.cif
 ```
 
-Inside that file, generic category names such as `_info.*`, `_chart.*`,
-`_table.*`, and `_verbosity.*` are less ambiguous than they would be in
+Inside that file, generic category names such as `_info.*`, `_rendering_plot.*`,
+`_rendering_table.*`, and `_verbosity.*` are less ambiguous than they would be in
 a single monolithic CIF file. This opens the option of a strict
 one-to-one correspondence for project-owned singleton categories:
 
 ```text
 project.info.title        -> project.cif: _info.title
-project.chart.type        -> project.cif: _chart.type
-project.table.type        -> project.cif: _table.type
+project.rendering_plot.type        -> project.cif: _rendering_plot.type
+project.rendering_table.type        -> project.cif: _rendering_table.type
 project.verbosity.fit     -> project.cif: _verbosity.fit
 ```
 
@@ -55,7 +55,7 @@ to objects reached from the current `Project` root, for example
 
 | Current Python surface                           | Current saved location   | Current CIF block form | Notes                                                                                 |
 | ------------------------------------------------ | ------------------------ | ---------------------- | ------------------------------------------------------------------------------------- |
-| `project.info`, `project.chart`, `project.table` | `project.cif`            | bare categories        | Project-level singleton config.                                                       |
+| `project.info`, `project.rendering_plot`, `project.rendering_table` | `project.cif`            | bare categories        | Project-level singleton config.                                                       |
 | `project.report`                                 | `project.cif`            | bare category          | Project-owned report-output config; report methods render artifacts under `reports/`. |
 | `project.publication`                            | `project.cif`            | bare categories + loop | Journal-submission metadata under `_journal_*` / `_publ_*` categories.                |
 | `project.verbosity`                              | `project.cif`            | bare category          | Project-owned fit-output verbosity category backed by `VerbosityEnum`.                |
@@ -76,10 +76,10 @@ to objects reached from the current `Project` root, for example
 | `project.info.created`       | `_project.created`       | Partly | Field name matches, category name does not.                                                        |
 | `project.info.last_modified` | `_project.last_modified` | Partly | Field name matches, category name does not.                                                        |
 | `project.info.path`          | none                     | No     | Runtime storage path, not a CIF field.                                                             |
-| `project.chart.type`         | `_chart.type`            | Yes    | Direct category-owned selector mapping.                                                            |
+| `project.rendering_plot.type`         | `_rendering_plot.type`            | Yes    | Direct category-owned selector mapping.                                                            |
 | `project.report.*`           | `_report.*`              | Yes    | Direct project-owned report-output configuration mapping.                                          |
 | `project.publication.*`      | `_journal.*` / `_publ_*` | Partly | Python keeps one owner with sibling categories; CIF uses journal and publication dictionary names. |
-| `project.table.type`         | `_table.type`            | Yes    | Direct category-owned selector mapping.                                                            |
+| `project.rendering_table.type`         | `_rendering_table.type`            | Yes    | Direct category-owned selector mapping.                                                            |
 | `project.verbosity.fit`      | `_verbosity.fit`         | Yes    | Direct category and field mapping for fitting process output verbosity.                            |
 
 ### Analysis Configuration
@@ -249,8 +249,8 @@ the accepted `_project.*` baseline:
 | `project.info.description`   | `_info.description`   | Currently `_project.description`.                |
 | `project.info.created`       | `_info.created`       | Currently `_project.created`.                    |
 | `project.info.last_modified` | `_info.last_modified` | Currently `_project.last_modified`.              |
-| `project.chart.type`         | `_chart.type`         | Already matches.                                 |
-| `project.table.type`         | `_table.type`         | Already matches.                                 |
+| `project.rendering_plot.type`         | `_rendering_plot.type`         | Already matches.                                 |
+| `project.rendering_table.type`         | `_rendering_table.type`         | Already matches.                                 |
 | `project.verbosity.fit`      | `_verbosity.fit`      | Implemented direct fit-output verbosity mapping. |
 
 Alternative target if the project identity field should be called `id`
@@ -330,14 +330,14 @@ underlying API pattern.
   `project.verbosity.fit`, leaving room for future coverage-specific
   verbosity fields.
 - Chart and table renderers are separate selector categories
-  (`project.chart.type`, `project.table.type`), so a future collapsed
+  (`project.rendering_plot.type`, `project.rendering_table.type`), so a future collapsed
   renderer setting would need a separate ADR.
 
 ## Open Questions
 
 - Should the project identity remain `project.info.name`, or should it
   become `project.info.id` to mirror the saved identifier field?
-- Should `project.chart.type` and `project.table.type` remain separate,
+- Should `project.rendering_plot.type` and `project.rendering_table.type` remain separate,
   or should the public API and CIF collapse to one renderer field?
 - Should `project.verbosity = 'short'` remain as a convenience alias for
   `project.verbosity.fit = 'short'`, or should strict correspondence

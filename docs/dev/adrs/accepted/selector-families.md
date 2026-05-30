@@ -40,7 +40,7 @@ Recognize three selector families:
 
 | Family                       | User intent                     | Examples                                                                        |
 | ---------------------------- | ------------------------------- | ------------------------------------------------------------------------------- |
-| Backend selector             | Pick an execution backend       | `experiment.calculator.type`, `project.chart.type`, `project.table.type`        |
+| Backend selector             | Pick an execution backend       | `experiment.calculator.type`, `project.rendering_plot.type`, `project.rendering_table.type`        |
 | Switchable-category selector | Swap a category implementation  | `analysis.minimizer.type`, `experiment.background.type`, `experiment.peak.type` |
 | Active-sibling selector      | Pick the active sibling surface | `analysis.fitting_mode.type`                                                    |
 
