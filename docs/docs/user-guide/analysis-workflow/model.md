@@ -180,6 +180,64 @@ Structure 🧩 'lbco' as cif
 ╘═══════════════════════════════════════════╛
 ```
 
+## Viewing a Model in 3D
+
+EasyDiffraction can render a defined structure as an interactive 3D view.
+The renderer engine is chosen through `project.view`. The interactive
+Three.js engine is the default; the ASCII engine prints a
+terminal-friendly schematic.
+
+```python
+# List the available renderer engines
+project.view.show_supported()
+
+# Switch the active engine if desired
+project.view.type = 'threejs'
+```
+
+Visual styling — independent of the per-element data — is configured on
+`project.style`:
+
+```python
+# List the accepted style settings
+project.style.show_supported()
+
+# Choose how atoms are depicted, sized, and coloured
+project.style.atom_shape = 'ball'  # 'ball' or 'ortep'
+project.style.radius_model = 'covalent'  # 'vdw', 'covalent', 'ionic', 'atomic'
+project.style.color_scheme = 'jmol'  # 'jmol' or 'vesta'
+```
+
+Bonds are generated automatically between atoms whose separation falls
+within the per-structure cutoffs stored on `structure.geom` (the standard
+cif_core `_geom` parameters):
+
+```python
+# Tune the per-structure bond-generation cutoffs (angstrom)
+project.structures['lbco'].geom.min_bond_distance_cutoff = 0.5
+project.structures['lbco'].geom.bond_distance_incr = 0.45
+```
+
+Draw the structure through `project.display`, mirroring
+`project.display.pattern()`:
+
+```python
+# List which features the data and active engine can draw
+project.display.show_structure_options(struct_name='lbco')
+
+# Draw the structure (include='auto' shows every available feature)
+project.display.structure(struct_name='lbco')
+
+# Or request a specific set of features
+project.display.structure(
+    struct_name='lbco',
+    include=('atoms', 'bonds', 'cell'),
+)
+```
+
+The same interactive view is embedded automatically in the HTML report
+(see the [Report](report.md) section).
+
 ## Saving a Model
 
 Saving the project, as described in the [Project](project.md) section,

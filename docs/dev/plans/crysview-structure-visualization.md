@@ -912,7 +912,7 @@ reach end-to-end (P1.1–P1.12) before any Three.js work (P1.13–P1.15).
     switch at `html_renderer.py:170`.
   - Commit: `Embed structure figure in HTML report under html_offline`.
 
-- [ ] **P1.16 — Promote ADR index row, tutorials, and docs**
+- [x] **P1.16 — Promote ADR index row, tutorials, and docs**
   - Files: existing [`docs/dev/adrs/index.md`](../adrs/index.md);
     `docs/docs/tutorials/*.py` (+ regenerated `*.ipynb`);
     `docs/docs/user-guide/`, `docs/docs/api-reference/`.

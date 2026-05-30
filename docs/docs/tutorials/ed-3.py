@@ -173,6 +173,62 @@ project.structures['lbco'].show_as_cif()
 project.structures['lbco'].show()
 
 # %% [markdown]
+# #### View Structure in 3D
+#
+# EasyDiffraction can draw the structure that has just been defined. The
+# renderer engine is selected through `project.view`. The default
+# `threejs` engine shows an interactive 3D view inside Jupyter, while the
+# `ascii` engine prints a compact schematic that works in any terminal.
+
+# %%
+project.view.show_supported()
+
+# %% [markdown]
+# Visual styling — the atom shape, per-element radius model, and colour
+# scheme — is configured on `project.style`.
+
+# %%
+project.style.show_supported()
+
+# %%
+project.style.atom_shape = 'ball'
+project.style.radius_model = 'covalent'
+project.style.color_scheme = 'jmol'
+
+# %% [markdown]
+# Bonds are generated automatically between atoms whose separation lies
+# within the per-structure cutoffs stored on `structure.geom`.
+
+# %%
+project.structures['lbco'].geom.min_bond_distance_cutoff = 0.5
+project.structures['lbco'].geom.bond_distance_incr = 0.45
+
+# %% [markdown]
+# List which features the structure data and the active engine can draw.
+
+# %%
+project.display.show_structure_options(struct_name='lbco')
+
+# %% [markdown]
+# Draw the structure. With `include='auto'` (the default) every available
+# feature is shown; a specific tuple such as `('atoms', 'bonds', 'cell')`
+# can be requested instead.
+
+# %%
+project.display.structure(struct_name='lbco')
+
+# %% [markdown]
+# For a quick text schematic in any terminal, switch to the `ascii`
+# engine, then restore the interactive default.
+
+# %%
+project.view.type = 'ascii'
+project.display.structure(struct_name='lbco')
+
+# %%
+project.view.type = 'threejs'
+
+# %% [markdown]
 # #### Save Project State
 #
 # Save the project state after adding the structure. This ensures
