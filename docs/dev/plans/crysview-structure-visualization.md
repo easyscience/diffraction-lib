@@ -491,7 +491,7 @@ reach end-to-end (P1.1–P1.12) before any Three.js work (P1.13–P1.15).
   - Export any newly public helpers from `crystallography/__init__.py`.
   - Commit: `Add orthogonalization and ADP eigendecomposition helpers`.
 
-- [ ] **P1.4 — Build the extended element database (radii + colours)**
+- [x] **P1.4 — Build the extended element database (radii + colours)**
   - Files: new
     `src/easydiffraction/display/structure/assets/__init__.py`,
     `assets/elements.py` (or a vendored data file + loader),
@@ -528,17 +528,21 @@ reach end-to-end (P1.1–P1.12) before any Three.js work (P1.13–P1.15).
   - **Shannon representative-radius policy (deterministic,
     reproducible).** The atom-site model carries only an element symbol,
     so pick exactly one Shannon row per element by a fixed rule:
-    **charge** = the element's main oxidation state from pymatgen
+    **charge** = walk the element's oxidation states from pymatgen
     `dev_scripts/periodic_table_resources/oxidation_states.yaml` (same
-    repo/raw-URL base, verified reachable HTTP 200; take its first
-    listed positive state, falling back to the first listed state);
-    **coordination** = `VI` (else the lowest coordination present if
-    `VI` is absent); **spin** = high-spin where a spin state is listed;
-    take the `Ionic Radius` column. If no Shannon row matches the chosen
-    charge, fall back to that element's covalent radius (the
-    `substituted` flag). Record the chosen `(charge, coordination)` per
-    element in `LICENSES.md`. Ionic is not the default model, so this
-    only applies when the user selects `radius_model = 'ionic'`.
+    repo/raw-URL base, verified reachable HTTP 200) in listed order,
+    keeping those that have a Shannon entry, then any remaining Shannon
+    charges (lowest `|charge|` first) — this keeps anions such as O²⁻ /
+    F⁻, not just cations; **coordination** = `VI` (else the lowest
+    coordination present); **spin** = high-spin where a spin state is
+    listed; take the `Ionic Radius` column, skipping non-physical
+    (non-positive) entries such as the H⁺ value. The first charge that
+    yields a positive radius wins; if none does, fall back to the
+    covalent radius (the `substituted` flag). Record the chosen
+    `(charge, coordination)` per element in `LICENSES.md`. Ionic is not
+    the default model, so this only applies when the user selects
+    `radius_model = 'ionic'`. (Result: 93/118 elements carry a Shannon
+    radius; the rest fall back to covalent.)
   - `radii.py`: `radius_for(element, model) -> tuple[float, bool]`
     lookup returning the radius and a `substituted` flag; a miss for the
     selected model (e.g. an element with no ionic entry) falls back to
