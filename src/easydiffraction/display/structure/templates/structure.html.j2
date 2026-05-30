@@ -72,6 +72,7 @@ const ICONS = {
   bonds: '<svg viewBox="0 0 24 24"><line x1="8" y1="16" x2="16" y2="8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><circle cx="6.7" cy="17.3" r="3.1" fill="currentColor"/><circle cx="17.3" cy="6.7" r="3.1" fill="currentColor"/></svg>',
   moments: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V5"/><path d="M7 10l5-6 5 6"/></svg>',
   labels: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="14" rx="2"/><path d="M9 15.5 12 8.5l3 7M10.1 13.2h3.8"/></svg>',
+  camera: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z"/><circle cx="12" cy="13" r="3.4"/></svg>',
 };
 
 const root = document.getElementById('{{ container_id }}');
@@ -89,7 +90,7 @@ let width = host.clientWidth || 640;
 let height = host.clientHeight || 480;
 
 const scene = new THREE.Scene();
-const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(width, height);
 host.appendChild(renderer.domElement);
@@ -173,18 +174,36 @@ for (const edge of SCENE.cellEdges) {
   groups.cell.add(new THREE.Line(geo, cellMaterial));
 }
 
+const Y_AXIS = new THREE.Vector3(0, 1, 0);
+const buildArrow = (origin, v, colour) => {
+  const group = new THREE.Group();
+  const length = v.length();
+  const shaftR = length * 0.012;
+  const headLen = length * 0.12;
+  const headR = shaftR * 4;
+  const shaftLen = Math.max(length - headLen, 1e-3);
+  const material = new THREE.MeshStandardMaterial({ color: col(colour) });
+  const shaft = new THREE.Mesh(new THREE.CylinderGeometry(shaftR, shaftR, shaftLen, 16), material);
+  shaft.position.y = shaftLen / 2;
+  const head = new THREE.Mesh(new THREE.ConeGeometry(headR, headLen, 20), material);
+  head.position.y = shaftLen + headLen / 2;
+  group.add(shaft, head);
+  group.quaternion.setFromUnitVectors(Y_AXIS, v.clone().normalize());
+  group.position.copy(origin);
+  return group;
+};
+
 if (SCENE.axes) {
   const origin = vec(SCENE.axes.origin);
   for (const arrow of SCENE.axes.arrows) {
     const v = vec(arrow.vector);
-    const len = v.length();
-    groups.axes.add(new THREE.ArrowHelper(v.clone().normalize(), origin, len, col(arrow.colour).getHex(), len * 0.12, len * 0.07));
+    groups.axes.add(buildArrow(origin, v, arrow.colour));
     const div = document.createElement('div');
     div.textContent = arrow.letter;
     div.style.color = rgbCss(arrow.colour);
     div.style.fontWeight = 'bold';
     const tag = new CSS2DObject(div);
-    tag.position.copy(origin.clone().add(v.clone().multiplyScalar(1.12)));
+    tag.position.copy(origin.clone().add(v.clone().multiplyScalar(1.08)));
     groups.axes.add(tag);
   }
 }
@@ -207,11 +226,11 @@ const target = box.getBoundingSphere(new THREE.Sphere()).center;
 const radius = Math.max(box.getBoundingSphere(new THREE.Sphere()).radius, 1);
 const aspect = width / height;
 const far = radius * 100;
-const distance = radius * 2.6;
+const distance = radius * 2.0;
 const home = target.clone().add(new THREE.Vector3(distance, distance * 0.6, distance));
 
 const perspective = new THREE.PerspectiveCamera(45, aspect, radius * 0.01, far);
-const ortho = new THREE.OrthographicCamera(-radius * aspect * 1.3, radius * aspect * 1.3, radius * 1.3, -radius * 1.3, -far, far);
+const ortho = new THREE.OrthographicCamera(-radius * aspect * 1.05, radius * aspect * 1.05, radius * 1.05, -radius * 1.05, -far, far);
 perspective.position.copy(home);
 ortho.position.copy(home);
 let camera = ortho;
@@ -272,6 +291,15 @@ homeButton.addEventListener('click', () => {
   controls.update();
 });
 
+const downloadButton = iconButton(cameraGroup, ICONS.camera, 'Download PNG');
+downloadButton.addEventListener('click', () => {
+  renderer.render(scene, camera);
+  const link = document.createElement('a');
+  link.download = 'structure.png';
+  link.href = renderer.domElement.toDataURL('image/png');
+  link.click();
+});
+
 const featureGroup = document.createElement('div');
 featureGroup.className = 'mb-grp';
 let hasFeatureToggle = false;
@@ -293,24 +321,42 @@ if (hasFeatureToggle) {
   modebar.appendChild(featureGroup);
 }
 
-const seen = new Map();
-const collectLegend = (label, colour) => {
-  const element = elementOf(label);
-  if (!seen.has(element)) seen.set(element, colour);
-};
-SCENE.atoms.forEach((a) => collectLegend(a.label, a.colour));
-SCENE.ellipsoids.forEach((e) => collectLegend(e.label, e.colour));
-SCENE.wedgeSpheres.forEach((s) => s.wedges[0] && collectLegend(s.label, s.wedges[0].colour));
-for (const [element, colour] of seen) {
+const addLegendItem = (background, text) => {
   const item = document.createElement('div');
   const swatch = document.createElement('span');
   swatch.className = 'sw';
-  swatch.style.background = rgbCss(colour);
+  swatch.style.background = background;
   item.appendChild(swatch);
-  item.appendChild(document.createTextNode(element));
+  item.appendChild(document.createTextNode(text));
   legend.appendChild(item);
+};
+
+const seenElements = new Map();
+const collectElement = (label, colour) => {
+  const element = elementOf(label);
+  if (!seenElements.has(element)) seenElements.set(element, colour);
+};
+SCENE.atoms.forEach((a) => collectElement(a.label, a.colour));
+SCENE.ellipsoids.forEach((e) => collectElement(e.label, e.colour));
+for (const [element, colour] of seenElements) addLegendItem(rgbCss(colour), element);
+
+const seenWedges = new Set();
+for (const s of SCENE.wedgeSpheres) {
+  if (seenWedges.has(s.label)) continue;
+  seenWedges.add(s.label);
+  let acc = 0;
+  const stops = s.wedges.map((w) => {
+    const start = acc * 100;
+    acc += w.fraction;
+    return `${rgbCss(w.colour)} ${start.toFixed(1)}% ${(acc * 100).toFixed(1)}%`;
+  });
+  const parts = s.label.split('/');
+  const ratio = s.wedges.slice(0, parts.length).map((w) => Math.round(w.fraction * 100));
+  const text = ratio.length > 1 ? `${s.label} (${ratio.join('/')})` : s.label;
+  addLegendItem(`linear-gradient(90deg, ${stops.join(', ')})`, text);
 }
-if (seen.size === 0) legend.style.display = 'none';
+
+if (!legend.children.length) legend.style.display = 'none';
 
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
@@ -337,8 +383,8 @@ const resize = () => {
   const ratio = width / height;
   perspective.aspect = ratio;
   perspective.updateProjectionMatrix();
-  ortho.left = -radius * ratio * 1.3;
-  ortho.right = radius * ratio * 1.3;
+  ortho.left = -radius * ratio * 1.05;
+  ortho.right = radius * ratio * 1.05;
   ortho.updateProjectionMatrix();
   renderer.setSize(width, height);
   labelRenderer.setSize(width, height);
