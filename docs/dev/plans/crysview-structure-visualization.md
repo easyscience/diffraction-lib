@@ -556,7 +556,7 @@ reach end-to-end (P1.1–P1.12) before any Three.js work (P1.13–P1.15).
     seed; Shannon ionic; atomic; VESTA), no hand-guessed values.
   - Commit: `Add extended element database for radii and colours`.
 
-- [ ] **P1.5 — Add the scene builder**
+- [x] **P1.5 — Add the scene builder**
   - Files: new `src/easydiffraction/display/structure/builder.py`.
   - `build_scene(structure, *, style, view_range, features) -> StructureScene`,
     the easydiffraction adapter. **`features` is the already-resolved
