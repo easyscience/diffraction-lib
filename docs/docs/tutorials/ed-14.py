@@ -58,6 +58,19 @@ structure.atom_sites['O1'].adp_iso = 0.0
 structure.atom_sites['O2'].adp_iso = 0.0
 
 # %% [markdown]
+# ### Structure View (ADP mode)
+#
+# Select the ADP atom view. With the starting isotropic displacements every
+# atom is drawn as a sphere; after the anisotropic refinement below, the same
+# view will draw probability ellipsoids for the anisotropic sites.
+
+# %%
+project.style.atom_view = 'adp'
+
+# %%
+project.display.structure(struct_name='tbti')
+
+# %% [markdown]
 # ## Step 3: Define Experiment
 
 # %%
@@ -163,6 +176,17 @@ project.display.pattern(expt_name='heidi')
 
 # %%
 structure.show_as_cif()
+
+# %% [markdown]
+# ### Structure View after refinement
+#
+# Tb, Ti and O1 were refined with anisotropic displacements (`Uani`), so the
+# ADP view now draws them as probability ellipsoids, while O2 stayed isotropic
+# (`Uiso`) and remains a sphere — highlighting how the view changed from the
+# initial spheres to ellipsoids.
+
+# %%
+project.display.structure(struct_name='tbti')
 
 # %% [markdown]
 # ## Step 6: Generate Report
