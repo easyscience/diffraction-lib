@@ -63,6 +63,7 @@ def render_html_report(
     context: dict[str, object],
     *,
     offline: bool = False,
+    project: object | None = None,
 ) -> str:
     """
     Render a report data context as HTML.
@@ -73,6 +74,9 @@ def render_html_report(
         Data returned by ``Report.data_context()``.
     offline : bool, default=False
         Whether Plotly figures should embed JavaScript assets.
+    project : object | None, default=None
+        Live project used to build interactive 3D structure figures.
+        When ``None``, the report omits structure views.
 
     Returns
     -------
@@ -86,6 +90,9 @@ def render_html_report(
     template_context['fit_figures'] = _fit_figure_html_context(
         context,
         offline=offline,
+    )
+    template_context['structure_figures'] = (
+        _structure_figure_html_context(project, offline=offline) if project is not None else {}
     )
     return _environment().get_template(_TEMPLATE_NAME).render(**template_context)
 
@@ -119,7 +126,7 @@ def save_html_report(
     output_path = html_report_path(project, path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(
-        render_html_report(context, offline=offline),
+        render_html_report(context, offline=offline, project=project),
         encoding='utf-8',
     )
     if offline:
@@ -182,6 +189,40 @@ def _fit_figure_html_context(
             report_style=report_style,
         )
         include_plotlyjs = False
+    return rendered
+
+
+def _structure_figure_html_context(
+    project: object,
+    *,
+    offline: bool,
+) -> dict[str, str]:
+    """Return interactive structure-view HTML snippets by structure name."""
+    from easydiffraction.display.structure.builder import build_scene  # noqa: PLC0415
+    from easydiffraction.display.structure.builder import (  # noqa: PLC0415
+        structure_feature_availability,
+    )
+    from easydiffraction.display.structure.renderers.threejs import (  # noqa: PLC0415
+        ThreeJsStructureRenderer,
+    )
+
+    renderer = ThreeJsStructureRenderer()
+    window = project.view.view_range()
+    rendered: dict[str, str] = {}
+    for structure in project.structures.values():
+        availability = structure_feature_availability(structure, style=project.style)
+        features = project.display._resolve_structure_features('auto', availability)
+        scene = build_scene(
+            structure,
+            style=project.style,
+            view_range=window,
+            features=features,
+        )
+        rendered[str(structure.name)] = renderer.render(
+            scene,
+            features=features,
+            offline=offline,
+        )
     return rendered
 
 

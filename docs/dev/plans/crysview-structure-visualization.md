@@ -901,7 +901,7 @@ reach end-to-end (P1.1–P1.12) before any Three.js work (P1.13–P1.15).
       standalone-HTML write path.
   - Commit: `Add Three.js structure renderer`.
 
-- [ ] **P1.15 — Embed the structure figure in the HTML report**
+- [x] **P1.15 — Embed the structure figure in the HTML report**
   - Files: existing `src/easydiffraction/report/html_renderer.py`,
     `src/easydiffraction/report/templates/html/report.html.j2`.
   - Render a structure figure into the HTML report honoring the report's

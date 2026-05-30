@@ -195,7 +195,7 @@ class Report(CategoryItem):
         """
         from easydiffraction.report.html_renderer import render_html_report  # noqa: PLC0415
 
-        return render_html_report(self.data_context(), offline=offline)
+        return render_html_report(self.data_context(), offline=offline, project=self.project)
 
     def save_tex(self) -> pathlib.Path:
         """

@@ -140,6 +140,11 @@
       <article class="record">
         <h3>{{ structure.id }}</h3>
 
+        {% if structure_figures[structure.id] %}
+        <h4>Structure view</h4>
+        <div class="figure">{{ structure_figures[structure.id] | safe }}</div>
+        {% endif %}
+
         {% for category in structure.categories %}
         <h4>{{ category.title }}</h4>
         {% if category.kind == "item" %}
