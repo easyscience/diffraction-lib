@@ -41,6 +41,11 @@ from easydiffraction.display.structure.scene import TextLabel
 IDENTITY_TOL = 1e-4
 EIGHT_PI_SQ = 8.0 * np.pi**2
 DEFAULT_BOND_INCR = 0.25
+# Prune bonds to the first coordination shell: keep a contact only if it is
+# within this multiple of the nearer atom's nearest-neighbour distance. Stops
+# large ionic-cation covalent radii (e.g. La/Ba) from bonding to every anion
+# (see open issue #108 for the full near-neighbour approach).
+COORDINATION_SHELL_FACTOR = 1.3
 ALL_FEATURES = ('atoms', 'bonds', 'cell', 'axes', 'moments', 'labels')
 
 
@@ -220,14 +225,23 @@ def _build_atoms(sites, clusters, *, style, matrix, cell, aniso_collection):
 
 
 def _build_bonds(scene_atoms, geom_min: float, geom_incr: float):
-    """Detect bonds between in-scene atoms via the cif_core _geom rule."""
+    """Detect bonds via the cif_core _geom rule, pruned to the first shell."""
     bonds = []
+    count = len(scene_atoms)
+    if count < 2:
+        return bonds
     radii = [radius_for(a.element, 'covalent')[0] for a in scene_atoms]
+    centres = np.array([a.centre for a in scene_atoms], dtype=float)
+    distances = np.linalg.norm(centres[:, None, :] - centres[None, :, :], axis=2)
+    np.fill_diagonal(distances, np.inf)
+    nearest = distances.min(axis=1)
     for i, atom_i in enumerate(scene_atoms):
-        for j in range(i + 1, len(scene_atoms)):
+        for j in range(i + 1, count):
             atom_j = scene_atoms[j]
-            distance = float(np.linalg.norm(atom_i.centre - atom_j.centre))
-            if geom_min <= distance <= radii[i] + radii[j] + geom_incr:
+            distance = float(distances[i, j])
+            shell = min(nearest[i], nearest[j]) * COORDINATION_SHELL_FACTOR
+            covalent_cutoff = radii[i] + radii[j] + geom_incr
+            if geom_min <= distance <= min(covalent_cutoff, shell):
                 bonds.append(Bond(_vec3(atom_i.centre), _vec3(atom_j.centre),
                                   atom_i.colour, atom_j.colour))
     return bonds
