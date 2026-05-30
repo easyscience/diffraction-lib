@@ -5,6 +5,8 @@ from __future__ import annotations
 
 from contextlib import suppress
 from dataclasses import dataclass
+from datetime import UTC
+from datetime import datetime
 from itertools import combinations
 from math import isclose
 from pathlib import Path
@@ -29,6 +31,8 @@ from easydiffraction.analysis.categories.sequential_fit import SequentialFitFact
 from easydiffraction.analysis.categories.sequential_fit_extract import (
     SequentialFitExtractCollection,
 )
+from easydiffraction.analysis.categories.software import Software
+from easydiffraction.analysis.categories.software import SoftwareFactory
 from easydiffraction.analysis.enums import FitCorrelationSourceEnum
 from easydiffraction.analysis.enums import FitModeEnum
 from easydiffraction.analysis.enums import FitResultKindEnum
@@ -62,6 +66,7 @@ from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import _help_method_rows
 from easydiffraction.utils.utils import _help_property_rows
 from easydiffraction.utils.utils import format_bulleted_warning
+from easydiffraction.utils.utils import package_version
 from easydiffraction.utils.utils import render_cif
 from easydiffraction.utils.utils import render_object_help
 from easydiffraction.utils.utils import render_table
@@ -79,6 +84,16 @@ _UNDO_REL_TOL = 1e-12
 _UNDO_ABS_TOL = 0.0
 _GT_REFLECTION_THRESHOLD_SIGMA = 3.0
 _GT_REFLECTION_THRESHOLD_EXPRESSION = r'I>3\s(I)'
+_EASYDIFFRACTION_URL = 'https://github.com/easyscience/diffraction-lib'
+_SOFTWARE_PACKAGE_BY_ENGINE = {
+    'cryspy': 'cryspy',
+    'crysfml': 'crysfml',
+    'pdffit': 'diffpy.pdffit2',
+    'lmfit': 'lmfit',
+    'dfols': 'dfols',
+    'bumps': 'bumps',
+    'emcee': 'emcee',
+}
 
 
 @dataclass(frozen=True)
@@ -477,6 +492,11 @@ class _AnalysisPersistedCategoryAccessorsMixin:
         """Persisted fit-parameter correlation summaries."""
         return self._fit_parameter_correlations
 
+    @property
+    def software(self) -> Software:
+        """Software snapshot for the latest successful fit."""
+        return self._software
+
 
 class Analysis(
     _AnalysisOwnerAccessorsMixin,
@@ -521,6 +541,7 @@ class Analysis(
         self._fit_parameters = FitParameters()
         self._fit_result = self._minimizer._fit_result_class()
         self._fit_parameter_correlations = FitParameterCorrelations()
+        self._software: Software = SoftwareFactory.create(SoftwareFactory.default_tag())
         self._has_persisted_fit_state_data = False
         self._persisted_fit_state_sidecar: dict[str, object] = {}
         self._fitter = Fitter(self.minimizer.type)
@@ -541,6 +562,7 @@ class Analysis(
         self._fit_parameters._parent = self
         self._fit_result._parent = self
         self._fit_parameter_correlations._parent = self
+        self._software._parent = self
 
     @staticmethod
     def _supported_filters_for(category: object) -> dict[str, object]:
@@ -554,6 +576,85 @@ class Analysis(
         """
         del category
         return {}
+
+    @staticmethod
+    def _type_info_tag(obj: object) -> str:
+        """Return the object's factory tag as a string."""
+        tag = getattr(getattr(obj, 'type_info', None), 'tag', '')
+        return str(getattr(tag, 'value', tag))
+
+    @staticmethod
+    def _software_version(name: str) -> str | None:
+        """Return the installed package version for one engine name."""
+        package_name = _SOFTWARE_PACKAGE_BY_ENGINE.get(name)
+        if package_name is None:
+            return None
+        return package_version(package_name)
+
+    def _software_package_name(self, engine: object) -> str:
+        """
+        Return an engine's package name without minimizer settings.
+        """
+        return self._type_info_tag(engine).split(' (')[0]
+
+    def _software_values(self, engine: object) -> tuple[str, str | None, str | None]:
+        """
+        Return package name, version, and URL for one software engine.
+        """
+        name = self._software_package_name(engine)
+        return name, self._software_version(name), getattr(engine, 'url', None)
+
+    @staticmethod
+    def _combine_software_values(
+        values: list[tuple[str, str | None, str | None]],
+    ) -> tuple[str | None, str | None, str | None]:
+        """Return comma-joined unique software role values."""
+        unique_values = sorted(set(values))
+        if not unique_values:
+            return None, None, None
+        return tuple(
+            ', '.join(str(value[index]) for value in unique_values if value[index]) or None
+            for index in range(3)
+        )
+
+    def _calculator_software_values(self) -> tuple[str | None, str | None, str | None]:
+        """Return name, version, and URL for active calculators."""
+        values = []
+        for experiment in self.project.experiments.values():
+            calculator = experiment.calculator.calculator
+            values.append(self._software_values(calculator))
+        return self._combine_software_values(values)
+
+    @staticmethod
+    def _set_software_role(
+        role: object,
+        values: tuple[str | None, str | None, str | None],
+    ) -> None:
+        """Set one software role from a name, version, URL tuple."""
+        name, version, url = values
+        role.name = name
+        role.version = version
+        role.url = url
+
+    def _stamp_software_provenance(self) -> None:
+        """Record software identities for the latest successful fit."""
+        self._set_software_role(
+            self.software.framework,
+            (
+                'EasyDiffraction',
+                package_version('easydiffraction'),
+                _EASYDIFFRACTION_URL,
+            ),
+        )
+        self._set_software_role(
+            self.software.calculator,
+            self._calculator_software_values(),
+        )
+        self._set_software_role(
+            self.software.minimizer,
+            self._software_values(self.minimizer),
+        )
+        self.software.timestamp = datetime.now(tz=UTC).isoformat(timespec='seconds')
 
     def _swap_minimizer(self, new_type: str) -> None:
         """Switch the active minimizer category."""
@@ -1072,8 +1173,14 @@ class Analysis(
         categories.extend(self._fit_parameter_state_categories())
         if self._has_persisted_fit_state():
             categories.extend(self._fit_result_state_categories())
+        if self._has_software_provenance():
+            categories.append(self.software)
 
         return categories
+
+    def _has_software_provenance(self) -> bool:
+        """Return True when software provenance has been stamped."""
+        return any(parameter.value is not None for parameter in self.software.parameters)
 
     # ------------------------------------------------------------------
     #  Parameter helpers
@@ -2510,6 +2617,7 @@ class Analysis(
             experiments,
             fit_options=FitterFitOptions(resume=resume, extra_steps=extra_steps),
         )
+        self._stamp_software_provenance()
 
         if self.project.info.path is not None:
             self.project.save()
@@ -2536,6 +2644,7 @@ class Analysis(
             experiments,
             fit_options=FitterFitOptions(resume=resume, extra_steps=extra_steps),
         )
+        self._stamp_software_provenance()
 
         if self.project.info.path is not None:
             self.project.save()
@@ -2573,6 +2682,8 @@ class Analysis(
             self.fit_results = None
             self.fitter.results = None
             self._clear_persisted_fit_state()
+
+        self._stamp_software_provenance()
 
         if self.project.info.path is not None:
             self.project.save()

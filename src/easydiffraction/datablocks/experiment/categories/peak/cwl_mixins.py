@@ -8,6 +8,7 @@ parameters. They are composed into concrete peak classes elsewhere via
 multiple inheritance.
 """
 
+from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.variable import Parameter
@@ -23,7 +24,13 @@ class CwlBroadeningMixin:
         self._broad_gauss_u: Parameter = Parameter(
             name='broad_gauss_u',
             description='Gaussian broadening from sample size and resolution',
-            units='deg²',
+            units='degrees_squared',
+            display_handler=DisplayHandler(
+                display_name='U',
+                display_units='deg^2',
+                latex_name=r'$U$',
+                latex_units=r'\mathrm{deg}^2',
+            ),
             value_spec=AttributeSpec(
                 default=0.01,
                 validator=RangeValidator(),
@@ -36,7 +43,13 @@ class CwlBroadeningMixin:
         self._broad_gauss_v: Parameter = Parameter(
             name='broad_gauss_v',
             description='Gaussian broadening instrumental contribution',
-            units='deg²',
+            units='degrees_squared',
+            display_handler=DisplayHandler(
+                display_name='V',
+                display_units='deg^2',
+                latex_name=r'$V$',
+                latex_units=r'\mathrm{deg}^2',
+            ),
             value_spec=AttributeSpec(
                 default=-0.01,
                 validator=RangeValidator(),
@@ -49,7 +62,13 @@ class CwlBroadeningMixin:
         self._broad_gauss_w: Parameter = Parameter(
             name='broad_gauss_w',
             description='Gaussian broadening instrumental contribution',
-            units='deg²',
+            units='degrees_squared',
+            display_handler=DisplayHandler(
+                display_name='W',
+                display_units='deg^2',
+                latex_name=r'$W$',
+                latex_units=r'\mathrm{deg}^2',
+            ),
             value_spec=AttributeSpec(
                 default=0.02,
                 validator=RangeValidator(),
@@ -62,7 +81,13 @@ class CwlBroadeningMixin:
         self._broad_lorentz_x: Parameter = Parameter(
             name='broad_lorentz_x',
             description='Lorentzian broadening from sample strain effects',
-            units='deg',
+            units='degrees',
+            display_handler=DisplayHandler(
+                display_name='X',
+                display_units='deg',
+                latex_name=r'$X$',
+                latex_units=r'\mathrm{deg}',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
@@ -75,7 +100,13 @@ class CwlBroadeningMixin:
         self._broad_lorentz_y: Parameter = Parameter(
             name='broad_lorentz_y',
             description='Lorentzian broadening from microstructural defects',
-            units='deg',
+            units='degrees',
+            display_handler=DisplayHandler(
+                display_name='Y',
+                display_units='deg',
+                latex_name=r'$Y$',
+                latex_units=r'\mathrm{deg}',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
@@ -93,7 +124,7 @@ class CwlBroadeningMixin:
     @property
     def broad_gauss_u(self) -> Parameter:
         """
-        Gaussian broadening from sample size and resolution (deg²).
+        Gaussian broadening from sample size and resolution (deg^2).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -107,7 +138,7 @@ class CwlBroadeningMixin:
     @property
     def broad_gauss_v(self) -> Parameter:
         """
-        Gaussian broadening instrumental contribution (deg²).
+        Gaussian broadening instrumental contribution (deg^2).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -121,7 +152,7 @@ class CwlBroadeningMixin:
     @property
     def broad_gauss_w(self) -> Parameter:
         """
-        Gaussian broadening instrumental contribution (deg²).
+        Gaussian broadening instrumental contribution (deg^2).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -170,7 +201,7 @@ class EmpiricalAsymmetryMixin:
         self._asym_empir_1: Parameter = Parameter(
             name='asym_empir_1',
             description='Empirical asymmetry coefficient p1',
-            units='',
+            units='none',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
@@ -183,7 +214,7 @@ class EmpiricalAsymmetryMixin:
         self._asym_empir_2: Parameter = Parameter(
             name='asym_empir_2',
             description='Empirical asymmetry coefficient p2',
-            units='',
+            units='none',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
@@ -196,7 +227,7 @@ class EmpiricalAsymmetryMixin:
         self._asym_empir_3: Parameter = Parameter(
             name='asym_empir_3',
             description='Empirical asymmetry coefficient p3',
-            units='',
+            units='none',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
@@ -209,7 +240,7 @@ class EmpiricalAsymmetryMixin:
         self._asym_empir_4: Parameter = Parameter(
             name='asym_empir_4',
             description='Empirical asymmetry coefficient p4',
-            units='',
+            units='none',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
@@ -290,7 +321,7 @@ class FcjAsymmetryMixin:
         self._asym_fcj_1: Parameter = Parameter(
             name='asym_fcj_1',
             description='Finger-Cox-Jephcoat asymmetry parameter 1',
-            units='',
+            units='none',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
@@ -303,7 +334,7 @@ class FcjAsymmetryMixin:
         self._asym_fcj_2: Parameter = Parameter(
             name='asym_fcj_2',
             description='Finger-Cox-Jephcoat asymmetry parameter 2',
-            units='',
+            units='none',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),

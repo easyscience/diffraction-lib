@@ -53,6 +53,7 @@ jupyterlab = '*'  # Jupyter notebooks
 ipython = '*'     # Interactive Python shell
 pixi-kernel = '*' # Pixi Jupyter kernel
 gsl = '*'         # GNU Scientific Library; required for diffpy.pdffit2
+tectonic = '*'    # LaTeX engine for PDF report generation
 
 [feature.dev.pypi-dependencies]
 pip = '*'

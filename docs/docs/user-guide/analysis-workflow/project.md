@@ -86,8 +86,9 @@ The example below illustrates a typical **project structure** for a
 ├── 📁 analysis       - Analysis settings and optional persisted Bayesian arrays.
 │   ├── 📄 <span class="orange"><b>analysis.cif</b></span> - Settings for data analysis (minimizer, fit mode, constraints, persisted fit state).
 │   └── 📄 <span class="orange"><b>results.h5</b></span>   - Optional Bayesian sidecar with posterior and predictive arrays.
-└── 📁 reports      - Optional IUCr submission reports.
-    └── 📄 <span class="orange"><b>La0.5Ba0.5CoO3.cif</b></span> - Report written by project.save(report=True).
+└── 📁 reports      - Optional reports written from project.report config.
+    ├── 📄 <span class="orange"><b>La0.5Ba0.5CoO3.cif</b></span>  - IUCr submission report.
+    └── 📄 <span class="orange"><b>La0.5Ba0.5CoO3.html</b></span> - HTML report.
 </pre>
 </div>
 
@@ -103,7 +104,9 @@ directory, showing the contents of all files in the project.
     If you save the project right after creating it, the project directory will
     only contain the `project.cif` file. The other folders and files will be
     created as you add structures, experiments, and set up the analysis. The
-    reports folder is created only when you call `project.save(report=True)`.
+    reports folder is created only when at least one of
+    `project.report.cif`, `project.report.html`, `project.report.tex`,
+    or `project.report.pdf` is set to `True` before `project.save()`.
 
 ### 1. <span class="orange">project.cif</span>
 

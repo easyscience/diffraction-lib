@@ -843,7 +843,7 @@ def test_plot_posterior_predictive_summary_uses_consistent_labels_and_styles(mon
             best_sample_prediction=np.array([9.0, 10.0, 11.0]),
         ),
         y_meas=np.array([9.5, 10.5, 11.5]),
-        axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+        axes_labels=['2θ (deg)', 'Intensity (arb. units)'],
         show_band=True,
         show_draws=False,
     )
@@ -1046,7 +1046,7 @@ def test_plot_posterior_predictive_summary_routes_ascii_to_measured_and_map(monk
             draws=np.array([[8.5, 9.5, 10.5]]),
         ),
         y_meas=np.array([9.5, 10.5, 11.5]),
-        axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+        axes_labels=['2θ (deg)', 'Intensity (arb. units)'],
         show_band=True,
         show_draws=True,
         excluded_ranges=((1.2, 1.4),),
@@ -1644,6 +1644,7 @@ def test_plot_meas_vs_calc_routes_powder_bragg_to_composite_backend():
         two_theta = np.array([0.0, 1.0, 2.0, 3.0])
         d_spacing = two_theta
         intensity_meas = np.array([10.0, 20.0, 30.0, 40.0])
+        intensity_meas_su = np.array([0.1, 0.2, 0.3, 0.4])
         intensity_bkg = np.array([1.0, 2.0, 3.0, 4.0])
         intensity_calc = np.array([9.0, 18.0, 27.0, 39.0])
 
@@ -1679,6 +1680,7 @@ def test_plot_meas_vs_calc_routes_powder_bragg_to_composite_backend():
     call = captured['powder_meas_vs_calc']
     assert np.allclose(call.x, np.array([1.0, 2.0]))
     assert np.allclose(call.y_meas, np.array([20.0, 30.0]))
+    assert np.allclose(call.y_meas_su, np.array([0.2, 0.3]))
     assert np.allclose(call.y_bkg, np.array([2.0, 3.0]))
     assert np.allclose(call.y_calc, np.array([18.0, 27.0]))
     assert np.allclose(call.y_resid, np.array([2.0, 3.0]))

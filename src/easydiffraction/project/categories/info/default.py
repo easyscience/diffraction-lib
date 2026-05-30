@@ -15,6 +15,7 @@ from easydiffraction.io.cif.handler import CifHandler
 from easydiffraction.io.cif.serialize import project_info_to_cif
 from easydiffraction.project.categories.info.factory import ProjectInfoFactory
 from easydiffraction.utils.logging import console
+from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_cif
 
 _PROJECT_TIMESTAMP_FORMAT = '%d %b %Y %H:%M:%S'
@@ -38,6 +39,8 @@ class ProjectInfo(CategoryItem):
         description: str = '',
     ) -> None:
         super().__init__()
+
+        self._validate_name(name)
 
         created = datetime.datetime.now(tz=datetime.UTC)
         last_modified = datetime.datetime.now(tz=datetime.UTC)
@@ -75,6 +78,15 @@ class ProjectInfo(CategoryItem):
         self._path: pathlib.Path | None = None
 
     @staticmethod
+    def _validate_name(value: str) -> None:
+        """Reject project names containing a path separator."""
+        if '/' in value or '\\' in value:
+            log.error(
+                f"Project name {value!r} must not contain a path separator ('/' or '\\').",
+                exc_type=ValueError,
+            )
+
+    @staticmethod
     def _parse_timestamp(value: str) -> datetime.datetime:
         """Parse project timestamp text from CIF storage format."""
         return datetime.datetime.strptime(value, _PROJECT_TIMESTAMP_FORMAT).replace(
@@ -105,6 +117,7 @@ class ProjectInfo(CategoryItem):
 
     @name.setter
     def name(self, value: str) -> None:
+        self._validate_name(value)
         self._project_id.value = value
 
     @property

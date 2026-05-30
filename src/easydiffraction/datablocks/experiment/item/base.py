@@ -8,6 +8,8 @@ from abc import abstractmethod
 from typing import TYPE_CHECKING
 from typing import Any
 
+import numpy as np
+
 from easydiffraction.core.datablock import DatablockItem
 from easydiffraction.datablocks.experiment.categories.background.factory import BackgroundFactory
 from easydiffraction.datablocks.experiment.categories.calculator import CalculatorCategoryFactory
@@ -34,8 +36,12 @@ from easydiffraction.utils.utils import format_bulleted_warning
 from easydiffraction.utils.utils import render_cif
 
 if TYPE_CHECKING:
+    from easydiffraction.core.variable import NumericDescriptor
     from easydiffraction.datablocks.experiment.categories.experiment_type import ExperimentType
     from easydiffraction.datablocks.structure.collection import Structures
+
+MeasuredRange = tuple[float, float, float | None]
+_MEASURED_RANGE_UNIFORM_TOLERANCE = 0.01
 
 
 def intensity_category_for(experiment: object) -> object:
@@ -257,6 +263,35 @@ class ExperimentBase(DatablockItem):
         """Experiment type: sample form, probe, beam mode."""
         return self._type
 
+    @property
+    def measured_range(self) -> MeasuredRange | None:
+        """Measured x-axis range as ``(min, max, inc)``."""
+        values = self._measured_x_values()
+        if values is None or values.size == 0:
+            return None
+
+        values = np.sort(values.astype(float, copy=False))
+        range_min = float(values[0])
+        range_max = float(values[-1])
+        if values.size == 1:
+            return (range_min, range_max, None)
+
+        increment = _representative_increment(values)
+        return (range_min, range_max, increment)
+
+    def _measured_x_values(self) -> np.ndarray | None:
+        """Return the measured x-axis values for this experiment."""
+        try:
+            category = intensity_category_for(self)
+        except AttributeError:
+            return None
+        values = getattr(category, 'unfiltered_x', None)
+        if values is None:
+            values = getattr(category, 'x', None)
+        if values is None:
+            return None
+        return np.asarray(values, dtype=float)
+
     # ------------------------------------------------------------------
     #  Diffrn conditions (read-only, single type)
     # ------------------------------------------------------------------
@@ -377,6 +412,18 @@ class ExperimentBase(DatablockItem):
         raise AttributeError(msg)
 
 
+def _representative_increment(values: np.ndarray) -> float | None:
+    """Return a representative increment for sorted x-axis values."""
+    steps = np.diff(values)
+    median_step = float(np.median(steps))
+    if median_step == 0:
+        return None
+    tolerance = abs(median_step) * _MEASURED_RANGE_UNIFORM_TOLERANCE
+    if np.max(np.abs(steps - median_step)) > tolerance:
+        return None
+    return median_step
+
+
 class ScExperimentBase(ExperimentBase):
     """Base class for all single crystal experiments."""
 
@@ -458,6 +505,16 @@ class ScExperimentBase(ExperimentBase):
     def refln(self) -> object:
         """Reflection collection for this experiment."""
         return self._refln
+
+    @property
+    def x_descriptor(self) -> NumericDescriptor | None:
+        """Return None because single-crystal data has no 1-D x axis."""
+        return None
+
+    @staticmethod
+    def fit_data_arrays() -> dict[str, np.ndarray | None]:
+        """Return no 1-D fit arrays for single-crystal experiments."""
+        return {}
 
     def _calculator_support_category(self) -> object | None:
         """
@@ -573,6 +630,17 @@ class PdExperimentBase(ExperimentBase):
     def data(self) -> object:
         """Data collection for this experiment."""
         return self._data
+
+    @property
+    def x_descriptor(self) -> NumericDescriptor:
+        """
+        Descriptor that owns the powder experiment's x-axis metadata.
+        """
+        return self.data.x_descriptor
+
+    def fit_data_arrays(self) -> dict[str, np.ndarray | None]:
+        """Return arrays needed to draw the powder fit-data chart."""
+        return self.data.fit_data_arrays()
 
     def _calculator_support_category(self) -> object | None:
         """

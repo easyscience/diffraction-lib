@@ -1,0 +1,257 @@
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
+# SPDX-License-Identifier: BSD-3-Clause
+"""Compile LaTeX report bundles into PDF reports."""
+
+from __future__ import annotations
+
+import os
+import shutil
+
+# TeX report compilation requires subprocesses; engines are discovered.
+import subprocess  # noqa: S404
+from typing import TYPE_CHECKING
+
+from easydiffraction.report.tex_renderer import save_tex_report
+from easydiffraction.utils.logging import log
+
+if TYPE_CHECKING:
+    import pathlib
+
+_ENGINE_ORDER = ('tectonic', 'latexmk', 'pdflatex')
+_ENGINE_RUNTIME_FAILURE_MARKERS = (
+    'panicked at',
+    'event loop thread panicked',
+    'Attempted to create a NULL object',
+)
+_MAX_COMPILER_DETAILS_LENGTH = 4000
+_INSTALL_HINT = """PDF skipped: no TeX engine on PATH.
+Install one with:
+  pixi add tectonic
+  conda install -c conda-forge tectonic
+  # or any TeX Live distribution (latexmk / pdflatex)
+Then set project.report.pdf = True and re-run project.save(), or call
+project.report.save_pdf().
+The .tex and data/ bundle remains under reports/tex/."""
+
+
+def save_pdf_report(
+    project: object,
+    context: dict[str, object],
+) -> pathlib.Path:
+    """
+    Write a TeX bundle and compile it to PDF when possible.
+
+    Parameters
+    ----------
+    project : object
+        Project instance.
+    context : dict[str, object]
+        Data returned by ``Report.data_context()``.
+
+    Returns
+    -------
+    pathlib.Path
+        Path of the PDF report, or the intended PDF path when no TeX
+        engine is available.
+    """
+    tex_path = save_tex_report(project, context)
+    return compile_pdf_report(tex_path)
+
+
+def compile_pdf_report(tex_path: pathlib.Path) -> pathlib.Path:
+    """
+    Compile an existing TeX report bundle into a PDF report.
+
+    TeX compilation failures propagate from the lower-level compiler
+    helper as ``RuntimeError``.
+
+    Parameters
+    ----------
+    tex_path : pathlib.Path
+        Path of the written main TeX document.
+
+    Returns
+    -------
+    pathlib.Path
+        Path of the PDF report, or the intended PDF path when no TeX
+        engine is available.
+    """
+    pdf_path = tex_path.parent.parent / f'{tex_path.stem}.pdf'
+    pdf_path.unlink(missing_ok=True)
+    engines = _find_engines()
+    if not engines:
+        log.warning(_INSTALL_HINT)
+        return pdf_path
+
+    runtime_failures = []
+    for engine in engines:
+        runtime_failure = _compile_report_bundle(engine, tex_path, pdf_path)
+        if runtime_failure is None:
+            return pdf_path
+        runtime_failures.append(runtime_failure)
+    if runtime_failures:
+        _warn_engine_runtime_failure(runtime_failures)
+    return pdf_path
+
+
+def _find_engines() -> list[tuple[str, str]]:
+    """Return available TeX engines in preferred order."""
+    engines = []
+    for engine_name in _ENGINE_ORDER:
+        executable = shutil.which(engine_name)
+        if executable is not None:
+            engines.append((engine_name, executable))
+    return engines
+
+
+def _compile_report_bundle(
+    engine: tuple[str, str],
+    tex_path: pathlib.Path,
+    pdf_path: pathlib.Path,
+) -> str | None:
+    """Compile figure documents first, then the main report."""
+    for figure_tex_path in _figure_tex_paths(tex_path):
+        runtime_failure = _compile_pdf(
+            engine,
+            figure_tex_path,
+            figure_tex_path.with_suffix('.pdf'),
+        )
+        if runtime_failure is not None:
+            return runtime_failure
+    return _compile_pdf(engine, tex_path, pdf_path)
+
+
+def _figure_tex_paths(tex_path: pathlib.Path) -> list[pathlib.Path]:
+    """Return standalone figure TeX files for a report bundle."""
+    data_dir = tex_path.parent / 'data'
+    if not data_dir.is_dir():
+        return []
+    return sorted(data_dir.glob('*.tex'))
+
+
+def _is_engine_runtime_failure(
+    engine_name: str,
+    result: subprocess.CompletedProcess[str],
+) -> bool:
+    """Return whether the TeX engine failed before compilation."""
+    if engine_name != 'tectonic':
+        return False
+    output = f'{result.stderr}\n{result.stdout}'
+    return any(marker in output for marker in _ENGINE_RUNTIME_FAILURE_MARKERS)
+
+
+def _compile_pdf(
+    engine: tuple[str, str],
+    tex_path: pathlib.Path,
+    pdf_path: pathlib.Path,
+) -> str | None:
+    """
+    Compile one TeX document with a discovered engine.
+
+    Parameters
+    ----------
+    engine : tuple[str, str]
+        Engine name and executable path.
+    tex_path : pathlib.Path
+        Path to the TeX file to compile.
+    pdf_path : pathlib.Path
+        Expected output PDF path.
+
+    Returns
+    -------
+    str | None
+        Runtime failure message for an engine-level crash, otherwise
+        ``None`` when compilation succeeds.
+
+    Raises
+    ------
+    RuntimeError
+        If the TeX engine fails to compile the document or does not
+        write the expected PDF.
+    """
+    engine_name, executable = engine
+    compile_tex_path = tex_path.resolve()
+    compile_pdf_path = pdf_path.resolve()
+    compile_pdf_path.unlink(missing_ok=True)
+    command = _compile_command(
+        engine_name,
+        executable,
+        compile_tex_path,
+        compile_pdf_path.parent,
+    )
+    # Engine path comes from shutil.which; shell=False.
+    result = subprocess.run(  # noqa: S603
+        command,
+        cwd=compile_tex_path.parent,
+        env=_compile_environment(),
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        if _is_engine_runtime_failure(engine_name, result):
+            return _compiler_error_message(engine_name, tex_path, result)
+        msg = _compiler_error_message(engine_name, tex_path, result)
+        raise RuntimeError(msg)
+    if not compile_pdf_path.is_file():
+        msg = f"TeX engine '{engine_name}' completed but did not write '{pdf_path}'."
+        raise RuntimeError(msg)
+    return None
+
+
+def _warn_engine_runtime_failure(
+    failures: list[str],
+) -> None:
+    """Warn when a TeX engine crashes before compiling LaTeX."""
+    details = '\n\n'.join(failures)
+    msg = (
+        'PDF skipped: the TeX engine failed before LaTeX compilation. '
+        'The .tex and data/ bundle remains under reports/tex/.\n'
+        f'{details}'
+    )
+    log.warning(msg)
+
+
+def _compile_command(
+    engine_name: str,
+    executable: str,
+    tex_path: pathlib.Path,
+    pdf_dir: pathlib.Path,
+) -> list[str]:
+    """Return the compile command for one engine."""
+    if engine_name == 'tectonic':
+        return [executable, '--outdir', str(pdf_dir), tex_path.name]
+    if engine_name == 'latexmk':
+        return [
+            executable,
+            '-pdf',
+            '-interaction=nonstopmode',
+            '-halt-on-error',
+            f'-outdir={pdf_dir}',
+            tex_path.name,
+        ]
+    return [
+        executable,
+        '-interaction=nonstopmode',
+        '-halt-on-error',
+        '-output-directory',
+        str(pdf_dir),
+        tex_path.name,
+    ]
+
+
+def _compile_environment() -> dict[str, str]:
+    """Return a TeX subprocess environment."""
+    return os.environ.copy()
+
+
+def _compiler_error_message(
+    engine_name: str,
+    tex_path: pathlib.Path,
+    result: subprocess.CompletedProcess[str],
+) -> str:
+    """Return a concise compiler failure message."""
+    details = (result.stderr or result.stdout).strip()
+    if len(details) > _MAX_COMPILER_DETAILS_LENGTH:
+        details = details[-_MAX_COMPILER_DETAILS_LENGTH:]
+    return f"TeX engine '{engine_name}' failed while compiling '{tex_path}'.\n{details}"

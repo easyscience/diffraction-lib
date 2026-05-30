@@ -121,7 +121,7 @@ def test_ascii_plotter_plot_powder_meas_vs_calc_announces_plotly_only_bragg_row(
                     f_calc=np.array([10.0]),
                 ),
             ),
-            axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+            axes_labels=['2θ (deg)', 'Intensity (arb. units)'],
             title='Powder plot',
             residual_height_fraction=0.25,
             bragg_peaks_height_fraction=0.15,

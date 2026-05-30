@@ -11,12 +11,23 @@ from cryspy.A_functions_base.function_2_space_group import (
 from cryspy.A_functions_base.function_2_space_group import get_it_number_by_name_hm_short
 
 from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.datablocks.structure.categories.space_group.factory import SpaceGroupFactory
 from easydiffraction.io.cif.handler import CifHandler
+
+_CRYSTAL_SYSTEM_RANGES = (
+    (1, 2, 'triclinic'),
+    (3, 15, 'monoclinic'),
+    (16, 74, 'orthorhombic'),
+    (75, 142, 'tetragonal'),
+    (143, 167, 'trigonal'),
+    (168, 194, 'hexagonal'),
+    (195, 230, 'cubic'),
+)
 
 
 @SpaceGroupFactory.register
@@ -44,6 +55,10 @@ class SpaceGroup(CategoryItem):
         self._name_h_m = StringDescriptor(
             name='name_h_m',
             description='Hermann-Mauguin symbol of the space group.',
+            display_handler=DisplayHandler(
+                display_name='H-M symbol',
+                latex_name='H-M symbol',
+            ),
             value_spec=AttributeSpec(
                 default='P 1',
                 validator=MembershipValidator(
@@ -64,6 +79,10 @@ class SpaceGroup(CategoryItem):
         self._it_coordinate_system_code = StringDescriptor(
             name='it_coordinate_system_code',
             description='A qualifier identifying which setting in IT is used.',
+            display_handler=DisplayHandler(
+                display_name='IT code',
+                latex_name='IT code',
+            ),
             value_spec=AttributeSpec(
                 default=lambda: self._it_coordinate_system_code_default_value,
                 validator=MembershipValidator(
@@ -163,3 +182,18 @@ class SpaceGroup(CategoryItem):
     @it_coordinate_system_code.setter
     def it_coordinate_system_code(self, value: str) -> None:
         self._it_coordinate_system_code.value = value
+
+    @property
+    def crystal_system(self) -> str:
+        """Crystal system derived from the H-M symbol."""
+        it_number = get_it_number_by_name_hm_short(self.name_h_m.value)
+        return _crystal_system_from_it_number(it_number)
+
+
+def _crystal_system_from_it_number(it_number: int) -> str:
+    """Return the crystal system for an International Tables number."""
+    for start, stop, crystal_system in _CRYSTAL_SYSTEM_RANGES:
+        if start <= it_number <= stop:
+            return crystal_system
+    msg = f'Unknown International Tables number: {it_number}'
+    raise ValueError(msg)

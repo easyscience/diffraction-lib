@@ -9,6 +9,7 @@ from typing import ClassVar
 from easydiffraction.analysis.categories.fit_result.base import FitResultBase
 from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.switchable import SwitchableCategoryBase
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import MembershipValidator
@@ -44,6 +45,7 @@ class MinimizerCategoryBase(CategoryItem, SwitchableCategoryBase):
                 names=['_minimizer.type'],
                 iucr_name='_easydiffraction_minimizer.type',
             ),
+            display_handler=DisplayHandler(display_name='Type', latex_name='Type'),
         )
 
     @staticmethod

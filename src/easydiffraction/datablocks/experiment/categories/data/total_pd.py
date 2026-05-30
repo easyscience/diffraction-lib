@@ -8,6 +8,7 @@ import numpy as np
 
 from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.metadata import CalculatorSupport
 from easydiffraction.core.metadata import Compatibility
 from easydiffraction.core.metadata import TypeInfo
@@ -55,7 +56,11 @@ class TotalDataPoint(CategoryItem):
         self._r = NumericDescriptor(
             name='r',
             description='Interatomic distance in real space',
-            units='Å',
+            units='angstroms',
+            display_handler=DisplayHandler(
+                display_units='Å',
+                latex_units=r'\AA',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0),
@@ -312,6 +317,19 @@ class TotalDataBase(CategoryCollection):
         """Background is always zero for PDF data."""
         return np.zeros_like(self.intensity_calc)
 
+    def fit_data_arrays(self) -> dict[str, np.ndarray | None]:
+        """Return arrays needed to draw the fit-data chart."""
+        meas = self.intensity_meas
+        calc = self.intensity_calc
+        return {
+            'x': self.x,
+            'meas': meas,
+            'meas_su': self.intensity_meas_su,
+            'calc': calc,
+            'diff': meas - calc,
+            'bkg': self.intensity_bkg,
+        }
+
 
 @DataFactory.register
 class TotalData(TotalDataBase):
@@ -361,6 +379,13 @@ class TotalData(TotalDataBase):
     # ------------------------------------------------------------------
     #  Public properties
     # ------------------------------------------------------------------
+
+    @property
+    def x_descriptor(self) -> NumericDescriptor:
+        """Descriptor that owns the r-space x-axis metadata."""
+        if self._items:
+            return self._items[0].r
+        return self._item_type().r
 
     @property
     def x(self) -> np.ndarray:

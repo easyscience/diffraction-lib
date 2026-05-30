@@ -8,6 +8,7 @@ def test_project_save_uses_cwd_when_no_explicit_path(monkeypatch, tmp_path, caps
 
     monkeypatch.chdir(tmp_path)
     p = Project()
+    p.report.html = False
     p.save_as(str(tmp_path))
     out = capsys.readouterr().out
     # It should announce saving and create the three core files
@@ -28,6 +29,7 @@ def test_project_save_as_writes_core_files(tmp_path, monkeypatch):
     monkeypatch.setattr(Analysis, 'as_cif', property(lambda self: 'analysis'))
 
     p = Project(name='p1')
+    p.report.html = False
     target = tmp_path / 'proj_dir'
     p.save_as(str(target))
 

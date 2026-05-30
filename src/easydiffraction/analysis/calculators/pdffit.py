@@ -7,17 +7,22 @@ The class adapts the engine to EasyDiffraction calculator interface and
 silences stdio on import to avoid noisy output in notebooks and logs.
 """
 
+from __future__ import annotations
+
 import os
 import re
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import numpy as np
 
 from easydiffraction.analysis.calculators.base import CalculatorBase
 from easydiffraction.analysis.calculators.factory import CalculatorFactory
 from easydiffraction.core.metadata import TypeInfo
-from easydiffraction.datablocks.experiment.item.base import ExperimentBase
-from easydiffraction.datablocks.structure.item.base import Structure
+
+if TYPE_CHECKING:
+    from easydiffraction.datablocks.experiment.item.base import ExperimentBase
+    from easydiffraction.datablocks.structure.item.base import Structure
 
 
 def _open_pdffit_devnull() -> object:
@@ -54,6 +59,7 @@ class PdffitCalculator(CalculatorBase):
         description='PDFfit2 for pair distribution function calculations',
     )
     engine_imported: bool = PdfFit is not None
+    url: str = 'https://www.diffpy.org/products/pdffit2.html'
 
     @property
     def name(self) -> str:

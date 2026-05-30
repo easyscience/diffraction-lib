@@ -9,6 +9,8 @@ from easydiffraction.project.categories.chart import Chart
 from easydiffraction.project.categories.chart import ChartFactory
 from easydiffraction.project.categories.info import ProjectInfo
 from easydiffraction.project.categories.info import ProjectInfoFactory
+from easydiffraction.project.categories.report import Report
+from easydiffraction.project.categories.report import ReportFactory
 from easydiffraction.project.categories.table import Table
 from easydiffraction.project.categories.table import TableFactory
 from easydiffraction.project.categories.verbosity import Verbosity
@@ -32,6 +34,7 @@ class ProjectConfig(CategoryOwner):
             description=description,
         )
         self._chart = ChartFactory.create(ChartFactory.default_tag())
+        self._report = ReportFactory.create(ReportFactory.default_tag())
         self._table = TableFactory.create(TableFactory.default_tag())
         self._verbosity = VerbosityFactory.create(VerbosityFactory.default_tag())
 
@@ -44,6 +47,11 @@ class ProjectConfig(CategoryOwner):
     def chart(self) -> Chart:
         """Chart configuration category."""
         return self._chart
+
+    @property
+    def report(self) -> Report:
+        """Report configuration category."""
+        return self._report
 
     @property
     def table(self) -> Table:

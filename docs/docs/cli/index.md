@@ -121,6 +121,12 @@ After fitting, the command displays the fit results and a project
 summary. By default, updated parameter values are **saved back** to the
 project directory.
 
+If `project.cif` enables any `_report.*` output flags, the same save
+also writes those reports. For example, `_report.html true` writes the
+HTML report after the fit, and `_report.tex true` plus
+`_report.pdf true` writes the TeX bundle and PDF when a TeX engine is
+available.
+
 Use the `--dry` flag to run the fit **without overwriting** the project
 files:
 

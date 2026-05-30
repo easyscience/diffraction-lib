@@ -7,6 +7,7 @@ from __future__ import annotations
 from typing import ClassVar
 
 from easydiffraction.analysis.categories.fit_result.base import FitResultBase
+from easydiffraction.analysis.categories.fit_result.base import _result_display_handler
 from easydiffraction.analysis.categories.fit_result.factory import FitResultFactory
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
@@ -313,115 +314,141 @@ class LeastSquaresFitResult(
         self._objective_name = self._string_result_descriptor(
             'objective_name',
             'Objective function name for the persisted deterministic fit.',
+            'Objective function',
         )
         self._objective_value = self._numeric_result_descriptor(
             'objective_value',
             'Objective value for the persisted deterministic fit.',
+            'Objective value',
         )
         self._n_data_points = self._integer_result_descriptor(
             'n_data_points',
             'Number of data points used in the persisted deterministic fit.',
+            'Number of data points',
         )
         self._n_parameters = self._integer_result_descriptor(
             'n_parameters',
             'Number of parameters considered in the persisted deterministic fit.',
+            'Number of parameters',
         )
         self._n_free_parameters = self._integer_result_descriptor(
             'n_free_parameters',
             'Number of free parameters in the persisted deterministic fit.',
+            'Number of free parameters',
         )
         self._degrees_of_freedom = self._integer_result_descriptor(
             'degrees_of_freedom',
             'Degrees of freedom for the persisted deterministic fit.',
+            'Degrees of freedom',
         )
         self._covariance_available = self._bool_result_descriptor(
             'covariance_available',
             'Whether covariance was available for the persisted deterministic fit.',
+            'Covariance available',
         )
         self._correlation_available = self._bool_result_descriptor(
             'correlation_available',
             'Whether correlations were available for the persisted deterministic fit.',
+            'Correlation available',
         )
         self._exit_reason = self._string_result_descriptor(
             'exit_reason',
             'Backend exit reason for the persisted deterministic fit.',
+            'Exit reason',
         )
         self._r_factor_all = self._numeric_result_descriptor(
             'r_factor_all',
             'R factor for all observed data in the deterministic fit.',
+            'R-factor (all)',
             cif_name='R_factor_all',
         )
         self._wr_factor_all = self._numeric_result_descriptor(
             'wr_factor_all',
             'Weighted R factor for all observed data in the fit.',
+            'Weighted R-factor (all)',
             cif_name='wR_factor_all',
         )
         self._r_factor_gt = self._numeric_result_descriptor(
             'r_factor_gt',
             'R factor for observations above the threshold.',
+            'R-factor (observed)',
             cif_name='R_factor_gt',
         )
         self._wr_factor_gt = self._numeric_result_descriptor(
             'wr_factor_gt',
             'Weighted R factor for observations above the threshold.',
+            'Weighted R-factor (observed)',
             cif_name='wR_factor_gt',
         )
         self._prof_r_factor = self._numeric_result_descriptor(
             'prof_r_factor',
             'Profile R factor for powder deterministic fits.',
+            'Profile R-factor',
             cif_name='prof_R_factor',
         )
         self._prof_wr_factor = self._numeric_result_descriptor(
             'prof_wr_factor',
             'Weighted profile R factor for powder deterministic fits.',
+            'Weighted profile R-factor',
             cif_name='prof_wR_factor',
         )
         self._prof_wr_expected = self._numeric_result_descriptor(
             'prof_wr_expected',
             'Expected weighted profile R factor for powder fits.',
+            'Expected weighted profile R-factor',
             cif_name='prof_wR_expected',
         )
         self._number_restraints = self._integer_result_descriptor(
             'number_restraints',
             'Number of restraints used in the deterministic fit.',
+            'Number of restraints',
         )
         self._number_constraints = self._integer_result_descriptor(
             'number_constraints',
             'Number of constraints used in the deterministic fit.',
+            'Number of constraints',
         )
         self._shift_over_su_max = self._numeric_result_descriptor(
             'shift_over_su_max',
             'Maximum absolute parameter shift divided by s.u.',
+            'Max shift/s.u.',
         )
         self._shift_over_su_mean = self._numeric_result_descriptor(
             'shift_over_su_mean',
             'Mean absolute parameter shift divided by s.u.',
+            'Mean shift/s.u.',
         )
         self._profile_function = self._string_result_descriptor(
             'profile_function',
             'Active profile function names for the deterministic fit.',
+            'Profile function',
         )
         self._background_function = self._string_result_descriptor(
             'background_function',
             'Active background function names for the deterministic fit.',
+            'Background function',
         )
         self._threshold_expression = self._string_result_descriptor(
             'threshold_expression',
             'Expression defining the observed-reflection threshold.',
+            'Threshold expression',
         )
         self._number_reflns_total = self._integer_result_descriptor(
             'number_reflns_total',
             'Total number of reflections represented in the fit.',
+            'Number of reflections (total)',
         )
         self._number_reflns_gt = self._integer_result_descriptor(
             'number_reflns_gt',
             'Number of reflections above the observed threshold.',
+            'Number of reflections (observed)',
         )
 
     @staticmethod
     def _string_result_descriptor(
         name: str,
         description: str,
+        display_name: str,
         *,
         cif_name: str | None = None,
     ) -> StringDescriptor:
@@ -437,12 +464,14 @@ class LeastSquaresFitResult(
             description=description,
             value_spec=AttributeSpec(default=None, allow_none=True),
             cif_handler=CifHandler(names=[f'_fit_result.{cif_name or name}']),
+            display_handler=_result_display_handler(display_name),
         )
 
     @staticmethod
     def _numeric_result_descriptor(
         name: str,
         description: str,
+        display_name: str,
         *,
         default: float | None = None,
         allow_none: bool = True,
@@ -454,10 +483,15 @@ class LeastSquaresFitResult(
             description=description,
             value_spec=AttributeSpec(default=default, allow_none=allow_none),
             cif_handler=CifHandler(names=[f'_fit_result.{cif_name or name}']),
+            display_handler=_result_display_handler(display_name),
         )
 
     @staticmethod
-    def _integer_result_descriptor(name: str, description: str) -> NumericDescriptor:
+    def _integer_result_descriptor(
+        name: str,
+        description: str,
+        display_name: str,
+    ) -> NumericDescriptor:
         """
         Create an integer-like numeric result descriptor.
 
@@ -470,10 +504,15 @@ class LeastSquaresFitResult(
             description=description,
             value_spec=AttributeSpec(default=None, allow_none=True),
             cif_handler=CifHandler(names=[f'_fit_result.{name}']),
+            display_handler=_result_display_handler(display_name),
         )
 
     @staticmethod
-    def _bool_result_descriptor(name: str, description: str) -> BoolDescriptor:
+    def _bool_result_descriptor(
+        name: str,
+        description: str,
+        display_name: str,
+    ) -> BoolDescriptor:
         """
         Create a boolean result descriptor.
 
@@ -486,6 +525,7 @@ class LeastSquaresFitResult(
             description=description,
             value_spec=AttributeSpec(default=None, allow_none=True),
             cif_handler=CifHandler(names=[f'_fit_result.{name}']),
+            display_handler=_result_display_handler(display_name),
         )
 
     def _include_exit_reason_cif_descriptor(self) -> bool:

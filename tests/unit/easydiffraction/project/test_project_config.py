@@ -9,6 +9,7 @@ import datetime
 def test_project_config_exposes_project_info_chart_and_table_categories():
     from easydiffraction.core.category_owner import CategoryOwner
     from easydiffraction.project.categories.chart import Chart
+    from easydiffraction.project.categories.report import Report
     from easydiffraction.project.categories.table import Table
     from easydiffraction.project.project_config import ProjectConfig
     from easydiffraction.project.project_info import ProjectInfo
@@ -18,9 +19,11 @@ def test_project_config_exposes_project_info_chart_and_table_categories():
     assert isinstance(config, CategoryOwner)
     assert isinstance(config.info, ProjectInfo)
     assert isinstance(config.chart, Chart)
+    assert isinstance(config.report, Report)
     assert isinstance(config.table, Table)
     assert config.info._parent is config
     assert config.chart._parent is config
+    assert config.report._parent is config
     assert config.table._parent is config
     assert config.info.name == 'beer'
     assert config.info.title == 'Beer title'
@@ -30,10 +33,17 @@ def test_project_config_exposes_project_info_chart_and_table_categories():
     assert isinstance(config.info.last_modified, datetime.datetime)
     assert config.verbosity._parent is config
     assert config.verbosity.fit.value == 'full'
-    assert config.categories == [config.info, config.chart, config.table, config.verbosity]
+    assert config.categories == [
+        config.info,
+        config.chart,
+        config.report,
+        config.table,
+        config.verbosity,
+    ]
     assert config.parameters == (
         config.info.parameters
         + config.chart.parameters
+        + config.report.parameters
         + config.table.parameters
         + config.verbosity.parameters
     )
@@ -53,6 +63,11 @@ def test_project_config_as_cif_has_project_chart_and_table_sections_without_data
     assert '_project.created' in cif_text
     assert '_project.last_modified' in cif_text
     assert '_chart.type' in cif_text
+    assert '_report.cif' in cif_text
+    assert '_report.html' in cif_text
+    assert '_report.tex' in cif_text
+    assert '_report.pdf' in cif_text
+    assert '_report.html_offline' in cif_text
     assert '_table.type' in cif_text
     assert '_chart.type auto' in cif_text
     assert '_table.type auto' in cif_text
@@ -69,6 +84,7 @@ def test_project_save_and_load_use_auto_display_defaults_when_unset(tmp_path):
 
     assert not project_cif.startswith('data_')
     assert '_chart.type auto' in project_cif
+    assert '_report.cif false' in project_cif
     assert '_table.type auto' in project_cif
     assert '_verbosity.fit full' in project_cif
 
@@ -91,6 +107,7 @@ def test_project_save_and_load_keep_project_config_section_format(tmp_path):
     assert not project_cif.startswith('data_')
     assert '_project.id               beer' in project_cif
     assert '_chart.type asciichartpy' in project_cif
+    assert '_report.cif false' in project_cif
     assert '_table.type rich' in project_cif
     assert '_verbosity.fit full' in project_cif
 

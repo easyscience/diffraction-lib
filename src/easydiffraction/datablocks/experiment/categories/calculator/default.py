@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.switchable import SwitchableCategoryBase
 from easydiffraction.core.validation import AttributeSpec
@@ -50,6 +51,10 @@ class Calculator(CategoryItem, SwitchableCategoryBase):
             cif_handler=CifHandler(
                 names=['_calculator.type'],
                 iucr_name='_easydiffraction_calculator.type',
+            ),
+            display_handler=DisplayHandler(
+                display_name='Type',
+                latex_name='Type',
             ),
         )
 

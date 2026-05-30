@@ -9,6 +9,7 @@ from typing import ClassVar
 from easydiffraction.analysis.categories.fit_result.factory import FitResultFactory
 from easydiffraction.analysis.enums import FitResultKindEnum
 from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import MembershipValidator
@@ -18,6 +19,13 @@ from easydiffraction.core.variable import IntegerDescriptor
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.io.cif.handler import CifHandler
+
+
+def _result_display_handler(label: str) -> DisplayHandler:
+    """
+    Return a display handler with the same label for HTML and LaTeX.
+    """
+    return DisplayHandler(display_name=label, latex_name=label)
 
 
 @FitResultFactory.register
@@ -51,36 +59,42 @@ class FitResultBase(CategoryItem):
                 ),
             ),
             cif_handler=CifHandler(names=['_fit_result.result_kind']),
+            display_handler=_result_display_handler('Result kind'),
         )
         self._success = BoolDescriptor(
             name='success',
             description='Whether the latest persisted fit-result projection succeeded.',
             value_spec=AttributeSpec(default=None, allow_none=True),
             cif_handler=CifHandler(names=['_fit_result.success']),
+            display_handler=_result_display_handler('Success'),
         )
         self._message = StringDescriptor(
             name='message',
             description='Status message for the latest persisted fit-result projection.',
             value_spec=AttributeSpec(default=None, allow_none=True),
             cif_handler=CifHandler(names=['_fit_result.message']),
+            display_handler=_result_display_handler('Message'),
         )
         self._iterations = IntegerDescriptor(
             name='iterations',
             description='Iteration count for the latest persisted fit-result projection.',
             value_spec=AttributeSpec(default=None, allow_none=True),
             cif_handler=CifHandler(names=['_fit_result.iterations']),
+            display_handler=_result_display_handler('Iterations'),
         )
         self._fitting_time = NumericDescriptor(
             name='fitting_time',
             description='Fitting time in seconds for the latest persisted projection.',
             value_spec=AttributeSpec(default=None, allow_none=True),
             cif_handler=CifHandler(names=['_fit_result.fitting_time']),
+            display_handler=_result_display_handler('Fitting time (s)'),
         )
         self._reduced_chi_square = NumericDescriptor(
             name='reduced_chi_square',
             description='Reduced chi-square for the latest persisted projection.',
             value_spec=AttributeSpec(default=None, allow_none=True),
             cif_handler=CifHandler(names=['_fit_result.reduced_chi_square']),
+            display_handler=_result_display_handler('Reduced chi-square'),
         )
 
     @property

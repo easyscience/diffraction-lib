@@ -11,6 +11,7 @@ experiment configuration and handles CIF serialization via
 from __future__ import annotations
 
 from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import MembershipValidator
@@ -50,6 +51,10 @@ class ExperimentType(CategoryItem):
                 names=['_expt_type.sample_form'],
                 iucr_name='_easydiffraction_experiment_type.sample_form',
             ),
+            display_handler=DisplayHandler(
+                display_name='Sample form',
+                latex_name='Sample form',
+            ),
         )
 
         self._beam_mode = StringDescriptor(
@@ -62,6 +67,10 @@ class ExperimentType(CategoryItem):
             cif_handler=CifHandler(
                 names=['_expt_type.beam_mode'],
                 iucr_name='_easydiffraction_experiment_type.beam_mode',
+            ),
+            display_handler=DisplayHandler(
+                display_name='Beam mode',
+                latex_name='Beam mode',
             ),
         )
         self._radiation_probe = StringDescriptor(
@@ -77,6 +86,10 @@ class ExperimentType(CategoryItem):
                 names=['_expt_type.radiation_probe'],
                 iucr_name='_easydiffraction_experiment_type.radiation_probe',
             ),
+            display_handler=DisplayHandler(
+                display_name='Probe',
+                latex_name='Probe',
+            ),
         )
         self._scattering_type = StringDescriptor(
             name='scattering_type',
@@ -90,6 +103,10 @@ class ExperimentType(CategoryItem):
             cif_handler=CifHandler(
                 names=['_expt_type.scattering_type'],
                 iucr_name='_easydiffraction_experiment_type.scattering_type',
+            ),
+            display_handler=DisplayHandler(
+                display_name='Scattering type',
+                latex_name='Scattering type',
             ),
         )
 

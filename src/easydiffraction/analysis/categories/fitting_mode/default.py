@@ -7,6 +7,7 @@ from __future__ import annotations
 from easydiffraction.analysis.categories.fitting_mode.factory import FittingModeFactory
 from easydiffraction.analysis.enums import FitModeEnum
 from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.switchable import SwitchableCategoryBase
 from easydiffraction.core.validation import AttributeSpec
@@ -44,6 +45,7 @@ class FittingMode(CategoryItem, SwitchableCategoryBase):
                 names=['_fitting_mode.type'],
                 iucr_name='_easydiffraction_fitting_mode.type',
             ),
+            display_handler=DisplayHandler(display_name='Type', latex_name='Type'),
         )
 
     @staticmethod

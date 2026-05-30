@@ -416,6 +416,7 @@ def test_plot_powder_meas_vs_calc_creates_synced_three_panel_figure(monkeypatch)
         y_meas=np.array([10.0, 12.0, 11.0]),
         y_calc=np.array([9.0, 11.0, 10.5]),
         y_resid=np.array([1.0, 1.0, 0.5]),
+        y_meas_su=np.array([0.2, 0.3, 0.4]),
         bragg_tick_sets=(
             BraggTickSet(
                 phase_id='phase-a',
@@ -436,7 +437,7 @@ def test_plot_powder_meas_vs_calc_creates_synced_three_panel_figure(monkeypatch)
                 f_calc=np.array([9.0]),
             ),
         ),
-        axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+        axes_labels=['2θ (deg)', 'Intensity (arb. units)'],
         title='Powder',
         residual_height_fraction=0.25,
         bragg_peaks_height_fraction=0.10,
@@ -477,6 +478,7 @@ def test_plot_powder_meas_vs_calc_creates_synced_three_panel_figure(monkeypatch)
     assert calc_trace.hovertemplate == expected_hovertemplate
     assert residual_trace.hovertemplate == expected_hovertemplate
     assert meas_trace.line.width == pp.MEASURED_LINE_WIDTH
+    assert list(meas_trace.error_y.array) == pytest.approx([0.2, 0.3, 0.4])
     assert calc_trace.line.width == pp.CALCULATED_LINE_WIDTH
     assert residual_trace.line.width == pp.RESIDUAL_LINE_WIDTH
     assert list(meas_trace.customdata[0]) == pytest.approx([10.0, 9.0, 1.0])
@@ -495,7 +497,7 @@ def test_plot_powder_meas_vs_calc_creates_synced_three_panel_figure(monkeypatch)
     assert fig.layout.yaxis2.title.text is None
     assert fig.layout.yaxis3.title.text is None
     assert fig.layout.yaxis3.zeroline is False
-    assert fig.layout.xaxis3.title.text == '2θ (degree)'
+    assert fig.layout.xaxis3.title.text == '2θ (deg)'
     assert 'Miller indices: (1 0 1)' in bragg_traces[0].text[0]
     assert 'phase-a' in bragg_traces[0].text[0]
 
@@ -529,7 +531,7 @@ def test_plot_powder_meas_vs_calc_adds_background_curve(monkeypatch):
                 f_calc=np.array([10.0]),
             ),
         ),
-        axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+        axes_labels=['2θ (deg)', 'Intensity (arb. units)'],
         title='Powder',
         residual_height_fraction=0.25,
         bragg_peaks_height_fraction=0.10,
@@ -578,7 +580,7 @@ def test_get_main_intensity_range_uses_unit_padding_for_flat_series():
         y_calc=np.array([5.0]),
         y_resid=None,
         bragg_tick_sets=(),
-        axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+        axes_labels=['2θ (deg)', 'Intensity (arb. units)'],
         title='Powder',
         residual_height_fraction=0.25,
         bragg_peaks_height_fraction=0.10,
@@ -610,7 +612,7 @@ def test_bragg_row_height_pixels_scale_linearly_with_phase_count():
                 f_calc=np.array([10.0]),
             ),
         ),
-        axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+        axes_labels=['2θ (deg)', 'Intensity (arb. units)'],
         title='Powder',
         residual_height_fraction=0.25,
         bragg_peaks_height_fraction=0.10,
@@ -679,7 +681,7 @@ def test_plot_powder_meas_vs_calc_grows_total_height_for_many_phases(monkeypatch
             y_calc=np.array([9.0, 11.0, 10.5]),
             y_resid=np.array([1.0, 1.0, 0.5]),
             bragg_tick_sets=bragg_tick_sets,
-            axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+            axes_labels=['2θ (deg)', 'Intensity (arb. units)'],
             title='Powder',
             residual_height_fraction=0.25,
             bragg_peaks_height_fraction=0.10,
@@ -740,7 +742,7 @@ def test_plot_powder_meas_vs_calc_uses_explicit_plotly_height_as_pixels(monkeypa
                     f_calc=np.array([10.0]),
                 ),
             ),
-            axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+            axes_labels=['2θ (deg)', 'Intensity (arb. units)'],
             title='Powder',
             residual_height_fraction=0.25,
             bragg_peaks_height_fraction=0.10,
@@ -771,7 +773,7 @@ def test_plot_powder_meas_vs_calc_skips_bragg_row_when_no_ticks(monkeypatch):
             y_calc=np.array([9.0, 11.0, 10.5]),
             y_resid=np.array([1.0, 1.0, 0.5]),
             bragg_tick_sets=(),
-            axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+            axes_labels=['2θ (deg)', 'Intensity (arb. units)'],
             title='Powder',
             residual_height_fraction=0.25,
             bragg_peaks_height_fraction=0.15,
@@ -784,7 +786,7 @@ def test_plot_powder_meas_vs_calc_skips_bragg_row_when_no_ticks(monkeypatch):
     assert fig.layout.xaxis.matches == 'x'
     assert fig.layout.xaxis2.matches == 'x'
     assert fig.layout.yaxis2.title.text is None
-    assert fig.layout.xaxis2.title.text == '2θ (degree)'
+    assert fig.layout.xaxis2.title.text == '2θ (deg)'
     assert fig.layout.title.font.size == pp.TITLE_FONT_SIZE
     assert fig.layout.yaxis.title.font.size == pp.AXIS_TITLE_FONT_SIZE
     assert fig.layout.xaxis2.title.font.size == pp.AXIS_TITLE_FONT_SIZE
@@ -815,7 +817,7 @@ def test_plot_powder_meas_vs_calc_styles_predictive_max_posterior_and_band(monke
             y_calc=np.array([9.0, 11.0, 10.5]),
             y_resid=np.array([1.0, 1.0, 0.5]),
             bragg_tick_sets=(),
-            axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+            axes_labels=['2θ (deg)', 'Intensity (arb. units)'],
             title='Powder',
             residual_height_fraction=0.25,
             bragg_peaks_height_fraction=0.15,
@@ -862,7 +864,7 @@ def test_plot_powder_meas_vs_calc_keeps_exact_residual_scale_match(monkeypatch):
             y_calc=np.array([180.0, 3400.0, 210.0]),
             y_resid=np.array([20.0, 200.0, 10.0]),
             bragg_tick_sets=(),
-            axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+            axes_labels=['2θ (deg)', 'Intensity (arb. units)'],
             title='Powder',
             residual_height_fraction=0.25,
             bragg_peaks_height_fraction=0.15,
@@ -917,7 +919,7 @@ def test_plot_powder_meas_vs_calc_clips_large_residual_spikes(monkeypatch):
             y_calc=np.array([180.0, 3400.0, 210.0]),
             y_resid=np.array([20.0, 1200.0, 10.0]),
             bragg_tick_sets=(),
-            axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+            axes_labels=['2θ (deg)', 'Intensity (arb. units)'],
             title='Powder',
             residual_height_fraction=0.25,
             bragg_peaks_height_fraction=0.15,
@@ -956,7 +958,7 @@ def test_plot_powder_meas_vs_calc_accepts_empty_filtered_range(monkeypatch):
             y_calc=np.array([], dtype=float),
             y_resid=np.array([], dtype=float),
             bragg_tick_sets=(),
-            axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+            axes_labels=['2θ (deg)', 'Intensity (arb. units)'],
             title='Powder',
             residual_height_fraction=0.25,
             bragg_peaks_height_fraction=0.15,

@@ -6,6 +6,7 @@ from __future__ import annotations
 from abc import abstractmethod
 
 from easydiffraction.core.category import CategoryCollection
+from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.switchable import SwitchableCategoryBase
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import MembershipValidator
@@ -35,6 +36,10 @@ class BackgroundBase(CategoryCollection, SwitchableCategoryBase):
         self._type: StringDescriptor = StringDescriptor(
             name='type',
             description='Active background type tag',
+            display_handler=DisplayHandler(
+                display_name='Type',
+                latex_name='Type',
+            ),
             value_spec=AttributeSpec(
                 default=default_tag,
                 validator=MembershipValidator(

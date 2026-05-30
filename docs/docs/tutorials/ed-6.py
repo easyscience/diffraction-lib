@@ -342,9 +342,6 @@ project.display.pattern(expt_name='hrpt', x_min=48, x_max=51)
 # ## Report
 #
 # This final section shows how to review the results of the analysis.
-
-# %% [markdown]
-# #### Show Project Report
-
-# %%
-project.report.show_report()
+#
+# The HTML report is written automatically when the project is saved;
+# enable `project.report.pdf` as well for a PDF version.

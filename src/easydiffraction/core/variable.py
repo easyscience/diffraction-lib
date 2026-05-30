@@ -9,6 +9,7 @@ import numpy as np
 
 from easydiffraction.core.diagnostic import Diagnostics
 from easydiffraction.core.guard import GuardedBase
+from easydiffraction.core.units_vocabulary import normalize_units_code
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
@@ -18,6 +19,7 @@ from easydiffraction.io.cif.serialize import param_to_cif
 from easydiffraction.utils.logging import log
 
 if TYPE_CHECKING:
+    from easydiffraction.core.display_handler import DisplayHandler
     from easydiffraction.core.posterior import PosteriorParameterSummary
     from easydiffraction.io.cif.handler import CifHandler
 
@@ -48,6 +50,7 @@ class GenericDescriptorBase(GuardedBase):
         value_spec: AttributeSpec,
         name: str,
         description: str | None = None,
+        display_handler: DisplayHandler | None = None,
     ) -> None:
         """
         Initialize the descriptor with validation and identity.
@@ -60,6 +63,8 @@ class GenericDescriptorBase(GuardedBase):
             Local name of the descriptor within its category.
         description : str | None, default=None
             Optional human-readable description.
+        display_handler : DisplayHandler | None, default=None
+            Optional labels and units for display contexts.
         """
         super().__init__()
 
@@ -84,6 +89,7 @@ class GenericDescriptorBase(GuardedBase):
         self._value_spec = value_spec
         self._name = name
         self._description = description
+        self._display_handler = display_handler
 
         # Initial validated states
         # self._value = self._value_spec.validated(
@@ -185,6 +191,63 @@ class GenericDescriptorBase(GuardedBase):
         return self._description
 
     @property
+    def display_handler(self) -> DisplayHandler | None:
+        """Optional labels and units for display contexts."""
+        return self._display_handler
+
+    def resolve_display_name(self, context: str) -> str:
+        """
+        Return the display label for the requested context.
+
+        Parameters
+        ----------
+        context : str
+            One of ``'latex'``, ``'html'``, or ``'gui'``.
+
+        Returns
+        -------
+        str
+            Resolved display label.
+        """
+        self._validate_display_context(context)
+        if self._display_handler is None:
+            return self.name
+        if context == 'latex':
+            return self._display_handler.latex_name or self.name
+        return self._display_handler.display_name or self.name
+
+    def resolve_display_units(self, context: str) -> str:
+        """
+        Return the display units for the requested context.
+
+        Parameters
+        ----------
+        context : str
+            One of ``'latex'``, ``'html'``, or ``'gui'``.
+
+        Returns
+        -------
+        str
+            Resolved display units.
+        """
+        self._validate_display_context(context)
+        fallback = str(getattr(self, '_units', ''))
+        if fallback == 'none':
+            fallback = ''
+        if self._display_handler is None:
+            return fallback
+        if context == 'latex':
+            return self._display_handler.latex_units or fallback
+        return self._display_handler.display_units or fallback
+
+    @staticmethod
+    def _validate_display_context(context: str) -> None:
+        """Validate a descriptor display context."""
+        if context not in {'latex', 'html', 'gui'}:
+            msg = "context must be one of 'latex', 'html', or 'gui'."
+            raise ValueError(msg)
+
+    @property
     def parameters(self) -> list[GenericDescriptorBase]:
         """
         Return a flat list of parameters contained by this object.
@@ -257,13 +320,13 @@ class GenericNumericDescriptor(GenericDescriptorBase):
         **kwargs: object,
     ) -> None:
         super().__init__(**kwargs)
-        self._units: str = units
+        self._units: str = normalize_units_code(units)
 
     def __str__(self) -> str:
         """Return the string representation including units."""
         s: str = super().__str__()
         s = s[1:-1]  # strip <>
-        if self.units:
+        if self.units != 'none':
             s += f' {self.units}'
         return f'<{s}>'
 
@@ -346,7 +409,7 @@ class GenericParameter(GenericNumericDescriptor):
         s = s[1:-1]  # strip <>
         if self.uncertainty is not None:
             s += f' ± {self.uncertainty}'
-        if self.units is not None:
+        if self.units != 'none':
             s += f' {self.units}'
         s += f' (free={self.free})'
         return f'<{s}>'

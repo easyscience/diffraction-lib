@@ -142,58 +142,61 @@ observation drives the policy:
   coefficient loop indexed by integer `power`), and pdCIF has no
   parametric peak-shape items at all. File path scopes them; no prefix
   needed.
-- **Reports** — a separate write path, `project.save(report=True)`, that
-  pulls live Python state and emits a single journal-submission CIF to
-  `reports/<project>.cif`. This path applies all IUCr renames,
-  structural reshapings, multi-datablock layout, and project-extension
-  namespacing (`_easydiffraction_*`). Lives under the new
-  `project.report` facade slot (replaces the unimplemented
-  `project.summary` placeholder). **Export only — no round-trip.**
+- **Reports** — a separate `project.report` facade that pulls live
+  Python state and emits journal report artifacts under `reports/`. The
+  IUCr CIF one-off method is `project.report.save_cif()`; the regular
+  `project.save()` call emits configured reports from the
+  `project.report.{cif,html,tex,pdf}` booleans. This path applies all
+  IUCr renames, structural reshapings, multi-datablock layout, and
+  project-extension namespacing (`_easydiffraction_*`). It replaces the
+  unimplemented `project.summary` placeholder. **Export only — no
+  round-trip.**
 
 ## Current State
 
 Project CIF categories audited against `cif_core.dic` v3.4.0 and
 `cif_pow.dic` v2.5.0. The "Default-save tier" column shows whether the
 category changes in the default save; the "IUCr export" column shows the
-dotted DDLm tag emitted under `project.save(report=True)`.
+dotted DDLm tag emitted by the IUCr CIF report writer.
 
-| Category (current)                                                                              | IUCr dictionary                                                             | Default-save tier                           | IUCr export (dotted DDLm)                                                                                                                                                                   |
-| ----------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `_cell.*`                                                                                       | core                                                                        | Structure — unchanged                       | `_cell.length_a`, `_cell.angle_alpha`, etc.                                                                                                                                                 |
-| `_atom_site.*` (most fields)                                                                    | core                                                                        | Structure — unchanged                       | `_atom_site.label`, `_atom_site.fract_x`, …                                                                                                                                                 |
-| `_atom_site.adp_type`                                                                           | core (`_atom_site.ADP_type`)                                                | Structure — casing fix                      | `_atom_site.ADP_type` (uppercase ADP per dictionary).                                                                                                                                       |
-| `_atom_site.wyckoff_letter`                                                                     | core (`_atom_site.Wyckoff_symbol`)                                          | Structure — rename                          | `_atom_site.Wyckoff_symbol` (uppercase W, "symbol" not "letter").                                                                                                                           |
-| `_atom_site.B_iso_or_equiv` / `U_iso_or_equiv`                                                  | core                                                                        | Structure — single-tag emit                 | `_atom_site.B_iso_or_equiv` xor `_atom_site.U_iso_or_equiv` per row, based on `_atom_site.ADP_type`.                                                                                        |
-| `_atom_site_aniso.B_*` / `U_*`                                                                  | core                                                                        | Structure — single-tag emit                 | `_atom_site_aniso.B_*` xor `_atom_site_aniso.U_*` per row.                                                                                                                                  |
-| `_space_group.name_h_m`                                                                         | core (`_space_group.name_H-M_alt`)                                          | Structure — casing fix                      | `_space_group.name_H-M_alt`.                                                                                                                                                                |
-| `_space_group.it_coordinate_system_code`                                                        | core (`_space_group.IT_coordinate_system_code`)                             | Structure — casing fix                      | `_space_group.IT_coordinate_system_code`.                                                                                                                                                   |
-| symmetry operations                                                                             | core (`_space_group_symop.*`)                                               | (not emitted today)                         | `_space_group_symop.id` + `_space_group_symop.operation_xyz` loop alongside the H-M name.                                                                                                   |
-| `_diffrn.ambient_temperature`, `ambient_pressure`                                               | core                                                                        | Experiment — unchanged                      | `_diffrn.ambient_temperature`, `_diffrn.ambient_pressure`.                                                                                                                                  |
-| `_diffrn.ambient_magnetic_field`, `ambient_electric_field`                                      | none                                                                        | Experiment — unchanged                      | `_easydiffraction_diffrn.ambient_magnetic_field`, `…electric_field` (project extension).                                                                                                    |
-| `_refln.*`                                                                                      | core                                                                        | (no default save under refln)               | `_refln.*` reflections loop (column set differs by domain — see §2.3).                                                                                                                      |
-| `_pd_meas.*`, `_pd_proc.*`, `_pd_calc.*`, `_pd_data.*`                                          | pdCIF                                                                       | Experiment — unchanged                      | `_pd_meas.*`, `_pd_proc.*`, `_pd_calc.*` profile-data loop (see §2.3).                                                                                                                      |
-| `_pd_background.*`                                                                              | pdCIF                                                                       | Experiment — unchanged                      | `_pd_background.*`.                                                                                                                                                                         |
-| `_pd_phase_block.*`                                                                             | pdCIF                                                                       | Experiment — unchanged                      | `_pd_phase_block.*`.                                                                                                                                                                        |
-| `_sc_crystal_block.*`                                                                           | community (no IUCr counterpart)                                             | Experiment — unchanged                      | `_easydiffraction_sc_crystal_block.*` in IUCr export.                                                                                                                                       |
-| `_instr.wavelength`                                                                             | core (`_diffrn_radiation_wavelength.value`)                                 | Experiment — unchanged                      | `_diffrn_radiation_wavelength.{id, value, wt}` — single-row category for monochromatic; loop only for multi-λ.                                                                              |
-| `_instr.2theta_offset`                                                                          | pdCIF (`_pd_calib.2theta_offset`)                                           | Experiment — unchanged                      | `_pd_calib.2theta_offset`.                                                                                                                                                                  |
-| `_instr.2theta_bank`, `d_to_tof_*`                                                              | pdCIF (`_pd_calib_d_to_tof.*` loop)                                         | Experiment — unchanged                      | Four-row loop `_pd_calib_d_to_tof.{id, coeff, power, coeff_su, diffractogram_id}`.                                                                                                          |
-| `_peak.*` (parametric profile shape)                                                            | none (pdCIF has no shape parameters)                                        | Experiment — unchanged                      | `_easydiffraction_peak.*` + `_pd_proc_ls.profile_function` free-text descriptor.                                                                                                            |
-| `_extinction.*`                                                                                 | core (`_refine_ls.extinction_*` items)                                      | Experiment — unchanged                      | `_easydiffraction_extinction.*` + dual emit `_refine_ls.extinction_{method,coef,expression}`.                                                                                               |
-| `_excluded_region.*`                                                                            | pdCIF (`_pd_proc.info_excluded_regions` free-text)                          | Experiment — unchanged                      | `_easydiffraction_excluded_region.*` + `_pd_proc.info_excluded_regions` free-text rendering.                                                                                                |
-| `_expt_type.*`                                                                                  | none                                                                        | Experiment — unchanged                      | `_easydiffraction_experiment_type.*`.                                                                                                                                                       |
-| `_calculator.type`, `_minimizer.type`                                                           | none                                                                        | Analysis — unchanged                        | Identification rolled into the `_easydiffraction_software.{framework, calculator, minimizer}` category; `_computing.structure_refinement` carries the same info as IUCr-standard free text. |
-| `_minimizer.*` settings (tolerances, max_iter, …)                                               | none                                                                        | Analysis — unchanged                        | `_easydiffraction_minimizer.*` (settings only, separate from the identification triple).                                                                                                    |
-| `_fitting_mode.type`, `_background.type`                                                        | none                                                                        | Analysis / Experiment — unchanged           | `_easydiffraction_fitting_mode.type`, `_easydiffraction_background.type` selectors.                                                                                                         |
-| `_fit_result.reduced_chi_square`, `n_data_points`, `n_parameters`                               | core (`_refine_ls.*`) and pdCIF (`_pd_proc_ls.*`)                           | Analysis — unchanged (topology-neutral)     | Shape-shifting per topology: see §1.2 and §3 transformers.                                                                                                                                  |
-| `_fit_result.*` (R-factors, counts, profile/background function)                                | core / pdCIF                                                                | Analysis — new fields under `_fit_result.*` | IUCr export remaps to per-topology `_refine_ls.*` / `_pd_proc_ls.*`; item names already match dictionary casing (§1.2).                                                                     |
-| `_fit_result.*` (Bayesian diagnostics, success, message, fitting_time, iterations, result_kind) | none                                                                        | Analysis — unchanged                        | `_easydiffraction_fit_result.*`.                                                                                                                                                            |
-| `_fit_parameter`, `_fit_parameter_correlation`                                                  | none / partial                                                              | Analysis — unchanged                        | `_easydiffraction_fit_parameter*` (no IUCr counterpart for per-parameter posterior).                                                                                                        |
-| `_alias`, `_constraint`                                                                         | none                                                                        | Analysis — unchanged                        | `_easydiffraction_alias*`, `_easydiffraction_constraint*`.                                                                                                                                  |
-| `_joint_fit`, `_sequential_fit*`                                                                | none                                                                        | Analysis — unchanged                        | `_easydiffraction_joint_fit*`, `_easydiffraction_sequential_fit*`.                                                                                                                          |
-| reflection-set aggregates                                                                       | core (`_reflns.*`)                                                          | Analysis — new fields                       | `_reflns.number_total`, `_reflns.number_gt`, `_reflns.threshold_expression` (e.g. `'I>3\s(I)'`).                                                                                            |
-| publication metadata                                                                            | core (`_journal.*`, `_publ_author.*`, `_publ_contact_author.*`, `_audit.*`) | (not emitted today)                         | Emitted in `data_global` block per §2.3a with `?` placeholders.                                                                                                                             |
-| analysis-stack identification                                                                   | core (`_computing.structure_refinement`)                                    | (not emitted today)                         | `_easydiffraction_software.{framework, calculator, minimizer}` triple + `_computing.structure_refinement` derived string in `data_global` (see §2.3a-i).                                    |
+| Category (current)                                                                              | IUCr dictionary                                                             | Default-save tier                           | IUCr export (dotted DDLm)                                                                                                                                                                  |
+| ----------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `_cell.*`                                                                                       | core                                                                        | Structure — unchanged                       | `_cell.length_a`, `_cell.angle_alpha`, etc.                                                                                                                                                |
+| `_atom_site.*` (most fields)                                                                    | core                                                                        | Structure — unchanged                       | `_atom_site.label`, `_atom_site.fract_x`, …                                                                                                                                                |
+| `_atom_site.adp_type`                                                                           | core (`_atom_site.ADP_type`)                                                | Structure — casing fix                      | `_atom_site.ADP_type` (uppercase ADP per dictionary).                                                                                                                                      |
+| `_atom_site.wyckoff_letter`                                                                     | core (`_atom_site.Wyckoff_symbol`)                                          | Structure — rename                          | `_atom_site.Wyckoff_symbol` (uppercase W, "symbol" not "letter").                                                                                                                          |
+| `_atom_site.B_iso_or_equiv` / `U_iso_or_equiv`                                                  | core                                                                        | Structure — single-tag emit                 | `_atom_site.B_iso_or_equiv` xor `_atom_site.U_iso_or_equiv` per row, based on `_atom_site.ADP_type`.                                                                                       |
+| `_atom_site_aniso.B_*` / `U_*`                                                                  | core                                                                        | Structure — single-tag emit                 | `_atom_site_aniso.B_*` xor `_atom_site_aniso.U_*` per row.                                                                                                                                 |
+| `_space_group.name_h_m`                                                                         | core (`_space_group.name_H-M_alt`)                                          | Structure — casing fix                      | `_space_group.name_H-M_alt`.                                                                                                                                                               |
+| `_space_group.it_coordinate_system_code`                                                        | core (`_space_group.IT_coordinate_system_code`)                             | Structure — casing fix                      | `_space_group.IT_coordinate_system_code`.                                                                                                                                                  |
+| symmetry operations                                                                             | core (`_space_group_symop.*`)                                               | (not emitted today)                         | `_space_group_symop.id` + `_space_group_symop.operation_xyz` loop alongside the H-M name.                                                                                                  |
+| `_diffrn.ambient_temperature`, `ambient_pressure`                                               | core                                                                        | Experiment — unchanged                      | `_diffrn.ambient_temperature`, `_diffrn.ambient_pressure`.                                                                                                                                 |
+| `_diffrn.ambient_magnetic_field`, `ambient_electric_field`                                      | none                                                                        | Experiment — unchanged                      | `_easydiffraction_diffrn.ambient_magnetic_field`, `…electric_field` (project extension).                                                                                                   |
+| `_refln.*`                                                                                      | core                                                                        | (no default save under refln)               | `_refln.*` reflections loop (column set differs by domain — see §2.3).                                                                                                                     |
+| `_pd_meas.*`, `_pd_proc.*`, `_pd_calc.*`, `_pd_data.*`                                          | pdCIF                                                                       | Experiment — unchanged                      | `_pd_meas.*`, `_pd_proc.*`, `_pd_calc.*` profile-data loop (see §2.3).                                                                                                                     |
+| `_pd_background.*`                                                                              | pdCIF                                                                       | Experiment — unchanged                      | `_pd_background.*`.                                                                                                                                                                        |
+| `_pd_phase_block.*`                                                                             | pdCIF                                                                       | Experiment — unchanged                      | `_pd_phase_block.*`.                                                                                                                                                                       |
+| `_sc_crystal_block.*`                                                                           | community (no IUCr counterpart)                                             | Experiment — unchanged                      | `_easydiffraction_sc_crystal_block.*` in IUCr export.                                                                                                                                      |
+| `_instr.wavelength`                                                                             | core (`_diffrn_radiation_wavelength.value`)                                 | Experiment — unchanged                      | `_diffrn_radiation_wavelength.{id, value, wt}` — single-row category for monochromatic; loop only for multi-λ.                                                                             |
+| `_instr.2theta_offset`                                                                          | pdCIF (`_pd_calib.2theta_offset`)                                           | Experiment — unchanged                      | `_pd_calib.2theta_offset`.                                                                                                                                                                 |
+| `_instr.2theta_bank`, `d_to_tof_*`                                                              | pdCIF (`_pd_calib_d_to_tof.*` loop)                                         | Experiment — unchanged                      | Four-row loop `_pd_calib_d_to_tof.{id, coeff, power, coeff_su, diffractogram_id}`.                                                                                                         |
+| `_peak.*` (parametric profile shape)                                                            | none (pdCIF has no shape parameters)                                        | Experiment — unchanged                      | `_easydiffraction_peak.*` + `_pd_proc_ls.profile_function` free-text descriptor.                                                                                                           |
+| `_extinction.*`                                                                                 | core (`_refine_ls.extinction_*` items)                                      | Experiment — unchanged                      | `_easydiffraction_extinction.*` + dual emit `_refine_ls.extinction_{method,coef,expression}`.                                                                                              |
+| `_excluded_region.*`                                                                            | pdCIF (`_pd_proc.info_excluded_regions` free-text)                          | Experiment — unchanged                      | `_easydiffraction_excluded_region.*` + `_pd_proc.info_excluded_regions` free-text rendering.                                                                                               |
+| `_expt_type.*`                                                                                  | none                                                                        | Experiment — unchanged                      | `_easydiffraction_experiment_type.*`.                                                                                                                                                      |
+| `_calculator.type`, `_minimizer.type`                                                           | none                                                                        | Analysis — unchanged                        | Selection fields remain settings only; identity is read from `analysis.software` for `_easydiffraction_software.{framework, calculator, minimizer}` and `_computing.structure_refinement`. |
+| `_software.*`                                                                                   | none                                                                        | Analysis — new provenance category          | Source for `_easydiffraction_software.{framework, calculator, minimizer}`, `_easydiffraction_software.fit_datetime`, and `_computing.structure_refinement` in `data_global`.               |
+| `_minimizer.*` settings (tolerances, max_iter, …)                                               | none                                                                        | Analysis — unchanged                        | `_easydiffraction_minimizer.*` (settings only, separate from the identification triple).                                                                                                   |
+| `_fitting_mode.type`, `_background.type`                                                        | none                                                                        | Analysis / Experiment — unchanged           | `_easydiffraction_fitting_mode.type`, `_easydiffraction_background.type` selectors.                                                                                                        |
+| `_fit_result.reduced_chi_square`, `n_data_points`, `n_parameters`                               | core (`_refine_ls.*`) and pdCIF (`_pd_proc_ls.*`)                           | Analysis — unchanged (topology-neutral)     | Shape-shifting per topology: see §1.2 and §3 transformers.                                                                                                                                 |
+| `_fit_result.*` (R-factors, counts, profile/background function)                                | core / pdCIF                                                                | Analysis — new fields under `_fit_result.*` | IUCr export remaps to per-topology `_refine_ls.*` / `_pd_proc_ls.*`; item names already match dictionary casing (§1.2).                                                                    |
+| `_fit_result.*` (Bayesian diagnostics, success, message, fitting_time, iterations, result_kind) | none                                                                        | Analysis — unchanged                        | `_easydiffraction_fit_result.*`.                                                                                                                                                           |
+| `_fit_parameter`, `_fit_parameter_correlation`                                                  | none / partial                                                              | Analysis — unchanged                        | `_easydiffraction_fit_parameter*` (no IUCr counterpart for per-parameter posterior).                                                                                                       |
+| `_alias`, `_constraint`                                                                         | none                                                                        | Analysis — unchanged                        | `_easydiffraction_alias*`, `_easydiffraction_constraint*`.                                                                                                                                 |
+| `_joint_fit`, `_sequential_fit*`                                                                | none                                                                        | Analysis — unchanged                        | `_easydiffraction_joint_fit*`, `_easydiffraction_sequential_fit*`.                                                                                                                         |
+| reflection-set aggregates                                                                       | core (`_reflns.*`)                                                          | Analysis — new fields                       | `_reflns.number_total`, `_reflns.number_gt`, `_reflns.threshold_expression` (e.g. `'I>3\s(I)'`).                                                                                           |
+| publication metadata                                                                            | core (`_journal.*`, `_publ_author.*`, `_publ_contact_author.*`, `_audit.*`) | (not emitted today)                         | Emitted in `data_global` block per §2.3a with `?` placeholders.                                                                                                                            |
+| analysis-stack identification                                                                   | core (`_computing.structure_refinement`)                                    | Analysis — `_software.*` persisted          | `_easydiffraction_software.{framework, calculator, minimizer}` triple + `_easydiffraction_software.fit_datetime` + `_computing.structure_refinement` derived from `analysis.software`.     |
 
 ## Decision
 
@@ -298,18 +301,19 @@ Specifically:
 #### 2.1 API
 
 ```python
-project.save()                          # regular project save only
-project.save(report=True)               # regular save + reports/<project>.cif
-project.report.save()                   # write reports only, no regular save
-project.report.check()                  # validate reports (see §2.5)
+project.save()                          # project files + configured reports
+project.report.save_cif()               # one-off reports/<project>.cif
+project.report.save()                   # write configured reports only
 ```
 
 `project.summary` (currently an unimplemented placeholder) is removed
-and replaced by `project.report` — a new facade slot that owns the
-journal-submission CIF generation and validation. The slot is named
-generically because the same path can host additional report types in
-the future (mmCIF export, figure bundles, etc.); the IUCr CIF is the
-only kind shipped today.
+and replaced by `project.report` — a facade slot that owns journal
+report generation. The `project.report.{cif,html,tex,pdf}` booleans
+control which reports `project.save()` emits. Per-format methods
+(`save_cif()`, `save_html()`, `save_tex()`, `save_pdf()`) write one-off
+artifacts without changing that configuration. The no-arg
+`project.report.save()` uses those booleans and raises `ValueError` when
+no formats are enabled.
 
 #### 2.2 Output location
 
@@ -330,7 +334,7 @@ example files in the corpus).
     pd_xray.cif
   analysis/
     analysis.cif
-  reports/                              # written by save(report=True)
+  reports/                              # written by report config or save_cif()
     <project_name>.cif                  # single multi-block IUCr CIF
 ```
 
@@ -504,13 +508,15 @@ the project has source data, otherwise `?`.
 
 - `_audit.creation_method 'EasyDiffraction <version>'`,
   `_audit.creation_date <iso8601>`.
-- `_computing.structure_refinement` (single string concatenating the
-  framework + calculator + minimizer names and versions, e.g.
+- `_computing.structure_refinement` (single string derived from
+  `analysis.software`; when calculator or minimizer provenance is unset
+  it falls back to the framework label only, e.g.
   `'EasyDiffraction 0.17.0 with lmfit 1.0.0 minimizer and cryspy 1.2.3 calculator'`).
   coreCIF standard channel for advertising the analysis-software stack
   to IUCr-aware tooling.
 - `_easydiffraction_software.*` triple holding the same three roles in
-  structured form (see §2.3a-i below).
+  structured form, plus `_easydiffraction_software.fit_datetime` when a
+  fit timestamp is available (see §2.3a-i below).
 - `_journal.*` placeholders, written as `?` when the project has no
   source data: `_journal.name_full`, `_journal.year`, `_journal.volume`,
   `_journal.issue`, `_journal.page_first`, `_journal.page_last`,
@@ -540,13 +546,14 @@ similar) is deferred — see Deferred Work.
 #### 2.3a-i `_easydiffraction_software` framework
 
 The IUCr submission needs to identify the analysis stack. The project
-emits one structured category in `data_global` carrying three role-keyed
-strings:
+emits one structured category in `data_global` from `analysis.software`,
+carrying three role-keyed strings and an optional fit timestamp:
 
 ```
 _easydiffraction_software.framework    'EasyDiffraction 0.17.0'
 _easydiffraction_software.calculator  'cryspy 1.2.3'
 _easydiffraction_software.minimizer   'lmfit 1.0.0'
+_easydiffraction_software.fit_datetime 2026-05-26T13:45:00+00:00
 ```
 
 - `_easydiffraction_software.framework` — EasyDiffraction itself, the
@@ -556,6 +563,9 @@ _easydiffraction_software.minimizer   'lmfit 1.0.0'
 - `_easydiffraction_software.minimizer` — the active minimizer (lmfit,
   scipy-lstsq, dfo-ls, emcee, …) with version. Bayesian sampler runs use
   the sampler name and version here.
+- `_easydiffraction_software.fit_datetime` — ISO-8601 UTC timestamp of
+  the successful fit that populated `analysis.software`. Omitted when no
+  timestamp is recorded.
 
 The same three values are concatenated into the
 `_computing.structure_refinement` free-text string for IUCr-tooling
@@ -630,12 +640,14 @@ _refln.index_k
 _refln.index_l
 _refln.F_squared_meas
 _refln.F_squared_calc
-_refln.phase_calc
+_pd_refln.phase_id
 _refln.d_spacing
 ```
 
 Column set adapted from the corpus content (`bal5001.cif`, `hb8206.cif`)
-with tag form taken from `cif_core.dic`.
+with tag form taken from `cif_core.dic` and `cif_pow.dic`. The phase
+identifier uses the powder dictionary's `_pd_refln.phase_id`; it is not
+the calculated structure-factor phase angle `_refln.phase_calc`.
 
 #### 2.3e Powder profile-data loop
 
@@ -775,44 +787,40 @@ The IUCr writer pass differs from the default writer:
 
 #### 2.5 Submission-side validation
 
-`project.report.check()` runs the generated `reports/<project>.cif`
-through `gemmi` (already a project dependency per `pyproject.toml`) for
-dictionary-compliance validation before submission.
+**Superseded (2026-05-30): the runtime writer self-check described below
+was removed.** The IUCr CIF writer no longer validates its own output
+against `cif_core.dic` / `cif_pow.dic`; `reports/<project>.cif` is
+written directly. Rationale:
 
-```python
-project.report.check()                  # validate reports/<project>.cif
-project.save(report=True, check=True)   # save + validate in one step
-```
+- The report CIF is our own deterministic output. Checking it at write
+  time and raising `EasyDiffractionWriterError` ("…file a bug") turns a
+  developer-side test concern into a user-facing failure that blocks a
+  scientist's report over a defect only we can fix.
+- The check resolved dictionaries from `tmp/iucr-dicts/` under the
+  repository root. That path never resolves for a pip-installed user, so
+  the self-check was a silent no-op for everyone except a developer who
+  had manually placed the dictionaries — where it only produced noise,
+  because the current COMCIFS DDLm/CIF2 dictionaries do not parse under
+  the helper's gemmi + regex approach.
+- Spec compliance of the emitted tag set is maintained by authoring the
+  writer against the COMCIFS reference dictionaries (the dotted-tag set
+  is fixed in `iucr_writer.py`); a separate IUCr-server upload remains
+  the authoritative compliance check before submission. No part of the
+  library reads `tmp/iucr-dicts/` at runtime.
 
-Validation checks performed by `gemmi`:
-
-- Every emitted tag exists in `cif_core.dic` or `cif_pow.dic` (the
-  shipped reference dictionaries, or fresh copies fetched on demand).
-  Unknown tags outside the project's `_easydiffraction_*` namespace
-  produce a warning.
-- Value types match the dictionary's `_type.contents` declaration (Real,
-  Integer, Code, Text, …).
-- Required category keys (`_category_key.name` per `_pd_calib_d_to_tof`,
-  `_atom_site`, etc.) are present in every loop row.
-- Loop columns share the same parent category.
-- DDLm dotted form is well-formed; underscore-form aliases resolve
-  correctly.
-
-Validation does **not** cover:
-
-- Crystallographic sanity checks (bond lengths, void volumes, density
-  plausibility, missed-symmetry detection, anisotropic-ADP
-  positive-definiteness). These need a full `checkCIF` implementation,
-  which `gemmi` does not provide. Treat `project.report.check()` as a
-  "spec compliance" pass, not a "scientific sanity" pass — a separate
-  IUCr-server upload remains the final check before submission.
-- Verifying that `?` placeholders in `_journal.*` / `_publ_*` have been
-  filled in by the user (those are valid CIF; the project cannot decide
-  which are mandatory per journal). Flagged as a separate concern.
-
-The `_easydiffraction_*` project-extension namespace is excluded from
-the unknown-tag warning by passing `gemmi`'s validator a prefix-skip
-list.
+The original decision (retained for history): the writer ran generated
+content through `gemmi` before writing, with public
+`project.report.check()` / `check=True` entry points removed so that
+dictionary compliance was an internal writer self-check rather than a
+user choice. The intended gemmi checks were tag existence in
+`cif_core.dic` / `cif_pow.dic` (unknown non-`_easydiffraction_*` tags
+raising `EasyDiffractionWriterError`), value-type matching against
+`_type.contents`, required category keys per loop row, single-category
+loop columns, and well-formed DDLm dotted form. It never covered
+crystallographic sanity checks (bond lengths, void volumes, density
+plausibility, missed-symmetry detection, ADP positive-definiteness) or
+whether `?` placeholders in `_journal.*` / `_publ_*` had been filled —
+those remain a separate IUCr-server concern.
 
 ### 3. Handler mechanism — `iucr_name` + `IucrCategoryTransformer`
 
@@ -976,10 +984,11 @@ Policy:
   recognisable to scientists familiar with `_refine_ls.*` /
   `_pd_proc_ls.*` from Rietveld publications; the IUCr export carries
   the matching dictionary-canonical category prefixes per topology.
-- IUCr submission becomes a single command, with no manual editing
-  required: `project.save(report=True)` produces an upload-ready file at
-  `reports/<project>.cif` matching the multi-datablock publication
-  convention.
+- IUCr submission becomes a single explicit report command, with no
+  manual editing required: `project.report.save_cif()` produces an
+  upload-ready file at `reports/<project>.cif` matching the
+  multi-datablock publication convention. Users who want CIF reports on
+  every project save can set `project.report.cif = True`.
 - Publication-metadata placeholders are emitted as `?` in `data_global`
   so users know where to fill in journal-required info before
   submission.
@@ -1005,8 +1014,8 @@ Policy:
   `hb8169.cif` at 50K lines (DDL1 form; DDLm form would be of comparable
   size).
 - IUCr export is one-way. A user who hand-edits a file in `reports/`
-  loses those edits on the next `project.save(report=True)`. Documented
-  as such; treat `reports/` as generated output.
+  loses those edits on the next configured report save. Documented as
+  such; treat `reports/` as generated output.
 - Some external tooling chains (publCIF, journal in-house scripts) may
   still expect DDL1 underscore form. The dotted DDLm form is the
   dictionary spec; if real submissions surface a problem, a downstream
@@ -1020,15 +1029,19 @@ Policy:
   function descriptors, reflns aggregates). `_fit_result.*` stays
   topology-neutral in `analysis/analysis.cif`; per-topology renaming to
   `_refine_ls.*` / `_pd_proc_ls.*` happens only in the IUCr export
-  (§1.2, §3 transformers).
+  (§1.2, §3 transformers). A later project-report amendment adds
+  `_software.*` as the persisted source for report software provenance.
 - [`minimizer-input-output-split.md`](minimizer-input-output-split.md) —
   `_fit_result.*` examples updated for the new fields.
 - [`project-facade-and-persistence.md`](project-facade-and-persistence.md)
   — `project.summary` facade slot is removed and replaced by
-  `project.report`. `summary.cif` is no longer written by default
-  `Project.save()`; the slot is repurposed for IUCr / journal report
-  generation in `reports/<project>.cif` (see §2). The unimplemented
-  `summary_to_cif()` placeholder code path
+  `project.report`. The accepted `project.save(report=True)` flag is
+  superseded by report booleans for configured reports and
+  `project.report.save_cif()` for the IUCr CIF one-off path.
+  `summary.cif` is no longer written by default `Project.save()`; the
+  slot is repurposed for IUCr / journal report generation in
+  `reports/<project>.cif` (see §2). The unimplemented `summary_to_cif()`
+  placeholder code path
   ([`project.py:464`](../../../../src/easydiffraction/project/project.py))
   is removed as part of the implementation plan; no summary content
   survives the transition because nothing was being written there in the
@@ -1038,14 +1051,21 @@ Policy:
   and replaced by `project.report.help()` (same responsibilities, new
   slot name). All other entries in the help-surface table are
   unaffected.
+- [`project-summary-rendering.md`](project-summary-rendering.md) —
+  amends this ADR's report API: public `check()` / `check=True` are
+  removed, the `_easydiffraction_software.*` triple is read from
+  `analysis.software`, and `_easydiffraction_software.fit_datetime` is
+  added when fit provenance has a timestamp. (The write-path gemmi
+  validation this ADR introduced was later removed — see the §2.5
+  amendment.)
 
 ## Open Questions
 
 (None blocking. Dictionary-side ambiguities have all been resolved
-against `cif_core.dic` v3.4.0 / `cif_pow.dic` v2.5.0. The §2.5 gemmi
-pass surfaces any remaining spec-compliance issue at generate-time, so
-the ADR no longer relies on speculation about real-world tooling
-behaviour.)
+against `cif_core.dic` v3.4.0 / `cif_pow.dic` v2.5.0 while authoring the
+writer. The runtime gemmi self-check originally described in §2.5 was
+removed (see the §2.5 amendment); spec compliance now rests on authoring
+discipline plus a final IUCr-server upload before submission.)
 
 ## Alternatives Considered
 
@@ -1103,11 +1123,11 @@ it.
 ## Deferred Work
 
 - **Publication-metadata override hook.** A user-supplied
-  `reports/publ_info.json` (or `publ_info.toml`) read by
-  `project.save(report=True)` to replace the `?` placeholders in
-  `data_global` (`_journal.*`, `_publ_*`, `_publ_author.*` loop
-  entries). Out of scope for the first pass; revisit once the IUCr
-  export is shipping and users have feedback on workflow friction.
+  `reports/publ_info.json` (or `publ_info.toml`) read by the IUCr report
+  writer to replace the `?` placeholders in `data_global` (`_journal.*`,
+  `_publ_*`, `_publ_author.*` loop entries). Out of scope for the first
+  pass; revisit once the IUCr export is shipping and users have feedback
+  on workflow friction.
 - **Crystallographic sanity validation.** The §2.5 validator covers spec
   compliance only. A future pass could integrate IUCr's web checkCIF
   (HTTP POST to the checkCIF endpoint) or bundle a local subset of its

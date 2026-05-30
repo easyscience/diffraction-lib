@@ -46,6 +46,14 @@ MEASURED_LINE_WIDTH = 2.0
 BACKGROUND_LINE_WIDTH = 1.0
 CALCULATED_LINE_WIDTH = 2.0
 RESIDUAL_LINE_WIDTH = 2.0
+MEASURED_MARKER_SIZE = 6
+MEASURED_MARKER_LINE_WIDTH = 0
+MEASURED_ERROR_BAR_THICKNESS = 2
+MEASURED_ERROR_BAR_WIDTH = 4
+LIGHT_AXIS_FRAME_COLOR = 'rgba(120, 140, 160, 0.28)'
+DARK_AXIS_FRAME_COLOR = 'rgba(110, 145, 190, 0.35)'
+LIGHT_LEGEND_BACKGROUND_COLOR = 'rgba(255, 255, 255, 0.5)'
+DARK_LEGEND_BACKGROUND_COLOR = 'rgba(0, 0, 0, 0.5)'
 
 BRAGG_TICK_COLORS = (
     'rgb(255, 127, 14)',
@@ -165,8 +173,8 @@ class PlotlyPlotter(PlotterBase):
             RGBA color string tuned for the active theme.
         """
         if cls._is_dark_mode():
-            return 'rgba(110, 145, 190, 0.35)'
-        return 'rgba(120, 140, 160, 0.28)'
+            return DARK_AXIS_FRAME_COLOR
+        return LIGHT_AXIS_FRAME_COLOR
 
     @classmethod
     def _axis_frame_color(cls) -> str:
@@ -177,8 +185,24 @@ class PlotlyPlotter(PlotterBase):
     def _legend_background_color(cls) -> str:
         """Return a half-transparent legend background color."""
         if cls._is_dark_mode():
-            return 'rgba(0, 0, 0, 0.5)'
-        return 'rgba(255, 255, 255, 0.5)'
+            return DARK_LEGEND_BACKGROUND_COLOR
+        return LIGHT_LEGEND_BACKGROUND_COLOR
+
+    @staticmethod
+    def _axis_frame_color_for_template(template: str) -> str | None:
+        if template == 'plotly_white':
+            return LIGHT_AXIS_FRAME_COLOR
+        if template == 'plotly_dark':
+            return DARK_AXIS_FRAME_COLOR
+        return None
+
+    @staticmethod
+    def _legend_background_color_for_template(template: str) -> str | None:
+        if template == 'plotly_white':
+            return LIGHT_LEGEND_BACKGROUND_COLOR
+        if template == 'plotly_dark':
+            return DARK_LEGEND_BACKGROUND_COLOR
+        return None
 
     def plot_correlation_heatmap(
         self,
@@ -428,6 +452,14 @@ class PlotlyPlotter(PlotterBase):
             'resid': RESIDUAL_LINE_WIDTH,
         }[label]
         line = {'color': color, 'width': line_width}
+        marker = None
+        if label == 'meas':
+            marker = {
+                'symbol': 'circle',
+                'size': MEASURED_MARKER_SIZE,
+                'line': {'width': MEASURED_MARKER_LINE_WIDTH},
+                'color': color,
+            }
         legend_rank = {
             'meas': 10,
             'bkg': 20,
@@ -442,6 +474,7 @@ class PlotlyPlotter(PlotterBase):
             mode=mode,
             name=name,
             legendrank=legend_rank,
+            marker=marker,
             customdata=customdata,
             hovertemplate=(
                 hovertemplate
@@ -956,16 +989,65 @@ window.requestAnimationFrame(installLegendToggleButton);
         if in_pycharm() or display is None or HTML is None:
             fig.show(config=config)
         else:
-            post_script = self._html_post_script(fig)
-            html_fig = pio.to_html(
+            html_fig = self.serialize_html(
                 fig,
                 include_plotlyjs='cdn',
-                full_html=False,
-                config=config,
-                post_script=post_script,
             )
-            html_fig = self._wrap_html_figure(fig, html_fig)
             display(HTML(html_fig))
+
+    @classmethod
+    def serialize_html(
+        cls,
+        fig: object,
+        *,
+        include_plotlyjs: bool | str,
+        force_template: str | None = None,
+        axis_frame_color: str | None = None,
+        grid_color: str | None = None,
+    ) -> str:
+        """
+        Serialize a Plotly figure with EasyDiffraction controls.
+
+        Parameters
+        ----------
+        fig : object
+            Plotly figure to serialize.
+        include_plotlyjs : bool | str
+            Plotly JavaScript inclusion mode passed to Plotly.
+        force_template : str | None, default=None
+            Optional template name applied before serialization.
+        axis_frame_color : str | None, default=None
+            Optional explicit axis-frame color.
+        grid_color : str | None, default=None
+            Optional explicit major-grid color.
+
+        Returns
+        -------
+        str
+            Inline HTML containing the figure and helper scripts.
+        """
+        if force_template is not None:
+            fig.update_layout(template=force_template)
+            resolved_axis_color = axis_frame_color
+            if resolved_axis_color is None:
+                resolved_axis_color = cls._axis_frame_color_for_template(force_template)
+            if resolved_axis_color is not None:
+                fig.update_xaxes(linecolor=resolved_axis_color)
+                fig.update_yaxes(linecolor=resolved_axis_color)
+            if grid_color is not None:
+                fig.update_xaxes(gridcolor=grid_color)
+                fig.update_yaxes(gridcolor=grid_color)
+            legend_bgcolor = cls._legend_background_color_for_template(force_template)
+            if legend_bgcolor is not None:
+                fig.update_layout(legend={'bgcolor': legend_bgcolor})
+        html_fig = pio.to_html(
+            fig,
+            include_plotlyjs=include_plotlyjs,
+            full_html=False,
+            config=cls._get_config(),
+            post_script=cls._html_post_script(fig),
+        )
+        return cls._wrap_html_figure(fig, html_fig)
 
     @classmethod
     def _get_layout(
@@ -1394,6 +1476,26 @@ window.requestAnimationFrame(installLegendToggleButton);
         Bragg row is added only when tick data is available. The
         residual row is added only when residual data is requested.
         """
+        fig = self.build_powder_meas_vs_calc_figure(plot_spec=plot_spec)
+        self._show_figure(fig)
+
+    def build_powder_meas_vs_calc_figure(
+        self,
+        plot_spec: PowderMeasVsCalcSpec,
+    ) -> object:
+        """
+        Build a composite powder Plotly figure without displaying it.
+
+        Parameters
+        ----------
+        plot_spec : PowderMeasVsCalcSpec
+            Composite powder-plot inputs and layout settings.
+
+        Returns
+        -------
+        object
+            Configured :class:`plotly.graph_objects.Figure`.
+        """
         layout = self._get_powder_composite_rows(plot_spec)
         x_min, x_max = self._composite_x_range(np.asarray(plot_spec.x))
         main_y_min, main_y_max = self._get_main_intensity_range(plot_spec)
@@ -1432,7 +1534,7 @@ window.requestAnimationFrame(installLegendToggleButton);
             residual_limit=residual_limit,
         )
 
-        self._show_figure(fig)
+        return fig
 
     @staticmethod
     def _create_powder_composite_figure(layout: PowderCompositeRows) -> object:
@@ -1476,6 +1578,15 @@ window.requestAnimationFrame(installLegendToggleButton);
             customdata=hover_data,
             hovertemplate=hover_template,
         )
+        if plot_spec.y_meas_su is not None:
+            meas_trace.error_y = {
+                'type': 'data',
+                'array': plot_spec.y_meas_su,
+                'visible': True,
+                'color': DEFAULT_COLORS['meas'],
+                'thickness': MEASURED_ERROR_BAR_THICKNESS,
+                'width': MEASURED_ERROR_BAR_WIDTH,
+            }
         fig.add_trace(meas_trace, row=1, col=1)
 
         if plot_spec.y_bkg is not None:
@@ -1797,6 +1908,45 @@ window.requestAnimationFrame(installLegendToggleButton);
         # Intentionally unused; accepted for API compatibility
         del height
 
+        fig = self.build_single_crystal_figure(
+            x_calc=x_calc,
+            y_meas=y_meas,
+            y_meas_su=y_meas_su,
+            axes_labels=axes_labels,
+            title=title,
+        )
+        self._show_figure(fig)
+
+    def build_single_crystal_figure(
+        self,
+        *,
+        x_calc: object,
+        y_meas: object,
+        y_meas_su: object,
+        axes_labels: object,
+        title: str,
+    ) -> object:
+        """
+        Build a single-crystal Plotly figure without displaying it.
+
+        Parameters
+        ----------
+        x_calc : object
+            1D array-like of calculated values (x-axis).
+        y_meas : object
+            1D array-like of measured values (y-axis).
+        y_meas_su : object
+            1D array-like of measurement uncertainties.
+        axes_labels : object
+            Pair of strings for the x and y titles.
+        title : str
+            Figure title.
+
+        Returns
+        -------
+        object
+            Configured :class:`plotly.graph_objects.Figure`.
+        """
         data = [
             self._get_single_crystal_trace(
                 x_calc,
@@ -1811,8 +1961,7 @@ window.requestAnimationFrame(installLegendToggleButton);
             shapes=[self._get_diagonal_shape()],
         )
 
-        fig = self._get_figure(data, layout)
-        self._show_figure(fig)
+        return self._get_figure(data, layout)
 
     def plot_scatter(
         self,

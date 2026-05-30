@@ -20,6 +20,7 @@ class BumpsAmoebaMinimizer(LeastSquaresMinimizerBase):
         'optimizer_name': 'bumps (amoeba)',
         'method_name': 'amoeba',
     }
+    url: str = 'https://bumps.readthedocs.io'
 
     type_info = TypeInfo(
         tag=MinimizerTypeEnum.BUMPS_AMOEBA,

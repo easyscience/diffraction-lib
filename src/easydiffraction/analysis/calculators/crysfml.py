@@ -1,6 +1,9 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 from typing import Any
 
 import numpy as np
@@ -8,11 +11,13 @@ import numpy as np
 from easydiffraction.analysis.calculators.base import CalculatorBase
 from easydiffraction.analysis.calculators.factory import CalculatorFactory
 from easydiffraction.core.metadata import TypeInfo
-from easydiffraction.datablocks.experiment.collection import Experiments
-from easydiffraction.datablocks.experiment.item.base import ExperimentBase
 from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
-from easydiffraction.datablocks.structure.collection import Structures
-from easydiffraction.datablocks.structure.item.base import Structure
+
+if TYPE_CHECKING:
+    from easydiffraction.datablocks.experiment.collection import Experiments
+    from easydiffraction.datablocks.experiment.item.base import ExperimentBase
+    from easydiffraction.datablocks.structure.collection import Structures
+    from easydiffraction.datablocks.structure.item.base import Structure
 
 try:
     from crysfml import cfml_py_utilities
@@ -70,6 +75,7 @@ class CrysfmlCalculator(CalculatorBase):
         description='CrysFML library for crystallographic calculations',
     )
     engine_imported: bool = cfml_py_utilities is not None
+    url: str = 'https://code.ill.fr/scientific-software/crysfml'
 
     @property
     def name(self) -> str:

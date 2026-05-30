@@ -26,6 +26,7 @@ class BumpsDreamMinimizer(BayesianMinimizerBase):
         'optimizer_name': 'bumps (dream)',
         'method_name': 'dream',
     }
+    url: str = 'https://bumps.readthedocs.io'
 
     type_info = TypeInfo(
         tag=MinimizerTypeEnum.BUMPS_DREAM,

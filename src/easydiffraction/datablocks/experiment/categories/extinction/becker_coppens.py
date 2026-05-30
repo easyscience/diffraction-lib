@@ -6,6 +6,7 @@ Becker-Coppens isotropic extinction correction for single crystals.
 
 from __future__ import annotations
 
+from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.metadata import CalculatorSupport
 from easydiffraction.core.metadata import Compatibility
 from easydiffraction.core.metadata import TypeInfo
@@ -68,7 +69,11 @@ class BeckerCoppensExtinction(ExtinctionBase):
         self._mosaicity = Parameter(
             name='mosaicity',
             description='Mosaicity of the crystal',
-            units='arcmin',
+            units='arcminutes',
+            display_handler=DisplayHandler(
+                display_units='arcmin',
+                latex_units=r'\mathrm{arcmin}',
+            ),
             value_spec=AttributeSpec(
                 default=1.0,
                 validator=RangeValidator(),
@@ -81,7 +86,11 @@ class BeckerCoppensExtinction(ExtinctionBase):
         self._radius = Parameter(
             name='radius',
             description='Mean radius of the crystal',
-            units='μm',
+            units='micrometres',
+            display_handler=DisplayHandler(
+                display_units='μm',
+                latex_units=r'$\mu\mathrm{m}$',
+            ),
             value_spec=AttributeSpec(
                 default=1.0,
                 validator=RangeValidator(),

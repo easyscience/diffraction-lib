@@ -404,10 +404,22 @@ def _iucr_items(
         return ()
     items: list[IucrItem] = []
     for attr_name, value in values:
-        descriptor = getattr(owner, attr_name, None)
+        descriptor = _iucr_descriptor(owner, attr_name)
         if descriptor is not None:
             items.append(_iucr_item(descriptor, value))
     return tuple(items)
+
+
+def _iucr_descriptor(owner: object, attr_name: str) -> object | None:
+    """Return the descriptor carrying IUCr metadata for *attr_name*."""
+    descriptor = getattr(owner, attr_name, None)
+    if getattr(descriptor, '_cif_handler', None) is not None:
+        return descriptor
+    if attr_name == 'type':
+        private_descriptor = getattr(owner, '_type', None)
+        if getattr(private_descriptor, '_cif_handler', None) is not None:
+            return private_descriptor
+    return None
 
 
 def _iucr_item(descriptor: object, value: object) -> IucrItem:

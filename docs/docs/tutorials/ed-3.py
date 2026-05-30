@@ -55,11 +55,10 @@ project.info.show_as_cif()
 # #### Save Project
 #
 # When saving the project for the first time, you need to specify the
-# directory path. In the example below, the project is saved to a
-# temporary location defined by the system.
+# directory path.
 
 # %%
-project.save_as(dir_path='lbco_hrpt', temporary=True)
+project.save_as(dir_path='projects/lbco_hrpt')
 
 # %% [markdown]
 # #### Set Up Data Plotter
@@ -620,21 +619,21 @@ project.display.pattern(expt_name='hrpt')
 project.display.pattern(expt_name='hrpt', x_min=38, x_max=41)
 
 # %% [markdown]
-# #### Save Project State and Submission Report
-
-# %%
-project.save(report=True)
-
-# %% [markdown]
-# ## Step 5: Report
+# ## Step 5: Generate Report
 #
 # This final section shows how to review the results of the analysis.
 #
-# The saved IUCr submission CIF is available under `reports/<project>.cif`
-# inside the project directory.
-
-# %% [markdown]
-# #### Show Project Report
+# By default, HTML report is generated after fitting. Here we also
+# show how to activate generation of CIF, TEX and PDF reports with
+# regular project saves.
+# Keep in mind, that PDF report generation requires additional
+# dependencies and is not that fast to be generated after each fit, so
+# use it with caution.
+# The generated report files will be saved in the `reports` folder of
+# the project directory.
 
 # %%
-project.report.show_report()
+project.report.cif = True
+project.report.tex = True
+project.report.pdf = True
+project.save()

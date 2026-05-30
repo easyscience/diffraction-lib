@@ -115,6 +115,14 @@
 │   │   │   │   └── 🏷️ class SequentialFitExtractCollection
 │   │   │   └── 📄 factory.py
 │   │   │       └── 🏷️ class SequentialFitExtractFactory
+│   │   ├── 📁 software
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 base.py
+│   │   │   │   └── 🏷️ class SoftwareRole
+│   │   │   ├── 📄 default.py
+│   │   │   │   └── 🏷️ class Software
+│   │   │   └── 📄 factory.py
+│   │   │       └── 🏷️ class SoftwareFactory
 │   │   └── 📄 __init__.py
 │   ├── 📁 fit_helpers
 │   │   ├── 📄 __init__.py
@@ -205,6 +213,11 @@
 │   │   └── 🏷️ class DatablockCollection
 │   ├── 📄 diagnostic.py
 │   │   └── 🏷️ class Diagnostics
+│   ├── 📄 display_handler.py
+│   │   └── 🏷️ class DisplayHandler
+│   ├── 📄 errors.py
+│   │   ├── 🏷️ class EasyDiffractionError
+│   │   └── 🏷️ class EasyDiffractionWriterError
 │   ├── 📄 factory.py
 │   │   └── 🏷️ class FactoryBase
 │   ├── 📄 guard.py
@@ -222,6 +235,7 @@
 │   │   └── 🏷️ class ConstraintsHandler
 │   ├── 📄 switchable.py
 │   │   └── 🏷️ class SwitchableCategoryBase
+│   ├── 📄 units_vocabulary.py
 │   ├── 📄 validation.py
 │   │   ├── 🏷️ class DataTypeHints
 │   │   ├── 🏷️ class DataTypes
@@ -381,7 +395,10 @@
 │   │   │   │   │   └── 🏷️ class PowderTofReflnData
 │   │   │   │   ├── 📄 bragg_sc.py
 │   │   │   │   │   ├── 🏷️ class Refln
-│   │   │   │   │   └── 🏷️ class ReflnData
+│   │   │   │   │   ├── 🏷️ class TofRefln
+│   │   │   │   │   ├── 🏷️ class ReflnDataBase
+│   │   │   │   │   ├── 🏷️ class CwlReflnData
+│   │   │   │   │   └── 🏷️ class TofReflnData
 │   │   │   │   └── 📄 factory.py
 │   │   │   │       └── 🏷️ class ReflnFactory
 │   │   │   └── 📄 __init__.py
@@ -536,7 +553,27 @@
 │   │   │   │   └── 🏷️ class ProjectInfo
 │   │   │   └── 📄 factory.py
 │   │   │       └── 🏷️ class ProjectInfoFactory
+│   │   ├── 📁 publication
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   │   ├── 🏷️ class PublicationItemBase
+│   │   │   │   ├── 🏷️ class PublicationJournal
+│   │   │   │   ├── 🏷️ class PublicationJournalDate
+│   │   │   │   ├── 🏷️ class PublicationJournalCoeditor
+│   │   │   │   ├── 🏷️ class PublicationContactAuthor
+│   │   │   │   ├── 🏷️ class PublicationBody
+│   │   │   │   ├── 🏷️ class PublicationAuthor
+│   │   │   │   ├── 🏷️ class PublicationAuthors
+│   │   │   │   └── 🏷️ class Publication
+│   │   │   └── 📄 factory.py
+│   │   │       └── 🏷️ class PublicationFactory
 │   │   ├── 📁 rendering
+│   │   ├── 📁 report
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   │   └── 🏷️ class Report
+│   │   │   └── 📄 factory.py
+│   │   │       └── 🏷️ class ReportFactory
 │   │   ├── 📁 table
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
@@ -561,14 +598,24 @@
 │   │   └── 🏷️ class Project
 │   ├── 📄 project_config.py
 │   │   └── 🏷️ class ProjectConfig
-│   └── 📄 project_info.py
+│   ├── 📄 project_info.py
+│   └── 📄 publication_loader.py
 ├── 📁 report
+│   ├── 📁 templates
+│   │   ├── 📁 html
+│   │   │   └── 📁 vendor
+│   │   └── 📁 tex
+│   │       └── 📁 styles
 │   ├── 📄 __init__.py
-│   ├── 📄 check.py
-│   │   ├── 🏷️ class ReportCheckResult
-│   │   └── 🏷️ class _GemmiLogger
-│   └── 📄 report.py
-│       └── 🏷️ class Report
+│   ├── 📄 data_context.py
+│   │   └── 🏷️ class ReportDataContext
+│   ├── 📄 enums.py
+│   │   └── 🏷️ class ReportFormatEnum
+│   ├── 📄 fit_plot.py
+│   ├── 📄 html_renderer.py
+│   ├── 📄 pdf_compiler.py
+│   ├── 📄 style.py
+│   └── 📄 tex_renderer.py
 ├── 📁 utils
 │   ├── 📁 _vendored
 │   │   ├── 📁 jupyter_dark_detect
@@ -587,6 +634,7 @@
 │   │   ├── 🏷️ class ExceptionHookManager
 │   │   ├── 🏷️ class Logger
 │   │   └── 🏷️ class ConsolePrinter
+│   ├── 📄 matplotlib_config.py
 │   └── 📄 utils.py
 ├── 📄 __init__.py
 └── 📄 __main__.py

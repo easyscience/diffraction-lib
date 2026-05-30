@@ -113,6 +113,20 @@ def test_extinction_transformer_emits_becker_coppens_type_1():
     assert items['_easydiffraction_extinction.mosaicity'] == 0.12
 
 
+def test_extinction_transformer_handles_real_switchable_type_property():
+    from easydiffraction.datablocks.experiment.categories.extinction.becker_coppens import (
+        BeckerCoppensExtinction,
+    )
+    from easydiffraction.io.cif.iucr_transformers import ExtinctionTransformer
+
+    extinction = BeckerCoppensExtinction()
+
+    items = _items_by_tag(ExtinctionTransformer().items(SimpleNamespace(extinction=extinction)))
+
+    assert items['_easydiffraction_extinction.type'] == 'becker-coppens'
+    assert items['_easydiffraction_extinction.model'] == 'gauss'
+
+
 def test_extinction_transformer_emits_becker_coppens_type_2():
     from easydiffraction.io.cif.iucr_transformers import ExtinctionTransformer
 

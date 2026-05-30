@@ -15,6 +15,7 @@ from datetime import datetime
 
 from easydiffraction.io.cif.iucr_transformers import IucrCategoryTransformer
 from easydiffraction.io.cif.iucr_transformers import IucrItem
+from easydiffraction.io.cif.serialize import format_param_value
 from easydiffraction.io.cif.serialize import format_value
 from easydiffraction.utils.utils import package_version
 
@@ -22,51 +23,52 @@ _BLOCK_SEPARATOR = '#====================================================='
 _TEXT_WRAP_WIDTH = 80
 _ITEM_WIDTH = 38
 
-_JOURNAL_TAGS = (
-    '_journal.name_full',
-    '_journal.year',
-    '_journal.volume',
-    '_journal.issue',
-    '_journal.page_first',
-    '_journal.page_last',
-    '_journal.paper_category',
-    '_journal.paper_DOI',
-    '_journal.coden_ASTM',
-    '_journal.suppl_publ_number',
+_JOURNAL_ITEMS = (
+    ('_journal.name_full', 'name_full'),
+    ('_journal.year', 'year'),
+    ('_journal.volume', 'volume'),
+    ('_journal.issue', 'issue'),
+    ('_journal.page_first', 'page_first'),
+    ('_journal.page_last', 'page_last'),
+    ('_journal.paper_category', 'paper_category'),
+    ('_journal.paper_DOI', 'paper_doi'),
+    ('_journal.coden_ASTM', 'coden_astm'),
+    ('_journal.suppl_publ_number', 'suppl_publ_number'),
 )
 
-_JOURNAL_DATE_TAGS = (
-    '_journal_date.accepted',
-    '_journal_date.from_coeditor',
-    '_journal_date.printers_final',
+_JOURNAL_DATE_ITEMS = (
+    ('_journal_date.accepted', 'accepted'),
+    ('_journal_date.from_coeditor', 'from_coeditor'),
+    ('_journal_date.printers_final', 'printers_final'),
 )
 
-_JOURNAL_COEDITOR_TAGS = (
-    '_journal_coeditor.code',
-    '_journal_coeditor.name',
-    '_journal_coeditor.notes',
+_JOURNAL_COEDITOR_ITEMS = (
+    ('_journal_coeditor.code', 'code'),
+    ('_journal_coeditor.name', 'name'),
+    ('_journal_coeditor.notes', 'notes'),
 )
 
-_PUBL_CONTACT_AUTHOR_TAGS = (
-    '_publ_contact_author.name',
-    '_publ_contact_author.address',
-    '_publ_contact_author.email',
-    '_publ_contact_author.phone',
-    '_publ_contact_author.id_ORCID',
-    '_publ_contact_author.id_IUCr',
+_PUBL_CONTACT_AUTHOR_ITEMS = (
+    ('_publ_contact_author.name', 'name'),
+    ('_publ_contact_author.address', 'address'),
+    ('_publ_contact_author.email', 'email'),
+    ('_publ_contact_author.phone', 'phone'),
+    ('_publ_contact_author.id_ORCID', 'id_orcid'),
+    ('_publ_contact_author.id_IUCr', 'id_iucr'),
 )
 
-_PUBL_AUTHOR_TAGS = (
-    '_publ_author.name',
-    '_publ_author.address',
-    '_publ_author.footnote',
-    '_publ_author.id_ORCID',
-    '_publ_author.id_IUCr',
+_PUBL_AUTHOR_ITEMS = (
+    ('_publ_author.name', 'name'),
+    ('_publ_author.address', 'address'),
+    ('_publ_author.footnote', 'footnote'),
+    ('_publ_author.id_ORCID', 'id_orcid'),
+    ('_publ_author.id_IUCr', 'id_iucr'),
 )
+_PUBL_AUTHOR_TAGS = tuple(tag for tag, _ in _PUBL_AUTHOR_ITEMS)
 
-_PUBL_BODY_TAGS = (
-    '_publ_body.title',
-    '_publ_body.contents',
+_PUBL_BODY_ITEMS = (
+    ('_publ_body.title', 'title'),
+    ('_publ_body.contents', 'contents'),
 )
 
 _PACKAGE_BY_ENGINE = {
@@ -101,8 +103,9 @@ def write_iucr_cif(
         Path of the written report CIF.
     """
     output_path = iucr_report_path(project, path)
+    content = _render_iucr_cif(project)
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(_render_iucr_cif(project), encoding='utf-8')
+    output_path.write_text(content, encoding='utf-8')
     return output_path
 
 
@@ -141,7 +144,7 @@ def _write_global_block(project: object) -> str:
     lines = ['data_global']
     _write_audit_section(lines)
     _write_computing_section(lines, project)
-    _write_publication_sections(lines)
+    _write_publication_sections(lines, project)
     _write_formula_section(lines, project)
     return '\n'.join(lines)
 
@@ -156,10 +159,10 @@ def _write_audit_section(lines: list[str]) -> None:
 
 def _write_computing_section(lines: list[str], project: object) -> None:
     """Append software-stack metadata."""
-    framework = _software_label('EasyDiffraction', package_name='easydiffraction')
-    calculator = _calculator_label(project)
-    minimizer = _minimizer_label(project)
-    refinement = f'{framework} with {minimizer} minimizer and {calculator} calculator'
+    framework = _software_role_label(project, 'framework')
+    calculator = _software_role_label(project, 'calculator')
+    minimizer = _software_role_label(project, 'minimizer')
+    refinement = _structure_refinement_label(framework, calculator, minimizer)
 
     _section(lines, 'Computing')
     _write_item(lines, '_computing.structure_refinement', refinement)
@@ -168,23 +171,48 @@ def _write_computing_section(lines: list[str], project: object) -> None:
     _write_item(lines, '_easydiffraction_software.framework', framework)
     _write_item(lines, '_easydiffraction_software.calculator', calculator)
     _write_item(lines, '_easydiffraction_software.minimizer', minimizer)
+    fit_datetime = _software_fit_datetime(project)
+    if fit_datetime is not None:
+        _write_item(lines, '_easydiffraction_software.fit_datetime', fit_datetime)
 
 
-def _write_publication_sections(lines: list[str]) -> None:
-    """Append publication placeholders."""
-    _write_placeholder_items(lines, 'Journal', _JOURNAL_TAGS)
-    _write_placeholder_items(lines, 'Journal dates', _JOURNAL_DATE_TAGS)
-    _write_placeholder_items(lines, 'Journal coeditor', _JOURNAL_COEDITOR_TAGS)
-    _write_placeholder_items(
+def _write_publication_sections(lines: list[str], project: object) -> None:
+    """
+    Append publication metadata from the project publication owner.
+    """
+    publication = getattr(project, 'publication', None)
+    _write_publication_item_section(
+        lines,
+        'Journal',
+        getattr(publication, 'journal', None),
+        _JOURNAL_ITEMS,
+    )
+    _write_publication_item_section(
+        lines,
+        'Journal dates',
+        getattr(publication, 'journal_date', None),
+        _JOURNAL_DATE_ITEMS,
+    )
+    _write_publication_item_section(
+        lines,
+        'Journal coeditor',
+        getattr(publication, 'journal_coeditor', None),
+        _JOURNAL_COEDITOR_ITEMS,
+    )
+    _write_publication_item_section(
         lines,
         'Publication contact author',
-        _PUBL_CONTACT_AUTHOR_TAGS,
+        getattr(publication, 'contact_author', None),
+        _PUBL_CONTACT_AUTHOR_ITEMS,
     )
 
     _section(lines, 'Publication authors')
-    _write_loop(lines, _PUBL_AUTHOR_TAGS, [tuple('?' for _ in _PUBL_AUTHOR_TAGS)])
+    _write_loop(lines, _PUBL_AUTHOR_TAGS, _publication_author_rows(publication))
 
-    _write_placeholder_items(lines, 'Publication body', _PUBL_BODY_TAGS)
+    _write_publication_body_section(
+        lines,
+        getattr(publication, 'body', None),
+    )
 
 
 def _write_formula_section(lines: list[str], project: object) -> None:
@@ -647,7 +675,7 @@ def _write_powder_refln_loop(lines: list[str], experiment: object) -> None:
             '_refln.index_l',
             '_refln.F_squared_meas',
             '_refln.F_squared_calc',
-            '_refln.phase_calc',
+            '_pd_refln.phase_id',
             '_refln.d_spacing',
         ),
         rows,
@@ -676,15 +704,63 @@ def _write_tof_calibration_loop(lines: list[str], experiment: object) -> None:
     _write_loop(lines, loop.tags, loop.rows)
 
 
-def _write_placeholder_items(
+def _write_publication_item_section(
     lines: list[str],
     title: str,
-    tags: Iterable[str],
+    category: object,
+    items: Iterable[tuple[str, str]],
 ) -> None:
-    """Append one placeholder category section."""
+    """Append one scalar publication metadata section."""
     _section(lines, title)
-    for tag in tags:
-        _write_item(lines, tag, '?')
+    for tag, attr_name in items:
+        _write_item(lines, tag, _attribute_value(category, attr_name))
+
+
+def _write_publication_body_section(lines: list[str], body: object) -> None:
+    """Append publication body metadata."""
+    _section(lines, 'Publication body')
+    for tag, attr_name in _PUBL_BODY_ITEMS:
+        _write_item(lines, tag, _publication_body_value(body, attr_name))
+
+
+def _publication_body_value(body: object, attr_name: str) -> object:
+    """Return one publication-body value."""
+    if attr_name != 'contents':
+        return _attribute_value(body, attr_name)
+
+    return _publication_body_contents(body)
+
+
+def _publication_body_contents(body: object) -> str | None:
+    """Return IUCr publication body contents from discrete fields."""
+    if body is None:
+        return None
+
+    sections = []
+    for attr_name in ('synopsis', 'abstract'):
+        value = _attribute_value(body, attr_name)
+        if value not in {None, ''}:
+            sections.append(str(value))
+
+    keywords = getattr(body, 'keywords', [])
+    if keywords:
+        sections.append(f'Keywords: {", ".join(keywords)}')
+
+    if not sections:
+        return None
+    return '\n\n'.join(sections)
+
+
+def _publication_author_rows(publication: object) -> list[tuple[object, ...]]:
+    """Return publication author rows or one empty placeholder row."""
+    authors = getattr(publication, 'authors', None)
+    rows = [
+        tuple(_attribute_value(author, attr_name) for _, attr_name in _PUBL_AUTHOR_ITEMS)
+        for author in _collection_values(authors)
+    ]
+    if rows:
+        return rows
+    return [tuple(None for _ in _PUBL_AUTHOR_ITEMS)]
 
 
 def _write_loop(
@@ -692,16 +768,13 @@ def _write_loop(
     tags: Iterable[str],
     rows: Iterable[tuple[object, ...]],
 ) -> None:
-    """Append a CIF loop with aligned columns."""
+    """Append a CIF loop with compact data rows."""
     tag_list = list(tags)
     formatted_rows = [tuple(_format_loop_value(value) for value in row) for row in rows]
-    widths = _loop_widths(tag_list, formatted_rows)
 
     lines.append('loop_')
     lines.extend(tag_list)
-    for row in formatted_rows:
-        cells = [cell.ljust(widths[index]) for index, cell in enumerate(row)]
-        lines.append(f'  {"  ".join(cells).rstrip()}')
+    lines.extend(f'  {" ".join(row)}' for row in formatted_rows)
 
 
 def _write_item(lines: list[str], tag: str, value: object) -> None:
@@ -723,17 +796,30 @@ def _section(lines: list[str], title: str) -> None:
 
 def _format_item_value(value: object) -> str:
     """Format a CIF item value for report output."""
-    if not isinstance(value, str):
-        return format_value(value)
-    if value in {'?', '.'}:
-        return value
-    if '\n' in value or len(value) > _TEXT_WRAP_WIDTH:
-        return _format_text_field(value)
-    if not value.strip():
-        return '?'
-    if _needs_quotes(value):
-        return _quote_string(value)
-    return value
+    if _is_cif_descriptor(value):
+        formatted = _format_descriptor_value(value)
+    elif not isinstance(value, str):
+        formatted = format_value(value)
+    elif value in {'?', '.'}:
+        formatted = value
+    elif '\n' in value or len(value) > _TEXT_WRAP_WIDTH:
+        formatted = _format_text_field(value)
+    elif not value.strip():
+        formatted = '?'
+    elif _needs_quotes(value):
+        formatted = _quote_string(value)
+    else:
+        formatted = value
+    return formatted
+
+
+def _format_descriptor_value(value: object) -> str:
+    """Format a descriptor while preserving parameter uncertainty."""
+    from easydiffraction.core.variable import Parameter  # noqa: PLC0415
+
+    if isinstance(value, Parameter):
+        return format_param_value(value)
+    return _format_item_value(_descriptor_value(value))
 
 
 def _format_loop_value(value: object) -> str:
@@ -767,18 +853,6 @@ def _quote_string(value: str) -> str:
     return _format_text_field(value)
 
 
-def _loop_widths(
-    tags: list[str],
-    rows: list[tuple[str, ...]],
-) -> list[int]:
-    """Return per-column widths for loop rows."""
-    widths = [len(tag) for tag in tags]
-    for row in rows:
-        for index, cell in enumerate(row):
-            widths[index] = max(widths[index], len(cell))
-    return widths
-
-
 def _report_path(
     project: object,
     path: str | pathlib.Path | None,
@@ -809,29 +883,57 @@ def _software_label(name: str, *, package_name: str | None = None) -> str:
     return f'{name} {version}' if version else name
 
 
-def _calculator_label(project: object) -> str:
-    """Return the active calculator label for the report."""
-    names: list[str] = []
-    for experiment in _collection_values(getattr(project, 'experiments', None)):
-        calculator = getattr(experiment, 'calculator', None)
-        calculator_name = _descriptor_value(getattr(calculator, 'type', None))
-        if calculator_name not in {None, ''}:
-            names.append(str(calculator_name))
-
-    unique_names = sorted(set(names))
-    if not unique_names:
-        return '?'
-    return ', '.join(_software_label(name) for name in unique_names)
-
-
-def _minimizer_label(project: object) -> str:
-    """Return the active minimizer label for the report."""
+def _analysis_software(project: object) -> object | None:
+    """Return the project's persisted software snapshot."""
     analysis = getattr(project, 'analysis', None)
-    minimizer = getattr(analysis, 'minimizer', None)
-    minimizer_name = _descriptor_value(getattr(minimizer, 'type', None))
-    if minimizer_name in {None, ''}:
+    return getattr(analysis, 'software', None)
+
+
+def _role_descriptor_value(role: object, attr_name: str) -> object:
+    """Return one software-role descriptor value."""
+    return _descriptor_value(getattr(role, attr_name, None))
+
+
+def _software_role_label(project: object, role_name: str) -> str:
+    """Return a persisted software role label or CIF unknown."""
+    software = _analysis_software(project)
+    role = getattr(software, role_name, None)
+    name = _role_descriptor_value(role, 'name')
+    if name in {None, ''}:
         return '?'
-    return _software_label(str(minimizer_name))
+
+    version = _role_descriptor_value(role, 'version')
+    if version in {None, ''}:
+        return str(name)
+    return f'{name} {version}'
+
+
+def _software_fit_datetime(project: object) -> object | None:
+    """Return the persisted fit timestamp, if available."""
+    software = _analysis_software(project)
+    timestamp = _descriptor_value(getattr(software, 'timestamp', None))
+    if timestamp in {None, ''}:
+        return None
+    return timestamp
+
+
+def _framework_refinement_label(framework: str) -> str:
+    """Return framework label for ``_computing`` fallback text."""
+    if framework == '?':
+        return _software_label('EasyDiffraction', package_name='easydiffraction')
+    return framework
+
+
+def _structure_refinement_label(
+    framework: str,
+    calculator: str,
+    minimizer: str,
+) -> str:
+    """Return the free-text refinement software label."""
+    framework_label = _framework_refinement_label(framework)
+    if calculator == '?' or minimizer == '?':
+        return framework_label
+    return f'{framework_label} with {minimizer} minimizer and {calculator} calculator'
 
 
 def _base_engine_name(name: str) -> str:
@@ -894,6 +996,13 @@ def _attribute_value(owner: object, attr_name: str) -> object:
     return _descriptor_value(getattr(owner, attr_name, None))
 
 
+def _attribute_descriptor(owner: object, attr_name: str) -> object:
+    """Return raw owner attr; preserve descriptor metadata."""
+    if owner is None:
+        return None
+    return getattr(owner, attr_name, None)
+
+
 def _fit_result(project: object) -> object:
     """Return the persisted fit-result category."""
     analysis = getattr(project, 'analysis', None)
@@ -918,15 +1027,15 @@ def _atom_site_tags(family: str) -> tuple[str, ...]:
 def _atom_site_row(atom_site: object) -> tuple[object, ...]:
     """Return one atom-site loop row."""
     return (
-        _attribute_value(atom_site, 'label'),
-        _attribute_value(atom_site, 'type_symbol'),
-        _attribute_value(atom_site, 'fract_x'),
-        _attribute_value(atom_site, 'fract_y'),
-        _attribute_value(atom_site, 'fract_z'),
-        _attribute_value(atom_site, 'occupancy'),
-        _attribute_value(atom_site, 'adp_type'),
-        _attribute_value(atom_site, 'adp_iso'),
-        _attribute_value(atom_site, 'wyckoff_letter'),
+        _attribute_descriptor(atom_site, 'label'),
+        _attribute_descriptor(atom_site, 'type_symbol'),
+        _attribute_descriptor(atom_site, 'fract_x'),
+        _attribute_descriptor(atom_site, 'fract_y'),
+        _attribute_descriptor(atom_site, 'fract_z'),
+        _attribute_descriptor(atom_site, 'occupancy'),
+        _attribute_descriptor(atom_site, 'adp_type'),
+        _attribute_descriptor(atom_site, 'adp_iso'),
+        _attribute_descriptor(atom_site, 'wyckoff_letter'),
     )
 
 
@@ -946,13 +1055,13 @@ def _atom_site_aniso_tags(family: str) -> tuple[str, ...]:
 def _atom_site_aniso_row(aniso_site: object) -> tuple[object, ...]:
     """Return one anisotropic-ADP loop row."""
     return (
-        _attribute_value(aniso_site, 'label'),
-        _attribute_value(aniso_site, 'adp_11'),
-        _attribute_value(aniso_site, 'adp_22'),
-        _attribute_value(aniso_site, 'adp_33'),
-        _attribute_value(aniso_site, 'adp_12'),
-        _attribute_value(aniso_site, 'adp_13'),
-        _attribute_value(aniso_site, 'adp_23'),
+        _attribute_descriptor(aniso_site, 'label'),
+        _attribute_descriptor(aniso_site, 'adp_11'),
+        _attribute_descriptor(aniso_site, 'adp_22'),
+        _attribute_descriptor(aniso_site, 'adp_33'),
+        _attribute_descriptor(aniso_site, 'adp_12'),
+        _attribute_descriptor(aniso_site, 'adp_13'),
+        _attribute_descriptor(aniso_site, 'adp_23'),
     )
 
 
@@ -1030,11 +1139,23 @@ def _sc_extension_items(experiment: object) -> list[tuple[str, object]]:
 def _extinction_items(experiment: object, *, extension: bool) -> list[IucrItem]:
     """Return transformed extinction items filtered by namespace."""
     transformer = IucrCategoryTransformer.create('extinction')
-    return [
+    items = [
         item
         for item in transformer.items(experiment)
         if item.tag.startswith('_easydiffraction_') == extension
     ]
+    if not extension:
+        return items
+    return [_with_extension_descriptor(experiment, item) for item in items]
+
+
+def _with_extension_descriptor(experiment: object, item: IucrItem) -> IucrItem:
+    """Return an extension item with its descriptor when available."""
+    extinction = getattr(experiment, 'extinction', None)
+    descriptor = _iucr_descriptor_for_tag(extinction, item.tag)
+    if descriptor is None:
+        return item
+    return IucrItem(item.tag, descriptor)
 
 
 def _powder_rietveld_experiments(project: object) -> list[object]:
@@ -1328,6 +1449,11 @@ def _descriptor_value(value: object) -> object:
     return getattr(value, 'value', value)
 
 
+def _is_cif_descriptor(value: object) -> bool:
+    """Return whether value is a CIF descriptor or parameter."""
+    return hasattr(value, 'value') and hasattr(value, '_cif_handler')
+
+
 def _iucr_items(owner: object, attr_names: tuple[str, ...]) -> list[tuple[str, object]]:
     """Return IUCr-tagged descriptor values from *owner*."""
     if owner is None:
@@ -1338,7 +1464,7 @@ def _iucr_items(owner: object, attr_names: tuple[str, ...]) -> list[tuple[str, o
 def _iucr_item(owner: object, attr_name: str) -> tuple[str, object]:
     """Return one ``(iucr_name, value)`` pair for a descriptor."""
     descriptor = _iucr_descriptor(owner, attr_name)
-    return descriptor._cif_handler.iucr_name, _descriptor_value(descriptor)
+    return descriptor._cif_handler.iucr_name, descriptor
 
 
 def _iucr_descriptor(owner: object, attr_name: str) -> object:
@@ -1353,6 +1479,29 @@ def _iucr_descriptor(owner: object, attr_name: str) -> object:
 
     msg = f'{type(owner).__name__}.{attr_name} has no CIF handler.'
     raise AttributeError(msg)
+
+
+def _iucr_descriptor_for_tag(owner: object, tag: str) -> object | None:
+    """Return the descriptor carrying one IUCr tag."""
+    if owner is None:
+        return None
+
+    private_type = getattr(owner, '_type', None)
+    if _descriptor_iucr_name(private_type) == tag:
+        return private_type
+
+    for descriptor in _owner_descriptors(owner):
+        if _descriptor_iucr_name(descriptor) == tag:
+            return descriptor
+    return None
+
+
+def _descriptor_iucr_name(descriptor: object) -> str | None:
+    """Return a descriptor's IUCr tag name, if present."""
+    handler = getattr(descriptor, '_cif_handler', None)
+    if handler is None:
+        return None
+    return handler.iucr_name
 
 
 def _owner_descriptors(owner: object) -> Iterable[object]:

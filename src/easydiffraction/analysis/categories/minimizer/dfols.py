@@ -20,6 +20,7 @@ class DfolsMinimizer(LeastSquaresMinimizerBase):
         'optimizer_name': 'dfols',
         'method_name': '',
     }
+    url: str = 'https://github.com/numericalalgorithmsgroup/dfols'
 
     type_info = TypeInfo(
         tag=MinimizerTypeEnum.DFOLS,

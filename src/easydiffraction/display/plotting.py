@@ -194,6 +194,7 @@ class _PowderMeasVsCalcSeries:
 
     y_meas: np.ndarray
     y_calc: np.ndarray
+    y_meas_su: np.ndarray | None = None
     y_bkg: np.ndarray | None = None
 
 
@@ -5324,6 +5325,54 @@ class Plotter(RendererBase):
             excluded_ranges=excluded_ranges,
         )
 
+    def _powder_meas_vs_calc_series(
+        self,
+        pattern: object,
+        ctx: dict[str, object],
+        plot_options: _MeasVsCalcPlotOptions,
+    ) -> _PowderMeasVsCalcSeries:
+        """Return filtered measured/calculated powder series."""
+        y_meas = self._filtered_y_array(
+            pattern.intensity_meas, ctx['x_array'], ctx['x_min'], ctx['x_max']
+        )
+        y_calc = self._filtered_y_array(
+            pattern.intensity_calc, ctx['x_array'], ctx['x_min'], ctx['x_max']
+        )
+        y_meas_su = self._optional_filtered_y_array(
+            getattr(pattern, 'intensity_meas_su', None),
+            ctx,
+        )
+        y_bkg = self._optional_filtered_y_array(
+            getattr(pattern, 'intensity_bkg', None),
+            ctx,
+        )
+        if not self._show_background_enabled(
+            plot_options,
+            background_available=y_bkg is not None,
+        ):
+            y_bkg = None
+        return _PowderMeasVsCalcSeries(
+            y_meas=y_meas,
+            y_calc=y_calc,
+            y_meas_su=y_meas_su,
+            y_bkg=y_bkg,
+        )
+
+    def _optional_filtered_y_array(
+        self,
+        values: object | None,
+        ctx: dict[str, object],
+    ) -> np.ndarray | None:
+        """Return filtered optional y values."""
+        if values is None:
+            return None
+        return self._filtered_y_array(
+            values,
+            ctx['x_array'],
+            ctx['x_min'],
+            ctx['x_max'],
+        )
+
     def _plot_meas_vs_calc_data(
         self,
         experiment: object,
@@ -5395,26 +5444,7 @@ class Plotter(RendererBase):
         if ctx is None:
             return
 
-        y_meas = self._filtered_y_array(
-            pattern.intensity_meas, ctx['x_array'], ctx['x_min'], ctx['x_max']
-        )
-        y_calc = self._filtered_y_array(
-            pattern.intensity_calc, ctx['x_array'], ctx['x_min'], ctx['x_max']
-        )
-        y_bkg_raw = getattr(pattern, 'intensity_bkg', None)
-        y_bkg = (
-            self._filtered_y_array(y_bkg_raw, ctx['x_array'], ctx['x_min'], ctx['x_max'])
-            if y_bkg_raw is not None
-            else None
-        )
-        if not self._show_background_enabled(plot_options, background_available=y_bkg is not None):
-            y_bkg = None
-
-        powder_series = _PowderMeasVsCalcSeries(
-            y_meas=y_meas,
-            y_calc=y_calc,
-            y_bkg=y_bkg,
-        )
+        powder_series = self._powder_meas_vs_calc_series(pattern, ctx, plot_options)
         excluded_ranges = (
             self._excluded_ranges(
                 experiment=experiment,
@@ -5439,8 +5469,8 @@ class Plotter(RendererBase):
 
         self._plot_line_meas_vs_calc(
             ctx=ctx,
-            y_meas=y_meas,
-            y_calc=y_calc,
+            y_meas=powder_series.y_meas,
+            y_calc=powder_series.y_calc,
             show_residual=False
             if plot_options.show_residual is None
             else plot_options.show_residual,
@@ -5515,6 +5545,7 @@ class Plotter(RendererBase):
             height=self._composite_plot_height(),
             y_bkg=series.y_bkg,
             excluded_ranges=excluded_ranges,
+            y_meas_su=series.y_meas_su,
         )
         self._backend.plot_powder_meas_vs_calc(plot_spec=plot_spec)
 
@@ -5822,7 +5853,11 @@ class Plotter(RendererBase):
             x_label = 'Experiment No.'
 
         # Y-axis label from descriptor
-        param_units = getattr(param_descriptor, 'units', '')
+        param_units = (
+            param_descriptor.resolve_display_units('gui')
+            if hasattr(param_descriptor, 'resolve_display_units')
+            else getattr(param_descriptor, 'units', '')
+        )
         y_label = f'Parameter value ({param_units})' if param_units else 'Parameter value'
 
         title = f"Parameter '{column_name}' across fit results"

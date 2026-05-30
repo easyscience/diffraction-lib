@@ -66,6 +66,7 @@ class PowderMeasVsCalcSpec:
     y_calc_name: str | None = None
     y_calc_line_dash: str | None = None
     excluded_ranges: tuple[tuple[float, float], ...] = ()
+    y_meas_su: np.ndarray | None = None
 
 
 class XAxisType(StrEnum):
@@ -131,7 +132,7 @@ DEFAULT_AXES_LABELS = {
         ScatteringTypeEnum.BRAGG,
         XAxisType.TWO_THETA,
     ): [
-        '2θ (degree)',
+        '2θ (deg)',
         'Intensity (arb. units)',
     ],
     (

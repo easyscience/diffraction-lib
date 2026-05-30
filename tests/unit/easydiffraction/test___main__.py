@@ -78,11 +78,35 @@ def test_cli_subcommands_call_utils(monkeypatch):
     assert logs == ['LIST_DATA', 'DATA_30_projects_False', 'LIST', 'DOWNLOAD_ALL', 'DOWNLOAD_1']
 
 
+def test_cli_removed_report_commands_are_unknown(tmp_path):
+    import easydiffraction.__main__ as main_mod
+
+    project_dir = tmp_path / 'proj'
+
+    save_result = runner.invoke(main_mod.app, ['save', str(project_dir)])
+    save_report_result = runner.invoke(main_mod.app, ['save-report', str(project_dir)])
+
+    assert save_result.exit_code != 0
+    assert save_report_result.exit_code != 0
+    assert "No such command 'save'" in save_result.output
+    assert "No such command 'save-report'" in save_report_result.output
+
+
 def test_cli_project_first_argument_normalization_supports_global_data_commands():
     import easydiffraction.__main__ as main_mod
 
     assert main_mod._normalized_cli_args(['list-data']) == ['list-data']
     assert main_mod._normalized_cli_args(['download-data', '30']) == ['download-data', '30']
+
+
+def test_cli_project_first_argument_normalization_excludes_removed_report_commands():
+    import easydiffraction.__main__ as main_mod
+
+    assert main_mod._normalized_cli_args(['project-dir', 'save']) == ['project-dir', 'save']
+    assert main_mod._normalized_cli_args(['project-dir', 'save-report']) == [
+        'project-dir',
+        'save-report',
+    ]
 
 
 def test_cli_fit_loads_and_fits(monkeypatch, tmp_path):

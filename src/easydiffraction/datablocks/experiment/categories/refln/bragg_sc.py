@@ -7,6 +7,7 @@ import numpy as np
 
 from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.metadata import CalculatorSupport
 from easydiffraction.core.metadata import Compatibility
 from easydiffraction.core.metadata import TypeInfo
@@ -37,6 +38,10 @@ class Refln(CategoryItem):
         self._id = StringDescriptor(
             name='id',
             description='Identifier of the reflection',
+            display_handler=DisplayHandler(
+                display_name='ID',
+                latex_name='ID',
+            ),
             value_spec=AttributeSpec(
                 default='0',
                 # TODO: the following pattern is valid for dict key
@@ -49,7 +54,13 @@ class Refln(CategoryItem):
         self._d_spacing = NumericDescriptor(
             name='d_spacing',
             description='Distance between lattice planes for this reflection',
-            units='Å',
+            units='angstroms',
+            display_handler=DisplayHandler(
+                display_name='d',
+                display_units='Å',
+                latex_name=r'$d$',
+                latex_units=r'\AA',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0),
@@ -59,7 +70,13 @@ class Refln(CategoryItem):
         self._sin_theta_over_lambda = NumericDescriptor(
             name='sin_theta_over_lambda',
             description='The sin(θ)/λ value for this reflection',
-            units='Å⁻¹',
+            units='reciprocal_angstroms',
+            display_handler=DisplayHandler(
+                display_name='sinθ/λ',
+                display_units='Å⁻¹',
+                latex_name=r'$\sin\theta/\lambda$',
+                latex_units=r'\AA$^{-1}$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0),
@@ -69,6 +86,10 @@ class Refln(CategoryItem):
         self._index_h = NumericDescriptor(
             name='index_h',
             description='Miller index h of a measured reflection',
+            display_handler=DisplayHandler(
+                display_name='h',
+                latex_name=r'$h$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
@@ -78,6 +99,10 @@ class Refln(CategoryItem):
         self._index_k = NumericDescriptor(
             name='index_k',
             description='Miller index k of a measured reflection',
+            display_handler=DisplayHandler(
+                display_name='k',
+                latex_name=r'$k$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
@@ -87,6 +112,10 @@ class Refln(CategoryItem):
         self._index_l = NumericDescriptor(
             name='index_l',
             description='Miller index l of a measured reflection',
+            display_handler=DisplayHandler(
+                display_name='l',
+                latex_name=r'$l$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
@@ -96,6 +125,10 @@ class Refln(CategoryItem):
         self._intensity_meas = NumericDescriptor(
             name='intensity_meas',
             description=' The intensity of the reflection derived from the measurements.',
+            display_handler=DisplayHandler(
+                display_name='Imeas',
+                latex_name=r'$I_{\mathrm{meas}}$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0),
@@ -105,6 +138,10 @@ class Refln(CategoryItem):
         self._intensity_meas_su = NumericDescriptor(
             name='intensity_meas_su',
             description='Standard uncertainty of the measured intensity.',
+            display_handler=DisplayHandler(
+                display_name='s.u.(Imeas)',
+                latex_name=r'$\sigma(I_{\mathrm{meas}})$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0),
@@ -114,21 +151,15 @@ class Refln(CategoryItem):
         self._intensity_calc = NumericDescriptor(
             name='intensity_calc',
             description='Intensity of the reflection calculated from atom site data',
+            display_handler=DisplayHandler(
+                display_name='Icalc',
+                latex_name=r'$I_{\mathrm{calc}}$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
             cif_handler=CifHandler(names=['_refln.intensity_calc']),
-        )
-        self._wavelength = NumericDescriptor(
-            name='wavelength',
-            description='Mean wavelength of radiation for this reflection',
-            units='Å',
-            value_spec=AttributeSpec(
-                default=0.0,
-                validator=RangeValidator(ge=0),
-            ),
-            cif_handler=CifHandler(names=['_refln.wavelength']),
         )
 
     # ------------------------------------------------------------------
@@ -225,6 +256,32 @@ class Refln(CategoryItem):
         """
         return self._intensity_calc
 
+
+class TofRefln(Refln):
+    """
+    TOF single-crystal reflection with a per-reflection wavelength.
+    """
+
+    def __init__(self) -> None:
+        super().__init__()
+
+        self._wavelength = NumericDescriptor(
+            name='wavelength',
+            description='Mean wavelength of radiation for this reflection',
+            units='angstroms',
+            display_handler=DisplayHandler(
+                display_name='λ',
+                display_units='Å',
+                latex_name=r'$\lambda$',
+                latex_units=r'\AA',
+            ),
+            value_spec=AttributeSpec(
+                default=0.0,
+                validator=RangeValidator(ge=0),
+            ),
+            cif_handler=CifHandler(names=['_refln.wavelength']),
+        )
+
     @property
     def wavelength(self) -> NumericDescriptor:
         """
@@ -236,24 +293,12 @@ class Refln(CategoryItem):
         return self._wavelength
 
 
-@ReflnFactory.register
-class ReflnData(CategoryCollection):
-    """Collection of reflections for single crystal diffraction data."""
-
-    type_info = TypeInfo(tag='bragg-sc', description='Bragg single-crystal reflection data')
-    compatibility = Compatibility(
-        sample_form=frozenset({SampleFormEnum.SINGLE_CRYSTAL}),
-        scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
-        beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH, BeamModeEnum.TIME_OF_FLIGHT}),
-    )
-    calculator_support = CalculatorSupport(
-        calculators=frozenset({CalculatorEnum.CRYSPY}),
-    )
+class ReflnDataBase(CategoryCollection):
+    """
+    Base collection of reflections for single-crystal diffraction data.
+    """
 
     _update_priority = 100
-
-    def __init__(self) -> None:
-        super().__init__(item_type=Refln)
 
     #################
     # Private methods
@@ -298,11 +343,6 @@ class ReflnData(CategoryCollection):
         """Set standard uncertainty of measured intensity values."""
         for p, v in zip(self._items, values, strict=True):
             p.intensity_meas_su._value = v
-
-    def _set_wavelength(self, values: object) -> None:
-        """Set wavelength."""
-        for p, v in zip(self._items, values, strict=True):
-            p.wavelength._value = v
 
     # Can be set multiple times
 
@@ -428,6 +468,55 @@ class ReflnData(CategoryCollection):
             (p.intensity_calc.value for p in self._items),
             dtype=float,
         )
+
+
+@ReflnFactory.register
+class CwlReflnData(ReflnDataBase):
+    """
+    Collection of reflections for CWL single-crystal diffraction data.
+    """
+
+    type_info = TypeInfo(
+        tag='bragg-sc-cwl', description='Bragg CWL single-crystal reflection data'
+    )
+    compatibility = Compatibility(
+        sample_form=frozenset({SampleFormEnum.SINGLE_CRYSTAL}),
+        scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
+        beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH}),
+    )
+    calculator_support = CalculatorSupport(
+        calculators=frozenset({CalculatorEnum.CRYSPY}),
+    )
+
+    def __init__(self) -> None:
+        super().__init__(item_type=Refln)
+
+
+@ReflnFactory.register
+class TofReflnData(ReflnDataBase):
+    """
+    Collection of reflections for TOF single-crystal diffraction data.
+    """
+
+    type_info = TypeInfo(
+        tag='bragg-sc-tof', description='Bragg TOF single-crystal reflection data'
+    )
+    compatibility = Compatibility(
+        sample_form=frozenset({SampleFormEnum.SINGLE_CRYSTAL}),
+        scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
+        beam_mode=frozenset({BeamModeEnum.TIME_OF_FLIGHT}),
+    )
+    calculator_support = CalculatorSupport(
+        calculators=frozenset({CalculatorEnum.CRYSPY}),
+    )
+
+    def __init__(self) -> None:
+        super().__init__(item_type=TofRefln)
+
+    def _set_wavelength(self, values: object) -> None:
+        """Set per-reflection wavelength."""
+        for p, v in zip(self._items, values, strict=True):
+            p.wavelength._value = v
 
     @property
     def wavelength(self) -> np.ndarray:

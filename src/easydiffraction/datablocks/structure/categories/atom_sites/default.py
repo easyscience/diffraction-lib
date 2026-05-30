@@ -15,6 +15,7 @@ from cryspy.A_functions_base.database import DATABASE
 
 from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import MembershipValidator
@@ -46,6 +47,10 @@ class AtomSite(CategoryItem):
         self._label = StringDescriptor(
             name='label',
             description='Unique identifier for the atom site.',
+            display_handler=DisplayHandler(
+                display_name='Label',
+                latex_name='Label',
+            ),
             value_spec=AttributeSpec(
                 default='Si',
                 # TODO: the following pattern is valid for dict key
@@ -58,6 +63,10 @@ class AtomSite(CategoryItem):
         self._type_symbol = StringDescriptor(
             name='type_symbol',
             description='Chemical symbol of the atom at this site.',
+            display_handler=DisplayHandler(
+                display_name='Type',
+                latex_name='Type',
+            ),
             value_spec=AttributeSpec(
                 default='Tb',
                 validator=MembershipValidator(allowed=self._type_symbol_allowed_values),
@@ -67,6 +76,10 @@ class AtomSite(CategoryItem):
         self._fract_x = Parameter(
             name='fract_x',
             description='Fractional x-coordinate of the atom site within the unit cell.',
+            display_handler=DisplayHandler(
+                display_name='x',
+                latex_name=r'$x$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
@@ -76,6 +89,10 @@ class AtomSite(CategoryItem):
         self._fract_y = Parameter(
             name='fract_y',
             description='Fractional y-coordinate of the atom site within the unit cell.',
+            display_handler=DisplayHandler(
+                display_name='y',
+                latex_name=r'$y$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
@@ -85,6 +102,10 @@ class AtomSite(CategoryItem):
         self._fract_z = Parameter(
             name='fract_z',
             description='Fractional z-coordinate of the atom site within the unit cell.',
+            display_handler=DisplayHandler(
+                display_name='z',
+                latex_name=r'$z$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
@@ -95,6 +116,10 @@ class AtomSite(CategoryItem):
             name='wyckoff_letter',
             description='Wyckoff letter indicating the symmetry of the '
             'atom site within the space group.',
+            display_handler=DisplayHandler(
+                display_name='Wyckoff',
+                latex_name='Wyckoff',
+            ),
             value_spec=AttributeSpec(
                 default=self._wyckoff_letter_default_value,
                 validator=MembershipValidator(allowed=self._wyckoff_letter_allowed_values),
@@ -111,6 +136,10 @@ class AtomSite(CategoryItem):
             name='occupancy',
             description='Occupancy of the atom site, representing the '
             'fraction of the site occupied by the atom type.',
+            display_handler=DisplayHandler(
+                display_name='Occ.',
+                latex_name='Occ.',
+            ),
             value_spec=AttributeSpec(
                 default=1.0,
                 validator=RangeValidator(ge=0.0, le=1.0),
@@ -120,7 +149,13 @@ class AtomSite(CategoryItem):
         self._adp_iso = Parameter(
             name='adp_iso',
             description='Isotropic atomic displacement parameter (ADP) for the atom site.',
-            units='Å²',
+            units='angstrom_squared',
+            display_handler=DisplayHandler(
+                display_name='Uiso',
+                display_units='Å²',
+                latex_name=r'$U_{\mathrm{iso}}$',
+                latex_units=r'\AA$^2$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0.0, le=10.0),
@@ -136,6 +171,10 @@ class AtomSite(CategoryItem):
             name='adp_type',
             description='Type of atomic displacement parameter (ADP) '
             'used (e.g., Biso, Uiso, Uani, Bani).',
+            display_handler=DisplayHandler(
+                display_name='ADP type',
+                latex_name='ADP type',
+            ),
             value_spec=AttributeSpec(
                 default=AdpTypeEnum.default(),
                 validator=MembershipValidator(allowed=[m.value for m in AdpTypeEnum]),

@@ -23,9 +23,10 @@ from easydiffraction.io.cif.serialize import project_config_to_cif
 from easydiffraction.io.cif.serialize import project_to_cif
 from easydiffraction.io.results_sidecar import read_analysis_results_sidecar
 from easydiffraction.io.results_sidecar import write_analysis_results_sidecar
+from easydiffraction.project.categories.publication import Publication
+from easydiffraction.project.categories.publication import PublicationFactory
 from easydiffraction.project.display import ProjectDisplay
 from easydiffraction.project.project_config import ProjectConfig
-from easydiffraction.report import Report
 from easydiffraction.utils.enums import VerbosityEnum
 from easydiffraction.utils.environment import resolve_artifact_path
 from easydiffraction.utils.logging import console
@@ -39,6 +40,7 @@ if TYPE_CHECKING:
     from easydiffraction.project.categories.table import Table
     from easydiffraction.project.categories.verbosity import Verbosity
     from easydiffraction.project.project_info import ProjectInfo
+    from easydiffraction.report import Report
 
 
 def _apply_csv_row_to_params(
@@ -208,9 +210,10 @@ class Project(GuardedBase):  # noqa: PLR0904
         object.__setattr__(self, '_chart', self._config.chart)
         object.__setattr__(self, '_table', self._config.table)
         object.__setattr__(self, '_verbosity', self._config.verbosity)
+        object.__setattr__(self, '_report', self._config.report)
+        self._publication = PublicationFactory.create(PublicationFactory.default_tag())
         self._display = ProjectDisplay(self)
         self._analysis = Analysis(self)
-        self._report = Report(self)
         self._saved = False
         self._varname = 'project' if type(self)._loading else varname()
         type(self)._current_project = self
@@ -223,6 +226,8 @@ class Project(GuardedBase):  # noqa: PLR0904
         self._analysis._parent = self
         self._chart._parent = self
         self._table._parent = self
+        self._report._parent = self
+        self._publication._parent = self
 
     @staticmethod
     def _supported_filters_for(category: object) -> dict[str, object]:
@@ -331,6 +336,11 @@ class Project(GuardedBase):  # noqa: PLR0904
     def report(self) -> Report:
         """Submission report builder bound to the project."""
         return self._report
+
+    @property
+    def publication(self) -> Publication:
+        """Publication metadata bound to the project."""
+        return self._publication
 
     @property
     def parameters(self) -> list:
@@ -461,16 +471,9 @@ class Project(GuardedBase):  # noqa: PLR0904
                 param_map[unique_name] = param
         return param_map
 
-    def save(self, *, report: bool = False, check: bool = False) -> None:
+    def save(self) -> None:
         """
         Save the project into the existing project directory.
-
-        Parameters
-        ----------
-        report : bool, default=False
-            Whether to write the IUCr submission report.
-        check : bool, default=False
-            Whether to validate the IUCr submission report.
         """
         if self.info.path is None:
             log.error('Project path not specified. Use save_as() to define the path first.')
@@ -531,10 +534,14 @@ class Project(GuardedBase):  # noqa: PLR0904
             branch = '└──' if index == len(analysis_file_names) - 1 else '├──'
             console.print(f'│   {branch} 📄 {file_name}')
 
-        if report:
-            report_path = self.report.save(check=check)
+        report_paths = self.report._save_configured()
+        if report_paths:
+            reports_dir = self.info.path / 'reports'
             console.print('└── 📁 reports/')
-            console.print(f'    └── 📄 {report_path.name}')
+            for index, report_path in enumerate(report_paths):
+                branch = '└──' if index == len(report_paths) - 1 else '├──'
+                relative_path = report_path.relative_to(reports_dir)
+                console.print(f'    {branch} 📄 {relative_path}')
 
         self.info.update_last_modified()
         self._saved = True
