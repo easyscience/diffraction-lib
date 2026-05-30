@@ -183,10 +183,16 @@ two cells, `[-0.2, 1.2]` adds a margin. Like the other settings it is
 persisted and overridable per call:
 
 ```python
-project.view.range = ((0, 1), (0, 1), (0, 1))   # default: full cell, borders included
+# Persisted per-axis bounds — six scalar settings, like the cell
+# parameters (defaults 0 and 1 on each axis = the full cell, borders
+# included):
+project.view.range_a_max = 2                       # two cells along a
+project.view.range_c_min, project.view.range_c_max = -0.2, 1.2   # margin on c
+
+# A convenience tuple overrides the persisted range for one call only:
 project.display.structure(
     struct_name='lbco',
-    range=((0, 2), (0, 1), (0, 1)),             # two cells along a, this call only
+    range=((0, 2), (0, 1), (0, 1)),
 )
 ```
 
@@ -221,7 +227,7 @@ carry.
 Because expansion happens in the scene builder (section 1), the 3D
 engines draw this expanded set in full. The `ascii` engine is the
 reduced-fidelity sibling (section 7): it always renders the single
-default cell and reports a wider `project.view.range` as a 3D-only
+default cell and reports a wider view range as a 3D-only
 capability through `show_structure_options()`, the same way it announces
 the other features only the 3D engines draw.
 
@@ -379,7 +385,7 @@ sibling of the 3D engines: one schematic projection, one unit cell, and
 no bonds, labels, ADP ellipsoids, or moment arrows. When an `include=`
 request asks for one of those features, the engine announces it is
 available with the 3D engines and skips it, just as the ascii chart
-engine does for Plotly-only features. A `project.view.range` wider than
+engine does for Plotly-only features. A view range wider than
 the default single cell is treated the same way: the terminal view
 always draws one cell and announces that multi-cell and margin ranges
 are honored only by the 3D engines, so its schematic stays uncluttered
@@ -489,9 +495,11 @@ project.display.structure(
 project.view.show_labels = False
 project.view.show_moments = True
 
-# What region (persisted): which symmetry-equivalent atoms are generated,
-# as a per-axis fractional range (default below, borders included).
-project.view.range = ((0, 1), (0, 1), (0, 1))
+# What region (persisted): six per-axis fractional bounds (defaults 0 and
+# 1 = full cell, borders included), mirroring the six scalar cell
+# parameters.
+project.view.range_a_min = 0
+project.view.range_a_max = 1   # range_b_min/max and range_c_min/max likewise
 ```
 
 The persisted equivalent in the project CIF:
@@ -501,9 +509,12 @@ The persisted equivalent in the project CIF:
 _view.type           threejs
 _view.show_labels    false
 _view.show_moments   true
-_view.range_a        0 1
-_view.range_b        0 1
-_view.range_c        0 1
+_view.range_a_min    0
+_view.range_a_max    1
+_view.range_b_min    0
+_view.range_b_max    1
+_view.range_c_min    0
+_view.range_c_max    1
 
 _style.atom_shape       ortep
 _style.radius_model     covalent
@@ -635,7 +646,7 @@ the final names.
 - **CIF tag spelling — resolved.** Project CIF: `_style.atom_shape`,
   `_style.radius_model`, `_style.color_scheme`,
   `_style.adp_probability`, and `_view.type` / `_view.show_labels` /
-  `_view.show_moments` / `_view.range_a|b|c`. These are project-internal
+  `_view.show_moments` / `_view.range_{a,b,c}_{min,max}`. These are project-internal
   app/settings tags (`_view.type` follows the Display-UX `_chart.type` /
   `_table.type` precedent); the radii and colours are a bundled
   element-database asset, not CIF-serialized.
@@ -658,8 +669,10 @@ the final names.
 - **Per-axis range boundary completion — resolved.** Version 1 draws
   only atoms inside the range (borders included) and bonds only between
   in-scene atoms — no out-of-range partner atoms or edge-coordination
-  completion. Range CIF spelling is `_view.range_a|b|c` (two numbers
-  each).
+  completion. The range is persisted as six scalar tags
+  `_view.range_{a,b,c}_{min,max}` (one number each, defaults 0 and 1),
+  mirroring the six scalar cell parameters; a per-call `range=` tuple on
+  `structure()` overrides them for one call.
 
 ## Deferred Work
 

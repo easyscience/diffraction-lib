@@ -97,10 +97,11 @@ plan-level structural choices confirmed with the author at plan start.
   `labels`); a companion `show_structure_options(struct_name=...)`
   mirrors `show_pattern_options()`. Notebook embeds an interactive view
   (IPython HTML repr); a standalone HTML file can be written to a path.
-- **Per-axis fractional range** (§3):
-  `project.view.range = ((0,1),(0,1),(0,1))` default (full cell,
-  **borders included**), per-axis, non-integer allowed, validated min <
-  max, persisted, overridable per call.
+- **Per-axis fractional range** (§3): six scalar bounds
+  `project.view.range_{a,b,c}_{min,max}` (defaults 0 and 1 = full cell,
+  **borders included**), mirroring the six scalar cell parameters;
+  non-integer allowed, validated min < max per axis, persisted; a
+  per-call `range=` tuple on `structure()` overrides for one call.
 - **Scene-atom identity rule** (§3): two generated atoms are the same
   scene atom iff same atom-site row **and** fractional coordinates
   coincide within `1e-4` (fractional units); keep one, drop the rest.
@@ -198,9 +199,11 @@ below were verified reachable (HTTP 200).
   Question 1) — **Resolved (final).** Project CIF: `_style.atom_shape`,
   `_style.radius_model`, `_style.color_scheme`,
   `_style.adp_probability`, and `_view.type`, `_view.show_labels`,
-  `_view.show_moments`, plus the range as `_view.range_a`,
-  `_view.range_b`, `_view.range_c` (two numbers each, e.g.
-  `_view.range_a   0 1`). Structure CIF (per-structure): the **standard
+  `_view.show_moments`, plus the per-axis range as six scalar tags
+  `_view.range_a_min` / `_view.range_a_max` / `_view.range_b_min` /
+  `_view.range_b_max` / `_view.range_c_min` / `_view.range_c_max` (one
+  number each, defaults 0 and 1), mirroring the cell parameters. Structure
+  CIF (per-structure): the **standard
   cif_core** bond cutoffs `_geom.min_bond_distance_cutoff` (default
   `0.0`) and `_geom.bond_distance_incr` (default `0.4`), plus the
   per-type bonding radius `_atom_type.radius_bond` when present (P1.11).
@@ -721,10 +724,14 @@ reach end-to-end (P1.1–P1.12) before any Three.js work (P1.13–P1.15).
     `ViewerEngineEnum` + `ViewerFactory.descriptions()` and **defaulting
     to `ViewerEngineEnum.default()` (`threejs`)**, matching P1.1;
     `from_cif` calling `self._parent._swap_view`. Plus persisted
-    view-state descriptors: `show_labels` (bool, default off),
-    `show_moments` (bool, default on-where-data), and the per-axis
-    `range` as `_view.range_a/b/c` (two-number min/max each, validated
-    min < max). `show_supported()` lists engines.
+    view-state descriptors: `show_labels` (`BoolDescriptor`, default off),
+    `show_moments` (`BoolDescriptor`, default on-where-data), and the
+    per-axis range as **six scalar `NumericDescriptor`s**
+    `range_a_min` / `range_a_max` / `range_b_min` / `range_b_max` /
+    `range_c_min` / `range_c_max` (CIF `_view.range_a_min` … , defaults 0
+    and 1, each axis validated `min < max` in the setter), mirroring the
+    six scalar cell parameters; `structure()`'s `range=` tuple arg
+    overrides them per call. `show_supported()` lists engines.
   - **Headless implication of the `threejs` default.** With `threejs`
     default, `project.display.structure(...)` returns/writes an HTML
     string and needs **no browser**, so it runs unattended in CI,
@@ -795,7 +802,7 @@ reach end-to-end (P1.1–P1.12) before any Three.js work (P1.13–P1.15).
       `structure_feature_availability(structure, style=project.style)`;
       build the scene via
       `build_scene(structure, style=project.style, view_range=<resolved range>, features=<resolved set>)`
-      (per-call `range` overrides the persisted `project.view.range` for
+      (per-call `range` overrides the persisted view range for
       that call); render with the active `project.view` engine.
       **Signature mirrors `pattern()`**: `structure(...) -> None`,
       displaying directly as a side effect (notebook: `IPython.display`
@@ -1013,8 +1020,9 @@ coverage (configured in P1.13).
       setting's accepted values; `_style.*` CIF round-trips. P1.8.
 - [ ] **`tests/unit/easydiffraction/project/categories/view/test_view.py`**
       (new) — `type` validates against `ViewerEngineEnum`; setting
-      `type` calls `_swap_view`; `range` rejects min ≥ max; `_view.type`
-      / `_view.show_*` / `_view.range_*` CIF round-trip;
+      `type` calls `_swap_view`; a `range_a_max` below `range_a_min` is
+      rejected (per-axis `min < max`); `_view.type` / `_view.show_*` /
+      `_view.range_a_min` … `_view.range_c_max` CIF round-trip;
       `show_supported()` lists engines. P1.9.
 - [ ] **`tests/unit/easydiffraction/project/test_project.py`** (extend)
       — `project.view` / `project.style` are read-only attributes;
@@ -1123,8 +1131,8 @@ ellipsoids — alongside the existing 1D pattern view.
   the standard bond cut-offs (a minimum distance and a tolerance added
   to the atoms' bonding radii) for each structure, saved in that
   structure's own file, so different phases can use different cut-offs.
-- **See a single cell, a margin, or several cells.**
-  `project.view.range` sets a per-axis fractional range (default: the
+- **See a single cell, a margin, or several cells.** `project.view` sets
+  a per-axis fractional range (default: the
   full cell with border atoms drawn); widen it for a margin or multiple
   cells.
 - **Works offline.** The notebook and standalone-HTML views embed a
