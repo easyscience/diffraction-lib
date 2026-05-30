@@ -311,7 +311,8 @@ class RasterStructureRenderer:
             (nx * view_dir[0] + ny * view_dir[1] + nz * view_dir[2]) / norm,
         ), axis=-1)
         intensity = _diffuse_intensity(normal)[..., None]
-        shade = np.clip(np.asarray(ell.colour, dtype=np.float32) / 255.0 * intensity, 0, 1)
+        base_rgb = RasterStructureRenderer._base_colours(xs - cx, ys - cy, ell.colour, ell.wedges)
+        shade = np.clip(base_rgb * intensity, 0, 1)
         sub[update] = surf_depth[update]
         colour[y0:y1, x0:x1][update] = shade[update]
 

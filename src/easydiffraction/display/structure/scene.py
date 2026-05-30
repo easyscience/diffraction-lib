@@ -50,13 +50,18 @@ class OccupancyWedgeSphere:
 
 @dataclass(frozen=True, slots=True)
 class AdpEllipsoid:
-    """An anisotropic ADP probability ellipsoid for one atom."""
+    """An anisotropic ADP probability ellipsoid for one atom.
+
+    ``wedges`` splits a shared site into relative-proportion colour wedges
+    (empty for a single atom, which uses ``colour``).
+    """
 
     centre: Vec3
     semi_axes: Vec3
     orientation: Mat3
     colour: Rgb
     label: str
+    wedges: tuple[OccupancyWedge, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)

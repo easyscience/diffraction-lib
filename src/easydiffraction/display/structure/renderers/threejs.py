@@ -88,6 +88,7 @@ def _scene_payload(scene: StructureScene) -> dict:
                 'orientation': [list(row) for row in e.orientation],
                 'colour': e.colour,
                 'label': e.label,
+                'wedges': [{'fraction': w.fraction, 'colour': w.colour} for w in e.wedges],
             }
             for e in scene.ellipsoids
         ],

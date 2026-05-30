@@ -22,7 +22,6 @@ from scipy.stats import chi
 from easydiffraction.crystallography import crystallography as ecr
 from easydiffraction.datablocks.structure.categories.atom_sites.enums import AdpTypeEnum
 from easydiffraction.display.structure.assets.colors import AXIS_COLORS
-from easydiffraction.display.structure.assets.colors import VACANCY_COLOR
 from easydiffraction.display.structure.assets.colors import color_for
 from easydiffraction.display.structure.assets.radii import radius_for
 from easydiffraction.display.structure.enums import AtomViewEnum
@@ -151,10 +150,13 @@ def _display_radius(model_radius: float, style) -> float:
     return style.atom_scale.value * float(np.sqrt(model_radius))
 
 
-def _atom_primitive(atom, centre, *, style, matrix, cell, aniso_collection):
-    """Build the sphere/ellipsoid primitive for a single full-occupancy atom."""
+def _atom_shape(atom, *, style, matrix, cell, aniso_collection):
+    """Return an atom's ADP-driven shape and the radius-substitution flag.
+
+    The shape is ``('ellipsoid', semi_axes, orientation)`` for an anisotropic
+    atom in the ADP view, otherwise ``('sphere', radius)``.
+    """
     element = _element_symbol(atom.type_symbol.value)
-    colour = color_for(element, style.color_scheme.value)
     view = AtomViewEnum(style.atom_view.value)
     radius, substituted = radius_for(element, view.radius_model())
     ball_radius = _display_radius(radius, style)
@@ -165,57 +167,68 @@ def _atom_primitive(atom, centre, *, style, matrix, cell, aniso_collection):
             and label in aniso_collection:
         u_cart = _cartesian_u(atom, aniso_collection[label], matrix, cell)
         semi, orient = ecr.adp_principal_axes(u_cart)
-        primitive = AdpEllipsoid(
-            _vec3(centre), _vec3(semi * scale),
-            tuple(_vec3(orient[:, i]) for i in range(3)), colour, label,
-        )
+        shape = ('ellipsoid', _vec3(semi * scale),
+                 tuple(_vec3(orient[:, i]) for i in range(3)))
     elif view.is_adp and adp_type in {AdpTypeEnum.UISO, AdpTypeEnum.BISO}:
         u_iso = atom.adp_iso.value
         if adp_type is AdpTypeEnum.BISO:
             u_iso = u_iso / EIGHT_PI_SQ
         iso_radius = float(np.sqrt(max(u_iso, 0.0))) * scale
-        primitive = AtomSphere(_vec3(centre), iso_radius or ball_radius, colour, label)
+        shape = ('sphere', iso_radius or ball_radius)
     else:
-        primitive = AtomSphere(_vec3(centre), ball_radius, colour, label)
-    return _SceneAtom(primitive, centre, element, colour, label), substituted
+        shape = ('sphere', ball_radius)
+    return shape, substituted
 
 
-def _wedge_sphere(rows, centre, *, style):
-    """Build an occupancy-wedge sphere for coincident atom-site rows."""
-    total = sum(occ for _, occ, _, _, _ in rows)
-    wedges = []
-    if total >= 1.0:
-        wedges = [OccupancyWedge(occ / total, colour) for _, occ, _, colour, _ in rows]
+def _atom_primitive(atom, centre, *, style, matrix, cell, aniso_collection):
+    """Build a solid sphere/ellipsoid primitive for a single atom."""
+    element = _element_symbol(atom.type_symbol.value)
+    colour = color_for(element, style.color_scheme.value)
+    shape, substituted = _atom_shape(
+        atom, style=style, matrix=matrix, cell=cell, aniso_collection=aniso_collection,
+    )
+    if shape[0] == 'ellipsoid':
+        primitive = AdpEllipsoid(_vec3(centre), shape[1], shape[2], colour, atom.label.value)
     else:
-        wedges = [OccupancyWedge(occ, colour) for _, occ, _, colour, _ in rows]
-        wedges.append(OccupancyWedge(1.0 - total, VACANCY_COLOR))
-    radius = _display_radius(max(radius for _, _, _, _, radius in rows), style)
-    major = max(rows, key=lambda r: r[1])
+        primitive = AtomSphere(_vec3(centre), shape[1], colour, atom.label.value)
+    return _SceneAtom(primitive, centre, element, colour, atom.label.value), substituted
+
+
+def _wedge_atom(rows, centre, *, style, matrix, cell, aniso_collection):
+    """Build a shared-site primitive: the major atom's ADP shape split into
+    relative-proportion colour wedges (absolute occupancy ignored)."""
+    total = sum(occ for _, occ, _, _, _ in rows) or 1.0
+    wedges = tuple(OccupancyWedge(occ / total, colour) for _, occ, _, colour, _ in rows)
+    major_atom, _occ, major_element, major_colour, _radius = max(rows, key=lambda r: r[1])
     label = '/'.join(r[0].label.value for r in rows)
-    primitive = OccupancyWedgeSphere(_vec3(centre), radius, tuple(wedges), label)
-    return _SceneAtom(primitive, centre, major[2], major[3], label)
+    shape, _ = _atom_shape(
+        major_atom, style=style, matrix=matrix, cell=cell, aniso_collection=aniso_collection,
+    )
+    if shape[0] == 'ellipsoid':
+        primitive = AdpEllipsoid(_vec3(centre), shape[1], shape[2], major_colour, label, wedges)
+    else:
+        primitive = OccupancyWedgeSphere(_vec3(centre), shape[1], wedges, label)
+    return _SceneAtom(primitive, centre, major_element, major_colour, label)
 
 
 def _build_atoms(sites, clusters, *, style, matrix, cell, aniso_collection):
     """Return the scene atoms (one per position cluster) and substitutions."""
     scene_atoms = []
     substitutions: set = set()
+    radius_model = AtomViewEnum(style.atom_view.value).radius_model()
     for members in clusters.values():
         centre = ecr.fractional_to_cartesian(members[0][1], matrix)
         if len(members) == 1:
             atom = sites[members[0][0]]
-            occ = atom.occupancy.value
-            if occ >= 1.0 - IDENTITY_TOL:
-                scene_atom, substituted = _atom_primitive(
-                    atom, centre, style=style, matrix=matrix, cell=cell,
-                    aniso_collection=aniso_collection,
-                )
-                scene_atoms.append(scene_atom)
-                if substituted:
-                    substitutions.add(_element_symbol(atom.type_symbol.value))
-                continue
+            scene_atom, substituted = _atom_primitive(
+                atom, centre, style=style, matrix=matrix, cell=cell,
+                aniso_collection=aniso_collection,
+            )
+            scene_atoms.append(scene_atom)
+            if substituted:
+                substitutions.add(_element_symbol(atom.type_symbol.value))
+            continue
         rows = []
-        radius_model = AtomViewEnum(style.atom_view.value).radius_model()
         for idx, _ in members:
             atom = sites[idx]
             element = _element_symbol(atom.type_symbol.value)
@@ -224,7 +237,10 @@ def _build_atoms(sites, clusters, *, style, matrix, cell, aniso_collection):
             rows.append((atom, atom.occupancy.value, element, colour, radius))
             if substituted:
                 substitutions.add(element)
-        scene_atoms.append(_wedge_sphere(rows, centre, style=style))
+        scene_atoms.append(_wedge_atom(
+            rows, centre, style=style, matrix=matrix, cell=cell,
+            aniso_collection=aniso_collection,
+        ))
     return scene_atoms, substitutions
 
 

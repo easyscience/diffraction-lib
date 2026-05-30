@@ -149,14 +149,24 @@ for (const s of SCENE.wedgeSpheres) {
 }
 
 for (const e of SCENE.ellipsoids) {
-  const mesh = new THREE.Mesh(unitSphere, new THREE.MeshStandardMaterial({ color: col(e.colour) }));
-  mesh.position.copy(vec(e.centre));
-  mesh.scale.set(e.semiAxes[0], e.semiAxes[1], e.semiAxes[2]);
   const basis = new THREE.Matrix4().makeBasis(vec(e.orientation[0]), vec(e.orientation[1]), vec(e.orientation[2]));
-  mesh.quaternion.setFromRotationMatrix(basis);
-  mesh.userData.label = e.label;
-  mesh.userData.element = elementOf(e.label);
-  groups.atoms.add(mesh);
+  const quat = new THREE.Quaternion().setFromRotationMatrix(basis);
+  const split = e.wedges && e.wedges.length;
+  const wedges = split ? e.wedges : [{ fraction: 1, colour: e.colour }];
+  const parts = e.label.split('/');
+  let phi = 0;
+  wedges.forEach((w, i) => {
+    const span = w.fraction * Math.PI * 2;
+    const geo = new THREE.SphereGeometry(1, Math.max(6, Math.round(48 * w.fraction)), 16, phi, span);
+    const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: col(w.colour), side: THREE.DoubleSide }));
+    mesh.position.copy(vec(e.centre));
+    mesh.scale.set(e.semiAxes[0], e.semiAxes[1], e.semiAxes[2]);
+    mesh.quaternion.copy(quat);
+    mesh.userData.label = e.label;
+    mesh.userData.element = split ? (parts[i] || null) : elementOf(e.label);
+    groups.atoms.add(mesh);
+    phi += span;
+  });
 }
 
 const addHalfBond = (p0, p1, colour) => {
