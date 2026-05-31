@@ -254,19 +254,16 @@ API. A short bridge period where old and new surfaces coexist is intentional.
   package, `project.style`, and the bespoke `Style.show_supported()`; drop the
   `_style.*` block and the moved `_rendering_structure.*` tags from CIF
   serialise. Commit: `Remove the old style and rendering_structure surfaces`.
-- [ ] **P1.11 — Docs, ADRs, tutorials.** Docs done: `model.md` (commit
-  `e24a42571`), crysview ADR §8 surface note + final CIF tags (commit
-  `44abff413`); `value-selector-discovery` ADR already current. **Tutorials not
-  done:** `ed-3/14.py` `project.style.*` migrated in place to
-  `project.structure_style.*` but **uncommitted**, and `ed-3/14.ipynb` still
-  call the removed `project.style` API. They must be regenerated
-  (`pixi run notebook-prepare`) and committed. The tutorial files carry unrelated
-  user playground edits, so completing/committing this is **pending a user
-  decision** (see `_impl-reply-1`).
-- [ ] **P1.12 — Phase 1 review gate.** No-code step. **Reopened** by
-  `_impl-review-1` [P1]: Phase 1 cannot be gated while the committed
-  `ed-3/14.ipynb` still reference the removed `project.style` API. Re-check once
-  P1.11's tutorial migration is committed.
+- [x] **P1.11 — Docs, ADRs, tutorials.** `model.md` (commit `e24a42571`),
+  crysview ADR §8 surface note + final CIF tags (commit `44abff413`),
+  `value-selector-discovery` ADR already current. Tutorials `ed-3/14/17.py`
+  migrated to `project.structure_style.*` (per-descriptor `show_supported()`)
+  and notebooks regenerated via `pixi run notebook-prepare`, committed in
+  `6fb2df3c7` (user approved committing their playground edits alongside).
+- [x] **P1.12 — Phase 1 review gate.** No-code step: mark complete and commit
+  the checklist update alone. (Reopened once by `_impl-review-1` [P1]; re-gated
+  after the tutorial migration landed in `6fb2df3c7`.) Commit:
+  `Reach Phase 1 review gate`.
 
 ### Selector classification (P1.2 audit)
 
