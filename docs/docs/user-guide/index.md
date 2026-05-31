@@ -12,8 +12,8 @@ Here is a brief overview of the User Guide sections:
 
 - [Glossary](glossary.md) – Defines common terms and labels used
   throughout the documentation.
-- [Concept](concept.md) – Introduces the overall idea behind data analysis in
-  EasyDiffraction.
+- [Concept](concept.md) – Introduces the overall idea behind data
+  analysis in EasyDiffraction.
 - [Data Format](data-format.md) – Explains the data structures and file
   formats used by EasyDiffraction.
 - [Parameters](parameters.md) – Describes how parameters are structured,

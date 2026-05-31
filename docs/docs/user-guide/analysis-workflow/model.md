@@ -16,8 +16,8 @@ EasyDiffraction allows you to:
   parameters.
 
 Below, you will find instructions on how to define and manage
-crystallographic structures in EasyDiffraction. It is assumed that you have
-already created a `project` object, as described in the
+crystallographic structures in EasyDiffraction. It is assumed that you
+have already created a `project` object, as described in the
 [Project](project.md) section.
 
 ## Adding a Structure from CIF
@@ -60,10 +60,10 @@ project.structures['lbco']
 
 ## Defining a Structure Manually
 
-If you do not have a CIF file or prefer to define the structure manually,
-you can use the `create` method of the `structures` object of the
-`project` instance. In this case, you will need to specify the name of
-the structure, which will be used to reference it later.
+If you do not have a CIF file or prefer to define the structure
+manually, you can use the `create` method of the `structures` object of
+the `project` instance. In this case, you will need to specify the name
+of the structure, which will be used to reference it later.
 
 ```python
 # Add a structure with default parameters
@@ -250,9 +250,9 @@ section).
 ## Saving a Structure
 
 Saving the project, as described in the [Project](project.md) section,
-will also save the structure. Each structure is saved as a separate CIF file in
-the `structures` subdirectory of the project directory. The project file
-contains references to these files.
+will also save the structure. Each structure is saved as a separate CIF
+file in the `structures` subdirectory of the project directory. The
+project file contains references to these files.
 
 Below is an example of the saved CIF file for the `lbco` structure:
 

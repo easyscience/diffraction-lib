@@ -70,9 +70,9 @@ Example output:
 
 Calculator types
 
-|   | Type   | Description                                      |
-| - | ------ | ------------------------------------------------ |
-| * | cryspy | CrysPy library for crystallographic calculations |
+|     | Type   | Description                                      |
+| --- | ------ | ------------------------------------------------ |
+| \*  | cryspy | CrysPy library for crystallographic calculations |
 
 To explicitly select a calculation engine for an experiment:
 
@@ -149,18 +149,18 @@ Example output:
 
 Minimizer types
 
-|   | Type                  | Description                                                   |
-| - | --------------------- | ------------------------------------------------------------- |
-|   | lmfit                 | LMFIT library using the default Levenberg-Marquardt method    |
-| * | lmfit (leastsq)       | LMFIT library with Levenberg-Marquardt least squares method   |
-|   | lmfit (least_squares) | LMFIT library with SciPy's trust region reflective algorithm  |
-|   | dfols                 | DFO-LS library for derivative-free least-squares optimization |
-|   | bumps                 | BUMPS library using the default Levenberg-Marquardt method    |
-|   | bumps (lm)            | BUMPS library with Levenberg-Marquardt method                 |
-|   | bumps (dream)         | BUMPS library with DREAM Bayesian sampling                    |
-|   | bumps (amoeba)        | BUMPS library with Nelder-Mead simplex method                 |
-|   | bumps (de)            | BUMPS library with differential evolution method              |
-|   | emcee                 | emcee affine-invariant ensemble Bayesian sampling             |
+|     | Type                  | Description                                                   |
+| --- | --------------------- | ------------------------------------------------------------- |
+|     | lmfit                 | LMFIT library using the default Levenberg-Marquardt method    |
+| \*  | lmfit (leastsq)       | LMFIT library with Levenberg-Marquardt least squares method   |
+|     | lmfit (least_squares) | LMFIT library with SciPy's trust region reflective algorithm  |
+|     | dfols                 | DFO-LS library for derivative-free least-squares optimization |
+|     | bumps                 | BUMPS library using the default Levenberg-Marquardt method    |
+|     | bumps (lm)            | BUMPS library with Levenberg-Marquardt method                 |
+|     | bumps (dream)         | BUMPS library with DREAM Bayesian sampling                    |
+|     | bumps (amoeba)        | BUMPS library with Nelder-Mead simplex method                 |
+|     | bumps (de)            | BUMPS library with differential evolution method              |
+|     | emcee                 | emcee affine-invariant ensemble Bayesian sampling             |
 
 To select the desired minimizer, e.g., 'lmfit':
 
@@ -319,8 +319,8 @@ or follow a certain relationship during the refinement process.
 ### Setting Aliases
 
 Before setting constraints, you need to set aliases for the parameters
-you want to constrain. This can be done using the `create` method of
-the `aliases` object. Aliases are used to reference parameters in a more
+you want to constrain. This can be done using the `create` method of the
+`aliases` object. Aliases are used to reference parameters in a more
 readable way, making it easier to manage constraints.
 
 An example of setting aliases for parameters in a structure:
