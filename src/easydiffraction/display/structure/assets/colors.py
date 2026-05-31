@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Per-element colours, axis colours, and theme-dependent canvas colours."""
+"""
+Per-element colours, axis colours, and theme-dependent canvas colours.
+"""
 
 from __future__ import annotations
 
@@ -26,8 +28,8 @@ def color_for(element: str, scheme: str) -> Rgb:
     """
     Return the RGB colour for an element under a colour scheme.
 
-    Falls back to the element's Jmol colour when the scheme has no entry,
-    and to :data:`DEFAULT_COLOR` when the element is unknown.
+    Falls back to the element's Jmol colour when the scheme has no
+    entry, and to :data:`DEFAULT_COLOR` when the element is unknown.
 
     Parameters
     ----------
@@ -38,7 +40,7 @@ def color_for(element: str, scheme: str) -> Rgb:
 
     Returns
     -------
-    tuple[int, int, int]
+    Rgb
         RGB triple in the 0-255 range.
     """
     entry = ELEMENT_COLORS.get(element)
@@ -61,7 +63,7 @@ def theme_colors(dark: bool) -> dict[str, Rgb]:
 
     Returns
     -------
-    dict[str, tuple[int, int, int]]
+    dict[str, Rgb]
         Mapping with ``'background'`` and ``'foreground'`` colours.
     """
     return DARK_THEME if dark else LIGHT_THEME

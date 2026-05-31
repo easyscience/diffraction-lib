@@ -481,25 +481,28 @@ class ProjectDisplay:
         Show a 3D structure view for one structure.
 
         Parallels :meth:`pattern`: it draws with the active
-        ``project.rendering_structure`` engine and displays directly (no return value).
-        Feature visibility is resolved per ADR section 8; the renderer
-        announces and skips any feature it cannot draw.
+        ``project.rendering_structure`` engine and displays directly (no
+        return value). Feature visibility is resolved per ADR section 8;
+        the renderer announces and skips any feature it cannot draw.
 
         Parameters
         ----------
         struct_name : str
             Name of the structure to draw.
-        include : str | tuple[str, ...]
-            ``'auto'`` (default) resolves features from data availability,
-            persisted ``project.rendering_structure`` flags, then built-in defaults; an
-            explicit tuple of ``atoms``/``bonds``/``cell``/``axes``/
+        include : str | tuple[str, ...], default='auto'
+            ``'auto'`` (default) resolves features from data
+            availability, persisted ``project.rendering_structure``
+            flags, then built-in defaults; an explicit tuple of
+            ``atoms``/``bonds``/``cell``/``axes``/
             ``moments``/``labels`` wins outright.
-        range : tuple | None
-            Optional per-axis ``((min, max), ...)`` window overriding the
-            persisted ``project.rendering_structure`` range for this call only.
-        path : str | None
+        range : tuple[tuple[float, float], tuple[float, float], tuple[float, float]] | None, default=None
+            Optional per-axis ``((min, max), ...)`` window overriding
+            the persisted ``project.rendering_structure`` range for this
+            call only.
+        path : str | None, default=None
             When given, write the rendered view to this path instead of
-            displaying it (a standalone HTML file for the Three.js engine).
+            displaying it (a standalone HTML file for the Three.js
+            engine).
         """
         from easydiffraction.display.structure.builder import build_scene  # noqa: PLC0415
         from easydiffraction.display.structure.builder import (  # noqa: PLC0415
@@ -526,7 +529,9 @@ class ProjectDisplay:
         self._emit_structure_output(output)
 
     def show_structure_options(self, struct_name: str) -> None:
-        """Show available ``structure(include=...)`` options with reasons."""
+        """
+        Show available ``structure(include=...)`` options with reasons.
+        """
         from easydiffraction.display.structure.builder import (  # noqa: PLC0415
             structure_feature_availability,
         )
@@ -562,7 +567,9 @@ class ProjectDisplay:
         include: str | tuple[str, ...],
         availability: object,
     ) -> frozenset[str]:
-        """Resolve the concrete feature set per ADR section 8 precedence."""
+        """
+        Resolve the concrete feature set per ADR section 8 precedence.
+        """
         normalized = self._normalize_structure_include(include)
         if normalized != ('auto',):
             return frozenset(normalized)

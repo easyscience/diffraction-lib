@@ -1,6 +1,9 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Bundled per-element radii and colour palettes (generated; see LICENSES.md)."""
+"""
+Bundled per-element radii and colour palettes (generated; see
+LICENSES.md).
+"""
 
 from __future__ import annotations
 

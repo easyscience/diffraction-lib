@@ -30,7 +30,9 @@ def _tint(rgb: Rgb, text: str) -> str:
 
 
 def _collect_atoms(scene: StructureScene):
-    """Flatten every drawable atom to (centre, radius, colour, label)."""
+    """
+    Flatten every drawable atom to (centre, radius, colour, label).
+    """
     atoms = [(a.centre, a.radius, a.colour, a.label) for a in scene.atoms]
     atoms += [(s.centre, s.radius, s.wedges[0].colour, s.label) for s in scene.occupancy_spheres]
     atoms += [(e.centre, float(np.mean(e.semi_axes)) or 0.4, e.colour, e.label)
@@ -48,7 +50,9 @@ class AsciiStructureRenderer(StructureRendererBase):
         return self.SUPPORTED
 
     def render(self, scene: StructureScene, *, features: frozenset[str]) -> str:
-        """Render a schematic ASCII view and announce 3D-only features."""
+        """
+        Render a schematic ASCII view and announce 3D-only features.
+        """
         atoms = _collect_atoms(scene)
         basis = np.array(scene.cell_basis, dtype=float)
         # Match the 3D default orientation (by axis length): longest axis
@@ -161,8 +165,10 @@ def _grid_to_lines(grid):
 
 
 def _annotate_axes(lines, left_col, bottom_row, v_letter, h_letter):
-    """Stack the vertical-axis label above the cell and place the horizontal
-    label at the right end of the bottom border (ANSI-safe: no slicing).
+    """
+    Stack the vertical-axis label above the cell and place the
+    horizontal label at the right end of the bottom border (ANSI-safe:
+    no slicing).
     """
     indent = ' ' * left_col
     header = ['', f'{indent}{v_letter}', f'{indent}↑']  # blank line, letter, arrow

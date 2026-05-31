@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Project structure_view category (durable content + region view state)."""
+"""
+Project structure_view category (durable content + region view state).
+"""
 
 from __future__ import annotations
 
@@ -137,7 +139,9 @@ class StructureView(CategoryItem):
         self._set_bound(self._range_c_max, value, lower=self._range_c_min.value, upper=float('inf'))
 
     def view_range(self) -> tuple[tuple[float, float], tuple[float, float], tuple[float, float]]:
-        """Assemble the per-axis ``((min, max), ...)`` fractional window."""
+        """
+        Assemble the per-axis ``((min, max), ...)`` fractional window.
+        """
         return (
             (self._range_a_min.value, self._range_a_max.value),
             (self._range_b_min.value, self._range_b_max.value),

@@ -52,10 +52,11 @@ class OccupancyWedgeSphere:
 
 @dataclass(frozen=True, slots=True)
 class AdpEllipsoid:
-    """An anisotropic ADP probability ellipsoid for one atom.
+    """
+    An anisotropic ADP probability ellipsoid for one atom.
 
-    ``wedges`` splits a shared site into relative-proportion colour wedges
-    (empty for a single atom, which uses ``colour``).
+    ``wedges`` splits a shared site into relative-proportion colour
+    wedges (empty for a single atom, which uses ``colour``).
     """
 
     centre: Vec3
@@ -130,7 +131,9 @@ class TextLabel:
 
 @dataclass(frozen=True, slots=True)
 class LegendEntry:
-    """One element's colour swatch and symbol for the structure legend."""
+    """
+    One element's colour swatch and symbol for the structure legend.
+    """
 
     symbol: str
     colour: Rgb

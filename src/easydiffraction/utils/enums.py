@@ -30,7 +30,9 @@ class VerbosityEnum(StrEnum):
         return cls.FULL
 
     def description(self) -> str:
-        """Return a human-readable description of this verbosity level."""
+        """
+        Return a human-readable description of this verbosity level.
+        """
         if self is VerbosityEnum.FULL:
             return 'Multi-line output with headers, tables, and details.'
         if self is VerbosityEnum.SHORT:

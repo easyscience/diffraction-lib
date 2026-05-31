@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Three.js renderer: an interactive, self-contained HTML structure view."""
+"""
+Three.js renderer: an interactive, self-contained HTML structure view.
+"""
 
 from __future__ import annotations
 
@@ -123,7 +125,9 @@ def _rgb_css(rgb: tuple[int, int, int]) -> str:
 
 
 class ThreeJsStructureRenderer(StructureRendererBase):
-    """Interactive Three.js renderer for notebook and standalone HTML."""
+    """
+    Interactive Three.js renderer for notebook and standalone HTML.
+    """
 
     SUPPORTED = frozenset({'atoms', 'bonds', 'cell', 'axes', 'moments', 'labels'})
 
@@ -147,15 +151,16 @@ class ThreeJsStructureRenderer(StructureRendererBase):
         scene : StructureScene
             The renderer-neutral primitives to draw.
         features : frozenset[str]
-            The content-resolved feature set; drives the modebar's initial
-            visibility toggles.
-        offline : bool
-            When ``True`` (default), inline the pinned Three.js assets so
-            the view renders with no network; when ``False`` link the CDN.
-        dark : bool | None
+            The content-resolved feature set; drives the modebar's
+            initial visibility toggles.
+        offline : bool, default=True
+            When ``True`` (default), inline the pinned Three.js assets
+            so the view renders with no network; when ``False`` link the
+            CDN.
+        dark : bool | None, default=None
             Force the dark (``True``) or light (``False``) theme. When
-            ``None`` (default), auto-detect from the environment. Reports
-            pass ``False`` so the view matches their light page.
+            ``None`` (default), auto-detect from the environment.
+            Reports pass ``False`` so the view matches their light page.
 
         Returns
         -------

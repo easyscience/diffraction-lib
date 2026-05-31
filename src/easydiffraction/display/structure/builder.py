@@ -52,7 +52,9 @@ ALL_FEATURES = ('atoms', 'bonds', 'cell', 'axes', 'moments', 'labels')
 
 @dataclass(frozen=True)
 class FeatureAvailability:
-    """What a structure's data supports, for 'auto' resolution + options."""
+    """
+    What a structure's data supports, for 'auto' resolution + options.
+    """
 
     available: frozenset[str]
     radius_substitutions: tuple[str, ...]
@@ -60,7 +62,9 @@ class FeatureAvailability:
 
 @dataclass(frozen=True)
 class _SceneAtom:
-    """An emitted atom primitive plus data needed for bonds and labels."""
+    """
+    An emitted atom primitive plus data needed for bonds and labels.
+    """
 
     primitive: object
     centre: np.ndarray
@@ -110,10 +114,13 @@ def _pos_key(pos: np.ndarray) -> tuple[int, int, int]:
 
 
 def _expand_positions(sites, ops, view_range):
-    """Generate (row_index, fractional position, rotation) for each in-range copy.
+    """
+    Generate (row_index, fractional position, rotation) for each
+    in-range copy.
 
-    The symmetry rotation is kept so an anisotropic ADP tensor can be rotated
-    onto each equivalent site (otherwise every copy reuses one orientation).
+    The symmetry rotation is kept so an anisotropic ADP tensor can be
+    rotated onto each equivalent site (otherwise every copy reuses one
+    orientation).
     """
     generated = []
     identity = np.eye(3)
@@ -129,7 +136,9 @@ def _expand_positions(sites, ops, view_range):
 
 
 def _group_by_position(generated):
-    """Dedup scene atoms (row + position) and cluster coincident positions."""
+    """
+    Dedup scene atoms (row + position) and cluster coincident positions.
+    """
     seen: dict = {}
     for idx, pos, rot, is_au in generated:
         seen.setdefault((idx, _pos_key(pos)), (idx, pos, rot, is_au))
@@ -140,11 +149,12 @@ def _group_by_position(generated):
 
 
 def _cartesian_u(atom, aniso, matrix: np.ndarray, cell, rot: np.ndarray) -> np.ndarray:
-    """Cartesian U tensor for an anisotropic atom (CIF U^ij convention).
+    """
+    Cartesian U tensor for an anisotropic atom (CIF U^ij convention).
 
-    ``rot`` is the fractional symmetry rotation that placed this copy; the
-    tensor is rotated onto the copy in Cartesian space so each equivalent
-    site shows the correctly oriented ellipsoid.
+    ``rot`` is the fractional symmetry rotation that placed this copy;
+    the tensor is rotated onto the copy in Cartesian space so each
+    equivalent site shows the correctly oriented ellipsoid.
     """
     comps = np.array([
         [aniso.adp_11.value, aniso.adp_12.value, aniso.adp_13.value],
@@ -160,16 +170,20 @@ def _cartesian_u(atom, aniso, matrix: np.ndarray, cell, rot: np.ndarray) -> np.n
 
 
 def _display_radius(model_radius: float, style) -> float:
-    """Square-root-compressed ball radius (narrows the heavy/light spread)."""
+    """
+    Square-root-compressed ball radius (narrows the heavy/light spread).
+    """
     return style.atom_scale.value * float(np.sqrt(model_radius))
 
 
 def _atom_shape(atom, *, style, matrix, cell, aniso_collection, rot):
-    """Return an atom's ADP-driven shape and the radius-substitution flag.
+    """
+    Return an atom's ADP-driven shape and the radius-substitution flag.
 
-    The shape is ``('ellipsoid', semi_axes, orientation)`` for an anisotropic
-    atom in the ADP view, otherwise ``('sphere', radius)``. ``rot`` is the
-    symmetry rotation placing this copy (identity for the reference atom).
+    The shape is ``('ellipsoid', semi_axes, orientation)`` for an
+    anisotropic atom in the ADP view, otherwise ``('sphere', radius)``.
+    ``rot`` is the symmetry rotation placing this copy (identity for the
+    reference atom).
     """
     element = _element_symbol(atom.type_symbol.value)
     view = AtomViewEnum(style.atom_view.value)
@@ -212,8 +226,10 @@ def _atom_primitive(atom, centre, *, style, matrix, cell, aniso_collection, rot,
 
 
 def _wedge_atom(rows, centre, *, style, matrix, cell, aniso_collection, asymmetric):
-    """Build a shared-site primitive: the major atom's ADP shape split into
-    relative-proportion colour wedges (absolute occupancy ignored)."""
+    """
+    Build a shared-site primitive: the major atom's ADP shape split into
+    relative-proportion colour wedges (absolute occupancy ignored).
+    """
     total = sum(occ for _, occ, _, _, _, _ in rows) or 1.0
     wedges = tuple(OccupancyWedge(occ / total, colour) for _, occ, _, colour, _, _ in rows)
     major_atom, _occ, major_element, major_colour, _radius, major_rot = max(rows, key=lambda r: r[1])
@@ -231,7 +247,9 @@ def _wedge_atom(rows, centre, *, style, matrix, cell, aniso_collection, asymmetr
 
 
 def _build_atoms(sites, clusters, *, style, matrix, cell, aniso_collection):
-    """Return the scene atoms (one per position cluster) and substitutions."""
+    """
+    Return the scene atoms (one per position cluster) and substitutions.
+    """
     scene_atoms = []
     substitutions: set = set()
     radius_model = AtomViewEnum(style.atom_view.value).radius_model()
@@ -266,7 +284,9 @@ def _build_atoms(sites, clusters, *, style, matrix, cell, aniso_collection):
 
 
 def _build_bonds(scene_atoms, geom_min: float, geom_incr: float):
-    """Detect bonds via the cif_core _geom rule, pruned to the first shell."""
+    """
+    Detect bonds via the cif_core _geom rule, pruned to the first shell.
+    """
     bonds = []
     count = len(scene_atoms)
     if count < 2:
@@ -314,7 +334,9 @@ def _axis_triad(matrix: np.ndarray) -> AxisTriad:
 
 
 def _legend(sites, style) -> tuple[LegendEntry, ...]:
-    """Return one colour swatch per distinct element, in first-seen order."""
+    """
+    Return one colour swatch per distinct element, in first-seen order.
+    """
     entries: dict[str, tuple[int, int, int]] = {}
     for atom in sites:
         element = _element_symbol(atom.type_symbol.value)
@@ -325,7 +347,8 @@ def _legend(sites, style) -> tuple[LegendEntry, ...]:
 
 def build_scene(structure, *, style, view_range, features) -> StructureScene:
     """
-    Build a renderer-neutral scene from a structure and resolved features.
+    Build a renderer-neutral scene from a structure and resolved
+    features.
 
     Parameters
     ----------
@@ -336,10 +359,12 @@ def build_scene(structure, *, style, view_range, features) -> StructureScene:
         The ``project.structure_style`` category (atom view, colour
         scheme, ADP probability, atom scale).
     view_range : tuple
-        Per-axis ``((min, max), (min, max), (min, max))`` fractional range.
+        Per-axis ``((min, max), (min, max), (min, max))`` fractional
+        range.
     features : frozenset[str]
-        The already-resolved set of primitives to emit (never ``'auto'``);
-        the builder never re-implements visibility precedence.
+        The already-resolved set of primitives to emit (never
+        ``'auto'``); the builder never re-implements visibility
+        precedence.
 
     Returns
     -------
@@ -386,7 +411,8 @@ def build_scene(structure, *, style, view_range, features) -> StructureScene:
 
 def structure_feature_availability(structure, *, style) -> FeatureAvailability:
     """
-    Report which features a structure supports, without building a scene.
+    Report which features a structure supports, without building a
+    scene.
 
     Used by the display facade for ``include='auto'`` resolution and by
     ``show_structure_options()``; the builder is the only reader of the
@@ -397,14 +423,14 @@ def structure_feature_availability(structure, *, style) -> FeatureAvailability:
     structure : object
         A structure datablock.
     style : object
-        The ``project.structure_style`` category (its atom view drives the
-        covalent-substitution report).
+        The ``project.structure_style`` category (its atom view drives
+        the covalent-substitution report).
 
     Returns
     -------
     FeatureAvailability
-        Available feature names and the elements whose radius fell back to
-        covalent under the selected model.
+        Available feature names and the elements whose radius fell back
+        to covalent under the selected model.
     """
     sites = list(structure.atom_sites)
     available = {'cell', 'axes'}

@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Per-structure bond-generation cutoffs (standard cif_core ``_geom``)."""
+"""
+Per-structure bond-generation cutoffs (standard cif_core ``_geom``).
+"""
 
 from __future__ import annotations
 

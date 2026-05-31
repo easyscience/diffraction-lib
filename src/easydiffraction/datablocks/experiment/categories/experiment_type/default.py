@@ -117,8 +117,8 @@ class ExperimentType(CategoryItem):
         """
         Powder diffraction or single crystal diffraction.
 
-        Reading this property returns the underlying
-        ``EnumDescriptor`` object.
+        Reading this property returns the underlying ``EnumDescriptor``
+        object.
         """
         return self._sample_form
 
@@ -127,8 +127,8 @@ class ExperimentType(CategoryItem):
         """
         Constant wavelength (CW) or time-of-flight (TOF) measurement.
 
-        Reading this property returns the underlying
-        ``EnumDescriptor`` object.
+        Reading this property returns the underlying ``EnumDescriptor``
+        object.
         """
         return self._beam_mode
 
@@ -137,8 +137,8 @@ class ExperimentType(CategoryItem):
         """
         Neutron or X-ray diffraction measurement.
 
-        Reading this property returns the underlying
-        ``EnumDescriptor`` object.
+        Reading this property returns the underlying ``EnumDescriptor``
+        object.
         """
         return self._radiation_probe
 
@@ -147,7 +147,7 @@ class ExperimentType(CategoryItem):
         """
         Conventional Bragg diffraction or total scattering (PDF).
 
-        Reading this property returns the underlying
-        ``EnumDescriptor`` object.
+        Reading this property returns the underlying ``EnumDescriptor``
+        object.
         """
         return self._scattering_type

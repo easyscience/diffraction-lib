@@ -648,11 +648,13 @@ class StringDescriptor(GenericStringDescriptor):
 
 
 class EnumDescriptor(StringDescriptor):
-    """String descriptor bound to a closed ``(str, Enum)`` value set.
+    """
+    String descriptor bound to a closed ``(str, Enum)`` value set.
 
     Derives validation and the default from ``enum`` and exposes
     ``show_supported()`` listing the members with the active one marked,
-    matching the switchable-category table (value-selector-discovery ADR).
+    matching the switchable-category table (value-selector-discovery
+    ADR).
     """
 
     def __init__(
@@ -673,13 +675,15 @@ class EnumDescriptor(StringDescriptor):
         name : str
             Local name of the descriptor within its category.
         enum : type[StrEnum]
-            The ``(str, Enum)`` class whose members are the allowed values.
+            The ``(str, Enum)`` class whose members are the allowed
+            values.
         cif_handler : CifHandler
             Object that tracks CIF identifiers.
         description : str | None, default=None
             Optional human-readable description.
         default : str | None, default=None
-            Default value; falls back to ``enum.default()`` when omitted.
+            Default value; falls back to ``enum.default()`` when
+            omitted.
         display_handler : DisplayHandler | None, default=None
             Optional labels and units for display contexts.
         """

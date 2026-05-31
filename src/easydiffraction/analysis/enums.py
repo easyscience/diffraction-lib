@@ -42,7 +42,9 @@ class FitResultKindEnum(StrEnum):
         return cls.DETERMINISTIC
 
     def description(self) -> str:
-        """Return a human-readable description of this fit-result kind."""
+        """
+        Return a human-readable description of this fit-result kind.
+        """
         if self is FitResultKindEnum.DETERMINISTIC:
             return 'Least-squares (point-estimate) fit result.'
         if self is FitResultKindEnum.BAYESIAN:
@@ -62,7 +64,9 @@ class FitCorrelationSourceEnum(StrEnum):
         return cls.DETERMINISTIC
 
     def description(self) -> str:
-        """Return a human-readable description of this correlation source."""
+        """
+        Return a human-readable description of this correlation source.
+        """
         if self is FitCorrelationSourceEnum.DETERMINISTIC:
             return 'Correlations from the least-squares covariance matrix.'
         if self is FitCorrelationSourceEnum.POSTERIOR:

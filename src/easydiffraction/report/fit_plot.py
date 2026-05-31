@@ -164,11 +164,12 @@ def fit_scatter_geometry() -> dict[str, float]:
 
 
 def fit_scatter_ranges(fit_data: dict[str, Any]) -> dict[str, float]:
-    """Return the shared x/y range, tick step, and y=x diagonal span.
+    """
+    Return the shared x/y range, tick step, and y=x diagonal span.
 
     The x and y axes share one range (computed across the calculated
-    values and the measured values widened by their uncertainties) so the
-    diagonal is a true y=x line and the ticks can match.
+    values and the measured values widened by their uncertainties) so
+    the diagonal is a true y=x line and the ticks can match.
     """
     x_values = _numeric_values(fit_data['x']['values'])
     meas = fit_data['series']['meas']

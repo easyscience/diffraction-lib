@@ -678,7 +678,8 @@ def orthogonalization_matrix(
     Returns
     -------
     np.ndarray
-        The ``(3, 3)`` matrix ``M`` with ``r_cartesian = M @ r_fractional``.
+        The ``(3, 3)`` matrix ``M`` with ``r_cartesian = M @
+        r_fractional``.
     """
     al, be, ga = np.radians([alpha, beta, gamma])
     cos_al, cos_be, cos_ga = np.cos([al, be, ga])
@@ -705,7 +706,7 @@ def fractional_to_cartesian(frac: object, matrix: np.ndarray) -> np.ndarray:
 
     Parameters
     ----------
-    frac : array-like
+    frac : object
         A single ``(3,)`` fractional vector or an ``(n, 3)`` stack.
     matrix : np.ndarray
         The ``(3, 3)`` orthogonalization matrix from
@@ -738,8 +739,9 @@ def adp_principal_axes(tensor: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     Returns
     -------
     tuple[np.ndarray, np.ndarray]
-        semi_axes : ``(3,)`` RMS principal semi-axis lengths. orientation
-        : ``(3, 3)`` matrix whose columns are the principal directions.
+        semi_axes : ``(3,)`` RMS principal semi-axis lengths.
+        orientation : ``(3, 3)`` matrix whose columns are the principal
+        directions.
     """
     eigenvalues, eigenvectors = np.linalg.eigh(np.asarray(tensor, dtype=float))
     semi_axes = np.sqrt(np.clip(eigenvalues, 0.0, None))
@@ -755,14 +757,14 @@ def symmetry_operators(
 
     Thin public wrapper over the general-position lookup, resolving the
     International Tables number from the Hermann-Mauguin symbol. Falls
-    back to the identity operator (so the asymmetric unit is still drawn)
-    when the space group cannot be resolved.
+    back to the identity operator (so the asymmetric unit is still
+    drawn) when the space group cannot be resolved.
 
     Parameters
     ----------
     name_hm : str
         Hermann-Mauguin symbol of the space group.
-    coord_code : str | None
+    coord_code : str | None, default=None
         IT coordinate system code, when one applies.
 
     Returns

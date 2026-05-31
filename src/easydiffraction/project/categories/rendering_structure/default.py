@@ -1,6 +1,9 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Project structure-rendering_structure category (switchable renderer engine)."""
+"""
+Project structure-rendering_structure category (switchable renderer
+engine).
+"""
 
 from __future__ import annotations
 
@@ -83,7 +86,10 @@ class RenderingStructure(CategoryItem, SwitchableCategoryBase):
         return self._viewer
 
     def from_cif(self, block: object, idx: int = 0) -> None:
-        """Populate this rendering_structure category from a CIF block, rebinding engine."""
+        """
+        Populate this rendering_structure category from a CIF block,
+        rebinding engine.
+        """
         super().from_cif(block, idx)
         view_type = read_cif_str(block, '_rendering_structure.type')
         if view_type is not None:
@@ -91,5 +97,7 @@ class RenderingStructure(CategoryItem, SwitchableCategoryBase):
 
     @property
     def as_cif(self) -> str:
-        """Return CIF representation of this rendering_structure category."""
+        """
+        Return CIF representation of this rendering_structure category.
+        """
         return super().as_cif

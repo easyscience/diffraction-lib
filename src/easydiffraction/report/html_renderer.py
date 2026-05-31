@@ -197,7 +197,9 @@ def _structure_figure_html_context(
     *,
     offline: bool,
 ) -> dict[str, str]:
-    """Return interactive structure-view HTML snippets by structure name."""
+    """
+    Return interactive structure-view HTML snippets by structure name.
+    """
     from easydiffraction.display.structure.builder import build_scene  # noqa: PLC0415
     from easydiffraction.display.structure.builder import (  # noqa: PLC0415
         structure_feature_availability,

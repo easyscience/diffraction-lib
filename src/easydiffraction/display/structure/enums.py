@@ -32,7 +32,8 @@ class ViewerEngineEnum(StrEnum):
 
 
 class AtomViewEnum(StrEnum):
-    """How atoms are sized and shaped in the structure view.
+    """
+    How atoms are sized and shaped in the structure view.
 
     The radius models draw fixed balls; ``adp`` draws displacement
     surfaces (spheres for isotropic sites, ellipsoids for anisotropic).
@@ -50,15 +51,19 @@ class AtomViewEnum(StrEnum):
 
     @property
     def is_adp(self) -> bool:
-        """Return whether atoms are drawn as displacement surfaces, not balls."""
+        """
+        Return whether atoms are drawn as displacement surfaces, not
+        balls.
+        """
         return self is AtomViewEnum.ADP
 
     def radius_model(self) -> str:
-        """Return the radius-table name for ball sizing.
+        """
+        Return the radius-table name for ball sizing.
 
-        The ``adp`` view still needs ball radii for mixed-occupancy sites
-        and as a fallback for zero-displacement atoms, where it uses
-        covalent radii.
+        The ``adp`` view still needs ball radii for mixed-occupancy
+        sites and as a fallback for zero-displacement atoms, where it
+        uses covalent radii.
         """
         if self is AtomViewEnum.ADP:
             return AtomViewEnum.COVALENT.value

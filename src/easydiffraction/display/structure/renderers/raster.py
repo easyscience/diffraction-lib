@@ -1,11 +1,13 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Raster renderer: a z-buffered PNG structure image for reports.
+"""
+Raster renderer: a z-buffered PNG structure image for reports.
 
-A tiny software rasteriser with a per-pixel depth buffer, so hidden-surface
-removal is exact for any structure. Spheres, bonds, cell edges, and axis
-arrows are all depth-tested against the same numpy buffer; Pillow then draws
-the a/b/c axis labels and the element legend on top and encodes the PNG.
+A tiny software rasteriser with a per-pixel depth buffer, so
+hidden-surface removal is exact for any structure. Spheres, bonds, cell
+edges, and axis arrows are all depth-tested against the same numpy
+buffer; Pillow then draws the a/b/c axis labels and the element legend
+on top and encodes the PNG.
 """
 
 from __future__ import annotations
@@ -50,12 +52,14 @@ def _unit(vector: np.ndarray) -> np.ndarray:
 
 
 def _view_basis(scene) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """Return (view_dir, right, up) for the default view.
+    """
+    Return (view_dir, right, up) for the default view.
 
-    Mirrors the Three.js default camera (by axis length): the longest axis is
-    horizontal, the 2nd-longest points up, the shortest goes into depth, and the
-    scene is viewed along ``0.37 longest + 0.24 middle + 0.90 shortest`` — so the
-    PDF figure and the interactive view orient identically.
+    Mirrors the Three.js default camera (by axis length): the longest
+    axis is horizontal, the 2nd-longest points up, the shortest goes
+    into depth, and the scene is viewed along ``0.37 longest + 0.24
+    middle + 0.90 shortest`` — so the PDF figure and the interactive
+    view orient identically.
     """
     if scene.axes is not None:
         vectors = [np.asarray(ax.vector, dtype=float) for ax in scene.axes.axes]
@@ -73,14 +77,18 @@ def _view_basis(scene) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
 
 
 def _diffuse_intensity(normal: np.ndarray) -> np.ndarray:
-    """Lambertian key-plus-fill intensity for a unit surface-normal field."""
+    """
+    Lambertian key-plus-fill intensity for a unit surface-normal field.
+    """
     key = np.clip(normal @ _LIGHT, 0.0, 1.0)
     fill = 0.4 * np.clip(normal @ _FILL, 0.0, 1.0)
     return np.clip(_AMBIENT + (1.0 - _AMBIENT) * (key + fill), 0.0, 1.0)
 
 
 def _specular(normal: np.ndarray) -> np.ndarray:
-    """Blinn-Phong specular highlight for a unit surface-normal field."""
+    """
+    Blinn-Phong specular highlight for a unit surface-normal field.
+    """
     return _SPEC_STRENGTH * np.clip(normal @ _HALF, 0.0, 1.0) ** _SHININESS
 
 
@@ -122,7 +130,10 @@ class RasterStructureRenderer:
     SUPPORTED = frozenset({'atoms', 'bonds', 'cell', 'axes'})
 
     def render_png(self, scene, *, features: frozenset[str]) -> bytes:
-        """Return PNG bytes of the scene rendered with a per-pixel z-buffer."""
+        """
+        Return PNG bytes of the scene rendered with a per-pixel
+        z-buffer.
+        """
         view_dir, right, up = _view_basis(scene)
         points = _scene_points(scene)
         target = points.mean(axis=0)
@@ -176,7 +187,10 @@ class RasterStructureRenderer:
 
     @staticmethod
     def _compose_png(rgb, scene, project, features) -> bytes:
-        """Draw axis labels and the legend with Pillow, then encode the PNG."""
+        """
+        Draw axis labels and the legend with Pillow, then encode the
+        PNG.
+        """
         from PIL import Image  # noqa: PLC0415
         from PIL import ImageDraw  # noqa: PLC0415
 
@@ -192,7 +206,9 @@ class RasterStructureRenderer:
 
     @staticmethod
     def _draw_axis_labels(draw, axes, project) -> None:
-        """Place each axis letter just beyond its arrow tip, always on top."""
+        """
+        Place each axis letter just beyond its arrow tip, always on top.
+        """
         font = _font(int(_CANVAS * _LABEL_FRAC))
         inset = int(_CANVAS * 0.02)
         origin = np.asarray(axes.origin, dtype=float)
@@ -206,7 +222,9 @@ class RasterStructureRenderer:
 
     @staticmethod
     def _draw_legend(draw, legend) -> None:
-        """Draw element colour swatches and symbols in a top-left panel."""
+        """
+        Draw element colour swatches and symbols in a top-left panel.
+        """
         font = _font(int(_CANVAS * _LEGEND_FRAC))
         margin = int(_CANVAS * 0.025)
         pad = int(_CANVAS * 0.014)
@@ -266,7 +284,10 @@ class RasterStructureRenderer:
 
     @staticmethod
     def _base_colours(dx, dy, base, wedges) -> np.ndarray:
-        """Per-pixel base colour: a flat tint, or azimuthal occupancy wedges."""
+        """
+        Per-pixel base colour: a flat tint, or azimuthal occupancy
+        wedges.
+        """
         if not wedges:
             flat = np.asarray(base, dtype=np.float32) / 255.0
             return np.broadcast_to(flat, dx.shape + (3,))
@@ -284,7 +305,10 @@ class RasterStructureRenderer:
 
     @staticmethod
     def _ellipsoid(colour, depth, project, scale, basis, ell) -> None:
-        """Z-tested, shaded oriented ADP ellipsoid (exact ray cast per pixel)."""
+        """
+        Z-tested, shaded oriented ADP ellipsoid (exact ray cast per
+        pixel).
+        """
         right, up, view_dir = basis
         centre = np.asarray(ell.centre, dtype=float)
         semi = np.maximum(np.asarray(ell.semi_axes, dtype=float), 1e-9)
@@ -379,7 +403,10 @@ class RasterStructureRenderer:
 
     @staticmethod
     def _triangle(colour, depth, v0, v1, v2, shade) -> None:
-        """Z-test and fill one flat-shaded triangle from projected vertices."""
+        """
+        Z-test and fill one flat-shaded triangle from projected
+        vertices.
+        """
         size = colour.shape[0]
         (x0, y0, d0), (x1, y1, d1), (x2, y2, d2) = v0, v1, v2
         min_x = max(0, int(min(x0, x1, x2)))
@@ -407,11 +434,14 @@ class RasterStructureRenderer:
         colour[min_y:max_y, min_x:max_x][update] = shade
 
     def _arrow(self, colour, depth, project, basis, origin, vector, extent, rgb) -> None:
-        """Draw a shaft cylinder and head cone as 3D triangles (orientation-safe).
+        """
+        Draw a shaft cylinder and head cone as 3D triangles
+        (orientation-safe).
 
-        Thickness and head size are fractions of ``extent`` (the fit extent), so
-        the arrow is a constant on-screen size in every cell. ``vector`` already
-        runs to the arrow tip (cell edge plus overhang).
+        Thickness and head size are fractions of ``extent`` (the fit
+        extent), so the arrow is a constant on-screen size in every
+        cell. ``vector`` already runs to the arrow tip (cell edge plus
+        overhang).
         """
         right, up, view_dir = basis
         length = float(np.linalg.norm(vector))

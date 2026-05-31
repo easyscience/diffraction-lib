@@ -23,8 +23,9 @@ class StructureRendererBase(ABC):
         scene : StructureScene
             The renderer-neutral primitives to draw.
         features : frozenset[str]
-            The content-resolved feature set from the facade. The renderer
-            draws the features it supports and announces + skips the rest.
+            The content-resolved feature set from the facade. The
+            renderer draws the features it supports and announces +
+            skips the rest.
 
         Returns
         -------

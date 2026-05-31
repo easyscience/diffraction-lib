@@ -104,9 +104,8 @@ class BeckerCoppensExtinction(ExtinctionBase):
         """
         Mosaicity distribution model (``'gauss'`` or ``'lorentz'``).
 
-        Reading this property returns the underlying
-        ``EnumDescriptor`` object. Assigning to it updates the
-        descriptor value.
+        Reading this property returns the underlying ``EnumDescriptor``
+        object. Assigning to it updates the descriptor value.
         """
         return self._model
 

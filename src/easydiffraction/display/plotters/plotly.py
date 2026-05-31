@@ -98,10 +98,11 @@ def single_crystal_axis_range(
     y_meas: object,
     y_meas_su: object,
 ) -> tuple[float, float]:
-    """Return one shared (min, max) range for a single-crystal scatter.
+    """
+    Return one shared (min, max) range for a single-crystal scatter.
 
-    The range spans the calculated values and the measured values widened
-    by their standard uncertainties, then pads both ends by
+    The range spans the calculated values and the measured values
+    widened by their standard uncertainties, then pads both ends by
     ``MAIN_INTENSITY_RANGE_MARGIN_FRACTION``. Applying the same range to
     both axes keeps the y=x diagonal meaningful.
 
@@ -145,12 +146,13 @@ def single_crystal_tick_step(
     maximum: float,
     target_ticks: int = 6,
 ) -> float:
-    """Return a 'nice' tick step covering ``[minimum, maximum]``.
+    """
+    Return a 'nice' tick step covering ``[minimum, maximum]``.
 
     The raw step ``span / target_ticks`` is rounded to the nearest 1/2/5
     multiple of a power of ten (the classic axis-label rounding), so the
-    ticks read as round numbers and the same step gives identical x and y
-    ticks over a shared range. Combined with a tick origin of 0 this
+    ticks read as round numbers and the same step gives identical x and
+    y ticks over a shared range. Combined with a tick origin of 0 this
     reproduces Plotly's own choice (e.g. a 500 step, not 750).
 
     Parameters
@@ -683,9 +685,10 @@ class PlotlyPlotter(PlotterBase):
         """
         Create a y=x reference line in data coordinates.
 
-        The line runs from ``(minimum, minimum)`` to ``(maximum, maximum)``
-        in axis (data) coordinates, so it tracks y=x regardless of the
-        axis aspect ratio rather than the paper-rectangle diagonal.
+        The line runs from ``(minimum, minimum)`` to ``(maximum,
+        maximum)`` in axis (data) coordinates, so it tracks y=x
+        regardless of the axis aspect ratio rather than the
+        paper-rectangle diagonal.
 
         Parameters
         ----------

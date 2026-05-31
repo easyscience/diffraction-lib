@@ -417,9 +417,8 @@ class AtomSite(CategoryItem):
         """
         ADP type used (e.g., Biso, Uiso, Uani, Bani).
 
-        Reading this property returns the underlying
-        ``EnumDescriptor`` object. Assigning to it updates the
-        parameter value.
+        Reading this property returns the underlying ``EnumDescriptor``
+        object. Assigning to it updates the parameter value.
         """
         return self._adp_type
 

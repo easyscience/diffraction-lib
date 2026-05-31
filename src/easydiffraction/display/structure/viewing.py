@@ -60,7 +60,8 @@ class Viewer(RendererBase):
         Returns
         -------
         str
-            ASCII text or an HTML document, depending on the active engine.
+            ASCII text or an HTML document, depending on the active
+            engine.
         """
         return self._backend.render(scene, features=features)
 

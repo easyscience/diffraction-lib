@@ -15,8 +15,8 @@ def radius_for(element: str, model: str) -> tuple[float, bool]:
     Return a sphere radius for an element under a radius model.
 
     Falls back to the element's covalent radius when the selected model
-    has no value for it, and to :data:`DEFAULT_RADIUS` when the element is
-    unknown.
+    has no value for it, and to :data:`DEFAULT_RADIUS` when the element
+    is unknown.
 
     Parameters
     ----------
@@ -28,9 +28,9 @@ def radius_for(element: str, model: str) -> tuple[float, bool]:
     Returns
     -------
     tuple[float, bool]
-        The radius (angstrom) and a ``substituted`` flag that is ``True``
-        when the requested model's value was unavailable and a fallback
-        was used.
+        The radius (angstrom) and a ``substituted`` flag that is
+        ``True`` when the requested model's value was unavailable and a
+        fallback was used.
     """
     entry = ELEMENT_RADII.get(element)
     if entry is None:
