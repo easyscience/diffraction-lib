@@ -16,17 +16,19 @@ saved in:
 project.cif
 ```
 
-Inside that file, generic category names such as `_info.*`,
-`_rendering_plot.*`, `_rendering_table.*`, and `_verbosity.*` are less
-ambiguous than they would be in a single monolithic CIF file. This opens
-the option of a strict one-to-one correspondence for project-owned
-singleton categories:
+Inside that file, project-owned category names such as
+`_rendering_plot.*`, `_report.*`, `_structure_view.*`,
+`_structure_style.*`, and `_verbosity.*` are less ambiguous than they
+would be in a single monolithic CIF file. This opens the option of a
+scoped one-to-one correspondence for EasyDiffraction-owned singleton
+configuration categories:
 
 ```text
-project.info.title        -> project.cif: _info.title
-project.rendering_plot.type        -> project.cif: _rendering_plot.type
-project.rendering_table.type        -> project.cif: _rendering_table.type
-project.verbosity.fit     -> project.cif: _verbosity.fit
+project.rendering_plot.type     -> project.cif: _rendering_plot.type
+project.report.cif              -> project.cif: _report.cif
+project.structure_view.range_a_min -> project.cif: _structure_view.range_a_min
+project.structure_style.atom_view  -> project.cif: _structure_style.atom_view
+project.verbosity.fit           -> project.cif: _verbosity.fit
 ```
 
 The design question is whether this rule should be applied only to
@@ -37,8 +39,16 @@ The accepted project-facade decision keeps `Project` as the public root
 and keeps `project.cif` as the singleton project configuration file. It
 also keeps `_project.*` as the semantic CIF category for scientific
 project information and rejects `_meta.*` for that purpose. This ADR
-therefore must not reintroduce the rejected `Workspace` rename,
-`workspace.cif`, or `_meta.project_*` tags as incidental cleanup.
+therefore does **not** reintroduce the rejected `Workspace` rename,
+`workspace.cif`, `_meta.project_*` tags, or a broad `_info.*` rewrite as
+incidental cleanup.
+
+The accepted project-summary-rendering ADR also rejected a v1
+`project.publication` owner. Journal, author, publication-body, and
+powder-measurement author metadata are not represented in code, are not
+persisted in `project.cif`, and are not emitted as empty report-CIF
+placeholders. This ADR records that as an intentional correspondence
+gap, not as a missing mapping.
 
 ## Scope Of Comparison
 
@@ -54,34 +64,43 @@ to objects reached from the current `Project` root, for example
 
 ## Current Persistence Layout
 
-| Current Python surface                                              | Current saved location   | Current CIF block form | Notes                                                                                 |
-| ------------------------------------------------------------------- | ------------------------ | ---------------------- | ------------------------------------------------------------------------------------- |
-| `project.info`, `project.rendering_plot`, `project.rendering_table` | `project.cif`            | bare categories        | Project-level singleton config.                                                       |
-| `project.report`                                                    | `project.cif`            | bare category          | Project-owned report-output config; report methods render artifacts under `reports/`. |
-| `project.publication`                                               | `project.cif`            | bare categories + loop | Journal-submission metadata under `_journal_*` / `_publ_*` categories.                |
-| `project.verbosity`                                                 | `project.cif`            | bare category          | Project-owned fit-output verbosity category backed by `VerbosityEnum`.                |
-| `project.structures[name]`                                          | `structures/<name>.cif`  | `data_<name>`          | Each structure is one CIF data block.                                                 |
-| `project.experiments[name]`                                         | `experiments/<name>.cif` | `data_<name>`          | Each experiment is one CIF data block.                                                |
-| `project.analysis`                                                  | `analysis/analysis.cif`  | bare categories        | Loader also accepts legacy root-level `analysis.cif`.                                 |
-| `project.summary`                                                   | `summary.cif`            | placeholder text       | Summary persistence exists as a file but `summary_to_cif()` is not implemented yet.   |
+| Current Python surface                                                                                                                                                  | Current saved location   | Current CIF block form | Notes                                                                                 |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ | ---------------------- | ------------------------------------------------------------------------------------- |
+| `project.info`, `project.rendering_plot`, `project.report`, `project.rendering_table`, `project.rendering_structure`, `project.structure_view`, `project.structure_style`, `project.verbosity` | `project.cif`            | bare categories        | Project-level singleton config.                                                       |
+| `project.structures[name]`                                                                                                                                              | `structures/<name>.cif`  | `data_<name>`          | Each structure is one CIF data block.                                                 |
+| `project.experiments[name]`                                                                                                                                             | `experiments/<name>.cif` | `data_<name>`          | Each experiment is one CIF data block.                                                |
+| `project.analysis`                                                                                                                                                      | `analysis/analysis.cif`  | bare categories        | Loader also accepts legacy root-level `analysis.cif`.                                 |
+| `project.report.save_*()` / `project.report.{cif,html,tex,pdf}`                                                                                                         | `reports/`              | multi-datablock CIF or rendered artifacts | Derived report outputs; generated only when configured or called explicitly. |
 
 ## Current Correspondence
 
 ### Project-Level Configuration
 
-| Current Python path            | Current CIF path         | Match? | Notes                                                                                              |
-| ------------------------------ | ------------------------ | ------ | -------------------------------------------------------------------------------------------------- |
-| `project.info.name`            | `_project.id`            | No     | Python uses user-facing `name`; CIF uses `id`; category is `info` in Python but `_project` in CIF. |
-| `project.info.title`           | `_project.title`         | Partly | Field name matches, category name does not.                                                        |
-| `project.info.description`     | `_project.description`   | Partly | Field name matches, category name does not.                                                        |
-| `project.info.created`         | `_project.created`       | Partly | Field name matches, category name does not.                                                        |
-| `project.info.last_modified`   | `_project.last_modified` | Partly | Field name matches, category name does not.                                                        |
-| `project.info.path`            | none                     | No     | Runtime storage path, not a CIF field.                                                             |
-| `project.rendering_plot.type`  | `_rendering_plot.type`   | Yes    | Direct category-owned selector mapping.                                                            |
-| `project.report.*`             | `_report.*`              | Yes    | Direct project-owned report-output configuration mapping.                                          |
-| `project.publication.*`        | `_journal.*` / `_publ_*` | Partly | Python keeps one owner with sibling categories; CIF uses journal and publication dictionary names. |
-| `project.rendering_table.type` | `_rendering_table.type`  | Yes    | Direct category-owned selector mapping.                                                            |
-| `project.verbosity.fit`        | `_verbosity.fit`         | Yes    | Direct category and field mapping for fitting process output verbosity.                            |
+| Current Python path                          | Current CIF path                | Match? | Notes                                                                                              |
+| -------------------------------------------- | ------------------------------- | ------ | -------------------------------------------------------------------------------------------------- |
+| `project.info.name`                          | `_project.id`                   | No     | Accepted exception: Python uses user-facing `name`; CIF uses semantic project `id`.                |
+| `project.info.title`                         | `_project.title`                | Partly | Accepted exception: field name matches, category name is semantic `_project`.                      |
+| `project.info.description`                   | `_project.description`          | Partly | Accepted exception: field name matches, category name is semantic `_project`.                      |
+| `project.info.created`                       | `_project.created`              | Partly | Accepted exception: field name matches, category name is semantic `_project`.                      |
+| `project.info.last_modified`                 | `_project.last_modified`        | Partly | Accepted exception: field name matches, category name is semantic `_project`.                      |
+| `project.info.path`                          | none                            | No     | Runtime storage path, not a CIF field.                                                             |
+| `project.rendering_plot.type`                | `_rendering_plot.type`          | Yes    | Direct category-owned selector mapping.                                                            |
+| `project.report.cif`                         | `_report.cif`                   | Yes    | Direct project-owned report-output configuration mapping.                                          |
+| `project.report.html`                        | `_report.html`                  | Yes    | Direct project-owned report-output configuration mapping.                                          |
+| `project.report.tex`                         | `_report.tex`                   | Yes    | Direct project-owned report-output configuration mapping.                                          |
+| `project.report.pdf`                         | `_report.pdf`                   | Yes    | Direct project-owned report-output configuration mapping.                                          |
+| `project.report.html_offline`                | `_report.html_offline`          | Yes    | Direct project-owned report-output configuration mapping.                                          |
+| `project.rendering_table.type`               | `_rendering_table.type`         | Yes    | Direct category-owned selector mapping.                                                            |
+| `project.rendering_structure.type`           | `_rendering_structure.type`     | Yes    | Direct category-owned selector mapping.                                                            |
+| `project.structure_view.show_labels`         | `_structure_view.show_labels`   | Yes    | Direct project-owned structure-view state mapping.                                                 |
+| `project.structure_view.show_moments`        | `_structure_view.show_moments`  | Yes    | Direct project-owned structure-view state mapping.                                                 |
+| `project.structure_view.range_{a,b,c}_{min,max}` | `_structure_view.range_{a,b,c}_{min,max}` | Yes | Six scalar bounds; direct project-owned structure-view state mapping.                              |
+| `project.structure_style.atom_view`          | `_structure_style.atom_view`    | Yes    | Direct project-owned structure-style value selector mapping.                                       |
+| `project.structure_style.color_scheme`       | `_structure_style.color_scheme` | Yes    | Direct project-owned structure-style value selector mapping.                                       |
+| `project.structure_style.adp_probability`    | `_structure_style.adp_probability` | Yes | Direct project-owned structure-style numeric setting.                                              |
+| `project.structure_style.atom_scale`         | `_structure_style.atom_scale`   | Yes    | Direct project-owned structure-style numeric setting.                                              |
+| `project.verbosity.fit`                      | `_verbosity.fit`                | Yes    | Direct category and field mapping for fitting process output verbosity.                            |
+| `project.verbosity = 'short'`                | `_verbosity.fit`                | Alias  | Convenience setter only; canonical persisted path remains `project.verbosity.fit`.                 |
 
 ### Analysis Configuration
 
@@ -89,8 +108,12 @@ to objects reached from the current `Project` root, for example
 | ------------------------------------------------- | ---------------------------------- | ------ | ------------------------------------------------------------------------------------------------ |
 | `analysis.minimizer.type`                         | `_minimizer.type`                  | Yes    | Direct category-owned selector mapping.                                                          |
 | `analysis.fitting_mode.type`                      | `_fitting_mode.type`               | Yes    | Direct category-owned active-sibling selector mapping.                                           |
+| `analysis.fit_result.*`                           | `_fit_result.*`                    | Yes    | Direct category mapping for scalar fit-result state; IUCr report export may use transformed tags. |
+| `analysis.fit_parameters[param].*`                 | `_fit_parameter.*`                 | Yes    | Direct loop mapping for persisted per-parameter fit state.                                       |
+| `analysis.fit_parameter_correlations[id].*`        | `_fit_parameter_correlation.*`     | Yes    | Direct loop mapping for deterministic and posterior correlation summaries.                       |
 | `analysis.joint_fit[experiment_id].experiment_id` | `_joint_fit.experiment_id`         | Yes    | Collection key is also stored as a field.                                                        |
 | `analysis.joint_fit[experiment_id].weight`        | `_joint_fit.weight`                | Yes    | Direct field mapping.                                                                            |
+| `analysis.software.*`                              | `_software.*`                      | Yes    | Direct analysis-tier software provenance mapping stamped at fit time.                            |
 | `analysis.sequential_fit.data_dir`                | `_sequential_fit.data_dir`         | Yes    | Direct category mapping.                                                                         |
 | `analysis.sequential_fit.file_pattern`            | `_sequential_fit.file_pattern`     | Yes    | Direct category mapping.                                                                         |
 | `analysis.sequential_fit.max_workers`             | `_sequential_fit.max_workers`      | Yes    | Direct category mapping.                                                                         |
@@ -102,7 +125,8 @@ to objects reached from the current `Project` root, for example
 | `analysis.sequential_fit_extract[id].required`    | `_sequential_fit_extract.required` | Yes    | Direct collection mapping.                                                                       |
 | `analysis.aliases[label].label`                   | `_alias.label`                     | Partly | Python collection is plural; CIF row category is singular.                                       |
 | `analysis.aliases[label].param_unique_name`       | `_alias.param_unique_name`         | Partly | Python collection is plural; CIF row category is singular.                                       |
-| `analysis.constraints[lhs_alias].expression`      | `_constraint.expression`           | Partly | Collection key is derived from the expression; there is no separate `_constraint.lhs_alias` tag. |
+| `analysis.constraints[id].id`                     | `_constraint.id`                   | Yes    | Direct explicit row-key mapping; older CIFs may backfill the id from the expression left-hand side. |
+| `analysis.constraints[id].expression`             | `_constraint.expression`           | Yes    | Direct row-field mapping; `lhs_alias` and `rhs_expr` are derived Python helpers.                  |
 
 ### Experiment Configuration
 
@@ -193,17 +217,17 @@ to objects reached from the current `Project` root, for example
 | `structure.cell.angle_alpha`                      | `_cell.angle_alpha`                                                                                                                                                 | Yes    | Direct category mapping.                                                          |
 | `structure.cell.angle_beta`                       | `_cell.angle_beta`                                                                                                                                                  | Yes    | Direct category mapping.                                                          |
 | `structure.cell.angle_gamma`                      | `_cell.angle_gamma`                                                                                                                                                 | Yes    | Direct category mapping.                                                          |
-| `structure.space_group.name_h_m`                  | `_space_group.name_H-M_alt`, `_space_group_name_H-M_alt`, `_symmetry.space_group_name_H-M`, or `_symmetry_space_group_name_H-M`                                     | Partly | CIF naming follows crystallographic conventions and supports legacy alternatives. |
-| `structure.space_group.it_coordinate_system_code` | `_space_group.IT_coordinate_system_code`, `_space_group_IT_coordinate_system_code`, `_symmetry.IT_coordinate_system_code`, or `_symmetry_IT_coordinate_system_code` | Partly | CIF naming follows crystallographic conventions and supports legacy alternatives. |
+| `structure.space_group.name_h_m`                  | `_space_group.name_H-M_alt`                                                                                                                                         | Partly | Default write uses dictionary-canonical casing; legacy `_space_group_name_H-M_alt` and `_symmetry*` alternatives are accepted on read. |
+| `structure.space_group.it_coordinate_system_code` | `_space_group.IT_coordinate_system_code`                                                                                                                            | Partly | Default write uses dictionary-canonical casing; legacy underscore-form and `_symmetry*` alternatives are accepted on read. |
 | `structure.atom_sites[label].label`               | `_atom_site.label`                                                                                                                                                  | Yes    | Direct row-field mapping.                                                         |
 | `structure.atom_sites[label].type_symbol`         | `_atom_site.type_symbol`                                                                                                                                            | Yes    | Direct row-field mapping.                                                         |
 | `structure.atom_sites[label].fract_x`             | `_atom_site.fract_x`                                                                                                                                                | Yes    | Direct row-field mapping.                                                         |
 | `structure.atom_sites[label].fract_y`             | `_atom_site.fract_y`                                                                                                                                                | Yes    | Direct row-field mapping.                                                         |
 | `structure.atom_sites[label].fract_z`             | `_atom_site.fract_z`                                                                                                                                                | Yes    | Direct row-field mapping.                                                         |
-| `structure.atom_sites[label].wyckoff_letter`      | `_atom_site.Wyckoff_letter` or `_atom_site.Wyckoff_symbol`                                                                                                          | Partly | CIF uses capitalized/legacy Wyckoff tags.                                         |
+| `structure.atom_sites[label].wyckoff_letter`      | `_atom_site.Wyckoff_symbol`                                                                                                                                         | Partly | Default write uses dictionary-canonical tag; legacy `_atom_site.Wyckoff_letter` is accepted on read. |
 | `structure.atom_sites[label].occupancy`           | `_atom_site.occupancy`                                                                                                                                              | Yes    | Direct row-field mapping.                                                         |
 | `structure.atom_sites[label].adp_iso`             | `_atom_site.B_iso_or_equiv` or `_atom_site.U_iso_or_equiv`                                                                                                          | No     | Python uses type-neutral ADP name; CIF uses B/U-specific tags.                    |
-| `structure.atom_sites[label].adp_type`            | `_atom_site.adp_type`                                                                                                                                               | Yes    | Direct row-field mapping.                                                         |
+| `structure.atom_sites[label].adp_type`            | `_atom_site.ADP_type`                                                                                                                                               | Partly | Default write uses dictionary-canonical capitalization; legacy `_atom_site.adp_type` is accepted on read. |
 | `structure.atom_site_aniso[label].label`          | `_atom_site_aniso.label`                                                                                                                                            | Yes    | Direct row-field mapping.                                                         |
 | `structure.atom_site_aniso[label].adp_11`         | `_atom_site_aniso.B_11` or `_atom_site_aniso.U_11`                                                                                                                  | No     | Python uses type-neutral ADP name; CIF uses B/U-specific tags.                    |
 | `structure.atom_site_aniso[label].adp_22`         | `_atom_site_aniso.B_22` or `_atom_site_aniso.U_22`                                                                                                                  | No     | Python uses type-neutral ADP name; CIF uses B/U-specific tags.                    |
@@ -212,58 +236,58 @@ to objects reached from the current `Project` root, for example
 | `structure.atom_site_aniso[label].adp_13`         | `_atom_site_aniso.B_13` or `_atom_site_aniso.U_13`                                                                                                                  | No     | Python uses type-neutral ADP name; CIF uses B/U-specific tags.                    |
 | `structure.atom_site_aniso[label].adp_23`         | `_atom_site_aniso.B_23` or `_atom_site_aniso.U_23`                                                                                                                  | No     | Python uses type-neutral ADP name; CIF uses B/U-specific tags.                    |
 
-### Not Yet Mapped
+### Not Represented In V1
 
-| Current Python path | Current CIF status    | Notes                                        |
-| ------------------- | --------------------- | -------------------------------------------- |
-| `project.summary`   | placeholder text only | `summary_to_cif()` currently returns a stub. |
+| Candidate surface | Current CIF status | Notes |
+| ----------------- | ------------------ | ----- |
+| `project.summary` | removed | Replaced by `project.report`; no `summary.cif` placeholder is written. |
+| `project.publication` | none | Rejected for v1 by the accepted project-summary-rendering ADR. |
+| journal/publication tags | not emitted | `_journal.*`, `_journal_date.*`, `_journal_coeditor.*`, `_publ_contact_author.*`, `_publ_author.*`, `_publ_body.*`, and `_pd_meas.info_author_*` placeholders are deferred and intentionally omitted while empty. |
 
-## Decision To Discuss
+## Decision
 
-Adopt a scoped one-to-one rule for project-level configuration:
+Adopt a scoped one-to-one rule for EasyDiffraction-owned project-level
+singleton configuration:
 
 ```text
 project.<category>.<field> -> project.cif: _<category>.<field>
 ```
 
-This ADR does not propose renaming the public root object. The current
-root object is already `Project`; the proposal is about category and tag
-correspondence inside project-owned singleton configuration.
+The rule applies to:
 
-The accepted baseline is:
+- `project.rendering_plot.type -> _rendering_plot.type`
+- `project.report.{cif,html,tex,pdf,html_offline} -> _report.*`
+- `project.rendering_table.type -> _rendering_table.type`
+- `project.rendering_structure.type -> _rendering_structure.type`
+- `project.structure_view.* -> _structure_view.*`
+- `project.structure_style.* -> _structure_style.*`
+- `project.verbosity.fit -> _verbosity.fit`
 
-```text
-project.info.<field> -> project.cif: _project.<field>
-```
-
-Future one-to-one correspondence work may still discuss whether the
-public identity field should be `name` or `id`, and whether verbosity
-should gain additional coverage-specific fields.
-
-Possible strict-correspondence target if a future ADR explicitly changes
-the accepted `_project.*` baseline:
-
-| Python path                    | Target CIF path         | Current state                                    |
-| ------------------------------ | ----------------------- | ------------------------------------------------ |
-| `project.info.name`            | `_info.name`            | Currently `_project.id`.                         |
-| `project.info.title`           | `_info.title`           | Currently `_project.title`.                      |
-| `project.info.description`     | `_info.description`     | Currently `_project.description`.                |
-| `project.info.created`         | `_info.created`         | Currently `_project.created`.                    |
-| `project.info.last_modified`   | `_info.last_modified`   | Currently `_project.last_modified`.              |
-| `project.rendering_plot.type`  | `_rendering_plot.type`  | Already matches.                                 |
-| `project.rendering_table.type` | `_rendering_table.type` | Already matches.                                 |
-| `project.verbosity.fit`        | `_verbosity.fit`        | Implemented direct fit-output verbosity mapping. |
-
-Alternative target if the project identity field should be called `id`
-rather than `name`:
+Keep `project.info` as the accepted exception:
 
 ```text
-project.info.id -> _info.id
+project.info.name -> _project.id
+project.info.title -> _project.title
+project.info.description -> _project.description
+project.info.created -> _project.created
+project.info.last_modified -> _project.last_modified
 ```
 
-Do not force strict one-to-one correspondence globally where CIF-domain
-names are clearer or where the Python API intentionally abstracts over
-CIF details.
+The exception is deliberate. `_project.*` is the semantic CIF category
+for scientific project identity in this project file, and `name` remains
+the user-facing Python property. This ADR does not rename `name` to
+`id`, does not rename `_project.*` to `_info.*`, and does not add an
+`_info.*` compatibility layer.
+
+Do not force strict one-to-one correspondence globally. Analysis,
+experiment, structure, measured-data, calculated-data, and report-export
+categories may keep CIF-domain names where those names are clearer,
+dictionary-aligned, or intentionally different from Python convenience
+names.
+
+Do not add a v1 `project.publication` owner or empty publication tags to
+make the correspondence table appear complete. Publication metadata is a
+future feature with its own sourcing and completeness questions.
 
 ## Rationale
 
@@ -273,12 +297,13 @@ Project-level configuration categories are not external crystallographic
 CIF categories. They are EasyDiffraction project-file categories, so the
 repository can optimize them for API/persistence symmetry.
 
-### `project.cif` Scopes Generic Categories
+### `project.cif` Scopes Project-Owned Categories
 
-`_info.title` is generic in isolation, but inside `project.cif` it reads
-as project information. This is similar to `_verbosity.fit`: the file
-scope tells the reader this is project-level verbosity, and the field
-name identifies the fitting-process coverage.
+`_report.cif`, `_structure_view.show_labels`, and `_verbosity.fit` are
+generic in isolation, but inside `project.cif` they read as
+project-level report, structure-view, and verbosity configuration. The
+file scope supplies the project root; the category and field names
+identify the specific setting.
 
 ### The Current `Project` Root Already Matches User Language
 
@@ -294,6 +319,14 @@ title, description, and timestamps. `_project.id` and `_project.title`
 say that directly, while `_meta.project_id` and `_meta.project_title`
 make the CIF less domain-oriented and repeat the concept in every item
 name.
+
+### `project.info` Is A Deliberate Exception
+
+`project.info` is the user-facing Python grouping, but `_project.*` is
+the accepted CIF grouping for project identity. Preserving this
+exception avoids a beta-period churn-only rename from `name` to `id` in
+Python and avoids a persistence migration from `_project.*` to
+`_info.*` without a scientific benefit.
 
 ### Scientific CIF/Domain Categories Should Stay Domain-Oriented
 
@@ -313,6 +346,13 @@ switchable-category, backend, and active-sibling selector families.
 These should remain exceptions unless a separate ADR changes the
 underlying API pattern.
 
+### Convenience Aliases Do Not Define Persistence
+
+`project.verbosity = 'short'` remains acceptable as a user-facing
+shortcut because it writes the canonical `project.verbosity.fit` value.
+The persistence contract is still the category/field path, not every
+convenience setter that happens to reach it.
+
 ## Consequences
 
 ### Positive
@@ -321,13 +361,16 @@ underlying API pattern.
 - Users can predict project-level CIF tags from Python paths.
 - The decision can focus on project-owned singleton config without
   forcing scientific CIF categories to mirror Python convenience names.
+- The clean-report decision remains intact: empty journal/publication
+  placeholders stay out of both `project.cif` and generated report CIFs.
 
 ### Trade-Offs
 
-- `_info.*` is less self-describing if copied out of `project.cif`.
-- Existing `_project.*` project files would need migration or a
-  deliberate compatibility decision.
-- Persisted verbosity is now a category object. The initial field is
+- `project.info` does not follow the strict category-name rule; this
+  exception must be explained alongside the other project config.
+- Future publication metadata needs a separate ADR rather than a quiet
+  extension of this correspondence table.
+- Persisted verbosity remains a category object. The initial field is
   `project.verbosity.fit`, leaving room for future coverage-specific
   verbosity fields.
 - Chart and table renderers are separate selector categories
@@ -336,11 +379,4 @@ underlying API pattern.
 
 ## Open Questions
 
-- Should the project identity remain `project.info.name`, or should it
-  become `project.info.id` to mirror the saved identifier field?
-- Should `project.rendering_plot.type` and
-  `project.rendering_table.type` remain separate, or should the public
-  API and CIF collapse to one renderer field?
-- Should `project.verbosity = 'short'` remain as a convenience alias for
-  `project.verbosity.fit = 'short'`, or should strict correspondence
-  remove the alias?
+None for this ADR.
