@@ -597,6 +597,52 @@ class TestRenderHtmlDocument:
         assert 'right: 10px; bottom: 8px;' in html
         assert "iconButton(downloadHost, ICONS.camera, 'Download PNG')" in html
 
+    def test_viewer_is_isolated_from_page_header_stacking(self, patched_theme):
+        html = ThreeJsStructureRenderer().render(
+            _identity_scene(),
+            features=frozenset(),
+            offline=True,
+            dark=False,
+        )
+
+        assert 'overflow:hidden;isolation:isolate;z-index:0;' in html
+        assert 'position: absolute; z-index: 2; background: var(--cv-panel-bg);' in html
+
+    def test_perspective_projection_uses_reduced_field_of_view(self, patched_theme):
+        html = ThreeJsStructureRenderer().render(
+            _identity_scene(),
+            features=frozenset(),
+            offline=True,
+            dark=False,
+        )
+
+        assert 'const PERSPECTIVE_FOV_DEG = 30;' in html
+        assert 'new THREE.PerspectiveCamera(PERSPECTIVE_FOV_DEG,' in html
+
+    def test_colour_scheme_select_matches_button_height(self, patched_theme):
+        html = ThreeJsStructureRenderer().render(
+            _rich_scene(),
+            features=frozenset({'atoms'}),
+            offline=True,
+            dark=False,
+        )
+
+        assert 'height: calc(var(--cv-control-h) + 2px);' in html
+        assert 'min-height: calc(var(--cv-control-h) + 2px);' in html
+        assert '--cv-axis-letter-size: 18px;\n  }\n  #' in html
+
+    def test_exposes_host_theme_sync_hook(self, patched_theme):
+        html = ThreeJsStructureRenderer().render(
+            _identity_scene(),
+            features=frozenset(),
+            offline=True,
+            dark=False,
+        )
+
+        assert 'root.__crysviewApplyTheme = applyTheme;' in html
+        assert "data-md-color-scheme" in html
+        assert "data-jp-theme-light" in html
+
 
 # ------------------------------------------------------------------
 #  ThreeJsStructureRenderer.render — invalid inputs

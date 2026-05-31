@@ -199,6 +199,8 @@ class ThreeJsStructureRenderer(StructureRendererBase):
         if dark is None:
             dark = is_dark()
         colours = theme_colors(dark=dark)
+        light_colours = theme_colors(dark=False)
+        dark_colours = theme_colors(dark=True)
         payload = json.dumps(_scene_payload(scene)).replace('</', '<\\/')
         import_map = json.dumps({'imports': _import_map(offline=offline)}).replace('</', '<\\/')
         template = _environment().get_template(self.TEMPLATE_NAME)
@@ -209,5 +211,9 @@ class ThreeJsStructureRenderer(StructureRendererBase):
             features_json=json.dumps(sorted(features)),
             background=_rgb_css(colours['background']),
             foreground=_rgb_css(colours['foreground']),
+            light_background=_rgb_css(light_colours['background']),
+            light_foreground=_rgb_css(light_colours['foreground']),
+            dark_background=_rgb_css(dark_colours['background']),
+            dark_foreground=_rgb_css(dark_colours['foreground']),
             theme='dark' if dark else 'light',
         )

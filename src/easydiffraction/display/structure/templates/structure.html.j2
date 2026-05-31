@@ -1,6 +1,7 @@
-<div id="{{ container_id }}" class="crysview" style="position:relative;width:100%;height:512px;
-     background:{{ background }};color:{{ foreground }};border:1px solid rgba(128,128,128,0.3);
-     border-radius:0;box-sizing:border-box;overflow:hidden;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;">
+<div id="{{ container_id }}" class="crysview cv-theme-{{ theme }}" style="position:relative;width:100%;height:512px;
+     background:var(--cv-scene-bg);color:var(--cv-scene-fg);border:1px solid rgba(128,128,128,0.3);
+     border-radius:0;box-sizing:border-box;overflow:hidden;isolation:isolate;z-index:0;
+     font-family:system-ui,-apple-system,'Segoe UI',sans-serif;">
   <div class="cv-canvas" style="position:absolute;inset:0;"></div>
   <div class="cv-modebar cv-card"></div>
   <div class="cv-download"></div>
@@ -11,26 +12,32 @@
 
 <style>
   #{{ container_id }} .cv-card {
-    position: absolute; z-index: 10; background: var(--cv-panel-bg);
+    position: absolute; z-index: 2; background: var(--cv-panel-bg);
     border: 1px solid var(--cv-panel-border); border-radius: 0;
     box-shadow: var(--cv-panel-shadow); font-size: 12px; color: var(--cv-panel-fg);
   }
   #{{ container_id }} {
     --cv-control-h: 32px;
     --cv-axis-letter-size: 18px;
-{% if theme == 'dark' %}
+  }
+  #{{ container_id }}.cv-theme-dark {
+    --cv-scene-bg: {{ dark_background }};
+    --cv-scene-fg: {{ dark_foreground }};
     --cv-panel-bg: rgba(37, 37, 43, 0.95);
     --cv-panel-border: #52545c;
-    --cv-panel-fg: {{ foreground }};
+    --cv-panel-fg: var(--cv-scene-fg);
     --cv-panel-shadow: 0 1px 8px rgba(0, 0, 0, 0.38);
     --cv-control-bg: #2c2f37;
     --cv-control-hover-bg: #373b45;
     --cv-control-active-bg: #3d4657;
     --cv-control-active-border: #63708a;
-    --cv-control-fg: {{ foreground }};
+    --cv-control-fg: var(--cv-scene-fg);
     --cv-control-muted: #8d929e;
     --cv-select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath d='M2 4l3 3 3-3' fill='none' stroke='%23ebebeb' stroke-width='1.3'/%3E%3C/svg%3E");
-{% else %}
+  }
+  #{{ container_id }}.cv-theme-light {
+    --cv-scene-bg: {{ light_background }};
+    --cv-scene-fg: {{ light_foreground }};
     --cv-panel-bg: rgba(255, 255, 255, 0.94);
     --cv-panel-border: #e2e2e2;
     --cv-panel-fg: #222;
@@ -42,7 +49,6 @@
     --cv-control-fg: #2a3f5f;
     --cv-control-muted: #b9bdc6;
     --cv-select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath d='M2 4l3 3 3-3' fill='none' stroke='%232a3f5f' stroke-width='1.3'/%3E%3C/svg%3E");
-{% endif %}
   }
   #{{ container_id }} .cv-modebar {
     top: 10px; right: 10px; display: flex; align-items: center; gap: 16px;
@@ -50,7 +56,7 @@
     background: none; border: none; box-shadow: none;
   }
   #{{ container_id }} .cv-download {
-    position: absolute; z-index: 10; right: 10px; bottom: 8px; display: flex;
+    position: absolute; z-index: 2; right: 10px; bottom: 8px; display: flex;
   }
   #{{ container_id }} .mb-grp { display: flex; gap: 4px; }
   #{{ container_id }} .mb {
@@ -72,9 +78,10 @@
     border-color: var(--cv-control-active-border);
   }
   #{{ container_id }} .mb-select {
-    height: var(--cv-control-h); box-sizing: border-box;
+    height: calc(var(--cv-control-h) + 2px); min-height: calc(var(--cv-control-h) + 2px);
+    box-sizing: border-box; margin: -1px 0;
     border: 1px solid var(--cv-panel-border); border-radius: 0;
-    color: var(--cv-control-fg); font-size: 12px; line-height: var(--cv-control-h);
+    color: var(--cv-control-fg); font-size: 12px; line-height: calc(var(--cv-control-h) - 2px);
     padding: 0 22px 0 8px; cursor: pointer;
     -webkit-appearance: none; -moz-appearance: none; appearance: none;
     background-color: var(--cv-control-bg);
@@ -87,19 +94,19 @@
     margin-right: 7px; vertical-align: middle; border: 1px solid rgba(0, 0, 0, 0.18);
   }
   #{{ container_id }} .cv-hint {
-    position: absolute; z-index: 10; bottom: 8px; left: 10px; font-size: 11px;
+    position: absolute; z-index: 2; bottom: 8px; left: 10px; font-size: 11px;
     color: var(--cv-panel-fg); background: var(--cv-panel-bg);
     border: 1px solid var(--cv-panel-border); padding: 5px 9px; border-radius: 0;
     line-height: 1.5; text-align: left; box-shadow: var(--cv-panel-shadow);
   }
   #{{ container_id }} .cv-tooltip {
-    position: absolute; z-index: 30; pointer-events: none; display: none;
+    position: absolute; z-index: 4; pointer-events: none; display: none;
     background: rgba(33, 42, 62, 0.92); color: #fff; padding: 3px 8px;
     border-radius: 0; font-size: 12px; white-space: nowrap;
   }
   #{{ container_id }} .cv-atom-label {
-    font-size: 11px; font-weight: 600; color: {{ foreground }};
-    text-shadow: 0 0 3px {{ background }}, 0 0 3px {{ background }}, 0 0 3px {{ background }};
+    font-size: 11px; font-weight: 600; color: var(--cv-scene-fg);
+    text-shadow: 0 0 3px var(--cv-scene-bg), 0 0 3px var(--cv-scene-bg), 0 0 3px var(--cv-scene-bg);
     pointer-events: none; white-space: nowrap;
   }
 </style>
@@ -112,7 +119,7 @@ import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer
 
 const SCENE = {{ scene_json }};
 const FEATURES = {{ features_json }};
-const FG = '{{ foreground }}';
+const INITIAL_THEME = '{{ theme }}';
 
 const ICONS = {
   perspective: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="15" rx="1.5"/><path d="M9 4.5 11 19.5M15 4.5 13 19.5"/></svg>',
@@ -141,6 +148,7 @@ const tooltip = root.querySelector('.cv-tooltip');
 const col = (rgb) => new THREE.Color().setRGB(rgb[0] / 255, rgb[1] / 255, rgb[2] / 255, THREE.SRGBColorSpace);
 const vec = (xyz) => new THREE.Vector3(xyz[0], xyz[1], xyz[2]);
 const rgbCss = (rgb) => `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`;
+const cssVar = (name, fallback) => getComputedStyle(root).getPropertyValue(name).trim() || fallback;
 const elementOf = (label) => (label.match(/[A-Z][a-z]?/) || [label])[0];
 const PALETTES = SCENE.palettes || {};
 
@@ -255,7 +263,9 @@ for (const b of SCENE.bonds) {
   addHalfBond(mid, end, b.endColour, b.endElement);
 }
 
-const cellMaterial = new THREE.LineBasicMaterial({ color: new THREE.Color(FG) });
+const cellMaterial = new THREE.LineBasicMaterial({
+  color: new THREE.Color(cssVar('--cv-scene-fg', '{{ foreground }}')),
+});
 for (const edge of SCENE.cellEdges) {
   const geo = new THREE.BufferGeometry().setFromPoints([vec(edge.start), vec(edge.end)]);
   groups.cell.add(new THREE.Line(geo, cellMaterial));
@@ -350,11 +360,12 @@ const halfW = Math.max((maxU - minU) / 2 + fitPad, 0.5) * margin;
 const halfH = Math.max((maxV - minV) / 2 + fitPad, 0.5) * margin;
 const radius = Math.max(halfW, halfH);
 const far = radius * 100;
-const tanV = Math.tan((45 * Math.PI) / 360);
+const PERSPECTIVE_FOV_DEG = 30;
+const tanV = Math.tan((PERSPECTIVE_FOV_DEG * Math.PI) / 360);
 const distance = Math.max(halfH / tanV, halfW / (tanV * aspect)) * 1.05;
 const home = target.clone().add(viewDir.clone().multiplyScalar(distance));
 
-const perspective = new THREE.PerspectiveCamera(45, aspect, Math.max(distance * 0.01, 0.01), far);
+const perspective = new THREE.PerspectiveCamera(PERSPECTIVE_FOV_DEG, aspect, Math.max(distance * 0.01, 0.01), far);
 // Ortho frustum sized to the projected extent; reserve a top band for the
 // modebar/legend so the cell sits a little lower and clears them.
 const orthoHalfH = Math.max(halfH, halfW / aspect);
@@ -629,6 +640,40 @@ const resize = () => {
   labelRenderer.setSize(width, height);
 };
 if (window.ResizeObserver) new ResizeObserver(resize).observe(host);
+
+const hostTheme = () => {
+  const scheme = document.documentElement && document.documentElement.getAttribute('data-md-color-scheme');
+  if (scheme === 'slate') return 'dark';
+  if (scheme === 'default') return 'light';
+  const jpLight = (document.body && document.body.getAttribute('data-jp-theme-light'))
+    || (document.documentElement && document.documentElement.getAttribute('data-jp-theme-light'));
+  if (jpLight === 'true') return 'light';
+  if (jpLight === 'false') return 'dark';
+  return INITIAL_THEME;
+};
+
+const applyTheme = (name) => {
+  const themeName = name === 'dark' ? 'dark' : 'light';
+  root.classList.toggle('cv-theme-dark', themeName === 'dark');
+  root.classList.toggle('cv-theme-light', themeName !== 'dark');
+  cellMaterial.color.setStyle(cssVar('--cv-scene-fg', '{{ foreground }}'));
+};
+
+root.__crysviewApplyTheme = applyTheme;
+applyTheme(hostTheme());
+if (window.MutationObserver) {
+  const themeObserver = new MutationObserver(() => applyTheme(hostTheme()));
+  themeObserver.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['data-md-color-scheme', 'data-jp-theme-light', 'data-jp-theme-name'],
+  });
+  if (document.body) {
+    themeObserver.observe(document.body, {
+      attributes: true,
+      attributeFilter: ['data-jp-theme-light', 'data-jp-theme-name'],
+    });
+  }
+}
 
 // Camera-relative light directions (right, up, toward-camera), matching the
 // raster figure's _LIGHT / _FILL so both engines shade atoms identically.
