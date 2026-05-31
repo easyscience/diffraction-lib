@@ -41,6 +41,7 @@ if TYPE_CHECKING:
     from easydiffraction.project.categories.rendering_table import RenderingTable
     from easydiffraction.project.categories.verbosity import Verbosity
     from easydiffraction.project.categories.rendering_structure import RenderingStructure
+    from easydiffraction.project.categories.structure_view import StructureView
     from easydiffraction.project.project_info import ProjectInfo
     from easydiffraction.report import Report
 
@@ -213,6 +214,7 @@ class Project(GuardedBase):  # noqa: PLR0904
         object.__setattr__(self, '_rendering_table', self._config.rendering_table)
         object.__setattr__(self, '_verbosity', self._config.verbosity)
         object.__setattr__(self, '_rendering_structure', self._config.rendering_structure)
+        object.__setattr__(self, '_structure_view', self._config.structure_view)
         object.__setattr__(self, '_style', self._config.style)
         object.__setattr__(self, '_report', self._config.report)
         self._publication = PublicationFactory.create(PublicationFactory.default_tag())
@@ -231,6 +233,7 @@ class Project(GuardedBase):  # noqa: PLR0904
         self._rendering_plot._parent = self
         self._rendering_table._parent = self
         self._rendering_structure._parent = self
+        self._structure_view._parent = self
         self._style._parent = self
         self._report._parent = self
         self._publication._parent = self
@@ -336,6 +339,11 @@ class Project(GuardedBase):  # noqa: PLR0904
     def rendering_structure(self) -> RenderingStructure:
         """Structure-view configuration bound to the project."""
         return self._rendering_structure
+
+    @property
+    def structure_view(self) -> StructureView:
+        """Structure-view content and region bound to the project."""
+        return self._structure_view
 
     @property
     def style(self) -> Style:

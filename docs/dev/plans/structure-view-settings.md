@@ -231,7 +231,7 @@ categories and their consumers land before the old surfaces are removed, so
 **every commit imports and renders** — no intermediate revision loses a live
 API. A short bridge period where old and new surfaces coexist is intentional.
 
-- [ ] **P1.7 — Add `structure_view` (additive).** New category +
+- [x] **P1.7 — Add `structure_view` (additive).** New category +
   `project.structure_view` + a new `_structure_view.*` CIF block carrying
   `show_labels`, `show_moments`, six `range_*` scalars, and `view_range()`.
   `rendering_structure` keeps its copies for now. Commit:
