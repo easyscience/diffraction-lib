@@ -602,19 +602,6 @@
 │   │   │   └── 📄 factory.py
 │   │   │       └── 🏷️ class ProjectInfoFactory
 │   │   ├── 📁 publication
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   │   ├── 🏷️ class PublicationItemBase
-│   │   │   │   ├── 🏷️ class PublicationJournal
-│   │   │   │   ├── 🏷️ class PublicationJournalDate
-│   │   │   │   ├── 🏷️ class PublicationJournalCoeditor
-│   │   │   │   ├── 🏷️ class PublicationContactAuthor
-│   │   │   │   ├── 🏷️ class PublicationBody
-│   │   │   │   ├── 🏷️ class PublicationAuthor
-│   │   │   │   ├── 🏷️ class PublicationAuthors
-│   │   │   │   └── 🏷️ class Publication
-│   │   │   └── 📄 factory.py
-│   │   │       └── 🏷️ class PublicationFactory
 │   │   ├── 📁 rendering
 │   │   ├── 📁 rendering_plot
 │   │   │   ├── 📄 __init__.py
@@ -670,8 +657,7 @@
 │   │   └── 🏷️ class Project
 │   ├── 📄 project_config.py
 │   │   └── 🏷️ class ProjectConfig
-│   ├── 📄 project_info.py
-│   └── 📄 publication_loader.py
+│   └── 📄 project_info.py
 ├── 📁 report
 │   ├── 📁 templates
 │   │   ├── 📁 html

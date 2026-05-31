@@ -23,8 +23,6 @@ from easydiffraction.io.cif.serialize import project_config_to_cif
 from easydiffraction.io.cif.serialize import project_to_cif
 from easydiffraction.io.results_sidecar import read_analysis_results_sidecar
 from easydiffraction.io.results_sidecar import write_analysis_results_sidecar
-from easydiffraction.project.categories.publication import Publication
-from easydiffraction.project.categories.publication import PublicationFactory
 from easydiffraction.project.display import ProjectDisplay
 from easydiffraction.project.project_config import ProjectConfig
 from easydiffraction.utils.enums import VerbosityEnum
@@ -217,7 +215,6 @@ class Project(GuardedBase):  # noqa: PLR0904
         object.__setattr__(self, '_structure_view', self._config.structure_view)
         object.__setattr__(self, '_structure_style', self._config.structure_style)
         object.__setattr__(self, '_report', self._config.report)
-        self._publication = PublicationFactory.create(PublicationFactory.default_tag())
         self._display = ProjectDisplay(self)
         self._analysis = Analysis(self)
         self._saved = False
@@ -236,7 +233,6 @@ class Project(GuardedBase):  # noqa: PLR0904
         self._structure_view._parent = self
         self._structure_style._parent = self
         self._report._parent = self
-        self._publication._parent = self
 
     @staticmethod
     def _supported_filters_for(category: object) -> dict[str, object]:
@@ -364,11 +360,6 @@ class Project(GuardedBase):  # noqa: PLR0904
     def report(self) -> Report:
         """Submission report builder bound to the project."""
         return self._report
-
-    @property
-    def publication(self) -> Publication:
-        """Publication metadata bound to the project."""
-        return self._publication
 
     @property
     def parameters(self) -> list:

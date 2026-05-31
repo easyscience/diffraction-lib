@@ -84,12 +84,6 @@ def _context() -> dict[str, object]:
             'n_phases': 1,
             'n_experiments': 0,
         },
-        'publication': {
-            'body': {'title': '', 'abstract': '', 'synopsis': '', 'keywords': ''},
-            'authors': [],
-            'journal': {'name_full': '', 'year': '', 'paper_doi': ''},
-            'contact_author': {'name': '', 'email': ''},
-        },
         'metadata': {
             'generated_at': '2026-05-26T00:00:00Z',
             'easydiffraction_version': '0.0',

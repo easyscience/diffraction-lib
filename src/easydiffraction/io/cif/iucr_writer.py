@@ -23,54 +23,6 @@ _BLOCK_SEPARATOR = '#====================================================='
 _TEXT_WRAP_WIDTH = 80
 _ITEM_WIDTH = 38
 
-_JOURNAL_ITEMS = (
-    ('_journal.name_full', 'name_full'),
-    ('_journal.year', 'year'),
-    ('_journal.volume', 'volume'),
-    ('_journal.issue', 'issue'),
-    ('_journal.page_first', 'page_first'),
-    ('_journal.page_last', 'page_last'),
-    ('_journal.paper_category', 'paper_category'),
-    ('_journal.paper_DOI', 'paper_doi'),
-    ('_journal.coden_ASTM', 'coden_astm'),
-    ('_journal.suppl_publ_number', 'suppl_publ_number'),
-)
-
-_JOURNAL_DATE_ITEMS = (
-    ('_journal_date.accepted', 'accepted'),
-    ('_journal_date.from_coeditor', 'from_coeditor'),
-    ('_journal_date.printers_final', 'printers_final'),
-)
-
-_JOURNAL_COEDITOR_ITEMS = (
-    ('_journal_coeditor.code', 'code'),
-    ('_journal_coeditor.name', 'name'),
-    ('_journal_coeditor.notes', 'notes'),
-)
-
-_PUBL_CONTACT_AUTHOR_ITEMS = (
-    ('_publ_contact_author.name', 'name'),
-    ('_publ_contact_author.address', 'address'),
-    ('_publ_contact_author.email', 'email'),
-    ('_publ_contact_author.phone', 'phone'),
-    ('_publ_contact_author.id_ORCID', 'id_orcid'),
-    ('_publ_contact_author.id_IUCr', 'id_iucr'),
-)
-
-_PUBL_AUTHOR_ITEMS = (
-    ('_publ_author.name', 'name'),
-    ('_publ_author.address', 'address'),
-    ('_publ_author.footnote', 'footnote'),
-    ('_publ_author.id_ORCID', 'id_orcid'),
-    ('_publ_author.id_IUCr', 'id_iucr'),
-)
-_PUBL_AUTHOR_TAGS = tuple(tag for tag, _ in _PUBL_AUTHOR_ITEMS)
-
-_PUBL_BODY_ITEMS = (
-    ('_publ_body.title', 'title'),
-    ('_publ_body.contents', 'contents'),
-)
-
 _PACKAGE_BY_ENGINE = {
     'cryspy': 'cryspy',
     'crysfml': 'crysfml',
@@ -144,7 +96,6 @@ def _write_global_block(project: object) -> str:
     lines = ['data_global']
     _write_audit_section(lines)
     _write_computing_section(lines, project)
-    _write_publication_sections(lines, project)
     _write_formula_section(lines, project)
     return '\n'.join(lines)
 
@@ -174,45 +125,6 @@ def _write_computing_section(lines: list[str], project: object) -> None:
     fit_datetime = _software_fit_datetime(project)
     if fit_datetime is not None:
         _write_item(lines, '_easydiffraction_software.fit_datetime', fit_datetime)
-
-
-def _write_publication_sections(lines: list[str], project: object) -> None:
-    """
-    Append publication metadata from the project publication owner.
-    """
-    publication = getattr(project, 'publication', None)
-    _write_publication_item_section(
-        lines,
-        'Journal',
-        getattr(publication, 'journal', None),
-        _JOURNAL_ITEMS,
-    )
-    _write_publication_item_section(
-        lines,
-        'Journal dates',
-        getattr(publication, 'journal_date', None),
-        _JOURNAL_DATE_ITEMS,
-    )
-    _write_publication_item_section(
-        lines,
-        'Journal coeditor',
-        getattr(publication, 'journal_coeditor', None),
-        _JOURNAL_COEDITOR_ITEMS,
-    )
-    _write_publication_item_section(
-        lines,
-        'Publication contact author',
-        getattr(publication, 'contact_author', None),
-        _PUBL_CONTACT_AUTHOR_ITEMS,
-    )
-
-    _section(lines, 'Publication authors')
-    _write_loop(lines, _PUBL_AUTHOR_TAGS, _publication_author_rows(publication))
-
-    _write_publication_body_section(
-        lines,
-        getattr(publication, 'body', None),
-    )
 
 
 def _write_formula_section(lines: list[str], project: object) -> None:
@@ -480,8 +392,9 @@ def _write_rietveld_blocks(project: object) -> list[str]:
     if not experiments:
         return []
 
-    phases = _powder_phases(project, experiments)
-    patterns = _powder_patterns(project, experiments)
+    used_block_names = {'global', 'overall'}
+    phases = _powder_phases(project, experiments, used_block_names)
+    patterns = _powder_patterns(experiments, used_block_names)
     return [
         _write_rietveld_overall_block(project, phases, patterns),
         *[_write_powder_phase_block(phase) for phase in phases],
@@ -495,20 +408,16 @@ def _write_rietveld_overall_block(
     patterns: list[_PowderPattern],
 ) -> str:
     """Render the powder Rietveld overall block."""
-    lines = [f'data_{_block_name(project.name)}_overall']
+    lines = ['data_overall']
     fit_result = _fit_result(project)
 
     _section(lines, 'Rietveld overall')
     _write_item(lines, '_pd_calc.method', 'Rietveld Refinement')
-    _write_item(
-        lines,
-        '_pd_block_id',
-        _pipe_ids([phase.block_name for phase in phases]),
-    )
-    _write_item(
+    _write_reference_values(lines, '_pd_block_id', [phase.block_name for phase in phases])
+    _write_reference_values(
         lines,
         '_pd_block_diffractogram_id',
-        _pipe_ids([pattern.block_name for pattern in patterns]),
+        [pattern.block_name for pattern in patterns],
     )
 
     _section(lines, 'Powder refinement')
@@ -587,7 +496,7 @@ def _write_powder_pattern_reference_section(
         phases,
     )
     _section(lines, 'Powder pattern')
-    _write_item(lines, '_pd_block_id', _pipe_ids(phase_ids))
+    _write_reference_values(lines, '_pd_block_id', phase_ids)
     _write_item(lines, '_pd_block_diffractogram_id', pattern.block_name)
 
 
@@ -601,9 +510,6 @@ def _write_powder_measurement_section(
     _section(lines, 'Powder measurement')
     _write_item(lines, '_pd_meas.scan_method', _attribute_value(expt_type, 'beam_mode'))
     _write_item(lines, '_pd_meas.number_of_points', len(data_items))
-    _write_item(lines, '_pd_meas.info_author_name', '?')
-    _write_item(lines, '_pd_meas.info_author_email', '?')
-    _write_item(lines, '_pd_meas.info_author_phone', '?')
 
 
 def _write_powder_proc_section(lines: list[str], experiment: object) -> None:
@@ -702,65 +608,6 @@ def _write_tof_calibration_loop(lines: list[str], experiment: object) -> None:
 
     _section(lines, 'TOF calibration')
     _write_loop(lines, loop.tags, loop.rows)
-
-
-def _write_publication_item_section(
-    lines: list[str],
-    title: str,
-    category: object,
-    items: Iterable[tuple[str, str]],
-) -> None:
-    """Append one scalar publication metadata section."""
-    _section(lines, title)
-    for tag, attr_name in items:
-        _write_item(lines, tag, _attribute_value(category, attr_name))
-
-
-def _write_publication_body_section(lines: list[str], body: object) -> None:
-    """Append publication body metadata."""
-    _section(lines, 'Publication body')
-    for tag, attr_name in _PUBL_BODY_ITEMS:
-        _write_item(lines, tag, _publication_body_value(body, attr_name))
-
-
-def _publication_body_value(body: object, attr_name: str) -> object:
-    """Return one publication-body value."""
-    if attr_name != 'contents':
-        return _attribute_value(body, attr_name)
-
-    return _publication_body_contents(body)
-
-
-def _publication_body_contents(body: object) -> str | None:
-    """Return IUCr publication body contents from discrete fields."""
-    if body is None:
-        return None
-
-    sections = []
-    for attr_name in ('synopsis', 'abstract'):
-        value = _attribute_value(body, attr_name)
-        if value not in {None, ''}:
-            sections.append(str(value))
-
-    keywords = getattr(body, 'keywords', [])
-    if keywords:
-        sections.append(f'Keywords: {", ".join(keywords)}')
-
-    if not sections:
-        return None
-    return '\n\n'.join(sections)
-
-
-def _publication_author_rows(publication: object) -> list[tuple[object, ...]]:
-    """Return publication author rows or one empty placeholder row."""
-    authors = getattr(publication, 'authors', None)
-    rows = [
-        tuple(_attribute_value(author, attr_name) for _, attr_name in _PUBL_AUTHOR_ITEMS)
-        for author in _collection_values(authors)
-    ]
-    if rows:
-        return rows
-    return [tuple(None for _ in _PUBL_AUTHOR_ITEMS)]
 
 
 def _write_loop(
@@ -1178,6 +1025,7 @@ def _powder_rietveld_experiments(project: object) -> list[object]:
 def _powder_phases(
     project: object,
     experiments: list[object],
+    used_block_names: set[str],
 ) -> list[_PowderPhase]:
     """Return unique powder phase blocks for the given experiments."""
     phases: list[_PowderPhase] = []
@@ -1188,10 +1036,9 @@ def _powder_phases(
             if structure_name in seen_structure_names:
                 continue
             seen_structure_names.add(structure_name)
-            block_name = f'{_block_name(project.name)}_phase_{len(phases) + 1}'
             phases.append(
                 _PowderPhase(
-                    block_name=block_name,
+                    block_name=_unique_block_name(structure_name, used_block_names),
                     structure=structure,
                     linked_phase=linked_phase,
                 )
@@ -1200,13 +1047,16 @@ def _powder_phases(
 
 
 def _powder_patterns(
-    project: object,
     experiments: list[object],
+    used_block_names: set[str],
 ) -> list[_PowderPattern]:
     """Return powder pattern blocks for the given experiments."""
     return [
         _PowderPattern(
-            block_name=f'{_block_name(project.name)}_pwd_{index}',
+            block_name=_unique_block_name(
+                getattr(experiment, 'name', None) or f'pattern_{index}',
+                used_block_names,
+            ),
             experiment=experiment,
         )
         for index, experiment in enumerate(experiments, start=1)
@@ -1244,11 +1094,27 @@ def _linked_powder_structures(
     raise ValueError(msg)
 
 
-def _pipe_ids(values: list[str]) -> str:
-    """Return pipe-delimited block identifiers."""
+def _write_reference_values(lines: list[str], tag: str, values: list[str]) -> None:
+    """Append scalar or loop block references."""
     if not values:
-        return '?'
-    return '|' + '|'.join(values) + '|'
+        _write_item(lines, tag, '?')
+        return
+    if len(values) == 1:
+        _write_item(lines, tag, values[0])
+        return
+    _write_loop(lines, (tag,), [(value,) for value in values])
+
+
+def _unique_block_name(value: object, used_block_names: set[str]) -> str:
+    """Return a CIF block name unique in the report."""
+    block_name = _block_name(value)
+    candidate = block_name
+    suffix = 2
+    while candidate in used_block_names:
+        candidate = f'{block_name}_{suffix}'
+        suffix += 1
+    used_block_names.add(candidate)
+    return candidate
 
 
 def _phase_block_names_for_experiment(

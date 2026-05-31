@@ -80,6 +80,7 @@ def test_project_exposes_chart_table_and_display_facades():
     assert isinstance(project.display, ProjectDisplay)
     assert isinstance(project.report, Report)
     assert hasattr(project.report, 'save')
+    assert 'publication' not in Project._public_attrs()
 
 
 def test_apply_params_from_csv_resolves_relative_file_paths(tmp_path):

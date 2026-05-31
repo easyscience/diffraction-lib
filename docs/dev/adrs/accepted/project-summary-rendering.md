@@ -19,20 +19,19 @@ Runs alongside, and **extends**, the accepted
 
 That ADR currently scopes `project.report` to **CIF only** — the
 multi-datablock IUCr-aligned report CIF written to
-`reports/<project>.cif`.
-This ADR keeps the facade and adds a **`project.report` configuration
-category** with five scalar persisted fields (`cif`, `html`, `tex`,
-`pdf`, `html_offline`) on `project.cif`, plus ad-hoc per-format methods
-(`save_html()`, `save_cif()`, `save_tex()`, `save_pdf()`). The
-Python-side API uses those same boolean descriptors directly, matching
-the persisted CIF shape. The LaTeX writer hardcodes `iucrjournals` as
-its document class — there is no style selector, no `_report.style`
-field, no `style=` arg on `save_tex()` / `save_pdf()`. The accepted IUCr
-`project.save(report=True)` flag is **removed**; reports come from the
-config category, not from boolean flags. All four format booleans
-default to `False` so `project.save()` writes nothing under `reports/`
-until the user configures otherwise, preserving the "no surprise files"
-property.
+`reports/<project>.cif`. This ADR keeps the facade and adds a
+**`project.report` configuration category** with five scalar persisted
+fields (`cif`, `html`, `tex`, `pdf`, `html_offline`) on `project.cif`,
+plus ad-hoc per-format methods (`save_html()`, `save_cif()`,
+`save_tex()`, `save_pdf()`). The Python-side API uses those same boolean
+descriptors directly, matching the persisted CIF shape. The LaTeX writer
+hardcodes `iucrjournals` as its document class — there is no style
+selector, no `_report.style` field, no `style=` arg on `save_tex()` /
+`save_pdf()`. The accepted IUCr `project.save(report=True)` flag is
+**removed**; reports come from the config category, not from boolean
+flags. All four format booleans default to `False` so `project.save()`
+writes nothing under `reports/` until the user configures otherwise,
+preserving the "no surprise files" property.
 
 Coordination points with the alignment ADR (no blocking conflicts; its
 Open Questions section is empty):
@@ -54,9 +53,9 @@ Open Questions section is empty):
   non-compliant CIF raises `EasyDiffractionWriterError` instead.
   Completeness checks for a future journal-submission metadata surface
   stay in Deferred Work and are not part of the v1 clean report CIF.
-- **Clean report metadata** — the alignment ADR's Deferred Work
-  proposed user-supplied `reports/publ_info.{toml,json}` data to replace
-  `?` placeholders. This ADR rejects that v1 surface. There is no
+- **Clean report metadata** — the alignment ADR's Deferred Work proposed
+  user-supplied `reports/publ_info.{toml,json}` data to replace `?`
+  placeholders. This ADR rejects that v1 surface. There is no
   `project.publication` owner in v1, `project.cif` does not persist
   journal/publication metadata, and the report CIF does not emit empty
   journal, author, publication-body, or powder-measurement author
@@ -164,8 +163,8 @@ Out of scope:
 - CIF tag-name decisions for any serialised field. Those are the
   alignment ADR's job; this ADR notes recommended mappings and
   cross-references.
-- The IUCr-aligned report CIF export tag policy and multi-datablock layout.
-  Covered by the alignment ADR; the output file lives at
+- The IUCr-aligned report CIF export tag policy and multi-datablock
+  layout. Covered by the alignment ADR; the output file lives at
   `reports/<project>.cif` and is opt-in via `project.report.cif = True`.
 - Pre-existing project-level singleton categories (`_info.*`,
   `_rendering_plot.*`, `_rendering_table.*`, `_verbosity.*`). Covered by
@@ -451,17 +450,17 @@ The project already has two distinct facade patterns for top-level
 config — not Pattern B — heavy datablock owner with its own CIF file.
 The split is summarised below.
 
-| Slot                                 | Pattern | CIF location                             | Python shape                                         |
-| ------------------------------------ | ------- | ---------------------------------------- | ---------------------------------------------------- |
-| `project.info`                       | A       | `project.cif` (`_info.*`)                | small `CategoryItem`                                 |
-| `project.rendering_plot`             | A       | `project.cif` (`_rendering_plot.*`)      | `CategoryItem` (one field)                           |
-| `project.rendering_table`            | A       | `project.cif` (`_rendering_table.*`)     | `CategoryItem` (one field)                           |
-| `project.verbosity`                  | A       | `project.cif` (`_verbosity.*`)           | `CategoryItem` (one field)                           |
-| **`project.report`** (this ADR)      | **A**   | **`project.cif` (`_report.*`)**          | **`CategoryItem` (five fields) plus action methods** |
-| `project.publication` (rejected, §5) | n/a     | none                                     | no v1 Python surface                                 |
-| `project.analysis`                   | B       | `analysis/analysis.cif`                  | `CategoryOwner` (heavy datablock)                    |
-| `project.structures[name]`           | B       | `structures/<name>.cif`                  | `CategoryOwner` (heavy datablock)                    |
-| `project.experiments[name]`          | B       | `experiments/<name>.cif`                 | `CategoryOwner` (heavy datablock)                    |
+| Slot                                 | Pattern | CIF location                         | Python shape                                         |
+| ------------------------------------ | ------- | ------------------------------------ | ---------------------------------------------------- |
+| `project.info`                       | A       | `project.cif` (`_info.*`)            | small `CategoryItem`                                 |
+| `project.rendering_plot`             | A       | `project.cif` (`_rendering_plot.*`)  | `CategoryItem` (one field)                           |
+| `project.rendering_table`            | A       | `project.cif` (`_rendering_table.*`) | `CategoryItem` (one field)                           |
+| `project.verbosity`                  | A       | `project.cif` (`_verbosity.*`)       | `CategoryItem` (one field)                           |
+| **`project.report`** (this ADR)      | **A**   | **`project.cif` (`_report.*`)**      | **`CategoryItem` (five fields) plus action methods** |
+| `project.publication` (rejected, §5) | n/a     | none                                 | no v1 Python surface                                 |
+| `project.analysis`                   | B       | `analysis/analysis.cif`              | `CategoryOwner` (heavy datablock)                    |
+| `project.structures[name]`           | B       | `structures/<name>.cif`              | `CategoryOwner` (heavy datablock)                    |
+| `project.experiments[name]`          | B       | `experiments/<name>.cif`             | `CategoryOwner` (heavy datablock)                    |
 
 Reasons `project.report` is Pattern A, not Pattern B:
 
@@ -1579,8 +1578,7 @@ public API surface treats missing provenance uniformly:
   namespace. Detecting complete provenance is a different concern from
   dictionary-spec compliance and falls to a deferred completeness check.
   Users who must guarantee complete provenance should run that check
-  (once it lands) or inspect the rendered report
-  manually.
+  (once it lands) or inspect the rendered report manually.
 - **Old projects.** Loading a project saved before this ADR produces an
   `analysis.software` with all fields unset and the timestamp `None`. No
   migration step is run; the user populates the snapshot by re-running
@@ -1588,8 +1586,7 @@ public API surface treats missing provenance uniformly:
 
 This rule applies wholesale — no flag toggles it, no targeted exception
 is raised. Users who need full provenance can re-run the fit; users
-producing draft / preview reports keep working without
-interruption.
+producing draft / preview reports keep working without interruption.
 
 ### 5. Clean report-CIF metadata policy
 
@@ -1623,9 +1620,8 @@ journal or portal.
 - `_publ_contact_author.name`, `_publ_contact_author.address`,
   `_publ_contact_author.email`, `_publ_contact_author.phone`,
   `_publ_contact_author.id_ORCID`, `_publ_contact_author.id_IUCr`.
-- `_publ_author.name`, `_publ_author.address`,
-  `_publ_author.footnote`, `_publ_author.id_ORCID`,
-  `_publ_author.id_IUCr`.
+- `_publ_author.name`, `_publ_author.address`, `_publ_author.footnote`,
+  `_publ_author.id_ORCID`, `_publ_author.id_IUCr`.
 - `_publ_body.title`, `_publ_body.synopsis`, `_publ_body.abstract`,
   `_publ_body.keywords`, `_publ_body.contents`.
 - `_pd_meas.info_author_name`, `_pd_meas.info_author_email`,
@@ -1641,26 +1637,26 @@ a clean report CIF.
 The report CIF keeps the following tag families when the project has
 source data for them.
 
-| Tag family | Tags retained | Rationale |
-| --- | --- | --- |
-| Audit | `_audit.creation_method`, `_audit.creation_date` | Identifies the EasyDiffraction writer and report-generation time. These are generated by the library, not user-authored empty metadata. |
-| Software provenance | `_computing.structure_refinement`; `_easydiffraction_software.framework`, `_easydiffraction_software.calculator`, `_easydiffraction_software.minimizer`, `_easydiffraction_software.fit_datetime` | Records the analysis stack in a standard IUCr text field plus structured EasyDiffraction fields. `fit_datetime` is emitted only when a fit snapshot exists. |
-| Chemical formula | `_chemical_formula.sum`, `_chemical_formula.moiety`, `_chemical_formula.weight`, `_chemical_formula.IUPAC` | Summarises chemistry derived from structure atom sites. These fields describe the refined model, not journal administration. |
-| Unit cell | `_cell.length_a`, `_cell.length_b`, `_cell.length_c`, `_cell.angle_alpha`, `_cell.angle_beta`, `_cell.angle_gamma` | Core crystallographic model parameters needed to understand and reuse a structure block. |
-| Space group | `_space_group.name_H-M_alt`, `_space_group.IT_coordinate_system_code`, `_space_group.crystal_system`; `_space_group_symop.id`, `_space_group_symop.operation_xyz` | Gives symmetry in standard coreCIF form and includes explicit operations for downstream tools. |
-| Atom sites | `_atom_site.label`, `_atom_site.type_symbol`, `_atom_site.fract_x`, `_atom_site.fract_y`, `_atom_site.fract_z`, `_atom_site.occupancy`, `_atom_site.ADP_type`, `_atom_site.B_iso_or_equiv` or `_atom_site.U_iso_or_equiv`, `_atom_site.Wyckoff_symbol` | Carries the refined structural model. The B/U split follows the accepted ADP policy and dictionary names. |
-| Anisotropic ADPs | `_atom_site_aniso.label`, `_atom_site_aniso.B_11`, `_atom_site_aniso.B_22`, `_atom_site_aniso.B_33`, `_atom_site_aniso.B_12`, `_atom_site_aniso.B_13`, `_atom_site_aniso.B_23`, or the matching `U_*` items | Carries anisotropic displacement parameters when present, using one ADP family per emitted loop. |
-| Diffraction conditions | `_diffrn.ambient_temperature`, `_diffrn.ambient_pressure`, `_diffrn_radiation.probe`, `_diffrn_radiation_wavelength.id`, `_diffrn_radiation_wavelength.value`, `_diffrn_radiation_wavelength.wt` | Describes measurement conditions and wavelength/probe information needed to interpret the refinement. |
-| Single-crystal refinement | `_refine_ls.R_factor_all`, `_refine_ls.wR_factor_all`, `_refine_ls.R_factor_gt`, `_refine_ls.wR_factor_gt`, `_refine_ls.number_parameters`, `_refine_ls.number_restraints`, `_refine_ls.number_constraints`, `_refine_ls.extinction_method`, `_refine_ls.extinction_coef`, `_refine.special_details` | Reports standard single-crystal fit quality and extinction details produced by the refinement state. |
-| Reflection summary | `_reflns.number_total`, `_reflns.number_gt`, `_reflns.threshold_expression` | Summarises the reflection set used for single-crystal quality metrics. |
-| Single-crystal reflections | `_refln.index_h`, `_refln.index_k`, `_refln.index_l`, `_refln.F_squared_meas`, `_refln.F_squared_calc`, `_refln.F_squared_meas_su`, `_refln.include_status` | Provides the measured/calculated reflection data needed to inspect the fit. |
-| Powder block cross-references | `_pd_block_id`, `_pd_block_diffractogram_id`, `_pd_phase_block.id`, `_pd_phase_block.scale` | Links `data_overall`, phase/model blocks, and diffractogram/pattern blocks in multi-block powder reports. The block-name and scalar-reference policy is defined in the CIF-alignment ADR §2.3. |
-| Powder measurement and profile | `_pd_meas.scan_method`, `_pd_meas.number_of_points`, `_pd_meas.2theta_scan` or `_pd_meas.time_of_flight`, `_pd_meas.intensity_total`, `_pd_calc.intensity_total`, `_pd_proc.intensity_bkg_calc`, `_pd_proc_ls.weight` | Carries the observed, calculated, background, and weight arrays for profile inspection. The author-info placeholders are excluded by §5.1. |
-| Powder processing | `_pd_proc.info_data_reduction`, `_pd_proc.info_datetime`, `_pd_proc.info_excluded_regions` | Documents processing state that affects the profile fit. Empty free-text fields are omitted until real source data exists. |
-| Powder refinement | `_pd_calc.method`, `_pd_proc_ls.prof_R_factor`, `_pd_proc_ls.prof_wR_factor`, `_pd_proc_ls.prof_wR_expected`, `_pd_proc_ls.profile_function`, `_pd_proc_ls.background_function`, `_refine_ls.number_parameters`, `_refine_ls.number_restraints`, `_refine_ls.number_constraints` | Reports Rietveld method, profile quality metrics, and model-size counts in standard pdCIF/coreCIF fields. |
-| Powder reflections | `_refln.index_h`, `_refln.index_k`, `_refln.index_l`, `_refln.F_squared_meas`, `_refln.F_squared_calc`, `_pd_refln.phase_id`, `_refln.d_spacing` | Keeps calculated powder reflection information tied to the contributing phase. |
-| TOF calibration | `_pd_calib_d_to_tof.id`, `_pd_calib_d_to_tof.power`, `_pd_calib_d_to_tof.coeff`, `_pd_calib_d_to_tof.coeff_su`, `_pd_calib_d_to_tof.diffractogram_id` | Required for time-of-flight powder reports when non-zero calibration coefficients are present. |
-| EasyDiffraction extensions | `_easydiffraction_experiment_type.sample_form`, `_easydiffraction_experiment_type.beam_mode`, `_easydiffraction_experiment_type.radiation_probe`, `_easydiffraction_experiment_type.scattering_type`, `_easydiffraction_calculator.type`, `_easydiffraction_peak.type`, `_easydiffraction_background.type`, `_easydiffraction_sc_crystal_block.id`, `_easydiffraction_sc_crystal_block.scale`, `_easydiffraction_diffrn.ambient_magnetic_field`, `_easydiffraction_diffrn.ambient_electric_field`, `_easydiffraction_extinction.type`, `_easydiffraction_extinction.model`, `_easydiffraction_extinction.mosaicity`, `_easydiffraction_extinction.radius` | Preserves EasyDiffraction-specific state that has no exact coreCIF/pdCIF equivalent but is needed to trace how the reported fit was configured. |
+| Tag family                     | Tags retained                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Rationale                                                                                                                                                                                      |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Audit                          | `_audit.creation_method`, `_audit.creation_date`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Identifies the EasyDiffraction writer and report-generation time. These are generated by the library, not user-authored empty metadata.                                                        |
+| Software provenance            | `_computing.structure_refinement`; `_easydiffraction_software.framework`, `_easydiffraction_software.calculator`, `_easydiffraction_software.minimizer`, `_easydiffraction_software.fit_datetime`                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Records the analysis stack in a standard IUCr text field plus structured EasyDiffraction fields. `fit_datetime` is emitted only when a fit snapshot exists.                                    |
+| Chemical formula               | `_chemical_formula.sum`, `_chemical_formula.moiety`, `_chemical_formula.weight`, `_chemical_formula.IUPAC`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Summarises chemistry derived from structure atom sites. These fields describe the refined model, not journal administration.                                                                   |
+| Unit cell                      | `_cell.length_a`, `_cell.length_b`, `_cell.length_c`, `_cell.angle_alpha`, `_cell.angle_beta`, `_cell.angle_gamma`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Core crystallographic model parameters needed to understand and reuse a structure block.                                                                                                       |
+| Space group                    | `_space_group.name_H-M_alt`, `_space_group.IT_coordinate_system_code`, `_space_group.crystal_system`; `_space_group_symop.id`, `_space_group_symop.operation_xyz`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Gives symmetry in standard coreCIF form and includes explicit operations for downstream tools.                                                                                                 |
+| Atom sites                     | `_atom_site.label`, `_atom_site.type_symbol`, `_atom_site.fract_x`, `_atom_site.fract_y`, `_atom_site.fract_z`, `_atom_site.occupancy`, `_atom_site.ADP_type`, `_atom_site.B_iso_or_equiv` or `_atom_site.U_iso_or_equiv`, `_atom_site.Wyckoff_symbol`                                                                                                                                                                                                                                                                                                                                                                                                    | Carries the refined structural model. The B/U split follows the accepted ADP policy and dictionary names.                                                                                      |
+| Anisotropic ADPs               | `_atom_site_aniso.label`, `_atom_site_aniso.B_11`, `_atom_site_aniso.B_22`, `_atom_site_aniso.B_33`, `_atom_site_aniso.B_12`, `_atom_site_aniso.B_13`, `_atom_site_aniso.B_23`, or the matching `U_*` items                                                                                                                                                                                                                                                                                                                                                                                                                                               | Carries anisotropic displacement parameters when present, using one ADP family per emitted loop.                                                                                               |
+| Diffraction conditions         | `_diffrn.ambient_temperature`, `_diffrn.ambient_pressure`, `_diffrn_radiation.probe`, `_diffrn_radiation_wavelength.id`, `_diffrn_radiation_wavelength.value`, `_diffrn_radiation_wavelength.wt`                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Describes measurement conditions and wavelength/probe information needed to interpret the refinement.                                                                                          |
+| Single-crystal refinement      | `_refine_ls.R_factor_all`, `_refine_ls.wR_factor_all`, `_refine_ls.R_factor_gt`, `_refine_ls.wR_factor_gt`, `_refine_ls.number_parameters`, `_refine_ls.number_restraints`, `_refine_ls.number_constraints`, `_refine_ls.extinction_method`, `_refine_ls.extinction_coef`, `_refine.special_details`                                                                                                                                                                                                                                                                                                                                                      | Reports standard single-crystal fit quality and extinction details produced by the refinement state.                                                                                           |
+| Reflection summary             | `_reflns.number_total`, `_reflns.number_gt`, `_reflns.threshold_expression`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Summarises the reflection set used for single-crystal quality metrics.                                                                                                                         |
+| Single-crystal reflections     | `_refln.index_h`, `_refln.index_k`, `_refln.index_l`, `_refln.F_squared_meas`, `_refln.F_squared_calc`, `_refln.F_squared_meas_su`, `_refln.include_status`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Provides the measured/calculated reflection data needed to inspect the fit.                                                                                                                    |
+| Powder block cross-references  | `_pd_block_id`, `_pd_block_diffractogram_id`, `_pd_phase_block.id`, `_pd_phase_block.scale`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Links `data_overall`, phase/model blocks, and diffractogram/pattern blocks in multi-block powder reports. The block-name and scalar-reference policy is defined in the CIF-alignment ADR §2.3. |
+| Powder measurement and profile | `_pd_meas.scan_method`, `_pd_meas.number_of_points`, `_pd_meas.2theta_scan` or `_pd_meas.time_of_flight`, `_pd_meas.intensity_total`, `_pd_calc.intensity_total`, `_pd_proc.intensity_bkg_calc`, `_pd_proc_ls.weight`                                                                                                                                                                                                                                                                                                                                                                                                                                     | Carries the observed, calculated, background, and weight arrays for profile inspection. The author-info placeholders are excluded by §5.1.                                                     |
+| Powder processing              | `_pd_proc.info_data_reduction`, `_pd_proc.info_datetime`, `_pd_proc.info_excluded_regions`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Documents processing state that affects the profile fit. Empty free-text fields are omitted until real source data exists.                                                                     |
+| Powder refinement              | `_pd_calc.method`, `_pd_proc_ls.prof_R_factor`, `_pd_proc_ls.prof_wR_factor`, `_pd_proc_ls.prof_wR_expected`, `_pd_proc_ls.profile_function`, `_pd_proc_ls.background_function`, `_refine_ls.number_parameters`, `_refine_ls.number_restraints`, `_refine_ls.number_constraints`                                                                                                                                                                                                                                                                                                                                                                          | Reports Rietveld method, profile quality metrics, and model-size counts in standard pdCIF/coreCIF fields.                                                                                      |
+| Powder reflections             | `_refln.index_h`, `_refln.index_k`, `_refln.index_l`, `_refln.F_squared_meas`, `_refln.F_squared_calc`, `_pd_refln.phase_id`, `_refln.d_spacing`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Keeps calculated powder reflection information tied to the contributing phase.                                                                                                                 |
+| TOF calibration                | `_pd_calib_d_to_tof.id`, `_pd_calib_d_to_tof.power`, `_pd_calib_d_to_tof.coeff`, `_pd_calib_d_to_tof.coeff_su`, `_pd_calib_d_to_tof.diffractogram_id`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Required for time-of-flight powder reports when non-zero calibration coefficients are present.                                                                                                 |
+| EasyDiffraction extensions     | `_easydiffraction_experiment_type.sample_form`, `_easydiffraction_experiment_type.beam_mode`, `_easydiffraction_experiment_type.radiation_probe`, `_easydiffraction_experiment_type.scattering_type`, `_easydiffraction_calculator.type`, `_easydiffraction_peak.type`, `_easydiffraction_background.type`, `_easydiffraction_sc_crystal_block.id`, `_easydiffraction_sc_crystal_block.scale`, `_easydiffraction_diffrn.ambient_magnetic_field`, `_easydiffraction_diffrn.ambient_electric_field`, `_easydiffraction_extinction.type`, `_easydiffraction_extinction.model`, `_easydiffraction_extinction.mosaicity`, `_easydiffraction_extinction.radius` | Preserves EasyDiffraction-specific state that has no exact coreCIF/pdCIF equivalent but is needed to trace how the reported fit was configured.                                                |
 
 ### 6. Shared `ReportDataContext` + Jinja templates
 
@@ -1940,13 +1936,13 @@ every renderer (HTML, PDF, terminal, GUI) simultaneously.
      **not** overwritten — fit time and report time are distinct events.
   5. **Publication metadata excluded from the default save and report
      CIF.** The alignment ADR's Scope explicitly excluded "Adding new
-     CIF categories the project does not currently track
-     (`_chemical.*`, `_publ.*`, `_journal.*`) **for the default save**"
-     (alignment ADR §Scope, lines 101-110). This ADR keeps that
-     exclusion for `_publ_*` and `_journal_*`: no `project.publication`
-     owner is added, no journal/publication metadata is persisted to
-     `project.cif`, and the report CIF omits the empty publication and
-     powder-measurement author placeholders listed in §5.1.
+     CIF categories the project does not currently track (`_chemical.*`,
+     `_publ.*`, `_journal.*`) **for the default save**" (alignment ADR
+     §Scope, lines 101-110). This ADR keeps that exclusion for `_publ_*`
+     and `_journal_*`: no `project.publication` owner is added, no
+     journal/publication metadata is persisted to `project.cif`, and the
+     report CIF omits the empty publication and powder-measurement
+     author placeholders listed in §5.1.
 
   All other IUCr-export decisions in the alignment ADR (multi-datablock
   layout, tag-name policy, gemmi as the validation engine) are
@@ -1974,11 +1970,10 @@ every renderer (HTML, PDF, terminal, GUI) simultaneously.
      journal-administration fields.
   3. **Project-level singleton category enumeration extended only by
      `_report.*`.** The accepted ADR enumerates `_info.*`,
-     `_rendering_plot.*`,
-     `_rendering_table.*`, `_verbosity.*` as the project-level singleton
-     categories owned by `project.cif`. This ADR adds `_report.*` (this
-     ADR §1.3) and explicitly does not add `_publ_*`, `_journal_*`, or
-     any `_publication.*` family.
+     `_rendering_plot.*`, `_rendering_table.*`, `_verbosity.*` as the
+     project-level singleton categories owned by `project.cif`. This ADR
+     adds `_report.*` (this ADR §1.3) and explicitly does not add
+     `_publ_*`, `_journal_*`, or any `_publication.*` family.
 - [`python-cif-category-correspondence.md`](../suggestions/python-cif-category-correspondence.md)
   — owns the Python-to-CIF correspondence rule for one new project-level
   singleton surface:

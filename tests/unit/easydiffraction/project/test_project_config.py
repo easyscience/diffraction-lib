@@ -78,6 +78,8 @@ def test_project_config_as_cif_has_project_chart_and_table_sections_without_data
     assert '_rendering_plot.type auto' in cif_text
     assert '_rendering_table.type auto' in cif_text
     assert '_verbosity.fit full' in cif_text
+    assert '_journal.' not in cif_text
+    assert '_publ_' not in cif_text
 
 
 def test_project_save_and_load_use_auto_display_defaults_when_unset(tmp_path):
@@ -93,6 +95,8 @@ def test_project_save_and_load_use_auto_display_defaults_when_unset(tmp_path):
     assert '_report.cif false' in project_cif
     assert '_rendering_table.type auto' in project_cif
     assert '_verbosity.fit full' in project_cif
+    assert '_journal.' not in project_cif
+    assert '_publ_' not in project_cif
 
     loaded = Project.load(str(tmp_path / 'proj'))
 

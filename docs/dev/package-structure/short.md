@@ -285,9 +285,6 @@
 │   │   │   ├── 📄 default.py
 │   │   │   └── 📄 factory.py
 │   │   ├── 📁 publication
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   └── 📄 factory.py
 │   │   ├── 📁 rendering
 │   │   ├── 📁 rendering_plot
 │   │   │   ├── 📄 __init__.py
@@ -322,8 +319,7 @@
 │   ├── 📄 display.py
 │   ├── 📄 project.py
 │   ├── 📄 project_config.py
-│   ├── 📄 project_info.py
-│   └── 📄 publication_loader.py
+│   └── 📄 project_info.py
 ├── 📁 report
 │   ├── 📁 templates
 │   │   ├── 📁 html
