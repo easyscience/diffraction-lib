@@ -291,7 +291,7 @@ Adjust the margins and paddings to fit the defaults in MkDocs Material and do no
 }
 
 .md-typeset .crysview.cv-host-theme-dark {
-  --cv-scene-bg: #111217 !important;
+  --cv-scene-bg: #212121 !important;
   --cv-scene-fg: #e6e8ee !important;
   --cv-panel-bg: rgba(37, 37, 43, 0.95) !important;
   --cv-panel-border: #52545c !important;

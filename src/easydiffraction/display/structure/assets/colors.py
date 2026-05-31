@@ -21,7 +21,7 @@ VACANCY_COLOR: Rgb = (210, 210, 210)
 
 # Canvas + annotation colours selected by the detected light/dark theme.
 LIGHT_THEME: dict[str, Rgb] = {'background': (255, 255, 255), 'foreground': (33, 33, 33)}
-DARK_THEME: dict[str, Rgb] = {'background': (20, 20, 24), 'foreground': (235, 235, 235)}
+DARK_THEME: dict[str, Rgb] = {'background': (33, 33, 33), 'foreground': (235, 235, 235)}
 
 
 def color_for(element: str, scheme: str) -> Rgb:

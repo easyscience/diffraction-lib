@@ -715,6 +715,6 @@ class TestRenderUnpatchedIntegration:
             offline=True,
             dark=True,
         )
-        assert 'rgb(20, 20, 24)' in html  # DARK_THEME background
+        assert 'rgb(33, 33, 33)' in html  # DARK_THEME background
         assert 'rgb(235, 235, 235)' in html  # DARK_THEME foreground
         assert 'dark' in html

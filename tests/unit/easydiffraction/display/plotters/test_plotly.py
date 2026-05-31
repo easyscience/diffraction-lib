@@ -169,6 +169,7 @@ def test_show_figure_adds_legend_toggle_script_to_html_output(monkeypatch):
     assert 'data-jp-theme-light' in captured['post_script']
     assert 'data-md-color-scheme' in captured['post_script']
     assert 'graphDiv.dataset.edPlotlyTheme' in captured['post_script']
+    assert "background: '#212121'" in captured['post_script']
     assert 'window.Plotly.relayout(graphDiv, update)' in captured['post_script']
     assert 'data-legend-toggle="true"' in captured['post_script']
     assert 'Toggle legend' in captured['post_script']

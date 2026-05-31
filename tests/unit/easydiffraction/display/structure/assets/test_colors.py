@@ -89,7 +89,7 @@ class TestConstants:
         assert LIGHT_THEME['foreground'] == (33, 33, 33)
 
     def test_dark_theme_values(self):
-        assert DARK_THEME['background'] == (20, 20, 24)
+        assert DARK_THEME['background'] == (33, 33, 33)
         assert DARK_THEME['foreground'] == (235, 235, 235)
 
     def test_theme_values_all_rgb(self):

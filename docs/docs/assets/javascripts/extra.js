@@ -31,7 +31,7 @@
   function themeColors() {
     if (themeName() === 'dark') {
       return {
-        background: '#111217',
+        background: '#212121',
         foreground: '#e6e8ee',
         grid: 'rgba(110, 145, 190, 0.35)',
         legend: 'rgba(0, 0, 0, 0.5)',
