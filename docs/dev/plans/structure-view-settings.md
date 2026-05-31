@@ -261,7 +261,7 @@ API. A short bridge period where old and new surfaces coexist is intentional.
   **uncommitted** for the user to regenerate (`pixi run notebook-prepare`) and
   stage (they carry unrelated user edits). Commit: `Update crysview ADR for the
   structure-view category split`.
-- [ ] **P1.12 — Phase 1 review gate.** No-code step: mark complete and commit the
+- [x] **P1.12 — Phase 1 review gate.** No-code step: mark complete and commit the
   checklist update alone. Commit: `Reach Phase 1 review gate`.
 
 ### Selector classification (P1.2 audit)
