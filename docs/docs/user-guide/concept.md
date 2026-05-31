@@ -6,7 +6,7 @@ main steps:
 
 ```mermaid
 flowchart LR
-    a(Data Aquisition)
+    a(Data Acquisition)
     b(Data Reduction)
     c(Data Analysis)
     a --> b
@@ -84,6 +84,23 @@ The aim of data analysis is to refine the structural parameters of the
 sample by minimizing the difference (or **residual**) between the
 experimental and calculated data — and this is exactly where
 EasyDiffraction comes into play.
+
+## Least-Squares and Bayesian Analysis
+
+Most refinements use least-squares minimization: EasyDiffraction varies
+the selected free parameters and reports the best-fit values, standard
+uncertainties, R-factors, and goodness-of-fit metrics. This is the usual
+workflow for routine model refinement and is available through
+minimizers such as `lmfit`, `dfols`, and several `bumps` optimizers.
+
+Bayesian analysis answers a different question. Instead of reporting
+only one best-fit point and a covariance estimate, a Bayesian sampler
+explores the posterior distribution of the free parameters. This gives
+credible intervals, correlations, posterior-predictive patterns, and
+diagnostics such as r-hat and effective sample size. EasyDiffraction
+currently exposes Bayesian workflows through `bumps (dream)` and
+`emcee`; their posterior and predictive arrays are stored in
+`analysis/results.h5` when available.
 
 <!-- prettier-ignore-start -->
 ![](../assets/images/user-guide/data-analysis_refinement.png){ width="450", loading=lazy }

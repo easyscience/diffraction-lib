@@ -19,10 +19,11 @@ crystallography. The **pdCIF** dictionary covers parameters specific to
 powder diffraction, **magCIF** is used for magnetic structure analysis.
 
 As most parameters needed for diffraction data analysis are already
-covered by IUCr dictionaries, EasyDiffraction uses the strict **CIF
-format** and follows these dictionaries as closely as possible — for
-both input and output — throughout the workflow described in the
-[Analysis Workflow](analysis-workflow/index.md) section.
+covered by IUCr dictionaries, EasyDiffraction uses **CIF** as its
+project persistence format and follows these dictionaries where they fit
+the day-to-day project files. Some EasyDiffraction-owned settings, such
+as minimizer choices and report configuration, use project-specific CIF
+categories.
 
 The key advantage of CIF is the standardized naming of parameters and
 categories, which promotes interoperability and familiarity among
@@ -91,9 +92,9 @@ loop_
 <span class="green"><b>_atom_site</b>.fract_x</span>
 <span class="green"><b>_atom_site</b>.fract_y</span>
 <span class="green"><b>_atom_site</b>.fract_z</span>
-<span class="green"><b>_atom_site</b>.Wyckoff_letter</span>
+<span class="green"><b>_atom_site</b>.Wyckoff_symbol</span>
 <span class="green"><b>_atom_site</b>.occupancy</span>
-<span class="green"><b>_atom_site</b>.adp_type</span>
+<span class="green"><b>_atom_site</b>.ADP_type</span>
 <span class="green"><b>_atom_site</b>.B_iso_or_equiv</span>
 La La   0   0   0     a   0.5  Biso 0.4958
 Ba Ba   0   0   0     a   0.5  Biso 0.4958
@@ -211,7 +212,8 @@ in the following blocks:
 - **structure**: defines the structure
 - **experiment**: contains the experiment setup and measured data
 - **analysis**: stores fitting and analysis parameters
-- **summary**: captures analysis results
+- **reports**: stores generated HTML, CIF, TeX, and PDF reports when
+  enabled through `project.report`
 
 Example CIF files for each block are provided in the
 [Analysis Workflow](analysis-workflow/index.md) and

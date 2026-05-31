@@ -16,9 +16,12 @@ Here is a brief overview of the main documentation sections:
 - [:material-school: Tutorials](tutorials/index.md) – Offers practical,
   step-by-step examples demonstrating common workflows and data analysis
   tasks.
-- [:material-code-braces-box: API Reference](api-reference/index.md) –
-  An auto-generated reference detailing the available functions and
-  modules in EasyDiffraction.
 - [:material-console: Command-Line Interface](cli/index.md) – Describes
   how to use EasyDiffraction from the terminal for batch fitting and
   other tasks.
+- [:material-code-braces-box: API Reference](api-reference/index.md) –
+  An auto-generated reference detailing the available functions and
+  modules in EasyDiffraction.
+- [:material-clipboard-text-outline: Quick Reference](quick-reference/index.md)
+  – Collects the most common commands for project setup, fitting,
+  display, reports, and command-line use.

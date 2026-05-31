@@ -6,7 +6,7 @@ structured workflow divided into **five key steps**:
 ```mermaid
 flowchart LR
     a(Project)
-    b(Model)
+    b(Structure)
     c(Experiment)
     d(Analysis)
     e(Report)
@@ -20,7 +20,7 @@ flowchart LR
   a container for structure and experiment parameters, measured and
   calculated data, analysis settings and results.
 - [:material-puzzle: Structure](model.md) – Load an existing
-  **crystallographic model** in CIF format or define a new one from
+  **crystallographic structure** in CIF format or define a new one from
   scratch.
 - [:material-microscope: Experiment](experiment.md) – Import
   **experimental diffraction data** and configure **instrumental** and

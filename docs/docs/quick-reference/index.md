@@ -180,37 +180,42 @@ List supported type choices. The current selection is marked in the
 output:
 
 ```python
-experiment.show_peak_profile_types()
-experiment.show_background_types()
-experiment.calculation.show_calculator_types()
+experiment.peak.show_supported()
+experiment.background.show_supported()
+experiment.calculator.show_supported()
 
-project.analysis.show_fitting_mode_types()
-project.analysis.fitting.show_minimizer_types()
+project.analysis.fitting_mode.show_supported()
+project.analysis.minimizer.show_supported()
 
-project.rendering.show_chart_engines()
-project.rendering.show_table_engines()
-project.rendering.show_config()
+project.rendering_plot.show_supported()
+project.rendering_table.show_supported()
+project.rendering_structure.show_supported()
+project.structure_style.atom_view.show_supported()
+project.structure_style.color_scheme.show_supported()
 ```
 
-Change the active type by assigning the corresponding `*_type` property:
+Change the active type by assigning the category's `type` selector or
+the value selector property:
 
 ```python
-experiment.peak_profile_type = 'pseudo-voigt'
-experiment.background_type = 'line-segment'
-experiment.calculation.calculator_type = 'cryspy'
+experiment.peak.type = 'pseudo-voigt'
+experiment.background.type = 'line-segment'
+experiment.calculator.type = 'cryspy'
 
-project.analysis.fitting_mode_type = 'single'
-project.analysis.fitting.minimizer_type = 'lmfit'
+project.analysis.fitting_mode.type = 'single'
+project.analysis.minimizer.type = 'lmfit'
 
-project.rendering.chart_engine = 'plotly'
-project.rendering.table_engine = 'rich'
+project.rendering_plot.type = 'plotly'
+project.rendering_table.type = 'rich'
+project.rendering_structure.type = 'threejs'
+project.structure_style.atom_view = 'covalent'
 ```
 
 For single-crystal experiments, extinction uses the same pattern:
 
 ```python
-experiment.show_extinction_types()
-experiment.extinction_type = 'becker-coppens'
+experiment.extinction.show_supported()
+experiment.extinction.type = 'becker-coppens'
 ```
 
 ## Find Commands with Help
@@ -291,14 +296,14 @@ experiment.linked_phases['lbco'].scale.free = True
 Choose calculators and minimizers:
 
 ```python
-experiment.calculation.show_calculator_types()
-experiment.calculation.calculator_type = 'cryspy'
+experiment.calculator.show_supported()
+experiment.calculator.type = 'cryspy'
 
-project.analysis.show_fitting_mode_types()
-project.analysis.fitting_mode_type = 'single'
+project.analysis.fitting_mode.show_supported()
+project.analysis.fitting_mode.type = 'single'
 
-project.analysis.fitting.show_minimizer_types()
-project.analysis.fitting.minimizer_type = 'lmfit'
+project.analysis.minimizer.show_supported()
+project.analysis.minimizer.type = 'lmfit'
 ```
 
 Run a fit and inspect the result:
@@ -324,7 +329,7 @@ project.analysis.sequential_fit_extract.create(
   required=True,
 )
 
-project.analysis.fitting_mode_type = 'sequential'
+project.analysis.fitting_mode.type = 'sequential'
 project.analysis.sequential_fit.data_dir = scan_data_dir
 project.analysis.sequential_fit.max_workers = 'auto'
 
@@ -345,7 +350,7 @@ and `apply_params_from_csv()` rather than `display.fit.results()`.
 After a Bayesian fit, inspect posterior displays:
 
 ```python
-project.display.posterior.distribution(param)
+project.display.posterior.distribution(structure.cell.length_a)
 project.display.posterior.distribution()
 project.display.posterior.pairs()
 project.display.posterior.predictive(expt_name='hrpt')
