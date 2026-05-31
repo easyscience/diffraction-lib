@@ -209,7 +209,7 @@ project.structure_style.color_scheme.show_supported()
 # atom_view picks a radius-model ball ('vdw'/'covalent'/'ionic')
 # or 'adp' for displacement surfaces (spheres for isotropic sites,
 # ellipsoids for anisotropic ones — driven by each atom's adp_type).
-project.structure_style.atom_view = 'adp'  # 'vdw', 'covalent', 'ionic', or 'adp'
+project.structure_style.atom_view = 'covalent'  # default; use 'adp' for ellipsoids
 project.structure_style.color_scheme = 'jmol'  # 'jmol' or 'vesta'
 project.structure_style.atom_scale = 0.3  # overall ball size (square-root compressed)
 project.structure_style.adp_probability = 0.5  # ADP ellipsoid probability level (0, 1)

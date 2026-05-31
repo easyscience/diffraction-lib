@@ -133,7 +133,7 @@ def test_created_instance_identity():
 def test_created_instance_defaults():
     structure_style = _make_style()
 
-    assert structure_style.atom_view.value == 'adp'
+    assert structure_style.atom_view.value == 'covalent'
     assert structure_style.color_scheme.value == 'jmol'
     assert structure_style.adp_probability.value == 0.99
     assert structure_style.atom_scale.value == 0.3

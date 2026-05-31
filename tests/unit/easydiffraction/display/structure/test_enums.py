@@ -95,8 +95,8 @@ class TestAtomViewEnum:
         with pytest.raises(ValueError, match='is not a valid AtomViewEnum'):
             AtomViewEnum('atomic')
 
-    def test_default_is_adp(self):
-        assert AtomViewEnum.default() is AtomViewEnum.ADP
+    def test_default_is_covalent(self):
+        assert AtomViewEnum.default() is AtomViewEnum.COVALENT
 
     def test_is_adp_true_only_for_adp(self):
         assert AtomViewEnum.ADP.is_adp is True

@@ -73,7 +73,7 @@ class TestStructureStyleIdentityAndDefaults:
         from easydiffraction.project.categories.structure_style.default import StructureStyle
 
         style = StructureStyle()
-        assert style.atom_view.value == 'adp'
+        assert style.atom_view.value == 'covalent'
         assert style.color_scheme.value == 'jmol'
         assert style.adp_probability.value == 0.99
         assert style.atom_scale.value == 0.3
@@ -334,7 +334,7 @@ class TestStructureStyleCif:
 
         style = StructureStyle()
         cif = style.as_cif
-        assert '_structure_style.atom_view adp' in cif
+        assert '_structure_style.atom_view covalent' in cif
         assert '_structure_style.color_scheme jmol' in cif
         assert '_structure_style.adp_probability 0.99' in cif
         assert '_structure_style.atom_scale 0.3' in cif

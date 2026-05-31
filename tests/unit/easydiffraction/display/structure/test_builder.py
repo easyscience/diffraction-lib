@@ -640,8 +640,8 @@ class TestValueSelectors:
 
 
 class TestStructureStyleInputs:
-    def test_default_atom_view_is_adp(self):
-        assert StructureStyle().atom_view.value == AtomViewEnum.ADP.value
+    def test_default_atom_view_is_covalent(self):
+        assert StructureStyle().atom_view.value == AtomViewEnum.COVALENT.value
 
     def test_default_color_scheme_is_jmol(self):
         assert StructureStyle().color_scheme.value == ColorSchemeEnum.JMOL.value

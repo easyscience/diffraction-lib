@@ -290,7 +290,7 @@ A scientist picks one model and one scheme instead of editing dozens of
 per-element rows, which keeps the view consistent and reproducible:
 
 ```python
-project.structure_style.atom_view = 'adp'      # vdw | covalent | ionic | adp
+project.structure_style.atom_view = 'covalent' # vdw | covalent | ionic | adp
 project.structure_style.color_scheme = 'jmol'  # jmol | vesta
 project.structure_style.atom_view.show_supported()
 project.structure_style.color_scheme.show_supported()
@@ -312,9 +312,9 @@ time:
   thermal-ellipsoid (ORTEP) depiction crystallographers use to inspect
   the displacement parameters a refinement adjusts.
 
-The default is `'adp'`, because this is a refinement tool and the
-thermal ellipsoids are usually the point; a structure with no ADP simply
-renders as covalent-radius spheres.
+The default is `'covalent'`, because it gives every structure a stable
+charge-free ball view. Users can switch to `'adp'` when they want to
+inspect displacement surfaces.
 
 > **Amendment — `atom_view` merge.** An earlier design split this into
 > two settings: `atom_shape` (`ball`/`ortep`) and `radius_model`
@@ -372,11 +372,10 @@ each selector lists its accepted values through descriptor-level
 is a plain category, not a switchable one: it has no factory-swapped
 `type`, only these validated value settings.
 
-The defaults are the **`adp`** atom view and the **Jmol/CPK** colour
-scheme, so the view looks right with no configuration. Covalent radii —
-the `adp` ball fallback and the `atom_view = 'covalent'` option — are
-preferred because they are backed by complete, well-documented
-per-element data and needs no oxidation state: today's atom-site model
+The defaults are the **`covalent`** atom view and the **Jmol/CPK**
+colour scheme, so the view looks right with no configuration. Covalent
+radii are preferred because they are backed by complete, well-documented
+per-element data and need no oxidation state: today's atom-site model
 carries only an element symbol — no charge, oxidation-state, or
 coordination field — so a model that depends on charge cannot be
 resolved per site yet.
@@ -509,7 +508,7 @@ project.rendering_structure.type = 'auto'           # default: 'threejs' in Jupy
 project.rendering_structure.show_supported()
 
 # How: standard styling models, not per-element values (visual only)
-project.structure_style.atom_view = 'adp'      # vdw | covalent | ionic | adp
+project.structure_style.atom_view = 'covalent' # vdw | covalent | ionic | adp
 project.structure_style.color_scheme = 'jmol'  # jmol | vesta
 project.structure_style.adp_probability = 0.5  # ADP probability level (0, 1)
 project.structure_style.atom_scale = 0.3       # overall atom scale (0, 1]
@@ -559,7 +558,7 @@ _structure_view.range_b_max    1
 _structure_view.range_c_min    0
 _structure_view.range_c_max    1
 
-_structure_style.atom_view        adp
+_structure_style.atom_view        covalent
 _structure_style.color_scheme     jmol
 _structure_style.adp_probability  0.5
 _structure_style.atom_scale       0.3

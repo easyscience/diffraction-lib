@@ -46,8 +46,8 @@ class AtomViewEnum(StrEnum):
 
     @classmethod
     def default(cls) -> AtomViewEnum:
-        """Select the default atom view (ADP displacement surfaces)."""
-        return cls.ADP
+        """Select the default atom view (covalent-radius balls)."""
+        return cls.COVALENT
 
     @property
     def is_adp(self) -> bool:
