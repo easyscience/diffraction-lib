@@ -832,9 +832,11 @@ rather than maintaining hand-written summary tables:
   descriptors first as key-value tables and loop items as loop tables
   with headers. Experiment data categories (`pd_data`, `total_data`,
   `refln`) are skipped because they are plotted or too large for report
-  tables. The fit-quality plot remains the first experiment
-  sub-subsection, and publication metadata remains source data only — it
-  is not added to HTML, TeX, or PDF reports.
+  tables. The structure view and the fit-quality plot sit directly under
+  their parent subsection — the structure or experiment record (e.g.
+  `3.1 lbco`, `4.1 hrpt`) — as its first content, with no extra
+  sub-subsection heading. Publication metadata remains source data only
+  — it is not added to HTML, TeX, or PDF reports.
 - **DisplayHandler names and units.** All table labels and units use the
   per-context `DisplayHandler` resolution chain, so TeX sees LaTeX names
   (`$2\theta$ offset`, `$U_{\mathrm{iso}}$`), HTML sees MathJax-capable
@@ -869,6 +871,14 @@ rather than maintaining hand-written summary tables:
   report styling code and passed to HTML CSS, TeX tables, and
   Plotly/pgfplots figures. Body rows alternate with the first body row
   filled, regardless of whether the table has a header.
+- **Framed structure figure.** In the TeX/PDF report the structure view
+  is wrapped in an `\fcolorbox` that is always the full line width; the
+  raster PNG is scaled to fit within half the text height or the line
+  width, whichever binds first (aspect preserved), so the box height
+  follows the image automatically. The frame uses the same light grey as
+  the interactive view's container, keeping the static report figure and
+  the Jupyter view visually consistent. The HTML report keeps the
+  interactive Three.js view, which already draws that container border.
 - **Predictable table widths.** HTML and TeX key-value tables use at
   least half of the available text width. Loop tables are classified
   from their rendered content: compact loops use half width, while wider
