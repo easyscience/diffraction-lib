@@ -270,8 +270,9 @@ class RasterStructureRenderer:
         if not wedges:
             flat = np.asarray(base, dtype=np.float32) / 255.0
             return np.broadcast_to(flat, dx.shape + (3,))
-        # Pie slices by screen-space azimuth (image y is down, so negate dy).
-        angle = (np.arctan2(-dy, dx) / (2.0 * np.pi)) % 1.0
+        # Pie slices by screen-space azimuth measured clockwise from the top, so
+        # a two-way split reads as a vertical seam (image y is down -> negate dy).
+        angle = (np.arctan2(dx, -dy) / (2.0 * np.pi)) % 1.0
         base_rgb = np.empty(dx.shape + (3,), dtype=np.float32)
         lo = 0.0
         for wedge in wedges:

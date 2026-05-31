@@ -149,6 +149,9 @@ for (const a of SCENE.atoms) {
   groups.atoms.add(mesh);
 }
 
+// Occupancy-wedge spheres: carve longitude wedges (proportional phi spans) and
+// orient them toward the camera below, once the view basis is known.
+const wedgeMeshes = [];
 for (const s of SCENE.wedgeSpheres) {
   let phi = 0;
   const parts = s.label.split('/');
@@ -161,6 +164,7 @@ for (const s of SCENE.wedgeSpheres) {
     mesh.userData.element = parts[i] || null;   // null for the vacancy wedge
     mesh.userData.asymmetric = s.asymmetric;
     groups.atoms.add(mesh);
+    wedgeMeshes.push(mesh);
     phi += span;
   });
 }
@@ -277,6 +281,14 @@ if (SCENE.axes && SCENE.axes.arrows.length === 3) {
 const look = viewDir.clone().negate();
 const camRight = new THREE.Vector3().crossVectors(look, viewUp).normalize();
 const camUp = new THREE.Vector3().crossVectors(camRight, look).normalize();
+// Orient occupancy-wedge spheres so their carve pole (+Y) points at the camera
+// (azimuthal spans then project as a proportional pie) and the wedge seam plane
+// is vertical (its normal is camRight), so a two-way split reads as a left/right
+// vertical seam matching the raster figure.
+const wedgeQuat = new THREE.Quaternion().setFromRotationMatrix(
+  new THREE.Matrix4().makeBasis(
+    new THREE.Vector3().crossVectors(viewDir, camRight), viewDir, camRight));
+for (const m of wedgeMeshes) m.quaternion.copy(wedgeQuat);
 let minU = Infinity, maxU = -Infinity, minV = Infinity, maxV = -Infinity;
 for (const p of fitPoints) {
   const d = p.clone().sub(target);
