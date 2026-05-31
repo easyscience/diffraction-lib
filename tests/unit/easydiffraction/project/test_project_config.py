@@ -40,7 +40,8 @@ def test_project_config_exposes_project_info_chart_and_table_categories():
         config.rendering_table,
         config.verbosity,
         config.rendering_structure,
-        config.style,
+        config.structure_view,
+        config.structure_style,
     ]
     assert config.parameters == (
         config.info.parameters
@@ -49,7 +50,8 @@ def test_project_config_exposes_project_info_chart_and_table_categories():
         + config.rendering_table.parameters
         + config.verbosity.parameters
         + config.rendering_structure.parameters
-        + config.style.parameters
+        + config.structure_view.parameters
+        + config.structure_style.parameters
     )
 
 

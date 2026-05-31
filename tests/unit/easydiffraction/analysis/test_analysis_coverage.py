@@ -261,7 +261,7 @@ class TestBayesianProjection:
         project = SimpleNamespace(
             experiments=Experiments(),
             structures=object(),
-            chart=SimpleNamespace(plotter=Plotter()),
+            rendering_plot=SimpleNamespace(plotter=Plotter()),
             _varname='proj',
         )
         analysis = Analysis(project=project)
