@@ -195,11 +195,9 @@ Minimizer & {{ tex_software_name(analysis.software.minimizer) }} & {{ analysis.s
 \subsection{ {{- structure.id | tex -}} }
 
 {% if tex.structure_figure_paths[structure.id] %}
-\subsubsection*{Structure view}
-
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.6\linewidth]{ {{- tex.structure_figure_paths[structure.id] -}} }
+\includegraphics[width=\linewidth]{ {{- tex.structure_figure_paths[structure.id] -}} }
 \end{figure}
 {% endif %}
 
@@ -249,8 +247,6 @@ Minimizer & {{ tex_software_name(analysis.software.minimizer) }} & {{ analysis.s
 \subsection{ {{- experiment.id | tex -}} }
 
 {% if experiment.fit_data and tex.fit_figure_paths[experiment.id] %}
-\subsubsection*{Fit quality}
-
 \begin{figure}[H]
 \centering
 Measured and calculated fit for {{ experiment.id | tex }}.
