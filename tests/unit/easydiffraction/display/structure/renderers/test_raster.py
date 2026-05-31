@@ -40,22 +40,9 @@ def _pixels(png: bytes) -> np.ndarray:
     return np.asarray(_open(png))
 
 
-_FRAME_INSET = 8  # crop past the always-drawn frame border when inspecting content
-
-
-def _interior(png: bytes) -> np.ndarray:
-    """Return the canvas interior, excluding the always-drawn frame border."""
-    return _pixels(png)[_FRAME_INSET:-_FRAME_INSET, _FRAME_INSET:-_FRAME_INSET]
-
-
 def _has_drawn_pixels(png: bytes) -> bool:
-    """True when any interior pixel departs from the white background."""
-    return bool((_interior(png) != 255).any())
-
-
-def _has_blank_interior(png: bytes) -> bool:
-    """True when the interior is pristine white, frame border excluded."""
-    return bool((_interior(png) == 255).all())
+    """True when any pixel departs from the white background."""
+    return bool((_pixels(png) != 255).any())
 
 
 def _atom_scene() -> StructureScene:
@@ -193,27 +180,17 @@ class TestRenderPngFeatures:
         assert _has_drawn_pixels(png)
 
     def test_empty_scene_is_blank(self):
-        # No primitives and no features -> a blank interior (only the frame).
+        # No primitives and no features -> a pristine white canvas.
         scene = StructureScene(cell_basis=CUBIC_BASIS)
         png = RasterStructureRenderer().render_png(scene, features=frozenset())
-        assert _has_blank_interior(png)
-
-    def test_frame_border_is_drawn(self):
-        # Every render is framed to mirror the interactive view's container
-        # border, even when the scene carries no structure content.
-        scene = StructureScene(cell_basis=CUBIC_BASIS)
-        png = RasterStructureRenderer().render_png(scene, features=frozenset())
-        pixels = _pixels(png)
-        assert tuple(pixels[0, 0]) != (255, 255, 255)
-        assert tuple(pixels[-1, -1]) != (255, 255, 255)
-        assert _has_blank_interior(png)
+        assert bool((_pixels(png) == 255).all())
 
     def test_feature_gating_skips_unrequested_atoms(self):
         # The scene has an atom, but 'atoms' is absent from the feature
         # set, so nothing is drawn.
         scene = _atom_scene()
         png = RasterStructureRenderer().render_png(scene, features=frozenset({'cell'}))
-        assert _has_blank_interior(png)
+        assert bool((_pixels(png) == 255).all())
 
     def test_unknown_feature_names_are_ignored(self):
         # Feature names outside SUPPORTED never trigger a draw and never
@@ -260,13 +237,13 @@ class TestRenderPngFeatures:
         # 'axes' requested but scene.axes is None -> no crash, blank.
         scene = StructureScene(cell_basis=CUBIC_BASIS)
         png = RasterStructureRenderer().render_png(scene, features=frozenset({'axes'}))
-        assert _has_blank_interior(png)
+        assert bool((_pixels(png) == 255).all())
 
     def test_cell_feature_without_edges_is_blank(self):
         # 'cell' requested but scene.cell_edges is None -> no crash.
         scene = StructureScene(cell_basis=CUBIC_BASIS)
         png = RasterStructureRenderer().render_png(scene, features=frozenset({'cell'}))
-        assert _has_blank_interior(png)
+        assert bool((_pixels(png) == 255).all())
 
     def test_full_scene_renders(self):
         png = RasterStructureRenderer().render_png(
@@ -362,7 +339,7 @@ class TestLegend:
         # Without a legend, the empty scene stays fully white.
         scene = StructureScene(cell_basis=CUBIC_BASIS)
         png = RasterStructureRenderer().render_png(scene, features=frozenset())
-        assert _has_blank_interior(png)
+        assert bool((_pixels(png) == 255).all())
 
 
 class TestViewBasis:

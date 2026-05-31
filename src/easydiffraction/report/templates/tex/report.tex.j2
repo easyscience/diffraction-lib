@@ -41,6 +41,7 @@
 \definecolor{rowshade}{RGB}{ {{- report_style.row_rgb -}} }
 \definecolor{tableborder}{RGB}{ {{- report_style.axis_rgb -}} }
 \definecolor{linkblue}{RGB}{ {{- report_style.link_rgb -}} }
+\definecolor{structframe}{RGB}{217, 217, 217}  % structure-figure frame; matches the interactive view
 \arrayrulecolor{tableborder}
 \hypersetup{colorlinks=true, urlcolor=linkblue}
 
@@ -197,7 +198,11 @@ Minimizer & {{ tex_software_name(analysis.software.minimizer) }} & {{ analysis.s
 {% if tex.structure_figure_paths[structure.id] %}
 \begin{figure}[H]
 \centering
-\includegraphics[width=\linewidth]{ {{- tex.structure_figure_paths[structure.id] -}} }
+\begingroup
+\setlength{\fboxsep}{0pt}
+\setlength{\fboxrule}{0.4pt}
+\fcolorbox{structframe}{white}{\makebox[\dimexpr\linewidth-2\fboxrule\relax][c]{\includegraphics[width=\dimexpr\linewidth-2\fboxrule\relax,height=0.5\textheight,keepaspectratio]{ {{- tex.structure_figure_paths[structure.id] -}} }}}
+\endgroup
 \end{figure}
 {% endif %}
 
