@@ -491,6 +491,18 @@ near-vertical edges that the column-major chart code cannot express.
 
 ### 8. Configuring what is shown and how
 
+> **Updated.** This configuration surface was reorganised by the
+> [`structure-view-settings`](../../plans/structure-view-settings.md) plan and
+> the [`value-selector-discovery`](value-selector-discovery.md) ADR; the
+> examples below predate that split and are kept as historical design context.
+> The current surface is three flat categories: `project.rendering_structure`
+> (engine `type` only, CIF `_rendering_structure.type`), `project.structure_view`
+> (`show_labels`, `show_moments`, `range_*`, CIF `_structure_view.*`), and
+> `project.structure_style` (`atom_view`, `color_scheme`, `adp_probability`,
+> `atom_scale`, CIF `_structure_style.*`). Per-selector discovery replaces
+> `project.style.show_supported()` — e.g.
+> `project.structure_style.atom_view.show_supported()`.
+
 The view has two configuration axes — _what_ is shown (content) and
 _how_ it is drawn (engine plus styling) — both reachable from Python and
 persisted to CIF.
@@ -677,13 +689,15 @@ All items below are now **resolved** so the implementation plan can be
 executed autonomously; the plan records the verified data sources and
 the final names.
 
-- **CIF tag spelling — resolved.** Project CIF: `_style.atom_view`,
-  `_style.color_scheme`,
-  `_style.adp_probability`, and `_rendering_structure.type` / `_rendering_structure.show_labels` /
-  `_rendering_structure.show_moments` / `_rendering_structure.range_{a,b,c}_{min,max}`. These are project-internal
-  app/settings tags (`_rendering_structure.type` follows the Display-UX `_rendering_plot.type` /
-  `_rendering_table.type` precedent); the radii and colours are a bundled
-  element-database asset, not CIF-serialized.
+- **CIF tag spelling — resolved (see the §8 *Updated* note for the final
+  split).** Project CIF: `_structure_style.atom_view` /
+  `_structure_style.color_scheme` / `_structure_style.adp_probability` /
+  `_structure_style.atom_scale`; `_structure_view.show_labels` /
+  `_structure_view.show_moments` / `_structure_view.range_{a,b,c}_{min,max}`; and
+  `_rendering_structure.type` (engine only). These are project-internal
+  app/settings tags (`_rendering_structure.type` follows the Display-UX
+  `_rendering_plot.type` / `_rendering_table.type` precedent); the radii and
+  colours are a bundled element-database asset, not CIF-serialized.
 - **Per-structure bond-cutoff category — resolved (standard
   `_geom.*`).** A single-record `structure.geom` category holding the
   cif_core cutoffs `_geom.min_bond_distance_cutoff` (default `0.0` Å)

@@ -254,10 +254,13 @@ API. A short bridge period where old and new surfaces coexist is intentional.
   package, `project.style`, and the bespoke `Style.show_supported()`; drop the
   `_style.*` block and the moved `_rendering_structure.*` tags from CIF
   serialise. Commit: `Remove the old style and rendering_structure surfaces`.
-- [ ] **P1.11 — Docs, ADRs, tutorials.** Update `model.md`, the crysview ADR,
-  the `value-selector-discovery` ADR, and `ed-3/14/17.py`; run
-  `pixi run notebook-prepare`; commit source + regenerated notebooks. Commit:
-  `Move structure-view docs and tutorials to new categories`.
+- [x] **P1.11 — Docs, ADRs, tutorials.** `model.md` updated (commit
+  `e24a42571`); crysview ADR updated with a §8 surface note + final CIF tags;
+  `value-selector-discovery` ADR already current. Tutorials `ed-3/14.py`
+  `project.style.*` migrated in place to `project.structure_style.*` and left
+  **uncommitted** for the user to regenerate (`pixi run notebook-prepare`) and
+  stage (they carry unrelated user edits). Commit: `Update crysview ADR for the
+  structure-view category split`.
 - [ ] **P1.12 — Phase 1 review gate.** No-code step: mark complete and commit the
   checklist update alone. Commit: `Reach Phase 1 review gate`.
 
