@@ -436,6 +436,9 @@ for (const name of ['cell', 'axes', 'atoms', 'bonds', 'moments', 'labels']) {
   button.addEventListener('click', () => {
     const next = !groups[name].visible;
     groups[name].visible = next;
+    // CSS2D labels (a/b/c, atom labels) ignore ancestor visibility in the
+    // CSS2DRenderer, so toggle them explicitly to match the meshes.
+    groups[name].traverse((o) => { if (o.isCSS2DObject) o.visible = next; });
     button.classList.toggle('on', next);
   });
 }
