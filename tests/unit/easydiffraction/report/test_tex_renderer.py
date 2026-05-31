@@ -143,7 +143,7 @@ def test_render_tex_report_renders_default_document():
     tex = render_tex_report(context)
 
     assert r'\documentclass[11pt]{article}' in tex
-    assert r'\usepackage[margin=2.5cm]{geometry}' in tex
+    assert r'\usepackage[margin=2cm]{geometry}' in tex
     assert r'\usepackage{fourier}' in tex
     assert r'\usepackage{longtable}' in tex
     assert r'\usepackage{paratype}' in tex
@@ -476,7 +476,13 @@ def test_save_tex_report_writes_structure_figure_png(tmp_path):
         label='Na', type_symbol='Na', fract_x=0, fract_y=0, fract_z=0, adp_iso=0.5, occupancy=1
     )
     structure.atom_sites.create(
-        label='Cl', type_symbol='Cl', fract_x=0.5, fract_y=0.5, fract_z=0.5, adp_iso=0.5, occupancy=1
+        label='Cl',
+        type_symbol='Cl',
+        fract_x=0.5,
+        fract_y=0.5,
+        fract_z=0.5,
+        adp_iso=0.5,
+        occupancy=1,
     )
 
     tex_path = tmp_path / 'report.tex'
