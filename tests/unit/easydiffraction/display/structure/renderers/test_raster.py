@@ -10,6 +10,7 @@ import numpy as np
 import pytest
 from PIL import Image
 
+from easydiffraction.display.structure.renderers import raster as MUT
 from easydiffraction.display.structure.renderers.raster import RasterStructureRenderer
 from easydiffraction.display.structure.scene import AdpEllipsoid
 from easydiffraction.display.structure.scene import AtomSphere
@@ -343,6 +344,58 @@ class TestLegend:
 
 
 class TestViewBasis:
+    def test_projection_shifts_content_down_in_report_frame(self):
+        view_dir = np.array([0.0, 0.0, 1.0])
+        right = np.array([1.0, 0.0, 0.0])
+        up = np.array([0.0, 1.0, 0.0])
+
+        _canvas, project, _extent, _pad = RasterStructureRenderer._make_canvas(
+            _atom_scene(), view_dir, right, up
+        )
+
+        _x, y, _depth = project((0.0, 0.0, 0.0))
+        size = MUT._CANVAS * MUT._SUPERSAMPLE
+        assert y == pytest.approx(size * (0.5 + MUT._VERTICAL_SHIFT_FRAC))
+
+    def test_axis_labels_follow_rendered_arrow_tips(self):
+        class TextRecorder:
+            def __init__(self) -> None:
+                self.calls = []
+
+            def text(self, xy, text, font, fill, anchor) -> None:
+                del font, fill, anchor
+                self.calls.append((xy, text))
+
+        def project(point: tuple[float, float, float]) -> tuple[float, float, float]:
+            return (
+                (200.0 + point[0] * 100.0) * MUT._SUPERSAMPLE,
+                (200.0 - point[1] * 100.0) * MUT._SUPERSAMPLE,
+                point[2],
+            )
+
+        draw = TextRecorder()
+        axes = AxisTriad(
+            origin=(0.0, 0.0, 0.0),
+            axes=(
+                AxisArrow(vector=(6.5, 0.0, 0.0), colour=(255, 0, 0), letter='a'),
+                AxisArrow(vector=(0.0, 6.5, 0.0), colour=(0, 255, 0), letter='b'),
+                AxisArrow(vector=(0.0, 0.0, 6.5), colour=(0, 0, 255), letter='c'),
+            ),
+        )
+        extent = 10.0
+
+        RasterStructureRenderer._draw_axis_labels(draw, axes, project, extent, 0.0)
+
+        max_axis = 6.5 / 1.3
+        overhang = max(
+            MUT._AXIS_OVERHANG_FRAC * extent,
+            MUT._AXIS_HEAD_LENGTH_FRAC * extent + MUT._AXIS_GAP_FRAC * extent,
+        )
+        label_x = 200.0 + (6.5 - 0.3 * max_axis + overhang) * 100.0
+        label_x += MUT._AXIS_LABEL_GAP_FRAC * extent * 100.0
+        a_xy = next(xy for xy, text in draw.calls if text == 'a')
+        assert a_xy[0] == pytest.approx(label_x)
+
     def test_anisotropic_cell_renders(self):
         # An 8x5x3 cell drives the longest/middle/shortest axis ordering
         # in the default-view basis selection.

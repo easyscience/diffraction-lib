@@ -145,8 +145,11 @@ class TestPdExperimentPeak:
         out = capsys.readouterr().out
         assert len(out) > 0
 
-    def test_show_peak_profile_types_includes_current(self, capsys):
+    def test_show_peak_profile_types_uses_context_aliases(self, capsys):
         ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
         ex.peak.show_supported()
         out = capsys.readouterr().out
-        assert str(ex.peak.type) in out
+        assert 'Alias' not in out
+        assert 'cwl-pseudo-voigt' not in out
+        assert 'pseudo-voigt' in out
+        assert 'pseudo-voigt + empirical asymmetry' in out

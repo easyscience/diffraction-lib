@@ -585,6 +585,18 @@ class TestRenderHtmlDocument:
         )
         assert captured['features'] == ['atoms', 'bonds', 'cell']
 
+    def test_download_button_is_bottom_right_overlay(self, patched_theme):
+        html = ThreeJsStructureRenderer().render(
+            _identity_scene(),
+            features=frozenset(),
+            offline=True,
+            dark=False,
+        )
+
+        assert '<div class="cv-download"></div>' in html
+        assert 'right: 10px; bottom: 8px;' in html
+        assert "iconButton(downloadHost, ICONS.camera, 'Download PNG')" in html
+
 
 # ------------------------------------------------------------------
 #  ThreeJsStructureRenderer.render — invalid inputs

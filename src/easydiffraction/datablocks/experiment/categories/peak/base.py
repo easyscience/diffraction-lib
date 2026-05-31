@@ -75,21 +75,12 @@ class PeakBase(CategoryItem, SwitchableCategoryBase):
         context = self._parent._peak_profile_context() if self._parent is not None else {}
         rows = self._supported_types(filters)
         aliases = [PeakFactory._local_alias_for(tag, **context) for tag, _ in rows]
-        show_aliases = any(alias != tag for alias, (tag, _) in zip(aliases, rows, strict=True))
-
-        if show_aliases:
-            columns_headers = ['', 'Type', 'Alias', 'Description']
-            columns_alignment = ['left', 'left', 'left', 'left']
-            columns_data = [
-                ['*' if tag == self.type else '', tag, alias, description]
-                for alias, (tag, description) in zip(aliases, rows, strict=True)
-            ]
-        else:
-            columns_headers = ['', 'Type', 'Description']
-            columns_alignment = ['left', 'left', 'left']
-            columns_data = [
-                ['*' if tag == self.type else '', tag, description] for tag, description in rows
-            ]
+        columns_headers = ['', 'Type', 'Description']
+        columns_alignment = ['left', 'left', 'left']
+        columns_data = [
+            ['*' if tag == self.type else '', alias, description]
+            for alias, (tag, description) in zip(aliases, rows, strict=True)
+        ]
 
         console.paragraph('Peak types')
         render_table(

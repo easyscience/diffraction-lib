@@ -63,9 +63,11 @@ _AXIS_HEAD_RADIUS_FRAC = 0.014
 _AXIS_HEAD_LENGTH_FRAC = 0.043
 _AXIS_OVERHANG_FRAC = 0.045  # minimum overhang past the cell corner
 _AXIS_GAP_FRAC = 0.02  # clear gap between a corner atom and the head base
+_AXIS_LABEL_GAP_FRAC = 0.025  # label centre beyond the rendered arrow tip
 _AXIS_SEGMENTS = 32  # tessellation of the shaft cylinder and head cone
 _AXIS_RESERVE = 1.24  # extent multiplier reserving room for the arrows
 _AXIS_PERP_THRESHOLD = 0.9  # pick a fallback up-vector when nearly vertical
+_VERTICAL_SHIFT_FRAC = 0.025  # nudge structure down in report frame
 
 _EPS = 1e-9  # degenerate length / denominator guard
 _EPS_NORM = 1e-12  # surface-normal renormalisation guard
@@ -305,6 +307,33 @@ def _screen_fit(
     return scale, (lo + hi) / 2.0, extent
 
 
+def _axis_tip_vectors(
+    vectors: list[np.ndarray],
+    extent: float,
+    max_atom_r: float,
+) -> list[np.ndarray | None]:
+    """Return rendered axis-tip vectors from the triad origin."""
+    # Recover the longest cell edge from the builder's 0.3*max overhang.
+    max_axis = max((float(np.linalg.norm(v)) for v in vectors), default=1.0) / 1.3
+    head_len = _AXIS_HEAD_LENGTH_FRAC * extent
+    # Overhang clears the largest atom (so corner atoms never hide the
+    # head), plus the head length and a small gap.
+    overhang = max(
+        _AXIS_OVERHANG_FRAC * extent,
+        max_atom_r + head_len + _AXIS_GAP_FRAC * extent,
+    )
+    tips: list[np.ndarray | None] = []
+    for vector in vectors:
+        length = float(np.linalg.norm(vector))
+        if length < _EPS:
+            tips.append(None)
+            continue
+        axis = vector / length
+        axis_len = max(length - 0.3 * max_axis, 1e-3)
+        tips.append(axis * (axis_len + overhang))
+    return tips
+
+
 class RasterStructureRenderer:
     """Render a structure scene as a z-buffered PNG image."""
 
@@ -320,7 +349,7 @@ class RasterStructureRenderer:
             axis=(1, 3)
         )
         rgb = np.clip(downsampled * 255.0, 0, 255).astype(np.uint8)
-        return self._compose_png(rgb, scene, project, features)
+        return self._compose_png(rgb, scene, project, features, extent, pad)
 
     @staticmethod
     def _make_canvas(
@@ -341,7 +370,7 @@ class RasterStructureRenderer:
         def project(point: object) -> tuple[float, float, float]:
             rel = np.asarray(point, dtype=float) - target
             sx = (float(rel @ right) - centre2d[0]) * scale + size / 2.0
-            sy = size / 2.0 - (float(rel @ up) - centre2d[1]) * scale
+            sy = size / 2.0 - (float(rel @ up) - centre2d[1]) * scale + size * _VERTICAL_SHIFT_FRAC
             return sx, sy, float(rel @ view_dir)
 
         colour = np.ones((size, size, 3), dtype=np.float32)
@@ -386,6 +415,8 @@ class RasterStructureRenderer:
         scene: StructureScene,
         project: Projector,
         features: frozenset[str],
+        extent: float,
+        max_atom_r: float,
     ) -> bytes:
         """Draw axis labels and the legend with Pillow, then encode."""
         from PIL import Image  # noqa: PLC0415
@@ -394,7 +425,9 @@ class RasterStructureRenderer:
         image = Image.fromarray(rgb, mode='RGB')
         draw = ImageDraw.Draw(image)
         if 'axes' in features and scene.axes is not None:
-            RasterStructureRenderer._draw_axis_labels(draw, scene.axes, project)
+            RasterStructureRenderer._draw_axis_labels(
+                draw, scene.axes, project, extent, max_atom_r
+            )
         if scene.legend:
             RasterStructureRenderer._draw_legend(draw, scene.legend)
         buffer = io.BytesIO()
@@ -402,17 +435,26 @@ class RasterStructureRenderer:
         return buffer.getvalue()
 
     @staticmethod
-    def _draw_axis_labels(draw: ImageDraw.ImageDraw, axes: AxisTriad, project: Projector) -> None:
+    def _draw_axis_labels(
+        draw: ImageDraw.ImageDraw,
+        axes: AxisTriad,
+        project: Projector,
+        extent: float,
+        max_atom_r: float,
+    ) -> None:
         """Place each axis letter just beyond its tip, always on top."""
         font = _font(int(_CANVAS * _LABEL_FRAC))
         inset = int(_CANVAS * 0.02)
         origin = np.asarray(axes.origin, dtype=float)
-        ox, oy, _od = project(axes.origin)
-        for arrow in axes.axes:
-            tip = origin + np.asarray(arrow.vector, dtype=float)
-            tx, ty, _td = project(tuple(tip))
-            lx = float(np.clip((ox + (tx - ox) * 1.08) / _SUPERSAMPLE, inset, _CANVAS - inset))
-            ly = float(np.clip((oy + (ty - oy) * 1.08) / _SUPERSAMPLE, inset, _CANVAS - inset))
+        vectors = [np.asarray(a.vector, dtype=float) for a in axes.axes]
+        tip_vectors = _axis_tip_vectors(vectors, extent, max_atom_r)
+        for arrow, tip_vector in zip(axes.axes, tip_vectors, strict=True):
+            if tip_vector is None:
+                continue
+            label = origin + tip_vector + _unit(tip_vector) * (_AXIS_LABEL_GAP_FRAC * extent)
+            lx, ly, _ld = project(tuple(label))
+            lx = float(np.clip(lx / _SUPERSAMPLE, inset, _CANVAS - inset))
+            ly = float(np.clip(ly / _SUPERSAMPLE, inset, _CANVAS - inset))
             draw.text((lx, ly), arrow.letter, font=font, fill=tuple(arrow.colour), anchor='mm')
 
     @staticmethod
@@ -680,22 +722,12 @@ class RasterStructureRenderer:
         """Draw the a/b/c arrow triad beyond the cell corners."""
         origin = np.asarray(axes.origin, dtype=float)
         vectors = [np.asarray(a.vector, dtype=float) for a in axes.axes]
-        # Recover the longest cell edge (the builder adds a 0.3*max
-        # overhang).
-        max_axis = max((float(np.linalg.norm(v)) for v in vectors), default=1.0) / 1.3
-        head_len = _AXIS_HEAD_LENGTH_FRAC * extent
-        # Overhang clears the largest atom (so corner atoms never hide
-        # the head), plus the head length and a small gap.
-        overhang = max(
-            _AXIS_OVERHANG_FRAC * extent, max_atom_r + head_len + _AXIS_GAP_FRAC * extent
-        )
-        for arrow, vector in zip(axes.axes, vectors, strict=True):
-            length = float(np.linalg.norm(vector))
-            if length < _EPS:
+        for arrow, tip_vector in zip(
+            axes.axes, _axis_tip_vectors(vectors, extent, max_atom_r), strict=True
+        ):
+            if tip_vector is None:
                 continue
-            axis = vector / length
-            axis_len = max(length - 0.3 * max_axis, 1e-3)
-            self._arrow(canvas, basis, origin, axis * (axis_len + overhang), extent, arrow.colour)
+            self._arrow(canvas, basis, origin, tip_vector, extent, arrow.colour)
 
 
 def _shade_normals(normal: np.ndarray, base_rgb: np.ndarray) -> np.ndarray:
