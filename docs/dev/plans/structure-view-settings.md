@@ -207,7 +207,7 @@ is staged and committed locally before moving on.
   `Add default and description to value-selector enums`. *(Only `VerbosityEnum`,
   `FitResultKindEnum`, `FitCorrelationSourceEnum` lacked `description()`; the
   rest already had both.)*
-- [ ] **P1.4 — Migrate experiment_type axes.** `sample_form`, `beam_mode`,
+- [x] **P1.4 — Migrate experiment_type axes.** `sample_form`, `beam_mode`,
   `radiation_probe`, `scattering_type` → `EnumDescriptor`. Commit:
   `Use EnumDescriptor for experiment_type axes`.
 - [ ] **P1.5 — Migrate `atom_sites.adp_type`.** The P1.2 audit confirms
