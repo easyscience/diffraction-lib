@@ -83,7 +83,7 @@ Part A:
   `atom_sites.type_symbol`, `atom_sites.wyckoff_letter`, `space_group.name_h_m`,
   `space_group.it_coordinate_system_code` — keep their current
   `MembershipValidator` (a dynamic-choice discovery surface is deferred per the
-  ADR). The P1.3 audit sorts every field into one of these three buckets.
+  ADR). The P1.2 audit sorts every field into one of these three buckets.
 - **Numerics stay plain.** `adp_probability`, `atom_scale`, the `range_*`
   scalars, and similar bounded numbers remain `NumericDescriptor`s; their limits
   live in the docstring + validation error, not in a `show_supported()` table
@@ -129,7 +129,7 @@ None outstanding:
   `_structure_view.*` / `_structure_style.*`), confirmed.
 - **Discovery surface — resolved.** Per-descriptor `show_supported()` only; no
   category-level method on the non-switchable bundle categories (see Decisions).
-- **Selector classification** is handled by the P1.3 audit (three buckets:
+- **Selector classification** is handled by the P1.2 audit (three buckets:
   value selector / category-level selector / dynamic-external) and recorded in
   this plan during implementation.
 
@@ -198,27 +198,31 @@ is staged and committed locally before moving on.
 - [x] **P1.1 — Add `EnumDescriptor`.** Implement in `core/variable.py` with the
   `show_supported()` table (reuse `render_table`). Commit:
   `Add EnumDescriptor with show_supported listing`.
-- [ ] **P1.2 — Enum metadata.** Add `.default()`/`.description` to value-selector
-  enums that lack them (no field migration yet). Commit:
-  `Add default and description to value-selector enums`.
-- [ ] **P1.3 — Classify selectors.** Audit every `MembershipValidator` usage;
+- [x] **P1.2 — Classify selectors.** Audit every `MembershipValidator` usage;
   record a three-bucket table in this plan (value selector / category-level
-  selector / dynamic-external), doc-only. Commit:
-  `Classify enumerated selectors for discovery`.
+  selector / dynamic-external), doc-only. See *Selector classification* below.
+  Commit: `Classify enumerated selectors for discovery`.
+- [ ] **P1.3 — Enum metadata.** Add `.default()`/`.description()` to the in-scope
+  value-selector enums that lack them (no field migration yet). Commit:
+  `Add default and description to value-selector enums`.
 - [ ] **P1.4 — Migrate experiment_type axes.** `sample_form`, `beam_mode`,
   `radiation_probe`, `scattering_type` → `EnumDescriptor`. Commit:
   `Use EnumDescriptor for experiment_type axes`.
-- [ ] **P1.5 — Migrate in-scope structure-data selectors.** Migrate only the
-  enum-backed value fields the P1.3 audit confirms (e.g. an ADP-type enum, if
-  present). The dynamic/external validators (`atom_sites.type_symbol`,
+- [ ] **P1.5 — Migrate `atom_sites.adp_type`.** The P1.2 audit confirms
+  `adp_type` (`AdpTypeEnum`) is the one in-scope structure-data value selector →
+  `EnumDescriptor` (preserve its dual CIF names `_atom_site.ADP_type` /
+  `_atom_site.adp_type` and the category's `adp_type` setter). The
+  dynamic/external validators (`atom_sites.type_symbol`,
   `atom_sites.wyckoff_letter`, `space_group.name_h_m`,
   `space_group.it_coordinate_system_code`) are **out of scope** and keep their
-  current `MembershipValidator`. If the audit finds none in scope, mark this
-  step complete with no code change. Commit (if any):
-  `Use EnumDescriptor for structure-data selectors`.
-- [ ] **P1.6 — Migrate remaining value selectors.** `verbosity` and any others
-  from the audit → `EnumDescriptor`. Commit:
-  `Use EnumDescriptor for remaining value selectors`.
+  current `MembershipValidator`. Commit:
+  `Use EnumDescriptor for atom_sites adp_type`.
+- [ ] **P1.6 — Migrate remaining value selectors.** Per the P1.2 audit:
+  `verbosity.fit` (`VerbosityEnum`), `fit_result.result_kind`
+  (`FitResultKindEnum`), `fit_parameter_correlations.source_kind`
+  (`FitCorrelationSourceEnum`), and `extinction.model` (`ExtinctionModelEnum`)
+  → `EnumDescriptor`, one commit per area. Commit (per area):
+  `Use EnumDescriptor for <area> selector`.
 
 **Part B — structure-view three-way split.** Ordered additive-first: the new
 categories and their consumers land before the old surfaces are removed, so
@@ -254,6 +258,42 @@ API. A short bridge period where old and new surfaces coexist is intentional.
   `Move structure-view docs and tutorials to new categories`.
 - [ ] **P1.12 — Phase 1 review gate.** No-code step: mark complete and commit the
   checklist update alone. Commit: `Reach Phase 1 review gate`.
+
+### Selector classification (P1.2 audit)
+
+Every `MembershipValidator` site, sorted into the three buckets from the
+`value-selector-discovery` ADR, plus a fourth not-yet-enum-backed group.
+
+**Migrate to `EnumDescriptor` (project-owned static `(str, Enum)`):**
+
+| Field | Enum | Step | Note |
+| --- | --- | --- | --- |
+| `experiment_type.sample_form` | `SampleFormEnum` | P1.4 | has `display_handler` |
+| `experiment_type.beam_mode` | `BeamModeEnum` | P1.4 | has `display_handler` |
+| `experiment_type.radiation_probe` | `RadiationProbeEnum` | P1.4 | has `display_handler` |
+| `experiment_type.scattering_type` | `ScatteringTypeEnum` | P1.4 | has `display_handler` |
+| `atom_sites.adp_type` | `AdpTypeEnum` | P1.5 | dual CIF names; category setter |
+| `verbosity.fit` | `VerbosityEnum` | P1.6 | |
+| `fit_result.result_kind` | `FitResultKindEnum` | P1.6 | |
+| `fit_parameter_correlations.source_kind` | `FitCorrelationSourceEnum` | P1.6 | |
+| `extinction.model` | `ExtinctionModelEnum` | P1.6 | |
+| `style.atom_view` | `AtomViewEnum` | P1.8 | already has metadata |
+| `style.color_scheme` | `ColorSchemeEnum` | P1.8 | already has metadata |
+
+**Category-level `.type` selectors — unchanged** (backend / switchable-category
+/ active-sibling families): `rendering_plot`, `rendering_table`,
+`rendering_structure`, `minimizer`, `background`, `peak`, `calculator`,
+`extinction`, `fitting_mode`.
+
+**Dynamic / external / context-dependent — unchanged:**
+`atom_sites.type_symbol` (isotope database), `atom_sites.wyckoff_letter`
+(space-group dependent), `space_group.name_h_m` /
+`space_group.it_coordinate_system_code` (callable, H-M-derived), minimizer
+`initialization_method` (per-class enum **subset**, not the full set).
+
+**Bucket 4 — closed but not `(str, Enum)`, out of scope** (candidates for a
+future enum-ification per `enum-backed-closed-values`, tracked separately):
+`data.calc_status` (`['incl', 'excl']`), `emcee.proposal_moves` (raw tuple).
 
 ## Phase 2 — Verification
 
