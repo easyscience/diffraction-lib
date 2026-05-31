@@ -5,6 +5,18 @@ Implementation plan for the
 ADR. Follows [`AGENTS.md`](../../../AGENTS.md) — no deliberate
 exceptions to those instructions.
 
+> **Status (updated).** Phase 1 (code) shipped on this branch — the
+> feature is implemented. **Phase 2 (tests) was never executed**; its
+> unit-test files are discharged by the
+> [`structure-view-settings`](structure-view-settings.md) plan's Phase 2,
+> written once against the final API. Some prose below is kept only as a
+> historical design record and predates two later changes: the
+> `atom_shape`/`radius_model` → `atom_view` merge (commit `f31996da7`)
+> and the `structure-view-settings` split of `style` / `rendering_structure`
+> into `rendering_structure` (engine) + `structure_view` + `structure_style`.
+> See the crysview ADR and the `structure-view-settings` plan for the
+> current design.
+
 > **Context for this plan.** This is a **greenfield feature**: there is
 > no prior crysview implementation on the branch. The ADR review cycle
 > closed at the review-5 sentinel ("No findings. Ready to commit."), so
