@@ -10,16 +10,20 @@ import base64
 import json
 import pathlib
 import uuid
+from typing import TYPE_CHECKING
 
 from jinja2 import Environment
 from jinja2 import PackageLoader
+from jinja2 import select_autoescape
 
 from easydiffraction.display.structure.assets.colors import color_for
 from easydiffraction.display.structure.assets.colors import theme_colors
 from easydiffraction.display.structure.enums import ColorSchemeEnum
 from easydiffraction.display.structure.renderers.base import StructureRendererBase
-from easydiffraction.display.structure.scene import StructureScene
 from easydiffraction.utils._vendored.theme_detect import is_dark
+
+if TYPE_CHECKING:
+    from easydiffraction.display.structure.scene import StructureScene
 
 _VENDOR = pathlib.Path(__file__).parent / 'vendor' / 'threejs'
 _CDN = 'https://cdn.jsdelivr.net/npm/three@0.160.0'
@@ -31,7 +35,11 @@ def _environment() -> Environment:
     """Return the Jinja environment for structure-view templates."""
     return Environment(
         loader=PackageLoader('easydiffraction.display.structure', 'templates'),
-        autoescape=False,
+        autoescape=select_autoescape(
+            enabled_extensions=(),
+            default_for_string=False,
+            default=False,
+        ),
         trim_blocks=True,
         lstrip_blocks=True,
     )
@@ -71,8 +79,13 @@ def _scene_payload(scene: StructureScene) -> dict:
         edges = [{'start': edge.start, 'end': edge.end} for edge in scene.cell_edges.edges]
     return {
         'atoms': [
-            {'centre': a.centre, 'radius': a.radius, 'colour': a.colour, 'label': a.label,
-             'asymmetric': a.asymmetric}
+            {
+                'centre': a.centre,
+                'radius': a.radius,
+                'colour': a.colour,
+                'label': a.label,
+                'asymmetric': a.asymmetric,
+            }
             for a in scene.atoms
         ],
         'wedgeSpheres': [
@@ -113,8 +126,9 @@ def _scene_payload(scene: StructureScene) -> dict:
         'labels': [{'anchor': label.anchor, 'text': label.text} for label in scene.labels],
         'legend': [{'symbol': entry.symbol, 'colour': entry.colour} for entry in scene.legend],
         'palettes': {
-            scheme.value: {entry.symbol: color_for(entry.symbol, scheme.value)
-                           for entry in scene.legend}
+            scheme.value: {
+                entry.symbol: color_for(entry.symbol, scheme.value) for entry in scene.legend
+            }
             for scheme in ColorSchemeEnum
         },
     }

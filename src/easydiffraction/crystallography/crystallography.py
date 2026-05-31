@@ -670,10 +670,18 @@ def orthogonalization_matrix(
 
     Parameters
     ----------
-    a, b, c : float
-        Unit-cell edge lengths (angstrom).
-    alpha, beta, gamma : float
-        Unit-cell angles (degrees).
+    a : float
+        Unit-cell edge length ``a`` (angstrom).
+    b : float
+        Unit-cell edge length ``b`` (angstrom).
+    c : float
+        Unit-cell edge length ``c`` (angstrom).
+    alpha : float
+        Unit-cell angle ``alpha`` (degrees).
+    beta : float
+        Unit-cell angle ``beta`` (degrees).
+    gamma : float
+        Unit-cell angle ``gamma`` (degrees).
 
     Returns
     -------
@@ -685,19 +693,13 @@ def orthogonalization_matrix(
     cos_al, cos_be, cos_ga = np.cos([al, be, ga])
     sin_ga = np.sin(ga)
     volume_factor = np.sqrt(
-        1.0
-        - cos_al**2
-        - cos_be**2
-        - cos_ga**2
-        + 2.0 * cos_al * cos_be * cos_ga
+        1.0 - cos_al**2 - cos_be**2 - cos_ga**2 + 2.0 * cos_al * cos_be * cos_ga
     )
-    return np.array(
-        [
-            [a, b * cos_ga, c * cos_be],
-            [0.0, b * sin_ga, c * (cos_al - cos_be * cos_ga) / sin_ga],
-            [0.0, 0.0, c * volume_factor / sin_ga],
-        ]
-    )
+    return np.array([
+        [a, b * cos_ga, c * cos_be],
+        [0.0, b * sin_ga, c * (cos_al - cos_be * cos_ga) / sin_ga],
+        [0.0, 0.0, c * volume_factor / sin_ga],
+    ])
 
 
 def fractional_to_cartesian(frac: object, matrix: np.ndarray) -> np.ndarray:

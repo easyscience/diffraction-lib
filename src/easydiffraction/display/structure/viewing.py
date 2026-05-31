@@ -4,12 +4,16 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from easydiffraction.display.base import RendererBase
 from easydiffraction.display.base import RendererFactoryBase
 from easydiffraction.display.structure.enums import ViewerEngineEnum
 from easydiffraction.display.structure.renderers.ascii import AsciiStructureRenderer
 from easydiffraction.display.structure.renderers.threejs import ThreeJsStructureRenderer
-from easydiffraction.display.structure.scene import StructureScene
+
+if TYPE_CHECKING:
+    from easydiffraction.display.structure.scene import StructureScene
 
 
 class ViewerFactory(RendererFactoryBase):

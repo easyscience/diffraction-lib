@@ -14,7 +14,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-# Plain, serialisable coordinate/colour aliases (no numpy, no domain types).
+# Plain, serialisable coordinate/colour aliases (no numpy, no domain).
 Vec3 = tuple[float, float, float]
 Rgb = tuple[int, int, int]
 Mat3 = tuple[Vec3, Vec3, Vec3]

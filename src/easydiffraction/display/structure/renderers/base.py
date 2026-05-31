@@ -6,8 +6,10 @@ from __future__ import annotations
 
 from abc import ABC
 from abc import abstractmethod
+from typing import TYPE_CHECKING
 
-from easydiffraction.display.structure.scene import StructureScene
+if TYPE_CHECKING:
+    from easydiffraction.display.structure.scene import StructureScene
 
 
 class StructureRendererBase(ABC):
@@ -31,6 +33,11 @@ class StructureRendererBase(ABC):
         -------
         str
             ASCII text or an HTML document, depending on the engine.
+
+        Raises
+        ------
+        NotImplementedError
+            Always; subclasses must override this method.
         """
         raise NotImplementedError
 
@@ -44,5 +51,10 @@ class StructureRendererBase(ABC):
         frozenset[str]
             Subset of ``atoms``, ``bonds``, ``cell``, ``axes``,
             ``moments``, ``labels``.
+
+        Raises
+        ------
+        NotImplementedError
+            Always; subclasses must override this method.
         """
         raise NotImplementedError

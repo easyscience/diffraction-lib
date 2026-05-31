@@ -1,8 +1,9 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 """
-Bundled per-element radii and colour palettes (generated; see
-LICENSES.md).
+Bundled per-element radii and colour palettes.
+
+Generated data module; see LICENSES.md for provenance.
 """
 
 from __future__ import annotations
@@ -129,7 +130,7 @@ ELEMENT_RADII: dict[str, dict[str, float | None]] = {
     'Og': {'vdw': 2, 'covalent': 1.6, 'ionic': None, 'atomic': None},
 }
 
-# RGB 0-255; vesta is None where VESTA lacks an entry (falls back to jmol).
+# RGB 0-255; vesta is None where VESTA has no entry (uses jmol).
 ELEMENT_COLORS: dict[str, dict[str, tuple[int, int, int] | None]] = {
     'H': {'jmol': (255, 255, 255), 'vesta': (255, 204, 204)},
     'He': {'jmol': (217, 255, 255), 'vesta': (252, 232, 206)},

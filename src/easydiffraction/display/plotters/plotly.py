@@ -55,11 +55,14 @@ LIGHT_AXIS_FRAME_COLOR = 'rgba(120, 140, 160, 0.28)'
 DARK_AXIS_FRAME_COLOR = 'rgba(110, 145, 190, 0.35)'
 LIGHT_LEGEND_BACKGROUND_COLOR = 'rgba(255, 255, 255, 0.5)'
 DARK_LEGEND_BACKGROUND_COLOR = 'rgba(0, 0, 0, 0.5)'
-# Single source for the y=x reference-line colour, shared with the report
-# axis gray (report.style.REPORT_AXIS_RGB) and imported by report.fit_plot
-# so the diagonal looks identical in the Plotly and pgfplots renderers.
+# Single source for the y=x reference-line colour, shared with the
+# report axis gray (report.style.REPORT_AXIS_RGB) and imported by
+# report.fit_plot so the diagonal looks identical in the Plotly and
+# pgfplots renderers.
 DIAGONAL_LINE_RGB = (190, 199, 208)
-DIAGONAL_LINE_COLOR = f'rgb({DIAGONAL_LINE_RGB[0]}, {DIAGONAL_LINE_RGB[1]}, {DIAGONAL_LINE_RGB[2]})'
+DIAGONAL_LINE_COLOR = (
+    f'rgb({DIAGONAL_LINE_RGB[0]}, {DIAGONAL_LINE_RGB[1]}, {DIAGONAL_LINE_RGB[2]})'
+)
 DIAGONAL_LINE_WIDTH = 0.5
 
 BRAGG_TICK_COLORS = (
@@ -71,6 +74,7 @@ BRAGG_TICK_COLORS = (
 )
 
 NICE_AXIS_FRACTIONS = (1.0, 2.0, 5.0, 10.0)
+NICE_AXIS_FRACTION_THRESHOLDS = (1.5, 3.0, 7.0)
 DISPLAY_TICK_FRACTIONS = (1.0, 2.0, 2.5, 4.0, 5.0, 7.5, 10.0)
 PLOTLY_HEIGHT_PER_UNIT = 24
 BRAGG_TICK_MARKER_SIZE = 12
@@ -176,11 +180,11 @@ def single_crystal_tick_step(
     exponent = float(np.floor(np.log10(raw_step)))
     base = 10.0**exponent
     fraction = raw_step / base
-    if fraction < 1.5:
+    if fraction < NICE_AXIS_FRACTION_THRESHOLDS[0]:
         nice_fraction = 1.0
-    elif fraction < 3.0:
+    elif fraction < NICE_AXIS_FRACTION_THRESHOLDS[1]:
         nice_fraction = 2.0
-    elif fraction < 7.0:
+    elif fraction < NICE_AXIS_FRACTION_THRESHOLDS[2]:
         nice_fraction = 5.0
     else:
         nice_fraction = 10.0
@@ -661,8 +665,8 @@ class PlotlyPlotter(PlotterBase):
             marker={
                 'symbol': 'circle',
                 'size': MEASURED_MARKER_SIZE,
-                # Stroke colour matches the fill (like the pgfplots PDF) so
-                # there is no contrasting ring around the markers.
+                # Stroke colour matches the fill (like the pgfplots
+                # PDF) so there is no contrasting ring around markers.
                 'line': {
                     'width': SINGLE_CRYSTAL_MARKER_LINE_WIDTH,
                     'color': DEFAULT_COLORS['meas'],
@@ -1224,8 +1228,8 @@ window.requestAnimationFrame(installLegendToggleButton);
                 axis['range'] = list(axis_range)
         if axis_dtick is not None:
             for axis in (xaxis, yaxis):
-                # Anchor ticks at 0 so they read as round numbers (0, 500,
-                # 1000, ...) instead of starting at the padded minimum.
+                # Anchor ticks at 0 so they read as round numbers
+                # (0, 500, 1000, ...) instead of at the padded minimum.
                 axis['tick0'] = 0
                 axis['dtick'] = axis_dtick
         return go.Layout(

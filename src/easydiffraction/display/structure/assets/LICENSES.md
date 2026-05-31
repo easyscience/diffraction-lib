@@ -5,20 +5,20 @@ permissive licences; the underlying values are scientific data.
 
 ## Sources
 
-| Data | Source | Licence |
-| --- | --- | --- |
+| Data                                                  | Source                                                                                                                 | Licence      |
+| ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ------------ |
 | Jmol/CPK colours, covalent radii, van der Waals radii | EasyDiffractionBeta `easyDiffractionApp/Logic/Tables.py` `PERIODIC_TABLE` (github.com/easyscience/EasyDiffractionBeta) | BSD-3-Clause |
-| Ionic (Shannon) radii | pymatgen `dev_scripts/periodic_table_resources/Shannon_Radii.csv` | MIT |
-| Atomic radii | pymatgen `dev_scripts/periodic_table_resources/radii.csv` (`Atomic radius`) | MIT |
-| VESTA colours | pymatgen `src/pymatgen/vis/ElementColorSchemes.yaml` (`VESTA`) | MIT |
-| Oxidation states (for Shannon selection) | pymatgen `dev_scripts/periodic_table_resources/oxidation_states.yaml` | MIT |
+| Ionic (Shannon) radii                                 | pymatgen `dev_scripts/periodic_table_resources/Shannon_Radii.csv`                                                      | MIT          |
+| Atomic radii                                          | pymatgen `dev_scripts/periodic_table_resources/radii.csv` (`Atomic radius`)                                            | MIT          |
+| VESTA colours                                         | pymatgen `src/pymatgen/vis/ElementColorSchemes.yaml` (`VESTA`)                                                         | MIT          |
+| Oxidation states (for Shannon selection)              | pymatgen `dev_scripts/periodic_table_resources/oxidation_states.yaml`                                                  | MIT          |
 
 Primary scientific references:
 
-- R. D. Shannon, *Revised effective ionic radii and systematic studies of
-  interatomic distances in halides and chalcogenides*, Acta Cryst. (1976)
-  **A32**, 751.
-- K. Momma and F. Izumi, *VESTA 3*, J. Appl. Cryst. (2011) **44**, 1272
+- R. D. Shannon, _Revised effective ionic radii and systematic studies
+  of interatomic distances in halides and chalcogenides_, Acta Cryst.
+  (1976) **A32**, 751.
+- K. Momma and F. Izumi, _VESTA 3_, J. Appl. Cryst. (2011) **44**, 1272
   (element colour palette).
 
 pymatgen raw files were fetched from
@@ -26,19 +26,21 @@ pymatgen raw files were fetched from
 
 ## Shannon representative-radius selection
 
-The atom-site model carries only an element symbol, so one representative
-Shannon row is chosen per element by a fixed, reproducible rule:
+The atom-site model carries only an element symbol, so one
+representative Shannon row is chosen per element by a fixed,
+reproducible rule:
 
-1. consider the element's oxidation states from `oxidation_states.yaml`, in
-   listed order, keeping those that have a Shannon entry; then any
+1. consider the element's oxidation states from `oxidation_states.yaml`,
+   in listed order, keeping those that have a Shannon entry; then any
    remaining Shannon charges, lowest `|charge|` first;
 2. for the first such charge, prefer coordination `VI`, else the lowest
    coordination present; prefer high-spin where a spin state is listed;
 3. take the `Ionic Radius` column; skip non-physical entries (e.g. the
    negative H+ value) and fall back to the covalent radius.
 
-Elements with no usable Shannon entry (noble gases and a few others) carry
-`ionic = None` and fall back to the covalent radius at lookup time.
+Elements with no usable Shannon entry (noble gases and a few others)
+carry `ionic = None` and fall back to the covalent radius at lookup
+time.
 
 ## Chosen (charge / coordination) per element
 
