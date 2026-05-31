@@ -642,7 +642,8 @@ const resize = () => {
 if (window.ResizeObserver) new ResizeObserver(resize).observe(host);
 
 const hostTheme = () => {
-  const scheme = document.documentElement && document.documentElement.getAttribute('data-md-color-scheme');
+  const scheme = (document.body && document.body.getAttribute('data-md-color-scheme'))
+    || (document.documentElement && document.documentElement.getAttribute('data-md-color-scheme'));
   if (scheme === 'slate') return 'dark';
   if (scheme === 'default') return 'light';
   const jpLight = (document.body && document.body.getAttribute('data-jp-theme-light'))
@@ -670,7 +671,7 @@ if (window.MutationObserver) {
   if (document.body) {
     themeObserver.observe(document.body, {
       attributes: true,
-      attributeFilter: ['data-jp-theme-light', 'data-jp-theme-name'],
+      attributeFilter: ['data-md-color-scheme', 'data-jp-theme-light', 'data-jp-theme-name'],
     });
   }
 }

@@ -13,47 +13,83 @@
   }
 
   function themeName() {
-    return document.documentElement.getAttribute('data-md-color-scheme') === 'slate'
-      ? 'dark'
-      : 'light'
+    const materialScheme =
+      document.body?.getAttribute('data-md-color-scheme') ||
+      document.documentElement.getAttribute('data-md-color-scheme')
+    if (materialScheme === 'slate') return 'dark'
+    if (materialScheme === 'default') return 'light'
+
+    const jupyterThemeLight =
+      document.body?.getAttribute('data-jp-theme-light') ||
+      document.documentElement.getAttribute('data-jp-theme-light')
+    if (jupyterThemeLight === 'false') return 'dark'
+    if (jupyterThemeLight === 'true') return 'light'
+
+    return 'light'
   }
 
   function themeColors() {
     if (themeName() === 'dark') {
       return {
-        background: '#262626',
-        foreground: '#a3a3a3',
-        grid: 'rgba(163, 163, 163, 0.22)',
+        background: '#111217',
+        foreground: '#e6e8ee',
+        grid: 'rgba(110, 145, 190, 0.35)',
+        legend: 'rgba(0, 0, 0, 0.5)',
       }
     }
     return {
-      background: '#fafafa',
-      foreground: '#525252',
-      grid: 'rgba(82, 82, 82, 0.18)',
+      background: '#ffffff',
+      foreground: '#222222',
+      grid: 'rgba(120, 140, 160, 0.28)',
+      legend: 'rgba(255, 255, 255, 0.5)',
     }
+  }
+
+  function plotlyAxisNames(plot) {
+    const names = new Set(['xaxis', 'yaxis'])
+    ;[plot.layout, plot._fullLayout].forEach((layout) => {
+      if (!layout) return
+      Object.keys(layout).forEach((key) => {
+        if (/^[xyz]axis[0-9]*$/.test(key)) {
+          names.add(key)
+        }
+      })
+    })
+    return names
   }
 
   function syncPlotlyTheme() {
     if (!window.Plotly) return
     const colors = themeColors()
     document.querySelectorAll('.plotly-graph-div').forEach((plot) => {
-      if (!plot.layout) return
+      if (!plot.layout && !plot._fullLayout) return
       const update = {
         paper_bgcolor: colors.background,
         plot_bgcolor: colors.background,
         'font.color': colors.foreground,
+        'title.font.color': colors.foreground,
+        'legend.bgcolor': colors.legend,
         'legend.font.color': colors.foreground,
+        'hoverlabel.bgcolor': colors.background,
+        'hoverlabel.font.color': colors.foreground,
       }
-      Object.keys(plot.layout).forEach((key) => {
-        if (/^[xy]axis[0-9]*$/.test(key)) {
-          update[`${key}.color`] = colors.foreground
-          update[`${key}.gridcolor`] = colors.grid
-          update[`${key}.linecolor`] = colors.grid
-          update[`${key}.zerolinecolor`] = colors.grid
-        }
+      plotlyAxisNames(plot).forEach((key) => {
+        update[`${key}.color`] = colors.foreground
+        update[`${key}.gridcolor`] = colors.grid
+        update[`${key}.linecolor`] = colors.grid
+        update[`${key}.zerolinecolor`] = colors.grid
+        update[`${key}.title.font.color`] = colors.foreground
+        update[`${key}.tickfont.color`] = colors.foreground
       })
       try {
-        window.Plotly.relayout(plot, update)
+        const result = window.Plotly.relayout(plot, update)
+        if (result && typeof result.then === 'function') {
+          result.then(function () {
+            window.Plotly.redraw(plot)
+          })
+        } else {
+          window.Plotly.redraw(plot)
+        }
       } catch (_error) {
         // Keep one stale chart from blocking the rest of the page theme update.
       }
@@ -86,9 +122,21 @@
   })
 
   if (window.MutationObserver) {
-    new MutationObserver(syncThemeAwareOutputs).observe(document.documentElement, {
+    const themeObserver = new MutationObserver(syncThemeAwareOutputs)
+    const attributeFilter = [
+      'data-md-color-scheme',
+      'data-jp-theme-light',
+      'data-jp-theme-name',
+    ]
+    themeObserver.observe(document.documentElement, {
       attributes: true,
-      attributeFilter: ['data-md-color-scheme'],
+      attributeFilter,
     })
+    if (document.body) {
+      themeObserver.observe(document.body, {
+        attributes: true,
+        attributeFilter,
+      })
+    }
   }
 })()

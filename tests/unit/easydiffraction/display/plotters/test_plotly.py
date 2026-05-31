@@ -166,6 +166,10 @@ def test_show_figure_adds_legend_toggle_script_to_html_output(monkeypatch):
     assert captured.get('show_called') is not True
     assert captured['config']['displayModeBar'] is True
     assert captured['config']['displaylogo'] is False
+    assert 'data-jp-theme-light' in captured['post_script']
+    assert 'data-md-color-scheme' in captured['post_script']
+    assert 'graphDiv.dataset.edPlotlyTheme' in captured['post_script']
+    assert 'window.Plotly.relayout(graphDiv, update)' in captured['post_script']
     assert 'data-legend-toggle="true"' in captured['post_script']
     assert 'Toggle legend' in captured['post_script']
     assert 'graphDiv.dataset.legendVisible' in captured['post_script']
@@ -229,7 +233,9 @@ def test_show_figure_skips_legend_toggle_script_without_legend(monkeypatch):
     plotter._show_figure(DummyFig())
 
     assert captured.get('show_called') is not True
-    assert captured['post_script'] is None
+    assert captured['post_script'] is not None
+    assert 'data-jp-theme-light' in captured['post_script']
+    assert 'data-legend-toggle="true"' not in captured['post_script']
     assert captured['displayed_html'] == '<div>plot</div>'
 
 
@@ -278,7 +284,8 @@ def test_show_figure_wraps_fixed_aspect_html(monkeypatch):
     plotter._show_figure(DummyFig())
 
     assert captured.get('show_called') is not True
-    assert captured['post_script'] is None
+    assert captured['post_script'] is not None
+    assert 'data-jp-theme-light' in captured['post_script']
     assert 'aspect-ratio: 1 / 1;' in captured['displayed_html']
     assert 'ed-fixed-aspect-plotly-wrapper' in captured['displayed_html']
     assert '<div>plot</div>' in captured['displayed_html']

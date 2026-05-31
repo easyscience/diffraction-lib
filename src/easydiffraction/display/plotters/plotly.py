@@ -950,14 +950,151 @@ syncLegendVisibility();
 window.requestAnimationFrame(installLegendToggleButton);
 """
 
+    @staticmethod
+    def _theme_sync_post_script() -> str:
+        """
+        Return client-side code for host dark/light theme changes.
+        """
+        return r"""
+const graphDiv = document.getElementById('{plot_id}');
+if (!graphDiv || !window.Plotly) {
+    return;
+}
+
+const hostTheme = function () {
+    const materialScheme = (
+        (document.body && document.body.getAttribute('data-md-color-scheme'))
+        || (document.documentElement && document.documentElement.getAttribute('data-md-color-scheme'))
+    );
+    if (materialScheme === 'slate') {
+        return 'dark';
+    }
+    if (materialScheme === 'default') {
+        return 'light';
+    }
+
+    const jupyterThemeLight = (
+        (document.body && document.body.getAttribute('data-jp-theme-light'))
+        || (document.documentElement && document.documentElement.getAttribute('data-jp-theme-light'))
+    );
+    if (jupyterThemeLight === 'false') {
+        return 'dark';
+    }
+    if (jupyterThemeLight === 'true') {
+        return 'light';
+    }
+    return 'light';
+};
+
+const themeColors = function (theme) {
+    if (theme === 'dark') {
+        return {
+            background: '#111217',
+            foreground: '#e6e8ee',
+            grid: 'rgba(110, 145, 190, 0.35)',
+            legend: 'rgba(0, 0, 0, 0.5)',
+        };
+    }
+    return {
+        background: '#ffffff',
+        foreground: '#222222',
+        grid: 'rgba(120, 140, 160, 0.28)',
+        legend: 'rgba(255, 255, 255, 0.5)',
+    };
+};
+
+const axisNames = function () {
+    const names = new Set(['xaxis', 'yaxis']);
+    [graphDiv.layout, graphDiv._fullLayout].forEach(function (layout) {
+        if (!layout) {
+            return;
+        }
+        Object.keys(layout).forEach(function (key) {
+            if (/^[xyz]axis[0-9]*$/.test(key)) {
+                names.add(key);
+            }
+        });
+    });
+    return names;
+};
+
+const applyTheme = function () {
+    const theme = hostTheme();
+    if (graphDiv.dataset.edPlotlyTheme === theme) {
+        return;
+    }
+    graphDiv.dataset.edPlotlyTheme = theme;
+
+    const colors = themeColors(theme);
+    const update = {
+        paper_bgcolor: colors.background,
+        plot_bgcolor: colors.background,
+        'font.color': colors.foreground,
+        'title.font.color': colors.foreground,
+        'legend.bgcolor': colors.legend,
+        'legend.font.color': colors.foreground,
+        'hoverlabel.bgcolor': colors.background,
+        'hoverlabel.font.color': colors.foreground,
+    };
+
+    axisNames().forEach(function (axisName) {
+        update[axisName + '.color'] = colors.foreground;
+        update[axisName + '.gridcolor'] = colors.grid;
+        update[axisName + '.linecolor'] = colors.grid;
+        update[axisName + '.zerolinecolor'] = colors.grid;
+        update[axisName + '.title.font.color'] = colors.foreground;
+        update[axisName + '.tickfont.color'] = colors.foreground;
+    });
+
+    try {
+        const result = window.Plotly.relayout(graphDiv, update);
+        if (result && typeof result.then === 'function') {
+            result.then(function () {
+                window.Plotly.redraw(graphDiv);
+            });
+        } else {
+            window.Plotly.redraw(graphDiv);
+        }
+    } catch (_error) {
+        // Keep theme switching from breaking interaction with the figure.
+    }
+};
+
+if (graphDiv.on) {
+    graphDiv.on('plotly_afterplot', applyTheme);
+}
+
+if (window.MutationObserver) {
+    const themeObserver = new MutationObserver(function () {
+        graphDiv.dataset.edPlotlyTheme = '';
+        applyTheme();
+    });
+    const attributeFilter = [
+        'data-md-color-scheme',
+        'data-jp-theme-light',
+        'data-jp-theme-name',
+    ];
+    themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: attributeFilter,
+    });
+    if (document.body) {
+        themeObserver.observe(document.body, {
+            attributes: true,
+            attributeFilter: attributeFilter,
+        });
+    }
+}
+
+applyTheme();
+"""
+
     @classmethod
     def _html_post_script(cls, fig: object) -> str | None:
         """Return concatenated HTML post scripts for a Plotly figure."""
-        scripts: list[str] = []
+        scripts: list[str] = [cls._theme_sync_post_script()]
         if cls._has_visible_legend(fig):
             scripts.append(cls._modebar_legend_toggle_post_script())
-        if not scripts:
-            return None
         return '\n'.join(cls._scoped_html_post_script(script) for script in scripts)
 
     @staticmethod

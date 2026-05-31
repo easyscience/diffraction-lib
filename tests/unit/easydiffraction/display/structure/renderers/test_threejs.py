@@ -642,6 +642,7 @@ class TestRenderHtmlDocument:
         assert 'root.__crysviewApplyTheme = applyTheme;' in html
         assert "data-md-color-scheme" in html
         assert "data-jp-theme-light" in html
+        assert "document.body.getAttribute('data-md-color-scheme')" in html
 
 
 # ------------------------------------------------------------------
