@@ -54,6 +54,8 @@ _SHININESS = 36.0  # specular exponent
 _SPEC_STRENGTH = 0.28  # small, subtle highlight (not a hard white spot)
 _LABEL_FRAC = 0.040  # axis-letter font size, as a fraction of the canvas
 _LEGEND_FRAC = 0.032  # legend font size, as a fraction of the canvas
+_BORDER_RGB = (217, 217, 217)  # interactive view's rgba(128,128,128,0.3) frame over white
+_BORDER_PX = 3  # subtle hairline frame, at canvas resolution
 # Axis-arrow proportions, as fractions of the fit extent, so the arrows
 # are a constant on-screen size in every cell (mirrors the Three.js
 # defaults). The fit extent is ~2x the Three.js half-height reference,
@@ -397,9 +399,22 @@ class RasterStructureRenderer:
             RasterStructureRenderer._draw_axis_labels(draw, scene.axes, project)
         if scene.legend:
             RasterStructureRenderer._draw_legend(draw, scene.legend)
+        RasterStructureRenderer._draw_border(draw, image.size)
         buffer = io.BytesIO()
         image.save(buffer, format='PNG')
         return buffer.getvalue()
+
+    @staticmethod
+    def _draw_border(draw: ImageDraw.ImageDraw, size: tuple[int, int]) -> None:
+        """
+        Frame the canvas to match the interactive view's container.
+        """
+        width, height = size
+        draw.rectangle(
+            (0, 0, width - 1, height - 1),
+            outline=_BORDER_RGB,
+            width=_BORDER_PX,
+        )
 
     @staticmethod
     def _draw_axis_labels(draw: ImageDraw.ImageDraw, axes: AxisTriad, project: Projector) -> None:
