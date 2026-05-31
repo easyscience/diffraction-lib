@@ -1,28 +1,29 @@
 # Plan: crysview Structure Visualization
 
 Implementation plan for the
-[`crysview-structure-visualization`](../adrs/suggestions/crysview-structure-visualization.md)
+[`crysview-structure-visualization`](../adrs/accepted/crysview-structure-visualization.md)
 ADR. Follows [`AGENTS.md`](../../../AGENTS.md) — no deliberate
 exceptions to those instructions.
 
-> **Status (updated).** Phase 1 (code) shipped on this branch — the
-> feature is implemented. **Phase 2 (tests) was never executed**; its
-> unit-test files are discharged by the
-> [`structure-view-settings`](structure-view-settings.md) plan's Phase
-> 2, written once against the final API. Some prose below is kept only
-> as a historical design record and predates two later changes: the
+> **Status (closed).** The feature has shipped on this branch and the
+> ADR has been promoted to accepted. The original Phase 2 checklist
+> below is retained as historical planning detail; active verification
+> was completed once against the final API through the
+> [`structure-view-settings`](structure-view-settings.md) plan. Some
+> prose below predates two later changes: the
 > `atom_shape`/`radius_model` → `atom_view` merge (commit `f31996da7`)
 > and the `structure-view-settings` split of `style` /
 > `rendering_structure` into `rendering_structure` (engine) +
-> `structure_view` + `structure_style`. See the crysview ADR and the
-> `structure-view-settings` plan for the current design.
+> `structure_view` + `structure_style`. See the accepted crysview ADR
+> and the `structure-view-settings` plan for the current design.
 
-> **Context for this plan.** This is a **greenfield feature**: there is
-> no prior crysview implementation on the branch. The ADR review cycle
-> closed at the review-5 sentinel ("No findings. Ready to commit."), so
-> the design below is settled; this plan only makes it concrete. It is a
-> **single comprehensive plan** covering both shipping engines (ASCII +
-> Three.js), the new `view` and `style` categories, the
+> **Context for this plan.** This started as a **greenfield feature**:
+> there was no prior crysview implementation on the branch. The ADR
+> review cycle closed at the review-5 sentinel ("No findings. Ready to
+> commit."), so the design below is settled; this plan only makes it
+> concrete. It is a **single comprehensive plan** covering both shipping
+> engines (ASCII + Three.js), the original `view` and `style` categories
+> later split by `structure-view-settings`, the
 > `project.display.structure()` surface, CIF persistence, Three.js
 > bundling, the HTML-report structure figure, and tutorials — one
 > branch, one PR — matching the slug invoked and the project precedent
@@ -34,14 +35,10 @@ exceptions to those instructions.
 ## ADR cross-reference
 
 - **Primary (owned) ADR:**
-  [`crysview-structure-visualization.md`](../adrs/suggestions/crysview-structure-visualization.md)
-  (Status: Proposed; ADR review cycle closed at the review-5 sentinel).
-  This plan **owns** the ADR — it was drafted via `/draft-adr` and is
-  not yet committed. `/draft-impl-1` Phase A only commits the ADR
-  suggestion and the plan and removes their design-phase `_review-*.md`
-  / `_reply-*.md` siblings — it does **not** edit
-  [`docs/dev/adrs/index.md`](../adrs/index.md). The **User-facing API**
-  index row is a normal Phase 1 step (P1.16).
+  [`crysview-structure-visualization.md`](../adrs/accepted/crysview-structure-visualization.md)
+  (accepted; ADR review cycle closed at the review-5 sentinel). This
+  plan originally owned the ADR during drafting; the ADR and index row
+  have since been promoted.
 - **Referenced accepted ADRs** (the design builds on these; none are
   amended):
   - [`display-ux.md`](../adrs/accepted/display-ux.md) — defines
@@ -60,8 +57,7 @@ exceptions to those instructions.
     `view` is a switchable-category selector (Family B), like `chart` /
     `table`.
   - [`enum-backed-closed-values.md`](../adrs/accepted/enum-backed-closed-values.md)
-    — every closed value set (`view.type`, `style.atom_shape`,
-    `style.radius_model`, `style.color_scheme`) is a `(str, Enum)`.
+    — every closed value set is a `(str, Enum)`.
   - [`factory-contracts.md`](../adrs/accepted/factory-contracts.md),
     [`factory-tag-naming.md`](../adrs/accepted/factory-tag-naming.md) —
     `@Factory.register` and tag-naming conventions for the new
@@ -416,9 +412,9 @@ P1.16):**
 
 - `docs/dev/adrs/index.md` (existing — add a **User-facing API** row for
   the crysview ADR).
-- `docs/dev/adrs/suggestions/crysview-structure-visualization.md`
-  (committed by `/draft-impl-1` Phase A; its `_review-*` / `_reply-*`
-  siblings removed there).
+- `docs/dev/adrs/accepted/crysview-structure-visualization.md` (promoted
+  after implementation; its `_review-*` / `_reply-*` siblings were
+  removed during the implementation workflow).
 
 **Tutorials and docs:**
 
@@ -428,7 +424,8 @@ P1.16):**
 - `docs/docs/tutorials/*.ipynb` (regenerated artefacts).
 - `docs/docs/user-guide/` and `docs/docs/api-reference/` (existing — add
   `project.display.structure()`, `project.rendering_structure`,
-  `project.style` reference + a short user-guide section).
+  `project.structure_view`, and `project.structure_style` references + a
+  short user-guide section).
 
 ## Commit discipline
 

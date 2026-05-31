@@ -8,6 +8,12 @@ consolidation), but the scope has broadened: Part A introduces a
 project-wide selector-discovery convention, and Part B reorganises the
 structure-view settings on top of it.
 
+> **Status (closed).** Phase 1 and Phase 2 are complete on the
+> `crysview-structure-visualization` branch. The
+> `value-selector-discovery` and `crysview-structure-visualization` ADRs
+> have both been promoted to accepted. This file is retained as the
+> implementation and verification record.
+
 **Branch & PR (deliberate exception).** §Planning asks for a flat-slug
 `structure-view-settings` branch off `develop`. This plan deliberately
 deviates: the work continues on the in-flight
@@ -20,11 +26,10 @@ later split from the visualization PR, a dedicated
 
 ## ADR
 
-This plan now needs ADR work (it was previously "no ADR required"):
+This plan completed the ADR work that was added during planning:
 
-- **New ADR — `value-selector-discovery`** (draft via `/draft-adr`
-  before Phase 1, or accept alongside this plan). Recognises a
-  **fourth** selector shape beyond the three category-level families in
+- **Accepted ADR — `value-selector-discovery`**. Recognises a **fourth**
+  selector shape beyond the three category-level families in
   [`selector-families.md`](../adrs/accepted/selector-families.md):
   - **Category-level selectors** — the backend, switchable-category, and
     active-sibling families. Each _is_ a category and owns
@@ -37,7 +42,7 @@ This plan now needs ADR work (it was previously "no ADR required"):
     **same** `render_table` and `*`-marks-current convention. This is
     the new half.
 - **Update — crysview ADR**
-  ([`crysview-structure-visualization.md`](../adrs/suggestions/crysview-structure-visualization.md)):
+  ([`crysview-structure-visualization.md`](../adrs/accepted/crysview-structure-visualization.md)):
   the structure-view surface becomes three categories; `_style.*` →
   `_structure_style.*`; `show_labels`/`show_moments`/`range_*` move to
   `_structure_view.*`; `_rendering_structure.*` reduces to `type`;
@@ -338,11 +343,11 @@ separately): `data.calc_status` (`['incl', 'excl']`),
 
 ## Phase 2 — Verification
 
-This Phase 2 also discharges the crysview feature's never-written unit
-tests (the
+This Phase 2 also discharges the crysview feature's originally planned
+unit tests (the
 [`crysview-structure-visualization`](crysview-structure-visualization.md)
-plan's Phase 2 was never executed — `display/structure/` has no unit
-tests), written **once** against the final post-split API:
+plan's original Phase 2 checklist was superseded), written **once**
+against the final post-split API:
 
 - **This plan's surfaces:** `EnumDescriptor` + per-selector
   `show_supported()`; each migrated value selector; the new

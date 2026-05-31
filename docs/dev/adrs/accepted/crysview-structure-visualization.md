@@ -2,15 +2,14 @@
 
 ## Status
 
-Proposed.
+Accepted.
 
-**Date:** 2026-05-29
+**Date:** 2026-05-31
 
 ## Context
 
 EasyDiffraction refines crystal structures but offers no interactive 3D
-view of them. The accepted
-[Display UX Facade](../../../docs/dev/adrs/accepted/display-ux.md) ADR
+view of them. The accepted [Display UX Facade](display-ux.md) ADR
 defines `project.display` for 1D pattern charts and for parameter, fit,
 and posterior tables and plots, but nothing spatial: there is no way to
 look at the atoms, the unit cell, or the anisotropic displacement
@@ -65,10 +64,10 @@ safe defaults take priority over developer ergonomics.
 
 ## Decision
 
-This is the first version of the decision, written for review. The
-points that earlier reviews left open are now settled in the sections
-below; the remaining genuinely-open items are listed under Open
-Questions.
+This ADR records the accepted first version of the structure viewer.
+Points that earlier reviews left open are settled in the sections below;
+the historical open questions are retained only to document the final
+choices.
 
 ### 1. Build a renderer-neutral structure scene
 
@@ -201,8 +200,8 @@ persisted and overridable per call:
 # Persisted per-axis bounds — six scalar settings, like the cell
 # parameters (defaults 0 and 1 on each axis = the full cell, borders
 # included):
-project.rendering_structure.range_a_max = 2                       # two cells along a
-project.rendering_structure.range_c_min, project.rendering_structure.range_c_max = -0.2, 1.2   # margin on c
+project.structure_view.range_a_max = 2                       # two cells along a
+project.structure_view.range_c_min, project.structure_view.range_c_max = -0.2, 1.2   # margin on c
 
 # A convenience tuple overrides the persisted range for one call only:
 project.display.structure(
@@ -291,9 +290,10 @@ A scientist picks one model and one scheme instead of editing dozens of
 per-element rows, which keeps the view consistent and reproducible:
 
 ```python
-project.style.atom_view = 'adp'           # vdw | covalent | ionic | adp (default adp)
-project.style.color_scheme = 'jmol'       # jmol | vesta | ... (default jmol)
-project.style.show_supported()            # accepted values per setting
+project.structure_style.atom_view = 'adp'      # vdw | covalent | ionic | adp
+project.structure_style.color_scheme = 'jmol'  # jmol | vesta
+project.structure_style.atom_view.show_supported()
+project.structure_style.color_scheme.show_supported()
 ```
 
 How an atom is sized and shaped is a single **display-style switch**,
@@ -330,7 +330,7 @@ renders as covalent-radius spheres.
 > redundant choice. The atomic radii remain in the element database,
 > unused by the public selector. The `adp` view still uses covalent
 > radii for the ball fallback and for mixed-occupancy sites. CIF field:
-> `_style.atom_view`.
+> `_structure_style.atom_view`.
 
 In `'adp'` the surfaces are drawn at one **probability level**,
 `adp_probability`, a fraction in the open interval (0, 1) — not a
@@ -351,25 +351,26 @@ nearer atom's nearest-neighbour distance — so the large covalent radii
 of ionic A-site cations do not bond to every surrounding anion (a
 heuristic stop-gap; see open issue #108 for the full near-neighbour
 approach). These two cutoffs live on the **structure** and persist in
-the structure's own CIF (see section 8), not in `project.style`. The
-`atom_view` radius models (vdw / covalent / ionic) change only the
-rendered sphere _size_ — they never decide which bonds appear; bond
-detection is governed solely by the `_geom` cutoffs and the per-type
-bonding radius. Version 1 draws bonds computed on the fly from this rule
-while the scene is built and persists no bond table. The full computed
-bond and angle geometry — the standard `_geom_bond` and `_geom_angle`
-loops, with distances, angles, symmetry codes, and standard
-uncertainties — is a separate, related feature that reuses the same
-symmetry-expansion and distance math (see Deferred Work).
+the structure's own CIF (see section 8), not in
+`project.structure_style`. The `atom_view` radius models (vdw / covalent
+/ ionic) change only the rendered sphere _size_ — they never decide
+which bonds appear; bond detection is governed solely by the `_geom`
+cutoffs and the per-type bonding radius. Version 1 draws bonds computed
+on the fly from this rule while the scene is built and persists no bond
+table. The full computed bond and angle geometry — the standard
+`_geom_bond` and `_geom_angle` loops, with distances, angles, symmetry
+codes, and standard uncertainties — is a separate, related feature that
+reuses the same symmetry-expansion and distance math (see Deferred
+Work).
 
 `atom_view` and `color_scheme` are finite, closed value sets, so each is
 a `(str, Enum)` validated on assignment per the
-[Enum-Backed Closed Value Sets](../../../docs/dev/adrs/accepted/enum-backed-closed-values.md)
-ADR, and `project.style.show_supported()` lists the accepted values for
-every styling setting — the same discoverability the engine selectors
-give through `show_supported()`. `style` is a plain category, not a
-switchable one: it has no factory-swapped `type`, only these validated
-value settings.
+[Enum-Backed Closed Value Sets](enum-backed-closed-values.md) ADR, and
+each selector lists its accepted values through descriptor-level
+`show_supported()` — for example
+`project.structure_style.atom_view.show_supported()`. `structure_style`
+is a plain category, not a switchable one: it has no factory-swapped
+`type`, only these validated value settings.
 
 The defaults are the **`adp`** atom view and the **Jmol/CPK** colour
 scheme, so the view looks right with no configuration. Covalent radii —
@@ -494,22 +495,13 @@ near-vertical edges that the column-major chart code cannot express.
 
 ### 8. Configuring what is shown and how
 
-> **Updated.** This configuration surface was reorganised by the
-> [`structure-view-settings`](../../plans/structure-view-settings.md)
-> plan and the [`value-selector-discovery`](value-selector-discovery.md)
-> ADR; the examples below predate that split and are kept as historical
-> design context. The current surface is three flat categories:
-> `project.rendering_structure` (engine `type` only, CIF
-> `_rendering_structure.type`), `project.structure_view` (`show_labels`,
-> `show_moments`, `range_*`, CIF `_structure_view.*`), and
-> `project.structure_style` (`atom_view`, `color_scheme`,
-> `adp_probability`, `atom_scale`, CIF `_structure_style.*`).
-> Per-selector discovery replaces `project.style.show_supported()` —
-> e.g. `project.structure_style.atom_view.show_supported()`.
+The view has three configuration axes — _which engine_ draws it, _what_
+is shown, and _how_ it is styled. They are three flat project
+categories, all persisted to CIF:
 
-The view has two configuration axes — _what_ is shown (content) and
-_how_ it is drawn (engine plus styling) — both reachable from Python and
-persisted to CIF.
+- `project.rendering_structure` selects the renderer engine only.
+- `project.structure_view` stores durable content and region settings.
+- `project.structure_style` stores durable appearance settings.
 
 ```python
 # How: renderer engine
@@ -517,11 +509,12 @@ project.rendering_structure.type = 'auto'           # default: 'threejs' in Jupy
 project.rendering_structure.show_supported()
 
 # How: standard styling models, not per-element values (visual only)
-project.style.atom_view = 'adp'           # vdw | covalent | ionic | adp (default adp)
-project.style.color_scheme = 'jmol'       # jmol | vesta | ... (default jmol)
-project.style.adp_probability = 0.5       # adp only; fraction in (0, 1)
-project.style.atom_scale = 0.3            # radius-model views only; size, sqrt-compressed (0, 1]
-project.style.show_supported()            # accepted values per setting
+project.structure_style.atom_view = 'adp'      # vdw | covalent | ionic | adp
+project.structure_style.color_scheme = 'jmol'  # jmol | vesta
+project.structure_style.adp_probability = 0.5  # ADP probability level (0, 1)
+project.structure_style.atom_scale = 0.3       # overall atom scale (0, 1]
+project.structure_style.atom_view.show_supported()
+project.structure_style.color_scheme.show_supported()
 
 # Which bonds exist: a per-structure geometric property, not styling.
 # Standard cif_core _geom auto-bonding (r_bond defaults to covalent radius):
@@ -541,14 +534,14 @@ project.display.structure(
 # Three.js modebar stays active, so the user can still toggle each
 # feature live afterwards. show_moments stays inert until the structure
 # model carries moment fields (see Deferred Work).
-project.rendering_structure.show_labels = False
-project.rendering_structure.show_moments = True
+project.structure_view.show_labels = False
+project.structure_view.show_moments = True
 
 # What region (persisted): six per-axis fractional bounds (defaults 0 and
 # 1 = full cell, borders included), mirroring the six scalar cell
 # parameters.
-project.rendering_structure.range_a_min = 0
-project.rendering_structure.range_a_max = 1   # range_b_min/max and range_c_min/max likewise
+project.structure_view.range_a_min = 0
+project.structure_view.range_a_max = 1   # range_b_min/max and range_c_min/max likewise
 ```
 
 The persisted equivalent in the project CIF:
@@ -556,19 +549,20 @@ The persisted equivalent in the project CIF:
 ```
 # In the project CIF (project-level view + style):
 _rendering_structure.type           auto
-_rendering_structure.show_labels    false
-_rendering_structure.show_moments   true
-_rendering_structure.range_a_min    0
-_rendering_structure.range_a_max    1
-_rendering_structure.range_b_min    0
-_rendering_structure.range_b_max    1
-_rendering_structure.range_c_min    0
-_rendering_structure.range_c_max    1
 
-_style.atom_view        adp
-_style.color_scheme     jmol
-_style.adp_probability  0.5
-_style.atom_scale       0.3
+_structure_view.show_labels    false
+_structure_view.show_moments   true
+_structure_view.range_a_min    0
+_structure_view.range_a_max    1
+_structure_view.range_b_min    0
+_structure_view.range_b_max    1
+_structure_view.range_c_min    0
+_structure_view.range_c_max    1
+
+_structure_style.atom_view        adp
+_structure_style.color_scheme     jmol
+_structure_style.adp_probability  0.5
+_structure_style.atom_scale       0.3
 
 # In the structure (sample) CIF, beside _cell / _atom_site (per-structure):
 _geom.min_bond_distance_cutoff   0.0
@@ -581,28 +575,26 @@ The `_rendering_structure.type` tag follows `_rendering_plot.type` /
 `ascii` in a terminal); `_geom.min_bond_distance_cutoff` and
 `_geom.bond_distance_incr` are the **standard cif_core** bond-cutoff
 tags (`_atom_type.radius_bond` is the standard per-type bonding radius,
-used when present). The `_style.*` and `_rendering_structure.*` tags are
-project-internal app settings whose exact spelling is finalized in the
-implementation plan (see sections 6, 8 and Open Questions).
+used when present). The `_structure_view.*`, `_structure_style.*`, and
+`_rendering_structure.type` tags are project-internal app settings.
 
 Initial visibility resolves in a fixed order, so a reopened project and
 a per-call request behave predictably:
 
 1. **An explicit `include=(...)` tuple wins outright.** The view opens
-   showing exactly those features; persisted
-   `_rendering_structure.show_*` flags are ignored for that call. So
-   `include=('atoms',)` shows only atoms even when `show_labels=True` is
-   persisted.
+   showing exactly those features; persisted `_structure_view.show_*`
+   flags are ignored for that call. So `include=('atoms',)` shows only
+   atoms even when `show_labels=True` is persisted.
 2. **`include='auto'`** — the default, and what a bare `structure()`
    call uses — resolves each feature in turn from: data availability
    first (a feature with no data is off, such as moments without moment
-   fields), then the persisted `_rendering_structure.show_*` flag where
-   one exists, then the built-in default otherwise. Version 1 persists
-   flags only for the two features whose default a scientist most often
-   flips — `show_labels` (off) and `show_moments` (on where data
-   exists); atoms, bonds, cell, and axes follow their built-in 'auto'
-   defaults and are set per call through an explicit `include=` tuple.
-   So `show_labels=True` with `include='auto'` opens with labels on.
+   fields), then the persisted `_structure_view.show_*` flag where one
+   exists, then the built-in default otherwise. Version 1 persists flags
+   only for the two features whose default a scientist most often flips
+   — `show_labels` (off) and `show_moments` (on where data exists);
+   atoms, bonds, cell, and axes follow their built-in 'auto' defaults
+   and are set per call through an explicit `include=` tuple. So
+   `show_labels=True` with `include='auto'` opens with labels on.
 3. **Unsupported options are skipped and announced, never errored.**
    Whether it arrived through an explicit tuple or 'auto', a feature the
    engine cannot draw (any 3D-only feature under `ascii`) or the data
@@ -610,7 +602,7 @@ a per-call request behave predictably:
    `show_structure_options()` and at draw time.
 4. **Live modebar changes apply on top of that initial state and are
    runtime-only.** Toggling a feature in the Three.js modebar never
-   rewrites the persisted `_rendering_structure.show_*` flags or the
+   rewrites the persisted `_structure_view.show_*` flags or the
    `include=` set, so reopening the project restores the resolved
    initial state rather than the last live toggle.
 
@@ -624,12 +616,11 @@ a per-call request behave predictably:
   structure and engine is discoverable with reasons.
 - Keeping crystallography in the scene builder and out of renderers lets
   several front-ends (Three.js now, Qt Quick 3D later) share one model.
-- A new switchable `view` category (`project.rendering_structure.type`,
-  CIF `_rendering_structure.type`) must be added per the
-  switchable-category and category-owner ADRs, alongside a plain
-  (non-switchable) `style` category: `style` has no factory-swapped
-  `type`, only enum-backed value settings discoverable through
-  `show_supported()`.
+- A switchable `rendering_structure` category
+  (`project.rendering_structure.type`, CIF `_rendering_structure.type`)
+  selects only the engine, per the switchable-category and
+  category-owner ADRs. Plain `structure_view` and `structure_style`
+  sibling categories hold content/region and appearance settings.
 - The `ascii` and `threejs` engines ship together, mirroring the chart
   engines: `ascii` needs no JavaScript and renders a schematic view in
   the terminal, CLI, and headless contexts, while `threejs` covers
@@ -644,10 +635,9 @@ a per-call request behave predictably:
   margin, or several cells need no new primitives. The 3D engines draw
   the expanded set; the `ascii` engine draws the single default cell and
   reports wider ranges as a 3D-only capability.
-- The styling category lets scientists choose an atom-shape mode
-  (ball-and-stick or ORTEP), a standard radius model (defaulting to
-  covalent, the model with complete charge-free per-element data), a
-  colour scheme, and an ADP probability level — not hand-edit
+- The styling category lets scientists choose a standard atom view
+  (`vdw`, `covalent`, `ionic`, or `adp`), a colour scheme, an ADP
+  probability level, and an overall atom scale — not hand-edit
   per-element rows — all CIF-persisted, with defaults that work
   unconfigured. The radii and colours come from a bundled element
   database (covalent, vdW, ionic, and atomic radii; Jmol/CPK and VESTA
@@ -657,7 +647,7 @@ a per-call request behave predictably:
   (`_geom.min_bond_distance_cutoff`, `_geom.bond_distance_incr`) plus a
   per-type bonding radius (`_atom_type.radius_bond`, defaulting to the
   covalent radius), all on the structure and persisted in the structure
-  CIF — not in `project.style`, and independent of the display
+  CIF — not in `project.structure_style`, and independent of the display
   `atom_view`. Version 1 draws bonds on the fly and persists no bond
   table; the full computed `_geom_bond` / `_geom_angle` tables are
   deferred to a separate feature.
@@ -726,9 +716,9 @@ the final names.
   only atoms inside the range (borders included) and bonds only between
   in-scene atoms — no out-of-range partner atoms or edge-coordination
   completion. The range is persisted as six scalar tags
-  `_rendering_structure.range_{a,b,c}_{min,max}` (one number each,
-  defaults 0 and 1), mirroring the six scalar cell parameters; a
-  per-call `range=` tuple on `structure()` overrides them for one call.
+  `_structure_view.range_{a,b,c}_{min,max}` (one number each, defaults 0
+  and 1), mirroring the six scalar cell parameters; a per-call `range=`
+  tuple on `structure()` overrides them for one call.
 
 ## Deferred Work
 

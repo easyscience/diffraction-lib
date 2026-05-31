@@ -78,7 +78,7 @@ Also touches:
   top-level `project.publication` owner is added alongside the existing
   `project.info`, `project.structures`, `project.experiments`,
   `project.analysis`, `project.report` facade slots (see §5).
-- [`python-cif-category-correspondence.md`](python-cif-category-correspondence.md)
+- [`python-cif-category-correspondence.md`](../suggestions/python-cif-category-correspondence.md)
   — owns the Python↔CIF correspondence rule for **two** new
   project-level singleton surfaces: `project.report.* ↔ _report.*` (five
   scalar items, §1.3) and `project.publication.*` sibling categories ↔
@@ -88,12 +88,12 @@ Also touches:
 
 The library today has four shapes of summary output:
 
-- `Report.show_report()` and friends — terminal/Jupyter rendering of
-  project metadata, crystallographic data per phase, experimental
+- `project.report` — report configuration and per-format export methods
+  for project metadata, crystallographic data per phase, experimental
   configuration, and fit metrics
-  ([report.py](../../../../src/easydiffraction/report/report.py)).
-  (Pre-PR #184 this was `Summary.show_report()` on `project.summary`;
-  the IUCr alignment ADR replaced the unimplemented placeholder.)
+  ([default.py](../../../../src/easydiffraction/project/categories/report/default.py)).
+  The IUCr alignment ADR replaced the earlier unimplemented
+  `project.summary` placeholder with this facade.
 - `summary.cif` — was written into the project root on every
   `project.save()` as the literal string `"To be added..."` until PR
   #184 removed both the writer call and the placeholder method. Not a
@@ -127,18 +127,16 @@ the unresolved design question. The alignment ADR has since replaced the
 unimplemented `project.summary` slot with a `project.report` facade
 scoped to IUCr CIF generation (`reports/<project>.cif`). That resolves
 the CIF half of the question but leaves the GUI Summary tab, the
-terminal `show_report()`, the human-readable HTML, and the
-manuscript-bound LaTeX/PDF without a definition. This ADR fills the gap
-by extending the same `project.report` facade with non-CIF rendering
-surfaces.
+human-readable HTML, and the manuscript-bound LaTeX/PDF without a
+definition. This ADR fills the gap by extending the same
+`project.report` facade with non-CIF rendering surfaces.
 
 ## Scope
 
 In scope:
 
-- Extend the alignment ADR's `project.report` facade with
-  terminal/Jupyter, HTML, and LaTeX rendering surfaces, a configuration
-  category (five scalar fields —
+- Extend the alignment ADR's `project.report` facade with HTML and LaTeX
+  rendering surfaces, a configuration category (five scalar fields —
   `project.report.{cif, html, tex, pdf, html_offline}` — persisted in
   `project.cif`), and ad-hoc per-format save methods. **All report
   formats are opt-in via the configuration; every format defaults to
@@ -174,7 +172,7 @@ Out of scope:
 - Pre-existing project-level singleton categories (`_info.*`,
   `_rendering_plot.*`, `_rendering_table.*`, `_verbosity.*`). Covered by
   the in-flight
-  [`python-cif-category-correspondence.md`](python-cif-category-correspondence.md).
+  [`python-cif-category-correspondence.md`](../suggestions/python-cif-category-correspondence.md).
   This ADR **does** add one new project-level singleton category,
   `_report.*`, alongside them (see §1.3 and the ADRs-amended list); that
   surface is not delegated to the correspondence ADR.
@@ -323,13 +321,6 @@ project.report.as_tex() -> str
 # Shared data context (for GUI Summary tab + Jinja templates):
 project.report.data_context() -> dict
 
-# Terminal / Jupyter renderers (existing methods, migrated to
-# project.report by PR #184 — names preserved):
-project.report.show_report()              # full report — sections below
-project.report.show_project_info()
-project.report.show_crystallographic_data()
-project.report.show_experimental_data()
-project.report.show_fitting_details()
 ```
 
 Per-format method signatures only carry the args that apply to that
@@ -487,12 +478,11 @@ Reasons `project.report` is Pattern A, not Pattern B:
 
 What makes `project.report` look heavier than `project.rendering_plot` /
 `project.rendering_table` / `project.verbosity` is the action methods on
-the facade (`save_cif()`, `save_html()`, `show_report()`,
-`data_context()`, etc.). Those live on the Python class alongside the
-configuration fields, which is the facade-hybrid amendment to
-`project-facade-and-persistence.md` already recorded in the ADRs-amended
-list. The action methods do not change where the configuration persists
-— that stays in `project.cif`.
+the facade (`save_cif()`, `save_html()`, `data_context()`, etc.). Those
+live on the Python class alongside the configuration fields, which is
+the facade-hybrid amendment to `project-facade-and-persistence.md`
+already recorded in the ADRs-amended list. The action methods do not
+change where the configuration persists — that stays in `project.cif`.
 
 #### 1.4 Validation moves internal — CIF only, writer-correctness only
 
@@ -653,7 +643,7 @@ self._u_iso = Parameter(
 | ---------------------------------------- | --------------------------- | ---------------------------- |
 | LaTeX (`save_tex`)                       | `$U_{\mathrm{iso}}$`        | `\AA$^2$`                    |
 | HTML (`save_html`, MathJax-rendered)     | `$U_{\mathrm{iso}}$`        | `\AA$^2$`                    |
-| HTML pre-MathJax / GUI / `show_report()` | `Uiso`                      | `Å²`                         |
+| HTML pre-MathJax / GUI                   | `Uiso`                      | `Å²`                         |
 | `project.report.data_context()` raw dict | both available              | both available               |
 | CIF emission                             | `_atom_site.U_iso_or_equiv` | (no `_units.code` row today) |
 | Python code / repr                       | `u_iso`                     | `angstrom_squared`           |
@@ -672,9 +662,9 @@ per-context fallback chain:
   additionally surrounds `handler.latex_name` / `handler.latex_units`
   with `\(...\)` math delimiters so MathJax picks them up where the
   descriptor has typeset variants — i.e., HTML can show the same
-  `$U_{\mathrm{iso}}$` the PDF shows, while a GUI tooltip or
-  `show_report()` printout falls back to `display_*`.
-- **GUI / terminal / `show_*()` context**:
+  `$U_{\mathrm{iso}}$` the PDF shows, while a GUI tooltip falls back to
+  `display_*`.
+- **GUI / plain-text context**:
   `handler.display_name or descriptor.name`,
   `handler.display_units or descriptor.units`.
 
@@ -1568,12 +1558,12 @@ successful return — pre-fit calls, failed fits, and projects loaded from
 a save predating this ADR all start out **without** the snapshot. The
 public API surface treats missing provenance uniformly:
 
-- **Rendering (`project.report.show_report()`, HTML, TeX).** Each
-  role-row prints `"(not available)"` for `name`, omits version and URL,
-  and adds a one-line footer "Software-provenance snapshot not yet
-  recorded — call `Analysis.fit()` once to populate." No warning, no
-  exception; the report still renders end-to-end so users iterating on a
-  configuration before fitting see the rest of the page.
+- **Rendering (HTML, TeX).** Each role-row prints `"(not available)"`
+  for `name`, omits version and URL, and adds a one-line footer
+  "Software-provenance snapshot not yet recorded — call `Analysis.fit()`
+  once to populate." No warning, no exception; the report still renders
+  end-to-end so users iterating on a configuration before fitting see
+  the rest of the page.
 - **IUCr CIF export (`project.report.cif = True`).** The
   `_easydiffraction_software.{framework, calculator, minimizer}` triple
   emits `?` placeholders consistent with the IUCr ADR's unset-field
@@ -2053,7 +2043,7 @@ every renderer (HTML, PDF, terminal, GUI) simultaneously.
      enumeration: `_report.*` (this ADR §1.3) and `_publication.*`
      family (this ADR §5; concrete sub-prefixes are `_publ_*` and
      `_journal_*` per IUCr coreCIF).
-- [`python-cif-category-correspondence.md`](python-cif-category-correspondence.md)
+- [`python-cif-category-correspondence.md`](../suggestions/python-cif-category-correspondence.md)
   — owns the Python-to-CIF correspondence rule for two new project-level
   singleton surfaces:
   - `project.report.*` ↔ `_report.*` — five scalar items (four format

@@ -5,6 +5,12 @@ Implementation plan for the
 ADR. Follows [`AGENTS.md`](../../../AGENTS.md) — no deliberate
 exceptions to those instructions.
 
+> **Status (closed).** The report-rendering work has shipped and its ADR
+> remains accepted. The unchecked Phase 2 items later in this document
+> are retained as historical planning detail; the corresponding report,
+> category, display-handler, and units-vocabulary tests now exist in the
+> unit-test tree.
+
 > **Context for this plan.** The branch `project-summary-rendering`
 > already carries an end-to-end Phase 1 implementation of an earlier
 > version of the same ADR (PR-ready as of commit

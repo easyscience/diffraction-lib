@@ -5,6 +5,13 @@ Implementation plan for the
 ADR. Follows [`AGENTS.md`](../../../AGENTS.md) — no deliberate
 exceptions to those instructions.
 
+> **Status (closed).** Phase 1 and Phase 2 are complete; the ADR was
+> promoted to accepted during implementation. This file is retained as
+> the implementation and verification record. Early references below to
+> `project.report.show_report()` and related display helpers were
+> superseded by the later project-summary-rendering work; the current
+> report facade exposes save/render/data-context methods.
+
 ## ADR cross-reference
 
 - Primary ADR: `iucr-cif-tag-alignment.md` (accepted; this plan promoted
