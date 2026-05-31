@@ -252,7 +252,7 @@ def _build_parameter_row(param: object) -> list[str]:
     uncertainty = f'{param.uncertainty:.4f}' if param.uncertainty is not None else 'N/A'
     if _is_uncertainty_large(param):
         uncertainty = f'[red]{uncertainty}[/red]'
-    units = getattr(param, 'units', 'N/A')
+    units = _display_units(param)
     relative_change = _compute_relative_change(param)
     return [
         param._identity.datablock_entry_name,
@@ -265,6 +265,16 @@ def _build_parameter_row(param: object) -> list[str]:
         uncertainty,
         relative_change,
     ]
+
+
+def _display_units(param: object) -> str:
+    """Return user-facing units for a fitted parameter."""
+    if hasattr(param, 'resolve_display_units'):
+        return param.resolve_display_units('gui')
+    units = getattr(param, 'units', 'N/A')
+    if units == 'none':
+        return ''
+    return units
 
 
 def _compute_relative_change(param: object) -> str:

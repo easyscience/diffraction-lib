@@ -84,7 +84,11 @@ def test_fitresults_display_results_places_units_after_parameter(monkeypatch):
             self.value = 1.2
             self.uncertainty = 0.05
             self.name = 'a'
-            self.units = 'arb'
+            self.units = 'angstrom_squared'
+
+        def resolve_display_units(self, context):
+            assert context == 'gui'
+            return 'Å²'
 
     from easydiffraction.analysis.fit_helpers import reporting
 
@@ -127,7 +131,7 @@ def test_fitresults_display_results_places_units_after_parameter(monkeypatch):
             'cat',
             'entry',
             'a',
-            'arb',
+            'Å²',
             '1.0000',
             '1.2000',
             '0.0500',
