@@ -61,19 +61,19 @@ project.info.show_as_cif()
 project.save_as(dir_path='projects/lbco_hrpt')
 
 # %% [markdown]
-# #### Set Up Data Plotter
+# #### Set Up Rendering Engines
 
 # %% [markdown]
-# Show supported plotting engines.
+# Show supported data plotting engines.
 
 # %%
 project.rendering_plot.show_supported()
 
 # %% [markdown]
-# Show current plotting configuration.
+# Show supported structure plotting engines.
 
 # %%
-project.rendering_plot.show_supported()
+project.rendering_structure.show_supported()
 
 # %% [markdown]
 # ## Step 2: Define Structure
@@ -177,16 +177,20 @@ project.structures['lbco'].show_as_cif()
 # %%
 project.rendering_structure.show_supported()
 
+# %%
+project.rendering_structure.help()
+
 # %% [markdown]
-# Visual styling — the atom shape, per-element radius model, and colour
-# scheme — is configured on `project.style`.
+# Visual styling — the atom view and colour scheme — is configured on
+# `project.structure_style`.
 
 # %%
-project.style.show_supported()
+project.structure_style.atom_view.show_supported()
+project.structure_style.color_scheme.show_supported()
 
 # %%
-project.style.atom_view = 'atomic'
-project.style.color_scheme = 'jmol'
+project.structure_style.atom_view = 'adp'
+project.structure_style.color_scheme = 'jmol'
 
 # %% [markdown]
 # Bonds are generated automatically between atoms whose separation lies
@@ -216,7 +220,11 @@ project.display.structure(struct_name='lbco')
 
 # %%
 project.rendering_structure.type = 'ascii'
+
+# %%
 project.display.structure(struct_name='lbco')
+
+# %%
 
 # %%
 project.rendering_structure.type = 'auto'
@@ -667,6 +675,17 @@ project.display.pattern(expt_name='hrpt')
 # %%
 project.display.pattern(expt_name='hrpt', x_min=38, x_max=41)
 
+# %%
+project.display.structure(struct_name='lbco')
+
+# %%
+
+# %%
+
+# %%
+
+# %%
+
 # %% [markdown]
 # ## Step 5: Generate Report
 #
@@ -686,3 +705,9 @@ project.report.cif = True
 project.report.tex = True
 project.report.pdf = True
 project.save()
+
+# %%
+
+# %%
+
+# %%

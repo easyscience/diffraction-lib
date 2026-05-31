@@ -117,6 +117,20 @@ struct.atom_sites.create(
     adp_iso=0.83,
 )
 
+# %%
+
+# %%
+project.rendering_structure.type = 'auto'
+project.display.structure(struct_name='cosio')
+
+# %%
+project.rendering_structure.type = 'ascii'
+project.display.structure(struct_name='cosio')
+
+# %%
+
+# %%
+
 # %% [markdown]
 # ## Step 3: Define Template Experiment
 #

@@ -65,7 +65,7 @@ structure.atom_sites['O2'].adp_iso = 0.0
 # view will draw probability ellipsoids for the anisotropic sites.
 
 # %%
-project.style.atom_view = 'adp'
+project.structure_style.atom_view = 'adp'
 
 # %%
 project.display.structure(struct_name='tbti')
@@ -133,6 +133,9 @@ project.display.fit.results()
 
 # %%
 structure.show_as_cif()
+
+# %%
+project.display.structure(struct_name='tbti')
 
 # %%
 project.experiments.show_names()
