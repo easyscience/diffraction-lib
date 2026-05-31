@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 """
-Per-element colours, axis colours, and theme-dependent canvas colours.
+Per-element colours, axis colours, and theme-dependent contrast colours.
 """
 
 from __future__ import annotations
@@ -19,7 +19,7 @@ AXIS_COLORS: dict[str, Rgb] = {'a': (220, 40, 40), 'b': (40, 180, 40), 'c': (40,
 # Neutral wedge colour for the vacant fraction of a mixed site.
 VACANCY_COLOR: Rgb = (210, 210, 210)
 
-# Canvas + annotation colours selected by the detected light/dark theme.
+# Parent-independent annotation contrast colours for light/dark themes.
 LIGHT_THEME: dict[str, Rgb] = {'background': (255, 255, 255), 'foreground': (33, 33, 33)}
 DARK_THEME: dict[str, Rgb] = {'background': (33, 33, 33), 'foreground': (235, 235, 235)}
 
@@ -54,7 +54,7 @@ def color_for(element: str, scheme: str) -> Rgb:
 
 def theme_colors(*, dark: bool) -> dict[str, Rgb]:
     """
-    Return canvas/annotation colours for the detected theme.
+    Return annotation contrast colours for the detected theme.
 
     Parameters
     ----------

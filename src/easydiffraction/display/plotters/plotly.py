@@ -95,6 +95,7 @@ PREDICTIVE_DRAW_PLOT_CAP = 50
 PREDICTIVE_DRAW_ARRAY_NDIM = 2
 FIXED_ASPECT_WRAPPER_META_KEY = 'fixed_aspect_wrapper'
 FIXED_ASPECT_WRAPPER_CLASS_NAME = 'ed-fixed-aspect-plotly-wrapper'
+TRANSPARENT_BACKGROUND_COLOR = 'rgba(0, 0, 0, 0)'
 
 
 def single_crystal_axis_range(
@@ -989,16 +990,18 @@ const hostTheme = function () {
 const themeColors = function (theme) {
     if (theme === 'dark') {
         return {
-            background: '#212121',
+            background: 'rgba(0, 0, 0, 0)',
             foreground: '#e6e8ee',
             grid: 'rgba(110, 145, 190, 0.35)',
+            hoverBackground: '#212121',
             legend: 'rgba(0, 0, 0, 0.5)',
         };
     }
     return {
-        background: '#ffffff',
+        background: 'rgba(0, 0, 0, 0)',
         foreground: '#222222',
         grid: 'rgba(120, 140, 160, 0.28)',
+        hoverBackground: '#ffffff',
         legend: 'rgba(255, 255, 255, 0.5)',
     };
 };
@@ -1033,7 +1036,7 @@ const applyTheme = function () {
         'title.font.color': colors.foreground,
         'legend.bgcolor': colors.legend,
         'legend.font.color': colors.foreground,
-        'hoverlabel.bgcolor': colors.background,
+        'hoverlabel.bgcolor': colors.hoverBackground,
         'hoverlabel.font.color': colors.foreground,
     };
 
@@ -1244,6 +1247,7 @@ applyTheme();
             A :class:`plotly.graph_objects.Figure` to display.
         """
         config = self._get_config()
+        self._apply_transparent_background(fig)
 
         if in_pycharm() or display is None or HTML is None:
             fig.show(config=config)
@@ -1299,6 +1303,7 @@ applyTheme();
             legend_bgcolor = cls._legend_background_color_for_template(force_template)
             if legend_bgcolor is not None:
                 fig.update_layout(legend={'bgcolor': legend_bgcolor})
+        cls._apply_transparent_background(fig)
         html_fig = pio.to_html(
             fig,
             include_plotlyjs=include_plotlyjs,
@@ -1307,6 +1312,16 @@ applyTheme();
             post_script=cls._html_post_script(fig),
         )
         return cls._wrap_html_figure(fig, html_fig)
+
+    @staticmethod
+    def _apply_transparent_background(fig: object) -> None:
+        """Make Plotly paper and plot areas inherit their parent."""
+        update_layout = getattr(fig, 'update_layout', None)
+        if callable(update_layout):
+            update_layout(
+                paper_bgcolor=TRANSPARENT_BACKGROUND_COLOR,
+                plot_bgcolor=TRANSPARENT_BACKGROUND_COLOR,
+            )
 
     @classmethod
     def _get_layout(
@@ -1380,6 +1395,8 @@ applyTheme();
                 'text': title,
                 'font': {'size': TITLE_FONT_SIZE},
             },
+            paper_bgcolor=TRANSPARENT_BACKGROUND_COLOR,
+            plot_bgcolor=TRANSPARENT_BACKGROUND_COLOR,
             legend={
                 'bgcolor': cls._legend_background_color(),
                 'xanchor': 'right',

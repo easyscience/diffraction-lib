@@ -291,8 +291,9 @@ Adjust the margins and paddings to fit the defaults in MkDocs Material and do no
 }
 
 .md-typeset .crysview.cv-host-theme-dark {
-  --cv-scene-bg: #212121 !important;
+  --cv-scene-bg: transparent !important;
   --cv-scene-fg: #e6e8ee !important;
+  --cv-label-shadow-bg: #212121 !important;
   --cv-panel-bg: rgba(37, 37, 43, 0.95) !important;
   --cv-panel-border: #52545c !important;
   --cv-panel-fg: var(--cv-scene-fg) !important;
@@ -302,13 +303,14 @@ Adjust the margins and paddings to fit the defaults in MkDocs Material and do no
   --cv-control-active-border: #63708a !important;
   --cv-control-fg: var(--cv-scene-fg) !important;
   --cv-control-muted: #8d929e !important;
-  background: var(--cv-scene-bg) !important;
+  background: transparent !important;
   color: var(--cv-scene-fg) !important;
 }
 
 .md-typeset .crysview.cv-host-theme-light {
-  --cv-scene-bg: #fff !important;
+  --cv-scene-bg: transparent !important;
   --cv-scene-fg: #222 !important;
+  --cv-label-shadow-bg: #fff !important;
   --cv-panel-bg: rgba(255, 255, 255, 0.94) !important;
   --cv-panel-border: #e2e2e2 !important;
   --cv-panel-fg: #222 !important;
@@ -318,7 +320,7 @@ Adjust the margins and paddings to fit the defaults in MkDocs Material and do no
   --cv-control-active-border: #c6d0e2 !important;
   --cv-control-fg: #2a3f5f !important;
   --cv-control-muted: #b9bdc6 !important;
-  background: var(--cv-scene-bg) !important;
+  background: transparent !important;
   color: var(--cv-scene-fg) !important;
 }
 
@@ -326,9 +328,9 @@ Adjust the margins and paddings to fit the defaults in MkDocs Material and do no
 .md-typeset .crysview.cv-host-theme-light .cv-atom-label {
   color: var(--cv-scene-fg) !important;
   text-shadow:
-    0 0 3px var(--cv-scene-bg),
-    0 0 3px var(--cv-scene-bg),
-    0 0 3px var(--cv-scene-bg) !important;
+    0 0 3px var(--cv-label-shadow-bg),
+    0 0 3px var(--cv-label-shadow-bg),
+    0 0 3px var(--cv-label-shadow-bg) !important;
 }
 
 /* Extra styling the panda dataframes, on top of the style included in the code */

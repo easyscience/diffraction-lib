@@ -676,8 +676,8 @@ class TestRenderUnpatchedIntegration:
 
     These tests deliberately omit the ``patched_theme`` fixture so the
     production ``theme_colors(dark=dark)`` call runs for real, proving the
-    keyword-only signature is invoked correctly and its light/dark canvas
-    colours reach the document.
+    keyword-only signature is invoked correctly and its light/dark
+    contrast colours reach the document.
     """
 
     def test_render_returns_html_document(self):
@@ -694,20 +694,21 @@ class TestRenderUnpatchedIntegration:
         assert '>' in html
         assert 'crysview-' in html
 
-    def test_light_theme_embeds_real_canvas_colours(self):
+    def test_light_theme_embeds_transparent_canvas_and_contrast_colours(self):
         # ``theme_colors(dark=False)`` returns LIGHT_THEME; its background
-        # and foreground must be wired into the document.
+        # and foreground must be wired into the document for labels.
         html = ThreeJsStructureRenderer().render(
             _identity_scene(),
             features=frozenset(),
             offline=True,
             dark=False,
         )
-        assert 'rgb(255, 255, 255)' in html  # LIGHT_THEME background
+        assert '--cv-scene-bg: transparent;' in html
+        assert '--cv-label-shadow-bg: rgb(255, 255, 255);' in html
         assert 'rgb(33, 33, 33)' in html  # LIGHT_THEME foreground
         assert 'light' in html
 
-    def test_dark_theme_embeds_real_canvas_colours(self):
+    def test_dark_theme_embeds_transparent_canvas_and_contrast_colours(self):
         # ``theme_colors(dark=True)`` returns DARK_THEME instead.
         html = ThreeJsStructureRenderer().render(
             _identity_scene(),
@@ -715,6 +716,7 @@ class TestRenderUnpatchedIntegration:
             offline=True,
             dark=True,
         )
-        assert 'rgb(33, 33, 33)' in html  # DARK_THEME background
+        assert '--cv-scene-bg: transparent;' in html
+        assert '--cv-label-shadow-bg: rgb(33, 33, 33);' in html
         assert 'rgb(235, 235, 235)' in html  # DARK_THEME foreground
         assert 'dark' in html

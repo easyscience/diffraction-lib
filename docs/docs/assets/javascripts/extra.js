@@ -31,16 +31,18 @@
   function themeColors() {
     if (themeName() === 'dark') {
       return {
-        background: '#212121',
+        background: 'rgba(0, 0, 0, 0)',
         foreground: '#e6e8ee',
         grid: 'rgba(110, 145, 190, 0.35)',
+        hoverBackground: '#212121',
         legend: 'rgba(0, 0, 0, 0.5)',
       }
     }
     return {
-      background: '#ffffff',
+      background: 'rgba(0, 0, 0, 0)',
       foreground: '#222222',
       grid: 'rgba(120, 140, 160, 0.28)',
+      hoverBackground: '#ffffff',
       legend: 'rgba(255, 255, 255, 0.5)',
     }
   }
@@ -70,7 +72,7 @@
         'title.font.color': colors.foreground,
         'legend.bgcolor': colors.legend,
         'legend.font.color': colors.foreground,
-        'hoverlabel.bgcolor': colors.background,
+        'hoverlabel.bgcolor': colors.hoverBackground,
         'hoverlabel.font.color': colors.foreground,
       }
       plotlyAxisNames(plot).forEach((key) => {

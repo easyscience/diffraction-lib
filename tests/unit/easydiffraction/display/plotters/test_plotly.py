@@ -21,6 +21,8 @@ def test_get_layout_sets_title_and_axis_title_font_sizes():
     assert layout.title.font.size == pp.TITLE_FONT_SIZE
     assert layout.xaxis.title.font.size == pp.AXIS_TITLE_FONT_SIZE
     assert layout.yaxis.title.font.size == pp.AXIS_TITLE_FONT_SIZE
+    assert layout.paper_bgcolor == pp.TRANSPARENT_BACKGROUND_COLOR
+    assert layout.plot_bgcolor == pp.TRANSPARENT_BACKGROUND_COLOR
 
 
 def test_get_trace_and_plot(monkeypatch):
@@ -169,7 +171,8 @@ def test_show_figure_adds_legend_toggle_script_to_html_output(monkeypatch):
     assert 'data-jp-theme-light' in captured['post_script']
     assert 'data-md-color-scheme' in captured['post_script']
     assert 'graphDiv.dataset.edPlotlyTheme' in captured['post_script']
-    assert "background: '#212121'" in captured['post_script']
+    assert "background: 'rgba(0, 0, 0, 0)'" in captured['post_script']
+    assert "hoverBackground: '#212121'" in captured['post_script']
     assert 'window.Plotly.relayout(graphDiv, update)' in captured['post_script']
     assert 'data-legend-toggle="true"' in captured['post_script']
     assert 'Toggle legend' in captured['post_script']
