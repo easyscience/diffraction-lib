@@ -236,7 +236,7 @@ API. A short bridge period where old and new surfaces coexist is intentional.
   `show_labels`, `show_moments`, six `range_*` scalars, and `view_range()`.
   `rendering_structure` keeps its copies for now. Commit:
   `Add structure_view content/region category`.
-- [ ] **P1.8 — Add `structure_style` (additive).** New category +
+- [x] **P1.8 — Add `structure_style` (additive).** New category +
   `project.structure_style` + a new `_structure_style.*` CIF block;
   `atom_view`/`color_scheme` as `EnumDescriptor`, `adp_probability`/`atom_scale`
   as `NumericDescriptor`. The old `style` category / `project.style` stay for
