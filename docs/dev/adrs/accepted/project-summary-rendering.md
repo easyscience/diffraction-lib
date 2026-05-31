@@ -18,7 +18,8 @@ Runs alongside, and **extends**, the accepted
 - A `project.save(report=True)` opt-in flag for the IUCr CIF.
 
 That ADR currently scopes `project.report` to **CIF only** — the
-multi-datablock IUCr submission CIF written to `reports/<project>.cif`.
+multi-datablock IUCr-aligned report CIF written to
+`reports/<project>.cif`.
 This ADR keeps the facade and adds a **`project.report` configuration
 category** with five scalar persisted fields (`cif`, `html`, `tex`,
 `pdf`, `html_offline`) on `project.cif`, plus ad-hoc per-format methods
@@ -50,18 +51,17 @@ Open Questions section is empty):
   `project.save()` (§1.4). HTML, TeX, and PDF outputs are not
   gemmi-validatable and get no pre-write validation; LaTeX errors
   surface at PDF-compile time via the TeX engine. A writer that emits
-  non-compliant CIF raises `EasyDiffractionWriterError` instead. This
-  ADR's deferred `check_completeness()` (publication-side completeness)
-  is a separate concern that stays in Deferred Work.
-- **Publication metadata source** — the alignment ADR's Deferred Work
-  proposes a user-supplied `reports/publ_info.{toml,json}` to replace
-  `?` placeholders. Both write paths read the same Python attribute,
-  **`project.publication`** — a new top-level on `Project`, sibling to
-  `project.info` and `project.analysis`. The schema is defined in §5 of
-  this ADR: six CIF-aligned sibling categories (`journal`,
-  `journal_date`, `journal_coeditor`, `contact_author`, `body`,
-  `authors`) with full IUCr-tag fidelity. The loader accepts TOML
-  (primary) and JSON (fallback); selection is by file extension.
+  non-compliant CIF raises `EasyDiffractionWriterError` instead.
+  Completeness checks for a future journal-submission metadata surface
+  stay in Deferred Work and are not part of the v1 clean report CIF.
+- **Clean report metadata** — the alignment ADR's Deferred Work
+  proposed user-supplied `reports/publ_info.{toml,json}` data to replace
+  `?` placeholders. This ADR rejects that v1 surface. There is no
+  `project.publication` owner in v1, `project.cif` does not persist
+  journal/publication metadata, and the report CIF does not emit empty
+  journal, author, publication-body, or powder-measurement author
+  placeholders. Section 5 records the deferred tags so they can be
+  reconsidered later without keeping empty fields in current reports.
 
 Also touches:
 
@@ -74,15 +74,14 @@ Also touches:
 - [`project-facade-and-persistence.md`](../accepted/project-facade-and-persistence.md)
   — two changes: `project.report` gains a persisted configuration
   category (`_report.*` in `project.cif`, see §1.3), turning the facade
-  into a hybrid of helper methods plus persisted config; and a new
-  top-level `project.publication` owner is added alongside the existing
-  `project.info`, `project.structures`, `project.experiments`,
-  `project.analysis`, `project.report` facade slots (see §5).
+  into a hybrid of helper methods plus persisted config; and the
+  previously proposed `project.publication` owner is rejected for v1 so
+  empty journal metadata stays out of `project.cif` (see §5).
 - [`python-cif-category-correspondence.md`](../suggestions/python-cif-category-correspondence.md)
-  — owns the Python↔CIF correspondence rule for **two** new
-  project-level singleton surfaces: `project.report.* ↔ _report.*` (five
-  scalar items, §1.3) and `project.publication.*` sibling categories ↔
-  `_journal.*`, `_publ_author.*`, `_publ_contact_author.*`, etc. (§5).
+  — owns the Python↔CIF correspondence rule for the new
+  `project.report.* ↔ _report.*` project-level singleton surface (five
+  scalar items, §1.3). The rejected `project.publication.*` surface is
+  recorded in §5 for future reconsideration, not accepted for v1.
 
 ## Context
 
@@ -150,12 +149,11 @@ In scope:
   Persisted in `analysis/analysis.cif` (amends the IUCr ADR's "Analysis
   — unchanged" stance for these fields; see §4 and the ADRs-amended
   list).
-- Add a new top-level `project.publication` owner on `Project` (sibling
-  to `project.info`, `project.structures`, `project.experiments`,
-  `project.analysis`, `project.report`) carrying the `_publ_*` /
-  `_journal_*` publication metadata the IUCr writer otherwise emits as
-  `?` placeholders. See §5; amends `project-facade-and-persistence.md`
-  and complements `python-cif-category-correspondence.md`.
+- Reject the previously proposed top-level `project.publication` owner
+  for v1. Journal, author, publication-body, and powder-measurement
+  author tags are not represented in code, are not persisted in
+  `project.cif`, and are not emitted as empty fields in the report CIF.
+  See §5 for the deferred tag list and the retained report-CIF fields.
 - Ship exactly one LaTeX style (`iucrjournals`) — no style selector, no
   `ReportStyleEnum`, no `_report.style` field. Multi-style support
   (REVTeX, Elsevier, etc.) is deferred to a follow-up ADR; see "Deferred
@@ -166,7 +164,7 @@ Out of scope:
 - CIF tag-name decisions for any serialised field. Those are the
   alignment ADR's job; this ADR notes recommended mappings and
   cross-references.
-- The IUCr CIF submission export tag policy and multi-datablock layout.
+- The IUCr-aligned report CIF export tag policy and multi-datablock layout.
   Covered by the alignment ADR; the output file lives at
   `reports/<project>.cif` and is opt-in via `project.report.cif = True`.
 - Pre-existing project-level singleton categories (`_info.*`,
@@ -460,7 +458,7 @@ The split is summarised below.
 | `project.rendering_table`            | A       | `project.cif` (`_rendering_table.*`)     | `CategoryItem` (one field)                           |
 | `project.verbosity`                  | A       | `project.cif` (`_verbosity.*`)           | `CategoryItem` (one field)                           |
 | **`project.report`** (this ADR)      | **A**   | **`project.cif` (`_report.*`)**          | **`CategoryItem` (five fields) plus action methods** |
-| `project.publication` (this ADR, §5) | A       | `project.cif` (`_publ_*` / `_journal_*`) | `CategoryOwner` of six sibling categories            |
+| `project.publication` (rejected, §5) | n/a     | none                                     | no v1 Python surface                                 |
 | `project.analysis`                   | B       | `analysis/analysis.cif`                  | `CategoryOwner` (heavy datablock)                    |
 | `project.structures[name]`           | B       | `structures/<name>.cif`                  | `CategoryOwner` (heavy datablock)                    |
 | `project.experiments[name]`          | B       | `experiments/<name>.cif`                 | `CategoryOwner` (heavy datablock)                    |
@@ -542,11 +540,10 @@ overhead to a one-time ~200 ms session cost. The
 `EasyDiffractionWriterError` includes the full gemmi diagnostic so bug
 reports are actionable.
 
-A separate, _completeness_-oriented check
-(`project.report.check_completeness()`) — flagging unfilled `_publ_*` /
-`_journal_*` placeholders for journal submission, which is a
-publication-readiness question rather than a writer-correctness one — is
-a different concern and stays in Deferred Work.
+A separate, _completeness_-oriented check for a future
+journal-submission metadata surface is a different concern and stays in
+Deferred Work. The v1 report does not expose or fill `_publ_*` /
+`_journal_*` placeholders.
 
 #### 1.5 Descriptor display metadata — `DisplayHandler`
 
@@ -1063,7 +1060,7 @@ Single style (`iucrjournals`) — no multi-style infrastructure.
   # reports/ directory does not exist
 ```
 
-`project.report.cif = True` (journal-submission CIF only):
+`project.report.cif = True` (clean IUCr-aligned report CIF only):
 
 ```
 <project_root>/
@@ -1088,7 +1085,7 @@ inspection page):
     <project>.html                  # ~3 MB, Plotly inlined
 ```
 
-`project.report.cif/html/pdf = True` (typical pre-submission bundle):
+`project.report.cif/html/pdf = True` (typical review bundle):
 
 ```
 <project_root>/
@@ -1097,7 +1094,7 @@ inspection page):
   experiments/<...>.cif
   analysis/analysis.cif
   reports/
-    <project>.cif                   # journal-submission CIF
+    <project>.cif                   # clean IUCr-aligned report CIF
     <project>.html                  # interactive inspection page
     <project>.pdf                   # typeset PDF, iucrjournals class
     tex/                            # source for the PDF (kept editable)
@@ -1156,9 +1153,8 @@ when there is a concrete second style to ship.
 The generated document uses the project title directly in `\title{...}`
 and emits an empty `\author{}`. If `project.info.description` is
 non-empty, that text becomes the document abstract; if it is empty, the
-abstract environment is omitted. Publication metadata
-(`project.publication.*`) is not included in the human-readable HTML or
-TeX/PDF reports.
+abstract environment is omitted. Journal/publication metadata is not
+included in the human-readable HTML or TeX/PDF reports.
 
 #### 3.2.1 Source provenance and bundled files
 
@@ -1565,26 +1561,25 @@ public API surface treats missing provenance uniformly:
   end-to-end so users iterating on a configuration before fitting see
   the rest of the page.
 - **IUCr CIF export (`project.report.cif = True`).** The
-  `_easydiffraction_software.{framework, calculator, minimizer}` triple
-  emits `?` placeholders consistent with the IUCr ADR's unset-field
-  convention. The derived `_computing.structure_refinement` string falls
-  back to `"EasyDiffraction <version>"` (framework only). The
-  `_easydiffraction_software.fit_datetime` tag is omitted entirely (no
-  `?` — the absence is the signal).
+  `_computing.structure_refinement` string falls back to
+  `"EasyDiffraction <version>"` when calculator or minimizer provenance
+  is unavailable. `_easydiffraction_software.framework` is emitted from
+  the framework label; `_easydiffraction_software.calculator`,
+  `_easydiffraction_software.minimizer`, and
+  `_easydiffraction_software.fit_datetime` are emitted only when the
+  corresponding fit snapshot values exist.
 - **Internal validation (the §1.4 pre-write gemmi pass).** Does **not**
   detect missing provenance. The gemmi pass validates that emitted tags
   and types match the IUCr core / pdCIF dictionaries, and it explicitly
   skips the `_easydiffraction_*` extension namespace. So the
   fallback-filled `_computing.structure_refinement`
   (`"EasyDiffraction <version>"`) is not flagged as missing — it's a
-  valid string — and the `?` placeholders on
-  `_easydiffraction_software.{framework, calculator, minimizer}` are not
-  flagged either, because gemmi does not validate the extension
-  namespace. Detecting "publication-grade provenance is incomplete" is a
-  different concern from dictionary-spec compliance and falls to the
-  deferred `project.report.check_completeness()` listed in Deferred
-  Work. Users who must guarantee complete provenance before submission
-  should run that check (once it lands) or inspect the rendered report
+  valid string — and omitted optional `_easydiffraction_software.*`
+  fields are not flagged because gemmi does not validate the extension
+  namespace. Detecting complete provenance is a different concern from
+  dictionary-spec compliance and falls to a deferred completeness check.
+  Users who must guarantee complete provenance should run that check
+  (once it lands) or inspect the rendered report
   manually.
 - **Old projects.** Loading a project saved before this ADR produces an
   `analysis.software` with all fields unset and the timestamp `None`. No
@@ -1592,121 +1587,80 @@ public API surface treats missing provenance uniformly:
   the fit.
 
 This rule applies wholesale — no flag toggles it, no targeted exception
-is raised. Publication-grade users who need the provenance can re-run
-the fit; users producing draft / preview reports keep working without
+is raised. Users who need full provenance can re-run the fit; users
+producing draft / preview reports keep working without
 interruption.
 
-### 5. Publication-metadata category on `project`
+### 5. Clean report-CIF metadata policy
 
-New top-level category on `Project`, sibling to `project.info` and
-`project.analysis`. Populated by the user (directly in Python, or loaded
-from a `publ_info.{toml,json}` file). Feeds the `_publ_*` / `_journal_*`
-/ `_publ_author.*` placeholders that the alignment ADR's `data_global`
-block currently emits as `?` (alignment ADR §2.3a).
+The v1 report CIF is a clean refinement report, not a journal-submission
+manuscript stub. It must not create a `project.publication` API surface,
+must not persist journal/publication metadata in `project.cif`, and must
+not emit report-CIF sections that only contain `?` placeholders.
 
-#### 5.1 Structure — CIF-aligned sibling categories
+The report writer keeps only data-backed scientific content and
+generation/provenance metadata. Optional tags with no source value are
+omitted rather than written as empty fields. CIF unknown markers remain
+allowed only inside an otherwise useful emitted category or loop row
+where the dictionary shape requires a cell and dropping the row would
+lose real project data.
 
-`Publication` is a category-owner (like `Experiment`) hosting sibling
-sub-categories that map **1:1 to CIF category prefixes**. No artificial
-groupings; the CIF dictionaries already provide the natural shape:
+#### 5.1 Deferred journal and author tags
 
-| Python attribute               | CIF category             | Audience                                                                                                                              |
-| ------------------------------ | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
-| `publication.journal`          | `_journal.*`             | User-set at submission (`name_full`, `paper_category`); editor-set post-acceptance (`year`, `volume`, `issue`, `page_*`, `paper_doi`) |
-| `publication.journal_date`     | `_journal_date.*`        | Editor (`accepted`, `from_coeditor`, `printers_final`)                                                                                |
-| `publication.journal_coeditor` | `_journal_coeditor.*`    | Editor (`code`, `name`, `notes`)                                                                                                      |
-| `publication.contact_author`   | `_publ_contact_author.*` | User (`name`, `address`, `email`, `phone`, `id_orcid`, `id_iucr`)                                                                     |
-| `publication.body`             | `_publ_body.*`           | User (`title`, `synopsis`, `abstract`, `keywords`)                                                                                    |
-| `publication.authors`          | `_publ_author.*` (loop)  | User (per author: `name`, `address`, `footnote`, `id_orcid`, `id_iucr`)                                                               |
+These tags are explicitly **not** part of the v1 code surface, default
+`project.cif`, or generated report CIF. They are recorded here for a
+future journal-submission ADR to reconsider against a concrete target
+journal or portal.
 
-Access pattern:
+- `_journal.name_full`, `_journal.year`, `_journal.volume`,
+  `_journal.issue`, `_journal.page_first`, `_journal.page_last`,
+  `_journal.paper_category`, `_journal.paper_DOI`,
+  `_journal.coden_ASTM`, `_journal.suppl_publ_number`.
+- `_journal_date.accepted`, `_journal_date.from_coeditor`,
+  `_journal_date.printers_final`.
+- `_journal_coeditor.code`, `_journal_coeditor.name`,
+  `_journal_coeditor.notes`.
+- `_publ_contact_author.name`, `_publ_contact_author.address`,
+  `_publ_contact_author.email`, `_publ_contact_author.phone`,
+  `_publ_contact_author.id_ORCID`, `_publ_contact_author.id_IUCr`.
+- `_publ_author.name`, `_publ_author.address`,
+  `_publ_author.footnote`, `_publ_author.id_ORCID`,
+  `_publ_author.id_IUCr`.
+- `_publ_body.title`, `_publ_body.synopsis`, `_publ_body.abstract`,
+  `_publ_body.keywords`, `_publ_body.contents`.
+- `_pd_meas.info_author_name`, `_pd_meas.info_author_email`,
+  `_pd_meas.info_author_phone`.
 
-```python
-project.publication.journal.name_full       = "Acta Crystallographica E"
-project.publication.journal.paper_category  = "structure-report"
-project.publication.journal.paper_doi       = "10.1107/S2056989026..."   # post-acceptance
-project.publication.contact_author.name     = "Jane Doe"
-project.publication.contact_author.email    = "jane@example.com"
-project.publication.contact_author.id_orcid = "0000-0001-..."
-project.publication.body.title              = "Crystal structure of ..."
-project.publication.body.synopsis           = "Short summary..."
-project.publication.body.abstract           = "..."
-project.publication.body.keywords           = ["powder diffraction", "Rietveld", ...]
-project.publication.authors.add(name="Jane Doe",   id_orcid="0000-0001-...")
-project.publication.authors.add(name="John Smith", id_orcid="0000-0002-...")
-```
+The previously proposed `publ_info.{toml,json}` loader is deferred with
+these tags. It would be useful only when the library commits to a
+submission-oriented publication metadata surface; it is unnecessary for
+a clean report CIF.
 
-Python attributes are lowercase snake_case (`id_orcid`); CIF tags retain
-dictionary casing (`_publ_contact_author.id_ORCID`). Loops use the
-project's existing `CategoryCollection` pattern (`add()`, indexed
-access, etc.).
+#### 5.2 Kept report-CIF fields and rationale
 
-The editor-side categories (`journal_date`, `journal_coeditor`) exist so
-the schema can carry editor-supplied fields when a user manually copies
-them in (typically by editing `project.publication.*` in Python after a
-referee round) — not because users typically fill them at submission
-time. Defaults are `None`; the IUCr writer emits `?` for unset fields.
-Round-trip is on the **`project.cif`** axis only (`project.publication`
-reads and writes there per the project-facade-and-persistence contract);
-**the report CIF at `reports/<project>.cif` stays export-only** per the
-accepted IUCr ADR. A reader for `reports/<project>.cif` is explicitly
-out of scope.
+The report CIF keeps the following tag families when the project has
+source data for them.
 
-#### 5.2 Discrete `body` fields, not a markdown blob
-
-`_publ_body.*` in coreCIF supports nested section content via an
-`element` / `format` / `contents` trio. For the refinement-table
-appendix use case (user pastes content into a full manuscript later),
-discrete top-level slots are more discoverable than a generic markdown
-blob:
-
-- `publication.body.title` — manuscript title (single string)
-- `publication.body.synopsis` — short summary (IUCr Acta E requires
-  this)
-- `publication.body.abstract` — abstract text
-- `publication.body.keywords` — list of strings (loop on CIF side)
-
-A future v2 could add free-form section support
-(`publication.body.sections[]` with element/format/contents trios) when
-users produce full manuscripts from the library. Out of scope for v1.
-
-#### 5.3 Input mechanism — TOML primary, JSON fallback
-
-Two import paths, both writing into the same in-memory
-`project.publication` object:
-
-```python
-# Direct Python edit (preferred for notebook / interactive use):
-project.publication.contact_author.email = "jane@example.com"
-
-# File-based load (preferred for collaborative / batch workflows):
-project.publication.load("reports/publ_info.toml")    # TOML, by extension
-project.publication.load("reports/publ_info.json")    # JSON, by extension
-```
-
-TOML is the primary format:
-
-- **Comment support** — users can document why a field is set / unset.
-- **Multi-line strings** — abstracts, addresses, and synopses without
-  escaping.
-- **Familiar** — the project already uses `pyproject.toml` and
-  `pixi.toml`.
-- **Standard library** `tomllib` (Python 3.11+); no new dependency.
-
-JSON is supported as a fallback for programmatic generation (e.g. a user
-script that dumps publication data from a database; an external tool
-that produces JSON output). Standard library `json`.
-
-Format selection is by file extension. Unknown extensions raise
-`ValueError("Unsupported publication-info format: <ext>. " "Use .toml or .json.")`.
-No YAML support — adds a dependency for no gain.
-
-Reading from the report CIF (`reports/<project>.cif`) back into
-`project.publication` is **explicitly out of scope** here and remains
-the accepted IUCr ADR's "Export only — no round-trip" contract. Users
-who edit the report file by hand should also update
-`project.publication` (or its TOML/JSON source) so the next save
-reflects the edits; the library does not auto-import.
+| Tag family | Tags retained | Rationale |
+| --- | --- | --- |
+| Audit | `_audit.creation_method`, `_audit.creation_date` | Identifies the EasyDiffraction writer and report-generation time. These are generated by the library, not user-authored empty metadata. |
+| Software provenance | `_computing.structure_refinement`; `_easydiffraction_software.framework`, `_easydiffraction_software.calculator`, `_easydiffraction_software.minimizer`, `_easydiffraction_software.fit_datetime` | Records the analysis stack in a standard IUCr text field plus structured EasyDiffraction fields. `fit_datetime` is emitted only when a fit snapshot exists. |
+| Chemical formula | `_chemical_formula.sum`, `_chemical_formula.moiety`, `_chemical_formula.weight`, `_chemical_formula.IUPAC` | Summarises chemistry derived from structure atom sites. These fields describe the refined model, not journal administration. |
+| Unit cell | `_cell.length_a`, `_cell.length_b`, `_cell.length_c`, `_cell.angle_alpha`, `_cell.angle_beta`, `_cell.angle_gamma` | Core crystallographic model parameters needed to understand and reuse a structure block. |
+| Space group | `_space_group.name_H-M_alt`, `_space_group.IT_coordinate_system_code`, `_space_group.crystal_system`; `_space_group_symop.id`, `_space_group_symop.operation_xyz` | Gives symmetry in standard coreCIF form and includes explicit operations for downstream tools. |
+| Atom sites | `_atom_site.label`, `_atom_site.type_symbol`, `_atom_site.fract_x`, `_atom_site.fract_y`, `_atom_site.fract_z`, `_atom_site.occupancy`, `_atom_site.ADP_type`, `_atom_site.B_iso_or_equiv` or `_atom_site.U_iso_or_equiv`, `_atom_site.Wyckoff_symbol` | Carries the refined structural model. The B/U split follows the accepted ADP policy and dictionary names. |
+| Anisotropic ADPs | `_atom_site_aniso.label`, `_atom_site_aniso.B_11`, `_atom_site_aniso.B_22`, `_atom_site_aniso.B_33`, `_atom_site_aniso.B_12`, `_atom_site_aniso.B_13`, `_atom_site_aniso.B_23`, or the matching `U_*` items | Carries anisotropic displacement parameters when present, using one ADP family per emitted loop. |
+| Diffraction conditions | `_diffrn.ambient_temperature`, `_diffrn.ambient_pressure`, `_diffrn_radiation.probe`, `_diffrn_radiation_wavelength.id`, `_diffrn_radiation_wavelength.value`, `_diffrn_radiation_wavelength.wt` | Describes measurement conditions and wavelength/probe information needed to interpret the refinement. |
+| Single-crystal refinement | `_refine_ls.R_factor_all`, `_refine_ls.wR_factor_all`, `_refine_ls.R_factor_gt`, `_refine_ls.wR_factor_gt`, `_refine_ls.number_parameters`, `_refine_ls.number_restraints`, `_refine_ls.number_constraints`, `_refine_ls.extinction_method`, `_refine_ls.extinction_coef`, `_refine.special_details` | Reports standard single-crystal fit quality and extinction details produced by the refinement state. |
+| Reflection summary | `_reflns.number_total`, `_reflns.number_gt`, `_reflns.threshold_expression` | Summarises the reflection set used for single-crystal quality metrics. |
+| Single-crystal reflections | `_refln.index_h`, `_refln.index_k`, `_refln.index_l`, `_refln.F_squared_meas`, `_refln.F_squared_calc`, `_refln.F_squared_meas_su`, `_refln.include_status` | Provides the measured/calculated reflection data needed to inspect the fit. |
+| Powder block cross-references | `_pd_block_id`, `_pd_block_diffractogram_id`, `_pd_phase_block.id`, `_pd_phase_block.scale` | Links overall, phase, and pattern blocks in multi-block powder reports. |
+| Powder measurement and profile | `_pd_meas.scan_method`, `_pd_meas.number_of_points`, `_pd_meas.2theta_scan` or `_pd_meas.time_of_flight`, `_pd_meas.intensity_total`, `_pd_calc.intensity_total`, `_pd_proc.intensity_bkg_calc`, `_pd_proc_ls.weight` | Carries the observed, calculated, background, and weight arrays for profile inspection. The author-info placeholders are excluded by §5.1. |
+| Powder processing | `_pd_proc.info_data_reduction`, `_pd_proc.info_datetime`, `_pd_proc.info_excluded_regions` | Documents processing state that affects the profile fit. Empty free-text fields are omitted until real source data exists. |
+| Powder refinement | `_pd_calc.method`, `_pd_proc_ls.prof_R_factor`, `_pd_proc_ls.prof_wR_factor`, `_pd_proc_ls.prof_wR_expected`, `_pd_proc_ls.profile_function`, `_pd_proc_ls.background_function`, `_refine_ls.number_parameters`, `_refine_ls.number_restraints`, `_refine_ls.number_constraints` | Reports Rietveld method, profile quality metrics, and model-size counts in standard pdCIF/coreCIF fields. |
+| Powder reflections | `_refln.index_h`, `_refln.index_k`, `_refln.index_l`, `_refln.F_squared_meas`, `_refln.F_squared_calc`, `_pd_refln.phase_id`, `_refln.d_spacing` | Keeps calculated powder reflection information tied to the contributing phase. |
+| TOF calibration | `_pd_calib_d_to_tof.id`, `_pd_calib_d_to_tof.power`, `_pd_calib_d_to_tof.coeff`, `_pd_calib_d_to_tof.coeff_su`, `_pd_calib_d_to_tof.diffractogram_id` | Required for time-of-flight powder reports when non-zero calibration coefficients are present. |
+| EasyDiffraction extensions | `_easydiffraction_experiment_type.sample_form`, `_easydiffraction_experiment_type.beam_mode`, `_easydiffraction_experiment_type.radiation_probe`, `_easydiffraction_experiment_type.scattering_type`, `_easydiffraction_calculator.type`, `_easydiffraction_peak.type`, `_easydiffraction_background.type`, `_easydiffraction_sc_crystal_block.id`, `_easydiffraction_sc_crystal_block.scale`, `_easydiffraction_diffrn.ambient_magnetic_field`, `_easydiffraction_diffrn.ambient_electric_field`, `_easydiffraction_extinction.type`, `_easydiffraction_extinction.model`, `_easydiffraction_extinction.mosaicity`, `_easydiffraction_extinction.radius` | Preserves EasyDiffraction-specific state that has no exact coreCIF/pdCIF equivalent but is needed to trace how the reported fit was configured. |
 
 ### 6. Shared `ReportDataContext` + Jinja templates
 
@@ -1793,14 +1747,6 @@ def data_context(self) -> dict:
             'constraints': ...,
         },
         'software': {...},  # from §4
-        'publication': {     # from project.publication (§5); unset fields → None
-            'journal':          {...},   # _journal.*
-            'journal_date':     {...},   # _journal_date.* (editor-side)
-            'journal_coeditor': {...},   # _journal_coeditor.* (editor-side)
-            'contact_author':   {...},   # _publ_contact_author.*
-            'body':             {...},   # _publ_body.{title, synopsis, abstract, keywords}
-            'authors':          [...],   # _publ_author.* loop
-        },
         'metadata': {
             'easydiffraction_version': ...,
             'generated_at': ...,
@@ -1992,25 +1938,15 @@ every renderer (HTML, PDF, terminal, GUI) simultaneously.
      existing `_audit.creation_date` keeps its
      `_iso_creation_datetime()` source (report-generation time) and is
      **not** overwritten — fit time and report time are distinct events.
-  5. **Publication metadata in the default save.** The alignment ADR's
-     Scope explicitly excluded "Adding new CIF categories the project
-     does not currently track (`_chemical.*`, `_publ.*`, `_journal.*`)
-     **for the default save**" (alignment ADR §Scope, lines 101-110).
-     This ADR adds `project.publication.*` (§5) and persists it to
-     `project.cif` — a different file from `reports/<project>.cif`, but
-     still a default-save change that the alignment ADR did not
-     anticipate. Specifically:
-     - `_publ_contact_author.*`, `_publ_author.*`, `_publ_body.*`,
-       `_journal.*`, `_journal_date.*`, `_journal_coeditor.*` are now in
-       scope for `project.cif`.
-     - The accepted IUCr export still reads these from
-       `project.publication.*` and emits them in `data_global` per
-       §2.3a; the `?` placeholder semantics for unset fields are
-       unchanged.
-     - The accepted "Export only — no round-trip" rule for
-       `reports/<project>.cif` is **unaffected** — `project.publication`
-       round-trips through `project.cif`, not through the report CIF
-       (see §5.1 / §5.3).
+  5. **Publication metadata excluded from the default save and report
+     CIF.** The alignment ADR's Scope explicitly excluded "Adding new
+     CIF categories the project does not currently track
+     (`_chemical.*`, `_publ.*`, `_journal.*`) **for the default save**"
+     (alignment ADR §Scope, lines 101-110). This ADR keeps that
+     exclusion for `_publ_*` and `_journal_*`: no `project.publication`
+     owner is added, no journal/publication metadata is persisted to
+     `project.cif`, and the report CIF omits the empty publication and
+     powder-measurement author placeholders listed in §5.1.
 
   All other IUCr-export decisions in the alignment ADR (multi-datablock
   layout, tag-name policy, gemmi as the validation engine) are
@@ -2023,7 +1959,7 @@ every renderer (HTML, PDF, terminal, GUI) simultaneously.
 - [`analysis-cif-fit-state.md`](../accepted/analysis-cif-fit-state.md) —
   adds `analysis.software` to the persisted analysis state.
 - [`project-facade-and-persistence.md`](../accepted/project-facade-and-persistence.md)
-  — three changes:
+  — three points:
   1. **`project.report` gains a persisted configuration category.** The
      accepted ADR scoped `project.report` as a CIF-write helper (single
      output: `reports/<project>.cif`). This ADR extends it with a
@@ -2032,34 +1968,26 @@ every renderer (HTML, PDF, terminal, GUI) simultaneously.
      every save. The facade becomes a hybrid — helper methods
      (`save_*()`) **and** persisted configuration on the same Python
      object.
-  2. **New top-level `project.publication` facade slot (§5).** Sibling
-     to `project.info`, `project.structures`, `project.experiments`,
-     `project.analysis`, `project.report`. Persisted to `project.cif`
-     next to the other project-level singleton categories.
-  3. **Project-level singleton category enumeration extended.** The
-     accepted ADR enumerates `_info.*`, `_rendering_plot.*`,
+  2. **No top-level `project.publication` facade slot in v1 (§5).** The
+     previously considered journal/publication metadata surface is
+     deferred so `project.cif` stays free of empty manuscript and
+     journal-administration fields.
+  3. **Project-level singleton category enumeration extended only by
+     `_report.*`.** The accepted ADR enumerates `_info.*`,
+     `_rendering_plot.*`,
      `_rendering_table.*`, `_verbosity.*` as the project-level singleton
-     categories owned by `project.cif`. This ADR adds two more to that
-     enumeration: `_report.*` (this ADR §1.3) and `_publication.*`
-     family (this ADR §5; concrete sub-prefixes are `_publ_*` and
-     `_journal_*` per IUCr coreCIF).
+     categories owned by `project.cif`. This ADR adds `_report.*` (this
+     ADR §1.3) and explicitly does not add `_publ_*`, `_journal_*`, or
+     any `_publication.*` family.
 - [`python-cif-category-correspondence.md`](../suggestions/python-cif-category-correspondence.md)
-  — owns the Python-to-CIF correspondence rule for two new project-level
-  singleton surfaces:
+  — owns the Python-to-CIF correspondence rule for one new project-level
+  singleton surface:
   - `project.report.*` ↔ `_report.*` — five scalar items (four format
     booleans plus `html_offline`) per §1.3.
-  - `project.publication.*` ↔ `_publ_*` / `_journal_*` sibling
-    categories per §5. Python attributes are lowercase snake_case
-    (`id_orcid`); CIF tags retain dictionary casing
-    (`_publ_contact_author.id_ORCID`).
 
-  Both follow the correspondence ADR's existing 1:1 mapping pattern. The
-  correspondence ADR's enumeration of "currently persisted Python
-  category surfaces" gains two rows for these additions.
-
-  No conflict with the correspondence ADR's project-level category list
-  because `_publ_*` / `_journal_*` are publication-domain, not
-  project-level singleton categories.
+  The rejected `project.publication.*` ↔ `_publ_*` / `_journal_*`
+  mapping is deferred in §5 and must not be added to the current
+  project-level category list.
 
 ## Open Questions
 
@@ -2160,12 +2088,10 @@ browser anyway. Deferred.
   matplotlib-rendered PDF figures for the LaTeX path while keeping
   pgfplots as the default. Tune when needed.
 - Tab/accordion navigation in HTML for projects with many experiments.
-- `project.report.check_completeness()` — complements the internal gemmi
-  pass from §1.4 (dictionary spec compliance, enforced before every CIF
-  write). The completeness check would flag whether the user has filled
-  in `_publ_*` / `_journal_*` placeholders for their target journal,
-  which dictionary validation cannot determine. Different concern,
-  different layer.
+- A future journal-submission completeness check — complements the
+  internal gemmi pass from §1.4 (dictionary spec compliance, enforced
+  before every CIF write). It would belong with a future
+  journal-metadata surface, not with the v1 clean report CIF.
 - A pinned-snapshot variant of `<project>.html` (timestamped, kept next
   to fit-run-specific artifacts) for users who want to track refinement
   history visually across saves.
@@ -2182,7 +2108,7 @@ browser anyway. Deferred.
 **Description:**
 
 Builds on the IUCr CIF alignment work by filling in the non-CIF half of
-the publication bundle. The `project.report` facade covers four output
+the report bundle. The `project.report` facade covers four output
 formats — CIF, HTML, TeX, PDF — chosen via a configuration category on
 the project (persisted in `project.cif`) and applied automatically on
 every save:

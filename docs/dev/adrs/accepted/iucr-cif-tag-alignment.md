@@ -5,8 +5,8 @@
 
 Reframes the earlier "IUCr CIF Tag Alignment for Fit Outputs" suggestion
 (2026-05-24, PR #181) into a tiered policy. The default saved CIFs stay
-optimised for day-to-day UX; a separate IUCr export path produces
-journal-submission CIFs on demand. Amends parts of
+optimised for day-to-day UX; a separate IUCr export path produces clean
+report CIFs on demand. Amends parts of
 [`analysis-cif-fit-state.md`](analysis-cif-fit-state.md) and
 [`minimizer-input-output-split.md`](minimizer-input-output-split.md);
 runs alongside the
@@ -40,11 +40,11 @@ commonly produced by tooling that has not yet caught up with the current
 DDLm spec. The dictionaries are the source of truth.
 
 The submission-specific publication dictionary (`cif_publ.dic`) is not
-consulted directly — the publication-block items are all present in
-`cif_core.dic` under `_journal.*`, `_journal_coeditor.*`,
-`_journal_date.*`, `_publ_author.*`, `_publ_contact_author.*`,
-`_publ_body.*`, `_publ_manuscript.*`, `_audit.*`, and
-`_chemical_formula.*`.
+consulted directly. The v1 report CIF deliberately avoids empty journal
+and author template fields; the retained global metadata comes from
+`cif_core.dic` items such as `_audit.*`, `_computing.*`, and
+`_chemical_formula.*`. Deferred journal/publication tags are listed in
+[`project-summary-rendering.md`](project-summary-rendering.md) §5.1.
 
 ## Context
 
@@ -59,11 +59,12 @@ and item names:
   without a custom mapping layer.
 - **Day-to-day UX.** Users switch between Python and direct CIF editing
   in a CLI. Some IUCr-canonical structures are awkward for hand editing
-  — submission templates require multi-datablock layouts with
-  `data_global` publication metadata, embedded `_publ_*` placeholder
-  fields, and TOF calibration as a coefficient loop indexed by integer
-  `power`. Parametric profile shape (Caglioti, FCJ, TOF sigma/gamma) has
-  no IUCr counterpart at all.
+  — submission templates often include multi-datablock layouts with
+  `data_global` metadata and TOF calibration as a coefficient loop
+  indexed by integer `power`. The v1 report keeps the structural pieces
+  and omits empty `_publ_*` / `_journal_*` placeholders. Parametric
+  profile shape (Caglioti, FCJ, TOF sigma/gamma) has no IUCr counterpart
+  at all.
 
 A blanket "align with IUCr everywhere" policy pays a UX cost the project
 does not need to absorb for files that are not submission targets. A
@@ -86,8 +87,8 @@ In scope:
 
 - A tiered category-and-item-name policy for the default save, split by
   domain (structure / analysis / experiment).
-- A new IUCr export path that produces a single journal-submission CIF
-  on demand, separate from the default save.
+- A new IUCr export path that produces a single clean report CIF on
+  demand, separate from the default save.
 - ADP write-side single-tag emission and casing alignment in the
   structure tier.
 - Loop-tag style policy: dotted DDLm form universally on write, both
@@ -96,7 +97,7 @@ In scope:
   on `CifHandler`, category-level `IucrCategoryTransformer` for
   structural reshapings).
 - Multi-datablock layout in the IUCr export, including the `data_global`
-  publication-metadata block.
+  audit, software, and chemistry metadata block.
 
 Out of scope:
 
@@ -106,8 +107,8 @@ Out of scope:
   for Python-side decisions.
 - Adding new CIF categories the project does not currently track
   (`_chemical.*`, `_publ.*`, `_journal.*`) **for the default save**. The
-  IUCr export emits the publication-metadata categories per §2.3a with
-  `?` placeholders where the project has no source data.
+  IUCr export derives `_chemical_formula.*` for the report only and does
+  not emit `_publ_*` / `_journal_*` placeholders in v1.
 - imgCIF (`cif_img.dic`); no raw image persistence path exists.
 - Project-level singleton categories `_info.*`, `_rendering_plot.*`,
   `_rendering_table.*`, `_verbosity.*` — out of scope here; see
@@ -195,7 +196,7 @@ dotted DDLm tag emitted by the IUCr CIF report writer.
 | `_alias`, `_constraint`                                                                         | none                                                                        | Analysis — unchanged                        | `_easydiffraction_alias*`, `_easydiffraction_constraint*`.                                                                                                                                 |
 | `_joint_fit`, `_sequential_fit*`                                                                | none                                                                        | Analysis — unchanged                        | `_easydiffraction_joint_fit*`, `_easydiffraction_sequential_fit*`.                                                                                                                         |
 | reflection-set aggregates                                                                       | core (`_reflns.*`)                                                          | Analysis — new fields                       | `_reflns.number_total`, `_reflns.number_gt`, `_reflns.threshold_expression` (e.g. `'I>3\s(I)'`).                                                                                           |
-| publication metadata                                                                            | core (`_journal.*`, `_publ_author.*`, `_publ_contact_author.*`, `_audit.*`) | (not emitted today)                         | Emitted in `data_global` block per §2.3a with `?` placeholders.                                                                                                                            |
+| report metadata                                                                                 | core (`_audit.*`, `_computing.*`, `_chemical_formula.*`) and project extension (`_easydiffraction_software.*`) | Analysis / derived report state             | Emitted in `data_global` block per §2.3a. Empty `_journal.*`, `_publ_*`, and `_pd_meas.info_author_*` placeholders are excluded by the clean-report policy in `project-summary-rendering.md` §5. |
 | analysis-stack identification                                                                   | core (`_computing.structure_refinement`)                                    | Analysis — `_software.*` persisted          | `_easydiffraction_software.{framework, calculator, minimizer}` triple + `_easydiffraction_software.fit_datetime` + `_computing.structure_refinement` derived from `analysis.software`.     |
 
 ## Decision
@@ -296,7 +297,7 @@ Specifically:
 - Parametric profile shape (`_peak.*` Caglioti / Lorentzian / FCJ / TOF
   coefficients) stays under `_peak.*`.
 
-### 2. Reports — IUCr submission CIF
+### 2. Reports — IUCr-aligned report CIF
 
 #### 2.1 API
 
@@ -360,7 +361,7 @@ quartz_sc/
                                           #   plus Bayesian / non-IUCr fields)
                                           # _easydiffraction_minimizer.* (settings)
   reports/
-    quartz_sc.cif                         # data_global    — _journal.*, _publ_*, _audit.*,
+    quartz_sc.cif                         # data_global    — _audit.*,
                                           #                  _easydiffraction_software.{framework,
                                           #                  calculator, minimizer},
                                           #                  _computing.structure_refinement,
@@ -386,7 +387,7 @@ mgo_rietveld/
   analysis/
     analysis.cif
   reports/
-    mgo_rietveld.cif                      # data_global               — publication metadata, software, _chemical_formula
+    mgo_rietveld.cif                      # data_global               — audit, software, _chemical_formula
                                           # data_mgo_rietveld_overall — _pd_proc_ls.prof_R_factor,
                                           #                              .prof_wR_factor,
                                           #                              .prof_wR_expected,
@@ -416,7 +417,7 @@ co2sio4/
   analysis/
     analysis.cif                          # _joint_fit weights
   reports/
-    co2sio4.cif                           # data_global          — publication metadata
+    co2sio4.cif                           # data_global          — audit, software, chemistry
                                           # data_co2sio4_overall  — combined refinement stats
                                           # data_co2sio4_phase_0  — Co2SiO4 structure
                                           # data_co2sio4_pwd_0    — NPD pattern,
@@ -440,7 +441,7 @@ co2sio4_t_series/
   analysis/
     analysis.cif                          # _sequential_fit configuration
   reports/
-    co2sio4_t_series.cif                  # data_global                  — publication metadata
+    co2sio4_t_series.cif                  # data_global                  — audit, software, chemistry
                                           # data_co2sio4_t_series_overall
                                           # data_co2sio4_t_series_phase_0
                                           # data_co2sio4_t_series_pwd_0  — TOF 5K,
@@ -453,15 +454,14 @@ co2sio4_t_series/
 
 #### 2.3 Multi-datablock layout inside the export file
 
-**Every export file starts with a `data_global` block carrying
-publication metadata** (§2.3a). Subsequent blocks depend on analysis
-topology. Block content uses dotted DDLm form throughout. The
+**Every export file starts with a `data_global` block carrying audit,
+software, and chemistry metadata** (§2.3a). Subsequent blocks depend on
+analysis topology. Block content uses dotted DDLm form throughout. The
 single-block-name rule is uniform across topologies; topology-specific
 GSAS-II-style suffix conventions seen in some example files (e.g.
 `data_<project>_publ`, `data_<project>_overall`) are folded into
-`data_global` for the publication header and `data_<project>_overall`
-for refinement metadata, leaving no ambiguity about where the
-journal-required publication items live.
+`data_global` for global metadata and `data_<project>_overall`
+for refinement metadata, leaving no ambiguity about block roles.
 
 - **Single-crystal, single structure (single experiment).**
   `data_global` + `data_<structure>` (or `data_I` if no name is set).
@@ -473,9 +473,9 @@ journal-required publication items live.
   `bp5014.cif`: `data_global + data_300K + data_55K + data_2point5K`.
 
 - **Powder Rietveld (single or multi-experiment, single or
-  multi-phase).** GSAS-II-style block split, with the publication block
-  renamed to `data_global` per the invariant above:
-  - `data_global` (publication metadata, per §2.3a),
+  multi-phase).** GSAS-II-style block split, with the global metadata
+  block named `data_global` per the invariant above:
+  - `data_global` (audit, software, and chemistry metadata per §2.3a),
   - `data_<project>_overall` (refinement-level metadata — Rietveld
     R-factors, profile/background function descriptors, parameter
     counts),
@@ -517,35 +517,23 @@ the project has source data, otherwise `?`.
 - `_easydiffraction_software.*` triple holding the same three roles in
   structured form, plus `_easydiffraction_software.fit_datetime` when a
   fit timestamp is available (see §2.3a-i below).
-- `_journal.*` placeholders, written as `?` when the project has no
-  source data: `_journal.name_full`, `_journal.year`, `_journal.volume`,
-  `_journal.issue`, `_journal.page_first`, `_journal.page_last`,
-  `_journal.paper_category`, `_journal.paper_DOI`,
-  `_journal.coden_ASTM`, `_journal.suppl_publ_number`.
-- `_journal_date.*` placeholders: `_journal_date.accepted`,
-  `_journal_date.from_coeditor`, `_journal_date.printers_final`, etc.
-- `_journal_coeditor.*` placeholders: `_journal_coeditor.code`,
-  `_journal_coeditor.name`, `_journal_coeditor.notes`.
-- `_publ_contact_author.*` placeholders: `_publ_contact_author.name`,
-  `_publ_contact_author.address`, `_publ_contact_author.email`,
-  `_publ_contact_author.phone`, `_publ_contact_author.id_ORCID`,
-  `_publ_contact_author.id_IUCr`.
-- `_publ_author.*` loop placeholders (`_publ_author.name`,
-  `_publ_author.address`, `_publ_author.footnote`,
-  `_publ_author.id_ORCID`, `_publ_author.id_IUCr`).
-- `_publ_body.*` for section content (`_publ_body.title`,
-  `_publ_body.contents`).
+- No `_journal.*`, `_journal_date.*`, `_journal_coeditor.*`,
+  `_publ_contact_author.*`, `_publ_author.*`, `_publ_body.*`, or
+  `_pd_meas.info_author_*` placeholders are emitted in v1. The clean
+  report policy and deferred tag list live in
+  [`project-summary-rendering.md`](project-summary-rendering.md) §5.
 - `_chemical_formula.*` chemistry summary derived from atom-site data
   where possible: `_chemical_formula.sum`, `_chemical_formula.moiety`,
   `_chemical_formula.weight`, `_chemical_formula.IUPAC` (uppercase IUPAC
   per dictionary).
 
-User-supplied publication metadata override (`publ_info.json` or
-similar) is deferred — see Deferred Work.
+User-supplied publication metadata (`publ_info.json`, `publ_info.toml`,
+or a Python `project.publication` owner) is deferred — see Deferred
+Work and the clean report policy in `project-summary-rendering.md` §5.
 
 #### 2.3a-i `_easydiffraction_software` framework
 
-The IUCr submission needs to identify the analysis stack. The project
+The IUCr-aligned report needs to identify the analysis stack. The project
 emits one structured category in `data_global` from `analysis.software`,
 carrying three role-keyed strings and an optional fit timestamp:
 
@@ -687,8 +675,9 @@ For each constant-wavelength (CWL) diffraction pattern:
 
 - `_pd_meas.*` measurement metadata (`_pd_meas.scan_method`,
   `_pd_meas.2theta_range_min/max/inc`, `_pd_meas.number_of_points`,
-  `_pd_meas.datetime_initiated`,
-  `_pd_meas.info_author_{name, email, phone}` placeholders).
+  `_pd_meas.datetime_initiated`). The
+  `_pd_meas.info_author_{name, email, phone}` placeholders are omitted
+  by the clean report policy.
 - `_diffrn.*` and `_diffrn_radiation_wavelength.*` (radiation type,
   probe, wavelength).
 - `_pd_proc.2theta_range_min/max/inc`, `_pd_proc.info_data_reduction`,
@@ -819,8 +808,9 @@ raising `EasyDiffractionWriterError`), value-type matching against
 loop columns, and well-formed DDLm dotted form. It never covered
 crystallographic sanity checks (bond lengths, void volumes, density
 plausibility, missed-symmetry detection, ADP positive-definiteness) or
-whether `?` placeholders in `_journal.*` / `_publ_*` had been filled —
-those remain a separate IUCr-server concern.
+whether future journal-submission metadata is complete — that remains a
+separate IUCr-server concern. The v1 clean report CIF does not emit the
+empty `_journal.*` / `_publ_*` placeholders.
 
 ### 3. Handler mechanism — `iucr_name` + `IucrCategoryTransformer`
 
@@ -984,17 +974,18 @@ Policy:
   recognisable to scientists familiar with `_refine_ls.*` /
   `_pd_proc_ls.*` from Rietveld publications; the IUCr export carries
   the matching dictionary-canonical category prefixes per topology.
-- IUCr submission becomes a single explicit report command, with no
-  manual editing required: `project.report.save_cif()` produces an
-  upload-ready file at `reports/<project>.cif` matching the
-  multi-datablock publication convention. Users who want CIF reports on
-  every project save can set `project.report.cif = True`.
-- Publication-metadata placeholders are emitted as `?` in `data_global`
-  so users know where to fill in journal-required info before
-  submission.
-- External IUCr tooling (publCIF, checkCIF, pdCIFplotter,
-  journal-submission pipelines) consumes the submission file cleanly;
-  the day-to-day saved files are not a tooling target.
+- The report CIF becomes a single explicit report command, with no
+  manual editing required for the refinement data:
+  `project.report.save_cif()` produces a clean file at
+  `reports/<project>.cif` matching the multi-datablock publication
+  convention for structural and fit content. Users who want CIF reports
+  on every project save can set `project.report.cif = True`.
+- Journal and author metadata placeholders are omitted from
+  `data_global`; a future submission-specific surface can add them when
+  a concrete journal workflow requires them.
+- External IUCr tooling (publCIF, checkCIF, pdCIFplotter) can consume
+  the report file cleanly; the day-to-day saved files are not a tooling
+  target.
 - `_easydiffraction_*` prefix appears only in the IUCr export, where the
   explicit namespacing aids journal reviewers. It does not bloat
   day-to-day CIFs.
@@ -1122,12 +1113,12 @@ it.
 
 ## Deferred Work
 
-- **Publication-metadata override hook.** A user-supplied
-  `reports/publ_info.json` (or `publ_info.toml`) read by the IUCr report
-  writer to replace the `?` placeholders in `data_global` (`_journal.*`,
-  `_publ_*`, `_publ_author.*` loop entries). Out of scope for the first
-  pass; revisit once the IUCr export is shipping and users have feedback
-  on workflow friction.
+- **Journal-submission metadata surface.** A future ADR may introduce a
+  user-supplied `reports/publ_info.json` / `publ_info.toml` file or a
+  Python `project.publication` owner for `_journal.*`, `_publ_*`, and
+  `_publ_author.*` entries. V1 deliberately omits those placeholders so
+  generated report CIFs stay clean; revisit only with concrete user or
+  journal-portal requirements.
 - **Crystallographic sanity validation.** The §2.5 validator covers spec
   compliance only. A future pass could integrate IUCr's web checkCIF
   (HTTP POST to the checkCIF endpoint) or bundle a local subset of its
