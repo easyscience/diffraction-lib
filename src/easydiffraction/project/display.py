@@ -513,6 +513,7 @@ class ProjectDisplay:
         )
 
         structure = self._project.structures[struct_name]
+        structure._update_categories()
         availability = structure_feature_availability(
             structure, style=self._project.structure_style
         )
@@ -542,6 +543,7 @@ class ProjectDisplay:
         )
 
         structure = self._project.structures[struct_name]
+        structure._update_categories()
         availability = structure_feature_availability(
             structure, style=self._project.structure_style
         )

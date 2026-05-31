@@ -11,8 +11,11 @@ import pytest
 
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
+from easydiffraction.datablocks.structure.item.base import Structure
 from easydiffraction.display.progress import ACTIVITY_LABEL_PROCESSING
 from easydiffraction.display.plotting import _MeasVsCalcPlotOptions
+from easydiffraction.display.structure.builder import FeatureAvailability
+from easydiffraction.project.categories.structure_style.default import StructureStyle
 from easydiffraction.project.display import PatternOptionStatus
 from easydiffraction.project.display import ProjectDisplay
 from easydiffraction.utils.enums import VerbosityEnum
@@ -69,6 +72,24 @@ def _make_project_stub() -> tuple[SimpleNamespace, list[tuple[str, tuple, dict]]
         verbosity=SimpleNamespace(fit=SimpleNamespace(value='full')),
     )
     return project, calls
+
+
+def _make_structure_display_project(structure: object) -> SimpleNamespace:
+    return SimpleNamespace(
+        structures={'lbco': structure},
+        structure_style=StructureStyle(),
+        structure_view=SimpleNamespace(
+            view_range=lambda: ((0.0, 1.0), (0.0, 1.0), (0.0, 1.0)),
+            show_labels=SimpleNamespace(value=False),
+            show_moments=SimpleNamespace(value=False),
+        ),
+        rendering_structure=SimpleNamespace(
+            viewer=SimpleNamespace(
+                render=lambda scene, *, features: '<html></html>',
+                supported_features=lambda: frozenset({'atoms', 'bonds', 'cell', 'axes'}),
+            ),
+        ),
+    )
 
 
 def _make_statuses(
@@ -663,3 +684,65 @@ def test_show_pattern_options_renders_table(monkeypatch):
     assert captured['columns_alignment'] == ['left', 'left', 'center', 'center', 'left']
     assert captured['columns_data'][0][0] == 'auto'
     assert captured['columns_data'][1][0] == 'measured'
+
+
+def test_structure_updates_categories_before_building_scene(monkeypatch, tmp_path):
+    structure = Structure(name='lbco')
+    structure.space_group.name_h_m = 'P m -3 m'
+    structure.cell.length_a = 3.88
+    assert structure.cell.length_b.value == 10.0
+
+    project = _make_structure_display_project(structure)
+    display = ProjectDisplay(project)
+    captured: dict[str, object] = {}
+
+    def fake_build_scene(structure_arg, *, style, view_range, features):
+        captured['cell_lengths'] = (
+            structure_arg.cell.length_a.value,
+            structure_arg.cell.length_b.value,
+            structure_arg.cell.length_c.value,
+        )
+        captured['style'] = style
+        captured['view_range'] = view_range
+        captured['features'] = features
+        return SimpleNamespace()
+
+    monkeypatch.setattr(
+        'easydiffraction.display.structure.builder.build_scene',
+        fake_build_scene,
+    )
+
+    display.structure('lbco', path=str(tmp_path / 'lbco.html'))
+
+    assert captured['cell_lengths'] == pytest.approx((3.88, 3.88, 3.88))
+    assert captured['style'] is project.structure_style
+    assert captured['view_range'] == ((0.0, 1.0), (0.0, 1.0), (0.0, 1.0))
+    assert captured['features'] == frozenset({'cell', 'axes'})
+
+
+def test_show_structure_options_updates_categories_before_availability(monkeypatch):
+    calls: list[str] = []
+    structure = SimpleNamespace(updated=False)
+
+    def update_categories():
+        calls.append('update')
+        structure.updated = True
+
+    def fake_structure_feature_availability(structure_arg, *, style):
+        calls.append('availability')
+        assert structure_arg.updated is True
+        return FeatureAvailability(frozenset({'cell', 'axes'}), ())
+
+    structure._update_categories = update_categories
+    project = _make_structure_display_project(structure)
+    display = ProjectDisplay(project)
+
+    monkeypatch.setattr(
+        'easydiffraction.display.structure.builder.structure_feature_availability',
+        fake_structure_feature_availability,
+    )
+    monkeypatch.setattr('easydiffraction.project.display.render_table', lambda **kwargs: None)
+
+    display.show_structure_options('lbco')
+
+    assert calls == ['update', 'availability']
