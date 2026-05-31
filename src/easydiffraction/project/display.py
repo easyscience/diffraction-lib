@@ -27,6 +27,9 @@ if TYPE_CHECKING:
     from easydiffraction.project.project import Project
 
 
+StructureViewRange = tuple[tuple[float, float], tuple[float, float], tuple[float, float]]
+
+
 _PATTERN_OPTION_DESCRIPTIONS: dict[str, str] = {
     'auto': 'Show the most informative available pattern view.',
     'measured': 'Measured diffraction intensities.',
@@ -474,7 +477,7 @@ class ProjectDisplay:
         self,
         struct_name: str,
         include: str | tuple[str, ...] = 'auto',
-        range: tuple[tuple[float, float], tuple[float, float], tuple[float, float]] | None = None,
+        range: StructureViewRange | None = None,
         path: str | None = None,
     ) -> None:
         """
@@ -495,7 +498,7 @@ class ProjectDisplay:
             flags, then built-in defaults; an explicit tuple of
             ``atoms``/``bonds``/``cell``/``axes``/
             ``moments``/``labels`` wins outright.
-        range : tuple[tuple[float, float], tuple[float, float], tuple[float, float]] | None, default=None
+        range : StructureViewRange | None, default=None
             Optional per-axis ``((min, max), ...)`` window overriding
             the persisted ``project.rendering_structure`` range for this
             call only.
@@ -510,7 +513,9 @@ class ProjectDisplay:
         )
 
         structure = self._project.structures[struct_name]
-        availability = structure_feature_availability(structure, style=self._project.structure_style)
+        availability = structure_feature_availability(
+            structure, style=self._project.structure_style
+        )
         features = self._resolve_structure_features(include, availability)
         window = range if range is not None else self._project.structure_view.view_range()
         scene = build_scene(
@@ -523,7 +528,7 @@ class ProjectDisplay:
         if path is not None:
             import pathlib  # noqa: PLC0415
 
-            pathlib.Path(path).write_text(output)
+            pathlib.Path(path).write_text(output, encoding='utf-8')
             return
         console.paragraph(f"Structure 🧩 '{struct_name}'")
         self._emit_structure_output(output)
@@ -537,7 +542,9 @@ class ProjectDisplay:
         )
 
         structure = self._project.structures[struct_name]
-        availability = structure_feature_availability(structure, style=self._project.structure_style)
+        availability = structure_feature_availability(
+            structure, style=self._project.structure_style
+        )
         supported = self._project.rendering_structure.viewer.supported_features()
         auto = self._resolve_structure_features('auto', availability)
 
@@ -615,9 +622,10 @@ class ProjectDisplay:
         from easydiffraction.utils.environment import in_jupyter  # noqa: PLC0415
 
         if self._project.rendering_structure.viewer.engine == ViewerEngineEnum.ASCII.value:
-            # Built-in print preserves the renderer's raw ANSI colour codes
-            # (Jupyter and terminals interpret them); Rich's console.print
-            # would escape and garble them. Mirrors the ASCII pattern plotter.
+            # Built-in print keeps the renderer's raw ANSI colour
+            # codes (Jupyter and terminals interpret them); Rich's
+            # console.print would escape and garble them. Mirrors
+            # the ASCII pattern plotter.
             print(output)
             return
         if in_jupyter():

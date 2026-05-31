@@ -65,10 +65,7 @@ class StructureStyle(CategoryItem):
 
     @property
     def atom_view(self) -> EnumDescriptor:
-        """
-        How atoms are sized/shaped
-        (``vdw``/``covalent``/``ionic``/``adp``).
-        """
+        """How atoms are sized/shaped (vdw/covalent/ionic/adp)."""
         return self._atom_view
 
     @atom_view.setter
@@ -86,9 +83,7 @@ class StructureStyle(CategoryItem):
 
     @property
     def adp_probability(self) -> NumericDescriptor:
-        """
-        ORTEP probability level (fraction in the open interval (0, 1)).
-        """
+        """ORTEP probability level (fraction in interval (0, 1))."""
         return self._adp_probability
 
     @adp_probability.setter
@@ -97,10 +92,7 @@ class StructureStyle(CategoryItem):
 
     @property
     def atom_scale(self) -> NumericDescriptor:
-        """
-        Overall ball-atom size factor in (0, 1] (square-root
-        compressed).
-        """
+        """Overall ball-atom size factor in (0, 1] (sqrt compressed)."""
         return self._atom_scale
 
     @atom_scale.setter
@@ -109,7 +101,5 @@ class StructureStyle(CategoryItem):
 
     @property
     def as_cif(self) -> str:
-        """
-        Return CIF representation of this structure_style category.
-        """
+        """Return CIF text for this structure_style category."""
         return super().as_cif

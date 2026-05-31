@@ -5,4 +5,6 @@
 from __future__ import annotations
 
 from easydiffraction.project.categories.rendering_structure.default import RenderingStructure
-from easydiffraction.project.categories.rendering_structure.factory import RenderingStructureFactory
+from easydiffraction.project.categories.rendering_structure.factory import (
+    RenderingStructureFactory,
+)

@@ -37,11 +37,11 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from easydiffraction.project.categories.rendering_plot import RenderingPlot
-    from easydiffraction.project.categories.rendering_table import RenderingTable
-    from easydiffraction.project.categories.verbosity import Verbosity
     from easydiffraction.project.categories.rendering_structure import RenderingStructure
-    from easydiffraction.project.categories.structure_view import StructureView
+    from easydiffraction.project.categories.rendering_table import RenderingTable
     from easydiffraction.project.categories.structure_style import StructureStyle
+    from easydiffraction.project.categories.structure_view import StructureView
+    from easydiffraction.project.categories.verbosity import Verbosity
     from easydiffraction.project.project_info import ProjectInfo
     from easydiffraction.report import Report
 

@@ -5,22 +5,22 @@
 from __future__ import annotations
 
 from easydiffraction.core.category_owner import CategoryOwner
-from easydiffraction.project.categories.rendering_plot import RenderingPlot
-from easydiffraction.project.categories.rendering_plot import RenderingPlotFactory
 from easydiffraction.project.categories.info import ProjectInfo
 from easydiffraction.project.categories.info import ProjectInfoFactory
-from easydiffraction.project.categories.report import Report
-from easydiffraction.project.categories.report import ReportFactory
-from easydiffraction.project.categories.rendering_table import RenderingTable
-from easydiffraction.project.categories.rendering_table import RenderingTableFactory
-from easydiffraction.project.categories.verbosity import Verbosity
-from easydiffraction.project.categories.verbosity import VerbosityFactory
+from easydiffraction.project.categories.rendering_plot import RenderingPlot
+from easydiffraction.project.categories.rendering_plot import RenderingPlotFactory
 from easydiffraction.project.categories.rendering_structure import RenderingStructure
 from easydiffraction.project.categories.rendering_structure import RenderingStructureFactory
-from easydiffraction.project.categories.structure_view import StructureView
-from easydiffraction.project.categories.structure_view import StructureViewFactory
+from easydiffraction.project.categories.rendering_table import RenderingTable
+from easydiffraction.project.categories.rendering_table import RenderingTableFactory
+from easydiffraction.project.categories.report import Report
+from easydiffraction.project.categories.report import ReportFactory
 from easydiffraction.project.categories.structure_style import StructureStyle
 from easydiffraction.project.categories.structure_style import StructureStyleFactory
+from easydiffraction.project.categories.structure_view import StructureView
+from easydiffraction.project.categories.structure_view import StructureViewFactory
+from easydiffraction.project.categories.verbosity import Verbosity
+from easydiffraction.project.categories.verbosity import VerbosityFactory
 
 
 class ProjectConfig(CategoryOwner):
@@ -43,7 +43,9 @@ class ProjectConfig(CategoryOwner):
         self._report = ReportFactory.create(ReportFactory.default_tag())
         self._rendering_table = RenderingTableFactory.create(RenderingTableFactory.default_tag())
         self._verbosity = VerbosityFactory.create(VerbosityFactory.default_tag())
-        self._rendering_structure = RenderingStructureFactory.create(RenderingStructureFactory.default_tag())
+        self._rendering_structure = RenderingStructureFactory.create(
+            RenderingStructureFactory.default_tag()
+        )
         self._structure_view = StructureViewFactory.create(StructureViewFactory.default_tag())
         self._structure_style = StructureStyleFactory.create(StructureStyleFactory.default_tag())
 

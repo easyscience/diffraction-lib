@@ -76,7 +76,14 @@ class StructureView(CategoryItem):
     def show_moments(self, value: bool) -> None:
         self._show_moments.value = value
 
-    def _set_bound(self, descriptor: NumericDescriptor, value: float, *, lower: float, upper: float) -> None:
+    @staticmethod
+    def _set_bound(
+        descriptor: NumericDescriptor,
+        value: float,
+        *,
+        lower: float,
+        upper: float,
+    ) -> None:
         if not lower < value < upper:
             log.warning(
                 f"'{descriptor.name}' = {value} violates min < max on its axis; ignored.",
@@ -91,7 +98,12 @@ class StructureView(CategoryItem):
 
     @range_a_min.setter
     def range_a_min(self, value: float) -> None:
-        self._set_bound(self._range_a_min, value, lower=float('-inf'), upper=self._range_a_max.value)
+        self._set_bound(
+            self._range_a_min,
+            value,
+            lower=float('-inf'),
+            upper=self._range_a_max.value,
+        )
 
     @property
     def range_a_max(self) -> NumericDescriptor:
@@ -100,7 +112,12 @@ class StructureView(CategoryItem):
 
     @range_a_max.setter
     def range_a_max(self, value: float) -> None:
-        self._set_bound(self._range_a_max, value, lower=self._range_a_min.value, upper=float('inf'))
+        self._set_bound(
+            self._range_a_max,
+            value,
+            lower=self._range_a_min.value,
+            upper=float('inf'),
+        )
 
     @property
     def range_b_min(self) -> NumericDescriptor:
@@ -109,7 +126,12 @@ class StructureView(CategoryItem):
 
     @range_b_min.setter
     def range_b_min(self, value: float) -> None:
-        self._set_bound(self._range_b_min, value, lower=float('-inf'), upper=self._range_b_max.value)
+        self._set_bound(
+            self._range_b_min,
+            value,
+            lower=float('-inf'),
+            upper=self._range_b_max.value,
+        )
 
     @property
     def range_b_max(self) -> NumericDescriptor:
@@ -118,7 +140,12 @@ class StructureView(CategoryItem):
 
     @range_b_max.setter
     def range_b_max(self, value: float) -> None:
-        self._set_bound(self._range_b_max, value, lower=self._range_b_min.value, upper=float('inf'))
+        self._set_bound(
+            self._range_b_max,
+            value,
+            lower=self._range_b_min.value,
+            upper=float('inf'),
+        )
 
     @property
     def range_c_min(self) -> NumericDescriptor:
@@ -127,7 +154,12 @@ class StructureView(CategoryItem):
 
     @range_c_min.setter
     def range_c_min(self, value: float) -> None:
-        self._set_bound(self._range_c_min, value, lower=float('-inf'), upper=self._range_c_max.value)
+        self._set_bound(
+            self._range_c_min,
+            value,
+            lower=float('-inf'),
+            upper=self._range_c_max.value,
+        )
 
     @property
     def range_c_max(self) -> NumericDescriptor:
@@ -136,7 +168,12 @@ class StructureView(CategoryItem):
 
     @range_c_max.setter
     def range_c_max(self, value: float) -> None:
-        self._set_bound(self._range_c_max, value, lower=self._range_c_min.value, upper=float('inf'))
+        self._set_bound(
+            self._range_c_max,
+            value,
+            lower=self._range_c_min.value,
+            upper=float('inf'),
+        )
 
     def view_range(self) -> tuple[tuple[float, float], tuple[float, float], tuple[float, float]]:
         """
