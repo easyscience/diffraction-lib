@@ -79,9 +79,10 @@
   }
   #{{ container_id }} .mb-select {
     height: calc(var(--cv-control-h) + 2px); min-height: calc(var(--cv-control-h) + 2px);
-    box-sizing: border-box; margin: -1px 0;
+    max-height: calc(var(--cv-control-h) + 2px); box-sizing: border-box;
+    display: inline-flex; align-items: center; margin: -1px 0; vertical-align: top;
     border: 1px solid var(--cv-panel-border); border-radius: 0;
-    color: var(--cv-control-fg); font-size: 12px; line-height: calc(var(--cv-control-h) - 2px);
+    color: var(--cv-control-fg); font-family: inherit; font-size: 12px; line-height: calc(var(--cv-control-h) - 2px);
     padding: 0 22px 0 8px; cursor: pointer;
     -webkit-appearance: none; -moz-appearance: none; appearance: none;
     background-color: var(--cv-control-bg);

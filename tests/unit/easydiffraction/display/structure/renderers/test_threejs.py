@@ -629,6 +629,10 @@ class TestRenderHtmlDocument:
 
         assert 'height: calc(var(--cv-control-h) + 2px);' in html
         assert 'min-height: calc(var(--cv-control-h) + 2px);' in html
+        assert 'max-height: calc(var(--cv-control-h) + 2px);' in html
+        assert 'display: inline-flex; align-items: center;' in html
+        assert 'vertical-align: top;' in html
+        assert 'font-family: inherit;' in html
         assert '--cv-axis-letter-size: 18px;\n  }\n  #' in html
 
     def test_exposes_host_theme_sync_hook(self, patched_theme):

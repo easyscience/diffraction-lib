@@ -278,7 +278,16 @@ Adjust the margins and paddings to fit the defaults in MkDocs Material and do no
 .md-typeset .crysview .mb-select {
   height: calc(var(--cv-control-h, 32px) + 2px) !important;
   min-height: calc(var(--cv-control-h, 32px) + 2px) !important;
+  max-height: calc(var(--cv-control-h, 32px) + 2px) !important;
+  box-sizing: border-box !important;
+  display: inline-flex !important;
+  align-items: center !important;
   margin: -1px 0 !important;
+  vertical-align: top !important;
+  font-family: inherit !important;
+  font-size: 12px !important;
+  line-height: calc(var(--cv-control-h, 32px) - 2px) !important;
+  padding: 0 22px 0 8px !important;
 }
 
 .md-typeset .crysview.cv-host-theme-dark {
