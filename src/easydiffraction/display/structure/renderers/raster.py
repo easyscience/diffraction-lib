@@ -33,11 +33,14 @@ _SHININESS = 36.0  # specular exponent
 _SPEC_STRENGTH = 0.28  # small, subtle highlight (not a hard white spot)
 _LABEL_FRAC = 0.040  # axis-letter font size, as a fraction of the canvas
 _LEGEND_FRAC = 0.032  # legend font size, as a fraction of the canvas
-# Axis-arrow proportions, as fractions of the arrow length (match the Three.js
-# buildArrow so the PDF and HTML axis triads look identical).
-_AXIS_SHAFT_RADIUS_FRAC = 0.012
-_AXIS_HEAD_RADIUS_FRAC = 0.048
-_AXIS_HEAD_LENGTH_FRAC = 0.12
+# Axis-arrow proportions, as fractions of the fit extent, so the arrows are a
+# constant on-screen size in every cell (mirrors the Three.js defaults). The fit
+# extent is ~2x the Three.js half-height reference, hence ~half its fractions.
+_AXIS_SHAFT_RADIUS_FRAC = 0.0045
+_AXIS_HEAD_RADIUS_FRAC = 0.014
+_AXIS_HEAD_LENGTH_FRAC = 0.043
+_AXIS_OVERHANG_FRAC = 0.045  # minimum overhang past the cell corner
+_AXIS_GAP_FRAC = 0.02  # clear gap between a corner atom and the head base
 
 
 def _unit(vector: np.ndarray) -> np.ndarray:
@@ -99,10 +102,9 @@ def _scene_points(scene) -> np.ndarray:
             points.append(edge.start)
             points.append(edge.end)
     if scene.axes is not None:
-        origin = np.asarray(scene.axes.origin, dtype=float)
+        # Only the cell origin; the axis arrows are sized from the fit extent and
+        # reserved with a margin, not enclosed point-by-point.
         points.append(scene.axes.origin)
-        for arrow in scene.axes.axes:
-            points.append(tuple(origin + np.asarray(arrow.vector, dtype=float)))
     return np.array(points, dtype=float) if points else np.zeros((1, 3))
 
 
@@ -131,7 +133,10 @@ class RasterStructureRenderer:
         pad = _max_radius(scene)
         lo = screen.min(axis=0) - pad
         hi = screen.max(axis=0) + pad
-        extent = float((hi - lo).max()) or 1.0
+        content_extent = float((hi - lo).max()) or 1.0
+        # Reserve room for the axis arrows (drawn beyond the cell, sized from the
+        # extent below) so their heads and letters stay inside the frame.
+        extent = content_extent * (1.24 if scene.axes is not None else 1.0)
         scale = (size * (1.0 - 2.0 * _MARGIN_FRAC)) / extent
         centre2d = (lo + hi) / 2.0
 
@@ -149,7 +154,7 @@ class RasterStructureRenderer:
                 self._capsule(colour, depth, project, scale, edge.start, edge.end,
                               0.012, (90, 90, 90), (90, 90, 90))
         if 'axes' in features and scene.axes is not None:
-            self._axes(colour, depth, project, (right, up, view_dir), scene.axes)
+            self._axes(colour, depth, project, (right, up, view_dir), scene.axes, extent, pad)
         if 'bonds' in features:
             for bond in scene.bonds:
                 self._capsule(colour, depth, project, scale, bond.start, bond.end,
@@ -400,12 +405,12 @@ class RasterStructureRenderer:
         sub[update] = tri_depth[update]
         colour[min_y:max_y, min_x:max_x][update] = shade
 
-    def _arrow(self, colour, depth, project, basis, origin, vector, rgb, ref_length) -> None:
+    def _arrow(self, colour, depth, project, basis, origin, vector, extent, rgb) -> None:
         """Draw a shaft cylinder and head cone as 3D triangles (orientation-safe).
 
-        Thickness and head size scale from ``ref_length`` (the longest axis),
-        not each arrow's own length, so all three axes share one uniform
-        thickness regardless of cell anisotropy.
+        Thickness and head size are fractions of ``extent`` (the fit extent), so
+        the arrow is a constant on-screen size in every cell. ``vector`` already
+        runs to the arrow tip (cell edge plus overhang).
         """
         right, up, view_dir = basis
         length = float(np.linalg.norm(vector))
@@ -415,9 +420,9 @@ class RasterStructureRenderer:
         perp = np.array([0.0, 0.0, 1.0]) if abs(axis[2]) < 0.9 else np.array([0.0, 1.0, 0.0])
         u = _unit(np.cross(perp, axis))
         v = np.cross(axis, u)
-        shaft_r = _AXIS_SHAFT_RADIUS_FRAC * ref_length
-        head_r = _AXIS_HEAD_RADIUS_FRAC * ref_length
-        base = origin + axis * max(length - _AXIS_HEAD_LENGTH_FRAC * ref_length, 1e-3)
+        shaft_r = _AXIS_SHAFT_RADIUS_FRAC * extent
+        head_r = _AXIS_HEAD_RADIUS_FRAC * extent
+        base = origin + axis * max(length - _AXIS_HEAD_LENGTH_FRAC * extent, 1e-3)
         tip = origin + vector
         flat = np.asarray(rgb, dtype=np.float32) / 255.0
 
@@ -448,9 +453,20 @@ class RasterStructureRenderer:
             self._triangle(colour, depth, project(tuple(base)), project(tuple(b1)),
                            project(tuple(b0)), shade_for(-axis))
 
-    def _axes(self, colour, depth, project, basis, axes) -> None:
+    def _axes(self, colour, depth, project, basis, axes, extent, max_atom_r) -> None:
         origin = np.asarray(axes.origin, dtype=float)
-        ref_length = max((float(np.linalg.norm(a.vector)) for a in axes.axes), default=1.0)
-        for arrow in axes.axes:
+        vectors = [np.asarray(a.vector, dtype=float) for a in axes.axes]
+        # Recover the longest cell edge (the builder adds a 0.3*max overhang).
+        max_axis = max((float(np.linalg.norm(v)) for v in vectors), default=1.0) / 1.3
+        head_len = _AXIS_HEAD_LENGTH_FRAC * extent
+        # Overhang clears the largest atom (so corner atoms never hide the head),
+        # plus the head length and a small gap.
+        overhang = max(_AXIS_OVERHANG_FRAC * extent, max_atom_r + head_len + _AXIS_GAP_FRAC * extent)
+        for arrow, vector in zip(axes.axes, vectors):
+            length = float(np.linalg.norm(vector))
+            if length < 1e-9:
+                continue
+            axis = vector / length
+            axis_len = max(length - 0.3 * max_axis, 1e-3)
             self._arrow(colour, depth, project, basis, origin,
-                        np.asarray(arrow.vector, dtype=float), arrow.colour, ref_length)
+                        axis * (axis_len + overhang), extent, arrow.colour)

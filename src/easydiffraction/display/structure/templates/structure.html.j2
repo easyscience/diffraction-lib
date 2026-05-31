@@ -212,42 +212,9 @@ for (const edge of SCENE.cellEdges) {
   groups.cell.add(new THREE.Line(geo, cellMaterial));
 }
 
-const Y_AXIS = new THREE.Vector3(0, 1, 0);
-// `ref` is the longest axis length; thickness and head size derive from it
-// (not each arrow's own length) so all three axes share one uniform thickness.
-const buildArrow = (origin, v, colour, ref) => {
-  const group = new THREE.Group();
-  const length = v.length();
-  const shaftR = ref * 0.012;
-  const headLen = ref * 0.12;
-  const headR = shaftR * 4;
-  const shaftLen = Math.max(length - headLen, 1e-3);
-  const material = solidMat(col(colour));
-  const shaft = new THREE.Mesh(new THREE.CylinderGeometry(shaftR, shaftR, shaftLen, 16), material);
-  shaft.position.y = shaftLen / 2;
-  const head = new THREE.Mesh(new THREE.ConeGeometry(headR, headLen, 20), material);
-  head.position.y = shaftLen + headLen / 2;
-  group.add(shaft, head);
-  group.quaternion.setFromUnitVectors(Y_AXIS, v.clone().normalize());
-  group.position.copy(origin);
-  return group;
-};
-
-if (SCENE.axes) {
-  const origin = vec(SCENE.axes.origin);
-  const ref = Math.max(...SCENE.axes.arrows.map((a) => vec(a.vector).length()), 1e-3);
-  for (const arrow of SCENE.axes.arrows) {
-    const v = vec(arrow.vector);
-    groups.axes.add(buildArrow(origin, v, arrow.colour, ref));
-    const div = document.createElement('div');
-    div.textContent = arrow.letter;
-    div.style.color = rgbCss(arrow.colour);
-    div.style.fontWeight = 'bold';
-    const tag = new CSS2DObject(div);
-    tag.position.copy(origin.clone().add(v.clone().multiplyScalar(1.08)));
-    groups.axes.add(tag);
-  }
-}
+// Axis arrows are built after the camera fit (below), so their thickness, head,
+// and overhang can be sized from the on-screen zoom and look identical in
+// every cell regardless of size or proportions.
 
 for (const label of SCENE.labels) {
   const div = document.createElement('div');
@@ -268,8 +235,9 @@ const aspect = width / height;
 const cellBasis = SCENE.axes ? SCENE.axes.arrows.map((a) => vec(a.vector)) : [];
 
 // Real content points the framing must enclose — atom centres, cell vertices,
-// axis-arrow tips and their label glyphs. (AABB corners are wrong here: they
-// stick out into empty space and over-zoom-out the view.) fitPad grows the
+// and the cell origin. (AABB corners are wrong here: they stick out into empty
+// space and over-zoom-out the view.) Axis arrows are sized from the zoom and
+// reserved via `margin` below, not enclosed point-by-point. fitPad grows the
 // extent by the largest atom radius so boundary spheres are not clipped.
 const fitPoints = [];
 let fitPad = 0;
@@ -277,12 +245,7 @@ for (const a of SCENE.atoms) { fitPoints.push(vec(a.centre)); fitPad = Math.max(
 for (const s of SCENE.wedgeSpheres || []) { fitPoints.push(vec(s.centre)); fitPad = Math.max(fitPad, s.radius); }
 for (const e of SCENE.ellipsoids || []) { fitPoints.push(vec(e.centre)); fitPad = Math.max(fitPad, Math.max(...e.semiAxes)); }
 for (const edge of SCENE.cellEdges || []) { fitPoints.push(vec(edge.start), vec(edge.end)); }
-if (SCENE.axes) {
-  const axesOrigin = vec(SCENE.axes.origin);
-  fitPoints.push(axesOrigin);
-  for (const arrow of SCENE.axes.arrows)
-    fitPoints.push(axesOrigin.clone().add(vec(arrow.vector).multiplyScalar(1.16)));
-}
+if (SCENE.axes) fitPoints.push(vec(SCENE.axes.origin));
 if (!fitPoints.length) fitPoints.push(box.min.clone(), box.max.clone());
 
 // Default orientation: longest cell axis horizontal, 2nd-longest vertical, the
@@ -322,8 +285,11 @@ for (const p of fitPoints) {
   minV = Math.min(minV, v); maxV = Math.max(maxV, v);
 }
 target.addScaledVector(camRight, (minU + maxU) / 2).addScaledVector(camUp, (minV + maxV) / 2);
-const halfW = Math.max((maxU - minU) / 2 + fitPad, 0.5) * 1.06;
-const halfH = Math.max((maxV - minV) / 2 + fitPad, 0.5) * 1.06;
+// Reserve extra extent for the axis arrows (drawn beyond the cell, sized from
+// the zoom below) and their letters, so they stay inside the frame.
+const margin = SCENE.axes ? 1.24 : 1.06;
+const halfW = Math.max((maxU - minU) / 2 + fitPad, 0.5) * margin;
+const halfH = Math.max((maxV - minV) / 2 + fitPad, 0.5) * margin;
 const radius = Math.max(halfW, halfH);
 const far = radius * 100;
 const tanV = Math.tan((45 * Math.PI) / 360);
@@ -349,15 +315,47 @@ ortho.position.copy(home);
 let camera = ortho;
 let projection = 'orthographic';
 
-// Normalise axis-arrow thickness to the on-screen zoom so arrows look equally
-// thin in every cell. They are built proportional to the longest axis, but the
-// ortho zoom is not (it depends on aspect and the trimetric tilt), so wide or
-// elongated cells would otherwise show fatter arrows than cubic ones. Scale
-// radially only, leaving each arrow's length and overhang untouched.
-if (SCENE.axes && SCENE.axes.arrows.length) {
-  const builtRef = Math.max(...SCENE.axes.arrows.map((a) => vec(a.vector).length()), 1e-3);
-  const arrowScale = (orthoHalfH * 0.010) / (builtRef * 0.012);
-  groups.axes.children.forEach((g) => { if (g.isGroup) g.scale.set(arrowScale, 1, arrowScale); });
+// Build the axis arrows now (after the fit) so every dimension is a fixed
+// fraction of the on-screen zoom (orthoHalfH): identical thickness, head
+// length, and overhang past the cell corner in every cell, regardless of size
+// or proportions. The cell-edge length is recovered per axis so the shaft still
+// reaches the cell corner before overhanging.
+if (SCENE.axes && SCENE.axes.arrows.length === 3) {
+  const Y_AXIS = new THREE.Vector3(0, 1, 0);
+  const origin = vec(SCENE.axes.origin);
+  const arrowVecs = SCENE.axes.arrows.map((a) => vec(a.vector));
+  const maxAxis = Math.max(...arrowVecs.map((v) => v.length()), 1e-3) / 1.3;
+  const shaftR = orthoHalfH * 0.009;
+  const headR = orthoHalfH * 0.028;
+  const headLen = orthoHalfH * 0.085;
+  // Overhang past the cell corner: at least clear the largest atom (corner
+  // atoms otherwise hide the head) plus the head length and a small gap, so the
+  // cap is always fully visible beyond any corner atom.
+  const overhang = Math.max(orthoHalfH * 0.09, fitPad + headLen + orthoHalfH * 0.04);
+  SCENE.axes.arrows.forEach((arrow, i) => {
+    const v = arrowVecs[i];
+    const dir = v.clone().normalize();
+    const axisLen = Math.max(v.length() - 0.3 * maxAxis, 1e-3);
+    const total = axisLen + overhang;
+    const shaftLen = Math.max(total - headLen, 1e-3);
+    const material = solidMat(col(arrow.colour));
+    const group = new THREE.Group();
+    const shaft = new THREE.Mesh(new THREE.CylinderGeometry(shaftR, shaftR, shaftLen, 16), material);
+    shaft.position.y = shaftLen / 2;
+    const head = new THREE.Mesh(new THREE.ConeGeometry(headR, headLen, 20), material);
+    head.position.y = shaftLen + headLen / 2;
+    group.add(shaft, head);
+    group.quaternion.setFromUnitVectors(Y_AXIS, dir);
+    group.position.copy(origin);
+    groups.axes.add(group);
+    const div = document.createElement('div');
+    div.textContent = arrow.letter;
+    div.style.color = rgbCss(arrow.colour);
+    div.style.fontWeight = 'bold';
+    const tag = new CSS2DObject(div);
+    tag.position.copy(origin).addScaledVector(dir, total + orthoHalfH * 0.05);
+    groups.axes.add(tag);
+  });
 }
 
 const controls = new OrbitControls(camera, renderer.domElement);
