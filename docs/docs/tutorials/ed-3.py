@@ -61,21 +61,6 @@ project.info.show_as_cif()
 project.save_as(dir_path='projects/lbco_hrpt')
 
 # %% [markdown]
-# #### Set Up Rendering Engines
-
-# %% [markdown]
-# Show supported data plotting engines.
-
-# %%
-project.rendering_plot.show_supported()
-
-# %% [markdown]
-# Show supported structure plotting engines.
-
-# %%
-project.rendering_structure.show_supported()
-
-# %% [markdown]
 # ## Step 2: Define Structure
 #
 # This section shows how to add structures and modify their
@@ -167,7 +152,7 @@ project.structures['lbco'].atom_sites.create(
 project.structures['lbco'].show_as_cif()
 
 # %% [markdown]
-# #### View Structure in 3D
+# #### View Structure
 #
 # EasyDiffraction can draw the structure that has just been defined. The
 # renderer engine is selected through `project.rendering_structure`. The default `auto`
@@ -176,6 +161,9 @@ project.structures['lbco'].show_as_cif()
 
 # %%
 project.rendering_structure.show_supported()
+
+# %% [markdown]
+# Show all public attributes of the structure rendering engine.
 
 # %%
 project.rendering_structure.help()
@@ -223,8 +211,6 @@ project.rendering_structure.type = 'ascii'
 
 # %%
 project.display.structure(struct_name='lbco')
-
-# %%
 
 # %%
 project.rendering_structure.type = 'auto'
@@ -379,6 +365,24 @@ project.experiments['hrpt'].calculator.show_supported()
 
 # %%
 project.experiments['hrpt'].calculator.type = 'cryspy'
+
+# %% [markdown]
+# #### Set Up Data Rendering Engine
+#
+# EasyDiffraction can plot the measured and calculated patterns using different rendering engines.
+# The default `auto` engine resolves to an interactive `plotly` view inside Jupyter and a
+# static `asciichartpy` plot for schematic representation in a terminal.
+#
+# Show supported data plotting engines.
+
+# %%
+project.rendering_plot.show_supported()
+
+# %% [markdown]
+# Show all public attributes of the data rendering engine.
+
+# %%
+project.rendering_plot.help()
 
 # %% [markdown]
 # #### Show Calculated Data
@@ -678,13 +682,11 @@ project.display.pattern(expt_name='hrpt', x_min=38, x_max=41)
 # %%
 project.display.structure(struct_name='lbco')
 
-# %%
+# %% [markdown]
+# #### Plot Structure
 
 # %%
-
-# %%
-
-# %%
+project.display.structure(struct_name='lbco')
 
 # %% [markdown]
 # ## Step 5: Generate Report
@@ -705,9 +707,3 @@ project.report.cif = True
 project.report.tex = True
 project.report.pdf = True
 project.save()
-
-# %%
-
-# %%
-
-# %%
