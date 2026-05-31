@@ -21,6 +21,7 @@ from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import RegexValidator
+from easydiffraction.core.variable import EnumDescriptor
 from easydiffraction.core.variable import Parameter
 from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.crystallography import crystallography as ecr
@@ -167,17 +168,14 @@ class AtomSite(CategoryItem):
                 ]
             ),
         )
-        self._adp_type = StringDescriptor(
+        self._adp_type = EnumDescriptor(
             name='adp_type',
+            enum=AdpTypeEnum,
             description='Type of atomic displacement parameter (ADP) '
             'used (e.g., Biso, Uiso, Uani, Bani).',
             display_handler=DisplayHandler(
                 display_name='ADP type',
                 latex_name='ADP type',
-            ),
-            value_spec=AttributeSpec(
-                default=AdpTypeEnum.default(),
-                validator=MembershipValidator(allowed=[m.value for m in AdpTypeEnum]),
             ),
             cif_handler=CifHandler(names=['_atom_site.ADP_type', '_atom_site.adp_type']),
         )
@@ -415,12 +413,12 @@ class AtomSite(CategoryItem):
         self._type_symbol.value = value
 
     @property
-    def adp_type(self) -> StringDescriptor:
+    def adp_type(self) -> EnumDescriptor:
         """
         ADP type used (e.g., Biso, Uiso, Uani, Bani).
 
         Reading this property returns the underlying
-        ``StringDescriptor`` object. Assigning to it updates the
+        ``EnumDescriptor`` object. Assigning to it updates the
         parameter value.
         """
         return self._adp_type

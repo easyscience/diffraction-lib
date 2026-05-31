@@ -210,7 +210,7 @@ is staged and committed locally before moving on.
 - [x] **P1.4 — Migrate experiment_type axes.** `sample_form`, `beam_mode`,
   `radiation_probe`, `scattering_type` → `EnumDescriptor`. Commit:
   `Use EnumDescriptor for experiment_type axes`.
-- [ ] **P1.5 — Migrate `atom_sites.adp_type`.** The P1.2 audit confirms
+- [x] **P1.5 — Migrate `atom_sites.adp_type`.** The P1.2 audit confirms
   `adp_type` (`AdpTypeEnum`) is the one in-scope structure-data value selector →
   `EnumDescriptor` (preserve its dual CIF names `_atom_site.ADP_type` /
   `_atom_site.adp_type` and the category's `adp_type` setter). The
