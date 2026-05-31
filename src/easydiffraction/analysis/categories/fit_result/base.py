@@ -12,8 +12,8 @@ from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
-from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.variable import BoolDescriptor
+from easydiffraction.core.variable import EnumDescriptor
 from easydiffraction.core.variable import GenericDescriptorBase
 from easydiffraction.core.variable import IntegerDescriptor
 from easydiffraction.core.variable import NumericDescriptor
@@ -49,15 +49,10 @@ class FitResultBase(CategoryItem):
 
     def __init__(self) -> None:
         super().__init__()
-        self._result_kind = StringDescriptor(
+        self._result_kind = EnumDescriptor(
             name='result_kind',
+            enum=FitResultKindEnum,
             description='Kind of the latest persisted fit-result projection.',
-            value_spec=AttributeSpec(
-                default=FitResultKindEnum.default().value,
-                validator=MembershipValidator(
-                    allowed=[member.value for member in FitResultKindEnum]
-                ),
-            ),
             cif_handler=CifHandler(names=['_fit_result.result_kind']),
             display_handler=_result_display_handler('Result kind'),
         )
@@ -98,7 +93,7 @@ class FitResultBase(CategoryItem):
         )
 
     @property
-    def result_kind(self) -> StringDescriptor:
+    def result_kind(self) -> EnumDescriptor:
         """Kind of the latest persisted fit-result projection."""
         return self._result_kind
 
