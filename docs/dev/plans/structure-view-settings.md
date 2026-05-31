@@ -219,7 +219,7 @@ is staged and committed locally before moving on.
   `space_group.it_coordinate_system_code`) are **out of scope** and keep their
   current `MembershipValidator`. Commit:
   `Use EnumDescriptor for atom_sites adp_type`.
-- [ ] **P1.6 — Migrate remaining value selectors.** Per the P1.2 audit:
+- [x] **P1.6 — Migrate remaining value selectors.** Per the P1.2 audit:
   `verbosity.fit` (`VerbosityEnum`), `fit_result.result_kind`
   (`FitResultKindEnum`), `fit_parameter_correlations.source_kind`
   (`FitCorrelationSourceEnum`), and `extinction.model` (`ExtinctionModelEnum`)
