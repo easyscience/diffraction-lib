@@ -37,7 +37,6 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from easydiffraction.project.categories.rendering_plot import RenderingPlot
-    from easydiffraction.project.categories.style import Style
     from easydiffraction.project.categories.rendering_table import RenderingTable
     from easydiffraction.project.categories.verbosity import Verbosity
     from easydiffraction.project.categories.rendering_structure import RenderingStructure
@@ -217,7 +216,6 @@ class Project(GuardedBase):  # noqa: PLR0904
         object.__setattr__(self, '_rendering_structure', self._config.rendering_structure)
         object.__setattr__(self, '_structure_view', self._config.structure_view)
         object.__setattr__(self, '_structure_style', self._config.structure_style)
-        object.__setattr__(self, '_style', self._config.style)
         object.__setattr__(self, '_report', self._config.report)
         self._publication = PublicationFactory.create(PublicationFactory.default_tag())
         self._display = ProjectDisplay(self)
@@ -237,7 +235,6 @@ class Project(GuardedBase):  # noqa: PLR0904
         self._rendering_structure._parent = self
         self._structure_view._parent = self
         self._structure_style._parent = self
-        self._style._parent = self
         self._report._parent = self
         self._publication._parent = self
 
@@ -352,11 +349,6 @@ class Project(GuardedBase):  # noqa: PLR0904
     def structure_style(self) -> StructureStyle:
         """Structure-view appearance bound to the project."""
         return self._structure_style
-
-    @property
-    def style(self) -> Style:
-        """Structure-view styling bound to the project."""
-        return self._style
 
     @property
     def display(self) -> ProjectDisplay:

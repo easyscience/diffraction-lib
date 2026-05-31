@@ -575,7 +575,13 @@ def project_config_to_cif(project: object) -> str:
     if publication is not None:
         sections.append(category_owner_to_cif(publication))
 
-    for attr_name in ('rendering_table', 'rendering_structure', 'style', 'verbosity'):
+    for attr_name in (
+        'rendering_table',
+        'rendering_structure',
+        'structure_view',
+        'structure_style',
+        'verbosity',
+    ):
         section = getattr(project, attr_name, None)
         if section is not None:
             sections.append(_as_cif_text(section))
@@ -709,9 +715,13 @@ def project_config_from_cif(project: object, cif_text: str) -> None:
     if rendering_structure is not None:
         rendering_structure.from_cif(block)
 
-    style = getattr(project, 'style', None)
-    if style is not None:
-        style.from_cif(block)
+    structure_view = getattr(project, 'structure_view', None)
+    if structure_view is not None:
+        structure_view.from_cif(block)
+
+    structure_style = getattr(project, 'structure_style', None)
+    if structure_style is not None:
+        structure_style.from_cif(block)
 
 
 def analysis_from_cif(analysis: object, cif_text: str) -> None:

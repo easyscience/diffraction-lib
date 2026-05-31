@@ -248,7 +248,7 @@ API. A short bridge period where old and new surfaces coexist is intentional.
   nothing reads `project.style` or `rendering_structure.view_range()`, but both
   still exist — so the revision builds and renders. Commit:
   `Read structure view and style from new categories`.
-- [ ] **P1.10 — Remove the old surfaces.** Now that no consumer uses them:
+- [x] **P1.10 — Remove the old surfaces.** Now that no consumer uses them:
   remove `show_labels`/`show_moments`/`range_*`/`view_range()` from
   `rendering_structure` (leaving engine `type` + `viewer`); remove the `style`
   package, `project.style`, and the bespoke `Style.show_supported()`; drop the

@@ -13,8 +13,6 @@ from easydiffraction.project.categories.report import Report
 from easydiffraction.project.categories.report import ReportFactory
 from easydiffraction.project.categories.rendering_table import RenderingTable
 from easydiffraction.project.categories.rendering_table import RenderingTableFactory
-from easydiffraction.project.categories.style import Style
-from easydiffraction.project.categories.style import StyleFactory
 from easydiffraction.project.categories.verbosity import Verbosity
 from easydiffraction.project.categories.verbosity import VerbosityFactory
 from easydiffraction.project.categories.rendering_structure import RenderingStructure
@@ -48,7 +46,6 @@ class ProjectConfig(CategoryOwner):
         self._rendering_structure = RenderingStructureFactory.create(RenderingStructureFactory.default_tag())
         self._structure_view = StructureViewFactory.create(StructureViewFactory.default_tag())
         self._structure_style = StructureStyleFactory.create(StructureStyleFactory.default_tag())
-        self._style = StyleFactory.create(StyleFactory.default_tag())
 
     @property
     def info(self) -> ProjectInfo:
@@ -89,11 +86,6 @@ class ProjectConfig(CategoryOwner):
     def structure_style(self) -> StructureStyle:
         """Structure-view appearance category."""
         return self._structure_style
-
-    @property
-    def style(self) -> Style:
-        """Structure-view styling category."""
-        return self._style
 
     @property
     def as_cif(self) -> str:
