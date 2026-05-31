@@ -202,9 +202,11 @@ is staged and committed locally before moving on.
   record a three-bucket table in this plan (value selector / category-level
   selector / dynamic-external), doc-only. See *Selector classification* below.
   Commit: `Classify enumerated selectors for discovery`.
-- [ ] **P1.3 — Enum metadata.** Add `.default()`/`.description()` to the in-scope
+- [x] **P1.3 — Enum metadata.** Add `.default()`/`.description()` to the in-scope
   value-selector enums that lack them (no field migration yet). Commit:
-  `Add default and description to value-selector enums`.
+  `Add default and description to value-selector enums`. *(Only `VerbosityEnum`,
+  `FitResultKindEnum`, `FitCorrelationSourceEnum` lacked `description()`; the
+  rest already had both.)*
 - [ ] **P1.4 — Migrate experiment_type axes.** `sample_form`, `beam_mode`,
   `radiation_probe`, `scattering_type` → `EnumDescriptor`. Commit:
   `Use EnumDescriptor for experiment_type axes`.

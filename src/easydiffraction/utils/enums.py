@@ -28,3 +28,13 @@ class VerbosityEnum(StrEnum):
     def default(cls) -> VerbosityEnum:
         """Return the default verbosity (FULL)."""
         return cls.FULL
+
+    def description(self) -> str:
+        """Return a human-readable description of this verbosity level."""
+        if self is VerbosityEnum.FULL:
+            return 'Multi-line output with headers, tables, and details.'
+        if self is VerbosityEnum.SHORT:
+            return 'Single-line status messages per action.'
+        if self is VerbosityEnum.SILENT:
+            return 'No console output.'
+        return ''
