@@ -130,6 +130,7 @@ class ThreeJsStructureRenderer(StructureRendererBase):
     """
 
     SUPPORTED = frozenset({'atoms', 'bonds', 'cell', 'axes', 'moments', 'labels'})
+    TEMPLATE_NAME = 'structure.html.j2'
 
     def supported_features(self) -> frozenset[str]:
         """Return the features the Three.js engine can draw."""
@@ -169,10 +170,10 @@ class ThreeJsStructureRenderer(StructureRendererBase):
         """
         if dark is None:
             dark = is_dark()
-        colours = theme_colors(dark)
+        colours = theme_colors(dark=dark)
         payload = json.dumps(_scene_payload(scene)).replace('</', '<\\/')
         import_map = json.dumps({'imports': _import_map(offline=offline)}).replace('</', '<\\/')
-        template = _environment().get_template('structure.html.j2')
+        template = _environment().get_template(self.TEMPLATE_NAME)
         return template.render(
             container_id=f'crysview-{uuid.uuid4().hex}',
             scene_json=payload,
