@@ -85,12 +85,22 @@ def test_rendering_plot_invalid_type_assignment_raises():
 def test_rendering_plot_from_cif_tolerates_invalid_type(monkeypatch):
     from easydiffraction.project.categories.rendering_plot import default as rendering_plot_mod
     from easydiffraction.project.categories.rendering_plot.default import RenderingPlot
+    from easydiffraction.utils.logging import Logger
+
+    # The descriptor's own from_cif validation routes through the
+    # Logger; force WARN so it logs rather than raises (another test
+    # may have left the Logger in RAISE mode).
+    monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.WARN, raising=True)
 
     rendering_plot = RenderingPlot()
     rendering_plot._parent = type(
         'P',
         (),
-        {'_swap_rendering_plot': lambda self, t, *, strict: rendering_plot._set_type(t, strict=strict)},
+        {
+            '_swap_rendering_plot': lambda self, t, *, strict: rendering_plot._set_type(
+                t, strict=strict
+            )
+        },
     )()
     block = gemmi.cif.read_string(
         'data_test\n_rendering_plot.type bogus-engine\n',
