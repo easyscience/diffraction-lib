@@ -137,6 +137,12 @@ project.experiments.add(expt)
 # This section shows the analysis process, including how to set up
 # calculation and fitting engines.
 #
+# #### Plot Structure
+
+# %%
+project.display.structure(struct_name='si')
+
+# %% [markdown]
 # #### Plot Measured vs Calculated
 
 # %%

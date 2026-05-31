@@ -58,6 +58,13 @@ project.structures.add_from_cif_path(structure_path)
 structure = project.structures['tbti']
 
 # %% [markdown]
+# Render the structure to confirm the pyrochlore model loaded from CIF as
+# expected before configuring the experiment.
+
+# %%
+project.display.structure(struct_name='tbti')
+
+# %% [markdown]
 # ## Step 3: Define the Diffraction Experiment
 #
 # Next we download the measured reflection data, create a neutron

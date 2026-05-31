@@ -63,6 +63,12 @@ project.structures['nacl'].atom_sites.create(
 )
 
 # %% [markdown]
+# ## Plot Structure
+
+# %%
+project.display.structure(struct_name='nacl')
+
+# %% [markdown]
 # ## Add Experiment
 
 # %%

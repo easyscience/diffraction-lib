@@ -176,6 +176,12 @@ project.experiments.add(expt)
 # calculation and fitting engines.
 #
 #
+# #### Plot Structure
+
+# %%
+project.display.structure(struct_name='hs')
+
+# %% [markdown]
 # #### Plot Measured vs Calculated
 
 # %%

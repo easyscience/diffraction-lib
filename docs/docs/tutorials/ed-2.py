@@ -89,6 +89,9 @@ structure.atom_sites.create(
     adp_iso=0.5,
 )
 
+# %%
+project.display.structure(struct_name='lbco')
+
 # %% [markdown]
 # ## Step 3: Define Experiment
 

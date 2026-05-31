@@ -330,6 +330,12 @@ expt47.peak.exp_decay_beta_1.free = True
 expt47.peak.exp_rise_alpha_1.free = True
 
 # %% [markdown]
+# #### Plot Structure
+
+# %%
+project.display.structure(struct_name='ncaf')
+
+# %% [markdown]
 # #### Plot Measured vs Calculated
 
 # %%

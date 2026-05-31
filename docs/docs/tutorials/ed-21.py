@@ -113,6 +113,13 @@ structure.atom_sites.create(
 )
 
 # %% [markdown]
+# With the structural model complete, render it to confirm the perovskite
+# framework before configuring the experiment.
+
+# %%
+project.display.structure(struct_name='lbco')
+
+# %% [markdown]
 # ## Step 3: Define the Diffraction Experiment
 #
 # Next we download the measured powder pattern, create a neutron powder
