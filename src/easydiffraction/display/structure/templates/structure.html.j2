@@ -336,8 +336,13 @@ const perspective = new THREE.PerspectiveCamera(45, aspect, Math.max(distance * 
 // modebar/legend so the cell sits a little lower and clears them.
 const orthoHalfH = Math.max(halfH, halfW / aspect);
 const topBandPx = 50;
-const topPad = (2 * orthoHalfH / height) * topBandPx;
-const ortho = new THREE.OrthographicCamera(-orthoHalfH * aspect, orthoHalfH * aspect, orthoHalfH + topPad, -orthoHalfH, -far, far);
+// Reserve a band at the top for the modebar by growing the vertical extent and
+// shifting the centre up, keeping width/height === aspect so spheres stay round.
+// (Adding the band only to `top` skews the frustum and distorts the scene.)
+const band = (2 * orthoHalfH / height) * topBandPx;
+const halfV = orthoHalfH + band * 0.5;
+const ortho = new THREE.OrthographicCamera(
+  -halfV * aspect, halfV * aspect, halfV + band * 0.5, -halfV + band * 0.5, -far, far);
 perspective.up.copy(viewUp);
 ortho.up.copy(viewUp);
 perspective.position.copy(home);
@@ -535,8 +540,15 @@ const resize = () => {
   const ratio = width / height;
   perspective.aspect = ratio;
   perspective.updateProjectionMatrix();
-  ortho.left = -radius * ratio * 1.26;
-  ortho.right = radius * ratio * 1.26;
+  // Recompute the ortho frustum for the new aspect exactly as on setup, so
+  // width/height === ratio (spheres stay round) and the modebar band is kept.
+  const oh = Math.max(halfH, halfW / ratio);
+  const reserve = (2 * oh / height) * topBandPx;
+  const hv = oh + reserve * 0.5;
+  ortho.left = -hv * ratio;
+  ortho.right = hv * ratio;
+  ortho.top = hv + reserve * 0.5;
+  ortho.bottom = -hv + reserve * 0.5;
   ortho.updateProjectionMatrix();
   renderer.setSize(width, height);
   labelRenderer.setSize(width, height);
