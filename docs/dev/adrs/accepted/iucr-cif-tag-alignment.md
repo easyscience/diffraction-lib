@@ -388,20 +388,20 @@ mgo_rietveld/
     analysis.cif
   reports/
     mgo_rietveld.cif                      # data_global               — audit, software, _chemical_formula
-                                          # data_mgo_rietveld_overall — _pd_proc_ls.prof_R_factor,
-                                          #                              .prof_wR_factor,
-                                          #                              .prof_wR_expected,
-                                          #                              .profile_function,
-                                          #                              .background_function,
-                                          #                              _refine_ls.number_parameters,
-                                          #                              _pd_block_id cross-refs
-                                          # data_mgo_rietveld_phase_0 — MgO structure
-                                          # data_mgo_rietveld_pwd_0    — _pd_meas.* profile loop
-                                          #                              (_2theta_scan, intensity_total,
-                                          #                              _pd_calc.intensity_total,
-                                          #                              _pd_proc.intensity_bkg_calc,
-                                          #                              _pd_proc_ls.weight),
-                                          #                              _refln.* powder reflections loop
+                                          # data_overall — _pd_proc_ls.prof_R_factor,
+                                          #                .prof_wR_factor,
+                                          #                .prof_wR_expected,
+                                          #                .profile_function,
+                                          #                .background_function,
+                                          #                _refine_ls.number_parameters,
+                                          #                _pd_block_id cross-refs
+                                          # data_mgo     — MgO structure
+                                          # data_npd     — _pd_meas.* profile loop
+                                          #                (_2theta_scan, intensity_total,
+                                          #                _pd_calc.intensity_total,
+                                          #                _pd_proc.intensity_bkg_calc,
+                                          #                _pd_proc_ls.weight),
+                                          #                _refln.* powder reflections loop
 ```
 
 **Example C — Joint Rietveld, multi-experiment (neutron + X-ray).**
@@ -418,11 +418,11 @@ co2sio4/
     analysis.cif                          # _joint_fit weights
   reports/
     co2sio4.cif                           # data_global          — audit, software, chemistry
-                                          # data_co2sio4_overall  — combined refinement stats
-                                          # data_co2sio4_phase_0  — Co2SiO4 structure
-                                          # data_co2sio4_pwd_0    — NPD pattern,
+                                          # data_overall     — combined refinement stats
+                                          # data_co2sio4     — Co2SiO4 structure
+                                          # data_npd_300K    — NPD pattern,
                                           #                          _pd_block_diffractogram_id='npd_300K'
-                                          # data_co2sio4_pwd_1    — XRD pattern,
+                                          # data_xrd_300K    — XRD pattern,
                                           #                          _pd_block_diffractogram_id='xrd_300K'
 ```
 
@@ -442,14 +442,14 @@ co2sio4_t_series/
     analysis.cif                          # _sequential_fit configuration
   reports/
     co2sio4_t_series.cif                  # data_global                  — audit, software, chemistry
-                                          # data_co2sio4_t_series_overall
-                                          # data_co2sio4_t_series_phase_0
-                                          # data_co2sio4_t_series_pwd_0  — TOF 5K,
+                                          # data_overall
+                                          # data_co2sio4
+                                          # data_tof_5K   — TOF 5K,
                                           #                                 _pd_meas.time_of_flight,
                                           #                                 _pd_calib_d_to_tof loop
-                                          # data_co2sio4_t_series_pwd_1  — TOF 100K
-                                          # data_co2sio4_t_series_pwd_2  — TOF 165K
-                                          # data_co2sio4_t_series_pwd_3  — TOF 200K
+                                          # data_tof_100K — TOF 100K
+                                          # data_tof_165K — TOF 165K
+                                          # data_tof_200K — TOF 200K
 ```
 
 #### 2.3 Multi-datablock layout inside the export file
@@ -460,8 +460,8 @@ analysis topology. Block content uses dotted DDLm form throughout. The
 single-block-name rule is uniform across topologies; topology-specific
 GSAS-II-style suffix conventions seen in some example files (e.g.
 `data_<project>_publ`, `data_<project>_overall`) are folded into
-`data_global` for global metadata and `data_<project>_overall`
-for refinement metadata, leaving no ambiguity about block roles.
+`data_global` for global metadata and `data_overall` for refinement
+metadata, leaving no ambiguity about block roles.
 
 - **Single-crystal, single structure (single experiment).**
   `data_global` + `data_<structure>` (or `data_I` if no name is set).
@@ -476,30 +476,42 @@ for refinement metadata, leaving no ambiguity about block roles.
   multi-phase).** GSAS-II-style block split, with the global metadata
   block named `data_global` per the invariant above:
   - `data_global` (audit, software, and chemistry metadata per §2.3a),
-  - `data_<project>_overall` (refinement-level metadata — Rietveld
-    R-factors, profile/background function descriptors, parameter
-    counts),
-  - `data_<project>_phase_N` (one per phase — structural data per
+  - `data_overall` (refinement-level metadata — Rietveld R-factors,
+    profile/background function descriptors, parameter counts),
+  - `data_<structure-name>` (one per phase — structural data per
     `_pd_phase_block.id`),
-  - `data_<project>_pwd_N` (one per diffraction pattern — measurement
-    metadata, profile data loop, reflections loop).
+  - `data_<experiment-name>` (one per diffraction pattern —
+    measurement metadata, profile data loop, reflections loop).
 
   This deviates from the `data_<project>_publ` GSAS-II convention seen
   in `hb8206.cif`; the deviation buys a uniform rule across
   single-crystal and powder exports and matches the single-crystal
   corpus (`bal5004`, etc.) which uses `data_global` universally.
+  `data_overall` is deliberately unprefixed because the generated report
+  CIF is already scoped to one project. `global` means file/report
+  metadata; `overall` means combined refinement summary. Phase and
+  diffractogram blocks use the existing structure and experiment names
+  after CIF block-code normalization; if two normalized names collide,
+  append a short numeric suffix to preserve uniqueness.
 
 - **Multi-experiment joint Rietveld.** Same shape as the
-  single-experiment Rietveld block split above, with additional `_pwd_N`
-  blocks per pattern, all cross-referenced via
-  `_pd_block_diffractogram_id` and `_pd_block_id` pipe-delimited
-  identifiers (e.g. `2025-12-06T14:46|binimetinib_3|noname|PubInfo`,
-  format mirrored from `hb8206.cif`).
+  single-experiment Rietveld block split above, with one
+  `data_<experiment-name>` block per pattern, all cross-referenced via
+  `_pd_block_diffractogram_id` and `_pd_block_id`.
+
+  `_pd_block_id` identifies phase/model blocks; in this report that is
+  the `data_<structure-name>` block ID. `_pd_block_diffractogram_id`
+  identifies diffractogram/pattern blocks; in this report that is the
+  `data_<experiment-name>` block ID. For single references, emit the
+  scalar block ID directly (for example `_pd_block_id lbco`, not
+  `_pd_block_id |lbco|`). If multiple phases/patterns are needed, use a
+  proper loop or move toward the newer pdCIF replacement fields, not
+  encode lists in one scalar with pipes.
 
 - **Sequential fit.** One file per step is **not** the IUCr convention;
-  sequential refinements emit one `data_<project>_pwd_N` block per step
-  inside the same `reports/<project>.cif`. Natural sequential ordering
-  matches the multi-pattern Rietveld pattern above.
+  sequential refinements emit one `data_<experiment-name>` block per
+  step inside the same `reports/<project>.cif`. Natural sequential
+  ordering matches the multi-pattern Rietveld pattern above.
 
 #### 2.3a `data_global` block content
 
@@ -569,8 +581,8 @@ identification triple above.
 
 #### 2.3b Structure-block content (per-block)
 
-For each `data_<structure>` (single-crystal) or `data_<project>_phase_N`
-(powder Rietveld) block:
+For each `data_<structure>` (single-crystal) or
+`data_<structure-name>` (powder Rietveld phase) block:
 
 - `_chemical_formula.{moiety, sum, weight, IUPAC}` summary.
 - `_cell.*` (`length_a`, `angle_alpha`, `volume`,
@@ -652,7 +664,7 @@ For TOF experiments, the `_pd_meas.2theta_scan` column is replaced by
 `_pd_meas.time_of_flight`. Verified against `bal5001.cif` (content set;
 tag form follows `cif_pow.dic`).
 
-#### 2.3f `data_<project>_overall` block (Rietveld only)
+#### 2.3f `data_overall` block (Rietveld only)
 
 For powder Rietveld files, an `_overall` block carries refinement-level
 metadata that applies across all phases and patterns:
@@ -666,10 +678,13 @@ metadata that applies across all phases and patterns:
   is applied).
 - `_refine_ls.number_parameters`, `_refine_ls.number_restraints`,
   `_refine_ls.number_constraints`.
-- `_pd_block_id` pipe-delimited cross-reference values pointing to the
-  phase and pattern blocks.
+- `_pd_block_id` references to phase/model blocks and
+  `_pd_block_diffractogram_id` references to diffractogram/pattern
+  blocks. Single references are plain scalar IDs. Multiple
+  phases/patterns should use a proper loop or newer pdCIF replacement
+  fields, not pipe-delimited scalar lists.
 
-#### 2.3g `data_<project>_pwd_N` block (Rietveld only — constant wavelength)
+#### 2.3g `data_<experiment-name>` block (Rietveld only — constant wavelength)
 
 For each constant-wavelength (CWL) diffraction pattern:
 
@@ -686,7 +701,7 @@ For each constant-wavelength (CWL) diffraction pattern:
 - The `_pd_meas.*` profile-data loop (§2.3e).
 - The `_refln.*` reflections loop (§2.3d).
 
-#### 2.3h `data_<project>_pwd_N` block (Rietveld only — TOF)
+#### 2.3h `data_<experiment-name>` block (Rietveld only — TOF)
 
 For time-of-flight (TOF) diffraction patterns the block has the same
 shape as §2.3g, with three TOF-specific substitutions — **all defined in
