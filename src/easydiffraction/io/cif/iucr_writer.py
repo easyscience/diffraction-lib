@@ -85,9 +85,10 @@ def iucr_report_path(
 
 def _render_iucr_cif(project: object) -> str:
     """Render all IUCr CIF blocks for *project*."""
+    used_block_names = {'global'}
     blocks = [_write_global_block(project)]
-    blocks.extend(_write_sc_blocks(project))
-    blocks.extend(_write_rietveld_blocks(project))
+    blocks.extend(_write_sc_blocks(project, used_block_names))
+    blocks.extend(_write_rietveld_blocks(project, used_block_names))
     return f'\n\n{_BLOCK_SEPARATOR}\n'.join(blocks) + '\n'
 
 
@@ -145,12 +146,16 @@ def _write_chemical_formula_section(
     _write_item(lines, '_chemical_formula.IUPAC', formula.iupac)
 
 
-def _write_sc_blocks(project: object) -> list[str]:
+def _write_sc_blocks(project: object, used_block_names: set[str]) -> list[str]:
     """Render single-crystal structure/experiment blocks."""
     blocks: list[str] = []
     for experiment in _single_crystal_experiments(project):
         structure = _linked_structure(project, experiment)
-        blocks.append(_write_sc_block(project, structure, experiment))
+        block_name = _unique_block_name(
+            getattr(structure, 'name', None) or 'I',
+            used_block_names,
+        )
+        blocks.append(_write_sc_block(project, structure, experiment, block_name))
     return blocks
 
 
@@ -158,9 +163,9 @@ def _write_sc_block(
     project: object,
     structure: object,
     experiment: object,
+    block_name: str,
 ) -> str:
     """Render one single-crystal data block."""
-    block_name = _block_name(getattr(structure, 'name', None) or 'I')
     lines = [f'data_{block_name}']
     _write_chemical_formula_section(lines, _structure_formula_values(structure))
     _write_cell_section(lines, structure)
@@ -386,17 +391,17 @@ def _write_sc_project_extensions(lines: list[str], experiment: object) -> None:
         _write_item(lines, tag, value)
 
 
-def _write_rietveld_blocks(project: object) -> list[str]:
+def _write_rietveld_blocks(project: object, used_block_names: set[str]) -> list[str]:
     """Render powder Rietveld overall, phase, and pattern blocks."""
     experiments = _powder_rietveld_experiments(project)
     if not experiments:
         return []
 
-    used_block_names = {'global', 'overall'}
+    overall_block_name = _unique_block_name('overall', used_block_names)
     phases = _powder_phases(project, experiments, used_block_names)
     patterns = _powder_patterns(experiments, used_block_names)
     return [
-        _write_rietveld_overall_block(project, phases, patterns),
+        _write_rietveld_overall_block(project, phases, patterns, overall_block_name),
         *[_write_powder_phase_block(phase) for phase in phases],
         *[_write_powder_pattern_block(project, pattern, phases) for pattern in patterns],
     ]
@@ -406,9 +411,10 @@ def _write_rietveld_overall_block(
     project: object,
     phases: list[_PowderPhase],
     patterns: list[_PowderPattern],
+    block_name: str,
 ) -> str:
     """Render the powder Rietveld overall block."""
-    lines = ['data_overall']
+    lines = [f'data_{block_name}']
     fit_result = _fit_result(project)
 
     _section(lines, 'Rietveld overall')

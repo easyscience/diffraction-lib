@@ -371,6 +371,32 @@ def test_write_iucr_cif_keeps_powder_block_names_unique(tmp_path):
     assert 'data_overall_3' in text
 
 
+def test_write_iucr_cif_keeps_mixed_topology_block_names_unique(tmp_path):
+    from easydiffraction.io.cif.iucr_writer import write_iucr_cif
+
+    project = _project(
+        'mixed',
+        tmp_path,
+        _collection(_structure(name='phase1')),
+        _collection(
+            _single_crystal_experiment('sc'),
+            _powder_experiment('cwl'),
+        ),
+    )
+
+    text = write_iucr_cif(project).read_text(encoding='utf-8')
+
+    block_names = [
+        line.removeprefix('data_')
+        for line in text.splitlines()
+        if line.startswith('data_')
+    ]
+    assert len(block_names) == len(set(block_names))
+    assert 'phase1' in block_names
+    assert 'phase1_2' in block_names
+    assert '_pd_block_id                           phase1_2' in text
+
+
 def test_iucr_loop_rows_are_not_padded_to_tag_width():
     from easydiffraction.io.cif.iucr_writer import _write_loop
 
