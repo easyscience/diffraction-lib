@@ -349,6 +349,44 @@ class TestScenePayloadPrimitives:
 
         assert payload['labels'] == [{'anchor': (0.1, 0.2, 0.3), 'text': 'Fe1'}]
 
+    def test_labels_fallback_to_atom_primitives(self):
+        scene = StructureScene(
+            cell_basis=_IDENTITY_BASIS,
+            atoms=(
+                AtomSphere(
+                    centre=(0.0, 0.0, 0.0),
+                    radius=0.5,
+                    colour=(255, 0, 0),
+                    label='Fe',
+                ),
+            ),
+            occupancy_spheres=(
+                OccupancyWedgeSphere(
+                    centre=(0.5, 0.5, 0.5),
+                    radius=0.4,
+                    wedges=(OccupancyWedge(fraction=1.0, colour=(0, 0, 255)),),
+                    label='La/Ba',
+                ),
+            ),
+            ellipsoids=(
+                AdpEllipsoid(
+                    centre=(0.25, 0.25, 0.25),
+                    semi_axes=(0.3, 0.2, 0.1),
+                    orientation=((1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0)),
+                    colour=(0, 255, 0),
+                    label='O',
+                ),
+            ),
+        )
+
+        payload = MUT._scene_payload(scene)
+
+        assert payload['labels'] == [
+            {'anchor': (0.0, 0.0, 0.0), 'text': 'Fe'},
+            {'anchor': (0.5, 0.5, 0.5), 'text': 'La/Ba'},
+            {'anchor': (0.25, 0.25, 0.25), 'text': 'O'},
+        ]
+
     def test_legend_exposes_symbol_and_colour(self):
         payload = MUT._scene_payload(_rich_scene())
 
@@ -481,6 +519,8 @@ class TestRenderHtmlDocument:
             dark=True,
         )
         assert 'dark' in html
+        assert '--cv-panel-bg: rgba(37, 37, 43, 0.95);' in html
+        assert "stroke='%23ebebeb'" in html
 
     def test_offline_embeds_inlined_module(self, patched_theme):
         html = ThreeJsStructureRenderer().render(

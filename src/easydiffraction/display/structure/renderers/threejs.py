@@ -123,7 +123,7 @@ def _scene_payload(scene: StructureScene) -> dict:
         ],
         'cellEdges': edges,
         'axes': axes,
-        'labels': [{'anchor': label.anchor, 'text': label.text} for label in scene.labels],
+        'labels': _label_payload(scene),
         'legend': [{'symbol': entry.symbol, 'colour': entry.colour} for entry in scene.legend],
         'palettes': {
             scheme.value: {
@@ -132,6 +132,20 @@ def _scene_payload(scene: StructureScene) -> dict:
             for scheme in ColorSchemeEnum
         },
     }
+
+
+def _label_payload(scene: StructureScene) -> list[dict[str, object]]:
+    """Return explicit labels, or atom labels for runtime toggling."""
+    if scene.labels:
+        return [{'anchor': label.anchor, 'text': label.text} for label in scene.labels]
+    labels = [{'anchor': atom.centre, 'text': atom.label} for atom in scene.atoms]
+    labels.extend(
+        {'anchor': sphere.centre, 'text': sphere.label} for sphere in scene.occupancy_spheres
+    )
+    labels.extend(
+        {'anchor': ellipsoid.centre, 'text': ellipsoid.label} for ellipsoid in scene.ellipsoids
+    )
+    return labels
 
 
 def _rgb_css(rgb: tuple[int, int, int]) -> str:

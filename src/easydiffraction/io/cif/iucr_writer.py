@@ -136,7 +136,7 @@ def _render_iucr_cif(project: object) -> str:
     blocks = [_write_global_block(project)]
     blocks.extend(_write_sc_blocks(project))
     blocks.extend(_write_rietveld_blocks(project))
-    return f'\n{_BLOCK_SEPARATOR}\n'.join(blocks) + '\n'
+    return f'\n\n{_BLOCK_SEPARATOR}\n'.join(blocks) + '\n'
 
 
 def _write_global_block(project: object) -> str:

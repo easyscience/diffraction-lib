@@ -531,7 +531,8 @@ class ProjectDisplay:
 
             pathlib.Path(path).write_text(output, encoding='utf-8')
             return
-        console.paragraph(f"Structure 🧩 '{struct_name}'")
+        atom_view = self._project.structure_style.atom_view.value
+        console.paragraph(f"Structure 🧩 '{struct_name}' (Atom view type: '{atom_view}')")
         self._emit_structure_output(output)
 
     def show_structure_options(self, struct_name: str) -> None:
