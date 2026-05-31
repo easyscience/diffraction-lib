@@ -333,8 +333,8 @@ def build_scene(structure, *, style, view_range, features) -> StructureScene:
         A structure datablock with ``cell``, ``atom_sites``,
         ``atom_site_aniso``, ``space_group`` and ``geom`` categories.
     style : object
-        The ``project.style`` category (atom shape, radius model, colour
-        scheme, ADP probability).
+        The ``project.structure_style`` category (atom view, colour
+        scheme, ADP probability, atom scale).
     view_range : tuple
         Per-axis ``((min, max), (min, max), (min, max))`` fractional range.
     features : frozenset[str]
@@ -397,7 +397,7 @@ def structure_feature_availability(structure, *, style) -> FeatureAvailability:
     structure : object
         A structure datablock.
     style : object
-        The ``project.style`` category (its radius model drives the
+        The ``project.structure_style`` category (its atom view drives the
         covalent-substitution report).
 
     Returns

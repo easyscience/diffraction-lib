@@ -207,14 +207,14 @@ def _structure_figure_html_context(
     )
 
     renderer = ThreeJsStructureRenderer()
-    window = project.rendering_structure.view_range()
+    window = project.structure_view.view_range()
     rendered: dict[str, str] = {}
     for structure in project.structures.values():
-        availability = structure_feature_availability(structure, style=project.style)
+        availability = structure_feature_availability(structure, style=project.structure_style)
         features = project.display._resolve_structure_features('auto', availability)
         scene = build_scene(
             structure,
-            style=project.style,
+            style=project.structure_style,
             view_range=window,
             features=features,
         )

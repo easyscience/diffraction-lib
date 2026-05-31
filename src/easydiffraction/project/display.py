@@ -507,12 +507,12 @@ class ProjectDisplay:
         )
 
         structure = self._project.structures[struct_name]
-        availability = structure_feature_availability(structure, style=self._project.style)
+        availability = structure_feature_availability(structure, style=self._project.structure_style)
         features = self._resolve_structure_features(include, availability)
-        window = range if range is not None else self._project.rendering_structure.view_range()
+        window = range if range is not None else self._project.structure_view.view_range()
         scene = build_scene(
             structure,
-            style=self._project.style,
+            style=self._project.structure_style,
             view_range=window,
             features=features,
         )
@@ -532,7 +532,7 @@ class ProjectDisplay:
         )
 
         structure = self._project.structures[struct_name]
-        availability = structure_feature_availability(structure, style=self._project.style)
+        availability = structure_feature_availability(structure, style=self._project.structure_style)
         supported = self._project.rendering_structure.viewer.supported_features()
         auto = self._resolve_structure_features('auto', availability)
 
@@ -566,7 +566,7 @@ class ProjectDisplay:
         normalized = self._normalize_structure_include(include)
         if normalized != ('auto',):
             return frozenset(normalized)
-        view = self._project.rendering_structure
+        view = self._project.structure_view
         resolved = {f for f in ('atoms', 'bonds', 'cell', 'axes') if f in availability.available}
         if 'labels' in availability.available and view.show_labels.value:
             resolved.add('labels')

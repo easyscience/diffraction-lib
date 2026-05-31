@@ -241,7 +241,7 @@ API. A short bridge period where old and new surfaces coexist is intentional.
   `atom_view`/`color_scheme` as `EnumDescriptor`, `adp_probability`/`atom_scale`
   as `NumericDescriptor`. The old `style` category / `project.style` stay for
   now. Commit: `Add structure_style appearance category`.
-- [ ] **P1.9 — Repoint consumers to the new categories.** Builder, display
+- [x] **P1.9 — Repoint consumers to the new categories.** Builder, display
   facade, and report renderers read appearance from `project.structure_style`
   and the window/flags from `project.structure_view` (`builder.py`,
   `display.py`, `html_renderer.py`, `tex_renderer.py`). After this commit

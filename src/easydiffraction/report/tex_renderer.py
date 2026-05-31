@@ -456,8 +456,8 @@ def _write_structure_assets(
         return {}
 
     renderer = RasterStructureRenderer()
-    window = project.rendering_structure.view_range()
-    style = project.style
+    window = project.structure_view.view_range()
+    style = project.structure_style
     data_dir = out_dir / 'data'
     data_dir.mkdir(parents=True, exist_ok=True)
 
