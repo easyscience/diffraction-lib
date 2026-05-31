@@ -6,9 +6,7 @@ from __future__ import annotations
 
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.metadata import TypeInfo
-from easydiffraction.core.validation import AttributeSpec
-from easydiffraction.core.validation import MembershipValidator
-from easydiffraction.core.variable import StringDescriptor
+from easydiffraction.core.variable import EnumDescriptor
 from easydiffraction.io.cif.handler import CifHandler
 from easydiffraction.project.categories.verbosity.factory import VerbosityFactory
 from easydiffraction.utils.enums import VerbosityEnum
@@ -28,20 +26,15 @@ class Verbosity(CategoryItem):
     def __init__(self) -> None:
         super().__init__()
 
-        self._fit = StringDescriptor(
+        self._fit = EnumDescriptor(
             name='fit',
+            enum=VerbosityEnum,
             description='Fitting process output verbosity',
-            value_spec=AttributeSpec(
-                default=VerbosityEnum.default().value,
-                validator=MembershipValidator(
-                    allowed=[member.value for member in VerbosityEnum],
-                ),
-            ),
             cif_handler=CifHandler(names=['_verbosity.fit']),
         )
 
     @property
-    def fit(self) -> StringDescriptor:
+    def fit(self) -> EnumDescriptor:
         """Fitting process output verbosity."""
         return self._fit
 
