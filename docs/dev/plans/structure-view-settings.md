@@ -195,7 +195,7 @@ is staged and committed locally before moving on.
 
 **Part A — value-selector discovery convention**
 
-- [ ] **P1.1 — Add `EnumDescriptor`.** Implement in `core/variable.py` with the
+- [x] **P1.1 — Add `EnumDescriptor`.** Implement in `core/variable.py` with the
   `show_supported()` table (reuse `render_table`). Commit:
   `Add EnumDescriptor with show_supported listing`.
 - [ ] **P1.2 — Enum metadata.** Add `.default()`/`.description` to value-selector

@@ -12,6 +12,7 @@ from easydiffraction.core.guard import GuardedBase
 from easydiffraction.core.units_vocabulary import normalize_units_code
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import DataTypes
+from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import TypeValidator
 from easydiffraction.io.cif.serialize import param_from_cif
@@ -19,6 +20,8 @@ from easydiffraction.io.cif.serialize import param_to_cif
 from easydiffraction.utils.logging import log
 
 if TYPE_CHECKING:
+    from enum import StrEnum
+
     from easydiffraction.core.display_handler import DisplayHandler
     from easydiffraction.core.posterior import PosteriorParameterSummary
     from easydiffraction.io.cif.handler import CifHandler
@@ -639,6 +642,85 @@ class StringDescriptor(GenericStringDescriptor):
         super().__init__(**kwargs)
         self._cif_handler = cif_handler
         self._cif_handler.attach(self)
+
+
+# ======================================================================
+
+
+class EnumDescriptor(StringDescriptor):
+    """String descriptor bound to a closed ``(str, Enum)`` value set.
+
+    Derives validation and the default from ``enum`` and exposes
+    ``show_supported()`` listing the members with the active one marked,
+    matching the switchable-category table (value-selector-discovery ADR).
+    """
+
+    def __init__(
+        self,
+        *,
+        name: str,
+        enum: type[StrEnum],
+        cif_handler: CifHandler,
+        description: str | None = None,
+        default: str | None = None,
+        display_handler: DisplayHandler | None = None,
+    ) -> None:
+        """
+        Initialize an enum-backed string descriptor.
+
+        Parameters
+        ----------
+        name : str
+            Local name of the descriptor within its category.
+        enum : type[StrEnum]
+            The ``(str, Enum)`` class whose members are the allowed values.
+        cif_handler : CifHandler
+            Object that tracks CIF identifiers.
+        description : str | None, default=None
+            Optional human-readable description.
+        default : str | None, default=None
+            Default value; falls back to ``enum.default()`` when omitted.
+        display_handler : DisplayHandler | None, default=None
+            Optional labels and units for display contexts.
+        """
+        self._enum = enum
+        resolved_default = enum.default().value if default is None else default
+        value_spec = AttributeSpec(
+            default=resolved_default,
+            validator=MembershipValidator(allowed=[member.value for member in enum]),
+        )
+        super().__init__(
+            name=name,
+            description=description,
+            value_spec=value_spec,
+            cif_handler=cif_handler,
+            display_handler=display_handler,
+        )
+
+    @property
+    def enum(self) -> type[StrEnum]:
+        """Return the ``(str, Enum)`` class backing this selector."""
+        return self._enum
+
+    def show_supported(self) -> None:
+        """List the accepted values, marking the active one."""
+        # Lazy display imports keep core/ free of heavy imports on this
+        # rarely-called path (mirrors help()).
+        from easydiffraction.utils.logging import console  # noqa: PLC0415
+        from easydiffraction.utils.utils import render_table  # noqa: PLC0415
+
+        current = self.value
+        columns_data = [
+            ['*' if member.value == current else '', member.value, member.description()]
+            for member in self._enum
+        ]
+        title = self._name.replace('_', ' ').title()
+        console.paragraph(f'{title} types')
+        render_table(
+            columns_headers=['', 'Value', 'Description'],
+            columns_alignment=['left', 'left', 'left'],
+            columns_data=columns_data,
+        )
 
 
 # ======================================================================
