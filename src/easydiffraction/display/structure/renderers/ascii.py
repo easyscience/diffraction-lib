@@ -51,13 +51,12 @@ class AsciiStructureRenderer(StructureRendererBase):
         """Render a schematic ASCII view and announce 3D-only features."""
         atoms = _collect_atoms(scene)
         basis = np.array(scene.cell_basis, dtype=float)
+        # Match the 3D default orientation (by axis length): longest axis
+        # horizontal, 2nd-longest vertical, shortest the dropped depth axis — so
+        # the ASCII and 3D engines share the up axis and width:height ratio.
         lengths = [float(np.linalg.norm(v)) for v in basis]
-        # Project onto the longest axis (horizontal) and shortest (vertical).
-        # Use the same descending, stable sort as the 3D renderers so all
-        # engines agree on which axis is up when two lengths tie (np.argmin
-        # breaks ties to the first index, the sort to the last).
         order = sorted(range(3), key=lambda i: lengths[i], reverse=True)
-        h_idx, v_idx = order[0], order[2]
+        h_idx, v_idx = order[0], order[1]
         h_vec = basis[h_idx]
         v_vec = basis[v_idx]
         h_hat = h_vec / (np.linalg.norm(h_vec) or 1.0)

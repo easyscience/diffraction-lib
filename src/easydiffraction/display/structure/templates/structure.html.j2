@@ -285,23 +285,22 @@ if (SCENE.axes) {
 }
 if (!fitPoints.length) fitPoints.push(box.min.clone(), box.max.clone());
 
-// Default orientation: longest cell axis horizontal, shortest vertical, the
-// remaining axis into depth, then a small azimuth + elevation for a trimetric
+// Default orientation: longest cell axis horizontal, 2nd-longest vertical, the
+// shortest axis into depth, then a small azimuth + elevation for a trimetric
 // 3D read. Falls back to a fixed angle when the cell axes are absent.
 let viewUp;
 let viewDir;
 if (SCENE.axes && SCENE.axes.arrows.length === 3) {
+  // Default view (by axis length): longest axis horizontal, 2nd-longest up,
+  // shortest into depth, viewed along 0.37·longest + 0.24·middle + 0.90·shortest.
   const sorted = SCENE.axes.arrows.map((a) => vec(a.vector)).sort((p, q) => q.length() - p.length());
   const longest = sorted[0].clone().normalize();
   const middle = sorted[1].clone().normalize();
   const shortest = sorted[2].clone().normalize();
-  viewUp = shortest.clone();
-  // Camera in the +longest +middle +shortest octant: the origin corner sits at
-  // the far back, the longest and middle axes splay toward the viewer, and the
-  // shortest axis points up — the standard trimetric crystallographic view.
-  viewDir = longest.clone().multiplyScalar(0.82)
-    .add(middle.clone().multiplyScalar(0.82))
-    .add(shortest.clone().multiplyScalar(0.55))
+  viewUp = middle.clone();
+  viewDir = longest.clone().multiplyScalar(0.37)
+    .add(middle.clone().multiplyScalar(0.24))
+    .add(shortest.clone().multiplyScalar(0.90))
     .normalize();
 } else {
   viewUp = new THREE.Vector3(0, 1, 0);

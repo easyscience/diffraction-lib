@@ -47,22 +47,20 @@ def _unit(vector: np.ndarray) -> np.ndarray:
 
 
 def _view_basis(scene) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """Return (view_dir, right, up): longest axis horizontal, shortest vertical.
+    """Return (view_dir, right, up) for the default view.
 
-    Mirrors the Three.js default camera: the camera sits in the
-    +longest +middle +shortest octant so the origin corner is at the far back
-    and the longest/middle axes splay toward the viewer with the shortest axis
-    up, giving the standard trimetric view in both the PDF and interactive
-    figures.
+    Mirrors the Three.js default camera (by axis length): the longest axis is
+    horizontal, the 2nd-longest points up, the shortest goes into depth, and the
+    scene is viewed along ``0.37 longest + 0.24 middle + 0.90 shortest`` — so the
+    PDF figure and the interactive view orient identically.
     """
     if scene.axes is not None:
         vectors = [np.asarray(ax.vector, dtype=float) for ax in scene.axes.axes]
-        order = sorted(range(3), key=lambda i: np.linalg.norm(vectors[i]), reverse=True)
-        longest = _unit(vectors[order[0]])
-        middle = _unit(vectors[order[1]])
-        shortest = _unit(vectors[order[2]])
-        view_up = shortest
-        view_dir = _unit(0.82 * longest + 0.82 * middle + 0.55 * shortest)
+        longest, middle, shortest = (
+            _unit(vectors[i]) for i in sorted(range(3), key=lambda i: np.linalg.norm(vectors[i]), reverse=True)
+        )
+        view_up = middle
+        view_dir = _unit(0.37 * longest + 0.24 * middle + 0.90 * shortest)
     else:
         view_up = np.array([0.0, 1.0, 0.0])
         view_dir = _unit(np.array([1.0, 0.8, 1.5]))
