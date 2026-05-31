@@ -387,9 +387,7 @@ def test_write_iucr_cif_keeps_mixed_topology_block_names_unique(tmp_path):
     text = write_iucr_cif(project).read_text(encoding='utf-8')
 
     block_names = [
-        line.removeprefix('data_')
-        for line in text.splitlines()
-        if line.startswith('data_')
+        line.removeprefix('data_') for line in text.splitlines() if line.startswith('data_')
     ]
     assert len(block_names) == len(set(block_names))
     assert 'phase1' in block_names
