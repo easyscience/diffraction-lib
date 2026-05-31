@@ -20,10 +20,10 @@ place.
 
 Two accepted ADRs set up that expectation but only half-deliver it:
 
-- [`enum-backed-closed-values.md`](enum-backed-closed-values.md) requires
-  every finite closed set to be a `(str, Enum)` and names "finite choices
-  are discoverable" as a consequence. It also makes enum members the
-  source of truth for **descriptions**.
+- [`enum-backed-closed-values.md`](enum-backed-closed-values.md)
+  requires every finite closed set to be a `(str, Enum)` and names
+  "finite choices are discoverable" as a consequence. It also makes enum
+  members the source of truth for **descriptions**.
 - [`switchable-category-owned-selectors.md`](switchable-category-owned-selectors.md)
   gives the three category-level selector families from
   [`selector-families.md`](selector-families.md) — backend,
@@ -34,12 +34,12 @@ Two accepted ADRs set up that expectation but only half-deliver it:
   category.show_supported()
   ```
 
-  All three are *category-level* selectors: each has an owner
+  All three are _category-level_ selectors: each has an owner
   `_swap_<name>` hook, the category **is** the single selector, and
   `show_supported()` lives on the category.
 
 But many enumerated choices are **not** category-level selectors. They
-are plain enumerated *fields* inside a category — there is no backend or
+are plain enumerated _fields_ inside a category — there is no backend or
 category to swap, only a value the consumer reads. Examples today:
 
 - `structure_style.atom_view`, `structure_style.color_scheme`
@@ -71,13 +71,13 @@ a discovery surface symmetric with the three category-level families.
 1. **Definition.** A value selector is an enumerated descriptor field
    over a **project-owned, static `(str, Enum)`** closed set (per
    [`enum-backed-closed-values.md`](enum-backed-closed-values.md)) whose
-   assignment sets a value (no class swap, no `_swap_<name>` hook). It is
-   distinct from the three category-level families in
+   assignment sets a value (no class swap, no `_swap_<name>` hook). It
+   is distinct from the three category-level families in
    [`selector-families.md`](selector-families.md), which swap a category
-   instance, rebind a backend, or activate siblings. A field whose allowed
-   set is **dynamic, external, or context-dependent** (validated against a
-   database or another field rather than a closed enum) is **not** a value
-   selector and is out of scope — see Decision 4.
+   instance, rebind a backend, or activate siblings. A field whose
+   allowed set is **dynamic, external, or context-dependent** (validated
+   against a database or another field rather than a closed enum) is
+   **not** a value selector and is out of scope — see Decision 4.
 
 2. **Discovery lives on the descriptor.** A value selector exposes
    `show_supported()` on the descriptor itself, reusing the **same**
@@ -119,16 +119,17 @@ a discovery surface symmetric with the three category-level families.
      they keep their category-level `show_supported()`.
    - **Dynamic / external / context-dependent** membership validators —
      `atom_sites.type_symbol`, `atom_sites.wyckoff_letter`,
-     `space_group.name_h_m`, `space_group.it_coordinate_system_code`, and
-     any field whose allowed values come from a database, another field,
-     or runtime context. These keep their existing `MembershipValidator`
-     and current validation behavior; they do **not** become
-     `EnumDescriptor`s and do **not** gain `show_supported()` under this
-     ADR. A separate dynamic-choice discovery surface is deferred.
+     `space_group.name_h_m`, `space_group.it_coordinate_system_code`,
+     and any field whose allowed values come from a database, another
+     field, or runtime context. These keep their existing
+     `MembershipValidator` and current validation behavior; they do
+     **not** become `EnumDescriptor`s and do **not** gain
+     `show_supported()` under this ADR. A separate dynamic-choice
+     discovery surface is deferred.
 
-   An implementation audit classifies each `MembershipValidator` field as
-   value selector, category-level selector, or dynamic/external before
-   any migration.
+   An implementation audit classifies each `MembershipValidator` field
+   as value selector, category-level selector, or dynamic/external
+   before any migration.
 
 5. **No category-level `show_supported()` on bundle categories.** A
    category that holds several value selectors (e.g. `structure_style`,
@@ -154,24 +155,24 @@ a discovery surface symmetric with the three category-level families.
 - Every finite choice is discoverable at its own selector, finally
   delivering the enum-backed ADR's "discoverable" promise for value
   fields, with one table format shared across all selector shapes.
-- The public surface is uniform: *every* selector answers
+- The public surface is uniform: _every_ selector answers
   `show_supported()`. Category-level selectors answer at
   `category.show_supported()`; value selectors at
   `category.field.show_supported()`. The asymmetry is intentional — a
-  category-level selector *is* the category, whereas a value field is one
-  of several on its category.
+  category-level selector _is_ the category, whereas a value field is
+  one of several on its category.
 - No deeper category tree: `show_supported()` is a method on the
   descriptor the getter already returns, not a nested sub-category.
 - Immutable categories (per
   [`immutable-experiment-type.md`](immutable-experiment-type.md)) still
   expose `show_supported()` as read-only discovery, even where the value
   is creation-time only.
-- This is a project-wide migration of the **enum-backed** value selectors
-  only (the audit pins the exact set; the dynamic/external validators
-  above are excluded and keep their current behavior). Affected enums gain
-  `.default()`/`.description` where missing. The phased rollout — and the
-  matching narrowing of which `atom_sites`/`space_group` fields are touched
-  — is tracked by the
+- This is a project-wide migration of the **enum-backed** value
+  selectors only (the audit pins the exact set; the dynamic/external
+  validators above are excluded and keep their current behavior).
+  Affected enums gain `.default()`/`.description` where missing. The
+  phased rollout — and the matching narrowing of which
+  `atom_sites`/`space_group` fields are touched — is tracked by the
   [`structure-view-settings`](../../plans/structure-view-settings.md)
   implementation plan, which also reorganizes the structure-view
   categories that motivated this ADR.
@@ -184,31 +185,32 @@ a discovery surface symmetric with the three category-level families.
   hook; a colour scheme or atom-view mode swaps nothing. Forcing that
   machinery would either nest a category under a category
   (`structure_style.color_scheme.type` — a deeper tree, which violates
-  the flat-sibling rule) or pollute the top level (`project.color_scheme`).
+  the flat-sibling rule) or pollute the top level
+  (`project.color_scheme`).
 - **Category-level `show_supported()` listing every enumerated field on
   the bundle.** Rejected as the primary surface: ambiguous on a
-  multi-field category and redundant with the per-descriptor method. Kept
-  open only as an optional, clearly-named grouped overview for related
-  axis bundles (Deferred Work).
+  multi-field category and redundant with the per-descriptor method.
+  Kept open only as an optional, clearly-named grouped overview for
+  related axis bundles (Deferred Work).
 - **Rely on `help()`, docstrings, and validation errors.** Rejected:
   `help()` describes the field but does not enumerate accepted values
   with the active one marked, and users should not have to trigger an
   error to learn the options.
-- **Keep `StringDescriptor + MembershipValidator(allowed=[...])` and bolt
-  on `show_supported()` per site.** Rejected: duplicates the
+- **Keep `StringDescriptor + MembershipValidator(allowed=[...])` and
+  bolt on `show_supported()` per site.** Rejected: duplicates the
   enum-to-allowed wiring, is easy to forget, and has no single source of
   truth. `EnumDescriptor` binds the enum once and derives validation,
   default, and discovery together.
 
 ## Deferred Work
 
-- A separate **dynamic-choice descriptor** giving a discovery surface
-  (a `show_supported()`-style listing) to fields whose allowed set is
+- A separate **dynamic-choice descriptor** giving a discovery surface (a
+  `show_supported()`-style listing) to fields whose allowed set is
   dynamic, external, or context-dependent — `atom_sites.type_symbol`,
   `atom_sites.wyckoff_letter`, `space_group.name_h_m`,
-  `space_group.it_coordinate_system_code`, and similar. Out of scope here;
-  these keep their current `MembershipValidator` until such a descriptor
-  exists.
+  `space_group.it_coordinate_system_code`, and similar. Out of scope
+  here; these keep their current `MembershipValidator` until such a
+  descriptor exists.
 - An optional, clearly-named grouped overview for tightly-related axis
   bundles (notably `experiment.experiment_type`'s four axes shown
   together). Not part of the initial rollout.

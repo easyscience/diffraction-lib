@@ -214,6 +214,10 @@
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 default.py
 │   │   │   │   └── 📄 factory.py
+│   │   │   ├── 📁 geom
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 default.py
+│   │   │   │   └── 📄 factory.py
 │   │   │   ├── 📁 space_group
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 default.py
@@ -232,6 +236,26 @@
 │   │   ├── 📄 ascii.py
 │   │   ├── 📄 base.py
 │   │   └── 📄 plotly.py
+│   ├── 📁 structure
+│   │   ├── 📁 assets
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 colors.py
+│   │   │   ├── 📄 elements.py
+│   │   │   └── 📄 radii.py
+│   │   ├── 📁 renderers
+│   │   │   ├── 📁 vendor
+│   │   │   │   └── 📁 threejs
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 ascii.py
+│   │   │   ├── 📄 base.py
+│   │   │   ├── 📄 raster.py
+│   │   │   └── 📄 threejs.py
+│   │   ├── 📁 templates
+│   │   ├── 📄 __init__.py
+│   │   ├── 📄 builder.py
+│   │   ├── 📄 enums.py
+│   │   ├── 📄 scene.py
+│   │   └── 📄 viewing.py
 │   ├── 📁 tablers
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 base.py
@@ -256,10 +280,6 @@
 │   └── 📄 results_sidecar.py
 ├── 📁 project
 │   ├── 📁 categories
-│   │   ├── 📁 chart
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   └── 📄 factory.py
 │   │   ├── 📁 info
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
@@ -269,11 +289,27 @@
 │   │   │   ├── 📄 default.py
 │   │   │   └── 📄 factory.py
 │   │   ├── 📁 rendering
+│   │   ├── 📁 rendering_plot
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   └── 📄 factory.py
+│   │   ├── 📁 rendering_structure
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   └── 📄 factory.py
+│   │   ├── 📁 rendering_table
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   └── 📄 factory.py
 │   │   ├── 📁 report
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
 │   │   │   └── 📄 factory.py
-│   │   ├── 📁 table
+│   │   ├── 📁 structure_style
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   └── 📄 factory.py
+│   │   ├── 📁 structure_view
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
 │   │   │   └── 📄 factory.py

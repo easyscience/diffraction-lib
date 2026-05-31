@@ -254,6 +254,7 @@
 │       ├── 🏷️ class GenericIntegerDescriptor
 │       ├── 🏷️ class GenericParameter
 │       ├── 🏷️ class StringDescriptor
+│       ├── 🏷️ class EnumDescriptor
 │       ├── 🏷️ class BoolDescriptor
 │       ├── 🏷️ class NumericDescriptor
 │       ├── 🏷️ class IntegerDescriptor
@@ -452,6 +453,12 @@
 │   │   │   │   │   └── 🏷️ class Cell
 │   │   │   │   └── 📄 factory.py
 │   │   │   │       └── 🏷️ class CellFactory
+│   │   │   ├── 📁 geom
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 default.py
+│   │   │   │   │   └── 🏷️ class Geom
+│   │   │   │   └── 📄 factory.py
+│   │   │   │       └── 🏷️ class GeomFactory
 │   │   │   ├── 📁 space_group
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 default.py
@@ -482,6 +489,53 @@
 │   │   └── 📄 plotly.py
 │   │       ├── 🏷️ class PowderCompositeRows
 │   │       └── 🏷️ class PlotlyPlotter
+│   ├── 📁 structure
+│   │   ├── 📁 assets
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 colors.py
+│   │   │   ├── 📄 elements.py
+│   │   │   └── 📄 radii.py
+│   │   ├── 📁 renderers
+│   │   │   ├── 📁 vendor
+│   │   │   │   └── 📁 threejs
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 ascii.py
+│   │   │   │   ├── 🏷️ class _Orientation
+│   │   │   │   └── 🏷️ class AsciiStructureRenderer
+│   │   │   ├── 📄 base.py
+│   │   │   │   └── 🏷️ class StructureRendererBase
+│   │   │   ├── 📄 raster.py
+│   │   │   │   ├── 🏷️ class _Canvas
+│   │   │   │   └── 🏷️ class RasterStructureRenderer
+│   │   │   └── 📄 threejs.py
+│   │   │       └── 🏷️ class ThreeJsStructureRenderer
+│   │   ├── 📁 templates
+│   │   ├── 📄 __init__.py
+│   │   ├── 📄 builder.py
+│   │   │   ├── 🏷️ class FeatureAvailability
+│   │   │   ├── 🏷️ class _RenderContext
+│   │   │   └── 🏷️ class _SceneAtom
+│   │   ├── 📄 enums.py
+│   │   │   ├── 🏷️ class ViewerEngineEnum
+│   │   │   ├── 🏷️ class AtomViewEnum
+│   │   │   └── 🏷️ class ColorSchemeEnum
+│   │   ├── 📄 scene.py
+│   │   │   ├── 🏷️ class AtomSphere
+│   │   │   ├── 🏷️ class OccupancyWedge
+│   │   │   ├── 🏷️ class OccupancyWedgeSphere
+│   │   │   ├── 🏷️ class AdpEllipsoid
+│   │   │   ├── 🏷️ class Bond
+│   │   │   ├── 🏷️ class MomentArrow
+│   │   │   ├── 🏷️ class CellEdge
+│   │   │   ├── 🏷️ class CellEdges
+│   │   │   ├── 🏷️ class AxisArrow
+│   │   │   ├── 🏷️ class AxisTriad
+│   │   │   ├── 🏷️ class TextLabel
+│   │   │   ├── 🏷️ class LegendEntry
+│   │   │   └── 🏷️ class StructureScene
+│   │   └── 📄 viewing.py
+│   │       ├── 🏷️ class ViewerFactory
+│   │       └── 🏷️ class Viewer
 │   ├── 📁 tablers
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 base.py
@@ -541,12 +595,6 @@
 │   └── 📄 results_sidecar.py
 ├── 📁 project
 │   ├── 📁 categories
-│   │   ├── 📁 chart
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   │   └── 🏷️ class Chart
-│   │   │   └── 📄 factory.py
-│   │   │       └── 🏷️ class ChartFactory
 │   │   ├── 📁 info
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
@@ -568,18 +616,42 @@
 │   │   │   └── 📄 factory.py
 │   │   │       └── 🏷️ class PublicationFactory
 │   │   ├── 📁 rendering
+│   │   ├── 📁 rendering_plot
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   │   └── 🏷️ class RenderingPlot
+│   │   │   └── 📄 factory.py
+│   │   │       └── 🏷️ class RenderingPlotFactory
+│   │   ├── 📁 rendering_structure
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   │   └── 🏷️ class RenderingStructure
+│   │   │   └── 📄 factory.py
+│   │   │       └── 🏷️ class RenderingStructureFactory
+│   │   ├── 📁 rendering_table
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   │   └── 🏷️ class RenderingTable
+│   │   │   └── 📄 factory.py
+│   │   │       └── 🏷️ class RenderingTableFactory
 │   │   ├── 📁 report
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
 │   │   │   │   └── 🏷️ class Report
 │   │   │   └── 📄 factory.py
 │   │   │       └── 🏷️ class ReportFactory
-│   │   ├── 📁 table
+│   │   ├── 📁 structure_style
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
-│   │   │   │   └── 🏷️ class Table
+│   │   │   │   └── 🏷️ class StructureStyle
 │   │   │   └── 📄 factory.py
-│   │   │       └── 🏷️ class TableFactory
+│   │   │       └── 🏷️ class StructureStyleFactory
+│   │   ├── 📁 structure_view
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   │   └── 🏷️ class StructureView
+│   │   │   └── 📄 factory.py
+│   │   │       └── 🏷️ class StructureViewFactory
 │   │   ├── 📁 verbosity
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py

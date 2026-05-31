@@ -182,11 +182,12 @@ Structure 🧩 'lbco' as cif
 
 ## Viewing a Model in 3D
 
-EasyDiffraction can render a defined structure as an interactive 3D view.
-The renderer engine is chosen through `project.rendering_structure`. The default `auto`
-engine resolves to the interactive Three.js view in Jupyter and the
-terminal-friendly ASCII schematic in a console — mirroring how
-`project.rendering_plot` and `project.rendering_table` pick their environment defaults.
+EasyDiffraction can render a defined structure as an interactive 3D
+view. The renderer engine is chosen through
+`project.rendering_structure`. The default `auto` engine resolves to the
+interactive Three.js view in Jupyter and the terminal-friendly ASCII
+schematic in a console — mirroring how `project.rendering_plot` and
+`project.rendering_table` pick their environment defaults.
 
 ```python
 # List the available renderer engines
@@ -215,8 +216,8 @@ project.structure_style.adp_probability = 0.5  # ADP ellipsoid probability level
 ```
 
 Bonds are generated automatically between atoms whose separation falls
-within the per-structure cutoffs stored on `structure.geom` (the standard
-cif_core `_geom` parameters):
+within the per-structure cutoffs stored on `structure.geom` (the
+standard cif_core `_geom` parameters):
 
 ```python
 # Tune the per-structure bond-generation cutoffs (angstrom)
@@ -242,8 +243,9 @@ project.display.structure(
 ```
 
 The same view is embedded automatically in the generated reports — an
-interactive Three.js view in the HTML report and a static, depth-rendered
-image in the TeX/PDF report (see the [Report](report.md) section).
+interactive Three.js view in the HTML report and a static,
+depth-rendered image in the TeX/PDF report (see the [Report](report.md)
+section).
 
 ## Saving a Model
 

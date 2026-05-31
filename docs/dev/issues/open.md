@@ -1806,16 +1806,17 @@ Jahn–Teller octahedra) or under-prune others, and it is not yet
 user-configurable.
 
 **Fix:** consider a robust, configurable near-neighbour algorithm for
-automatic "reasonable" bonding — e.g. a Voronoi / solid-angle method such
-as pymatgen's `CrystalNN` or `VoronoiNN`, which weights neighbours by
-solid angle instead of a single relative cutoff. The Voronoi route is the
-most robust across arbitrary structures but introduces a heavyweight
-dependency (pymatgen), so it needs a dependency decision; an ASE/Jmol-style
-multiplicative covalent tolerance is lighter but, like the current factor,
-cannot separate shells when ionic-cation covalent radii are large.
+automatic "reasonable" bonding — e.g. a Voronoi / solid-angle method
+such as pymatgen's `CrystalNN` or `VoronoiNN`, which weights neighbours
+by solid angle instead of a single relative cutoff. The Voronoi route is
+the most robust across arbitrary structures but introduces a heavyweight
+dependency (pymatgen), so it needs a dependency decision; an
+ASE/Jmol-style multiplicative covalent tolerance is lighter but, like
+the current factor, cannot separate shells when ionic-cation covalent
+radii are large.
 
-**Depends on:** dependency decision for pymatgen (if the Voronoi route is
-chosen).
+**Depends on:** dependency decision for pymatgen (if the Voronoi route
+is chosen).
 
 ---
 

@@ -109,8 +109,8 @@ Out of scope:
   IUCr export emits the publication-metadata categories per §2.3a with
   `?` placeholders where the project has no source data.
 - imgCIF (`cif_img.dic`); no raw image persistence path exists.
-- Project-level singleton categories `_info.*`, `_rendering_plot.*`, `_rendering_table.*`,
-  `_verbosity.*` — out of scope here; see
+- Project-level singleton categories `_info.*`, `_rendering_plot.*`,
+  `_rendering_table.*`, `_verbosity.*` — out of scope here; see
   `python-cif-category-correspondence`.
 
 ## Design Philosophy: Tiered Default Save + Separate IUCr Export

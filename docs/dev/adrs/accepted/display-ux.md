@@ -43,7 +43,8 @@ defaults.
 
 Use `project.display` as the user-facing facade for display actions.
 Move serialized renderer settings out of that facade and into separate
-project categories named `project.rendering_plot` and `project.rendering_table`.
+project categories named `project.rendering_plot` and
+`project.rendering_table`.
 
 Renderer settings:
 

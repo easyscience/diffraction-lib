@@ -89,9 +89,9 @@ The public API stays flat and user-facing:
 - `project.rendering_table`
 
 Saved `project.cif` remains a section file without a `data_` header. It
-serializes the `_project.*` metadata category plus the `_rendering_plot.*` and
-`_rendering_table.*` configuration categories without pretending that the project
-config is a real datablock.
+serializes the `_project.*` metadata category plus the
+`_rendering_plot.*` and `_rendering_table.*` configuration categories
+without pretending that the project config is a real datablock.
 
 ### 4. CIF serialization is split by responsibility
 

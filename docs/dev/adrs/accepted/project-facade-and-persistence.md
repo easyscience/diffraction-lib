@@ -90,9 +90,10 @@ serialized project-information field. If the path is exposed in Python,
 it must not emit a `_project.path` CIF item.
 
 The project-level singleton categories currently persisted in
-`project.cif` are `_project.*`, `_rendering_plot.*`, `_report.*`, `_rendering_table.*`,
-`_verbosity.*`, `_journal.*`, `_journal_date.*`, `_journal_coeditor.*`,
-`_publ_contact_author.*`, `_publ_body.*`, and the `_publ_author.*` loop.
+`project.cif` are `_project.*`, `_rendering_plot.*`, `_report.*`,
+`_rendering_table.*`, `_verbosity.*`, `_journal.*`, `_journal_date.*`,
+`_journal_coeditor.*`, `_publ_contact_author.*`, `_publ_body.*`, and the
+`_publ_author.*` loop.
 
 ## Consequences
 

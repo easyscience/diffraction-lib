@@ -8,14 +8,14 @@ exceptions to those instructions.
 > **Status (updated).** Phase 1 (code) shipped on this branch — the
 > feature is implemented. **Phase 2 (tests) was never executed**; its
 > unit-test files are discharged by the
-> [`structure-view-settings`](structure-view-settings.md) plan's Phase 2,
-> written once against the final API. Some prose below is kept only as a
-> historical design record and predates two later changes: the
+> [`structure-view-settings`](structure-view-settings.md) plan's Phase
+> 2, written once against the final API. Some prose below is kept only
+> as a historical design record and predates two later changes: the
 > `atom_shape`/`radius_model` → `atom_view` merge (commit `f31996da7`)
-> and the `structure-view-settings` split of `style` / `rendering_structure`
-> into `rendering_structure` (engine) + `structure_view` + `structure_style`.
-> See the crysview ADR and the `structure-view-settings` plan for the
-> current design.
+> and the `structure-view-settings` split of `style` /
+> `rendering_structure` into `rendering_structure` (engine) +
+> `structure_view` + `structure_style`. See the crysview ADR and the
+> `structure-view-settings` plan for the current design.
 
 > **Context for this plan.** This is a **greenfield feature**: there is
 > no prior crysview implementation on the branch. The ADR review cycle
@@ -52,9 +52,10 @@ exceptions to those instructions.
     and
     [`switchable-category-api.md`](../adrs/accepted/switchable-category-api.md)
     — the contract the new switchable `view` category follows
-    (`project.rendering_structure` read-only attribute; `project.rendering_structure.type` writable
-    selector; `project.rendering_structure.show_supported()`; private `_swap_rendering_structure`
-    hook, Family B engine rebind).
+    (`project.rendering_structure` read-only attribute;
+    `project.rendering_structure.type` writable selector;
+    `project.rendering_structure.show_supported()`; private
+    `_swap_rendering_structure` hook, Family B engine rebind).
   - [`selector-families.md`](../adrs/accepted/selector-families.md) —
     `view` is a switchable-category selector (Family B), like `chart` /
     `table`.
@@ -98,11 +99,13 @@ plan-level structural choices confirmed with the author at plan start.
   `threejs` (notebook + standalone HTML), shipping together exactly as
   the `asciichartpy` and `plotly` chart engines do. Qt Quick 3D is
   deferred.
-- **Switchable `rendering_structure` selector** (§2): `project.rendering_structure.type` (`'auto'`
-  default, resolving to `'threejs'` in Jupyter / `'ascii'` in a
-  terminal), CIF `_rendering_structure.type`, following the category-owned selector
-  contract with a private `_swap_rendering_structure` Family B rebind. No `rendering_structure_type`
-  setter, no `show_supported_rendering_structure_types()`.
+- **Switchable `rendering_structure` selector** (§2):
+  `project.rendering_structure.type` (`'auto'` default, resolving to
+  `'threejs'` in Jupyter / `'ascii'` in a terminal), CIF
+  `_rendering_structure.type`, following the category-owned selector
+  contract with a private `_swap_rendering_structure` Family B rebind.
+  No `rendering_structure_type` setter, no
+  `show_supported_rendering_structure_types()`.
 - **`structure()` entry point** (§3):
   `project.display.structure(struct_name=...)` parallel to
   `pattern(expt_name=...)`, with `include=` reusing the pattern
@@ -111,10 +114,11 @@ plan-level structural choices confirmed with the author at plan start.
   mirrors `show_pattern_options()`. Notebook embeds an interactive view
   (IPython HTML repr); a standalone HTML file can be written to a path.
 - **Per-axis fractional range** (§3): six scalar bounds
-  `project.rendering_structure.range_{a,b,c}_{min,max}` (defaults 0 and 1 = full cell,
-  **borders included**), mirroring the six scalar cell parameters;
-  non-integer allowed, validated min < max per axis, persisted; a
-  per-call `range=` tuple on `structure()` overrides for one call.
+  `project.rendering_structure.range_{a,b,c}_{min,max}` (defaults 0 and
+  1 = full cell, **borders included**), mirroring the six scalar cell
+  parameters; non-integer allowed, validated min < max per axis,
+  persisted; a per-call `range=` tuple on `structure()` overrides for
+  one call.
 - **Scene-atom identity rule** (§3): two generated atoms are the same
   scene atom iff same atom-site row **and** fractional coordinates
   coincide within `1e-4` (fractional units); keep one, drop the rest.
@@ -165,11 +169,12 @@ plan-level structural choices confirmed with the author at plan start.
   `html_offline` flag — the same switch that already governs
   Plotly/MathJax.
 - **Visibility precedence** (§8): explicit `include=(...)` tuple wins
-  outright (ignores persisted `_rendering_structure.show_*`); `include='auto'` resolves
-  each feature from data-availability → persisted flag (only
-  `show_labels` off, `show_moments` on-where-data) → built-in default;
-  unsupported options are skipped and announced, never errored; live
-  modebar toggles are runtime-only and never rewrite persisted state.
+  outright (ignores persisted `_rendering_structure.show_*`);
+  `include='auto'` resolves each feature from data-availability →
+  persisted flag (only `show_labels` off, `show_moments` on-where-data)
+  → built-in default; unsupported options are skipped and announced,
+  never errored; live modebar toggles are runtime-only and never rewrite
+  persisted state.
 - **Moments stay gated** (§3, Deferred Work): the scene model carries a
   moment-arrow primitive, but the builder never emits it because the
   structure model has no moment fields today; `show_moments` is inert
@@ -211,20 +216,25 @@ below were verified reachable (HTTP 200).
 - **Exact CIF tag spelling for `style`, `view`, and `geom`** (ADR Open
   Question 1) — **Resolved (final).** Project CIF: `_style.atom_shape`,
   `_style.radius_model`, `_style.color_scheme`,
-  `_style.adp_probability`, and `_rendering_structure.type`, `_rendering_structure.show_labels`,
-  `_rendering_structure.show_moments`, plus the per-axis range as six scalar tags
-  `_rendering_structure.range_a_min` / `_rendering_structure.range_a_max` / `_rendering_structure.range_b_min` /
-  `_rendering_structure.range_b_max` / `_rendering_structure.range_c_min` / `_rendering_structure.range_c_max` (one
-  number each, defaults 0 and 1), mirroring the cell parameters. Structure
-  CIF (per-structure): the **standard
-  cif_core** bond cutoffs `_geom.min_bond_distance_cutoff` (default
-  `0.0`) and `_geom.bond_distance_incr` (default `0.25`), plus the
-  per-type bonding radius `_atom_type.radius_bond` when present (P1.11).
-  `_rendering_structure.type` follows the Display-UX ADR (`_rendering_plot.type` /
-  `_rendering_table.type`); `_style.*` and `_rendering_structure.*` are project-internal
-  app/settings tags; the bond cutoffs use the standard `_geom.*`
-  category `cif_core.dic` defines (`_geom.min_bond_distance_cutoff` dic
-  13084, `_geom.bond_distance_incr` dic 13044), while the computed
+  `_style.adp_probability`, and `_rendering_structure.type`,
+  `_rendering_structure.show_labels`,
+  `_rendering_structure.show_moments`, plus the per-axis range as six
+  scalar tags `_rendering_structure.range_a_min` /
+  `_rendering_structure.range_a_max` /
+  `_rendering_structure.range_b_min` /
+  `_rendering_structure.range_b_max` /
+  `_rendering_structure.range_c_min` /
+  `_rendering_structure.range_c_max` (one number each, defaults 0 and
+  1), mirroring the cell parameters. Structure CIF (per-structure): the
+  **standard cif_core** bond cutoffs `_geom.min_bond_distance_cutoff`
+  (default `0.0`) and `_geom.bond_distance_incr` (default `0.25`), plus
+  the per-type bonding radius `_atom_type.radius_bond` when present
+  (P1.11). `_rendering_structure.type` follows the Display-UX ADR
+  (`_rendering_plot.type` / `_rendering_table.type`); `_style.*` and
+  `_rendering_structure.*` are project-internal app/settings tags; the
+  bond cutoffs use the standard `_geom.*` category `cif_core.dic`
+  defines (`_geom.min_bond_distance_cutoff` dic 13084,
+  `_geom.bond_distance_incr` dic 13044), while the computed
   `_geom_bond.*` / `_geom_angle.*` loops are a separate, deferred
   concern. No further confirmation needed during implementation.
 - **ASCII rendering details** (ADR Open Question 2) — **Resolved (final
@@ -360,15 +370,16 @@ below were verified reachable (HTTP 200).
 **Project wiring + persistence:**
 
 - `src/easydiffraction/project/project.py` (existing — add `view` /
-  `style` read-only properties and the private `_swap_rendering_structure` hook,
-  mirroring `_swap_rendering_plot` at `project.py:238`).
+  `style` read-only properties and the private
+  `_swap_rendering_structure` hook, mirroring `_swap_rendering_plot` at
+  `project.py:238`).
 - `src/easydiffraction/project/project_config.py` (existing — import +
-  instantiate `RenderingStructureFactory` / `StyleFactory` defaults, mirroring the
-  chart/table wiring at `project_config.py:36`).
+  instantiate `RenderingStructureFactory` / `StyleFactory` defaults,
+  mirroring the chart/table wiring at `project_config.py:36`).
 - The CIF read-side hook that restores chart/table (in
   `project_config.py` / the project-config CIF deserializer) — extend to
-  restore `_rendering_structure.*` / `_style.*` (mirrors the chart `from_cif` at
-  `project/categories/rendering_plot/default.py:94`).
+  restore `_rendering_structure.*` / `_style.*` (mirrors the chart
+  `from_cif` at `project/categories/rendering_plot/default.py:94`).
 
 **Display facade:**
 
@@ -416,8 +427,8 @@ P1.16):**
   `pixi run notebook-prepare`).
 - `docs/docs/tutorials/*.ipynb` (regenerated artefacts).
 - `docs/docs/user-guide/` and `docs/docs/api-reference/` (existing — add
-  `project.display.structure()`, `project.rendering_structure`, `project.style`
-  reference + a short user-guide section).
+  `project.display.structure()`, `project.rendering_structure`,
+  `project.style` reference + a short user-guide section).
 
 ## Commit discipline
 
@@ -444,12 +455,13 @@ reach end-to-end (P1.1–P1.12) before any Three.js work (P1.13–P1.15).
     ADR, each with a `default()` classmethod (model on
     `PlotterEngineEnum` at `display/plotting.py:50`):
     - `ViewerEngineEnum`: `ASCII = 'ascii'`, `THREEJS = 'threejs'`, with
-      an **environment-aware `default()`** (`threejs` in Jupyter, `ascii`
-      in a terminal), matching `PlotterEngineEnum` / `TableEngineEnum`.
-      The `view` category adds an `'auto'` selector sentinel resolved
-      through `default()`, so `project.rendering_structure.type` defaults to `auto` and
-      the ADR §8 persisted example is `_rendering_structure.type auto`; see P1.9 and the
-      headless note there.
+      an **environment-aware `default()`** (`threejs` in Jupyter,
+      `ascii` in a terminal), matching `PlotterEngineEnum` /
+      `TableEngineEnum`. The `view` category adds an `'auto'` selector
+      sentinel resolved through `default()`, so
+      `project.rendering_structure.type` defaults to `auto` and the ADR
+      §8 persisted example is `_rendering_structure.type auto`; see P1.9
+      and the headless note there.
     - `AtomShapeEnum`: `BALL = 'ball'`, `ORTEP = 'ortep'` (default
       `ORTEP`).
     - `RadiusModelEnum`: `VDW = 'vdw'`, `COVALENT = 'covalent'`,
@@ -687,9 +699,9 @@ reach end-to-end (P1.1–P1.12) before any Three.js work (P1.13–P1.15).
     (`display/plotting.py:5980`) and `TableRendererFactory` /
     `TableRenderer` (`display/tables.py:142`): a `_registry()` of
     `{engine: {'description', 'class'}}`, `descriptions()`, and the
-    active-engine binding the `_swap_rendering_structure` hook rebinds. Add the
-    `@ViewerFactory.register` decorator to `AsciiStructureRenderer` in
-    this step (the factory now exists).
+    active-engine binding the `_swap_rendering_structure` hook rebinds.
+    Add the `@ViewerFactory.register` decorator to
+    `AsciiStructureRenderer` in this step (the factory now exists).
   - **Registration wiring (AGENTS.md §Architecture).**
     `display/structure/__init__.py` explicitly imports the `renderers`
     package (which imports the concrete renderer classes, P1.6) **and**
@@ -737,51 +749,57 @@ reach end-to-end (P1.1–P1.12) before any Three.js work (P1.13–P1.15).
     `src/easydiffraction/project/categories/rendering_structure/__init__.py`,
     `default.py`, `factory.py`.
   - `View(CategoryItem, SwitchableCategoryBase)` modelled on `Chart`
-    (`project/categories/rendering_plot/default.py`): `_category_code='view'`,
-    `_owner_attr_name='view'`, `_swap_method_name='_swap_rendering_structure'`; a
-    `type` `StringDescriptor` with CIF `_rendering_structure.type` validated against
-    `['auto', *ViewerEngineEnum]` + `ViewerFactory.descriptions()` and
-    **defaulting to `'auto'`** (resolved to a concrete engine through
-    `ViewerEngineEnum.default()`, exactly as `Chart` resolves its
-    `'auto'`), matching P1.1; `from_cif` calling `self._parent._swap_rendering_structure`. Plus persisted
-    view-state descriptors: `show_labels` (`BoolDescriptor`, default off),
-    `show_moments` (`BoolDescriptor`, default on-where-data), and the
-    per-axis range as **six scalar `NumericDescriptor`s**
+    (`project/categories/rendering_plot/default.py`):
+    `_category_code='view'`, `_owner_attr_name='view'`,
+    `_swap_method_name='_swap_rendering_structure'`; a `type`
+    `StringDescriptor` with CIF `_rendering_structure.type` validated
+    against `['auto', *ViewerEngineEnum]` +
+    `ViewerFactory.descriptions()` and **defaulting to `'auto'`**
+    (resolved to a concrete engine through `ViewerEngineEnum.default()`,
+    exactly as `Chart` resolves its `'auto'`), matching P1.1; `from_cif`
+    calling `self._parent._swap_rendering_structure`. Plus persisted
+    view-state descriptors: `show_labels` (`BoolDescriptor`, default
+    off), `show_moments` (`BoolDescriptor`, default on-where-data), and
+    the per-axis range as **six scalar `NumericDescriptor`s**
     `range_a_min` / `range_a_max` / `range_b_min` / `range_b_max` /
-    `range_c_min` / `range_c_max` (CIF `_rendering_structure.range_a_min` … , defaults 0
-    and 1, each axis validated `min < max` in the setter), mirroring the
-    six scalar cell parameters; `structure()`'s `range=` tuple arg
-    overrides them per call. `show_supported()` lists engines.
+    `range_c_min` / `range_c_max` (CIF
+    `_rendering_structure.range_a_min` … , defaults 0 and 1, each axis
+    validated `min < max` in the setter), mirroring the six scalar cell
+    parameters; `structure()`'s `range=` tuple arg overrides them per
+    call. `show_supported()` lists engines.
   - **Headless implication of the `auto` default.** In Jupyter (and
     under nbmake `script-tests`, which run a Jupyter kernel) `auto`
     resolves to `threejs`, so `project.display.structure(...)`
     returns/writes an HTML string and needs **no browser** — it runs
     unattended out of the box. In a bare terminal `auto` resolves to the
     `ascii` engine the ADR §2 names; `threejs` can still be forced via
-    `project.rendering_structure.type = 'threejs'`. The P1.16 tutorial and the Phase 2
-    script-test coverage item therefore exercise **both** paths: the
-    `threejs` HTML emission and an explicit `view.type = 'ascii'`
-    terminal render (see the Phase 2 "Integration / script-test
-    coverage" item).
-  - Register `View` in `project/categories/rendering_structure/__init__.py`.
+    `project.rendering_structure.type = 'threejs'`. The P1.16 tutorial
+    and the Phase 2 script-test coverage item therefore exercise
+    **both** paths: the `threejs` HTML emission and an explicit
+    `view.type = 'ascii'` terminal render (see the Phase 2 "Integration
+    / script-test coverage" item).
+  - Register `View` in
+    `project/categories/rendering_structure/__init__.py`.
   - Commit: `Add switchable view category for renderer selection`.
 
-- [x] **P1.10 — Wire `project.rendering_structure` / `project.style` + CIF
-      persistence**
+- [x] **P1.10 — Wire `project.rendering_structure` / `project.style` +
+      CIF persistence**
   - Files: existing `src/easydiffraction/project/project.py`,
     `src/easydiffraction/project/project_config.py` (+ the
     project-config CIF deserializer hook).
-  - Add read-only `rendering_structure` / `style` properties on `Project` (mirror
-    `rendering_plot` / `rendering_table` at `project.py:315`) and the private `_swap_rendering_structure`
-    hook (mirror `_swap_rendering_plot` at `project.py:238`) that rebinds the
+  - Add read-only `rendering_structure` / `style` properties on
+    `Project` (mirror `rendering_plot` / `rendering_table` at
+    `project.py:315`) and the private `_swap_rendering_structure` hook
+    (mirror `_swap_rendering_plot` at `project.py:238`) that rebinds the
     active `Viewer` engine.
   - Instantiate `RenderingStructureFactory` / `StyleFactory` defaults in
     `project_config.py` (mirror `project_config.py:36`) and extend the
-    CIF read side to restore `_rendering_structure.*` / `_style.*` (mirror the chart
-    `from_cif`).
+    CIF read side to restore `_rendering_structure.*` / `_style.*`
+    (mirror the chart `from_cif`).
   - Round-trip check is deferred to the Phase 2 tests; this step only
     wires the surfaces.
-  - Commit: `Wire project.rendering_structure and project.style with CIF persistence`.
+  - Commit:
+    `Wire project.rendering_structure and project.style with CIF persistence`.
 
 - [x] **P1.11 — Add the per-structure `geom` bond-cutoff category**
   - Files: new
@@ -823,15 +841,15 @@ reach end-to-end (P1.1–P1.12) before any Three.js work (P1.13–P1.15).
       `structure_feature_availability(structure, style=project.style)`;
       build the scene via
       `build_scene(structure, style=project.style, view_range=<resolved range>, features=<resolved set>)`
-      (per-call `range` overrides the persisted view range for
-      that call); render with the active `project.rendering_structure` engine.
-      **Signature mirrors `pattern()`**: `structure(...) -> None`,
-      displaying directly as a side effect (notebook: `IPython.display`
-      of the engine's HTML; terminal: print the ASCII view); when `path`
-      is given, also write a standalone, self-contained HTML file
-      (Three.js embedded). (`pattern()` is `-> None` and displays
-      directly — verified in `display.py` — so no open signature
-      decision remains.)
+      (per-call `range` overrides the persisted view range for that
+      call); render with the active `project.rendering_structure`
+      engine. **Signature mirrors `pattern()`**:
+      `structure(...) -> None`, displaying directly as a side effect
+      (notebook: `IPython.display` of the engine's HTML; terminal: print
+      the ASCII view); when `path` is given, also write a standalone,
+      self-contained HTML file (Three.js embedded). (`pattern()` is
+      `-> None` and displays directly — verified in `display.py` — so no
+      open signature decision remains.)
     - `show_structure_options(struct_name)`: mirror
       `show_pattern_options()` — list each `include=` option with engine
       - data support and the reason when unavailable, reading the
@@ -946,9 +964,9 @@ reach end-to-end (P1.1–P1.12) before any Three.js work (P1.13–P1.15).
     `project.display.structure(...)`, `show_structure_options(...)`);
     regenerate notebooks via `pixi run notebook-prepare` and stage the
     `.py` + regenerated `.ipynb` together.
-  - Add `project.display.structure()` / `project.rendering_structure` / `project.style`
-    and the per-structure `structure.geom` bond cutoffs to the API
-    reference and a short user-guide section.
+  - Add `project.display.structure()` / `project.rendering_structure` /
+    `project.style` and the per-structure `structure.geom` bond cutoffs
+    to the API reference and a short user-guide section.
   - Commit: `Document structure view in tutorials and reference`.
 
 - [x] **P1.17 — Reach Phase 1 review gate**
@@ -1041,16 +1059,17 @@ coverage (configured in P1.13).
       setting's accepted values; `_style.*` CIF round-trips. P1.8.
 - [ ] **`tests/unit/easydiffraction/project/categories/rendering_structure/test_rendering_structure.py`**
       (new) — `type` validates against `['auto', *ViewerEngineEnum]` and
-      defaults to `'auto'`; setting
-      `type` calls `_swap_rendering_structure`; a `range_a_max` below `range_a_min` is
-      rejected (per-axis `min < max`); `_rendering_structure.type` / `_rendering_structure.show_*` /
-      `_rendering_structure.range_a_min` … `_rendering_structure.range_c_max` CIF round-trip;
+      defaults to `'auto'`; setting `type` calls
+      `_swap_rendering_structure`; a `range_a_max` below `range_a_min`
+      is rejected (per-axis `min < max`); `_rendering_structure.type` /
+      `_rendering_structure.show_*` / `_rendering_structure.range_a_min`
+      … `_rendering_structure.range_c_max` CIF round-trip;
       `show_supported()` lists engines. P1.9.
 - [ ] **`tests/unit/easydiffraction/project/test_project.py`** (extend)
-      — `project.rendering_structure` / `project.style` are read-only attributes;
-      switching `project.rendering_structure.type` rebinds the active engine; a saved +
-      reloaded project restores `_rendering_structure.*` / `_style.*` identically.
-      P1.10.
+      — `project.rendering_structure` / `project.style` are read-only
+      attributes; switching `project.rendering_structure.type` rebinds
+      the active engine; a saved + reloaded project restores
+      `_rendering_structure.*` / `_style.*` identically. P1.10.
 - [ ] **`tests/unit/easydiffraction/datablocks/structure/categories/geom/test_geom.py`**
       (new — single parent-level test if the package is only
       `default.py`/`factory.py`) — defaults are
@@ -1069,17 +1088,17 @@ coverage (configured in P1.13).
       3D-only, moments gated, ionic→covalent substitution). P1.12.
 - [ ] **`tests/unit/easydiffraction/display/structure/renderers/test_threejs.py`**
       (new) — the renderer emits an HTML string containing the scene
-      JSON and the modebar controls; the emitted `<script
-      type="importmap">` parses to JSON with a top-level **`imports`**
-      key mapping `three` (regression guard: a bare specifier map with no
-      `imports` wrapper silently fails to resolve and renders blank);
-      **offline** mode embeds the
-      Three.js asset text inline (no CDN URL), online mode links it; the
-      standalone write path produces a self-contained file; the resolved
-      dark/light theme drives the canvas/annotation colours (assert the
-      dark vs light background differs when `is_dark()` is
-      monkeypatched), while element colours stay scheme-driven. Assert
-      on emitted markup, not a live browser. P1.14.
+      JSON and the modebar controls; the emitted
+      `<script     type="importmap">` parses to JSON with a top-level
+      **`imports`** key mapping `three` (regression guard: a bare
+      specifier map with no `imports` wrapper silently fails to resolve
+      and renders blank); **offline** mode embeds the Three.js asset
+      text inline (no CDN URL), online mode links it; the standalone
+      write path produces a self-contained file; the resolved dark/light
+      theme drives the canvas/annotation colours (assert the dark vs
+      light background differs when `is_dark()` is monkeypatched), while
+      element colours stay scheme-driven. Assert on emitted markup, not
+      a live browser. P1.14.
 - [ ] **`tests/unit/easydiffraction/report/test_html_renderer.py`**
       (extend) — `html_offline=True` embeds the Three.js assets next to
       / inside the report; `html_offline=False` links them; the
@@ -1092,9 +1111,9 @@ coverage (configured in P1.13).
       `pixi run script-tests` exercises the tutorial that calls
       `project.display.structure(...)` along **both** engine paths: the
       **`auto` default** (which resolves to `threejs` under nbmake's
-      Jupyter kernel) HTML emission (no browser, runs headless in CI) and
-      an explicit `project.rendering_structure.type = 'ascii'` terminal render.
-      Extend a tutorial if not. P1.16.
+      Jupyter kernel) HTML emission (no browser, runs headless in CI)
+      and an explicit `project.rendering_structure.type = 'ascii'`
+      terminal render. Extend a tutorial if not. P1.16.
 
 Use `pixi run test-structure-check` to confirm the unit-test layout
 mirrors the source tree per AGENTS.md §Testing.
@@ -1145,23 +1164,23 @@ ellipsoids — alongside the existing 1D pattern view.
   `project.display.show_structure_options('lbco')` lists what each
   engine and the current structure can show, with reasons when something
   is unavailable.
-- **Choose the engine and the styling, once.** `project.rendering_structure.type`
-  selects `threejs` or `ascii`; `project.style` picks the depiction
-  (`ortep` thermal ellipsoids — the default — or `ball`-and-stick), a
-  standard radius model (covalent by default, or vdw/ionic/atomic), and
-  a colour scheme (Jmol/CPK, VESTA) and ADP probability level — standard
-  models drawn from a built-in element database, not dozens of
-  per-element rows. The view also follows your notebook's dark or light
-  theme automatically. It all persists to `project.cif`, so a reopened
-  project looks the same.
+- **Choose the engine and the styling, once.**
+  `project.rendering_structure.type` selects `threejs` or `ascii`;
+  `project.style` picks the depiction (`ortep` thermal ellipsoids — the
+  default — or `ball`-and-stick), a standard radius model (covalent by
+  default, or vdw/ionic/atomic), and a colour scheme (Jmol/CPK, VESTA)
+  and ADP probability level — standard models drawn from a built-in
+  element database, not dozens of per-element rows. The view also
+  follows your notebook's dark or light theme automatically. It all
+  persists to `project.cif`, so a reopened project looks the same.
 - **Tune which bonds are drawn, per structure.** `structure.geom` sets
   the standard bond cut-offs (a minimum distance and a tolerance added
   to the atoms' bonding radii) for each structure, saved in that
   structure's own file, so different phases can use different cut-offs.
-- **See a single cell, a margin, or several cells.** `project.rendering_structure` sets
-  a per-axis fractional range (default: the
-  full cell with border atoms drawn); widen it for a margin or multiple
-  cells.
+- **See a single cell, a margin, or several cells.**
+  `project.rendering_structure` sets a per-axis fractional range
+  (default: the full cell with border atoms drawn); widen it for a
+  margin or multiple cells.
 - **Works offline.** The notebook and standalone-HTML views embed a
   pinned Three.js so they render with no network, and a structure figure
   can be embedded in the HTML report under the existing
