@@ -152,6 +152,10 @@ def _rgb_css(rgb: tuple[int, int, int]) -> str:
     return f'rgb({rgb[0]}, {rgb[1]}, {rgb[2]})'
 
 
+def _rgba_css(rgb: tuple[int, int, int], alpha: float) -> str:
+    return f'rgba({rgb[0]}, {rgb[1]}, {rgb[2]}, {alpha:g})'
+
+
 class ThreeJsStructureRenderer(StructureRendererBase):
     """
     Interactive Three.js renderer for notebook and standalone HTML.
@@ -212,8 +216,10 @@ class ThreeJsStructureRenderer(StructureRendererBase):
             background=_rgb_css(colours['background']),
             foreground=_rgb_css(colours['foreground']),
             light_background=_rgb_css(light_colours['background']),
+            light_panel_background=_rgba_css(light_colours['background'], 0.5),
             light_foreground=_rgb_css(light_colours['foreground']),
             dark_background=_rgb_css(dark_colours['background']),
+            dark_panel_background=_rgba_css(dark_colours['background'], 0.5),
             dark_foreground=_rgb_css(dark_colours['foreground']),
             theme='dark' if dark else 'light',
         )

@@ -245,6 +245,9 @@ class TestRgbCss:
         assert MUT._rgb_css((0, 0, 0)) == 'rgb(0, 0, 0)'
         assert MUT._rgb_css((255, 255, 255)) == 'rgb(255, 255, 255)'
 
+    def test_formats_triple_and_alpha_as_css_rgba(self):
+        assert MUT._rgba_css((1, 2, 3), 0.5) == 'rgba(1, 2, 3, 0.5)'
+
 
 # ------------------------------------------------------------------
 #  _scene_payload
@@ -519,7 +522,7 @@ class TestRenderHtmlDocument:
             dark=True,
         )
         assert 'dark' in html
-        assert '--cv-panel-bg: rgba(37, 37, 43, 0.95);' in html
+        assert '--cv-panel-bg: rgba(10, 20, 30, 0.5);' in html
         assert "stroke='%23ebebeb'" in html
 
     def test_offline_embeds_inlined_module(self, patched_theme):
@@ -606,7 +609,31 @@ class TestRenderHtmlDocument:
         )
 
         assert 'overflow:hidden;isolation:isolate;z-index:0;' in html
-        assert 'position: absolute; z-index: 2; background: var(--cv-panel-bg);' in html
+        assert 'style="position:absolute;inset:0;z-index:1;"' in html
+        assert 'position: absolute; z-index: 4; background: var(--cv-panel-bg);' in html
+
+    def test_legend_and_hint_overlay_axis_letters(self, patched_theme):
+        html = ThreeJsStructureRenderer().render(
+            _rich_scene(),
+            features=frozenset({'axes'}),
+            offline=True,
+            dark=False,
+        )
+
+        assert '.cv-legend { z-index: 5;' in html
+        assert '.cv-hint {\n    position: absolute; z-index: 5;' in html
+        assert "className = 'cv-axis-letter';" in html
+
+    def test_legend_and_hint_use_half_transparent_background(self, patched_theme):
+        html = ThreeJsStructureRenderer().render(
+            _identity_scene(),
+            features=frozenset(),
+            offline=True,
+            dark=False,
+        )
+
+        assert '--cv-panel-bg: rgba(10, 20, 30, 0.5);' in html
+        assert 'color: var(--cv-panel-fg); background: var(--cv-panel-bg);' in html
 
     def test_perspective_projection_uses_reduced_field_of_view(self, patched_theme):
         html = ThreeJsStructureRenderer().render(

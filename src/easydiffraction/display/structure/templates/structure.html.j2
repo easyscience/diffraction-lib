@@ -2,7 +2,7 @@
      background:var(--cv-scene-bg);color:var(--cv-scene-fg);border:1px solid rgba(128,128,128,0.3);
      border-radius:0;box-sizing:border-box;overflow:hidden;isolation:isolate;z-index:0;
      font-family:system-ui,-apple-system,'Segoe UI',sans-serif;">
-  <div class="cv-canvas" style="position:absolute;inset:0;"></div>
+  <div class="cv-canvas" style="position:absolute;inset:0;z-index:1;"></div>
   <div class="cv-modebar cv-card"></div>
   <div class="cv-download"></div>
   <div class="cv-legend cv-card"></div>
@@ -12,7 +12,7 @@
 
 <style>
   #{{ container_id }} .cv-card {
-    position: absolute; z-index: 2; background: var(--cv-panel-bg);
+    position: absolute; z-index: 4; background: var(--cv-panel-bg);
     border: 1px solid var(--cv-panel-border); border-radius: 0;
     box-shadow: var(--cv-panel-shadow); font-size: 12px; color: var(--cv-panel-fg);
   }
@@ -24,7 +24,7 @@
     --cv-scene-bg: transparent;
     --cv-scene-fg: {{ dark_foreground }};
     --cv-label-shadow-bg: {{ dark_background }};
-    --cv-panel-bg: rgba(37, 37, 43, 0.95);
+    --cv-panel-bg: {{ dark_panel_background }};
     --cv-panel-border: #52545c;
     --cv-panel-fg: var(--cv-scene-fg);
     --cv-panel-shadow: 0 1px 8px rgba(0, 0, 0, 0.38);
@@ -40,7 +40,7 @@
     --cv-scene-bg: transparent;
     --cv-scene-fg: {{ light_foreground }};
     --cv-label-shadow-bg: {{ light_background }};
-    --cv-panel-bg: rgba(255, 255, 255, 0.94);
+    --cv-panel-bg: {{ light_panel_background }};
     --cv-panel-border: #e2e2e2;
     --cv-panel-fg: #222;
     --cv-panel-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
@@ -58,7 +58,7 @@
     background: none; border: none; box-shadow: none;
   }
   #{{ container_id }} .cv-download {
-    position: absolute; z-index: 2; right: 10px; bottom: 8px; display: flex;
+    position: absolute; z-index: 4; right: 10px; bottom: 8px; display: flex;
   }
   #{{ container_id }} .mb-grp { display: flex; gap: 4px; }
   #{{ container_id }} .mb {
@@ -91,13 +91,13 @@
     background-image: var(--cv-select-arrow);
     background-repeat: no-repeat; background-position: right 7px center; background-size: 9px 9px;
   }
-  #{{ container_id }} .cv-legend { top: 10px; left: 10px; padding: 8px 11px; line-height: 1.7; white-space: nowrap; text-align: left; }
+  #{{ container_id }} .cv-legend { z-index: 5; top: 10px; left: 10px; padding: 8px 11px; line-height: 1.7; white-space: nowrap; text-align: left; }
   #{{ container_id }} .cv-legend .sw {
     display: inline-block; width: 11px; height: 11px; border-radius: 50%;
     margin-right: 7px; vertical-align: middle; border: 1px solid rgba(0, 0, 0, 0.18);
   }
   #{{ container_id }} .cv-hint {
-    position: absolute; z-index: 2; bottom: 8px; left: 10px; font-size: 11px;
+    position: absolute; z-index: 5; bottom: 8px; left: 10px; font-size: 11px;
     color: var(--cv-panel-fg); background: var(--cv-panel-bg);
     border: 1px solid var(--cv-panel-border); padding: 5px 9px; border-radius: 0;
     line-height: 1.5; text-align: left; box-shadow: var(--cv-panel-shadow);
