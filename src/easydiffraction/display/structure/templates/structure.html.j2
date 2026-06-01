@@ -133,6 +133,7 @@ const ICONS = {
   atoms: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M11.8 12.2 14 10M12.9 16.1l1.8.4"/><circle cx="9" cy="15" r="4.2" fill="currentColor" stroke="none"/><circle cx="16" cy="8" r="3" fill="currentColor" stroke="none"/><circle cx="17" cy="17" r="2.6" fill="currentColor" stroke="none"/></svg>',
   bonds: '<svg viewBox="0 0 24 24"><line x1="8" y1="16" x2="16" y2="8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><circle cx="6.7" cy="17.3" r="3.1" fill="currentColor"/><circle cx="17.3" cy="6.7" r="3.1" fill="currentColor"/></svg>',
   asymmetricUnit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="9" cy="15" r="4.2" fill="currentColor" stroke="none"/><circle cx="16" cy="8" r="3" opacity=".48"/><circle cx="17" cy="17" r="2.6" opacity=".34"/><path d="M11.8 12.2 14 10M12.9 16.1l1.8.4" opacity=".34"/></svg>',
+  atomsOff: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M11.8 12.2 14 10M12.9 16.1l1.8.4"/><circle cx="9" cy="15" r="4.2"/><circle cx="16" cy="8" r="3"/><circle cx="17" cy="17" r="2.6"/></svg>',
   moments: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V5"/><path d="M7 10l5-6 5 6"/></svg>',
   labels: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="14" rx="2"/><path d="M9 15.5 12 8.5l3 7M10.1 13.2h3.8"/></svg>',
   camera: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z"/><circle cx="12" cy="13" r="3.4"/></svg>',
@@ -512,22 +513,50 @@ homeButton.addEventListener('click', () => {
 const featureGroup = document.createElement('div');
 featureGroup.className = 'mb-grp';
 let hasFeatureToggle = false;
-// Asymmetric-unit toggle: hide symmetry-equivalent copies, keep the reference atoms.
+// Atoms control: one button cycling all atoms -> asymmetric unit only -> no
+// atoms. The asymmetric-unit step is offered only when the scene actually
+// contains symmetry-equivalent copies to hide; otherwise it is a plain
+// show/hide toggle.
 const hasNonAU = SCENE.atoms.some((a) => !a.asymmetric)
   || SCENE.wedgeSpheres.some((s) => !s.asymmetric)
   || SCENE.ellipsoids.some((e) => !e.asymmetric);
-const addAsymmetricUnitToggle = (parent) => {
-  let auOnly = false;
-  const auButton = iconButton(parent, ICONS.asymmetricUnit, 'Asymmetric unit only', 'tog');
-  auButton.addEventListener('click', () => {
-    auOnly = !auOnly;
-    groups.atoms.children.forEach((m) => { m.visible = !auOnly || m.userData.asymmetric; });
-    auButton.classList.toggle('on', auOnly);
+const ATOM_STATES = hasNonAU
+  ? [
+      { key: 'all', icon: ICONS.atoms, on: true },
+      { key: 'asym', icon: ICONS.asymmetricUnit, on: true },
+      { key: 'none', icon: ICONS.atomsOff, on: false },
+    ]
+  : [
+      { key: 'all', icon: ICONS.atoms, on: true },
+      { key: 'none', icon: ICONS.atomsOff, on: false },
+    ];
+const ATOMS_TOOLTIP = hasNonAU
+  ? 'Atoms: all / asymmetric unit / none'
+  : 'Atoms: show / hide';
+const addAtomsControl = (parent) => {
+  let index = groups.atoms.visible ? 0 : ATOM_STATES.length - 1;
+  const start = ATOM_STATES[index];
+  const button = iconButton(parent, start.icon, ATOMS_TOOLTIP, 'tog' + (start.on ? ' on' : ''));
+  button.addEventListener('click', () => {
+    index = (index + 1) % ATOM_STATES.length;
+    const state = ATOM_STATES[index];
+    groups.atoms.visible = state.key !== 'none';
+    groups.atoms.children.forEach((m) => {
+      m.visible = state.key !== 'asym' || !!m.userData.asymmetric;
+    });
+    // CSS2D atom labels ignore ancestor visibility, so match them to the group.
+    groups.atoms.traverse((o) => { if (o.isCSS2DObject) o.visible = groups.atoms.visible; });
+    button.innerHTML = state.icon;
+    button.classList.toggle('on', state.on);
   });
 };
 for (const name of ['atoms', 'labels', 'bonds', 'cell', 'axes', 'moments']) {
   if (!groups[name] || groups[name].children.length === 0) continue;
   hasFeatureToggle = true;
+  if (name === 'atoms') {
+    addAtomsControl(featureGroup);
+    continue;
+  }
   const visible = groups[name].visible;
   const button = iconButton(featureGroup, ICONS[name], name.charAt(0).toUpperCase() + name.slice(1), 'tog' + (visible ? ' on' : ''));
   button.addEventListener('click', () => {
@@ -538,7 +567,6 @@ for (const name of ['atoms', 'labels', 'bonds', 'cell', 'axes', 'moments']) {
     groups[name].traverse((o) => { if (o.isCSS2DObject) o.visible = next; });
     button.classList.toggle('on', next);
   });
-  if (name === 'atoms' && hasNonAU) addAsymmetricUnitToggle(featureGroup);
 }
 if (hasFeatureToggle) {
   modebar.appendChild(featureGroup);
