@@ -196,6 +196,7 @@ def test_show_figure_adds_legend_toggle_script_to_html_output(monkeypatch):
     assert captured.get('show_called') is not True
     assert captured['config']['displayModeBar'] is True
     assert captured['config']['displaylogo'] is False
+    assert captured['config']['responsive'] is True
     assert 'data-jp-theme-light' in captured['post_script']
     assert 'data-md-color-scheme' in captured['post_script']
     assert 'graphDiv.dataset.edPlotlyTheme' in captured['post_script']
@@ -212,6 +213,10 @@ def test_show_figure_adds_legend_toggle_script_to_html_output(monkeypatch):
     assert '--ed-plotly-modebar-icon-color' in captured['post_script']
     assert '--ed-plotly-modebar-icon-hover-opacity' in captured['post_script']
     assert 'window.Plotly.relayout(graphDiv, update)' in captured['post_script']
+    assert 'window.Plotly.Plots.resize(graphDiv)' in captured['post_script']
+    assert "document.addEventListener('visibilitychange'" in captured['post_script']
+    assert "window.addEventListener('focus', scheduleResize);" in captured['post_script']
+    assert 'new ResizeObserver(scheduleResize)' in captured['post_script']
     assert 'data-legend-toggle="true"' in captured['post_script']
     assert 'Toggle legend' in captured['post_script']
     assert 'graphDiv.dataset.legendVisible' in captured['post_script']

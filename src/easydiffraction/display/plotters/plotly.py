@@ -760,6 +760,7 @@ class PlotlyPlotter(PlotterBase):
         return {
             'displayModeBar': True,
             'displaylogo': False,
+            'responsive': True,
             'modeBarButtonsToRemove': [
                 'select2d',
                 'lasso2d',
@@ -1181,10 +1182,63 @@ applyTheme();
             .replace('__LIGHT_LEGEND_BACKGROUND_COLOR__', LIGHT_LEGEND_BACKGROUND_COLOR)
         )
 
+    @staticmethod
+    def _resize_sync_post_script() -> str:
+        """
+        Return client-side code to resize hidden-tab Plotly outputs.
+        """
+        return r"""
+const graphDiv = document.getElementById('{plot_id}');
+if (!graphDiv || !window.Plotly || !window.Plotly.Plots) {
+    return;
+}
+
+let pendingResize = false;
+const resizePlot = function () {
+    if (pendingResize) {
+        return;
+    }
+    pendingResize = true;
+    window.requestAnimationFrame(function () {
+        pendingResize = false;
+        if (!graphDiv.isConnected || graphDiv.offsetParent === null) {
+            return;
+        }
+        window.Plotly.Plots.resize(graphDiv);
+    });
+};
+
+const scheduleResize = function () {
+    resizePlot();
+    window.setTimeout(resizePlot, 50);
+    window.setTimeout(resizePlot, 250);
+};
+
+if (window.ResizeObserver) {
+    const resizeObserver = new ResizeObserver(scheduleResize);
+    resizeObserver.observe(graphDiv);
+    if (graphDiv.parentElement) {
+        resizeObserver.observe(graphDiv.parentElement);
+    }
+}
+
+document.addEventListener('visibilitychange', function () {
+    if (!document.hidden) {
+        scheduleResize();
+    }
+});
+window.addEventListener('focus', scheduleResize);
+window.addEventListener('pageshow', scheduleResize);
+scheduleResize();
+"""
+
     @classmethod
     def _html_post_script(cls, fig: object) -> str | None:
         """Return concatenated HTML post scripts for a Plotly figure."""
-        scripts: list[str] = [cls._theme_sync_post_script()]
+        scripts: list[str] = [
+            cls._theme_sync_post_script(),
+            cls._resize_sync_post_script(),
+        ]
         if cls._has_visible_legend(fig):
             scripts.append(cls._modebar_legend_toggle_post_script())
         return '\n'.join(cls._scoped_html_post_script(script) for script in scripts)
