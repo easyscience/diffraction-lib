@@ -10,7 +10,7 @@ report CIFs on demand. Amends parts of
 [`analysis-cif-fit-state.md`](analysis-cif-fit-state.md) and
 [`minimizer-input-output-split.md`](minimizer-input-output-split.md);
 runs alongside the
-[`python-cif-category-correspondence.md`](../suggestions/python-cif-category-correspondence.md)
+[`python-cif-category-correspondence.md`](python-cif-category-correspondence.md)
 suggestion (Python-side correspondence).
 
 Grounded in:
@@ -75,7 +75,7 @@ Two earlier ADRs already touch this surface:
 
 - [`loop-category-key-identity.md`](loop-category-key-identity.md) pins
   loop-key naming on COMCIFS conventions.
-- [`python-cif-category-correspondence.md`](../suggestions/python-cif-category-correspondence.md)
+- [`python-cif-category-correspondence.md`](python-cif-category-correspondence.md)
   catalogues Python-vs-CIF category mismatches and chooses which side
   should bend.
 
@@ -103,7 +103,7 @@ Out of scope:
 
 - Python attribute renames. This ADR changes CIF emission only.
   Cross-reference
-  [`python-cif-category-correspondence.md`](../suggestions/python-cif-category-correspondence.md)
+  [`python-cif-category-correspondence.md`](python-cif-category-correspondence.md)
   for Python-side decisions.
 - Adding new CIF categories the project does not currently track
   (`_chemical.*`, `_publ.*`, `_journal.*`) **for the default save**. The

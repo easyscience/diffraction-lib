@@ -52,7 +52,7 @@ Three problems have accumulated since that ADR landed:
    swapped category writes; `_calculation.calculator_type` lives inside
    its category block but the descriptor name awkwardly repeats the noun
    ("calculator") instead of using a uniform `.type` selector.
-   [`python-cif-category-correspondence.md`](../suggestions/python-cif-category-correspondence.md)
+   [`python-cif-category-correspondence.md`](python-cif-category-correspondence.md)
    notes the inconsistency under §"Owner-level switchable selectors" and
    tags it for a future ADR.
 
@@ -663,7 +663,7 @@ binding — this is a Family-B engine-swap mechanism; only the user-facing
 surface and the CIF block name change.
 
 Affected ADRs: this rename adds a small amendment to
-[`python-cif-category-correspondence.md`](../suggestions/python-cif-category-correspondence.md)
+[`python-cif-category-correspondence.md`](python-cif-category-correspondence.md)
 (category and CIF tag both move from `calculation` to `calculator`) and
 to [`selector-families.md`](selector-families.md) (the example row for
 Family B).
@@ -821,7 +821,7 @@ member and exposes `category.type` plus `category.show_supported()`.
   Replace the `analysis.fitting_mode_type` description with
   `analysis.fitting_mode.type` and document the new `FittingMode`
   category (§8b).
-- [`python-cif-category-correspondence.md`](../suggestions/python-cif-category-correspondence.md)
+- [`python-cif-category-correspondence.md`](python-cif-category-correspondence.md)
   — the §"Owner-level switchable selectors" table becomes obsolete;
   remove the "deliberate abstraction" exception. Update every entry to
   the `_<cat>.type` form.

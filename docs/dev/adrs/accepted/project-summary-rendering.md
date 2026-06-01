@@ -76,7 +76,7 @@ Also touches:
   into a hybrid of helper methods plus persisted config; and the
   previously proposed `project.publication` owner is rejected for v1 so
   empty journal metadata stays out of `project.cif` (see §5).
-- [`python-cif-category-correspondence.md`](../suggestions/python-cif-category-correspondence.md)
+- [`python-cif-category-correspondence.md`](python-cif-category-correspondence.md)
   — owns the Python↔CIF correspondence rule for the new
   `project.report.* ↔ _report.*` project-level singleton surface (five
   scalar items, §1.3). The rejected `project.publication.*` surface is
@@ -169,7 +169,7 @@ Out of scope:
 - Pre-existing project-level singleton categories (`_info.*`,
   `_rendering_plot.*`, `_rendering_table.*`, `_verbosity.*`). Covered by
   the in-flight
-  [`python-cif-category-correspondence.md`](../suggestions/python-cif-category-correspondence.md).
+  [`python-cif-category-correspondence.md`](python-cif-category-correspondence.md).
   This ADR **does** add one new project-level singleton category,
   `_report.*`, alongside them (see §1.3 and the ADRs-amended list); that
   surface is not delegated to the correspondence ADR.
@@ -1974,7 +1974,7 @@ every renderer (HTML, PDF, terminal, GUI) simultaneously.
      project-level singleton categories owned by `project.cif`. This ADR
      adds `_report.*` (this ADR §1.3) and explicitly does not add
      `_publ_*`, `_journal_*`, or any `_publication.*` family.
-- [`python-cif-category-correspondence.md`](../suggestions/python-cif-category-correspondence.md)
+- [`python-cif-category-correspondence.md`](python-cif-category-correspondence.md)
   — owns the Python-to-CIF correspondence rule for one new project-level
   singleton surface:
   - `project.report.*` ↔ `_report.*` — five scalar items (four format

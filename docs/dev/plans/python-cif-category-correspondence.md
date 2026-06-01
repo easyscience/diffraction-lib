@@ -10,8 +10,8 @@ Follows [`AGENTS.md`](../../../AGENTS.md). No deliberate exceptions.
 ## ADR
 
 - Primary ADR:
-  [`python-cif-category-correspondence.md`](../adrs/suggestions/python-cif-category-correspondence.md)
-  (Proposed; review cycle closed, ready to promote).
+  [`python-cif-category-correspondence.md`](../adrs/accepted/python-cif-category-correspondence.md)
+  (Accepted).
 - Referenced accepted ADRs:
   - [`project-facade-and-persistence.md`](../adrs/accepted/project-facade-and-persistence.md)
   - [`project-summary-rendering.md`](../adrs/accepted/project-summary-rendering.md)
@@ -42,8 +42,6 @@ None.
 
 ## Concrete Files Likely To Change
 
-- `docs/dev/adrs/suggestions/python-cif-category-correspondence.md`
-  (moved to `accepted/`).
 - `docs/dev/adrs/accepted/python-cif-category-correspondence.md`
   (status and accepted-location link fixes after the move).
 - `docs/dev/adrs/index.md`.
@@ -62,10 +60,9 @@ review gate. Follow the rules in [`AGENTS.md`](../../../AGENTS.md) →
 
 ## Implementation Steps (Phase 1)
 
-- [ ] **P1.1 - Promote the ADR to accepted**
-  - Move
-    `docs/dev/adrs/suggestions/python-cif-category-correspondence.md` to
-    `docs/dev/adrs/accepted/python-cif-category-correspondence.md`.
+- [x] **P1.1 - Promote the ADR to accepted**
+  - Move the ADR from `docs/dev/adrs/suggestions/` to
+    `docs/dev/adrs/accepted/`.
   - Change ADR status from `Proposed` to `Accepted`.
   - Remove the suggestion-only status note.
   - Update `docs/dev/adrs/index.md` to mark the ADR as accepted and
