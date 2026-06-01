@@ -1820,6 +1820,90 @@ is chosen).
 
 ---
 
+## 109. 🟢 Let More Tables Adapt to Terminal Width
+
+**Type:** UX / Display
+
+`list_tutorials` now renders its table at the real terminal width via a
+new optional `width` parameter threaded through the table render path
+(`render_table` → `TableRenderer.render` → backend `render`; Rich
+applies it, the HTML backend ignores it). Every other table and all log
+output still go through the shared Rich console, whose width is floored
+at `ConsoleManager._MIN_CONSOLE_WIDTH = 130` ("to avoid cramped
+layouts"). On a standard ~80-column terminal that floor makes wide
+tables overflow and soft-wrap badly.
+
+**Fix:** decide on a global policy — either have `_detect_width` trust
+the detected terminal width (keeping 130 only as a fallback when
+detection fails), or pass the terminal width into more table call sites
+the way `list_tutorials` now does. A global change affects every table
+(fit results, parameters, ...) and all logs, so weigh it against the
+deliberate minimum-width choice.
+
+**Depends on:** related to issue 62.
+
+---
+
+## 110. 🟢 Render Styled Multi-Line Table Cells in the HTML Backend
+
+**Type:** Display / Notebook parity
+
+`list_tutorials` shows a two-line cell in the terminal — a colored title
+on the first line and a dimmed description on the second — using Rich
+markup and an embedded newline. The Jupyter table backend
+(`PandasTableBackend`) cannot render this: `_strip_rich_markup` only
+matches a single full-cell `[color]text[/color]`, and HTML collapses the
+newline, so the markup would show as literal text. `list_tutorials` is
+therefore gated via `in_jupyter()` to show only the plain title in
+notebooks, which drops the description and the color there.
+
+**Fix:** teach the HTML backend to render the same styling — translate
+embedded newlines to `<br>`, map `[dim]` to reduced opacity, and accept
+multiple/mixed markup tags per cell — then remove the terminal-only gate
+in `list_tutorials` so notebooks also get the styled two-line entry.
+
+**Depends on:** related to issue 62.
+
+---
+
+## 111. 🟢 Add Test Coverage for `list_tutorials` Two-Line Rendering
+
+**Type:** Test coverage
+
+The `list_tutorials` table gained a styled two-line cell (colored title
+plus dimmed description), a terminal-only `in_jupyter()` gate that falls
+back to the plain title, and a new optional `width` parameter on the
+table render path. Existing tests only assert that titles appear in the
+output.
+
+**Fix:** add unit tests for the description line appearing in the
+terminal (non-Jupyter) path, the Jupyter-gated path showing the plain
+title with no literal Rich markup, and the `width` parameter sizing the
+rendered Rich table. Run `pixi run fix` / `check` / `unit-tests` to
+confirm the shared-renderer signature change.
+
+**Depends on:** nothing.
+
+---
+
+## 112. 🟢 Suppress the Redundant Row-Index Column in Tables
+
+**Type:** Display / UX
+
+`TableRenderer._prepare_dataframe` bumps the DataFrame index to 1-based,
+and both the Rich and pandas backends always render it as the first
+column. For tables that already carry an explicit identifier — e.g.
+`list_tutorials`, whose `id` column duplicates that 1-based counter —
+the leading index column is redundant and reads as a duplicate.
+
+**Fix:** add an opt-out (e.g. a `show_index` flag on the render path) so
+callers with their own id column can hide the auto-generated index, or
+only render the index column when no explicit id column is present.
+
+**Depends on:** nothing.
+
+---
+
 ## Summary
 
 | #   | Issue                                             | Severity | Type                         |
@@ -1911,3 +1995,7 @@ is chosen).
 | 106 | Document `FitResultBase.result_kind` default      | 🟢 Low   | Code readability             |
 | 107 | Validate CIF report vs IUCr dictionaries          | 🟡 Med   | Test coverage                |
 | 108 | Smarter automatic bond detection (near-neighbour) | 🟢 Low   | UX / Visualization           |
+| 109 | Let more tables adapt to terminal width           | 🟢 Low   | UX / Display                 |
+| 110 | Styled multi-line table cells in HTML backend     | 🟢 Low   | Display / Notebook parity    |
+| 111 | Test coverage for `list_tutorials` rendering      | 🟢 Low   | Test coverage                |
+| 112 | Suppress redundant row-index column in tables     | 🟢 Low   | Display / UX                 |
