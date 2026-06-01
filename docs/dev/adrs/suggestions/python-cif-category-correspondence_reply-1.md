@@ -26,16 +26,15 @@ adds `project.report`, `project.rendering_structure`,
 `project.publication` plus journal/publication tags as intentionally not
 represented in v1.
 
-Pointer: `## Current Persistence Layout`, `### Project-Level
-Configuration`, and `### Not Represented In V1`.
+Pointer: `## Current Persistence Layout`,
+`### Project-Level Configuration`, and `### Not Represented In V1`.
 
 ## P2 - Refresh the constraint correspondence rows
 
 Verdict: agree.
 
 Action taken: the analysis table now describes the explicit row-key
-model:
-`analysis.constraints[id].id -> _constraint.id` and
+model: `analysis.constraints[id].id -> _constraint.id` and
 `analysis.constraints[id].expression -> _constraint.expression`. The row
 notes that older CIFs may backfill ids from the expression left-hand
 side, and that `lhs_alias` / `rhs_expr` are derived Python helpers.
@@ -48,8 +47,7 @@ Verdict: agree.
 
 Action taken: the structure table now distinguishes canonical write tags
 from read aliases for the affected rows. The default-save rows now use
-`_space_group.name_H-M_alt`,
-`_space_group.IT_coordinate_system_code`,
+`_space_group.name_H-M_alt`, `_space_group.IT_coordinate_system_code`,
 `_atom_site.Wyckoff_symbol`, and `_atom_site.ADP_type`, with legacy
 alternatives described as read-side aliases.
 

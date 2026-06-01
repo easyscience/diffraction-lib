@@ -6,22 +6,22 @@
 
 The decision text says to adopt the strict project-level mapping
 `project.<category>.<field> -> _<category>.<field>` at
-`python-cif-category-correspondence.md:223`, but the next paragraph keeps
-the accepted baseline `project.info.<field> -> _project.<field>` at
-`python-cif-category-correspondence.md:233`. The consequences then still
-discuss `_info.*` migration risk at
+`python-cif-category-correspondence.md:223`, but the next paragraph
+keeps the accepted baseline `project.info.<field> -> _project.<field>`
+at `python-cif-category-correspondence.md:233`. The consequences then
+still discuss `_info.*` migration risk at
 `python-cif-category-correspondence.md:327`. As written, an implementer
 cannot tell whether accepting this ADR should keep `_project.*` or
-supersede it with `_info.*`. Please choose one explicit decision:
-either keep `_project.*` and define strict correspondence as applying
-only to the other project-owned singleton categories, or explicitly
-propose a superseding `_project.*` -> `_info.*` migration with the
-compatibility policy.
+supersede it with `_info.*`. Please choose one explicit decision: either
+keep `_project.*` and define strict correspondence as applying only to
+the other project-owned singleton categories, or explicitly propose a
+superseding `_project.*` -> `_info.*` migration with the compatibility
+policy.
 
 ### P1 - Update the project persistence inventory
 
-The "Current Persistence Layout" table still lists
-`project.publication` and `project.summary` / `summary.cif` at
+The "Current Persistence Layout" table still lists `project.publication`
+and `project.summary` / `summary.cif` at
 `python-cif-category-correspondence.md:61` and
 `python-cif-category-correspondence.md:66`, and the "Not Yet Mapped"
 section repeats `project.summary` at

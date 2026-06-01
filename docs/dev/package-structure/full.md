@@ -568,6 +568,8 @@
 │   │   ├── 🏷️ class TableEngineEnum
 │   │   ├── 🏷️ class TableRenderer
 │   │   └── 🏷️ class TableRendererFactory
+│   ├── 📄 theme.py
+│   │   └── 🏷️ class DisplayThemeColors
 │   └── 📄 utils.py
 │       └── 🏷️ class JupyterScrollManager
 ├── 📁 io
