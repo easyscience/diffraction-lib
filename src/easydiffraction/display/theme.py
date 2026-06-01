@@ -16,7 +16,7 @@ LIGHT_INNER_TICK_GRID_COLOR = '#f2f2f2'
 DARK_INNER_TICK_GRID_COLOR = '#1c1c1c'
 LIGHT_HOVER_BACKGROUND_COLOR = '#ffffff'
 DARK_HOVER_BACKGROUND_COLOR = '#212121'
-# Legend background mirrors the opaque theme base surface at 50% opacity.
+# Legend background mirrors the opaque theme base surface at 50% opacity
 LIGHT_LEGEND_BACKGROUND_COLOR = 'rgba(255, 255, 255, 0.5)'
 DARK_LEGEND_BACKGROUND_COLOR = 'rgba(33, 33, 33, 0.5)'
 TABLE_AXIS_FRAME_CSS_VAR = '--ed-axis-frame-color'

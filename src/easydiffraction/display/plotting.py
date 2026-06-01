@@ -2343,7 +2343,9 @@ class Plotter(RendererBase):
 
     @staticmethod
     def _correlation_cell_size_pixels() -> int:
-        """Return the correlation cell width in pixels (~16 label chars)."""
+        """
+        Return the correlation cell width in pixels (~16 label chars).
+        """
         return round(
             CORRELATION_CELL_LABEL_CHAR_COUNT
             * CORRELATION_LABEL_CHAR_WIDTH_FACTOR
@@ -2383,6 +2385,11 @@ class Plotter(RendererBase):
         subplot_border_shapes: list[dict[str, object]],
     ) -> None:
         """Apply final layout settings to the posterior pair plot."""
+        axis_frame_shape_indexes = [
+            index
+            for index, shape in enumerate(subplot_border_shapes)
+            if shape.get('type') == 'rect'
+        ]
         fig.update_layout(
             autosize=True,
             margin=self._square_matrix_layout_margin(context.annotation_labels),
@@ -2407,6 +2414,10 @@ class Plotter(RendererBase):
                 'y': 0.995,
                 'groupclick': 'togglegroup',
             },
+        )
+        PlotlyPlotter._apply_theme_sync_meta(
+            fig,
+            axis_frame_shape_indexes=axis_frame_shape_indexes,
         )
 
     @staticmethod
@@ -4783,6 +4794,7 @@ class Plotter(RendererBase):
         if label_trace is not None:
             traces.append(label_trace)
         fig = go.Figure(data=traces)
+        shapes = self._correlation_heatmap_grid_shapes(context)
 
         fig.update_layout(
             autosize=True,
@@ -4797,7 +4809,7 @@ class Plotter(RendererBase):
                 x_centers=x_centers,
                 y_centers=y_centers,
             ),
-            shapes=self._correlation_heatmap_grid_shapes(context),
+            shapes=shapes,
             meta=self._square_matrix_layout_meta(
                 n_parameters=context.n_cols,
                 annotation_labels=[*context.row_labels, *context.col_labels],
@@ -4835,6 +4847,11 @@ class Plotter(RendererBase):
             constrain='domain',
             scaleanchor='x',
             scaleratio=1,
+        )
+        PlotlyPlotter._apply_theme_sync_meta(
+            fig,
+            axis_frame_shape_indexes=range(len(shapes)),
+            correlation_heatmap=True,
         )
         return fig
 

@@ -53,6 +53,40 @@ def test_get_layout_sets_title_axis_and_theme_colors(
     assert layout.yaxis.ticklabelstandoff == pp.Y_AXIS_TICK_LABEL_STANDOFF
 
 
+@pytest.mark.parametrize(
+    ('is_dark_mode', 'background_color'),
+    [
+        (False, 'light-background'),
+        (True, 'dark-background'),
+    ],
+)
+def test_correlation_colorscale_uses_theme_background(
+    monkeypatch,
+    is_dark_mode,
+    background_color,
+):
+    import easydiffraction.display.plotters.plotly as pp
+
+    monkeypatch.setattr(
+        pp.PlotlyPlotter,
+        '_is_dark_mode',
+        classmethod(lambda cls: is_dark_mode),
+    )
+    monkeypatch.setattr(
+        pp.PlotlyPlotter,
+        '_background_color',
+        classmethod(lambda cls: background_color),
+    )
+
+    colorscale = pp.PlotlyPlotter._correlation_colorscale()
+
+    assert colorscale == [
+        (0.0, '#d73027'),
+        (0.5, background_color),
+        (1.0, '#4575b4'),
+    ]
+
+
 def test_get_trace_and_plot(monkeypatch):
     import easydiffraction.display.plotters.plotly as pp
 
@@ -212,7 +246,14 @@ def test_show_figure_adds_legend_toggle_script_to_html_output(monkeypatch):
     assert 'ed-plotly-themed-modebar' in captured['post_script']
     assert '--ed-plotly-modebar-icon-color' in captured['post_script']
     assert '--ed-plotly-modebar-icon-hover-opacity' in captured['post_script']
+    assert 'const correlationColorscale = function (colors) {' in captured['post_script']
+    assert 'const themeSync = meta.ed_plotly_theme_sync;' in captured['post_script']
+    assert 'const applyAnnotationTheme = function (update, colors) {' in captured['post_script']
+    assert 'const shapeIndexes = themeSync.axis_frame_shape_indexes;' in captured['post_script']
+    assert 'if (themeSync.correlation_heatmap !== true) {' in captured['post_script']
+    assert 'window.Plotly.restyle(' in captured['post_script']
     assert 'window.Plotly.relayout(graphDiv, update)' in captured['post_script']
+    assert 'Promise.all(pending).then(function () {' in captured['post_script']
     assert 'window.Plotly.Plots.resize(graphDiv)' in captured['post_script']
     assert "document.addEventListener('visibilitychange'" in captured['post_script']
     assert "window.addEventListener('focus', scheduleResize);" in captured['post_script']

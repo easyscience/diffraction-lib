@@ -461,6 +461,10 @@ def test_build_posterior_pairs_plot_hides_diagonal_ticks_and_uses_annotations():
             ],
         )['fixed_aspect_wrapper']['aspect_ratio']
     )
+    theme_sync = figure.layout.meta['ed_plotly_theme_sync']
+    assert theme_sync['axis_frame_shape_indexes'] == [
+        index for index, shape in enumerate(figure.layout.shapes) if shape.type == 'rect'
+    ]
     assert [annotation.text for annotation in figure.layout.annotations] == [
         'Posterior pair plot',
         'length_a',
@@ -2127,6 +2131,9 @@ def test_plot_param_correlations_renders_plotly_heatmap(monkeypatch):
         fig.layout.meta['fixed_aspect_wrapper']['max_width_pixels']
         == correlation_wrapper_meta['max_width_pixels']
     )
+    theme_sync = fig.layout.meta['ed_plotly_theme_sync']
+    assert theme_sync['correlation_heatmap'] is True
+    assert theme_sync['axis_frame_shape_indexes'] == list(range(len(fig.layout.shapes)))
     assert fig.layout.xaxis.showline is False
     assert fig.layout.xaxis.mirror is False
     assert fig.layout.yaxis.showline is False
@@ -2139,6 +2146,9 @@ def test_plot_param_correlations_renders_plotly_heatmap(monkeypatch):
     assert fig.layout.plot_bgcolor is None
     assert len(fig.layout.shapes) == 3
     assert all(shape.type == 'rect' for shape in fig.layout.shapes)
+    assert {shape.line.color for shape in fig.layout.shapes} == {
+        plotly_mod.PlotlyPlotter._axis_frame_color(),
+    }
 
 
 def test_plot_param_correlations_plotly_labels_respect_threshold(monkeypatch):

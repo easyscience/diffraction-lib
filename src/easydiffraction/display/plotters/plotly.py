@@ -108,6 +108,9 @@ PREDICTIVE_DRAW_PLOT_CAP = 50
 PREDICTIVE_DRAW_ARRAY_NDIM = 2
 FIXED_ASPECT_WRAPPER_META_KEY = 'fixed_aspect_wrapper'
 FIXED_ASPECT_WRAPPER_CLASS_NAME = 'ed-fixed-aspect-plotly-wrapper'
+THEME_SYNC_META_KEY = 'ed_plotly_theme_sync'
+THEME_SYNC_AXIS_FRAME_SHAPE_INDEXES_KEY = 'axis_frame_shape_indexes'
+THEME_SYNC_CORRELATION_HEATMAP_KEY = 'correlation_heatmap'
 
 
 def single_crystal_axis_range(
@@ -260,23 +263,25 @@ class PlotlyPlotter(PlotterBase):
         """
         Return a diverging colorscale for correlation heatmaps.
 
-        Dark mode uses black at zero correlation for lower visual
-        prominence. Light mode uses white at zero correlation.
+        The midpoint uses the active plot background so correlations
+        fade from red-like negative values through the host surface to
+        blue-like positive values.
 
         Returns
         -------
         list[tuple[float, str]]
             Plotly-compatible colorscale definition.
         """
-        if cls._is_dark_mode():
-            return [
-                (0.0, '#d73027'),
-                (0.5, '#000000'),
-                (1.0, '#4575b4'),
-            ]
+        return cls._correlation_colorscale_for_background(cls._background_color())
+
+    @staticmethod
+    def _correlation_colorscale_for_background(
+        background_color: str,
+    ) -> list[tuple[float, str]]:
+        """Return the correlation colorscale for a theme background."""
         return [
             (0.0, '#d73027'),
-            (0.5, '#f7f7f7'),
+            (0.5, background_color),
             (1.0, '#4575b4'),
         ]
 
@@ -441,6 +446,11 @@ class PlotlyPlotter(PlotterBase):
         if label_trace is not None:
             traces.append(label_trace)
         fig = self._get_figure(traces, layout)
+        self._apply_theme_sync_meta(
+            fig,
+            axis_frame_shape_indexes=range(len(shapes)),
+            correlation_heatmap=True,
+        )
         fig.update_xaxes(
             side='bottom',
             tickangle=-10,
@@ -1043,6 +1053,29 @@ const themeColors = function (theme) {
     };
 };
 
+const correlationColorscale = function (colors) {
+    return [
+        [0.0, '#d73027'],
+        [0.5, colors.background],
+        [1.0, '#4575b4'],
+    ];
+};
+
+const themeSyncMeta = function () {
+    const meta = (
+        (graphDiv.layout && graphDiv.layout.meta)
+        || (graphDiv._fullLayout && graphDiv._fullLayout.meta)
+    );
+    if (!meta || typeof meta !== 'object') {
+        return {};
+    }
+    const themeSync = meta.__THEME_SYNC_META_KEY__;
+    if (!themeSync || typeof themeSync !== 'object') {
+        return {};
+    }
+    return themeSync;
+};
+
 const axisNames = function () {
     const names = new Set(['xaxis', 'yaxis']);
     [graphDiv.layout, graphDiv._fullLayout].forEach(function (layout) {
@@ -1056,6 +1089,55 @@ const axisNames = function () {
         });
     });
     return names;
+};
+
+const applyAnnotationTheme = function (update, colors) {
+    const annotations = (
+        (graphDiv.layout && graphDiv.layout.annotations)
+        || (graphDiv._fullLayout && graphDiv._fullLayout.annotations)
+        || []
+    );
+    for (let index = 0; index < annotations.length; index += 1) {
+        update['annotations[' + index + '].font.color'] = colors.foreground;
+    }
+};
+
+const applyAxisFrameShapeTheme = function (update, colors, themeSync) {
+    const shapeIndexes = themeSync.__THEME_SYNC_AXIS_FRAME_SHAPE_INDEXES_KEY__;
+    if (!Array.isArray(shapeIndexes)) {
+        return;
+    }
+    shapeIndexes.forEach(function (shapeIndex) {
+        if (!Number.isInteger(shapeIndex) || shapeIndex < 0) {
+            return;
+        }
+        update['shapes[' + shapeIndex + '].line.color'] = colors.axisFrame;
+    });
+};
+
+const correlationHeatmapTraceIndexes = function (themeSync) {
+    if (themeSync.__THEME_SYNC_CORRELATION_HEATMAP_KEY__ !== true) {
+        return [];
+    }
+    const traces = graphDiv.data || [];
+    const indexes = [];
+    traces.forEach(function (trace, index) {
+        if (trace && trace.type === 'heatmap') {
+            indexes.push(index);
+        }
+    });
+    return indexes;
+};
+
+const restyleCorrelationHeatmaps = function (colors, themeSync) {
+    const colorscale = correlationColorscale(colors);
+    return correlationHeatmapTraceIndexes(themeSync).map(function (traceIndex) {
+        return window.Plotly.restyle(
+            graphDiv,
+            {colorscale: [colorscale]},
+            [traceIndex],
+        );
+    });
 };
 
 const installModebarThemeStyle = function () {
@@ -1097,6 +1179,7 @@ const applyModebarTheme = function (theme, colors) {
 const applyTheme = function () {
     const theme = hostTheme();
     const colors = themeColors(theme);
+    const syncMeta = themeSyncMeta();
     applyModebarTheme(theme, colors);
 
     if (graphDiv.dataset.edPlotlyTheme === theme) {
@@ -1124,11 +1207,17 @@ const applyTheme = function () {
         update[axisName + '.title.font.color'] = colors.foreground;
         update[axisName + '.tickfont.color'] = colors.foreground;
     });
+    applyAnnotationTheme(update, colors);
+    applyAxisFrameShapeTheme(update, colors, syncMeta);
 
     try {
         const result = window.Plotly.relayout(graphDiv, update);
-        if (result && typeof result.then === 'function') {
-            result.then(function () {
+        const restyleResults = restyleCorrelationHeatmaps(colors, syncMeta);
+        const pending = [result].concat(restyleResults).filter(function (item) {
+            return item && typeof item.then === 'function';
+        });
+        if (pending.length > 0) {
+            Promise.all(pending).then(function () {
                 window.Plotly.redraw(graphDiv);
             });
         } else {
@@ -1169,6 +1258,15 @@ applyTheme();
 """
         return (
             script
+            .replace('__THEME_SYNC_META_KEY__', THEME_SYNC_META_KEY)
+            .replace(
+                '__THEME_SYNC_AXIS_FRAME_SHAPE_INDEXES_KEY__',
+                THEME_SYNC_AXIS_FRAME_SHAPE_INDEXES_KEY,
+            )
+            .replace(
+                '__THEME_SYNC_CORRELATION_HEATMAP_KEY__',
+                THEME_SYNC_CORRELATION_HEATMAP_KEY,
+            )
             .replace('__DARK_BACKGROUND_COLOR__', DARK_BACKGROUND_COLOR)
             .replace('__DARK_FOREGROUND_COLOR__', DARK_FOREGROUND_COLOR)
             .replace('__DARK_AXIS_FRAME_COLOR__', DARK_AXIS_FRAME_COLOR)
@@ -1270,6 +1368,39 @@ scheduleResize();
         return None
 
     @classmethod
+    def _apply_theme_sync_meta(
+        cls,
+        fig: object,
+        *,
+        axis_frame_shape_indexes: object = (),
+        correlation_heatmap: bool = False,
+    ) -> None:
+        """Store figure-specific live theme-sync metadata."""
+        meta = cls._figure_meta(fig)
+        updated_meta = dict(meta) if isinstance(meta, dict) else {}
+
+        theme_sync = updated_meta.get(THEME_SYNC_META_KEY)
+        updated_theme_sync = dict(theme_sync) if isinstance(theme_sync, dict) else {}
+
+        indexes = [
+            int(index)
+            for index in axis_frame_shape_indexes
+            if isinstance(index, int) and not isinstance(index, bool) and index >= 0
+        ]
+        if indexes:
+            updated_theme_sync[THEME_SYNC_AXIS_FRAME_SHAPE_INDEXES_KEY] = indexes
+        if correlation_heatmap:
+            updated_theme_sync[THEME_SYNC_CORRELATION_HEATMAP_KEY] = True
+
+        if not updated_theme_sync:
+            return
+
+        updated_meta[THEME_SYNC_META_KEY] = updated_theme_sync
+        update_layout = getattr(fig, 'update_layout', None)
+        if callable(update_layout):
+            update_layout(meta=updated_meta)
+
+    @classmethod
     def _fixed_aspect_wrapper_aspect_ratio(cls, fig: object) -> str | None:
         """Return the fixed aspect ratio requested for inline HTML."""
         meta = cls._figure_meta(fig)
@@ -1291,7 +1422,9 @@ scheduleResize();
 
     @classmethod
     def _fixed_aspect_wrapper_max_width(cls, fig: object) -> int | None:
-        """Return the max wrapper width in pixels, if one was requested."""
+        """
+        Return the max wrapper width in pixels, if one was requested.
+        """
         meta = cls._figure_meta(fig)
         if not isinstance(meta, dict):
             return None
