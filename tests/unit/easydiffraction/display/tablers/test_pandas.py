@@ -8,14 +8,18 @@ import pytest
 
 class TestPandasTableBackend:
     def test_build_base_styles(self):
+        from easydiffraction.display.tablers.pandas import PANDAS_AXIS_FRAME_COLOR
         from easydiffraction.display.tablers.pandas import PandasTableBackend
 
         backend = PandasTableBackend()
-        styles = backend._build_base_styles('#aabbcc')
+        styles = backend._build_base_styles(PANDAS_AXIS_FRAME_COLOR)
         assert isinstance(styles, list)
         assert len(styles) > 0
         selectors = [s['selector'] for s in styles]
         assert 'thead' in selectors
+        assert any(
+            PANDAS_AXIS_FRAME_COLOR in value for style in styles for _, value in style['props']
+        )
 
     def test_build_header_alignment_styles(self):
         from easydiffraction.display.tablers.pandas import PandasTableBackend
@@ -35,7 +39,9 @@ class TestPandasTableBackend:
         assert hasattr(styler, 'to_html')
 
     def test_build_renderable_returns_html(self):
+        from easydiffraction.display.tablers.pandas import PANDAS_TABLE_THEME_CLASS
         from easydiffraction.display.tablers.pandas import PandasTableBackend
+        from easydiffraction.display.theme import TABLE_AXIS_FRAME_CSS_VAR
 
         pytest.importorskip('jinja2')
         backend = PandasTableBackend()
@@ -45,3 +51,6 @@ class TestPandasTableBackend:
 
         assert isinstance(html, str)
         assert '<table' in html
+        assert PANDAS_TABLE_THEME_CLASS in html
+        assert TABLE_AXIS_FRAME_CSS_VAR in html
+        assert 'window.__edPandasTableThemeObserverInstalled' in html

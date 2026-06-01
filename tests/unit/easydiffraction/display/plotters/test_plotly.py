@@ -13,16 +13,44 @@ def test_module_import():
     assert expected_module_name == actual_module_name
 
 
-def test_get_layout_sets_title_and_axis_title_font_sizes():
+@pytest.mark.parametrize(
+    'is_dark_mode',
+    [False, True],
+)
+def test_get_layout_sets_title_axis_and_theme_colors(
+    monkeypatch,
+    is_dark_mode,
+):
     import easydiffraction.display.plotters.plotly as pp
+
+    if is_dark_mode:
+        background_color = pp.DARK_BACKGROUND_COLOR
+        axis_color = pp.DARK_AXIS_FRAME_COLOR
+        grid_color = pp.DARK_INNER_TICK_GRID_COLOR
+    else:
+        background_color = pp.LIGHT_BACKGROUND_COLOR
+        axis_color = pp.LIGHT_AXIS_FRAME_COLOR
+        grid_color = pp.LIGHT_INNER_TICK_GRID_COLOR
+
+    monkeypatch.setattr(
+        pp.PlotlyPlotter,
+        '_is_dark_mode',
+        classmethod(lambda cls: is_dark_mode),
+    )
 
     layout = pp.PlotlyPlotter._get_layout('Title', ['x axis', 'y axis'])
 
     assert layout.title.font.size == pp.TITLE_FONT_SIZE
     assert layout.xaxis.title.font.size == pp.AXIS_TITLE_FONT_SIZE
     assert layout.yaxis.title.font.size == pp.AXIS_TITLE_FONT_SIZE
-    assert layout.paper_bgcolor == pp.TRANSPARENT_BACKGROUND_COLOR
-    assert layout.plot_bgcolor == pp.TRANSPARENT_BACKGROUND_COLOR
+    assert layout.paper_bgcolor == background_color
+    assert layout.plot_bgcolor == background_color
+    assert layout.xaxis.linecolor == axis_color
+    assert layout.yaxis.linecolor == axis_color
+    assert layout.xaxis.gridcolor == grid_color
+    assert layout.yaxis.gridcolor == grid_color
+    assert layout.xaxis.ticklabelstandoff == pp.X_AXIS_TICK_LABEL_STANDOFF
+    assert layout.yaxis.ticklabelstandoff == pp.Y_AXIS_TICK_LABEL_STANDOFF
 
 
 def test_get_trace_and_plot(monkeypatch):
@@ -171,8 +199,18 @@ def test_show_figure_adds_legend_toggle_script_to_html_output(monkeypatch):
     assert 'data-jp-theme-light' in captured['post_script']
     assert 'data-md-color-scheme' in captured['post_script']
     assert 'graphDiv.dataset.edPlotlyTheme' in captured['post_script']
-    assert "background: 'rgba(0, 0, 0, 0)'" in captured['post_script']
-    assert "hoverBackground: '#212121'" in captured['post_script']
+    assert f"background: '{pp.DARK_BACKGROUND_COLOR}'" in captured['post_script']
+    assert f"background: '{pp.LIGHT_BACKGROUND_COLOR}'" in captured['post_script']
+    assert f"axisFrame: '{pp.DARK_AXIS_FRAME_COLOR}'" in captured['post_script']
+    assert f"axisFrame: '{pp.LIGHT_AXIS_FRAME_COLOR}'" in captured['post_script']
+    assert f"innerTickGrid: '{pp.DARK_INNER_TICK_GRID_COLOR}'" in captured['post_script']
+    assert f"innerTickGrid: '{pp.LIGHT_INNER_TICK_GRID_COLOR}'" in captured['post_script']
+    assert f"hoverBackground: '{pp.DARK_HOVER_BACKGROUND_COLOR}'" in captured['post_script']
+    assert f"legend: '{pp.DARK_LEGEND_BACKGROUND_COLOR}'" in captured['post_script']
+    assert 'ed-plotly-modebar-theme-style' in captured['post_script']
+    assert 'ed-plotly-themed-modebar' in captured['post_script']
+    assert '--ed-plotly-modebar-icon-color' in captured['post_script']
+    assert '--ed-plotly-modebar-icon-hover-opacity' in captured['post_script']
     assert 'window.Plotly.relayout(graphDiv, update)' in captured['post_script']
     assert 'data-legend-toggle="true"' in captured['post_script']
     assert 'Toggle legend' in captured['post_script']
@@ -509,6 +547,12 @@ def test_plot_powder_meas_vs_calc_creates_synced_three_panel_figure(monkeypatch)
     assert fig.layout.xaxis.matches == 'x'
     assert fig.layout.xaxis2.matches == 'x'
     assert fig.layout.xaxis3.matches == 'x'
+    assert fig.layout.xaxis.ticklabelstandoff == pp.X_AXIS_TICK_LABEL_STANDOFF
+    assert fig.layout.xaxis2.ticklabelstandoff == pp.X_AXIS_TICK_LABEL_STANDOFF
+    assert fig.layout.xaxis3.ticklabelstandoff == pp.X_AXIS_TICK_LABEL_STANDOFF
+    assert fig.layout.yaxis.ticklabelstandoff == pp.Y_AXIS_TICK_LABEL_STANDOFF
+    assert fig.layout.yaxis2.ticklabelstandoff == pp.Y_AXIS_TICK_LABEL_STANDOFF
+    assert fig.layout.yaxis3.ticklabelstandoff == pp.Y_AXIS_TICK_LABEL_STANDOFF
     assert fig.layout.yaxis3.scaleanchor == 'y'
     assert fig.layout.yaxis3.scaleratio == pytest.approx(1.0)
 

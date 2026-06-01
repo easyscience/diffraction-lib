@@ -31,19 +31,21 @@
   function themeColors() {
     if (themeName() === 'dark') {
       return {
-        background: 'rgba(0, 0, 0, 0)',
-        foreground: '#e6e8ee',
-        grid: 'rgba(110, 145, 190, 0.35)',
-        hoverBackground: '#212121',
-        legend: 'rgba(0, 0, 0, 0.5)',
+        background: '#111', // DARK_BACKGROUND_COLOR
+        foreground: '#e6e8ee', // DARK_FOREGROUND_COLOR
+        axisFrame: '#333', // DARK_AXIS_FRAME_COLOR
+        innerTickGrid: '#1e1e1e', // DARK_INNER_TICK_GRID_COLOR
+        hoverBackground: '#212121', // DARK_HOVER_BACKGROUND_COLOR
+        legend: 'rgba(0, 0, 0, 0.5)', // DARK_LEGEND_BACKGROUND_COLOR
       }
     }
     return {
-      background: 'rgba(0, 0, 0, 0)',
-      foreground: '#222222',
-      grid: 'rgba(120, 140, 160, 0.28)',
-      hoverBackground: '#ffffff',
-      legend: 'rgba(255, 255, 255, 0.5)',
+      background: '#fff', // LIGHT_BACKGROUND_COLOR
+      foreground: '#222222', // LIGHT_FOREGROUND_COLOR
+      axisFrame: '#e2e2e2', // LIGHT_AXIS_FRAME_COLOR
+      innerTickGrid: '#f2f2f2', // LIGHT_INNER_TICK_GRID_COLOR
+      hoverBackground: '#ffffff', // LIGHT_HOVER_BACKGROUND_COLOR
+      legend: 'rgba(255, 255, 255, 0.5)', // LIGHT_LEGEND_BACKGROUND_COLOR
     }
   }
 
@@ -60,11 +62,46 @@
     return names
   }
 
+  function installPlotlyModebarThemeStyle() {
+    const styleId = 'ed-plotly-modebar-theme-style'
+    if (document.getElementById(styleId)) return
+
+    const style = document.createElement('style')
+    style.id = styleId
+    style.textContent = [
+      '.plotly-graph-div.ed-plotly-themed-modebar .modebar-btn path {',
+      '  fill: var(--ed-plotly-modebar-icon-color) !important;',
+      '  opacity: var(--ed-plotly-modebar-icon-opacity) !important;',
+      '}',
+      '.plotly-graph-div.ed-plotly-themed-modebar .modebar-btn:hover path,',
+      '.plotly-graph-div.ed-plotly-themed-modebar .modebar-btn.active path {',
+      '  fill: var(--ed-plotly-modebar-icon-color) !important;',
+      '  opacity: var(--ed-plotly-modebar-icon-hover-opacity) !important;',
+      '}',
+    ].join('\n')
+    document.head.appendChild(style)
+  }
+
+  function syncPlotlyModebarTheme(plot, colors) {
+    installPlotlyModebarThemeStyle()
+    plot.classList.add('ed-plotly-themed-modebar')
+    plot.style.setProperty('--ed-plotly-modebar-icon-color', colors.foreground)
+    plot.style.setProperty(
+      '--ed-plotly-modebar-icon-opacity',
+      themeName() === 'dark' ? '0.62' : '0.42',
+    )
+    plot.style.setProperty(
+      '--ed-plotly-modebar-icon-hover-opacity',
+      themeName() === 'dark' ? '0.95' : '0.85',
+    )
+  }
+
   function syncPlotlyTheme() {
     if (!window.Plotly) return
     const colors = themeColors()
     document.querySelectorAll('.plotly-graph-div').forEach((plot) => {
       if (!plot.layout && !plot._fullLayout) return
+      syncPlotlyModebarTheme(plot, colors)
       const update = {
         paper_bgcolor: colors.background,
         plot_bgcolor: colors.background,
@@ -77,9 +114,9 @@
       }
       plotlyAxisNames(plot).forEach((key) => {
         update[`${key}.color`] = colors.foreground
-        update[`${key}.gridcolor`] = colors.grid
-        update[`${key}.linecolor`] = colors.grid
-        update[`${key}.zerolinecolor`] = colors.grid
+        update[`${key}.gridcolor`] = colors.innerTickGrid
+        update[`${key}.linecolor`] = colors.axisFrame
+        update[`${key}.zerolinecolor`] = colors.innerTickGrid
         update[`${key}.title.font.color`] = colors.foreground
         update[`${key}.tickfont.color`] = colors.foreground
       })
@@ -98,6 +135,14 @@
     })
   }
 
+  function syncPandasTableTheme() {
+    const colors = themeColors()
+    document.querySelectorAll('.ed-themed-table').forEach((table) => {
+      // TABLE_AXIS_FRAME_CSS_VAR
+      table.style.setProperty('--ed-axis-frame-color', colors.axisFrame)
+    })
+  }
+
   function syncCrysviewTheme() {
     const next = themeName()
     document.querySelectorAll('.crysview').forEach((viewer) => {
@@ -111,6 +156,7 @@
 
   function syncThemeAwareOutputs() {
     syncPlotlyTheme()
+    syncPandasTableTheme()
     syncCrysviewTheme()
   }
 
