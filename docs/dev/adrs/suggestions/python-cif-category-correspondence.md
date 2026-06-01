@@ -3,6 +3,14 @@
 **Status:** Proposed  
 **Date:** 2026-05-17
 
+## Status Note
+
+The ADR review cycle closed at
+`python-cif-category-correspondence_review-2.md` with the final-review
+sentinel. The suggestion is ready for a same-slug draft plan; review
+and reply artifacts from the ADR cycle have been removed from the
+active tree.
+
 ## Context
 
 EasyDiffraction exposes a Python object graph and persists state in CIF
