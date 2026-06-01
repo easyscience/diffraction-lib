@@ -43,8 +43,8 @@ None.
 
 ## Concrete Files Likely To Change
 
-- `docs/dev/adrs/accepted/python-cif-category-correspondence.md`
-  (status and accepted-location link fixes after the move).
+- `docs/dev/adrs/accepted/python-cif-category-correspondence.md` (status
+  and accepted-location link fixes after the move).
 - `docs/dev/adrs/index.md`.
 - Accepted ADRs that link to the suggestion path:
   - `docs/dev/adrs/accepted/iucr-cif-tag-alignment.md`
