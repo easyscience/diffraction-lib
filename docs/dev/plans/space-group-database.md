@@ -117,7 +117,7 @@ file as part of the same commit.
   ```
   Commit: `Add multi-source cross-check and disagreement report`
 
-- [ ] **P1.3 — First generation run + commit the report.** Run the generator
+- [x] **P1.3 — First generation run + commit the report.** Run the generator
   (cctbx temp-installed) with no overrides to produce the initial
   disagreement report; commit the report. Do not commit a database file yet.
   Commit: `Generate initial space-group disagreement report`
