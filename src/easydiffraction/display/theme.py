@@ -6,8 +6,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-LIGHT_BACKGROUND_COLOR = '#fff'
-DARK_BACKGROUND_COLOR = '#111'
+LIGHT_BACKGROUND_COLOR = 'rgba(0, 0, 0, 0)'
+DARK_BACKGROUND_COLOR = 'rgba(0, 0, 0, 0)'
 LIGHT_FOREGROUND_COLOR = '#222222'
 DARK_FOREGROUND_COLOR = '#e6e8ee'
 LIGHT_AXIS_FRAME_COLOR = '#e2e2e2'

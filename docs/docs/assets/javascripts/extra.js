@@ -31,7 +31,7 @@
   function themeColors() {
     if (themeName() === 'dark') {
       return {
-        background: '#111', // DARK_BACKGROUND_COLOR
+        background: 'rgba(0, 0, 0, 0)', // DARK_BACKGROUND_COLOR
         foreground: '#e6e8ee', // DARK_FOREGROUND_COLOR
         axisFrame: '#333', // DARK_AXIS_FRAME_COLOR
         innerTickGrid: '#1e1e1e', // DARK_INNER_TICK_GRID_COLOR
@@ -40,7 +40,7 @@
       }
     }
     return {
-      background: '#fff', // LIGHT_BACKGROUND_COLOR
+      background: 'rgba(0, 0, 0, 0)', // LIGHT_BACKGROUND_COLOR
       foreground: '#222222', // LIGHT_FOREGROUND_COLOR
       axisFrame: '#e2e2e2', // LIGHT_AXIS_FRAME_COLOR
       innerTickGrid: '#f2f2f2', // LIGHT_INNER_TICK_GRID_COLOR
