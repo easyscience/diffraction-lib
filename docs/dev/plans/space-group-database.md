@@ -101,13 +101,20 @@ file as part of the same commit.
   strings (JSON-native). Do not wire a routine pixi task.
   Commit: `Add cctbx-based space-group table extraction`
 
-- [ ] **P1.2 — Multi-source cross-check + disagreement report.** Extend the
+- [x] **P1.2 — Multi-source cross-check + disagreement report.** Extend the
   generator to compare the cctbx table against cryspy `wyckoff.dat`, gemmi
   (`spacegroup_table()` settings/ops + orbit-closure), parsed SgInfo, and
   the RASPA CSV. Where ≥2 machine sources disagree on a value, write a
   report record `{case, per-source values, IT: <blank for maintainer>,
   recommendation}` to `docs/dev/space-group-database/disagreements.md`.
   Consume `tools/space_groups_overrides.yaml` if present.
+  P1.3 command:
+  ```bash
+  pixi exec --spec cctbx --spec gemmi --spec sympy \
+    python tools/generate_space_groups.py \
+    --write-report docs/dev/space-group-database/disagreements.md \
+    --print-summary
+  ```
   Commit: `Add multi-source cross-check and disagreement report`
 
 - [ ] **P1.3 — First generation run + commit the report.** Run the generator
