@@ -2,10 +2,11 @@
 
 Follows [`AGENTS.md`](../../../AGENTS.md). No deliberate exceptions.
 
-> **Status:** Ready for Phase 1 implementation. The ADR review cycle
-> closed at `python-cif-category-correspondence_review-2.md` with the
-> final-review sentinel. The review/reply artifacts have already been
-> removed from the active tree.
+> **Status:** Phase 1 implementation complete; awaiting implementation
+> review. The ADR review cycle closed at
+> `python-cif-category-correspondence_review-2.md` with the final-review
+> sentinel. The review/reply artifacts have already been removed from
+> the active tree.
 
 ## ADR
 
@@ -71,7 +72,7 @@ review gate. Follow the rules in [`AGENTS.md`](../../../AGENTS.md) →
     `../suggestions/python-cif-category-correspondence.md`.
   - Commit: `Promote Python-CIF correspondence ADR`
 
-- [ ] **P1.2 - Phase 1 review gate**
+- [x] **P1.2 - Phase 1 review gate**
   - Mark this checklist item complete after P1.1 is committed.
   - Commit: `Reach Python-CIF correspondence Phase 1 review gate`
 
