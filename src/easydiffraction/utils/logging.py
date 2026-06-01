@@ -41,6 +41,8 @@ from easydiffraction.utils.environment import in_jupyter
 from easydiffraction.utils.environment import in_pytest
 from easydiffraction.utils.environment import in_warp
 
+CONSOLE_PARAGRAPH_STYLE = 'bold deep_sky_blue3'
+
 # ======================================================================
 # HANDLERS
 # ======================================================================
@@ -721,7 +723,7 @@ class ConsolePrinter:
             if part.startswith("'") and part.endswith("'"):
                 text.append(part)
             else:
-                text.append(part, style='bold deep_sky_blue3')
+                text.append(part, style=CONSOLE_PARAGRAPH_STYLE)
         formatted = f'{text.markup}'
         if not in_jupyter():
             formatted = f'\n{formatted}'

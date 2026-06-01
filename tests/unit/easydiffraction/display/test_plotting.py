@@ -276,6 +276,7 @@ def test_plotter_routes_to_ascii_plotter(monkeypatch):
         def __init__(self):
             self.two_theta = np.array([0.0, 1.0])
             self.intensity_meas = np.array([1.0, 2.0])
+            self.intensity_calc = np.array([1.0, 2.0])
             self.d_spacing = self.two_theta
 
     class ExptType:
@@ -294,7 +295,18 @@ def test_plotter_routes_to_ascii_plotter(monkeypatch):
         _MeasVsCalcPlotOptions(),
     )
     assert called['labels'] == ('meas',)
-    assert 'Measured data' in called['title']
+    assert called['title'] == "Diffraction pattern for experiment 🔬 'E'"
+    assert called['excluded_ranges'] == ()
+
+    p._plot_calc_data(
+        object(),
+        Ptn(),
+        'E',
+        ExptType(),
+        _MeasVsCalcPlotOptions(),
+    )
+    assert called['labels'] == ('calc',)
+    assert called['title'] == "Diffraction pattern for experiment 🔬 'E'"
     assert called['excluded_ranges'] == ()
 
 

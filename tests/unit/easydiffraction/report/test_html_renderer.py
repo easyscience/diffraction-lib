@@ -349,6 +349,7 @@ def test_render_html_report_uses_plotly_fit_style_order():
 
     html = render_html_report(context)
 
+    assert 'Diffraction pattern for experiment' in html
     measured = html.index('"name":"Measured (Imeas)"')
     background = html.index('"name":"Background (Ibkg)"')
     calculated = html.index('"name":"Total calculated (Icalc)"')

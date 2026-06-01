@@ -746,3 +746,32 @@ def test_show_structure_options_updates_categories_before_availability(monkeypat
     display.show_structure_options('lbco')
 
     assert calls == ['update', 'availability']
+
+
+def test_show_structure_options_omits_reason_column(monkeypatch):
+    structure = Structure(name='lbco')
+    project = _make_structure_display_project(structure)
+    display = ProjectDisplay(project)
+    captured: dict[str, object] = {}
+
+    def fake_structure_feature_availability(structure_arg, *, style):
+        assert structure_arg is structure
+        assert style is project.structure_style
+        return FeatureAvailability(frozenset({'cell', 'axes'}), ())
+
+    def fake_render_table(*, columns_headers, columns_alignment, columns_data):
+        captured['columns_headers'] = columns_headers
+        captured['columns_alignment'] = columns_alignment
+        captured['columns_data'] = columns_data
+
+    monkeypatch.setattr(
+        'easydiffraction.display.structure.builder.structure_feature_availability',
+        fake_structure_feature_availability,
+    )
+    monkeypatch.setattr('easydiffraction.project.display.render_table', fake_render_table)
+
+    display.show_structure_options('lbco')
+
+    assert captured['columns_headers'] == ['Option', 'Description', 'Available', 'Auto']
+    assert captured['columns_alignment'] == ['left', 'left', 'center', 'center']
+    assert all(len(row) == 4 for row in captured['columns_data'])

@@ -537,7 +537,7 @@ class ProjectDisplay:
 
     def show_structure_options(self, struct_name: str) -> None:
         """
-        Show available ``structure(include=...)`` options with reasons.
+        Show available ``structure(include=...)`` options.
         """
         from easydiffraction.display.structure.builder import (  # noqa: PLC0415
             structure_feature_availability,
@@ -555,17 +555,15 @@ class ProjectDisplay:
         for option in ('atoms', 'bonds', 'cell', 'axes', 'moments', 'labels'):
             in_data = option in availability.available
             in_engine = option in supported
-            reason = self._structure_option_reason(option, in_data=in_data, in_engine=in_engine)
             rows.append([
                 option,
                 _STRUCTURE_OPTION_DESCRIPTIONS[option],
                 'yes' if (in_data and in_engine) else 'no',
                 'yes' if (option in auto and in_engine) else 'no',
-                reason or '-',
             ])
         render_table(
-            columns_headers=['Option', 'Description', 'Available', 'Auto', 'Reason'],
-            columns_alignment=['left', 'left', 'center', 'center', 'left'],
+            columns_headers=['Option', 'Description', 'Available', 'Auto'],
+            columns_alignment=['left', 'left', 'center', 'center'],
             columns_data=rows,
         )
         if availability.radius_substitutions:
@@ -607,17 +605,6 @@ class ProjectDisplay:
             msg = "include='auto' cannot be combined with other options."
             raise ValueError(msg)
         return normalized
-
-    @staticmethod
-    def _structure_option_reason(option: str, *, in_data: bool, in_engine: bool) -> str:
-        """Explain why a structure option is unavailable, if it is."""
-        if not in_engine:
-            return 'Shown only by the 3D engines.'
-        if not in_data:
-            if option == 'moments':
-                return 'No moment data in version 1.'
-            return 'No data for this structure.'
-        return ''
 
     def _emit_structure_output(self, output: str) -> None:
         """Display ASCII text in the console or HTML in a notebook."""

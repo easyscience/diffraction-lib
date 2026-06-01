@@ -5258,7 +5258,7 @@ class Plotter(RendererBase):
             y_series=[y_meas],
             labels=['meas'],
             axes_labels=ctx['axes_labels'],
-            title=f"Measured data for experiment 🔬 '{expt_name}'",
+            title=f"Diffraction pattern for experiment 🔬 '{expt_name}'",
             height=self.height,
             excluded_ranges=excluded_ranges,
         )
@@ -5320,7 +5320,7 @@ class Plotter(RendererBase):
             y_series=[y_calc],
             labels=['calc'],
             axes_labels=ctx['axes_labels'],
-            title=f"Calculated data for experiment 🔬 '{expt_name}'",
+            title=f"Diffraction pattern for experiment 🔬 '{expt_name}'",
             height=self.height,
             excluded_ranges=excluded_ranges,
         )
@@ -5418,7 +5418,7 @@ class Plotter(RendererBase):
             log.error(f'No calculated data available for experiment {expt_name}')
             return
 
-        title = f"Measured vs Calculated data for experiment 🔬 '{expt_name}'"
+        title = f"Diffraction pattern for experiment 🔬 '{expt_name}'"
 
         # Single crystal scatter plot (I²calc vs I²meas)
         if x_axis in {XAxisType.INTENSITY_CALC, 'intensity_calc'}:
