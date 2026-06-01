@@ -35846,11 +35846,7 @@ on top and encodes the PNG.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/display/structure/renderers/threejs.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">155</span>
-<span class="normal">156</span>
-<span class="normal">157</span>
-<span class="normal">158</span>
-<span class="normal">159</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">159</span>
 <span class="normal">160</span>
 <span class="normal">161</span>
 <span class="normal">162</span>
@@ -35910,7 +35906,13 @@ on top and encodes the PNG.</p>
 <span class="normal">216</span>
 <span class="normal">217</span>
 <span class="normal">218</span>
-<span class="normal">219</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ThreeJsStructureRenderer</span><span class="p">(</span><span class="n">StructureRendererBase</span><span class="p">):</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ThreeJsStructureRenderer</span><span class="p">(</span><span class="n">StructureRendererBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Interactive Three.js renderer for notebook and standalone HTML.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -35970,8 +35972,10 @@ on top and encodes the PNG.</p>
             <span class="n">background</span><span class="o">=</span><span class="n">_rgb_css</span><span class="p">(</span><span class="n">colours</span><span class="p">[</span><span class="s1">&#39;background&#39;</span><span class="p">]),</span>
             <span class="n">foreground</span><span class="o">=</span><span class="n">_rgb_css</span><span class="p">(</span><span class="n">colours</span><span class="p">[</span><span class="s1">&#39;foreground&#39;</span><span class="p">]),</span>
             <span class="n">light_background</span><span class="o">=</span><span class="n">_rgb_css</span><span class="p">(</span><span class="n">light_colours</span><span class="p">[</span><span class="s1">&#39;background&#39;</span><span class="p">]),</span>
+            <span class="n">light_panel_background</span><span class="o">=</span><span class="n">_rgba_css</span><span class="p">(</span><span class="n">light_colours</span><span class="p">[</span><span class="s1">&#39;background&#39;</span><span class="p">],</span> <span class="mf">0.5</span><span class="p">),</span>
             <span class="n">light_foreground</span><span class="o">=</span><span class="n">_rgb_css</span><span class="p">(</span><span class="n">light_colours</span><span class="p">[</span><span class="s1">&#39;foreground&#39;</span><span class="p">]),</span>
             <span class="n">dark_background</span><span class="o">=</span><span class="n">_rgb_css</span><span class="p">(</span><span class="n">dark_colours</span><span class="p">[</span><span class="s1">&#39;background&#39;</span><span class="p">]),</span>
+            <span class="n">dark_panel_background</span><span class="o">=</span><span class="n">_rgba_css</span><span class="p">(</span><span class="n">dark_colours</span><span class="p">[</span><span class="s1">&#39;background&#39;</span><span class="p">],</span> <span class="mf">0.5</span><span class="p">),</span>
             <span class="n">dark_foreground</span><span class="o">=</span><span class="n">_rgb_css</span><span class="p">(</span><span class="n">dark_colours</span><span class="p">[</span><span class="s1">&#39;foreground&#39;</span><span class="p">]),</span>
             <span class="n">theme</span><span class="o">=</span><span class="s1">&#39;dark&#39;</span> <span class="k">if</span> <span class="n">dark</span> <span class="k">else</span> <span class="s1">&#39;light&#39;</span><span class="p">,</span>
         <span class="p">)</span>
@@ -36010,9 +36014,9 @@ on top and encodes the PNG.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/structure/renderers/threejs.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">163</span>
-<span class="normal">164</span>
-<span class="normal">165</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">supported_features</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">frozenset</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">supported_features</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">frozenset</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the features the Three.js engine can draw.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">SUPPORTED</span>
 </code></pre></div></td></tr></table></div>
@@ -36167,11 +36171,7 @@ Reports pass <code>False</code> so the view matches their light page.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/structure/renderers/threejs.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">167</span>
-<span class="normal">168</span>
-<span class="normal">169</span>
-<span class="normal">170</span>
-<span class="normal">171</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">171</span>
 <span class="normal">172</span>
 <span class="normal">173</span>
 <span class="normal">174</span>
@@ -36219,7 +36219,13 @@ Reports pass <code>False</code> so the view matches their light page.</p>
 <span class="normal">216</span>
 <span class="normal">217</span>
 <span class="normal">218</span>
-<span class="normal">219</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">scene</span><span class="p">:</span> <span class="n">StructureScene</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
@@ -36267,8 +36273,10 @@ Reports pass <code>False</code> so the view matches their light page.</p>
         <span class="n">background</span><span class="o">=</span><span class="n">_rgb_css</span><span class="p">(</span><span class="n">colours</span><span class="p">[</span><span class="s1">&#39;background&#39;</span><span class="p">]),</span>
         <span class="n">foreground</span><span class="o">=</span><span class="n">_rgb_css</span><span class="p">(</span><span class="n">colours</span><span class="p">[</span><span class="s1">&#39;foreground&#39;</span><span class="p">]),</span>
         <span class="n">light_background</span><span class="o">=</span><span class="n">_rgb_css</span><span class="p">(</span><span class="n">light_colours</span><span class="p">[</span><span class="s1">&#39;background&#39;</span><span class="p">]),</span>
+        <span class="n">light_panel_background</span><span class="o">=</span><span class="n">_rgba_css</span><span class="p">(</span><span class="n">light_colours</span><span class="p">[</span><span class="s1">&#39;background&#39;</span><span class="p">],</span> <span class="mf">0.5</span><span class="p">),</span>
         <span class="n">light_foreground</span><span class="o">=</span><span class="n">_rgb_css</span><span class="p">(</span><span class="n">light_colours</span><span class="p">[</span><span class="s1">&#39;foreground&#39;</span><span class="p">]),</span>
         <span class="n">dark_background</span><span class="o">=</span><span class="n">_rgb_css</span><span class="p">(</span><span class="n">dark_colours</span><span class="p">[</span><span class="s1">&#39;background&#39;</span><span class="p">]),</span>
+        <span class="n">dark_panel_background</span><span class="o">=</span><span class="n">_rgba_css</span><span class="p">(</span><span class="n">dark_colours</span><span class="p">[</span><span class="s1">&#39;background&#39;</span><span class="p">],</span> <span class="mf">0.5</span><span class="p">),</span>
         <span class="n">dark_foreground</span><span class="o">=</span><span class="n">_rgb_css</span><span class="p">(</span><span class="n">dark_colours</span><span class="p">[</span><span class="s1">&#39;foreground&#39;</span><span class="p">]),</span>
         <span class="n">theme</span><span class="o">=</span><span class="s1">&#39;dark&#39;</span> <span class="k">if</span> <span class="n">dark</span> <span class="k">else</span> <span class="s1">&#39;light&#39;</span><span class="p">,</span>
     <span class="p">)</span>
