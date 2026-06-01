@@ -2,9 +2,9 @@
   "1": {
     "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-1/ed-1.ipynb",
     "original_name": "quick_from-cif_pd-neut-cwl_LBCO-HRPT",
-    "title": "Quick Start: LBCO from CIF",
-    "description": "Minimalistic Rietveld refinement of La0.5Ba0.5CoO3 using structure and experiment defined via CIF files",
-    "level": "quick"
+    "title": "Basic Tutorial: LBCO from CIF",
+    "description": "Basic Rietveld refinement of La0.5Ba0.5CoO3 with structure and experiment defined via CIF files",
+    "level": "basic"
   },
   "2": {
     "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-2/ed-2.ipynb",
@@ -16,7 +16,7 @@
   "3": {
     "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-3/ed-3.ipynb",
     "original_name": "basic_single-fit_pd-neut-cwl_LBCO-HRPT",
-    "title": "Basic Tutorial: LBCO, HRPT",
+    "title": "Complete Tutorial: LBCO, HRPT",
     "description": "Comprehensive Rietveld refinement of La0.5Ba0.5CoO3 following GUI-like workflow with detailed explanations",
     "level": "basic"
   },
@@ -135,15 +135,43 @@
   "21": {
     "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-21/ed-21.ipynb",
     "original_name": "",
-    "title": "Bayesian Analysis: LBCO, HRPT",
-    "description": "Bayesian analysis of the La0.5Ba0.5CoO3 crystal structure - Markov Chain Monte Carlo (MCMC) sampling.",
+    "title": "Bayesian Analysis (bumps-dream): LBCO, HRPT",
+    "description": "Bayesian analysis of La0.5Ba0.5CoO3 using Markov Chain Monte Carlo (MCMC) sampling with the bumps-DREAM minimizer, on constant wavelength neutron powder diffraction data from HRPT at PSI",
     "level": "advanced"
   },
   "22": {
     "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-22/ed-22.ipynb",
     "original_name": "",
-    "title": "Bayesian Analysis: Tb2TiO7, HEiDi",
-    "description": "Bayesian analysis of the Tb2TiO7 crystal structure - Markov Chain Monte Carlo (MCMC) sampling.",
+    "title": "Bayesian Analysis (emcee): Tb2TiO7, HEiDi",
+    "description": "Bayesian analysis of Tb2TiO7 using Markov Chain Monte Carlo (MCMC) sampling with the emcee minimizer, on constant wavelength neutron single crystal diffraction data from HEiDi at FRM II",
+    "level": "advanced"
+  },
+  "23": {
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-23/ed-23.ipynb",
+    "original_name": "",
+    "title": "Structure Refinement: Co2SiO4, D20 (Resumed scan)",
+    "description": "Resume an interrupted sequential Rietveld refinement of Co2SiO4 by reloading a saved project; the remaining temperature-scan datasets are processed and appended to analysis/results.csv",
+    "level": "advanced"
+  },
+  "24": {
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-24/ed-24.ipynb",
+    "original_name": "",
+    "title": "Bayesian Analysis Display (bumps-dream): LBCO, HRPT",
+    "description": "Reopen the saved bumps-DREAM Bayesian project for La0.5Ba0.5CoO3 and inspect persisted fit summaries, correlation matrix, and posterior plots without rerunning MCMC sampling",
+    "level": "advanced"
+  },
+  "25": {
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-25/ed-25.ipynb",
+    "original_name": "",
+    "title": "Bayesian Analysis (emcee): LBCO, HRPT",
+    "description": "Bayesian analysis of La0.5Ba0.5CoO3 using Markov Chain Monte Carlo (MCMC) sampling with the emcee minimizer, on constant wavelength neutron powder diffraction data from HRPT at PSI",
+    "level": "advanced"
+  },
+  "26": {
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-26/ed-26.ipynb",
+    "original_name": "",
+    "title": "Bayesian Analysis Resume (emcee): LBCO, HRPT",
+    "description": "Reload a saved emcee Bayesian project for La0.5Ba0.5CoO3, inspect the posterior, and resume MCMC sampling with additional steps (supported only for emcee, not bumps-DREAM)",
     "level": "advanced"
   }
 }
