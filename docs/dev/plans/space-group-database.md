@@ -92,7 +92,7 @@ the step names, with explicit paths, and commit locally with the step's
 `Commit:` message **before** moving to the next step. Mark `[x]` in this
 file as part of the same commit.
 
-- [ ] **P1.1 — cctbx extraction to a complete table.** Write the first part
+- [x] **P1.1 — cctbx extraction to a complete table.** Write the first part
   of `tools/generate_space_groups.py`: in a throwaway env with `cctbx`
   installed, enumerate all 230 groups × standard settings via sgtbx, emit
   the full Wyckoff orbits (`coords_xyz`), `multiplicity`, `site_symmetry`,

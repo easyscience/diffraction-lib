@@ -125,8 +125,13 @@ already satisfies.
 ### 3. Primary source: cctbx/sgtbx via temporary install
 
 Build from **cctbx/sgtbx**, the reference implementation, which provides
-full Wyckoff orbits, site symmetries, multiplicities, generators, and every
-setting for all 230 groups directly and correctly. cctbx is a
+full Wyckoff orbits, multiplicities, generators, symmetry operators, and
+tabulated settings for all 230 groups directly and correctly. cctbx exposes
+Wyckoff stabilizer point-group labels rather than the dotted International
+Tables site-symmetry strings, so the generator treats cctbx's value as the
+initial `site_symmetry` candidate and reconciles it against cryspy
+`wyckoff.dat` plus maintainer curation before the database is accepted.
+cctbx is a
 **generation-only** dependency: it is installed into the pixi environment
 **only for the generation run** and removed afterwards — it is never added
 to the runtime dependencies and never imported at runtime, which loads only
@@ -312,11 +317,22 @@ from the environment:
 *(Filled in when the generation is run; until then this section is the
 checklist the build must populate.)*
 
+### P1.1 extraction observations
+
+The first cctbx extraction pass enumerates 530 cctbx-tabulated setting
+records covering all 230 IT groups, with no duplicate
+`(IT_number, IT_coordinate_system_code)` keys after normalisation. This is
+not identical to the wider cryspy-style coordinate-code surface used by
+EasyDiffraction today: cryspy exposes additional repeated axis/cell-choice
+aliases for some monoclinic and orthorhombic groups. The generator therefore
+treats those aliases as a Phase 1 cross-check/curation concern rather than
+silently inventing values during the initial cctbx extraction.
+
 ## Open Questions
 
 None outstanding. Build-time specifics — the exact software versions and the
-candidate additional-metadata fields — are recorded in §Build Provenance and
-Deferred Work respectively.
+candidate additional-metadata fields — are recorded in §Build Provenance,
+§P1.1 extraction observations, and Deferred Work respectively.
 
 ## Deferred Work
 
