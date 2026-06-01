@@ -6,9 +6,8 @@ Accepted.
 
 **Date:** 2026-05-31
 
-**Implementation note:** The later
-[`structure-view-settings`](../../plans/structure-view-settings.md) plan
-split structure-view configuration into `rendering_structure`,
+**Implementation note:** A later implementation pass split
+structure-view configuration into `rendering_structure`,
 `structure_view`, and `structure_style`. This ADR reflects that final
 surface; no separate `structure-view-settings` ADR exists.
 

@@ -14,9 +14,8 @@ User-facing API.
 
 ## Implementation Note
 
-This ADR was implemented through the
-[`structure-view-settings`](../../plans/structure-view-settings.md)
-plan. That plan also amended
+This ADR was accepted as part of the structure-view settings cleanup,
+which also amended
 [`crysview-structure-visualization.md`](crysview-structure-visualization.md)
 for the structure-view settings split; no separate
 `structure-view-settings` ADR exists.
@@ -180,11 +179,8 @@ a discovery surface symmetric with the three category-level families.
   selectors only (the audit pins the exact set; the dynamic/external
   validators above are excluded and keep their current behavior).
   Affected enums gain `.default()`/`.description` where missing. The
-  phased rollout — and the matching narrowing of which
-  `atom_sites`/`space_group` fields are touched — is tracked by the
-  [`structure-view-settings`](../../plans/structure-view-settings.md)
-  implementation plan, which also reorganizes the structure-view
-  categories that motivated this ADR.
+  phased rollout also reorganized the structure-view categories that
+  motivated this ADR.
 
 ## Alternatives Considered
 
