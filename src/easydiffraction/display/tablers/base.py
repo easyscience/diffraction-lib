@@ -131,6 +131,7 @@ class TableBackendBase(ABC):
         alignments: object,
         df: object,
         display_handle: object | None = None,
+        width: int | None = None,
     ) -> object:
         """
         Render the provided DataFrame with backend-specific styling.
@@ -145,6 +146,9 @@ class TableBackendBase(ABC):
         display_handle : object | None, default=None
             Optional environment-specific handle to enable in-place
             updates.
+        width : int | None, default=None
+            Optional target table width. Honored by fixed-width
+            backends (e.g. Rich); ignored by reflowing ones (e.g. HTML).
 
         Returns
         -------

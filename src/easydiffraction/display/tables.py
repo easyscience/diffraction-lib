@@ -116,7 +116,12 @@ class TableRenderer(RendererBase):
         alignments, prepared_df = self._prepare_dataframe(df)
         return self._backend.build_renderable(alignments, prepared_df)
 
-    def render(self, df: object, display_handle: object | None = None) -> object:
+    def render(
+        self,
+        df: object,
+        display_handle: object | None = None,
+        width: int | None = None,
+    ) -> object:
         """
         Render a DataFrame as a table using the active backend.
 
@@ -129,6 +134,9 @@ class TableRenderer(RendererBase):
             Optional environment-specific handle used to update an
             existing output area in-place (e.g., an IPython
             DisplayHandle or a terminal live handle).
+        width : int | None, default=None
+            Optional target table width passed to the backend. Honored
+            by fixed-width backends (Rich); ignored by HTML.
 
         Returns
         -------
@@ -136,7 +144,7 @@ class TableRenderer(RendererBase):
             Backend-specific return value (usually ``None``).
         """
         alignments, prepared_df = self._prepare_dataframe(df)
-        return self._backend.render(alignments, prepared_df, display_handle)
+        return self._backend.render(alignments, prepared_df, display_handle, width)
 
 
 class TableRendererFactory(RendererFactoryBase):

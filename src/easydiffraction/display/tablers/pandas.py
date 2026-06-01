@@ -236,6 +236,7 @@ class PandasTableBackend(TableBackendBase):
         alignments: object,
         df: object,
         display_handle: object | None = None,
+        width: int | None = None,
     ) -> object:
         """
         Render a styled DataFrame.
@@ -249,6 +250,9 @@ class PandasTableBackend(TableBackendBase):
         display_handle : object | None, default=None
             Optional IPython DisplayHandle to update an existing output
             area in place when running in Jupyter.
+        width : int | None, default=None
+            Ignored. HTML tables reflow to the available width, so no
+            fixed table width is applied.
 
         Returns
         -------
