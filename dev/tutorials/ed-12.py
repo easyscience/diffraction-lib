@@ -26,12 +26,12 @@ project = ed.Project()
 # %%
 # Keep the auto-selected engine. Alternatively, you can uncomment the
 # line below to explicitly set the engine to the required one.
-# project.chart.type = 'plotly'
+# project.rendering_plot.type = 'plotly'
 
 # %%
 # Set global plot range for plots
-project.chart.plotter.x_min = 2.0
-project.chart.plotter.x_max = 30.0
+project.rendering_plot.plotter.x_min = 2.0
+project.rendering_plot.plotter.x_max = 30.0
 
 # %% [markdown]
 # ## Add Structure
@@ -61,6 +61,12 @@ project.structures['nacl'].atom_sites.create(
     wyckoff_letter='b',
     adp_iso=1.0,
 )
+
+# %% [markdown]
+# ## Plot Structure
+
+# %%
+project.display.structure(struct_name='nacl')
 
 # %% [markdown]
 # ## Add Experiment

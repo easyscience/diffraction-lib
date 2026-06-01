@@ -242,6 +242,13 @@ project.experiments.add(expt_s2)
 project.experiments.add(expt_n2)
 
 # %% [markdown]
+# #### Plot Structures
+
+# %%
+project.display.structure(struct_name='ferrite')
+project.display.structure(struct_name='austenite')
+
+# %% [markdown]
 # #### Plot Measured vs Calculated
 
 # %%

@@ -807,10 +807,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#adding-a-model-from-cif" class="md-nav__link">
+  <a href="#adding-a-structure-from-cif" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Adding a Model from CIF
+        Adding a Structure from CIF
       
     </span>
   </a>
@@ -818,15 +818,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#defining-a-model-manually" class="md-nav__link">
+  <a href="#defining-a-structure-manually" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Defining a Model Manually
+        Defining a Structure Manually
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Defining a Model Manually">
+    <nav class="md-nav" aria-label="Defining a Structure Manually">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -868,10 +868,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#listing-defined-models" class="md-nav__link">
+  <a href="#listing-defined-structures" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Listing Defined Models
+        Listing Defined Structures
       
     </span>
   </a>
@@ -879,10 +879,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#viewing-a-model-as-cif" class="md-nav__link">
+  <a href="#viewing-a-structure-as-cif" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Viewing a Model as CIF
+        Viewing a Structure as CIF
       
     </span>
   </a>
@@ -890,10 +890,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#saving-a-model" class="md-nav__link">
+  <a href="#viewing-a-structure-in-3d" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Saving a Model
+        Viewing a Structure in 3D
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#saving-a-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Saving a Structure
       
     </span>
   </a>
@@ -2955,10 +2966,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#adding-a-model-from-cif" class="md-nav__link">
+  <a href="#adding-a-structure-from-cif" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Adding a Model from CIF
+        Adding a Structure from CIF
       
     </span>
   </a>
@@ -2966,15 +2977,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#defining-a-model-manually" class="md-nav__link">
+  <a href="#defining-a-structure-manually" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Defining a Model Manually
+        Defining a Structure Manually
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Defining a Model Manually">
+    <nav class="md-nav" aria-label="Defining a Structure Manually">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -3016,10 +3027,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#listing-defined-models" class="md-nav__link">
+  <a href="#listing-defined-structures" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Listing Defined Models
+        Listing Defined Structures
       
     </span>
   </a>
@@ -3027,10 +3038,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#viewing-a-model-as-cif" class="md-nav__link">
+  <a href="#viewing-a-structure-as-cif" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Viewing a Model as CIF
+        Viewing a Structure as CIF
       
     </span>
   </a>
@@ -3038,10 +3049,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#saving-a-model" class="md-nav__link">
+  <a href="#viewing-a-structure-in-3d" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Saving a Model
+        Viewing a Structure in 3D
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#saving-a-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Saving a Structure
       
     </span>
   </a>
@@ -3079,25 +3101,25 @@ fitted to the <strong>experimentally measured data</strong> to refine the struct
 parameters.</p>
 <p>EasyDiffraction allows you to:</p>
 <ul>
-<li><strong>Load an existing model</strong> from a file (<strong><abbr title="Crystallographic Information File.">CIF</abbr></strong> format).</li>
+<li><strong>Load an existing structure</strong> from a file (<strong><abbr title="Crystallographic Information File.">CIF</abbr></strong> format).</li>
 <li><strong>Manually define</strong> a new structure by specifying crystallographic
   parameters.</li>
 </ul>
 <p>Below, you will find instructions on how to define and manage
-crystallographic models in EasyDiffraction. It is assumed that you have
-already created a <code>project</code> object, as described in the
+crystallographic structures in EasyDiffraction. It is assumed that you
+have already created a <code>project</code> object, as described in the
 <a href="../project/">Project</a> section.</p>
-<h2 id="adding-a-model-from-cif">Adding a Model from <abbr title="Crystallographic Information File.">CIF</abbr></h2>
+<h2 id="adding-a-structure-from-cif">Adding a Structure from <abbr title="Crystallographic Information File.">CIF</abbr></h2>
 <p>This is the most straightforward way to define a structure in
 EasyDiffraction. If you have a crystallographic information file (<abbr title="Crystallographic Information File.">CIF</abbr>)
 for your structure, you can add it to your project using the
 <code>add_from_cif_path</code> method of the <code>project.structures</code> collection. In
-this case, the name of the model will be taken from <abbr title="Crystallographic Information File.">CIF</abbr>.</p>
+this case, the structure name will be taken from <abbr title="Crystallographic Information File.">CIF</abbr>.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="c1"># Load a phase from a CIF file</span>
 <span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="o">.</span><span class="n">add_from_cif_path</span><span class="p">(</span><span class="s1">&#39;data/lbco.cif&#39;</span><span class="p">)</span>
 </code></pre></div>
-<p>Accessing the model after loading it will be done through the
-<code>structures</code> collection of the <code>project</code> instance. The name of the model
+<p>Accessing the structure after loading it will be done through the
+<code>structures</code> collection of the <code>project</code> instance. The structure name
 will be the same as the data block id in the <abbr title="Crystallographic Information File.">CIF</abbr> file. For example, if
 the <abbr title="Crystallographic Information File.">CIF</abbr> file contains a data block with the id <code>lbco</code>,</p>
 <!-- prettier-ignore-start -->
@@ -3117,19 +3139,19 @@ data_<span class="red"><b>lbco</b></span>
 <div class="language-python highlight"><pre><span></span><code><span class="c1"># Access the structure by its name</span>
 <span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="p">[</span><span class="s1">&#39;lbco&#39;</span><span class="p">]</span>
 </code></pre></div>
-<h2 id="defining-a-model-manually">Defining a Model Manually</h2>
-<p>If you do not have a <abbr title="Crystallographic Information File.">CIF</abbr> file or prefer to define the model manually,
-you can use the <code>create</code> method of the <code>structures</code> object of the
-<code>project</code> instance. In this case, you will need to specify the name of
-the model, which will be used to reference it later.</p>
+<h2 id="defining-a-structure-manually">Defining a Structure Manually</h2>
+<p>If you do not have a <abbr title="Crystallographic Information File.">CIF</abbr> file or prefer to define the structure
+manually, you can use the <code>create</code> method of the <code>structures</code> object of
+the <code>project</code> instance. In this case, you will need to specify the name
+of the structure, which will be used to reference it later.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="c1"># Add a structure with default parameters</span>
 <span class="c1"># The structure name is used to reference it later.</span>
 <span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;nacl&#39;</span><span class="p">)</span>
 </code></pre></div>
-<p>The <code>add</code> method creates a new structure with default parameters. You
+<p>The <code>create</code> method creates a new structure with default parameters. You
 can then modify its parameters to match your specific crystallographic
 structure. All parameters are grouped into the following categories,
-which makes it easier to manage the model:</p>
+which makes it easier to manage the structure:</p>
 <ol>
 <li><strong>Space Group Category</strong>: Defines the symmetry of the crystal
    structure.</li>
@@ -3167,7 +3189,7 @@ which makes it easier to manage the model:</p>
     <span class="n">adp_iso</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
 <span class="p">)</span>
 </code></pre></div>
-<h2 id="listing-defined-models">Listing Defined Models</h2>
+<h2 id="listing-defined-structures">Listing Defined Structures</h2>
 <p>To check which structures have been added to the <code>project</code>, use:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="c1"># Show defined structures</span>
 <span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="o">.</span><span class="n">show_names</span><span class="p">()</span>
@@ -3176,7 +3198,7 @@ which makes it easier to manage the model:</p>
 <div class="language-text highlight"><pre><span></span><code>Defined structures 🧩
 [&#39;lbco&#39;, &#39;nacl&#39;]
 </code></pre></div>
-<h2 id="viewing-a-model-as-cif">Viewing a Model as <abbr title="Crystallographic Information File.">CIF</abbr></h2>
+<h2 id="viewing-a-structure-as-cif">Viewing a Structure as <abbr title="Crystallographic Information File.">CIF</abbr></h2>
 <p>To inspect a structure in <abbr title="Crystallographic Information File.">CIF</abbr> format, use:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="c1"># Show structure as CIF</span>
 <span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="p">[</span><span class="s1">&#39;lbco&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">show_as_cif</span><span class="p">()</span>
@@ -3205,19 +3227,72 @@ which makes it easier to manage the model:</p>
 │ _atom_site.label                          │
 │ _atom_site.occupancy                      │
 │ _atom_site.type_symbol                    │
-│ _atom_site.Wyckoff_letter                 │
+│ _atom_site.Wyckoff_symbol                 │
 │ Biso 0.5 0.0 0.0 0.0 La 0.5 La a          │
 │ Biso 0.5 0.0 0.0 0.0 Ba 0.5 Ba a          │
 │ Biso 0.5 0.5 0.5 0.5 Co 1.0 Co b          │
 │ Biso 0.5 0.0 0.5 0.5 O 1.0 O c            │
 ╘═══════════════════════════════════════════╛
 </code></pre></div>
-<h2 id="saving-a-model">Saving a Model</h2>
+<h2 id="viewing-a-structure-in-3d">Viewing a Structure in 3D</h2>
+<p>EasyDiffraction can render a defined structure as an interactive 3D
+view. The renderer engine is chosen through
+<code>project.rendering_structure</code>. The default <code>auto</code> engine resolves to the
+interactive Three.js view in Jupyter and the terminal-friendly ASCII
+schematic in a console — mirroring how <code>project.rendering_plot</code> and
+<code>project.rendering_table</code> pick their environment defaults.</p>
+<div class="language-python highlight"><pre><span></span><code><span class="c1"># List the available renderer engines</span>
+<span class="n">project</span><span class="o">.</span><span class="n">rendering_structure</span><span class="o">.</span><span class="n">show_supported</span><span class="p">()</span>
+
+<span class="c1"># Override the automatic choice if desired (&#39;auto&#39;, &#39;threejs&#39;, &#39;ascii&#39;)</span>
+<span class="n">project</span><span class="o">.</span><span class="n">rendering_structure</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s1">&#39;auto&#39;</span>
+</code></pre></div>
+<p>Visual styling — independent of the per-element data — is configured on
+<code>project.structure_style</code>:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="c1"># List the accepted values for an enumerated setting (the active one is marked)</span>
+<span class="n">project</span><span class="o">.</span><span class="n">structure_style</span><span class="o">.</span><span class="n">atom_view</span><span class="o">.</span><span class="n">show_supported</span><span class="p">()</span>
+<span class="n">project</span><span class="o">.</span><span class="n">structure_style</span><span class="o">.</span><span class="n">color_scheme</span><span class="o">.</span><span class="n">show_supported</span><span class="p">()</span>
+
+<span class="c1"># Choose how atoms are depicted, sized, and coloured.</span>
+<span class="c1"># atom_view picks a radius-model ball (&#39;vdw&#39;/&#39;covalent&#39;/&#39;ionic&#39;)</span>
+<span class="c1"># or &#39;adp&#39; for displacement surfaces (spheres for isotropic sites,</span>
+<span class="c1"># ellipsoids for anisotropic ones — driven by each atom&#39;s adp_type).</span>
+<span class="n">project</span><span class="o">.</span><span class="n">structure_style</span><span class="o">.</span><span class="n">atom_view</span> <span class="o">=</span> <span class="s1">&#39;covalent&#39;</span>  <span class="c1"># default; use &#39;adp&#39; for ellipsoids</span>
+<span class="n">project</span><span class="o">.</span><span class="n">structure_style</span><span class="o">.</span><span class="n">color_scheme</span> <span class="o">=</span> <span class="s1">&#39;jmol&#39;</span>  <span class="c1"># &#39;jmol&#39; or &#39;vesta&#39;</span>
+<span class="n">project</span><span class="o">.</span><span class="n">structure_style</span><span class="o">.</span><span class="n">atom_scale</span> <span class="o">=</span> <span class="mf">0.3</span>  <span class="c1"># overall ball size (square-root compressed)</span>
+<span class="n">project</span><span class="o">.</span><span class="n">structure_style</span><span class="o">.</span><span class="n">adp_probability</span> <span class="o">=</span> <span class="mf">0.5</span>  <span class="c1"># ADP ellipsoid probability level (0, 1)</span>
+</code></pre></div>
+<p>Bonds are generated automatically between atoms whose separation falls
+within the per-structure cutoffs stored on <code>structure.geom</code> (the
+standard cif_core <code>_geom</code> parameters):</p>
+<div class="language-python highlight"><pre><span></span><code><span class="c1"># Tune the per-structure bond-generation cutoffs (angstrom)</span>
+<span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="p">[</span><span class="s1">&#39;lbco&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">min_bond_distance_cutoff</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="p">[</span><span class="s1">&#39;lbco&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">bond_distance_incr</span> <span class="o">=</span> <span class="mf">0.25</span>
+</code></pre></div>
+<p>Draw the structure through <code>project.display</code>, mirroring
+<code>project.display.pattern()</code>:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="c1"># List which features the data and active engine can draw</span>
+<span class="n">project</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">show_structure_options</span><span class="p">(</span><span class="n">struct_name</span><span class="o">=</span><span class="s1">&#39;lbco&#39;</span><span class="p">)</span>
+
+<span class="c1"># Draw the structure (include=&#39;auto&#39; shows every available feature)</span>
+<span class="n">project</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">structure</span><span class="p">(</span><span class="n">struct_name</span><span class="o">=</span><span class="s1">&#39;lbco&#39;</span><span class="p">)</span>
+
+<span class="c1"># Or request a specific set of features</span>
+<span class="n">project</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">structure</span><span class="p">(</span>
+    <span class="n">struct_name</span><span class="o">=</span><span class="s1">&#39;lbco&#39;</span><span class="p">,</span>
+    <span class="n">include</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;atoms&#39;</span><span class="p">,</span> <span class="s1">&#39;bonds&#39;</span><span class="p">,</span> <span class="s1">&#39;cell&#39;</span><span class="p">),</span>
+<span class="p">)</span>
+</code></pre></div>
+<p>The same view is embedded automatically in the generated reports — an
+interactive Three.js view in the HTML report and a static,
+depth-rendered image in the TeX/PDF report (see the <a href="../report/">Report</a>
+section).</p>
+<h2 id="saving-a-structure">Saving a Structure</h2>
 <p>Saving the project, as described in the <a href="../project/">Project</a> section,
-will also save the model. Each model is saved as a separate <abbr title="Crystallographic Information File.">CIF</abbr> file in
-the <code>structures</code> subdirectory of the project directory. The project file
-contains references to these files.</p>
-<p>Below is an example of the saved <abbr title="Crystallographic Information File.">CIF</abbr> file for the <code>lbco</code> model:</p>
+will also save the structure. Each structure is saved as a separate <abbr title="Crystallographic Information File.">CIF</abbr>
+file in the <code>structures</code> subdirectory of the project directory. The
+project file contains references to these files.</p>
+<p>Below is an example of the saved <abbr title="Crystallographic Information File.">CIF</abbr> file for the <code>lbco</code> structure:</p>
 <!-- prettier-ignore-start -->
 
 <div class="cif">
@@ -3240,9 +3315,9 @@ loop_
 <span class="green"><b>_atom_site</b>.fract_x</span>
 <span class="green"><b>_atom_site</b>.fract_y</span>
 <span class="green"><b>_atom_site</b>.fract_z</span>
-<span class="green"><b>_atom_site</b>.Wyckoff_letter</span>
+<span class="green"><b>_atom_site</b>.Wyckoff_symbol</span>
 <span class="green"><b>_atom_site</b>.occupancy</span>
-<span class="green"><b>_atom_site</b>.adp_type</span>
+<span class="green"><b>_atom_site</b>.ADP_type</span>
 <span class="green"><b>_atom_site</b>.B_iso_or_equiv</span>
 La La   0   0   0     a   0.5  Biso 0.4958
 Ba Ba   0   0   0     a   0.5  Biso 0.4943

@@ -61,21 +61,6 @@ project.info.show_as_cif()
 project.save_as(dir_path='projects/lbco_hrpt')
 
 # %% [markdown]
-# #### Set Up Data Plotter
-
-# %% [markdown]
-# Show supported plotting engines.
-
-# %%
-project.chart.show_supported()
-
-# %% [markdown]
-# Show current plotting configuration.
-
-# %%
-project.chart.show_supported()
-
-# %% [markdown]
 # ## Step 2: Define Structure
 #
 # This section shows how to add structures and modify their
@@ -167,10 +152,68 @@ project.structures['lbco'].atom_sites.create(
 project.structures['lbco'].show_as_cif()
 
 # %% [markdown]
-# #### Show Structure Structure
+# #### View Structure
+#
+# EasyDiffraction can draw the structure that has just been defined. The
+# renderer engine is selected through `project.rendering_structure`. The default `auto`
+# engine resolves to an interactive `threejs` view inside Jupyter and a
+# compact `ascii` schematic in a terminal.
 
 # %%
-project.structures['lbco'].show()
+project.rendering_structure.show_supported()
+
+# %% [markdown]
+# Show all public attributes of the structure rendering engine.
+
+# %%
+project.rendering_structure.help()
+
+# %% [markdown]
+# Visual styling — the atom view and colour scheme — is configured on
+# `project.structure_style`.
+
+# %%
+project.structure_style.atom_view.show_supported()
+project.structure_style.color_scheme.show_supported()
+
+# %%
+project.structure_style.atom_view = 'adp'
+project.structure_style.color_scheme = 'jmol'
+
+# %% [markdown]
+# Bonds are generated automatically between atoms whose separation lies
+# within the per-structure cutoffs stored on `structure.geom`.
+
+# %%
+project.structures['lbco'].geom.min_bond_distance_cutoff = 0.5
+project.structures['lbco'].geom.bond_distance_incr = 0.25
+
+# %% [markdown]
+# List which features the structure data and the active engine can draw.
+
+# %%
+project.display.show_structure_options(struct_name='lbco')
+
+# %% [markdown]
+# Draw the structure. With `include='auto'` (the default) every available
+# feature is shown; a specific tuple such as `('atoms', 'bonds', 'cell')`
+# can be requested instead.
+
+# %%
+project.display.structure(struct_name='lbco')
+
+# %% [markdown]
+# For a quick text schematic, switch to the `ascii` engine explicitly,
+# then restore the automatic default.
+
+# %%
+project.rendering_structure.type = 'ascii'
+
+# %%
+project.display.structure(struct_name='lbco')
+
+# %%
+project.rendering_structure.type = 'auto'
 
 # %% [markdown]
 # #### Save Project State
@@ -322,6 +365,24 @@ project.experiments['hrpt'].calculator.show_supported()
 
 # %%
 project.experiments['hrpt'].calculator.type = 'cryspy'
+
+# %% [markdown]
+# #### Set Up Data Rendering Engine
+#
+# EasyDiffraction can plot the measured and calculated patterns using different rendering engines.
+# The default `auto` engine resolves to an interactive `plotly` view inside Jupyter and a
+# static `asciichartpy` plot for schematic representation in a terminal.
+#
+# Show supported data plotting engines.
+
+# %%
+project.rendering_plot.show_supported()
+
+# %% [markdown]
+# Show all public attributes of the data rendering engine.
+
+# %%
+project.rendering_plot.help()
 
 # %% [markdown]
 # #### Show Calculated Data
@@ -617,6 +678,15 @@ project.display.pattern(expt_name='hrpt')
 
 # %%
 project.display.pattern(expt_name='hrpt', x_min=38, x_max=41)
+
+# %%
+project.display.structure(struct_name='lbco')
+
+# %% [markdown]
+# #### Plot Structure
+
+# %%
+project.display.structure(struct_name='lbco')
 
 # %% [markdown]
 # ## Step 5: Generate Report

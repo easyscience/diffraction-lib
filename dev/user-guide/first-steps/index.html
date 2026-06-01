@@ -3190,9 +3190,9 @@ be called on the <code>Project</code> instance to display the available options 
 different categories.</p>
 <h3 id="supported-calculators">Supported calculators</h3>
 <p>The calculator is automatically selected based on the experiment type.
-You can use the experiment <code>calculation</code> category to see which
-calculation engines are compatible:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="p">[</span><span class="s1">&#39;hrpt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">calculation</span><span class="o">.</span><span class="n">show_calculator_types</span><span class="p">()</span>
+Use the experiment <code>calculator</code> category to see which calculation
+engines are compatible:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="p">[</span><span class="s1">&#39;hrpt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">calculator</span><span class="o">.</span><span class="n">show_supported</span><span class="p">()</span>
 </code></pre></div>
 <p>This will display a list of supported calculators along with their
 descriptions, allowing you to choose the one that best fits your needs.</p>
@@ -3212,9 +3212,9 @@ descriptions, allowing you to choose the one that best fits your needs.</p>
 </tbody>
 </table>
 <h3 id="supported-minimizers">Supported minimizers</h3>
-<p>You can also check the available minimizers using the
-<code>show_minimizer_types()</code> method:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fitting</span><span class="o">.</span><span class="n">show_minimizer_types</span><span class="p">()</span>
+<p>You can also check the available minimizers from the active minimizer
+category:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">minimizer</span><span class="o">.</span><span class="n">show_supported</span><span class="p">()</span>
 </code></pre></div>
 <h3 id="available-parameters">Available parameters</h3>
 <p>EasyDiffraction provides several methods for showing the available
@@ -3246,22 +3246,22 @@ method is:</p>
 <tbody>
 <tr>
 <td>1</td>
-<td>project.structures['lbco'].atom_site['La'].adp_type</td>
+<td>project.structures['lbco'].atom_sites['La'].adp_type</td>
 <td>lbco.atom_site.La.ADP_type</td>
 </tr>
 <tr>
 <td>2</td>
-<td>project.structures['lbco'].atom_site['La'].adp_iso</td>
+<td>project.structures['lbco'].atom_sites['La'].adp_iso</td>
 <td>lbco.atom_site.La.adp_iso</td>
 </tr>
 <tr>
 <td>3</td>
-<td>project.structures['lbco'].atom_site['La'].fract_x</td>
+<td>project.structures['lbco'].atom_sites['La'].fract_x</td>
 <td>lbco.atom_site.La.fract_x</td>
 </tr>
 <tr>
 <td>4</td>
-<td>project.structures['lbco'].atom_site['La'].fract_y</td>
+<td>project.structures['lbco'].atom_sites['La'].fract_y</td>
 <td>lbco.atom_site.La.fract_y</td>
 </tr>
 <tr>
@@ -3287,9 +3287,9 @@ method is:</p>
 </tbody>
 </table>
 <h3 id="supported-plotters">Supported plotters</h3>
-<p>To see the available plotters, you can use the <code>display</code> category on the
-<code>Project</code> instance:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">rendering</span><span class="o">.</span><span class="n">show_chart_engines</span><span class="p">()</span>
+<p>To see the available plotters, use the project rendering categories:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">rendering_plot</span><span class="o">.</span><span class="n">show_supported</span><span class="p">()</span>
+<span class="n">project</span><span class="o">.</span><span class="n">rendering_table</span><span class="o">.</span><span class="n">show_supported</span><span class="p">()</span>
 </code></pre></div>
 <p>An example of the output is:</p>
 <table>

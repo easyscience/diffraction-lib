@@ -312,6 +312,12 @@ for term in expt2.background:
 # #### Perform Fit
 
 # %% [markdown]
+# #### Plot Structure
+
+# %%
+project.display.structure(struct_name='pbso4')
+
+# %% [markdown]
 # #### Plot Measured vs Calculated
 
 # %%

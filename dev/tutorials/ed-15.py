@@ -36,6 +36,9 @@ structure = project.structures['taurine']
 # %%
 structure.show_as_cif()
 
+# %%
+project.display.structure(struct_name='taurine')
+
 # %% [markdown]
 # ## Step 3: Define Experiment
 

@@ -222,6 +222,13 @@ project.structures.show_names()
 project.experiments.add(experiment)
 
 # %% [markdown]
+# #### Plot Structures
+
+# %%
+project.display.structure(struct_name='lbco')
+project.display.structure(struct_name='si')
+
+# %% [markdown]
 # #### Set Excluded Regions
 #
 # Show measured data as loaded from the file.

@@ -21,11 +21,11 @@ project = ed.Project()
 # ## Set Plotting Engine
 
 # %%
-project.chart.show_supported()
+project.rendering_plot.show_supported()
 
 # %%
 # Set global plot range for plots
-project.chart.plotter.x_max = 40
+project.rendering_plot.plotter.x_max = 40
 
 # %% [markdown]
 # ## Add Structure
@@ -47,6 +47,12 @@ structure.atom_sites.create(
     wyckoff_letter='a',
     adp_iso=0.5,
 )
+
+# %% [markdown]
+# ## Plot Structure
+
+# %%
+project.display.structure(struct_name='si')
 
 # %% [markdown]
 # ## Add Experiment

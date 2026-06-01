@@ -501,6 +501,15 @@ project_1.structures['si'].atom_sites.create(
 )
 
 # %% [markdown]
+# #### Visualize Structure
+#
+# Render the Si structure to confirm the model was built correctly before
+# linking it to the experiment.
+
+# %%
+project_1.display.structure(struct_name='si')
+
+# %% [markdown]
 # ### 🔗 Assign Structure to Experiment
 #
 # Now we need to assign, or link, this structure to the experiment
@@ -1053,6 +1062,15 @@ project_2.structures['lbco'].atom_sites.create(
     wyckoff_letter='c',
     adp_iso=1.66,
 )
+
+# %% [markdown]
+# #### Visualize Structure
+#
+# Render the LBCO structure you just built before linking it to the
+# experiment.
+
+# %%
+project_2.display.structure(struct_name='lbco')
 
 # %% [markdown]
 # ### 🔗 Exercise 4: Assign Structure to Experiment

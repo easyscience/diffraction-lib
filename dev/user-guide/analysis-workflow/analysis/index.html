@@ -962,6 +962,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#emcee-minimizer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        emcee Minimizer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#dfo-ls-minimizer" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1007,6 +1018,17 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bayesian-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bayesian Analysis
+      
+    </span>
+  </a>
   
 </li>
       
@@ -3172,6 +3194,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#emcee-minimizer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        emcee Minimizer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#dfo-ls-minimizer" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3217,6 +3250,17 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bayesian-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bayesian Analysis
+      
+    </span>
+  </a>
   
 </li>
       
@@ -3360,36 +3404,38 @@ crystallographic models.</p>
 <p>The calculator is automatically selected based on the experiment type
 (e.g., <code>cryspy</code> for Bragg diffraction, <code>pdffit</code> for total scattering).
 To show the supported calculation engines for a specific experiment:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="p">[</span><span class="s1">&#39;hrpt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">calculation</span><span class="o">.</span><span class="n">show_calculator_types</span><span class="p">()</span>
+<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="p">[</span><span class="s1">&#39;hrpt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">calculator</span><span class="o">.</span><span class="n">show_supported</span><span class="p">()</span>
 </code></pre></div>
-<p>The example of the output is:</p>
-<p>Supported calculator types</p>
+<p>Example output:</p>
+<p>Calculator types</p>
 <table>
 <thead>
 <tr>
-<th>Calculator</th>
+<th></th>
+<th>Type</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
+<td>*</td>
 <td>cryspy</td>
 <td>CrysPy library for crystallographic calculations</td>
 </tr>
 </tbody>
 </table>
 <p>To explicitly select a calculation engine for an experiment:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="p">[</span><span class="s1">&#39;hrpt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">calculation</span><span class="o">.</span><span class="n">calculator_type</span> <span class="o">=</span> <span class="s1">&#39;cryspy&#39;</span>
+<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="p">[</span><span class="s1">&#39;hrpt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">calculator</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s1">&#39;cryspy&#39;</span>
 </code></pre></div>
 <h2 id="minimization-optimization">Minimization / Optimization</h2>
 <p>The process of refining model parameters involves iterating through
 multiple steps until the calculated data sufficiently matches the
 experimental data. This process is illustrated in the following diagram:</p>
 <pre class="mermaid"><code>flowchart LR
-    a(Propose&lt;br/&gt;model)
-    b(Set/change&lt;br/&gt;model&lt;br/&gt;parameter&lt;br/&gt;values)
-    c(Calculate&lt;br/&gt;model&lt;br/&gt;data)
-    d(Compare&lt;br/&gt;model data to&lt;br/&gt;experimental&lt;br/&gt;data)
+    a(Propose&lt;br/&gt;structure)
+    b(Set/change&lt;br/&gt;structure and&lt;br/&gt;experiment&lt;br/&gt;parameters)
+    c(Calculate&lt;br/&gt;pattern)
+    d(Compare&lt;br/&gt;calculated data to&lt;br/&gt;experimental&lt;br/&gt;data)
     e(Stop&lt;br/&gt;iteration)
     a --&gt; b
     b --&gt; c
@@ -3413,6 +3459,12 @@ traditional optimizers which search for the best minimum they can find
 in the search space, bumps provides Bayesian uncertainty analysis which
 explores all viable minima and finds confidence intervals on the
 parameters based on uncertainty in the measured values.</p>
+<h3 id="emcee-minimizer">emcee Minimizer</h3>
+<p><a href="https://emcee.readthedocs.io/">emcee</a> is an affine-invariant ensemble
+sampler for Bayesian posterior exploration. It is useful after a stable
+least-squares model has been prepared and the goal is to inspect
+credible intervals, correlations, and posterior-predictive uncertainty
+rather than only one best-fit point.</p>
 <h3 id="dfo-ls-minimizer">DFO-LS Minimizer</h3>
 <p><a href="https://github.com/numericalalgorithmsgroup/dfols">DFO-LS</a>
 (Derivative-Free Optimizer for Least-Squares) is a Python library for
@@ -3420,38 +3472,73 @@ solving nonlinear least-squares minimization, without requiring
 derivatives of the objective.</p>
 <h3 id="set-minimizer">Set Minimizer</h3>
 <p>To show the supported minimizers:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fitting</span><span class="o">.</span><span class="n">show_minimizer_types</span><span class="p">()</span>
+<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">minimizer</span><span class="o">.</span><span class="n">show_supported</span><span class="p">()</span>
 </code></pre></div>
-<p>The example of the output is:</p>
-<p>Supported minimizers</p>
+<p>Example output:</p>
+<p>Minimizer types</p>
 <table>
 <thead>
 <tr>
-<th>Minimizer</th>
+<th></th>
+<th>Type</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
+<td></td>
 <td>lmfit</td>
-<td>LMFIT library using the default Levenberg-Marquardt least squares method</td>
+<td>LMFIT library using the default Levenberg-Marquardt method</td>
 </tr>
 <tr>
+<td>*</td>
 <td>lmfit (leastsq)</td>
 <td>LMFIT library with Levenberg-Marquardt least squares method</td>
 </tr>
 <tr>
+<td></td>
 <td>lmfit (least_squares)</td>
 <td>LMFIT library with SciPy's trust region reflective algorithm</td>
 </tr>
 <tr>
+<td></td>
 <td>dfols</td>
 <td>DFO-LS library for derivative-free least-squares optimization</td>
+</tr>
+<tr>
+<td></td>
+<td>bumps</td>
+<td>BUMPS library using the default Levenberg-Marquardt method</td>
+</tr>
+<tr>
+<td></td>
+<td>bumps (lm)</td>
+<td>BUMPS library with Levenberg-Marquardt method</td>
+</tr>
+<tr>
+<td></td>
+<td>bumps (dream)</td>
+<td>BUMPS library with DREAM Bayesian sampling</td>
+</tr>
+<tr>
+<td></td>
+<td>bumps (amoeba)</td>
+<td>BUMPS library with Nelder-Mead simplex method</td>
+</tr>
+<tr>
+<td></td>
+<td>bumps (de)</td>
+<td>BUMPS library with differential evolution method</td>
+</tr>
+<tr>
+<td></td>
+<td>emcee</td>
+<td>emcee affine-invariant ensemble Bayesian sampling</td>
 </tr>
 </tbody>
 </table>
 <p>To select the desired minimizer, e.g., 'lmfit':</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fitting</span><span class="o">.</span><span class="n">minimizer_type</span> <span class="o">=</span> <span class="s1">&#39;lmfit&#39;</span>
+<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">minimizer</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s1">&#39;lmfit&#39;</span>
 </code></pre></div>
 <h3 id="fit-mode">Fit Mode</h3>
 <p>In EasyDiffraction, you can set the <strong>fit mode</strong> to control how the
@@ -3475,19 +3562,24 @@ across all experiments.</p>
 <td>joint</td>
 <td>Simultaneous fitting of all experiments; some parameters are shared</td>
 </tr>
+<tr>
+<td>sequential</td>
+<td>Repeated single fits over a scan directory</td>
+</tr>
 </tbody>
 </table>
 <p>You can set the fit mode on the analysis owner:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fitting_mode_type</span> <span class="o">=</span> <span class="s1">&#39;joint&#39;</span>
+<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fitting_mode</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s1">&#39;joint&#39;</span>
 </code></pre></div>
 <p>To check the current fit mode:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fitting_mode_type</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fitting_mode</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
 </code></pre></div>
 <h3 id="perform-fit">Perform Fit</h3>
 <p>Refining the structure and experiment parameters against measured data
 is usually divided into several steps, where each step involves adding
-or removing parameters to be refined, calculating the model data, and
-comparing it to the experimental data as shown in the diagram above.</p>
+or removing parameters to be refined, calculating the diffraction
+pattern, and comparing it to the experimental data as shown in the
+diagram above.</p>
 <p>To select the parameters to be refined, you can set the attribute <code>free</code>
 of the parameters to <code>True</code>. This indicates that the parameter is free
 to be optimized during the refinement process.</p>
@@ -3509,29 +3601,30 @@ using the <code>fit</code> method of the <code>analysis</code> object:</p>
 parameters until the calculated data sufficiently matches the
 experimental data.</p>
 <p>An example of the output after performing the fit is:</p>
-<div class="language-console highlight"><pre><span></span><code><span class="go">Using experiment 🔬 &#39;hrpt&#39; for &#39;single&#39; fitting</span>
-<span class="go">🚀 Starting fitting process with &#39;lmfit (leastsq)&#39;...</span>
-<span class="go">📈 Goodness-of-fit (reduced χ²) change:</span>
-<span class="go">╒═════════════════╤═════════════════╤═════════════════╕</span>
-<span class="go">│    iteration    │        χ²       │ improvement [%] │</span>
-<span class="go">╞═════════════════╪═════════════════╪═════════════════╡</span>
-<span class="go">│        1        │      164.59     │                 │</span>
-<span class="go">│        12       │      33.43      │     79.7% ↓     │</span>
-<span class="go">│        21       │      13.22      │     60.4% ↓     │</span>
-<span class="go">│        30       │       5.78      │     56.3% ↓     │</span>
-<span class="go">│        39       │       3.15      │     45.6% ↓     │</span>
-<span class="go">│        77       │       3.14      │                 │</span>
-<span class="go">╘═════════════════╧═════════════════╧═════════════════╛</span>
-<span class="go">🏆 Best goodness-of-fit (reduced χ²) is 3.14 at iteration 73</span>
+<div class="language-console highlight"><pre><span></span><code><span class="go">🚀 Starting fit process with &#39;lmfit (leastsq)&#39;...</span>
+<span class="go">📈 Goodness-of-fit progress:</span>
+<span class="go">╒═══════════╤══════════╤═══════╤═════════════════╕</span>
+<span class="go">│ iteration │ time (s) │  χ²   │ change / status │</span>
+<span class="go">╞═══════════╪══════════╪═══════╪═════════════════╡</span>
+<span class="go">│     1     │   0.10   │ 164.6 │ initial         │</span>
+<span class="go">│    12     │   0.24   │ 33.4  │ 79.7 % ↓        │</span>
+<span class="go">│    21     │   0.38   │ 13.2  │ 60.4 % ↓        │</span>
+<span class="go">│    30     │   0.52   │  5.8  │ 56.3 % ↓        │</span>
+<span class="go">│    77     │   0.77   │  3.1  │ converged       │</span>
+<span class="go">╘═══════════╧══════════╧═══════╧═════════════════╛</span>
+<span class="go">🏆 Best goodness-of-fit (reduced χ²) is 3.14 at iteration 77</span>
 <span class="go">✅ Fitting complete.</span>
-<span class="go">Fit results</span>
-<span class="go">✅ Success: True</span>
-<span class="go">⏱️ Fitting time: 0.77 seconds</span>
-<span class="go">📏 Goodness-of-fit (reduced χ²): 3.14</span>
-<span class="go">📏 R-factor (Rf): 8.42%</span>
-<span class="go">📏 R-factor squared (Rf²): 11.79%</span>
-<span class="go">📏 Weighted R-factor (wR): 11.62%</span>
-<span class="go">📈 Fitted parameters:</span>
+<span class="go">📋 Least-squares fit results:</span>
+<span class="go">╒═════════════════════════════════╤════════════════╕</span>
+<span class="go">│ 🧪 Minimizer                    │ lmfit (leastsq)│</span>
+<span class="go">│ ✅ Overall status               │ success        │</span>
+<span class="go">│ ⏱️ Fitting time (seconds)       │ 0.77           │</span>
+<span class="go">│ 🔁 Iterations                   │ 77             │</span>
+<span class="go">│ 📏 Goodness-of-fit (reduced χ²) │ 3.14           │</span>
+<span class="go">│ 📏 R-factor (Rf, %)             │ 8.42           │</span>
+<span class="go">│ 📏 Weighted R-factor (wR, %)    │ 11.62          │</span>
+<span class="go">╘═════════════════════════════════╧════════════════╛</span>
+<span class="go">📈 Refined parameters:</span>
 </code></pre></div>
 <p>Now, you can inspect the fitted parameters to see how they have changed
 during the refinement process, select more parameters to be refined, and
@@ -3540,34 +3633,61 @@ perform additional fits as needed.</p>
 <code>pattern</code> method of the <code>display</code> object:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">pattern</span><span class="p">(</span><span class="n">expt_name</span><span class="o">=</span><span class="s1">&#39;hrpt&#39;</span><span class="p">)</span>
 </code></pre></div>
+<h2 id="bayesian-analysis">Bayesian Analysis</h2>
+<p>Bayesian minimizers sample a posterior distribution rather than only
+optimizing to a single minimum. They are useful after a conventional
+least-squares fit has produced a stable model and you want credible
+intervals, parameter correlations, and posterior-predictive uncertainty.</p>
+<p>Two minimizer types currently use Bayesian sampling:</p>
+<ul>
+<li><code>bumps (dream)</code> uses the DREAM sampler through Bumps.</li>
+<li><code>emcee</code> uses the affine-invariant ensemble sampler and can resume from
+  a saved project.</li>
+</ul>
+<p>Select a Bayesian minimizer through the same category-owned selector:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">minimizer</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s1">&#39;emcee&#39;</span>
+<span class="n">project</span><span class="o">.</span><span class="n">save_as</span><span class="p">(</span><span class="n">dir_path</span><span class="o">=</span><span class="s1">&#39;lbco_hrpt&#39;</span><span class="p">)</span>  <span class="c1"># required before an emcee fit</span>
+<span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+</code></pre></div>
+<p>For a saved <code>emcee</code> project, resume the chain with extra steps:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">resume</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">extra_steps</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+</code></pre></div>
+<p>After a Bayesian fit, inspect posterior summaries and plots:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">posterior</span><span class="o">.</span><span class="n">distribution</span><span class="p">()</span>
+<span class="n">project</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">posterior</span><span class="o">.</span><span class="n">pairs</span><span class="p">()</span>
+<span class="n">project</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">posterior</span><span class="o">.</span><span class="n">predictive</span><span class="p">(</span><span class="n">expt_name</span><span class="o">=</span><span class="s1">&#39;hrpt&#39;</span><span class="p">)</span>
+</code></pre></div>
+<p>When posterior or posterior-predictive arrays are persisted, they are
+stored in <code>analysis/results.h5</code>. Scalar summaries remain in
+<code>analysis/analysis.cif</code>.</p>
 <h2 id="constraints">Constraints</h2>
-<p>In EasyDiffraction, you can define <strong>constraints</strong> on the model
-parameters to ensure that they remain within a specific range or follow
-a certain relationship during the refinement process.</p>
+<p>In EasyDiffraction, you can define <strong>constraints</strong> on the structure or
+experiment parameters to ensure that they remain within a specific range
+or follow a certain relationship during the refinement process.</p>
 <h3 id="setting-aliases">Setting Aliases</h3>
 <p>Before setting constraints, you need to set aliases for the parameters
-you want to constrain. This can be done using the <code>add</code> method of the
+you want to constrain. This can be done using the <code>create</code> method of the
 <code>aliases</code> object. Aliases are used to reference parameters in a more
 readable way, making it easier to manage constraints.</p>
 <p>An example of setting aliases for parameters in a structure:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="c1"># Set aliases for the atomic displacement parameters</span>
 <span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
     <span class="n">label</span><span class="o">=</span><span class="s1">&#39;biso_La&#39;</span><span class="p">,</span>
-    <span class="n">param_uid</span><span class="o">=</span><span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="p">[</span><span class="s1">&#39;lbco&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">atom_sites</span><span class="p">[</span><span class="s1">&#39;La&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">adp_iso</span><span class="o">.</span><span class="n">uid</span><span class="p">,</span>
+    <span class="n">param</span><span class="o">=</span><span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="p">[</span><span class="s1">&#39;lbco&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">atom_sites</span><span class="p">[</span><span class="s1">&#39;La&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">adp_iso</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
     <span class="n">label</span><span class="o">=</span><span class="s1">&#39;biso_Ba&#39;</span><span class="p">,</span>
-    <span class="n">param_uid</span><span class="o">=</span><span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="p">[</span><span class="s1">&#39;lbco&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">atom_sites</span><span class="p">[</span><span class="s1">&#39;Ba&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">adp_iso</span><span class="o">.</span><span class="n">uid</span><span class="p">,</span>
+    <span class="n">param</span><span class="o">=</span><span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="p">[</span><span class="s1">&#39;lbco&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">atom_sites</span><span class="p">[</span><span class="s1">&#39;Ba&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">adp_iso</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="c1"># Set aliases for the occupancies of the atom sites</span>
 <span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
     <span class="n">label</span><span class="o">=</span><span class="s1">&#39;occ_La&#39;</span><span class="p">,</span>
-    <span class="n">param_uid</span><span class="o">=</span><span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="p">[</span><span class="s1">&#39;lbco&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">atom_sites</span><span class="p">[</span><span class="s1">&#39;La&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">occupancy</span><span class="o">.</span><span class="n">uid</span><span class="p">,</span>
+    <span class="n">param</span><span class="o">=</span><span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="p">[</span><span class="s1">&#39;lbco&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">atom_sites</span><span class="p">[</span><span class="s1">&#39;La&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">occupancy</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
     <span class="n">label</span><span class="o">=</span><span class="s1">&#39;occ_Ba&#39;</span><span class="p">,</span>
-    <span class="n">param_uid</span><span class="o">=</span><span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="p">[</span><span class="s1">&#39;lbco&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">atom_sites</span><span class="p">[</span><span class="s1">&#39;Ba&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">occupancy</span><span class="o">.</span><span class="n">uid</span><span class="p">,</span>
+    <span class="n">param</span><span class="o">=</span><span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="p">[</span><span class="s1">&#39;lbco&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">atom_sites</span><span class="p">[</span><span class="s1">&#39;Ba&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">occupancy</span><span class="p">,</span>
 <span class="p">)</span>
 </code></pre></div>
 <h3 id="setting-constraints">Setting Constraints</h3>
@@ -3596,18 +3716,22 @@ method:</p>
 <table>
 <thead>
 <tr>
+<th>id</th>
 <th>expression</th>
 </tr>
 </thead>
 <tbody>
 <tr>
+<td>biso_Ba</td>
 <td>biso_Ba = biso_La</td>
 </tr>
 <tr>
+<td>occ_Ba</td>
 <td>occ_Ba = 1 - occ_La</td>
 </tr>
 </tbody>
 </table>
+<p>Constraints enabled: True</p>
 <h2 id="analysis-as-cif">Analysis as <abbr title="Crystallographic Information File.">CIF</abbr></h2>
 <p>To inspect an analysis configuration in <abbr title="Crystallographic Information File.">CIF</abbr> format, use:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="c1"># Show analysis as CIF</span>
@@ -3615,21 +3739,22 @@ method:</p>
 </code></pre></div>
 <p>Example output:</p>
 <div class="language-text highlight"><pre><span></span><code>╒════════════════════════════════════════════════╕
-│ _fitting.minimizer_type      &quot;lmfit (leastsq)&quot; │
-│ _fitting.mode_type           single            │
+│ _fitting_mode.type           single            │
+│ _minimizer.type              &quot;lmfit (leastsq)&quot; │
 │                                                │
 │ loop_                                          │
 │ _alias.label                                   │
-│ _alias.param_uid                               │
+│ _alias.param_unique_name                       │
 │ biso_La  lbco.atom_site.La.B_iso_or_equiv      │
 │ biso_Ba  lbco.atom_site.Ba.B_iso_or_equiv      │
 │ occ_La   lbco.atom_site.La.occupancy           │
 │ occ_Ba   lbco.atom_site.Ba.occupancy           │
 │                                                │
 │ loop_                                          │
+│ _constraint.id                                 │
 │ _constraint.expression                         │
-│ &quot;biso_Ba = biso_La&quot;                            │
-│ &quot;occ_Ba = 1 - occ_La&quot;                         │
+│ biso_Ba  &quot;biso_Ba = biso_La&quot;                   │
+│ occ_Ba   &quot;occ_Ba = 1 - occ_La&quot;                 │
 ╘════════════════════════════════════════════════╛
 </code></pre></div>
 <h2 id="saving-an-analysis">Saving an Analysis</h2>

@@ -30,6 +30,14 @@ project_dir = ed.download_data(id=37, destination='projects')
 project = ed.Project.load(project_dir)
 
 # %% [markdown]
+# ## View Structure
+#
+# Render the Co2SiO4 structure restored from the saved project.
+
+# %%
+project.display.structure(struct_name='cosio')
+
+# %% [markdown]
 # ## Resume Sequential Analysis
 #
 # This project already stores the template experiment, sequential-fit

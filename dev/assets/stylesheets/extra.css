@@ -257,6 +257,82 @@ Adjust the margins and paddings to fit the defaults in MkDocs Material and do no
   padding-left: 0.85em !important;
 }
 
+/* Keep inline Three.js structure outputs inside the notebook stacking context.
+   Generated notebook HTML contains internal z-index values, so isolate the
+   viewer to stop its controls from painting over the sticky MkDocs header. */
+.md-typeset .crysview {
+  isolation: isolate;
+  z-index: 0;
+}
+
+.md-typeset .crysview .cv-card,
+.md-typeset .crysview .cv-download,
+.md-typeset .crysview .cv-hint {
+  z-index: 2 !important;
+}
+
+.md-typeset .crysview .cv-tooltip {
+  z-index: 4 !important;
+}
+
+.md-typeset .crysview .mb-select {
+  height: calc(var(--cv-control-h, 32px) + 2px) !important;
+  min-height: calc(var(--cv-control-h, 32px) + 2px) !important;
+  max-height: calc(var(--cv-control-h, 32px) + 2px) !important;
+  box-sizing: border-box !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  margin: -1px 0 !important;
+  vertical-align: top !important;
+  font-family: inherit !important;
+  font-size: 12px !important;
+  line-height: calc(var(--cv-control-h, 32px) - 2px) !important;
+  padding: 0 22px 0 8px !important;
+}
+
+.md-typeset .crysview.cv-host-theme-dark {
+  --cv-scene-bg: transparent !important;
+  --cv-scene-fg: #e6e8ee !important;
+  --cv-label-shadow-bg: #212121 !important;
+  --cv-panel-bg: rgba(37, 37, 43, 0.95) !important;
+  --cv-panel-border: #52545c !important;
+  --cv-panel-fg: var(--cv-scene-fg) !important;
+  --cv-control-bg: #2c2f37 !important;
+  --cv-control-hover-bg: #373b45 !important;
+  --cv-control-active-bg: #3d4657 !important;
+  --cv-control-active-border: #63708a !important;
+  --cv-control-fg: var(--cv-scene-fg) !important;
+  --cv-control-muted: #8d929e !important;
+  background: transparent !important;
+  color: var(--cv-scene-fg) !important;
+}
+
+.md-typeset .crysview.cv-host-theme-light {
+  --cv-scene-bg: transparent !important;
+  --cv-scene-fg: #222 !important;
+  --cv-label-shadow-bg: #fff !important;
+  --cv-panel-bg: rgba(255, 255, 255, 0.94) !important;
+  --cv-panel-border: #e2e2e2 !important;
+  --cv-panel-fg: #222 !important;
+  --cv-control-bg: #f5f5f6 !important;
+  --cv-control-hover-bg: #e9eaef !important;
+  --cv-control-active-bg: #e7ecf5 !important;
+  --cv-control-active-border: #c6d0e2 !important;
+  --cv-control-fg: #2a3f5f !important;
+  --cv-control-muted: #b9bdc6 !important;
+  background: transparent !important;
+  color: var(--cv-scene-fg) !important;
+}
+
+.md-typeset .crysview.cv-host-theme-dark .cv-atom-label,
+.md-typeset .crysview.cv-host-theme-light .cv-atom-label {
+  color: var(--cv-scene-fg) !important;
+  text-shadow:
+    0 0 3px var(--cv-label-shadow-bg),
+    0 0 3px var(--cv-label-shadow-bg),
+    0 0 3px var(--cv-label-shadow-bg) !important;
+}
+
 /* Extra styling the panda dataframes, on top of the style included in the code */
 table.dataframe {
   float: left;

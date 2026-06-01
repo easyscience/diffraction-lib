@@ -31,6 +31,12 @@ project_dir = download_data(id=36, destination='projects')
 project = Project.load(project_dir)
 
 # %% [markdown]
+# ## View Structure
+
+# %%
+project.display.structure(struct_name='lbco')
+
+# %% [markdown]
 # ## Perform Analysis
 
 # %%

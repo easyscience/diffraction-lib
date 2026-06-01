@@ -118,6 +118,13 @@ struct.atom_sites.create(
 )
 
 # %% [markdown]
+# #### Plot Structure
+
+# %%
+project.structure_style.atom_view = 'adp'
+project.display.structure(struct_name='cosio')
+
+# %% [markdown]
 # ## Step 3: Define Template Experiment
 #
 # For sequential fitting, we create a single template experiment from
@@ -296,6 +303,13 @@ display.fit.correlations()
 
 # %%
 display.pattern(expt_name='d20')
+
+# %% [markdown]
+# #### Plot structure after the first fit.
+
+# %%
+project.structure_style.atom_view = 'adp'
+project.display.structure(struct_name='cosio')
 
 # %% [markdown]
 # #### Run Sequential Fitting

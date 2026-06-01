@@ -3707,7 +3707,7 @@ fitted model, experiments, and analysis results.</p>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction.report.html_renderer</span><span class="w"> </span><span class="kn">import</span> <span class="n">render_html_report</span>  <span class="c1"># noqa: PLC0415</span>
 
-        <span class="k">return</span> <span class="n">render_html_report</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_context</span><span class="p">(),</span> <span class="n">offline</span><span class="o">=</span><span class="n">offline</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">render_html_report</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_context</span><span class="p">(),</span> <span class="n">offline</span><span class="o">=</span><span class="n">offline</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">save_tex</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -4438,7 +4438,7 @@ fitted model, experiments, and analysis results.</p>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction.report.html_renderer</span><span class="w"> </span><span class="kn">import</span> <span class="n">render_html_report</span>  <span class="c1"># noqa: PLC0415</span>
 
-    <span class="k">return</span> <span class="n">render_html_report</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_context</span><span class="p">(),</span> <span class="n">offline</span><span class="o">=</span><span class="n">offline</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">render_html_report</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_context</span><span class="p">(),</span> <span class="n">offline</span><span class="o">=</span><span class="n">offline</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>

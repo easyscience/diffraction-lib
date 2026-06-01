@@ -619,6 +619,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#least-squares-and-bayesian-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Least-Squares and Bayesian Analysis
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2922,6 +2933,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#least-squares-and-bayesian-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Least-Squares and Bayesian Analysis
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2951,7 +2973,7 @@
 main steps:<br />
 <strong>data acquisition</strong>, <strong>data reduction</strong>, and <strong>data analysis</strong>.</p>
 <pre class="mermaid"><code>flowchart LR
-    a(Data Aquisition)
+    a(Data Acquisition)
     b(Data Reduction)
     c(Data Analysis)
     a --&gt; b
@@ -3023,6 +3045,20 @@ model into two parts: the <strong>structure</strong> and the <strong>experiment<
 sample by minimizing the difference (or <strong>residual</strong>) between the
 experimental and calculated data — and this is exactly where
 EasyDiffraction comes into play.</p>
+<h2 id="least-squares-and-bayesian-analysis">Least-Squares and Bayesian Analysis</h2>
+<p>Most refinements use least-squares minimization: EasyDiffraction varies
+the selected free parameters and reports the best-fit values, standard
+uncertainties, R-factors, and goodness-of-fit metrics. This is the usual
+workflow for routine model refinement and is available through
+minimizers such as <code>lmfit</code>, <code>dfols</code>, and several <code>bumps</code> optimizers.</p>
+<p>Bayesian analysis answers a different question. Instead of reporting
+only one best-fit point and a covariance estimate, a Bayesian sampler
+explores the posterior distribution of the free parameters. This gives
+credible intervals, correlations, posterior-predictive patterns, and
+diagnostics such as r-hat and effective sample size. EasyDiffraction
+currently exposes Bayesian workflows through <code>bumps (dream)</code> and
+<code>emcee</code>; their posterior and predictive arrays are stored in
+<code>analysis/results.h5</code> when available.</p>
 <!-- prettier-ignore-start -->
 <figure>
 <p><img _="," alt="" loading="lazy" src="../../assets/images/user-guide/data-analysis_refinement.png" width="450" /></p>

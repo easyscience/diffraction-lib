@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#_pd_instr" class="md-skip">
+        <a href="#_instr" class="md-skip">
           Skip to content
         </a>
       
@@ -2804,10 +2804,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#_pd_instrresolution" class="md-nav__link">
+  <a href="#_instrwavelength" class="md-nav__link">
     <span class="md-ellipsis">
       
-        _pd_instr.resolution
+        _instr.wavelength
       
     </span>
   </a>
@@ -2815,10 +2815,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_pd_instrreflex_asymmetry" class="md-nav__link">
+  <a href="#_instr2theta_offset" class="md-nav__link">
     <span class="md-ellipsis">
       
-        _pd_instr.reflex_asymmetry
+        _instr.2theta_offset
       
     </span>
   </a>
@@ -2826,10 +2826,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_pd_instr2theta_bank" class="md-nav__link">
+  <a href="#_instr2theta_bank" class="md-nav__link">
     <span class="md-ellipsis">
       
-        _pd_instr.2theta_bank
+        _instr.2theta_bank
       
     </span>
   </a>
@@ -2837,54 +2837,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_pd_instrdtt" class="md-nav__link">
+  <a href="#_instrd_to_tof" class="md-nav__link">
     <span class="md-ellipsis">
       
-        _pd_instr.dtt
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_pd_instrzero" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        _pd_instr.zero
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_pd_instralpha" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        _pd_instr.alpha
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_pd_instrbeta" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        _pd_instr.beta
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_pd_instrsigma" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        _pd_instr.sigma
+        _instr.d_to_tof
       
     </span>
   </a>
@@ -2916,72 +2872,40 @@
 
 
 <p><a class="label-cif" href="#">customCIF</a></p>
-<h1 id="_pd_instr">_pd_instr</h1>
-<p>This section contains information relevant to the instrument used for
-the diffraction measurement, similar to this
-<a href="https://www.iucr.org/resources/cif/dictionaries/browse/cif_pd"><abbr title="International Union of Crystallography.">IUCr</abbr> section</a>.</p>
-<h2 id="_pd_instrresolution"><a href="#">_pd_instr.resolution</a></h2>
-<p>In general, the profile of a Bragg reflection centred at the peak
-position can be approximated by mathematical convolution of
-contributions from the instrument, called the instrumental resolution
-function, and from the microstructure of the sample. Because many
-contributions to powder diffraction peaks have a nearly Gaussian or
-Lorentzian shape, the pseudo-Voigt function, is widely used to describe
-peak profiles in powder diffraction.</p>
-<p>Half-width parameters (normally characterising the instrumental
-resolution function) as implemented in <a href="https://cryspy.fr">CrysPy</a>:</p>
+<h1 id="_instr">_instr</h1>
+<p>This category stores instrument setup and calibration parameters used by
+EasyDiffraction experiments. Constant-wavelength and time-of-flight
+experiments use different subsets of the category.</p>
+<h2 id="_instrwavelength">_instr.wavelength</h2>
+<p>Incident neutron or X-ray wavelength for constant-wavelength
+experiments. In Python this is accessed as:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="n">experiment</span><span class="o">.</span><span class="n">instrument</span><span class="o">.</span><span class="n">setup_wavelength</span>
+</code></pre></div>
+<h2 id="_instr2theta_offset">_instr.2theta_offset</h2>
+<p>Two-theta zero offset for constant-wavelength powder experiments. In
+Python this is accessed as:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="n">experiment</span><span class="o">.</span><span class="n">instrument</span><span class="o">.</span><span class="n">calib_twotheta_offset</span>
+</code></pre></div>
+<h2 id="_instr2theta_bank">_instr.2theta_bank</h2>
+<p>Detector-bank two-theta angle for time-of-flight powder experiments. In
+Python this is accessed as:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="n">experiment</span><span class="o">.</span><span class="n">instrument</span><span class="o">.</span><span class="n">setup_twotheta_bank</span>
+</code></pre></div>
+<h2 id="_instrd_to_tof">_instr.d_to_tof</h2>
+<p>Time-of-flight calibration terms converting d-spacing to time of flight.
+In Python these are accessed as:</p>
 <ul>
-<li>_pd_instr.resolution_u</li>
-<li>_pd_instr.resolution_v</li>
-<li>_pd_instr.resolution_w</li>
+<li><code>experiment.instrument.calib_d_to_tof_recip</code></li>
+<li><code>experiment.instrument.calib_d_to_tof_offset</code></li>
+<li><code>experiment.instrument.calib_d_to_tof_linear</code></li>
+<li><code>experiment.instrument.calib_d_to_tof_quad</code></li>
 </ul>
-<p>Lorentzian isotropic microstrain parameter as implemented in
-<a href="https://cryspy.fr">CrysPy</a>:</p>
+<p>They serialize to the following <abbr title="Crystallographic Information File.">CIF</abbr> tags:</p>
 <ul>
-<li>_pd_instr.resolution_x</li>
-</ul>
-<p>Lorentzian isotropic particle size parameteras implemented in
-<a href="https://cryspy.fr">CrysPy</a>:</p>
-<ul>
-<li>_pd_instr.resolution_y</li>
-</ul>
-<h2 id="_pd_instrreflex_asymmetry"><a href="#">_pd_instr.reflex_asymmetry</a></h2>
-<p>Peak profile asymmetry parameters as implemented in
-<a href="https://cryspy.fr">CrysPy</a>.</p>
-<ul>
-<li>_pd_instr.reflex_asymmetry_p1</li>
-<li>_pd_instr.reflex_asymmetry_p2</li>
-<li>_pd_instr.reflex_asymmetry_p3</li>
-<li>_pd_instr.reflex_asymmetry_p4</li>
-</ul>
-<h2 id="_pd_instr2theta_bank"><a href="#">_pd_instr.2theta_bank</a></h2>
-<p>Time-of-flight parameters as implemented in <a href="https://cryspy.fr">CrysPy</a>.</p>
-<h2 id="_pd_instrdtt"><a href="#">_pd_instr.dtt</a></h2>
-<p>Time-of-flight parameters as implemented in <a href="https://cryspy.fr">CrysPy</a>.</p>
-<ul>
-<li>_pd_instr.dtt1</li>
-<li>_pd_instr.dtt2</li>
-</ul>
-<h2 id="_pd_instrzero"><a href="#">_pd_instr.zero</a></h2>
-<p>Time-of-flight parameters as implemented in <a href="https://cryspy.fr">CrysPy</a>.</p>
-<h2 id="_pd_instralpha"><a href="#">_pd_instr.alpha</a></h2>
-<p>Time-of-flight parameters as implemented in <a href="https://cryspy.fr">CrysPy</a>.</p>
-<ul>
-<li>_pd_instr.alpha0</li>
-<li>_pd_instr.alpha1</li>
-</ul>
-<h2 id="_pd_instrbeta"><a href="#">_pd_instr.beta</a></h2>
-<p>Time-of-flight parameters as implemented in <a href="https://cryspy.fr">CrysPy</a>.</p>
-<ul>
-<li>_pd_instr.beta0</li>
-<li>_pd_instr.beta1</li>
-</ul>
-<h2 id="_pd_instrsigma"><a href="#">_pd_instr.sigma</a></h2>
-<p>Time-of-flight parameters as implemented in <a href="https://cryspy.fr">CrysPy</a>.</p>
-<ul>
-<li>_pd_instr.sigma0</li>
-<li>_pd_instr.sigma1</li>
-<li>_pd_instr.sigma2</li>
+<li><code>_instr.d_to_tof_recip</code></li>
+<li><code>_instr.d_to_tof_offset</code></li>
+<li><code>_instr.d_to_tof_linear</code></li>
+<li><code>_instr.d_to_tof_quad</code></li>
 </ul>
 <!-- prettier-ignore-start -->
 <!-- prettier-ignore-end -->

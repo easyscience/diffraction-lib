@@ -3084,10 +3084,11 @@ The base dictionary, <strong>coreCIF</strong>, contains the most common paramete
 crystallography. The <strong>pdCIF</strong> dictionary covers parameters specific to
 powder diffraction, <strong>magCIF</strong> is used for magnetic structure analysis.</p>
 <p>As most parameters needed for diffraction data analysis are already
-covered by <abbr title="International Union of Crystallography.">IUCr</abbr> dictionaries, EasyDiffraction uses the strict <strong><abbr title="Crystallographic Information File.">CIF</abbr>
-format</strong> and follows these dictionaries as closely as possible — for
-both input and output — throughout the workflow described in the
-<a href="../analysis-workflow/">Analysis Workflow</a> section.</p>
+covered by <abbr title="International Union of Crystallography.">IUCr</abbr> dictionaries, EasyDiffraction uses <strong><abbr title="Crystallographic Information File.">CIF</abbr></strong> as its
+project persistence format and follows these dictionaries where they fit
+the day-to-day project files. Some EasyDiffraction-owned settings, such
+as minimizer choices and report configuration, use project-specific <abbr title="Crystallographic Information File.">CIF</abbr>
+categories.</p>
 <p>The key advantage of <abbr title="Crystallographic Information File.">CIF</abbr> is the standardized naming of parameters and
 categories, which promotes interoperability and familiarity among
 researchers.</p>
@@ -3214,9 +3215,9 @@ loop_
 <span class="green"><b>_atom_site</b>.fract_x</span>
 <span class="green"><b>_atom_site</b>.fract_y</span>
 <span class="green"><b>_atom_site</b>.fract_z</span>
-<span class="green"><b>_atom_site</b>.Wyckoff_letter</span>
+<span class="green"><b>_atom_site</b>.Wyckoff_symbol</span>
 <span class="green"><b>_atom_site</b>.occupancy</span>
-<span class="green"><b>_atom_site</b>.adp_type</span>
+<span class="green"><b>_atom_site</b>.ADP_type</span>
 <span class="green"><b>_atom_site</b>.B_iso_or_equiv</span>
 La La   0   0   0     a   0.5  Biso 0.4958
 Ba Ba   0   0   0     a   0.5  Biso 0.4958
@@ -3324,7 +3325,8 @@ in the following blocks:</p>
 <li><strong>structure</strong>: defines the structure</li>
 <li><strong>experiment</strong>: contains the experiment setup and measured data</li>
 <li><strong>analysis</strong>: stores fitting and analysis parameters</li>
-<li><strong>summary</strong>: captures analysis results</li>
+<li><strong>reports</strong>: stores generated HTML, <abbr title="Crystallographic Information File.">CIF</abbr>, TeX, and PDF reports when
+  enabled through <code>project.report</code></li>
 </ul>
 <p>Example <abbr title="Crystallographic Information File.">CIF</abbr> files for each block are provided in the
 <a href="../analysis-workflow/">Analysis Workflow</a> and

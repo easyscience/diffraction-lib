@@ -41,6 +41,12 @@ project.structures['ni'].atom_sites.create(
 )
 
 # %% [markdown]
+# ## Plot Structure
+
+# %%
+project.display.structure(struct_name='ni')
+
+# %% [markdown]
 # ## Add Experiment
 
 # %%

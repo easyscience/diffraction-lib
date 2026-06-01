@@ -187,6 +187,12 @@ project.analysis.joint_fit.create(experiment_id='sepd', weight=0.7)
 project.analysis.joint_fit.create(experiment_id='nomad', weight=0.3)
 
 # %% [markdown]
+# #### Plot Structure
+
+# %%
+project.display.structure(struct_name='si')
+
+# %% [markdown]
 # #### Plot Measured vs Calculated (Before Fit)
 
 # %%
