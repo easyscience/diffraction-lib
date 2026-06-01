@@ -2107,17 +2107,25 @@ def test_plot_param_correlations_renders_plotly_heatmap(monkeypatch):
     assert fig.layout.margin.b == (
         SQUARE_MATRIX_BOTTOM_MARGIN_PIXELS + 2 * SQUARE_MATRIX_AXIS_TITLE_LINE_HEIGHT_PIXELS
     )
+    correlation_wrapper_meta = Plotter._square_matrix_layout_meta(
+        n_parameters=2,
+        annotation_labels=[
+            'phase.<br>scale',
+            'phase.<br>cell.<br>length_c',
+            'phase.<br>scale',
+            'phase.<br>cell.<br>length_c',
+        ],
+        cell_size_pixels=Plotter._correlation_cell_size_pixels(),
+        cap_width=True,
+    )['fixed_aspect_wrapper']
     assert (
         fig.layout.meta['fixed_aspect_wrapper']['aspect_ratio']
-        == Plotter._square_matrix_layout_meta(
-            n_parameters=2,
-            annotation_labels=[
-                'phase.<br>scale',
-                'phase.<br>cell.<br>length_c',
-                'phase.<br>scale',
-                'phase.<br>cell.<br>length_c',
-            ],
-        )['fixed_aspect_wrapper']['aspect_ratio']
+        == correlation_wrapper_meta['aspect_ratio']
+    )
+    # Cells are capped to ~16 label characters wide via the wrapper max-width.
+    assert (
+        fig.layout.meta['fixed_aspect_wrapper']['max_width_pixels']
+        == correlation_wrapper_meta['max_width_pixels']
     )
     assert fig.layout.xaxis.showline is False
     assert fig.layout.xaxis.mirror is False

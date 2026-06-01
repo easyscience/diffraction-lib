@@ -1290,16 +1290,38 @@ scheduleResize();
         return aspect_ratio
 
     @classmethod
+    def _fixed_aspect_wrapper_max_width(cls, fig: object) -> int | None:
+        """Return the max wrapper width in pixels, if one was requested."""
+        meta = cls._figure_meta(fig)
+        if not isinstance(meta, dict):
+            return None
+
+        wrapper = meta.get(FIXED_ASPECT_WRAPPER_META_KEY)
+        if not isinstance(wrapper, dict):
+            return None
+
+        max_width = wrapper.get('max_width_pixels')
+        if not isinstance(max_width, (int, float)) or isinstance(max_width, bool):
+            return None
+        if max_width <= 0:
+            return None
+        return int(max_width)
+
+    @classmethod
     def _wrap_html_figure(cls, fig: object, html_fig: str) -> str:
         """Wrap inline Plotly HTML in a fixed-aspect container."""
         aspect_ratio = cls._fixed_aspect_wrapper_aspect_ratio(fig)
         if aspect_ratio is None:
             return html_fig
 
+        max_width = cls._fixed_aspect_wrapper_max_width(fig)
+        max_width_css = f'    max-width: {max_width}px;\n' if max_width is not None else ''
+
         return (
             '<style>\n'
             f'.{FIXED_ASPECT_WRAPPER_CLASS_NAME} {{\n'
             '    width: 100%;\n'
+            f'{max_width_css}'
             f'    aspect-ratio: {aspect_ratio};\n'
             '}\n\n'
             f'.{FIXED_ASPECT_WRAPPER_CLASS_NAME} > div,\n'

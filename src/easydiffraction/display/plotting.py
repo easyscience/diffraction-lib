@@ -171,6 +171,11 @@ SQUARE_MATRIX_TOP_MARGIN_PIXELS = 40
 SQUARE_MATRIX_BOTTOM_MARGIN_PIXELS = 40
 SQUARE_MATRIX_AXIS_TITLE_LINE_HEIGHT_PIXELS = 18
 SQUARE_MATRIX_TITLE_LEFT_PADDING_PIXELS = 14
+# Correlation-matrix cells are sized to roughly this many label-font
+# characters; the factor approximates one glyph's width per font pixel
+# for Plotly's default sans-serif axis labels.
+CORRELATION_CELL_LABEL_CHAR_COUNT = 16
+CORRELATION_LABEL_CHAR_WIDTH_FACTOR = 0.6
 POSTERIOR_PAIR_SAMPLE_MARKER_SIZE = 6
 POSTERIOR_PAIR_SAMPLE_HOVER_MARKER_SIZE = 6
 
@@ -2336,23 +2341,38 @@ class Plotter(RendererBase):
         )
         return cell_size * cls._square_matrix_plot_extent(n_parameters)
 
+    @staticmethod
+    def _correlation_cell_size_pixels() -> int:
+        """Return the correlation cell width in pixels (~16 label chars)."""
+        return round(
+            CORRELATION_CELL_LABEL_CHAR_COUNT
+            * CORRELATION_LABEL_CHAR_WIDTH_FACTOR
+            * POSTERIOR_PAIR_AXIS_TITLE_FONT_SIZE
+        )
+
     @classmethod
     def _square_matrix_layout_meta(
         cls,
         *,
         n_parameters: int,
         annotation_labels: list[str],
+        cell_size_pixels: int | None = None,
+        cap_width: bool = False,
     ) -> dict[str, object]:
         """Return wrapper metadata for square matrix plots."""
         margins = cls._square_matrix_layout_margin(annotation_labels)
-        plot_size = cls._square_matrix_target_plot_size_pixels(n_parameters)
+        if cell_size_pixels is None:
+            plot_size = cls._square_matrix_target_plot_size_pixels(n_parameters)
+        else:
+            plot_size = cell_size_pixels * cls._square_matrix_plot_extent(n_parameters)
         aspect_width = round(plot_size + int(margins['l']) + int(margins['r']))
         aspect_height = round(plot_size + int(margins['t']) + int(margins['b']))
-        return {
-            SQUARE_MATRIX_FIXED_ASPECT_META_KEY: {
-                'aspect_ratio': f'{aspect_width} / {aspect_height}',
-            }
+        wrapper: dict[str, object] = {
+            'aspect_ratio': f'{aspect_width} / {aspect_height}',
         }
+        if cap_width:
+            wrapper['max_width_pixels'] = aspect_width
+        return {SQUARE_MATRIX_FIXED_ASPECT_META_KEY: wrapper}
 
     def _finalize_posterior_pairs_figure(
         self,
@@ -4781,6 +4801,8 @@ class Plotter(RendererBase):
             meta=self._square_matrix_layout_meta(
                 n_parameters=context.n_cols,
                 annotation_labels=[*context.row_labels, *context.col_labels],
+                cell_size_pixels=self._correlation_cell_size_pixels(),
+                cap_width=True,
             ),
             showlegend=False,
         )

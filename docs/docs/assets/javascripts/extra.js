@@ -34,15 +34,15 @@
         background: 'rgba(0, 0, 0, 0)', // DARK_BACKGROUND_COLOR
         foreground: '#e6e8ee', // DARK_FOREGROUND_COLOR
         axisFrame: '#333', // DARK_AXIS_FRAME_COLOR
-        innerTickGrid: '#1e1e1e', // DARK_INNER_TICK_GRID_COLOR
+        innerTickGrid: '#1c1c1c', // DARK_INNER_TICK_GRID_COLOR
         hoverBackground: '#212121', // DARK_HOVER_BACKGROUND_COLOR
-        legend: 'rgba(0, 0, 0, 0.5)', // DARK_LEGEND_BACKGROUND_COLOR
+        legend: 'rgba(33, 33, 33, 0.5)', // DARK_LEGEND_BACKGROUND_COLOR
       }
     }
     return {
       background: 'rgba(0, 0, 0, 0)', // LIGHT_BACKGROUND_COLOR
       foreground: '#222222', // LIGHT_FOREGROUND_COLOR
-      axisFrame: '#e2e2e2', // LIGHT_AXIS_FRAME_COLOR
+      axisFrame: '#e0e0e0', // LIGHT_AXIS_FRAME_COLOR
       innerTickGrid: '#f2f2f2', // LIGHT_INNER_TICK_GRID_COLOR
       hoverBackground: '#ffffff', // LIGHT_HOVER_BACKGROUND_COLOR
       legend: 'rgba(255, 255, 255, 0.5)', // LIGHT_LEGEND_BACKGROUND_COLOR
