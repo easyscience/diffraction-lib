@@ -12,6 +12,15 @@ Accepted.
 
 User-facing API.
 
+## Implementation Note
+
+This ADR was implemented through the
+[`structure-view-settings`](../../plans/structure-view-settings.md)
+plan. That plan also amended
+[`crysview-structure-visualization.md`](crysview-structure-visualization.md)
+for the structure-view settings split; no separate
+`structure-view-settings` ADR exists.
+
 ## Context
 
 EasyDiffraction is used by scientists who explore the API in notebooks,

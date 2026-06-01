@@ -12,7 +12,8 @@ structure-view settings on top of it.
 > `crysview-structure-visualization` branch. The
 > `value-selector-discovery` and `crysview-structure-visualization` ADRs
 > have both been promoted to accepted. This file is retained as the
-> implementation and verification record.
+> implementation and verification record; no same-slug
+> `structure-view-settings` ADR is needed.
 
 **Branch & PR (deliberate exception).** §Planning asks for a flat-slug
 `structure-view-settings` branch off `develop`. This plan deliberately
@@ -26,7 +27,11 @@ later split from the visualization PR, a dedicated
 
 ## ADR
 
-This plan completed the ADR work that was added during planning:
+This plan completed the ADR work that was added during planning. Its two
+architectural decisions intentionally live in existing accepted ADRs:
+there is no separate `structure-view-settings` ADR because the selector
+convention is project-wide and the settings split is part of the
+crysview public surface.
 
 - **Accepted ADR — `value-selector-discovery`**. Recognises a **fourth**
   selector shape beyond the three category-level families in
