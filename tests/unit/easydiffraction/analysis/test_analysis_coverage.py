@@ -194,7 +194,11 @@ class TestSnapshotParams:
             unique_name = 'p1'
             value = 1.23
             uncertainty = 0.01
-            units = 'Å'
+            units = 'angstroms'
+
+            def resolve_display_units(self, context):
+                assert context == 'gui'
+                return 'Å'
 
         class FakeResults:
             parameters = [FakeParam()]
@@ -203,6 +207,7 @@ class TestSnapshotParams:
         assert 'expt1' in a._parameter_snapshots
         assert a._parameter_snapshots['expt1']['p1']['value'] == 1.23
         assert a._parameter_snapshots['expt1']['p1']['uncertainty'] == 0.01
+        assert a._parameter_snapshots['expt1']['p1']['units'] == 'Å'
 
 
 class TestBayesianProjection:
