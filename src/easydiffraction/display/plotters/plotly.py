@@ -1107,6 +1107,7 @@ const applyTheme = function () {
     const update = {
         paper_bgcolor: colors.background,
         plot_bgcolor: colors.background,
+        'modebar.bgcolor': colors.background,
         'font.color': colors.foreground,
         'title.font.color': colors.foreground,
         'legend.bgcolor': colors.legend,
