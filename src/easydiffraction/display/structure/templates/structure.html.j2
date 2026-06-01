@@ -499,6 +499,10 @@ if (SCENE.axes) {
 
 const homeButton = iconButton(cameraGroup, ICONS.home, 'Reset view');
 homeButton.addEventListener('click', () => {
+  perspective.zoom = 1;
+  perspective.updateProjectionMatrix();
+  ortho.zoom = 1;
+  ortho.updateProjectionMatrix();
   camera.up.copy(viewUp);
   camera.position.copy(home);
   controls.target.copy(target);

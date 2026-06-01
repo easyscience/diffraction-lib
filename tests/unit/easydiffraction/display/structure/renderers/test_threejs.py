@@ -619,6 +619,22 @@ class TestRenderHtmlDocument:
         assert 'const PERSPECTIVE_FOV_DEG = 30;' in html
         assert 'new THREE.PerspectiveCamera(PERSPECTIVE_FOV_DEG,' in html
 
+    def test_reset_view_resets_orthographic_zoom(self, patched_theme):
+        html = ThreeJsStructureRenderer().render(
+            _identity_scene(),
+            features=frozenset(),
+            offline=True,
+            dark=False,
+        )
+
+        assert "iconButton(cameraGroup, ICONS.home, 'Reset view');" in html
+        assert 'perspective.zoom = 1;' in html
+        assert 'perspective.updateProjectionMatrix();' in html
+        assert 'ortho.zoom = 1;' in html
+        assert 'ortho.updateProjectionMatrix();' in html
+        assert 'camera.position.copy(home);' in html
+        assert 'controls.target.copy(target);' in html
+
     def test_colour_scheme_select_matches_button_height(self, patched_theme):
         html = ThreeJsStructureRenderer().render(
             _rich_scene(),
