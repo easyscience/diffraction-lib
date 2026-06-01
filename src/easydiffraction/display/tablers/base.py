@@ -147,8 +147,8 @@ class TableBackendBase(ABC):
             Optional environment-specific handle to enable in-place
             updates.
         width : int | None, default=None
-            Optional target table width. Honored by fixed-width
-            backends (e.g. Rich); ignored by reflowing ones (e.g. HTML).
+            Optional target table width. Honored by fixed-width backends
+            (e.g. Rich); ignored by reflowing ones (e.g. HTML).
 
         Returns
         -------

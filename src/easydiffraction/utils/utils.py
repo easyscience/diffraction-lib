@@ -23,6 +23,7 @@ from uncertainties import ufloat_fromstr
 
 from easydiffraction.display.tables import TableRenderer
 from easydiffraction.io.ascii import extract_project_from_zip
+from easydiffraction.utils.environment import in_jupyter
 from easydiffraction.utils.environment import resolve_artifact_path
 from easydiffraction.utils.logging import CONSOLE_PARAGRAPH_STYLE
 from easydiffraction.utils.logging import console
@@ -560,10 +561,11 @@ def list_tutorials() -> None:
     """
     Display a table of available tutorial notebooks.
 
-    Each row shows the tutorial ID, filename, and a combined entry with
-    the title on the first line and a dimmed description on the second,
-    for all tutorials available for the current version of
-    easydiffraction.
+    In the terminal each row shows the tutorial ID, filename, and a
+    combined entry with the title on the first line and a dimmed
+    description on the second. In Jupyter the table shows the plain
+    title only, since the HTML backend cannot render the terminal
+    styling.
     """
     index = _fetch_tutorials_index()
     if not index:
@@ -577,16 +579,22 @@ def list_tutorials() -> None:
     columns_alignment = ['right', 'left', 'left']
     columns_data = []
 
+    use_markup = not in_jupyter()
     for tutorial_id in index:
         record = index[tutorial_id]
         filename = f'ed-{tutorial_id}.ipynb'
-        title = escape(record.get('title', ''))
-        description = escape(record.get('description', ''))
-        styled_title = f'[{CONSOLE_PARAGRAPH_STYLE}]{title}[/]'
-        if description:
-            details = f'{styled_title}\n[dim]{description}[/dim]'
+        title = record.get('title', '')
+        description = record.get('description', '')
+        if not use_markup:
+            # Jupyter uses the HTML table backend, which would show Rich
+            # markup as literal text; keep the plain title there.
+            details = title
         else:
-            details = styled_title
+            styled_title = f'[{CONSOLE_PARAGRAPH_STYLE}]{escape(title)}[/]'
+            if description:
+                details = f'{styled_title}\n[dim]{escape(description)}[/dim]'
+            else:
+                details = styled_title
         columns_data.append([tutorial_id, filename, details])
 
     render_table(

@@ -171,8 +171,8 @@ class RichTableBackend(TableBackendBase):
         display_handle : object, default=None
             Optional environment handle for in-place updates.
         width : int | None, default=None
-            Optional target table width. When set, the table is sized
-            to this width so long cells wrap to fit the terminal.
+            Optional target table width. When set, the table is sized to
+            this width so long cells wrap to fit the terminal.
 
         Returns
         -------
