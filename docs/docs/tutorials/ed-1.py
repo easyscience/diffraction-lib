@@ -40,6 +40,10 @@ structure_path = ed.download_data(id=1, destination='data')
 # Add structure from downloaded CIF
 project.structures.add_from_cif_path(structure_path)
 
+# %%
+# Plot the crystal structure
+project.display.structure(struct_name='lbco')
+
 # %% [markdown]
 # ## Step 3: Define Experiment
 

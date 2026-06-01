@@ -14,14 +14,26 @@ except ImportError:
 import re
 
 from easydiffraction.display.tablers.base import TableBackendBase
+from easydiffraction.display.theme import DARK_AXIS_FRAME_COLOR
+from easydiffraction.display.theme import LIGHT_AXIS_FRAME_COLOR
+from easydiffraction.display.theme import TABLE_AXIS_FRAME_CSS_VAR
 from easydiffraction.utils.environment import can_use_ipython_display
 from easydiffraction.utils.logging import log
 
 _RICH_COLOR_RE = re.compile(r'\[(\w+)\](.*?)\[/\1\]')
+PANDAS_TABLE_THEME_CLASS = 'ed-themed-table'
+PANDAS_AXIS_FRAME_COLOR = f'var({TABLE_AXIS_FRAME_CSS_VAR}, {LIGHT_AXIS_FRAME_COLOR})'
 
 
 class PandasTableBackend(TableBackendBase):
     """Render tables using the pandas Styler in Jupyter environments."""
+
+    def _table_attributes(self) -> str:
+        """Return HTML table attributes for themed pandas tables."""
+        return (
+            f'class="dataframe {PANDAS_TABLE_THEME_CLASS}" '
+            f'style="{TABLE_AXIS_FRAME_CSS_VAR}: {self._pandas_border_color};"'
+        )
 
     @staticmethod
     def _build_base_styles(color: str) -> list[dict]:
@@ -172,7 +184,7 @@ class PandasTableBackend(TableBackendBase):
         styler = df.style.format(precision=self.FLOAT_PRECISION)
         if color_styles is not None:
             styler = styler.apply(lambda _: color_styles, axis=None)
-        styler = styler.set_table_attributes('class="dataframe"')  # For mkdocs-jupyter
+        styler = styler.set_table_attributes(self._table_attributes())
         styler = styler.set_table_styles(table_styles + header_alignment_styles)
 
         for column, align in zip(df.columns, alignments, strict=False):
@@ -182,8 +194,7 @@ class PandasTableBackend(TableBackendBase):
             )
         return styler
 
-    @staticmethod
-    def _update_display(styler: object, display_handle: object) -> None:
+    def _update_display(self, styler: object, display_handle: object) -> None:
         """
         Single, consistent update path for Jupyter.
 
@@ -203,7 +214,7 @@ class PandasTableBackend(TableBackendBase):
             # IPython DisplayHandle path
             if can_use_ipython_display(display_handle) and HTML is not None:
                 try:
-                    html = styler.to_html()
+                    html = self._themed_html(styler)
                     display_handle.update(HTML(html))
                 except (TypeError, ValueError, AttributeError, RuntimeError, OSError) as err:
                     log.debug(f'Pandas DisplayHandle update failed: {err!r}')
@@ -215,13 +226,17 @@ class PandasTableBackend(TableBackendBase):
                 pass
 
         # Normal display
-        display(styler)
+        if HTML is not None:
+            display(HTML(self._themed_html(styler)))
+        else:
+            display(styler)
 
     def render(
         self,
         alignments: object,
         df: object,
         display_handle: object | None = None,
+        width: int | None = None,
     ) -> object:
         """
         Render a styled DataFrame.
@@ -235,12 +250,16 @@ class PandasTableBackend(TableBackendBase):
         display_handle : object | None, default=None
             Optional IPython DisplayHandle to update an existing output
             area in place when running in Jupyter.
+        width : int | None, default=None
+            Ignored. HTML tables reflow to the available width, so no
+            fixed table width is applied.
 
         Returns
         -------
         object
             Backend-defined return value (commonly ``None``).
         """
+        del width
         styler = self._build_styler(alignments, df)
         self._update_display(styler, display_handle)
 
@@ -266,7 +285,7 @@ class PandasTableBackend(TableBackendBase):
             HTML string representation of the styled table.
         """
         styler = self._build_styler(alignments, df)
-        return styler.to_html()
+        return self._themed_html(styler)
 
     def _build_styler(
         self,
@@ -274,5 +293,84 @@ class PandasTableBackend(TableBackendBase):
         df: object,
     ) -> object:
         """Return a configured pandas Styler for the provided table."""
-        color = self._pandas_border_color
+        color = PANDAS_AXIS_FRAME_COLOR
         return self._apply_styling(df, alignments, color)
+
+    @classmethod
+    def _themed_html(cls, styler: object) -> str:
+        """Return styled table HTML plus the theme-sync script."""
+        return styler.to_html() + cls._theme_sync_post_script()
+
+    @staticmethod
+    def _theme_sync_post_script() -> str:
+        """Return client-side code for host table theme changes."""
+        return f"""
+<script>
+(function () {{
+  const tableSelector = '.{PANDAS_TABLE_THEME_CLASS}';
+  const axisFrameProperty = '{TABLE_AXIS_FRAME_CSS_VAR}';
+
+  const hostTheme = function () {{
+    const materialScheme = (
+      document.body?.getAttribute('data-md-color-scheme')
+      || document.documentElement.getAttribute('data-md-color-scheme')
+    );
+    if (materialScheme === 'slate') {{
+      return 'dark';
+    }}
+    if (materialScheme === 'default') {{
+      return 'light';
+    }}
+
+    const jupyterThemeLight = (
+      document.body?.getAttribute('data-jp-theme-light')
+      || document.documentElement.getAttribute('data-jp-theme-light')
+    );
+    if (jupyterThemeLight === 'false') {{
+      return 'dark';
+    }}
+    if (jupyterThemeLight === 'true') {{
+      return 'light';
+    }}
+    return 'light';
+  }};
+
+  const axisFrameColor = function () {{
+    if (hostTheme() === 'dark') {{
+      return '{DARK_AXIS_FRAME_COLOR}';
+    }}
+    return '{LIGHT_AXIS_FRAME_COLOR}';
+  }};
+
+  const applyTheme = function () {{
+    const color = axisFrameColor();
+    document.querySelectorAll(tableSelector).forEach(function (table) {{
+      table.style.setProperty(axisFrameProperty, color);
+    }});
+  }};
+
+  applyTheme();
+
+  if (window.__edPandasTableThemeObserverInstalled || !window.MutationObserver) {{
+    return;
+  }}
+  window.__edPandasTableThemeObserverInstalled = true;
+  const themeObserver = new MutationObserver(applyTheme);
+  const attributeFilter = [
+    'data-md-color-scheme',
+    'data-jp-theme-light',
+    'data-jp-theme-name',
+  ];
+  themeObserver.observe(document.documentElement, {{
+    attributes: true,
+    attributeFilter: attributeFilter,
+  }});
+  if (document.body) {{
+    themeObserver.observe(document.body, {{
+      attributes: true,
+      attributeFilter: attributeFilter,
+    }});
+  }}
+}}());
+</script>
+"""

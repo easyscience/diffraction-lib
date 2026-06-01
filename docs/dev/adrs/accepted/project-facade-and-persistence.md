@@ -16,8 +16,8 @@ Persistence.
 
 `Project` is the top-level user facade. It owns project metadata,
 structures, experiments, rendering preferences, display helpers,
-analysis, report helpers, publication metadata, verbosity, and save/load
-behavior.
+analysis, report helpers, verbosity, and save/load behavior. Journal and
+publication metadata are deferred from the v1 facade.
 
 A later proposal considered renaming this facade to `Workspace` so that
 `project` could be reserved for the scientific project information
@@ -57,12 +57,14 @@ hybrid surface: its scalar output configuration persists to
 under `reports/`. The previous `project.summary` placeholder and its
 `summary.cif` output are not part of the persistence layout.
 
-Expose journal-submission metadata as `project.publication`. It is a
-top-level owner with CIF-aligned sibling categories for `_journal.*`,
+Do not expose journal-submission metadata as `project.publication` in
+v1. The clean report policy in
+[`project-summary-rendering.md`](project-summary-rendering.md) §5 keeps
+`project.cif` and generated report CIFs free of empty `_journal.*`,
 `_journal_date.*`, `_journal_coeditor.*`, `_publ_contact_author.*`,
-`_publ_body.*`, and the `_publ_author.*` loop. These singleton
-publication categories persist in `project.cif` and feed report exports;
-`reports/<project>.cif` remains export-only.
+`_publ_body.*`, `_publ_author.*`, and `_pd_meas.info_author_*` fields.
+Those tags are deferred for a future journal-submission metadata
+surface.
 
 Keep project information available as `project.info`. The Python name
 avoids a confusing `project.project` access path, while the persisted
@@ -90,9 +92,8 @@ serialized project-information field. If the path is exposed in Python,
 it must not emit a `_project.path` CIF item.
 
 The project-level singleton categories currently persisted in
-`project.cif` are `_project.*`, `_chart.*`, `_report.*`, `_table.*`,
-`_verbosity.*`, `_journal.*`, `_journal_date.*`, `_journal_coeditor.*`,
-`_publ_contact_author.*`, `_publ_body.*`, and the `_publ_author.*` loop.
+`project.cif` are `_project.*`, `_rendering_plot.*`, `_report.*`,
+`_rendering_table.*`, and `_verbosity.*`.
 
 ## Consequences
 

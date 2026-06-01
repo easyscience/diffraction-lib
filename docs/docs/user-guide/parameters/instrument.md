@@ -1,84 +1,54 @@
 [customCIF][0]{:.label-cif}
 
-# \_pd_instr
+# \_instr
 
-This section contains information relevant to the instrument used for
-the diffraction measurement, similar to this
-[IUCr section](https://www.iucr.org/resources/cif/dictionaries/browse/cif_pd).
+This category stores instrument setup and calibration parameters used by
+EasyDiffraction experiments. Constant-wavelength and time-of-flight
+experiments use different subsets of the category.
 
-## [\_pd_instr.resolution](#)
+## \_instr.wavelength
 
-In general, the profile of a Bragg reflection centred at the peak
-position can be approximated by mathematical convolution of
-contributions from the instrument, called the instrumental resolution
-function, and from the microstructure of the sample. Because many
-contributions to powder diffraction peaks have a nearly Gaussian or
-Lorentzian shape, the pseudo-Voigt function, is widely used to describe
-peak profiles in powder diffraction.
+Incident neutron or X-ray wavelength for constant-wavelength
+experiments. In Python this is accessed as:
 
-Half-width parameters (normally characterising the instrumental
-resolution function) as implemented in [CrysPy](https://cryspy.fr):
+```python
+experiment.instrument.setup_wavelength
+```
 
-- \_pd_instr.resolution_u
-- \_pd_instr.resolution_v
-- \_pd_instr.resolution_w
+## \_instr.2theta_offset
 
-Lorentzian isotropic microstrain parameter as implemented in
-[CrysPy](https://cryspy.fr):
+Two-theta zero offset for constant-wavelength powder experiments. In
+Python this is accessed as:
 
-- \_pd_instr.resolution_x
+```python
+experiment.instrument.calib_twotheta_offset
+```
 
-Lorentzian isotropic particle size parameteras implemented in
-[CrysPy](https://cryspy.fr):
+## \_instr.2theta_bank
 
-- \_pd_instr.resolution_y
+Detector-bank two-theta angle for time-of-flight powder experiments. In
+Python this is accessed as:
 
-## [\_pd_instr.reflex_asymmetry](#)
+```python
+experiment.instrument.setup_twotheta_bank
+```
 
-Peak profile asymmetry parameters as implemented in
-[CrysPy](https://cryspy.fr).
+## \_instr.d_to_tof
 
-- \_pd_instr.reflex_asymmetry_p1
-- \_pd_instr.reflex_asymmetry_p2
-- \_pd_instr.reflex_asymmetry_p3
-- \_pd_instr.reflex_asymmetry_p4
+Time-of-flight calibration terms converting d-spacing to time of flight.
+In Python these are accessed as:
 
-## [\_pd_instr.2theta_bank](#)
+- `experiment.instrument.calib_d_to_tof_recip`
+- `experiment.instrument.calib_d_to_tof_offset`
+- `experiment.instrument.calib_d_to_tof_linear`
+- `experiment.instrument.calib_d_to_tof_quad`
 
-Time-of-flight parameters as implemented in [CrysPy](https://cryspy.fr).
+They serialize to the following CIF tags:
 
-## [\_pd_instr.dtt](#)
-
-Time-of-flight parameters as implemented in [CrysPy](https://cryspy.fr).
-
-- \_pd_instr.dtt1
-- \_pd_instr.dtt2
-
-## [\_pd_instr.zero](#)
-
-Time-of-flight parameters as implemented in [CrysPy](https://cryspy.fr).
-
-## [\_pd_instr.alpha](#)
-
-Time-of-flight parameters as implemented in [CrysPy](https://cryspy.fr).
-
-- \_pd_instr.alpha0
-- \_pd_instr.alpha1
-
-## [\_pd_instr.beta](#)
-
-Time-of-flight parameters as implemented in [CrysPy](https://cryspy.fr).
-
-- \_pd_instr.beta0
-- \_pd_instr.beta1
-
-## [\_pd_instr.sigma](#)
-
-Time-of-flight parameters as implemented in [CrysPy](https://cryspy.fr).
-
-- \_pd_instr.sigma0
-- \_pd_instr.sigma1
-- \_pd_instr.sigma2
+- `_instr.d_to_tof_recip`
+- `_instr.d_to_tof_offset`
+- `_instr.d_to_tof_linear`
+- `_instr.d_to_tof_quad`
 
 <!-- prettier-ignore-start -->
 [0]: #

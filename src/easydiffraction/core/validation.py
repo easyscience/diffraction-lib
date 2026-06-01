@@ -167,15 +167,17 @@ class TypeValidator(ValidatorBase):
 
 
 class RangeValidator(ValidatorBase):
-    """Ensure a numeric value lies within [ge, le]."""
+    """Ensure a numeric value lies within [ge, le] and (gt, lt)."""
 
     def __init__(
         self,
         *,
         ge: float = -np.inf,
         le: float = np.inf,
+        gt: float = -np.inf,
+        lt: float = np.inf,
     ) -> None:
-        self.ge, self.le = ge, le
+        self.ge, self.le, self.gt, self.lt = ge, le, gt, lt
 
     def validated(
         self,
@@ -185,12 +187,12 @@ class RangeValidator(ValidatorBase):
         current: object = None,
     ) -> object:
         """Validate range and return value or fallback."""
-        if not (self.ge <= value <= self.le):
+        if not (self.ge <= value <= self.le and self.gt < value < self.lt):
             Diagnostics.range_mismatch(
                 name,
                 value,
-                self.ge,
-                self.le,
+                max(self.ge, self.gt),
+                min(self.le, self.lt),
                 current=current,
                 default=default,
             )

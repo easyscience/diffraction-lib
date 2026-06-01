@@ -171,6 +171,11 @@ SQUARE_MATRIX_TOP_MARGIN_PIXELS = 40
 SQUARE_MATRIX_BOTTOM_MARGIN_PIXELS = 40
 SQUARE_MATRIX_AXIS_TITLE_LINE_HEIGHT_PIXELS = 18
 SQUARE_MATRIX_TITLE_LEFT_PADDING_PIXELS = 14
+# Correlation-matrix cells are sized to roughly this many label-font
+# characters; the factor approximates one glyph's width per font pixel
+# for Plotly's default sans-serif axis labels.
+CORRELATION_CELL_LABEL_CHAR_COUNT = 16
+CORRELATION_LABEL_CHAR_WIDTH_FACTOR = 0.6
 POSTERIOR_PAIR_SAMPLE_MARKER_SIZE = 6
 POSTERIOR_PAIR_SAMPLE_HOVER_MARKER_SIZE = 6
 
@@ -2336,23 +2341,40 @@ class Plotter(RendererBase):
         )
         return cell_size * cls._square_matrix_plot_extent(n_parameters)
 
+    @staticmethod
+    def _correlation_cell_size_pixels() -> int:
+        """
+        Return the correlation cell width in pixels (~16 label chars).
+        """
+        return round(
+            CORRELATION_CELL_LABEL_CHAR_COUNT
+            * CORRELATION_LABEL_CHAR_WIDTH_FACTOR
+            * POSTERIOR_PAIR_AXIS_TITLE_FONT_SIZE
+        )
+
     @classmethod
     def _square_matrix_layout_meta(
         cls,
         *,
         n_parameters: int,
         annotation_labels: list[str],
+        cell_size_pixels: int | None = None,
+        cap_width: bool = False,
     ) -> dict[str, object]:
         """Return wrapper metadata for square matrix plots."""
         margins = cls._square_matrix_layout_margin(annotation_labels)
-        plot_size = cls._square_matrix_target_plot_size_pixels(n_parameters)
+        if cell_size_pixels is None:
+            plot_size = cls._square_matrix_target_plot_size_pixels(n_parameters)
+        else:
+            plot_size = cell_size_pixels * cls._square_matrix_plot_extent(n_parameters)
         aspect_width = round(plot_size + int(margins['l']) + int(margins['r']))
         aspect_height = round(plot_size + int(margins['t']) + int(margins['b']))
-        return {
-            SQUARE_MATRIX_FIXED_ASPECT_META_KEY: {
-                'aspect_ratio': f'{aspect_width} / {aspect_height}',
-            }
+        wrapper: dict[str, object] = {
+            'aspect_ratio': f'{aspect_width} / {aspect_height}',
         }
+        if cap_width:
+            wrapper['max_width_pixels'] = aspect_width
+        return {SQUARE_MATRIX_FIXED_ASPECT_META_KEY: wrapper}
 
     def _finalize_posterior_pairs_figure(
         self,
@@ -2363,6 +2385,11 @@ class Plotter(RendererBase):
         subplot_border_shapes: list[dict[str, object]],
     ) -> None:
         """Apply final layout settings to the posterior pair plot."""
+        axis_frame_shape_indexes = [
+            index
+            for index, shape in enumerate(subplot_border_shapes)
+            if shape.get('type') == 'rect'
+        ]
         fig.update_layout(
             autosize=True,
             margin=self._square_matrix_layout_margin(context.annotation_labels),
@@ -2387,6 +2414,10 @@ class Plotter(RendererBase):
                 'y': 0.995,
                 'groupclick': 'togglegroup',
             },
+        )
+        PlotlyPlotter._apply_theme_sync_meta(
+            fig,
+            axis_frame_shape_indexes=axis_frame_shape_indexes,
         )
 
     @staticmethod
@@ -4763,6 +4794,7 @@ class Plotter(RendererBase):
         if label_trace is not None:
             traces.append(label_trace)
         fig = go.Figure(data=traces)
+        shapes = self._correlation_heatmap_grid_shapes(context)
 
         fig.update_layout(
             autosize=True,
@@ -4777,10 +4809,12 @@ class Plotter(RendererBase):
                 x_centers=x_centers,
                 y_centers=y_centers,
             ),
-            shapes=self._correlation_heatmap_grid_shapes(context),
+            shapes=shapes,
             meta=self._square_matrix_layout_meta(
                 n_parameters=context.n_cols,
                 annotation_labels=[*context.row_labels, *context.col_labels],
+                cell_size_pixels=self._correlation_cell_size_pixels(),
+                cap_width=True,
             ),
             showlegend=False,
         )
@@ -4813,6 +4847,11 @@ class Plotter(RendererBase):
             constrain='domain',
             scaleanchor='x',
             scaleratio=1,
+        )
+        PlotlyPlotter._apply_theme_sync_meta(
+            fig,
+            axis_frame_shape_indexes=range(len(shapes)),
+            correlation_heatmap=True,
         )
         return fig
 
@@ -5258,7 +5297,7 @@ class Plotter(RendererBase):
             y_series=[y_meas],
             labels=['meas'],
             axes_labels=ctx['axes_labels'],
-            title=f"Measured data for experiment 🔬 '{expt_name}'",
+            title=f"Diffraction pattern for experiment 🔬 '{expt_name}'",
             height=self.height,
             excluded_ranges=excluded_ranges,
         )
@@ -5320,7 +5359,7 @@ class Plotter(RendererBase):
             y_series=[y_calc],
             labels=['calc'],
             axes_labels=ctx['axes_labels'],
-            title=f"Calculated data for experiment 🔬 '{expt_name}'",
+            title=f"Diffraction pattern for experiment 🔬 '{expt_name}'",
             height=self.height,
             excluded_ranges=excluded_ranges,
         )
@@ -5418,7 +5457,7 @@ class Plotter(RendererBase):
             log.error(f'No calculated data available for experiment {expt_name}')
             return
 
-        title = f"Measured vs Calculated data for experiment 🔬 '{expt_name}'"
+        title = f"Diffraction pattern for experiment 🔬 '{expt_name}'"
 
         # Single crystal scatter plot (I²calc vs I²meas)
         if x_axis in {XAxisType.INTENSITY_CALC, 'intensity_calc'}:

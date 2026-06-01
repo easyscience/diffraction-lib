@@ -16,6 +16,7 @@ from easydiffraction.analysis.fit_helpers.metrics import calculate_rb_factor
 from easydiffraction.analysis.fit_helpers.metrics import calculate_weighted_r_factor
 from easydiffraction.analysis.fit_helpers.reporting import FitResults
 from easydiffraction.analysis.fit_helpers.reporting import _build_parameter_row
+from easydiffraction.analysis.fit_helpers.reporting import _display_units
 from easydiffraction.analysis.fit_helpers.reporting import _overall_status_row_label
 from easydiffraction.core.posterior import PosteriorParameterSummary
 from easydiffraction.utils.logging import console
@@ -714,7 +715,7 @@ def _build_posterior_summary_row(
     category = getattr(identity, 'category_code', 'N/A')
     entry = getattr(identity, 'category_entry_name', '') or ''
     parameter_name = getattr(parameter, 'name', summary.display_name)
-    units = getattr(parameter, 'units', 'N/A')
+    units = _display_units(parameter)
 
     return [
         datablock,

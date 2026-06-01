@@ -91,8 +91,8 @@ EasyDiffraction.
 
     | Category                                            | Parameter                                                    | How to access in the code          |
     |-----------------------------------------------------|--------------------------------------------------------------|------------------------------------|
-    | :material-space-station: [space_group][space_group] | :material-tag: [name_hm][space_group]                        | space_group.name_hm                |
-    |                                                     | :material-numeric: [system_code][space_group]                | space_group.system_code            |
+    | :material-space-station: [space_group][space_group] | :material-tag: [name_h_m][space_group]                       | space_group.name_h_m               |
+    |                                                     | :material-numeric: [it_coordinate_system_code][space_group]  | space_group.it_coordinate_system_code |
     | :material-cube-outline: [cell][cell]                | :material-ruler: [length_a][cell]                            | cell.length_a                      |
     |                                                     | :material-ruler: [length_b][cell]                            | cell.length_b                      |
     |                                                     | :material-ruler: [length_c][cell]                            | cell.length_c                      |
@@ -114,8 +114,8 @@ EasyDiffraction.
 
     | Category                                            | Parameter                                                    | CIF name for serialization              | CIF dictionary            |
     |-----------------------------------------------------|--------------------------------------------------------------|-----------------------------------------|---------------------------|
-    | :material-space-station: [space_group][space_group] | :material-tag: [name_hm][space_group]                        | \_space_group.name_H-M_alt              | [coreCIF][1]{:.label-cif} |
-    |                                                     | :material-numeric: [system_code][space_group]                | \_space_group.IT_coordinate_system_code | [coreCIF][1]{:.label-cif} |
+    | :material-space-station: [space_group][space_group] | :material-tag: [name_h_m][space_group]                       | \_space_group.name_H-M_alt              | [coreCIF][1]{:.label-cif} |
+    |                                                     | :material-numeric: [it_coordinate_system_code][space_group]  | \_space_group.IT_coordinate_system_code | [coreCIF][1]{:.label-cif} |
     | :material-cube-outline: [cell][cell]                | :material-ruler: [length_a][cell]                            | \_cell.length_a                         | [coreCIF][1]{:.label-cif} |
     |                                                     | :material-ruler: [length_b][cell]                            | \_cell.length_b                         | [coreCIF][1]{:.label-cif} |
     |                                                     | :material-ruler: [length_c][cell]                            | \_cell.length_c                         | [coreCIF][1]{:.label-cif} |
@@ -205,8 +205,8 @@ EasyDiffraction.
 
     | Category                                       | Parameter                                                  | CIF name for serialization         | CIF dictionary                       |
     |------------------------------------------------|------------------------------------------------------------|------------------------------------|--------------------------------------|
-    | :material-microscope: [instrument][instrument] | :material-wrench: [setup_wavelength][instrument]           | \_instrument.setup_wavelength      | [easydiffractionCIF][0]{:.label-cif} |
-    |                                                | :material-tune: [calib_twotheta_offset][instrument]        | \_instrument.calib_twotheta_offset | [easydiffractionCIF][0]{:.label-cif} |
+    | :material-microscope: [instrument][instrument] | :material-wrench: [setup_wavelength][instrument]           | \_instr.wavelength                | [easydiffractionCIF][0]{:.label-cif} |
+    |                                                | :material-tune: [calib_twotheta_offset][instrument]        | \_instr.2theta_offset             | [easydiffractionCIF][0]{:.label-cif} |
     | :material-shape: [peak][peak]                  | :material-arrow-expand-horizontal: [broad_gauss_u][peak]   | \_peak.broad_gauss_u               | [easydiffractionCIF][0]{:.label-cif} |
     |                                                | :material-arrow-expand-horizontal: [broad_gauss_v][peak]   | \_peak.broad_gauss_v               | [easydiffractionCIF][0]{:.label-cif} |
     |                                                | :material-arrow-expand-horizontal: [broad_gauss_w][peak]   | \_peak.broad_gauss_w               | [easydiffractionCIF][0]{:.label-cif} |
@@ -236,18 +236,18 @@ EasyDiffraction.
 
     | Category                                       | Parameter                                                      | CIF name for serialization         | CIF dictionary                       |
     |------------------------------------------------|----------------------------------------------------------------|------------------------------------|--------------------------------------|
-    | :material-microscope: [instrument][instrument] | :material-wrench: [setup_twotheta_bank][instrument]            | \_instrument.setup_twotheta_bank   | [easydiffractionCIF][0]{:.label-cif} |
-    |                                                | :material-tune: [calib_d_to_tof_recip][instrument]             | \_instrument.calib_d_to_tof_recip  | [easydiffractionCIF][0]{:.label-cif} |
-    |                                                | :material-tune: [calib_d_to_tof_offset][instrument]            | \_instrument.calib_d_to_tof_offset | [easydiffractionCIF][0]{:.label-cif} |
-    |                                                | :material-tune: [calib_d_to_tof_linear][instrument]            | \_instrument.calib_d_to_tof_linear | [easydiffractionCIF][0]{:.label-cif} |
-    |                                                | :material-tune: [calib_d_to_tof_quad][instrument]              | \_instrument.calib_d_to_tof_quad   | [easydiffractionCIF][0]{:.label-cif} |
-    | :material-shape: [peak][peak]                  | :material-arrow-expand-horizontal: [broad_gauss_sigma_0][peak] | \_peak.broad_gauss_sigma_0         | [easydiffractionCIF][0]{:.label-cif} |
-    |                                                | :material-arrow-expand-horizontal: [broad_gauss_sigma_1][peak] | \_peak.broad_gauss_sigma_1         | [easydiffractionCIF][0]{:.label-cif} |
-    |                                                | :material-arrow-expand-horizontal: [broad_gauss_sigma_2][peak] | \_peak.broad_gauss_sigma_2         | [easydiffractionCIF][0]{:.label-cif} |
-    |                                                | :material-arrow-expand-horizontal: [exp_decay_beta_0][peak]    | \_peak.exp_decay_beta_0            | [easydiffractionCIF][0]{:.label-cif} |
-    |                                                | :material-arrow-expand-horizontal: [exp_decay_beta_1][peak]    | \_peak.exp_decay_beta_1            | [easydiffractionCIF][0]{:.label-cif} |
-    |                                                | :material-scale-unbalanced: [exp_rise_alpha_0][peak]           | \_peak.exp_rise_alpha_0            | [easydiffractionCIF][0]{:.label-cif} |
-    |                                                | :material-scale-unbalanced: [exp_rise_alpha_1][peak]           | \_peak.exp_rise_alpha_1            | [easydiffractionCIF][0]{:.label-cif} |
+    | :material-microscope: [instrument][instrument] | :material-wrench: [setup_twotheta_bank][instrument]            | \_instr.2theta_bank                | [easydiffractionCIF][0]{:.label-cif} |
+    |                                                | :material-tune: [calib_d_to_tof_recip][instrument]             | \_instr.d_to_tof_recip             | [easydiffractionCIF][0]{:.label-cif} |
+    |                                                | :material-tune: [calib_d_to_tof_offset][instrument]            | \_instr.d_to_tof_offset            | [easydiffractionCIF][0]{:.label-cif} |
+    |                                                | :material-tune: [calib_d_to_tof_linear][instrument]            | \_instr.d_to_tof_linear            | [easydiffractionCIF][0]{:.label-cif} |
+    |                                                | :material-tune: [calib_d_to_tof_quad][instrument]              | \_instr.d_to_tof_quad              | [easydiffractionCIF][0]{:.label-cif} |
+    | :material-shape: [peak][peak]                  | :material-arrow-expand-horizontal: [broad_gauss_sigma_0][peak] | \_peak.gauss_sigma_0               | [easydiffractionCIF][0]{:.label-cif} |
+    |                                                | :material-arrow-expand-horizontal: [broad_gauss_sigma_1][peak] | \_peak.gauss_sigma_1               | [easydiffractionCIF][0]{:.label-cif} |
+    |                                                | :material-arrow-expand-horizontal: [broad_gauss_sigma_2][peak] | \_peak.gauss_sigma_2               | [easydiffractionCIF][0]{:.label-cif} |
+    |                                                | :material-arrow-expand-horizontal: [exp_decay_beta_0][peak]    | \_peak.decay_beta_0                | [easydiffractionCIF][0]{:.label-cif} |
+    |                                                | :material-arrow-expand-horizontal: [exp_decay_beta_1][peak]    | \_peak.decay_beta_1                | [easydiffractionCIF][0]{:.label-cif} |
+    |                                                | :material-scale-unbalanced: [exp_rise_alpha_0][peak]           | \_peak.rise_alpha_0                | [easydiffractionCIF][0]{:.label-cif} |
+    |                                                | :material-scale-unbalanced: [exp_rise_alpha_1][peak]           | \_peak.rise_alpha_1                | [easydiffractionCIF][0]{:.label-cif} |
 
 ### Total scattering
 

@@ -277,6 +277,8 @@ def test_write_iucr_cif_writes_global_block(tmp_path):
     assert '_computing.structure_refinement' in text
     assert '_easydiffraction_software.framework' in text
     assert '_easydiffraction_software.minimizer' in text
+    assert '_journal.' not in text
+    assert '_publ_' not in text
 
 
 def test_write_iucr_cif_emits_single_crystal_block(tmp_path):
@@ -312,15 +314,20 @@ def test_write_iucr_cif_emits_powder_cwl_blocks(tmp_path):
 
     text = write_iucr_cif(project).read_text(encoding='utf-8')
 
-    assert 'data_powder_overall' in text
-    assert 'data_powder_phase_1' in text
-    assert 'data_powder_pwd_1' in text
+    assert 'data_overall' in text
+    assert 'data_phase1' in text
+    assert 'data_cwl' in text
+    assert '_pd_block_id                           phase1' in text
+    assert '_pd_block_diffractogram_id             cwl' in text
+    assert '|phase1|' not in text
+    assert '|cwl|' not in text
     assert '_pd_meas.2theta_scan' in text
     assert '_pd_meas.time_of_flight' not in text
     assert '_pd_refln.phase_id' in text
     assert '_refln.phase_calc' not in text
     assert '_pd_proc.info_excluded_regions' in text
     assert '_easydiffraction_background.type' in text
+    assert '_pd_meas.info_author_' not in text
 
 
 def test_write_iucr_cif_emits_joint_tof_pattern_blocks(tmp_path):
@@ -338,12 +345,54 @@ def test_write_iucr_cif_emits_joint_tof_pattern_blocks(tmp_path):
 
     text = write_iucr_cif(project).read_text(encoding='utf-8')
 
-    assert 'data_joint_pwd_1' in text
-    assert 'data_joint_pwd_2' in text
+    assert 'data_tof1' in text
+    assert 'data_tof2' in text
+    assert '\n_pd_block_diffractogram_id\n  tof1\n  tof2\n' in text
     assert '_pd_meas.time_of_flight' in text
     assert '_pd_calib_d_to_tof.power' in text
     assert 'recip' in text
     assert '-1' in text
+
+
+def test_write_iucr_cif_keeps_powder_block_names_unique(tmp_path):
+    from easydiffraction.io.cif.iucr_writer import write_iucr_cif
+
+    project = _project(
+        'demo',
+        tmp_path,
+        _collection(_structure(name='overall')),
+        _collection(_powder_experiment('overall')),
+    )
+
+    text = write_iucr_cif(project).read_text(encoding='utf-8')
+
+    assert 'data_overall' in text
+    assert 'data_overall_2' in text
+    assert 'data_overall_3' in text
+
+
+def test_write_iucr_cif_keeps_mixed_topology_block_names_unique(tmp_path):
+    from easydiffraction.io.cif.iucr_writer import write_iucr_cif
+
+    project = _project(
+        'mixed',
+        tmp_path,
+        _collection(_structure(name='phase1')),
+        _collection(
+            _single_crystal_experiment('sc'),
+            _powder_experiment('cwl'),
+        ),
+    )
+
+    text = write_iucr_cif(project).read_text(encoding='utf-8')
+
+    block_names = [
+        line.removeprefix('data_') for line in text.splitlines() if line.startswith('data_')
+    ]
+    assert len(block_names) == len(set(block_names))
+    assert 'phase1' in block_names
+    assert 'phase1_2' in block_names
+    assert '_pd_block_id                           phase1_2' in text
 
 
 def test_iucr_loop_rows_are_not_padded_to_tag_width():

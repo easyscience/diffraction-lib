@@ -21,11 +21,14 @@ from easydiffraction.display.plotters.plotly import COMPOSITE_MARGIN_BOTTOM
 from easydiffraction.display.plotters.plotly import COMPOSITE_MARGIN_TOP
 from easydiffraction.display.plotters.plotly import COMPOSITE_VERTICAL_SPACING
 from easydiffraction.display.plotters.plotly import DEFAULT_COLORS
+from easydiffraction.display.plotters.plotly import DIAGONAL_LINE_RGB
 from easydiffraction.display.plotters.plotly import DISPLAY_TICK_FRACTIONS
 from easydiffraction.display.plotters.plotly import MAIN_INTENSITY_RANGE_MARGIN_FRACTION
 from easydiffraction.display.plotters.plotly import MEASURED_LINE_WIDTH
 from easydiffraction.display.plotters.plotly import PLOTLY_HEIGHT_PER_UNIT
 from easydiffraction.display.plotters.plotly import RESIDUAL_LINE_WIDTH
+from easydiffraction.display.plotters.plotly import single_crystal_axis_range
+from easydiffraction.display.plotters.plotly import single_crystal_tick_step
 from easydiffraction.display.plotting import DEFAULT_RESIDUAL_HEIGHT_FRACTION
 from easydiffraction.report.style import REPORT_AXIS_RGB
 from easydiffraction.report.style import REPORT_CHART_GRID_RGB
@@ -148,6 +151,7 @@ def fit_plot_axis_styles() -> dict[str, str]:
     return {
         'axis_rgb': _style_rgb_channels(REPORT_AXIS_RGB),
         'grid_rgb': _style_rgb_channels(REPORT_CHART_GRID_RGB),
+        'diag_rgb': _style_rgb_channels(DIAGONAL_LINE_RGB),
     }
 
 
@@ -160,28 +164,29 @@ def fit_scatter_geometry() -> dict[str, float]:
 
 
 def fit_scatter_ranges(fit_data: dict[str, Any]) -> dict[str, float]:
-    """Return x/y ranges and the y=x diagonal span for an SC scatter."""
+    """
+    Return the shared x/y range, tick step, and y=x diagonal span.
+
+    The x and y axes share one range (computed across the calculated
+    values and the measured values widened by their uncertainties) so
+    the diagonal is a true y=x line and the ticks can match.
+    """
     x_values = _numeric_values(fit_data['x']['values'])
     meas = fit_data['series']['meas']
     y_values = _numeric_values(meas['values'])
     su = meas.get('su')
-    if su is not None:
-        su_values = _numeric_values(su)
-        y_low = [value - error for value, error in zip(y_values, su_values, strict=True)]
-        y_high = [value + error for value, error in zip(y_values, su_values, strict=True)]
-    else:
-        y_low = y_values
-        y_high = y_values
+    su_values = _numeric_values(su) if su is not None else None
 
-    x_min, x_max = _padded_range(*_data_range([x_values]))
-    y_min, y_max = _padded_range(*_data_range([y_low, y_high]))
+    axis_min, axis_max = single_crystal_axis_range(x_values, y_values, su_values)
+    tick_step = single_crystal_tick_step(axis_min, axis_max)
     return {
-        'x_min': x_min,
-        'x_max': x_max,
-        'y_min': y_min,
-        'y_max': y_max,
-        'diag_min': min(x_min, y_min),
-        'diag_max': max(x_max, y_max),
+        'x_min': axis_min,
+        'x_max': axis_max,
+        'y_min': axis_min,
+        'y_max': axis_max,
+        'diag_min': axis_min,
+        'diag_max': axis_max,
+        'tick_step': tick_step,
     }
 
 
@@ -294,14 +299,6 @@ def _rgb_channels(color: str) -> str:
 def _style_rgb_channels(rgb: tuple[int, int, int]) -> str:
     """Return comma-separated channels for report style RGB colors."""
     return ','.join(str(channel) for channel in rgb)
-
-
-def _padded_range(minimum: float, maximum: float) -> tuple[float, float]:
-    """Return a range padded by the main-intensity margin fraction."""
-    margin = max(maximum - minimum, 0.0) * MAIN_INTENSITY_RANGE_MARGIN_FRACTION
-    if margin <= 0.0:
-        margin = 1.0
-    return minimum - margin, maximum + margin
 
 
 def _data_range(series_list: list[list[float]]) -> tuple[float, float]:

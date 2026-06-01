@@ -93,11 +93,6 @@ class TestStructureAtomSites:
 
 
 class TestStructureDisplay:
-    def test_show(self, structure, capsys):
-        structure.show()
-        out = capsys.readouterr().out
-        assert 'test_struct' in out
-
     def test_show_as_cif(self, structure, capsys):
         structure.show_as_cif()
         out = capsys.readouterr().out

@@ -27,6 +27,9 @@ if TYPE_CHECKING:
     from easydiffraction.project.project import Project
 
 
+StructureViewRange = tuple[tuple[float, float], tuple[float, float], tuple[float, float]]
+
+
 _PATTERN_OPTION_DESCRIPTIONS: dict[str, str] = {
     'auto': 'Show the most informative available pattern view.',
     'measured': 'Measured diffraction intensities.',
@@ -36,6 +39,17 @@ _PATTERN_OPTION_DESCRIPTIONS: dict[str, str] = {
     'bragg': 'Bragg reflection tick marks when reflection data exists.',
     'excluded': 'Excluded fitting regions when defined on the experiment.',
     'uncertainty': 'Posterior predictive uncertainty bands when available.',
+}
+
+
+_STRUCTURE_OPTION_DESCRIPTIONS: dict[str, str] = {
+    'auto': 'Show the features the structure and engine support.',
+    'atoms': 'Atoms as spheres, occupancy wedges, or ADP ellipsoids.',
+    'bonds': 'Bonds between atoms within the per-structure cutoffs.',
+    'cell': 'Unit-cell edges.',
+    'axes': 'The a/b/c axis triad.',
+    'moments': 'Magnetic-moment arrows (no moment data in version 1).',
+    'labels': 'Atom labels at each site.',
 }
 
 
@@ -132,7 +146,7 @@ class FitDisplay:
         show_diagonal: bool = True,
     ) -> None:
         """Show parameter correlations from the latest fit."""
-        self._project.chart.plotter.plot_param_correlations(
+        self._project.rendering_plot.plotter.plot_param_correlations(
             threshold=threshold,
             precision=precision,
             max_parameters=max_parameters,
@@ -154,9 +168,9 @@ class FitDisplay:
             another.
         """
         if param is None:
-            self._project.chart.plotter.plot_all_param_series(versus=versus)
+            self._project.rendering_plot.plotter.plot_all_param_series(versus=versus)
         else:
-            self._project.chart.plotter.plot_param_series(param=param, versus=versus)
+            self._project.rendering_plot.plotter.plot_param_series(param=param, versus=versus)
 
     def help(self) -> None:
         """Print available fit-display methods."""
@@ -199,7 +213,7 @@ class PosteriorDisplay:
         """Return whether predictive plotting still needs processing."""
         analysis = self._project.analysis
         experiment = self._project.experiments[expt_name]
-        plotter = self._project.chart.plotter
+        plotter = self._project.rendering_plot.plotter
         _, x_axis_name, _, _, _ = plotter._resolve_x_axis(experiment.type, x)
         x_axis_name = str(x_axis_name)
         require_draws = plotter.engine == PlotterEngineEnum.PLOTLY.value and style in {
@@ -250,7 +264,7 @@ class PosteriorDisplay:
             else nullcontext()
         )
         with indicator_context:
-            self._project.chart.plotter.plot_posterior_pairs(
+            self._project.rendering_plot.plotter.plot_posterior_pairs(
                 parameters=parameters,
                 style=style,
                 threshold=threshold,
@@ -261,7 +275,7 @@ class PosteriorDisplay:
         """
         Plot posterior distributions for one or all free parameters.
         """
-        plotter = self._project.chart.plotter
+        plotter = self._project.rendering_plot.plotter
         if param is not None:
             plotter.plot_param_distribution(param)
             return
@@ -298,7 +312,7 @@ class PosteriorDisplay:
             else nullcontext()
         )
         with indicator_context:
-            self._project.chart.plotter.plot_posterior_predictive(
+            self._project.rendering_plot.plotter.plot_posterior_predictive(
                 expt_name=expt_name,
                 style=style,
                 x_min=x_min,
@@ -374,7 +388,7 @@ class ProjectDisplay:
                     else nullcontext()
                 )
                 with indicator_context:
-                    self._project.chart.plotter._plot_posterior_predictive_request(
+                    self._project.rendering_plot.plotter._plot_posterior_predictive_request(
                         expt_name=expt_name,
                         style='band',
                         plot_options=_MeasVsCalcPlotOptions(
@@ -417,7 +431,7 @@ class ProjectDisplay:
                 else nullcontext()
             )
             with indicator_context:
-                self._project.chart.plotter._plot_posterior_predictive_request(
+                self._project.rendering_plot.plotter._plot_posterior_predictive_request(
                     expt_name=expt_name,
                     style='band',
                     plot_options=_MeasVsCalcPlotOptions(
@@ -457,6 +471,162 @@ class ProjectDisplay:
                 ]
                 for status in statuses
             ],
+        )
+
+    def structure(
+        self,
+        struct_name: str,
+        include: str | tuple[str, ...] = 'auto',
+        range: StructureViewRange | None = None,
+        path: str | None = None,
+    ) -> None:
+        """
+        Show a 3D structure view for one structure.
+
+        Parallels :meth:`pattern`: it draws with the active
+        ``project.rendering_structure`` engine and displays directly (no
+        return value). Feature visibility is resolved per ADR section 8;
+        the renderer announces and skips any feature it cannot draw.
+
+        Parameters
+        ----------
+        struct_name : str
+            Name of the structure to draw.
+        include : str | tuple[str, ...], default='auto'
+            ``'auto'`` (default) resolves features from data
+            availability, persisted ``project.rendering_structure``
+            flags, then built-in defaults; an explicit tuple of
+            ``atoms``/``bonds``/``cell``/``axes``/
+            ``moments``/``labels`` wins outright.
+        range : StructureViewRange | None, default=None
+            Optional per-axis ``((min, max), ...)`` window overriding
+            the persisted ``project.rendering_structure`` range for this
+            call only.
+        path : str | None, default=None
+            When given, write the rendered view to this path instead of
+            displaying it (a standalone HTML file for the Three.js
+            engine).
+        """
+        from easydiffraction.display.structure.builder import build_scene  # noqa: PLC0415
+        from easydiffraction.display.structure.builder import (  # noqa: PLC0415
+            structure_feature_availability,
+        )
+
+        structure = self._project.structures[struct_name]
+        structure._update_categories()
+        availability = structure_feature_availability(
+            structure, style=self._project.structure_style
+        )
+        features = self._resolve_structure_features(include, availability)
+        window = range if range is not None else self._project.structure_view.view_range()
+        scene = build_scene(
+            structure,
+            style=self._project.structure_style,
+            view_range=window,
+            features=features,
+        )
+        output = self._project.rendering_structure.viewer.render(scene, features=features)
+        if path is not None:
+            import pathlib  # noqa: PLC0415
+
+            pathlib.Path(path).write_text(output, encoding='utf-8')
+            return
+        atom_view = self._project.structure_style.atom_view.value
+        console.paragraph(f"Structure 🧩 '{struct_name}' (Atom view type: '{atom_view}')")
+        self._emit_structure_output(output)
+
+    def show_structure_options(self, struct_name: str) -> None:
+        """
+        Show available ``structure(include=...)`` options.
+        """
+        from easydiffraction.display.structure.builder import (  # noqa: PLC0415
+            structure_feature_availability,
+        )
+
+        structure = self._project.structures[struct_name]
+        structure._update_categories()
+        availability = structure_feature_availability(
+            structure, style=self._project.structure_style
+        )
+        supported = self._project.rendering_structure.viewer.supported_features()
+        auto = self._resolve_structure_features('auto', availability)
+
+        rows = []
+        for option in ('atoms', 'bonds', 'cell', 'axes', 'moments', 'labels'):
+            in_data = option in availability.available
+            in_engine = option in supported
+            rows.append([
+                option,
+                _STRUCTURE_OPTION_DESCRIPTIONS[option],
+                'yes' if (in_data and in_engine) else 'no',
+                'yes' if (option in auto and in_engine) else 'no',
+            ])
+        render_table(
+            columns_headers=['Option', 'Description', 'Available', 'Auto'],
+            columns_alignment=['left', 'left', 'center', 'center'],
+            columns_data=rows,
+        )
+        if availability.radius_substitutions:
+            console.paragraph('Radius substitutions (fell back to covalent)')
+            console.print(', '.join(availability.radius_substitutions))
+
+    def _resolve_structure_features(
+        self,
+        include: str | tuple[str, ...],
+        availability: object,
+    ) -> frozenset[str]:
+        """
+        Resolve the concrete feature set per ADR section 8 precedence.
+        """
+        normalized = self._normalize_structure_include(include)
+        if normalized != ('auto',):
+            return frozenset(normalized)
+        view = self._project.structure_view
+        resolved = {f for f in ('atoms', 'bonds', 'cell', 'axes') if f in availability.available}
+        if 'labels' in availability.available and view.show_labels.value:
+            resolved.add('labels')
+        if 'moments' in availability.available and view.show_moments.value:
+            resolved.add('moments')
+        return frozenset(resolved)
+
+    @staticmethod
+    def _normalize_structure_include(include: str | tuple[str, ...]) -> tuple[str, ...]:
+        """Validate and normalize a ``structure(include=...)`` value."""
+        values = (include,) if isinstance(include, str) else include
+        if not values:
+            msg = 'include must contain at least one option.'
+            raise ValueError(msg)
+        normalized = tuple(dict.fromkeys(values))
+        unknown = [value for value in normalized if value not in _STRUCTURE_OPTION_DESCRIPTIONS]
+        if unknown:
+            msg = f'Unknown structure include option(s): {unknown}.'
+            raise ValueError(msg)
+        if 'auto' in normalized and len(normalized) > 1:
+            msg = "include='auto' cannot be combined with other options."
+            raise ValueError(msg)
+        return normalized
+
+    def _emit_structure_output(self, output: str) -> None:
+        """Display ASCII text in the console or HTML in a notebook."""
+        from easydiffraction.display.structure.enums import ViewerEngineEnum  # noqa: PLC0415
+        from easydiffraction.utils.environment import in_jupyter  # noqa: PLC0415
+
+        if self._project.rendering_structure.viewer.engine == ViewerEngineEnum.ASCII.value:
+            # Built-in print keeps the renderer's raw ANSI colour
+            # codes (Jupyter and terminals interpret them); Rich's
+            # console.print would escape and garble them. Mirrors
+            # the ASCII pattern plotter.
+            print(output)
+            return
+        if in_jupyter():
+            from IPython.display import HTML  # noqa: PLC0415
+            from IPython.display import display  # noqa: PLC0415
+
+            display(HTML(output))
+            return
+        console.print(
+            'Three.js structure view generated as HTML. Pass path=... to save it, '
+            "or set project.rendering_structure.type = 'ascii' for a terminal view.",
         )
 
     @staticmethod
@@ -591,7 +761,7 @@ class ProjectDisplay:
         self._validate_requested_include(statuses, include)
         include_set = set(include)
         if include_set == {'measured'}:
-            self._project.chart.plotter.plot_meas(
+            self._project.rendering_plot.plotter.plot_meas(
                 expt_name=expt_name,
                 x_min=x_min,
                 x_max=x_max,
@@ -600,7 +770,7 @@ class ProjectDisplay:
             )
             return
         if include_set == {'measured', 'excluded'}:
-            self._project.chart.plotter.plot_meas(
+            self._project.rendering_plot.plotter.plot_meas(
                 expt_name=expt_name,
                 x_min=x_min,
                 x_max=x_max,
@@ -609,7 +779,7 @@ class ProjectDisplay:
             )
             return
         if include_set == {'calculated'}:
-            self._project.chart.plotter.plot_calc(
+            self._project.rendering_plot.plotter.plot_calc(
                 expt_name=expt_name,
                 x_min=x_min,
                 x_max=x_max,
@@ -618,7 +788,7 @@ class ProjectDisplay:
             )
             return
         if include_set == {'calculated', 'excluded'}:
-            self._project.chart.plotter.plot_calc(
+            self._project.rendering_plot.plotter.plot_calc(
                 expt_name=expt_name,
                 x_min=x_min,
                 x_max=x_max,
@@ -627,7 +797,7 @@ class ProjectDisplay:
             )
             return
         if {'measured', 'calculated'}.issubset(include_set):
-            self._project.chart.plotter._plot_meas_vs_calc_request(
+            self._project.rendering_plot.plotter._plot_meas_vs_calc_request(
                 expt_name=expt_name,
                 plot_options=_MeasVsCalcPlotOptions(
                     x_min=x_min,
@@ -649,7 +819,7 @@ class ProjectDisplay:
 
     def _pattern_option_statuses(self, expt_name: str) -> list[PatternOptionStatus]:
         """Return availability details for the requested experiment."""
-        self._project.chart.plotter._update_project_categories(expt_name)
+        self._project.rendering_plot.plotter._update_project_categories(expt_name)
         experiment = self._project.experiments[expt_name]
         pattern = intensity_category_for(experiment)
         sample_form = experiment.type.sample_form.value
@@ -873,9 +1043,9 @@ class ProjectDisplay:
         if not posterior_predictive:
             return False, 'Posterior predictive data is unavailable.'
 
-        active_chart_engine = getattr(self._project.chart.plotter, 'engine', None)
+        active_chart_engine = getattr(self._project.rendering_plot.plotter, 'engine', None)
         if active_chart_engine is None:
-            active_chart_engine = self._project.chart.type
+            active_chart_engine = self._project.rendering_plot.type
 
         if active_chart_engine != PlotterEngineEnum.PLOTLY.value:
             return False, 'Uncertainty bands currently require the Plotly chart engine.'

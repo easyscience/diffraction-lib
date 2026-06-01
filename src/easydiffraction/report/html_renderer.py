@@ -63,6 +63,7 @@ def render_html_report(
     context: dict[str, object],
     *,
     offline: bool = False,
+    project: object | None = None,
 ) -> str:
     """
     Render a report data context as HTML.
@@ -73,6 +74,9 @@ def render_html_report(
         Data returned by ``Report.data_context()``.
     offline : bool, default=False
         Whether Plotly figures should embed JavaScript assets.
+    project : object | None, default=None
+        Live project used to build interactive 3D structure figures.
+        When ``None``, the report omits structure views.
 
     Returns
     -------
@@ -86,6 +90,9 @@ def render_html_report(
     template_context['fit_figures'] = _fit_figure_html_context(
         context,
         offline=offline,
+    )
+    template_context['structure_figures'] = (
+        _structure_figure_html_context(project, offline=offline) if project is not None else {}
     )
     return _environment().get_template(_TEMPLATE_NAME).render(**template_context)
 
@@ -119,7 +126,7 @@ def save_html_report(
     output_path = html_report_path(project, path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(
-        render_html_report(context, offline=offline),
+        render_html_report(context, offline=offline, project=project),
         encoding='utf-8',
     )
     if offline:
@@ -175,7 +182,7 @@ def _fit_figure_html_context(
         if fit_data is None:
             continue
         experiment_id = str(experiment.get('id') or 'experiment')
-        figure = _fit_data_figure(experiment_id, fit_data, experiment)
+        figure = _fit_data_figure(experiment_id, fit_data)
         rendered[experiment_id] = _figure_html(
             figure,
             include_plotlyjs=include_plotlyjs,
@@ -185,10 +192,46 @@ def _fit_figure_html_context(
     return rendered
 
 
+def _structure_figure_html_context(
+    project: object,
+    *,
+    offline: bool,
+) -> dict[str, str]:
+    """
+    Return interactive structure-view HTML snippets by structure name.
+    """
+    from easydiffraction.display.structure.builder import build_scene  # noqa: PLC0415
+    from easydiffraction.display.structure.builder import (  # noqa: PLC0415
+        structure_feature_availability,
+    )
+    from easydiffraction.display.structure.renderers.threejs import (  # noqa: PLC0415
+        ThreeJsStructureRenderer,
+    )
+
+    renderer = ThreeJsStructureRenderer()
+    window = project.structure_view.view_range()
+    rendered: dict[str, str] = {}
+    for structure in project.structures.values():
+        availability = structure_feature_availability(structure, style=project.structure_style)
+        features = project.display._resolve_structure_features('auto', availability)
+        scene = build_scene(
+            structure,
+            style=project.structure_style,
+            view_range=window,
+            features=features,
+        )
+        rendered[str(structure.name)] = renderer.render(
+            scene,
+            features=features,
+            offline=offline,
+            dark=False,
+        )
+    return rendered
+
+
 def _fit_data_figure(
     experiment_id: str,
     fit_data: dict[str, object],
-    experiment: dict[str, object],
 ) -> object:
     """Build a Plotly fit figure from one fit-data payload."""
     x_data = fit_data['x']
@@ -230,7 +273,7 @@ def _fit_data_figure(
             y_resid=np.asarray(y_diff, dtype=float),
             bragg_tick_sets=tuple(fit_data.get('bragg_tick_sets') or ()),
             axes_labels=list(fit_data.get('axes_labels') or [_axis_title(x_data), 'Intensity']),
-            title=_fit_figure_title(experiment_id, experiment),
+            title=_fit_figure_title(experiment_id),
             residual_height_fraction=DEFAULT_RESID_HEIGHT,
             bragg_peaks_height_fraction=DEFAULT_BRAGG_ROW,
             y_bkg=np.asarray(y_bkg, dtype=float) if y_bkg is not None else None,
@@ -259,25 +302,13 @@ def _single_crystal_fit_data_figure(
         y_meas=y_meas_array,
         y_meas_su=y_meas_su_array,
         axes_labels=list(fit_data.get('axes_labels') or ['I²calc', 'I²meas']),
-        title=f"Measured vs Calculated data for experiment 🔬 '{experiment_id}'",
+        title=_fit_figure_title(experiment_id),
     )
 
 
-def _fit_figure_title(experiment_id: str, experiment: dict[str, object]) -> str:
+def _fit_figure_title(experiment_id: str) -> str:
     """Return a report title matching the direct plotting API."""
-    experiment_type = experiment.get('type')
-    if _is_powder_bragg_context(experiment_type):
-        return f"Measured vs Calculated data for experiment 🔬 '{experiment_id}'"
-    return f'Measured vs calculated: {experiment_id}'
-
-
-def _is_powder_bragg_context(experiment_type: object) -> bool:
-    if not isinstance(experiment_type, dict):
-        return False
-    return (
-        experiment_type.get('sample_form') == 'powder'
-        and experiment_type.get('scattering_type') == 'bragg'
-    )
+    return f"Diffraction pattern for experiment 🔬 '{experiment_id}'"
 
 
 def _figure_html(

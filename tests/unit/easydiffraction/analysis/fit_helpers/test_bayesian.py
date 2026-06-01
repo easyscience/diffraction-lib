@@ -15,7 +15,15 @@ class Identity:
 
 
 class Param:
-    def __init__(self, unique_name: str, start: float, value: float, uncertainty: float) -> None:
+    def __init__(
+        self,
+        unique_name: str,
+        start: float,
+        value: float,
+        uncertainty: float,
+        *,
+        display_units: str | None = None,
+    ) -> None:
         self._identity = Identity()
         self._fit_start_value = start
         self.unique_name = unique_name
@@ -23,6 +31,11 @@ class Param:
         self.value = value
         self.uncertainty = uncertainty
         self.units = 'arb'
+        self._display_units = display_units
+
+    def resolve_display_units(self, context: str) -> str:
+        assert context == 'gui'
+        return self._display_units or self.units
 
 
 def test_module_import():
@@ -221,7 +234,13 @@ def test_build_posterior_summary_row_restores_identifier_columns():
     from easydiffraction.analysis.fit_helpers.bayesian import PosteriorParameterSummary
     from easydiffraction.analysis.fit_helpers.bayesian import _build_posterior_summary_row
 
-    parameter = Param(unique_name='a', start=1.0, value=1.2, uncertainty=0.05)
+    parameter = Param(
+        unique_name='a',
+        start=1.0,
+        value=1.2,
+        uncertainty=0.05,
+        display_units='Å²',
+    )
     summary = PosteriorParameterSummary(
         unique_name='a',
         display_name='a',
@@ -241,7 +260,7 @@ def test_build_posterior_summary_row_restores_identifier_columns():
         'cat',
         'entry',
         'a',
-        'arb',
+        'Å²',
         '1.1500',
         '[1.0000, 1.3000]',
         '[red]1.107[/red]',
@@ -262,7 +281,13 @@ def test_render_committed_parameter_table_places_units_after_parameter(monkeypat
     monkeypatch.setattr(bayesian, 'render_table', fake_render_table)
 
     bayesian._render_committed_parameter_table([
-        Param(unique_name='a', start=1.0, value=1.2, uncertainty=0.05)
+        Param(
+            unique_name='a',
+            start=1.0,
+            value=1.2,
+            uncertainty=0.05,
+            display_units='Å²',
+        )
     ])
 
     assert captured['columns_headers'] == [
@@ -293,7 +318,7 @@ def test_render_committed_parameter_table_places_units_after_parameter(monkeypat
             'cat',
             'entry',
             'a',
-            'arb',
+            'Å²',
             '1.0000',
             '1.2000',
             '0.0500',
@@ -316,7 +341,15 @@ def test_render_posterior_summary_table_places_units_after_parameter(monkeypatch
     monkeypatch.setattr(bayesian, 'render_table', fake_render_table)
 
     bayesian._render_posterior_summary_table(
-        parameters=[Param(unique_name='a', start=1.0, value=1.2, uncertainty=0.05)],
+        parameters=[
+            Param(
+                unique_name='a',
+                start=1.0,
+                value=1.2,
+                uncertainty=0.05,
+                display_units='Å²',
+            )
+        ],
         posterior_parameter_summaries=[
             PosteriorParameterSummary(
                 unique_name='a',
@@ -360,7 +393,7 @@ def test_render_posterior_summary_table_places_units_after_parameter(monkeypatch
             'cat',
             'entry',
             'a',
-            'arb',
+            'Å²',
             '1.1500',
             '[1.0000, 1.3000]',
             '[red]1.107[/red]',

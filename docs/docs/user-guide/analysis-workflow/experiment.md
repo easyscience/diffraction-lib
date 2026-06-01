@@ -74,7 +74,7 @@ data_<span class="red"><b>hrpt</b></span>
 you can access it in the code as follows:
 
 ```python
-# Access the experient by its name
+# Access the experiment by its name
 project.experiments['hrpt']
 ```
 
@@ -203,7 +203,7 @@ project.experiments['hrpt'].excluded_regions.create(start=160, end=180)
 
 ```python
 # Select the desired peak profile type
-project.experiments['hrpt'].peak_profile_type = 'pseudo-voigt'
+project.experiments['hrpt'].peak.type = 'pseudo-voigt'
 
 # Modify default peak profile parameters
 project.experiments['hrpt'].peak.broad_gauss_u = 0.1
@@ -217,7 +217,7 @@ project.experiments['hrpt'].peak.broad_lorentz_y = 0.1
 
 ```python
 # Select the desired background type
-project.experiments['hrpt'].background_type = 'line-segment'
+project.experiments['hrpt'].background.type = 'line-segment'
 
 # Add background points
 project.experiments['hrpt'].background.create(x=10, y=170)
@@ -489,19 +489,19 @@ data_<span class="red"><b>wish</b></span>
 
 <span class="blue"><b>_diffrn_radiation</b>.probe</span> neutron
 
-<span class="blue"><b>_pd_instr</b>.2theta_bank</span> 152.827
+<span class="blue"><b>_instr</b>.2theta_bank</span> 152.827
 
-<span class="blue"><b>_pd_instr</b>.dtt1</span> 20773.1(3)
-<span class="blue"><b>_pd_instr</b>.dtt2</span>    -1.08308
-<span class="blue"><b>_pd_instr</b>.zero</span>   -13.7(5)
+<span class="blue"><b>_instr</b>.d_to_tof_linear</span> 20773.1(3)
+<span class="blue"><b>_instr</b>.d_to_tof_quad</span>    -1.08308
+<span class="blue"><b>_instr</b>.d_to_tof_offset</span>   -13.7(5)
 
-<span class="blue"><b>_pd_instr</b>.alpha0</span> -0.009(1)
-<span class="blue"><b>_pd_instr</b>.alpha1</span>  0.109(2)
-<span class="blue"><b>_pd_instr</b>.beta0</span>   0.00670(3)
-<span class="blue"><b>_pd_instr</b>.beta1</span>   0.0100(3)
-<span class="blue"><b>_pd_instr</b>.sigma0</span>  0
-<span class="blue"><b>_pd_instr</b>.sigma1</span>  0
-<span class="blue"><b>_pd_instr</b>.sigma2</span> 15.7(8)
+<span class="blue"><b>_peak</b>.rise_alpha_0</span> -0.009(1)
+<span class="blue"><b>_peak</b>.rise_alpha_1</span>  0.109(2)
+<span class="blue"><b>_peak</b>.decay_beta_0</span>  0.00670(3)
+<span class="blue"><b>_peak</b>.decay_beta_1</span>  0.0100(3)
+<span class="blue"><b>_peak</b>.gauss_sigma_0</span> 0
+<span class="blue"><b>_peak</b>.gauss_sigma_1</span> 0
+<span class="blue"><b>_peak</b>.gauss_sigma_2</span> 15.7(8)
 
 loop_
 <span class="green"><b>_pd_phase_block</b>.id</span>
@@ -558,21 +558,8 @@ This example represents a single-crystal neutron diffraction experiment:
 <pre>
 data_<span class="red"><b>heidi</b></span>
 
-<span class="blue"><b>_diffrn_radiation</b>.probe</span>                 neutron
-<span class="blue"><b>_diffrn_radiation_wavelength</b>.wavelength</span> 0.793
-
-<span class="blue"><b>_pd_calib</b>.2theta_offset</span> 0.6225(4)
-
-<span class="blue"><b>_pd_instr</b>.resolution_u</span>  0.0834
-<span class="blue"><b>_pd_instr</b>.resolution_v</span> -0.1168
-<span class="blue"><b>_pd_instr</b>.resolution_w</span>  0.123
-<span class="blue"><b>_pd_instr</b>.resolution_x</span>  0
-<span class="blue"><b>_pd_instr</b>.resolution_y</span>  0.0797
-
-<span class="blue"><b>_pd_instr</b>.reflex_asymmetry_p1</span> 0
-<span class="blue"><b>_pd_instr</b>.reflex_asymmetry_p2</span> 0
-<span class="blue"><b>_pd_instr</b>.reflex_asymmetry_p3</span> 0
-<span class="blue"><b>_pd_instr</b>.reflex_asymmetry_p4</span> 0
+<span class="blue"><b>_diffrn_radiation</b>.probe</span> neutron
+<span class="blue"><b>_instr</b>.wavelength</span>       0.793
 
 loop_
 <span class="green"><b>_exptl_crystal</b>.id</span>

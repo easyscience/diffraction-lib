@@ -84,12 +84,6 @@ def _context() -> dict[str, object]:
             'n_phases': 1,
             'n_experiments': 0,
         },
-        'publication': {
-            'body': {'title': '', 'abstract': '', 'synopsis': '', 'keywords': ''},
-            'authors': [],
-            'journal': {'name_full': '', 'year': '', 'paper_doi': ''},
-            'contact_author': {'name': '', 'email': ''},
-        },
         'metadata': {
             'generated_at': '2026-05-26T00:00:00Z',
             'easydiffraction_version': '0.0',
@@ -355,6 +349,7 @@ def test_render_html_report_uses_plotly_fit_style_order():
 
     html = render_html_report(context)
 
+    assert 'Diffraction pattern for experiment' in html
     measured = html.index('"name":"Measured (Imeas)"')
     background = html.index('"name":"Background (Ibkg)"')
     calculated = html.index('"name":"Total calculated (Icalc)"')

@@ -12,9 +12,9 @@ from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
-from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import RegexValidator
+from easydiffraction.core.variable import EnumDescriptor
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.io.cif.handler import CifHandler
@@ -47,15 +47,10 @@ class FitParameterCorrelationItem(CategoryItem):
             ),
             cif_handler=CifHandler(names=['_fit_parameter_correlation.id']),
         )
-        self._source_kind = StringDescriptor(
+        self._source_kind = EnumDescriptor(
             name='source_kind',
+            enum=FitCorrelationSourceEnum,
             description='Origin of the persisted correlation summary.',
-            value_spec=AttributeSpec(
-                default=FitCorrelationSourceEnum.default().value,
-                validator=MembershipValidator(
-                    allowed=[member.value for member in FitCorrelationSourceEnum]
-                ),
-            ),
             cif_handler=CifHandler(names=['_fit_parameter_correlation.source_kind']),
         )
         self._param_unique_name_i = StringDescriptor(
@@ -96,7 +91,7 @@ class FitParameterCorrelationItem(CategoryItem):
         self._id.value = value
 
     @property
-    def source_kind(self) -> StringDescriptor:
+    def source_kind(self) -> EnumDescriptor:
         """Origin of the persisted correlation summary."""
         return self._source_kind
 

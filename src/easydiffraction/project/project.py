@@ -23,8 +23,6 @@ from easydiffraction.io.cif.serialize import project_config_to_cif
 from easydiffraction.io.cif.serialize import project_to_cif
 from easydiffraction.io.results_sidecar import read_analysis_results_sidecar
 from easydiffraction.io.results_sidecar import write_analysis_results_sidecar
-from easydiffraction.project.categories.publication import Publication
-from easydiffraction.project.categories.publication import PublicationFactory
 from easydiffraction.project.display import ProjectDisplay
 from easydiffraction.project.project_config import ProjectConfig
 from easydiffraction.utils.enums import VerbosityEnum
@@ -36,8 +34,11 @@ from easydiffraction.utils.utils import display_path
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from easydiffraction.project.categories.chart import Chart
-    from easydiffraction.project.categories.table import Table
+    from easydiffraction.project.categories.rendering_plot import RenderingPlot
+    from easydiffraction.project.categories.rendering_structure import RenderingStructure
+    from easydiffraction.project.categories.rendering_table import RenderingTable
+    from easydiffraction.project.categories.structure_style import StructureStyle
+    from easydiffraction.project.categories.structure_view import StructureView
     from easydiffraction.project.categories.verbosity import Verbosity
     from easydiffraction.project.project_info import ProjectInfo
     from easydiffraction.report import Report
@@ -207,11 +208,13 @@ class Project(GuardedBase):  # noqa: PLR0904
         object.__setattr__(self, '_info', self._config.info)
         self._structures = Structures()
         self._experiments = Experiments()
-        object.__setattr__(self, '_chart', self._config.chart)
-        object.__setattr__(self, '_table', self._config.table)
+        object.__setattr__(self, '_rendering_plot', self._config.rendering_plot)
+        object.__setattr__(self, '_rendering_table', self._config.rendering_table)
         object.__setattr__(self, '_verbosity', self._config.verbosity)
+        object.__setattr__(self, '_rendering_structure', self._config.rendering_structure)
+        object.__setattr__(self, '_structure_view', self._config.structure_view)
+        object.__setattr__(self, '_structure_style', self._config.structure_style)
         object.__setattr__(self, '_report', self._config.report)
-        self._publication = PublicationFactory.create(PublicationFactory.default_tag())
         self._display = ProjectDisplay(self)
         self._analysis = Analysis(self)
         self._saved = False
@@ -224,10 +227,12 @@ class Project(GuardedBase):  # noqa: PLR0904
         self._structures._parent = self
         self._experiments._parent = self
         self._analysis._parent = self
-        self._chart._parent = self
-        self._table._parent = self
+        self._rendering_plot._parent = self
+        self._rendering_table._parent = self
+        self._rendering_structure._parent = self
+        self._structure_view._parent = self
+        self._structure_style._parent = self
         self._report._parent = self
-        self._publication._parent = self
 
     @staticmethod
     def _supported_filters_for(category: object) -> dict[str, object]:
@@ -235,13 +240,17 @@ class Project(GuardedBase):  # noqa: PLR0904
         del category
         return {}
 
-    def _swap_chart(self, new_type: str, *, strict: bool = True) -> None:
+    def _swap_rendering_plot(self, new_type: str, *, strict: bool = True) -> None:
         """Switch the active chart renderer."""
-        self._chart._set_type(new_type, strict=strict)
+        self._rendering_plot._set_type(new_type, strict=strict)
 
-    def _swap_table(self, new_type: str, *, strict: bool = True) -> None:
+    def _swap_rendering_table(self, new_type: str, *, strict: bool = True) -> None:
         """Switch the active table renderer."""
-        self._table._set_type(new_type, strict=strict)
+        self._rendering_table._set_type(new_type, strict=strict)
+
+    def _swap_rendering_structure(self, new_type: str, *, strict: bool = True) -> None:
+        """Switch the active structure-view renderer."""
+        self._rendering_structure._set_type(new_type, strict=strict)
 
     @classmethod
     def current_project_path(cls) -> pathlib.Path | None:
@@ -313,14 +322,29 @@ class Project(GuardedBase):  # noqa: PLR0904
         self._experiments = experiments
 
     @property
-    def chart(self) -> Chart:
+    def rendering_plot(self) -> RenderingPlot:
         """Chart configuration bound to the project."""
-        return self._chart
+        return self._rendering_plot
 
     @property
-    def table(self) -> Table:
+    def rendering_table(self) -> RenderingTable:
         """Table configuration bound to the project."""
-        return self._table
+        return self._rendering_table
+
+    @property
+    def rendering_structure(self) -> RenderingStructure:
+        """Structure-view configuration bound to the project."""
+        return self._rendering_structure
+
+    @property
+    def structure_view(self) -> StructureView:
+        """Structure-view content and region bound to the project."""
+        return self._structure_view
+
+    @property
+    def structure_style(self) -> StructureStyle:
+        """Structure-view appearance bound to the project."""
+        return self._structure_style
 
     @property
     def display(self) -> ProjectDisplay:
@@ -336,11 +360,6 @@ class Project(GuardedBase):  # noqa: PLR0904
     def report(self) -> Report:
         """Submission report builder bound to the project."""
         return self._report
-
-    @property
-    def publication(self) -> Publication:
-        """Publication metadata bound to the project."""
-        return self._publication
 
     @property
     def parameters(self) -> list:

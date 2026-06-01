@@ -141,7 +141,6 @@ def _project() -> SimpleNamespace:
             software=SimpleNamespace(),
             constraints=[],
         ),
-        publication=SimpleNamespace(),
     )
 
 
@@ -151,6 +150,7 @@ def test_report_data_context_builds_fit_data():
     context = build_report_data_context(_project())
 
     fit_data = context['experiments'][0]['fit_data']
+    assert 'publication' not in context
     assert fit_data['axes_labels'] == ['I²calc', 'I²meas']
     assert list(fit_data['series']['meas']['su']) == [0.5, 0.7]
     assert list(fit_data['series']['calc']['values']) == [10.0, 20.0]

@@ -8763,6 +8763,7 @@ packages:
   - lmfit
   - numpy
   - pandas
+  - pillow>=10.1
   - plotly
   - pooch
   - py3dmol

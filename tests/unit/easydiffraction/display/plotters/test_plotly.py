@@ -13,14 +13,78 @@ def test_module_import():
     assert expected_module_name == actual_module_name
 
 
-def test_get_layout_sets_title_and_axis_title_font_sizes():
+@pytest.mark.parametrize(
+    'is_dark_mode',
+    [False, True],
+)
+def test_get_layout_sets_title_axis_and_theme_colors(
+    monkeypatch,
+    is_dark_mode,
+):
     import easydiffraction.display.plotters.plotly as pp
+
+    if is_dark_mode:
+        background_color = pp.DARK_BACKGROUND_COLOR
+        axis_color = pp.DARK_AXIS_FRAME_COLOR
+        grid_color = pp.DARK_INNER_TICK_GRID_COLOR
+    else:
+        background_color = pp.LIGHT_BACKGROUND_COLOR
+        axis_color = pp.LIGHT_AXIS_FRAME_COLOR
+        grid_color = pp.LIGHT_INNER_TICK_GRID_COLOR
+
+    monkeypatch.setattr(
+        pp.PlotlyPlotter,
+        '_is_dark_mode',
+        classmethod(lambda cls: is_dark_mode),
+    )
 
     layout = pp.PlotlyPlotter._get_layout('Title', ['x axis', 'y axis'])
 
     assert layout.title.font.size == pp.TITLE_FONT_SIZE
     assert layout.xaxis.title.font.size == pp.AXIS_TITLE_FONT_SIZE
     assert layout.yaxis.title.font.size == pp.AXIS_TITLE_FONT_SIZE
+    assert layout.paper_bgcolor == background_color
+    assert layout.plot_bgcolor == background_color
+    assert layout.xaxis.linecolor == axis_color
+    assert layout.yaxis.linecolor == axis_color
+    assert layout.xaxis.gridcolor == grid_color
+    assert layout.yaxis.gridcolor == grid_color
+    assert layout.xaxis.ticklabelstandoff == pp.X_AXIS_TICK_LABEL_STANDOFF
+    assert layout.yaxis.ticklabelstandoff == pp.Y_AXIS_TICK_LABEL_STANDOFF
+
+
+@pytest.mark.parametrize(
+    ('is_dark_mode', 'background_color'),
+    [
+        (False, 'light-background'),
+        (True, 'dark-background'),
+    ],
+)
+def test_correlation_colorscale_uses_theme_background(
+    monkeypatch,
+    is_dark_mode,
+    background_color,
+):
+    import easydiffraction.display.plotters.plotly as pp
+
+    monkeypatch.setattr(
+        pp.PlotlyPlotter,
+        '_is_dark_mode',
+        classmethod(lambda cls: is_dark_mode),
+    )
+    monkeypatch.setattr(
+        pp.PlotlyPlotter,
+        '_background_color',
+        classmethod(lambda cls: background_color),
+    )
+
+    colorscale = pp.PlotlyPlotter._correlation_colorscale()
+
+    assert colorscale == [
+        (0.0, '#d73027'),
+        (0.5, background_color),
+        (1.0, '#4575b4'),
+    ]
 
 
 def test_get_trace_and_plot(monkeypatch):
@@ -166,6 +230,34 @@ def test_show_figure_adds_legend_toggle_script_to_html_output(monkeypatch):
     assert captured.get('show_called') is not True
     assert captured['config']['displayModeBar'] is True
     assert captured['config']['displaylogo'] is False
+    assert captured['config']['responsive'] is True
+    assert 'data-jp-theme-light' in captured['post_script']
+    assert 'data-md-color-scheme' in captured['post_script']
+    assert 'graphDiv.dataset.edPlotlyTheme' in captured['post_script']
+    assert f"background: '{pp.DARK_BACKGROUND_COLOR}'" in captured['post_script']
+    assert f"background: '{pp.LIGHT_BACKGROUND_COLOR}'" in captured['post_script']
+    assert f"axisFrame: '{pp.DARK_AXIS_FRAME_COLOR}'" in captured['post_script']
+    assert f"axisFrame: '{pp.LIGHT_AXIS_FRAME_COLOR}'" in captured['post_script']
+    assert f"innerTickGrid: '{pp.DARK_INNER_TICK_GRID_COLOR}'" in captured['post_script']
+    assert f"innerTickGrid: '{pp.LIGHT_INNER_TICK_GRID_COLOR}'" in captured['post_script']
+    assert f"hoverBackground: '{pp.DARK_HOVER_BACKGROUND_COLOR}'" in captured['post_script']
+    assert f"legend: '{pp.DARK_LEGEND_BACKGROUND_COLOR}'" in captured['post_script']
+    assert 'ed-plotly-modebar-theme-style' in captured['post_script']
+    assert 'ed-plotly-themed-modebar' in captured['post_script']
+    assert '--ed-plotly-modebar-icon-color' in captured['post_script']
+    assert '--ed-plotly-modebar-icon-hover-opacity' in captured['post_script']
+    assert 'const correlationColorscale = function (colors) {' in captured['post_script']
+    assert 'const themeSync = meta.ed_plotly_theme_sync;' in captured['post_script']
+    assert 'const applyAnnotationTheme = function (update, colors) {' in captured['post_script']
+    assert 'const shapeIndexes = themeSync.axis_frame_shape_indexes;' in captured['post_script']
+    assert 'if (themeSync.correlation_heatmap !== true) {' in captured['post_script']
+    assert 'window.Plotly.restyle(' in captured['post_script']
+    assert 'window.Plotly.relayout(graphDiv, update)' in captured['post_script']
+    assert 'Promise.all(pending).then(function () {' in captured['post_script']
+    assert 'window.Plotly.Plots.resize(graphDiv)' in captured['post_script']
+    assert "document.addEventListener('visibilitychange'" in captured['post_script']
+    assert "window.addEventListener('focus', scheduleResize);" in captured['post_script']
+    assert 'new ResizeObserver(scheduleResize)' in captured['post_script']
     assert 'data-legend-toggle="true"' in captured['post_script']
     assert 'Toggle legend' in captured['post_script']
     assert 'graphDiv.dataset.legendVisible' in captured['post_script']
@@ -229,7 +321,9 @@ def test_show_figure_skips_legend_toggle_script_without_legend(monkeypatch):
     plotter._show_figure(DummyFig())
 
     assert captured.get('show_called') is not True
-    assert captured['post_script'] is None
+    assert captured['post_script'] is not None
+    assert 'data-jp-theme-light' in captured['post_script']
+    assert 'data-legend-toggle="true"' not in captured['post_script']
     assert captured['displayed_html'] == '<div>plot</div>'
 
 
@@ -278,7 +372,8 @@ def test_show_figure_wraps_fixed_aspect_html(monkeypatch):
     plotter._show_figure(DummyFig())
 
     assert captured.get('show_called') is not True
-    assert captured['post_script'] is None
+    assert captured['post_script'] is not None
+    assert 'data-jp-theme-light' in captured['post_script']
     assert 'aspect-ratio: 1 / 1;' in captured['displayed_html']
     assert 'ed-fixed-aspect-plotly-wrapper' in captured['displayed_html']
     assert '<div>plot</div>' in captured['displayed_html']
@@ -350,12 +445,20 @@ def test_plotly_single_crystal_trace_and_plot(monkeypatch):
     assert trace.kwargs['y'] == y_meas
     assert trace.kwargs['mode'] == 'markers'
     assert 'error_y' in trace.kwargs
+    assert trace.kwargs['marker']['size'] == pp.MEASURED_MARKER_SIZE
+    assert trace.kwargs['marker']['line']['color'] == pp.DEFAULT_COLORS['meas']
+    assert trace.kwargs['error_y']['thickness'] == pp.MEASURED_ERROR_BAR_THICKNESS
+    assert trace.kwargs['error_y']['width'] == pp.MEASURED_ERROR_BAR_WIDTH
 
-    # Exercise _get_diagonal_shape
-    shape = plotter._get_diagonal_shape()
+    # Exercise _get_diagonal_shape (now a data-coordinate y=x line)
+    shape = plotter._get_diagonal_shape(0.0, 10.0)
     assert shape['type'] == 'line'
-    assert shape['xref'] == 'paper'
-    assert shape['yref'] == 'paper'
+    assert shape['xref'] == 'x'
+    assert shape['yref'] == 'y'
+    assert (shape['x0'], shape['y0']) == (0.0, 0.0)
+    assert (shape['x1'], shape['y1']) == (10.0, 10.0)
+    assert shape['line']['color'] == pp.DIAGONAL_LINE_COLOR
+    assert shape['line']['width'] == pp.DIAGONAL_LINE_WIDTH
 
     # Exercise plot_single_crystal
     plotter.plot_single_crystal(
@@ -368,6 +471,44 @@ def test_plotly_single_crystal_trace_and_plot(monkeypatch):
     )
     # One display call expected
     assert dummy_display_calls['count'] == 1 or shown['count'] == 1
+
+
+def test_single_crystal_axis_range_unions_calc_and_meas_with_uncertainty():
+    import easydiffraction.display.plotters.plotly as pp
+
+    minimum, maximum = pp.single_crystal_axis_range(
+        x_calc=[2.0, 8.0],
+        y_meas=[1.0, 10.0],
+        y_meas_su=[0.5, 1.0],
+    )
+    # Spans meas-su minimum (0.5) to meas+su maximum (11.0); calc 2..8 is
+    # inside. A 5% margin of the 10.5 span pads both ends symmetrically.
+    assert minimum == pytest.approx(0.5 - 0.525)
+    assert maximum == pytest.approx(11.0 + 0.525)
+
+
+def test_single_crystal_axis_range_handles_missing_uncertainty():
+    import easydiffraction.display.plotters.plotly as pp
+
+    minimum, maximum = pp.single_crystal_axis_range(
+        x_calc=[0.0, 4.0],
+        y_meas=[1.0, 3.0],
+        y_meas_su=None,
+    )
+    assert minimum < 0.0
+    assert maximum > 4.0
+
+
+def test_single_crystal_tick_step_rounds_to_nice_value():
+    import easydiffraction.display.plotters.plotly as pp
+
+    # Span 3000 over ~6 intervals -> raw 500 -> nice 500.
+    assert pp.single_crystal_tick_step(0.0, 3000.0) == pytest.approx(500.0)
+    # Padded heidi-like range (span just above the 500 threshold) rounds to
+    # 500, not 750 (regression for the old round-up logic).
+    assert pp.single_crystal_tick_step(-158.275, 2841.73) == pytest.approx(500.0)
+    # Degenerate span falls back to 1.0.
+    assert pp.single_crystal_tick_step(5.0, 5.0) == pytest.approx(1.0)
 
 
 def test_get_bragg_tick_trace_includes_peak_metadata():
@@ -452,6 +593,12 @@ def test_plot_powder_meas_vs_calc_creates_synced_three_panel_figure(monkeypatch)
     assert fig.layout.xaxis.matches == 'x'
     assert fig.layout.xaxis2.matches == 'x'
     assert fig.layout.xaxis3.matches == 'x'
+    assert fig.layout.xaxis.ticklabelstandoff == pp.X_AXIS_TICK_LABEL_STANDOFF
+    assert fig.layout.xaxis2.ticklabelstandoff == pp.X_AXIS_TICK_LABEL_STANDOFF
+    assert fig.layout.xaxis3.ticklabelstandoff == pp.X_AXIS_TICK_LABEL_STANDOFF
+    assert fig.layout.yaxis.ticklabelstandoff == pp.Y_AXIS_TICK_LABEL_STANDOFF
+    assert fig.layout.yaxis2.ticklabelstandoff == pp.Y_AXIS_TICK_LABEL_STANDOFF
+    assert fig.layout.yaxis3.ticklabelstandoff == pp.Y_AXIS_TICK_LABEL_STANDOFF
     assert fig.layout.yaxis3.scaleanchor == 'y'
     assert fig.layout.yaxis3.scaleratio == pytest.approx(1.0)
 

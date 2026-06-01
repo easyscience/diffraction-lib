@@ -16,13 +16,16 @@ import numpy as np
 import pandas as pd
 import pooch
 from packaging.version import Version
+from rich.markup import escape
 from uncertainties import UFloat
 from uncertainties import ufloat
 from uncertainties import ufloat_fromstr
 
 from easydiffraction.display.tables import TableRenderer
 from easydiffraction.io.ascii import extract_project_from_zip
+from easydiffraction.utils.environment import in_jupyter
 from easydiffraction.utils.environment import resolve_artifact_path
+from easydiffraction.utils.logging import CONSOLE_PARAGRAPH_STYLE
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 
@@ -558,8 +561,11 @@ def list_tutorials() -> None:
     """
     Display a table of available tutorial notebooks.
 
-    Shows tutorial ID, filename and title for all tutorials available
-    for the current version of easydiffraction.
+    In the terminal each row shows the tutorial ID, filename, and a
+    combined entry with the title on the first line and a dimmed
+    description on the second. In Jupyter the table shows the plain
+    title only, since the HTML backend cannot render the terminal
+    styling.
     """
     index = _fetch_tutorials_index()
     if not index:
@@ -569,20 +575,33 @@ def list_tutorials() -> None:
     version = _get_version_for_url()
     console.paragraph(f'Tutorials available for easydiffraction v{version}:')
 
-    columns_headers = ['id', 'file', 'title']
+    columns_headers = ['id', 'file', 'tutorial']
     columns_alignment = ['right', 'left', 'left']
     columns_data = []
 
+    use_markup = not in_jupyter()
     for tutorial_id in index:
         record = index[tutorial_id]
         filename = f'ed-{tutorial_id}.ipynb'
         title = record.get('title', '')
-        columns_data.append([tutorial_id, filename, title])
+        description = record.get('description', '')
+        if not use_markup:
+            # Jupyter uses the HTML table backend, which would show Rich
+            # markup as literal text; keep the plain title there.
+            details = title
+        else:
+            styled_title = f'[{CONSOLE_PARAGRAPH_STYLE}]{escape(title)}[/]'
+            if description:
+                details = f'{styled_title}\n[dim]{escape(description)}[/dim]'
+            else:
+                details = styled_title
+        columns_data.append([tutorial_id, filename, details])
 
     render_table(
         columns_headers=columns_headers,
         columns_data=columns_data,
         columns_alignment=columns_alignment,
+        width=shutil.get_terminal_size().columns,
     )
 
 
@@ -733,6 +752,7 @@ def render_table(
     columns_alignment: object,
     columns_headers: object = None,
     display_handle: object = None,
+    width: int | None = None,
 ) -> None:
     """
     Render tabular data to the active display backend.
@@ -749,6 +769,9 @@ def render_table(
     display_handle : object, default=None
         Optional display handle for in-place updates (e.g. in Jupyter or
         a terminal Live context).
+    width : int | None, default=None
+        Optional target table width. Honored by fixed-width backends
+        (Rich); ignored by reflowing ones (HTML).
     """
     headers = [
         (col, align) for col, align in zip(columns_headers, columns_alignment, strict=False)
@@ -756,7 +779,7 @@ def render_table(
     df = pd.DataFrame(columns_data, columns=pd.MultiIndex.from_tuples(headers))
 
     tabler = TableRenderer.get()
-    tabler.render(df, display_handle=display_handle)
+    tabler.render(df, display_handle=display_handle, width=width)
 
 
 def build_table_renderable(

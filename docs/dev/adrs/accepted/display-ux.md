@@ -43,21 +43,22 @@ defaults.
 
 Use `project.display` as the user-facing facade for display actions.
 Move serialized renderer settings out of that facade and into separate
-project categories named `project.chart` and `project.table`.
+project categories named `project.rendering_plot` and
+`project.rendering_table`.
 
 Renderer settings:
 
 ```python
-project.chart.type = 'plotly'
-project.table.type = 'pandas'
-project.chart.show_supported()
-project.table.show_supported()
+project.rendering_plot.type = 'plotly'
+project.rendering_table.type = 'pandas'
+project.rendering_plot.show_supported()
+project.rendering_table.show_supported()
 ```
 
 CIF names:
 
-- `_chart.type`
-- `_table.type`
+- `_rendering_plot.type`
+- `_rendering_table.type`
 
 No legacy loader is required for `_display.plotter_type` or
 `_display.tabler_type`. The project is in beta, so this cleanup may

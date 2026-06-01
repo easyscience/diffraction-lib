@@ -11,10 +11,9 @@ from easydiffraction.core.metadata import CalculatorSupport
 from easydiffraction.core.metadata import Compatibility
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
-from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.validation import RangeValidator
+from easydiffraction.core.variable import EnumDescriptor
 from easydiffraction.core.variable import Parameter
-from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.datablocks.experiment.categories.extinction.base import ExtinctionBase
 from easydiffraction.datablocks.experiment.categories.extinction.factory import ExtinctionFactory
 from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
@@ -51,15 +50,10 @@ class BeckerCoppensExtinction(ExtinctionBase):
     def __init__(self) -> None:
         super().__init__()
 
-        self._model = StringDescriptor(
+        self._model = EnumDescriptor(
             name='model',
+            enum=ExtinctionModelEnum,
             description='Mosaicity distribution model (gauss or lorentz)',
-            value_spec=AttributeSpec(
-                default=ExtinctionModelEnum.default().value,
-                validator=MembershipValidator(
-                    allowed=[member.value for member in ExtinctionModelEnum],
-                ),
-            ),
             cif_handler=CifHandler(
                 names=['_extinction.model'],
                 iucr_name='_easydiffraction_extinction.model',
@@ -106,13 +100,12 @@ class BeckerCoppensExtinction(ExtinctionBase):
     # ------------------------------------------------------------------
 
     @property
-    def model(self) -> StringDescriptor:
+    def model(self) -> EnumDescriptor:
         """
         Mosaicity distribution model (``'gauss'`` or ``'lorentz'``).
 
-        Reading this property returns the underlying
-        ``StringDescriptor`` object. Assigning to it updates the
-        descriptor value.
+        Reading this property returns the underlying ``EnumDescriptor``
+        object. Assigning to it updates the descriptor value.
         """
         return self._model
 

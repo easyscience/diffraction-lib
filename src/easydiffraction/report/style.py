@@ -4,8 +4,10 @@
 
 from __future__ import annotations
 
+from easydiffraction.display.theme import LIGHT_AXIS_FRAME_COLOR
+
 REPORT_AXIS_RGB = (190, 199, 208)
-REPORT_TABLE_INNER_RGB = (217, 223, 228)
+REPORT_TABLE_INNER_HEX = LIGHT_AXIS_FRAME_COLOR
 REPORT_CHART_GRID_RGB = (235, 240, 248)
 REPORT_ROW_RGB = (235, 240, 248)
 REPORT_LINK_RGB = (36, 90, 155)  # mirrors --link (#245a9b) in html/style.css
@@ -20,8 +22,8 @@ def report_style_context() -> dict[str, object]:
     return {
         'axis_hex': _rgb_hex(REPORT_AXIS_RGB),
         'axis_rgb': _rgb_channels(REPORT_AXIS_RGB),
-        'grid_hex': _rgb_hex(REPORT_TABLE_INNER_RGB),
-        'grid_rgb': _rgb_channels(REPORT_TABLE_INNER_RGB),
+        'grid_hex': REPORT_TABLE_INNER_HEX,
+        'grid_rgb': _hex_channels(REPORT_TABLE_INNER_HEX),
         'chart_grid_hex': _rgb_hex(REPORT_CHART_GRID_RGB),
         'chart_grid_rgb': _rgb_channels(REPORT_CHART_GRID_RGB),
         'row_hex': _rgb_hex(REPORT_ROW_RGB),
@@ -43,3 +45,12 @@ def _rgb_hex(rgb: tuple[int, int, int]) -> str:
 def _rgb_channels(rgb: tuple[int, int, int]) -> str:
     """Return comma-separated channels for TeX RGB definitions."""
     return ','.join(str(channel) for channel in rgb)
+
+
+def _hex_channels(color: str) -> str:
+    """Return comma-separated RGB channels for a CSS hex color."""
+    return _rgb_channels((
+        int(color[1:3], 16),
+        int(color[3:5], 16),
+        int(color[5:7], 16),
+    ))

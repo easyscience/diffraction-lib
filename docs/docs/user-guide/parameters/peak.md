@@ -1,27 +1,66 @@
-[coreCIF][1]{:.label-cif}
+[customCIF][0]{:.label-cif}
 
-# \_cell
+# \_peak
 
-Data items in this category record details about the crystallographic
-cell parameters and their measurement. Please see the
-[IUCr page](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/CCELL.html)
-for further details.
+This category stores peak-profile parameters used by powder diffraction
+and total-scattering calculations. The active peak-profile category is
+selected from the experiment:
 
-## \_cell.angle
+```python
+experiment.peak.type = 'pseudo-voigt'
+```
 
-The angles between the bounding cell axes in degrees.
+## Constant-wavelength powder profiles
 
-- [\_cell.angle_alpha](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Icell.angle_alpha.html)
-- [\_cell.angle_beta](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Icell.angle_beta.html)
-- [\_cell.angle_gamma](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Icell.angle_gamma.html)
+The constant-wavelength pseudo-Voigt profile uses Gaussian and
+Lorentzian broadening parameters:
 
-## \_cell.length
+- `_peak.broad_gauss_u`
+- `_peak.broad_gauss_v`
+- `_peak.broad_gauss_w`
+- `_peak.broad_lorentz_x`
+- `_peak.broad_lorentz_y`
 
-The lengths of each cell axis in angstroms.
+When empirical asymmetry is enabled, the profile also uses:
 
-- [\_cell.length_a](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Icell.length_a.html)
-- [\_cell.length_b](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Icell.length_b.html)
-- [\_cell.length_c](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Icell.length_c.html)
+- `_peak.asym_p1`
+- `_peak.asym_p2`
+- `_peak.asym_p3`
+- `_peak.asym_p4`
+
+## Time-of-flight powder profiles
+
+The time-of-flight pseudo-Voigt profiles use instrument-dependent
+Gaussian broadening, back-to-back exponential rise and decay terms, and
+optionally Lorentzian broadening or double-exponential asymmetry terms:
+
+- `_peak.gauss_sigma_0`
+- `_peak.gauss_sigma_1`
+- `_peak.gauss_sigma_2`
+- `_peak.rise_alpha_0`
+- `_peak.rise_alpha_1`
+- `_peak.decay_beta_0`
+- `_peak.decay_beta_1`
+- `_peak.lorentz_gamma_0`
+- `_peak.lorentz_gamma_1`
+- `_peak.lorentz_gamma_2`
+- `_peak.dexp_rise_alpha_1`
+- `_peak.dexp_rise_alpha_2`
+- `_peak.dexp_decay_beta_00`
+- `_peak.dexp_decay_beta_01`
+- `_peak.dexp_decay_beta_10`
+
+## Total-scattering profiles
+
+Total-scattering peak parameters describe Q-space cutoff, broadening,
+sharpening, and damping:
+
+- `_peak.cutoff_q`
+- `_peak.broad_q`
+- `_peak.sharp_delta_1`
+- `_peak.sharp_delta_2`
+- `_peak.damp_q`
+- `_peak.damp_particle_diameter`
 
 <!-- prettier-ignore-start -->
 [0]: #

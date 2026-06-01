@@ -52,7 +52,7 @@ Three problems have accumulated since that ADR landed:
    swapped category writes; `_calculation.calculator_type` lives inside
    its category block but the descriptor name awkwardly repeats the noun
    ("calculator") instead of using a uniform `.type` selector.
-   [`python-cif-category-correspondence.md`](../suggestions/python-cif-category-correspondence.md)
+   [`python-cif-category-correspondence.md`](python-cif-category-correspondence.md)
    notes the inconsistency under §"Owner-level switchable selectors" and
    tags it for a future ADR.
 
@@ -140,16 +140,16 @@ the `Calculation` category is renamed (see §8); one is new
 (`_fitting_mode`) because the active-sibling selector is promoted to its
 own category (also §8).
 
-| Today                                 | Replacement          | Mechanism family ¹ |
-| ------------------------------------- | -------------------- | ------------------ |
-| `_fitting.minimizer_type`             | `_minimizer.type`    | A                  |
-| `_peak.profile_type`                  | `_peak.type`         | A                  |
-| (none — only `_pd_background.*` loop) | `_background.type`   | A                  |
-| (none — only active-class fields)     | `_extinction.type`   | A                  |
-| `_calculation.calculator_type`        | `_calculator.type`   | B (and §8 rename)  |
-| `_rendering.chart_engine`             | `_chart.type`        | B (and §8 split)   |
-| `_rendering.table_engine`             | `_table.type`        | B (and §8 split)   |
-| `_fitting.mode_type`                  | `_fitting_mode.type` | C (and §8 promote) |
+| Today                                 | Replacement             | Mechanism family ¹ |
+| ------------------------------------- | ----------------------- | ------------------ |
+| `_fitting.minimizer_type`             | `_minimizer.type`       | A                  |
+| `_peak.profile_type`                  | `_peak.type`            | A                  |
+| (none — only `_pd_background.*` loop) | `_background.type`      | A                  |
+| (none — only active-class fields)     | `_extinction.type`      | A                  |
+| `_calculation.calculator_type`        | `_calculator.type`      | B (and §8 rename)  |
+| `_rendering.chart_engine`             | `_rendering_plot.type`  | B (and §8 split)   |
+| `_rendering.table_engine`             | `_rendering_table.type` | B (and §8 split)   |
+| `_fitting.mode_type`                  | `_fitting_mode.type`    | C (and §8 promote) |
 
 ¹ Mechanism family per [`selector-families.md`](selector-families.md): A
 swaps the category instance, B swaps the live engine behind a singleton
@@ -461,11 +461,11 @@ Owners contribute only the filter dict via
 `_supported_filters_for(category)`.
 
 The Family-B swap hooks (e.g. `Experiment._swap_calculator`,
-`Project._swap_chart`, `Project._swap_table`) follow the same shape but
-rebind the live engine rather than the category instance. The Family-C
-swap hook (`Analysis._swap_fitting_mode`) performs the existing
-sibling-activation logic. The mixin does not care which mechanism the
-owner uses; it only routes the writable surface.
+`Project._swap_rendering_plot`, `Project._swap_rendering_table`) follow
+the same shape but rebind the live engine rather than the category
+instance. The Family-C swap hook (`Analysis._swap_fitting_mode`)
+performs the existing sibling-activation logic. The mixin does not care
+which mechanism the owner uses; it only routes the writable surface.
 
 CIF read path becomes:
 
@@ -599,12 +599,13 @@ levels).
 The `Rendering` category is **removed**. Two new sibling categories
 appear on `Project`:
 
-- `project.chart` — `CategoryItem` with one writable selector `type`
-  (`PlotterEngineEnum` plus the `'auto'` sentinel) and the live
-  `Plotter` facade as a private internal. CIF block: `_chart.*`.
-- `project.table` — `CategoryItem` with one writable selector `type`
-  (`TableEngineEnum` plus `'auto'`) and the live `TableRenderer` facade
-  as a private internal. CIF block: `_table.*`.
+- `project.rendering_plot` — `CategoryItem` with one writable selector
+  `type` (`PlotterEngineEnum` plus the `'auto'` sentinel) and the live
+  `Plotter` facade as a private internal. CIF block:
+  `_rendering_plot.*`.
+- `project.rendering_table` — `CategoryItem` with one writable selector
+  `type` (`TableEngineEnum` plus `'auto'`) and the live `TableRenderer`
+  facade as a private internal. CIF block: `_rendering_table.*`.
 
 Both follow the §4 mechanism — Family B (engine swap), `category.type`
 surface — and become natural homes for future chart-only and table-only
@@ -614,8 +615,8 @@ descriptors (e.g. `chart.height`, `chart.theme`, `table.max_rows`,
 The owner-level `project.rendering.show_chart_engines()`,
 `project.rendering.show_table_engines()`, and
 `project.rendering.show_config()` methods are deleted. Their
-replacements are `project.chart.show_supported()`,
-`project.table.show_supported()`, and (if needed) a thin
+replacements are `project.rendering_plot.show_supported()`,
+`project.rendering_table.show_supported()`, and (if needed) a thin
 `project.show_config()` that prints both categories' current state.
 
 #### 8b. `analysis.fitting_mode_type` → `analysis.fitting_mode.type`
@@ -662,7 +663,7 @@ binding — this is a Family-B engine-swap mechanism; only the user-facing
 surface and the CIF block name change.
 
 Affected ADRs: this rename adds a small amendment to
-[`python-cif-category-correspondence.md`](../suggestions/python-cif-category-correspondence.md)
+[`python-cif-category-correspondence.md`](python-cif-category-correspondence.md)
 (category and CIF tag both move from `calculation` to `calculator`) and
 to [`selector-families.md`](selector-families.md) (the example row for
 Family B).
@@ -685,16 +686,16 @@ separate, smaller table.
 
 ### In scope — every selector with a writable type surface
 
-| #   | Owner      | Today                                          | Proposed Python                    | CIF today                               | CIF proposed         | Mech           | Source                                            |
-| --- | ---------- | ---------------------------------------------- | ---------------------------------- | --------------------------------------- | -------------------- | -------------- | ------------------------------------------------- |
-| 1   | analysis   | `analysis.minimizer_type = 'X'`                | `analysis.minimizer.type = 'X'`    | `_fitting.minimizer_type`               | `_minimizer.type`    | A              | `analysis/analysis.py:1022`                       |
-| 2   | experiment | `experiment.peak_profile_type = 'X'`           | `experiment.peak.type = 'X'`       | `_peak.profile_type`                    | `_peak.type`         | A              | `experiment/item/base.py:514`                     |
-| 3   | experiment | `experiment.background_type = 'X'`             | `experiment.background.type = 'X'` | (none — only `_pd_background.*` loop)   | `_background.type`   | A              | `experiment/item/bragg_pd.py:184`                 |
-| 4   | experiment | `experiment.extinction_type = 'X'`             | `experiment.extinction.type = 'X'` | (none — only active class's own fields) | `_extinction.type`   | A              | `experiment/item/base.py:312`                     |
-| 5   | experiment | `experiment.calculation.calculator_type = 'X'` | `experiment.calculator.type = 'X'` | `_calculation.calculator_type`          | `_calculator.type`   | B + §8 rename  | `experiment/categories/calculation/default.py:50` |
-| 6   | project    | `project.rendering.chart_engine = 'X'`         | `project.chart.type = 'X'`         | `_rendering.chart_engine`               | `_chart.type`        | B + §8 split   | `project/categories/rendering/default.py:100`     |
-| 7   | project    | `project.rendering.table_engine = 'X'`         | `project.table.type = 'X'`         | `_rendering.table_engine`               | `_table.type`        | B + §8 split   | `project/categories/rendering/default.py:109`     |
-| 8   | analysis   | `analysis.fitting_mode_type = 'X'`             | `analysis.fitting_mode.type = 'X'` | `_fitting.mode_type`                    | `_fitting_mode.type` | C + §8 promote | `analysis/analysis.py:960`                        |
+| #   | Owner      | Today                                          | Proposed Python                      | CIF today                               | CIF proposed            | Mech           | Source                                            |
+| --- | ---------- | ---------------------------------------------- | ------------------------------------ | --------------------------------------- | ----------------------- | -------------- | ------------------------------------------------- |
+| 1   | analysis   | `analysis.minimizer_type = 'X'`                | `analysis.minimizer.type = 'X'`      | `_fitting.minimizer_type`               | `_minimizer.type`       | A              | `analysis/analysis.py:1022`                       |
+| 2   | experiment | `experiment.peak_profile_type = 'X'`           | `experiment.peak.type = 'X'`         | `_peak.profile_type`                    | `_peak.type`            | A              | `experiment/item/base.py:514`                     |
+| 3   | experiment | `experiment.background_type = 'X'`             | `experiment.background.type = 'X'`   | (none — only `_pd_background.*` loop)   | `_background.type`      | A              | `experiment/item/bragg_pd.py:184`                 |
+| 4   | experiment | `experiment.extinction_type = 'X'`             | `experiment.extinction.type = 'X'`   | (none — only active class's own fields) | `_extinction.type`      | A              | `experiment/item/base.py:312`                     |
+| 5   | experiment | `experiment.calculation.calculator_type = 'X'` | `experiment.calculator.type = 'X'`   | `_calculation.calculator_type`          | `_calculator.type`      | B + §8 rename  | `experiment/categories/calculation/default.py:50` |
+| 6   | project    | `project.rendering.chart_engine = 'X'`         | `project.rendering_plot.type = 'X'`  | `_rendering.chart_engine`               | `_rendering_plot.type`  | B + §8 split   | `project/categories/rendering/default.py:100`     |
+| 7   | project    | `project.rendering.table_engine = 'X'`         | `project.rendering_table.type = 'X'` | `_rendering.table_engine`               | `_rendering_table.type` | B + §8 split   | `project/categories/rendering/default.py:109`     |
+| 8   | analysis   | `analysis.fitting_mode_type = 'X'`             | `analysis.fitting_mode.type = 'X'`   | `_fitting.mode_type`                    | `_fitting_mode.type`    | C + §8 promote | `analysis/analysis.py:960`                        |
 
 Mechanism legend (recap):
 
@@ -820,7 +821,7 @@ member and exposes `category.type` plus `category.show_supported()`.
   Replace the `analysis.fitting_mode_type` description with
   `analysis.fitting_mode.type` and document the new `FittingMode`
   category (§8b).
-- [`python-cif-category-correspondence.md`](../suggestions/python-cif-category-correspondence.md)
+- [`python-cif-category-correspondence.md`](python-cif-category-correspondence.md)
   — the §"Owner-level switchable selectors" table becomes obsolete;
   remove the "deliberate abstraction" exception. Update every entry to
   the `_<cat>.type` form.
@@ -837,15 +838,15 @@ member and exposes `category.type` plus `category.show_supported()`.
 - [`display-ux.md`](display-ux.md) — replace every reference to
   `project.rendering`, `_rendering.chart_engine`, and
   `_rendering.table_engine` with the post-§8a shape:
-  `project.chart.type`, `project.table.type`, CIF blocks `_chart.*` and
-  `_table.*`. Drop the writable-selector contract that puts chart/table
-  engines on the `rendering` category; document instead that each
-  renderer lives on its own category with the canonical `category.type`
-  surface.
+  `project.rendering_plot.type`, `project.rendering_table.type`, CIF
+  blocks `_rendering_plot.*` and `_rendering_table.*`. Drop the
+  writable-selector contract that puts chart/table engines on the
+  `rendering` category; document instead that each renderer lives on its
+  own category with the canonical `category.type` surface.
 - [`category-owner-sections.md`](category-owner-sections.md) — update
   the `ProjectConfig` children list: drop `Rendering`; add `Chart` and
   `Table` as siblings. Update the `_rendering.*` CIF block reference to
-  `_chart.*` and `_table.*`.
+  `_rendering_plot.*` and `_rendering_table.*`.
 
 (A grep against `docs/dev/adrs/accepted/` for the renamed Python names
 and CIF tags surfaced four additional hits that turned out to be generic
@@ -918,8 +919,8 @@ visible at a glance.
 ```
 data_project
 
-_chart.type   plotly
-_table.type   rich
+_rendering_plot.type   plotly
+_rendering_table.type   rich
 ```
 
 The `_rendering.*` block is gone; two single-purpose blocks replace it
@@ -1040,11 +1041,11 @@ project.experiments['hrpt'].background.create(id='1', order=0, coef=0.42)
 project.experiments['hrpt'].calculator.show_supported()
 project.experiments['hrpt'].calculator.type = 'cryspy'
 
-project.chart.show_supported()
-project.chart.type = 'plotly'
+project.rendering_plot.show_supported()
+project.rendering_plot.type = 'plotly'
 
-project.table.show_supported()
-project.table.type = 'rich'
+project.rendering_table.show_supported()
+project.rendering_table.type = 'rich'
 
 # Family C — active-sibling selector (same surface)
 project.analysis.fitting_mode.show_supported()

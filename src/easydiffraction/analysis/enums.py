@@ -41,6 +41,16 @@ class FitResultKindEnum(StrEnum):
         """Return the default persisted fit-result kind."""
         return cls.DETERMINISTIC
 
+    def description(self) -> str:
+        """
+        Return a human-readable description of this fit-result kind.
+        """
+        if self is FitResultKindEnum.DETERMINISTIC:
+            return 'Least-squares (point-estimate) fit result.'
+        if self is FitResultKindEnum.BAYESIAN:
+            return 'Bayesian (posterior-sampling) fit result.'
+        return ''
+
 
 class FitCorrelationSourceEnum(StrEnum):
     """Source of a persisted fit-parameter correlation summary."""
@@ -52,3 +62,13 @@ class FitCorrelationSourceEnum(StrEnum):
     def default(cls) -> FitCorrelationSourceEnum:
         """Return the default persisted correlation source."""
         return cls.DETERMINISTIC
+
+    def description(self) -> str:
+        """
+        Return a human-readable description of this correlation source.
+        """
+        if self is FitCorrelationSourceEnum.DETERMINISTIC:
+            return 'Correlations from the least-squares covariance matrix.'
+        if self is FitCorrelationSourceEnum.POSTERIOR:
+            return 'Correlations from posterior samples.'
+        return ''

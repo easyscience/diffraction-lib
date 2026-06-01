@@ -51,6 +51,14 @@ project_dir = ed.download_data(id=38, destination='projects')
 project = ed.Project.load(project_dir)
 
 # %% [markdown]
+# ## View Structure
+#
+# Render the La0.5Ba0.5CoO3 structure restored from the saved project.
+
+# %%
+project.display.structure(struct_name='lbco')
+
+# %% [markdown]
 # ## Review the Saved Fit Summary
 #
 # The fit summary reports the committed point estimate, sampler

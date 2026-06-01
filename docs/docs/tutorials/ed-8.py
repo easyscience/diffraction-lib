@@ -330,6 +330,12 @@ expt47.peak.exp_decay_beta_1.free = True
 expt47.peak.exp_rise_alpha_1.free = True
 
 # %% [markdown]
+# #### Plot Structure
+
+# %%
+project.display.structure(struct_name='ncaf')
+
+# %% [markdown]
 # #### Plot Measured vs Calculated
 
 # %%
@@ -357,8 +363,6 @@ project.display.pattern(expt_name='wish_4_7')
 
 # %% [markdown]
 # ## Report
-#
-# This final section shows how to review the results of the analysis.
 #
 # The HTML report is written automatically when the project is saved;
 # enable `project.report.pdf` as well for a PDF version.

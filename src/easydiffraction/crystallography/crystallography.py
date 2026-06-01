@@ -417,7 +417,9 @@ def _get_general_position_ops(
     """
     key = (it_number, coord_code)
     if key not in SPACE_GROUPS:
-        log.error(f'Space group ({it_number}, {coord_code!r}) not found')
+        # Not in the local SPACE_GROUPS table (e.g. P 1, where cryspy
+        # reports no coordinate-system codes). The caller falls back to
+        # the identity operator, so report no general-position ops.
         return None
 
     entry = SPACE_GROUPS[key]
@@ -649,3 +651,136 @@ def apply_atom_site_aniso_symmetry_constraints(
     atom_site_aniso.update(dict(zip(keys, param_i, strict=False)))
 
     return atom_site_aniso, ref_i
+
+
+def orthogonalization_matrix(
+    a: float,
+    b: float,
+    c: float,
+    alpha: float,
+    beta: float,
+    gamma: float,
+) -> np.ndarray:
+    """
+    Build the fractional-to-Cartesian orthogonalization matrix.
+
+    Uses the standard crystallographic convention with the Cartesian x
+    axis along **a** and **b** in the x-y plane (the IUCr / Busing-Levy
+    setting). Edge lengths are in angstrom and angles in degrees.
+
+    Parameters
+    ----------
+    a : float
+        Unit-cell edge length ``a`` (angstrom).
+    b : float
+        Unit-cell edge length ``b`` (angstrom).
+    c : float
+        Unit-cell edge length ``c`` (angstrom).
+    alpha : float
+        Unit-cell angle ``alpha`` (degrees).
+    beta : float
+        Unit-cell angle ``beta`` (degrees).
+    gamma : float
+        Unit-cell angle ``gamma`` (degrees).
+
+    Returns
+    -------
+    np.ndarray
+        The ``(3, 3)`` matrix ``M`` with ``r_cartesian = M @
+        r_fractional``.
+    """
+    al, be, ga = np.radians([alpha, beta, gamma])
+    cos_al, cos_be, cos_ga = np.cos([al, be, ga])
+    sin_ga = np.sin(ga)
+    volume_factor = np.sqrt(
+        1.0 - cos_al**2 - cos_be**2 - cos_ga**2 + 2.0 * cos_al * cos_be * cos_ga
+    )
+    return np.array([
+        [a, b * cos_ga, c * cos_be],
+        [0.0, b * sin_ga, c * (cos_al - cos_be * cos_ga) / sin_ga],
+        [0.0, 0.0, c * volume_factor / sin_ga],
+    ])
+
+
+def fractional_to_cartesian(frac: object, matrix: np.ndarray) -> np.ndarray:
+    """
+    Convert fractional coordinates to Cartesian using a cell matrix.
+
+    Parameters
+    ----------
+    frac : object
+        A single ``(3,)`` fractional vector or an ``(n, 3)`` stack.
+    matrix : np.ndarray
+        The ``(3, 3)`` orthogonalization matrix from
+        :func:`orthogonalization_matrix`.
+
+    Returns
+    -------
+    np.ndarray
+        Cartesian coordinates with the same shape as *frac*.
+    """
+    return np.asarray(frac, dtype=float) @ np.asarray(matrix, dtype=float).T
+
+
+def adp_principal_axes(tensor: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """
+    Diagonalise a Cartesian ADP tensor into principal axes.
+
+    Expects a symmetric ``(3, 3)`` **U-type** (mean-square displacement)
+    tensor already in the Cartesian frame; conversion from the crystal
+    frame and from B to U (``U = B / (8 pi**2)``) is the caller's
+    responsibility. Returned semi-axes are RMS displacements
+    (sqrt-eigenvalue); scaling to a probability level is done by the
+    caller.
+
+    Parameters
+    ----------
+    tensor : np.ndarray
+        Symmetric ``(3, 3)`` Cartesian U tensor.
+
+    Returns
+    -------
+    tuple[np.ndarray, np.ndarray]
+        semi_axes : ``(3,)`` RMS principal semi-axis lengths.
+        orientation : ``(3, 3)`` matrix whose columns are the principal
+        directions.
+    """
+    eigenvalues, eigenvectors = np.linalg.eigh(np.asarray(tensor, dtype=float))
+    semi_axes = np.sqrt(np.clip(eigenvalues, 0.0, None))
+    return semi_axes, eigenvectors
+
+
+def symmetry_operators(
+    name_hm: str,
+    coord_code: str | None = None,
+) -> list[tuple[np.ndarray, np.ndarray]]:
+    """
+    Return general-position symmetry operators for a space group.
+
+    Thin public wrapper over the general-position lookup, resolving the
+    International Tables number from the Hermann-Mauguin symbol. Falls
+    back to the identity operator (so the asymmetric unit is still
+    drawn) when the space group cannot be resolved.
+
+    Parameters
+    ----------
+    name_hm : str
+        Hermann-Mauguin symbol of the space group.
+    coord_code : str | None, default=None
+        IT coordinate system code, when one applies.
+
+    Returns
+    -------
+    list[tuple[np.ndarray, np.ndarray]]
+        ``(rotation, translation)`` pairs; rotation a ``(3, 3)`` integer
+        array, translation a ``(3,)`` fractional vector.
+    """
+    identity = [(np.eye(3, dtype=int), np.zeros(3))]
+    it_number = get_it_number_by_name_hm_short(name_hm)
+    if it_number is None:
+        log.warning(f"Unknown space group '{name_hm}'; showing asymmetric unit only")
+        return identity
+    ops = _get_general_position_ops(it_number, coord_code)
+    if ops is None:
+        return identity
+    return ops

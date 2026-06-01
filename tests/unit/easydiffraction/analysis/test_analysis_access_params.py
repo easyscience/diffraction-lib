@@ -9,17 +9,25 @@ def _make_param(
     name,
     val,
     *,
+    units='none',
+    display_units=None,
     user_constrained=False,
     symmetry_constrained=False,
 ):
+    from easydiffraction.core.display_handler import DisplayHandler
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
     from easydiffraction.io.cif.handler import CifHandler
 
+    display_handler = (
+        DisplayHandler(display_units=display_units) if display_units is not None else None
+    )
     param = Parameter(
         name=name,
+        units=units,
         value_spec=AttributeSpec(default=0.0),
         cif_handler=CifHandler(names=[f'_{cat}.{name}']),
+        display_handler=display_handler,
     )
     param.value = val
     param._identity.datablock_entry_name = lambda: db
@@ -295,3 +303,55 @@ def test_fittable_params_excludes_symmetry_constrained_parameters(monkeypatch):
 
     structure_df = rendered[0]
     assert structure_df['parameter', 'left'].tolist() == ['length_a']
+
+
+def test_free_params_uses_display_units_for_structures_and_experiments(monkeypatch):
+    import easydiffraction.analysis.analysis as analysis_mod
+    from easydiffraction.analysis.analysis import Analysis
+
+    structure_param = _make_param(
+        's1',
+        'cell',
+        '',
+        'length_a',
+        4.0,
+        units='angstrom_squared',
+        display_units='Å²',
+    )
+    experiment_param = _make_param(
+        'e1',
+        'time_of_flight',
+        '',
+        'time_offset',
+        12.0,
+        units='microseconds',
+        display_units='μs',
+    )
+
+    class Coll:
+        def __init__(self, params):
+            self.parameters = params
+            self.free_parameters = params
+
+        def __iter__(self):
+            return iter(())
+
+    class Project:
+        def __init__(self):
+            self.structures = Coll([structure_param])
+            self.experiments = Coll([experiment_param])
+
+    rendered = []
+
+    class FakeTableRenderer:
+        def render(self, df):
+            rendered.append(df)
+
+    monkeypatch.setattr(
+        analysis_mod.TableRenderer, 'get', staticmethod(lambda: FakeTableRenderer())
+    )
+    Analysis(Project()).display.free_params()
+
+    free_df = rendered[0]
+    assert free_df['parameter', 'left'].tolist() == ['length_a', 'time_offset']
+    assert free_df['units', 'left'].tolist() == ['Å²', 'μs']

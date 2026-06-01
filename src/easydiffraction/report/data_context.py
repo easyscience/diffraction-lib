@@ -57,48 +57,6 @@ _EXPERIMENT_DIFFRN_FIELDS = (
     'ambient_temperature',
     'ambient_pressure',
 )
-_PUBLICATION_JOURNAL_FIELDS = (
-    'name_full',
-    'year',
-    'volume',
-    'issue',
-    'page_first',
-    'page_last',
-    'paper_category',
-    'paper_doi',
-    'coden_astm',
-    'suppl_publ_number',
-)
-_PUBLICATION_JOURNAL_DATE_FIELDS = (
-    'accepted',
-    'from_coeditor',
-    'printers_final',
-)
-_PUBLICATION_JOURNAL_COEDITOR_FIELDS = (
-    'code',
-    'name',
-    'notes',
-)
-_PUBLICATION_CONTACT_AUTHOR_FIELDS = (
-    'name',
-    'address',
-    'email',
-    'phone',
-    'id_orcid',
-    'id_iucr',
-)
-_PUBLICATION_BODY_FIELDS = (
-    'title',
-    'synopsis',
-    'abstract',
-)
-_PUBLICATION_AUTHOR_FIELDS = (
-    'name',
-    'address',
-    'footnote',
-    'id_orcid',
-    'id_iucr',
-)
 _REPORT_LOOP_DISPLAY_LIMIT = DEFAULT_LOOP_DISPLAY_LIMIT
 _FULL_WIDTH_TABLE_CHAR_LIMIT = 40
 _TRUNCATED_DATA_CATEGORY_CODES = frozenset({'pd_data', 'total_data'})
@@ -126,8 +84,7 @@ class ReportDataContext:
     Parameters
     ----------
     project : object
-        Project facade that owns structures, experiments, analysis, and
-        publication metadata.
+        Project facade that owns structures, experiments, and analysis.
     """
 
     def __init__(self, project: object) -> None:
@@ -151,7 +108,6 @@ class ReportDataContext:
             'structures': [self._structure_context(structure) for structure in structures],
             'experiments': [self._experiment_context(experiment) for experiment in experiments],
             'analysis': self._analysis_context(),
-            'publication': self._publication_context(),
             'metadata': {
                 'easydiffraction_version': package_version('easydiffraction'),
                 'generated_at': _format_generated_at(datetime.now(tz=UTC)),
@@ -310,37 +266,6 @@ class ReportDataContext:
             'calculator': _software_role_context(_safe_attr(software, 'calculator')),
             'minimizer': _software_role_context(_safe_attr(software, 'minimizer')),
             'fit_datetime': _attr_value(software, 'timestamp'),
-        }
-
-    def _publication_context(self) -> dict[str, object]:
-        """Return journal-publication metadata."""
-        publication = _safe_attr(self._project, 'publication')
-        body = _safe_attr(publication, 'body')
-        return {
-            'journal': _field_values(
-                _safe_attr(publication, 'journal'),
-                _PUBLICATION_JOURNAL_FIELDS,
-            ),
-            'journal_date': _field_values(
-                _safe_attr(publication, 'journal_date'),
-                _PUBLICATION_JOURNAL_DATE_FIELDS,
-            ),
-            'journal_coeditor': _field_values(
-                _safe_attr(publication, 'journal_coeditor'),
-                _PUBLICATION_JOURNAL_COEDITOR_FIELDS,
-            ),
-            'contact_author': _field_values(
-                _safe_attr(publication, 'contact_author'),
-                _PUBLICATION_CONTACT_AUTHOR_FIELDS,
-            ),
-            'body': {
-                **_field_values(body, _PUBLICATION_BODY_FIELDS),
-                'keywords': list(_safe_attr(body, 'keywords') or []),
-            },
-            'authors': [
-                _field_values(author, _PUBLICATION_AUTHOR_FIELDS)
-                for author in _collection_values(_safe_attr(publication, 'authors'))
-            ],
         }
 
 

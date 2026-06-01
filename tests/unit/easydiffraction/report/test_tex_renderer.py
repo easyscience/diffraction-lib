@@ -16,24 +16,6 @@ def _minimal_context() -> dict[str, object]:
             'n_phases': 0,
             'n_experiments': 0,
         },
-        'publication': {
-            'body': {
-                'title': '',
-                'abstract': '',
-                'synopsis': '',
-                'keywords': '',
-            },
-            'authors': [],
-            'journal': {
-                'name_full': '',
-                'year': '',
-                'paper_doi': '',
-            },
-            'contact_author': {
-                'name': '',
-                'email': '',
-            },
-        },
         'metadata': {
             'generated_at': '2026-05-26T00:00:00Z',
             'easydiffraction_version': '0.0',
@@ -143,7 +125,7 @@ def test_render_tex_report_renders_default_document():
     tex = render_tex_report(context)
 
     assert r'\documentclass[11pt]{article}' in tex
-    assert r'\usepackage[margin=2.5cm]{geometry}' in tex
+    assert r'\usepackage[margin=2cm]{geometry}' in tex
     assert r'\usepackage{fourier}' in tex
     assert r'\usepackage{longtable}' in tex
     assert r'\usepackage{paratype}' in tex
@@ -459,3 +441,36 @@ def test_save_tex_report_removes_stale_managed_bundle_dirs(tmp_path):
     assert not (tex_dir / 'data').exists()
     assert not (tex_dir / 'figures').exists()
     assert not (tex_dir / 'styles').exists()
+
+
+def test_save_tex_report_writes_structure_figure_png(tmp_path):
+    import easydiffraction as ed
+
+    from easydiffraction.report.tex_renderer import save_tex_report
+
+    project = ed.Project(name='struct_fig')
+    project.structures.create(name='nacl')
+    structure = project.structures['nacl']
+    structure.cell.length_a = 5.64
+    structure.cell.length_b = 5.64
+    structure.cell.length_c = 5.64
+    structure.atom_sites.create(
+        label='Na', type_symbol='Na', fract_x=0, fract_y=0, fract_z=0, adp_iso=0.5, occupancy=1
+    )
+    structure.atom_sites.create(
+        label='Cl',
+        type_symbol='Cl',
+        fract_x=0.5,
+        fract_y=0.5,
+        fract_z=0.5,
+        adp_iso=0.5,
+        occupancy=1,
+    )
+
+    tex_path = tmp_path / 'report.tex'
+    save_tex_report(project, project.report.data_context(), path=tex_path)
+
+    figure_path = tex_path.parent / 'data' / 'struct_nacl.png'
+    assert figure_path.exists()
+    assert figure_path.read_bytes().startswith(b'\x89PNG\r\n\x1a\n')
+    assert 'data/struct_nacl.png' in tex_path.read_text(encoding='utf-8')

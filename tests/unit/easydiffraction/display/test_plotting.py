@@ -276,6 +276,7 @@ def test_plotter_routes_to_ascii_plotter(monkeypatch):
         def __init__(self):
             self.two_theta = np.array([0.0, 1.0])
             self.intensity_meas = np.array([1.0, 2.0])
+            self.intensity_calc = np.array([1.0, 2.0])
             self.d_spacing = self.two_theta
 
     class ExptType:
@@ -294,7 +295,18 @@ def test_plotter_routes_to_ascii_plotter(monkeypatch):
         _MeasVsCalcPlotOptions(),
     )
     assert called['labels'] == ('meas',)
-    assert 'Measured data' in called['title']
+    assert called['title'] == "Diffraction pattern for experiment 🔬 'E'"
+    assert called['excluded_ranges'] == ()
+
+    p._plot_calc_data(
+        object(),
+        Ptn(),
+        'E',
+        ExptType(),
+        _MeasVsCalcPlotOptions(),
+    )
+    assert called['labels'] == ('calc',)
+    assert called['title'] == "Diffraction pattern for experiment 🔬 'E'"
     assert called['excluded_ranges'] == ()
 
 
@@ -449,6 +461,10 @@ def test_build_posterior_pairs_plot_hides_diagonal_ticks_and_uses_annotations():
             ],
         )['fixed_aspect_wrapper']['aspect_ratio']
     )
+    theme_sync = figure.layout.meta['ed_plotly_theme_sync']
+    assert theme_sync['axis_frame_shape_indexes'] == [
+        index for index, shape in enumerate(figure.layout.shapes) if shape.type == 'rect'
+    ]
     assert [annotation.text for annotation in figure.layout.annotations] == [
         'Posterior pair plot',
         'length_a',
@@ -2095,18 +2111,29 @@ def test_plot_param_correlations_renders_plotly_heatmap(monkeypatch):
     assert fig.layout.margin.b == (
         SQUARE_MATRIX_BOTTOM_MARGIN_PIXELS + 2 * SQUARE_MATRIX_AXIS_TITLE_LINE_HEIGHT_PIXELS
     )
+    correlation_wrapper_meta = Plotter._square_matrix_layout_meta(
+        n_parameters=2,
+        annotation_labels=[
+            'phase.<br>scale',
+            'phase.<br>cell.<br>length_c',
+            'phase.<br>scale',
+            'phase.<br>cell.<br>length_c',
+        ],
+        cell_size_pixels=Plotter._correlation_cell_size_pixels(),
+        cap_width=True,
+    )['fixed_aspect_wrapper']
     assert (
         fig.layout.meta['fixed_aspect_wrapper']['aspect_ratio']
-        == Plotter._square_matrix_layout_meta(
-            n_parameters=2,
-            annotation_labels=[
-                'phase.<br>scale',
-                'phase.<br>cell.<br>length_c',
-                'phase.<br>scale',
-                'phase.<br>cell.<br>length_c',
-            ],
-        )['fixed_aspect_wrapper']['aspect_ratio']
+        == correlation_wrapper_meta['aspect_ratio']
     )
+    # Cells are capped to ~16 label characters wide via the wrapper max-width.
+    assert (
+        fig.layout.meta['fixed_aspect_wrapper']['max_width_pixels']
+        == correlation_wrapper_meta['max_width_pixels']
+    )
+    theme_sync = fig.layout.meta['ed_plotly_theme_sync']
+    assert theme_sync['correlation_heatmap'] is True
+    assert theme_sync['axis_frame_shape_indexes'] == list(range(len(fig.layout.shapes)))
     assert fig.layout.xaxis.showline is False
     assert fig.layout.xaxis.mirror is False
     assert fig.layout.yaxis.showline is False
@@ -2119,6 +2146,9 @@ def test_plot_param_correlations_renders_plotly_heatmap(monkeypatch):
     assert fig.layout.plot_bgcolor is None
     assert len(fig.layout.shapes) == 3
     assert all(shape.type == 'rect' for shape in fig.layout.shapes)
+    assert {shape.line.color for shape in fig.layout.shapes} == {
+        plotly_mod.PlotlyPlotter._axis_frame_color(),
+    }
 
 
 def test_plot_param_correlations_plotly_labels_respect_threshold(monkeypatch):

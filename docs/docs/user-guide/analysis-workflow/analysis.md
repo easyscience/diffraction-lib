@@ -63,21 +63,21 @@ The calculator is automatically selected based on the experiment type
 To show the supported calculation engines for a specific experiment:
 
 ```python
-project.experiments['hrpt'].calculation.show_calculator_types()
+project.experiments['hrpt'].calculator.show_supported()
 ```
 
-The example of the output is:
+Example output:
 
-Supported calculator types
+Calculator types
 
-| Calculator | Description                                      |
-| ---------- | ------------------------------------------------ |
-| cryspy     | CrysPy library for crystallographic calculations |
+|     | Type   | Description                                      |
+| --- | ------ | ------------------------------------------------ |
+| \*  | cryspy | CrysPy library for crystallographic calculations |
 
 To explicitly select a calculation engine for an experiment:
 
 ```python
-project.experiments['hrpt'].calculation.calculator_type = 'cryspy'
+project.experiments['hrpt'].calculator.type = 'cryspy'
 ```
 
 ## Minimization / Optimization
@@ -88,10 +88,10 @@ experimental data. This process is illustrated in the following diagram:
 
 ```mermaid
 flowchart LR
-    a(Propose<br/>model)
-    b(Set/change<br/>model<br/>parameter<br/>values)
-    c(Calculate<br/>model<br/>data)
-    d(Compare<br/>model data to<br/>experimental<br/>data)
+    a(Propose<br/>structure)
+    b(Set/change<br/>structure and<br/>experiment<br/>parameters)
+    c(Calculate<br/>pattern)
+    d(Compare<br/>calculated data to<br/>experimental<br/>data)
     e(Stop<br/>iteration)
     a --> b
     b --> c
@@ -122,6 +122,14 @@ in the search space, bumps provides Bayesian uncertainty analysis which
 explores all viable minima and finds confidence intervals on the
 parameters based on uncertainty in the measured values.
 
+### emcee Minimizer
+
+[emcee](https://emcee.readthedocs.io/) is an affine-invariant ensemble
+sampler for Bayesian posterior exploration. It is useful after a stable
+least-squares model has been prepared and the goal is to inspect
+credible intervals, correlations, and posterior-predictive uncertainty
+rather than only one best-fit point.
+
 ### DFO-LS Minimizer
 
 [DFO-LS](https://github.com/numericalalgorithmsgroup/dfols)
@@ -134,24 +142,30 @@ derivatives of the objective.
 To show the supported minimizers:
 
 ```python
-project.analysis.fitting.show_minimizer_types()
+project.analysis.minimizer.show_supported()
 ```
 
-The example of the output is:
+Example output:
 
-Supported minimizers
+Minimizer types
 
-| Minimizer             | Description                                                              |
-| --------------------- | ------------------------------------------------------------------------ |
-| lmfit                 | LMFIT library using the default Levenberg-Marquardt least squares method |
-| lmfit (leastsq)       | LMFIT library with Levenberg-Marquardt least squares method              |
-| lmfit (least_squares) | LMFIT library with SciPy's trust region reflective algorithm             |
-| dfols                 | DFO-LS library for derivative-free least-squares optimization            |
+|     | Type                  | Description                                                   |
+| --- | --------------------- | ------------------------------------------------------------- |
+|     | lmfit                 | LMFIT library using the default Levenberg-Marquardt method    |
+| \*  | lmfit (leastsq)       | LMFIT library with Levenberg-Marquardt least squares method   |
+|     | lmfit (least_squares) | LMFIT library with SciPy's trust region reflective algorithm  |
+|     | dfols                 | DFO-LS library for derivative-free least-squares optimization |
+|     | bumps                 | BUMPS library using the default Levenberg-Marquardt method    |
+|     | bumps (lm)            | BUMPS library with Levenberg-Marquardt method                 |
+|     | bumps (dream)         | BUMPS library with DREAM Bayesian sampling                    |
+|     | bumps (amoeba)        | BUMPS library with Nelder-Mead simplex method                 |
+|     | bumps (de)            | BUMPS library with differential evolution method              |
+|     | emcee                 | emcee affine-invariant ensemble Bayesian sampling             |
 
 To select the desired minimizer, e.g., 'lmfit':
 
 ```python
-project.analysis.fitting.minimizer_type = 'lmfit'
+project.analysis.minimizer.type = 'lmfit'
 ```
 
 ### Fit Mode
@@ -163,29 +177,31 @@ across all experiments.
 
 The supported fit modes are:
 
-| Mode   | Description                                                         |
-| ------ | ------------------------------------------------------------------- |
-| single | Independent fitting of each experiment; no shared parameters        |
-| joint  | Simultaneous fitting of all experiments; some parameters are shared |
+| Mode       | Description                                                         |
+| ---------- | ------------------------------------------------------------------- |
+| single     | Independent fitting of each experiment; no shared parameters        |
+| joint      | Simultaneous fitting of all experiments; some parameters are shared |
+| sequential | Repeated single fits over a scan directory                          |
 
 You can set the fit mode on the analysis owner:
 
 ```python
-project.analysis.fitting_mode_type = 'joint'
+project.analysis.fitting_mode.type = 'joint'
 ```
 
 To check the current fit mode:
 
 ```python
-print(project.analysis.fitting_mode_type)
+print(project.analysis.fitting_mode.type)
 ```
 
 ### Perform Fit
 
 Refining the structure and experiment parameters against measured data
 is usually divided into several steps, where each step involves adding
-or removing parameters to be refined, calculating the model data, and
-comparing it to the experimental data as shown in the diagram above.
+or removing parameters to be refined, calculating the diffraction
+pattern, and comparing it to the experimental data as shown in the
+diagram above.
 
 To select the parameters to be refined, you can set the attribute `free`
 of the parameters to `True`. This indicates that the parameter is free
@@ -218,29 +234,30 @@ experimental data.
 An example of the output after performing the fit is:
 
 ```console
-Using experiment 🔬 'hrpt' for 'single' fitting
-🚀 Starting fitting process with 'lmfit (leastsq)'...
-📈 Goodness-of-fit (reduced χ²) change:
-╒═════════════════╤═════════════════╤═════════════════╕
-│    iteration    │        χ²       │ improvement [%] │
-╞═════════════════╪═════════════════╪═════════════════╡
-│        1        │      164.59     │                 │
-│        12       │      33.43      │     79.7% ↓     │
-│        21       │      13.22      │     60.4% ↓     │
-│        30       │       5.78      │     56.3% ↓     │
-│        39       │       3.15      │     45.6% ↓     │
-│        77       │       3.14      │                 │
-╘═════════════════╧═════════════════╧═════════════════╛
-🏆 Best goodness-of-fit (reduced χ²) is 3.14 at iteration 73
+🚀 Starting fit process with 'lmfit (leastsq)'...
+📈 Goodness-of-fit progress:
+╒═══════════╤══════════╤═══════╤═════════════════╕
+│ iteration │ time (s) │  χ²   │ change / status │
+╞═══════════╪══════════╪═══════╪═════════════════╡
+│     1     │   0.10   │ 164.6 │ initial         │
+│    12     │   0.24   │ 33.4  │ 79.7 % ↓        │
+│    21     │   0.38   │ 13.2  │ 60.4 % ↓        │
+│    30     │   0.52   │  5.8  │ 56.3 % ↓        │
+│    77     │   0.77   │  3.1  │ converged       │
+╘═══════════╧══════════╧═══════╧═════════════════╛
+🏆 Best goodness-of-fit (reduced χ²) is 3.14 at iteration 77
 ✅ Fitting complete.
-Fit results
-✅ Success: True
-⏱️ Fitting time: 0.77 seconds
-📏 Goodness-of-fit (reduced χ²): 3.14
-📏 R-factor (Rf): 8.42%
-📏 R-factor squared (Rf²): 11.79%
-📏 Weighted R-factor (wR): 11.62%
-📈 Fitted parameters:
+📋 Least-squares fit results:
+╒═════════════════════════════════╤════════════════╕
+│ 🧪 Minimizer                    │ lmfit (leastsq)│
+│ ✅ Overall status               │ success        │
+│ ⏱️ Fitting time (seconds)       │ 0.77           │
+│ 🔁 Iterations                   │ 77             │
+│ 📏 Goodness-of-fit (reduced χ²) │ 3.14           │
+│ 📏 R-factor (Rf, %)             │ 8.42           │
+│ 📏 Weighted R-factor (wR, %)    │ 11.62          │
+╘═════════════════════════════════╧════════════════╛
+📈 Refined parameters:
 ```
 
 Now, you can inspect the fitted parameters to see how they have changed
@@ -254,16 +271,55 @@ To plot the measured and calculated data after the fit, you can use the
 project.display.pattern(expt_name='hrpt')
 ```
 
+## Bayesian Analysis
+
+Bayesian minimizers sample a posterior distribution rather than only
+optimizing to a single minimum. They are useful after a conventional
+least-squares fit has produced a stable model and you want credible
+intervals, parameter correlations, and posterior-predictive uncertainty.
+
+Two minimizer types currently use Bayesian sampling:
+
+- `bumps (dream)` uses the DREAM sampler through Bumps.
+- `emcee` uses the affine-invariant ensemble sampler and can resume from
+  a saved project.
+
+Select a Bayesian minimizer through the same category-owned selector:
+
+```python
+project.analysis.minimizer.type = 'emcee'
+project.save_as(dir_path='lbco_hrpt')  # required before an emcee fit
+project.analysis.fit()
+```
+
+For a saved `emcee` project, resume the chain with extra steps:
+
+```python
+project.analysis.fit(resume=True, extra_steps=500)
+```
+
+After a Bayesian fit, inspect posterior summaries and plots:
+
+```python
+project.display.posterior.distribution()
+project.display.posterior.pairs()
+project.display.posterior.predictive(expt_name='hrpt')
+```
+
+When posterior or posterior-predictive arrays are persisted, they are
+stored in `analysis/results.h5`. Scalar summaries remain in
+`analysis/analysis.cif`.
+
 ## Constraints
 
-In EasyDiffraction, you can define **constraints** on the model
-parameters to ensure that they remain within a specific range or follow
-a certain relationship during the refinement process.
+In EasyDiffraction, you can define **constraints** on the structure or
+experiment parameters to ensure that they remain within a specific range
+or follow a certain relationship during the refinement process.
 
 ### Setting Aliases
 
 Before setting constraints, you need to set aliases for the parameters
-you want to constrain. This can be done using the `add` method of the
+you want to constrain. This can be done using the `create` method of the
 `aliases` object. Aliases are used to reference parameters in a more
 readable way, making it easier to manage constraints.
 
@@ -273,21 +329,21 @@ An example of setting aliases for parameters in a structure:
 # Set aliases for the atomic displacement parameters
 project.analysis.aliases.create(
     label='biso_La',
-    param_uid=project.structures['lbco'].atom_sites['La'].adp_iso.uid,
+    param=project.structures['lbco'].atom_sites['La'].adp_iso,
 )
 project.analysis.aliases.create(
     label='biso_Ba',
-    param_uid=project.structures['lbco'].atom_sites['Ba'].adp_iso.uid,
+    param=project.structures['lbco'].atom_sites['Ba'].adp_iso,
 )
 
 # Set aliases for the occupancies of the atom sites
 project.analysis.aliases.create(
     label='occ_La',
-    param_uid=project.structures['lbco'].atom_sites['La'].occupancy.uid,
+    param=project.structures['lbco'].atom_sites['La'].occupancy,
 )
 project.analysis.aliases.create(
     label='occ_Ba',
-    param_uid=project.structures['lbco'].atom_sites['Ba'].occupancy.uid,
+    param=project.structures['lbco'].atom_sites['Ba'].occupancy,
 )
 ```
 
@@ -326,10 +382,12 @@ The example of the output is:
 
 User defined constraints
 
-| expression          |
-| ------------------- |
-| biso_Ba = biso_La   |
-| occ_Ba = 1 - occ_La |
+| id      | expression          |
+| ------- | ------------------- |
+| biso_Ba | biso_Ba = biso_La   |
+| occ_Ba  | occ_Ba = 1 - occ_La |
+
+Constraints enabled: True
 
 ## Analysis as CIF
 
@@ -344,21 +402,22 @@ Example output:
 
 ```
 ╒════════════════════════════════════════════════╕
-│ _fitting.minimizer_type      "lmfit (leastsq)" │
-│ _fitting.mode_type           single            │
+│ _fitting_mode.type           single            │
+│ _minimizer.type              "lmfit (leastsq)" │
 │                                                │
 │ loop_                                          │
 │ _alias.label                                   │
-│ _alias.param_uid                               │
+│ _alias.param_unique_name                       │
 │ biso_La  lbco.atom_site.La.B_iso_or_equiv      │
 │ biso_Ba  lbco.atom_site.Ba.B_iso_or_equiv      │
 │ occ_La   lbco.atom_site.La.occupancy           │
 │ occ_Ba   lbco.atom_site.Ba.occupancy           │
 │                                                │
 │ loop_                                          │
+│ _constraint.id                                 │
 │ _constraint.expression                         │
-│ "biso_Ba = biso_La"                            │
-│ "occ_Ba = 1 - occ_La"                         │
+│ biso_Ba  "biso_Ba = biso_La"                   │
+│ occ_Ba   "occ_Ba = 1 - occ_La"                 │
 ╘════════════════════════════════════════════════╛
 ```
 

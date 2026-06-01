@@ -78,6 +78,18 @@ if TYPE_CHECKING:
 
 _SUMMARY_HIDDEN_PARAMETER_CATEGORIES = frozenset({'pd_data', 'total_data', 'refln'})
 _POSTERIOR_SAMPLE_NDIM = 3
+
+
+def _parameter_display_units(param: object) -> str:
+    """Return user-facing GUI units for one parameter."""
+    if hasattr(param, 'resolve_display_units'):
+        return param.resolve_display_units('gui')
+    units = getattr(param, 'units', 'N/A')
+    if units == 'none':
+        return ''
+    return units
+
+
 _FLATTENED_POSTERIOR_SAMPLE_NDIM = 2
 _CREDIBLE_INTERVAL_LEVEL_COUNT = 2
 _UNDO_REL_TOL = 1e-12
@@ -1219,7 +1231,7 @@ class Analysis(
                 }
             if isinstance(param, (NumericDescriptor, Parameter)):
                 record |= {
-                    ('units', 'left'): param.units,
+                    ('units', 'left'): _parameter_display_units(param),
                 }
             if isinstance(param, Parameter):
                 record |= {
@@ -2417,7 +2429,7 @@ class Analysis(
             self._persisted_fit_state_sidecar['predictive_datasets'] = {}
             return
 
-        plotter = self.project.chart.plotter
+        plotter = self.project.rendering_plot.plotter
         distribution_payload = self._store_posterior_distribution_cache_projection(
             plotter=plotter,
             results=results,
@@ -2899,7 +2911,7 @@ class Analysis(
             snapshot[param.unique_name] = {
                 'value': param.value,
                 'uncertainty': param.uncertainty,
-                'units': param.units,
+                'units': _parameter_display_units(param),
             }
         self._parameter_snapshots[expt_name] = snapshot
 
