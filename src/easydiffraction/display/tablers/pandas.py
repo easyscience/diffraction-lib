@@ -259,6 +259,7 @@ class PandasTableBackend(TableBackendBase):
         object
             Backend-defined return value (commonly ``None``).
         """
+        del width
         styler = self._build_styler(alignments, df)
         self._update_display(styler, display_handle)
 
