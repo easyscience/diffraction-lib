@@ -459,14 +459,23 @@ const viewAlongAxis = (axisIndex) => {
     .map((axis, index) => ({ axis, index }))
     .filter(({ index }) => index !== axisIndex)
     .sort((left, right) => right.axis.length() - left.axis.length());
-  let horizontal = projectedOnViewPlane(remaining[0].axis.clone().normalize(), viewAxis);
+  let horizontalSource = remaining[0];
+  let secondarySource = remaining[1];
+  let horizontal = projectedOnViewPlane(horizontalSource.axis.clone().normalize(), viewAxis);
   if (horizontal.lengthSq() < 1e-8) {
-    horizontal = projectedOnViewPlane(remaining[1].axis.clone().normalize(), viewAxis);
+    [horizontalSource, secondarySource] = [secondarySource, horizontalSource];
+    horizontal = projectedOnViewPlane(horizontalSource.axis.clone().normalize(), viewAxis);
   }
   horizontal.normalize();
-  const look = viewAxis.clone().negate();
+  const secondary = projectedOnViewPlane(secondarySource.axis.clone().normalize(), viewAxis).normalize();
+  const cameraAxis = viewAxis.clone();
+  const look = cameraAxis.clone().negate();
   const up = new THREE.Vector3().crossVectors(horizontal, look).normalize();
-  viewAlong(viewAxis, up);
+  if (secondary.dot(up) < 0) {
+    cameraAxis.negate();
+    up.negate();
+  }
+  viewAlong(cameraAxis, up);
 };
 
 const iconButton = (parent, html, title, cls) => {

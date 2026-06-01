@@ -662,6 +662,23 @@ class TestRenderHtmlDocument:
         assert 'camera.position.copy(home);' in html
         assert 'controls.target.copy(target);' in html
 
+    def test_axis_view_buttons_flip_camera_to_keep_secondary_axis_up(self, patched_theme):
+        html = ThreeJsStructureRenderer().render(
+            _rich_scene(),
+            features=frozenset({'axes'}),
+            offline=True,
+            dark=False,
+        )
+
+        assert 'let secondarySource = remaining[1];' in html
+        assert '[horizontalSource, secondarySource] = [secondarySource, horizontalSource];' in html
+        assert 'const cameraAxis = viewAxis.clone();' in html
+        assert 'if (secondary.dot(up) < 0) {' in html
+        assert 'cameraAxis.negate();' in html
+        assert 'up.negate();' in html
+        assert 'viewAlong(cameraAxis, up);' in html
+        assert 'viewAlong(viewAxis, up);' not in html
+
     def test_colour_scheme_select_matches_button_height(self, patched_theme):
         html = ThreeJsStructureRenderer().render(
             _rich_scene(),
