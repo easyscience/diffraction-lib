@@ -611,11 +611,17 @@ def test_plot_powder_meas_vs_calc_creates_synced_three_panel_figure(monkeypatch)
         2 * pp.PlotlyPlotter._bragg_tick_symbol_height_pixels()
     )
 
+    # Each line is wrapped in a colored span and padded left/right with the
+    # shared non-breaking space (see PlotlyPlotter._format_hover_lines).
+    pad = pp.HOVER_HORIZONTAL_PAD
+    meas_span = '<span style="color:rgb(31,119,180)">Imeas: %{customdata[0]:,.2f}</span>'
+    calc_span = '<span style="color:rgb(214,39,40)">Icalc: %{customdata[1]:,.2f}</span>'
+    resid_span = '<span style="color:rgb(44,160,44)">Imeas - Icalc: %{customdata[2]:,.2f}</span>'
     expected_hovertemplate = (
-        'x: %{x:,.2f}<br>'
-        'Imeas: %{customdata[0]:,.2f}<br>'
-        'Icalc: %{customdata[1]:,.2f}<br>'
-        'Imeas - Icalc: %{customdata[2]:,.2f}'
+        f'{pad}x: %{{x:,.2f}}{pad}<br>'
+        f'{pad}{meas_span}{pad}<br>'
+        f'{pad}{calc_span}{pad}<br>'
+        f'{pad}{resid_span}{pad}'
         '<extra></extra>'
     )
     meas_trace = next(trace for trace in fig.data if trace.name == 'Measured (Imeas)')

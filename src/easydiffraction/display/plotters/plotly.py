@@ -101,7 +101,7 @@ AXIS_TITLE_FONT_SIZE = 12
 X_AXIS_TICK_LABEL_STANDOFF = 5
 Y_AXIS_TICK_LABEL_STANDOFF = 6
 HOVER_LABEL_FONT_SIZE = 12
-# Plotly exposes no hover-label padding, so a non-breaking space is baked
+# Plotly has no hover-label padding, so a non-breaking space is baked
 # into each template line to hold the text off the left and right frame.
 # Vertical spacing is left to Plotly's own ~3px line box: a blank spacer
 # line reserves a full content-line height, which inflates the bottom
