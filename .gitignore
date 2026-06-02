@@ -15,6 +15,10 @@ build/
 # MkDocs
 docs/site/
 
+# Generated docs-serving copy of the canonical Three.js (synced from
+# src/ by `pixi run docs-sync-vendored-js`; the source of truth is src/)
+docs/docs/assets/javascripts/vendor/threejs/
+
 # Jupyter Notebooks
 .ipynb_checkpoints
 

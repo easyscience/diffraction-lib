@@ -6,19 +6,22 @@
 # diffraction experiment at NOMAD at SNS.
 
 # %% [markdown]
-# ## Import Library
+# ## 🛠️ Import Library
 
 # %%
 import easydiffraction as ed
 
 # %% [markdown]
-# ## Create Project
+# ## 📦 Define Project
+
+# %% [markdown]
+# ### Create Project
 
 # %%
 project = ed.Project()
 
 # %% [markdown]
-# ## Set Plotting Engine
+# ### Set Plotting Engine
 
 # %%
 project.rendering_plot.show_supported()
@@ -28,7 +31,7 @@ project.rendering_plot.show_supported()
 project.rendering_plot.plotter.x_max = 40
 
 # %% [markdown]
-# ## Add Structure
+# ### Add Structure
 
 # %%
 project.structures.create(name='si')
@@ -49,13 +52,13 @@ structure.atom_sites.create(
 )
 
 # %% [markdown]
-# ## Plot Structure
+# ### Display Structure
 
 # %%
 project.display.structure(struct_name='si')
 
 # %% [markdown]
-# ## Add Experiment
+# ### Add Experiment
 
 # %%
 data_path = ed.download_data(id=5, destination='data')
@@ -81,7 +84,10 @@ experiment.peak.sharp_delta_2 = 4.0
 experiment.peak.damp_particle_diameter = 0
 
 # %% [markdown]
-# ## Select Fitting Parameters
+# ## 🚀 Perform Analysis
+
+# %% [markdown]
+# ### Set Free Parameters
 
 # %%
 project.structures['si'].cell.length_a.free = True
@@ -95,7 +101,7 @@ experiment.peak.sharp_delta_1.free = True
 experiment.peak.sharp_delta_2.free = True
 
 # %% [markdown]
-# ## Run Fitting
+# ### Run Fitting
 
 # %%
 project.analysis.fit()
@@ -103,7 +109,7 @@ project.display.fit.results()
 project.display.fit.correlations()
 
 # %% [markdown]
-# ## Plot Measured vs Calculated
+# ### Display Pattern
 
 # %%
 project.display.pattern(expt_name='nomad', include=('measured', 'calculated'))

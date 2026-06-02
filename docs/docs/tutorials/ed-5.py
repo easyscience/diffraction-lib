@@ -9,7 +9,7 @@
 # one-by-one and batch setting.
 
 # %% [markdown]
-# ## Import Library
+# ## 🛠️ Import Library
 
 # %%
 from easydiffraction import ExperimentFactory
@@ -18,25 +18,25 @@ from easydiffraction import StructureFactory
 from easydiffraction import download_data
 
 # %% [markdown]
-# ## Define Structure
+# ## 🧩 Define Structure
 #
 # This section shows how to add structures and modify their
 # parameters.
 #
-# #### Create Structure
+# ### Create Structure
 
 # %%
 structure = StructureFactory.from_scratch(name='cosio')
 
 # %% [markdown]
-# #### Set Space Group
+# ### Set Space Group
 
 # %%
 structure.space_group.name_h_m = 'P n m a'
 structure.space_group.it_coordinate_system_code = 'abc'
 
 # %% [markdown]
-# #### Set Unit Cell
+# ### Set Unit Cell
 
 # %%
 structure.cell.length_a = 10.3
@@ -44,7 +44,7 @@ structure.cell.length_b = 6.0
 structure.cell.length_c = 4.8
 
 # %% [markdown]
-# #### Set Atom Sites
+# ### Set Atom Sites
 
 # %%
 structure.atom_sites.create(
@@ -103,31 +103,31 @@ structure.atom_sites.create(
 )
 
 # %% [markdown]
-# ## Define Experiment
+# ## 🔬 Define Experiment
 #
 # This section shows how to add experiments, configure their parameters,
 # and link the structures defined in the previous step.
 #
-# #### Download Measured Data
+# ### Download Data
 
 # %%
 data_path = download_data(id=12, destination='data')
 
 # %% [markdown]
-# #### Create Experiment
+# ### Create Experiment
 
 # %%
 expt = ExperimentFactory.from_data_path(name='d20', data_path=data_path)
 
 # %% [markdown]
-# #### Set Instrument
+# ### Set Instrument
 
 # %%
 expt.instrument.setup_wavelength = 1.87
 expt.instrument.calib_twotheta_offset = 0.1
 
 # %% [markdown]
-# #### Set Peak Profile
+# ### Set Peak Profile
 
 # %%
 expt.peak.show_supported()
@@ -141,7 +141,7 @@ expt.peak.broad_gauss_v = -0.5
 expt.peak.broad_gauss_w = 0.4
 
 # %% [markdown]
-# #### Set Background
+# ### Set Background
 
 # %%
 expt.background.show_supported()
@@ -163,18 +163,18 @@ expt.background.create(id='13', x=130, y=500)
 expt.background.create(id='14', x=150, y=500)
 
 # %% [markdown]
-# #### Set Linked Phases
+# ### Set Linked Phases
 
 # %%
 expt.linked_phases.create(id='cosio', scale=1.0)
 
 # %% [markdown]
-# ## Define Project
+# ## 📦 Define Project
 #
 # The project object is used to manage the structure, experiment, and
 # analysis.
 #
-# #### Create Project
+# ### Create Project
 
 # %%
 project = Project()
@@ -183,30 +183,30 @@ project = Project()
 project.save_as('projects/cosio_d20')
 
 # %% [markdown]
-# #### Add Structure
+# ### Add Structure
 
 # %%
 project.structures.add(structure)
 
 # %% [markdown]
-# #### Add Experiment
+# ### Add Experiment
 
 # %%
 project.experiments.add(expt)
 
 # %% [markdown]
-# ## Perform Analysis
+# ## 🚀 Perform Analysis
 #
 # This section shows the analysis process, including how to set up
 # calculation and fitting engines.
 #
-# #### Plot Structure
+# ### Display Structure
 
 # %%
 project.display.structure(struct_name='cosio')
 
 # %% [markdown]
-# #### Plot Measured vs Calculated
+# ### Display Pattern
 
 # %%
 project.display.pattern(expt_name='d20')
@@ -215,7 +215,7 @@ project.display.pattern(expt_name='d20')
 project.display.pattern(expt_name='d20', x_min=41, x_max=54)
 
 # %% [markdown]
-# #### Set Free Parameters
+# ### Set Free Parameters
 
 # %%
 structure.cell.length_a.free = True
@@ -255,7 +255,7 @@ for point in expt.background:
 project.display.parameters.free()
 
 # %% [markdown]
-# #### Set Constraints
+# ### Set Constraints
 #
 # Set aliases for parameters.
 
@@ -277,7 +277,7 @@ project.analysis.constraints.create(expression='biso_Co2 = biso_Co1')
 
 
 # %% [markdown]
-# #### Run Fitting
+# ### Run Fitting
 
 # %%
 project.analysis.fit()
@@ -289,7 +289,7 @@ project.display.fit.results()
 project.display.fit.correlations()
 
 # %% [markdown]
-# #### Plot Measured vs Calculated
+# ### Display Pattern
 
 # %%
 project.display.pattern(expt_name='d20')
@@ -298,7 +298,7 @@ project.display.pattern(expt_name='d20')
 project.display.pattern(expt_name='d20', x_min=42, x_max=52)
 
 # %% [markdown]
-# ## Report
+# ## 📊 Report
 #
 # The HTML report is written automatically when the project is saved;
 # enable `project.report.pdf` as well for a PDF version.

@@ -12,38 +12,44 @@
 # comments or explanations — these can be found in the other tutorials.
 
 # %% [markdown]
-# ## Import Modules
+# ## 🛠️ Import Library
 
 # %%
 from easydiffraction import Project
 from easydiffraction import download_data
 
 # %% [markdown]
-# ## Download Saved Project
+# ## 📂 Load Project
+
+# %% [markdown]
+# ### Download Project
 
 # %%
 project_dir = download_data(id=36, destination='projects')
 
 # %% [markdown]
-# ## Load Project
+# ### Load Project
 
 # %%
 project = Project.load(project_dir)
 
 # %% [markdown]
-# ## View Structure
+# ## 🚀 Perform Analysis
+
+# %% [markdown]
+# ### Display Structure
 
 # %%
 project.display.structure(struct_name='lbco')
 
 # %% [markdown]
-# ## Perform Analysis
+# ### Run Fitting
 
 # %%
 project.analysis.fit()
 
 # %% [markdown]
-# ## Show Results
+# ### Display Fit Results
 
 # %%
 project.display.fit.results()

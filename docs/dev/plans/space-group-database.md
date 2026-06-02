@@ -1,8 +1,7 @@
 # Plan: Complete Space-Group Reference Database
 
 This plan follows [`AGENTS.md`](../../../AGENTS.md) and implements the
-[`space-group-database`](../adrs/suggestions/space-group-database.md)
-ADR.
+[`space-group-database`](../adrs/accepted/space-group-database.md) ADR.
 
 **Deliberate exception to note for `/draft-impl-1`:** Phase 1 contains a
 **maintainer-only curation gate** (P1.4). The disagreement report is
@@ -24,7 +23,7 @@ careful rebuild remains possible from the preserved local workspace.
 ## ADR
 
 This plan owns the ADR
-[`docs/dev/adrs/suggestions/space-group-database.md`](../adrs/suggestions/space-group-database.md)
+[`docs/dev/adrs/accepted/space-group-database.md`](../adrs/accepted/space-group-database.md)
 (drafted via `/draft-adr`, review cycle closed). It is a
 **prerequisite** for
 [`wyckoff-letter-detection`](../adrs/suggestions/wyckoff-letter-detection.md):
@@ -86,7 +85,7 @@ this plan delivers the complete data; that feature delivers the
   ignored generator (cctbx extraction + multi-source cross-check +
   disagreement report + overrides consumption). Do not keep this helper
   in the branch after implementation.
-- `docs/dev/adrs/suggestions/space-group-database/space_groups_overrides.yaml`
+- `docs/dev/adrs/accepted/space-group-database/space_groups_overrides.yaml`
   — **new** curation overrides (maintainer-authored at P1.4). Keep the
   selected values here, not inside this plan: the plan documents
   workflow, while YAML is the structured generator input with a focused
@@ -98,7 +97,7 @@ this plan delivers the complete data; that feature delivers the
   generated database; **remove** `space_groups.pkl.gz`.
 - `src/easydiffraction/crystallography/space_groups.py` — rewrite loader
   (read JSON, reconstruct dict, drop `_RestrictedUnpickler` + `pickle`).
-- `docs/dev/adrs/suggestions/space-group-database.md` — fill in _Build
+- `docs/dev/adrs/accepted/space-group-database.md` — fill in _Build
   Provenance_ with recorded versions.
 - `tools/check_packaged_db.py` — **new** helper that inspects a built
   wheel (independent of the package's dependency tree): it reads
@@ -170,7 +169,7 @@ in this file as part of the same commit.
       **stops here**. The maintainer inspects the report, consults
       International Tables for flagged cases, and **always** produces a
       checked-in
-      `docs/dev/adrs/suggestions/space-group-database/space_groups_overrides.yaml`:
+      `docs/dev/adrs/accepted/space-group-database/space_groups_overrides.yaml`:
       a list of curated records (each with rationale) when there were
       disagreements, or — if the report was empty because all machine
       sources agreed — the same file containing only an explanatory

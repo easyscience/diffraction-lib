@@ -14,6 +14,8 @@ def test_cwl_pseudo_voigt_params_exist_and_settable():
     assert peak.broad_gauss_u.name == 'broad_gauss_u'
     peak.broad_gauss_u = 0.123
     assert peak.broad_gauss_u.value == 0.123
+    # Squared-degree units render with a Unicode superscript.
+    assert peak.broad_gauss_u.resolve_display_units('gui') == 'deg²'
 
 
 def test_cwl_split_pseudo_voigt_adds_empirical_asymmetry():

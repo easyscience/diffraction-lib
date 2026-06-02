@@ -3,6 +3,7 @@
      border-radius:0;box-sizing:border-box;overflow:hidden;isolation:isolate;z-index:0;
      font-family:system-ui,-apple-system,'Segoe UI',sans-serif;">
   <div class="cv-canvas" style="position:absolute;inset:0;z-index:1;"></div>
+  <div class="cv-loading" style="position:absolute;inset:0;z-index:6;display:flex;align-items:center;justify-content:center;font-size:0.75rem;letter-spacing:0.04em;color:var(--cv-scene-fg);background:var(--cv-scene-bg);">Loading 3D view…</div>
   <div class="cv-modebar cv-card"></div>
   <div class="cv-download"></div>
   <div class="cv-legend cv-card"></div>
@@ -21,7 +22,7 @@
     --cv-axis-letter-size: 18px;
   }
   #{{ container_id }}.cv-theme-dark {
-    --cv-scene-bg: transparent;
+    --cv-scene-bg: {{ dark_background }};
     --cv-scene-fg: {{ dark_foreground }};
     --cv-label-shadow-bg: {{ dark_background }};
     --cv-panel-bg: {{ dark_panel_background }};
@@ -37,7 +38,7 @@
     --cv-select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath d='M2 4l3 3 3-3' fill='none' stroke='%23ebebeb' stroke-width='1.3'/%3E%3C/svg%3E");
   }
   #{{ container_id }}.cv-theme-light {
-    --cv-scene-bg: transparent;
+    --cv-scene-bg: {{ light_background }};
     --cv-scene-fg: {{ light_foreground }};
     --cv-label-shadow-bg: {{ light_background }};
     --cv-panel-bg: {{ light_panel_background }};
@@ -114,7 +115,9 @@
   }
 </style>
 
+{% if import_map %}
 <script type="importmap">{{ import_map }}</script>
+{% endif %}
 <script type="module">
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -702,6 +705,11 @@ const applyTheme = (name) => {
   root.classList.toggle('cv-theme-dark', themeName === 'dark');
   root.classList.toggle('cv-theme-light', themeName !== 'dark');
   cellMaterial.color.setStyle(cssVar('--cv-scene-fg', '{{ foreground }}'));
+  // Paint the scene background via the renderer clear color so it always
+  // matches the Plotly axes-rectangle background, independent of any
+  // host-page CSS that might otherwise leave the canvas transparent.
+  const sceneBg = themeName === 'dark' ? '{{ dark_background }}' : '{{ light_background }}';
+  renderer.setClearColor(new THREE.Color().setStyle(sceneBg), 1);
 };
 
 root.__crysviewApplyTheme = applyTheme;
@@ -746,4 +754,6 @@ const animate = () => {
   labelRenderer.render(scene, camera);
 };
 animate();
+const cvLoading = root.querySelector('.cv-loading');
+if (cvLoading) cvLoading.remove();
 </script>

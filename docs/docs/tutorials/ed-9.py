@@ -6,7 +6,7 @@
 # neutron powder diffraction data simulated with McStas.
 
 # %% [markdown]
-# ## Import Library
+# ## 🛠️ Import Library
 
 # %%
 from easydiffraction import ExperimentFactory
@@ -15,7 +15,7 @@ from easydiffraction import StructureFactory
 from easydiffraction import download_data
 
 # %% [markdown]
-# ## Define Structures
+# ## 🧩 Define Structures
 #
 # This section shows how to add structures and modify their
 # parameters.
@@ -115,18 +115,18 @@ structure_2.atom_sites.create(
 )
 
 # %% [markdown]
-# ## Define Experiment
+# ## 🔬 Define Experiment
 #
 # This section shows how to add experiments, configure their parameters,
 # and link the structures defined in the previous step.
 #
-# #### Download Data
+# ### Download Data
 
 # %%
 data_path = download_data(id=8, destination='data')
 
 # %% [markdown]
-# #### Create Experiment
+# ### Create Experiment
 
 # %%
 experiment = ExperimentFactory.from_data_path(
@@ -139,14 +139,14 @@ experiment = ExperimentFactory.from_data_path(
 )
 
 # %% [markdown]
-# #### Set Instrument
+# ### Set Instrument
 
 # %%
 experiment.instrument.setup_twotheta_bank = 94.90931761529106
 experiment.instrument.calib_d_to_tof_linear = 58724.76869981215
 
 # %% [markdown]
-# #### Set Peak Profile
+# ### Set Peak Profile
 
 # %%
 experiment.peak.broad_gauss_sigma_0 = 45137
@@ -158,7 +158,7 @@ experiment.peak.exp_rise_alpha_0 = 0
 experiment.peak.exp_rise_alpha_1 = 0.0097
 
 # %% [markdown]
-# #### Set Background
+# ### Set Background
 
 # %% [markdown]
 # Select the background type.
@@ -185,51 +185,51 @@ experiment.background.create(id='12', x=105000, y=0.2)
 experiment.background.create(id='13', x=110000, y=0.2)
 
 # %% [markdown]
-# #### Set Linked Phases
+# ### Set Linked Phases
 
 # %%
 experiment.linked_phases.create(id='lbco', scale=4.0)
 experiment.linked_phases.create(id='si', scale=0.2)
 
 # %% [markdown]
-# ## Define Project
+# ## 📦 Define Project
 #
 # The project object is used to manage structures, experiments, and
 # analysis.
 #
-# #### Create Project
+# ### Create Project
 
 # %%
 project = Project()
 
 # %% [markdown]
-# #### Add Structures
+# ### Add Structures
 
 # %%
 project.structures.add(structure_1)
 project.structures.add(structure_2)
 
 # %% [markdown]
-# #### Show Structures
+# ### Show Structures
 
 # %%
 project.structures.show_names()
 
 # %% [markdown]
-# #### Add Experiments
+# ### Add Experiments
 
 # %%
 project.experiments.add(experiment)
 
 # %% [markdown]
-# #### Plot Structures
+# ### Display Structure
 
 # %%
 project.display.structure(struct_name='lbco')
 project.display.structure(struct_name='si')
 
 # %% [markdown]
-# #### Set Excluded Regions
+# ### Set Excluded Regions
 #
 # Show measured data as loaded from the file.
 
@@ -262,12 +262,12 @@ project.display.pattern(expt_name='mcstas', include=('measured', 'excluded'))
 project.experiments['mcstas'].show_as_cif()
 
 # %% [markdown]
-# ## Perform Analysis
+# ## 🚀 Perform Analysis
 #
 # This section outlines the analysis process, including how to configure
 # calculation and fitting engines.
 #
-# #### Set Fitting Parameters
+# ### Set Free Parameters
 #
 # Set structure parameters to be optimized.
 
@@ -297,7 +297,7 @@ for point in experiment.background:
     point.y.free = True
 
 # %% [markdown]
-# #### Perform Fit
+# ### Run Fitting
 
 # %%
 project.analysis.fit()
@@ -305,7 +305,7 @@ project.display.fit.results()
 project.display.fit.correlations()
 
 # %% [markdown]
-# #### Plot Measured vs Calculated
+# ### Display Pattern
 
 # %%
 project.display.pattern(expt_name='mcstas')

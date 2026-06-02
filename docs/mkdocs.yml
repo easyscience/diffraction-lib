@@ -87,6 +87,10 @@ extra_css:
 
 extra_javascript:
   - assets/javascripts/extra.js
+  # Self-hosted Plotly (cartesian bundle) plus the shared lazy loader for
+  # SHARED-mode figures. Plotly must load before ed-figures.js, which uses it.
+  - assets/javascripts/vendor/plotly/plotly-cartesian.min.js
+  - assets/javascripts/ed-figures.js
   # MathJax for rendering mathematical expressions
   - assets/javascripts/mathjax.js # Custom MathJax config to ensure compatibility with mkdocs-jupyter
   - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js # Official MathJax CDN
@@ -140,6 +144,7 @@ plugins:
       include_requirejs: true # Required for Plotly
       #custom_mathjax_url: 'https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js' # See 'extra_javascript' above
       ignore_h1_titles: true # Use titles defined in the nav section below
+      toc_depth: 3 # Notebook-only TOC depth: show `##`/`###`, hide deeper steps (`####`)
       remove_tag_config:
         remove_input_tags:
           - hide-in-docs
@@ -169,6 +174,7 @@ watch:
 not_in_nav: |
   index.md
   user-guide/parameters
+  assets/javascripts/vendor/**/*.md
 
 # Format and layout of the global navigation for the site
 nav:

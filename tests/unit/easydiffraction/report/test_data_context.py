@@ -476,3 +476,12 @@ def test_report_descriptor_rows_preserve_mixed_mathjax_label_text():
 
     assert rows[0]['html_label'] == r'\(2\theta\) offset'
     assert rows[0]['html_units'] == r'\(\mathrm{deg}\)'
+
+
+def test_plain_unit_text_renders_squared_degrees_with_superscript():
+    from easydiffraction.report.data_context import _plain_unit_text
+
+    assert _plain_unit_text('degrees_squared') == 'deg²'
+    assert _plain_unit_text('deg^2') == 'deg²'
+    assert _plain_unit_text('deg²') == 'deg²'
+    assert _plain_unit_text('degrees') == 'deg'

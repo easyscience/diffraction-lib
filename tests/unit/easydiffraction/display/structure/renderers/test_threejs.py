@@ -754,21 +754,23 @@ class TestRenderUnpatchedIntegration:
         assert '>' in html
         assert 'crysview-' in html
 
-    def test_light_theme_embeds_transparent_canvas_and_contrast_colours(self):
-        # ``theme_colors(dark=False)`` returns LIGHT_THEME; its background
-        # and foreground must be wired into the document for labels.
+    def test_light_theme_embeds_scene_background_and_contrast_colours(self):
+        # ``theme_colors(dark=False)`` returns LIGHT_THEME; its opaque
+        # scene background and foreground must be wired into the document.
         html = ThreeJsStructureRenderer().render(
             _identity_scene(),
             features=frozenset(),
             offline=True,
             dark=False,
         )
-        assert '--cv-scene-bg: transparent;' in html
+        assert '--cv-scene-bg: rgb(255, 255, 255);' in html
         assert '--cv-label-shadow-bg: rgb(255, 255, 255);' in html
-        assert 'rgb(33, 33, 33)' in html  # LIGHT_THEME foreground
+        assert 'rgb(34, 34, 34)' in html  # LIGHT_THEME foreground
         assert 'light' in html
+        # Scene background is also painted via the WebGL clear color.
+        assert 'renderer.setClearColor' in html
 
-    def test_dark_theme_embeds_transparent_canvas_and_contrast_colours(self):
+    def test_dark_theme_embeds_scene_background_and_contrast_colours(self):
         # ``theme_colors(dark=True)`` returns DARK_THEME instead.
         html = ThreeJsStructureRenderer().render(
             _identity_scene(),
@@ -776,7 +778,36 @@ class TestRenderUnpatchedIntegration:
             offline=True,
             dark=True,
         )
-        assert '--cv-scene-bg: transparent;' in html
+        assert '--cv-scene-bg: rgb(33, 33, 33);' in html
         assert '--cv-label-shadow-bg: rgb(33, 33, 33);' in html
-        assert 'rgb(235, 235, 235)' in html  # DARK_THEME foreground
+        assert 'rgb(230, 232, 238)' in html  # DARK_THEME foreground
         assert 'dark' in html
+        # Scene background is also painted via the WebGL clear color.
+        assert 'renderer.setClearColor' in html
+
+
+class TestSharedEmbedMode:
+    def test_shared_omits_per_scene_importmap(self):
+        from easydiffraction.utils.environment import FigureEmbedMode
+
+        html = ThreeJsStructureRenderer().render(
+            _identity_scene(),
+            features=frozenset({'atoms'}),
+            dark=False,
+            mode=FigureEmbedMode.SHARED,
+        )
+        assert 'type="importmap"' not in html
+        # Bare specifiers remain; the page-level import map resolves them.
+        assert "from 'three'" in html
+
+    def test_standalone_keeps_inline_importmap(self):
+        from easydiffraction.utils.environment import FigureEmbedMode
+
+        html = ThreeJsStructureRenderer().render(
+            _identity_scene(),
+            features=frozenset({'atoms'}),
+            offline=True,
+            dark=False,
+            mode=FigureEmbedMode.STANDALONE,
+        )
+        assert 'type="importmap"' in html

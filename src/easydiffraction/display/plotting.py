@@ -2824,6 +2824,9 @@ class Plotter(RendererBase):
             x_axis_range=x_axis_range,
             y_axis_range=y_axis_range,
         )
+        panel_height = getattr(self._backend, '_single_main_panel_height_pixels', None)
+        if callable(panel_height):
+            fig.update_layout(height=panel_height(DEFAULT_RESID_HEIGHT))
         return fig
 
     def _plot_ascii_param_distribution(
@@ -3992,9 +3995,9 @@ class Plotter(RendererBase):
             legend={
                 'bgcolor': self._plot_legend_background_color(),
                 'xanchor': 'right',
-                'x': 1.0,
+                'x': 0.99,
                 'yanchor': 'top',
-                'y': 1.0,
+                'y': 0.99,
             },
             xaxis_title=axes_labels[0],
             yaxis_title=axes_labels[1],

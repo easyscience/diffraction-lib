@@ -5,13 +5,13 @@
 # diffraction data from HEiDi at FRM II.
 
 # %% [markdown]
-# ## Import Library
+# ## 🛠️ Import Library
 
 # %%
 import easydiffraction as ed
 
 # %% [markdown]
-# ## Step 1: Define Project
+# ## 📦 Define Project
 
 # %%
 # Create minimal project without name and description
@@ -24,7 +24,7 @@ neutron diffraction data from HEiDi at FRM II."""
 project.save_as('projects/tbti_heidi')
 
 # %% [markdown]
-# ## Step 2: Define Structure
+# ## 🧩 Define Structure
 
 # %%
 # Download CIF file from repository
@@ -58,7 +58,7 @@ structure.atom_sites['O1'].adp_iso = 0.0
 structure.atom_sites['O2'].adp_iso = 0.0
 
 # %% [markdown]
-# ### Structure View (ADP mode)
+# ### Display Structure (ADP)
 #
 # Select the ADP atom view. With the starting isotropic displacements every
 # atom is drawn as a sphere; after the anisotropic refinement below, the same
@@ -71,7 +71,7 @@ project.structure_style.atom_view = 'adp'
 project.display.structure(struct_name='tbti')
 
 # %% [markdown]
-# ## Step 3: Define Experiment
+# ## 🔬 Define Experiment
 
 # %%
 # Download data file from repository
@@ -101,7 +101,10 @@ experiment.extinction.mosaicity = 35000
 experiment.extinction.radius = 10
 
 # %% [markdown]
-# ## Step 4: Perform Analysis I (ADP iso)
+# ## 🚀 Perform Analysis
+
+# %% [markdown]
+# ### ADP iso
 
 # %%
 project.display.pattern(expt_name='heidi')
@@ -144,7 +147,7 @@ project.experiments.show_names()
 project.display.pattern(expt_name='heidi')
 
 # %% [markdown]
-# ## Step 5: Perform Analysis (ADP aniso)
+# ### ADP aniso
 
 # %%
 structure.atom_sites['Tb'].adp_type = 'Uani'
@@ -181,7 +184,7 @@ project.display.pattern(expt_name='heidi')
 structure.show_as_cif()
 
 # %% [markdown]
-# ### Structure View after refinement
+# ### Display Structure (final)
 #
 # Tb, Ti and O1 were refined with anisotropic displacements (`Uani`), so the
 # ADP view now draws them as probability ellipsoids, while O2 stayed isotropic
@@ -192,7 +195,7 @@ structure.show_as_cif()
 project.display.structure(struct_name='tbti')
 
 # %% [markdown]
-# ## Step 6: Generate Report
+# ## 📊 Report
 
 # %%
 # Enable PDF report generation before the last save (time consuming)

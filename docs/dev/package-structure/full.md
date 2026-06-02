@@ -686,6 +686,7 @@
 │   ├── 📄 enums.py
 │   │   └── 🏷️ class VerbosityEnum
 │   ├── 📄 environment.py
+│   │   └── 🏷️ class FigureEmbedMode
 │   ├── 📄 logging.py
 │   │   ├── 🏷️ class IconifiedRichHandler
 │   │   ├── 🏷️ class ConsoleManager

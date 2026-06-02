@@ -1,6 +1,6 @@
 # ADR: Plotting & Docs Performance for Interactive Figures
 
-**Status:** Proposed **Date:** 2026-06-02
+**Status:** Accepted **Date:** 2026-06-02
 
 ## Group
 
@@ -9,8 +9,8 @@ Documentation.
 > This ADR follows [`AGENTS.md`](../../../../AGENTS.md). It spans the
 > documentation build (MkDocs) and the display serialization contract,
 > so it also relates to the User-facing API ADRs
-> [`display-ux.md`](../accepted/display-ux.md) and
-> [`crysview-structure-visualization.md`](../accepted/crysview-structure-visualization.md).
+> [`display-ux.md`](display-ux.md) and
+> [`crysview-structure-visualization.md`](crysview-structure-visualization.md).
 > No public Python API change is intended; the change is in how figure
 > HTML and its JavaScript runtime are delivered.
 
@@ -29,8 +29,8 @@ appear progressively.
 
 1. Tutorial sources are `docs/docs/tutorials/ed-*.py`; notebooks are
    generated artifacts (per
-   [`notebook-generation.md`](../accepted/notebook-generation.md)) and
-   are committed with **outputs stripped** (`notebook-strip`).
+   [`notebook-generation.md`](notebook-generation.md)) and are committed
+   with **outputs stripped** (`notebook-strip`).
 2. The docs CI
    ([`.github/workflows/docs.yml`](../../../../.github/workflows/docs.yml))
    runs `notebook-exec-ci` to **execute** every notebook, baking the
@@ -76,11 +76,11 @@ appear progressively.
 The same serialization paths feed three contexts with **conflicting**
 runtime needs, which is the crux of any robust fix:
 
-| Target                | Who                                                                                         | Runtime requirement                                                                                                                                                                                                          |
-| --------------------- | ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Live notebook**     | `_show_figure` in Jupyter                                                                   | Runtime must be reachable from the running kernel/browser (today: Plotly via CDN; Three.js inlined).                                                                                                                         |
-| **MkDocs site**       | executed-notebook HTML embedded by `mkdocs-jupyter`                                         | Wants the runtime loaded **once per page** and figures rendered **lazily**.                                                                                                                                                  |
-| **Standalone report** | `report/html_renderer.py` → `PlotlyPlotter.serialize_html` / Three.js `render(offline=...)` | Delivery set by the existing `offline` flag — embedded/self-contained when `offline=True`, CDN when `offline=False` (default). Authoritative per [`project-summary-rendering.md`](../accepted/project-summary-rendering.md). |
+| Target                | Who                                                                                         | Runtime requirement                                                                                                                                                                                              |
+| --------------------- | ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Live notebook**     | `_show_figure` in Jupyter                                                                   | Runtime must be reachable from the running kernel/browser (today: Plotly via CDN; Three.js inlined).                                                                                                             |
+| **MkDocs site**       | executed-notebook HTML embedded by `mkdocs-jupyter`                                         | Wants the runtime loaded **once per page** and figures rendered **lazily**.                                                                                                                                      |
+| **Standalone report** | `report/html_renderer.py` → `PlotlyPlotter.serialize_html` / Three.js `render(offline=...)` | Delivery set by the existing `offline` flag — embedded/self-contained when `offline=True`, CDN when `offline=False` (default). Authoritative per [`project-summary-rendering.md`](project-summary-rendering.md). |
 
 A useful precedent already lives in the report renderer
 ([`src/easydiffraction/report/html_renderer.py`](../../../../src/easydiffraction/report/html_renderer.py)):
@@ -157,7 +157,7 @@ delivered together** in one change. Concretely:
    `include_requirejs` if verification confirms it is no longer needed.
 
 2. **Introduce a figure _embedding mode_** (a `(str, Enum)` per
-   [`enum-backed-closed-values.md`](../accepted/enum-backed-closed-values.md))
+   [`enum-backed-closed-values.md`](enum-backed-closed-values.md))
    threaded through `serialize_html` and the Three.js `render`:
    - `INLINE` — live Jupyter: render eagerly with the runtime reachable
      as today. **Default.**
@@ -196,7 +196,7 @@ delivered together** in one change. Concretely:
 
 4. **Reports keep their existing `offline` contract, authoritative and
    unchanged.** Per
-   [`project-summary-rendering.md`](../accepted/project-summary-rendering.md),
+   [`project-summary-rendering.md`](project-summary-rendering.md),
    `render_html_report(offline=...)` already decides runtime delivery:
    `offline=True` embeds a self-contained runtime; `offline=False` (the
    default) links the CDN, embedding Plotly in the first figure and
@@ -260,6 +260,31 @@ delivered together** in one change. Concretely:
    theme override). Injecting the map on every page is harmless where no
    scene consumes it (the tiny JSON is inert), keeping the override
    simple.
+
+7. **SHARED figures downcast bulk float64 arrays to float32 (a bounded,
+   display-only precision decision).** In `SHARED` mode only, the
+   serializer transcodes the figure spec's float64 typed arrays to
+   float32 (~7 significant figures) before embedding, roughly halving
+   the payload (measured: ed-6 5.5 MB → 3.4 MB; 2.2 → 1.4 MB gzipped).
+   This is an explicit **display** decision, not a change to stored
+   data, and it is bounded:
+   - It operates on a **copy** of the serialized figure
+     (`fig.to_plotly_json()`), never the source parameters, CIF, or any
+     computation.
+   - It applies **only** to docs `SHARED` figures. Live notebooks
+     (`INLINE`), reports (`STANDALONE`), and every CIF/state file keep
+     full float64.
+   - It is **visually lossless**: screens resolve ~3 significant
+     figures, and the tutorials' hover templates format to a few
+     decimals (e.g. `:,.2f`), so float32 changes no displayed or
+     hover-visible value at the precision actually shown.
+
+   Storage-side numeric precision is a separate, deliberate decision,
+   proposed in a `cif-numeric-precision` ADR suggestion (out of scope
+   for this change, not committed on this branch). Phase 2 adds coverage
+   for the `f8`→`f4` transcode (shape preserved, round-trips through
+   Plotly) and a representative hover/range-sensitive figure whose
+   formatted values are unchanged.
 
 This pays the network bill once per page from the same origin, removes
 the per-figure JS duplication, and turns first paint from "render every
@@ -366,7 +391,7 @@ inject one shared runtime, and add the lazy loader globally.
   the resolver with a unit test asserting both the default and the
   docs-build override.
 - **Report `offline` contract.** Keep
-  [`project-summary-rendering.md`](../accepted/project-summary-rendering.md)
+  [`project-summary-rendering.md`](project-summary-rendering.md)
   authoritative (Decision 4); the existing `offline=True` /
   `offline=False` report tests must stay green and gain no `SHARED`
   behavior.
@@ -414,17 +439,24 @@ Settled in discussion on 2026-06-02:
 
 - Static-image-first placeholders (kaleido) if skeletons prove
   insufficient on the heaviest pages.
+- Lazy on-scroll download of the Three.js runtime. The docs `SHARED`
+  three.js view self-hosts (page-level import map) and shows a loading
+  skeleton but renders **eagerly** — P1.8 was scoped to this low-risk
+  path. Deferring the runtime download behind an `IntersectionObserver`
+  (dynamic `import('three')`) is a follow-up; Plotly already loads
+  lazily and structure views are rare, so the win is small relative to
+  the module-rewrite risk.
 - Trace downsampling for very dense series in the docs view (smaller
   payload + faster draw) — a separate, data-side optimization.
 - A docs CI budget check (page weight / figure count) to catch
   regressions, aligning with
-  [`documentation-ci-build.md`](suggestions/documentation-ci-build.md).
+  [`documentation-ci-build.md`](../suggestions/documentation-ci-build.md).
 - Hoist a single importmap into the **report** template `<head>` for
   standalone reports that render multiple Three.js scenes (the same
   per-scene-importmap bug as docs, but governed by
-  [`project-summary-rendering.md`](../accepted/project-summary-rendering.md)).
-  Out of scope here since it touches the report contract; flagged so it
-  is not lost.
+  [`project-summary-rendering.md`](project-summary-rendering.md)). Out
+  of scope here since it touches the report contract; flagged so it is
+  not lost.
 
 ## Alternatives considered
 

@@ -10,6 +10,9 @@ renderer may be used depending on configuration.
 
 from __future__ import annotations
 
+import base64
+import json
+import uuid
 from dataclasses import dataclass
 
 import darkdetect
@@ -17,6 +20,7 @@ import numpy as np
 import plotly.graph_objects as go
 import plotly.io as pio
 from plotly.subplots import make_subplots
+from plotly.utils import PlotlyJSONEncoder
 
 try:
     from IPython.display import HTML
@@ -42,12 +46,15 @@ from easydiffraction.display.theme import LIGHT_FOREGROUND_COLOR
 from easydiffraction.display.theme import LIGHT_HOVER_BACKGROUND_COLOR
 from easydiffraction.display.theme import LIGHT_INNER_TICK_GRID_COLOR
 from easydiffraction.display.theme import LIGHT_LEGEND_BACKGROUND_COLOR
+from easydiffraction.display.theme import PAPER_BACKGROUND_COLOR
 from easydiffraction.display.theme import DisplayThemeColors
 from easydiffraction.display.theme import display_theme_colors
 from easydiffraction.display.theme import display_theme_colors_for_template
 from easydiffraction.utils._vendored.theme_detect import is_dark
+from easydiffraction.utils.environment import FigureEmbedMode
 from easydiffraction.utils.environment import in_jupyter
 from easydiffraction.utils.environment import in_pycharm
+from easydiffraction.utils.environment import resolve_figure_embed_mode
 
 DEFAULT_COLORS = {
     'meas': 'rgb(31, 119, 180)',
@@ -66,6 +73,13 @@ MEASURED_MARKER_LINE_WIDTH = 0
 SINGLE_CRYSTAL_MARKER_LINE_WIDTH = 0.5
 MEASURED_ERROR_BAR_THICKNESS = 0.5
 MEASURED_ERROR_BAR_WIDTH = 2
+# Correlation-heatmap cell borders. Internal cell separators sit inside
+# the plot area and render at their full width. The outer frame sits on
+# the plot-area boundary, where Plotly clips half of the stroke, so it
+# is drawn at double width to keep its visible half matching the
+# internal separators.
+CORRELATION_GRID_LINE_WIDTH = 1
+CORRELATION_FRAME_LINE_WIDTH = 2 * CORRELATION_GRID_LINE_WIDTH
 # Single source for the y=x reference-line colour, shared with the
 # report axis gray (report.style.REPORT_AXIS_RGB) and imported by
 # report.fit_plot so the diagonal looks identical in the Plotly and
@@ -119,6 +133,43 @@ FIXED_ASPECT_WRAPPER_CLASS_NAME = 'ed-fixed-aspect-plotly-wrapper'
 THEME_SYNC_META_KEY = 'ed_plotly_theme_sync'
 THEME_SYNC_AXIS_FRAME_SHAPE_INDEXES_KEY = 'axis_frame_shape_indexes'
 THEME_SYNC_CORRELATION_HEATMAP_KEY = 'correlation_heatmap'
+
+
+def _typed_arrays_to_float32(value: object) -> object:
+    """
+    Recursively transcode float64 Plotly typed-array specs to float32.
+
+    Plotly serializes numpy arrays as base64 typed-array specs
+    (``{'dtype': 'f8', 'bdata': ...}``). For the docs display, float32
+    (~7 significant figures) is visually lossless and halves the bulk
+    data size. Scalars and small inline lists are left untouched.
+
+    Parameters
+    ----------
+    value : object
+        A figure dict, list, or leaf from ``fig.to_plotly_json()``.
+
+    Returns
+    -------
+    object
+        The same structure with float64 typed arrays downcast to
+        float32.
+    """
+    if isinstance(value, dict):
+        if value.get('dtype') == 'f8' and 'bdata' in value:
+            downcast = np.frombuffer(
+                base64.b64decode(value['bdata']),
+                dtype='<f8',
+            ).astype('<f4')
+            return {
+                **value,
+                'dtype': 'f4',
+                'bdata': base64.b64encode(downcast.tobytes()).decode('ascii'),
+            }
+        return {key: _typed_arrays_to_float32(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_typed_arrays_to_float32(item) for item in value]
+    return value
 
 
 def single_crystal_axis_range(
@@ -320,6 +371,11 @@ class PlotlyPlotter(PlotterBase):
         """Return the plot background color for the active theme."""
         return cls._theme_colors().background
 
+    @staticmethod
+    def _paper_background_color() -> str:
+        """Return the transparent figure-paper (outer margin) color."""
+        return PAPER_BACKGROUND_COLOR
+
     @classmethod
     def _inner_tick_grid_color(cls) -> str:
         """Return the inner tick-grid color for the active theme."""
@@ -458,7 +514,7 @@ class PlotlyPlotter(PlotterBase):
                 'xref': 'x',
                 'yref': 'y',
                 'layer': 'above',
-                'line': {'color': grid_color, 'width': 1},
+                'line': {'color': grid_color, 'width': CORRELATION_GRID_LINE_WIDTH},
             }
             for x_pos in x_edges[1:-1]
         ]
@@ -472,7 +528,7 @@ class PlotlyPlotter(PlotterBase):
                 'xref': 'x',
                 'yref': 'y',
                 'layer': 'above',
-                'line': {'color': grid_color, 'width': 1},
+                'line': {'color': grid_color, 'width': CORRELATION_GRID_LINE_WIDTH},
             }
             for y_pos in y_edges[1:-1]
         )
@@ -485,7 +541,7 @@ class PlotlyPlotter(PlotterBase):
             'xref': 'paper',
             'yref': 'paper',
             'layer': 'above',
-            'line': {'color': grid_color, 'width': 1},
+            'line': {'color': grid_color, 'width': CORRELATION_FRAME_LINE_WIDTH},
             'fillcolor': 'rgba(0, 0, 0, 0)',
         })
 
@@ -1119,6 +1175,15 @@ if (!graphDiv || !window.Plotly) {
     return;
 }
 
+// Theme this figure was rendered with (Python-detected), used as the
+// fallback when the host page exposes no detectable theme attribute --
+// e.g. some Jupyter front-ends -- so icons match the baked plot instead
+// of defaulting to light.
+const bakedThemeLayout = graphDiv._fullLayout || graphDiv.layout || {};
+const bakedTheme = bakedThemeLayout.plot_bgcolor === '__DARK_BACKGROUND_COLOR__'
+    ? 'dark'
+    : 'light';
+
 const hostTheme = function () {
     const materialScheme = (
         (document.body && document.body.getAttribute('data-md-color-scheme'))
@@ -1147,13 +1212,14 @@ const hostTheme = function () {
     if (jupyterThemeLight === 'true') {
         return 'light';
     }
-    return 'light';
+    return bakedTheme;
 };
 
 const themeColors = function (theme) {
     if (theme === 'dark') {
         return {
             background: '__DARK_BACKGROUND_COLOR__',
+            paperBackground: '__PAPER_BACKGROUND_COLOR__',
             foreground: '__DARK_FOREGROUND_COLOR__',
             axisFrame: '__DARK_AXIS_FRAME_COLOR__',
             innerTickGrid: '__DARK_INNER_TICK_GRID_COLOR__',
@@ -1163,6 +1229,7 @@ const themeColors = function (theme) {
     }
     return {
         background: '__LIGHT_BACKGROUND_COLOR__',
+        paperBackground: '__PAPER_BACKGROUND_COLOR__',
         foreground: '__LIGHT_FOREGROUND_COLOR__',
         axisFrame: '__LIGHT_AXIS_FRAME_COLOR__',
         innerTickGrid: '__LIGHT_INNER_TICK_GRID_COLOR__',
@@ -1258,39 +1325,53 @@ const restyleCorrelationHeatmaps = function (colors, themeSync) {
     });
 };
 
-const installModebarThemeStyle = function () {
-    const styleId = 'ed-plotly-modebar-theme-style';
-    if (document.getElementById(styleId)) {
-        return;
+const rgbaFromColor = function (color, alpha) {
+    const hexMatch = color.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i);
+    let red;
+    let green;
+    let blue;
+    if (hexMatch) {
+        let hex = hexMatch[1];
+        if (hex.length === 3) {
+            hex = hex.split('').map(function (part) {
+                return part + part;
+            }).join('');
+        }
+        red = parseInt(hex.slice(0, 2), 16);
+        green = parseInt(hex.slice(2, 4), 16);
+        blue = parseInt(hex.slice(4, 6), 16);
+    } else {
+        const parts = color.match(/(\d+(?:\.\d+)?)/g);
+        if (!parts || parts.length < 3) {
+            return color;
+        }
+        red = Number(parts[0]);
+        green = Number(parts[1]);
+        blue = Number(parts[2]);
     }
-
-    const style = document.createElement('style');
-    style.id = styleId;
-    style.textContent = [
-        '.plotly-graph-div.ed-plotly-themed-modebar .modebar-btn path {',
-        '    fill: var(--ed-plotly-modebar-icon-color) !important;',
-        '    opacity: var(--ed-plotly-modebar-icon-opacity) !important;',
-        '}',
-        '.plotly-graph-div.ed-plotly-themed-modebar .modebar-btn:hover path,',
-        '.plotly-graph-div.ed-plotly-themed-modebar .modebar-btn.active path {',
-        '    fill: var(--ed-plotly-modebar-icon-color) !important;',
-        '    opacity: var(--ed-plotly-modebar-icon-hover-opacity) !important;',
-        '}',
-    ].join('\n');
-    document.head.appendChild(style);
+    return 'rgba(' + red + ', ' + green + ', ' + blue + ', ' + alpha + ')';
 };
 
-const applyModebarTheme = function (theme, colors) {
-    installModebarThemeStyle();
+const installModebarIconStyle = function (theme, colors) {
+    // Plotly paints modebar icon fills with non-important inline styles
+    // (and re-paints on hover), and the host plot id can start with a
+    // digit, so an id-based rule is invalid. A class-based !important
+    // rule with direct colors reliably themes every icon, inactive and
+    // hovered, in both light and dark hosts.
     graphDiv.classList.add('ed-plotly-themed-modebar');
-    graphDiv.style.setProperty('--ed-plotly-modebar-icon-color', colors.foreground);
-    graphDiv.style.setProperty(
-        '--ed-plotly-modebar-icon-opacity',
-        theme === 'dark' ? '0.62' : '0.42',
-    );
-    graphDiv.style.setProperty(
-        '--ed-plotly-modebar-icon-hover-opacity',
-        theme === 'dark' ? '0.95' : '0.85',
+    const styleId = 'ed-plotly-modebar-icon-style';
+    let style = document.getElementById(styleId);
+    if (!style) {
+        style = document.createElement('style');
+        style.id = styleId;
+        document.head.appendChild(style);
+    }
+    const inactive = rgbaFromColor(colors.foreground, theme === 'dark' ? 0.62 : 0.55);
+    const active = rgbaFromColor(colors.foreground, theme === 'dark' ? 0.95 : 0.9);
+    style.textContent = (
+        '.ed-plotly-themed-modebar .modebar-btn path { fill: ' + inactive + ' !important; }'
+        + '.ed-plotly-themed-modebar .modebar-btn:hover path,'
+        + '.ed-plotly-themed-modebar .modebar-btn.active path { fill: ' + active + ' !important; }'
     );
 };
 
@@ -1298,17 +1379,22 @@ const applyTheme = function () {
     const theme = hostTheme();
     const colors = themeColors(theme);
     const syncMeta = themeSyncMeta();
-    applyModebarTheme(theme, colors);
+    installModebarIconStyle(theme, colors);
 
     if (graphDiv.dataset.edPlotlyTheme === theme) {
         return;
     }
     graphDiv.dataset.edPlotlyTheme = theme;
 
+    const transparentPlot = syncMeta.__THEME_SYNC_CORRELATION_HEATMAP_KEY__ === true;
+    const modebarColor = rgbaFromColor(colors.foreground, theme === 'dark' ? 0.62 : 0.42);
+    const modebarActiveColor = rgbaFromColor(colors.foreground, theme === 'dark' ? 0.95 : 0.85);
     const update = {
-        paper_bgcolor: colors.background,
-        plot_bgcolor: colors.background,
-        'modebar.bgcolor': colors.background,
+        paper_bgcolor: colors.paperBackground,
+        plot_bgcolor: transparentPlot ? colors.paperBackground : colors.background,
+        'modebar.bgcolor': colors.paperBackground,
+        'modebar.color': modebarColor,
+        'modebar.activecolor': modebarActiveColor,
         'font.color': colors.foreground,
         'title.font.color': colors.foreground,
         'legend.bgcolor': colors.legend,
@@ -1386,6 +1472,7 @@ applyTheme();
                 '__THEME_SYNC_CORRELATION_HEATMAP_KEY__',
                 THEME_SYNC_CORRELATION_HEATMAP_KEY,
             )
+            .replace('__PAPER_BACKGROUND_COLOR__', PAPER_BACKGROUND_COLOR)
             .replace('__DARK_BACKGROUND_COLOR__', DARK_BACKGROUND_COLOR)
             .replace('__DARK_FOREGROUND_COLOR__', DARK_FOREGROUND_COLOR)
             .replace('__DARK_AXIS_FRAME_COLOR__', DARK_AXIS_FRAME_COLOR)
@@ -1670,12 +1757,124 @@ scheduleResize();
 
         if in_pycharm() or display is None or HTML is None:
             fig.show(config=config)
+            return
+
+        # Docs execution sets SHARED, baking a lazy placeholder into
+        # the cell HTML. Live Jupyter stays INLINE (eager, CDN).
+        if resolve_figure_embed_mode() is FigureEmbedMode.SHARED:
+            html_fig = self.serialize_html(
+                fig,
+                include_plotlyjs=False,
+                mode=FigureEmbedMode.SHARED,
+            )
         else:
             html_fig = self.serialize_html(
                 fig,
                 include_plotlyjs='cdn',
+                mode=FigureEmbedMode.INLINE,
             )
-            display(HTML(html_fig))
+        display(HTML(html_fig))
+
+    @staticmethod
+    def _ed_theme_payload() -> dict:
+        """Return light and dark theme colors for the shared loader."""
+        return {
+            'light': {
+                'background': LIGHT_BACKGROUND_COLOR,
+                'paperBackground': PAPER_BACKGROUND_COLOR,
+                'foreground': LIGHT_FOREGROUND_COLOR,
+                'axisFrame': LIGHT_AXIS_FRAME_COLOR,
+                'innerTickGrid': LIGHT_INNER_TICK_GRID_COLOR,
+                'hoverBackground': LIGHT_HOVER_BACKGROUND_COLOR,
+                'legend': LIGHT_LEGEND_BACKGROUND_COLOR,
+            },
+            'dark': {
+                'background': DARK_BACKGROUND_COLOR,
+                'paperBackground': PAPER_BACKGROUND_COLOR,
+                'foreground': DARK_FOREGROUND_COLOR,
+                'axisFrame': DARK_AXIS_FRAME_COLOR,
+                'innerTickGrid': DARK_INNER_TICK_GRID_COLOR,
+                'hoverBackground': DARK_HOVER_BACKGROUND_COLOR,
+                'legend': DARK_LEGEND_BACKGROUND_COLOR,
+            },
+        }
+
+    @classmethod
+    def _ed_theme_sync_payload(cls, fig: object) -> dict:
+        """Return live theme-sync metadata for the shared loader."""
+        meta = cls._figure_meta(fig)
+        theme_sync = meta.get(THEME_SYNC_META_KEY) if isinstance(meta, dict) else None
+        if not isinstance(theme_sync, dict):
+            return {}
+        payload: dict = {}
+        indexes = theme_sync.get(THEME_SYNC_AXIS_FRAME_SHAPE_INDEXES_KEY)
+        if isinstance(indexes, list):
+            payload['axisFrameShapeIndexes'] = indexes
+        if theme_sync.get(THEME_SYNC_CORRELATION_HEATMAP_KEY):
+            payload['correlationHeatmap'] = True
+        return payload
+
+    @staticmethod
+    def _figure_height(fig: object) -> int:
+        """
+        Return the figure height in pixels for the loading skeleton.
+        """
+        layout = getattr(fig, 'layout', None)
+        height = getattr(layout, 'height', None) if layout is not None else None
+        if isinstance(height, (int, float)) and not isinstance(height, bool) and height > 0:
+            return int(height)
+        # DEFAULT_HEIGHT is a unit count; convert to pixels like the
+        # non-shared default so height-less figures (e.g. posterior
+        # distribution plots) don't collapse into a tiny skeleton.
+        return DEFAULT_HEIGHT * PLOTLY_HEIGHT_PER_UNIT
+
+    @classmethod
+    def _serialize_html_shared(cls, fig: object) -> str:
+        """
+        Serialize a figure as a lazy SHARED-mode placeholder.
+
+        Emits a skeleton plus the figure spec as ``application/json``
+        for the shared ``ed-figures.js`` loader to render on demand. No
+        Plotly bundle or per-figure post-script is embedded; the runtime
+        loads once per page and the loader owns theme-sync, resize, and
+        legend. Bulk float64 arrays are downcast to float32 (visually
+        lossless, ~7 significant figures) to roughly halve the embedded
+        data.
+
+        Parameters
+        ----------
+        fig : object
+            Plotly figure to serialize.
+
+        Returns
+        -------
+        str
+            Placeholder HTML carrying the figure spec.
+        """
+        figure_dict = _typed_arrays_to_float32(fig.to_plotly_json())
+        spec = {
+            'data': figure_dict.get('data', []),
+            'layout': figure_dict.get('layout', {}),
+            'config': cls._get_config(),
+            'edTheme': cls._ed_theme_payload(),
+            'edThemeSync': cls._ed_theme_sync_payload(fig),
+            'edHasLegend': cls._has_visible_legend(fig),
+        }
+        # Escape '<' so the JSON cannot terminate the <script> element.
+        spec_json = json.dumps(spec, cls=PlotlyJSONEncoder).replace('<', '\\u003c')
+        plot_id = f'ed-fig-{uuid.uuid4().hex}'
+        height = cls._figure_height(fig)
+        html_fig = (
+            '<div class="ed-figure" data-ed-figure="plotly">'
+            f'<div class="ed-figure-skeleton" style="height: {height}px">'
+            'Loading plot…</div>'
+            f'<div class="ed-figure-target" id="{plot_id}" '
+            f'style="min-height: {height}px"></div>'
+            '<script type="application/json" class="ed-figure-spec">'
+            f'{spec_json}</script>'
+            '</div>'
+        )
+        return cls._wrap_html_figure(fig, html_fig)
 
     @classmethod
     def serialize_html(
@@ -1683,6 +1882,7 @@ scheduleResize();
         fig: object,
         *,
         include_plotlyjs: bool | str,
+        mode: FigureEmbedMode = FigureEmbedMode.STANDALONE,
         force_template: str | None = None,
         axis_frame_color: str | None = None,
         grid_color: str | None = None,
@@ -1696,6 +1896,9 @@ scheduleResize();
             Plotly figure to serialize.
         include_plotlyjs : bool | str
             Plotly JavaScript inclusion mode passed to Plotly.
+        mode : FigureEmbedMode, default=FigureEmbedMode.STANDALONE
+            Embedding mode. ``SHARED`` emits a lazy placeholder for the
+            docs loader; ``INLINE``/``STANDALONE`` serialize eagerly.
         force_template : str | None, default=None
             Optional template name applied before serialization.
         axis_frame_color : str | None, default=None
@@ -1708,6 +1911,8 @@ scheduleResize();
         str
             Inline HTML containing the figure and helper scripts.
         """
+        if mode is FigureEmbedMode.SHARED:
+            return cls._serialize_html_shared(fig)
         background_color = None
         if force_template is not None:
             fig.update_layout(template=force_template)
@@ -1764,10 +1969,25 @@ scheduleResize();
             resolved_background = background_color
             if resolved_background is None:
                 resolved_background = cls._background_color()
+            if cls._figure_is_correlation_heatmap(fig):
+                # Correlation cells carry their own colors; keep the
+                # area outside the cells transparent.
+                resolved_background = cls._paper_background_color()
             update_layout(
-                paper_bgcolor=resolved_background,
+                paper_bgcolor=cls._paper_background_color(),
                 plot_bgcolor=resolved_background,
             )
+
+    @classmethod
+    def _figure_is_correlation_heatmap(cls, fig: object) -> bool:
+        """
+        Return whether a figure is flagged as a correlation heatmap.
+        """
+        meta = cls._figure_meta(fig)
+        theme_sync = meta.get(THEME_SYNC_META_KEY) if isinstance(meta, dict) else None
+        if not isinstance(theme_sync, dict):
+            return False
+        return bool(theme_sync.get(THEME_SYNC_CORRELATION_HEATMAP_KEY))
 
     @classmethod
     def _get_layout(
@@ -1847,14 +2067,14 @@ scheduleResize();
                 'text': title,
                 'font': {'size': TITLE_FONT_SIZE},
             },
-            paper_bgcolor=cls._background_color(),
+            paper_bgcolor=cls._paper_background_color(),
             plot_bgcolor=cls._background_color(),
             legend={
                 'bgcolor': cls._legend_background_color(),
                 'xanchor': 'right',
-                'x': 1.0,
+                'x': 0.99,
                 'yanchor': 'top',
-                'y': 1.0,
+                'y': 0.99,
             },
             xaxis=xaxis,
             yaxis=yaxis,
@@ -2020,6 +2240,36 @@ scheduleResize();
         if plot_spec.height is None:
             return float(DEFAULT_HEIGHT * PLOTLY_HEIGHT_PER_UNIT)
         return float(plot_spec.height)
+
+    @classmethod
+    def _single_main_panel_height_pixels(cls, residual_height_fraction: float) -> int:
+        """
+        Return figure height matching the composite main panel.
+
+        Standalone single-panel figures (e.g. posterior distribution
+        plots) use this so their plot area matches the pattern plot's
+        top panel rather than the full three-row composite. Mirrors the
+        baseline main-row math in ``_baseline_non_bragg_row_heights``
+        for the default main + Bragg ticks + residual layout, then adds
+        the figure's vertical margins so the drawable area (not the
+        outer height) equals that panel.
+
+        Parameters
+        ----------
+        residual_height_fraction : float
+            Residual-to-main row ratio of the reference composite.
+
+        Returns
+        -------
+        int
+            Figure height in pixels.
+        """
+        base = float(DEFAULT_HEIGHT * PLOTLY_HEIGHT_PER_UNIT)
+        plot_area = cls._composite_plot_area_height(base)
+        available = plot_area * cls._subplot_available_height_fraction(3)
+        non_bragg = max(available - cls._bragg_tick_symbol_height_pixels(), 1.0)
+        main = non_bragg / (1.0 + residual_height_fraction)
+        return round(main + COMPOSITE_MARGIN_TOP + COMPOSITE_MARGIN_BOTTOM)
 
     @staticmethod
     def _composite_plot_area_height(full_height: float) -> float:
@@ -2462,9 +2712,9 @@ scheduleResize();
             legend={
                 'bgcolor': self._legend_background_color(),
                 'xanchor': 'right',
-                'x': 1.0,
+                'x': 0.99,
                 'yanchor': 'top',
-                'y': 1.0,
+                'y': 0.99,
             },
         )
 

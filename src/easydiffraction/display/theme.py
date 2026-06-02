@@ -6,20 +6,49 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-LIGHT_BACKGROUND_COLOR = 'rgba(0, 0, 0, 0)'
-DARK_BACKGROUND_COLOR = 'rgba(0, 0, 0, 0)'
-LIGHT_FOREGROUND_COLOR = '#222222'
-DARK_FOREGROUND_COLOR = '#e6e8ee'
-LIGHT_AXIS_FRAME_COLOR = '#e0e0e0'
-DARK_AXIS_FRAME_COLOR = '#333'
-LIGHT_INNER_TICK_GRID_COLOR = '#f2f2f2'
-DARK_INNER_TICK_GRID_COLOR = '#1c1c1c'
-LIGHT_HOVER_BACKGROUND_COLOR = '#ffffff'
-DARK_HOVER_BACKGROUND_COLOR = '#212121'
+# Background inside the axes rectangle (the plotted area / 3D scene).
 # Legend background mirrors the opaque theme base surface at 50% opacity
-LIGHT_LEGEND_BACKGROUND_COLOR = 'rgba(255, 255, 255, 0.5)'
+# Figure paper (margins around the axes) stays transparent so charts
+# blend into the host page; only the plotted area is opaque.
+
+DARK_BACKGROUND_COLOR = '#212121'
+DARK_FOREGROUND_COLOR = '#e6e8ee'
+DARK_AXIS_FRAME_COLOR = '#444'
+DARK_INNER_TICK_GRID_COLOR = '#2a2a2a'
+DARK_HOVER_BACKGROUND_COLOR = '#212121'
 DARK_LEGEND_BACKGROUND_COLOR = 'rgba(33, 33, 33, 0.5)'
+
+LIGHT_BACKGROUND_COLOR = '#ffffff'
+LIGHT_FOREGROUND_COLOR = '#222222'
+LIGHT_AXIS_FRAME_COLOR = '#d3d3d3'
+LIGHT_INNER_TICK_GRID_COLOR = '#f2f2f2'
+LIGHT_HOVER_BACKGROUND_COLOR = '#ffffff'
+LIGHT_LEGEND_BACKGROUND_COLOR = 'rgba(255, 255, 255, 0.5)'
+
+PAPER_BACKGROUND_COLOR = 'rgba(0, 0, 0, 0)'
+
 TABLE_AXIS_FRAME_CSS_VAR = '--ed-axis-frame-color'
+
+
+def hex_to_rgb(value: str) -> tuple[int, int, int]:
+    """
+    Return the RGB triple for a hex color string.
+
+    Parameters
+    ----------
+    value : str
+        Hex color in ``#rgb`` or ``#rrggbb`` form.
+
+    Returns
+    -------
+    tuple[int, int, int]
+        Red, green, and blue components in the 0-255 range.
+    """
+    shorthand_length = 3
+    digits = value.lstrip('#')
+    if len(digits) == shorthand_length:
+        digits = ''.join(channel * 2 for channel in digits)
+    return (int(digits[0:2], 16), int(digits[2:4], 16), int(digits[4:6], 16))
 
 
 @dataclass(frozen=True)

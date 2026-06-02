@@ -877,8 +877,8 @@ def test_plot_posterior_predictive_summary_uses_consistent_labels_and_styles(mon
     assert measured_trace.legendrank == 10
     assert max_posterior_trace.legendrank == 20
     assert max_posterior_trace.line.dash == POSTERIOR_POINT_ESTIMATE_LINE_DASH
-    assert fig.layout.legend.x == 1.0
-    assert fig.layout.legend.y == 1.0
+    assert fig.layout.legend.x == 0.99
+    assert fig.layout.legend.y == 0.99
     assert fig.layout.legend.bgcolor == PlotlyPlotter._legend_background_color()
     assert fig.layout.margin.r == 30
     assert fig.layout.margin.t == 40

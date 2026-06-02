@@ -43,7 +43,7 @@ def test_get_layout_sets_title_axis_and_theme_colors(
     assert layout.title.font.size == pp.TITLE_FONT_SIZE
     assert layout.xaxis.title.font.size == pp.AXIS_TITLE_FONT_SIZE
     assert layout.yaxis.title.font.size == pp.AXIS_TITLE_FONT_SIZE
-    assert layout.paper_bgcolor == background_color
+    assert layout.paper_bgcolor == pp.PAPER_BACKGROUND_COLOR
     assert layout.plot_bgcolor == background_color
     assert layout.xaxis.linecolor == axis_color
     assert layout.yaxis.linecolor == axis_color
@@ -242,10 +242,12 @@ def test_show_figure_adds_legend_toggle_script_to_html_output(monkeypatch):
     assert f"innerTickGrid: '{pp.LIGHT_INNER_TICK_GRID_COLOR}'" in captured['post_script']
     assert f"hoverBackground: '{pp.DARK_HOVER_BACKGROUND_COLOR}'" in captured['post_script']
     assert f"legend: '{pp.DARK_LEGEND_BACKGROUND_COLOR}'" in captured['post_script']
-    assert 'ed-plotly-modebar-theme-style' in captured['post_script']
+    assert "'modebar.color'" in captured['post_script']
+    assert "'modebar.activecolor'" in captured['post_script']
+    assert 'rgbaFromColor' in captured['post_script']
+    # Modebar icons are also themed via a class-based !important rule so
+    # they stay visible regardless of Plotly's inline fills.
     assert 'ed-plotly-themed-modebar' in captured['post_script']
-    assert '--ed-plotly-modebar-icon-color' in captured['post_script']
-    assert '--ed-plotly-modebar-icon-hover-opacity' in captured['post_script']
     assert 'const correlationColorscale = function (colors) {' in captured['post_script']
     assert 'const themeSync = meta.ed_plotly_theme_sync;' in captured['post_script']
     assert 'const applyAnnotationTheme = function (update, colors) {' in captured['post_script']
@@ -1123,3 +1125,123 @@ def test_plot_powder_meas_vs_calc_accepts_empty_filtered_range(monkeypatch):
     assert len(fig.data) == 3
     assert fig.layout.yaxis2.range[0] == pytest.approx(-1.0)
     assert fig.layout.yaxis2.range[1] == pytest.approx(1.0)
+
+
+def test_typed_arrays_to_float32_transcodes_and_preserves_shape():
+    import base64
+
+    import easydiffraction.display.plotters.plotly as pp
+
+    values = np.arange(6, dtype='<f8')
+    spec = {
+        'dtype': 'f8',
+        'bdata': base64.b64encode(values.tobytes()).decode('ascii'),
+        'shape': '2, 3',
+    }
+    payload = {'x': spec, 'count': 6, 'name': 'meas'}
+
+    result = pp._typed_arrays_to_float32(payload)
+
+    assert result['x']['dtype'] == 'f4'
+    assert result['x']['shape'] == '2, 3'
+    decoded = np.frombuffer(base64.b64decode(result['x']['bdata']), dtype='<f4')
+    assert np.allclose(decoded, values)
+    # Non-array entries are untouched.
+    assert result['count'] == 6
+    assert result['name'] == 'meas'
+
+
+def test_serialize_html_shared_is_lazy_placeholder_with_float32():
+    import easydiffraction.display.plotters.plotly as pp
+    import plotly.graph_objects as go
+
+    from easydiffraction.utils.environment import FigureEmbedMode
+
+    fig = go.Figure(go.Scatter(x=np.arange(3000.0), y=np.arange(3000.0)))
+    html = pp.PlotlyPlotter.serialize_html(
+        fig,
+        include_plotlyjs=False,
+        mode=FigureEmbedMode.SHARED,
+    )
+
+    assert 'data-ed-figure="plotly"' in html
+    assert 'ed-figure-skeleton' in html
+    assert 'ed-figure-spec' in html
+    # Lazy: no eager runtime call is embedded.
+    assert 'Plotly.newPlot' not in html
+    # Display precision: bulk arrays are downcast to float32.
+    assert 'f4' in html
+
+
+def test_serialize_html_inline_is_eager_self_contained():
+    import easydiffraction.display.plotters.plotly as pp
+    import plotly.graph_objects as go
+
+    from easydiffraction.utils.environment import FigureEmbedMode
+
+    fig = go.Figure(go.Scatter(x=np.arange(10.0), y=np.arange(10.0)))
+    html = pp.PlotlyPlotter.serialize_html(
+        fig,
+        include_plotlyjs='cdn',
+        mode=FigureEmbedMode.INLINE,
+    )
+
+    assert 'data-ed-figure' not in html
+    # Eager render embeds the plot div / runtime call.
+    assert 'plotly-graph-div' in html or 'newPlot' in html
+
+
+def test_typed_arrays_to_float32_leaves_integer_specs_untouched():
+    import base64
+
+    import easydiffraction.display.plotters.plotly as pp
+
+    ints = np.arange(5, dtype='<i4')
+    spec = {
+        'dtype': 'i4',
+        'bdata': base64.b64encode(ints.tobytes()).decode('ascii'),
+        'shape': '5',
+    }
+    result = pp._typed_arrays_to_float32({'value': spec, 'flag': True})
+
+    # Integer typed arrays and inline scalars are left untouched.
+    assert result['value']['dtype'] == 'i4'
+    assert result['value']['bdata'] == spec['bdata']
+    assert result['flag'] is True
+
+
+def test_typed_arrays_to_float32_roundtrips_through_plotly():
+    import base64
+
+    import easydiffraction.display.plotters.plotly as pp
+    import plotly.graph_objects as go
+    import plotly.io as pio
+
+    expected = np.arange(3000.0) * 1.5
+    fig = go.Figure(go.Scatter(x=np.arange(3000.0), y=expected))
+    downcast = pp._typed_arrays_to_float32(fig.to_plotly_json())
+
+    # Plotly accepts the f4 typed arrays (reconstruct + serialise, no error).
+    pio.to_json(go.Figure(downcast))
+
+    # Values survive within float32 tolerance.
+    y_spec = downcast['data'][0]['y']
+    assert y_spec['dtype'] == 'f4'
+    decoded = np.frombuffer(base64.b64decode(y_spec['bdata']), dtype='<f4')
+    assert np.allclose(decoded, expected, rtol=1e-6)
+
+
+def test_float32_downcast_preserves_hover_formatted_values():
+    # Representative powder intensities and a correlation value. Hover
+    # templates format to a few decimals (e.g. ``:,.2f``), so the
+    # float32 downcast must not change the value at the shown precision.
+    values = np.array(
+        [12345.6789, 0.001234, 9876.54321, 100.0, 0.5, -0.87654],
+        dtype='<f8',
+    )
+    as_f32 = values.astype('<f4')
+
+    def formatted(array):
+        return [f'{value:,.2f}' for value in array]
+
+    assert formatted(values) == formatted(as_f32)

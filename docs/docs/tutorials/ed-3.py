@@ -19,24 +19,24 @@
 # the main container for all information.
 
 # %% [markdown]
-# ## Import Library
+# ## 🛠️ Import Library
 
 # %%
 import easydiffraction as ed
 
 # %% [markdown]
-# ## Step 1: Create a Project
+# ## 📦 Define Project
 #
 # This section explains how to create a project and define its metadata.
 
 # %% [markdown]
-# #### Create Project
+# ### Create Project
 
 # %%
 project = ed.Project(name='lbco_hrpt')
 
 # %% [markdown]
-# #### Set Project Metadata
+# ### Set Project Metadata
 
 # %%
 project.info.title = 'La0.5Ba0.5CoO3 at HRPT@PSI'
@@ -46,13 +46,13 @@ structure, using neutron powder diffraction data collected in constant
 wavelength mode at the HRPT diffractometer (PSI)."""
 
 # %% [markdown]
-# #### Show Project Metadata as CIF
+# ### Show Project Metadata as CIF
 
 # %%
 project.info.show_as_cif()
 
 # %% [markdown]
-# #### Save Project
+# ### Save Project
 #
 # When saving the project for the first time, you need to specify the
 # directory path.
@@ -61,19 +61,19 @@ project.info.show_as_cif()
 project.save_as(dir_path='projects/lbco_hrpt')
 
 # %% [markdown]
-# ## Step 2: Define Structure
+# ## 🧩 Define Structure
 #
 # This section shows how to add structures and modify their
 # parameters.
 
 # %% [markdown]
-# #### Add Structure
+# ### Add Structure
 
 # %%
 project.structures.create(name='lbco')
 
 # %% [markdown]
-# #### Show Defined Structures
+# ### Show Defined Structures
 #
 # Show the names of the crystal structures added. These names are used
 # to access the structure using the syntax:
@@ -84,7 +84,7 @@ project.structures.create(name='lbco')
 project.structures.show_names()
 
 # %% [markdown]
-# #### Set Space Group
+# ### Set Space Group
 #
 # Modify the default space group parameters.
 
@@ -93,7 +93,7 @@ project.structures['lbco'].space_group.name_h_m = 'P m -3 m'
 project.structures['lbco'].space_group.it_coordinate_system_code = '1'
 
 # %% [markdown]
-# #### Set Unit Cell
+# ### Set Unit Cell
 #
 # Modify the default unit cell parameters.
 
@@ -101,7 +101,7 @@ project.structures['lbco'].space_group.it_coordinate_system_code = '1'
 project.structures['lbco'].cell.length_a = 3.88
 
 # %% [markdown]
-# #### Set Atom Sites
+# ### Set Atom Sites
 #
 # Add atom sites to the structure.
 
@@ -146,13 +146,13 @@ project.structures['lbco'].atom_sites.create(
 )
 
 # %% [markdown]
-# #### Show Structure as CIF
+# ### Show Structure as CIF
 
 # %%
 project.structures['lbco'].show_as_cif()
 
 # %% [markdown]
-# #### View Structure
+# ### Display Structure
 #
 # EasyDiffraction can draw the structure that has just been defined. The
 # renderer engine is selected through `project.rendering_structure`. The default `auto`
@@ -216,7 +216,7 @@ project.display.structure(struct_name='lbco')
 project.rendering_structure.type = 'auto'
 
 # %% [markdown]
-# #### Save Project State
+# ### Save Project State
 #
 # Save the project state after adding the structure. This ensures
 # that all changes are stored and can be accessed later. The project
@@ -226,13 +226,13 @@ project.rendering_structure.type = 'auto'
 project.save()
 
 # %% [markdown]
-# ## Step 3: Define Experiment
+# ## 🔬 Define Experiment
 #
 # This section shows how to add experiments, configure their parameters,
 # and link the structures defined in the previous step.
 
 # %% [markdown]
-# #### Download Measured Data
+# ### Download Data
 #
 # Download the data file from the EasyDiffraction repository on GitHub.
 
@@ -240,7 +240,7 @@ project.save()
 data_path = ed.download_data(id=3, destination='data')
 
 # %% [markdown]
-# #### Add Diffraction Experiment
+# ### Create Experiment
 
 # %%
 project.experiments.add_from_data_path(
@@ -252,19 +252,19 @@ project.experiments.add_from_data_path(
 )
 
 # %% [markdown]
-# #### Show Defined Experiments
+# ### Show Defined Experiments
 
 # %%
 project.experiments.show_names()
 
 # %% [markdown]
-# #### Show Measured Data
+# ### Show Measured Data
 
 # %%
 project.display.pattern(expt_name='hrpt', include='measured')
 
 # %% [markdown]
-# #### Set Instrument
+# ### Set Instrument
 #
 # Modify the default instrument parameters.
 
@@ -273,7 +273,7 @@ project.experiments['hrpt'].instrument.setup_wavelength = 1.494
 project.experiments['hrpt'].instrument.calib_twotheta_offset = 0.6
 
 # %% [markdown]
-# #### Set Peak Profile
+# ### Set Peak Profile
 #
 # Show supported peak profile types.
 
@@ -297,7 +297,7 @@ project.experiments['hrpt'].peak.broad_lorentz_x = 0
 project.experiments['hrpt'].peak.broad_lorentz_y = 0.1
 
 # %% [markdown]
-# #### Set Background
+# ### Set Background
 
 # %% [markdown]
 # Show supported background types.
@@ -328,7 +328,7 @@ project.experiments['hrpt'].background.create(id='165', x=165, y=170)
 project.experiments['hrpt'].background.show()
 
 # %% [markdown]
-# #### Set Linked Phases
+# ### Set Linked Phases
 #
 # Link the structure defined in the previous step to the experiment.
 
@@ -336,24 +336,24 @@ project.experiments['hrpt'].background.show()
 project.experiments['hrpt'].linked_phases.create(id='lbco', scale=10.0)
 
 # %% [markdown]
-# #### Show Experiment as CIF
+# ### Show Experiment as CIF
 
 # %%
 project.experiments['hrpt'].show_as_cif()
 
 # %% [markdown]
-# #### Save Project State
+# ### Save Project State
 
 # %%
 project.save()
 
 # %% [markdown]
-# ## Step 4: Perform Analysis
+# ## 🚀 Perform Analysis
 #
 # This section explains the analysis process, including how to set up
 # calculation and fitting engines.
 #
-# #### Set Calculator
+# ### Set Calculator
 #
 # Show supported calculation engines for this experiment.
 
@@ -367,7 +367,7 @@ project.experiments['hrpt'].calculator.show_supported()
 project.experiments['hrpt'].calculator.type = 'cryspy'
 
 # %% [markdown]
-# #### Set Up Data Rendering Engine
+# ### Set Plotting Engine
 #
 # EasyDiffraction can plot the measured and calculated patterns using different rendering engines.
 # The default `auto` engine resolves to an interactive `plotly` view inside Jupyter and a
@@ -385,13 +385,13 @@ project.rendering_plot.show_supported()
 project.rendering_plot.help()
 
 # %% [markdown]
-# #### Show Calculated Data
+# ### Show Calculated Data
 
 # %%
 project.display.pattern(expt_name='hrpt', include='calculated')
 
 # %% [markdown]
-# #### Plot Measured vs Calculated
+# ### Display Pattern
 
 # %%
 project.display.pattern(expt_name='hrpt')
@@ -400,7 +400,7 @@ project.display.pattern(expt_name='hrpt')
 project.display.pattern(expt_name='hrpt', x_min=38, x_max=41)
 
 # %% [markdown]
-# #### Show Parameters
+# ### Display Parameters
 #
 # Show all parameters of the project.
 
@@ -426,7 +426,7 @@ project.display.parameters.free()
 project.display.parameters.access()
 
 # %% [markdown]
-# #### Set Fit Mode
+# ### Set Fit Mode
 #
 # Show supported fit modes.
 
@@ -440,7 +440,7 @@ project.analysis.fitting_mode.show_supported()
 project.analysis.fitting_mode.type = 'single'
 
 # %% [markdown]
-# #### Set Minimizer
+# ### Set Minimizer
 #
 # Show supported fitting engines.
 
@@ -487,7 +487,7 @@ project.analysis.fit()
 project.display.fit.results()
 
 # %% [markdown]
-# #### Plot Measured vs Calculated
+# #### Display Pattern
 
 # %%
 project.display.pattern(expt_name='hrpt')
@@ -520,7 +520,7 @@ project.analysis.fit()
 project.display.fit.results()
 
 # %% [markdown]
-# #### Plot Measured vs Calculated
+# #### Display Pattern
 
 # %%
 project.display.pattern(expt_name='hrpt')
@@ -559,7 +559,7 @@ project.analysis.fit()
 project.display.fit.results()
 
 # %% [markdown]
-# #### Plot Measured vs Calculated
+# #### Display Pattern
 
 # %%
 project.display.pattern(expt_name='hrpt')
@@ -610,7 +610,7 @@ project.analysis.fit()
 project.display.fit.results()
 
 # %% [markdown]
-# #### Plot Measured vs Calculated
+# #### Display Pattern
 
 # %%
 project.display.pattern(expt_name='hrpt')
@@ -671,7 +671,7 @@ project.display.fit.results()
 project.display.fit.correlations()
 
 # %% [markdown]
-# #### Plot Measured vs Calculated
+# #### Display Pattern
 
 # %%
 project.display.pattern(expt_name='hrpt')
@@ -683,13 +683,13 @@ project.display.pattern(expt_name='hrpt', x_min=38, x_max=41)
 project.display.structure(struct_name='lbco')
 
 # %% [markdown]
-# #### Plot Structure
+# #### Display Structure
 
 # %%
 project.display.structure(struct_name='lbco')
 
 # %% [markdown]
-# ## Step 5: Generate Report
+# ## 📊 Report
 #
 # This final section shows how to review the results of the analysis.
 #

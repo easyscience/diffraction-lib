@@ -6,7 +6,7 @@
 # from HRPT at PSI.
 
 # %% [markdown]
-# ## Import Library
+# ## 🛠️ Import Library
 
 # %%
 from easydiffraction import ExperimentFactory
@@ -15,25 +15,25 @@ from easydiffraction import StructureFactory
 from easydiffraction import download_data
 
 # %% [markdown]
-# ## Define Structure
+# ## 🧩 Define Structure
 #
 # This section shows how to add structures and modify their
 # parameters.
 #
-# #### Create Structure
+# ### Create Structure
 
 # %%
 structure = StructureFactory.from_scratch(name='hs')
 
 # %% [markdown]
-# #### Set Space Group
+# ### Set Space Group
 
 # %%
 structure.space_group.name_h_m = 'R -3 m'
 structure.space_group.it_coordinate_system_code = 'h'
 
 # %% [markdown]
-# #### Set Unit Cell
+# ### Set Unit Cell
 
 
 # %%
@@ -41,7 +41,7 @@ structure.cell.length_a = 6.9
 structure.cell.length_c = 14.1
 
 # %% [markdown]
-# #### Set Atom Sites
+# ### Set Atom Sites
 
 # %%
 structure.atom_sites.create(
@@ -91,31 +91,31 @@ structure.atom_sites.create(
 )
 
 # %% [markdown]
-# ## Define Experiment
+# ## 🔬 Define Experiment
 #
 # This section shows how to add experiments, configure their parameters,
 # and link the structures defined in the previous step.
 #
-# #### Download Measured Data
+# ### Download Data
 
 # %%
 data_path = download_data(id=11, destination='data')
 
 # %% [markdown]
-# #### Create Experiment
+# ### Create Experiment
 
 # %%
 expt = ExperimentFactory.from_data_path(name='hrpt', data_path=data_path)
 
 # %% [markdown]
-# #### Set Instrument
+# ### Set Instrument
 
 # %%
 expt.instrument.setup_wavelength = 1.89
 expt.instrument.calib_twotheta_offset = 0.0
 
 # %% [markdown]
-# #### Set Peak Profile
+# ### Set Peak Profile
 
 # %%
 expt.peak.show_supported()
@@ -127,7 +127,7 @@ expt.peak.broad_lorentz_x = 0.0
 expt.peak.broad_lorentz_y = 0
 
 # %% [markdown]
-# #### Set Background
+# ### Set Background
 
 # %%
 expt.background.create(id='1', x=4.4196, y=500)
@@ -141,48 +141,48 @@ expt.background.create(id='8', x=121.6311, y=500)
 expt.background.create(id='9', x=159.4116, y=500)
 
 # %% [markdown]
-# #### Set Linked Phases
+# ### Set Linked Phases
 
 # %%
 expt.linked_phases.create(id='hs', scale=0.5)
 
 # %% [markdown]
-# ## Define Project
+# ## 📦 Define Project
 #
 # The project object is used to manage the structure, experiment, and
 # analysis.
 #
-# #### Create Project
+# ### Create Project
 
 # %%
 project = Project()
 
 # %% [markdown]
-# #### Add Structure
+# ### Add Structure
 
 # %%
 project.structures.add(structure)
 
 # %% [markdown]
-# #### Add Experiment
+# ### Add Experiment
 
 # %%
 project.experiments.add(expt)
 
 # %% [markdown]
-# ## Perform Analysis
+# ## 🚀 Perform Analysis
 #
 # This section shows the analysis process, including how to set up
 # calculation and fitting engines.
 #
 #
-# #### Plot Structure
+# ### Display Structure
 
 # %%
 project.display.structure(struct_name='hs')
 
 # %% [markdown]
-# #### Plot Measured vs Calculated
+# ### Display Pattern
 
 # %%
 project.display.pattern(expt_name='hrpt')
@@ -218,7 +218,7 @@ project.analysis.fit()
 project.display.fit.results()
 
 # %% [markdown]
-# #### Plot Measured vs Calculated
+# #### Display Pattern
 
 # %%
 project.display.pattern(expt_name='hrpt')
@@ -256,7 +256,7 @@ project.analysis.fit()
 project.display.fit.results()
 
 # %% [markdown]
-# #### Plot Measured vs Calculated
+# #### Display Pattern
 
 # %%
 project.display.pattern(expt_name='hrpt')
@@ -292,7 +292,7 @@ project.analysis.fit()
 project.display.fit.results()
 
 # %% [markdown]
-# #### Plot Measured vs Calculated
+# #### Display Pattern
 
 # %%
 project.display.pattern(expt_name='hrpt')
@@ -336,7 +336,7 @@ project.display.fit.results()
 project.display.fit.correlations()
 
 # %% [markdown]
-# #### Plot Measured vs Calculated
+# #### Display Pattern
 
 # %%
 project.display.pattern(expt_name='hrpt')
@@ -345,7 +345,7 @@ project.display.pattern(expt_name='hrpt')
 project.display.pattern(expt_name='hrpt', x_min=48, x_max=51)
 
 # %% [markdown]
-# ## Report
+# ## 📊 Report
 #
 # The HTML report is written automatically when the project is saved;
 # enable `project.report.pdf` as well for a PDF version.
