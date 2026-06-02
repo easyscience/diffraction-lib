@@ -767,6 +767,8 @@ class TestRenderUnpatchedIntegration:
         assert '--cv-label-shadow-bg: rgb(255, 255, 255);' in html
         assert 'rgb(34, 34, 34)' in html  # LIGHT_THEME foreground
         assert 'light' in html
+        # Scene background is also painted via the WebGL clear color.
+        assert 'renderer.setClearColor' in html
 
     def test_dark_theme_embeds_scene_background_and_contrast_colours(self):
         # ``theme_colors(dark=True)`` returns DARK_THEME instead.
@@ -780,6 +782,8 @@ class TestRenderUnpatchedIntegration:
         assert '--cv-label-shadow-bg: rgb(33, 33, 33);' in html
         assert 'rgb(230, 232, 238)' in html  # DARK_THEME foreground
         assert 'dark' in html
+        # Scene background is also painted via the WebGL clear color.
+        assert 'renderer.setClearColor' in html
 
 
 class TestSharedEmbedMode:

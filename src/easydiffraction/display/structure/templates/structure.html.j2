@@ -705,6 +705,11 @@ const applyTheme = (name) => {
   root.classList.toggle('cv-theme-dark', themeName === 'dark');
   root.classList.toggle('cv-theme-light', themeName !== 'dark');
   cellMaterial.color.setStyle(cssVar('--cv-scene-fg', '{{ foreground }}'));
+  // Paint the scene background via the renderer clear color so it always
+  // matches the Plotly axes-rectangle background, independent of any
+  // host-page CSS that might otherwise leave the canvas transparent.
+  const sceneBg = themeName === 'dark' ? '{{ dark_background }}' : '{{ light_background }}';
+  renderer.setClearColor(new THREE.Color().setStyle(sceneBg), 1);
 };
 
 root.__crysviewApplyTheme = applyTheme;
