@@ -46,6 +46,7 @@ from easydiffraction.display.theme import LIGHT_FOREGROUND_COLOR
 from easydiffraction.display.theme import LIGHT_HOVER_BACKGROUND_COLOR
 from easydiffraction.display.theme import LIGHT_INNER_TICK_GRID_COLOR
 from easydiffraction.display.theme import LIGHT_LEGEND_BACKGROUND_COLOR
+from easydiffraction.display.theme import PAPER_BACKGROUND_COLOR
 from easydiffraction.display.theme import DisplayThemeColors
 from easydiffraction.display.theme import display_theme_colors
 from easydiffraction.display.theme import display_theme_colors_for_template
@@ -362,6 +363,11 @@ class PlotlyPlotter(PlotterBase):
     def _background_color(cls) -> str:
         """Return the plot background color for the active theme."""
         return cls._theme_colors().background
+
+    @staticmethod
+    def _paper_background_color() -> str:
+        """Return the transparent figure-paper (outer margin) color."""
+        return PAPER_BACKGROUND_COLOR
 
     @classmethod
     def _inner_tick_grid_color(cls) -> str:
@@ -1197,6 +1203,7 @@ const themeColors = function (theme) {
     if (theme === 'dark') {
         return {
             background: '__DARK_BACKGROUND_COLOR__',
+            paperBackground: '__PAPER_BACKGROUND_COLOR__',
             foreground: '__DARK_FOREGROUND_COLOR__',
             axisFrame: '__DARK_AXIS_FRAME_COLOR__',
             innerTickGrid: '__DARK_INNER_TICK_GRID_COLOR__',
@@ -1206,6 +1213,7 @@ const themeColors = function (theme) {
     }
     return {
         background: '__LIGHT_BACKGROUND_COLOR__',
+        paperBackground: '__PAPER_BACKGROUND_COLOR__',
         foreground: '__LIGHT_FOREGROUND_COLOR__',
         axisFrame: '__LIGHT_AXIS_FRAME_COLOR__',
         innerTickGrid: '__LIGHT_INNER_TICK_GRID_COLOR__',
@@ -1349,9 +1357,9 @@ const applyTheme = function () {
     graphDiv.dataset.edPlotlyTheme = theme;
 
     const update = {
-        paper_bgcolor: colors.background,
+        paper_bgcolor: colors.paperBackground,
         plot_bgcolor: colors.background,
-        'modebar.bgcolor': colors.background,
+        'modebar.bgcolor': colors.paperBackground,
         'font.color': colors.foreground,
         'title.font.color': colors.foreground,
         'legend.bgcolor': colors.legend,
@@ -1429,6 +1437,7 @@ applyTheme();
                 '__THEME_SYNC_CORRELATION_HEATMAP_KEY__',
                 THEME_SYNC_CORRELATION_HEATMAP_KEY,
             )
+            .replace('__PAPER_BACKGROUND_COLOR__', PAPER_BACKGROUND_COLOR)
             .replace('__DARK_BACKGROUND_COLOR__', DARK_BACKGROUND_COLOR)
             .replace('__DARK_FOREGROUND_COLOR__', DARK_FOREGROUND_COLOR)
             .replace('__DARK_AXIS_FRAME_COLOR__', DARK_AXIS_FRAME_COLOR)
@@ -1737,6 +1746,7 @@ scheduleResize();
         return {
             'light': {
                 'background': LIGHT_BACKGROUND_COLOR,
+                'paperBackground': PAPER_BACKGROUND_COLOR,
                 'foreground': LIGHT_FOREGROUND_COLOR,
                 'axisFrame': LIGHT_AXIS_FRAME_COLOR,
                 'innerTickGrid': LIGHT_INNER_TICK_GRID_COLOR,
@@ -1745,6 +1755,7 @@ scheduleResize();
             },
             'dark': {
                 'background': DARK_BACKGROUND_COLOR,
+                'paperBackground': PAPER_BACKGROUND_COLOR,
                 'foreground': DARK_FOREGROUND_COLOR,
                 'axisFrame': DARK_AXIS_FRAME_COLOR,
                 'innerTickGrid': DARK_INNER_TICK_GRID_COLOR,
@@ -1921,7 +1932,7 @@ scheduleResize();
             if resolved_background is None:
                 resolved_background = cls._background_color()
             update_layout(
-                paper_bgcolor=resolved_background,
+                paper_bgcolor=cls._paper_background_color(),
                 plot_bgcolor=resolved_background,
             )
 
@@ -2003,7 +2014,7 @@ scheduleResize();
                 'text': title,
                 'font': {'size': TITLE_FONT_SIZE},
             },
-            paper_bgcolor=cls._background_color(),
+            paper_bgcolor=cls._paper_background_color(),
             plot_bgcolor=cls._background_color(),
             legend={
                 'bgcolor': cls._legend_background_color(),

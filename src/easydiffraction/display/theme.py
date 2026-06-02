@@ -6,8 +6,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-LIGHT_BACKGROUND_COLOR = 'rgba(0, 0, 0, 0)'
-DARK_BACKGROUND_COLOR = 'rgba(0, 0, 0, 0)'
+# Background inside the axes rectangle (the plotted area / 3D scene).
+LIGHT_BACKGROUND_COLOR = '#ffffff'
+DARK_BACKGROUND_COLOR = '#111111'
+# Figure paper (margins around the axes) stays transparent so charts
+# blend into the host page; only the plotted area is opaque.
+PAPER_BACKGROUND_COLOR = 'rgba(0, 0, 0, 0)'
 LIGHT_FOREGROUND_COLOR = '#222222'
 DARK_FOREGROUND_COLOR = '#e6e8ee'
 LIGHT_AXIS_FRAME_COLOR = '#e0e0e0'
@@ -20,6 +24,27 @@ DARK_HOVER_BACKGROUND_COLOR = '#212121'
 LIGHT_LEGEND_BACKGROUND_COLOR = 'rgba(255, 255, 255, 0.5)'
 DARK_LEGEND_BACKGROUND_COLOR = 'rgba(33, 33, 33, 0.5)'
 TABLE_AXIS_FRAME_CSS_VAR = '--ed-axis-frame-color'
+
+
+def hex_to_rgb(value: str) -> tuple[int, int, int]:
+    """
+    Return the RGB triple for a hex color string.
+
+    Parameters
+    ----------
+    value : str
+        Hex color in ``#rgb`` or ``#rrggbb`` form.
+
+    Returns
+    -------
+    tuple[int, int, int]
+        Red, green, and blue components in the 0-255 range.
+    """
+    shorthand_length = 3
+    digits = value.lstrip('#')
+    if len(digits) == shorthand_length:
+        digits = ''.join(channel * 2 for channel in digits)
+    return (int(digits[0:2], 16), int(digits[2:4], 16), int(digits[4:6], 16))
 
 
 @dataclass(frozen=True)

@@ -91,10 +91,11 @@
     if (!colors) {
       return;
     }
+    var paperBackground = colors.paperBackground || 'rgba(0, 0, 0, 0)';
     var update = {
-      paper_bgcolor: colors.background,
+      paper_bgcolor: paperBackground,
       plot_bgcolor: colors.background,
-      'modebar.bgcolor': colors.background,
+      'modebar.bgcolor': paperBackground,
       'font.color': colors.foreground,
       'title.font.color': colors.foreground,
       'legend.bgcolor': colors.legend,

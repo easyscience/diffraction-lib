@@ -24,3 +24,23 @@ def test_display_theme_colors_for_template_maps_plotly_templates():
     assert theme.display_theme_colors_for_template('plotly_white') is theme.LIGHT_THEME_COLORS
     assert theme.display_theme_colors_for_template('plotly_dark') is theme.DARK_THEME_COLORS
     assert theme.display_theme_colors_for_template('custom') is None
+
+
+def test_plot_backgrounds_opaque_and_paper_transparent():
+    import easydiffraction.display.theme as theme
+
+    # Inside the axes rectangle is opaque; the figure paper stays
+    # transparent so charts blend into the host page.
+    assert theme.LIGHT_BACKGROUND_COLOR == '#ffffff'
+    assert theme.DARK_BACKGROUND_COLOR == '#111111'
+    assert theme.PAPER_BACKGROUND_COLOR == 'rgba(0, 0, 0, 0)'
+
+
+def test_hex_to_rgb_expands_short_and_full_forms():
+    from easydiffraction.display.theme import hex_to_rgb
+
+    assert hex_to_rgb('#ffffff') == (255, 255, 255)
+    assert hex_to_rgb('#111111') == (17, 17, 17)
+    assert hex_to_rgb('#e6e8ee') == (230, 232, 238)
+    assert hex_to_rgb('#fff') == (255, 255, 255)
+    assert hex_to_rgb('#111') == (17, 17, 17)

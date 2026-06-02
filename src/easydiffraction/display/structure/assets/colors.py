@@ -7,6 +7,11 @@ Per-element colours, axis colours, and theme-dependent contrast colours.
 from __future__ import annotations
 
 from easydiffraction.display.structure.assets.elements import ELEMENT_COLORS
+from easydiffraction.display.theme import DARK_BACKGROUND_COLOR
+from easydiffraction.display.theme import DARK_FOREGROUND_COLOR
+from easydiffraction.display.theme import LIGHT_BACKGROUND_COLOR
+from easydiffraction.display.theme import LIGHT_FOREGROUND_COLOR
+from easydiffraction.display.theme import hex_to_rgb
 
 Rgb = tuple[int, int, int]
 
@@ -19,9 +24,17 @@ AXIS_COLORS: dict[str, Rgb] = {'a': (220, 40, 40), 'b': (40, 180, 40), 'c': (40,
 # Neutral wedge colour for the vacant fraction of a mixed site.
 VACANCY_COLOR: Rgb = (210, 210, 210)
 
-# Parent-independent annotation contrast colours for light/dark themes.
-LIGHT_THEME: dict[str, Rgb] = {'background': (255, 255, 255), 'foreground': (33, 33, 33)}
-DARK_THEME: dict[str, Rgb] = {'background': (33, 33, 33), 'foreground': (235, 235, 235)}
+# Light/dark annotation contrast colours, derived from the shared
+# display theme (``display/theme.py``) so plots and the structure
+# view share one background/foreground source of truth.
+LIGHT_THEME: dict[str, Rgb] = {
+    'background': hex_to_rgb(LIGHT_BACKGROUND_COLOR),
+    'foreground': hex_to_rgb(LIGHT_FOREGROUND_COLOR),
+}
+DARK_THEME: dict[str, Rgb] = {
+    'background': hex_to_rgb(DARK_BACKGROUND_COLOR),
+    'foreground': hex_to_rgb(DARK_FOREGROUND_COLOR),
+}
 
 
 def color_for(element: str, scheme: str) -> Rgb:

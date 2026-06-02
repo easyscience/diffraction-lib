@@ -43,7 +43,7 @@ def test_get_layout_sets_title_axis_and_theme_colors(
     assert layout.title.font.size == pp.TITLE_FONT_SIZE
     assert layout.xaxis.title.font.size == pp.AXIS_TITLE_FONT_SIZE
     assert layout.yaxis.title.font.size == pp.AXIS_TITLE_FONT_SIZE
-    assert layout.paper_bgcolor == background_color
+    assert layout.paper_bgcolor == pp.PAPER_BACKGROUND_COLOR
     assert layout.plot_bgcolor == background_color
     assert layout.xaxis.linecolor == axis_color
     assert layout.yaxis.linecolor == axis_color
