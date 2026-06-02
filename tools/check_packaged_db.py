@@ -24,6 +24,8 @@ from pathlib import Path
 _DATA_MEMBER = 'easydiffraction/crystallography/space_groups.json.gz'
 _OBSOLETE_MEMBER = 'easydiffraction/crystallography/space_groups.pkl.gz'
 _REQUIRED_KEYS = [(14, '-b1'), (3, '-a1'), (1, None)]
+# Accepted seed record count (see the space-group-database ADR provenance).
+_EXPECTED_RECORD_COUNT = 816
 
 
 def _wheel_path(argv: list[str]) -> Path:
@@ -52,6 +54,10 @@ def main(argv: list[str]) -> None:
     missing_keys = [key for key in _REQUIRED_KEYS if key not in keys]
     if missing_keys:
         sys.exit(f'packaged database missing expected keys: {missing_keys}')
+    if len(records) != _EXPECTED_RECORD_COUNT:
+        sys.exit(f'packaged database has {len(records)} records, expected {_EXPECTED_RECORD_COUNT}')
+    if len(keys) != _EXPECTED_RECORD_COUNT:
+        sys.exit(f'packaged database has {len(keys)} unique keys, expected {_EXPECTED_RECORD_COUNT}')
 
     print(
         f'packaged DB OK in {wheel.name}: '

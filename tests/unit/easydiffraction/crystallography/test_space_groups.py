@@ -20,6 +20,10 @@ _EXPECTED_RECORD_KEYS = {
 }
 _EXPECTED_WYCKOFF_KEYS = {'multiplicity', 'site_symmetry', 'coords_xyz'}
 
+# Accepted seed: 530 cctbx settings + 226 reference-settings aliases + 60
+# runtime coordinate-code aliases. A deliberate regeneration updates this.
+_EXPECTED_RECORD_COUNT = 816
+
 
 def test_module_import():
     import easydiffraction.crystallography.space_groups as MUT
@@ -40,6 +44,15 @@ def test_all_230_groups_present():
     """Every International Tables group 1-230 is present (no coverage gap)."""
     it_numbers = {key[0] for key in SPACE_GROUPS}
     assert it_numbers == set(range(1, 231))
+
+
+def test_record_count_matches_accepted_seed():
+    """The loaded table keeps its full setting/alias surface (no silent loss).
+
+    SPACE_GROUPS is keyed by ``(IT_number, IT_coordinate_system_code)``, so this
+    also pins the number of unique setting keys.
+    """
+    assert len(SPACE_GROUPS) == _EXPECTED_RECORD_COUNT
 
 
 def test_triclinic_groups_keep_none_coordinate_code():
