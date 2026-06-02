@@ -174,6 +174,7 @@ watch:
 not_in_nav: |
   index.md
   user-guide/parameters
+  assets/javascripts/vendor/**/*.md
 
 # Format and layout of the global navigation for the site
 nav:
