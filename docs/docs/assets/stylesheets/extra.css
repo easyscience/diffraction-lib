@@ -468,7 +468,12 @@ h1 .label-experiment {
   width: 100%;
   min-height: 120px;
   color: var(--md-default-fg-color--light);
-  background: var(--md-default-fg-color--lightest);
+  /* Blend with the page background (the figure paper is transparent),
+     so the loading box tracks light/dark. Do not use
+     --md-default-fg-color--lightest here: this site repurposes that
+     variable as a text color, which painted a solid grey block that
+     ignored the theme. */
+  background: var(--md-default-bg-color);
   border-radius: 2px;
   font-size: 0.75rem;
   letter-spacing: 0.04em;
