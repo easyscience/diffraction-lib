@@ -10,6 +10,8 @@ renderer may be used depending on configuration.
 
 from __future__ import annotations
 
+import json
+import uuid
 from dataclasses import dataclass
 
 import darkdetect
@@ -17,6 +19,7 @@ import numpy as np
 import plotly.graph_objects as go
 import plotly.io as pio
 from plotly.subplots import make_subplots
+from plotly.utils import PlotlyJSONEncoder
 
 try:
     from IPython.display import HTML
@@ -46,8 +49,10 @@ from easydiffraction.display.theme import DisplayThemeColors
 from easydiffraction.display.theme import display_theme_colors
 from easydiffraction.display.theme import display_theme_colors_for_template
 from easydiffraction.utils._vendored.theme_detect import is_dark
+from easydiffraction.utils.environment import FigureEmbedMode
 from easydiffraction.utils.environment import in_jupyter
 from easydiffraction.utils.environment import in_pycharm
+from easydiffraction.utils.environment import resolve_figure_embed_mode
 
 DEFAULT_COLORS = {
     'meas': 'rgb(31, 119, 180)',
@@ -1670,12 +1675,115 @@ scheduleResize();
 
         if in_pycharm() or display is None or HTML is None:
             fig.show(config=config)
+            return
+
+        # Docs notebook execution sets SHARED so the baked cell HTML is a
+        # lazy placeholder; live Jupyter stays INLINE (eager, runtime via
+        # the CDN as before).
+        if resolve_figure_embed_mode() is FigureEmbedMode.SHARED:
+            html_fig = self.serialize_html(
+                fig,
+                include_plotlyjs=False,
+                mode=FigureEmbedMode.SHARED,
+            )
         else:
             html_fig = self.serialize_html(
                 fig,
                 include_plotlyjs='cdn',
+                mode=FigureEmbedMode.INLINE,
             )
-            display(HTML(html_fig))
+        display(HTML(html_fig))
+
+    @staticmethod
+    def _ed_theme_payload() -> dict:
+        """Return light and dark theme colors for the shared loader."""
+        return {
+            'light': {
+                'background': LIGHT_BACKGROUND_COLOR,
+                'foreground': LIGHT_FOREGROUND_COLOR,
+                'axisFrame': LIGHT_AXIS_FRAME_COLOR,
+                'innerTickGrid': LIGHT_INNER_TICK_GRID_COLOR,
+                'hoverBackground': LIGHT_HOVER_BACKGROUND_COLOR,
+                'legend': LIGHT_LEGEND_BACKGROUND_COLOR,
+            },
+            'dark': {
+                'background': DARK_BACKGROUND_COLOR,
+                'foreground': DARK_FOREGROUND_COLOR,
+                'axisFrame': DARK_AXIS_FRAME_COLOR,
+                'innerTickGrid': DARK_INNER_TICK_GRID_COLOR,
+                'hoverBackground': DARK_HOVER_BACKGROUND_COLOR,
+                'legend': DARK_LEGEND_BACKGROUND_COLOR,
+            },
+        }
+
+    @classmethod
+    def _ed_theme_sync_payload(cls, fig: object) -> dict:
+        """Return live theme-sync metadata for the shared loader."""
+        meta = cls._figure_meta(fig)
+        theme_sync = meta.get(THEME_SYNC_META_KEY) if isinstance(meta, dict) else None
+        if not isinstance(theme_sync, dict):
+            return {}
+        payload: dict = {}
+        indexes = theme_sync.get(THEME_SYNC_AXIS_FRAME_SHAPE_INDEXES_KEY)
+        if isinstance(indexes, list):
+            payload['axisFrameShapeIndexes'] = indexes
+        if theme_sync.get(THEME_SYNC_CORRELATION_HEATMAP_KEY):
+            payload['correlationHeatmap'] = True
+        return payload
+
+    @staticmethod
+    def _figure_height(fig: object) -> int:
+        """Return the figure height in pixels for the loading skeleton."""
+        layout = getattr(fig, 'layout', None)
+        height = getattr(layout, 'height', None) if layout is not None else None
+        if isinstance(height, (int, float)) and not isinstance(height, bool) and height > 0:
+            return int(height)
+        return DEFAULT_HEIGHT
+
+    @classmethod
+    def _serialize_html_shared(cls, fig: object) -> str:
+        """
+        Serialize a figure as a lazy SHARED-mode placeholder.
+
+        Emits a skeleton plus the figure spec as ``application/json`` for
+        the shared ``ed-figures.js`` loader to render on demand. No Plotly
+        bundle or per-figure post-script is embedded; the runtime loads
+        once per page and the loader owns theme-sync, resize, and legend.
+
+        Parameters
+        ----------
+        fig : object
+            Plotly figure to serialize.
+
+        Returns
+        -------
+        str
+            Placeholder HTML carrying the figure spec.
+        """
+        figure_dict = fig.to_plotly_json()
+        spec = {
+            'data': figure_dict.get('data', []),
+            'layout': figure_dict.get('layout', {}),
+            'config': cls._get_config(),
+            'edTheme': cls._ed_theme_payload(),
+            'edThemeSync': cls._ed_theme_sync_payload(fig),
+            'edHasLegend': cls._has_visible_legend(fig),
+        }
+        # Escape '<' so the JSON cannot terminate the <script> element.
+        spec_json = json.dumps(spec, cls=PlotlyJSONEncoder).replace('<', '\\u003c')
+        plot_id = f'ed-fig-{uuid.uuid4().hex}'
+        height = cls._figure_height(fig)
+        html_fig = (
+            '<div class="ed-figure" data-ed-figure="plotly">'
+            f'<div class="ed-figure-skeleton" style="height: {height}px">'
+            'Loading plot…</div>'
+            f'<div class="ed-figure-target" id="{plot_id}" '
+            f'style="min-height: {height}px"></div>'
+            '<script type="application/json" class="ed-figure-spec">'
+            f'{spec_json}</script>'
+            '</div>'
+        )
+        return cls._wrap_html_figure(fig, html_fig)
 
     @classmethod
     def serialize_html(
@@ -1683,6 +1791,7 @@ scheduleResize();
         fig: object,
         *,
         include_plotlyjs: bool | str,
+        mode: FigureEmbedMode = FigureEmbedMode.STANDALONE,
         force_template: str | None = None,
         axis_frame_color: str | None = None,
         grid_color: str | None = None,
@@ -1696,6 +1805,9 @@ scheduleResize();
             Plotly figure to serialize.
         include_plotlyjs : bool | str
             Plotly JavaScript inclusion mode passed to Plotly.
+        mode : FigureEmbedMode, default=STANDALONE
+            Embedding mode. ``SHARED`` emits a lazy placeholder for the
+            docs loader; ``INLINE``/``STANDALONE`` serialize eagerly.
         force_template : str | None, default=None
             Optional template name applied before serialization.
         axis_frame_color : str | None, default=None
@@ -1708,6 +1820,8 @@ scheduleResize();
         str
             Inline HTML containing the figure and helper scripts.
         """
+        if mode is FigureEmbedMode.SHARED:
+            return cls._serialize_html_shared(fig)
         background_color = None
         if force_template is not None:
             fig.update_layout(template=force_template)

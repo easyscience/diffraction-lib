@@ -194,7 +194,7 @@ dependency the plan does not name, **stop and ask**.
       `include_requirejs` in place for now — Phase 2 removes it.)
       Commit: `Wire docs runtime assets and page importmap`
 
-- [ ] **P1.7 — Add `SHARED` mode to the Plotly serializer.** Thread the
+- [x] **P1.7 — Add `SHARED` mode to the Plotly serializer.** Thread the
       mode through `serialize_html` and `_show_figure`; in `SHARED` emit
       placeholder + `application/json` payload + `data-ed-figure`,
       `include_plotlyjs=False`, no per-figure post-scripts.
