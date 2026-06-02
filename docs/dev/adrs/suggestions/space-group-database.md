@@ -379,11 +379,12 @@ and the documented decisions in sync.
   and an origin-choice group.
 - The disagreement report is itself a verification artifact, reviewed by
   the maintainer before the database is accepted.
-- A packaging regression check builds or installs the wheel and confirms
-  `easydiffraction.crystallography.space_groups` imports and loads the
-  renamed `space_groups.json.gz` — catching missing package-data
-  inclusion for the new file, not just source-tree correctness. (The
-  packaging config must ship `*.json.gz` in place of `*.pkl.gz`.)
+- A packaging regression check builds the wheel and inspects it directly
+  (`tools/check_packaged_db.py`), confirming the renamed
+  `space_groups.json.gz` is shipped as package data, the obsolete
+  `.pkl.gz` is gone, and the archive covers all 230 groups — catching
+  missing package-data inclusion without coupling to the package's full
+  runtime dependency tree.
 - Per the document-review rule, this ADR was written without running
   tests, linters, or build commands.
 

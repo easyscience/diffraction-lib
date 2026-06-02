@@ -100,10 +100,12 @@ this plan delivers the complete data; that feature delivers the
   (read JSON, reconstruct dict, drop `_RestrictedUnpickler` + `pickle`).
 - `docs/dev/adrs/suggestions/space-group-database.md` — fill in _Build
   Provenance_ with recorded versions.
-- `tools/check_packaged_db.py` — **new** tiny helper that imports the
-  installed package and asserts the loaded `SPACE_GROUPS` covers 230
-  groups plus the public cryspy coordinate-code alias surface (used by
-  the Phase 2 packaging regression).
+- `tools/check_packaged_db.py` — **new** helper that inspects a built
+  wheel (independent of the package's dependency tree): it reads
+  `space_groups.json.gz` straight from the wheel and asserts the data
+  ships, the obsolete `.pkl.gz` is gone, and all 230 groups plus the
+  cryspy coordinate-code alias surface are present (used by the Phase 2
+  packaging regression).
 - `pyproject.toml` — **only if** the Phase 2 packaging test shows the
   `.json.gz` is not shipped (add a hatch `artifacts`/`force-include`
   entry).
@@ -224,12 +226,13 @@ mirroring source):
   Work in the ADR);
 - **spot-checks vs International Tables** for P4, P3, P6, Pm-3, a
   monoclinic with cell choices, and an origin-choice group;
-- **packaging**: a small helper `tools/check_packaged_db.py` imports
-  `easydiffraction.crystallography.space_groups` and asserts the loaded
-  `SPACE_GROUPS` covers 230 groups plus the public cryspy
-  coordinate-code alias surface; it is run against an **installed
-  wheel** (not the source tree) by the packaging command below, catching
-  package-data omission for the renamed `.json.gz`.
+- **packaging**: `tools/check_packaged_db.py` opens the built **wheel**
+  and reads `space_groups.json.gz` directly from it (no install, so the
+  check is independent of the package's dependency tree), asserting the
+  data ships, the obsolete `.pkl.gz` is absent, and all 230 groups plus
+  the cryspy coordinate-code alias surface are present. This catches
+  package-data omission for the renamed `.json.gz` regardless of
+  unrelated runtime-import issues.
 
 Verification commands (zsh-safe log capture where output is needed):
 
@@ -241,15 +244,14 @@ pixi run integration-tests > /tmp/easydiffraction-integration.log 2>&1; integrat
 pixi run script-tests > /tmp/easydiffraction-script.log 2>&1; script_tests_exit_code=$?; tail -n 200 /tmp/easydiffraction-script.log; exit $script_tests_exit_code
 ```
 
-Packaging regression — build a wheel, install it into a throwaway env,
-and import from outside the source tree so the _installed_ package is
-exercised:
+Packaging regression — build the wheel and inspect it directly (no
+install, so the check does not depend on the package's full runtime
+dependency tree):
 
 ```bash
-pixi run dist-build > /tmp/easydiffraction-build.log 2>&1; build_exit_code=$?; tail -n 50 /tmp/easydiffraction-build.log; [ "$build_exit_code" -eq 0 ] || exit "$build_exit_code"
-python -m venv /tmp/ed-pkg-check
-/tmp/ed-pkg-check/bin/pip install dist/*.whl > /tmp/easydiffraction-pkg.log 2>&1; pkg_install_exit_code=$?; tail -n 50 /tmp/easydiffraction-pkg.log; [ "$pkg_install_exit_code" -eq 0 ] || exit "$pkg_install_exit_code"
-( cd /tmp && /tmp/ed-pkg-check/bin/python "$OLDPWD/tools/check_packaged_db.py" ); pkg_check_exit_code=$?; [ "$pkg_check_exit_code" -eq 0 ] || exit "$pkg_check_exit_code"; echo "packaging check OK"
+rm -rf dist
+pixi run dist-build > /tmp/easydiffraction-build.log 2>&1; build_exit_code=$?; tail -n 8 /tmp/easydiffraction-build.log; [ "$build_exit_code" -eq 0 ] || exit "$build_exit_code"
+python tools/check_packaged_db.py dist/*.whl; pkg_check_exit_code=$?; [ "$pkg_check_exit_code" -eq 0 ] || exit "$pkg_check_exit_code"
 ```
 
 If this shows `.json.gz` is not shipped, add a hatch
