@@ -10,6 +10,7 @@ renderer may be used depending on configuration.
 
 from __future__ import annotations
 
+import base64
 import json
 import uuid
 from dataclasses import dataclass
@@ -124,6 +125,42 @@ FIXED_ASPECT_WRAPPER_CLASS_NAME = 'ed-fixed-aspect-plotly-wrapper'
 THEME_SYNC_META_KEY = 'ed_plotly_theme_sync'
 THEME_SYNC_AXIS_FRAME_SHAPE_INDEXES_KEY = 'axis_frame_shape_indexes'
 THEME_SYNC_CORRELATION_HEATMAP_KEY = 'correlation_heatmap'
+
+
+def _typed_arrays_to_float32(value: object) -> object:
+    """
+    Recursively transcode float64 Plotly typed-array specs to float32.
+
+    Plotly serializes numpy arrays as base64 typed-array specs
+    (``{'dtype': 'f8', 'bdata': ...}``). For the docs display, float32
+    (~7 significant figures) is visually lossless and halves the bulk
+    data size. Scalars and small inline lists are left untouched.
+
+    Parameters
+    ----------
+    value : object
+        A figure dict, list, or leaf from ``fig.to_plotly_json()``.
+
+    Returns
+    -------
+    object
+        The same structure with float64 typed arrays downcast to float32.
+    """
+    if isinstance(value, dict):
+        if value.get('dtype') == 'f8' and 'bdata' in value:
+            downcast = np.frombuffer(
+                base64.b64decode(value['bdata']),
+                dtype='<f8',
+            ).astype('<f4')
+            return {
+                **value,
+                'dtype': 'f4',
+                'bdata': base64.b64encode(downcast.tobytes()).decode('ascii'),
+            }
+        return {key: _typed_arrays_to_float32(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_typed_arrays_to_float32(item) for item in value]
+    return value
 
 
 def single_crystal_axis_range(
@@ -1749,6 +1786,8 @@ scheduleResize();
         the shared ``ed-figures.js`` loader to render on demand. No Plotly
         bundle or per-figure post-script is embedded; the runtime loads
         once per page and the loader owns theme-sync, resize, and legend.
+        Bulk float64 arrays are downcast to float32 (visually lossless,
+        ~7 significant figures) to roughly halve the embedded data.
 
         Parameters
         ----------
@@ -1760,7 +1799,7 @@ scheduleResize();
         str
             Placeholder HTML carrying the figure spec.
         """
-        figure_dict = fig.to_plotly_json()
+        figure_dict = _typed_arrays_to_float32(fig.to_plotly_json())
         spec = {
             'data': figure_dict.get('data', []),
             'layout': figure_dict.get('layout', {}),
