@@ -100,6 +100,14 @@ TITLE_FONT_SIZE = 14
 AXIS_TITLE_FONT_SIZE = 12
 X_AXIS_TICK_LABEL_STANDOFF = 5
 Y_AXIS_TICK_LABEL_STANDOFF = 6
+HOVER_LABEL_FONT_SIZE = 12
+# Plotly exposes no hover-label padding, so a non-breaking space is baked
+# into each template line to hold the text off the left and right frame.
+# Vertical spacing is left to Plotly's own ~3px line box: a blank spacer
+# line reserves a full content-line height, which inflates the bottom
+# margin and cannot be tuned, so a single space keeps all four margins
+# small and even.
+HOVER_HORIZONTAL_PAD = '\u00a0'
 PREDICTIVE_BAND_COLOR = 'rgba(214, 39, 40, 0.14)'
 PREDICTIVE_BAND_EDGE_COLOR = 'rgba(214, 39, 40, 0.45)'
 PREDICTIVE_DRAW_COLOR = 'rgba(140, 140, 140, 0.18)'
@@ -321,6 +329,50 @@ class PlotlyPlotter(PlotterBase):
     def _legend_background_color(cls) -> str:
         """Return a half-transparent legend background color."""
         return cls._theme_colors().legend_background
+
+    @classmethod
+    def _hover_label_style(
+        cls,
+        theme_colors: DisplayThemeColors | None = None,
+    ) -> dict:
+        """
+        Return the shared hover-label style for every Plotly figure.
+
+        This is the single source of truth for tooltip framing. The
+        border matches the Axes-rectangle (axis-frame) color and the
+        background follows the active theme. Per-line text colors live
+        in each trace's hover template, not here.
+
+        Parameters
+        ----------
+        theme_colors : DisplayThemeColors | None, default=None
+            Explicit theme colors; the active theme is used when
+            omitted.
+
+        Returns
+        -------
+        dict
+            A Plotly ``hoverlabel`` style dictionary.
+        """
+        colors = theme_colors if theme_colors is not None else cls._theme_colors()
+        return {
+            'bgcolor': colors.hover_background,
+            'bordercolor': colors.axis_frame,
+            'font': {'color': colors.foreground, 'size': HOVER_LABEL_FONT_SIZE},
+            'align': 'left',
+        }
+
+    @classmethod
+    def _apply_hover_label_style(
+        cls,
+        fig: object,
+        *,
+        theme_colors: DisplayThemeColors | None = None,
+    ) -> None:
+        """Apply the shared hover-label style to a Plotly figure."""
+        update_layout = getattr(fig, 'update_layout', None)
+        if callable(update_layout):
+            update_layout(hoverlabel=cls._hover_label_style(theme_colors))
 
     @staticmethod
     def _background_color_for_template(template: str) -> str | None:
@@ -554,8 +606,9 @@ class PlotlyPlotter(PlotterBase):
             showlegend=False,
         )
 
-    @staticmethod
+    @classmethod
     def _get_powder_trace(
+        cls,
         x: object,
         y: object,
         label: str,
@@ -623,9 +676,49 @@ class PlotlyPlotter(PlotterBase):
             hovertemplate=(
                 hovertemplate
                 if hovertemplate is not None
-                else f'{name}<br>x: %{{x}}<br>y: %{{y}}<extra></extra>'
+                else cls._format_hover_lines([
+                    cls._hover_color_span(name, color),
+                    cls._hover_color_span('x: %{x}', color),
+                    cls._hover_color_span('y: %{y}', color),
+                ])
             ),
         )
+
+    @staticmethod
+    def _hover_text_color(color: str) -> str:
+        """Return a span-safe CSS color (no internal whitespace)."""
+        return color.replace(' ', '')
+
+    @classmethod
+    def _hover_color_span(cls, text: str, color: str) -> str:
+        """Wrap hover text in a span colored to match a trace."""
+        return f'<span style="color:{cls._hover_text_color(color)}">{text}</span>'
+
+    @classmethod
+    def _format_hover_lines(
+        cls,
+        lines: list[str],
+        *,
+        extra: str = '<extra></extra>',
+    ) -> str:
+        """
+        Join hover lines with the padding shared by every tooltip.
+
+        Parameters
+        ----------
+        lines : list[str]
+            Per-line hover content, already colored where needed.
+        extra : str, default='<extra></extra>'
+            Trailing Plotly hover directive (the secondary box).
+
+        Returns
+        -------
+        str
+            A hover-template body padded left and right; top and bottom
+            spacing is supplied by Plotly's own line box.
+        """
+        padded = [f'{HOVER_HORIZONTAL_PAD}{line}{HOVER_HORIZONTAL_PAD}' for line in lines]
+        return '<br>'.join(padded) + extra
 
     @staticmethod
     def _powder_meas_vs_calc_hover_data(plot_spec: PowderMeasVsCalcSpec) -> np.ndarray:
@@ -649,29 +742,54 @@ class PlotlyPlotter(PlotterBase):
             residual_values,
         ))
 
-    @staticmethod
-    def _powder_meas_vs_calc_hover_template(plot_spec: PowderMeasVsCalcSpec) -> str:
+    @classmethod
+    def _powder_meas_vs_calc_hover_template(
+        cls,
+        plot_spec: PowderMeasVsCalcSpec,
+    ) -> str:
         """
         Return a shared hover template for composite powder traces.
+
+        Each line is colored to match its curve and padded away from the
+        tooltip frame through the shared hover formatter.
         """
         calc_label = plot_spec.y_calc_name or 'Icalc'
         if plot_spec.y_bkg is None:
-            return (
-                'x: %{x:,.2f}<br>'
-                'Imeas: %{customdata[0]:,.2f}<br>'
-                f'{calc_label}: %{{customdata[1]:,.2f}}<br>'
-                f'Imeas - {calc_label}: %{{customdata[2]:,.2f}}'
-                '<extra></extra>'
-            )
+            return cls._format_hover_lines([
+                'x: %{x:,.2f}',
+                cls._hover_color_span(
+                    'Imeas: %{customdata[0]:,.2f}',
+                    DEFAULT_COLORS['meas'],
+                ),
+                cls._hover_color_span(
+                    f'{calc_label}: %{{customdata[1]:,.2f}}',
+                    DEFAULT_COLORS['calc'],
+                ),
+                cls._hover_color_span(
+                    f'Imeas - {calc_label}: %{{customdata[2]:,.2f}}',
+                    DEFAULT_COLORS['resid'],
+                ),
+            ])
 
-        return (
-            'x: %{x:,.2f}<br>'
-            'Imeas: %{customdata[0]:,.2f}<br>'
-            'Ibkg: %{customdata[1]:,.2f}<br>'
-            f'{calc_label}: %{{customdata[2]:,.2f}}<br>'
-            f'Imeas - {calc_label}: %{{customdata[3]:,.2f}}'
-            '<extra></extra>'
-        )
+        return cls._format_hover_lines([
+            'x: %{x:,.2f}',
+            cls._hover_color_span(
+                'Imeas: %{customdata[0]:,.2f}',
+                DEFAULT_COLORS['meas'],
+            ),
+            cls._hover_color_span(
+                'Ibkg: %{customdata[1]:,.2f}',
+                DEFAULT_COLORS['bkg'],
+            ),
+            cls._hover_color_span(
+                f'{calc_label}: %{{customdata[2]:,.2f}}',
+                DEFAULT_COLORS['calc'],
+            ),
+            cls._hover_color_span(
+                f'Imeas - {calc_label}: %{{customdata[3]:,.2f}}',
+                DEFAULT_COLORS['resid'],
+            ),
+        ])
 
     @staticmethod
     def _get_single_crystal_trace(
@@ -1196,6 +1314,7 @@ const applyTheme = function () {
         'legend.bgcolor': colors.legend,
         'legend.font.color': colors.foreground,
         'hoverlabel.bgcolor': colors.hoverBackground,
+        'hoverlabel.bordercolor': colors.axisFrame,
         'hoverlabel.font.color': colors.foreground,
     };
 
@@ -1547,6 +1666,7 @@ scheduleResize();
         """
         config = self._get_config()
         self._apply_background_color(fig)
+        self._apply_hover_label_style(fig)
 
         if in_pycharm() or display is None or HTML is None:
             fig.show(config=config)
@@ -1616,6 +1736,12 @@ scheduleResize();
             if legend_bgcolor is not None:
                 fig.update_layout(legend={'bgcolor': legend_bgcolor})
         cls._apply_background_color(fig, background_color=background_color)
+        hover_theme_colors = (
+            display_theme_colors_for_template(force_template)
+            if force_template is not None
+            else None
+        )
+        cls._apply_hover_label_style(fig, theme_colors=hover_theme_colors)
         html_fig = pio.to_html(
             fig,
             include_plotlyjs=include_plotlyjs,
@@ -1810,14 +1936,20 @@ scheduleResize();
                 add_kwargs['col'] = col
             fig.add_vrect(**add_kwargs)
 
-    @staticmethod
+    @classmethod
     def _get_bragg_tick_trace(
+        cls,
         tick_set: BraggTickSet,
         row_y: float,
         color: str,
     ) -> object:
         """
         Create a hover-capable Bragg tick trace for one linked phase.
+
+        Only the Miller-index line is colored to match the phase tick
+        marker; the phase name and x line use the default tooltip text
+        color, and all lines share the padding and themed frame used by
+        every other tooltip.
         """
         y = np.full(tick_set.x.shape, row_y, dtype=float)
         hover_text = []
@@ -1825,14 +1957,17 @@ scheduleResize();
             index_h = int(tick_set.h[idx])
             index_k = int(tick_set.k[idx])
             index_l = int(tick_set.ell[idx])
-            hover_text.append(
-                f'{tick_set.phase_id}<br>'
-                f'x: {float(x_value):,.2f}<br>'
-                f'Miller indices: ({index_h} {index_k} {index_l})<br>'
-                # f'F²cal:{float(tick_set.f_squared_calc[idx]):.6g}<br>'
-                # f'Fcalc:{float(tick_set.f_calc[idx]):.6g}'
-                '<extra></extra>'
-            )
+            lines = [
+                tick_set.phase_id,
+                f'x: {float(x_value):,.2f}',
+                cls._hover_color_span(
+                    f'Miller indices: ({index_h} {index_k} {index_l})',
+                    color,
+                ),
+                # f'F²cal: {float(tick_set.f_squared_calc[idx]):.6g}',
+                # f'Fcalc: {float(tick_set.f_calc[idx]):.6g}',
+            ]
+            hover_text.append(cls._format_hover_lines(lines))
 
         return go.Scatter(
             x=tick_set.x,
@@ -1846,10 +1981,6 @@ scheduleResize();
             },
             name=f'Bragg peaks: {tick_set.phase_id}',
             text=hover_text,
-            hoverlabel={
-                'font': {'color': 'white'},
-                'bordercolor': 'white',
-            },
             hovertemplate='%{text}',
         )
 
