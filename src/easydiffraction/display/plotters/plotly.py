@@ -2042,9 +2042,9 @@ scheduleResize();
             legend={
                 'bgcolor': cls._legend_background_color(),
                 'xanchor': 'right',
-                'x': 1.0,
+                'x': 0.99,
                 'yanchor': 'top',
-                'y': 1.0,
+                'y': 0.97,
             },
             xaxis=xaxis,
             yaxis=yaxis,
@@ -2652,9 +2652,9 @@ scheduleResize();
             legend={
                 'bgcolor': self._legend_background_color(),
                 'xanchor': 'right',
-                'x': 1.0,
+                'x': 0.99,
                 'yanchor': 'top',
-                'y': 1.0,
+                'y': 0.97,
             },
         )
 

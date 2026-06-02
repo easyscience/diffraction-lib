@@ -3992,9 +3992,9 @@ class Plotter(RendererBase):
             legend={
                 'bgcolor': self._plot_legend_background_color(),
                 'xanchor': 'right',
-                'x': 1.0,
+                'x': 0.99,
                 'yanchor': 'top',
-                'y': 1.0,
+                'y': 0.97,
             },
             xaxis_title=axes_labels[0],
             yaxis_title=axes_labels[1],
