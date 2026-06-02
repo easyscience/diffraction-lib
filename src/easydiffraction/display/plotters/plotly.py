@@ -1356,10 +1356,13 @@ const applyTheme = function () {
     }
     graphDiv.dataset.edPlotlyTheme = theme;
 
+    const transparentPlot = syncMeta.__THEME_SYNC_CORRELATION_HEATMAP_KEY__ === true;
     const update = {
         paper_bgcolor: colors.paperBackground,
-        plot_bgcolor: colors.background,
+        plot_bgcolor: transparentPlot ? colors.paperBackground : colors.background,
         'modebar.bgcolor': colors.paperBackground,
+        'modebar.color': colors.foreground,
+        'modebar.activecolor': colors.foreground,
         'font.color': colors.foreground,
         'title.font.color': colors.foreground,
         'legend.bgcolor': colors.legend,
@@ -1931,10 +1934,25 @@ scheduleResize();
             resolved_background = background_color
             if resolved_background is None:
                 resolved_background = cls._background_color()
+            if cls._figure_is_correlation_heatmap(fig):
+                # Correlation cells carry their own colors; keep the
+                # area outside the cells transparent.
+                resolved_background = cls._paper_background_color()
             update_layout(
                 paper_bgcolor=cls._paper_background_color(),
                 plot_bgcolor=resolved_background,
             )
+
+    @classmethod
+    def _figure_is_correlation_heatmap(cls, fig: object) -> bool:
+        """
+        Return whether a figure is flagged as a correlation heatmap.
+        """
+        meta = cls._figure_meta(fig)
+        theme_sync = meta.get(THEME_SYNC_META_KEY) if isinstance(meta, dict) else None
+        if not isinstance(theme_sync, dict):
+            return False
+        return bool(theme_sync.get(THEME_SYNC_CORRELATION_HEATMAP_KEY))
 
     @classmethod
     def _get_layout(
@@ -2016,6 +2034,11 @@ scheduleResize();
             },
             paper_bgcolor=cls._paper_background_color(),
             plot_bgcolor=cls._background_color(),
+            modebar={
+                'bgcolor': cls._paper_background_color(),
+                'color': cls._theme_colors().foreground,
+                'activecolor': cls._theme_colors().foreground,
+            },
             legend={
                 'bgcolor': cls._legend_background_color(),
                 'xanchor': 'right',

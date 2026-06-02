@@ -92,10 +92,13 @@
       return;
     }
     var paperBackground = colors.paperBackground || 'rgba(0, 0, 0, 0)';
+    var transparentPlot = themeSync && themeSync.correlationHeatmap === true;
     var update = {
       paper_bgcolor: paperBackground,
-      plot_bgcolor: colors.background,
+      plot_bgcolor: transparentPlot ? paperBackground : colors.background,
       'modebar.bgcolor': paperBackground,
+      'modebar.color': colors.foreground,
+      'modebar.activecolor': colors.foreground,
       'font.color': colors.foreground,
       'title.font.color': colors.foreground,
       'legend.bgcolor': colors.legend,
