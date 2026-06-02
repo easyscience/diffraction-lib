@@ -217,7 +217,7 @@ dependency the plan does not name, **stop and ask**.
       `serialize_html` / `render`, preserving the `offline` contract
       exactly. Commit: `Pass STANDALONE mode from report renderer`
 
-- [ ] **P1.10 — Route docs notebook execution to `SHARED`.** Set
+- [x] **P1.10 — Route docs notebook execution to `SHARED`.** Set
       `EASYDIFFRACTION_FIGURE_EMBED_MODE=shared` on `notebook-exec-ci`
       and `notebook-exec` in `pixi.toml`. This is the switch that makes
       baked cell HTML carry `SHARED` output; live Jupyter stays
