@@ -40,19 +40,29 @@ symmetry-constraint code and the planned Wyckoff feature silently do
 nothing for very common groups.
 
 Several authoritative reference sources are already gathered under
-`tmp/third-party-resources/`:
+`tmp/space-groups/`:
 
-- `wyckoff.dat` — **byte-identical to cryspy's** Wyckoff table (verified);
-  complete for all 230 groups (representatives, multiplicities, site
-  symmetries).
-- `spacegroupdata.h`, `sginfo.dat` — SgInfo space-group data.
-- `bricks.cpp`, `symbols.cpp` — cctbx/sgtbx sources (Hall symbols,
-  settings, Wyckoff "bricks"), per `links.txt`.
-- `raspa-page_55_reference.csv` — a settings table (IT № → Hermann-Mauguin
-  / Hall → cell choice → centring → crystal system); no Wyckoff data.
-- `International-Tables-for-crystallography.pdf` (Vol A) and `ITC-Vol.C.pdf`
-  — the authoritative ground truth (PDF).
-- `cif_core.dic` — CIF Core dictionary.
+- `data/cryspy/wyckoff.dat` — **byte-identical to cryspy's** Wyckoff table
+  (verified); complete for all 230 groups (representatives,
+  multiplicities, site symmetries).
+- `data/avogadro/spacegroupdata.h` and `data/sginfo/sginfo.dat` —
+  independently gathered setting and multiplicity references.
+- `data/cctbx/bricks.cpp` and `data/cctbx/symbols.cpp` — cctbx/sgtbx
+  source snapshots kept for provenance; installed cctbx/sgtbx is used for
+  extraction.
+- `data/raspa/raspa-space-group-information.csv` — a settings table
+  extracted from the RASPA manual appendix (IT № → Hermann-Mauguin / Hall →
+  cell choice → centring → crystal system); no Wyckoff data.
+- `data/international-tables/International-Tables-for-crystallography.pdf`
+  (Vol A) and `data/international-tables/ITC-Vol.C.pdf` — authoritative
+  manual curation sources (PDF).
+- `data/iucr/cif_core.dic` — CIF Core dictionary.
+
+One-time source-extraction and generation helpers live under
+`tmp/space-groups/helper-tools/`. They are local, ignored curation tooling
+rather than branch deliverables; the durable record is the final generated
+database, the checked-in ADR companion curation overrides, and the
+provenance recorded in this ADR.
 
 `gemmi 0.7.5` is in the environment; `cctbx` is not installed (only its
 source snippets are present).
@@ -122,43 +132,48 @@ human-readable, diffable, and language-agnostic; the only constraint on the
 generator is to emit JSON-native types, which the string-based schema
 already satisfies.
 
-### 3. Primary source: cctbx/sgtbx via temporary install
+### 3. Generation sources: cryspy first, cctbx for setting metadata
 
-Build from **cctbx/sgtbx**, the reference implementation, which provides
-full Wyckoff orbits, multiplicities, generators, symmetry operators, and
-tabulated settings for all 230 groups directly and correctly. cctbx exposes
-Wyckoff stabilizer point-group labels rather than the dotted International
-Tables site-symmetry strings, so the generator treats cctbx's value as the
-initial `site_symmetry` candidate and reconciles it against cryspy
-`wyckoff.dat` plus maintainer curation before the database is accepted.
-cctbx is a
-**generation-only** dependency: it is installed into the pixi environment
-**only for the generation run** and removed afterwards — it is never added
-to the runtime dependencies and never imported at runtime, which loads only
-the bundled JSON. Building the database is a **one-time effort**, not a
-recurring pipeline: cctbx is installed once for that build, the exact
-software versions used are recorded in §Build provenance, and the install
-is then removed. A pinned GitHub data download was the considered
-alternative; the temporary install was chosen for the authoritative API and
-the least parsing risk.
+Build the Wyckoff-facing part of the database from **cryspy `wyckoff.dat`**
+first. It is complete for all 230 IT groups, carries the letters and
+representative coordinate orbits, and stores the dotted
+International-Tables-style site-symmetry strings that
+`wyckoff-letter-detection.md` needs. This keeps the minimum implementation
+close to the source already used by the calculator while moving ownership
+of the data into EasyDiffraction.
 
-### 4. One-time generation script, checked in for transparency
+Use **cctbx/sgtbx** for the setting-level metadata that cryspy's Wyckoff
+table does not provide in the same form: full symmetry operators,
+generators, point group, Laue class, Hall symbol candidates, and
+operation/orbit-closure checks. cctbx is a **generation-only** dependency:
+it is installed into the pixi environment **only for the generation run**
+and removed afterwards — it is never added to the runtime dependencies and
+never imported at runtime, which loads only the bundled JSON. Building the
+database is a **one-time effort**, not a recurring pipeline: cctbx is
+installed once for that build, the exact software versions used are recorded
+in §Build provenance, and the install is then removed. A pinned GitHub data
+download was the considered alternative; the temporary install was chosen
+for the authoritative API and the least parsing risk.
 
-Add `tools/generate_space_groups.py`, run **once** to emit
-`space_groups.json.gz`. It is committed (not necessarily wired to a routine
-pixi task, since it is not run on every build) so that *how* the database
-was built stays on the record and a future rebuild is possible. The
-committed deliverables together document the database: the generator
-script, the curation overrides (§6), the disagreement report (§6), and the
-recorded software versions (§Build provenance). The generated JSON is the
-artifact; those text files explain it.
+### 4. One-time local generation helper
+
+Keep the one-time generator at
+`tmp/space-groups/helper-tools/generate_space_groups.py` and run it **once**
+to emit `space_groups.json.gz`. It is intentionally not kept in the branch
+after implementation, because it is local curation tooling rather than
+runtime or routine development tooling. The future rebuild path is preserved
+by keeping the helper in the ignored `tmp/space-groups/` workspace and by
+recording its SHA-256, input sources, command line, software versions, and
+ADR companion curation overrides in §Build provenance. The generated JSON is
+the committed artifact; the ADR and overrides explain how it was produced.
 
 ### 5. Multi-source verification
 
 The generator verifies its output against **every** gathered source, not
 just the primary one:
 
-- cryspy `wyckoff.dat` — letters, multiplicities, site symmetries;
+- cryspy `wyckoff.dat` — letters, multiplicities, site symmetries, and
+  representative coordinate orbits;
 - gemmi (already a runtime dependency, 0.7.5) — `spacegroup_table()` covers
   all 230 groups and 564 settings with Hall symbols and full symmetry
   operations. gemmi has **no** Wyckoff API (no letters, site symmetries, or
@@ -171,9 +186,12 @@ just the primary one:
   so the disagreement report labels a gemmi orbit/multiplicity check as
   *dependent* on the cctbx/cryspy representative, not as an independent third
   source for that representative;
-- SgInfo `spacegroupdata.h` / `sginfo.dat` — settings and generators;
-- cctbx `symbols.cpp` / `bricks.cpp` — Hall symbols and settings;
-- RASPA `raspa-page_55_reference.csv` — setting / cell-choice enumeration;
+- Avogadro `data/avogadro/spacegroupdata.h` and SgInfo
+  `data/sginfo/sginfo.dat` — settings and multiplicities;
+- cctbx `data/cctbx/symbols.cpp` / `data/cctbx/bricks.cpp` — source
+  provenance for Hall symbols and settings;
+- RASPA `data/raspa/raspa-space-group-information.csv` — setting /
+  cell-choice enumeration;
 - International Tables Vol A — authoritative spot-checks.
 
 Verification covers presence (all 230 groups and their standard settings),
@@ -188,22 +206,70 @@ the generator emits a structured **disagreement report** entry containing:
 
 - the case (group / setting / Wyckoff letter / field);
 - each contributing source and its value;
-- the **comparison with International Tables**;
-- the generator's **recommended resolution** (and why).
+- an `IT` column for later International Tables comparison;
+- an `Override` column for the final selected value and rationale.
 
 The maintainer inspects the report and **selects** the authoritative value
 per case. Selections are recorded in a checked-in **YAML overrides file**,
-`tools/space_groups_overrides.yaml`, next to the generator — YAML so each
-selection can carry an inline comment recording its rationale. The
-generator consumes it during the build, so every non-obvious choice is
-explicit and auditable rather than baked silently into the binary. The
-disagreement report itself
-is committed as a reviewable Markdown artifact under `docs/dev/`
-(e.g. `docs/dev/space-group-database/disagreements.md`), so the curation
-decisions are auditable like the project's other dev docs. Cases where all
-sources agree need no entry.
+`docs/dev/adrs/suggestions/space-group-database/space_groups_overrides.yaml`
+while the ADR is proposed. If this ADR is accepted, move that companion file
+with the ADR to the accepted ADR area. YAML lets each selection carry an
+inline comment recording its rationale. The generator consumes it during
+the build, so every non-obvious choice is explicit and auditable rather
+than baked silently into the binary. The overrides are deliberately not
+embedded in this ADR or in the implementation plan: those Markdown files
+describe the process, while the YAML file is the stable machine-readable
+input to the generator with a focused diff for curated values. The
+disagreement report itself is a local curation artifact under
+`tmp/space-groups/extracted-comparison/`.
+The Markdown report is split into one table per field, and the comparison
+folder also contains a combined CSV plus one CSV per field so each class of
+disagreement can be checked independently. Cases where all sources agree
+need no entry.
 
-### 7. The database file is generated, not hand-edited
+### 7. Current curation baseline and deferrals
+
+The extracted comparison data is sufficient for the **minimal database
+needed by `wyckoff-letter-detection.md`**. The Phase 1 build therefore uses
+this source priority:
+
+1. Use cryspy `data/cryspy/wyckoff.dat` as the initial authority for
+   Wyckoff-facing fields: letters, multiplicities, site-symmetry symbols,
+   and representative coordinate orbits. It is complete for all 230 IT
+   groups and carries the International-Tables-style site-symmetry strings
+   that the detection feature needs.
+2. Use cctbx/sgtbx as the source for setting-level symmetry metadata that
+   cryspy does not provide in the same table, especially full symmetry
+   operators, generators, point group, Laue class, Hall symbol candidates,
+   and orbit-closure checks.
+3. Use RASPA, Avogadro, SgInfo, and gemmi as cross-checks for setting
+   presence, Hermann-Mauguin / Hall symbols, centring, multiplicities, and
+   operation closure. When cryspy lacks a field or a value is disputed, the
+   maintainer should prefer the source that agrees with the largest
+   independent cluster and record the choice in
+   the ADR companion overrides file.
+
+This is intentionally a **curated seed database**, not the final
+International Tables audit. The `IT` and `Override` columns in the
+comparison reports are left for future human verification. Future curation
+should check flagged rows against International Tables Vol A first, and may
+also consult Bilbao Crystallographic Server and ISODISTORT as independent
+online references for Wyckoff-position data. Those checks are deferred so
+the database can unblock Wyckoff detection now while keeping every
+non-obvious choice visible for later correction.
+
+The triclinic groups do not require a special-case database model. P1 (IT 1)
+has one Wyckoff position, `a`, with multiplicity 1. P-1 (IT 2) has the
+expected inversion-centre special positions plus the general position. The
+only awkwardness is representation of "no coordinate-system code":
+EasyDiffraction's `SpaceGroup` category uses the empty string `''`, while
+the table key uses `None`. The database keeps `(1, None)` and `(2, None)`;
+callers normalise `''` to `None` at lookup boundaries, as specified in
+[`wyckoff-letter-detection.md`](wyckoff-letter-detection.md). This is the
+least surprising solution because it keeps "no setting" distinct from any
+real coordinate-code string without inventing a sentinel value.
+
+### 8. The database file is generated, not hand-edited
 
 `space_groups.json.gz` is never edited by hand. Any correction flows
 through the curation overrides and a regeneration run, keeping the file and
@@ -220,9 +286,10 @@ the documented decisions in sync.
   the new entries immediately, with no consumer change; the two triclinic
   `None`-code groups additionally need the companion consumer-side fix (see
   Compatibility).
-- Documented, auditable provenance: the committed generator, curation
-  overrides, disagreement report, and recorded build versions show exactly
-  how the database was produced and every contested value decided.
+- Documented, auditable provenance: the local generator helper SHA-256,
+  curation overrides, local disagreement report, and recorded build versions
+  show exactly how the database was produced and every contested value
+  decided.
 - The Wyckoff-detection "unsupported group" path shrinks from "common
   groups" to genuinely-exotic settings, simplifying that feature.
 - The 42-group gap and the missing settings become permanent regression
@@ -259,10 +326,12 @@ the documented decisions in sync.
 
 ## Alternatives Considered
 
-- **cryspy as the primary source.** Fastest (already present, verified
-  complete, zero new deps), but its provenance is the calculator the
-  database is meant to be independent of. Kept as a **verification
-  cross-check**, not the authority.
+- **cryspy as the sole source.** Fastest (already present, verified
+  complete, zero new deps), but it does not provide every setting-level
+  metadata field needed for the new database and its provenance is the
+  calculator the database is meant to outgrow. Accepted as the initial
+  authority for Wyckoff-facing fields, but not as the sole authority for the
+  whole database.
 - **Parse SgInfo / cctbx C sources directly.** Most "self-owned", but the
   highest parsing and verification burden. Used as cross-checks instead of
   the primary generator.
@@ -308,9 +377,10 @@ from the environment:
 - **gemmi** version (cross-check);
 - **cryspy** version and the `wyckoff.dat` SHA-256 (cross-check);
 - **gathered inputs** — origin URL/commit and SHA-256 of each source used
-  from `tmp/third-party-resources/` (SgInfo, cctbx `symbols.cpp` /
+  from `tmp/space-groups/` (SgInfo, cctbx `symbols.cpp` /
   `bricks.cpp`, the RASPA CSV, the International Tables edition);
-- **generator** — the `tools/generate_space_groups.py` commit and the exact
+- **generator** — SHA-256 of
+  `tmp/space-groups/helper-tools/generate_space_groups.py` and the exact
   command line (with arguments) that produced the file;
 - **output** — the SHA-256 of the committed `space_groups.json.gz`.
 
@@ -336,6 +406,10 @@ candidate additional-metadata fields — are recorded in §Build Provenance,
 
 ## Deferred Work
 
+- Full human verification against International Tables Vol A, with Bilbao
+  Crystallographic Server and ISODISTORT as additional independent
+  references for flagged Wyckoff-position rows. Record corrections in
+  the ADR companion overrides file and regenerate the database/report.
 - **Additional metadata cctbx exposes**, deliberately deferred from the
   symmetry-core schema (§1): asymmetric-unit definition, reflection /
   systematic-absence conditions, centring translation vectors, per-Wyckoff
