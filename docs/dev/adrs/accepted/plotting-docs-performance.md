@@ -279,8 +279,9 @@ delivered together** in one change. Concretely:
      decimals (e.g. `:,.2f`), so float32 changes no displayed or
      hover-visible value at the precision actually shown.
 
-   Storage-side numeric precision is a separate, deliberate decision
-   tracked in [`cif-numeric-precision.md`](cif-numeric-precision.md).
+   Storage-side numeric precision is a separate, deliberate decision,
+   proposed in a `cif-numeric-precision` ADR suggestion (out of scope
+   for this change, not committed on this branch).
    Phase 2 adds coverage for the `f8`→`f4` transcode (shape preserved,
    round-trips through Plotly) and a representative hover/range-sensitive
    figure whose formatted values are unchanged.

@@ -70,9 +70,8 @@ commit with message `Promote plotting-docs-performance ADR to accepted`.
    (ADR Decision 7) — a bounded, display-only precision reduction
    (~2× payload). Operates on a copy of the serialized figure; source
    data/CIF/reports keep full float64; visually lossless at shown
-   precision. Storage-side precision is the separate
-   [`cif-numeric-precision`](../adrs/suggestions/cif-numeric-precision.md)
-   ADR.
+   precision. Storage-side precision is a separate `cif-numeric-precision`
+   ADR suggestion (out of scope here, not committed on this branch).
 
 ## No new dependencies
 
