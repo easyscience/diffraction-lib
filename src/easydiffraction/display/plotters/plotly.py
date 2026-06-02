@@ -1807,7 +1807,10 @@ scheduleResize();
         height = getattr(layout, 'height', None) if layout is not None else None
         if isinstance(height, (int, float)) and not isinstance(height, bool) and height > 0:
             return int(height)
-        return DEFAULT_HEIGHT
+        # DEFAULT_HEIGHT is a unit count; convert to pixels like the
+        # non-shared default so height-less figures (e.g. posterior
+        # distribution plots) don't collapse into a tiny skeleton.
+        return DEFAULT_HEIGHT * PLOTLY_HEIGHT_PER_UNIT
 
     @classmethod
     def _serialize_html_shared(cls, fig: object) -> str:
