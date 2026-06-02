@@ -186,7 +186,7 @@ project_1.experiments['sim_si'].excluded_regions.create(id='2', start=105500, en
 project_1.display.pattern(expt_name='sim_si', include=('measured', 'excluded'))
 
 # %% [markdown]
-# #### Set Instrument Parameters
+# #### Set Instrument
 #
 # After the experiment is created and measured data is loaded, we need
 # to set the instrument parameters.
@@ -256,7 +256,7 @@ print(project_1.experiments['sim_si'].instrument.calib_d_to_tof_linear.value)
 # attributes.
 
 # %% [markdown]
-# #### Set Peak Profile Parameters
+# #### Set Peak Profile
 #
 # The next set of parameters is needed to define the peak profile used
 # in the fitting process. The peak profile describes the shape of the
@@ -471,7 +471,7 @@ project_1.structures['si'].space_group.name_h_m = 'F d -3 m'
 project_1.structures['si'].space_group.it_coordinate_system_code = '2'
 
 # %% [markdown]
-# #### Set Lattice Parameters
+# #### Set Unit Cell
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See
@@ -501,7 +501,7 @@ project_1.structures['si'].atom_sites.create(
 )
 
 # %% [markdown]
-# #### Visualize Structure
+# #### Display Structure
 #
 # Render the Si structure to confirm the model was built correctly before
 # linking it to the experiment.
@@ -558,7 +558,7 @@ project_1.experiments['sim_si'].linked_phases.create(id='si', scale=1.0)
 # for more details about the fitting process in EasyDiffraction.
 
 # %% [markdown]
-# #### Set Fit Parameters
+# #### Set Free Parameters
 #
 # To perform the fit, we need to specify the refinement parameters.
 # These are the parameters that will be adjusted during the fitting
@@ -589,7 +589,7 @@ project_1.experiments['sim_si'].peak.exp_rise_alpha_0.free = True
 project_1.experiments['sim_si'].peak.exp_rise_alpha_1.free = True
 
 # %% [markdown]
-# #### Show Free Parameters
+# #### Display Free Parameters
 #
 # We can check which parameters are free to be refined by calling the
 # `free` method of the `display.parameters` object of the project.
@@ -606,7 +606,7 @@ project_1.experiments['sim_si'].peak.exp_rise_alpha_1.free = True
 project_1.display.parameters.free()
 
 # %% [markdown]
-# #### Visualize Diffraction Patterns
+# #### Display Pattern
 #
 # Before performing the fit, we can visually compare the measured
 # diffraction pattern with the calculated diffraction pattern based on
@@ -634,7 +634,7 @@ project_1.analysis.fit()
 project_1.display.fit.results()
 
 # %% [markdown]
-# #### Check Fit Results
+# #### Display Fit Results
 #
 # You can see that the agreement between the measured and calculated
 # diffraction patterns is now much improved and that the intensities of
@@ -648,7 +648,7 @@ project_1.display.fit.results()
 # 1, indicating a good fit.
 
 # %% [markdown]
-# #### Visualize Fit Results
+# #### Display Fit Results
 #
 # After the fit is completed, we can plot the comparison between the
 # measured and calculated diffraction patterns again to see how well the
@@ -806,7 +806,7 @@ project_2.experiments['sim_lbco'].excluded_regions.create(id='2', start=105500, 
 project_2.display.pattern(expt_name='sim_lbco', include=('measured', 'excluded'))
 
 # %% [markdown]
-# #### Exercise 2.2: Set Instrument Parameters
+# #### Exercise 2.2: Set Instrument
 #
 # Set the instrument parameters for the LBCO experiment.
 
@@ -829,7 +829,7 @@ project_2.experiments['sim_lbco'].instrument.calib_d_to_tof_linear = ed.extract_
 )
 
 # %% [markdown]
-# #### Exercise 2.3: Set Peak Profile Parameters
+# #### Exercise 2.3: Set Peak Profile
 #
 # Set the peak profile parameters for the LBCO experiment.
 
@@ -992,7 +992,7 @@ project_2.structures['lbco'].space_group.name_h_m = 'P m -3 m'
 project_2.structures['lbco'].space_group.it_coordinate_system_code = '1'
 
 # %% [markdown]
-# #### Exercise 3.3: Set Lattice Parameters
+# #### Exercise 3.3: Set Unit Cell
 #
 # Set the lattice parameters for the LBCO structure.
 
@@ -1064,7 +1064,7 @@ project_2.structures['lbco'].atom_sites.create(
 )
 
 # %% [markdown]
-# #### Visualize Structure
+# #### Display Structure
 #
 # Render the LBCO structure you just built before linking it to the
 # experiment.
@@ -1093,7 +1093,7 @@ project_2.experiments['sim_lbco'].linked_phases.create(id='lbco', scale=1.0)
 # %% [markdown]
 # ### 🚀 Exercise 5: Analyze and Fit the Data
 #
-# #### Exercise 5.1: Set Fit Parameters
+# #### Exercise 5.1: Set Free Parameters
 #
 # Select the initial set of parameters to be refined during the fitting
 # process.
@@ -1218,7 +1218,7 @@ project_2.display.pattern(expt_name='sim_lbco')
 # substantial impact on the quality of the fit.
 
 # %% [markdown]
-# #### Exercise 5.5: Visualize the Fit Results in d-spacing
+# #### Exercise 5.5: Display Fit Results (d-spacing)
 #
 # Plot measured vs calculated diffraction patterns in d-spacing instead
 # of TOF.

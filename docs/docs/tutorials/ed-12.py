@@ -9,19 +9,22 @@
 # https://github.com/diffpy/add2019-diffpy-cmi/tree/master
 
 # %% [markdown]
-# ## Import Library
+# ## 🛠️ Import Library
 
 # %%
 import easydiffraction as ed
 
 # %% [markdown]
-# ## Create Project
+# ## 📦 Define Project
+
+# %% [markdown]
+# ### Create Project
 
 # %%
 project = ed.Project()
 
 # %% [markdown]
-# ## Set Plotting Engine
+# ### Set Plotting Engine
 
 # %%
 # Keep the auto-selected engine. Alternatively, you can uncomment the
@@ -34,7 +37,7 @@ project.rendering_plot.plotter.x_min = 2.0
 project.rendering_plot.plotter.x_max = 30.0
 
 # %% [markdown]
-# ## Add Structure
+# ### Add Structure
 
 # %%
 project.structures.create(name='nacl')
@@ -63,13 +66,13 @@ project.structures['nacl'].atom_sites.create(
 )
 
 # %% [markdown]
-# ## Plot Structure
+# ### Display Structure
 
 # %%
 project.display.structure(struct_name='nacl')
 
 # %% [markdown]
-# ## Add Experiment
+# ### Add Experiment
 
 # %%
 data_path = ed.download_data(id=4, destination='data')
@@ -102,7 +105,10 @@ project.experiments['xray_pdf'].peak.damp_particle_diameter = 0
 project.experiments['xray_pdf'].linked_phases.create(id='nacl', scale=0.5)
 
 # %% [markdown]
-# ## Select Fitting Parameters
+# ## 🚀 Perform Analysis
+
+# %% [markdown]
+# ### Set Free Parameters
 
 # %%
 project.structures['nacl'].cell.length_a.free = True
@@ -115,7 +121,7 @@ project.experiments['xray_pdf'].peak.damp_q.free = True
 project.experiments['xray_pdf'].peak.sharp_delta_2.free = True
 
 # %% [markdown]
-# ## Run Fitting
+# ### Run Fitting
 
 # %%
 project.analysis.fit()
@@ -123,7 +129,7 @@ project.display.fit.results()
 project.display.fit.correlations()
 
 # %% [markdown]
-# ## Plot Measured vs Calculated
+# ### Display Pattern
 
 # %%
 project.display.pattern(expt_name='xray_pdf')

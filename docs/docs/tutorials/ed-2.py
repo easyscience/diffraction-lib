@@ -22,19 +22,19 @@
 # the code, please refer to the other tutorials.
 
 # %% [markdown]
-# ## Import Library
+# ## 🛠️ Import Library
 
 # %%
 import easydiffraction as ed
 
 # %% [markdown]
-# ## Step 1: Define Project
+# ## 📦 Define Project
 
 # %%
 project = ed.Project()
 
 # %% [markdown]
-# ## Step 2: Define Structure
+# ## 🧩 Define Structure
 
 # %%
 project.structures.create(name='lbco')
@@ -93,7 +93,7 @@ structure.atom_sites.create(
 project.display.structure(struct_name='lbco')
 
 # %% [markdown]
-# ## Step 3: Define Experiment
+# ## 🔬 Define Experiment
 
 # %%
 data_path = ed.download_data(id=3, destination='data')
@@ -135,7 +135,10 @@ experiment.excluded_regions.create(id='2', start=165, end=180)
 experiment.linked_phases.create(id='lbco', scale=10.0)
 
 # %% [markdown]
-# ## Step 4: Perform Analysis (no constraints)
+# ## 🚀 Perform Analysis
+
+# %% [markdown]
+# ### Without Constraints
 
 # %%
 structure.cell.length_a.free = True
@@ -174,7 +177,7 @@ project.display.fit.correlations()
 project.display.pattern(expt_name='hrpt')
 
 # %% [markdown]
-# ## Step 5: Perform Analysis (with constraints)
+# ### With Constraints
 
 # %%
 # As can be seen from the parameter-correlation plot, the isotropic
@@ -211,7 +214,7 @@ project.display.fit.correlations()
 project.display.pattern(expt_name='hrpt')
 
 # %% [markdown]
-# ## Step 6: Switch calculator engine
+# ### Switch Calculator
 
 # %%
 experiment.calculator.show_supported()
@@ -232,7 +235,7 @@ project.display.fit.correlations()
 project.display.pattern(expt_name='hrpt')
 
 # %% [markdown]
-# ## Step 7: Save Project
+# ## 💾 Save Project
 
 # %%
 project.save_as('projects/lbco_hrpt')

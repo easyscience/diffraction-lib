@@ -9,7 +9,7 @@
 # is refined simultaneously against both datasets.
 
 # %% [markdown]
-# ## Import Library
+# ## 🛠️ Import Library
 
 # %%
 from easydiffraction import ExperimentFactory
@@ -18,32 +18,32 @@ from easydiffraction import StructureFactory
 from easydiffraction import download_data
 
 # %% [markdown]
-# ## Define Structure
+# ## 🧩 Define Structure
 #
 # A single Si structure is shared between the Bragg and PDF
 # experiments. Structural parameters refined against both datasets
 # simultaneously.
 #
-# #### Create Structure
+# ### Create Structure
 
 # %%
 structure = StructureFactory.from_scratch(name='si')
 
 # %% [markdown]
-# #### Set Space Group
+# ### Set Space Group
 
 # %%
 structure.space_group.name_h_m = 'F d -3 m'
 structure.space_group.it_coordinate_system_code = '1'
 
 # %% [markdown]
-# #### Set Unit Cell
+# ### Set Unit Cell
 
 # %%
 structure.cell.length_a = 5.42
 
 # %% [markdown]
-# #### Set Atom Sites
+# ### Set Atom Sites
 
 # %%
 structure.atom_sites.create(
@@ -57,7 +57,7 @@ structure.atom_sites.create(
 )
 
 # %% [markdown]
-# ## Define Experiments
+# ## 🔬 Define Experiments
 #
 # Two experiments are defined: one for Bragg diffraction and one for
 # PDF analysis. Both are linked to the same Si structure.
@@ -150,36 +150,36 @@ pdf_expt.peak.damp_particle_diameter = 0
 pdf_expt.linked_phases.create(id='si', scale=1.0)
 
 # %% [markdown]
-# ## Define Project
+# ## 📦 Define Project
 #
 # The project object manages the shared structure, both experiments,
 # and the analysis.
 #
-# #### Create Project
+# ### Create Project
 
 # %%
 project = Project()
 
 # %% [markdown]
-# #### Add Structure
+# ### Add Structure
 
 # %%
 project.structures.add(structure)
 
 # %% [markdown]
-# #### Add Experiments
+# ### Add Experiments
 
 # %%
 project.experiments.add(bragg_expt)
 project.experiments.add(pdf_expt)
 
 # %% [markdown]
-# ## Perform Analysis
+# ## 🚀 Perform Analysis
 #
 # This section shows the joint analysis process. The calculator is
 # auto-resolved per experiment: CrysPy for Bragg, PDFfit for PDF.
 #
-# #### Set Fit Mode and Weights
+# ### Set Fit Mode and Weights
 
 # %%
 project.analysis.fitting_mode.type = 'joint'
@@ -187,13 +187,13 @@ project.analysis.joint_fit.create(experiment_id='sepd', weight=0.7)
 project.analysis.joint_fit.create(experiment_id='nomad', weight=0.3)
 
 # %% [markdown]
-# #### Plot Structure
+# ### Display Structure
 
 # %%
 project.display.structure(struct_name='si')
 
 # %% [markdown]
-# #### Plot Measured vs Calculated (Before Fit)
+# ### Display Pattern (Before Fit)
 
 # %%
 project.display.pattern(expt_name='sepd')
@@ -202,7 +202,7 @@ project.display.pattern(expt_name='sepd')
 project.display.pattern(expt_name='nomad')
 
 # %% [markdown]
-# #### Set Fitting Parameters
+# ### Set Free Parameters
 #
 # Shared structural parameters are refined against both datasets
 # simultaneously.
@@ -234,13 +234,13 @@ pdf_expt.peak.sharp_delta_1.free = True
 pdf_expt.peak.sharp_delta_2.free = True
 
 # %% [markdown]
-# #### Show Free Parameters
+# ### Display Free Parameters
 
 # %%
 project.display.parameters.free()
 
 # %% [markdown]
-# #### Run Fitting
+# ### Run Fitting
 
 # %%
 project.analysis.fit()
@@ -248,7 +248,7 @@ project.display.fit.results()
 project.display.fit.correlations()
 
 # %% [markdown]
-# #### Plot Measured vs Calculated (After Fit)
+# ### Display Pattern (After Fit)
 
 # %%
 project.display.pattern(expt_name='sepd')

@@ -9,13 +9,16 @@
 # restored directly from disk.
 
 # %% [markdown]
-# ## Import Library
+# ## 🛠️ Import Library
 
 # %%
 import easydiffraction as ed
 
 # %% [markdown]
-# ## Download Saved Project
+# ## 📂 Load Project
+
+# %% [markdown]
+# ### Download Project
 #
 # The returned path points directly to the saved project directory with
 # the completed Bayesian fit and persisted posterior samples and plot
@@ -25,7 +28,7 @@ import easydiffraction as ed
 project_dir = ed.download_data(id=39, destination='projects')
 
 # %% [markdown]
-# ## Load the Saved Bayesian Project
+# ### Load Project
 #
 # Loading restores the persisted fit state, posterior samples, and plot
 # caches. No new fit is launched in this tutorial.
@@ -34,7 +37,10 @@ project_dir = ed.download_data(id=39, destination='projects')
 project = ed.Project.load(project_dir)
 
 # %% [markdown]
-# ## View Structure
+# ## 📊 Inspect Results
+
+# %% [markdown]
+# ### Display Structure
 #
 # Render the La0.5Ba0.5CoO3 structure restored from the saved project.
 
@@ -42,7 +48,7 @@ project = ed.Project.load(project_dir)
 project.display.structure(struct_name='lbco')
 
 # %% [markdown]
-# ## Review the Saved Fit Summary
+# ### Display Fit Results
 #
 # The fit summary reports the committed point estimate, sampler
 # settings, convergence diagnostics, and posterior parameter summaries
@@ -52,7 +58,7 @@ project.display.structure(struct_name='lbco')
 project.display.fit.results()
 
 # %% [markdown]
-# ## Show Correlations
+# ### Display Correlations
 #
 # The correlation matrix is restored from the saved project state.
 
@@ -60,7 +66,7 @@ project.display.fit.results()
 project.display.fit.correlations()
 
 # %% [markdown]
-# ## Inspect Posterior Densities and Pair Structure
+# ### Display Posterior Densities
 #
 # The pair plot and one-dimensional posterior distributions now load
 # from the persisted caches generated when the Bayesian fit was saved.
@@ -72,7 +78,7 @@ project.display.posterior.pairs()
 project.display.posterior.distribution()
 
 # %% [markdown]
-# ## Plot Posterior Predictive Checks
+# ### Display Posterior Predictive
 #
 # The posterior predictive view reuses the cached predictive summary
 # stored in the project rather than recalculating it on first display.

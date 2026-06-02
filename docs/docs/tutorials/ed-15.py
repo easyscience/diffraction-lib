@@ -5,20 +5,20 @@
 # crystal neutron diffraction data from SENJU at J-PARC.
 
 # %% [markdown]
-# ## Import Library
+# ## 🛠️ Import Library
 
 # %%
 import easydiffraction as ed
 
 # %% [markdown]
-# ## Step 1: Define Project
+# ## 📦 Define Project
 
 # %%
 # Create minimal project without name and description
 project = ed.Project()
 
 # %% [markdown]
-# ## Step 2: Define Structure
+# ## 🧩 Define Structure
 
 # %%
 # Download CIF file from repository
@@ -40,7 +40,7 @@ structure.show_as_cif()
 project.display.structure(struct_name='taurine')
 
 # %% [markdown]
-# ## Step 3: Define Experiment
+# ## 🔬 Define Experiment
 
 # %%
 # Download data file from repository
@@ -67,7 +67,10 @@ experiment.extinction.mosaicity = 1000.0
 experiment.extinction.radius = 100.0
 
 # %% [markdown]
-# ## Step 4: Perform Analysis I (ADP iso)
+# ## 🚀 Perform Analysis
+
+# %% [markdown]
+# ### ADP iso
 
 # %%
 project.display.pattern(expt_name='senju')
@@ -105,7 +108,7 @@ project.experiments.show_names()
 project.display.pattern(expt_name='senju')
 
 # %% [markdown]
-# ## Step 5: Perform Analysis (ADP aniso)
+# ### ADP aniso
 
 # %%
 for atom_site in structure.atom_sites:
