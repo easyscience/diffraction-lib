@@ -21,6 +21,8 @@ from easydiffraction.display.structure.assets.colors import theme_colors
 from easydiffraction.display.structure.enums import ColorSchemeEnum
 from easydiffraction.display.structure.renderers.base import StructureRendererBase
 from easydiffraction.utils._vendored.theme_detect import is_dark
+from easydiffraction.utils.environment import FigureEmbedMode
+from easydiffraction.utils.environment import resolve_figure_embed_mode
 
 if TYPE_CHECKING:
     from easydiffraction.display.structure.scene import StructureScene
@@ -175,6 +177,7 @@ class ThreeJsStructureRenderer(StructureRendererBase):
         features: frozenset[str],
         offline: bool = True,
         dark: bool | None = None,
+        mode: FigureEmbedMode | None = None,
     ) -> str:
         """
         Render the scene as a self-contained interactive HTML document.
@@ -194,6 +197,11 @@ class ThreeJsStructureRenderer(StructureRendererBase):
             Force the dark (``True``) or light (``False``) theme. When
             ``None`` (default), auto-detect from the environment.
             Reports pass ``False`` so the view matches their light page.
+        mode : FigureEmbedMode | None, default=None
+            Embedding mode; ``None`` resolves from the environment.
+            ``SHARED`` (docs) omits the per-scene import map and relies
+            on the page-level one; ``INLINE``/``STANDALONE`` emit a
+            per-scene import map per ``offline``.
 
         Returns
         -------
@@ -202,11 +210,20 @@ class ThreeJsStructureRenderer(StructureRendererBase):
         """
         if dark is None:
             dark = is_dark()
+        if mode is None:
+            mode = resolve_figure_embed_mode()
         colours = theme_colors(dark=dark)
         light_colours = theme_colors(dark=False)
         dark_colours = theme_colors(dark=True)
         payload = json.dumps(_scene_payload(scene)).replace('</', '<\\/')
-        import_map = json.dumps({'imports': _import_map(offline=offline)}).replace('</', '<\\/')
+        if mode is FigureEmbedMode.SHARED:
+            # Docs pages carry one shared import map (overrides/main.html);
+            # omit the per-scene one so several scenes stay valid on a page.
+            import_map = None
+        else:
+            import_map = json.dumps({'imports': _import_map(offline=offline)}).replace(
+                '</', '<\\/'
+            )
         template = _environment().get_template(self.TEMPLATE_NAME)
         return template.render(
             container_id=f'crysview-{uuid.uuid4().hex}',

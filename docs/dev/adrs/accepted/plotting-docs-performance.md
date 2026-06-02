@@ -414,6 +414,13 @@ Settled in discussion on 2026-06-02:
 
 - Static-image-first placeholders (kaleido) if skeletons prove
   insufficient on the heaviest pages.
+- Lazy on-scroll download of the Three.js runtime. The docs `SHARED`
+  three.js view self-hosts (page-level import map) and shows a loading
+  skeleton but renders **eagerly** — P1.8 was scoped to this low-risk
+  path. Deferring the runtime download behind an `IntersectionObserver`
+  (dynamic `import('three')`) is a follow-up; Plotly already loads
+  lazily and structure views are rare, so the win is small relative to
+  the module-rewrite risk.
 - Trace downsampling for very dense series in the docs view (smaller
   payload + faster draw) — a separate, data-side optimization.
 - A docs CI budget check (page weight / figure count) to catch

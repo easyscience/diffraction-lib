@@ -202,11 +202,14 @@ dependency the plan does not name, **stop and ask**.
       `resolve_figure_embed_mode()`. Commit:
       `Add SHARED embedding mode to Plotly serializer`
 
-- [ ] **P1.8 — Add `SHARED` mode to the Three.js renderer.** Thread the
-      mode through `render(...)` (`viewing.py` + `threejs.py`) and
-      `structure.html.j2`; `SHARED` drops the per-scene importmap (bare
-      specifiers) and emits a placeholder + lazy boot; `STANDALONE`
-      keeps the inline data-URL importmap. Commit:
+- [x] **P1.8 — Add `SHARED` mode to the Three.js renderer.** Add a
+      `mode` arg to `threejs.py` `render(...)` that resolves from the
+      environment when unset (so `viewing.py` and the ASCII/raster
+      renderers stay untouched); `SHARED` drops the per-scene importmap
+      (the page-level one resolves the bare specifiers) and shows a
+      loading skeleton — eager render, with the lazy on-scroll download
+      deferred per the ADR; `STANDALONE`/`INLINE` keep the per-scene
+      import map per `offline`. Commit:
       `Add SHARED embedding mode to Three.js renderer`
 
 - [ ] **P1.9 — Pass `STANDALONE` from the report renderer.** Update
