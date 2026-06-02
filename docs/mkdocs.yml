@@ -87,6 +87,10 @@ extra_css:
 
 extra_javascript:
   - assets/javascripts/extra.js
+  # Self-hosted Plotly (cartesian bundle) plus the shared lazy loader for
+  # SHARED-mode figures. Plotly must load before ed-figures.js, which uses it.
+  - assets/javascripts/vendor/plotly/plotly-cartesian.min.js
+  - assets/javascripts/ed-figures.js
   # MathJax for rendering mathematical expressions
   - assets/javascripts/mathjax.js # Custom MathJax config to ensure compatibility with mkdocs-jupyter
   - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js # Official MathJax CDN

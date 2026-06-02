@@ -187,7 +187,7 @@ dependency the plan does not name, **stop and ask**.
       styles to `extra.css`. Commit:
       `Add shared ed-figures.js lazy figure loader`
 
-- [ ] **P1.6 — Wire docs runtime assets and the page importmap.** Add
+- [x] **P1.6 — Wire docs runtime assets and the page importmap.** Add
       the Plotly bundle + `ed-figures.js` to `extra_javascript` (and
       skeleton CSS to `extra_css` if separate) in `mkdocs.yml`; add the
       `{% block extrahead %}` importmap to `overrides/main.html`. (Leave

@@ -1,5 +1,23 @@
 {% extends "base.html" %}
 
+{% block extrahead %}
+  {{ super() }}
+  {# Page-level import map for the self-hosted Three.js modules (see the
+     plotting-docs-performance ADR). One per page is the only reliable
+     way to deliver an import map; it is inert on pages with no structure
+     view. Paths resolve against base_url so they stay correct under the
+     mike-versioned site. #}
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "{{ base_url }}/assets/javascripts/vendor/threejs/three.module.js",
+        "three/addons/controls/OrbitControls.js": "{{ base_url }}/assets/javascripts/vendor/threejs/OrbitControls.js",
+        "three/addons/renderers/CSS2DRenderer.js": "{{ base_url }}/assets/javascripts/vendor/threejs/CSS2DRenderer.js"
+      }
+    }
+  </script>
+{% endblock %}
+
 {% block content %}
 
 {% if page.nb_url %}
