@@ -157,7 +157,7 @@ class TestResolveFigureEmbedMode:
         from easydiffraction.utils.environment import resolve_figure_embed_mode
 
         monkeypatch.setenv('EASYDIFFRACTION_FIGURE_EMBED_MODE', 'bogus')
-        with pytest.raises(ValueError) as exc_info:
+        with pytest.raises(ValueError, match='bogus') as exc_info:
             resolve_figure_embed_mode()
         message = str(exc_info.value)
         assert 'bogus' in message
