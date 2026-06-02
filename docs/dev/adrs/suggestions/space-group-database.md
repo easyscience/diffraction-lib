@@ -369,23 +369,71 @@ The database is built once, so the exact tooling and inputs used to produce
 the committed `space_groups.json.gz` are recorded here at generation time.
 This section **is** the named, durable provenance artifact that makes the
 one-time build auditable and reconstructable even after cctbx is removed
-from the environment:
+from the environment.
 
-- **cctbx** — conda-forge channel, version, and build string, plus the exact
-  install command used (e.g. the `pixi add` / `conda install` line);
-- **Python and platform** — Python version and OS/architecture of the build;
-- **gemmi** version (cross-check);
-- **cryspy** version and the `wyckoff.dat` SHA-256 (cross-check);
-- **gathered inputs** — origin URL/commit and SHA-256 of each source used
-  from `tmp/space-groups/` (SgInfo, cctbx `symbols.cpp` /
-  `bricks.cpp`, the RASPA CSV, the International Tables edition);
-- **generator** — SHA-256 of
-  `tmp/space-groups/helper-tools/generate_space_groups.py` and the exact
-  command line (with arguments) that produced the file;
-- **output** — the SHA-256 of the committed `space_groups.json.gz`.
+Generation run:
 
-*(Filled in when the generation is run; until then this section is the
-checklist the build must populate.)*
+```bash
+pixi exec --spec cctbx --spec gemmi --spec sympy --spec pyyaml \
+  python tmp/space-groups/helper-tools/generate_space_groups.py \
+  --output-json src/easydiffraction/crystallography/space_groups.json.gz \
+  --write-comparison-folder tmp/space-groups/extracted-comparison \
+  --print-summary
+```
+
+Build environment:
+
+- **cctbx** from conda-forge:
+  - `cctbx 2026.4 py314he55896b_1`
+  - `cctbx-base 2026.4 py314h4545a6d_1`
+- **Helper-only packages** from conda-forge:
+  `gemmi 0.7.5 py314h2fd7851_0`,
+  `sympy 1.14.0 pyh2585a3b_106`,
+  `pyyaml 6.0.3 py314h6e9b3f0_1`.
+- **Python and platform:** Python 3.14.5, macOS-26.2 arm64
+  (`macOS-26.2-arm64-arm-64bit-Mach-O`).
+- **Runtime cross-check versions:** cryspy 0.11.0, gemmi 0.7.5.
+
+Generated and curation artifacts:
+
+- `src/easydiffraction/crystallography/space_groups.json.gz`:
+  `4ca517975bf3b54adcd29bbbf4a4917e4715c84068fe0fbc505000ee633fc105`
+- `tmp/space-groups/helper-tools/generate_space_groups.py`:
+  `f706bae152a15426d52f9b27dd1b87611fa4d8a6044313b2406a8b96e636a89e`
+- `docs/dev/adrs/suggestions/space-group-database/space_groups_overrides.yaml`:
+  `7077eec25d0f3b852dd7096a24dc7ac438467f9cb594f91a65ce10cda0e0722a`
+- `tmp/space-groups/extracted-comparison/disagreements.md`:
+  `ff9885805fd56a6bc3881995e004ae0c32ff6a6d7da2e89ac420c08b47ea4220`
+- `tmp/space-groups/extracted-comparison/all-fields.csv`:
+  `bfa2f57ec74f03f413b886cdfec7d4d902abd2c11777b30060f89090a7ccbc0f`
+
+Gathered input snapshots:
+
+- cctbx `symbols.cpp`, GitHub `cctbx/cctbx_project`
+  commit `9031bd719b56bc55bc5a276f407a9a64cc08c2c3`:
+  `901e038d6c060a7630c4e05f85b5c2fb6940edd9c6a2421755c146e29298b81b`
+- cctbx `bricks.cpp`, GitHub `cctbx/cctbx_project`
+  commit `9031bd719b56bc55bc5a276f407a9a64cc08c2c3`:
+  `85cfee5c215dbbfb9520730186ddc1d73b2ba93d5c94b969dc8968da6c5f2534`
+- Avogadro `spacegroupdata.h`, GitHub `OpenChemistry/avogadrolibs`
+  commit `88ff1a7af4625824b258933715d8f112bc35453e`:
+  `c5688f343ae2f37ec2e37beea2534d47f192f354bbe382bf11203c8e7b22cac9`
+- cryspy `wyckoff.dat` snapshot:
+  `ce6a576068610fb9a0d80a77f1c8957c3d1138a0e8f8fa9c248c62786dd3fb38`
+- cryspy `function_2_space_group.py` snapshot:
+  `e3cf8fd594c053068ed6f68d805ee9d216cfefa392351a2456cb3b2632bc4462`
+- SgInfo `sginfo.dat` snapshot:
+  `54591fd507aeb8cd24f9cb7e552a4b85cd6c5fd8f905782b489639f4cce51205`
+- RASPA appendix extraction `raspa-space-group-information.csv`:
+  `61258cb176cb5851efb042d0ac144f6f3ee9f730fc92564d4550acdd52dabd17`
+- RASPA manual PDF `raspa.pdf`:
+  `c5dfc865276667f787f793b7b4eacddcde268d5c7a1fa203a00db612ad7f79cf`
+- International Tables Vol A PDF:
+  `6d619f4e71754dc257cffc1fd8e92e23145e2f8511fa97ed1b5522773da3666e`
+- International Tables Vol C PDF:
+  `f095728556c0ebb05ab55ca2bbccac76c544f04f71da3a121b0477ba66699a0d`
+- IUCr CIF Core dictionary snapshot:
+  `dd7460c1ed1666adecf2f77441556920a051f076c31a6b7274d33dfbe2b6d5ad`
 
 ### P1.1 extraction observations
 

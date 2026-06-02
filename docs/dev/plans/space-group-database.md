@@ -161,7 +161,7 @@ file as part of the same commit.
   maintainer confirms.
   Commit (maintainer, or agent on resume): `Add curated space-group overrides`
 
-- [ ] **P1.5 — Final generation + provenance.** Re-run the generator
+- [x] **P1.5 — Final generation + provenance.** Re-run the generator
   consuming the overrides to emit
   `src/easydiffraction/crystallography/space_groups.json.gz`. Fill in the
   ADR's *Build Provenance* section with the exact versions (cctbx channel/
