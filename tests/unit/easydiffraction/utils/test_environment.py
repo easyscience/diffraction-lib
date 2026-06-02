@@ -125,3 +125,41 @@ class TestArtifactPaths:
 
         assert created_dir.is_dir()
         assert created_dir.parent == repo_root / 'tmp' / 'tutorials'
+
+
+class TestResolveFigureEmbedMode:
+    def test_unset_defaults_to_inline(self, monkeypatch):
+        from easydiffraction.utils.environment import FigureEmbedMode
+        from easydiffraction.utils.environment import resolve_figure_embed_mode
+
+        monkeypatch.delenv('EASYDIFFRACTION_FIGURE_EMBED_MODE', raising=False)
+        assert resolve_figure_embed_mode() is FigureEmbedMode.INLINE
+
+    def test_blank_defaults_to_inline(self, monkeypatch):
+        from easydiffraction.utils.environment import FigureEmbedMode
+        from easydiffraction.utils.environment import resolve_figure_embed_mode
+
+        monkeypatch.setenv('EASYDIFFRACTION_FIGURE_EMBED_MODE', '   ')
+        assert resolve_figure_embed_mode() is FigureEmbedMode.INLINE
+
+    def test_shared_and_standalone_case_insensitive(self, monkeypatch):
+        from easydiffraction.utils.environment import FigureEmbedMode
+        from easydiffraction.utils.environment import resolve_figure_embed_mode
+
+        monkeypatch.setenv('EASYDIFFRACTION_FIGURE_EMBED_MODE', 'shared')
+        assert resolve_figure_embed_mode() is FigureEmbedMode.SHARED
+        monkeypatch.setenv('EASYDIFFRACTION_FIGURE_EMBED_MODE', 'STANDALONE')
+        assert resolve_figure_embed_mode() is FigureEmbedMode.STANDALONE
+
+    def test_unknown_value_raises_with_details(self, monkeypatch):
+        import pytest
+
+        from easydiffraction.utils.environment import resolve_figure_embed_mode
+
+        monkeypatch.setenv('EASYDIFFRACTION_FIGURE_EMBED_MODE', 'bogus')
+        with pytest.raises(ValueError) as exc_info:
+            resolve_figure_embed_mode()
+        message = str(exc_info.value)
+        assert 'bogus' in message
+        for mode in ('inline', 'shared', 'standalone'):
+            assert mode in message

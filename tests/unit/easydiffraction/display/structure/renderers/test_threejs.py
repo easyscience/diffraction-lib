@@ -780,3 +780,30 @@ class TestRenderUnpatchedIntegration:
         assert '--cv-label-shadow-bg: rgb(33, 33, 33);' in html
         assert 'rgb(235, 235, 235)' in html  # DARK_THEME foreground
         assert 'dark' in html
+
+
+class TestSharedEmbedMode:
+    def test_shared_omits_per_scene_importmap(self):
+        from easydiffraction.utils.environment import FigureEmbedMode
+
+        html = ThreeJsStructureRenderer().render(
+            _identity_scene(),
+            features=frozenset({'atoms'}),
+            dark=False,
+            mode=FigureEmbedMode.SHARED,
+        )
+        assert 'type="importmap"' not in html
+        # Bare specifiers remain; the page-level import map resolves them.
+        assert "from 'three'" in html
+
+    def test_standalone_keeps_inline_importmap(self):
+        from easydiffraction.utils.environment import FigureEmbedMode
+
+        html = ThreeJsStructureRenderer().render(
+            _identity_scene(),
+            features=frozenset({'atoms'}),
+            offline=True,
+            dark=False,
+            mode=FigureEmbedMode.STANDALONE,
+        )
+        assert 'type="importmap"' in html

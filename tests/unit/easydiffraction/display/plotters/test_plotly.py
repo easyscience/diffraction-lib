@@ -1123,3 +1123,67 @@ def test_plot_powder_meas_vs_calc_accepts_empty_filtered_range(monkeypatch):
     assert len(fig.data) == 3
     assert fig.layout.yaxis2.range[0] == pytest.approx(-1.0)
     assert fig.layout.yaxis2.range[1] == pytest.approx(1.0)
+
+
+def test_typed_arrays_to_float32_transcodes_and_preserves_shape():
+    import base64
+
+    import easydiffraction.display.plotters.plotly as pp
+
+    values = np.arange(6, dtype='<f8')
+    spec = {
+        'dtype': 'f8',
+        'bdata': base64.b64encode(values.tobytes()).decode('ascii'),
+        'shape': '2, 3',
+    }
+    payload = {'x': spec, 'count': 6, 'name': 'meas'}
+
+    result = pp._typed_arrays_to_float32(payload)
+
+    assert result['x']['dtype'] == 'f4'
+    assert result['x']['shape'] == '2, 3'
+    decoded = np.frombuffer(base64.b64decode(result['x']['bdata']), dtype='<f4')
+    assert np.allclose(decoded, values)
+    # Non-array entries are untouched.
+    assert result['count'] == 6
+    assert result['name'] == 'meas'
+
+
+def test_serialize_html_shared_is_lazy_placeholder_with_float32():
+    import easydiffraction.display.plotters.plotly as pp
+    import plotly.graph_objects as go
+
+    from easydiffraction.utils.environment import FigureEmbedMode
+
+    fig = go.Figure(go.Scatter(x=np.arange(3000.0), y=np.arange(3000.0)))
+    html = pp.PlotlyPlotter.serialize_html(
+        fig,
+        include_plotlyjs=False,
+        mode=FigureEmbedMode.SHARED,
+    )
+
+    assert 'data-ed-figure="plotly"' in html
+    assert 'ed-figure-skeleton' in html
+    assert 'ed-figure-spec' in html
+    # Lazy: no eager runtime call is embedded.
+    assert 'Plotly.newPlot' not in html
+    # Display precision: bulk arrays are downcast to float32.
+    assert 'f4' in html
+
+
+def test_serialize_html_inline_is_eager_self_contained():
+    import easydiffraction.display.plotters.plotly as pp
+    import plotly.graph_objects as go
+
+    from easydiffraction.utils.environment import FigureEmbedMode
+
+    fig = go.Figure(go.Scatter(x=np.arange(10.0), y=np.arange(10.0)))
+    html = pp.PlotlyPlotter.serialize_html(
+        fig,
+        include_plotlyjs='cdn',
+        mode=FigureEmbedMode.INLINE,
+    )
+
+    assert 'data-ed-figure' not in html
+    # Eager render embeds the plot div / runtime call.
+    assert 'plotly-graph-div' in html or 'newPlot' in html
