@@ -178,7 +178,7 @@ file as part of the same commit.
   `space_groups.pkl.gz`.
   Commit: `Load space groups from JSON and drop restricted unpickler`
 
-- [ ] **P1.7 — Phase 1 review gate.** No code. Mark this `[x]`, commit the
+- [x] **P1.7 — Phase 1 review gate.** No code. Mark this `[x]`, commit the
   checklist update alone, and hand off to `/review-impl-1`.
   Commit: `Reach Phase 1 review gate`
 
