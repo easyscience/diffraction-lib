@@ -1,16 +1,17 @@
 # ADR: Complete Space-Group Reference Database
 
-**Status:** Proposed **Date:** 2026-06-01
+**Status:** Accepted **Date:** 2026-06-01
 
 ## Group
 
 Structure model.
 
-> This ADR follows [`AGENTS.md`](../../../../AGENTS.md). It is a
+> This ADR follows [`AGENTS.md`](../../../../AGENTS.md). It was a
 > prerequisite for
-> [`wyckoff-letter-detection.md`](wyckoff-letter-detection.md): Wyckoff
+> [`wyckoff-letter-detection.md`](../suggestions/wyckoff-letter-detection.md): Wyckoff
 > detection can only resolve letters for space groups present in the
-> bundled table, and that table is currently incomplete.
+> bundled table, which this ADR's implementation completed for all
+> 230 groups.
 
 ## Context
 
@@ -102,7 +103,7 @@ Coordinates and operators stay **strings** (e.g. `'(x,1/2,0)'`,
 `sympify`) in `crystallography.py` and to keep the file JSON-native
 (§2). Triclinic no-setting groups keep the `None` coordinate code, as
 today (see the `''`→`None` normalisation in
-[`wyckoff-letter-detection.md`](wyckoff-letter-detection.md) §2).
+[`wyckoff-letter-detection.md`](../suggestions/wyckoff-letter-detection.md) §2).
 
 **Query surface preserved.** On disk the JSON is a list of setting
 records, each carrying the canonical `IT_number` and
@@ -225,7 +226,7 @@ containing:
 The maintainer inspects the report and **selects** the authoritative
 value per case. Selections are recorded in a checked-in **YAML overrides
 file**,
-`docs/dev/adrs/suggestions/space-group-database/space_groups_overrides.yaml`
+`docs/dev/adrs/accepted/space-group-database/space_groups_overrides.yaml`
 while the ADR is proposed. If this ADR is accepted, move that companion
 file with the ADR to the accepted ADR area. YAML lets each selection
 carry an inline comment recording its rationale. The generator consumes
@@ -284,7 +285,7 @@ coordinate-system code": EasyDiffraction's `SpaceGroup` category uses
 the empty string `''`, while the table key uses `None`. The database
 keeps `(1, None)` and `(2, None)`; callers normalise `''` to `None` at
 lookup boundaries, as specified in
-[`wyckoff-letter-detection.md`](wyckoff-letter-detection.md). This is
+[`wyckoff-letter-detection.md`](../suggestions/wyckoff-letter-detection.md). This is
 the least surprising solution because it keeps "no setting" distinct
 from any real coordinate-code string without inventing a sentinel value.
 
@@ -343,7 +344,7 @@ and the documented decisions in sync.
   early when `coord_code is None` and `_get_general_position_ops()`
   indexes the raw key, so they need the `''`→`None` normalisation
   defined in
-  [`wyckoff-letter-detection.md`](wyckoff-letter-detection.md) §2 (which
+  [`wyckoff-letter-detection.md`](../suggestions/wyckoff-letter-detection.md) §2 (which
   also updates these call sites). This ADR delivers the data; that ADR
   delivers the `None`-code consumer handling.
 
@@ -424,7 +425,7 @@ Generated and curation artifacts:
   `30f0051c669712ab34d991e60223c5e29264fc033b2ab03392cc01465ceba926`
 - `tmp/space-groups/helper-tools/generate_space_groups.py`:
   `bf10dcfbcf9e60485037ddabc65425e61f746ad9649cd3ccc67376dd6aae241a`
-- `docs/dev/adrs/suggestions/space-group-database/space_groups_overrides.yaml`:
+- `docs/dev/adrs/accepted/space-group-database/space_groups_overrides.yaml`:
   `7077eec25d0f3b852dd7096a24dc7ac438467f9cb594f91a65ce10cda0e0722a`
 - `tmp/space-groups/extracted-comparison/disagreements.md`:
   `dda940fbf75862516411685c9b9bdf7170fa4a116f90eeeff93bd068b8acda4c`
@@ -508,7 +509,7 @@ respectively.
 
 ## Related ADRs
 
-- [`wyckoff-letter-detection.md`](wyckoff-letter-detection.md) — the
+- [`wyckoff-letter-detection.md`](../suggestions/wyckoff-letter-detection.md) — the
   dependent feature; its `''`→`None` coordinate-code normalisation and
   its "unsupported group" handling both build on this database.
 - [`iucr-cif-tag-alignment.md`](../accepted/iucr-cif-tag-alignment.md) —
