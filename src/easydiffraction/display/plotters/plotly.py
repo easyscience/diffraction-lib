@@ -144,7 +144,8 @@ def _typed_arrays_to_float32(value: object) -> object:
     Returns
     -------
     object
-        The same structure with float64 typed arrays downcast to float32.
+        The same structure with float64 typed arrays downcast to
+        float32.
     """
     if isinstance(value, dict):
         if value.get('dtype') == 'f8' and 'bdata' in value:
@@ -1714,9 +1715,8 @@ scheduleResize();
             fig.show(config=config)
             return
 
-        # Docs notebook execution sets SHARED so the baked cell HTML is a
-        # lazy placeholder; live Jupyter stays INLINE (eager, runtime via
-        # the CDN as before).
+        # Docs execution sets SHARED, baking a lazy placeholder into
+        # the cell HTML. Live Jupyter stays INLINE (eager, CDN).
         if resolve_figure_embed_mode() is FigureEmbedMode.SHARED:
             html_fig = self.serialize_html(
                 fig,
@@ -1770,7 +1770,9 @@ scheduleResize();
 
     @staticmethod
     def _figure_height(fig: object) -> int:
-        """Return the figure height in pixels for the loading skeleton."""
+        """
+        Return the figure height in pixels for the loading skeleton.
+        """
         layout = getattr(fig, 'layout', None)
         height = getattr(layout, 'height', None) if layout is not None else None
         if isinstance(height, (int, float)) and not isinstance(height, bool) and height > 0:
@@ -1782,12 +1784,13 @@ scheduleResize();
         """
         Serialize a figure as a lazy SHARED-mode placeholder.
 
-        Emits a skeleton plus the figure spec as ``application/json`` for
-        the shared ``ed-figures.js`` loader to render on demand. No Plotly
-        bundle or per-figure post-script is embedded; the runtime loads
-        once per page and the loader owns theme-sync, resize, and legend.
-        Bulk float64 arrays are downcast to float32 (visually lossless,
-        ~7 significant figures) to roughly halve the embedded data.
+        Emits a skeleton plus the figure spec as ``application/json``
+        for the shared ``ed-figures.js`` loader to render on demand. No
+        Plotly bundle or per-figure post-script is embedded; the runtime
+        loads once per page and the loader owns theme-sync, resize, and
+        legend. Bulk float64 arrays are downcast to float32 (visually
+        lossless, ~7 significant figures) to roughly halve the embedded
+        data.
 
         Parameters
         ----------
@@ -1844,7 +1847,7 @@ scheduleResize();
             Plotly figure to serialize.
         include_plotlyjs : bool | str
             Plotly JavaScript inclusion mode passed to Plotly.
-        mode : FigureEmbedMode, default=STANDALONE
+        mode : FigureEmbedMode, default=FigureEmbedMode.STANDALONE
             Embedding mode. ``SHARED`` emits a lazy placeholder for the
             docs loader; ``INLINE``/``STANDALONE`` serialize eagerly.
         force_template : str | None, default=None

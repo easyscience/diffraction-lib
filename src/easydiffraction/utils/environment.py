@@ -6,7 +6,7 @@ from __future__ import annotations
 import os
 import sys
 import tempfile
-from enum import Enum
+from enum import StrEnum
 from importlib.util import find_spec
 from pathlib import Path
 
@@ -208,7 +208,7 @@ def create_artifact_temp_dir(prefix: str) -> Path:
 # ----------------------------------------------------------------------
 
 
-class FigureEmbedMode(str, Enum):
+class FigureEmbedMode(StrEnum):
     """
     How interactive figure HTML embeds its JavaScript runtime.
 
@@ -252,10 +252,7 @@ def resolve_figure_embed_mode() -> FigureEmbedMode:
         return FigureEmbedMode(raw.lower())
     except ValueError:
         supported = ', '.join(mode.value for mode in FigureEmbedMode)
-        message = (
-            f'Invalid {_FIGURE_EMBED_MODE_ENV_VAR}={raw!r}; '
-            f'supported values: {supported}.'
-        )
+        message = f'Invalid {_FIGURE_EMBED_MODE_ENV_VAR}={raw!r}; supported values: {supported}.'
         raise ValueError(message) from None
 
 

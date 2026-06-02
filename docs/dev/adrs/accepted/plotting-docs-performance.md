@@ -29,8 +29,8 @@ appear progressively.
 
 1. Tutorial sources are `docs/docs/tutorials/ed-*.py`; notebooks are
    generated artifacts (per
-   [`notebook-generation.md`](notebook-generation.md)) and
-   are committed with **outputs stripped** (`notebook-strip`).
+   [`notebook-generation.md`](notebook-generation.md)) and are committed
+   with **outputs stripped** (`notebook-strip`).
 2. The docs CI
    ([`.github/workflows/docs.yml`](../../../../.github/workflows/docs.yml))
    runs `notebook-exec-ci` to **execute** every notebook, baking the
@@ -76,10 +76,10 @@ appear progressively.
 The same serialization paths feed three contexts with **conflicting**
 runtime needs, which is the crux of any robust fix:
 
-| Target                | Who                                                                                         | Runtime requirement                                                                                                                                                                                                          |
-| --------------------- | ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Live notebook**     | `_show_figure` in Jupyter                                                                   | Runtime must be reachable from the running kernel/browser (today: Plotly via CDN; Three.js inlined).                                                                                                                         |
-| **MkDocs site**       | executed-notebook HTML embedded by `mkdocs-jupyter`                                         | Wants the runtime loaded **once per page** and figures rendered **lazily**.                                                                                                                                                  |
+| Target                | Who                                                                                         | Runtime requirement                                                                                                                                                                                              |
+| --------------------- | ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Live notebook**     | `_show_figure` in Jupyter                                                                   | Runtime must be reachable from the running kernel/browser (today: Plotly via CDN; Three.js inlined).                                                                                                             |
+| **MkDocs site**       | executed-notebook HTML embedded by `mkdocs-jupyter`                                         | Wants the runtime loaded **once per page** and figures rendered **lazily**.                                                                                                                                      |
 | **Standalone report** | `report/html_renderer.py` → `PlotlyPlotter.serialize_html` / Three.js `render(offline=...)` | Delivery set by the existing `offline` flag — embedded/self-contained when `offline=True`, CDN when `offline=False` (default). Authoritative per [`project-summary-rendering.md`](project-summary-rendering.md). |
 
 A useful precedent already lives in the report renderer
@@ -281,10 +281,10 @@ delivered together** in one change. Concretely:
 
    Storage-side numeric precision is a separate, deliberate decision,
    proposed in a `cif-numeric-precision` ADR suggestion (out of scope
-   for this change, not committed on this branch).
-   Phase 2 adds coverage for the `f8`→`f4` transcode (shape preserved,
-   round-trips through Plotly) and a representative hover/range-sensitive
-   figure whose formatted values are unchanged.
+   for this change, not committed on this branch). Phase 2 adds coverage
+   for the `f8`→`f4` transcode (shape preserved, round-trips through
+   Plotly) and a representative hover/range-sensitive figure whose
+   formatted values are unchanged.
 
 This pays the network bill once per page from the same origin, removes
 the per-figure JS duplication, and turns first paint from "render every
@@ -454,9 +454,9 @@ Settled in discussion on 2026-06-02:
 - Hoist a single importmap into the **report** template `<head>` for
   standalone reports that render multiple Three.js scenes (the same
   per-scene-importmap bug as docs, but governed by
-  [`project-summary-rendering.md`](project-summary-rendering.md)).
-  Out of scope here since it touches the report contract; flagged so it
-  is not lost.
+  [`project-summary-rendering.md`](project-summary-rendering.md)). Out
+  of scope here since it touches the report contract; flagged so it is
+  not lost.
 
 ## Alternatives considered
 

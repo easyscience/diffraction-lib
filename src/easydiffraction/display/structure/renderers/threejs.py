@@ -217,8 +217,8 @@ class ThreeJsStructureRenderer(StructureRendererBase):
         dark_colours = theme_colors(dark=True)
         payload = json.dumps(_scene_payload(scene)).replace('</', '<\\/')
         if mode is FigureEmbedMode.SHARED:
-            # Docs pages carry one shared import map (overrides/main.html);
-            # omit the per-scene one so several scenes stay valid on a page.
+            # Docs pages provide one page-level import map; omit the
+            # per-scene one so multiple scenes on a page stay valid.
             import_map = None
         else:
             import_map = json.dumps({'imports': _import_map(offline=offline)}).replace(
