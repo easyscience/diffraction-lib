@@ -2241,6 +2241,33 @@ scheduleResize();
             return float(DEFAULT_HEIGHT * PLOTLY_HEIGHT_PER_UNIT)
         return float(plot_spec.height)
 
+    @classmethod
+    def _single_main_panel_height_pixels(cls, residual_height_fraction: float) -> int:
+        """
+        Return the default 3-row composite's main-panel height.
+
+        Standalone single-panel figures (e.g. posterior distribution
+        plots) use this so they match the pattern plot's top panel
+        rather than the full three-row composite height. Mirrors the
+        baseline main-row math in ``_baseline_non_bragg_row_heights``
+        for the default main + Bragg ticks + residual layout.
+
+        Parameters
+        ----------
+        residual_height_fraction : float
+            Residual-to-main row ratio of the reference composite.
+
+        Returns
+        -------
+        int
+            Main-panel height in pixels.
+        """
+        base = float(DEFAULT_HEIGHT * PLOTLY_HEIGHT_PER_UNIT)
+        plot_area = cls._composite_plot_area_height(base)
+        available = plot_area * cls._subplot_available_height_fraction(3)
+        non_bragg = max(available - cls._bragg_tick_symbol_height_pixels(), 1.0)
+        return round(non_bragg / (1.0 + residual_height_fraction))
+
     @staticmethod
     def _composite_plot_area_height(full_height: float) -> float:
         """

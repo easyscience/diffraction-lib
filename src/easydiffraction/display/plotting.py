@@ -2824,6 +2824,9 @@ class Plotter(RendererBase):
             x_axis_range=x_axis_range,
             y_axis_range=y_axis_range,
         )
+        panel_height = getattr(self._backend, '_single_main_panel_height_pixels', None)
+        if callable(panel_height):
+            fig.update_layout(height=panel_height(DEFAULT_RESID_HEIGHT))
         return fig
 
     def _plot_ascii_param_distribution(
