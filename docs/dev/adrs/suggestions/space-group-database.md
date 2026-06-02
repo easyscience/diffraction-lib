@@ -124,8 +124,8 @@ is **at least as queryable as today**, by both IT number +
 coordinate-system code and by Hermann-Mauguin symbol. The generated
 database therefore includes 816 records: 530 cctbx-tabulated settings,
 226 cryspy reference-settings aliases, and 60 runtime coordinate-code
-aliases, so every coordinate code the `SpaceGroup` category can produce —
-i.e. every `get_it_coordinate_system_codes_by_it_number` value — is a
+aliases, so every coordinate code the `SpaceGroup` category can produce
+— i.e. every `get_it_coordinate_system_codes_by_it_number` value — is a
 valid `SPACE_GROUPS` key.
 
 ### 2. JSON storage removes the unpickle workaround
@@ -470,14 +470,14 @@ settings. The Phase 1 database adds 226 reference-settings alias records
 and a further 60 runtime coordinate-code aliases — the redundant
 cell-choice-2/3 codes for the five primitive monoclinic groups IT
 3/4/6/10/11, which cryspy's runtime
-`get_it_coordinate_system_codes_by_it_number` exposes and which copy cell
-choice 1 verbatim — producing 816 records total, so every coordinate code
-the `SpaceGroup` category can return resolves. Reference-settings alias
-records are generated from cctbx by parsing the cryspy Hermann-Mauguin
-alias where cctbx accepts it; otherwise they copy the closest same-IT
-cctbx setting and carry the cryspy alias name. Detailed value verification
-for those alias records remains part of the deferred International Tables
-audit.
+`get_it_coordinate_system_codes_by_it_number` exposes and which copy
+cell choice 1 verbatim — producing 816 records total, so every
+coordinate code the `SpaceGroup` category can return resolves.
+Reference-settings alias records are generated from cctbx by parsing the
+cryspy Hermann-Mauguin alias where cctbx accepts it; otherwise they copy
+the closest same-IT cctbx setting and carry the cryspy alias name.
+Detailed value verification for those alias records remains part of the
+deferred International Tables audit.
 
 ## Open Questions
 
