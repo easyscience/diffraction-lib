@@ -144,6 +144,7 @@ plugins:
       include_requirejs: true # Required for Plotly
       #custom_mathjax_url: 'https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js' # See 'extra_javascript' above
       ignore_h1_titles: true # Use titles defined in the nav section below
+      toc_depth: 3 # Notebook-only TOC depth: show `##`/`###`, hide deeper steps (`####`)
       remove_tag_config:
         remove_input_tags:
           - hide-in-docs
