@@ -9,6 +9,7 @@
   --sz-body-text-color--lightmode:        #525252;
   --sz-body-heading-color--lightmode:     #434343;
   --sz-code-background-color--lightmode:  #ececec;
+  --sz-code-border-color--lightmode:      #d3d3d3;
 
   --sz-link-color--darkmode:              #37bdf9;
   --sz-hovered-link-color--darkmode:      #2890c0;
@@ -16,6 +17,7 @@
   --sz-body-text-color--darkmode:         #a3a3a3;
   --sz-body-heading-color--darkmode:      #e5e5e5;
   --sz-code-background-color--darkmode:   #212121;
+  --sz-code-border-color--darkmode:       #444;
 }
 
 /****************/
@@ -221,6 +223,20 @@ Adjust the margins and paddings to fit the defaults in MkDocs Material and do no
 .jupyter-wrapper {
   width: 100% !important;
   display: flex !important;
+}
+
+/* Jupyter code-cell (input) border color, per theme.
+   mkdocs-jupyter inlines its own index.css inside the notebook body,
+   after this stylesheet, and already sets --jp-cell-editor-border-color
+   on `[data-md-color-scheme=slate] .jupyter-wrapper` (same specificity,
+   later in source order, so an equal-specificity override would lose).
+   Prefix `body` (which carries data-md-color-scheme) to out-specify the
+   plugin's rule and win the cascade. */
+body[data-md-color-scheme="default"] .jupyter-wrapper {
+  --jp-cell-editor-border-color: var(--sz-code-border-color--lightmode);
+}
+body[data-md-color-scheme="slate"] .jupyter-wrapper {
+  --jp-cell-editor-border-color: var(--sz-code-border-color--darkmode);
 }
 
 .jp-Notebook {
