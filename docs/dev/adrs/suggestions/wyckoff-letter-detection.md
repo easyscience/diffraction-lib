@@ -461,6 +461,84 @@ which fall out naturally below.
   `_space_group_Wyckoff.*` values are ignored/overwritten too — the
   library does not validate its own derived output at runtime.
 
+### 10. Wyckoff coordinate templates use canonical parametric form
+
+Every consumer of the table's `coords_xyz` templates assumes each one is
+written in **canonical International Tables parametric form**: a free
+axis appears as a bare signed variable (`x`, `-x`, `2*x`), and a
+symmetry-fixed axis is a constant or a function of the _other_ (free)
+axes in which its **own** variable never appears. The constrained-axis
+test is exactly that — axis _i_ is fixed when symbol _i_ is absent from
+all three components, so `(x,-x,z)` marks `fract_y` constrained,
+`(0,0,z)` marks `fract_x`/`fract_y` constrained, and `(x,y,z)` marks
+none. Three places rely on this spelling: the existing coordinate
+constraints (`_fract_constrained_flags()` /
+`_apply_fract_constraints()`,
+[`crystallography.py:221`](../../../../src/easydiffraction/crystallography/crystallography.py)),
+the §2 orbit matcher and representative selection, and the §3 coordinate
+snapping.
+
+**A regression makes this a live problem, not just a guideline.** The
+complete `space_groups.json.gz` produced by the space-group-database
+work ([`space-group-database.md`](../accepted/space-group-database.md))
+stores cctbx's special-position **operator** form for coupled sites
+instead of the canonical form. R-3m letter `h` is tabulated as
+`(1/2*x-1/2*y, -1/2*x+1/2*y, z)` rather than `(x,-x,z)`, and
+`(x,x,z)`-type sites as `(1/2*x+1/2*y, 1/2*x+1/2*y, …)`. In the operator
+form a coupled component carries **all** of its participating variables,
+so the "own symbol absent" test never fires:
+`_fract_constrained_flags()` reports the dependent axis as free and
+`_apply_fract_constraints()` never slaves it. After a refinement step
+moves the free coordinate, the dependent one (here `fract_y = -fract_x`)
+goes stale, the atom drifts off its special position, and — because the
+per-atom multiplicity is still forced to the special-position value
+(today's `_update_atom_multiplicity()`, §7) — the recalculated structure
+factors become inconsistent and blow up. This is observable in the
+`ed-6` HS / R-3m tutorial: refining the O and H `fract_x` / `fract_z`
+(its third fit) leaves `fract_y` stale, so the post-fit pattern
+recalculation jumps from a good fit to a badly wrong one and the next
+fit restarts from a far worse reduced χ². The scope is every coupled
+special position — **288 of 5600 tabulated positions (5.1 %), across 117
+space-group IT numbers**; fully-fixed sites (`(0,0,z)`) and general
+positions are unaffected because their constrained-axis detection does
+not depend on the spelling.
+
+**Decision — regenerate the table in canonical parametric form**, and
+add a generation-time invariant check that rejects any `coords_xyz`
+component whose own axis variable appears in a coupled term (operator-
+form leakage). The canonical strings are recoverable for the whole
+table: cctbx exposes the standard ITA Wyckoff representatives directly,
+and independently each operator template is a linear projection that
+re-parametrises deterministically to a canonical representative
+(verified: all 288 affected templates reduce to canonical parametric
+form). **Copying the pre-#187 pickle back is not a fix** — it stored
+canonical strings for only 236 of the 288 affected positions and covered
+just 613 of today's 816 keys (missing 203), so the canonical form must
+be (re)generated for the complete table, not restored from the old
+snapshot. This keeps the cheap symbol-presence detection and every
+current consumer unchanged, and it is the form §2's matcher, §3's
+snapping, and §6–§7's multiplicity contract already assume.
+
+The recorded fallback, if a future need for the raw operator form
+arises, is to make the kernel operator-form-aware: replace the
+symbol-presence heuristic with a rank / null-space analysis of the
+parsed linear map `R·v + b` (degrees of freedom = `rank(R)`; the
+dependent axes are those outside a chosen free-axis basis), align the §2
+matcher to the same analysis, and still re-parametrise to a single
+canonical representative before snapping so downstream consumers see a
+stable form. This is the more general solution but more code, and it
+must be proven against both representations; it is unnecessary while the
+table is canonical.
+
+Either path is a **prerequisite for the detection and snapping in §2–§3
+and the multiplicity contract in §6–§7**, which all assume canonical
+templates and an atom that actually sits on its special position. A
+coupled-special-position regression test (for example R-3m `h`,
+asserting `fract_y` is flagged constrained and tracks `-fract_x` after a
+`fract_x` edit) belongs in the targeted suite below, since the current
+constraint tests cover only all-fixed and all-free sites — which behave
+identically in both spellings and so never exercised the gap.
+
 ## Open Questions
 
 - The default tolerance value (`1e-3`) is a reasonable starting point
@@ -611,7 +689,10 @@ already built.
 
 - [`space-group-database.md`](../accepted/space-group-database.md) — the
   complete, self-owned `SPACE_GROUPS` reference table (all 230 groups,
-  every setting and full Wyckoff orbit) that this detection reads.
+  every setting and full Wyckoff orbit) that this detection reads. §10
+  requires its `coords_xyz` templates in canonical parametric form; the
+  table currently ships cctbx operator-form entries for coupled special
+  positions, which must be regenerated.
 - [`category-owner-sections.md`](../accepted/category-owner-sections.md)
   — the new read-only, auto-populated `space_group_Wyckoff` category is
   a `CategoryOwner`-held sibling category on the crystal structure.

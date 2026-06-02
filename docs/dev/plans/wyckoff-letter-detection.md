@@ -129,11 +129,30 @@ rotation/translation parser.
     stored non-empty letter verbatim with `?` multiplicity.
 14. **Tolerance.** `_WYCKOFF_DETECTION_TOL = 1e-3` is the default; a
     user/project-level tolerance setting remains deferred.
+15. **Canonical Wyckoff templates are a prerequisite (ADR §10).** The
+    orbit matcher (Decisions 2–3), snapping (Decision 5), and the
+    existing coordinate constraints assume `coords_xyz` in canonical ITA
+    parametric form (`(x,-x,z)`), but the bundled `space_groups.json.gz`
+    ships cctbx operator-form templates (`(1/2*x-1/2*y,…)`) for 288
+    coupled special positions across 117 IT numbers. That spelling
+    silently breaks `_fract_constrained_flags()` /
+    `_apply_fract_constraints()`, so a refined special-position
+    coordinate drifts off-site (the `ed-6` fit-3 → fit-4 regression).
+    The table must be regenerated in canonical form — with a
+    generation-time invariant check rejecting operator-form leakage —
+    before detection/snapping can be trusted, and a coupled-position
+    regression test (e.g. R-3m `h`) added. This touches the
+    space-group-database, so treat it as a coordinated change with that
+    ADR.
 
 ## Open questions
 
 - **Tolerance default.** `1e-3` is the ADR's starting point; it may be
   tuned against the tutorial corpus during Phase 2. Not a blocker.
+- **Canonical-form regeneration ownership.** §10's fix lives in the
+  space-group-database generator, not this feature's code. Decide
+  whether to land it as a standalone fix ahead of this plan or fold it
+  into Phase 1 — it is a hard prerequisite either way.
 
 ## Concrete files likely to change
 
