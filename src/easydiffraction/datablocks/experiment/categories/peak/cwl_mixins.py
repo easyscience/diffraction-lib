@@ -27,7 +27,7 @@ class CwlBroadeningMixin:
             units='degrees_squared',
             display_handler=DisplayHandler(
                 display_name='U',
-                display_units='deg^2',
+                display_units='deg²',
                 latex_name=r'$U$',
                 latex_units=r'\mathrm{deg}^2',
             ),
@@ -46,7 +46,7 @@ class CwlBroadeningMixin:
             units='degrees_squared',
             display_handler=DisplayHandler(
                 display_name='V',
-                display_units='deg^2',
+                display_units='deg²',
                 latex_name=r'$V$',
                 latex_units=r'\mathrm{deg}^2',
             ),
@@ -65,7 +65,7 @@ class CwlBroadeningMixin:
             units='degrees_squared',
             display_handler=DisplayHandler(
                 display_name='W',
-                display_units='deg^2',
+                display_units='deg²',
                 latex_name=r'$W$',
                 latex_units=r'\mathrm{deg}^2',
             ),
@@ -124,7 +124,7 @@ class CwlBroadeningMixin:
     @property
     def broad_gauss_u(self) -> Parameter:
         """
-        Gaussian broadening from sample size and resolution (deg^2).
+        Gaussian broadening from sample size and resolution (deg²).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -138,7 +138,7 @@ class CwlBroadeningMixin:
     @property
     def broad_gauss_v(self) -> Parameter:
         """
-        Gaussian broadening instrumental contribution (deg^2).
+        Gaussian broadening instrumental contribution (deg²).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -152,7 +152,7 @@ class CwlBroadeningMixin:
     @property
     def broad_gauss_w(self) -> Parameter:
         """
-        Gaussian broadening instrumental contribution (deg^2).
+        Gaussian broadening instrumental contribution (deg²).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.

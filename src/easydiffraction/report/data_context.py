@@ -1020,14 +1020,14 @@ def _plain_unit_text(value: str) -> str:
     """Return plain unit text normalized for report display."""
     return (
         value
-        .replace('degrees_squared', 'deg^2')
-        .replace('degree_squared', 'deg^2')
-        .replace('degrees squared', 'deg^2')
-        .replace('degree squared', 'deg^2')
+        .replace('degrees_squared', 'deg²')
+        .replace('degree_squared', 'deg²')
+        .replace('degrees squared', 'deg²')
+        .replace('degree squared', 'deg²')
         .replace('degrees', 'deg')
         .replace('degree', 'deg')
-        .replace('deg²', 'deg^2')
-        .replace('°²', 'deg^2')
+        .replace('deg^2', 'deg²')
+        .replace('°²', 'deg²')
         .replace('°', 'deg')
     )
 
