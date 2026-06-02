@@ -66,6 +66,13 @@ commit with message `Promote plotting-docs-performance ADR to accepted`.
    `{% block extrahead %}` in `docs/overrides/main.html`, paths resolved
    against `{{ base_url }}`; `SHARED` scenes drop their per-scene
    importmap.
+7. **SHARED figures downcast bulk float64 arrays to float32**
+   (ADR Decision 7) — a bounded, display-only precision reduction
+   (~2× payload). Operates on a copy of the serialized figure; source
+   data/CIF/reports keep full float64; visually lossless at shown
+   precision. Storage-side precision is the separate
+   [`cif-numeric-precision`](../adrs/suggestions/cif-numeric-precision.md)
+   ADR.
 
 ## No new dependencies
 
@@ -252,6 +259,12 @@ with the zsh-safe pattern and preserve the exit code.
 - A `tools/` test for `bump_vendored_js.py --check` drift detection (no
   network — monkeypatch/`pooch` fixture), mirroring
   `tools/test_structure_check.py`.
+- `_typed_arrays_to_float32()` (SHARED float32 downcast, ADR Decision 7):
+  every `f8` typed-array spec becomes `f4` with `shape` preserved and
+  round-trips through Plotly; integer specs and inline scalars are
+  untouched. Plus a representative powder/correlation figure whose
+  **hover-template-formatted** values are identical under f64 vs f32
+  (proving the loss is display-only).
 
 **Trace-type audit** — confirm no WebGL/3D/map trace types are used
 anywhere; if any are found, switch the vendored bundle from

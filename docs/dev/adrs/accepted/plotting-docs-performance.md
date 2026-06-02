@@ -261,6 +261,30 @@ delivered together** in one change. Concretely:
    scene consumes it (the tiny JSON is inert), keeping the override
    simple.
 
+7. **SHARED figures downcast bulk float64 arrays to float32 (a bounded,
+   display-only precision decision).** In `SHARED` mode only, the
+   serializer transcodes the figure spec's float64 typed arrays to
+   float32 (~7 significant figures) before embedding, roughly halving
+   the payload (measured: ed-6 5.5 MB → 3.4 MB; 2.2 → 1.4 MB gzipped).
+   This is an explicit **display** decision, not a change to stored
+   data, and it is bounded:
+   - It operates on a **copy** of the serialized figure
+     (`fig.to_plotly_json()`), never the source parameters, CIF, or any
+     computation.
+   - It applies **only** to docs `SHARED` figures. Live notebooks
+     (`INLINE`), reports (`STANDALONE`), and every CIF/state file keep
+     full float64.
+   - It is **visually lossless**: screens resolve ~3 significant
+     figures, and the tutorials' hover templates format to a few
+     decimals (e.g. `:,.2f`), so float32 changes no displayed or
+     hover-visible value at the precision actually shown.
+
+   Storage-side numeric precision is a separate, deliberate decision
+   tracked in [`cif-numeric-precision.md`](cif-numeric-precision.md).
+   Phase 2 adds coverage for the `f8`→`f4` transcode (shape preserved,
+   round-trips through Plotly) and a representative hover/range-sensitive
+   figure whose formatted values are unchanged.
+
 This pays the network bill once per page from the same origin, removes
 the per-figure JS duplication, and turns first paint from "render every
 figure" into "render nothing until seen" — addressing both bottlenecks
