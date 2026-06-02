@@ -87,10 +87,14 @@ need a new dependency, stop and ask per `AGENTS.md` §Planning.
 
 1. **Activation trigger.** Scroll-near lazy only (lean: yes);
    click-to-activate deferred unless a page proves pathological.
-2. **RequireJS.** Keep `include_requirejs: true` through Phase 1; in
-   Phase 2, after confirming the self-hosted `include_plotlyjs=False`
-   output renders under `mkdocs-jupyter`, remove it. If removal breaks
-   rendering, keep it and note why.
+2. **RequireJS — resolved (Phase 2): kept.** The SHARED output uses the
+   global `window.Plotly` (self-hosted bundle) loaded by a classic
+   script, so it does not itself need RequireJS. But confirming nothing
+   else under `mkdocs-jupyter` relies on `include_requirejs` requires a
+   browser render check this environment cannot perform. Rather than
+   risk breaking rendering, `include_requirejs: true` is **kept**, and
+   its removal is deferred to a browser-verified follow-up (cost of
+   keeping: one small cached script).
 
 ## Concrete files likely to change
 
@@ -275,9 +279,10 @@ line:
 git grep -nE "go\.(Scattergl|Scatter3d|Surface|Mesh3d|Cone|Streamtube|Volume|Isosurface|Scattermapbox|Choroplethmapbox|Densitymapbox|Scattergeo|Choropleth)" -- src docs || echo "no gl/3d/map traces; plotly-cartesian suffices"
 ```
 
-**RequireJS** — after confirming docs render with the self-hosted
-`include_plotlyjs=False` output, remove `include_requirejs: true` from
-`mkdocs.yml` (open question 2). Commit separately.
+**RequireJS** — **kept** (open question 2 resolved). Removing
+`include_requirejs: true` needs a browser render check this environment
+cannot run, so it is deferred to a browser-verified follow-up rather
+than risk breaking rendering.
 
 **Command suite** (run in order; fix → commit → re-run until clean):
 
@@ -310,7 +315,8 @@ and `docs/site/` untracked. For tutorial project-path collisions in
 - [ ] Phase 2 tests added; `test-structure-check` + the five task
       commands clean
 - [ ] Docs build smoke passes; figures load lazily
-- [ ] RequireJS decision applied
+- [x] RequireJS decision applied (kept; removal deferred to
+      browser-verified follow-up)
 - [ ] Phase 2 review cycle closed (`/review-impl-2` sentinel)
 - [ ] ADR promoted to `accepted/` and indexed
 - [ ] PR opened against `develop`
