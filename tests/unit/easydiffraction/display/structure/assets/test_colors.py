@@ -90,8 +90,8 @@ class TestConstants:
         assert LIGHT_THEME['foreground'] == (34, 34, 34)
 
     def test_dark_theme_values(self):
-        # Derived from display/theme.py (#111111 / #e6e8ee).
-        assert DARK_THEME['background'] == (17, 17, 17)
+        # Derived from display/theme.py (#212121 / #e6e8ee).
+        assert DARK_THEME['background'] == (33, 33, 33)
         assert DARK_THEME['foreground'] == (230, 232, 238)
 
     def test_theme_values_all_rgb(self):

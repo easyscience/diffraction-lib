@@ -776,8 +776,8 @@ class TestRenderUnpatchedIntegration:
             offline=True,
             dark=True,
         )
-        assert '--cv-scene-bg: rgb(17, 17, 17);' in html
-        assert '--cv-label-shadow-bg: rgb(17, 17, 17);' in html
+        assert '--cv-scene-bg: rgb(33, 33, 33);' in html
+        assert '--cv-label-shadow-bg: rgb(33, 33, 33);' in html
         assert 'rgb(230, 232, 238)' in html  # DARK_THEME foreground
         assert 'dark' in html
 

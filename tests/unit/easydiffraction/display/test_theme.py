@@ -32,7 +32,7 @@ def test_plot_backgrounds_opaque_and_paper_transparent():
     # Inside the axes rectangle is opaque; the figure paper stays
     # transparent so charts blend into the host page.
     assert theme.LIGHT_BACKGROUND_COLOR == '#ffffff'
-    assert theme.DARK_BACKGROUND_COLOR == '#111111'
+    assert theme.DARK_BACKGROUND_COLOR == '#212121'
     assert theme.PAPER_BACKGROUND_COLOR == 'rgba(0, 0, 0, 0)'
 
 

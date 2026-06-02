@@ -8,7 +8,7 @@ from dataclasses import dataclass
 
 # Background inside the axes rectangle (the plotted area / 3D scene).
 LIGHT_BACKGROUND_COLOR = '#ffffff'
-DARK_BACKGROUND_COLOR = '#111111'
+DARK_BACKGROUND_COLOR = '#212121'
 # Figure paper (margins around the axes) stays transparent so charts
 # blend into the host page; only the plotted area is opaque.
 PAPER_BACKGROUND_COLOR = 'rgba(0, 0, 0, 0)'
