@@ -3,8 +3,9 @@
 """
 Space group reference data.
 
-Loads gzipped, packaged JSON with crystallographic space-group information.
-The file is part of the distribution; user input is not involved.
+Loads gzipped, packaged JSON with crystallographic space-group
+information. The file is part of the distribution; user input is not
+involved.
 """
 
 from __future__ import annotations
