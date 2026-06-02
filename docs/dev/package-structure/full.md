@@ -263,7 +263,6 @@
 │   ├── 📄 __init__.py
 │   ├── 📄 crystallography.py
 │   └── 📄 space_groups.py
-│       └── 🏷️ class _RestrictedUnpickler
 ├── 📁 datablocks
 │   ├── 📁 experiment
 │   │   ├── 📁 categories

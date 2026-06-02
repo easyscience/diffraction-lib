@@ -12,7 +12,10 @@ from __future__ import annotations
 from abc import ABC
 from abc import abstractmethod
 
-from IPython import get_ipython
+try:
+    from IPython import get_ipython
+except ImportError:  # IPython is an optional display dependency
+    get_ipython = None
 from rich.color import Color
 
 from easydiffraction.display.theme import DARK_AXIS_FRAME_COLOR
@@ -63,7 +66,9 @@ class TableBackendBase(ABC):
         default = True
 
         in_jupyter = (
-            get_ipython() is not None and get_ipython().__class__.__name__ == 'ZMQInteractiveShell'
+            get_ipython is not None
+            and get_ipython() is not None
+            and get_ipython().__class__.__name__ == 'ZMQInteractiveShell'
         )
 
         if not in_jupyter:
