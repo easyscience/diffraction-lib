@@ -1508,7 +1508,7 @@ project_2.save_as(dir_path='data/powder_diffraction_LBCO_Si')
 #
 # If you'd like to keep exploring, the EasyDiffraction library offers
 # many additional tutorials and examples on the official documentation
-# site: 👉 https://docs.easydiffraction.org/lib/tutorials/
+# site: 👉 https://docs.easydiffraction.org/lib/latest/tutorials
 #
 # Besides the Python package, EasyDiffraction also comes with a
 # graphical user interface (GUI) that lets you perform similar analyses
