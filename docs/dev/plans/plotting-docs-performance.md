@@ -158,7 +158,7 @@ dependency the plan does not name, **stop and ask**.
       HTML. Export from `utils/__init__.py` if needed. Commit:
       `Add FigureEmbedMode enum and env resolver`
 
-- [ ] **P1.2 — Add the vendored-JS bump script and task.** Create
+- [x] **P1.2 — Add the vendored-JS bump script and task.** Create
       `tools/bump_vendored_js.py` (pinned table of Plotly + Three.js
       versions/URLs/SHA-256, `pooch` fetch with `known_hash`, regenerate
       `LICENSES.md`, `--check` mode). Add the `vendor-update-js` pixi

@@ -221,6 +221,12 @@ docs-set-default-pre = 'mike set-default -F docs/mkdocs.yml --push --branch gh-p
 
 docs-update-assets = 'python tools/update_docs_assets.py'
 
+# Vendored JavaScript runtimes (Plotly cartesian bundle + Three.js).
+# vendor-update-js re-fetches the pinned versions; vendor-check-js is a
+# no-network drift guard for CI.
+vendor-update-js = 'python tools/bump_vendored_js.py'
+vendor-check-js = 'python tools/bump_vendored_js.py --check'
+
 ##############################
 # 📦 Template Management Tasks
 ##############################
