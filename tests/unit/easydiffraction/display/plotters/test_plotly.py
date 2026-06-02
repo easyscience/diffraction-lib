@@ -245,6 +245,9 @@ def test_show_figure_adds_legend_toggle_script_to_html_output(monkeypatch):
     assert "'modebar.color'" in captured['post_script']
     assert "'modebar.activecolor'" in captured['post_script']
     assert 'rgbaFromColor' in captured['post_script']
+    # Modebar icons are also themed via a class-based !important rule so
+    # they stay visible regardless of Plotly's inline fills.
+    assert 'ed-plotly-themed-modebar' in captured['post_script']
     assert 'const correlationColorscale = function (colors) {' in captured['post_script']
     assert 'const themeSync = meta.ed_plotly_theme_sync;' in captured['post_script']
     assert 'const applyAnnotationTheme = function (update, colors) {' in captured['post_script']

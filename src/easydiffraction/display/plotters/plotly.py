@@ -1336,10 +1336,34 @@ const rgbaFromColor = function (color, alpha) {
     return 'rgba(' + red + ', ' + green + ', ' + blue + ', ' + alpha + ')';
 };
 
+const installModebarIconStyle = function (theme, colors) {
+    // Plotly paints modebar icon fills with non-important inline styles
+    // (and re-paints on hover), and the host plot id can start with a
+    // digit, so an id-based rule is invalid. A class-based !important
+    // rule with direct colors reliably themes every icon, inactive and
+    // hovered, in both light and dark hosts.
+    graphDiv.classList.add('ed-plotly-themed-modebar');
+    const styleId = 'ed-plotly-modebar-icon-style';
+    let style = document.getElementById(styleId);
+    if (!style) {
+        style = document.createElement('style');
+        style.id = styleId;
+        document.head.appendChild(style);
+    }
+    const inactive = rgbaFromColor(colors.foreground, theme === 'dark' ? 0.62 : 0.55);
+    const active = rgbaFromColor(colors.foreground, theme === 'dark' ? 0.95 : 0.9);
+    style.textContent = (
+        '.ed-plotly-themed-modebar .modebar-btn path { fill: ' + inactive + ' !important; }'
+        + '.ed-plotly-themed-modebar .modebar-btn:hover path,'
+        + '.ed-plotly-themed-modebar .modebar-btn.active path { fill: ' + active + ' !important; }'
+    );
+};
+
 const applyTheme = function () {
     const theme = hostTheme();
     const colors = themeColors(theme);
     const syncMeta = themeSyncMeta();
+    installModebarIconStyle(theme, colors);
 
     if (graphDiv.dataset.edPlotlyTheme === theme) {
         return;

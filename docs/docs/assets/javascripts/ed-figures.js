@@ -112,6 +112,23 @@
     return 'rgba(' + red + ', ' + green + ', ' + blue + ', ' + alpha + ')';
   }
 
+  function installModebarIconStyle(graphDiv, mode, colors) {
+    graphDiv.classList.add('ed-plotly-themed-modebar');
+    var styleId = 'ed-plotly-modebar-icon-style';
+    var style = document.getElementById(styleId);
+    if (!style) {
+      style = document.createElement('style');
+      style.id = styleId;
+      document.head.appendChild(style);
+    }
+    var inactive = rgbaFromColor(colors.foreground, mode === 'dark' ? 0.62 : 0.55);
+    var active = rgbaFromColor(colors.foreground, mode === 'dark' ? 0.95 : 0.9);
+    style.textContent =
+      '.ed-plotly-themed-modebar .modebar-btn path { fill: ' + inactive + ' !important; }' +
+      '.ed-plotly-themed-modebar .modebar-btn:hover path,' +
+      '.ed-plotly-themed-modebar .modebar-btn.active path { fill: ' + active + ' !important; }';
+  }
+
   function applyTheme(graphDiv, theme, themeSync) {
     if (!graphDiv || !window.Plotly || !theme) {
       return;
@@ -121,6 +138,7 @@
     if (!colors) {
       return;
     }
+    installModebarIconStyle(graphDiv, mode, colors);
     var paperBackground = colors.paperBackground || 'rgba(0, 0, 0, 0)';
     var transparentPlot = themeSync && themeSync.correlationHeatmap === true;
     var modebarColor = rgbaFromColor(colors.foreground, mode === 'dark' ? 0.62 : 0.42);
