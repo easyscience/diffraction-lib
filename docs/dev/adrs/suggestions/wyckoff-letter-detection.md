@@ -101,18 +101,17 @@ Add to
 
 Both return a small frozen
 `WyckoffPosition(letter, multiplicity, site_symmetry, coord_template)`
-dataclass rather
-than bare tuples: the named values are consumed together when a position
-is detected or looked up (the atom site stores the letter and
-multiplicity; the derived `space_group_Wyckoff` table exposes the
-site-symmetry symbol), and the selected `coord_template` is what
-coordinate snapping and constrained-axis flags use. `coord_template` is
-`None` only for plain table lookups that do not provide coordinates.
-Named fields read better at the call sites, and the record can later
-carry the equivalent-position orbit without a breaking positional
-change. This matches the project's frozen-dataclass metadata idiom
-(`TypeInfo`, `Compatibility`); the bare-tuple alternative is rejected as
-less readable and fragile to extension.
+dataclass rather than bare tuples: the named values are consumed
+together when a position is detected or looked up (the atom site stores
+the letter and multiplicity; the derived `space_group_Wyckoff` table
+exposes the site-symmetry symbol), and the selected `coord_template` is
+what coordinate snapping and constrained-axis flags use.
+`coord_template` is `None` only for plain table lookups that do not
+provide coordinates. Named fields read better at the call sites, and the
+record can later carry the equivalent-position orbit without a breaking
+positional change. This matches the project's frozen-dataclass metadata
+idiom (`TypeInfo`, `Compatibility`); the bare-tuple alternative is
+rejected as less readable and fragile to extension.
 
 **Orbit-membership test.** For a coordinate `p = (x, y, z)` and an orbit
 template parsed into rotation `R` and translation `b`, the point lies on
@@ -136,10 +135,10 @@ nearest-position.
 **Representative selection.** The matcher also records the nearest
 template inside the winning orbit. That selected `coord_template`, not
 the first `coords_xyz[0]` entry in the table, drives the existing
-coordinate-snap and constrained-axis logic. For example, in Pm-3m
-letter `6e`, a point near `(0,x,0)` must snap and constrain according to
-the `(0,x,0)` representative, not the first table representative
-`(x,0,0)`. The explicit-letter path uses
+coordinate-snap and constrained-axis logic. For example, in Pm-3m letter
+`6e`, a point near `(0,x,0)` must snap and constrain according to the
+`(0,x,0)` representative, not the first table representative `(x,0,0)`.
+The explicit-letter path uses
 `wyckoff_position_info(..., fract_xyz=current_coords)` to select the
 nearest representative for the chosen letter before snapping.
 
@@ -200,9 +199,9 @@ group the letter changes in three ways:
   unsupported new key, auto-detection is a no-op: existing letters are
   preserved verbatim as unvalidated values, multiplicities become
   `None`, constraints are skipped, and a warning records that the group
-  is untabulated. Preserving the stored letter is chosen over clearing it
-  because, without a persistent auto/provided marker, deleting it could
-  remove valid user or CIF input.
+  is untabulated. Preserving the stored letter is chosen over clearing
+  it because, without a persistent auto/provided marker, deleting it
+  could remove valid user or CIF input.
 - **User edits the letter** (public letter setter). The chosen letter is
   applied as-is and persists. Its site-symmetry constraints snap the
   constrained axes onto the special position (§5); if the pre-set
@@ -210,8 +209,8 @@ group the letter changes in three ways:
   — a warning is logged that the coordinates were adjusted, but the
   change is still made. A user-set letter is not re-detected until the
   user next edits the coordinates or space-group key. (For a space group
-  absent from the table the letter is accepted unvalidated and carries no
-  derived data or constraints — §8.)
+  absent from the table the letter is accepted unvalidated and carries
+  no derived data or constraints — §8.)
 
 Detection writes the resolved letter through a dedicated internal
 mutator, `_set_wyckoff_letter_detected()`, modelled on the existing
@@ -308,12 +307,12 @@ standard CIF tag `_atom_site.site_symmetry_multiplicity`. Its empty form
 is `None`, and that empty state follows **record availability**, not the
 letter: a no-record site (an unsupported space group, with or without a
 stored non-empty letter; or a transient empty letter before the first
-update) has `None` multiplicity whether its letter is empty or stored but
-unvalidated (§8). `None` serialises to CIF `?` (§9) and the calculator
-skips it (§7).
+update) has `None` multiplicity whether its letter is empty or stored
+but unvalidated (§8). `None` serialises to CIF `?` (§9) and the
+calculator skips it (§7).
 
-The **site-symmetry symbol is not an atom-site quantity.** In the CIF core
-dictionary it belongs to the `space_group_Wyckoff` loop
+The **site-symmetry symbol is not an atom-site quantity.** In the CIF
+core dictionary it belongs to the `space_group_Wyckoff` loop
 (`_space_group_Wyckoff.site_symmetry` — "the subgroup of the space group
 that leaves the point fixed"), alongside the Wyckoff `letter`,
 `multiplicity`, and `coords_xyz`. EasyDiffraction therefore gains a new
@@ -321,9 +320,9 @@ read-only `space_group_Wyckoff` category on the crystal structure (a
 sibling of `space_group`, `cell`, `atom_sites`). It lists every Wyckoff
 position of the structure's current space group — `id` (the CIF category
 key, e.g. `6e`), `letter`, `multiplicity`, `site_symmetry`, and the
-representative `coords_xyz` — sourced from `SPACE_GROUPS[key]` (`key` via
-the §2 normalisation). This is the symbol's correct home and the natural
-place for the deferred "expose the full orbit" work.
+representative `coords_xyz` — sourced from `SPACE_GROUPS[key]` (`key`
+via the §2 normalisation). This is the symbol's correct home and the
+natural place for the deferred "expose the full orbit" work.
 
 The collection key is `id`, serialized as `_space_group_Wyckoff.id`.
 That follows the CIF category-key identity rather than using `letter` as
@@ -343,9 +342,10 @@ ordinary category update hooks, so no special `_update_priority` is
 needed and no other category depends on it for detection. This
 read-only, auto-populated collection is a **new pattern** in the model —
 no prior instance exists (the closest, `atom_site_aniso`, is
-sync-managed but user-editable) — and is justified by being a CIF-defined
-category whose contents are fully determined by the space group. When
-the space group is absent from `SPACE_GROUPS`, the category is empty.
+sync-managed but user-editable) — and is justified by being a
+CIF-defined category whose contents are fully determined by the space
+group. When the space group is absent from `SPACE_GROUPS`, the category
+is empty.
 
 `site_symmetry` stores the International Tables site-symmetry symbol
 **verbatim** from the table, including its positional dots (for example
@@ -384,18 +384,18 @@ below is a guard, not a common case. When the space group is genuinely
 absent from the table its letters cannot be enumerated, so membership
 validation is not applied — the validator accepts whatever the user or a
 CIF supplies. Auto-detection is still a no-op there, but an explicit
-letter from Python/CIF input is stored verbatim rather than rejected, and
-a previously stored letter is preserved when a later space-group change
-moves the site into an unsupported key. Blocking a valid assignment,
-failing to load an otherwise-valid CIF, or deleting a possibly valid
-stored value is worse than keeping an unverifiable letter. A stored
-non-empty letter in this no-record state carries no `multiplicity` (§6),
-drives no symmetry constraints, and a `log.warning` records that the
-group is untabulated so the letter could not be validated. Rejecting with
-a validation error was the
-considered alternative, declined as too brittle for boundary input that
-Python assignment and CIF loading routinely produce. The atom site
-reaches its space group through the parent chain
+letter from Python/CIF input is stored verbatim rather than rejected,
+and a previously stored letter is preserved when a later space-group
+change moves the site into an unsupported key. Blocking a valid
+assignment, failing to load an otherwise-valid CIF, or deleting a
+possibly valid stored value is worse than keeping an unverifiable
+letter. A stored non-empty letter in this no-record state carries no
+`multiplicity` (§6), drives no symmetry constraints, and a `log.warning`
+records that the group is untabulated so the letter could not be
+validated. Rejecting with a validation error was the considered
+alternative, declined as too brittle for boundary input that Python
+assignment and CIF loading routinely produce. The atom site reaches its
+space group through the parent chain
 `atom → atom_sites → structure → space_group`, the same access already
 used for ADP synchronisation
 ([`default.py:252`](../../../../src/easydiffraction/datablocks/structure/categories/atom_sites/default.py)).
@@ -420,11 +420,11 @@ which fall out naturally below.
   **Any** non-empty letter is written verbatim — whether detected for a
   supported group, supplied explicitly for an unsupported one, or
   preserved after a later change into an unsupported key (§3, §8). A
-  non-empty letter in an unsupported group carries a `None`
-  multiplicity because it is stored but unvalidated. A letter is empty,
-  and serialises as the CIF null `?`, only when it is neither detected
-  nor otherwise stored — an unsupported group with no stored letter, or
-  a transient not-yet-updated state. `?` is already the serializer's
+  non-empty letter in an unsupported group carries a `None` multiplicity
+  because it is stored but unvalidated. A letter is empty, and
+  serialises as the CIF null `?`, only when it is neither detected nor
+  otherwise stored — an unsupported group with no stored letter, or a
+  transient not-yet-updated state. `?` is already the serializer's
   output for an empty string
   ([`serialize.py:62`](../../../../src/easydiffraction/io/cif/serialize.py))
   and reads back as empty. The column is therefore always present and
@@ -446,20 +446,20 @@ which fall out naturally below.
   ([`iucr_writer.py:876`](../../../../src/easydiffraction/io/cif/iucr_writer.py))
   already emits the resolved `Wyckoff_symbol` for every atom and now
   also emits `_atom_site.site_symmetry_multiplicity`.
-- **`space_group_Wyckoff` loop.** The derived category is model-owned and
-  report-facing, but it is not persisted in project CIF. `Structure`
+- **`space_group_Wyckoff` loop.** The derived category is model-owned
+  and report-facing, but it is not persisted in project CIF. `Structure`
   explicitly excludes it from project-save serialization via
   `_serializable_categories()`, overriding `CategoryOwner`'s default of
   serializing all owned categories. The IUCr/report writer emits the
   `_space_group_Wyckoff.*` loop from the derived category because that
   loop is useful report output even though it is redundant persisted
   state.
-- **Derived values on read.** Multiplicity is recomputed from the letter,
-  so any incoming `_atom_site.site_symmetry_multiplicity` is ignored
-  rather than trusted; the `space_group_Wyckoff` category is re-derived
-  from the space group, so any incoming `_space_group_Wyckoff.*` values
-  are ignored/overwritten too — the library does not validate its own
-  derived output at runtime.
+- **Derived values on read.** Multiplicity is recomputed from the
+  letter, so any incoming `_atom_site.site_symmetry_multiplicity` is
+  ignored rather than trusted; the `space_group_Wyckoff` category is
+  re-derived from the space group, so any incoming
+  `_space_group_Wyckoff.*` values are ignored/overwritten too — the
+  library does not validate its own derived output at runtime.
 
 ## Open Questions
 
@@ -493,18 +493,19 @@ which fall out naturally below.
   its coordinates or space-group setting, or re-set the letter
   afterwards. This is the deliberate cost of keeping the letter,
   coordinates, and space-group key consistent.
-- `AtomSite` gains one read-only derived descriptor (`multiplicity`), and
-  a new read-only, auto-populated `space_group_Wyckoff` category exposes
-  the per-position `site_symmetry` (and the full Wyckoff table) — a new
-  derived-collection pattern in the model.
+- `AtomSite` gains one read-only derived descriptor (`multiplicity`),
+  and a new read-only, auto-populated `space_group_Wyckoff` category
+  exposes the per-position `site_symmetry` (and the full Wyckoff table)
+  — a new derived-collection pattern in the model.
 
 ### Compatibility Outcomes
 
 - Projects that already specify every Wyckoff letter keep those letters:
   explicit letters are respected and reload verbatim. Their constraints
-  remain unchanged except where the current first-representative shortcut
-  was wrong for coordinates on another representative of the same orbit;
-  that case is intentionally fixed by nearest-representative selection.
+  remain unchanged except where the current first-representative
+  shortcut was wrong for coordinates on another representative of the
+  same orbit; that case is intentionally fixed by nearest-representative
+  selection.
 - A saved project reloads to the same letters: every letter is written
   (whether the user supplied it or detection filled it), so all reload
   verbatim — and an auto-filled one would re-derive to the same value
@@ -576,8 +577,8 @@ may miss:
   preserving stored letters as unvalidated values with `None`
   multiplicity; and the minimizer leaving the letter fixed;
 - the no-record contract (§6–§7, §9): `None` `multiplicity`, `?` in CIF,
-  the calculator skip, and an empty `space_group_Wyckoff` category for an
-  absent group;
+  the calculator skip, and an empty `space_group_Wyckoff` category for
+  an absent group;
 - the new `space_group_Wyckoff` category: it auto-populates from the
   structure's space group (each entry's letter / multiplicity /
   site_symmetry / coords match `SPACE_GROUPS`), rebuilds when the space
@@ -611,9 +612,9 @@ already built.
 - [`space-group-database.md`](../accepted/space-group-database.md) — the
   complete, self-owned `SPACE_GROUPS` reference table (all 230 groups,
   every setting and full Wyckoff orbit) that this detection reads.
-- [`category-owner-sections.md`](../accepted/category-owner-sections.md) —
-  the new read-only, auto-populated `space_group_Wyckoff` category is a
-  `CategoryOwner`-held sibling category on the crystal structure.
+- [`category-owner-sections.md`](../accepted/category-owner-sections.md)
+  — the new read-only, auto-populated `space_group_Wyckoff` category is
+  a `CategoryOwner`-held sibling category on the crystal structure.
 - [`iucr-cif-tag-alignment.md`](../accepted/iucr-cif-tag-alignment.md) —
   `_atom_site.Wyckoff_symbol` and
   `_atom_site.site_symmetry_multiplicity` tags.

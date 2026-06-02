@@ -36,12 +36,11 @@ rotation/translation parser.
   `develop`; already exists and already carries the space-group ADR
   promotion commit `c84183662`).
 - Implementation shortcuts must stay on the current branch. Before
-  `/draft-impl-1` starts code work, verify
-  `git branch --show-current` is `wyckoff-letter-detection`. If it is
-  not, stop before editing and ask the user to switch to the target
-  branch outside the shortcut. This planning session is currently on
-  `plotting-docs-performance`, so implementation must not start from the
-  current branch.
+  `/draft-impl-1` starts code work, verify `git branch --show-current`
+  is `wyckoff-letter-detection`. If it is not, stop before editing and
+  ask the user to switch to the target branch outside the shortcut. This
+  planning session is currently on `plotting-docs-performance`, so
+  implementation must not start from the current branch.
 - PR targets `develop` (not `master`). Scope label:
   `[scope] enhancement` (adds a user-facing feature and closes #51).
 - Do not push the branch until the user asks.
@@ -64,8 +63,8 @@ rotation/translation parser.
    choose by `(multiplicity ascending, residual ascending)`;
    same-multiplicity ties within `tol` log a warning.
 4. **Coordinate-code normalisation.** A shared `_normalize_coord_code()`
-   maps the empty string `''` to `None` and is used by detection, allowed
-   letter discovery, `_get_wyckoff_exprs()`, and
+   maps the empty string `''` to `None` and is used by detection,
+   allowed letter discovery, `_get_wyckoff_exprs()`, and
    `_get_general_position_ops()`.
 5. **The atom-site letter is concrete for supported groups.** Missing
    letters are filled on create/load, coordinate edits re-detect with a
@@ -101,9 +100,10 @@ rotation/translation parser.
     model-owned and report-facing, but not persisted in project CIF.
     `Structure._serializable_categories()` excludes it from
     `structure.as_cif` / project saves, the IUCr/report writer emits the
-    `_space_group_Wyckoff.*` loop from the derived category, and incoming
-    `_space_group_Wyckoff.*` values are ignored/overwritten on project
-    load because the category is re-derived from the space group.
+    `_space_group_Wyckoff.*` loop from the derived category, and
+    incoming `_space_group_Wyckoff.*` values are ignored/overwritten on
+    project load because the category is re-derived from the space
+    group.
 11. **Allowed letters come from the current space group.**
     `_wyckoff_letter_allowed_values` returns `['', *tabulated_letters]`
     for supported groups and `[]` for absent groups.
@@ -111,14 +111,15 @@ rotation/translation parser.
     `MembershipValidator` falls back on mismatch, so `_wyckoff_letter`
     uses a dedicated permissive-when-empty validator: an empty allowed
     set accepts explicit user/CIF letters verbatim, and the update flow
-    preserves any stored non-empty letter when a later space-group change
-    moves the site into an unsupported key. Those stored letters are
-    unvalidated, carry `None` multiplicity, skip constraints, and warn;
-    a non-empty allowed set enforces membership. A temporary no-parent
-    context during `atom_sites.create(..., wyckoff_letter=...)` is not
-    treated as unsupported: the raw letter is marked as requiring
-    context validation and is checked against the parent structure's
-    space group on the first parented update.
+    preserves any stored non-empty letter when a later space-group
+    change moves the site into an unsupported key. Those stored letters
+    are unvalidated, carry `None` multiplicity, skip constraints, and
+    warn; a non-empty allowed set enforces membership. A temporary
+    no-parent context during
+    `atom_sites.create(..., wyckoff_letter=...)` is not treated as
+    unsupported: the raw letter is marked as requiring context
+    validation and is checked against the parent structure's space group
+    on the first parented update.
 13. **CIF atom-site behaviour.** Project CIF writes
     `_atom_site.Wyckoff_symbol` and
     `_atom_site.site_symmetry_multiplicity` for every atom (`?` for
@@ -157,7 +158,8 @@ Phase 1 (implementation):
   `SpaceGroupWyckoffCollection` with `id`, `letter`, `multiplicity`,
   `site_symmetry`, and `coords_xyz` descriptors plus private rebuild.
 - `src/easydiffraction/datablocks/structure/categories/space_group_wyckoff/factory.py`
-  and `src/easydiffraction/datablocks/structure/categories/space_group_wyckoff/__init__.py`
+  and
+  `src/easydiffraction/datablocks/structure/categories/space_group_wyckoff/__init__.py`
   — register/import the new concrete collection.
 - `src/easydiffraction/datablocks/structure/item/base.py` — add the
   `space_group_wyckoff` sibling category, expose it read-only, rebuild
@@ -204,13 +206,12 @@ The ADR commit + design-phase review/reply cleanup are handled by
 
 - [ ] **P1.0 — Re-close the ADR review gate.** No code. Ensure
       `git branch --show-current` is `wyckoff-letter-detection`; if not,
-      stop before editing and ask the user to switch to the target branch
-      outside the shortcut. Then ensure
+      stop before editing and ask the user to switch to the target
+      branch outside the shortcut. Then ensure
       `wyckoff-letter-detection_review-16.md` remains the latest ADR
       review and has the final-review sentinel. If any newer ADR review
       appears before implementation, update this plan and re-review it
-      before P1.1.
-      Commit: `Confirm wyckoff letter detection ADR gate`
+      before P1.1. Commit: `Confirm wyckoff letter detection ADR gate`
 - [ ] **P1.1 — Orbit matcher in the crystallography submodule.** Add to
       `crystallography.py`: frozen
       `WyckoffPosition(letter, multiplicity, site_symmetry, coord_template)`,
@@ -221,8 +222,8 @@ The ADR commit + design-phase review/reply cleanup are handled by
       representative template for snapping. Make `_get_wyckoff_exprs`
       and `_get_general_position_ops` use `_normalize_coord_code`.
       Export new public names via `crystallography/__init__.py` if
-      public.
-      Commit: `Add Wyckoff orbit detection to crystallography module`
+      public. Commit:
+      `Add Wyckoff orbit detection to crystallography module`
 - [ ] **P1.2 — Derived `space_group_wyckoff` category.** Add the
       `space_group_wyckoff` package with a `SpaceGroupWyckoff` item
       keyed by `id` (`_space_group_Wyckoff.id`) and read-only
@@ -234,21 +235,20 @@ The ADR commit + design-phase review/reply cleanup are handled by
 - [ ] **P1.3 — Wire `space_group_wyckoff` into `Structure`.** Add it as
       a read-only sibling category on `Structure`, rebuild it when
       structure categories update so it tracks the current space group,
-      keep it empty for absent groups, and exclude it from project CIF by
-      overriding `_serializable_categories()`. Rebuild it from
+      keep it empty for absent groups, and exclude it from project CIF
+      by overriding `_serializable_categories()`. Rebuild it from
       `Structure._update_categories()` before ordinary category update
-      hooks, with no special `_update_priority`; atom-site detection reads
-      `SPACE_GROUPS` through the crystallography helpers rather than
-      depending on this collection.
-      Commit: `Wire derived Wyckoff table into Structure`
+      hooks, with no special `_update_priority`; atom-site detection
+      reads `SPACE_GROUPS` through the crystallography helpers rather
+      than depending on this collection. Commit:
+      `Wire derived Wyckoff table into Structure`
 - [ ] **P1.4 — Read-only multiplicity + detection mutator on
       `AtomSite`.** Add only `multiplicity` as a read-only derived
       descriptor on `AtomSite` with `CifHandler` for
       `_atom_site.site_symmetry_multiplicity`, empty form `None`, and no
       public setter. Add `_set_wyckoff_letter_detected()` modelled on
       `_set_value_from_minimizer`. Do not add `site_symmetry` to
-      `AtomSite`.
-      Commit: `Add read-only multiplicity to AtomSite`
+      `AtomSite`. Commit: `Add read-only multiplicity to AtomSite`
 - [ ] **P1.5 — Dynamic allowed letters + unsupported-group validation.**
       Make `_wyckoff_letter_allowed_values` return
       `['', *list(SPACE_GROUPS[key]['Wyckoff_positions'])]` for a
@@ -260,33 +260,33 @@ The ADR commit + design-phase review/reply cleanup are handled by
       `atom_sites.create(..., wyckoff_letter=...)` call sets the letter
       before parent context exists, store the raw value with a private
       "needs context validation" marker instead of treating missing
-      context as an unsupported group.
-      Commit: `Derive allowed Wyckoff letters from the space group`
+      context as an unsupported group. Commit:
+      `Derive allowed Wyckoff letters from the space group`
 - [ ] **P1.6 — Detection triggers in the atom-site update flow.** In
       `_update(*, called_by_minimizer=False)`, implement fill-if-empty,
       re-detect-on-coordinate-change, and re-detect-on-space-group-key
       change with per-atom coordinate and `(name_hm, coord_code)`
       baselines. First resolve any pending no-parent-context
       `wyckoff_letter` value: for a supported key, validate it against
-      the parent structure's allowed letters and raise `ValueError` if it
-      is invalid; for an unsupported key, keep it as an unvalidated
+      the parent structure's allowed letters and raise `ValueError` if
+      it is invalid; for an unsupported key, keep it as an unvalidated
       stored letter. For supported keys, refresh letter, multiplicity,
       and selected representative; for unsupported keys, preserve stored
       letters as unvalidated values, set multiplicity to `None`, skip
       constraints, and warn. Use the selected `coord_template` for
       snapping and constrained-axis flags. Warn when coordinate or
-      supported space-group edits move the letter, when a user letter-set
-      snaps coordinates, and when a same-letter coordinate edit snaps
-      coordinates. Honour `called_by_minimizer=True`; populate
-      `multiplicity` from `wyckoff_position_info`. Site-symmetry display
-      data comes from `structure.space_group_wyckoff`, not from
-      `AtomSite`.
-      Commit: `Detect and track Wyckoff letters in the update flow`
+      supported space-group edits move the letter, when a user
+      letter-set snaps coordinates, and when a same-letter coordinate
+      edit snaps coordinates. Honour `called_by_minimizer=True`;
+      populate `multiplicity` from `wyckoff_position_info`.
+      Site-symmetry display data comes from
+      `structure.space_group_wyckoff`, not from `AtomSite`. Commit:
+      `Detect and track Wyckoff letters in the update flow`
 - [ ] **P1.7 — Calculator consumes model multiplicity.** Replace the
       `SPACE_GROUPS` lookup in `cryspy._update_atom_multiplicity` with
       `atom_site.multiplicity.value`; when it is `None`, leave the
-      backend's inferred multiplicity in place.
-      Commit: `Read multiplicity from the model in the cryspy calculator`
+      backend's inferred multiplicity in place. Commit:
+      `Read multiplicity from the model in the cryspy calculator`
 - [ ] **P1.8 — CIF and report output.** Ensure project CIF writes
       `_atom_site.Wyckoff_symbol` and
       `_atom_site.site_symmetry_multiplicity` but excludes the derived
@@ -297,15 +297,15 @@ The ADR commit + design-phase review/reply cleanup are handled by
       from the space group. Extend IUCr/report output with
       `_atom_site.site_symmetry_multiplicity` and the report-only
       `_space_group_Wyckoff.{id,letter,multiplicity,site_symmetry,coords_xyz}`
-      loop.
-      Commit: `Serialize Wyckoff multiplicity and report Wyckoff table`
+      loop. Commit:
+      `Serialize Wyckoff multiplicity and report Wyckoff table`
 - [ ] **P1.9 — Promote ADR, close #51, remove stale TODOs.** `git mv`
       `wyckoff-letter-detection.md` from `suggestions/` to `accepted/`,
       set `**Status:** Accepted`, flip its `docs/dev/adrs/index.md` row
       to `Accepted`, and fix links with `git grep -n`. Move issue #51
       from `open.md` to `closed.md` and delete the resolved TODOs in
-      `default.py` (~200–211, ~225, ~569).
-      Commit: `Promote wyckoff-letter-detection ADR and close issue #51`
+      `default.py` (~200–211, ~225, ~569). Commit:
+      `Promote wyckoff-letter-detection ADR and close issue #51`
 - [ ] **P1.10 — Phase 1 review gate.** No code. Mark this `[x]`, commit
       the checklist update alone, then stop for the Phase 1 review.
       Commit: `Reach Phase 1 review gate`
@@ -333,13 +333,13 @@ Tests to add or update:
   fill-if-empty on create/load; re-detect via both `atom.fract_x = …`
   and `atom.fract_x.value = …` with the warning; user letter override
   with the snap warning; `atom_sites.create(..., wyckoff_letter=...)`
-  validating against the parent structure once context exists; same-letter
-  coordinate edits whose snap moves stored coordinates; supported
-  space-group / setting edits re-detecting all atom sites; unsupported
-  space-group transitions preserving stored non-empty letters as
-  unvalidated values with `None` multiplicity; minimizer leaves the
-  letter fixed; no-record contract (`None` multiplicity, `?` in CIF,
-  calculator skip); CIF round-trip stability.
+  validating against the parent structure once context exists;
+  same-letter coordinate edits whose snap moves stored coordinates;
+  supported space-group / setting edits re-detecting all atom sites;
+  unsupported space-group transitions preserving stored non-empty
+  letters as unvalidated values with `None` multiplicity; minimizer
+  leaves the letter fixed; no-record contract (`None` multiplicity, `?`
+  in CIF, calculator skip); CIF round-trip stability.
 - **`space_group_wyckoff` behaviours** in
   `tests/unit/easydiffraction/datablocks/structure/categories/test_space_group_wyckoff.py`:
   auto-populates from `SPACE_GROUPS`, uses `id` keys, preserves
