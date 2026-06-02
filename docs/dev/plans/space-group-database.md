@@ -170,7 +170,7 @@ file as part of the same commit.
   SHA-256 + command, output SHA-256).
   Commit: `Generate complete space_groups.json.gz with recorded provenance`
 
-- [ ] **P1.6 — Rewrite loader, drop pickle.** Rewrite
+- [x] **P1.6 — Rewrite loader, drop pickle.** Rewrite
   `src/easydiffraction/crystallography/space_groups.py` to read
   `space_groups.json.gz` and rebuild the `(IT_number,
   IT_coordinate_system_code)`-keyed `SPACE_GROUPS` dict; remove
