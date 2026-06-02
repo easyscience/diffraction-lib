@@ -7,22 +7,26 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 # Background inside the axes rectangle (the plotted area / 3D scene).
-LIGHT_BACKGROUND_COLOR = '#ffffff'
-DARK_BACKGROUND_COLOR = '#212121'
+# Legend background mirrors the opaque theme base surface at 50% opacity
 # Figure paper (margins around the axes) stays transparent so charts
 # blend into the host page; only the plotted area is opaque.
-PAPER_BACKGROUND_COLOR = 'rgba(0, 0, 0, 0)'
-LIGHT_FOREGROUND_COLOR = '#222222'
+
+DARK_BACKGROUND_COLOR = '#212121'
 DARK_FOREGROUND_COLOR = '#e6e8ee'
-LIGHT_AXIS_FRAME_COLOR = '#e0e0e0'
-DARK_AXIS_FRAME_COLOR = '#333'
-LIGHT_INNER_TICK_GRID_COLOR = '#f2f2f2'
-DARK_INNER_TICK_GRID_COLOR = '#1c1c1c'
-LIGHT_HOVER_BACKGROUND_COLOR = '#ffffff'
+DARK_AXIS_FRAME_COLOR = '#444'
+DARK_INNER_TICK_GRID_COLOR = '#2a2a2a'
 DARK_HOVER_BACKGROUND_COLOR = '#212121'
-# Legend background mirrors the opaque theme base surface at 50% opacity
-LIGHT_LEGEND_BACKGROUND_COLOR = 'rgba(255, 255, 255, 0.5)'
 DARK_LEGEND_BACKGROUND_COLOR = 'rgba(33, 33, 33, 0.5)'
+
+LIGHT_BACKGROUND_COLOR = '#ffffff'
+LIGHT_FOREGROUND_COLOR = '#222222'
+LIGHT_AXIS_FRAME_COLOR = '#d3d3d3'
+LIGHT_INNER_TICK_GRID_COLOR = '#f2f2f2'
+LIGHT_HOVER_BACKGROUND_COLOR = '#ffffff'
+LIGHT_LEGEND_BACKGROUND_COLOR = 'rgba(255, 255, 255, 0.5)'
+
+PAPER_BACKGROUND_COLOR = 'rgba(0, 0, 0, 0)'
+
 TABLE_AXIS_FRAME_CSS_VAR = '--ed-axis-frame-color'
 
 
