@@ -212,7 +212,7 @@ dependency the plan does not name, **stop and ask**.
       import map per `offline`. Commit:
       `Add SHARED embedding mode to Three.js renderer`
 
-- [ ] **P1.9 — Pass `STANDALONE` from the report renderer.** Update
+- [x] **P1.9 — Pass `STANDALONE` from the report renderer.** Update
       `report/html_renderer.py` to pass `STANDALONE` into
       `serialize_html` / `render`, preserving the `offline` contract
       exactly. Commit: `Pass STANDALONE mode from report renderer`

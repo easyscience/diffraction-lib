@@ -18,6 +18,7 @@ from easydiffraction.display.plotters.plotly import PlotlyPlotter
 from easydiffraction.display.plotting import DEFAULT_BRAGG_ROW
 from easydiffraction.display.plotting import DEFAULT_RESID_HEIGHT
 from easydiffraction.report.style import report_style_context
+from easydiffraction.utils.environment import FigureEmbedMode
 
 _TEMPLATE_NAME = 'html/report.html.j2'
 _MATHJAX_FILENAME = 'mathjax-tex-mml-chtml.js'
@@ -225,6 +226,7 @@ def _structure_figure_html_context(
             features=features,
             offline=offline,
             dark=False,
+            mode=FigureEmbedMode.STANDALONE,
         )
     return rendered
 
@@ -323,6 +325,7 @@ def _figure_html(
         return PlotlyPlotter.serialize_html(
             figure,
             include_plotlyjs=include_plotlyjs,
+            mode=FigureEmbedMode.STANDALONE,
             force_template='plotly_white',
             axis_frame_color=str(report_style['axis_hex']),
             grid_color=str(report_style['chart_grid_hex']),
