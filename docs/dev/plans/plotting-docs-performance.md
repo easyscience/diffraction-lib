@@ -223,7 +223,7 @@ dependency the plan does not name, **stop and ask**.
       baked cell HTML carry `SHARED` output; live Jupyter stays
       `INLINE`. Commit: `Route docs notebook execution to SHARED mode`
 
-- [ ] **P1.11 — Phase 1 review gate (no code).** Mark this item `[x]`,
+- [x] **P1.11 — Phase 1 review gate (no code).** Mark this item `[x]`,
       commit the checklist update alone, then hand off to
       `/review-impl-1`. Commit: `Reach Phase 1 review gate`
 
@@ -292,7 +292,7 @@ and `docs/site/` untracked. For tutorial project-path collisions in
 
 ## Status checklist
 
-- [ ] Phase 1 complete (P1.1–P1.11 committed)
+- [x] Phase 1 complete (P1.1–P1.11 committed)
 - [ ] Phase 1 review cycle closed (`/review-impl-1` sentinel)
 - [ ] Phase 2 tests added; `test-structure-check` + the five task
       commands clean
