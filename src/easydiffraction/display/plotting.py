@@ -3994,7 +3994,7 @@ class Plotter(RendererBase):
                 'xanchor': 'right',
                 'x': 0.99,
                 'yanchor': 'top',
-                'y': 0.97,
+                'y': 0.99,
             },
             xaxis_title=axes_labels[0],
             yaxis_title=axes_labels[1],
