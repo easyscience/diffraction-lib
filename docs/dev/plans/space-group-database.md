@@ -1,8 +1,7 @@
 # Plan: Complete Space-Group Reference Database
 
 This plan follows [`AGENTS.md`](../../../AGENTS.md) and implements the
-[`space-group-database`](../adrs/accepted/space-group-database.md)
-ADR.
+[`space-group-database`](../adrs/accepted/space-group-database.md) ADR.
 
 **Deliberate exception to note for `/draft-impl-1`:** Phase 1 contains a
 **maintainer-only curation gate** (P1.4). The disagreement report is
