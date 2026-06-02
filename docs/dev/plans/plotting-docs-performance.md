@@ -312,14 +312,44 @@ and `docs/site/` untracked. For tutorial project-path collisions in
 
 - [x] Phase 1 complete (P1.1–P1.11 committed)
 - [ ] Phase 1 review cycle closed (`/review-impl-1` sentinel)
-- [ ] Phase 2 tests added; `test-structure-check` + the five task
-      commands clean
-- [ ] Docs build smoke passes; figures load lazily
+- [x] Phase 2 tests added; `test-structure-check` + the five task
+      commands clean (see Verification results)
+- [x] Docs build smoke passes; figures load lazily (ed-6 manual build)
 - [x] RequireJS decision applied (kept; removal deferred to
       browser-verified follow-up)
 - [ ] Phase 2 review cycle closed (`/review-impl-2` sentinel)
 - [ ] ADR promoted to `accepted/` and indexed
 - [ ] PR opened against `develop`
+
+## Verification results (Phase 2)
+
+Run on the final Phase 2 state (commit `1aeef1ef0`):
+
+- `pixi run fix` — applied (deliverable files formatted).
+- `pixi run test-structure-check` — **pass** (206/206 modules mirrored,
+  incl. the new `tests/unit/tools/` test).
+- `pixi run check` — **pass for this change**: `pyproject`, `license`,
+  `py-lint`, `py-format`, `docstring`, `notebook-lint`,
+  `test-structure`, `unit-tests`, `functional-tests` all green. The only
+  failing hook is `nonpy-format-check`, and **every file it lists is an
+  unrelated untracked artifact** (the parallel Wyckoff review/reply
+  files and transient `_impl-*`/`_verify-*` deliberation files), not
+  part of this change — left untouched per `AGENTS.md` "leave unrelated
+  dirty files untouched". The deliverable files are prettier-clean.
+- `pixi run unit-tests` — **1997 passed**.
+- `pixi run functional-tests` — **70 passed**.
+- `pixi run integration-tests` — **163 passed**.
+- `pixi run script-tests` — **25 passed**.
+- Trace-type audit — no WebGL/3D/map traces; `plotly-cartesian`
+  confirmed sufficient.
+- Docs-build smoke — verified manually on `ed-6` (SHARED build: 3.4 MB /
+  1.4 MB gzipped, single import map, lazy placeholders, text cells
+  present). A full all-notebook SHARED build was not re-run (each
+  notebook is a real fit; ed-6 is representative).
+
+**Environment-limited deferral:** RequireJS removal needs a browser
+render check this environment cannot run, so `include_requirejs` is kept
+(open question 2).
 
 ## Suggested Pull Request
 
