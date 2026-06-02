@@ -128,7 +128,7 @@ file as part of the same commit.
   Consume the ADR companion overrides file if present.
   P1.3 command:
   ```bash
-  pixi exec --spec cctbx --spec gemmi --spec sympy \
+  pixi exec --spec cctbx --spec gemmi --spec sympy --spec pyyaml \
     python tmp/space-groups/helper-tools/generate_space_groups.py \
     --write-comparison-folder tmp/space-groups/extracted-comparison \
     --print-summary
@@ -149,7 +149,7 @@ file as part of the same commit.
   commit hash.
   Commit: `Localize space-group curation artifacts`
 
-- [ ] **P1.4 — MAINTAINER CURATION GATE (manual).** `/draft-impl-1` **stops
+- [x] **P1.4 — MAINTAINER CURATION GATE (manual).** `/draft-impl-1` **stops
   here**. The maintainer inspects the report, consults International Tables
   for flagged cases, and **always** produces a checked-in
   `docs/dev/adrs/suggestions/space-group-database/space_groups_overrides.yaml`:

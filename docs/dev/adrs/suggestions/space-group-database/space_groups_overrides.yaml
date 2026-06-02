@@ -1,0 +1,11 @@
+# Space-group database curated overrides.
+#
+# Initial minimal seed decision, 2026-06-02:
+# Use the ADR source priority without manual row-level overrides for now:
+# cryspy wyckoff.dat for Wyckoff-facing values, cctbx/sgtbx for
+# setting-level metadata, and RASPA/Avogadro/SgInfo/gemmi as cross-checks.
+#
+# Flagged rows remain visible in tmp/space-groups/extracted-comparison/
+# for future verification against International Tables Vol A, Bilbao
+# Crystallographic Server, and ISODISTORT.
+[]
