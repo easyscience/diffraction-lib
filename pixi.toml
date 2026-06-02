@@ -211,9 +211,12 @@ notebook-prepare = { depends-on = [
 
 docs-vars = "JUPYTER_PLATFORM_DIRS=1 PYTHONWARNINGS='ignore::RuntimeWarning'"
 docs-pre = 'pixi run docs-vars python -m mkdocs'
-docs-serve = 'pixi run docs-pre serve -f docs/mkdocs.yml'
+# Copy the canonical Three.js snapshot into the (git-ignored) docs
+# assets before any build/serve so MkDocs can serve it.
+docs-sync-vendored-js = 'python tools/sync_docs_vendored_js.py'
+docs-serve = { cmd = 'pixi run docs-pre serve -f docs/mkdocs.yml', depends-on = ['docs-sync-vendored-js'] }
 docs-serve-dirty = 'pixi run docs-serve --dirty'
-docs-build = 'pixi run docs-pre build -f docs/mkdocs.yml'
+docs-build = { cmd = 'pixi run docs-pre build -f docs/mkdocs.yml', depends-on = ['docs-sync-vendored-js'] }
 docs-build-local = 'pixi run docs-build --no-directory-urls'
 
 docs-deploy-pre = 'mike deploy -F docs/mkdocs.yml --push --branch gh-pages --update-aliases --alias-type redirect'

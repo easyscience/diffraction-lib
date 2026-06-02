@@ -172,7 +172,7 @@ dependency the plan does not name, **stop and ask**.
       assets explicitly. Commit:
       `Vendor plotly-cartesian and refresh three.js`
 
-- [ ] **P1.4 — Add `docs-sync-vendored-js` and wire it.** Add the pixi
+- [x] **P1.4 — Add `docs-sync-vendored-js` and wire it.** Add the pixi
       task copying canonical Three.js →
       `docs/docs/assets/javascripts/ vendor/threejs/`; git-ignore that
       path; add `depends-on` on `docs-build` and `docs-serve`; add a
