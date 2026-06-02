@@ -82,6 +82,53 @@
     ];
   }
 
+  function rgbaFromColor(color, alpha) {
+    var hexMatch = color.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i);
+    var red;
+    var green;
+    var blue;
+    if (hexMatch) {
+      var hex = hexMatch[1];
+      if (hex.length === 3) {
+        hex = hex
+          .split('')
+          .map(function (part) {
+            return part + part;
+          })
+          .join('');
+      }
+      red = parseInt(hex.slice(0, 2), 16);
+      green = parseInt(hex.slice(2, 4), 16);
+      blue = parseInt(hex.slice(4, 6), 16);
+    } else {
+      var parts = color.match(/(\d+(?:\.\d+)?)/g);
+      if (!parts || parts.length < 3) {
+        return color;
+      }
+      red = Number(parts[0]);
+      green = Number(parts[1]);
+      blue = Number(parts[2]);
+    }
+    return 'rgba(' + red + ', ' + green + ', ' + blue + ', ' + alpha + ')';
+  }
+
+  function installModebarIconStyle(graphDiv, mode, colors) {
+    graphDiv.classList.add('ed-plotly-themed-modebar');
+    var styleId = 'ed-plotly-modebar-icon-style';
+    var style = document.getElementById(styleId);
+    if (!style) {
+      style = document.createElement('style');
+      style.id = styleId;
+      document.head.appendChild(style);
+    }
+    var inactive = rgbaFromColor(colors.foreground, mode === 'dark' ? 0.62 : 0.55);
+    var active = rgbaFromColor(colors.foreground, mode === 'dark' ? 0.95 : 0.9);
+    style.textContent =
+      '.ed-plotly-themed-modebar .modebar-btn path { fill: ' + inactive + ' !important; }' +
+      '.ed-plotly-themed-modebar .modebar-btn:hover path,' +
+      '.ed-plotly-themed-modebar .modebar-btn.active path { fill: ' + active + ' !important; }';
+  }
+
   function applyTheme(graphDiv, theme, themeSync) {
     if (!graphDiv || !window.Plotly || !theme) {
       return;
@@ -91,15 +138,23 @@
     if (!colors) {
       return;
     }
+    installModebarIconStyle(graphDiv, mode, colors);
+    var paperBackground = colors.paperBackground || 'rgba(0, 0, 0, 0)';
+    var transparentPlot = themeSync && themeSync.correlationHeatmap === true;
+    var modebarColor = rgbaFromColor(colors.foreground, mode === 'dark' ? 0.62 : 0.42);
+    var modebarActiveColor = rgbaFromColor(colors.foreground, mode === 'dark' ? 0.95 : 0.85);
     var update = {
-      paper_bgcolor: colors.background,
-      plot_bgcolor: colors.background,
-      'modebar.bgcolor': colors.background,
+      paper_bgcolor: paperBackground,
+      plot_bgcolor: transparentPlot ? paperBackground : colors.background,
+      'modebar.bgcolor': paperBackground,
+      'modebar.color': modebarColor,
+      'modebar.activecolor': modebarActiveColor,
       'font.color': colors.foreground,
       'title.font.color': colors.foreground,
       'legend.bgcolor': colors.legend,
       'legend.font.color': colors.foreground,
       'hoverlabel.bgcolor': colors.hoverBackground,
+      'hoverlabel.bordercolor': colors.axisFrame,
       'hoverlabel.font.color': colors.foreground,
     };
     axisNames(graphDiv).forEach(function (name) {

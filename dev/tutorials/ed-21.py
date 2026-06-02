@@ -22,13 +22,13 @@
 #   pattern?
 
 # %% [markdown]
-# ## Import Library
+# ## 🛠️ Import Library
 
 # %%
 import easydiffraction as ed
 
 # %% [markdown]
-# ## Step 1: Create a Project Container
+# ## 📦 Define Project
 #
 # The project object keeps structures, experiments, fit settings, and
 # plotting utilities together in a single place. We will build the full
@@ -44,7 +44,7 @@ project = ed.Project()
 project.save_as('projects/lbco_hrpt_bumps-dream')
 
 # %% [markdown]
-# ## Step 2: Build the Structural Model
+# ## 🧩 Define Structure
 #
 # We define a simple cubic perovskite model for LBCO. La and Ba share the
 # same crystallographic site with equal occupancy, while Co and O occupy
@@ -120,7 +120,7 @@ structure.atom_sites.create(
 project.display.structure(struct_name='lbco')
 
 # %% [markdown]
-# ## Step 3: Define the Diffraction Experiment
+# ## 🔬 Define Experiment
 #
 # Next we download the measured powder pattern, create a neutron powder
 # experiment, and configure the instrument, profile, background, and
@@ -189,7 +189,7 @@ experiment.excluded_regions.create(id='1', start=0, end=10)
 experiment.excluded_regions.create(id='2', start=100, end=180)
 
 # %% [markdown]
-# ## Step 4: Run an Initial Local Refinement
+# ## 🚀 Initial Refinement
 #
 # Before Bayesian sampling, it is useful to run a deterministic fit. This
 # gives us:
@@ -241,7 +241,7 @@ project.display.fit.correlations()
 project.display.pattern(expt_name='hrpt')
 
 # %% [markdown]
-# ## Step 5: Prepare for Bayesian Sampling
+# ## 🎲 Prepare Sampling
 #
 # DREAM requires finite bounds for the free parameters. Instead of
 # setting them manually, we derive them from the uncertainties estimated
@@ -278,7 +278,7 @@ for param in project.free_parameters:
 project.display.parameters.free()
 
 # %% [markdown]
-# ## Step 6: Configure and Run DREAM
+# ## 🎲 Run Sampling
 #
 # We now switch from the local minimizer to the Bayesian DREAM sampler.
 #
@@ -311,7 +311,7 @@ project.analysis.minimizer.burn_in_steps = 20  # lower than the default 600
 project.analysis.fit()
 
 # %% [markdown]
-# ## Step 7: Inspect Bayesian Results
+# ## 📊 Inspect Results
 #
 # The fit-results display now includes sampler settings, convergence
 # diagnostics, committed parameter values, and posterior summary

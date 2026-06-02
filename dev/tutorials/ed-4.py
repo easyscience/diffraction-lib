@@ -12,7 +12,7 @@
 # based on the joint fit of both X-ray and neutron diffraction data.
 
 # %% [markdown]
-# ## Import Library
+# ## 🛠️ Import Library
 
 # %%
 from easydiffraction import ExperimentFactory
@@ -21,24 +21,24 @@ from easydiffraction import StructureFactory
 from easydiffraction import download_data
 
 # %% [markdown]
-# ## Define Structure
+# ## 🧩 Define Structure
 #
 # This section shows how to add structures and modify their
 # parameters.
 #
-# #### Create Structure
+# ### Create Structure
 
 # %%
 structure = StructureFactory.from_scratch(name='pbso4')
 
 # %% [markdown]
-# #### Set Space Group
+# ### Set Space Group
 
 # %%
 structure.space_group.name_h_m = 'P n m a'
 
 # %% [markdown]
-# #### Set Unit Cell
+# ### Set Unit Cell
 
 # %%
 structure.cell.length_a = 8.47
@@ -46,7 +46,7 @@ structure.cell.length_b = 5.39
 structure.cell.length_c = 6.95
 
 # %% [markdown]
-# #### Set Atom Sites
+# ### Set Atom Sites
 
 # %%
 structure.atom_sites.create(
@@ -97,7 +97,7 @@ structure.atom_sites.create(
 
 
 # %% [markdown]
-# ## Define Experiments
+# ## 🔬 Define Experiments
 #
 # This section shows how to add experiments, configure their parameters,
 # and link the structures defined in the previous step.
@@ -232,48 +232,48 @@ for id, x, y in [
 expt2.linked_phases.create(id='pbso4', scale=0.001)
 
 # %% [markdown]
-# ## Define Project
+# ## 📦 Define Project
 #
 # The project object is used to manage structures, experiments, and
 # analysis.
 #
-# #### Create Project
+# ### Create Project
 
 # %%
 project = Project()
 
 # %% [markdown]
-# #### Add Structure
+# ### Add Structure
 
 # %%
 project.structures.add(structure)
 
 # %% [markdown]
-# #### Add Experiments
+# ### Add Experiments
 
 # %%
 project.experiments.add(expt1)
 project.experiments.add(expt2)
 
 # %% [markdown]
-# ## Perform Analysis
+# ## 🚀 Perform Analysis
 #
 # This section outlines the analysis process, including how to configure
 # calculation and fitting engines.
 #
-# #### Set Fit Mode
+# ### Set Fit Mode
 
 # %%
 project.analysis.fitting_mode.type = 'joint'
 
 # %% [markdown]
-# #### Set Minimizer
+# ### Set Minimizer
 
 # %%
 project.analysis.minimizer.type = 'lmfit'
 
 # %% [markdown]
-# #### Set Fitting Parameters
+# ### Set Free Parameters
 #
 # Set structure parameters to be optimized.
 
@@ -309,16 +309,16 @@ for term in expt2.background:
     term.coef.free = True
 
 # %% [markdown]
-# #### Perform Fit
+# ### Run Fitting
 
 # %% [markdown]
-# #### Plot Structure
+# ### Display Structure
 
 # %%
 project.display.structure(struct_name='pbso4')
 
 # %% [markdown]
-# #### Plot Measured vs Calculated
+# ### Display Pattern
 
 # %%
 project.display.pattern(expt_name='npd', x_min=35.5, x_max=38.3)

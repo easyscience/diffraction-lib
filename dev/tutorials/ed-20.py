@@ -9,7 +9,7 @@
 # the BEER instrument are analyzed in this tutorial.
 
 # %% [markdown]
-# ## Import Library
+# ## 🛠️ Import Library
 
 # %%
 from easydiffraction import ExperimentFactory
@@ -20,12 +20,12 @@ from easydiffraction import extract_data_paths_from_zip
 from easydiffraction import extract_metadata
 
 # %% [markdown]
-# ## Define Structures
+# ## 🧩 Define Structures
 #
 # This section covers how to add structures and modify their
 # parameters.
 #
-# #### Create Ferrite Structure
+# ### Create Ferrite Structure
 
 # %%
 ferrite = StructureFactory.from_scratch(name='ferrite')
@@ -47,7 +47,7 @@ ferrite.atom_sites.create(
 )
 
 # %% [markdown]
-# #### Create Austenite Structure
+# ### Create Austenite Structure
 
 # %%
 austenite = StructureFactory.from_scratch(name='austenite')
@@ -69,12 +69,12 @@ austenite.atom_sites.create(
 )
 
 # %% [markdown]
-# ## Define Experiments
+# ## 🔬 Define Experiments
 #
 # This section shows how to add experiments, configure their parameters,
 # and link the structures defined in the previous step.
 #
-# #### Download Measured Data
+# ### Download Data
 
 # %%
 zip_path = download_data(id=33, destination='data')
@@ -84,7 +84,7 @@ data_path_s2 = data_paths[1]  # 'Duplex_in_HR_for_IRF_S2.dat'
 data_path_n2 = data_paths[0]  # 'Duplex_in_HR_for_IRF_N2.dat'
 
 # %% [markdown]
-# #### Create Experiment
+# ### Create Experiment
 
 # %%
 expt_s2 = ExperimentFactory.from_data_path(
@@ -101,7 +101,7 @@ expt_n2 = ExperimentFactory.from_data_path(
 )
 
 # %% [markdown]
-# #### Set Instrument
+# ### Set Instrument
 
 # %%
 expt_s2.instrument.setup_twotheta_bank = extract_metadata(
@@ -120,7 +120,7 @@ expt_n2.instrument.calib_d_to_tof_linear = extract_metadata(
 )
 
 # %% [markdown]
-# #### Set Peak Profile
+# ### Set Peak Profile
 
 # %%
 expt_s2.peak.show_supported()
@@ -142,7 +142,7 @@ expt_n2.peak.broad_gauss_sigma_1 = 1200
 expt_n2.peak.broad_gauss_sigma_2 = 900
 
 # %% [markdown]
-# #### Set Background
+# ### Set Background
 
 # %%
 expt_s2.background.show_supported()
@@ -194,7 +194,7 @@ for point in expt_s2.background:
     expt_n2.background.create(id=point.id.value, x=point.x.value, y=point.y.value)
 
 # %% [markdown]
-# #### Set Linked Phases
+# ### Set Linked Phases
 
 # %%
 expt_s2.linked_phases.create(id='ferrite', scale=10)
@@ -205,7 +205,7 @@ expt_n2.linked_phases.create(id='ferrite', scale=10)
 expt_n2.linked_phases.create(id='austenite', scale=10)
 
 # %% [markdown]
-# #### Set Excluded Regions
+# ### Set Excluded Regions
 
 # %%
 expt_s2.excluded_regions.create(id='1', start=0, end=40500)
@@ -216,40 +216,40 @@ expt_n2.excluded_regions.create(id='1', start=0, end=40500)
 expt_n2.excluded_regions.create(id='2', start=130000, end=180000)
 
 # %% [markdown]
-# ## Define Project
+# ## 📦 Define Project
 #
 # The project object is used to manage the structure, experiments,
 # and analysis
 #
-# #### Create Project
+# ### Create Project
 
 # %%
 project = Project(name='beer')
 project.save_as(dir_path='projects/beer_mcstas')
 
 # %% [markdown]
-# #### Add Structures
+# ### Add Structures
 
 # %%
 project.structures.add(ferrite)
 project.structures.add(austenite)
 
 # %% [markdown]
-# #### Add Experiments
+# ### Add Experiments
 
 # %%
 project.experiments.add(expt_s2)
 project.experiments.add(expt_n2)
 
 # %% [markdown]
-# #### Plot Structures
+# ### Display Structure
 
 # %%
 project.display.structure(struct_name='ferrite')
 project.display.structure(struct_name='austenite')
 
 # %% [markdown]
-# #### Plot Measured vs Calculated
+# ### Display Pattern
 
 # %%
 project.display.pattern(expt_name='expt_s2')
@@ -258,12 +258,12 @@ project.display.pattern(expt_name='expt_s2')
 project.display.pattern(expt_name='expt_n2')
 
 # %% [markdown]
-# ## Perform Analysis
+# ## 🚀 Perform Analysis
 #
 # This section shows the analysis process, including how to set up
 # calculation and fitting engines.
 #
-# #### Set Fit Mode
+# ### Set Fit Mode
 
 # %%
 project.analysis.fitting_mode.show_supported()
@@ -272,7 +272,7 @@ project.analysis.fitting_mode.show_supported()
 project.analysis.fitting_mode.type = 'joint'
 
 # %% [markdown]
-# #### Set Free Parameters
+# ### Set Free Parameters
 
 # %%
 project.display.parameters.fittable()
@@ -310,7 +310,7 @@ for segment in expt_n2.background:
     segment.y.free = True
 
 # %% [markdown]
-# #### Add Constraints
+# ### Add Constraints
 
 # %%
 project.analysis.aliases.create(
@@ -331,7 +331,7 @@ project.analysis.constraints.create(expression='n2_ferrite_scale = s2_ferrite_sc
 project.analysis.constraints.create(expression='n2_austenite_scale = s2_austenite_scale')
 
 # %% [markdown]
-# #### Run Fitting
+# ### Run Fitting
 #
 # Run full fitting with all free parameters.
 
@@ -358,7 +358,7 @@ project.display.fit.results()
 project.display.fit.correlations()
 
 # %% [markdown]
-# #### Plot Measured vs Calculated
+# ### Display Pattern
 #
 # Show full range in TOF.
 

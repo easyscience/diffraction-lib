@@ -31,18 +31,18 @@
   function themeColors() {
     if (themeName() === 'dark') {
       return {
-        background: 'rgba(0, 0, 0, 0)', // DARK_BACKGROUND_COLOR
+        background: '#212121', // 'rgba(0, 0, 0, 0)', // DARK_BACKGROUND_COLOR
         foreground: '#e6e8ee', // DARK_FOREGROUND_COLOR
-        axisFrame: '#333', // DARK_AXIS_FRAME_COLOR
-        innerTickGrid: '#222', // DARK_INNER_TICK_GRID_COLOR
+        axisFrame: '#444', // DARK_AXIS_FRAME_COLOR
+        innerTickGrid: '#2a2a2a', // DARK_INNER_TICK_GRID_COLOR
         hoverBackground: '#212121', // DARK_HOVER_BACKGROUND_COLOR
         legend: 'rgba(33, 33, 33, 0.5)', // DARK_LEGEND_BACKGROUND_COLOR
       }
     }
     return {
-      background: 'rgba(0, 0, 0, 0)', // LIGHT_BACKGROUND_COLOR
+      background: '#ffffff', // 'rgba(0, 0, 0, 0)', // LIGHT_BACKGROUND_COLOR
       foreground: '#222222', // LIGHT_FOREGROUND_COLOR
-      axisFrame: '#e0e0e0', // LIGHT_AXIS_FRAME_COLOR
+      axisFrame: '#d3d3d3', // LIGHT_AXIS_FRAME_COLOR
       innerTickGrid: '#f2f2f2', // LIGHT_INNER_TICK_GRID_COLOR
       hoverBackground: '#ffffff', // LIGHT_HOVER_BACKGROUND_COLOR
       legend: 'rgba(255, 255, 255, 0.5)', // LIGHT_LEGEND_BACKGROUND_COLOR

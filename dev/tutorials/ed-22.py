@@ -22,13 +22,13 @@
 #   intensities?
 
 # %% [markdown]
-# ## Import Library
+# ## 🛠️ Import Library
 
 # %%
 import easydiffraction as ed
 
 # %% [markdown]
-# ## Step 1: Create a Project Container
+# ## 📦 Define Project
 #
 # The project object keeps structures, experiments, fit settings, and
 # plotting utilities together in a single place. We will build the full
@@ -41,7 +41,7 @@ project = ed.Project()
 project.save_as('projects/tbti_heidi_emcee')
 
 # %% [markdown]
-# ## Step 2: Build the Structural Model
+# ## 🧩 Define Structure
 #
 # For this example we start from a CIF file describing the Tb2TiO7
 # pyrochlore structure. Loading the structure from CIF is convenient
@@ -65,7 +65,7 @@ structure = project.structures['tbti']
 project.display.structure(struct_name='tbti')
 
 # %% [markdown]
-# ## Step 3: Define the Diffraction Experiment
+# ## 🔬 Define Experiment
 #
 # Next we download the measured reflection data, create a neutron
 # single-crystal experiment, and configure the crystal link,
@@ -106,7 +106,7 @@ experiment.extinction.mosaicity = 35000
 experiment.extinction.radius = 10
 
 # %% [markdown]
-# ## Step 4: Run an Initial Local Refinement
+# ## 🚀 Initial Refinement
 #
 # Before Bayesian sampling, it is useful to run a deterministic fit. This
 # gives us:
@@ -166,7 +166,7 @@ project.display.fit.correlations()
 project.display.pattern(expt_name='heidi')
 
 # %% [markdown]
-# ## Step 5: Prepare for Bayesian Sampling
+# ## 🎲 Prepare Sampling
 #
 # Bayesian samplers require finite bounds for the free parameters. Instead of
 # setting them manually, we derive them from the uncertainties estimated
@@ -205,7 +205,7 @@ for param in project.free_parameters:
 project.display.parameters.free()
 
 # %% [markdown]
-# ## Step 6: Configure and Run emcee
+# ## 🎲 Run Sampling
 #
 # We now switch from the local minimizer to the Bayesian emcee sampler.
 #
@@ -234,7 +234,7 @@ project.analysis.minimizer.population_size = 16  # lower than the default 32
 project.analysis.fit()
 
 # %% [markdown]
-# ## Step 7: Inspect Bayesian Results
+# ## 📊 Inspect Results
 #
 # The fit-results display now includes sampler settings, convergence
 # diagnostics, committed parameter values, and posterior summary
