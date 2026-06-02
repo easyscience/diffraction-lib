@@ -165,7 +165,7 @@ dependency the plan does not name, **stop and ask**.
       task. Do not run network fetches in CI/tests. Commit:
       `Add vendored-JS bump script and pixi task`
 
-- [ ] **P1.3 — Vendor Plotly and refresh Three.js.** Run
+- [x] **P1.3 — Vendor Plotly and refresh Three.js.** Run
       `pixi run vendor-update-js` to fetch `plotly-cartesian.min.js`
       into the committed docs vendor dir and refresh the Three.js
       snapshot + regenerate both `LICENSES.md`. Stage the vendored
