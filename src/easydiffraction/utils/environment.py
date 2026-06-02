@@ -6,11 +6,13 @@ from __future__ import annotations
 import os
 import sys
 import tempfile
+from enum import Enum
 from importlib.util import find_spec
 from pathlib import Path
 
 _ARTIFACT_ROOT_ENV_VAR = 'EASYDIFFRACTION_ARTIFACT_ROOT'
 _PIXI_PROJECT_ROOT_ENV_VAR = 'PIXI_PROJECT_ROOT'
+_FIGURE_EMBED_MODE_ENV_VAR = 'EASYDIFFRACTION_FIGURE_EMBED_MODE'
 _TUTORIALS_DIR = Path('docs') / 'docs' / 'tutorials'
 _TUTORIAL_ARTIFACT_ROOT = Path('tmp') / 'tutorials'
 
@@ -199,6 +201,62 @@ def create_artifact_temp_dir(prefix: str) -> Path:
 
     artifact_root.mkdir(parents=True, exist_ok=True)
     return Path(tempfile.mkdtemp(prefix=prefix, dir=artifact_root)).resolve()
+
+
+# ----------------------------------------------------------------------
+# Figure embedding mode
+# ----------------------------------------------------------------------
+
+
+class FigureEmbedMode(str, Enum):
+    """
+    How interactive figure HTML embeds its JavaScript runtime.
+
+    ``INLINE`` renders eagerly for live Jupyter; ``SHARED`` emits a lazy
+    placeholder activated by a once-per-page shared runtime for the docs
+    site; ``STANDALONE`` renders an eager self-contained fragment for
+    reports, with runtime delivery decided by the caller's ``offline``
+    flag.
+    """
+
+    INLINE = 'inline'
+    SHARED = 'shared'
+    STANDALONE = 'standalone'
+
+
+def resolve_figure_embed_mode() -> FigureEmbedMode:
+    """
+    Resolve the active figure embedding mode from the environment.
+
+    Reads ``EASYDIFFRACTION_FIGURE_EMBED_MODE``. An unset or empty value
+    resolves to :attr:`FigureEmbedMode.INLINE`. Any other value must
+    name a supported mode; an unknown value raises ``ValueError`` so a
+    typo in a docs or CI environment fails the build loudly instead of
+    silently falling back to eager output.
+
+    Returns
+    -------
+    FigureEmbedMode
+        The resolved embedding mode.
+
+    Raises
+    ------
+    ValueError
+        If the variable is set to a non-empty value that is not a
+        supported mode.
+    """
+    raw = os.environ.get(_FIGURE_EMBED_MODE_ENV_VAR, '').strip()
+    if not raw:
+        return FigureEmbedMode.INLINE
+    try:
+        return FigureEmbedMode(raw.lower())
+    except ValueError:
+        supported = ', '.join(mode.value for mode in FigureEmbedMode)
+        message = (
+            f'Invalid {_FIGURE_EMBED_MODE_ENV_VAR}={raw!r}; '
+            f'supported values: {supported}.'
+        )
+        raise ValueError(message) from None
 
 
 # ----------------------------------------------------------------------

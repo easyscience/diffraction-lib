@@ -146,7 +146,7 @@ the next step (per `AGENTS.md` §Commits). Keep commits atomic and
 single-purpose. If a step uncovers a serious design gap or a need for a
 dependency the plan does not name, **stop and ask**.
 
-- [ ] **P1.1 — Add `FigureEmbedMode` enum and env resolver.** In
+- [x] **P1.1 — Add `FigureEmbedMode` enum and env resolver.** In
       `utils/environment.py`, add the `(str, Enum)` with `INLINE` /
       `SHARED` / `STANDALONE` and `resolve_figure_embed_mode()` reading
       `EASYDIFFRACTION_FIGURE_EMBED_MODE`. **Strict validation:** an
