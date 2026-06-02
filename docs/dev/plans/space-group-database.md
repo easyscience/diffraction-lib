@@ -272,3 +272,177 @@ flagged rows visible for later International Tables verification. The
 data now ships as transparent, inspectable JSON instead of an opaque
 binary pickle. Existing projects load unchanged; structures in the
 previously-missing groups now get correct symmetry handling.
+
+---
+
+## Follow-up phase: canonical Wyckoff `coords_xyz` templates
+
+_Added after #187 shipped — a second, standalone cycle of this ADR's
+implementation. It is the **prerequisite** that
+[`wyckoff-letter-detection`](../adrs/suggestions/wyckoff-letter-detection.md)
+§10 / Decision 15 depends on and gates on at its P1.0, and it ships on
+its **own PR** (separate from #187). When implementing this phase, treat
+the `CT` checklist below as the active Phase 1 steps — the #187 Phase 1
+above is complete._
+
+### Status (this phase)
+
+- [ ] Phase 1 — Implementation (data + tooling + docs)
+- [ ] Phase 1 review gate
+- [ ] Phase 2 — Verification (tests + checks)
+
+### Problem
+
+The bundled `space_groups.json.gz` stores cctbx **operator-form**
+`coords_xyz` — e.g. R-3m (IT 166) `h` is `(1/2*x-1/2*y,-1/2*x+1/2*y,z)` —
+for the coupled special positions (verified: 3826 templates; per the
+wyckoff plan's Decision 15, 288 positions across 117 IT numbers). The
+constraint helpers `_fract_constrained_flags()` (`crystallography.py:221`)
+and `_apply_fract_constraints()` (`:250`), the Wyckoff orbit matcher, and
+coordinate snapping all assume the **canonical ITA parametric form**
+(`(x,-x,z)`). The operator-form spelling silently breaks the
+constrained-axis flags, so a refined special-position coordinate drifts
+off its symmetry site — the `ed-6` fit-3 → fit-4 regression. The
+constraint **code** is correct; only the **data** spelling is wrong.
+
+### Decisions (this phase)
+
+1. **Re-parametrise every operator-form `coords_xyz` to canonical ITA
+   parametric form** — each component a signed single free variable plus
+   an optional rational constant; no numeric coefficient on a variable
+   and no coupled cross-variable term. The transform is deterministic and
+   **orbit-preserving**, verified by **exact symbolic equivalence**
+   (`sympy`) for each affected Wyckoff orbit: the canonical and
+   operator-form representative sets are proven to describe the same point
+   set as rational affine forms, not merely to agree at sampled parameters
+   (sampling may supplement but never replace the symbolic proof) —
+   review-1 [P1].
+2. **Apply it as a cctbx-free post-processing pass over the existing
+   bundled DB**, not a full cctbx regeneration. The transform parses the
+   existing `coords_xyz` strings and re-parametrises with `sympy` (already
+   a `crystallography.py` dependency), so it runs in this repo's
+   environment. The cctbx generator also gains the same pass + a
+   generation-time invariant for future rebuilds, but this PR's
+   `space_groups.json.gz` is produced by the post-processing transform.
+   _Rejected alternative — re-running the full cctbx generator — needs the
+   throwaway cctbx env and re-derives the whole table when only the
+   `coords_xyz` spelling is wrong._
+3. **No constraint-code change.** `_fract_constrained_flags()` /
+   `_apply_fract_constraints()` are correct as-is.
+4. **No new runtime dependency.** `sympy` already backs
+   `crystallography.py`; `cctbx` stays generation-only and is not needed
+   for the transform.
+5. **Guard both sides:** a generation-time invariant in the generator, a
+   `tools/check_packaged_db.py` assertion rejecting operator-form leakage
+   in the packaged wheel, and a unit data-invariant over loaded
+   `SPACE_GROUPS`.
+6. **Record it in the ADR:** add the canonical-`coords_xyz` invariant as a
+   decision and update _Build Provenance_ with the new DB SHA-256 and the
+   transform's SHA-256.
+
+### Open questions (this phase)
+
+- If any affected position cannot be canonicalised automatically, fall
+  back to a maintainer-curated entry in the existing
+  `space_groups_overrides.yaml` channel and record it. Not expected.
+
+### Concrete files likely to change (this phase)
+
+- `src/easydiffraction/crystallography/space_groups.json.gz` — rewritten
+  with canonical `coords_xyz`; all other fields unchanged.
+- `tmp/space-groups/helper-tools/canonicalize_coords.py` — **new**, local
+  ignored one-time transform (read DB → re-parametrise → verify orbit
+  equality → rewrite).
+- `tmp/space-groups/helper-tools/generate_space_groups.py` — add the same
+  canonicalisation pass + generation-time invariant.
+- `tools/check_packaged_db.py` — assert no packaged `coords_xyz` is
+  operator-form.
+- `docs/dev/adrs/accepted/space-group-database.md` — canonical-form
+  invariant decision + updated _Build Provenance_.
+- Phase 2 tests:
+  - `tests/unit/easydiffraction/crystallography/test_space_groups.py`
+    (or `_coverage.py`) — data invariant: no `SPACE_GROUPS` `coords_xyz`
+    is operator-form.
+  - `tests/unit/easydiffraction/crystallography/test_crystallography.py`
+    (or `_coverage.py`) — coupled-position constraint regression: for
+    R-3m `h` (`(x,-x,z)`), `_fract_constrained_flags()` marks `fract_y`
+    constrained and `_apply_fract_constraints()` slaves it to `-fract_x`
+    after a `fract_x` edit (existing tests cover only all-fixed /
+    all-free sites).
+  - `ed-6` functional/script regression: the special-position fit stays
+    on-site across fit-3 → fit-4.
+
+### Implementation steps — canonical-templates phase
+
+Per-step commit discipline as in Phase 1, **with the same deliberate
+exception** that `tmp/space-groups/helper-tools/*` are local curation
+tooling, not branch deliverables (review-1 [P1]). The local transform and
+generator changes are therefore **not their own commits**: each tracked
+commit stages only the tracked deliverable it produces, and the local
+tools are recorded by SHA-256 in the ADR provenance (CT4). No step commits
+only ignored files, and no empty commits.
+
+- [ ] **CT1 — Canonicalise the database (local transform → tracked
+      output).** Add the local, ignored
+      `tmp/space-groups/helper-tools/canonicalize_coords.py`: parse each
+      `coords_xyz` with `sympy`, detect operator form, re-parametrise to
+      canonical ITA form, and prove **exact symbolic orbit equivalence**
+      for every affected position (review-1 [P1]). Run it to rewrite
+      `src/easydiffraction/crystallography/space_groups.json.gz` (R-3m `h`
+      → `(x,-x,z)`; all other fields unchanged). The transform is local
+      tooling (recorded by SHA in CT4); **this commit stages only the
+      regenerated `space_groups.json.gz`**. Commit:
+      `Canonicalize space-group coords_xyz templates`
+- [ ] **CT2 — Generator canonicalisation pass + invariant (local prep,
+      no commit).** Fold the same canonicalisation + a generation-time
+      invariant (rejecting operator-form leakage) into the local
+      `tmp/space-groups/helper-tools/generate_space_groups.py`, so a
+      future cctbx rebuild stays canonical. **Local curation tooling — not
+      committed** (deliberate exception); its updated SHA-256 is recorded
+      in CT4. No commit.
+- [ ] **CT3 — Packaging assertion.** Extend the tracked
+      `tools/check_packaged_db.py` to assert no packaged `coords_xyz`
+      template is operator-form (catches future regression at the wheel
+      layer). Commit: `Assert canonical coords_xyz in packaged DB check`
+- [ ] **CT4 — ADR invariant + provenance.** Add the canonical-`coords_xyz`
+      invariant as a decision in
+      `docs/dev/adrs/accepted/space-group-database.md`, and update its
+      _Build Provenance_ with the new `space_groups.json.gz` SHA-256, the
+      `canonicalize_coords.py` transform SHA-256, **and the updated
+      `generate_space_groups.py` SHA-256** plus the canonical-invariant
+      step in the rebuild path (review-1 [P2]). Commit:
+      `Record canonical coords_xyz invariant and provenance`
+- [ ] **CT5 — Phase 1 review gate.** No code. Mark `[x]`, commit the
+      checklist update alone, hand off to review. Commit:
+      `Reach canonical-templates Phase 1 review gate`
+
+### Phase 2 — Verification (canonical-templates phase)
+
+Add the tests above, then run (zsh-safe capture):
+
+```bash
+pixi run fix
+pixi run test-structure-check > /tmp/easydiffraction-test-structure.log 2>&1; test_structure_exit_code=$?; tail -n 50 /tmp/easydiffraction-test-structure.log; exit $test_structure_exit_code
+pixi run check > /tmp/easydiffraction-check.log 2>&1; check_exit_code=$?; tail -n 200 /tmp/easydiffraction-check.log; exit $check_exit_code
+pixi run unit-tests > /tmp/easydiffraction-unit.log 2>&1; unit_tests_exit_code=$?; tail -n 100 /tmp/easydiffraction-unit.log; exit $unit_tests_exit_code
+pixi run integration-tests > /tmp/easydiffraction-integration.log 2>&1; integration_tests_exit_code=$?; tail -n 100 /tmp/easydiffraction-integration.log; exit $integration_tests_exit_code
+pixi run script-tests > /tmp/easydiffraction-script.log 2>&1; script_tests_exit_code=$?; tail -n 100 /tmp/easydiffraction-script.log; exit $script_tests_exit_code
+```
+
+Then the packaging regression from #187's Phase 2 (build the wheel +
+`python tools/check_packaged_db.py dist/*.whl`), which now also exercises
+the new operator-form assertion.
+
+### Suggested Pull Request — canonical-templates fix
+
+**Title:** Store space-group Wyckoff coordinates in canonical form
+
+**Description:** A refined atom on certain special positions (sites with
+linked coordinates, like `(x, -x, z)`) could drift off its symmetry
+position during a fit, because the bundled space-group table stored those
+coordinate templates in an internal operator form the symmetry-constraint
+code didn't recognise. This change rewrites every affected template into
+the standard International Tables form so the constraints hold, adds
+guards so the table can't silently regress, and fixes the related `ed-6`
+tutorial refinement. It also unblocks automatic Wyckoff-position
+detection, which builds on these canonical templates.
