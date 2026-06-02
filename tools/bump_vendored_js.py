@@ -171,7 +171,10 @@ def _bump_runtime(runtime: VendoredRuntime) -> None:
 
 def _check_runtime(runtime: VendoredRuntime) -> list[str]:
     """
-    Return drift messages for a runtime's vendored files.
+    Return drift messages for a runtime's vendored files and license.
+
+    Checks both the asset hashes and that ``LICENSES.md`` exists and
+    matches the regenerated text from the pinned table.
 
     Parameters
     ----------
@@ -196,6 +199,14 @@ def _check_runtime(runtime: VendoredRuntime) -> list[str]:
                 f'hash drift: {runtime.dest_dir / asset.filename} '
                 f'(expected {asset.sha256}, actual {actual})'
             )
+    license_path = dest_dir / 'LICENSES.md'
+    if not license_path.is_file():
+        problems.append(f'missing: {runtime.dest_dir / "LICENSES.md"}')
+    elif license_path.read_text(encoding='utf-8') != _license_text(runtime):
+        problems.append(
+            f'license drift: {runtime.dest_dir / "LICENSES.md"} '
+            f'(does not match the pinned table; run vendor-update-js)'
+        )
     return problems
 
 
