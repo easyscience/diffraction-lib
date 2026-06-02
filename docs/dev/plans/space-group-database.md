@@ -296,42 +296,50 @@ above is complete._
 The bundled `space_groups.json.gz` stores cctbx **operator-form**
 `coords_xyz` — e.g. R-3m (IT 166) `h` is `(1/2*x-1/2*y,-1/2*x+1/2*y,z)` —
 for the coupled special positions (verified: 3826 templates; per the
-wyckoff plan's Decision 15, 288 positions across 117 IT numbers). The
-constraint helpers `_fract_constrained_flags()` (`crystallography.py:221`)
-and `_apply_fract_constraints()` (`:250`), the Wyckoff orbit matcher, and
-coordinate snapping all assume the **canonical ITA parametric form**
-(`(x,-x,z)`). The operator-form spelling silently breaks the
-constrained-axis flags, so a refined special-position coordinate drifts
-off its symmetry site — the `ed-6` fit-3 → fit-4 regression. The
-constraint **code** is correct; only the **data** spelling is wrong.
+wyckoff plan's Decision 15, 288 positions across 117 IT numbers).
+`_fract_constrained_flags()` (`crystallography.py:221`) decides which axis
+is constrained purely by **which variable symbol is absent** from the
+representative: canonical `(x,-x,z)` has `y` absent → `fract_y` constrained
+→ slaved to `-x`; but operator-form `(1/2*x-1/2*y,…)` makes **both `x` and
+`y` appear** → `fract_y` is wrongly "free" and the `y=-x` coupling is
+lost, so a refined special-position coordinate drifts off its symmetry
+site (the `ed-6` fit-3 → fit-4 regression). `_apply_fract_constraints()`
+(`:250`) and `_parse_rotation_matrix()` (`:350`, which does
+`int(coeff_str)`) share the same expectation. The constraint **code** is
+correct; only the **data** spelling is wrong. **Root cause:** the
+generator emitted cctbx operator-form `coords_xyz` for these positions
+instead of cryspy's canonical form; the ADR's intended Wyckoff source,
+cryspy's `wyckoff.dat`, already holds the canonical ITA form for them
+(verified — R-3m gives `(x,x,1/2)`, `(x,-x,1/2)`, …).
 
 ### Decisions (this phase)
 
-1. **Re-parametrise every operator-form `coords_xyz` to canonical ITA
-   parametric form** — each component a signed single free variable plus
-   an optional rational constant; no numeric coefficient on a variable
-   and no coupled cross-variable term. The transform is deterministic and
-   **orbit-preserving**, verified by **exact symbolic equivalence**
-   (`sympy`) for each affected Wyckoff orbit: the canonical and
-   operator-form representative sets are proven to describe the same point
-   set as rational affine forms, not merely to agree at sampled parameters
-   (sampling may supplement but never replace the symbolic proof) —
-   review-1 [P1].
-2. **Apply it as a cctbx-free post-processing pass over the existing
-   bundled DB**, not a full cctbx regeneration. The transform parses the
-   existing `coords_xyz` strings and re-parametrises with `sympy` (already
-   a `crystallography.py` dependency), so it runs in this repo's
-   environment. The cctbx generator also gains the same pass + a
-   generation-time invariant for future rebuilds, but this PR's
-   `space_groups.json.gz` is produced by the post-processing transform.
-   _Rejected alternative — re-running the full cctbx generator — needs the
-   throwaway cctbx env and re-derives the whole table when only the
-   `coords_xyz` spelling is wrong._
+1. **Re-source canonical `coords_xyz` from cryspy's `wyckoff.dat`** (the
+   ADR's intended Wyckoff source, ITA convention, already in the
+   environment) for every operator-form template, replacing the cctbx
+   operator-form spelling. Canonical form = each component a signed single
+   free variable (or an integer-coefficient ITA combination such as
+   `x-y`) plus an optional rational constant — **no fractional coefficient
+   on a variable** — with each genuine free DOF reduced to one canonical
+   variable so dependent axes' symbols are absent.
+2. **Verify each replacement two ways** (review-1 [P1] plus the CT1
+   correctness gap): (a) **exact symbolic orbit equivalence** (`sympy`) —
+   the cryspy canonical orbit and the cctbx operator-form orbit describe
+   the same point set as rational affine forms, not merely agree at
+   sampled parameters; **and** (b) **constraint correctness** — the
+   canonical representative's free-symbol set produces the right
+   `_fract_constrained_flags()` (free-DOF count matches the orbit's true
+   dimensionality; dependent axes constrained). Orbit equivalence alone is
+   insufficient: a non-minimal form like `(x-y,-x+y,z)` would pass it yet
+   leave `fract_y` wrongly free. _Rejected alternative — a blind `sympy`
+   re-parametrise of the existing operator strings — risks exactly that
+   non-minimal failure mode and re-derives the ITA convention cryspy
+   already encodes._
 3. **No constraint-code change.** `_fract_constrained_flags()` /
    `_apply_fract_constraints()` are correct as-is.
-4. **No new runtime dependency.** `sympy` already backs
-   `crystallography.py`; `cctbx` stays generation-only and is not needed
-   for the transform.
+4. **No new dependency.** Re-sourcing reads cryspy's `wyckoff.dat`;
+   `cryspy` and `sympy` are already project dependencies, and `cctbx`
+   stays generation-only (not needed for re-sourcing).
 5. **Guard both sides:** a generation-time invariant in the generator, a
    `tools/check_packaged_db.py` assertion rejecting operator-form leakage
    in the packaged wheel, and a unit data-invariant over loaded
@@ -351,10 +359,12 @@ constraint **code** is correct; only the **data** spelling is wrong.
 - `src/easydiffraction/crystallography/space_groups.json.gz` — rewritten
   with canonical `coords_xyz`; all other fields unchanged.
 - `tmp/space-groups/helper-tools/canonicalize_coords.py` — **new**, local
-  ignored one-time transform (read DB → re-parametrise → verify orbit
-  equality → rewrite).
-- `tmp/space-groups/helper-tools/generate_space_groups.py` — add the same
-  canonicalisation pass + generation-time invariant.
+  ignored one-time tool (read DB → re-source canonical `coords_xyz` from
+  cryspy `wyckoff.dat` per `(IT, coord_code, letter)` → verify orbit
+  equivalence + constraint flags → rewrite).
+- `tmp/space-groups/helper-tools/generate_space_groups.py` — source the
+  Wyckoff `coords_xyz` from cryspy's canonical form (not cctbx
+  operator-form) + a generation-time invariant rejecting operator-form.
 - `tools/check_packaged_db.py` — assert no packaged `coords_xyz` is
   operator-form.
 - `docs/dev/adrs/accepted/space-group-database.md` — canonical-form
@@ -382,24 +392,28 @@ commit stages only the tracked deliverable it produces, and the local
 tools are recorded by SHA-256 in the ADR provenance (CT4). No step commits
 only ignored files, and no empty commits.
 
-- [ ] **CT1 — Canonicalise the database (local transform → tracked
-      output).** Add the local, ignored
-      `tmp/space-groups/helper-tools/canonicalize_coords.py`: parse each
-      `coords_xyz` with `sympy`, detect operator form, re-parametrise to
-      canonical ITA form, and prove **exact symbolic orbit equivalence**
-      for every affected position (review-1 [P1]). Run it to rewrite
+- [ ] **CT1 — Canonicalise the database (local re-sourcing tool →
+      tracked output).** Add the local, ignored
+      `tmp/space-groups/helper-tools/canonicalize_coords.py`: for each
+      operator-form `coords_xyz`, look up the canonical orbit from cryspy's
+      `wyckoff.dat` by `(IT_number, coord_code, letter)`, and verify the
+      replacement two ways — **exact symbolic orbit equivalence** (`sympy`)
+      against the cctbx operator-form orbit **and** correct
+      `_fract_constrained_flags()` (free-DOF count + dependent axes
+      constrained). Run it to rewrite
       `src/easydiffraction/crystallography/space_groups.json.gz` (R-3m `h`
-      → `(x,-x,z)`; all other fields unchanged). The transform is local
-      tooling (recorded by SHA in CT4); **this commit stages only the
-      regenerated `space_groups.json.gz`**. Commit:
+      → `(x,-x,z)`; all other fields unchanged). The tool is local tooling
+      (recorded by SHA in CT4); **this commit stages only the regenerated
+      `space_groups.json.gz`**. Commit:
       `Canonicalize space-group coords_xyz templates`
-- [ ] **CT2 — Generator canonicalisation pass + invariant (local prep,
-      no commit).** Fold the same canonicalisation + a generation-time
-      invariant (rejecting operator-form leakage) into the local
-      `tmp/space-groups/helper-tools/generate_space_groups.py`, so a
-      future cctbx rebuild stays canonical. **Local curation tooling — not
-      committed** (deliberate exception); its updated SHA-256 is recorded
-      in CT4. No commit.
+- [ ] **CT2 — Generator sources canonical coords + invariant (local prep,
+      no commit).** Update the local
+      `tmp/space-groups/helper-tools/generate_space_groups.py` to source
+      Wyckoff `coords_xyz` from cryspy's canonical `wyckoff.dat` (not cctbx
+      operator-form) and add a generation-time invariant rejecting
+      operator-form leakage, so a future rebuild stays canonical. **Local
+      curation tooling — not committed** (deliberate exception); its
+      updated SHA-256 is recorded in CT4. No commit.
 - [ ] **CT3 — Packaging assertion.** Extend the tracked
       `tools/check_packaged_db.py` to assert no packaged `coords_xyz`
       template is operator-form (catches future regression at the wheel
