@@ -22,8 +22,8 @@ parameters a refinement is adjusting.
 
 A working prototype establishes the target experience and the data it
 needs. It lives at
-[`crysview-threejs-demo.html`](crysview-structure-visualization/crysview-threejs-demo.html) and
-demonstrates, against a non-orthogonal unit cell:
+[`crysview-threejs-demo.html`](crysview-structure-visualization/crysview-threejs-demo.html)
+and demonstrates, against a non-orthogonal unit cell:
 
 - atoms as spheres with element radius and colour;
 - anisotropic ADP ellipsoids (semi-axis lengths plus orientation);
