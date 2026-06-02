@@ -1309,47 +1309,37 @@ const restyleCorrelationHeatmaps = function (colors, themeSync) {
     });
 };
 
-const installModebarThemeStyle = function () {
-    const styleId = 'ed-plotly-modebar-theme-style';
-    if (document.getElementById(styleId)) {
-        return;
+const rgbaFromColor = function (color, alpha) {
+    const hexMatch = color.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i);
+    let red;
+    let green;
+    let blue;
+    if (hexMatch) {
+        let hex = hexMatch[1];
+        if (hex.length === 3) {
+            hex = hex.split('').map(function (part) {
+                return part + part;
+            }).join('');
+        }
+        red = parseInt(hex.slice(0, 2), 16);
+        green = parseInt(hex.slice(2, 4), 16);
+        blue = parseInt(hex.slice(4, 6), 16);
+    } else {
+        const parts = color.match(/(\d+(?:\.\d+)?)/g);
+        if (!parts || parts.length < 3) {
+            return color;
+        }
+        red = Number(parts[0]);
+        green = Number(parts[1]);
+        blue = Number(parts[2]);
     }
-
-    const style = document.createElement('style');
-    style.id = styleId;
-    style.textContent = [
-        '.plotly-graph-div.ed-plotly-themed-modebar .modebar-btn path {',
-        '    fill: var(--ed-plotly-modebar-icon-color) !important;',
-        '    opacity: var(--ed-plotly-modebar-icon-opacity) !important;',
-        '}',
-        '.plotly-graph-div.ed-plotly-themed-modebar .modebar-btn:hover path,',
-        '.plotly-graph-div.ed-plotly-themed-modebar .modebar-btn.active path {',
-        '    fill: var(--ed-plotly-modebar-icon-color) !important;',
-        '    opacity: var(--ed-plotly-modebar-icon-hover-opacity) !important;',
-        '}',
-    ].join('\n');
-    document.head.appendChild(style);
-};
-
-const applyModebarTheme = function (theme, colors) {
-    installModebarThemeStyle();
-    graphDiv.classList.add('ed-plotly-themed-modebar');
-    graphDiv.style.setProperty('--ed-plotly-modebar-icon-color', colors.foreground);
-    graphDiv.style.setProperty(
-        '--ed-plotly-modebar-icon-opacity',
-        theme === 'dark' ? '0.62' : '0.42',
-    );
-    graphDiv.style.setProperty(
-        '--ed-plotly-modebar-icon-hover-opacity',
-        theme === 'dark' ? '0.95' : '0.85',
-    );
+    return 'rgba(' + red + ', ' + green + ', ' + blue + ', ' + alpha + ')';
 };
 
 const applyTheme = function () {
     const theme = hostTheme();
     const colors = themeColors(theme);
     const syncMeta = themeSyncMeta();
-    applyModebarTheme(theme, colors);
 
     if (graphDiv.dataset.edPlotlyTheme === theme) {
         return;
@@ -1357,12 +1347,14 @@ const applyTheme = function () {
     graphDiv.dataset.edPlotlyTheme = theme;
 
     const transparentPlot = syncMeta.__THEME_SYNC_CORRELATION_HEATMAP_KEY__ === true;
+    const modebarColor = rgbaFromColor(colors.foreground, theme === 'dark' ? 0.62 : 0.42);
+    const modebarActiveColor = rgbaFromColor(colors.foreground, theme === 'dark' ? 0.95 : 0.85);
     const update = {
         paper_bgcolor: colors.paperBackground,
         plot_bgcolor: transparentPlot ? colors.paperBackground : colors.background,
         'modebar.bgcolor': colors.paperBackground,
-        'modebar.color': colors.foreground,
-        'modebar.activecolor': colors.foreground,
+        'modebar.color': modebarColor,
+        'modebar.activecolor': modebarActiveColor,
         'font.color': colors.foreground,
         'title.font.color': colors.foreground,
         'legend.bgcolor': colors.legend,
@@ -2034,11 +2026,6 @@ scheduleResize();
             },
             paper_bgcolor=cls._paper_background_color(),
             plot_bgcolor=cls._background_color(),
-            modebar={
-                'bgcolor': cls._paper_background_color(),
-                'color': cls._theme_colors().foreground,
-                'activecolor': cls._theme_colors().foreground,
-            },
             legend={
                 'bgcolor': cls._legend_background_color(),
                 'xanchor': 'right',

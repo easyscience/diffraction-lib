@@ -15,12 +15,20 @@ ADR. No deliberate exception to `AGENTS.md` is taken.
 
 This plan implements the
 [`wyckoff-letter-detection`](../adrs/suggestions/wyckoff-letter-detection.md)
-ADR. The ADR review cycle previously closed at review 10, but the ADR
-then changed to add the derived `space_group_Wyckoff` category and
-space-group-key re-detection. That later ADR review cycle closed at
-`wyckoff-letter-detection_review-16.md`, whose second non-blank line is
-the final-review sentinel. The closed ADR text was committed as
-`0f3bc269c` (`Finalize Wyckoff letter detection ADR`).
+ADR. Earlier ADR review cycles closed at review 10 and then review 16
+(adding the derived `space_group_Wyckoff` category and space-group-key
+re-detection); that text was committed as `0f3bc269c`
+(`Finalize Wyckoff letter detection ADR`). The ADR was then **extended
+with §10 (canonical `coords_xyz` templates)** after the coupled
+special-position regression was found in the `ed-6` tutorial. That §10
+`draft-adr` cycle closed with the final-review sentinel in
+`wyckoff-letter-detection_review-2.md`; its §10 text was committed as
+`9882c50cb`, with a small Testing/Compatibility follow-up still in the
+worktree at planning time. The ADR `_review-*` / `_reply-*` siblings are
+transient and are removed by `/draft-impl-1` Phase A before the
+checklist runs, so P1.0 verifies durable signals (§10 present and
+committed, and the §10 prerequisite landed) rather than a specific
+review file.
 
 Its prerequisite — the
 [`space-group-database`](../adrs/accepted/space-group-database.md) ADR
@@ -129,30 +137,35 @@ rotation/translation parser.
     stored non-empty letter verbatim with `?` multiplicity.
 14. **Tolerance.** `_WYCKOFF_DETECTION_TOL = 1e-3` is the default; a
     user/project-level tolerance setting remains deferred.
-15. **Canonical Wyckoff templates are a prerequisite (ADR §10).** The
-    orbit matcher (Decisions 2–3), snapping (Decision 5), and the
-    existing coordinate constraints assume `coords_xyz` in canonical ITA
-    parametric form (`(x,-x,z)`), but the bundled `space_groups.json.gz`
-    ships cctbx operator-form templates (`(1/2*x-1/2*y,…)`) for 288
-    coupled special positions across 117 IT numbers. That spelling
-    silently breaks `_fract_constrained_flags()` /
-    `_apply_fract_constraints()`, so a refined special-position
-    coordinate drifts off-site (the `ed-6` fit-3 → fit-4 regression).
-    The table must be regenerated in canonical form — with a
-    generation-time invariant check rejecting operator-form leakage —
-    before detection/snapping can be trusted, and a coupled-position
-    regression test (e.g. R-3m `h`) added. This touches the
-    space-group-database, so treat it as a coordinated change with that
-    ADR.
+15. **Canonical Wyckoff templates are a prerequisite (ADR §10), owned by
+    the space-group database.** The orbit matcher (Decisions 2–3),
+    snapping (Decision 5), and the existing coordinate constraints
+    assume `coords_xyz` in canonical ITA parametric form (`(x,-x,z)`),
+    but the bundled `space_groups.json.gz` ships cctbx operator-form
+    templates (`(1/2*x-1/2*y,…)`) for 288 coupled special positions
+    across 117 IT numbers. That spelling silently breaks
+    `_fract_constrained_flags()` / `_apply_fract_constraints()`, so a
+    refined special-position coordinate drifts off-site (the `ed-6`
+    fit-3 → fit-4 regression). **Decision: fix this as a standalone
+    prerequisite** against the
+    [`space-group-database`](../adrs/accepted/space-group-database.md)
+    ADR, not inside this feature. The generator
+    (`tmp/space-groups/helper-tools/generate_space_groups.py`, cctbx-
+    dependent and not in this repo's environment) and the bundled
+    `space_groups.json.gz` are that ADR's artifacts, and the live
+    refinement regression should ship on its own small PR rather than
+    wait for this feature. That fix re-parametrises every operator-form
+    template to canonical form (deterministic; verified for all 288),
+    adds a generation-time invariant check (and a
+    `tools/check_packaged_db.py` assertion) rejecting operator-form
+    leakage, and adds a coupled- position constraint regression. This
+    plan **depends on** that fix, **verifies it at P1.0**, and does not
+    modify the database generator itself.
 
 ## Open questions
 
 - **Tolerance default.** `1e-3` is the ADR's starting point; it may be
   tuned against the tutorial corpus during Phase 2. Not a blocker.
-- **Canonical-form regeneration ownership.** §10's fix lives in the
-  space-group-database generator, not this feature's code. Decide
-  whether to land it as a standalone fix ahead of this plan or fold it
-  into Phase 1 — it is a hard prerequisite either way.
 
 ## Concrete files likely to change
 
@@ -212,6 +225,19 @@ Phase 2 (tests):
   group change, absent-group emptiness, and project-CIF exclusion.
 - A tutorial-corpus regression check (functional/script level) that
   strips each declared letter and asserts re-detection reproduces it.
+- `tests/unit/easydiffraction/crystallography/test_space_groups.py` (or
+  `_coverage.py`) — the §10 canonical-template data invariant (no
+  operator-form `coords_xyz`).
+
+**Prerequisite, out of scope for this plan (Decision 15).** The
+canonical-table regeneration itself —
+`tmp/space-groups/helper-tools/generate_space_groups.py`,
+`src/easydiffraction/crystallography/space_groups.json.gz`,
+`tools/check_packaged_db.py`, and
+[`space-group-database.md`](../adrs/accepted/space-group-database.md) —
+lands as a standalone space-group-database fix. This plan only
+**verifies** it (P1.0) and guards it from the consuming side (the Phase
+2 invariant test).
 
 ## Implementation steps (Phase 1)
 
@@ -223,14 +249,21 @@ before moving to the next step or the Phase 1 review gate**, per
 The ADR commit + design-phase review/reply cleanup are handled by
 `/draft-impl-1` Phase A before P1.1.
 
-- [ ] **P1.0 — Re-close the ADR review gate.** No code. Ensure
-      `git branch --show-current` is `wyckoff-letter-detection`; if not,
-      stop before editing and ask the user to switch to the target
-      branch outside the shortcut. Then ensure
-      `wyckoff-letter-detection_review-16.md` remains the latest ADR
-      review and has the final-review sentinel. If any newer ADR review
-      appears before implementation, update this plan and re-review it
-      before P1.1. Commit: `Confirm wyckoff letter detection ADR gate`
+- [ ] **P1.0 — Verify the ADR gate and the §10 prerequisite.** No code.
+      Ensure `git branch --show-current` is `wyckoff-letter-detection`;
+      if not, stop before editing and ask the user to switch to the
+      target branch outside the shortcut. Confirm the ADR on disk
+      includes §10 (the canonical-`coords_xyz` decision) and that its
+      most recent `draft-adr` cycle closed with a final-review sentinel.
+      **Gate on the §10 prerequisite (Decision 15):** confirm the
+      standalone canonical-table fix has landed by asserting no bundled
+      `SPACE_GROUPS` `coords_xyz` template is in operator form — every
+      component is canonical parametric, with no component containing
+      its own axis variable in a coupled term, so R-3m `h` reads
+      `(x,-x,z)`, not `(1/2*x-1/2*y,…)`. If any operator-form template
+      remains, **stop**: the space-group-database prerequisite must land
+      before this plan's detection and snapping can be implemented.
+      Commit: `Confirm wyckoff letter detection ADR gate`
 - [ ] **P1.1 — Orbit matcher in the crystallography submodule.** Add to
       `crystallography.py`: frozen
       `WyckoffPosition(letter, multiplicity, site_symmetry, coord_template)`,
@@ -346,7 +379,20 @@ Tests to add or update:
   and explicit-letter lookup selecting the nearest representative rather
   than `coords_xyz[0]`; rounded inputs (`0.3333→1/3`, `0.4999→1/2`) at
   `1e-3`; `''`→`None` normalisation; genuinely absent group returns no
-  record.
+  record; and the **§10 coupled-position guard** — a coupled special
+  position (R-3m `h`, `(x,-x,z)`) flags `fract_y` symmetry-constrained
+  and re-slaves it to `-fract_x` after a `fract_x` edit (the `ed-6`
+  regression). This unit-level guard complements the prerequisite fix in
+  the space-group-database (Decision 15); the existing constraint tests
+  covered only all-fixed and all-free sites, which never exercised the
+  coupled case.
+- **Canonical-template data invariant (§10)** in
+  `tests/unit/easydiffraction/crystallography/test_space_groups.py` (or
+  its `_coverage.py`): assert every `SPACE_GROUPS` `coords_xyz` template
+  is canonical parametric form — no component contains its own axis
+  variable in a coupled term (operator-form leakage) — so a future table
+  regeneration cannot silently reintroduce the bug. This is the same
+  invariant P1.0 gates on, asserted from the test side.
 - **Atom-site behaviours** in
   `tests/unit/easydiffraction/datablocks/structure/categories/test_atom_sites.py`:
   fill-if-empty on create/load; re-detect via both `atom.fract_x = …`
@@ -399,3 +445,11 @@ Tables notation. Existing projects and CIF files keep their supplied
 letters, unsupported groups can still preserve stored letters safely,
 and the same multiplicity is used consistently across calculators and
 reports.
+
+**Scope note (per Decision 15).** The special-position constraint
+correction for coupled sites (the `ed-6` regression, where a refined
+atom at a site like `(x, -x, z)` drifted off its symmetry position) is
+**not** part of this PR. It ships first as a standalone
+space-group-database correction, and this feature builds on it; that
+user-facing benefit belongs in the prerequisite's PR description, not
+here.

@@ -584,6 +584,14 @@ identically in both spellings and so never exercised the gap.
   shortcut was wrong for coordinates on another representative of the
   same orbit; that case is intentionally fixed by nearest-representative
   selection.
+- Projects with explicit letters on a coupled special position currently
+  stored in operator form (for example R-3m `h`) keep their letters, but
+  their constraint behaviour changes once the table is regenerated to
+  canonical form (§10): the dependent coordinate stops drifting under
+  refinement and is slaved to the free coordinate
+  (`fract_y = -fract_x`). This is the intended fix for the ed-6
+  regression and, like nearest-representative selection, is a deliberate
+  constraint change to call out rather than a silent one.
 - A saved project reloads to the same letters: every letter is written
   (whether the user supplied it or detection filled it), so all reload
   verbatim — and an auto-filled one would re-derive to the same value
@@ -641,6 +649,14 @@ may miss:
 - non-first orbit representatives, including auto-detection of a point
   near a representative such as `(0,x,0)` and explicit-letter snapping
   via the nearest representative rather than `coords_xyz[0]` (§2, §5);
+- the §10 canonical-template invariant: a coupled special position such
+  as R-3m `h` (`(x,-x,z)`) flags `fract_y` symmetry-constrained and
+  re-slaves it to `-fract_x` after a `fract_x` edit — the ed-6
+  regression guard — and a data check that every `SPACE_GROUPS`
+  `coords_xyz` template is canonical parametric form, i.e. no component
+  contains its own axis variable in a coupled term (operator-form
+  leakage), so a future table regeneration cannot silently reintroduce
+  the bug;
 - lenient matching of rounded inputs (`0.3333 → 1/3`, `0.4999 → 1/2`) at
   the `1e-3` tolerance (§5);
 - the `''`→`None` coordinate-code normalisation — P1/P-1 under their
