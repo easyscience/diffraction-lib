@@ -73,6 +73,13 @@ MEASURED_MARKER_LINE_WIDTH = 0
 SINGLE_CRYSTAL_MARKER_LINE_WIDTH = 0.5
 MEASURED_ERROR_BAR_THICKNESS = 0.5
 MEASURED_ERROR_BAR_WIDTH = 2
+# Correlation-heatmap cell borders. Internal cell separators sit inside
+# the plot area and render at their full width. The outer frame sits on
+# the plot-area boundary, where Plotly clips half of the stroke, so it
+# is drawn at double width to keep its visible half matching the
+# internal separators.
+CORRELATION_GRID_LINE_WIDTH = 1
+CORRELATION_FRAME_LINE_WIDTH = 2 * CORRELATION_GRID_LINE_WIDTH
 # Single source for the y=x reference-line colour, shared with the
 # report axis gray (report.style.REPORT_AXIS_RGB) and imported by
 # report.fit_plot so the diagonal looks identical in the Plotly and
@@ -507,7 +514,7 @@ class PlotlyPlotter(PlotterBase):
                 'xref': 'x',
                 'yref': 'y',
                 'layer': 'above',
-                'line': {'color': grid_color, 'width': 1},
+                'line': {'color': grid_color, 'width': CORRELATION_GRID_LINE_WIDTH},
             }
             for x_pos in x_edges[1:-1]
         ]
@@ -521,7 +528,7 @@ class PlotlyPlotter(PlotterBase):
                 'xref': 'x',
                 'yref': 'y',
                 'layer': 'above',
-                'line': {'color': grid_color, 'width': 1},
+                'line': {'color': grid_color, 'width': CORRELATION_GRID_LINE_WIDTH},
             }
             for y_pos in y_edges[1:-1]
         )
@@ -534,7 +541,7 @@ class PlotlyPlotter(PlotterBase):
             'xref': 'paper',
             'yref': 'paper',
             'layer': 'above',
-            'line': {'color': grid_color, 'width': 1},
+            'line': {'color': grid_color, 'width': CORRELATION_FRAME_LINE_WIDTH},
             'fillcolor': 'rgba(0, 0, 0, 0)',
         })
 
@@ -1168,6 +1175,15 @@ if (!graphDiv || !window.Plotly) {
     return;
 }
 
+// Theme this figure was rendered with (Python-detected), used as the
+// fallback when the host page exposes no detectable theme attribute --
+// e.g. some Jupyter front-ends -- so icons match the baked plot instead
+// of defaulting to light.
+const bakedThemeLayout = graphDiv._fullLayout || graphDiv.layout || {};
+const bakedTheme = bakedThemeLayout.plot_bgcolor === '__DARK_BACKGROUND_COLOR__'
+    ? 'dark'
+    : 'light';
+
 const hostTheme = function () {
     const materialScheme = (
         (document.body && document.body.getAttribute('data-md-color-scheme'))
@@ -1196,7 +1212,7 @@ const hostTheme = function () {
     if (jupyterThemeLight === 'true') {
         return 'light';
     }
-    return 'light';
+    return bakedTheme;
 };
 
 const themeColors = function (theme) {
