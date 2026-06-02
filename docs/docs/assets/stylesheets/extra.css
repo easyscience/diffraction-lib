@@ -433,3 +433,35 @@ h1 .label-experiment {
 .label-experiment:hover {
   color: white !important;
 }
+
+/* ----------------------------------------------------------------------
+ * Lazy interactive figures (ed-figures.js, SHARED embedding mode).
+ * The skeleton reserves the figure height (set inline) to avoid layout
+ * shift, and is hidden once the figure renders.
+ * ------------------------------------------------------------------- */
+
+.ed-figure {
+  position: relative;
+  margin: 0.6rem 0;
+}
+
+.ed-figure-skeleton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 120px;
+  color: var(--md-default-fg-color--light);
+  background: var(--md-default-fg-color--lightest);
+  border-radius: 2px;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+}
+
+.ed-figure--ready .ed-figure-skeleton {
+  display: none;
+}
+
+.ed-figure-target {
+  width: 100%;
+}

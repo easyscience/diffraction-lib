@@ -179,7 +179,7 @@ dependency the plan does not name, **stop and ask**.
       sync step before `mkdocs build` in `docs.yml`. Commit:
       `Add docs-sync-vendored-js task and wiring`
 
-- [ ] **P1.5 — Add the shared `ed-figures.js` loader + skeleton CSS.**
+- [x] **P1.5 — Add the shared `ed-figures.js` loader + skeleton CSS.**
       Implement `IntersectionObserver` lazy activation for
       `data-ed-figure` placeholders (Plotly `newPlot` + Three.js boot),
       centralized theme-sync / resize / legend logic, eager fallback
