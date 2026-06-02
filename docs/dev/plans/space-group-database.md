@@ -50,8 +50,9 @@ consumer handling so the triclinic groups use it.
   for the one-time build and never added to the project's runtime
   dependencies (`cctbx` is named here for `/draft-impl-1` pre-approval, but
   it is *not* a pyproject runtime dep).
-- **Scope:** all 230 groups × all standard settings × full Wyckoff orbits,
-  plus the **symmetry-core** metadata `hall_symbol`, general-position
+- **Scope:** all 230 groups × all standard settings and public
+  coordinate-code aliases × full Wyckoff orbits, plus the **symmetry-core**
+  metadata `hall_symbol`, general-position
   `symop` list, `generators`, `point_group`, `laue_class`, `centring`
   (further fields deferred per the ADR).
 - **Cross-check sources:** cryspy `data/cryspy/wyckoff.dat`, gemmi
@@ -95,7 +96,8 @@ consumer handling so the triclinic groups use it.
   Provenance* with recorded versions.
 - `tools/check_packaged_db.py` — **new** tiny helper that imports the
   installed package and asserts the loaded `SPACE_GROUPS` covers 230 groups
-  (used by the Phase 2 packaging regression).
+  plus the public cryspy coordinate-code alias surface (used by the Phase 2
+  packaging regression).
 - `pyproject.toml` — **only if** the Phase 2 packaging test shows the
   `.json.gz` is not shipped (add a hatch `artifacts`/`force-include` entry).
 - Phase 2: `tests/unit/easydiffraction/crystallography/test_space_groups.py`
@@ -195,19 +197,22 @@ Tests to add/update (in
 - **presence**: all 230 groups + standard settings load (regression vs the
   current 42-group / 18-setting gap);
 - **query surface (parity with today, no new index)**: every standard-setting
-  `(IT_number, IT_coordinate_system_code)` entry loads from the DB, and for
-  each group the *existing* cryspy-backed `get_it_number_by_name_hm_short`
-  resolution still returns an IT number that is present in the DB. This
-  verifies "at least as queryable as today" against the loaded dict and the
-  unchanged H-M path; a database-derived H-M index is **not** added here (it
-  stays Deferred Work in the ADR);
+  `(IT_number, IT_coordinate_system_code)` entry loads from the DB, every
+  coordinate-system code currently exposed by cryspy's
+  `get_it_coordinate_system_codes_by_it_number` resolves in `SPACE_GROUPS`,
+  and for each group the *existing* cryspy-backed
+  `get_it_number_by_name_hm_short` resolution still returns an IT number
+  that is present in the DB. This verifies "at least as queryable as today"
+  against the loaded dict and the unchanged H-M path; a database-derived H-M
+  index is **not** added here (it stays Deferred Work in the ADR);
 - **spot-checks vs International Tables** for P4, P3, P6, Pm-3, a monoclinic
   with cell choices, and an origin-choice group;
 - **packaging**: a small helper `tools/check_packaged_db.py` imports
   `easydiffraction.crystallography.space_groups` and asserts the loaded
-  `SPACE_GROUPS` covers 230 groups; it is run against an **installed wheel**
-  (not the source tree) by the packaging command below, catching
-  package-data omission for the renamed `.json.gz`.
+  `SPACE_GROUPS` covers 230 groups plus the public cryspy coordinate-code
+  alias surface; it is run against an **installed wheel** (not the source
+  tree) by the packaging command below, catching package-data omission for
+  the renamed `.json.gz`.
 
 Verification commands (zsh-safe log capture where output is needed):
 
@@ -241,9 +246,10 @@ common space groups entirely — including P4, P3, P6, and Pm-3 — plus many
 alternative monoclinic settings, so symmetry constraints and Wyckoff
 information silently did nothing for structures in those groups. This change
 rebuilds the database from curated cryspy and cctbx/sgtbx source data,
-covering all 230 groups and their standard settings with full symmetry
-information, cross-checked against several independent references with every
-contested value resolved on the record. The data now ships as transparent,
-inspectable JSON instead of an opaque binary pickle. Existing projects load
-unchanged; structures in the previously-missing groups now get correct
-symmetry handling.
+covering all 230 groups, their standard settings, and every public
+coordinate-code alias with full symmetry information. The seed data is
+cross-checked against several independent references and keeps flagged rows
+visible for later International Tables verification. The data now ships as
+transparent, inspectable JSON instead of an opaque binary pickle. Existing
+projects load unchanged; structures in the previously-missing groups now get
+correct symmetry handling.

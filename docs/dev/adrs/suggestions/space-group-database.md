@@ -68,17 +68,17 @@ provenance recorded in this ADR.
 source snippets are present).
 
 The goal: a **complete, self-owned** `space_groups.json.gz` covering all
-230 groups × all standard settings × full Wyckoff orbits, built **once**
-with its software provenance recorded (§Build provenance) and any source
-disagreements resolved by human curation.
+230 groups × all standard settings plus every coordinate-code alias the
+current `SpaceGroup` category can produce × full Wyckoff orbits, built
+**once** with its software provenance recorded (§Build provenance).
 
 ## Decision
 
 ### 1. Scope and schema
 
-Cover **all 230 IT groups × every standard setting (coordinate-system
-code) × every Wyckoff position**, where each position stores its
-`multiplicity`, `site_symmetry`, and the full `coords_xyz` orbit.
+Cover **all 230 IT groups × every standard setting and public
+coordinate-code alias × every Wyckoff position**, where each position stores
+its `multiplicity`, `site_symmetry`, and the full `coords_xyz` orbit.
 
 The schema **extends the existing one additively**: every current key is
 preserved so consumers (`crystallography.py`, the calculators, CIF code)
@@ -117,7 +117,10 @@ fuller "H-M symbol *with* setting → specific
 can map to several settings/origins) and is out of committed scope; actually
 dropping the cryspy dependency is left to Deferred Work. The point here is
 only that the new database is **at least as queryable as today**, by both
-IT number + coordinate-system code and by Hermann-Mauguin symbol.
+IT number + coordinate-system code and by Hermann-Mauguin symbol. The
+generated database therefore includes 756 records: 530 cctbx-tabulated
+settings plus 226 cryspy coordinate-code aliases, so every one of the 711
+cryspy reference coordinate-code rows is a valid `SPACE_GROUPS` key.
 
 ### 2. JSON storage removes the unpickle workaround
 
@@ -194,9 +197,9 @@ just the primary one:
   cell-choice enumeration;
 - International Tables Vol A — authoritative spot-checks.
 
-Verification covers presence (all 230 groups and their standard settings),
-per-position values (letter, multiplicity, site symmetry), and orbit
-coordinates.
+Verification covers presence (all 230 groups, their standard settings, and
+the public cryspy coordinate-code alias surface), per-position values (letter,
+multiplicity, site symmetry), and orbit coordinates.
 
 ### 6. Disagreement report and human-in-the-loop curation
 
@@ -253,10 +256,14 @@ This is intentionally a **curated seed database**, not the final
 International Tables audit. The `IT` and `Override` columns in the
 comparison reports are left for future human verification. Future curation
 should check flagged rows against International Tables Vol A first, and may
-also consult Bilbao Crystallographic Server and ISODISTORT as independent
-online references for Wyckoff-position data. Those checks are deferred so
-the database can unblock Wyckoff detection now while keeping every
-non-obvious choice visible for later correction.
+also consult the IUCr International Tables Symmetry Database
+(`https://symmdb.iucr.org/`), Bilbao Crystallographic Server, and ISODISTORT
+as independent online references for Wyckoff-position data. The IUCr
+Symmetry Database is especially relevant where subscriber access is
+available because its Wyckoff-position program exposes multiplicities,
+letters, site-symmetry symbols, and coordinate triplets. Those checks are
+deferred so the database can unblock Wyckoff detection now while keeping
+every non-obvious choice visible for later correction.
 
 The triclinic groups do not require a special-case database model. P1 (IT 1)
 has one Wyckoff position, `a`, with multiplicity 1. P-1 (IT 2) has the
@@ -288,8 +295,8 @@ the documented decisions in sync.
   Compatibility).
 - Documented, auditable provenance: the local generator helper SHA-256,
   curation overrides, local disagreement report, and recorded build versions
-  show exactly how the database was produced and every contested value
-  decided.
+  show exactly how the seed database was produced and which value checks
+  remain deferred.
 - The Wyckoff-detection "unsupported group" path shrinks from "common
   groups" to genuinely-exotic settings, simplifying that feature.
 - The 42-group gap and the missing settings become permanent regression
@@ -299,7 +306,9 @@ the documented decisions in sync.
 
 - A temporary, generation-only cctbx install is needed for the one-time
   build (never a runtime dependency).
-- A one-time human curation pass over the disagreement report.
+- Deferred human curation over the disagreement report before the seed is
+  promoted from cross-checked package data to a final International Tables
+  audit.
 - `space_groups.json.gz` is larger than today's partial pickle (gzipped JSON
   is less compact than gzipped pickle), though still well under ~1.5 MB.
 
@@ -343,12 +352,12 @@ the documented decisions in sync.
 
 ## Verification
 
-- A regression test asserts that **all 230 groups and their standard
-  settings are present** in the loaded table (guarding against the current
-  42-group / 18-setting gap).
-- A query-surface test asserts that lookups by `(IT_number, coord_code)` and
-  by Hermann-Mauguin symbol still resolve every group — at least matching
-  today's capability.
+- A regression test asserts that **all 230 groups, their standard settings,
+  and every public cryspy coordinate-code alias are present** in the loaded
+  table (guarding against the current 42-group / 18-setting gap).
+- A query-surface test asserts that every coordinate-system code exposed by
+  `SpaceGroup` resolves as a `(IT_number, coord_code)` key and that
+  Hermann-Mauguin symbol resolution still reaches every group.
 - Spot-check tests compare representative groups against International
   Tables: a primitive tetragonal (P4), a trigonal (P3), a hexagonal (P6),
   a centrosymmetric cubic (Pm-3), a monoclinic with cell choices, and an
@@ -397,15 +406,15 @@ Build environment:
 Generated and curation artifacts:
 
 - `src/easydiffraction/crystallography/space_groups.json.gz`:
-  `4ca517975bf3b54adcd29bbbf4a4917e4715c84068fe0fbc505000ee633fc105`
+  `7a8c4885d3cb5276414b6642b6d558954b6dbad076044a501f328adc09ad9278`
 - `tmp/space-groups/helper-tools/generate_space_groups.py`:
-  `f706bae152a15426d52f9b27dd1b87611fa4d8a6044313b2406a8b96e636a89e`
+  `d2f926af174488d730951250cdf9b08962a11a53bdac8cd6bd5d15ba2d818760`
 - `docs/dev/adrs/suggestions/space-group-database/space_groups_overrides.yaml`:
   `7077eec25d0f3b852dd7096a24dc7ac438467f9cb594f91a65ce10cda0e0722a`
 - `tmp/space-groups/extracted-comparison/disagreements.md`:
-  `ff9885805fd56a6bc3881995e004ae0c32ff6a6d7da2e89ac420c08b47ea4220`
+  `dda940fbf75862516411685c9b9bdf7170fa4a116f90eeeff93bd068b8acda4c`
 - `tmp/space-groups/extracted-comparison/all-fields.csv`:
-  `bfa2f57ec74f03f413b886cdfec7d4d902abd2c11777b30060f89090a7ccbc0f`
+  `4c69060514c58730d905d204144364d5696af9781d5d6132966960131ccd6b3a`
 
 Gathered input snapshots:
 
@@ -442,9 +451,13 @@ records covering all 230 IT groups, with no duplicate
 `(IT_number, IT_coordinate_system_code)` keys after normalisation. This is
 not identical to the wider cryspy-style coordinate-code surface used by
 EasyDiffraction today: cryspy exposes additional repeated axis/cell-choice
-aliases for some monoclinic and orthorhombic groups. The generator therefore
-treats those aliases as a Phase 1 cross-check/curation concern rather than
-silently inventing values during the initial cctbx extraction.
+aliases for some monoclinic, orthorhombic, and trigonal settings. The final
+Phase 1 database adds 226 alias records, producing 756 records total and
+covering all 711 cryspy reference coordinate-code rows. Alias records are
+generated from cctbx by parsing the cryspy Hermann-Mauguin alias where
+cctbx accepts it; otherwise they copy the closest same-IT cctbx setting and
+carry the cryspy alias name. Detailed value verification for those alias
+records remains part of the deferred International Tables audit.
 
 ## Open Questions
 
@@ -454,10 +467,11 @@ candidate additional-metadata fields — are recorded in §Build Provenance,
 
 ## Deferred Work
 
-- Full human verification against International Tables Vol A, with Bilbao
-  Crystallographic Server and ISODISTORT as additional independent
-  references for flagged Wyckoff-position rows. Record corrections in
-  the ADR companion overrides file and regenerate the database/report.
+- Full human verification against International Tables Vol A, with the IUCr
+  International Tables Symmetry Database (`https://symmdb.iucr.org/`),
+  Bilbao Crystallographic Server, and ISODISTORT as additional independent
+  references for flagged Wyckoff-position rows. Record corrections in the
+  ADR companion overrides file and regenerate the database/report.
 - **Additional metadata cctbx exposes**, deliberately deferred from the
   symmetry-core schema (§1): asymmetric-unit definition, reflection /
   systematic-absence conditions, centring translation vectors, per-Wyckoff
