@@ -154,6 +154,7 @@
       'legend.bgcolor': colors.legend,
       'legend.font.color': colors.foreground,
       'hoverlabel.bgcolor': colors.hoverBackground,
+      'hoverlabel.bordercolor': colors.axisFrame,
       'hoverlabel.font.color': colors.foreground,
     };
     axisNames(graphDiv).forEach(function (name) {
