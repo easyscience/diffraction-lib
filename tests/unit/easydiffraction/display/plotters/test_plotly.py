@@ -1187,3 +1187,59 @@ def test_serialize_html_inline_is_eager_self_contained():
     assert 'data-ed-figure' not in html
     # Eager render embeds the plot div / runtime call.
     assert 'plotly-graph-div' in html or 'newPlot' in html
+
+
+def test_typed_arrays_to_float32_leaves_integer_specs_untouched():
+    import base64
+
+    import easydiffraction.display.plotters.plotly as pp
+
+    ints = np.arange(5, dtype='<i4')
+    spec = {
+        'dtype': 'i4',
+        'bdata': base64.b64encode(ints.tobytes()).decode('ascii'),
+        'shape': '5',
+    }
+    result = pp._typed_arrays_to_float32({'value': spec, 'flag': True})
+
+    # Integer typed arrays and inline scalars are left untouched.
+    assert result['value']['dtype'] == 'i4'
+    assert result['value']['bdata'] == spec['bdata']
+    assert result['flag'] is True
+
+
+def test_typed_arrays_to_float32_roundtrips_through_plotly():
+    import base64
+
+    import easydiffraction.display.plotters.plotly as pp
+    import plotly.graph_objects as go
+    import plotly.io as pio
+
+    expected = np.arange(3000.0) * 1.5
+    fig = go.Figure(go.Scatter(x=np.arange(3000.0), y=expected))
+    downcast = pp._typed_arrays_to_float32(fig.to_plotly_json())
+
+    # Plotly accepts the f4 typed arrays (reconstruct + serialise, no error).
+    pio.to_json(go.Figure(downcast))
+
+    # Values survive within float32 tolerance.
+    y_spec = downcast['data'][0]['y']
+    assert y_spec['dtype'] == 'f4'
+    decoded = np.frombuffer(base64.b64decode(y_spec['bdata']), dtype='<f4')
+    assert np.allclose(decoded, expected, rtol=1e-6)
+
+
+def test_float32_downcast_preserves_hover_formatted_values():
+    # Representative powder intensities and a correlation value. Hover
+    # templates format to a few decimals (e.g. ``:,.2f``), so the
+    # float32 downcast must not change the value at the shown precision.
+    values = np.array(
+        [12345.6789, 0.001234, 9876.54321, 100.0, 0.5, -0.87654],
+        dtype='<f8',
+    )
+    as_f32 = values.astype('<f4')
+
+    def formatted(array):
+        return [f'{value:,.2f}' for value in array]
+
+    assert formatted(values) == formatted(as_f32)

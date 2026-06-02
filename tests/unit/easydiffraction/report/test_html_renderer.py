@@ -363,3 +363,24 @@ def test_render_html_report_uses_plotly_fit_style_order():
     assert '"color":"rgb(31, 119, 180)"' in html
     assert '"name":"Bragg peaks: phase-a"' in html
     assert '"yaxis3"' in html
+
+
+def test_report_figure_html_ignores_shared_env(monkeypatch):
+    import plotly.graph_objects as go
+
+    from easydiffraction.report.html_renderer import _figure_html
+    from easydiffraction.report.style import report_style_context
+
+    # Even with the docs SHARED env set, reports stay STANDALONE (eager,
+    # self-contained) because the report path passes the mode explicitly.
+    monkeypatch.setenv('EASYDIFFRACTION_FIGURE_EMBED_MODE', 'shared')
+    fig = go.Figure(go.Scatter(x=[1.0, 2.0, 3.0], y=[4.0, 5.0, 6.0]))
+
+    html = _figure_html(
+        fig,
+        include_plotlyjs=True,
+        report_style=report_style_context(),
+    )
+
+    assert 'data-ed-figure' not in html
+    assert 'plotly-graph-div' in html or 'newPlot' in html
