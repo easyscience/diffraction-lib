@@ -222,6 +222,10 @@
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 default.py
 │   │   │   │   └── 📄 factory.py
+│   │   │   ├── 📁 space_group_wyckoff
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 default.py
+│   │   │   │   └── 📄 factory.py
 │   │   │   └── 📄 __init__.py
 │   │   ├── 📁 item
 │   │   │   ├── 📄 __init__.py

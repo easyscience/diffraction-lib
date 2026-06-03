@@ -244,6 +244,7 @@
 │   │   ├── 🏷️ class TypeValidator
 │   │   ├── 🏷️ class RangeValidator
 │   │   ├── 🏷️ class MembershipValidator
+│   │   ├── 🏷️ class PermissiveMembershipValidator
 │   │   ├── 🏷️ class RegexValidator
 │   │   └── 🏷️ class AttributeSpec
 │   └── 📄 variable.py
@@ -262,6 +263,7 @@
 ├── 📁 crystallography
 │   ├── 📄 __init__.py
 │   ├── 📄 crystallography.py
+│   │   └── 🏷️ class WyckoffPosition
 │   └── 📄 space_groups.py
 ├── 📁 datablocks
 │   ├── 📁 experiment
@@ -464,6 +466,13 @@
 │   │   │   │   │   └── 🏷️ class SpaceGroup
 │   │   │   │   └── 📄 factory.py
 │   │   │   │       └── 🏷️ class SpaceGroupFactory
+│   │   │   ├── 📁 space_group_wyckoff
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 default.py
+│   │   │   │   │   ├── 🏷️ class SpaceGroupWyckoff
+│   │   │   │   │   └── 🏷️ class SpaceGroupWyckoffCollection
+│   │   │   │   └── 📄 factory.py
+│   │   │   │       └── 🏷️ class SpaceGroupWyckoffFactory
 │   │   │   └── 📄 __init__.py
 │   │   ├── 📁 item
 │   │   │   ├── 📄 __init__.py

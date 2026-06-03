@@ -190,7 +190,9 @@ class Structure(DatablockItem):
 
     @property
     def space_group_wyckoff(self) -> SpaceGroupWyckoffCollection:
-        """Read-only Wyckoff table derived from the current space group."""
+        """
+        Read-only Wyckoff table derived from the current space group.
+        """
         return self._space_group_wyckoff
 
     # ------------------------------------------------------------------
@@ -252,7 +254,9 @@ class Structure(DatablockItem):
         self._need_categories_update = False
 
     def _serializable_categories(self) -> list:
-        """Project-CIF categories (excludes the derived Wyckoff table)."""
+        """
+        Project-CIF categories (excludes the derived Wyckoff table).
+        """
         return [
             category
             for category in self.categories

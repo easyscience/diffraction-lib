@@ -331,25 +331,23 @@ The ADR commit + design-phase review/reply cleanup are handled by
       point — so centering copies and off-canonical-slot representatives
       (e.g. 6e `(0,x,0)`) snap correctly; derive constrained-axis flags
       from the same representative. This free-parameter-solving snap
-      **replaces the positional `_apply_fract_constraints` substitution**
-      (a deliberate deviation from ADR §5's "existing constraint step",
-      decided during P1.1; reflect it in ADR §5 at the P1.9 promotion).
-      Warn when coordinate or
-      supported space-group edits move the letter, when a user
-      letter-set snaps coordinates, and when a same-letter coordinate
-      edit snaps coordinates. Honour `called_by_minimizer=True`;
-      populate `multiplicity` from `wyckoff_position_info`.
-      Site-symmetry display data comes from
+      **replaces the positional `_apply_fract_constraints`
+      substitution** (a deliberate deviation from ADR §5's "existing
+      constraint step", decided during P1.1; reflect it in ADR §5 at the
+      P1.9 promotion). Warn when coordinate or supported space-group
+      edits move the letter, when a user letter-set snaps coordinates,
+      and when a same-letter coordinate edit snaps coordinates. Honour
+      `called_by_minimizer=True`; populate `multiplicity` from
+      `wyckoff_position_info`. Site-symmetry display data comes from
       `structure.space_group_wyckoff`, not from `AtomSite`. Commit:
       `Detect and track Wyckoff letters in the update flow`
 
   _P1.6 implementation decisions (implemented):_
-
   - **Snap = slot-aware free-parameter-solving**
-    (`crystallography.snap_to_wyckoff_template`, already committed): solve
-    the free params from the **free (refinable) axes**, keep those axes,
-    and derive the constrained axes. **Not** manifold projection — that
-    averaged/moved the free axis and fought the minimizer. Handles
+    (`crystallography.snap_to_wyckoff_template`, already committed):
+    solve the free params from the **free (refinable) axes**, keep those
+    axes, and derive the constrained axes. **Not** manifold projection —
+    that averaged/moved the free axis and fought the minimizer. Handles
     off-canonical reps like 6e `(0,x,0)` (keep `fract_y`, set
     `fract_x=fract_z=0`); matches the old substitution for canonical
     sites, so the fit is unaffected. Per-axis constraint flags are
@@ -362,12 +360,14 @@ The ADR commit + design-phase review/reply cleanup are handled by
     detection still runs there. Gate re-detection **and** the
     "adjusted"/"moved-letter" warnings on `not called_by_minimizer`, so
     they never fire per fit step.
-  - **Remaining:** rewrite `_apply_atomic_coordinates_symmetry_constraints`
-    (per atom: resolve the `_wyckoff_letter_needs_validation` marker →
-    decide detect/trigger → snap → set `multiplicity` + constrained flags
-    → refresh baselines), thread `called_by_minimizer` through
-    `AtomSites._update`, change the objective call site(s), then **verify
-    by running `test_fit_neutron_pd_cwl_hs`** and smoke tests.
+  - **Remaining:** rewrite
+    `_apply_atomic_coordinates_symmetry_constraints` (per atom: resolve
+    the `_wyckoff_letter_needs_validation` marker → decide
+    detect/trigger → snap → set `multiplicity` + constrained flags →
+    refresh baselines), thread `called_by_minimizer` through
+    `AtomSites._update`, change the objective call site(s), then
+    **verify by running `test_fit_neutron_pd_cwl_hs`** and smoke tests.
+
 - [x] **P1.7 — Calculator consumes model multiplicity.** Replace the
       `SPACE_GROUPS` lookup in `cryspy._update_atom_multiplicity` with
       `atom_site.multiplicity.value`; when it is `None`, leave the
@@ -413,6 +413,7 @@ The ADR commit + design-phase review/reply cleanup are handled by
         matches the conventional ITA "Coordinates" entry. Decision
         confirmed with the user during P1.8. The full orbit remains
         available on the in-memory `space_group_wyckoff` category.
+
 - [x] **P1.9 — Promote ADR, close #51, remove stale TODOs.** `git mv`
       `wyckoff-letter-detection.md` from `suggestions/` to `accepted/`,
       set `**Status:** Accepted`, flip its `docs/dev/adrs/index.md` row
@@ -438,6 +439,7 @@ The ADR commit + design-phase review/reply cleanup are handled by
         methods to resolve #51, so there is no `default.py` change in
         this step. The only remaining TODO (label-regex/dict-key, line
         ~68) is unrelated to #51 and was intentionally left.
+
 - [x] **P1.10 — Phase 1 review gate.** No code. Mark this `[x]`, commit
       the checklist update alone, then stop for the Phase 1 review.
       Commit: `Reach Phase 1 review gate`

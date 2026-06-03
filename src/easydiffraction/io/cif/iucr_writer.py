@@ -224,11 +224,13 @@ def _write_symmetry_operations_section(lines: list[str], structure: object) -> N
 
 
 def _write_space_group_wyckoff_section(lines: list[str], structure: object) -> None:
-    """Append the derived space-group Wyckoff-position loop.
+    """
+    Append the derived space-group Wyckoff-position loop.
 
-    This loop is report-only: it summarises every Wyckoff position of the
-    structure's space group. ``coords_xyz`` reports the representative
-    orbit coordinate (the first orbit member) to keep loop cells compact.
+    This loop is report-only: it summarises every Wyckoff position of
+    the structure's space group. ``coords_xyz`` reports the
+    representative orbit coordinate (the first orbit member) to keep
+    loop cells compact.
     """
     positions = list(_collection_values(getattr(structure, 'space_group_wyckoff', None)))
     if not positions:
@@ -259,7 +261,9 @@ def _write_space_group_wyckoff_section(lines: list[str], structure: object) -> N
 
 
 def _wyckoff_representative_coord(position: object) -> str:
-    """Return the representative (first) orbit coordinate of a position."""
+    """
+    Return the representative (first) orbit coordinate of a position.
+    """
     coords = _attribute_value(position, 'coords_xyz')
     if not coords:
         return '?'
