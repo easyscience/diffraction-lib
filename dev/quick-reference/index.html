@@ -3044,14 +3044,12 @@ returns the extracted project directory path.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">experiment</span><span class="o">.</span><span class="n">linked_phases</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;lbco&#39;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="inspect-the-project">Inspect the Project</h2>
-<p>Show names, <abbr title="Crystallographic Information File.">CIF</abbr> text, and plotting options:</p>
+<p>Show names and <abbr title="Crystallographic Information File.">CIF</abbr> text:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="o">.</span><span class="n">show_names</span><span class="p">()</span>
 <span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">show_names</span><span class="p">()</span>
 
 <span class="n">structure</span><span class="o">.</span><span class="n">show_as_cif</span><span class="p">()</span>
 <span class="n">experiment</span><span class="o">.</span><span class="n">show_as_cif</span><span class="p">()</span>
-
-<span class="n">project</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">show_pattern_options</span><span class="p">(</span><span class="n">expt_name</span><span class="o">=</span><span class="s1">&#39;hrpt&#39;</span><span class="p">)</span>
 </code></pre></div>
 <p>Open the main display views:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">pattern</span><span class="p">(</span><span class="n">expt_name</span><span class="o">=</span><span class="s1">&#39;hrpt&#39;</span><span class="p">)</span>

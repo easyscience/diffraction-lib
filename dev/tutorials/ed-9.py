@@ -229,7 +229,7 @@ project.display.structure(struct_name='si')
 # Show measured data as loaded from the file.
 
 # %%
-project.display.pattern(expt_name='mcstas', include='measured')
+project.display.pattern(expt_name='mcstas')
 
 # %% [markdown]
 # Add excluded regions.
@@ -248,7 +248,7 @@ experiment.excluded_regions.show()
 # Show measured data after adding excluded regions.
 
 # %%
-project.display.pattern(expt_name='mcstas', include=('measured', 'excluded'))
+project.display.pattern(expt_name='mcstas')
 
 # %% [markdown]
 # Show experiment as CIF.

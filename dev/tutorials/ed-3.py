@@ -257,7 +257,7 @@ project.experiments.show_names()
 # ### Show Measured Data
 
 # %%
-project.display.pattern(expt_name='hrpt', include='measured')
+project.display.pattern(expt_name='hrpt')
 
 # %% [markdown]
 # ### Set Instrument
@@ -379,12 +379,6 @@ project.rendering_plot.show_supported()
 
 # %%
 project.rendering_plot.help()
-
-# %% [markdown]
-# ### Show Calculated Data
-
-# %%
-project.display.pattern(expt_name='hrpt', include='calculated')
 
 # %% [markdown]
 # ### Display Pattern
