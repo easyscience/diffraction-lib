@@ -164,6 +164,27 @@ def test_get_trace_and_plot(monkeypatch):
     assert dummy_display_calls['count'] == 1 or shown['count'] == 1
 
 
+def test_single_panel_height_matches_composite_main_row():
+    import easydiffraction.display.plotters.plotly as pp
+
+    full_height = pp.DEFAULT_HEIGHT * pp.PLOTLY_HEIGHT_PER_UNIT
+    main_panel = pp.PlotlyPlotter._single_main_panel_height_pixels(
+        pp.DEFAULT_RESIDUAL_HEIGHT_FRACTION
+    )
+    # A single-panel view is sized to the composite main row, not the
+    # full three-panel height.
+    assert 0 < main_panel < full_height
+
+
+def test_composite_x_range_is_tight():
+    import numpy as np
+
+    import easydiffraction.display.plotters.plotly as pp
+
+    assert pp.PlotlyPlotter._composite_x_range(np.array([10.0, 20.0, 30.0])) == (10.0, 30.0)
+    assert pp.PlotlyPlotter._composite_x_range(np.array([])) == (None, None)
+
+
 def test_show_figure_adds_legend_toggle_script_to_html_output(monkeypatch):
     import easydiffraction.display.plotters.plotly as pp
 
