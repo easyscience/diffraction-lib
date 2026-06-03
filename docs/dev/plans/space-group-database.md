@@ -289,7 +289,7 @@ above is complete._
 
 - [x] Phase 1 — Implementation (data + tooling + docs)
 - [x] Phase 1 review gate
-- [ ] Phase 2 — Verification (tests + checks)
+- [x] Phase 2 — Verification (tests + checks)
 
 ### Problem
 
