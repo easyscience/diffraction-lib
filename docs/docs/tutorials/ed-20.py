@@ -41,7 +41,6 @@ ferrite.atom_sites.create(
     fract_x=0.0,
     fract_y=0.0,
     fract_z=0.0,
-    wyckoff_letter='a',
     adp_type='Biso',
     adp_iso=1.0,
 )
@@ -63,7 +62,6 @@ austenite.atom_sites.create(
     fract_x=0.0,
     fract_y=0.0,
     fract_z=0.0,
-    wyckoff_letter='a',
     adp_type='Biso',
     adp_iso=1.0,
 )

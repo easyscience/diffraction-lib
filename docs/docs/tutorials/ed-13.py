@@ -496,7 +496,6 @@ project_1.structures['si'].atom_sites.create(
     fract_x=0,
     fract_y=0,
     fract_z=0,
-    wyckoff_letter='a',
     adp_iso=0.89,
 )
 
@@ -1030,7 +1029,6 @@ project_2.structures['lbco'].atom_sites.create(
     fract_x=0,
     fract_y=0,
     fract_z=0,
-    wyckoff_letter='a',
     adp_iso=0.95,
     occupancy=0.5,
 )
@@ -1040,7 +1038,6 @@ project_2.structures['lbco'].atom_sites.create(
     fract_x=0,
     fract_y=0,
     fract_z=0,
-    wyckoff_letter='a',
     adp_iso=0.95,
     occupancy=0.5,
 )
@@ -1050,7 +1047,6 @@ project_2.structures['lbco'].atom_sites.create(
     fract_x=0.5,
     fract_y=0.5,
     fract_z=0.5,
-    wyckoff_letter='b',
     adp_iso=0.80,
 )
 project_2.structures['lbco'].atom_sites.create(
@@ -1059,7 +1055,6 @@ project_2.structures['lbco'].atom_sites.create(
     fract_x=0,
     fract_y=0.5,
     fract_z=0.5,
-    wyckoff_letter='c',
     adp_iso=1.66,
 )
 
@@ -1411,7 +1406,6 @@ project_2.structures['si'].atom_sites.create(
     fract_x=0,
     fract_y=0,
     fract_z=0,
-    wyckoff_letter='a',
     adp_iso=0.89,
 )
 

@@ -55,7 +55,6 @@ structure.atom_sites.create(
     fract_x=0.1876,
     fract_y=0.25,
     fract_z=0.167,
-    wyckoff_letter='c',
     adp_iso=1.37,
 )
 structure.atom_sites.create(
@@ -64,7 +63,6 @@ structure.atom_sites.create(
     fract_x=0.0654,
     fract_y=0.25,
     fract_z=0.684,
-    wyckoff_letter='c',
     adp_iso=0.3777,
 )
 structure.atom_sites.create(
@@ -73,7 +71,6 @@ structure.atom_sites.create(
     fract_x=0.9082,
     fract_y=0.25,
     fract_z=0.5954,
-    wyckoff_letter='c',
     adp_iso=1.9764,
 )
 structure.atom_sites.create(
@@ -82,7 +79,6 @@ structure.atom_sites.create(
     fract_x=0.1935,
     fract_y=0.25,
     fract_z=0.5432,
-    wyckoff_letter='c',
     adp_iso=1.4456,
 )
 structure.atom_sites.create(
@@ -91,7 +87,6 @@ structure.atom_sites.create(
     fract_x=0.0811,
     fract_y=0.0272,
     fract_z=0.8086,
-    wyckoff_letter='d',
     adp_iso=1.2822,
 )
 
