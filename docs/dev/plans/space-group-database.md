@@ -440,7 +440,7 @@ only ignored files, and no empty commits.
       `tools/check_packaged_db.py` to assert no packaged `coords_xyz`
       template is operator-form (catches future regression at the wheel
       layer). Commit: `Assert canonical coords_xyz in packaged DB check`
-- [ ] **CT4 — ADR invariant + provenance.** Add the canonical-`coords_xyz`
+- [x] **CT4 — ADR invariant + provenance.** Add the canonical-`coords_xyz`
       invariant as a decision in
       `docs/dev/adrs/accepted/space-group-database.md`, and update its
       _Build Provenance_ with the new `space_groups.json.gz` SHA-256, the

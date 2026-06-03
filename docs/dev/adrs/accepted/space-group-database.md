@@ -297,6 +297,22 @@ sentinel value.
 through the curation overrides and a regeneration run, keeping the file
 and the documented decisions in sync.
 
+### 9. Canonical ITA `coords_xyz` (no operator form)
+
+Every Wyckoff `coords_xyz` template is stored in **canonical
+International Tables parametric form** — each component a signed single
+free variable (or an integer-coefficient combination such as `x-y`) plus
+an optional rational constant, never a fractional coefficient on a
+variable. cctbx's `unique_ops().as_xyz()` (the generator's raw output)
+emits **operator form** (e.g. `1/2*x-1/2*y`) for coupled special
+positions, which silently breaks
+`crystallography._fract_constrained_flags` so a refined special-position
+coordinate drifts off its symmetry site. Canonical `coords_xyz` are
+therefore re-sourced from cryspy's `wyckoff.dat` (the intended Wyckoff
+source), matched by orbit equivalence; the invariant is enforced in the
+unit tests and by `tools/check_packaged_db.py`, which rejects any
+operator-form template in the packaged wheel.
+
 ## Consequences
 
 ### Positive
@@ -409,6 +425,21 @@ pixi exec --spec cctbx --spec gemmi --spec sympy --spec pyyaml \
   --print-summary
 ```
 
+**Canonical-`coords_xyz` correction (§9).** The run above emits cctbx
+operator-form `coords_xyz` for coupled special positions. The
+canonical-templates post-process then re-sources canonical ITA
+`coords_xyz` from cryspy's `wyckoff.dat`:
+
+```bash
+python tmp/space-groups/helper-tools/canonicalize_coords.py --write
+```
+
+It matches each of the 288 coupled positions to the orbit-equivalent
+cryspy position (one, IT 228 origin-1 `g`, is re-parametrised from
+cctbx's own orbit), changes only `coords_xyz`, and asserts no
+operator-form template remains. The `space_groups.json.gz` SHA-256 below
+is **after** this correction.
+
 Build environment:
 
 - **cctbx** from conda-forge:
@@ -423,10 +454,14 @@ Build environment:
 
 Generated and curation artifacts:
 
-- `src/easydiffraction/crystallography/space_groups.json.gz`:
-  `30f0051c669712ab34d991e60223c5e29264fc033b2ab03392cc01465ceba926`
+- `src/easydiffraction/crystallography/space_groups.json.gz`
+  (after the §9 canonical-`coords_xyz` correction):
+  `234a9aeb9579c67fcb1a924554714407498cbb34fa94c8562b4dd454e9503225`
 - `tmp/space-groups/helper-tools/generate_space_groups.py`:
-  `bf10dcfbcf9e60485037ddabc65425e61f746ad9649cd3ccc67376dd6aae241a`
+  `3aa5f03cd1a69bdfe0a280158c9343b65d5eaa4d75a6d58f2606fb5fbe3df83d`
+- `tmp/space-groups/helper-tools/canonicalize_coords.py` (§9
+  canonical-`coords_xyz` post-process):
+  `c6b2b1ac50d59f6546c9fc9eadebb49a637ac4d6fba589a2a4a1d80deeb10e37`
 - `docs/dev/adrs/accepted/space-group-database/space_groups_overrides.yaml`:
   `7077eec25d0f3b852dd7096a24dc7ac438467f9cb594f91a65ce10cda0e0722a`
 - `tmp/space-groups/extracted-comparison/disagreements.md`:
