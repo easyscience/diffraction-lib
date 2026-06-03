@@ -10860,10 +10860,7 @@ renderer may be used depending on configuration.</p>
 <span class="normal">3008</span>
 <span class="normal">3009</span>
 <span class="normal">3010</span>
-<span class="normal">3011</span>
-<span class="normal">3012</span>
-<span class="normal">3013</span>
-<span class="normal">3014</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PlotlyPlotter</span><span class="p">(</span><span class="n">PlotterBase</span><span class="p">):</span>
+<span class="normal">3011</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PlotlyPlotter</span><span class="p">(</span><span class="n">PlotterBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Interactive plotter using Plotly for notebooks and browsers.&quot;&quot;&quot;</span>
 
     <span class="n">_supports_graphical_heatmap</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
@@ -12892,24 +12889,25 @@ renderer may be used depending on configuration.</p>
     <span class="k">def</span><span class="w"> </span><span class="nf">_baseline_non_bragg_row_heights</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">plot_spec</span><span class="p">:</span> <span class="n">PowderMeasVsCalcSpec</span><span class="p">,</span>
-        <span class="n">row_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
-        <span class="n">has_bragg_ticks</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
         <span class="n">has_residual</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return baseline main and residual row heights in pixels.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return fixed main and residual row heights in pixels.</span>
+
+<span class="sd">        Anchored to the reference three-row layout so the main and</span>
+<span class="sd">        residual rows keep their pixel height regardless of which rows</span>
+<span class="sd">        are shown; ``_composite_figure_height`` adapts instead.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">baseline_height</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_base_composite_height_pixels</span><span class="p">(</span><span class="n">plot_spec</span><span class="p">)</span>
         <span class="n">plot_area_height</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_composite_plot_area_height</span><span class="p">(</span><span class="n">baseline_height</span><span class="p">)</span>
-        <span class="n">available_row_pixels</span> <span class="o">=</span> <span class="n">plot_area_height</span> <span class="o">*</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_subplot_available_height_fraction</span><span class="p">(</span><span class="n">row_count</span><span class="p">)</span>
-        <span class="n">baseline_bragg_pixels</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span>
-            <span class="bp">cls</span><span class="o">.</span><span class="n">_bragg_tick_symbol_height_pixels</span><span class="p">()</span> <span class="k">if</span> <span class="n">has_bragg_ticks</span> <span class="k">else</span> <span class="mi">0</span>
-        <span class="p">)</span>
-        <span class="n">non_bragg_pixels</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">available_row_pixels</span> <span class="o">-</span> <span class="n">baseline_bragg_pixels</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">has_residual</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">non_bragg_pixels</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="n">available_row_pixels</span> <span class="o">=</span> <span class="n">plot_area_height</span> <span class="o">*</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_subplot_available_height_fraction</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">non_bragg_pixels</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">available_row_pixels</span> <span class="o">-</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_bragg_tick_symbol_height_pixels</span><span class="p">(),</span> <span class="mf">1.0</span><span class="p">)</span>
 
         <span class="n">main_pixels</span> <span class="o">=</span> <span class="n">non_bragg_pixels</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">plot_spec</span><span class="o">.</span><span class="n">residual_height_fraction</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">has_residual</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">main_pixels</span><span class="p">,</span> <span class="kc">None</span>
+
         <span class="n">residual_pixels</span> <span class="o">=</span> <span class="n">main_pixels</span> <span class="o">*</span> <span class="n">plot_spec</span><span class="o">.</span><span class="n">residual_height_fraction</span>
         <span class="k">return</span> <span class="n">main_pixels</span><span class="p">,</span> <span class="n">residual_pixels</span>
 
@@ -12921,8 +12919,6 @@ renderer may be used depending on configuration.</p>
         <span class="n">row_count</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">has_bragg_ticks</span><span class="p">)</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">has_residual</span><span class="p">)</span>
         <span class="n">main_row_height</span><span class="p">,</span> <span class="n">residual_row_height</span> <span class="o">=</span> <span class="n">PlotlyPlotter</span><span class="o">.</span><span class="n">_baseline_non_bragg_row_heights</span><span class="p">(</span>
             <span class="n">plot_spec</span><span class="o">=</span><span class="n">plot_spec</span><span class="p">,</span>
-            <span class="n">row_count</span><span class="o">=</span><span class="n">row_count</span><span class="p">,</span>
-            <span class="n">has_bragg_ticks</span><span class="o">=</span><span class="n">has_bragg_ticks</span><span class="p">,</span>
             <span class="n">has_residual</span><span class="o">=</span><span class="n">has_residual</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">row_heights</span> <span class="o">=</span> <span class="p">[</span><span class="n">main_row_height</span><span class="p">]</span>
@@ -12946,22 +12942,20 @@ renderer may be used depending on configuration.</p>
         <span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_composite_figure_height</span><span class="p">(</span>
-        <span class="bp">cls</span><span class="p">,</span>
-        <span class="n">plot_spec</span><span class="p">:</span> <span class="n">PowderMeasVsCalcSpec</span><span class="p">,</span>
-        <span class="n">layout</span><span class="p">:</span> <span class="n">PowderCompositeRows</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return figure height for Bragg row growth.&quot;&quot;&quot;</span>
-        <span class="n">base_pixels</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_base_composite_height_pixels</span><span class="p">(</span><span class="n">plot_spec</span><span class="p">)</span>
-        <span class="n">phase_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">plot_spec</span><span class="o">.</span><span class="n">bragg_tick_sets</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">phase_count</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">base_pixels</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_composite_figure_height</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">layout</span><span class="p">:</span> <span class="n">PowderCompositeRows</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return figure height matching the row pixel heights.</span>
 
-        <span class="n">added_bragg_pixels</span> <span class="o">=</span> <span class="nb">float</span><span class="p">((</span><span class="n">phase_count</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_bragg_tick_symbol_height_pixels</span><span class="p">())</span>
-        <span class="n">growth_pixels</span> <span class="o">=</span> <span class="n">added_bragg_pixels</span> <span class="o">/</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_subplot_available_height_fraction</span><span class="p">(</span>
-            <span class="n">layout</span><span class="o">.</span><span class="n">row_count</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="n">base_pixels</span> <span class="o">+</span> <span class="n">growth_pixels</span>
+<span class="sd">        Each entry in ``layout.row_heights`` is an absolute pixel</span>
+<span class="sd">        target. Plotly distributes the plot area across rows by</span>
+<span class="sd">        fraction, so the figure height is the row-pixel sum scaled up</span>
+<span class="sd">        for the inter-row spacing, plus the vertical margins. The main</span>
+<span class="sd">        and residual rows stay fixed while the Bragg row (and the</span>
+<span class="sd">        figure) grow with the phase count.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">row_pixels</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">layout</span><span class="o">.</span><span class="n">row_heights</span><span class="p">)</span>
+        <span class="n">plot_area_height</span> <span class="o">=</span> <span class="n">row_pixels</span> <span class="o">/</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_subplot_available_height_fraction</span><span class="p">(</span><span class="n">layout</span><span class="o">.</span><span class="n">row_count</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">plot_area_height</span> <span class="o">+</span> <span class="n">COMPOSITE_MARGIN_TOP</span> <span class="o">+</span> <span class="n">COMPOSITE_MARGIN_BOTTOM</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_main_intensity_range</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">plot_spec</span><span class="p">:</span> <span class="n">PowderMeasVsCalcSpec</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
@@ -13285,7 +13279,7 @@ renderer may be used depending on configuration.</p>
         <span class="n">layout</span><span class="p">:</span> <span class="n">PowderCompositeRows</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span>
-            <span class="n">height</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_composite_figure_height</span><span class="p">(</span><span class="n">plot_spec</span><span class="p">,</span> <span class="n">layout</span><span class="p">),</span>
+            <span class="n">height</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_composite_figure_height</span><span class="p">(</span><span class="n">layout</span><span class="p">),</span>
             <span class="n">margin</span><span class="o">=</span><span class="p">{</span>
                 <span class="s1">&#39;autoexpand&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
                 <span class="s1">&#39;r&#39;</span><span class="p">:</span> <span class="n">COMPOSITE_MARGIN_RIGHT</span><span class="p">,</span>
@@ -14646,7 +14640,10 @@ residual row is added only when residual data is requested.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotters/plotly.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2470</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2467</span>
+<span class="normal">2468</span>
+<span class="normal">2469</span>
+<span class="normal">2470</span>
 <span class="normal">2471</span>
 <span class="normal">2472</span>
 <span class="normal">2473</span>
@@ -14655,10 +14652,7 @@ residual row is added only when residual data is requested.</p>
 <span class="normal">2476</span>
 <span class="normal">2477</span>
 <span class="normal">2478</span>
-<span class="normal">2479</span>
-<span class="normal">2480</span>
-<span class="normal">2481</span>
-<span class="normal">2482</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_powder_meas_vs_calc</span><span class="p">(</span>
+<span class="normal">2479</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_powder_meas_vs_calc</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">plot_spec</span><span class="p">:</span> <span class="n">PowderMeasVsCalcSpec</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -14761,7 +14755,10 @@ residual row is added only when residual data is requested.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotters/plotly.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2484</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2481</span>
+<span class="normal">2482</span>
+<span class="normal">2483</span>
+<span class="normal">2484</span>
 <span class="normal">2485</span>
 <span class="normal">2486</span>
 <span class="normal">2487</span>
@@ -14813,10 +14810,7 @@ residual row is added only when residual data is requested.</p>
 <span class="normal">2533</span>
 <span class="normal">2534</span>
 <span class="normal">2535</span>
-<span class="normal">2536</span>
-<span class="normal">2537</span>
-<span class="normal">2538</span>
-<span class="normal">2539</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">build_powder_meas_vs_calc_figure</span><span class="p">(</span>
+<span class="normal">2536</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">build_powder_meas_vs_calc_figure</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">plot_spec</span><span class="p">:</span> <span class="n">PowderMeasVsCalcSpec</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
@@ -15029,7 +15023,10 @@ a diagonal reference line.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotters/plotly.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2881</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2878</span>
+<span class="normal">2879</span>
+<span class="normal">2880</span>
+<span class="normal">2881</span>
 <span class="normal">2882</span>
 <span class="normal">2883</span>
 <span class="normal">2884</span>
@@ -15067,10 +15064,7 @@ a diagonal reference line.</p>
 <span class="normal">2916</span>
 <span class="normal">2917</span>
 <span class="normal">2918</span>
-<span class="normal">2919</span>
-<span class="normal">2920</span>
-<span class="normal">2921</span>
-<span class="normal">2922</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_single_crystal</span><span class="p">(</span>
+<span class="normal">2919</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_single_crystal</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">x_calc</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
     <span class="n">y_meas</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
@@ -15273,7 +15267,10 @@ a diagonal reference line.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotters/plotly.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2924</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2921</span>
+<span class="normal">2922</span>
+<span class="normal">2923</span>
+<span class="normal">2924</span>
 <span class="normal">2925</span>
 <span class="normal">2926</span>
 <span class="normal">2927</span>
@@ -15318,10 +15315,7 @@ a diagonal reference line.</p>
 <span class="normal">2966</span>
 <span class="normal">2967</span>
 <span class="normal">2968</span>
-<span class="normal">2969</span>
-<span class="normal">2970</span>
-<span class="normal">2971</span>
-<span class="normal">2972</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">build_single_crystal_figure</span><span class="p">(</span>
+<span class="normal">2969</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">build_single_crystal_figure</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">x_calc</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
@@ -15395,7 +15389,10 @@ a diagonal reference line.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotters/plotly.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2974</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2971</span>
+<span class="normal">2972</span>
+<span class="normal">2973</span>
+<span class="normal">2974</span>
 <span class="normal">2975</span>
 <span class="normal">2976</span>
 <span class="normal">2977</span>
@@ -15432,10 +15429,7 @@ a diagonal reference line.</p>
 <span class="normal">3008</span>
 <span class="normal">3009</span>
 <span class="normal">3010</span>
-<span class="normal">3011</span>
-<span class="normal">3012</span>
-<span class="normal">3013</span>
-<span class="normal">3014</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_scatter</span><span class="p">(</span>
+<span class="normal">3011</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_scatter</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">x</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
     <span class="n">y</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>

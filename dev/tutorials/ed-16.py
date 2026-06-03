@@ -52,7 +52,6 @@ structure.atom_sites.create(
     fract_x=0,
     fract_y=0,
     fract_z=0,
-    wyckoff_letter='a',
     adp_iso=0.2,
 )
 

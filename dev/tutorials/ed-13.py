@@ -438,7 +438,7 @@ project_1.experiments['sim_si'].background.create(id='7', x=110000, y=0.01)
 # _atom_site.occupancy
 # _atom_site.ADP_type
 # _atom_site.B_iso_or_equiv
-# Si Si   0 0 0   a  1.0   Biso 0.89
+# Si Si   0.125 0.125 0.125   a  1.0   Biso 0.89
 # ```
 
 # %% [markdown]
@@ -493,10 +493,9 @@ project_1.structures['si'].cell.length_a = 5.43
 project_1.structures['si'].atom_sites.create(
     label='Si',
     type_symbol='Si',
-    fract_x=0,
-    fract_y=0,
-    fract_z=0,
-    wyckoff_letter='a',
+    fract_x=0.125,
+    fract_y=0.125,
+    fract_z=0.125,
     adp_iso=0.89,
 )
 
@@ -1030,7 +1029,6 @@ project_2.structures['lbco'].atom_sites.create(
     fract_x=0,
     fract_y=0,
     fract_z=0,
-    wyckoff_letter='a',
     adp_iso=0.95,
     occupancy=0.5,
 )
@@ -1040,7 +1038,6 @@ project_2.structures['lbco'].atom_sites.create(
     fract_x=0,
     fract_y=0,
     fract_z=0,
-    wyckoff_letter='a',
     adp_iso=0.95,
     occupancy=0.5,
 )
@@ -1050,7 +1047,6 @@ project_2.structures['lbco'].atom_sites.create(
     fract_x=0.5,
     fract_y=0.5,
     fract_z=0.5,
-    wyckoff_letter='b',
     adp_iso=0.80,
 )
 project_2.structures['lbco'].atom_sites.create(
@@ -1059,7 +1055,6 @@ project_2.structures['lbco'].atom_sites.create(
     fract_x=0,
     fract_y=0.5,
     fract_z=0.5,
-    wyckoff_letter='c',
     adp_iso=1.66,
 )
 
@@ -1408,10 +1403,9 @@ project_2.structures['si'].cell.length_a = 5.43
 project_2.structures['si'].atom_sites.create(
     label='Si',
     type_symbol='Si',
-    fract_x=0,
-    fract_y=0,
-    fract_z=0,
-    wyckoff_letter='a',
+    fract_x=0.125,
+    fract_y=0.125,
+    fract_z=0.125,
     adp_iso=0.89,
 )
 

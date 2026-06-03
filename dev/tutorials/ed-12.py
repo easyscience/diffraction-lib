@@ -52,7 +52,6 @@ project.structures['nacl'].atom_sites.create(
     fract_x=0,
     fract_y=0,
     fract_z=0,
-    wyckoff_letter='a',
     adp_iso=1.0,
 )
 project.structures['nacl'].atom_sites.create(
@@ -61,7 +60,6 @@ project.structures['nacl'].atom_sites.create(
     fract_x=0.5,
     fract_y=0.5,
     fract_z=0.5,
-    wyckoff_letter='b',
     adp_iso=1.0,
 )
 

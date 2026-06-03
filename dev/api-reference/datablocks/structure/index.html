@@ -2681,6 +2681,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#easydiffraction.datablocks.structure.categories.space_group_wyckoff" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        space_group_wyckoff
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3070,6 +3081,17 @@
     <span class="md-ellipsis">
       
         space_group
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#easydiffraction.datablocks.structure.categories.space_group_wyckoff" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        space_group_wyckoff
       
     </span>
   </a>
@@ -4662,10 +4684,7 @@ in crystallographic structures.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/structure/categories/atom_sites/default.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 33</span>
-<span class="normal"> 34</span>
-<span class="normal"> 35</span>
-<span class="normal"> 36</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 36</span>
 <span class="normal"> 37</span>
 <span class="normal"> 38</span>
 <span class="normal"> 39</span>
@@ -5164,7 +5183,77 @@ in crystallographic structures.</p>
 <span class="normal">532</span>
 <span class="normal">533</span>
 <span class="normal">534</span>
-<span class="normal">535</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AtomSite</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
+<span class="normal">535</span>
+<span class="normal">536</span>
+<span class="normal">537</span>
+<span class="normal">538</span>
+<span class="normal">539</span>
+<span class="normal">540</span>
+<span class="normal">541</span>
+<span class="normal">542</span>
+<span class="normal">543</span>
+<span class="normal">544</span>
+<span class="normal">545</span>
+<span class="normal">546</span>
+<span class="normal">547</span>
+<span class="normal">548</span>
+<span class="normal">549</span>
+<span class="normal">550</span>
+<span class="normal">551</span>
+<span class="normal">552</span>
+<span class="normal">553</span>
+<span class="normal">554</span>
+<span class="normal">555</span>
+<span class="normal">556</span>
+<span class="normal">557</span>
+<span class="normal">558</span>
+<span class="normal">559</span>
+<span class="normal">560</span>
+<span class="normal">561</span>
+<span class="normal">562</span>
+<span class="normal">563</span>
+<span class="normal">564</span>
+<span class="normal">565</span>
+<span class="normal">566</span>
+<span class="normal">567</span>
+<span class="normal">568</span>
+<span class="normal">569</span>
+<span class="normal">570</span>
+<span class="normal">571</span>
+<span class="normal">572</span>
+<span class="normal">573</span>
+<span class="normal">574</span>
+<span class="normal">575</span>
+<span class="normal">576</span>
+<span class="normal">577</span>
+<span class="normal">578</span>
+<span class="normal">579</span>
+<span class="normal">580</span>
+<span class="normal">581</span>
+<span class="normal">582</span>
+<span class="normal">583</span>
+<span class="normal">584</span>
+<span class="normal">585</span>
+<span class="normal">586</span>
+<span class="normal">587</span>
+<span class="normal">588</span>
+<span class="normal">589</span>
+<span class="normal">590</span>
+<span class="normal">591</span>
+<span class="normal">592</span>
+<span class="normal">593</span>
+<span class="normal">594</span>
+<span class="normal">595</span>
+<span class="normal">596</span>
+<span class="normal">597</span>
+<span class="normal">598</span>
+<span class="normal">599</span>
+<span class="normal">600</span>
+<span class="normal">601</span>
+<span class="normal">602</span>
+<span class="normal">603</span>
+<span class="normal">604</span>
+<span class="normal">605</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AtomSite</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Single atom site with fractional coordinates and ADP.</span>
 
@@ -5178,6 +5267,14 @@ in crystallographic structures.</p>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialise the atom site with default descriptor values.&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="c1"># Set when a Wyckoff letter is assigned without a parent context</span>
+        <span class="c1"># (e.g. create() before the atom is added); the update flow then</span>
+        <span class="c1"># validates it once the parent structure is available.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_wyckoff_letter_needs_validation</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="c1"># Wyckoff-detection baselines (None until first detection);</span>
+        <span class="c1"># compared in the update flow to decide whether to re-detect.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_wyckoff_coord_baseline</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_wyckoff_key_baseline</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_label</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;label&#39;</span><span class="p">,</span>
@@ -5257,7 +5354,9 @@ in crystallographic structures.</p>
             <span class="p">),</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_wyckoff_letter_default_value</span><span class="p">,</span>
-                <span class="n">validator</span><span class="o">=</span><span class="n">MembershipValidator</span><span class="p">(</span><span class="n">allowed</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_wyckoff_letter_allowed_values</span><span class="p">),</span>
+                <span class="n">validator</span><span class="o">=</span><span class="n">PermissiveMembershipValidator</span><span class="p">(</span>
+                    <span class="n">allowed</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wyckoff_letter_allowed_values</span><span class="p">,</span>
+                <span class="p">),</span>
             <span class="p">),</span>
             <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
                 <span class="n">names</span><span class="o">=</span><span class="p">[</span>
@@ -5266,6 +5365,17 @@ in crystallographic structures.</p>
                     <span class="s1">&#39;_atom_site.wyckoff_letter&#39;</span><span class="p">,</span>
                 <span class="p">]</span>
             <span class="p">),</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_multiplicity</span> <span class="o">=</span> <span class="n">IntegerDescriptor</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;multiplicity&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Site multiplicity derived from the Wyckoff &#39;</span>
+            <span class="s1">&#39;position; None for an untabulated space group.&#39;</span><span class="p">,</span>
+            <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+                <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;Mult.&#39;</span><span class="p">,</span>
+                <span class="n">latex_name</span><span class="o">=</span><span class="s1">&#39;Mult.&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_atom_site.site_symmetry_multiplicity&#39;</span><span class="p">]),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_occupancy</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;occupancy&#39;</span><span class="p">,</span>
@@ -5330,21 +5440,39 @@ in crystallographic structures.</p>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">({</span><span class="n">key</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">DATABASE</span><span class="p">[</span><span class="s1">&#39;Isotopes&#39;</span><span class="p">]})</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_structure_space_group</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the parent structure&#39;s space-group category, or ``None``.</span>
+
+<span class="sd">        Walks ``AtomSite`` → atom-sites collection → structure; returns</span>
+<span class="sd">        ``None`` when any link is missing (no parent context yet).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">collection</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_parent&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">structure</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">collection</span><span class="p">,</span> <span class="s1">&#39;_parent&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">if</span> <span class="n">collection</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="s1">&#39;space_group&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">if</span> <span class="n">structure</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_wyckoff_letter_allowed_values</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return allowed Wyckoff-letter symbols.</span>
+<span class="sd">        Allowed Wyckoff letters for the current space group.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        list[str]</span>
-<span class="sd">            Currently a hard-coded placeholder list.</span>
+<span class="sd">            ``[&#39;&#39;, *letters]`` for a tabulated space group (empty first,</span>
+<span class="sd">            so an unset letter is valid); ``[]`` when there is no parent</span>
+<span class="sd">            context or the space group is untabulated.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># TODO: Need to now current space group. How to access it? Via</span>
-        <span class="c1">#  parent Cell? Then letters =</span>
-        <span class="c1">#  list(SPACE_GROUPS[62, &#39;cab&#39;][&#39;Wyckoff_positions&#39;].keys())</span>
-        <span class="c1">#  Temporarily return hardcoded list:</span>
-        <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="s1">&#39;h&#39;</span><span class="p">,</span> <span class="s1">&#39;i&#39;</span><span class="p">]</span>
+        <span class="n">space_group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_structure_space_group</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">space_group</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="n">positions</span> <span class="o">=</span> <span class="n">ecr</span><span class="o">.</span><span class="n">space_group_wyckoff_table</span><span class="p">(</span>
+            <span class="n">space_group</span><span class="o">.</span><span class="n">name_h_m</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="n">space_group</span><span class="o">.</span><span class="n">it_coordinate_system_code</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">positions</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">positions</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_wyckoff_letter_default_value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -5354,10 +5482,11 @@ in crystallographic structures.</p>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        str</span>
-<span class="sd">            First element of the allowed values list.</span>
+<span class="sd">            The first allowed value (empty string), or ``&#39;&#39;`` when no</span>
+<span class="sd">            letters are allowed.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># TODO: What to pass as default?</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wyckoff_letter_allowed_values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">allowed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wyckoff_letter_allowed_values</span>
+        <span class="k">return</span> <span class="n">allowed</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">allowed</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_convert_adp_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -5578,7 +5707,34 @@ in crystallographic structures.</p>
 
     <span class="nd">@wyckoff_letter</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">wyckoff_letter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_wyckoff_letter</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_structure_space_group</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># No parent context yet (e.g. create() before the atom is</span>
+            <span class="c1"># added): store the raw value and defer validation to the</span>
+            <span class="c1"># update flow, which resolves it once context is available.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_wyckoff_letter_needs_validation</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_wyckoff_letter</span><span class="o">.</span><span class="n">_set_value_from_minimizer</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_wyckoff_letter</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">multiplicity</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IntegerDescriptor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read-only site multiplicity derived from the Wyckoff position.</span>
+
+<span class="sd">        Populated by Wyckoff detection; ``value`` is ``None`` when the</span>
+<span class="sd">        space group is untabulated. There is no public setter.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_multiplicity</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_wyckoff_letter_detected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">letter</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the auto-detected Wyckoff letter, bypassing validation.</span>
+
+<span class="sd">        Modelled on ``_set_value_from_minimizer``: detection supplies a</span>
+<span class="sd">        trusted letter, written directly rather than re-validated</span>
+<span class="sd">        against the (dynamic) allowed-letters set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_wyckoff_letter</span><span class="o">.</span><span class="n">_set_value_from_minimizer</span><span class="p">(</span><span class="n">letter</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">fract_x</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Parameter</span><span class="p">:</span>
@@ -5787,6 +5943,33 @@ object. Assigning to it updates the parameter value.</p>
 <p>Reading this property returns the underlying
 <code>StringDescriptor</code> object. Assigning to it updates the
 parameter value.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h6 id="easydiffraction.datablocks.structure.categories.atom_sites.default.AtomSite.multiplicity" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">multiplicity</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h6>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Read-only site multiplicity derived from the Wyckoff position.</p>
+<p>Populated by Wyckoff detection; <code>value</code> is <code>None</code> when the
+space group is untabulated. There is no public setter.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -6011,10 +6194,7 @@ returned unchanged.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/structure/categories/atom_sites/default.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 44</span>
-<span class="normal"> 45</span>
-<span class="normal"> 46</span>
-<span class="normal"> 47</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 47</span>
 <span class="normal"> 48</span>
 <span class="normal"> 49</span>
 <span class="normal"> 50</span>
@@ -6148,9 +6328,41 @@ returned unchanged.</p>
 <span class="normal">178</span>
 <span class="normal">179</span>
 <span class="normal">180</span>
-<span class="normal">181</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialise the atom site with default descriptor values.&quot;&quot;&quot;</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+    <span class="c1"># Set when a Wyckoff letter is assigned without a parent context</span>
+    <span class="c1"># (e.g. create() before the atom is added); the update flow then</span>
+    <span class="c1"># validates it once the parent structure is available.</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_wyckoff_letter_needs_validation</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="c1"># Wyckoff-detection baselines (None until first detection);</span>
+    <span class="c1"># compared in the update flow to decide whether to re-detect.</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_wyckoff_coord_baseline</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_wyckoff_key_baseline</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">_label</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;label&#39;</span><span class="p">,</span>
@@ -6230,7 +6442,9 @@ returned unchanged.</p>
         <span class="p">),</span>
         <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
             <span class="n">default</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_wyckoff_letter_default_value</span><span class="p">,</span>
-            <span class="n">validator</span><span class="o">=</span><span class="n">MembershipValidator</span><span class="p">(</span><span class="n">allowed</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_wyckoff_letter_allowed_values</span><span class="p">),</span>
+            <span class="n">validator</span><span class="o">=</span><span class="n">PermissiveMembershipValidator</span><span class="p">(</span>
+                <span class="n">allowed</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wyckoff_letter_allowed_values</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">),</span>
         <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
             <span class="n">names</span><span class="o">=</span><span class="p">[</span>
@@ -6239,6 +6453,17 @@ returned unchanged.</p>
                 <span class="s1">&#39;_atom_site.wyckoff_letter&#39;</span><span class="p">,</span>
             <span class="p">]</span>
         <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_multiplicity</span> <span class="o">=</span> <span class="n">IntegerDescriptor</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;multiplicity&#39;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Site multiplicity derived from the Wyckoff &#39;</span>
+        <span class="s1">&#39;position; None for an untabulated space group.&#39;</span><span class="p">,</span>
+        <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+            <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;Mult.&#39;</span><span class="p">,</span>
+            <span class="n">latex_name</span><span class="o">=</span><span class="s1">&#39;Mult.&#39;</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+        <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_atom_site.site_symmetry_multiplicity&#39;</span><span class="p">]),</span>
     <span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_occupancy</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;occupancy&#39;</span><span class="p">,</span>
@@ -6331,77 +6556,7 @@ returned unchanged.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/structure/categories/atom_sites/default.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">538</span>
-<span class="normal">539</span>
-<span class="normal">540</span>
-<span class="normal">541</span>
-<span class="normal">542</span>
-<span class="normal">543</span>
-<span class="normal">544</span>
-<span class="normal">545</span>
-<span class="normal">546</span>
-<span class="normal">547</span>
-<span class="normal">548</span>
-<span class="normal">549</span>
-<span class="normal">550</span>
-<span class="normal">551</span>
-<span class="normal">552</span>
-<span class="normal">553</span>
-<span class="normal">554</span>
-<span class="normal">555</span>
-<span class="normal">556</span>
-<span class="normal">557</span>
-<span class="normal">558</span>
-<span class="normal">559</span>
-<span class="normal">560</span>
-<span class="normal">561</span>
-<span class="normal">562</span>
-<span class="normal">563</span>
-<span class="normal">564</span>
-<span class="normal">565</span>
-<span class="normal">566</span>
-<span class="normal">567</span>
-<span class="normal">568</span>
-<span class="normal">569</span>
-<span class="normal">570</span>
-<span class="normal">571</span>
-<span class="normal">572</span>
-<span class="normal">573</span>
-<span class="normal">574</span>
-<span class="normal">575</span>
-<span class="normal">576</span>
-<span class="normal">577</span>
-<span class="normal">578</span>
-<span class="normal">579</span>
-<span class="normal">580</span>
-<span class="normal">581</span>
-<span class="normal">582</span>
-<span class="normal">583</span>
-<span class="normal">584</span>
-<span class="normal">585</span>
-<span class="normal">586</span>
-<span class="normal">587</span>
-<span class="normal">588</span>
-<span class="normal">589</span>
-<span class="normal">590</span>
-<span class="normal">591</span>
-<span class="normal">592</span>
-<span class="normal">593</span>
-<span class="normal">594</span>
-<span class="normal">595</span>
-<span class="normal">596</span>
-<span class="normal">597</span>
-<span class="normal">598</span>
-<span class="normal">599</span>
-<span class="normal">600</span>
-<span class="normal">601</span>
-<span class="normal">602</span>
-<span class="normal">603</span>
-<span class="normal">604</span>
-<span class="normal">605</span>
-<span class="normal">606</span>
-<span class="normal">607</span>
-<span class="normal">608</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">608</span>
 <span class="normal">609</span>
 <span class="normal">610</span>
 <span class="normal">611</span>
@@ -6485,7 +6640,181 @@ returned unchanged.</p>
 <span class="normal">689</span>
 <span class="normal">690</span>
 <span class="normal">691</span>
-<span class="normal">692</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AtomSitesFactory</span><span class="o">.</span><span class="n">register</span>
+<span class="normal">692</span>
+<span class="normal">693</span>
+<span class="normal">694</span>
+<span class="normal">695</span>
+<span class="normal">696</span>
+<span class="normal">697</span>
+<span class="normal">698</span>
+<span class="normal">699</span>
+<span class="normal">700</span>
+<span class="normal">701</span>
+<span class="normal">702</span>
+<span class="normal">703</span>
+<span class="normal">704</span>
+<span class="normal">705</span>
+<span class="normal">706</span>
+<span class="normal">707</span>
+<span class="normal">708</span>
+<span class="normal">709</span>
+<span class="normal">710</span>
+<span class="normal">711</span>
+<span class="normal">712</span>
+<span class="normal">713</span>
+<span class="normal">714</span>
+<span class="normal">715</span>
+<span class="normal">716</span>
+<span class="normal">717</span>
+<span class="normal">718</span>
+<span class="normal">719</span>
+<span class="normal">720</span>
+<span class="normal">721</span>
+<span class="normal">722</span>
+<span class="normal">723</span>
+<span class="normal">724</span>
+<span class="normal">725</span>
+<span class="normal">726</span>
+<span class="normal">727</span>
+<span class="normal">728</span>
+<span class="normal">729</span>
+<span class="normal">730</span>
+<span class="normal">731</span>
+<span class="normal">732</span>
+<span class="normal">733</span>
+<span class="normal">734</span>
+<span class="normal">735</span>
+<span class="normal">736</span>
+<span class="normal">737</span>
+<span class="normal">738</span>
+<span class="normal">739</span>
+<span class="normal">740</span>
+<span class="normal">741</span>
+<span class="normal">742</span>
+<span class="normal">743</span>
+<span class="normal">744</span>
+<span class="normal">745</span>
+<span class="normal">746</span>
+<span class="normal">747</span>
+<span class="normal">748</span>
+<span class="normal">749</span>
+<span class="normal">750</span>
+<span class="normal">751</span>
+<span class="normal">752</span>
+<span class="normal">753</span>
+<span class="normal">754</span>
+<span class="normal">755</span>
+<span class="normal">756</span>
+<span class="normal">757</span>
+<span class="normal">758</span>
+<span class="normal">759</span>
+<span class="normal">760</span>
+<span class="normal">761</span>
+<span class="normal">762</span>
+<span class="normal">763</span>
+<span class="normal">764</span>
+<span class="normal">765</span>
+<span class="normal">766</span>
+<span class="normal">767</span>
+<span class="normal">768</span>
+<span class="normal">769</span>
+<span class="normal">770</span>
+<span class="normal">771</span>
+<span class="normal">772</span>
+<span class="normal">773</span>
+<span class="normal">774</span>
+<span class="normal">775</span>
+<span class="normal">776</span>
+<span class="normal">777</span>
+<span class="normal">778</span>
+<span class="normal">779</span>
+<span class="normal">780</span>
+<span class="normal">781</span>
+<span class="normal">782</span>
+<span class="normal">783</span>
+<span class="normal">784</span>
+<span class="normal">785</span>
+<span class="normal">786</span>
+<span class="normal">787</span>
+<span class="normal">788</span>
+<span class="normal">789</span>
+<span class="normal">790</span>
+<span class="normal">791</span>
+<span class="normal">792</span>
+<span class="normal">793</span>
+<span class="normal">794</span>
+<span class="normal">795</span>
+<span class="normal">796</span>
+<span class="normal">797</span>
+<span class="normal">798</span>
+<span class="normal">799</span>
+<span class="normal">800</span>
+<span class="normal">801</span>
+<span class="normal">802</span>
+<span class="normal">803</span>
+<span class="normal">804</span>
+<span class="normal">805</span>
+<span class="normal">806</span>
+<span class="normal">807</span>
+<span class="normal">808</span>
+<span class="normal">809</span>
+<span class="normal">810</span>
+<span class="normal">811</span>
+<span class="normal">812</span>
+<span class="normal">813</span>
+<span class="normal">814</span>
+<span class="normal">815</span>
+<span class="normal">816</span>
+<span class="normal">817</span>
+<span class="normal">818</span>
+<span class="normal">819</span>
+<span class="normal">820</span>
+<span class="normal">821</span>
+<span class="normal">822</span>
+<span class="normal">823</span>
+<span class="normal">824</span>
+<span class="normal">825</span>
+<span class="normal">826</span>
+<span class="normal">827</span>
+<span class="normal">828</span>
+<span class="normal">829</span>
+<span class="normal">830</span>
+<span class="normal">831</span>
+<span class="normal">832</span>
+<span class="normal">833</span>
+<span class="normal">834</span>
+<span class="normal">835</span>
+<span class="normal">836</span>
+<span class="normal">837</span>
+<span class="normal">838</span>
+<span class="normal">839</span>
+<span class="normal">840</span>
+<span class="normal">841</span>
+<span class="normal">842</span>
+<span class="normal">843</span>
+<span class="normal">844</span>
+<span class="normal">845</span>
+<span class="normal">846</span>
+<span class="normal">847</span>
+<span class="normal">848</span>
+<span class="normal">849</span>
+<span class="normal">850</span>
+<span class="normal">851</span>
+<span class="normal">852</span>
+<span class="normal">853</span>
+<span class="normal">854</span>
+<span class="normal">855</span>
+<span class="normal">856</span>
+<span class="normal">857</span>
+<span class="normal">858</span>
+<span class="normal">859</span>
+<span class="normal">860</span>
+<span class="normal">861</span>
+<span class="normal">862</span>
+<span class="normal">863</span>
+<span class="normal">864</span>
+<span class="normal">865</span>
+<span class="normal">866</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AtomSitesFactory</span><span class="o">.</span><span class="n">register</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">AtomSites</span><span class="p">(</span><span class="n">CategoryCollection</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Collection of :class:`AtomSite` instances.&quot;&quot;&quot;</span>
 
@@ -6502,47 +6831,150 @@ returned unchanged.</p>
     <span class="c1">#  Private helper methods</span>
     <span class="c1"># ------------------------------------------------------------------</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_apply_atomic_coordinates_symmetry_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_apply_atomic_coordinates_symmetry_constraints</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">called_by_minimizer</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Apply symmetry rules to fractional coordinates of every site.</span>
+<span class="sd">        Detect Wyckoff letters and snap coordinates to symmetry.</span>
 
-<span class="sd">        Uses the parent structure&#39;s space-group symbol, IT coordinate</span>
-<span class="sd">        system code and each atom&#39;s Wyckoff letter.  Atoms without a</span>
-<span class="sd">        Wyckoff letter are silently skipped. Coordinates fully</span>
-<span class="sd">        determined by site symmetry are flagged as</span>
-<span class="sd">        ``symmetry_constrained`` so they cannot be marked refinable.</span>
+<span class="sd">        For each atom: resolve any pending no-context Wyckoff letter;</span>
+<span class="sd">        (re)detect the letter when it is empty or the coordinates /</span>
+<span class="sd">        space-group key changed (skipped under a minimizer); snap</span>
+<span class="sd">        coordinates to the selected orbit representative; and record the</span>
+<span class="sd">        multiplicity and constrained-axis flags. Atoms in an untabulated</span>
+<span class="sd">        space group keep their stored letter unvalidated, with no</span>
+<span class="sd">        multiplicity or constraints.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        called_by_minimizer : bool, default=False</span>
+<span class="sd">            When True (per fit iteration), skip re-detection and</span>
+<span class="sd">            warnings; only the silent coordinate snap runs.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">structure</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span>
-        <span class="n">space_group_name</span> <span class="o">=</span> <span class="n">structure</span><span class="o">.</span><span class="n">space_group</span><span class="o">.</span><span class="n">name_h_m</span><span class="o">.</span><span class="n">value</span>
-        <span class="n">space_group_coord_code</span> <span class="o">=</span> <span class="n">structure</span><span class="o">.</span><span class="n">space_group</span><span class="o">.</span><span class="n">it_coordinate_system_code</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">name_hm</span> <span class="o">=</span> <span class="n">structure</span><span class="o">.</span><span class="n">space_group</span><span class="o">.</span><span class="n">name_h_m</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">coord_code</span> <span class="o">=</span> <span class="n">structure</span><span class="o">.</span><span class="n">space_group</span><span class="o">.</span><span class="n">it_coordinate_system_code</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">supported</span> <span class="o">=</span> <span class="n">ecr</span><span class="o">.</span><span class="n">space_group_wyckoff_table</span><span class="p">(</span><span class="n">name_hm</span><span class="p">,</span> <span class="n">coord_code</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">:</span>
-            <span class="n">wl</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">wyckoff_letter</span><span class="o">.</span><span class="n">value</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">wl</span><span class="p">:</span>
-                <span class="c1"># TODO: Decide how to handle this case</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_clear_fract_symmetry_constrained</span><span class="p">(</span><span class="n">atom</span><span class="p">)</span>
-                <span class="k">continue</span>
-            <span class="n">dummy_atom</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s1">&#39;fract_x&#39;</span><span class="p">:</span> <span class="n">atom</span><span class="o">.</span><span class="n">fract_x</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-                <span class="s1">&#39;fract_y&#39;</span><span class="p">:</span> <span class="n">atom</span><span class="o">.</span><span class="n">fract_y</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-                <span class="s1">&#39;fract_z&#39;</span><span class="p">:</span> <span class="n">atom</span><span class="o">.</span><span class="n">fract_z</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-            <span class="p">}</span>
-            <span class="n">ecr</span><span class="o">.</span><span class="n">apply_atom_site_symmetry_constraints</span><span class="p">(</span>
-                <span class="n">atom_site</span><span class="o">=</span><span class="n">dummy_atom</span><span class="p">,</span>
-                <span class="n">name_hm</span><span class="o">=</span><span class="n">space_group_name</span><span class="p">,</span>
-                <span class="n">coord_code</span><span class="o">=</span><span class="n">space_group_coord_code</span><span class="p">,</span>
-                <span class="n">wyckoff_letter</span><span class="o">=</span><span class="n">wl</span><span class="p">,</span>
+            <span class="k">if</span> <span class="n">atom</span><span class="o">.</span><span class="n">_wyckoff_letter_needs_validation</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_pending_wyckoff_letter</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="n">name_hm</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">supported</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_detect_and_snap_atom</span><span class="p">(</span>
+                    <span class="n">atom</span><span class="p">,</span> <span class="n">name_hm</span><span class="p">,</span> <span class="n">coord_code</span><span class="p">,</span> <span class="n">called_by_minimizer</span><span class="o">=</span><span class="n">called_by_minimizer</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_mark_atom_untabulated</span><span class="p">(</span>
+                    <span class="n">atom</span><span class="p">,</span> <span class="p">(</span><span class="n">name_hm</span><span class="p">,</span> <span class="n">coord_code</span><span class="p">),</span> <span class="n">called_by_minimizer</span><span class="o">=</span><span class="n">called_by_minimizer</span>
+                <span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_pending_wyckoff_letter</span><span class="p">(</span><span class="n">atom</span><span class="p">:</span> <span class="n">AtomSite</span><span class="p">,</span> <span class="n">name_hm</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validate a deferred no-context Wyckoff letter; raise if invalid.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">stored</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">wyckoff_letter</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">allowed</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">_wyckoff_letter_allowed_values</span>
+        <span class="k">if</span> <span class="n">allowed</span> <span class="ow">and</span> <span class="n">stored</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allowed</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Invalid Wyckoff letter </span><span class="si">{</span><span class="n">stored</span><span class="si">!r}</span><span class="s1"> for space group &#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name_hm</span><span class="si">!r}</span><span class="s1">; allowed letters: </span><span class="si">{</span><span class="n">allowed</span><span class="si">}</span><span class="s1">&#39;</span>
             <span class="p">)</span>
-            <span class="n">constrained_flags</span> <span class="o">=</span> <span class="n">ecr</span><span class="o">.</span><span class="n">atom_site_symmetry_constrained_flags</span><span class="p">(</span>
-                <span class="n">name_hm</span><span class="o">=</span><span class="n">space_group_name</span><span class="p">,</span>
-                <span class="n">coord_code</span><span class="o">=</span><span class="n">space_group_coord_code</span><span class="p">,</span>
-                <span class="n">wyckoff_letter</span><span class="o">=</span><span class="n">wl</span><span class="p">,</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="n">atom</span><span class="o">.</span><span class="n">_wyckoff_letter_needs_validation</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_mark_atom_untabulated</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">atom</span><span class="p">:</span> <span class="n">AtomSite</span><span class="p">,</span>
+        <span class="n">key</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">],</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">called_by_minimizer</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle an atom whose space group is absent from the table.&quot;&quot;&quot;</span>
+        <span class="n">atom</span><span class="o">.</span><span class="n">_multiplicity</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_clear_fract_symmetry_constrained</span><span class="p">(</span><span class="n">atom</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">atom</span><span class="o">.</span><span class="n">wyckoff_letter</span><span class="o">.</span><span class="n">value</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">called_by_minimizer</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Wyckoff letter of </span><span class="si">{</span><span class="n">atom</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s1"> is stored but not &#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;validated because the space group is untabulated&#39;</span>
             <span class="p">)</span>
-            <span class="n">atom</span><span class="o">.</span><span class="n">fract_x</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">dummy_atom</span><span class="p">[</span><span class="s1">&#39;fract_x&#39;</span><span class="p">]</span>
-            <span class="n">atom</span><span class="o">.</span><span class="n">fract_y</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">dummy_atom</span><span class="p">[</span><span class="s1">&#39;fract_y&#39;</span><span class="p">]</span>
-            <span class="n">atom</span><span class="o">.</span><span class="n">fract_z</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">dummy_atom</span><span class="p">[</span><span class="s1">&#39;fract_z&#39;</span><span class="p">]</span>
-            <span class="n">atom</span><span class="o">.</span><span class="n">_fract_x</span><span class="o">.</span><span class="n">_set_symmetry_constrained</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">constrained_flags</span><span class="p">[</span><span class="s1">&#39;fract_x&#39;</span><span class="p">])</span>
-            <span class="n">atom</span><span class="o">.</span><span class="n">_fract_y</span><span class="o">.</span><span class="n">_set_symmetry_constrained</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">constrained_flags</span><span class="p">[</span><span class="s1">&#39;fract_y&#39;</span><span class="p">])</span>
-            <span class="n">atom</span><span class="o">.</span><span class="n">_fract_z</span><span class="o">.</span><span class="n">_set_symmetry_constrained</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">constrained_flags</span><span class="p">[</span><span class="s1">&#39;fract_z&#39;</span><span class="p">])</span>
+        <span class="n">atom</span><span class="o">.</span><span class="n">_wyckoff_coord_baseline</span> <span class="o">=</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">fract_x</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">atom</span><span class="o">.</span><span class="n">fract_y</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">atom</span><span class="o">.</span><span class="n">fract_z</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">atom</span><span class="o">.</span><span class="n">_wyckoff_key_baseline</span> <span class="o">=</span> <span class="n">key</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_detect_and_snap_atom</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">atom</span><span class="p">:</span> <span class="n">AtomSite</span><span class="p">,</span>
+        <span class="n">name_hm</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">coord_code</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">called_by_minimizer</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Detect (if triggered) and snap one atom to its Wyckoff position.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">name_hm</span><span class="p">,</span> <span class="n">coord_code</span><span class="p">)</span>
+        <span class="n">letter_before</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">wyckoff_letter</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">coords</span> <span class="o">=</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">fract_x</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">atom</span><span class="o">.</span><span class="n">fract_y</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">atom</span><span class="o">.</span><span class="n">fract_z</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="c1"># A ``None`` baseline marks the first population</span>
+        <span class="c1"># (create/load), not a later edit. Treat coordinates or the</span>
+        <span class="c1"># space-group key as &quot;changed&quot; only against an existing</span>
+        <span class="c1"># baseline, so an explicit initial letter is preserved (routed</span>
+        <span class="c1"># to ``wyckoff_position_info`` below) instead of being</span>
+        <span class="c1"># overwritten by all-letter detection. The ADR requires a</span>
+        <span class="c1"># user-supplied letter to persist until a genuine later</span>
+        <span class="c1"># coordinate or space-group-key edit.</span>
+        <span class="n">coords_changed</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">_wyckoff_coord_baseline</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span>
+            <span class="nb">abs</span><span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="n">b</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">ecr</span><span class="o">.</span><span class="n">_WYCKOFF_DETECTION_TOL</span>
+            <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span> <span class="n">atom</span><span class="o">.</span><span class="n">_wyckoff_coord_baseline</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">key_changed</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">_wyckoff_key_baseline</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">atom</span><span class="o">.</span><span class="n">_wyckoff_key_baseline</span> <span class="o">!=</span> <span class="n">key</span>
+        <span class="n">detect</span> <span class="o">=</span> <span class="p">(</span><span class="ow">not</span> <span class="n">called_by_minimizer</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">letter_before</span> <span class="ow">or</span> <span class="n">coords_changed</span> <span class="ow">or</span> <span class="n">key_changed</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">detect</span><span class="p">:</span>
+            <span class="n">position</span> <span class="o">=</span> <span class="n">ecr</span><span class="o">.</span><span class="n">detect_wyckoff_position</span><span class="p">(</span><span class="n">name_hm</span><span class="p">,</span> <span class="n">coord_code</span><span class="p">,</span> <span class="n">coords</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">position</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">letter_before</span> <span class="ow">and</span> <span class="n">position</span><span class="o">.</span><span class="n">letter</span> <span class="o">!=</span> <span class="n">letter_before</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;change moved the Wyckoff letter of </span><span class="si">{</span><span class="n">atom</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s1"> &#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;from </span><span class="si">{</span><span class="n">letter_before</span><span class="si">}</span><span class="s1"> to </span><span class="si">{</span><span class="n">position</span><span class="o">.</span><span class="n">letter</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">position</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">atom</span><span class="o">.</span><span class="n">_set_wyckoff_letter_detected</span><span class="p">(</span><span class="n">position</span><span class="o">.</span><span class="n">letter</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">letter_before</span><span class="p">:</span>
+            <span class="n">position</span> <span class="o">=</span> <span class="n">ecr</span><span class="o">.</span><span class="n">wyckoff_position_info</span><span class="p">(</span>
+                <span class="n">name_hm</span><span class="p">,</span> <span class="n">coord_code</span><span class="p">,</span> <span class="n">letter_before</span><span class="p">,</span> <span class="n">fract_xyz</span><span class="o">=</span><span class="n">coords</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">position</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">position</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">position</span><span class="o">.</span><span class="n">coord_template</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">atom</span><span class="o">.</span><span class="n">_multiplicity</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_clear_fract_symmetry_constrained</span><span class="p">(</span><span class="n">atom</span><span class="p">)</span>
+            <span class="n">atom</span><span class="o">.</span><span class="n">_wyckoff_coord_baseline</span> <span class="o">=</span> <span class="n">coords</span>
+            <span class="n">atom</span><span class="o">.</span><span class="n">_wyckoff_key_baseline</span> <span class="o">=</span> <span class="n">key</span>
+            <span class="k">return</span>
+
+        <span class="n">atom</span><span class="o">.</span><span class="n">_multiplicity</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">position</span><span class="o">.</span><span class="n">multiplicity</span>
+        <span class="n">snapped</span><span class="p">,</span> <span class="n">flags</span> <span class="o">=</span> <span class="n">ecr</span><span class="o">.</span><span class="n">snap_to_wyckoff_template</span><span class="p">(</span><span class="n">position</span><span class="o">.</span><span class="n">coord_template</span><span class="p">,</span> <span class="n">coords</span><span class="p">)</span>
+        <span class="n">atom</span><span class="o">.</span><span class="n">fract_x</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">snapped</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">atom</span><span class="o">.</span><span class="n">fract_y</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">snapped</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">atom</span><span class="o">.</span><span class="n">fract_z</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">snapped</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">atom</span><span class="o">.</span><span class="n">_fract_x</span><span class="o">.</span><span class="n">_set_symmetry_constrained</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">flags</span><span class="p">[</span><span class="s1">&#39;fract_x&#39;</span><span class="p">])</span>
+        <span class="n">atom</span><span class="o">.</span><span class="n">_fract_y</span><span class="o">.</span><span class="n">_set_symmetry_constrained</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">flags</span><span class="p">[</span><span class="s1">&#39;fract_y&#39;</span><span class="p">])</span>
+        <span class="n">atom</span><span class="o">.</span><span class="n">_fract_z</span><span class="o">.</span><span class="n">_set_symmetry_constrained</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">flags</span><span class="p">[</span><span class="s1">&#39;fract_z&#39;</span><span class="p">])</span>
+        <span class="n">moved</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span>
+            <span class="nb">abs</span><span class="p">(</span><span class="n">s</span> <span class="o">-</span> <span class="n">c</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">ecr</span><span class="o">.</span><span class="n">_WYCKOFF_DETECTION_TOL</span> <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">snapped</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">moved</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">called_by_minimizer</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">detect</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;coordinates of </span><span class="si">{</span><span class="n">atom</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s1"> did not fit letter &#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">position</span><span class="o">.</span><span class="n">letter</span><span class="si">}</span><span class="s1"> and were adjusted&#39;</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">letter_before</span> <span class="ow">and</span> <span class="n">position</span><span class="o">.</span><span class="n">letter</span> <span class="o">==</span> <span class="n">letter_before</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;coordinates of </span><span class="si">{</span><span class="n">atom</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s1"> were adjusted to satisfy &#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;Wyckoff letter </span><span class="si">{</span><span class="n">position</span><span class="o">.</span><span class="n">letter</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="p">)</span>
+        <span class="n">atom</span><span class="o">.</span><span class="n">_wyckoff_coord_baseline</span> <span class="o">=</span> <span class="n">snapped</span>
+        <span class="n">atom</span><span class="o">.</span><span class="n">_wyckoff_key_baseline</span> <span class="o">=</span> <span class="n">key</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_clear_fract_symmetry_constrained</span><span class="p">(</span><span class="n">atom</span><span class="p">:</span> <span class="n">AtomSite</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -6633,11 +7065,12 @@ returned unchanged.</p>
 <span class="sd">        ----------</span>
 <span class="sd">        called_by_minimizer : bool, default=False</span>
 <span class="sd">            Whether the update was triggered by the fitting minimizer.</span>
-<span class="sd">            Currently unused.</span>
+<span class="sd">            When True, Wyckoff re-detection and warnings are skipped;</span>
+<span class="sd">            only the silent coordinate snap runs.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">del</span> <span class="n">called_by_minimizer</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_apply_atomic_coordinates_symmetry_constraints</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_apply_atomic_coordinates_symmetry_constraints</span><span class="p">(</span>
+            <span class="n">called_by_minimizer</span><span class="o">=</span><span class="n">called_by_minimizer</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_apply_adp_symmetry_constraints</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sync_iso_from_aniso</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
@@ -6675,9 +7108,9 @@ returned unchanged.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/structure/categories/atom_sites/default.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">547</span>
-<span class="normal">548</span>
-<span class="normal">549</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">617</span>
+<span class="normal">618</span>
+<span class="normal">619</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialise an empty atom-sites collection.&quot;&quot;&quot;</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">item_type</span><span class="o">=</span><span class="n">AtomSite</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -9428,6 +9861,1146 @@ parameter value.</p>
 
 </div>
 
+<div class="doc doc-object doc-module">
+
+
+
+<h3 id="easydiffraction.datablocks.structure.categories.space_group_wyckoff" class="doc doc-heading">
+            <code>space_group_wyckoff</code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-module">
+
+
+
+<h4 id="easydiffraction.datablocks.structure.categories.space_group_wyckoff.default" class="doc doc-heading">
+            <code>default</code>
+
+
+</h4>
+
+    <div class="doc doc-contents ">
+
+        <p>Derived space-group Wyckoff category.</p>
+<p>Defines :class:<code>SpaceGroupWyckoff</code> items and the read-only
+:class:<code>SpaceGroupWyckoffCollection</code>. Rows are derived from the bundled
+space-group table for the structure's current space group; they are not
+user-edited. <code>Structure</code> rebuilds the collection when the space group
+changes via
+:meth:<code>SpaceGroupWyckoffCollection._replace_from_space_group</code>.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h5 id="easydiffraction.datablocks.structure.categories.space_group_wyckoff.default.SpaceGroupWyckoff" class="doc doc-heading">
+            <code>SpaceGroupWyckoff</code>
+
+
+</h5>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code&gt;CategoryItem&lt;/code&gt; (&lt;code&gt;easydiffraction.core.category.CategoryItem&lt;/code&gt;)" href="../../core/#easydiffraction.core.category.CategoryItem">CategoryItem</a></code></p>
+
+
+
+        <p>A single Wyckoff position of the space group (all fields read-only).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+
+
+
+
+
+
+              <details class="mkdocstrings-source">
+                <summary>Source code in <code>src/easydiffraction/datablocks/structure/categories/space_group_wyckoff/default.py</code></summary>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 37</span>
+<span class="normal"> 38</span>
+<span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
+<span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SpaceGroupWyckoff</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A single Wyckoff position of the space group (all fields read-only).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_category_code</span> <span class="o">=</span> <span class="s1">&#39;space_group_Wyckoff&#39;</span>
+    <span class="n">_category_entry_name</span> <span class="o">=</span> <span class="s1">&#39;id&#39;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialise an empty Wyckoff-position row.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_id</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;id&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Identifier of the Wyckoff position.&#39;</span><span class="p">,</span>
+            <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span><span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;ID&#39;</span><span class="p">,</span> <span class="n">latex_name</span><span class="o">=</span><span class="s1">&#39;ID&#39;</span><span class="p">),</span>
+            <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_space_group_Wyckoff.id&#39;</span><span class="p">]),</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_letter</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;letter&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Wyckoff letter of the position.&#39;</span><span class="p">,</span>
+            <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span><span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;Letter&#39;</span><span class="p">,</span> <span class="n">latex_name</span><span class="o">=</span><span class="s1">&#39;Letter&#39;</span><span class="p">),</span>
+            <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_space_group_Wyckoff.letter&#39;</span><span class="p">]),</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_multiplicity</span> <span class="o">=</span> <span class="n">IntegerDescriptor</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;multiplicity&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Multiplicity of the Wyckoff position.&#39;</span><span class="p">,</span>
+            <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span><span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;Multiplicity&#39;</span><span class="p">,</span> <span class="n">latex_name</span><span class="o">=</span><span class="s1">&#39;Multiplicity&#39;</span><span class="p">),</span>
+            <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_space_group_Wyckoff.multiplicity&#39;</span><span class="p">]),</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_site_symmetry</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;site_symmetry&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Site-symmetry symbol of the Wyckoff position.&#39;</span><span class="p">,</span>
+            <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+                <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;Site symmetry&#39;</span><span class="p">,</span> <span class="n">latex_name</span><span class="o">=</span><span class="s1">&#39;Site symmetry&#39;</span>
+            <span class="p">),</span>
+            <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_space_group_Wyckoff.site_symmetry&#39;</span><span class="p">]),</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_coords_xyz</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;coords_xyz&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Coordinates of the Wyckoff orbit.&#39;</span><span class="p">,</span>
+            <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span><span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;Coordinates&#39;</span><span class="p">,</span> <span class="n">latex_name</span><span class="o">=</span><span class="s1">&#39;Coordinates&#39;</span><span class="p">),</span>
+            <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_space_group_Wyckoff.coords_xyz&#39;</span><span class="p">]),</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StringDescriptor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read-only Wyckoff-position identifier.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">letter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StringDescriptor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read-only Wyckoff letter.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_letter</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">multiplicity</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IntegerDescriptor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read-only multiplicity.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_multiplicity</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">site_symmetry</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StringDescriptor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read-only site-symmetry symbol.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_site_symmetry</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">coords_xyz</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StringDescriptor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read-only orbit coordinates.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coords_xyz</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h6 id="easydiffraction.datablocks.structure.categories.space_group_wyckoff.default.SpaceGroupWyckoff.id" class="doc doc-heading">
+            <code class="highlight language-python"><span class="nb">id</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h6>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Read-only Wyckoff-position identifier.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h6 id="easydiffraction.datablocks.structure.categories.space_group_wyckoff.default.SpaceGroupWyckoff.letter" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">letter</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h6>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Read-only Wyckoff letter.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h6 id="easydiffraction.datablocks.structure.categories.space_group_wyckoff.default.SpaceGroupWyckoff.multiplicity" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">multiplicity</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h6>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Read-only multiplicity.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h6 id="easydiffraction.datablocks.structure.categories.space_group_wyckoff.default.SpaceGroupWyckoff.site_symmetry" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">site_symmetry</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h6>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Read-only site-symmetry symbol.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h6 id="easydiffraction.datablocks.structure.categories.space_group_wyckoff.default.SpaceGroupWyckoff.coords_xyz" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">coords_xyz</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h6>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Read-only orbit coordinates.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h6 id="easydiffraction.datablocks.structure.categories.space_group_wyckoff.default.SpaceGroupWyckoff.__init__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">()</span></code>
+
+</h6>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Initialise an empty Wyckoff-position row.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/datablocks/structure/categories/space_group_wyckoff/default.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialise an empty Wyckoff-position row.&quot;&quot;&quot;</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">_id</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;id&#39;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Identifier of the Wyckoff position.&#39;</span><span class="p">,</span>
+        <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span><span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;ID&#39;</span><span class="p">,</span> <span class="n">latex_name</span><span class="o">=</span><span class="s1">&#39;ID&#39;</span><span class="p">),</span>
+        <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+        <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_space_group_Wyckoff.id&#39;</span><span class="p">]),</span>
+    <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_letter</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;letter&#39;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Wyckoff letter of the position.&#39;</span><span class="p">,</span>
+        <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span><span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;Letter&#39;</span><span class="p">,</span> <span class="n">latex_name</span><span class="o">=</span><span class="s1">&#39;Letter&#39;</span><span class="p">),</span>
+        <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+        <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_space_group_Wyckoff.letter&#39;</span><span class="p">]),</span>
+    <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_multiplicity</span> <span class="o">=</span> <span class="n">IntegerDescriptor</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;multiplicity&#39;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Multiplicity of the Wyckoff position.&#39;</span><span class="p">,</span>
+        <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span><span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;Multiplicity&#39;</span><span class="p">,</span> <span class="n">latex_name</span><span class="o">=</span><span class="s1">&#39;Multiplicity&#39;</span><span class="p">),</span>
+        <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+        <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_space_group_Wyckoff.multiplicity&#39;</span><span class="p">]),</span>
+    <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_site_symmetry</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;site_symmetry&#39;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Site-symmetry symbol of the Wyckoff position.&#39;</span><span class="p">,</span>
+        <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span>
+            <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;Site symmetry&#39;</span><span class="p">,</span> <span class="n">latex_name</span><span class="o">=</span><span class="s1">&#39;Site symmetry&#39;</span>
+        <span class="p">),</span>
+        <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+        <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_space_group_Wyckoff.site_symmetry&#39;</span><span class="p">]),</span>
+    <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_coords_xyz</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;coords_xyz&#39;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Coordinates of the Wyckoff orbit.&#39;</span><span class="p">,</span>
+        <span class="n">display_handler</span><span class="o">=</span><span class="n">DisplayHandler</span><span class="p">(</span><span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;Coordinates&#39;</span><span class="p">,</span> <span class="n">latex_name</span><span class="o">=</span><span class="s1">&#39;Coordinates&#39;</span><span class="p">),</span>
+        <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+        <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_space_group_Wyckoff.coords_xyz&#39;</span><span class="p">]),</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h5 id="easydiffraction.datablocks.structure.categories.space_group_wyckoff.default.SpaceGroupWyckoffCollection" class="doc doc-heading">
+            <code>SpaceGroupWyckoffCollection</code>
+
+
+</h5>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code&gt;CategoryCollection&lt;/code&gt; (&lt;code&gt;easydiffraction.core.category.CategoryCollection&lt;/code&gt;)" href="../../core/#easydiffraction.core.category.CategoryCollection">CategoryCollection</a></code></p>
+
+
+
+        <p>Read-only collection of derived Wyckoff positions.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+
+
+
+
+
+
+              <details class="mkdocstrings-source">
+                <summary>Source code in <code>src/easydiffraction/datablocks/structure/categories/space_group_wyckoff/default.py</code></summary>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@SpaceGroupWyckoffFactory</span><span class="o">.</span><span class="n">register</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SpaceGroupWyckoffCollection</span><span class="p">(</span><span class="n">CategoryCollection</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read-only collection of derived Wyckoff positions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">type_info</span> <span class="o">=</span> <span class="n">TypeInfo</span><span class="p">(</span>
+        <span class="n">tag</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Derived space-group Wyckoff table&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialise an empty derived Wyckoff collection.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">item_type</span><span class="o">=</span><span class="n">SpaceGroupWyckoff</span><span class="p">)</span>
+
+    <span class="nd">@override</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reject public mutation; the collection is derived (read-only).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">_READ_ONLY_MESSAGE</span><span class="p">)</span>
+
+    <span class="nd">@override</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reject public mutation; the collection is derived (read-only).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">_READ_ONLY_MESSAGE</span><span class="p">)</span>
+
+    <span class="nd">@override</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reject public mutation; the collection is derived (read-only).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">_READ_ONLY_MESSAGE</span><span class="p">)</span>
+
+    <span class="nd">@override</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reject item assignment; the collection is derived (read-only).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">_READ_ONLY_MESSAGE</span><span class="p">)</span>
+
+    <span class="nd">@override</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reject item deletion; the collection is derived (read-only).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">_READ_ONLY_MESSAGE</span><span class="p">)</span>
+
+    <span class="nd">@override</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Ignore incoming CIF values for this derived category.</span>
+
+<span class="sd">        The Wyckoff table is derived from the structure&#39;s space group</span>
+<span class="sd">        and is never read back from a CIF file: any</span>
+<span class="sd">        ``_space_group_Wyckoff.*`` loop in incoming CIF (for example a</span>
+<span class="sd">        hand-edited project file) is discarded and the table is rebuilt</span>
+<span class="sd">        from the space group on the next update.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_replace_from_space_group</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Rebuild rows from the parent structure&#39;s space group.</span>
+
+<span class="sd">        Repopulates from the bundled Wyckoff table and adopts the new</span>
+<span class="sd">        rows via ``_adopt_items``, which rebuilds the name index and</span>
+<span class="sd">        parent links so a stale key lookup cannot survive a space-group</span>
+<span class="sd">        change. Leaves the collection empty for an absent/untabulated</span>
+<span class="sd">        space group.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">structure</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_parent&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">structure</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_adopt_items</span><span class="p">([])</span>
+            <span class="k">return</span>
+        <span class="n">name_hm</span> <span class="o">=</span> <span class="n">structure</span><span class="o">.</span><span class="n">space_group</span><span class="o">.</span><span class="n">name_h_m</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">coord_code</span> <span class="o">=</span> <span class="n">structure</span><span class="o">.</span><span class="n">space_group</span><span class="o">.</span><span class="n">it_coordinate_system_code</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">positions</span> <span class="o">=</span> <span class="n">ecr</span><span class="o">.</span><span class="n">space_group_wyckoff_table</span><span class="p">(</span><span class="n">name_hm</span><span class="p">,</span> <span class="n">coord_code</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">positions</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_adopt_items</span><span class="p">([])</span>
+            <span class="k">return</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">letter</span><span class="p">,</span> <span class="n">position</span> <span class="ow">in</span> <span class="n">positions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">multiplicity</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">position</span><span class="p">[</span><span class="s1">&#39;multiplicity&#39;</span><span class="p">])</span>
+            <span class="n">row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item_type</span><span class="p">()</span>
+            <span class="n">row</span><span class="o">.</span><span class="n">_id</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">multiplicity</span><span class="si">}{</span><span class="n">letter</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="n">row</span><span class="o">.</span><span class="n">_letter</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">letter</span>
+            <span class="n">row</span><span class="o">.</span><span class="n">_multiplicity</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">multiplicity</span>
+            <span class="n">row</span><span class="o">.</span><span class="n">_site_symmetry</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">position</span><span class="p">[</span><span class="s1">&#39;site_symmetry&#39;</span><span class="p">])</span>
+            <span class="n">row</span><span class="o">.</span><span class="n">_coords_xyz</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">position</span><span class="p">[</span><span class="s1">&#39;coords_xyz&#39;</span><span class="p">])</span>
+            <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_adopt_items</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h6 id="easydiffraction.datablocks.structure.categories.space_group_wyckoff.default.SpaceGroupWyckoffCollection.__init__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">()</span></code>
+
+</h6>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Initialise an empty derived Wyckoff collection.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/datablocks/structure/categories/space_group_wyckoff/default.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialise an empty derived Wyckoff collection.&quot;&quot;&quot;</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">item_type</span><span class="o">=</span><span class="n">SpaceGroupWyckoff</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h6 id="easydiffraction.datablocks.structure.categories.space_group_wyckoff.default.SpaceGroupWyckoffCollection.add" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">add</span><span class="p">(</span><span class="n">item</span><span class="p">)</span></code>
+
+</h6>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Reject public mutation; the collection is derived (read-only).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/datablocks/structure/categories/space_group_wyckoff/default.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@override</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reject public mutation; the collection is derived (read-only).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">_READ_ONLY_MESSAGE</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h6 id="easydiffraction.datablocks.structure.categories.space_group_wyckoff.default.SpaceGroupWyckoffCollection.create" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">create</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+</h6>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Reject public mutation; the collection is derived (read-only).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/datablocks/structure/categories/space_group_wyckoff/default.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@override</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reject public mutation; the collection is derived (read-only).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">_READ_ONLY_MESSAGE</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h6 id="easydiffraction.datablocks.structure.categories.space_group_wyckoff.default.SpaceGroupWyckoffCollection.remove" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">remove</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></code>
+
+</h6>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Reject public mutation; the collection is derived (read-only).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/datablocks/structure/categories/space_group_wyckoff/default.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@override</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reject public mutation; the collection is derived (read-only).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">_READ_ONLY_MESSAGE</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h6 id="easydiffraction.datablocks.structure.categories.space_group_wyckoff.default.SpaceGroupWyckoffCollection.__setitem__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__setitem__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span></code>
+
+</h6>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Reject item assignment; the collection is derived (read-only).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/datablocks/structure/categories/space_group_wyckoff/default.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@override</span>
+<span class="k">def</span><span class="w"> </span><span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reject item assignment; the collection is derived (read-only).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">_READ_ONLY_MESSAGE</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h6 id="easydiffraction.datablocks.structure.categories.space_group_wyckoff.default.SpaceGroupWyckoffCollection.__delitem__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__delitem__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></code>
+
+</h6>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Reject item deletion; the collection is derived (read-only).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/datablocks/structure/categories/space_group_wyckoff/default.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@override</span>
+<span class="k">def</span><span class="w"> </span><span class="fm">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reject item deletion; the collection is derived (read-only).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">_READ_ONLY_MESSAGE</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h6 id="easydiffraction.datablocks.structure.categories.space_group_wyckoff.default.SpaceGroupWyckoffCollection.from_cif" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">from_cif</span><span class="p">(</span><span class="n">block</span><span class="p">)</span></code>
+
+</h6>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Ignore incoming <abbr title="Crystallographic Information File.">CIF</abbr> values for this derived category.</p>
+<p>The Wyckoff table is derived from the structure's space group
+and is never read back from a <abbr title="Crystallographic Information File.">CIF</abbr> file: any
+<code>_space_group_Wyckoff.*</code> loop in incoming <abbr title="Crystallographic Information File.">CIF</abbr> (for example a
+hand-edited project file) is discarded and the table is rebuilt
+from the space group on the next update.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/datablocks/structure/categories/space_group_wyckoff/default.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@override</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Ignore incoming CIF values for this derived category.</span>
+
+<span class="sd">    The Wyckoff table is derived from the structure&#39;s space group</span>
+<span class="sd">    and is never read back from a CIF file: any</span>
+<span class="sd">    ``_space_group_Wyckoff.*`` loop in incoming CIF (for example a</span>
+<span class="sd">    hand-edited project file) is discarded and the table is rebuilt</span>
+<span class="sd">    from the space group on the next update.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+<h4 id="easydiffraction.datablocks.structure.categories.space_group_wyckoff.factory" class="doc doc-heading">
+            <code>factory</code>
+
+
+</h4>
+
+    <div class="doc doc-contents ">
+
+        <p>Space-group Wyckoff factory — delegates entirely to <code>FactoryBase</code>.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h5 id="easydiffraction.datablocks.structure.categories.space_group_wyckoff.factory.SpaceGroupWyckoffFactory" class="doc doc-heading">
+            <code>SpaceGroupWyckoffFactory</code>
+
+
+</h5>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code&gt;FactoryBase&lt;/code&gt; (&lt;code&gt;easydiffraction.core.factory.FactoryBase&lt;/code&gt;)" href="../../core/#easydiffraction.core.factory.FactoryBase">FactoryBase</a></code></p>
+
+
+
+        <p>Create space-group Wyckoff collections by tag.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+
+
+
+
+
+
+              <details class="mkdocstrings-source">
+                <summary>Source code in <code>src/easydiffraction/datablocks/structure/categories/space_group_wyckoff/factory.py</code></summary>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SpaceGroupWyckoffFactory</span><span class="p">(</span><span class="n">FactoryBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create space-group Wyckoff collections by tag.&quot;&quot;&quot;</span>
+
+    <span class="n">_default_rules</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="nb">frozenset</span><span class="p">():</span> <span class="s1">&#39;default&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+  </div>
+
+    </div>
+
+</div>
+
 
   </div>
 
@@ -10157,13 +11730,7 @@ inserting pre-built structures.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/structure/item/base.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 26</span>
-<span class="normal"> 27</span>
-<span class="normal"> 28</span>
-<span class="normal"> 29</span>
-<span class="normal"> 30</span>
-<span class="normal"> 31</span>
-<span class="normal"> 32</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 32</span>
 <span class="normal"> 33</span>
 <span class="normal"> 34</span>
 <span class="normal"> 35</span>
@@ -10378,7 +11945,33 @@ inserting pre-built structures.</p>
 <span class="normal">244</span>
 <span class="normal">245</span>
 <span class="normal">246</span>
-<span class="normal">247</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Structure</span><span class="p">(</span><span class="n">DatablockItem</span><span class="p">):</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Structure</span><span class="p">(</span><span class="n">DatablockItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Structure datablock item.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -10398,6 +11991,8 @@ inserting pre-built structures.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_atom_site_aniso</span> <span class="o">=</span> <span class="n">AtomSiteAnisoFactory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_atom_site_aniso_type</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_geom_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">GeomFactory</span><span class="o">.</span><span class="n">default_tag</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_geom</span> <span class="o">=</span> <span class="n">GeomFactory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_geom_type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_space_group_wyckoff_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">SpaceGroupWyckoffFactory</span><span class="o">.</span><span class="n">default_tag</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_space_group_wyckoff</span> <span class="o">=</span> <span class="n">SpaceGroupWyckoffFactory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_space_group_wyckoff_type</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">datablock_entry_name</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
@@ -10535,6 +12130,13 @@ inserting pre-built structures.</p>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_geom</span> <span class="o">=</span> <span class="n">new</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">space_group_wyckoff</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SpaceGroupWyckoffCollection</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read-only Wyckoff table derived from the current space group.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_space_group_wyckoff</span>
+
     <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1"># Private methods</span>
     <span class="c1"># ------------------------------------------------------------------</span>
@@ -10585,12 +12187,23 @@ inserting pre-built structures.</p>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">called_by_minimizer</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_need_categories_update</span><span class="p">:</span>
             <span class="k">return</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_space_group_wyckoff</span><span class="o">.</span><span class="n">_replace_from_space_group</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sync_atom_site_aniso</span><span class="p">()</span>
 
         <span class="k">for</span> <span class="n">category</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="p">:</span>
             <span class="n">category</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">called_by_minimizer</span><span class="o">=</span><span class="n">called_by_minimizer</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_need_categories_update</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_serializable_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Project-CIF categories (excludes the derived Wyckoff table).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">category</span>
+            <span class="k">for</span> <span class="n">category</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">category</span><span class="p">,</span> <span class="n">SpaceGroupWyckoffCollection</span><span class="p">)</span>
+        <span class="p">]</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1"># Public methods</span>
@@ -10795,6 +12408,31 @@ inserting pre-built structures.</p>
 
 </div>
 
+<div class="doc doc-object doc-attribute">
+
+
+
+<h5 id="easydiffraction.datablocks.structure.item.base.Structure.space_group_wyckoff" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">space_group_wyckoff</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h5>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Read-only Wyckoff table derived from the current space group.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
 
 
 
@@ -10817,10 +12455,10 @@ inserting pre-built structures.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/structure/item/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">244</span>
-<span class="normal">245</span>
-<span class="normal">246</span>
-<span class="normal">247</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Render the CIF text for this structure in the terminal.&quot;&quot;&quot;</span>
     <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Structure 🧩 &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; as cif&quot;</span><span class="p">)</span>
     <span class="n">render_cif</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cif_for_display</span><span class="p">())</span>

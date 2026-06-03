@@ -14115,18 +14115,7 @@ patterns.</p>
 <span class="normal">869</span>
 <span class="normal">870</span>
 <span class="normal">871</span>
-<span class="normal">872</span>
-<span class="normal">873</span>
-<span class="normal">874</span>
-<span class="normal">875</span>
-<span class="normal">876</span>
-<span class="normal">877</span>
-<span class="normal">878</span>
-<span class="normal">879</span>
-<span class="normal">880</span>
-<span class="normal">881</span>
-<span class="normal">882</span>
-<span class="normal">883</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@CalculatorFactory</span><span class="o">.</span><span class="n">register</span>
+<span class="normal">872</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@CalculatorFactory</span><span class="o">.</span><span class="n">register</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">CryspyCalculator</span><span class="p">(</span><span class="n">CalculatorBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Cryspy-based diffraction calculator.</span>
@@ -14574,36 +14563,25 @@ patterns.</p>
         <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Update cryspy atom multiplicities.</span>
+<span class="sd">        Update cryspy atom multiplicities from the model.</span>
 
 <span class="sd">        CrysPy normalizes fractional coordinates into the ``[0, 1)``</span>
 <span class="sd">        interval while parsing CIF.  For sites such as ``(x, -x, z)``,</span>
 <span class="sd">        that can turn ``-x`` into ``1 - x`` before the Wyckoff</span>
 <span class="sd">        multiplicity is inferred, making special positions look like</span>
-<span class="sd">        general positions.  EasyDiffraction already stores the intended</span>
-<span class="sd">        Wyckoff letter, so keep the calculator dictionary aligned with</span>
-<span class="sd">        that model state.</span>
+<span class="sd">        general positions.  EasyDiffraction&#39;s Wyckoff detection already</span>
+<span class="sd">        stores the correct per-site multiplicity, so use it; when a site</span>
+<span class="sd">        has no detected multiplicity (untabulated space group), keep the</span>
+<span class="sd">        backend&#39;s inferred value.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">cryspy</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span>
 
-        <span class="kn">from</span><span class="w"> </span><span class="nn">cryspy.A_functions_base.function_2_space_group</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>  <span class="c1"># noqa: PLC0415</span>
-            <span class="n">get_it_number_by_name_hm_short</span><span class="p">,</span>
-        <span class="p">)</span>
-
-        <span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction.crystallography.space_groups</span><span class="w"> </span><span class="kn">import</span> <span class="n">SPACE_GROUPS</span>  <span class="c1"># noqa: PLC0415</span>
-
-        <span class="n">it_number</span> <span class="o">=</span> <span class="n">get_it_number_by_name_hm_short</span><span class="p">(</span><span class="n">structure</span><span class="o">.</span><span class="n">space_group</span><span class="o">.</span><span class="n">name_h_m</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-        <span class="n">coord_code</span> <span class="o">=</span> <span class="n">structure</span><span class="o">.</span><span class="n">space_group</span><span class="o">.</span><span class="n">it_coordinate_system_code</span><span class="o">.</span><span class="n">value</span>
-        <span class="k">if</span> <span class="n">it_number</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="p">(</span><span class="n">it_number</span><span class="p">,</span> <span class="n">coord_code</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">SPACE_GROUPS</span><span class="p">:</span>
-            <span class="k">return</span>
-
-        <span class="n">positions</span> <span class="o">=</span> <span class="n">SPACE_GROUPS</span><span class="p">[</span><span class="n">it_number</span><span class="p">,</span> <span class="n">coord_code</span><span class="p">][</span><span class="s1">&#39;Wyckoff_positions&#39;</span><span class="p">]</span>
         <span class="n">multiplicity</span> <span class="o">=</span> <span class="n">cryspy_model_dict</span><span class="p">[</span><span class="s1">&#39;atom_multiplicity&#39;</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">atom_site</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">structure</span><span class="o">.</span><span class="n">atom_sites</span><span class="p">):</span>
-            <span class="n">wyckoff_letter</span> <span class="o">=</span> <span class="n">atom_site</span><span class="o">.</span><span class="n">wyckoff_letter</span><span class="o">.</span><span class="n">value</span>
-            <span class="k">if</span> <span class="n">wyckoff_letter</span> <span class="ow">in</span> <span class="n">positions</span><span class="p">:</span>
-                <span class="n">multiplicity</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">positions</span><span class="p">[</span><span class="n">wyckoff_letter</span><span class="p">][</span><span class="s1">&#39;multiplicity&#39;</span><span class="p">]</span>
+            <span class="n">site_multiplicity</span> <span class="o">=</span> <span class="n">atom_site</span><span class="o">.</span><span class="n">multiplicity</span><span class="o">.</span><span class="n">value</span>
+            <span class="k">if</span> <span class="n">site_multiplicity</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">multiplicity</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">site_multiplicity</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_update_aniso_beta</span><span class="p">(</span>
@@ -38114,7 +38092,10 @@ a table in notebooks or a text UI in terminals.</p>
 <span class="normal">420</span>
 <span class="normal">421</span>
 <span class="normal">422</span>
-<span class="normal">423</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Fitter</span><span class="p">:</span>
+<span class="normal">423</span>
+<span class="normal">424</span>
+<span class="normal">425</span>
+<span class="normal">426</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Fitter</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Handles the fitting workflow using a pluggable minimizer.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selection</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">MinimizerTypeEnum</span><span class="o">.</span><span class="n">default</span><span class="p">())</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -38404,9 +38385,12 @@ a table in notebooks or a text UI in terminals.</p>
 
         <span class="c1"># Update categories to reflect new parameter values</span>
         <span class="c1"># Order matters: structures first (symmetry, structure),</span>
-        <span class="c1"># then analysis (constraints), then experiments (calculations)</span>
+        <span class="c1"># then analysis (constraints), then experiments (calculations).</span>
+        <span class="c1"># Pass called_by_minimizer so the per-iteration Wyckoff snap</span>
+        <span class="c1"># runs silently (no re-detection or warnings); detection</span>
+        <span class="c1"># already ran at fit setup.</span>
         <span class="k">for</span> <span class="n">structure</span> <span class="ow">in</span> <span class="n">structures</span><span class="p">:</span>
-            <span class="n">structure</span><span class="o">.</span><span class="n">_update_categories</span><span class="p">()</span>
+            <span class="n">structure</span><span class="o">.</span><span class="n">_update_categories</span><span class="p">(</span><span class="n">called_by_minimizer</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">analysis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">analysis</span><span class="o">.</span><span class="n">_update_categories</span><span class="p">(</span><span class="n">called_by_minimizer</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>

@@ -68,7 +68,6 @@ struct.atom_sites.create(
     fract_x=0,
     fract_y=0,
     fract_z=0,
-    wyckoff_letter='a',
     adp_iso=0.3,
 )
 struct.atom_sites.create(
@@ -77,7 +76,6 @@ struct.atom_sites.create(
     fract_x=0.279,
     fract_y=0.25,
     fract_z=0.985,
-    wyckoff_letter='c',
     adp_iso=0.3,
 )
 struct.atom_sites.create(
@@ -86,7 +84,6 @@ struct.atom_sites.create(
     fract_x=0.094,
     fract_y=0.25,
     fract_z=0.429,
-    wyckoff_letter='c',
     adp_iso=0.34,
 )
 struct.atom_sites.create(
@@ -95,7 +92,6 @@ struct.atom_sites.create(
     fract_x=0.091,
     fract_y=0.25,
     fract_z=0.771,
-    wyckoff_letter='c',
     adp_iso=0.63,
 )
 struct.atom_sites.create(
@@ -104,7 +100,6 @@ struct.atom_sites.create(
     fract_x=0.448,
     fract_y=0.25,
     fract_z=0.217,
-    wyckoff_letter='c',
     adp_iso=0.59,
 )
 struct.atom_sites.create(
@@ -113,7 +108,6 @@ struct.atom_sites.create(
     fract_x=0.164,
     fract_y=0.032,
     fract_z=0.28,
-    wyckoff_letter='d',
     adp_iso=0.83,
 )
 
