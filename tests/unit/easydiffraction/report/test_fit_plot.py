@@ -72,3 +72,43 @@ def test_fit_plot_axis_styles_expose_shared_diagonal_color():
     styles = fit_plot_axis_styles()
 
     assert styles['diag_rgb'] == '190,199,208'
+
+
+def test_fit_plot_geometry_keeps_panel_heights_fixed_across_rows():
+    from easydiffraction.report.fit_plot import _FIGURE_AXIS_HEIGHT_TO_WIDTH
+    from easydiffraction.report.fit_plot import _FIGURE_AXIS_WIDTH_CM
+    from easydiffraction.report.fit_plot import fit_plot_geometry
+
+    def fit_data(*, phases: int, residual: bool) -> dict:
+        data = {'bragg_tick_sets': ['phase'] * phases}
+        data['series'] = {'diff': [0.0]} if residual else {}
+        return data
+
+    def stack_height_cm(geometry: dict, row_count: int) -> float:
+        return (
+            geometry['main_height_cm']
+            + geometry['bragg_height_cm']
+            + geometry['residual_height_cm']
+            + (row_count - 1) * geometry['vertical_sep_cm']
+        )
+
+    full = fit_plot_geometry(fit_data(phases=1, residual=True))
+    main_bragg = fit_plot_geometry(fit_data(phases=1, residual=False))
+    main_resid = fit_plot_geometry(fit_data(phases=0, residual=True))
+    main_only = fit_plot_geometry(fit_data(phases=0, residual=False))
+    two_phase = fit_plot_geometry(fit_data(phases=2, residual=True))
+
+    # The main panel keeps the same cm height in every layout.
+    assert main_bragg['main_height_cm'] == pytest.approx(full['main_height_cm'])
+    assert main_resid['main_height_cm'] == pytest.approx(full['main_height_cm'])
+    assert main_only['main_height_cm'] == pytest.approx(full['main_height_cm'])
+    # The residual panel keeps its height with or without Bragg ticks.
+    assert main_resid['residual_height_cm'] == pytest.approx(full['residual_height_cm'])
+    # The Bragg panel grows linearly with the phase count.
+    assert two_phase['bragg_height_cm'] == pytest.approx(2 * full['bragg_height_cm'])
+    # The reference three-row figure keeps its nominal height; reduced
+    # layouts are shorter and extra phases make it taller.
+    reference_cm = _FIGURE_AXIS_WIDTH_CM * _FIGURE_AXIS_HEIGHT_TO_WIDTH
+    assert stack_height_cm(full, 3) == pytest.approx(reference_cm)
+    assert stack_height_cm(main_only, 1) < reference_cm
+    assert stack_height_cm(two_phase, 3) > reference_cm
