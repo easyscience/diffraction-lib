@@ -381,6 +381,11 @@ class ProjectDisplay:
         x : object | None, default=None
             Optional x-axis variable overriding the experiment default
             (excluded-region overlays are skipped for a custom axis).
+
+        Raises
+        ------
+        ValueError
+            If no pattern content is available for the experiment.
         """
         statuses = self._pattern_option_statuses(expt_name)
         content = self._auto_include(statuses)
