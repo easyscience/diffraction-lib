@@ -249,7 +249,7 @@ before moving to the next step or the Phase 1 review gate**, per
 The ADR commit + design-phase review/reply cleanup are handled by
 `/draft-impl-1` Phase A before P1.1.
 
-- [ ] **P1.0 — Verify the ADR gate and the §10 prerequisite.** No code.
+- [x] **P1.0 — Verify the ADR gate and the §10 prerequisite.** No code.
       Ensure `git branch --show-current` is `wyckoff-letter-detection`;
       if not, stop before editing and ask the user to switch to the
       target branch outside the shortcut. Confirm the ADR on disk
