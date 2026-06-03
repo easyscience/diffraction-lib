@@ -128,6 +128,14 @@ class SpaceGroupWyckoffCollection(CategoryCollection):
         """Reject public mutation; the collection is derived (read-only)."""
         raise TypeError(_READ_ONLY_MESSAGE)
 
+    def __setitem__(self, name: str, item: object) -> None:
+        """Reject item assignment; the collection is derived (read-only)."""
+        raise TypeError(_READ_ONLY_MESSAGE)
+
+    def __delitem__(self, name: str) -> None:
+        """Reject item deletion; the collection is derived (read-only)."""
+        raise TypeError(_READ_ONLY_MESSAGE)
+
     def from_cif(self, block: object) -> None:
         """
         Ignore incoming CIF values for this derived category.
