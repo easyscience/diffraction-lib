@@ -7,10 +7,13 @@ Defines :class:`SpaceGroupWyckoff` items and the read-only
 :class:`SpaceGroupWyckoffCollection`. Rows are derived from the bundled
 space-group table for the structure's current space group; they are not
 user-edited. ``Structure`` rebuilds the collection when the space group
-changes via :meth:`SpaceGroupWyckoffCollection._replace_from_space_group`.
+changes via
+:meth:`SpaceGroupWyckoffCollection._replace_from_space_group`.
 """
 
 from __future__ import annotations
+
+from typing import override
 
 from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
@@ -32,7 +35,9 @@ _READ_ONLY_MESSAGE = (
 
 
 class SpaceGroupWyckoff(CategoryItem):
-    """A single Wyckoff position of the space group (all fields read-only)."""
+    """
+    A single Wyckoff position of the space group (all fields read-only).
+    """
 
     _category_code = 'space_group_Wyckoff'
     _category_entry_name = 'id'
@@ -65,7 +70,9 @@ class SpaceGroupWyckoff(CategoryItem):
         self._site_symmetry = StringDescriptor(
             name='site_symmetry',
             description='Site-symmetry symbol of the Wyckoff position.',
-            display_handler=DisplayHandler(display_name='Site symmetry', latex_name='Site symmetry'),
+            display_handler=DisplayHandler(
+                display_name='Site symmetry', latex_name='Site symmetry'
+            ),
             value_spec=AttributeSpec(default=''),
             cif_handler=CifHandler(names=['_space_group_Wyckoff.site_symmetry']),
         )
@@ -105,7 +112,9 @@ class SpaceGroupWyckoff(CategoryItem):
 
 @SpaceGroupWyckoffFactory.register
 class SpaceGroupWyckoffCollection(CategoryCollection):
-    """Read-only collection of Wyckoff positions, derived from the space group."""
+    """
+    Read-only collection of derived Wyckoff positions.
+    """
 
     type_info = TypeInfo(
         tag='default',
@@ -116,41 +125,57 @@ class SpaceGroupWyckoffCollection(CategoryCollection):
         """Initialise an empty derived Wyckoff collection."""
         super().__init__(item_type=SpaceGroupWyckoff)
 
+    @override
     def add(self, item: object) -> None:
-        """Reject public mutation; the collection is derived (read-only)."""
+        """
+        Reject public mutation; the collection is derived (read-only).
+        """
         raise ValueError(_READ_ONLY_MESSAGE)
 
+    @override
     def create(self, **kwargs: object) -> None:
-        """Reject public mutation; the collection is derived (read-only)."""
+        """
+        Reject public mutation; the collection is derived (read-only).
+        """
         raise ValueError(_READ_ONLY_MESSAGE)
 
+    @override
     def remove(self, name: str) -> None:
-        """Reject public mutation; the collection is derived (read-only)."""
+        """
+        Reject public mutation; the collection is derived (read-only).
+        """
         raise ValueError(_READ_ONLY_MESSAGE)
 
+    @override
     def __setitem__(self, name: str, item: object) -> None:
-        """Reject item assignment; the collection is derived (read-only)."""
+        """
+        Reject item assignment; the collection is derived (read-only).
+        """
         raise ValueError(_READ_ONLY_MESSAGE)
 
+    @override
     def __delitem__(self, name: str) -> None:
-        """Reject item deletion; the collection is derived (read-only)."""
+        """
+        Reject item deletion; the collection is derived (read-only).
+        """
         raise ValueError(_READ_ONLY_MESSAGE)
 
+    @override
     def from_cif(self, block: object) -> None:
         """
         Ignore incoming CIF values for this derived category.
 
-        The Wyckoff table is derived from the structure's space group and
-        is never read back from a CIF file: any ``_space_group_Wyckoff.*``
-        loop in incoming CIF (for example a hand-edited project file) is
-        discarded and the table is rebuilt from the space group on the
-        next update.
+        The Wyckoff table is derived from the structure's space group
+        and is never read back from a CIF file: any
+        ``_space_group_Wyckoff.*`` loop in incoming CIF (for example a
+        hand-edited project file) is discarded and the table is rebuilt
+        from the space group on the next update.
         """
         return
 
     def _replace_from_space_group(self) -> None:
         """
-        Rebuild the rows from the parent structure's current space group.
+        Rebuild rows from the parent structure's space group.
 
         Repopulates from the bundled Wyckoff table and adopts the new
         rows via ``_adopt_items``, which rebuilds the name index and

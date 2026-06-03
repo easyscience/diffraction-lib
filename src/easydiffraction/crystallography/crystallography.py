@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import itertools
+import operator
 from dataclasses import dataclass
 from fractions import Fraction
 from typing import Any
@@ -18,14 +19,15 @@ from sympy import sympify
 from easydiffraction.crystallography.space_groups import SPACE_GROUPS
 from easydiffraction.utils.logging import log
 
-# Maximum residual (in fractional units) for a coordinate to be considered
-# on a Wyckoff orbit during detection.
+# Maximum residual (in fractional units) for a coordinate to be
+# considered on a Wyckoff orbit during detection.
 _WYCKOFF_DETECTION_TOL = 1e-3
 
 
 @dataclass(frozen=True)
 class WyckoffPosition:
-    """A resolved Wyckoff position and the orbit representative matched.
+    """
+    A resolved Wyckoff position and the orbit representative matched.
 
     Parameters
     ----------
@@ -37,8 +39,8 @@ class WyckoffPosition:
         International Tables site-symmetry symbol.
     coord_template : str | None
         Nearest matched orbit representative (e.g. ``'(x,-x,z)'``), or
-        ``None`` for a table lookup made without coordinates. This is what
-        coordinate snapping and constrained-axis flags consume.
+        ``None`` for a table lookup made without coordinates. This is
+        what coordinate snapping and constrained-axis flags consume.
     """
 
     letter: str
@@ -48,7 +50,8 @@ class WyckoffPosition:
 
 
 def _normalize_coord_code(coord_code: str | None) -> str | None:
-    """Normalize a coordinate-system code to the ``SPACE_GROUPS`` key form.
+    """
+    Normalize a coordinate-system code to the ``SPACE_GROUPS`` key form.
 
     The empty string (used by consumers for groups with no coordinate
     code, e.g. triclinic P1/P-1) maps to ``None``, which is how those
@@ -62,9 +65,10 @@ def _normalize_coord_code(coord_code: str | None) -> str | None:
     Returns
     -------
     str | None
-        ``None`` for the empty string, otherwise ``coord_code`` unchanged.
+        ``None`` for the empty string, otherwise ``coord_code``
+        unchanged.
     """
-    if coord_code == '':
+    if not coord_code:
         return None
     return coord_code
 
@@ -256,11 +260,11 @@ def _get_wyckoff_exprs(
 
     coord_code = _normalize_coord_code(coord_code)
     if (it_number, coord_code) not in SPACE_GROUPS:
-        # Space group / coordinate-system combination is absent from the
-        # local SPACE_GROUPS table. Treat as "no symmetry constraints to
-        # apply". Triclinic groups are keyed ``(it_number, None)`` and
-        # resolve normally through this lookup, so a ``None`` code is not
-        # treated as unset.
+        # Space group / coordinate-system combination is absent
+        # from the local SPACE_GROUPS table. Treat as "no symmetry
+        # constraints to apply". Triclinic groups are keyed
+        # ``(it_number, None)`` and resolve normally through this
+        # lookup, so a ``None`` code is not treated as unset.
         return None
 
     entry = SPACE_GROUPS[it_number, coord_code]
@@ -482,11 +486,12 @@ def _get_general_position_ops(
 
 
 def _orbit_template_residual(point: np.ndarray, rot: np.ndarray, trans: np.ndarray) -> float:
-    """Return the mod-1 distance from ``point`` to an orbit template.
+    """
+    Return the mod-1 distance from ``point`` to an orbit template.
 
-    The template manifold is ``{rot·v + trans}``; the point lies on it for
-    some free ``v`` when the residual is ~0. Integer lattice shifts account
-    for unit-cell periodicity.
+    The template manifold is ``{rot·v + trans}``; the point lies on it
+    for some free ``v`` when the residual is ~0. Integer lattice shifts
+    account for unit-cell periodicity.
 
     Parameters
     ----------
@@ -514,11 +519,13 @@ def _orbit_template_residual(point: np.ndarray, rot: np.ndarray, trans: np.ndarr
 
 
 def _nearest_orbit_template(point: np.ndarray, coords_xyz: list[str]) -> tuple[str, float]:
-    """Return the orbit template nearest to ``point`` and its residual.
+    """
+    Return the orbit template nearest to ``point`` and its residual.
 
     On near-ties (e.g. centering copies that share a manifold mod 1) the
-    earlier, canonical representative is kept for deterministic output; the
-    free-parameter-solving snap downstream is correct for any of them.
+    earlier, canonical representative is kept for deterministic output;
+    the free-parameter-solving snap downstream is correct for any of
+    them.
     """
     best_template = coords_xyz[0]
     best_residual = np.inf
@@ -535,12 +542,12 @@ def _wyckoff_template_constrained_flags(rot: np.ndarray) -> dict[str, bool]:
     """
     Return per-axis symmetry-constraint flags for a parsed template.
 
-    An axis is **free** when its coordinate is the first (in x, y, z order)
-    to introduce a free parameter, and **constrained** otherwise (a
-    constant, or a coordinate slaved to an earlier axis's parameter). This
-    is slot-based, so it is correct for off-canonical representatives such
-    as ``(0,x,0)`` (``fract_x`` constrained, ``fract_y`` free) where the
-    symbol-presence test would be wrong.
+    An axis is **free** when its coordinate is the first (in x, y, z
+    order) to introduce a free parameter, and **constrained** otherwise
+    (a constant, or a coordinate slaved to an earlier axis's parameter).
+    This is slot-based, so it is correct for off-canonical
+    representatives such as ``(0,x,0)`` (``fract_x`` constrained,
+    ``fract_y`` free) where the symbol-presence test would be wrong.
 
     Parameters
     ----------
@@ -550,8 +557,8 @@ def _wyckoff_template_constrained_flags(rot: np.ndarray) -> dict[str, bool]:
     Returns
     -------
     dict[str, bool]
-        Mapping ``'fract_x'/'fract_y'/'fract_z'`` to ``True`` if the axis
-        is fully fixed by site symmetry.
+        Mapping ``'fract_x'/'fract_y'/'fract_z'`` to ``True`` if the
+        axis is fully fixed by site symmetry.
     """
     claimed: set[int] = set()
     flags: dict[str, bool] = {}
@@ -572,26 +579,27 @@ def snap_to_wyckoff_template(
     """
     Project a coordinate onto a Wyckoff orbit-representative manifold.
 
-    Solves the free Wyckoff parameters from the **free (refinable) axes**
-    only — keeping those axes' values, so a minimizer's refined free
-    coordinate is preserved — then derives the constrained axes from the
-    template. Replaces per-axis symbol substitution: it handles coupled
-    axes (e.g. ``(x,-x,z)``: keep ``fract_x``, set ``fract_y=-fract_x``)
-    and off-canonical representatives (e.g. ``(0,x,0)``: keep ``fract_y``,
-    set ``fract_x=fract_z=0``).
+    Solves the free Wyckoff parameters from the **free (refinable)
+    axes** only — keeping those axes' values, so a minimizer's refined
+    free coordinate is preserved — then derives the constrained axes
+    from the template. Replaces per-axis symbol substitution: it handles
+    coupled axes (e.g. ``(x,-x,z)``: keep ``fract_x``, set
+    ``fract_y=-fract_x``) and off-canonical representatives (e.g.
+    ``(0,x,0)``: keep ``fract_y``, set ``fract_x=fract_z=0``).
 
     Parameters
     ----------
     coord_template : str
-        Selected orbit representative, e.g. ``'(x,-x,z)'`` or ``'(0,x,0)'``.
+        Selected orbit representative, e.g. ``'(x,-x,z)'`` or
+        ``'(0,x,0)'``.
     fract_xyz : tuple[float, float, float]
         Current fractional coordinate.
 
     Returns
     -------
     tuple[tuple[float, float, float], dict[str, bool]]
-        The snapped ``(x, y, z)`` (free axes kept, constrained axes derived;
-        not reduced mod 1), and the per-axis constraint flags.
+        The snapped ``(x, y, z)`` (free axes kept, constrained axes
+        derived; not reduced mod 1), and the per-axis constraint flags.
     """
     rot, trans = _parse_rotation_matrix(coord_template)
     rot_float = rot.astype(float)
@@ -625,10 +633,11 @@ def detect_wyckoff_position(
     Detect the Wyckoff position a fractional coordinate occupies.
 
     Tests the coordinate for membership in every Wyckoff orbit of the
-    resolved space group and returns the matched position with its nearest
-    representative template. The winner is chosen by multiplicity
-    ascending, then residual ascending (the most special site first); a
-    rare same-multiplicity tie within ``tol`` is reported with a warning.
+    resolved space group and returns the matched position with its
+    nearest representative template. The winner is chosen by
+    multiplicity ascending, then residual ascending (the most special
+    site first); a rare same-multiplicity tie within ``tol`` is reported
+    with a warning.
 
     Parameters
     ----------
@@ -638,7 +647,7 @@ def detect_wyckoff_position(
         Coordinate-system code.
     fract_xyz : tuple[float, float, float]
         Fractional coordinate to classify.
-    tol : float, default _WYCKOFF_DETECTION_TOL
+    tol : float, default=_WYCKOFF_DETECTION_TOL
         Maximum residual for orbit membership.
 
     Returns
@@ -660,18 +669,25 @@ def detect_wyckoff_position(
         template, residual = _nearest_orbit_template(point, position['coords_xyz'])
         if residual <= tol:
             matches.append(
-                (int(position['multiplicity']), residual, letter, position['site_symmetry'], template),
+                (
+                    int(position['multiplicity']),
+                    residual,
+                    letter,
+                    position['site_symmetry'],
+                    template,
+                ),
             )
 
     if not matches:
         return None
-    matches.sort(key=lambda match: (match[0], match[1]))
+    matches.sort(key=operator.itemgetter(0, 1))
     multiplicity, _residual, letter, site_symmetry, template = matches[0]
     ties = [match for match in matches[1:] if match[0] == multiplicity]
     if ties:
         others = ', '.join(repr(match[2]) for match in ties)
         log.warning(
-            f"Wyckoff detection tie for {name_hm!r}: chose {letter!r} over {others} (same multiplicity)",
+            f'Wyckoff detection tie for {name_hm!r}: chose {letter!r} '
+            f'over {others} (same multiplicity)',
         )
     return WyckoffPosition(letter, multiplicity, site_symmetry, template)
 
@@ -683,7 +699,7 @@ def wyckoff_position_info(
     fract_xyz: tuple[float, float, float] | None = None,
 ) -> WyckoffPosition | None:
     """
-    Look up a known Wyckoff letter, optionally selecting a representative.
+    Look up a Wyckoff letter and optionally its representative.
 
     Parameters
     ----------
@@ -693,7 +709,7 @@ def wyckoff_position_info(
         Coordinate-system code.
     letter : str
         Wyckoff letter to look up.
-    fract_xyz : tuple[float, float, float] | None, default None
+    fract_xyz : tuple[float, float, float] | None, default=None
         When given, the nearest orbit representative for ``letter`` is
         selected as ``coord_template``; otherwise ``coord_template`` is
         ``None``.
@@ -718,7 +734,9 @@ def wyckoff_position_info(
     if fract_xyz is not None:
         point = np.asarray(fract_xyz, dtype=float) % 1.0
         template, _residual = _nearest_orbit_template(point, position['coords_xyz'])
-    return WyckoffPosition(letter, int(position['multiplicity']), position['site_symmetry'], template)
+    return WyckoffPosition(
+        letter, int(position['multiplicity']), position['site_symmetry'], template
+    )
 
 
 def space_group_wyckoff_table(name_hm: str, coord_code: str | None) -> dict[str, dict] | None:
@@ -736,8 +754,8 @@ def space_group_wyckoff_table(name_hm: str, coord_code: str | None) -> dict[str,
     -------
     dict[str, dict] | None
         Mapping of Wyckoff letter to its ``multiplicity``,
-        ``site_symmetry``, and ``coords_xyz`` record, or ``None`` when the
-        space group is absent from ``SPACE_GROUPS``.
+        ``site_symmetry``, and ``coords_xyz`` record, or ``None`` when
+        the space group is absent from ``SPACE_GROUPS``.
     """
     it_number = get_it_number_by_name_hm_short(name_hm)
     if it_number is None:

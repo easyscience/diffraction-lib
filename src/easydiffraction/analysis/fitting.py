@@ -378,9 +378,9 @@ class Fitter:
         # Update categories to reflect new parameter values
         # Order matters: structures first (symmetry, structure),
         # then analysis (constraints), then experiments (calculations).
-        # Pass called_by_minimizer so the per-iteration Wyckoff snap runs
-        # silently (no re-detection or warnings); detection already ran at
-        # fit setup.
+        # Pass called_by_minimizer so the per-iteration Wyckoff snap
+        # runs silently (no re-detection or warnings); detection
+        # already ran at fit setup.
         for structure in structures:
             structure._update_categories(called_by_minimizer=True)
 

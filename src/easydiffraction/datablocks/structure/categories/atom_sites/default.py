@@ -51,8 +51,8 @@ class AtomSite(CategoryItem):
         # (e.g. create() before the atom is added); the update flow then
         # validates it once the parent structure is available.
         self._wyckoff_letter_needs_validation = False
-        # Wyckoff-detection baselines (None until first detection); compared
-        # in the update flow to decide whether to re-detect.
+        # Wyckoff-detection baselines (None until first detection);
+        # compared in the update flow to decide whether to re-detect.
         self._wyckoff_coord_baseline: tuple[float, float, float] | None = None
         self._wyckoff_key_baseline: tuple[str, str | None] | None = None
 
@@ -239,8 +239,8 @@ class AtomSite(CategoryItem):
         Returns
         -------
         list[str]
-            ``['', *letters]`` for a tabulated space group (empty first, so
-            an unset letter is valid); ``[]`` when there is no parent
+            ``['', *letters]`` for a tabulated space group (empty first,
+            so an unset letter is valid); ``[]`` when there is no parent
             context or the space group is untabulated.
         """
         space_group = self._resolve_structure_space_group()
@@ -508,11 +508,11 @@ class AtomSite(CategoryItem):
 
     def _set_wyckoff_letter_detected(self, letter: str) -> None:
         """
-        Set the auto-detected Wyckoff letter, bypassing membership validation.
+        Set the auto-detected Wyckoff letter, bypassing validation.
 
         Modelled on ``_set_value_from_minimizer``: detection supplies a
-        trusted letter, written directly rather than re-validated against
-        the (dynamic) allowed-letters set.
+        trusted letter, written directly rather than re-validated
+        against the (dynamic) allowed-letters set.
         """
         self._wyckoff_letter._set_value_from_minimizer(letter)
 
@@ -622,9 +622,11 @@ class AtomSites(CategoryCollection):
     #  Private helper methods
     # ------------------------------------------------------------------
 
-    def _apply_atomic_coordinates_symmetry_constraints(self, *, called_by_minimizer: bool = False) -> None:
+    def _apply_atomic_coordinates_symmetry_constraints(
+        self, *, called_by_minimizer: bool = False
+    ) -> None:
         """
-        Detect Wyckoff letters and snap fractional coordinates to symmetry.
+        Detect Wyckoff letters and snap coordinates to symmetry.
 
         For each atom: resolve any pending no-context Wyckoff letter;
         (re)detect the letter when it is empty or the coordinates /
@@ -637,8 +639,8 @@ class AtomSites(CategoryCollection):
         Parameters
         ----------
         called_by_minimizer : bool, default=False
-            When True (per fit iteration), skip re-detection and warnings;
-            only the silent coordinate snap runs.
+            When True (per fit iteration), skip re-detection and
+            warnings; only the silent coordinate snap runs.
         """
         structure = self._parent
         name_hm = structure.space_group.name_h_m.value
@@ -648,13 +650,19 @@ class AtomSites(CategoryCollection):
             if atom._wyckoff_letter_needs_validation:
                 self._resolve_pending_wyckoff_letter(atom, name_hm)
             if supported:
-                self._detect_and_snap_atom(atom, name_hm, coord_code, called_by_minimizer=called_by_minimizer)
+                self._detect_and_snap_atom(
+                    atom, name_hm, coord_code, called_by_minimizer=called_by_minimizer
+                )
             else:
-                self._mark_atom_untabulated(atom, (name_hm, coord_code), called_by_minimizer=called_by_minimizer)
+                self._mark_atom_untabulated(
+                    atom, (name_hm, coord_code), called_by_minimizer=called_by_minimizer
+                )
 
     @staticmethod
     def _resolve_pending_wyckoff_letter(atom: AtomSite, name_hm: str) -> None:
-        """Validate a deferred no-context Wyckoff letter; raise if invalid."""
+        """
+        Validate a deferred no-context Wyckoff letter; raise if invalid.
+        """
         stored = atom.wyckoff_letter.value
         allowed = atom._wyckoff_letter_allowed_values
         if allowed and stored not in allowed:
@@ -691,20 +699,23 @@ class AtomSites(CategoryCollection):
         *,
         called_by_minimizer: bool,
     ) -> None:
-        """Detect (if triggered) and snap one atom to its Wyckoff position."""
+        """
+        Detect (if triggered) and snap one atom to its Wyckoff position.
+        """
         key = (name_hm, coord_code)
         letter_before = atom.wyckoff_letter.value
         coords = (atom.fract_x.value, atom.fract_y.value, atom.fract_z.value)
-        # A ``None`` baseline marks the first population (create/load), not a
-        # later edit. Treat coordinates or the space-group key as "changed"
-        # only against an existing baseline, so an explicit initial letter is
-        # preserved (routed to ``wyckoff_position_info`` below) instead of
-        # being overwritten by all-letter detection. The ADR requires a
-        # user-supplied letter to persist until a genuine later coordinate or
-        # space-group-key edit.
+        # A ``None`` baseline marks the first population
+        # (create/load), not a later edit. Treat coordinates or the
+        # space-group key as "changed" only against an existing
+        # baseline, so an explicit initial letter is preserved (routed
+        # to ``wyckoff_position_info`` below) instead of being
+        # overwritten by all-letter detection. The ADR requires a
+        # user-supplied letter to persist until a genuine later
+        # coordinate or space-group-key edit.
         coords_changed = atom._wyckoff_coord_baseline is not None and any(
             abs(a - b) > ecr._WYCKOFF_DETECTION_TOL
-            for a, b in zip(coords, atom._wyckoff_coord_baseline)
+            for a, b in zip(coords, atom._wyckoff_coord_baseline, strict=True)
         )
         key_changed = atom._wyckoff_key_baseline is not None and atom._wyckoff_key_baseline != key
         detect = (not called_by_minimizer) and (not letter_before or coords_changed or key_changed)
@@ -718,7 +729,9 @@ class AtomSites(CategoryCollection):
             if position is not None:
                 atom._set_wyckoff_letter_detected(position.letter)
         elif letter_before:
-            position = ecr.wyckoff_position_info(name_hm, coord_code, letter_before, fract_xyz=coords)
+            position = ecr.wyckoff_position_info(
+                name_hm, coord_code, letter_before, fract_xyz=coords
+            )
         else:
             position = None
 
@@ -737,7 +750,9 @@ class AtomSites(CategoryCollection):
         atom._fract_x._set_symmetry_constrained(value=flags['fract_x'])
         atom._fract_y._set_symmetry_constrained(value=flags['fract_y'])
         atom._fract_z._set_symmetry_constrained(value=flags['fract_z'])
-        moved = any(abs(s - c) > ecr._WYCKOFF_DETECTION_TOL for s, c in zip(snapped, coords))
+        moved = any(
+            abs(s - c) > ecr._WYCKOFF_DETECTION_TOL for s, c in zip(snapped, coords, strict=True)
+        )
         if moved and not called_by_minimizer:
             if not detect:
                 log.warning(
@@ -840,10 +855,12 @@ class AtomSites(CategoryCollection):
         Parameters
         ----------
         called_by_minimizer : bool, default=False
-            Whether the update was triggered by the fitting minimizer. When
-            True, Wyckoff re-detection and warnings are skipped; only the
-            silent coordinate snap runs.
+            Whether the update was triggered by the fitting minimizer.
+            When True, Wyckoff re-detection and warnings are skipped;
+            only the silent coordinate snap runs.
         """
-        self._apply_atomic_coordinates_symmetry_constraints(called_by_minimizer=called_by_minimizer)
+        self._apply_atomic_coordinates_symmetry_constraints(
+            called_by_minimizer=called_by_minimizer
+        )
         self._apply_adp_symmetry_constraints()
         self._sync_iso_from_aniso()
