@@ -314,7 +314,7 @@ The ADR commit + design-phase review/reply cleanup are handled by
       "needs context validation" marker instead of treating missing
       context as an unsupported group. Commit:
       `Derive allowed Wyckoff letters from the space group`
-- [ ] **P1.6 — Detection triggers in the atom-site update flow.** In
+- [x] **P1.6 — Detection triggers in the atom-site update flow.** In
       `_update(*, called_by_minimizer=False)`, implement fill-if-empty,
       re-detect-on-coordinate-change, and re-detect-on-space-group-key
       change with per-atom coordinate and `(name_hm, coord_code)`
@@ -343,7 +343,7 @@ The ADR commit + design-phase review/reply cleanup are handled by
       `structure.space_group_wyckoff`, not from `AtomSite`. Commit:
       `Detect and track Wyckoff letters in the update flow`
 
-  _P1.6 implementation decisions (in progress):_
+  _P1.6 implementation decisions (implemented):_
 
   - **Snap = slot-aware free-parameter-solving**
     (`crystallography.snap_to_wyckoff_template`, already committed): solve

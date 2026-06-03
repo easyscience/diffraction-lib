@@ -30,6 +30,7 @@ from easydiffraction.crystallography import crystallography as ecr
 from easydiffraction.datablocks.structure.categories.atom_sites.enums import AdpTypeEnum
 from easydiffraction.datablocks.structure.categories.atom_sites.factory import AtomSitesFactory
 from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.utils.logging import log
 
 
 class AtomSite(CategoryItem):
@@ -50,6 +51,10 @@ class AtomSite(CategoryItem):
         # (e.g. create() before the atom is added); the update flow then
         # validates it once the parent structure is available.
         self._wyckoff_letter_needs_validation = False
+        # Wyckoff-detection baselines (None until first detection); compared
+        # in the update flow to decide whether to re-detect.
+        self._wyckoff_coord_baseline: tuple[float, float, float] | None = None
+        self._wyckoff_key_baseline: tuple[str, str | None] | None = None
 
         self._label = StringDescriptor(
             name='label',
@@ -617,47 +622,129 @@ class AtomSites(CategoryCollection):
     #  Private helper methods
     # ------------------------------------------------------------------
 
-    def _apply_atomic_coordinates_symmetry_constraints(self) -> None:
+    def _apply_atomic_coordinates_symmetry_constraints(self, *, called_by_minimizer: bool = False) -> None:
         """
-        Apply symmetry rules to fractional coordinates of every site.
+        Detect Wyckoff letters and snap fractional coordinates to symmetry.
 
-        Uses the parent structure's space-group symbol, IT coordinate
-        system code and each atom's Wyckoff letter.  Atoms without a
-        Wyckoff letter are silently skipped. Coordinates fully
-        determined by site symmetry are flagged as
-        ``symmetry_constrained`` so they cannot be marked refinable.
+        For each atom: resolve any pending no-context Wyckoff letter;
+        (re)detect the letter when it is empty or the coordinates /
+        space-group key changed (skipped under a minimizer); snap
+        coordinates to the selected orbit representative; and record the
+        multiplicity and constrained-axis flags. Atoms in an untabulated
+        space group keep their stored letter unvalidated, with no
+        multiplicity or constraints.
+
+        Parameters
+        ----------
+        called_by_minimizer : bool, default=False
+            When True (per fit iteration), skip re-detection and warnings;
+            only the silent coordinate snap runs.
         """
         structure = self._parent
-        space_group_name = structure.space_group.name_h_m.value
-        space_group_coord_code = structure.space_group.it_coordinate_system_code.value
+        name_hm = structure.space_group.name_h_m.value
+        coord_code = structure.space_group.it_coordinate_system_code.value
+        supported = ecr.space_group_wyckoff_table(name_hm, coord_code) is not None
         for atom in self._items:
-            wl = atom.wyckoff_letter.value
-            if not wl:
-                # TODO: Decide how to handle this case
-                self._clear_fract_symmetry_constrained(atom)
-                continue
-            dummy_atom = {
-                'fract_x': atom.fract_x.value,
-                'fract_y': atom.fract_y.value,
-                'fract_z': atom.fract_z.value,
-            }
-            ecr.apply_atom_site_symmetry_constraints(
-                atom_site=dummy_atom,
-                name_hm=space_group_name,
-                coord_code=space_group_coord_code,
-                wyckoff_letter=wl,
+            if atom._wyckoff_letter_needs_validation:
+                self._resolve_pending_wyckoff_letter(atom, name_hm)
+            if supported:
+                self._detect_and_snap_atom(atom, name_hm, coord_code, called_by_minimizer=called_by_minimizer)
+            else:
+                self._mark_atom_untabulated(atom, (name_hm, coord_code), called_by_minimizer=called_by_minimizer)
+
+    @staticmethod
+    def _resolve_pending_wyckoff_letter(atom: AtomSite, name_hm: str) -> None:
+        """Validate a deferred no-context Wyckoff letter; raise if invalid."""
+        stored = atom.wyckoff_letter.value
+        allowed = atom._wyckoff_letter_allowed_values
+        if allowed and stored not in allowed:
+            msg = (
+                f'Invalid Wyckoff letter {stored!r} for space group '
+                f'{name_hm!r}; allowed letters: {allowed}'
             )
-            constrained_flags = ecr.atom_site_symmetry_constrained_flags(
-                name_hm=space_group_name,
-                coord_code=space_group_coord_code,
-                wyckoff_letter=wl,
+            raise ValueError(msg)
+        atom._wyckoff_letter_needs_validation = False
+
+    def _mark_atom_untabulated(
+        self,
+        atom: AtomSite,
+        key: tuple[str, str | None],
+        *,
+        called_by_minimizer: bool,
+    ) -> None:
+        """Handle an atom whose space group is absent from the table."""
+        atom._multiplicity.value = None
+        self._clear_fract_symmetry_constrained(atom)
+        if atom.wyckoff_letter.value and not called_by_minimizer:
+            log.warning(
+                f'Wyckoff letter of {atom.label.value} is stored but not '
+                f'validated because the space group is untabulated'
             )
-            atom.fract_x.value = dummy_atom['fract_x']
-            atom.fract_y.value = dummy_atom['fract_y']
-            atom.fract_z.value = dummy_atom['fract_z']
-            atom._fract_x._set_symmetry_constrained(value=constrained_flags['fract_x'])
-            atom._fract_y._set_symmetry_constrained(value=constrained_flags['fract_y'])
-            atom._fract_z._set_symmetry_constrained(value=constrained_flags['fract_z'])
+        atom._wyckoff_coord_baseline = (atom.fract_x.value, atom.fract_y.value, atom.fract_z.value)
+        atom._wyckoff_key_baseline = key
+
+    def _detect_and_snap_atom(
+        self,
+        atom: AtomSite,
+        name_hm: str,
+        coord_code: str | None,
+        *,
+        called_by_minimizer: bool,
+    ) -> None:
+        """Detect (if triggered) and snap one atom to its Wyckoff position."""
+        key = (name_hm, coord_code)
+        letter_before = atom.wyckoff_letter.value
+        coords = (atom.fract_x.value, atom.fract_y.value, atom.fract_z.value)
+        coords_changed = atom._wyckoff_coord_baseline is None or any(
+            abs(a - b) > ecr._WYCKOFF_DETECTION_TOL
+            for a, b in zip(coords, atom._wyckoff_coord_baseline)
+        )
+        detect = (not called_by_minimizer) and (
+            not letter_before or coords_changed or atom._wyckoff_key_baseline != key
+        )
+        if detect:
+            position = ecr.detect_wyckoff_position(name_hm, coord_code, coords)
+            if position is not None and letter_before and position.letter != letter_before:
+                log.warning(
+                    f'change moved the Wyckoff letter of {atom.label.value} '
+                    f'from {letter_before} to {position.letter}'
+                )
+            if position is not None:
+                atom._set_wyckoff_letter_detected(position.letter)
+        elif letter_before:
+            position = ecr.wyckoff_position_info(name_hm, coord_code, letter_before, fract_xyz=coords)
+        else:
+            position = None
+
+        if position is None or position.coord_template is None:
+            atom._multiplicity.value = None
+            self._clear_fract_symmetry_constrained(atom)
+            atom._wyckoff_coord_baseline = coords
+            atom._wyckoff_key_baseline = key
+            return
+
+        atom._multiplicity.value = position.multiplicity
+        snapped, flags = ecr.snap_to_wyckoff_template(position.coord_template, coords)
+        atom.fract_x.value = snapped[0]
+        atom.fract_y.value = snapped[1]
+        atom.fract_z.value = snapped[2]
+        atom._fract_x._set_symmetry_constrained(value=flags['fract_x'])
+        atom._fract_y._set_symmetry_constrained(value=flags['fract_y'])
+        atom._fract_z._set_symmetry_constrained(value=flags['fract_z'])
+        moved = any(abs(s - c) > ecr._WYCKOFF_DETECTION_TOL for s, c in zip(snapped, coords))
+        if moved and not called_by_minimizer:
+            if not detect:
+                log.warning(
+                    f'coordinates of {atom.label.value} did not fit letter '
+                    f'{position.letter} and were adjusted'
+                )
+            elif letter_before and position.letter == letter_before:
+                log.warning(
+                    f'coordinates of {atom.label.value} were adjusted to satisfy '
+                    f'Wyckoff letter {position.letter}'
+                )
+        atom._wyckoff_coord_baseline = snapped
+        atom._wyckoff_key_baseline = key
 
     @staticmethod
     def _clear_fract_symmetry_constrained(atom: AtomSite) -> None:
@@ -747,11 +834,10 @@ class AtomSites(CategoryCollection):
         Parameters
         ----------
         called_by_minimizer : bool, default=False
-            Whether the update was triggered by the fitting minimizer.
-            Currently unused.
+            Whether the update was triggered by the fitting minimizer. When
+            True, Wyckoff re-detection and warnings are skipped; only the
+            silent coordinate snap runs.
         """
-        del called_by_minimizer
-
-        self._apply_atomic_coordinates_symmetry_constraints()
+        self._apply_atomic_coordinates_symmetry_constraints(called_by_minimizer=called_by_minimizer)
         self._apply_adp_symmetry_constraints()
         self._sync_iso_from_aniso()
