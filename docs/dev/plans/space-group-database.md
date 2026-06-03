@@ -434,15 +434,24 @@ only ignored files, and no empty commits.
       byte-identical). The tool is local tooling (recorded by SHA in CT4);
       **this commit stages only the regenerated `space_groups.json.gz`**.
       Commit: `Canonicalize space-group coords_xyz templates`
-- [x] **CT2 — Fix the generator's coords source for future rebuilds
-      (local prep, no commit).** Update the local
-      `tmp/space-groups/helper-tools/generate_space_groups.py` so
-      `_extract_wyckoff_positions` sources `coords_xyz` from cryspy's
-      canonical `wyckoff.dat` (not cctbx `unique_ops`), plus a
-      generation-time invariant rejecting operator-form leakage, so a
-      future rebuild stays canonical. **No re-run now** (CT1's
-      post-process already produced the canonical DB). Local curation
-      tooling — not committed; its updated SHA-256 is recorded in CT4.
+- [x] **CT2 — Make the durable rebuild path two-stage with an
+      invariant-enforcing post-process (local prep, no commit).** The
+      generator (`generate_space_groups.py`) runs in a throwaway
+      cctbx-only env, and cctbx **always** emits operator-form coords for
+      coupled positions — so the generator cannot itself source canonical
+      coords or self-assert a no-operator-form invariant (the canonical
+      spelling lives in cryspy's `wyckoff.dat`, and the constraint check
+      needs `easydiffraction`, i.e. the project env). The durable rebuild
+      path is therefore **two mandatory stages**: (1) the generator
+      (cctbx env), then (2) `canonicalize_coords.py --write` (project
+      env), which is the **invariant-enforcing step** — it re-sources
+      canonical ITA coords, verifies each exactly, and refuses to write
+      unless every template is canonical (no operator form, no fractional
+      coefficient). The generator's `_extract_wyckoff_positions` docstring
+      directs to this mandatory post-process and the ADR _Build
+      Provenance_ documents both stages (review-1 [Finding 1]). **No
+      re-run now** (CT1 already produced the canonical DB). Local curation
+      tooling — not committed; its SHA-256 is recorded in CT4.
 - [x] **CT3 — Packaging assertion.** Extend the tracked
       `tools/check_packaged_db.py` to assert no packaged `coords_xyz`
       template is operator-form (catches future regression at the wheel

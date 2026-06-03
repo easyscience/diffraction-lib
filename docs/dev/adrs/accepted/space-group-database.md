@@ -432,10 +432,17 @@ pixi exec --spec cctbx --spec gemmi --spec sympy --spec pyyaml \
   --print-summary
 ```
 
-**Canonical-`coords_xyz` correction (§9).** The run above emits cctbx
-operator-form `coords_xyz` for coupled special positions. The
-canonical-templates post-process then re-sources canonical ITA
-`coords_xyz` from cryspy's `wyckoff.dat`:
+**Canonical-`coords_xyz` correction (§9) — mandatory second stage.**
+The rebuild has **two mandatory stages**, and the generator run above is
+only the first. The generator emits cctbx operator-form `coords_xyz` for
+coupled special positions and **cannot** emit canonical form itself:
+cctbx always produces operator form, and the canonical ITA spelling lives
+in cryspy's `wyckoff.dat`. The generator alone therefore does **not**
+produce a shippable database. It **must** be followed by the
+canonicalization post-process, which is the **invariant-enforcing step**
+— it re-sources canonical ITA `coords_xyz` from cryspy's `wyckoff.dat`
+and refuses to write unless every template is canonical (no operator
+form, no fractional coefficient):
 
 ```bash
 python tmp/space-groups/helper-tools/canonicalize_coords.py --write
