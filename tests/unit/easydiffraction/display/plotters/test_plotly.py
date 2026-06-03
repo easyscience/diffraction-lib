@@ -885,7 +885,7 @@ def test_plot_powder_meas_vs_calc_uses_explicit_plotly_height_as_pixels(monkeypa
             x=np.array([1.0, 2.0, 3.0]),
             y_meas=np.array([10.0, 12.0, 11.0]),
             y_calc=np.array([9.0, 11.0, 10.5]),
-            y_resid=None,
+            y_resid=np.array([1.0, 1.0, 0.5]),
             bragg_tick_sets=(
                 BraggTickSet(
                     phase_id='phase-a',
@@ -905,7 +905,72 @@ def test_plot_powder_meas_vs_calc_uses_explicit_plotly_height_as_pixels(monkeypa
         ),
     )
 
+    # A full main + Bragg + residual composite renders at exactly the
+    # explicit height; reduced layouts derive a smaller height instead.
     assert captured['fig'].layout.height == 800
+
+
+def test_plot_powder_meas_vs_calc_keeps_top_and_bottom_rows_fixed(monkeypatch):
+    """Top and residual rows keep a fixed pixel height."""
+    import easydiffraction.display.plotters.plotly as pp
+
+    from easydiffraction.display.plotters.base import BraggTickSet
+    from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
+
+    captured = {}
+
+    def fake_show_figure(self, fig):
+        captured.setdefault('figures', []).append(fig)
+
+    monkeypatch.setattr(pp.PlotlyPlotter, '_show_figure', fake_show_figure)
+
+    bragg_tick_sets = (
+        BraggTickSet(
+            phase_id='phase-a',
+            x=np.array([1.5]),
+            h=np.array([1]),
+            k=np.array([0]),
+            ell=np.array([1]),
+            f_squared_calc=np.array([100.0]),
+            f_calc=np.array([10.0]),
+        ),
+    )
+
+    def plot_spec(*, with_bragg: bool, with_residual: bool) -> PowderMeasVsCalcSpec:
+        return PowderMeasVsCalcSpec(
+            x=np.array([1.0, 2.0, 3.0]),
+            y_meas=np.array([10.0, 12.0, 11.0]),
+            y_calc=np.array([9.0, 11.0, 10.5]),
+            y_resid=np.array([1.0, 1.0, 0.5]) if with_residual else None,
+            bragg_tick_sets=bragg_tick_sets if with_bragg else (),
+            axes_labels=['2θ (deg)', 'Intensity (arb. units)'],
+            title='Powder',
+            residual_height_fraction=0.25,
+            bragg_peaks_height_fraction=0.10,
+            height=None,
+        )
+
+    plotter = pp.PlotlyPlotter()
+    plotter.plot_powder_meas_vs_calc(plot_spec=plot_spec(with_bragg=True, with_residual=True))
+    plotter.plot_powder_meas_vs_calc(plot_spec=plot_spec(with_bragg=True, with_residual=False))
+    plotter.plot_powder_meas_vs_calc(plot_spec=plot_spec(with_bragg=False, with_residual=True))
+    plotter.plot_powder_meas_vs_calc(plot_spec=plot_spec(with_bragg=False, with_residual=False))
+
+    full, main_bragg, main_resid, main_only = captured['figures']
+
+    def row_pixels(fig, axis_name: str) -> float:
+        axis = getattr(fig.layout, axis_name)
+        plot_area_height = fig.layout.height - fig.layout.margin.t - fig.layout.margin.b
+        return plot_area_height * (axis.domain[1] - axis.domain[0])
+
+    # The top (main) row keeps the same pixel height in every layout.
+    assert row_pixels(main_bragg, 'yaxis') == pytest.approx(row_pixels(full, 'yaxis'))
+    assert row_pixels(main_resid, 'yaxis') == pytest.approx(row_pixels(full, 'yaxis'))
+    assert row_pixels(main_only, 'yaxis') == pytest.approx(row_pixels(full, 'yaxis'))
+    # The residual row keeps its height whether or not Bragg shows.
+    assert row_pixels(main_resid, 'yaxis2') == pytest.approx(row_pixels(full, 'yaxis3'))
+    # Hiding rows shrinks the figure instead of stretching the top row.
+    assert main_only.layout.height < main_resid.layout.height < full.layout.height
 
 
 def test_plot_powder_meas_vs_calc_skips_bragg_row_when_no_ticks(monkeypatch):
