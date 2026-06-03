@@ -325,8 +325,16 @@ The ADR commit + design-phase review/reply cleanup are handled by
       stored letter. For supported keys, refresh letter, multiplicity,
       and selected representative; for unsupported keys, preserve stored
       letters as unvalidated values, set multiplicity to `None`, skip
-      constraints, and warn. Use the selected `coord_template` for
-      snapping and constrained-axis flags. Warn when coordinate or
+      constraints, and warn. Snap by **solving the free parameters** —
+      least-squares project the coordinate onto the selected
+      `coord_template`'s manifold, then set every axis to that manifold
+      point — so centering copies and off-canonical-slot representatives
+      (e.g. 6e `(0,x,0)`) snap correctly; derive constrained-axis flags
+      from the same representative. This free-parameter-solving snap
+      **replaces the positional `_apply_fract_constraints` substitution**
+      (a deliberate deviation from ADR §5's "existing constraint step",
+      decided during P1.1; reflect it in ADR §5 at the P1.9 promotion).
+      Warn when coordinate or
       supported space-group edits move the letter, when a user
       letter-set snaps coordinates, and when a same-letter coordinate
       edit snaps coordinates. Honour `called_by_minimizer=True`;
