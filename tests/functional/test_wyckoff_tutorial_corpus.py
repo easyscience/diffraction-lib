@@ -25,18 +25,15 @@ def _string_assignment(tree, attr_name):
     Returns ``None`` when the attribute is assigned zero or several
     times, so callers can skip ambiguous (multi-structure) tutorials.
     """
-    values = []
-    for node in ast.walk(tree):
-        if not isinstance(node, ast.Assign):
-            continue
-        for target in node.targets:
-            if (
-                isinstance(target, ast.Attribute)
-                and target.attr == attr_name
-                and isinstance(node.value, ast.Constant)
-                and isinstance(node.value.value, str)
-            ):
-                values.append(node.value.value)
+    values = [
+        node.value.value
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Assign)
+        and isinstance(node.value, ast.Constant)
+        and isinstance(node.value.value, str)
+        for target in node.targets
+        if isinstance(target, ast.Attribute) and target.attr == attr_name
+    ]
     if len(values) == 1:
         return values[0]
     return None

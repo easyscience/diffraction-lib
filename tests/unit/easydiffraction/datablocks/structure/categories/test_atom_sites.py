@@ -331,7 +331,7 @@ class TestAtomSiteWyckoffDetection:
 
         structure = self._structure()
         structure.atom_sites.create(label='Z', type_symbol='O', adp_iso=0.5, wyckoff_letter='z')
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match='Invalid Wyckoff letter'):
             structure._update_categories()
 
     def test_same_letter_edit_snaps_off_orbit_coordinate(self):

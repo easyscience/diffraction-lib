@@ -29,7 +29,7 @@ class WyckoffPosition:
     """
     A resolved Wyckoff position and the orbit representative matched.
 
-    Parameters
+    Attributes
     ----------
     letter : str
         Wyckoff letter (e.g. ``'h'``).

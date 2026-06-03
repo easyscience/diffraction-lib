@@ -86,15 +86,15 @@ class TestReadOnly:
         structure = _cubic_structure()
         wy = structure.space_group_wyckoff
         row = wy['1a']
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match='read-only'):
             wy.add(row)
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match='read-only'):
             wy.create()
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match='read-only'):
             wy.remove('1a')
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match='read-only'):
             wy['1a'] = row
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match='read-only'):
             del wy['1a']
 
     def test_from_cif_ignores_incoming_loop(self):
@@ -103,7 +103,7 @@ class TestReadOnly:
         from easydiffraction.datablocks.structure.item.factory import StructureFactory
 
         cif = (
-            "data_x\n"
+            'data_x\n'
             "_space_group.name_H-M_alt 'P m -3 m'\n"
             '_space_group.IT_coordinate_system_code 1\n'
             'loop_\n'
