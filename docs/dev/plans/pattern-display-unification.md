@@ -98,7 +98,7 @@ composite path (`build_powder_meas_vs_calc_figure`):
   explicit main-panel height and tight `(min,max)` x-range. Fixes
   issues #1 and #2.
   Commit: `Match single-panel pattern height and x-range to composite`
-- [ ] **P1.2 — Drop `include`; always render available content.**
+- [x] **P1.2 — Drop `include`; always render available content.**
   Rewrite `pattern()`; remove the selection/validation/discovery
   layer; always-shade excluded. Fixes issue #3.
   Commit: `Always render available pattern content; drop include`
