@@ -23,7 +23,12 @@ from easydiffraction.io.cif.handler import CifHandler
 
 
 class TofGaussianBroadeningMixin:
-    """TOF Gaussian broadening parameters σ₀, σ₁, σ₂."""
+    """
+    TOF Gaussian broadening parameters σ₀, σ₁, σ₂.
+
+    The constant term σ₀ defaults nonzero so every TOF profile has a
+    finite peak width out of the box; σ₁ and σ₂ default to 0.
+    """
 
     def __init__(self) -> None:
         super().__init__()
@@ -37,7 +42,7 @@ class TofGaussianBroadeningMixin:
                 latex_units=r'$\mu\mathrm{s}^2$',
             ),
             value_spec=AttributeSpec(
-                default=0.0,
+                default=7.0,
                 validator=RangeValidator(),
             ),
             cif_handler=CifHandler(
@@ -230,6 +235,9 @@ class TofBackToBackExponentialMixin:
 
     Rise parameters α₀, α₁ and decay parameters β₀, β₁ follow Von
     Dreele, Jorgensen & Windsor, J. Appl. Cryst. 15, 581 (1982).
+
+    The rise α₁ and decay β₀ default nonzero so the profile is
+    normalisable and the peak is visible; refine per instrument.
     """
 
     def __init__(self) -> None:
@@ -244,7 +252,7 @@ class TofBackToBackExponentialMixin:
                 latex_units=r'$\mu\mathrm{s}$',
             ),
             value_spec=AttributeSpec(
-                default=0.01,
+                default=0.0,
                 validator=RangeValidator(),
             ),
             cif_handler=CifHandler(
@@ -261,7 +269,7 @@ class TofBackToBackExponentialMixin:
                 latex_units=r'$\mu\mathrm{s}/\mathrm{\AA}$',
             ),
             value_spec=AttributeSpec(
-                default=0.02,
+                default=0.2,
                 validator=RangeValidator(),
             ),
             cif_handler=CifHandler(
@@ -278,7 +286,7 @@ class TofBackToBackExponentialMixin:
                 latex_units=r'$\mu\mathrm{s}$',
             ),
             value_spec=AttributeSpec(
-                default=0.0,
+                default=0.04,
                 validator=RangeValidator(),
             ),
             cif_handler=CifHandler(
@@ -368,6 +376,9 @@ class TofDoubleExponentialMixin:
     Rise parameters α₁, α₂, decay parameters β₀₀, β₀₁, β₁₀ for two
     exponential regimes, and switching-function parameters r₀₁, r₀₂,
     r₀₃.
+
+    α₁, β₀₀, β₁₀ and r₀₁ default nonzero so both regimes stay finite and
+    blended; an all-zero set produces NaN. Refine per instrument.
     """
 
     def __init__(self) -> None:
@@ -382,7 +393,7 @@ class TofDoubleExponentialMixin:
                 latex_units=r'$\mu\mathrm{s}$',
             ),
             value_spec=AttributeSpec(
-                default=0.0,
+                default=0.25,
                 validator=RangeValidator(),
             ),
             cif_handler=CifHandler(
@@ -416,7 +427,7 @@ class TofDoubleExponentialMixin:
                 latex_units=r'$\mu\mathrm{s}$',
             ),
             value_spec=AttributeSpec(
-                default=0.0,
+                default=4.0,
                 validator=RangeValidator(),
             ),
             cif_handler=CifHandler(
@@ -450,7 +461,7 @@ class TofDoubleExponentialMixin:
                 latex_units=r'$\mu\mathrm{s}$',
             ),
             value_spec=AttributeSpec(
-                default=0.0,
+                default=2.0,
                 validator=RangeValidator(),
             ),
             cif_handler=CifHandler(
@@ -463,7 +474,7 @@ class TofDoubleExponentialMixin:
             description='Double-exp switching function r₀₁',
             units='none',
             value_spec=AttributeSpec(
-                default=0.0,
+                default=0.5,
                 validator=RangeValidator(),
             ),
             cif_handler=CifHandler(
