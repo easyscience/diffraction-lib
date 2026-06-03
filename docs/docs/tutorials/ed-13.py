@@ -145,10 +145,10 @@ project_1.experiments.add_from_data_path(
 # for more details about the measured data and its format.
 #
 # To visualize the measured data, we can use the `pattern` method of
-# the project's `display` facade with `include='measured'`.
+# the project's `display` facade.
 
 # %%
-project_1.display.pattern(expt_name='sim_si', include='measured')
+project_1.display.pattern(expt_name='sim_si')
 
 # %% [markdown]
 # If you zoom in on the highest TOF peak (around 120,000 μs), you will
@@ -183,7 +183,7 @@ project_1.experiments['sim_si'].excluded_regions.create(id='2', start=105500, en
 # the plot and is not used in the fitting process.
 
 # %%
-project_1.display.pattern(expt_name='sim_si', include=('measured', 'excluded'))
+project_1.display.pattern(expt_name='sim_si')
 
 # %% [markdown]
 # #### Set Instrument
@@ -798,12 +798,12 @@ project_2.experiments.add_from_data_path(
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2.display.pattern(expt_name='sim_lbco', include='measured')
+project_2.display.pattern(expt_name='sim_lbco')
 
 project_2.experiments['sim_lbco'].excluded_regions.create(id='1', start=0, end=55000)
 project_2.experiments['sim_lbco'].excluded_regions.create(id='2', start=105500, end=200000)
 
-project_2.display.pattern(expt_name='sim_lbco', include=('measured', 'excluded'))
+project_2.display.pattern(expt_name='sim_lbco')
 
 # %% [markdown]
 # #### Exercise 2.2: Set Instrument

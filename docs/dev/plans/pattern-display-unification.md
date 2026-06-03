@@ -105,7 +105,7 @@ composite path (`build_powder_meas_vs_calc_figure`):
 - [x] **P1.4 — Amend ADR and docs.** Update `display-ux.md`; drop stale
       `show_pattern_options` references. Commit:
       `Amend display-ux ADR for always-on pattern view`
-- [ ] **P1.5 — Update tutorials.** Remove `include=` from tutorial
+- [x] **P1.5 — Update tutorials.** Remove `include=` from tutorial
       sources; `pixi run notebook-prepare`. Commit:
       `Drop include= from tutorials for unified pattern view`
 - [ ] **P1.6 — Phase 1 review gate.** Commit:

@@ -111,7 +111,7 @@ project.display.fit.correlations()
 # ### Display Pattern
 
 # %%
-project.display.pattern(expt_name='nomad', include=('measured', 'calculated'))
+project.display.pattern(expt_name='nomad')
 
 # %% [markdown]
 # ## 💾 Save Project
