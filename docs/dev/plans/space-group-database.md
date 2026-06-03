@@ -26,7 +26,7 @@ This plan owns the ADR
 [`docs/dev/adrs/accepted/space-group-database.md`](../adrs/accepted/space-group-database.md)
 (drafted via `/draft-adr`, review cycle closed). It is a
 **prerequisite** for
-[`wyckoff-letter-detection`](../adrs/suggestions/wyckoff-letter-detection.md):
+[`wyckoff-letter-detection`](../adrs/accepted/wyckoff-letter-detection.md):
 this plan delivers the complete data; that feature delivers the
 `''`→`None` consumer handling so the triclinic groups use it.
 
@@ -272,3 +272,253 @@ flagged rows visible for later International Tables verification. The
 data now ships as transparent, inspectable JSON instead of an opaque
 binary pickle. Existing projects load unchanged; structures in the
 previously-missing groups now get correct symmetry handling.
+
+---
+
+## Follow-up phase: canonical Wyckoff `coords_xyz` templates
+
+_Added after #187 shipped — a second, standalone cycle of this ADR's
+implementation. It is the **prerequisite** that
+[`wyckoff-letter-detection`](../adrs/accepted/wyckoff-letter-detection.md)
+§10 / Decision 15 depends on and gates on at its P1.0, and it ships on
+its **own PR** (separate from #187). When implementing this phase, treat
+the `CT` checklist below as the active Phase 1 steps — the #187 Phase 1
+above is complete._
+
+### Status (this phase)
+
+- [x] Phase 1 — Implementation (data + tooling + docs)
+- [x] Phase 1 review gate
+- [x] Phase 2 — Verification (tests + checks)
+
+### Problem
+
+The bundled `space_groups.json.gz` stores cctbx **operator-form**
+`coords_xyz` — e.g. R-3m (IT 166) `h` is `(1/2*x-1/2*y,-1/2*x+1/2*y,z)`
+— for the coupled special positions (verified: 3826 templates; per the
+wyckoff plan's Decision 15, 288 positions across 117 IT numbers).
+`_fract_constrained_flags()` (`crystallography.py:221`) decides which
+axis is constrained purely by **which variable symbol is absent** from
+the representative: canonical `(x,-x,z)` has `y` absent → `fract_y`
+constrained → slaved to `-x`; but operator-form `(1/2*x-1/2*y,…)` makes
+**both `x` and `y` appear** → `fract_y` is wrongly "free" and the `y=-x`
+coupling is lost, so a refined special-position coordinate drifts off
+its symmetry site (the `ed-6` fit-3 → fit-4 regression).
+`_apply_fract_constraints()` (`:250`) and `_parse_rotation_matrix()`
+(`:350`, which does `int(coeff_str)`) share the same expectation. The
+constraint **code** is correct; only the **data** spelling is wrong.
+**Root cause:** the generator emitted cctbx operator-form `coords_xyz`
+for these positions instead of cryspy's canonical form; the ADR's
+intended Wyckoff source, cryspy's `wyckoff.dat`, already holds the
+canonical ITA form for them (verified — R-3m gives `(x,x,1/2)`,
+`(x,-x,1/2)`, …).
+
+### Decisions (this phase)
+
+1. **Produce canonical `coords_xyz` via a cctbx-free post-process that
+   re-sources from cryspy's `wyckoff.dat`.** The root cause is that the
+   generator's `_extract_wyckoff_positions` built `coords_xyz` from
+   cctbx (`position.unique_ops().as_xyz()`, operator form) while
+   cryspy's `wyckoff.dat` — the ADR's intended Wyckoff source — was read
+   only for count-validation. A Wyckoff orbit is a list of **distinct
+   point-functions** (one per equivalent site), not a set of manifolds.
+   A local tool loads the bundled DB and, for each operator-form
+   position, builds the **full** canonical orbit by **expanding** the
+   cryspy primitive orbit over the group's centering translations (the
+   identity-rotation symops): each cryspy primitive element shifted by
+   each centering vector yields one canonical full-orbit element. This
+   **preserves the full (centered) orbit** — `coords_xyz` length stays
+   equal to the multiplicity, matching the #187 baseline — with
+   **distinct** elements. (cctbx stores the full centered orbit; cryspy
+   lists only the **primitive** orbit, with centering implicit.)
+   Canonical form = each component a signed single free variable (or an
+   integer-coefficient ITA combination such as `x-y`) plus an optional
+   rational constant — **no fractional coefficient on a variable** —
+   with each genuine free DOF reduced to one canonical variable so
+   dependent axes' symbols are absent. _Rejected alternatives: (a)
+   replacing `coords_xyz` with cryspy's orbit **directly** silently
+   reduces centered orbits to primitive, breaking the
+   length-equals-multiplicity invariant (review-1 [Finding 2]); (b)
+   re-spelling each cctbx element by **column space** collapses distinct
+   point-functions sharing a manifold into **duplicate** templates
+   (review-2 [Finding 1]). The centering expansion avoids both. No cctbx
+   re-run is needed; fixing the generator + full cctbx re-run adds a
+   heavy install + reproducibility risk for the same cryspy↔cctbx
+   reconciliation._
+2. **Verify each replacement two ways** (review-1 [P1] plus the CT1
+   correctness gap): (a) **exact symbolic orbit equivalence** (`sympy`)
+   — the cryspy canonical orbit and the cctbx operator-form orbit
+   describe the same point set as rational affine forms, not merely
+   agree at sampled parameters; **and** (b) **constraint correctness** —
+   the canonical representative's free-symbol set produces the right
+   `_fract_constrained_flags()` (free-DOF count matches the orbit's true
+   dimensionality; dependent axes constrained). Orbit equivalence alone
+   is insufficient: a non-minimal form like `(x-y,-x+y,z)` would pass it
+   yet leave `fract_y` wrongly free. _Rejected alternative — a blind
+   `sympy` re-parametrise of the existing operator strings — risks
+   exactly that non-minimal failure mode and re-derives the ITA
+   convention cryspy already encodes._
+3. **No constraint-code change.** `_fract_constrained_flags()` /
+   `_apply_fract_constraints()` are correct as-is.
+4. **No new dependency, no cctbx.** The post-process uses `cryspy`'s
+   `wyckoff.dat` + `numpy`/`sympy` (already project deps); `cctbx` is
+   not used at all (it stays generation-only, relevant only if the
+   generator is ever fully re-run).
+5. **Guard the output:** the canonicalize post-process is the
+   invariant-enforcing step — it refuses to write unless every template
+   is canonical and the orbit is distinct — backed by a
+   `tools/check_packaged_db.py` assertion rejecting operator-form
+   leakage in the packaged wheel and a unit data-invariant over loaded
+   `SPACE_GROUPS`. (The generator stays cctbx extraction and cannot
+   self-assert this; see Decision 1 and CT2.)
+6. **Record it in the ADR:** add the canonical-`coords_xyz` invariant as
+   a decision and update _Build Provenance_ with the new DB SHA-256 and
+   the transform's SHA-256.
+
+### Open questions (this phase)
+
+- If any affected position cannot be canonicalised automatically, fall
+  back to a maintainer-curated entry in the existing
+  `space_groups_overrides.yaml` channel and record it. Not expected.
+
+### Concrete files likely to change (this phase)
+
+- `src/easydiffraction/crystallography/space_groups.json.gz` — rewritten
+  with canonical `coords_xyz`; all other fields unchanged.
+- `tmp/space-groups/helper-tools/canonicalize_coords.py` — **new**,
+  local ignored cctbx-free post-process: load DB → orbit-match each
+  position to cryspy's canonical orbit → verify (mod-1 orbit
+  membership + `_fract_constrained_flags`) → rewrite `coords_xyz` (all
+  other fields byte-identical).
+- `tmp/space-groups/helper-tools/generate_space_groups.py` — **local,
+  ignored**: stays cctbx extraction; it **cannot** self-canonicalize
+  (cctbx always emits operator form, and the canonical spelling + checks
+  need the project env — see CT2). Its `_extract_wyckoff_positions`
+  docstring directs to the mandatory `canonicalize_coords.py` second
+  stage. Not re-run now.
+- `docs/dev/adrs/accepted/space-group-database/space_groups_overrides.yaml`
+  — record any position the orbit match leaves ambiguous (curated vs
+  International Tables).
+- `tools/check_packaged_db.py` — assert no packaged `coords_xyz` is
+  operator-form.
+- `docs/dev/adrs/accepted/space-group-database.md` — canonical-form
+  invariant decision + updated _Build Provenance_.
+- Phase 2 tests:
+  - `tests/unit/easydiffraction/crystallography/test_space_groups.py`
+    (or `_coverage.py`) — data invariant: no `SPACE_GROUPS` `coords_xyz`
+    is operator-form.
+  - `tests/unit/easydiffraction/crystallography/test_crystallography.py`
+    (or `_coverage.py`) — coupled-position constraint regression: for
+    R-3m `h` (`(x,-x,z)`), `_fract_constrained_flags()` marks `fract_y`
+    constrained and `_apply_fract_constraints()` slaves it to `-fract_x`
+    after a `fract_x` edit (existing tests cover only all-fixed /
+    all-free sites).
+  - `ed-6` functional/script regression: the special-position fit stays
+    on-site across fit-3 → fit-4.
+
+### Implementation steps — canonical-templates phase
+
+Per-step commit discipline as in Phase 1, **with the same deliberate
+exception** that `tmp/space-groups/helper-tools/*` are local curation
+tooling, not branch deliverables (review-1 [P1]). The local transform
+and generator changes are therefore **not their own commits**: each
+tracked commit stages only the tracked deliverable it produces, and the
+local tools are recorded by SHA-256 in the ADR provenance (CT4). No step
+commits only ignored files, and no empty commits.
+
+- [x] **CT1 — Canonicalise the DB via the cctbx-free post-process.**
+      Finish the local
+      `tmp/space-groups/helper-tools/canonicalize_coords.py`: parse
+      cryspy `wyckoff.dat`, then build each operator-form position's
+      **full** canonical orbit by **expanding the cryspy primitive orbit
+      over the group's centering translations** (`coords_xyz` length
+      equals the multiplicity, all elements **distinct**). Verify per
+      position, **exactly** — `len(set) == multiplicity` (distinct full
+      orbit), no operator form, no fractional coefficient, correct
+      `_fract_constrained_flags()` (free-axis count equals the manifold
+      rank), and parametrization-independent geometric equivalence to
+      the cctbx orbit. Curate against International Tables any case the
+      cryspy match leaves ambiguous, recording it in
+      `space_groups_overrides.yaml`. Run it to rewrite
+      `src/easydiffraction/crystallography/space_groups.json.gz` (R-3m
+      `h` → `(x,-x,z)`, 18-element full orbit; all non-`coords_xyz`
+      fields byte-identical). The tool is local tooling (recorded by SHA
+      in CT4); **this commit stages only the regenerated
+      `space_groups.json.gz`**. Commit:
+      `Canonicalize space-group coords_xyz templates`
+- [x] **CT2 — Make the durable rebuild path two-stage with an
+      invariant-enforcing post-process (local prep, no commit).** The
+      generator (`generate_space_groups.py`) runs in a throwaway
+      cctbx-only env, and cctbx **always** emits operator-form coords
+      for coupled positions — so the generator cannot itself source
+      canonical coords or self-assert a no-operator-form invariant (the
+      canonical spelling lives in cryspy's `wyckoff.dat`, and the
+      constraint check needs `easydiffraction`, i.e. the project env).
+      The durable rebuild path is therefore **two mandatory stages**:
+      (1) the generator (cctbx env), then (2)
+      `canonicalize_coords.py --write` (project env), which is the
+      **invariant-enforcing step** — it re-sources canonical ITA coords,
+      verifies each exactly, and refuses to write unless every template
+      is canonical (no operator form, no fractional coefficient). The
+      generator's `_extract_wyckoff_positions` docstring directs to this
+      mandatory post-process and the ADR _Build Provenance_ documents
+      both stages (review-1 [Finding 1]). **No re-run now** (CT1 already
+      produced the canonical DB). Local curation tooling — not
+      committed; its SHA-256 is recorded in CT4.
+- [x] **CT3 — Packaging assertion.** Extend the tracked
+      `tools/check_packaged_db.py` to assert no packaged `coords_xyz`
+      template is operator-form (catches future regression at the wheel
+      layer). Commit: `Assert canonical coords_xyz in packaged DB check`
+- [x] **CT4 — ADR invariant + provenance.** Add the
+      canonical-`coords_xyz` invariant as a decision in
+      `docs/dev/adrs/accepted/space-group-database.md`, and update its
+      _Build Provenance_ with the new `space_groups.json.gz` SHA-256,
+      the `canonicalize_coords.py` transform SHA-256, **and the updated
+      `generate_space_groups.py` SHA-256** plus the canonical-invariant
+      step in the rebuild path (review-1 [P2]). Commit:
+      `Record canonical coords_xyz invariant and provenance`
+- [x] **CT5 — Phase 1 review gate.** No code. Mark `[x]`, commit the
+      checklist update alone, hand off to review. Commit:
+      `Reach canonical-templates Phase 1 review gate`
+
+### Phase 2 — Verification (canonical-templates phase)
+
+Add the tests above, then run (zsh-safe capture):
+
+```bash
+pixi run fix
+pixi run test-structure-check > /tmp/easydiffraction-test-structure.log 2>&1; test_structure_exit_code=$?; tail -n 50 /tmp/easydiffraction-test-structure.log; exit $test_structure_exit_code
+pixi run check > /tmp/easydiffraction-check.log 2>&1; check_exit_code=$?; tail -n 200 /tmp/easydiffraction-check.log; exit $check_exit_code
+pixi run unit-tests > /tmp/easydiffraction-unit.log 2>&1; unit_tests_exit_code=$?; tail -n 100 /tmp/easydiffraction-unit.log; exit $unit_tests_exit_code
+pixi run integration-tests > /tmp/easydiffraction-integration.log 2>&1; integration_tests_exit_code=$?; tail -n 100 /tmp/easydiffraction-integration.log; exit $integration_tests_exit_code
+pixi run script-tests > /tmp/easydiffraction-script.log 2>&1; script_tests_exit_code=$?; tail -n 100 /tmp/easydiffraction-script.log; exit $script_tests_exit_code
+```
+
+Then the packaging regression from #187's Phase 2 (build the wheel +
+`python tools/check_packaged_db.py dist/*.whl`), which now also
+exercises the new operator-form assertion.
+
+**Verification note (for `/review-impl-2`).** Phase 2's `pixi run fix`
+also reformatted docstrings in
+`src/easydiffraction/display/plotters/plotly.py` and
+`src/easydiffraction/report/fit_plot.py` — **pre-existing** debt from
+this branch's plotting commits (`bb817a5fd`, `176e6e682`, `bec2f5e73`),
+surfaced by the recently-enabled `format-docstring` hook and required
+for `pixi run check` to pass. It is **unrelated** to canonical-templates
+and was folded into the verification commit `92c41124b` (authored
+manually); drop or move it if this branch is split from the plotting
+stream.
+
+### Suggested Pull Request — canonical-templates fix
+
+**Title:** Store space-group Wyckoff coordinates in canonical form
+
+**Description:** A refined atom on certain special positions (sites with
+linked coordinates, like `(x, -x, z)`) could drift off its symmetry
+position during a fit, because the bundled space-group table stored
+those coordinate templates in an internal operator form the
+symmetry-constraint code didn't recognise. This change rewrites every
+affected template into the standard International Tables form so the
+constraints hold, adds guards so the table can't silently regress, and
+fixes the related `ed-6` tutorial refinement. It also unblocks automatic
+Wyckoff-position detection, which builds on these canonical templates.

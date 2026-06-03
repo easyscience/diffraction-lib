@@ -112,10 +112,16 @@ class TestAtomSite:
         assert 'Fe' in allowed
 
     def test_wyckoff_letter_allowed_values(self):
-        from easydiffraction.datablocks.structure.categories.atom_sites.default import AtomSite
+        from easydiffraction.datablocks.structure.item.base import Structure
 
-        site = AtomSite()
-        allowed = site._wyckoff_letter_allowed_values
+        # Allowed letters are derived from the parent structure's space
+        # group, so the atom must live inside a structure with a
+        # tabulated space group; a parentless AtomSite has no allowed
+        # letters.
+        structure = Structure(name='s')
+        structure.space_group.name_h_m = 'P m -3 m'
+        structure.atom_sites.create(label='X', type_symbol='O', adp_iso=0.5)
+        allowed = structure.atom_sites['X']._wyckoff_letter_allowed_values
         assert 'a' in allowed
 
     def test_uses_iucr_casing_with_legacy_aliases(self):
@@ -262,3 +268,152 @@ class TestAdpIsoAsB:
         structure.atom_sites['Si'].adp_type = 'Uani'
         expected_b = u_val * 8.0 * math.pi**2
         assert math.isclose(structure.atom_sites['Si'].adp_iso_as_b, expected_b, rel_tol=1e-10)
+
+
+# ------------------------------------------------------------------
+#  Wyckoff letter detection / multiplicity
+# ------------------------------------------------------------------
+
+
+class TestAtomSiteWyckoffDetection:
+    @staticmethod
+    def _structure(name_hm='P m -3 m'):
+        from easydiffraction.datablocks.structure.item.base import Structure
+
+        structure = Structure(name='s')
+        structure.space_group.name_h_m = name_hm
+        return structure
+
+    def test_fill_if_empty_on_update(self):
+        structure = self._structure()
+        structure.atom_sites.create(label='A', type_symbol='O', adp_iso=0.5)
+        structure._update_categories()
+        atom = structure.atom_sites['A']
+        assert atom.wyckoff_letter.value == 'a'
+        assert atom.multiplicity.value == 1
+
+    def test_redetect_via_property_setter(self):
+        structure = self._structure()
+        structure.atom_sites.create(label='A', type_symbol='O', adp_iso=0.5)
+        structure._update_categories()
+        structure.atom_sites['A'].fract_x = 0.3
+        structure._update_categories()
+        assert structure.atom_sites['A'].wyckoff_letter.value == 'e'
+
+    def test_redetect_via_descriptor_value(self):
+        structure = self._structure()
+        structure.atom_sites.create(label='A', type_symbol='O', adp_iso=0.5)
+        structure._update_categories()
+        structure.atom_sites['A'].fract_x.value = 0.3
+        structure._update_categories()
+        assert structure.atom_sites['A'].wyckoff_letter.value == 'e'
+
+    def test_explicit_letter_preserved_on_first_update(self):
+        # (0.5,0,0) lies on both 'e' = (x,0,0) and the more special
+        # 'd' = (1/2,0,0); an explicit 'e' must be kept, not detected 'd'.
+        structure = self._structure()
+        structure.atom_sites.create(
+            label='E',
+            type_symbol='O',
+            fract_x=0.5,
+            fract_y=0.0,
+            fract_z=0.0,
+            adp_iso=0.5,
+            wyckoff_letter='e',
+        )
+        structure._update_categories()
+        atom = structure.atom_sites['E']
+        assert atom.wyckoff_letter.value == 'e'
+        assert atom.multiplicity.value == 6
+
+    def test_invalid_explicit_letter_raises_on_update(self):
+        import pytest
+
+        structure = self._structure()
+        structure.atom_sites.create(label='Z', type_symbol='O', adp_iso=0.5, wyckoff_letter='z')
+        with pytest.raises(ValueError, match='Invalid Wyckoff letter'):
+            structure._update_categories()
+
+    def test_same_letter_edit_snaps_off_orbit_coordinate(self):
+        # 'e' = (x,0,0): a small off-orbit nudge in fract_y (within the
+        # detection tolerance) keeps the letter 'e' and snaps fract_y back
+        # to 0 while fract_x stays free.
+        structure = self._structure()
+        structure.atom_sites.create(
+            label='E',
+            type_symbol='O',
+            fract_x=0.3,
+            fract_y=0.0,
+            fract_z=0.0,
+            adp_iso=0.5,
+        )
+        structure._update_categories()
+        assert structure.atom_sites['E'].wyckoff_letter.value == 'e'
+        structure.atom_sites['E'].fract_x.value = 0.4
+        structure.atom_sites['E'].fract_y.value = 0.0005
+        structure._update_categories()
+        atom = structure.atom_sites['E']
+        assert atom.wyckoff_letter.value == 'e'
+        assert abs(atom.fract_x.value - 0.4) < 1e-6
+        assert abs(atom.fract_y.value) < 1e-6
+
+    def test_space_group_change_redetects(self):
+        structure = self._structure()
+        structure.atom_sites.create(label='A', type_symbol='O', adp_iso=0.5)
+        structure._update_categories()
+        assert structure.atom_sites['A'].multiplicity.value == 1  # Pm-3m 'a'
+        structure.space_group.name_h_m = 'F m -3 m'
+        structure._update_categories()
+        atom = structure.atom_sites['A']
+        assert atom.wyckoff_letter.value == 'a'
+        assert atom.multiplicity.value == 4  # Fm-3m 'a'
+
+    def test_minimizer_path_keeps_letter_fixed(self):
+        structure = self._structure()
+        structure.atom_sites.create(
+            label='E',
+            type_symbol='O',
+            fract_x=0.3,
+            fract_y=0.0,
+            fract_z=0.0,
+            adp_iso=0.5,
+        )
+        structure._update_categories()
+        # A minimizer step varies the free axis; the letter stays fixed
+        # (no re-detection) and the free coordinate is preserved.
+        structure.atom_sites['E'].fract_x.value = 0.4
+        structure._update_categories(called_by_minimizer=True)
+        assert structure.atom_sites['E'].wyckoff_letter.value == 'e'
+        assert abs(structure.atom_sites['E'].fract_x.value - 0.4) < 1e-6
+
+    def test_untabulated_group_preserves_letter_without_multiplicity(self, monkeypatch):
+        from easydiffraction.crystallography import crystallography as ecr
+
+        monkeypatch.setattr(ecr, 'space_group_wyckoff_table', lambda *a, **k: None)
+        structure = self._structure()
+        structure.atom_sites.create(label='X', type_symbol='O', adp_iso=0.5, wyckoff_letter='a')
+        structure._update_categories()
+        atom = structure.atom_sites['X']
+        assert atom.wyckoff_letter.value == 'a'
+        assert atom.multiplicity.value is None
+
+    def test_no_record_contract_clears_multiplicity(self, monkeypatch):
+        from easydiffraction.crystallography import crystallography as ecr
+
+        monkeypatch.setattr(ecr, 'space_group_wyckoff_table', lambda *a, **k: None)
+        structure = self._structure()
+        structure.atom_sites.create(label='X', type_symbol='O', adp_iso=0.5)
+        structure._update_categories()
+        assert structure.atom_sites['X'].multiplicity.value is None
+        assert '_atom_site.site_symmetry_multiplicity' in structure.as_cif
+
+    def test_cif_round_trip_redrives_letter(self):
+        from easydiffraction.datablocks.structure.item.factory import StructureFactory
+
+        structure = self._structure()
+        structure.atom_sites.create(label='A', type_symbol='O', adp_iso=0.5)
+        structure._update_categories()
+        reloaded = StructureFactory.from_cif_str(structure.as_cif)
+        reloaded._update_categories()
+        assert reloaded.atom_sites['A'].wyckoff_letter.value == 'a'
+        assert reloaded.atom_sites['A'].multiplicity.value == 1

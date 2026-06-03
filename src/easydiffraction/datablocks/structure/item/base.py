@@ -19,6 +19,12 @@ from easydiffraction.datablocks.structure.categories.geom import Geom
 from easydiffraction.datablocks.structure.categories.geom.factory import GeomFactory
 from easydiffraction.datablocks.structure.categories.space_group import SpaceGroup
 from easydiffraction.datablocks.structure.categories.space_group.factory import SpaceGroupFactory
+from easydiffraction.datablocks.structure.categories.space_group_wyckoff import (
+    SpaceGroupWyckoffCollection,
+)
+from easydiffraction.datablocks.structure.categories.space_group_wyckoff.factory import (
+    SpaceGroupWyckoffFactory,
+)
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.utils import render_cif
 
@@ -43,6 +49,8 @@ class Structure(DatablockItem):
         self._atom_site_aniso = AtomSiteAnisoFactory.create(self._atom_site_aniso_type)
         self._geom_type: str = GeomFactory.default_tag()
         self._geom = GeomFactory.create(self._geom_type)
+        self._space_group_wyckoff_type: str = SpaceGroupWyckoffFactory.default_tag()
+        self._space_group_wyckoff = SpaceGroupWyckoffFactory.create(self._space_group_wyckoff_type)
         self._identity.datablock_entry_name = lambda: self.name
 
     # ------------------------------------------------------------------
@@ -180,6 +188,13 @@ class Structure(DatablockItem):
         """
         self._geom = new
 
+    @property
+    def space_group_wyckoff(self) -> SpaceGroupWyckoffCollection:
+        """
+        Read-only Wyckoff table derived from the current space group.
+        """
+        return self._space_group_wyckoff
+
     # ------------------------------------------------------------------
     # Private methods
     # ------------------------------------------------------------------
@@ -230,12 +245,23 @@ class Structure(DatablockItem):
         if not called_by_minimizer and not self._need_categories_update:
             return
 
+        self._space_group_wyckoff._replace_from_space_group()
         self._sync_atom_site_aniso()
 
         for category in self.categories:
             category._update(called_by_minimizer=called_by_minimizer)
 
         self._need_categories_update = False
+
+    def _serializable_categories(self) -> list:
+        """
+        Project-CIF categories (excludes the derived Wyckoff table).
+        """
+        return [
+            category
+            for category in self.categories
+            if not isinstance(category, SpaceGroupWyckoffCollection)
+        ]
 
     # ------------------------------------------------------------------
     # Public methods

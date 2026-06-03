@@ -105,16 +105,19 @@ def fit_plot_ranges(fit_data: dict[str, Any]) -> dict[str, float]:
 
 
 def fit_plot_geometry(fit_data: dict[str, Any]) -> dict[str, float]:
-    """Return Plotly-matched pgfplots axis geometry."""
+    """
+    Return Plotly-matched pgfplots axis geometry.
+
+    Row heights are anchored to the reference three-row layout so the
+    main and residual panels keep a fixed centimetre height; the axis
+    stack grows or shrinks with the rows shown, matching the interactive
+    composite figure.
+    """
     bragg_tick_sets = fit_data.get('bragg_tick_sets') or []
     has_bragg_ticks = bool(bragg_tick_sets)
     has_residual = _has_residual(fit_data)
     row_count = 1 + int(has_bragg_ticks) + int(has_residual)
-    main_pixels, residual_pixels = _non_bragg_row_heights(
-        row_count=row_count,
-        has_bragg_ticks=has_bragg_ticks,
-        has_residual=has_residual,
-    )
+    main_pixels, residual_pixels = _non_bragg_row_heights(has_residual=has_residual)
 
     row_heights = [main_pixels]
     if has_bragg_ticks:
@@ -122,16 +125,15 @@ def fit_plot_geometry(fit_data: dict[str, Any]) -> dict[str, float]:
     if has_residual and residual_pixels is not None:
         row_heights.append(residual_pixels)
 
-    height_sum = sum(row_heights)
-    stack_height = _FIGURE_AXIS_WIDTH_CM * _FIGURE_AXIS_HEIGHT_TO_WIDTH
-    row_area_height = stack_height * _subplot_available_height_fraction(row_count)
-    scaled_heights = [row_area_height * row_height / height_sum for row_height in row_heights]
+    cm_per_pixel = _figure_cm_per_pixel()
+    row_heights_cm = [row_height * cm_per_pixel for row_height in row_heights]
+    plot_area_cm = sum(row_heights_cm) / _subplot_available_height_fraction(row_count)
     return {
         'axis_width_cm': _FIGURE_AXIS_WIDTH_CM,
-        'main_height_cm': scaled_heights[0],
-        'bragg_height_cm': scaled_heights[1] if has_bragg_ticks else 0.0,
-        'residual_height_cm': scaled_heights[-1] if has_residual else 0.0,
-        'vertical_sep_cm': _vertical_sep_cm(stack_height),
+        'main_height_cm': row_heights_cm[0],
+        'bragg_height_cm': row_heights_cm[1] if has_bragg_ticks else 0.0,
+        'residual_height_cm': row_heights_cm[-1] if has_residual else 0.0,
+        'vertical_sep_cm': _vertical_sep_cm(plot_area_cm),
     }
 
 
@@ -234,23 +236,34 @@ def _has_residual(fit_data: dict[str, Any]) -> bool:
     return isinstance(series, dict) and 'diff' in series
 
 
-def _non_bragg_row_heights(
-    *,
-    row_count: int,
-    has_bragg_ticks: bool,
-    has_residual: bool,
-) -> tuple[float, float | None]:
-    plot_area_height = _composite_plot_area_height()
-    available_row_pixels = plot_area_height * _subplot_available_height_fraction(row_count)
-    baseline_bragg_pixels = _bragg_tick_symbol_height_pixels() if has_bragg_ticks else 0.0
-    non_bragg_pixels = max(available_row_pixels - baseline_bragg_pixels, 1.0)
+def _non_bragg_row_heights(*, has_residual: bool) -> tuple[float, float | None]:
+    """
+    Return fixed main and residual row heights in pixels.
 
-    if not has_residual:
-        return non_bragg_pixels, None
+    Anchored to the reference three-row layout so the rows keep a
+    constant height regardless of which rows the figure shows.
+    """
+    plot_area_height = _composite_plot_area_height()
+    available_row_pixels = plot_area_height * _subplot_available_height_fraction(3)
+    non_bragg_pixels = max(available_row_pixels - _bragg_tick_symbol_height_pixels(), 1.0)
 
     main_pixels = non_bragg_pixels / (1.0 + DEFAULT_RESIDUAL_HEIGHT_FRACTION)
+    if not has_residual:
+        return main_pixels, None
+
     residual_pixels = main_pixels * DEFAULT_RESIDUAL_HEIGHT_FRACTION
     return main_pixels, residual_pixels
+
+
+def _figure_cm_per_pixel() -> float:
+    """
+    Return the fixed cm-per-pixel scale for fit-figure rows.
+
+    Anchored so the reference three-row layout fills the nominal axis
+    stack height (axis width times the reference aspect ratio).
+    """
+    reference_stack_cm = _FIGURE_AXIS_WIDTH_CM * _FIGURE_AXIS_HEIGHT_TO_WIDTH
+    return reference_stack_cm / _composite_plot_area_height()
 
 
 def _composite_plot_area_height() -> float:
@@ -270,8 +283,8 @@ def _bragg_row_height_pixels(tick_set_count: int) -> float:
     return float(tick_set_count) * _bragg_tick_symbol_height_pixels()
 
 
-def _vertical_sep_cm(stack_height: float) -> float:
-    return stack_height * COMPOSITE_VERTICAL_SPACING
+def _vertical_sep_cm(plot_area_cm: float) -> float:
+    return plot_area_cm * COMPOSITE_VERTICAL_SPACING
 
 
 def _display_tick_limit(raw_limit: float) -> float:

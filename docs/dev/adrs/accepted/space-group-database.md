@@ -8,10 +8,10 @@ Structure model.
 
 > This ADR follows [`AGENTS.md`](../../../../AGENTS.md). It was a
 > prerequisite for
-> [`wyckoff-letter-detection.md`](../suggestions/wyckoff-letter-detection.md):
-> Wyckoff detection can only resolve letters for space groups present in
-> the bundled table, which this ADR's implementation completed for all
-> 230 groups.
+> [`wyckoff-letter-detection.md`](wyckoff-letter-detection.md): Wyckoff
+> detection can only resolve letters for space groups present in the
+> bundled table, which this ADR's implementation completed for all 230
+> groups.
 
 ## Context
 
@@ -103,8 +103,7 @@ Coordinates and operators stay **strings** (e.g. `'(x,1/2,0)'`,
 `sympify`) in `crystallography.py` and to keep the file JSON-native
 (§2). Triclinic no-setting groups keep the `None` coordinate code, as
 today (see the `''`→`None` normalisation in
-[`wyckoff-letter-detection.md`](../suggestions/wyckoff-letter-detection.md)
-§2).
+[`wyckoff-letter-detection.md`](wyckoff-letter-detection.md) §2).
 
 **Query surface preserved.** On disk the JSON is a list of setting
 records, each carrying the canonical `IT_number` and
@@ -286,16 +285,45 @@ coordinate-system code": EasyDiffraction's `SpaceGroup` category uses
 the empty string `''`, while the table key uses `None`. The database
 keeps `(1, None)` and `(2, None)`; callers normalise `''` to `None` at
 lookup boundaries, as specified in
-[`wyckoff-letter-detection.md`](../suggestions/wyckoff-letter-detection.md).
-This is the least surprising solution because it keeps "no setting"
-distinct from any real coordinate-code string without inventing a
-sentinel value.
+[`wyckoff-letter-detection.md`](wyckoff-letter-detection.md). This is
+the least surprising solution because it keeps "no setting" distinct
+from any real coordinate-code string without inventing a sentinel value.
 
 ### 8. The database file is generated, not hand-edited
 
 `space_groups.json.gz` is never edited by hand. Any correction flows
 through the curation overrides and a regeneration run, keeping the file
 and the documented decisions in sync.
+
+### 9. Canonical ITA `coords_xyz` (no operator form)
+
+Every Wyckoff `coords_xyz` template is stored in **canonical
+International Tables parametric form** — each component a signed single
+free variable (or an integer-coefficient combination such as `x-y`) plus
+an optional rational constant, never a fractional coefficient on a
+variable. cctbx's `unique_ops().as_xyz()` (the generator's raw output)
+emits **operator form** (e.g. `1/2*x-1/2*y`) for coupled special
+positions, which silently breaks
+`crystallography._fract_constrained_flags` so a refined special-position
+coordinate drifts off its symmetry site. A Wyckoff orbit is a list of
+**distinct point-functions** (one per symmetry-equivalent site), and the
+DB stores the **full** (centered) orbit — `coords_xyz` length equals the
+ITA multiplicity. cryspy lists only the **primitive** orbit, so the full
+orbit is built by **expanding** each cryspy primitive element over the
+group's centering translations (the identity-rotation symops):
+`full = {primitive element + centering vector}`, yielding exactly
+`multiplicity` distinct canonical templates. Every replacement is
+verified **exactly**: `len == multiplicity` and
+`len(set) == multiplicity` (a proper full orbit with distinct elements —
+no collapsed duplicates); no operator form and no fractional
+coefficient; the representative's `_fract_constrained_flags` free-axis
+count equals the manifold's rank (rejecting non-minimal spellings such
+as `(x-y,-x+y,z)`); and parametrization-independent geometric
+equivalence to the cctbx orbit (every element on a cctbx manifold, every
+cctbx manifold covered). The no-operator-form and no-duplicate
+invariants are enforced by the post-process before it writes, in the
+unit tests, and (for operator form) by `tools/check_packaged_db.py`,
+which rejects any operator-form template in the packaged wheel.
 
 ## Consequences
 
@@ -346,9 +374,9 @@ and the documented decisions in sync.
   early when `coord_code is None` and `_get_general_position_ops()`
   indexes the raw key, so they need the `''`→`None` normalisation
   defined in
-  [`wyckoff-letter-detection.md`](../suggestions/wyckoff-letter-detection.md)
-  §2 (which also updates these call sites). This ADR delivers the data;
-  that ADR delivers the `None`-code consumer handling.
+  [`wyckoff-letter-detection.md`](wyckoff-letter-detection.md) §2 (which
+  also updates these call sites). This ADR delivers the data; that ADR
+  delivers the `None`-code consumer handling.
 
 ## Alternatives Considered
 
@@ -409,6 +437,32 @@ pixi exec --spec cctbx --spec gemmi --spec sympy --spec pyyaml \
   --print-summary
 ```
 
+**Canonical-`coords_xyz` correction (§9) — mandatory second stage.** The
+rebuild has **two mandatory stages**, and the generator run above is
+only the first. The generator emits cctbx operator-form `coords_xyz` for
+coupled special positions and **cannot** emit canonical form itself:
+cctbx always produces operator form, and the canonical ITA spelling
+lives in cryspy's `wyckoff.dat`. The generator alone therefore does
+**not** produce a shippable database. It **must** be followed by the
+canonicalization post-process, which is the **invariant-enforcing step**
+— it re-sources canonical ITA `coords_xyz` from cryspy's `wyckoff.dat`
+and refuses to write unless every template is canonical (no operator
+form, no fractional coefficient):
+
+```bash
+python tmp/space-groups/helper-tools/canonicalize_coords.py --write
+```
+
+It rebuilds each of the 288 coupled positions' **full** orbit by
+**expanding** the cryspy primitive orbit over the group's centering
+translations — `coords_xyz` length equals the multiplicity and every
+element is distinct. It changes only `coords_xyz`, verifies every
+replacement **exactly** (distinct full orbit, canonical spelling, a
+`_fract_constrained_flags` rank check, and parametrization-independent
+geometric equivalence to the cctbx orbit), and asserts no operator-form
+and no duplicate template remains. The `space_groups.json.gz` SHA-256
+below is **after** this correction.
+
 Build environment:
 
 - **cctbx** from conda-forge:
@@ -423,10 +477,14 @@ Build environment:
 
 Generated and curation artifacts:
 
-- `src/easydiffraction/crystallography/space_groups.json.gz`:
-  `30f0051c669712ab34d991e60223c5e29264fc033b2ab03392cc01465ceba926`
+- `src/easydiffraction/crystallography/space_groups.json.gz` (after the
+  §9 canonical-`coords_xyz` correction):
+  `390f0e9d0ebe27a52ee5680a1bc686123ba84c8751302fed4dee4dfaf7edf7b4`
 - `tmp/space-groups/helper-tools/generate_space_groups.py`:
-  `bf10dcfbcf9e60485037ddabc65425e61f746ad9649cd3ccc67376dd6aae241a`
+  `3aa5f03cd1a69bdfe0a280158c9343b65d5eaa4d75a6d58f2606fb5fbe3df83d`
+- `tmp/space-groups/helper-tools/canonicalize_coords.py` (§9
+  canonical-`coords_xyz` post-process):
+  `8f2e94b130481d2a11de057fe200d8e5fd5d3d5eec7cdd39f5d4afd13f5cb8f2`
 - `docs/dev/adrs/accepted/space-group-database/space_groups_overrides.yaml`:
   `7077eec25d0f3b852dd7096a24dc7ac438467f9cb594f91a65ce10cda0e0722a`
 - `tmp/space-groups/extracted-comparison/disagreements.md`:
@@ -511,8 +569,8 @@ respectively.
 
 ## Related ADRs
 
-- [`wyckoff-letter-detection.md`](../suggestions/wyckoff-letter-detection.md)
-  — the dependent feature; its `''`→`None` coordinate-code normalisation
-  and its "unsupported group" handling both build on this database.
+- [`wyckoff-letter-detection.md`](wyckoff-letter-detection.md) — the
+  dependent feature; its `''`→`None` coordinate-code normalisation and
+  its "unsupported group" handling both build on this database.
 - [`iucr-cif-tag-alignment.md`](../accepted/iucr-cif-tag-alignment.md) —
   consumes space-group and Wyckoff data on export.

@@ -48,7 +48,6 @@ structure_1.atom_sites.create(
     fract_x=0,
     fract_y=0,
     fract_z=0,
-    wyckoff_letter='a',
     adp_iso=0.2,
     occupancy=0.5,
 )
@@ -58,7 +57,6 @@ structure_1.atom_sites.create(
     fract_x=0,
     fract_y=0,
     fract_z=0,
-    wyckoff_letter='a',
     adp_iso=0.2,
     occupancy=0.5,
 )
@@ -68,7 +66,6 @@ structure_1.atom_sites.create(
     fract_x=0.5,
     fract_y=0.5,
     fract_z=0.5,
-    wyckoff_letter='b',
     adp_iso=0.2567,
 )
 structure_1.atom_sites.create(
@@ -77,7 +74,6 @@ structure_1.atom_sites.create(
     fract_x=0,
     fract_y=0.5,
     fract_z=0.5,
-    wyckoff_letter='c',
     adp_iso=1.4041,
 )
 
@@ -110,7 +106,6 @@ structure_2.atom_sites.create(
     fract_x=0.0,
     fract_y=0.0,
     fract_z=0.0,
-    wyckoff_letter='a',
     adp_iso=0.0,
 )
 

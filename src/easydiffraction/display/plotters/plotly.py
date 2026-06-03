@@ -2305,24 +2305,25 @@ scheduleResize();
     def _baseline_non_bragg_row_heights(
         cls,
         plot_spec: PowderMeasVsCalcSpec,
-        row_count: int,
         *,
-        has_bragg_ticks: bool,
         has_residual: bool,
     ) -> tuple[float, float | None]:
-        """Return baseline main and residual row heights in pixels."""
+        """
+        Return fixed main and residual row heights in pixels.
+
+        Anchored to the reference three-row layout so the main and
+        residual rows keep their pixel height regardless of which rows
+        are shown; ``_composite_figure_height`` adapts instead.
+        """
         baseline_height = cls._base_composite_height_pixels(plot_spec)
         plot_area_height = cls._composite_plot_area_height(baseline_height)
-        available_row_pixels = plot_area_height * cls._subplot_available_height_fraction(row_count)
-        baseline_bragg_pixels = float(
-            cls._bragg_tick_symbol_height_pixels() if has_bragg_ticks else 0
-        )
-        non_bragg_pixels = max(available_row_pixels - baseline_bragg_pixels, 1.0)
-
-        if not has_residual:
-            return non_bragg_pixels, None
+        available_row_pixels = plot_area_height * cls._subplot_available_height_fraction(3)
+        non_bragg_pixels = max(available_row_pixels - cls._bragg_tick_symbol_height_pixels(), 1.0)
 
         main_pixels = non_bragg_pixels / (1.0 + plot_spec.residual_height_fraction)
+        if not has_residual:
+            return main_pixels, None
+
         residual_pixels = main_pixels * plot_spec.residual_height_fraction
         return main_pixels, residual_pixels
 
@@ -2334,8 +2335,6 @@ scheduleResize();
         row_count = 1 + int(has_bragg_ticks) + int(has_residual)
         main_row_height, residual_row_height = PlotlyPlotter._baseline_non_bragg_row_heights(
             plot_spec=plot_spec,
-            row_count=row_count,
-            has_bragg_ticks=has_bragg_ticks,
             has_residual=has_residual,
         )
         row_heights = [main_row_height]
@@ -2359,22 +2358,20 @@ scheduleResize();
         )
 
     @classmethod
-    def _composite_figure_height(
-        cls,
-        plot_spec: PowderMeasVsCalcSpec,
-        layout: PowderCompositeRows,
-    ) -> float:
-        """Return figure height for Bragg row growth."""
-        base_pixels = cls._base_composite_height_pixels(plot_spec)
-        phase_count = len(plot_spec.bragg_tick_sets)
-        if phase_count <= 1:
-            return base_pixels
+    def _composite_figure_height(cls, layout: PowderCompositeRows) -> float:
+        """
+        Return figure height matching the row pixel heights.
 
-        added_bragg_pixels = float((phase_count - 1) * cls._bragg_tick_symbol_height_pixels())
-        growth_pixels = added_bragg_pixels / cls._subplot_available_height_fraction(
-            layout.row_count
-        )
-        return base_pixels + growth_pixels
+        Each entry in ``layout.row_heights`` is an absolute pixel
+        target. Plotly distributes the plot area across rows by
+        fraction, so the figure height is the row-pixel sum scaled up
+        for the inter-row spacing, plus the vertical margins. The main
+        and residual rows stay fixed while the Bragg row (and the
+        figure) grow with the phase count.
+        """
+        row_pixels = sum(layout.row_heights)
+        plot_area_height = row_pixels / cls._subplot_available_height_fraction(layout.row_count)
+        return plot_area_height + COMPOSITE_MARGIN_TOP + COMPOSITE_MARGIN_BOTTOM
 
     @classmethod
     def _get_main_intensity_range(cls, plot_spec: PowderMeasVsCalcSpec) -> tuple[float, float]:
@@ -2698,7 +2695,7 @@ scheduleResize();
         layout: PowderCompositeRows,
     ) -> None:
         fig.update_layout(
-            height=self._composite_figure_height(plot_spec, layout),
+            height=self._composite_figure_height(layout),
             margin={
                 'autoexpand': True,
                 'r': COMPOSITE_MARGIN_RIGHT,

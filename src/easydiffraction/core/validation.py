@@ -252,6 +252,36 @@ class MembershipValidator(ValidatorBase):
 # ======================================================================
 
 
+class PermissiveMembershipValidator(MembershipValidator):
+    """
+    Membership validator accepting any value when choices are empty.
+
+    Used where the allowed set is derived dynamically and may
+    legitimately be empty (for example a Wyckoff letter under an
+    untabulated space group, or before a parent context is available):
+    an empty allowed set stores the value verbatim instead of rejecting
+    it. A non-empty allowed set validates membership as usual.
+    """
+
+    def validated(
+        self,
+        value: object,
+        name: str,
+        default: object = None,
+        current: object = None,
+    ) -> object:
+        """
+        Accept any value when allowed is empty, else check membership.
+        """
+        allowed_values = self.allowed() if callable(self.allowed) else self.allowed
+        if not allowed_values:
+            return value
+        return super().validated(value, name, default=default, current=current)
+
+
+# ======================================================================
+
+
 class RegexValidator(ValidatorBase):
     """Ensure that a string matches a given regular expression."""
 
