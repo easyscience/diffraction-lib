@@ -144,18 +144,23 @@ class SpaceGroupWyckoffCollection(CategoryCollection):
         """
         Rebuild the rows from the parent structure's current space group.
 
-        Clears all rows, then repopulates from the bundled Wyckoff table.
-        Leaves the collection empty for an absent/untabulated space group.
+        Repopulates from the bundled Wyckoff table and adopts the new
+        rows via ``_adopt_items``, which rebuilds the name index and
+        parent links so a stale key lookup cannot survive a space-group
+        change. Leaves the collection empty for an absent/untabulated
+        space group.
         """
-        self._items.clear()
         structure = getattr(self, '_parent', None)
         if structure is None:
+            self._adopt_items([])
             return
         name_hm = structure.space_group.name_h_m.value
         coord_code = structure.space_group.it_coordinate_system_code.value
         positions = ecr.space_group_wyckoff_table(name_hm, coord_code)
         if not positions:
+            self._adopt_items([])
             return
+        rows = []
         for letter, position in positions.items():
             multiplicity = int(position['multiplicity'])
             row = self._item_type()
@@ -164,4 +169,5 @@ class SpaceGroupWyckoffCollection(CategoryCollection):
             row._multiplicity.value = multiplicity
             row._site_symmetry.value = str(position['site_symmetry'])
             row._coords_xyz.value = ' '.join(position['coords_xyz'])
-            self._items.append(row)
+            rows.append(row)
+        self._adopt_items(rows)
