@@ -104,7 +104,7 @@ composite path (`build_powder_meas_vs_calc_figure`):
   Commit: `Always render available pattern content; drop include`
 - [x] **P1.3 — Structure scene top margin.** Fixes issue #4.
   Commit: `Add top margin above structure scene rectangle`
-- [ ] **P1.4 — Amend ADR and docs.** Update `display-ux.md`; drop
+- [x] **P1.4 — Amend ADR and docs.** Update `display-ux.md`; drop
   stale `show_pattern_options` references.
   Commit: `Amend display-ux ADR for always-on pattern view`
 - [ ] **P1.5 — Update tutorials.** Remove `include=` from tutorial

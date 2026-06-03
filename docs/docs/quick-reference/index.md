@@ -136,7 +136,7 @@ experiment.linked_phases.create(id='lbco', scale=10.0)
 
 ## Inspect the Project
 
-Show names, CIF text, and plotting options:
+Show names and CIF text:
 
 ```python
 project.structures.show_names()
@@ -144,8 +144,6 @@ project.experiments.show_names()
 
 structure.show_as_cif()
 experiment.show_as_cif()
-
-project.display.show_pattern_options(expt_name='hrpt')
 ```
 
 Open the main display views:

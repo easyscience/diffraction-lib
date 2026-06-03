@@ -158,8 +158,7 @@ representation); like the HTML report it can also write a standalone
 HTML file to a path. The exact return and save signature is left to the
 implementation plan.
 
-Content selection mirrors `pattern(include=...)` rather than inventing a
-new vocabulary:
+Content selection uses an `include=` argument:
 
 ```python
 project.display.structure(struct_name='lbco')
@@ -181,13 +180,11 @@ toggles the same features after the initial view is drawn, so `include`
 sets the starting state and the modebar refines it.
 
 A companion `project.display.show_structure_options(struct_name=...)`
-mirrors the existing `show_pattern_options(expt_name=...)`: it lists
-each `include=` option with whether the active engine and the current
-structure state support it, and the reason when they do not — for
-example `moments` is unavailable until the structure model carries
+lists each `include=` option with whether the active engine and the
+current structure state support it, and the reason when they do not —
+for example `moments` is unavailable until the structure model carries
 moment fields, and the `ascii` engine reports the features only the 3D
-engines draw. This gives the structure view the same per-option
-discoverability the pattern view already offers.
+engines draw. This gives the structure view per-option discoverability.
 
 The view also has a spatial extent: which symmetry-equivalent atoms the
 scene contains. The scene builder takes the unique (asymmetric-unit)
@@ -613,11 +610,11 @@ a per-call request behave predictably:
 ## Consequences
 
 - `project.display` gains a spatial view (`structure()`) that
-  complements the 1D `pattern()` view and reuses the `include=`
-  vocabulary.
-- `project.display` also gains `show_structure_options()`, parallel to
-  `show_pattern_options()`, so the supported content for a given
-  structure and engine is discoverable with reasons.
+  complements the 1D `pattern()` view with an `include=` feature
+  selector.
+- `project.display` also gains `show_structure_options()`, so the
+  supported content for a given structure and engine is discoverable
+  with reasons.
 - Keeping crystallography in the scene builder and out of renderers lets
   several front-ends (Three.js now, Qt Quick 3D later) share one model.
 - A switchable `rendering_structure` category
