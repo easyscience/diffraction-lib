@@ -438,7 +438,7 @@ The ADR commit + design-phase review/reply cleanup are handled by
         methods to resolve #51, so there is no `default.py` change in
         this step. The only remaining TODO (label-regex/dict-key, line
         ~68) is unrelated to #51 and was intentionally left.
-- [ ] **P1.10 — Phase 1 review gate.** No code. Mark this `[x]`, commit
+- [x] **P1.10 — Phase 1 review gate.** No code. Mark this `[x]`, commit
       the checklist update alone, then stop for the Phase 1 review.
       Commit: `Reach Phase 1 review gate`
 
