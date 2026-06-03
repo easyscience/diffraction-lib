@@ -130,16 +130,16 @@ state supports; there is no view-selection argument:
 - uncertainty bands where posterior predictive data exists and the chart
   engine supports them
 
-Excluded regions are a property of the experiment, not a viewing
-choice, so they are always shaded when present, skipped only when a
-custom `x` axis variable is selected (the overlay cannot be mapped onto
-it). `uncertainty` is shown where posterior predictive data exists for
-a supported experiment and the active chart engine can render bands.
+Excluded regions are a property of the experiment, not a viewing choice,
+so they are always shaded when present, skipped only when a custom `x`
+axis variable is selected (the overlay cannot be mapped onto it).
+`uncertainty` is shown where posterior predictive data exists for a
+supported experiment and the active chart engine can render bands.
 
 Single-panel views (for example measured-only, before a structure is
-linked) and the full composite share one figure-sizing and x-range
-core, so a one-row chart is the top row of the multi-row chart pixel
-for pixel: the same height and the same tick-to-tick x-range with no
+linked) and the full composite share one figure-sizing and x-range core,
+so a one-row chart is the top row of the multi-row chart pixel for
+pixel: the same height and the same tick-to-tick x-range with no
 autoscale padding.
 
 This supersedes the earlier design, which assembled a view from an

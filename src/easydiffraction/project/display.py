@@ -612,7 +612,9 @@ class ProjectDisplay:
         cls,
         statuses: list[PatternOptionStatus],
     ) -> tuple[str, ...]:
-        """Return the kinds of pattern content to render by availability."""
+        """
+        Return the kinds of pattern content to render by availability.
+        """
         status_by_name = {status.name: status for status in statuses}
         optional_point_estimate = ('background', 'residual', 'bragg', 'excluded')
 
