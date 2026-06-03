@@ -157,10 +157,11 @@ class SpaceGroupWyckoffCollection(CategoryCollection):
         if not positions:
             return
         for letter, position in positions.items():
+            multiplicity = int(position['multiplicity'])
             row = self._item_type()
-            row._id.value = letter
+            row._id.value = f'{multiplicity}{letter}'
             row._letter.value = letter
-            row._multiplicity.value = int(position['multiplicity'])
+            row._multiplicity.value = multiplicity
             row._site_symmetry.value = str(position['site_symmetry'])
             row._coords_xyz.value = ' '.join(position['coords_xyz'])
             self._items.append(row)
