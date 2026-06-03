@@ -111,3 +111,91 @@ class TestAtomSiteSymmetryConstrainedFlags:
         flags = atom_site_symmetry_constrained_flags('NOT REAL', None, 'a')
         assert flags == {'fract_x': False, 'fract_y': False, 'fract_z': False}
         monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.RAISE, raising=True)
+
+
+class TestDetectWyckoffPosition:
+    def test_general_position(self):
+        from easydiffraction.crystallography.crystallography import detect_wyckoff_position
+
+        # A generic point in P m -3 m is the general position 'n' (48).
+        position = detect_wyckoff_position('P m -3 m', '1', (0.12, 0.23, 0.34))
+        assert position.letter == 'n'
+        assert position.multiplicity == 48
+
+    def test_special_position(self):
+        from easydiffraction.crystallography.crystallography import detect_wyckoff_position
+
+        position = detect_wyckoff_position('P m -3 m', '1', (0.0, 0.0, 0.0))
+        assert position.letter == 'a'
+        assert position.multiplicity == 1
+
+    def test_multiplicity_tie_break_prefers_most_special(self):
+        from easydiffraction.crystallography.crystallography import detect_wyckoff_position
+
+        # (1/2,0,0) lies on both 'e' = (x,0,0) (mult 6) and the more
+        # special 'd' = (1/2,0,0) (mult 3); detection prefers 'd'.
+        position = detect_wyckoff_position('P m -3 m', '1', (0.5, 0.0, 0.0))
+        assert position.letter == 'd'
+        assert position.multiplicity == 3
+
+    def test_non_first_orbit_representative(self):
+        from easydiffraction.crystallography.crystallography import detect_wyckoff_position
+
+        # (0,y,0) is on the 'e' orbit via a non-first representative
+        # ((0,x,0), not the tabulated first rep (x,0,0)).
+        position = detect_wyckoff_position('P m -3 m', '1', (0.0, 0.3, 0.0))
+        assert position.letter == 'e'
+
+    def test_rounded_input_matches_within_tolerance(self):
+        from easydiffraction.crystallography.crystallography import detect_wyckoff_position
+
+        # x = 0.3333 ~ 1/3 is still on 'e' = (x,0,0) at the 1e-3 tolerance.
+        position = detect_wyckoff_position('P m -3 m', '1', (0.3333, 0.0, 0.0))
+        assert position.letter == 'e'
+
+    def test_empty_coord_code_normalises_to_none(self):
+        from easydiffraction.crystallography.crystallography import detect_wyckoff_position
+
+        # P 1 is keyed (1, None); an empty coordinate code resolves there.
+        position = detect_wyckoff_position('P 1', '', (0.1, 0.2, 0.3))
+        assert position is not None
+        assert position.letter == 'a'
+
+    def test_absent_group_returns_none(self, monkeypatch):
+        from easydiffraction.crystallography.crystallography import detect_wyckoff_position
+
+        monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.WARN, raising=True)
+        assert detect_wyckoff_position('NOT A REAL SG', None, (0.1, 0.2, 0.3)) is None
+        monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.RAISE, raising=True)
+
+
+class TestWyckoffPositionInfo:
+    def test_without_coords_has_no_template(self):
+        from easydiffraction.crystallography.crystallography import wyckoff_position_info
+
+        position = wyckoff_position_info('P m -3 m', '1', 'e')
+        assert position.letter == 'e'
+        assert position.multiplicity == 6
+        assert position.coord_template is None
+
+    def test_selects_nearest_representative_not_first(self):
+        from easydiffraction.crystallography.crystallography import (
+            snap_to_wyckoff_template,
+            wyckoff_position_info,
+        )
+
+        # 'e' first rep is (x,0,0); for a point near the (0,x,0) member the
+        # nearest representative must be chosen so the snap keeps fract_y
+        # free near 0.3 instead of collapsing onto (x,0,0) -> (0,0,0).
+        position = wyckoff_position_info('P m -3 m', '1', 'e', fract_xyz=(0.0, 0.3, 0.0))
+        assert position.coord_template is not None
+        snapped, _flags = snap_to_wyckoff_template(position.coord_template, (0.0, 0.3, 0.0))
+        assert abs(snapped[0]) < 1e-6
+        assert abs(snapped[1] - 0.3) < 1e-6
+        assert abs(snapped[2]) < 1e-6
+
+    def test_absent_letter_returns_none(self):
+        from easydiffraction.crystallography.crystallography import wyckoff_position_info
+
+        # P m -3 m has no Wyckoff letter 'z'.
+        assert wyckoff_position_info('P m -3 m', '1', 'z') is None
