@@ -438,7 +438,7 @@ project_1.experiments['sim_si'].background.create(id='7', x=110000, y=0.01)
 # _atom_site.occupancy
 # _atom_site.ADP_type
 # _atom_site.B_iso_or_equiv
-# Si Si   0 0 0   a  1.0   Biso 0.89
+# Si Si   0.125 0.125 0.125   a  1.0   Biso 0.89
 # ```
 
 # %% [markdown]
@@ -493,9 +493,9 @@ project_1.structures['si'].cell.length_a = 5.43
 project_1.structures['si'].atom_sites.create(
     label='Si',
     type_symbol='Si',
-    fract_x=0,
-    fract_y=0,
-    fract_z=0,
+    fract_x=0.125,
+    fract_y=0.125,
+    fract_z=0.125,
     adp_iso=0.89,
 )
 
@@ -1403,9 +1403,9 @@ project_2.structures['si'].cell.length_a = 5.43
 project_2.structures['si'].atom_sites.create(
     label='Si',
     type_symbol='Si',
-    fract_x=0,
-    fract_y=0,
-    fract_z=0,
+    fract_x=0.125,
+    fract_y=0.125,
+    fract_z=0.125,
     adp_iso=0.89,
 )
 
