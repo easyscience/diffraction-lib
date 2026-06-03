@@ -95,3 +95,35 @@ def test_coords_xyz_are_canonical_distinct_full_orbits():
                 assert not _NONCANONICAL_COORD.search(template), (key, letter, template)
             assert len(set(coords)) == len(coords), (key, letter)
             assert len(coords) == position['multiplicity'], (key, letter)
+
+
+def test_representative_template_has_no_self_axis_coupling():
+    """Every Wyckoff representative is in canonical parametric form.
+
+    For the representative ``coords_xyz[0]``, no component may couple its
+    own axis variable with another axis (e.g. an x-slot term ``x+y``):
+    that is operator-form leakage, the ed-6 regression that the
+    canonical-templates fix removed. The slot-based constraint logic in
+    crystallography.py relies on this canonical form, so it is asserted
+    from the data side to block a silent reintroduction on a future
+    table regeneration. Non-first orbit members are genuine symmetry
+    images and may legitimately couple, so only the representative is
+    checked.
+    """
+    from easydiffraction.crystallography.crystallography import _parse_rotation_matrix
+
+    for key, record in SPACE_GROUPS.items():
+        for letter, position in record['Wyckoff_positions'].items():
+            representative = position['coords_xyz'][0]
+            rot, _trans = _parse_rotation_matrix(representative)
+            for axis_index in range(3):
+                references_own_axis = rot[axis_index, axis_index] != 0
+                couples_other_axis = any(
+                    rot[axis_index, other] != 0 for other in range(3) if other != axis_index
+                )
+                assert not (references_own_axis and couples_other_axis), (
+                    key,
+                    letter,
+                    representative,
+                    axis_index,
+                )
