@@ -287,8 +287,8 @@ above is complete._
 
 ### Status (this phase)
 
-- [ ] Phase 1 — Implementation (data + tooling + docs)
-- [ ] Phase 1 review gate
+- [x] Phase 1 — Implementation (data + tooling + docs)
+- [x] Phase 1 review gate
 - [ ] Phase 2 — Verification (tests + checks)
 
 ### Problem
@@ -427,7 +427,7 @@ only ignored files, and no empty commits.
       is local tooling (recorded by SHA in CT4); **this commit stages only
       the regenerated `space_groups.json.gz`**. Commit:
       `Canonicalize space-group coords_xyz templates`
-- [ ] **CT2 — Fix the generator's coords source for future rebuilds
+- [x] **CT2 — Fix the generator's coords source for future rebuilds
       (local prep, no commit).** Update the local
       `tmp/space-groups/helper-tools/generate_space_groups.py` so
       `_extract_wyckoff_positions` sources `coords_xyz` from cryspy's
@@ -448,7 +448,7 @@ only ignored files, and no empty commits.
       `generate_space_groups.py` SHA-256** plus the canonical-invariant
       step in the rebuild path (review-1 [P2]). Commit:
       `Record canonical coords_xyz invariant and provenance`
-- [ ] **CT5 — Phase 1 review gate.** No code. Mark `[x]`, commit the
+- [x] **CT5 — Phase 1 review gate.** No code. Mark `[x]`, commit the
       checklist update alone, hand off to review. Commit:
       `Reach canonical-templates Phase 1 review gate`
 
