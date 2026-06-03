@@ -76,7 +76,7 @@ def test_tutorial_output(name: str) -> None:
     # produce fit metrics that are not reproducible across CPU arch
     # or BLAS; confirm they ran and saved, but skip the numbers.
     if name in PLATFORM_SENSITIVE:
-        pytest.skip(f'{name}: platform-sensitive fit metrics not compared')
+        pytest.skip('platform-sensitive')
 
     rtol = expected['rtol']
     _assert_close(
