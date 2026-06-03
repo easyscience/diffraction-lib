@@ -695,13 +695,19 @@ class AtomSites(CategoryCollection):
         key = (name_hm, coord_code)
         letter_before = atom.wyckoff_letter.value
         coords = (atom.fract_x.value, atom.fract_y.value, atom.fract_z.value)
-        coords_changed = atom._wyckoff_coord_baseline is None or any(
+        # A ``None`` baseline marks the first population (create/load), not a
+        # later edit. Treat coordinates or the space-group key as "changed"
+        # only against an existing baseline, so an explicit initial letter is
+        # preserved (routed to ``wyckoff_position_info`` below) instead of
+        # being overwritten by all-letter detection. The ADR requires a
+        # user-supplied letter to persist until a genuine later coordinate or
+        # space-group-key edit.
+        coords_changed = atom._wyckoff_coord_baseline is not None and any(
             abs(a - b) > ecr._WYCKOFF_DETECTION_TOL
             for a, b in zip(coords, atom._wyckoff_coord_baseline)
         )
-        detect = (not called_by_minimizer) and (
-            not letter_before or coords_changed or atom._wyckoff_key_baseline != key
-        )
+        key_changed = atom._wyckoff_key_baseline is not None and atom._wyckoff_key_baseline != key
+        detect = (not called_by_minimizer) and (not letter_before or coords_changed or key_changed)
         if detect:
             position = ecr.detect_wyckoff_position(name_hm, coord_code, coords)
             if position is not None and letter_before and position.letter != letter_before:
