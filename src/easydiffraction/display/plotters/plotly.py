@@ -2308,11 +2308,12 @@ scheduleResize();
         *,
         has_residual: bool,
     ) -> tuple[float, float | None]:
-        """Return fixed main and residual row heights in pixels.
+        """
+        Return fixed main and residual row heights in pixels.
 
         Anchored to the reference three-row layout so the main and
-        residual rows keep their pixel height regardless of which
-        rows are shown; ``_composite_figure_height`` adapts instead.
+        residual rows keep their pixel height regardless of which rows
+        are shown; ``_composite_figure_height`` adapts instead.
         """
         baseline_height = cls._base_composite_height_pixels(plot_spec)
         plot_area_height = cls._composite_plot_area_height(baseline_height)
@@ -2358,7 +2359,8 @@ scheduleResize();
 
     @classmethod
     def _composite_figure_height(cls, layout: PowderCompositeRows) -> float:
-        """Return figure height matching the row pixel heights.
+        """
+        Return figure height matching the row pixel heights.
 
         Each entry in ``layout.row_heights`` is an absolute pixel
         target. Plotly distributes the plot area across rows by

@@ -2,6 +2,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
 """Unit tests for the space-group reference-data loader."""
 
+import re
+
 from easydiffraction.crystallography.space_groups import SPACE_GROUPS
 
 _EXPECTED_RECORD_KEYS = {
@@ -23,6 +25,11 @@ _EXPECTED_WYCKOFF_KEYS = {'multiplicity', 'site_symmetry', 'coords_xyz'}
 # Accepted seed: 530 cctbx settings + 226 reference-settings aliases + 60
 # runtime coordinate-code aliases. A deliberate regeneration updates this.
 _EXPECTED_RECORD_COUNT = 816
+
+# Canonical coords_xyz forbids operator form (``1/2*x``) and fractional
+# coefficients (``5/4x``); integer coefficients (``2x``) and rational
+# constants (``x+1/2``) are allowed.
+_NONCANONICAL_COORD = re.compile(r'[0-9.]\s*\*\s*[xyz]|[xyz]\s*\*|\d+/\d+\s*[xyz]')
 
 
 def test_module_import():
@@ -72,3 +79,19 @@ def test_every_record_has_the_expected_schema():
             assert isinstance(position['multiplicity'], int)
             assert isinstance(position['coords_xyz'], list)
             assert position['coords_xyz']
+
+
+def test_coords_xyz_are_canonical_distinct_full_orbits():
+    """Every Wyckoff coords_xyz is a canonical, distinct, full orbit.
+
+    Regression guard for the canonical-templates fix: no operator-form or
+    fractional-coefficient spelling, no duplicate template, and a length
+    equal to the multiplicity (the full centered orbit).
+    """
+    for key, record in SPACE_GROUPS.items():
+        for letter, position in record['Wyckoff_positions'].items():
+            coords = position['coords_xyz']
+            for template in coords:
+                assert not _NONCANONICAL_COORD.search(template), (key, letter, template)
+            assert len(set(coords)) == len(coords), (key, letter)
+            assert len(coords) == position['multiplicity'], (key, letter)

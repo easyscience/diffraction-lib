@@ -314,18 +314,18 @@ ITA multiplicity. cryspy lists only the **primitive** orbit, so the full
 orbit is built by **expanding** each cryspy primitive element over the
 group's centering translations (the identity-rotation symops):
 `full = {primitive element + centering vector}`, yielding exactly
-`multiplicity` distinct canonical templates. Every replacement is verified
-**exactly**: `len == multiplicity` and `len(set) == multiplicity` (a
-proper full orbit with distinct elements — no collapsed duplicates); no
-operator form and no fractional coefficient; the representative's
-`_fract_constrained_flags` free-axis count equals the manifold's rank
-(rejecting non-minimal spellings such as `(x-y,-x+y,z)`); and
-parametrization-independent geometric equivalence to the cctbx orbit
-(every element on a cctbx manifold, every cctbx manifold covered). The
-no-operator-form and no-duplicate invariants are enforced by the
-post-process before it writes, in the unit tests, and (for operator form)
-by `tools/check_packaged_db.py`, which rejects any operator-form template
-in the packaged wheel.
+`multiplicity` distinct canonical templates. Every replacement is
+verified **exactly**: `len == multiplicity` and
+`len(set) == multiplicity` (a proper full orbit with distinct elements —
+no collapsed duplicates); no operator form and no fractional
+coefficient; the representative's `_fract_constrained_flags` free-axis
+count equals the manifold's rank (rejecting non-minimal spellings such
+as `(x-y,-x+y,z)`); and parametrization-independent geometric
+equivalence to the cctbx orbit (every element on a cctbx manifold, every
+cctbx manifold covered). The no-operator-form and no-duplicate
+invariants are enforced by the post-process before it writes, in the
+unit tests, and (for operator form) by `tools/check_packaged_db.py`,
+which rejects any operator-form template in the packaged wheel.
 
 ## Consequences
 
@@ -439,13 +439,13 @@ pixi exec --spec cctbx --spec gemmi --spec sympy --spec pyyaml \
   --print-summary
 ```
 
-**Canonical-`coords_xyz` correction (§9) — mandatory second stage.**
-The rebuild has **two mandatory stages**, and the generator run above is
+**Canonical-`coords_xyz` correction (§9) — mandatory second stage.** The
+rebuild has **two mandatory stages**, and the generator run above is
 only the first. The generator emits cctbx operator-form `coords_xyz` for
 coupled special positions and **cannot** emit canonical form itself:
-cctbx always produces operator form, and the canonical ITA spelling lives
-in cryspy's `wyckoff.dat`. The generator alone therefore does **not**
-produce a shippable database. It **must** be followed by the
+cctbx always produces operator form, and the canonical ITA spelling
+lives in cryspy's `wyckoff.dat`. The generator alone therefore does
+**not** produce a shippable database. It **must** be followed by the
 canonicalization post-process, which is the **invariant-enforcing step**
 — it re-sources canonical ITA `coords_xyz` from cryspy's `wyckoff.dat`
 and refuses to write unless every template is canonical (no operator
@@ -479,8 +479,8 @@ Build environment:
 
 Generated and curation artifacts:
 
-- `src/easydiffraction/crystallography/space_groups.json.gz`
-  (after the §9 canonical-`coords_xyz` correction):
+- `src/easydiffraction/crystallography/space_groups.json.gz` (after the
+  §9 canonical-`coords_xyz` correction):
   `390f0e9d0ebe27a52ee5680a1bc686123ba84c8751302fed4dee4dfaf7edf7b4`
 - `tmp/space-groups/helper-tools/generate_space_groups.py`:
   `3aa5f03cd1a69bdfe0a280158c9343b65d5eaa4d75a6d58f2606fb5fbe3df83d`

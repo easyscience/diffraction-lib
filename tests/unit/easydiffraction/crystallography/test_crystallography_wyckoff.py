@@ -54,6 +54,20 @@ class TestApplyAtomSiteSymmetryConstraints:
         result = apply_atom_site_symmetry_constraints(atom, 'P m -3 m', '1', 'a')
         assert result is not None
 
+    def test_coupled_special_position_slaves_dependent_axis(self):
+        from easydiffraction.crystallography.crystallography import (
+            apply_atom_site_symmetry_constraints,
+        )
+
+        # R -3 m (IT 166), coord_code='h', Wyckoff 'h' = (x,-x,z): editing
+        # fract_x slaves fract_y to -fract_x while fract_x/fract_z stay free
+        # (the ed-6 coupled-position regression).
+        atom = {'fract_x': 0.3, 'fract_y': 0.0, 'fract_z': 0.5}
+        result = apply_atom_site_symmetry_constraints(atom, 'R -3 m', 'h', 'h')
+        assert result['fract_x'] == 0.3
+        assert result['fract_y'] == -0.3
+        assert result['fract_z'] == 0.5
+
 
 class TestAtomSiteSymmetryConstrainedFlags:
     def test_special_position_all_fixed(self):
@@ -73,6 +87,17 @@ class TestAtomSiteSymmetryConstrainedFlags:
         # P 1 (IT 1), Wyckoff 'a' is the general position
         flags = atom_site_symmetry_constrained_flags('P 1', '1', 'a')
         assert flags == {'fract_x': False, 'fract_y': False, 'fract_z': False}
+
+    def test_coupled_special_position_constrains_dependent_axis(self):
+        from easydiffraction.crystallography.crystallography import (
+            atom_site_symmetry_constrained_flags,
+        )
+
+        # R -3 m (IT 166), Wyckoff 'h' = (x,-x,z): fract_y is slaved to -x,
+        # so only fract_y is constrained. Operator-form coords_xyz would
+        # wrongly mark fract_y free (the canonical-templates regression).
+        flags = atom_site_symmetry_constrained_flags('R -3 m', 'h', 'h')
+        assert flags == {'fract_x': False, 'fract_y': True, 'fract_z': False}
 
     def test_invalid_returns_all_false(self, monkeypatch):
         from easydiffraction.crystallography.crystallography import (

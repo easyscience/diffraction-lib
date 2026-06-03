@@ -105,12 +105,13 @@ def fit_plot_ranges(fit_data: dict[str, Any]) -> dict[str, float]:
 
 
 def fit_plot_geometry(fit_data: dict[str, Any]) -> dict[str, float]:
-    """Return Plotly-matched pgfplots axis geometry.
+    """
+    Return Plotly-matched pgfplots axis geometry.
 
     Row heights are anchored to the reference three-row layout so the
     main and residual panels keep a fixed centimetre height; the axis
-    stack grows or shrinks with the rows shown, matching the
-    interactive composite figure.
+    stack grows or shrinks with the rows shown, matching the interactive
+    composite figure.
     """
     bragg_tick_sets = fit_data.get('bragg_tick_sets') or []
     has_bragg_ticks = bool(bragg_tick_sets)
@@ -236,7 +237,8 @@ def _has_residual(fit_data: dict[str, Any]) -> bool:
 
 
 def _non_bragg_row_heights(*, has_residual: bool) -> tuple[float, float | None]:
-    """Return fixed main and residual row heights in pixels.
+    """
+    Return fixed main and residual row heights in pixels.
 
     Anchored to the reference three-row layout so the rows keep a
     constant height regardless of which rows the figure shows.
@@ -254,7 +256,8 @@ def _non_bragg_row_heights(*, has_residual: bool) -> tuple[float, float | None]:
 
 
 def _figure_cm_per_pixel() -> float:
-    """Return the fixed cm-per-pixel scale for fit-figure rows.
+    """
+    Return the fixed cm-per-pixel scale for fit-figure rows.
 
     Anchored so the reference three-row layout fills the nominal axis
     stack height (axis width times the reference aspect ratio).
