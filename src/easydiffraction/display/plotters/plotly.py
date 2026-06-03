@@ -2317,9 +2317,7 @@ scheduleResize();
         baseline_height = cls._base_composite_height_pixels(plot_spec)
         plot_area_height = cls._composite_plot_area_height(baseline_height)
         available_row_pixels = plot_area_height * cls._subplot_available_height_fraction(3)
-        non_bragg_pixels = max(
-            available_row_pixels - cls._bragg_tick_symbol_height_pixels(), 1.0
-        )
+        non_bragg_pixels = max(available_row_pixels - cls._bragg_tick_symbol_height_pixels(), 1.0)
 
         main_pixels = non_bragg_pixels / (1.0 + plot_spec.residual_height_fraction)
         if not has_residual:
@@ -2360,7 +2358,7 @@ scheduleResize();
 
     @classmethod
     def _composite_figure_height(cls, layout: PowderCompositeRows) -> float:
-        """Return figure height that renders rows at their pixel heights.
+        """Return figure height matching the row pixel heights.
 
         Each entry in ``layout.row_heights`` is an absolute pixel
         target. Plotly distributes the plot area across rows by
