@@ -31,7 +31,7 @@ _TUTORIALS_DIR = pathlib.Path(__file__).resolve().parents[2] / 'docs' / 'docs' /
 # letter) for tutorial sites that no longer declare the letter in source
 # (they now exercise auto-detection). Detection must reproduce each letter.
 _GROUND_TRUTH = [
-    ('F d -3 m', '1', (0.0, 0.0, 0.0), 'a'),
+    ('F d -3 m', '2', (0.125, 0.125, 0.125), 'a'),
     ('F m -3 m', '1', (0.0, 0.0, 0.0), 'a'),
     ('F m -3 m', '1', (0.5, 0.5, 0.5), 'b'),
     ('I 21 3', '1', (0.0851, 0.0851, 0.0851), 'a'),
