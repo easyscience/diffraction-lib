@@ -368,7 +368,7 @@ The ADR commit + design-phase review/reply cleanup are handled by
     → refresh baselines), thread `called_by_minimizer` through
     `AtomSites._update`, change the objective call site(s), then **verify
     by running `test_fit_neutron_pd_cwl_hs`** and smoke tests.
-- [ ] **P1.7 — Calculator consumes model multiplicity.** Replace the
+- [x] **P1.7 — Calculator consumes model multiplicity.** Replace the
       `SPACE_GROUPS` lookup in `cryspy._update_atom_multiplicity` with
       `atom_site.multiplicity.value`; when it is `None`, leave the
       backend's inferred multiplicity in place. Commit:

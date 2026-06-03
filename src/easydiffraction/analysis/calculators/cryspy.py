@@ -489,36 +489,25 @@ class CryspyCalculator(CalculatorBase):
         structure: Structure,
     ) -> None:
         """
-        Update cryspy atom multiplicities.
+        Update cryspy atom multiplicities from the model.
 
         CrysPy normalizes fractional coordinates into the ``[0, 1)``
         interval while parsing CIF.  For sites such as ``(x, -x, z)``,
         that can turn ``-x`` into ``1 - x`` before the Wyckoff
         multiplicity is inferred, making special positions look like
-        general positions.  EasyDiffraction already stores the intended
-        Wyckoff letter, so keep the calculator dictionary aligned with
-        that model state.
+        general positions.  EasyDiffraction's Wyckoff detection already
+        stores the correct per-site multiplicity, so use it; when a site
+        has no detected multiplicity (untabulated space group), keep the
+        backend's inferred value.
         """
         if cryspy is None:
             return
 
-        from cryspy.A_functions_base.function_2_space_group import (  # noqa: PLC0415
-            get_it_number_by_name_hm_short,
-        )
-
-        from easydiffraction.crystallography.space_groups import SPACE_GROUPS  # noqa: PLC0415
-
-        it_number = get_it_number_by_name_hm_short(structure.space_group.name_h_m.value)
-        coord_code = structure.space_group.it_coordinate_system_code.value
-        if it_number is None or (it_number, coord_code) not in SPACE_GROUPS:
-            return
-
-        positions = SPACE_GROUPS[it_number, coord_code]['Wyckoff_positions']
         multiplicity = cryspy_model_dict['atom_multiplicity']
         for idx, atom_site in enumerate(structure.atom_sites):
-            wyckoff_letter = atom_site.wyckoff_letter.value
-            if wyckoff_letter in positions:
-                multiplicity[idx] = positions[wyckoff_letter]['multiplicity']
+            site_multiplicity = atom_site.multiplicity.value
+            if site_multiplicity is not None:
+                multiplicity[idx] = site_multiplicity
 
     @staticmethod
     def _update_aniso_beta(
