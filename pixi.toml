@@ -115,8 +115,12 @@ notebook-tests = { cmd = 'python -m pytest --nbmake docs/docs/tutorials/ --nbmak
 # saved projects exist under tmp/tutorials/projects/.
 tutorial-output-tests = { cmd = 'python -m pytest tests/tutorials/ --color=yes -v', env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials' } }
 # Run the tutorials and then verify their saved outputs in a single step.
-script-tests-checked = { cmd = 'python -m pytest tests/tutorials/ --color=yes -v', depends-on = ['script-tests'], env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials' } }
-notebook-tests-checked = { cmd = 'python -m pytest tests/tutorials/ --color=yes -v', depends-on = ['notebook-tests'], env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials' } }
+script-tests-checked = { cmd = 'python -m pytest tests/tutorials/ --color=yes -v', depends-on = [
+  'script-tests',
+], env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials' } }
+notebook-tests-checked = { cmd = 'python -m pytest tests/tutorials/ --color=yes -v', depends-on = [
+  'notebook-tests',
+], env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials' } }
 
 test = { depends-on = ['unit-tests', 'functional-tests'] }
 test-all = { depends-on = [
