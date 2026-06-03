@@ -23,6 +23,7 @@ from pathlib import Path
 import pytest
 
 from analysis_cif_reader import read_analysis_cif
+from generate_baseline import PLATFORM_SENSITIVE
 from generate_baseline import artifact_root
 
 BASELINE = json.loads((Path(__file__).parent / 'baseline.json').read_text(encoding='utf-8'))
@@ -64,12 +65,20 @@ def test_tutorial_output(name: str) -> None:
     assert cif_path.is_file(), f"Missing {cif_path}; tutorial '{name}' did not save its project."
 
     cif = read_analysis_cif(cif_path)
-    rtol = expected['rtol']
 
+    # result_kind reflects the minimizer type; it is reproducible
+    # across platforms, so it is always checked.
     assert cif.result_kind == expected['result_kind'], (
         f"{name}: result_kind '{cif.result_kind}' != expected '{expected['result_kind']}'"
     )
 
+    # Some tutorials (e.g. ed-7 on the compiled crysfml backend)
+    # produce fit metrics that are not reproducible across CPU arch
+    # or BLAS; confirm they ran and saved, but skip the numbers.
+    if name in PLATFORM_SENSITIVE:
+        pytest.skip(f'{name}: platform-sensitive fit metrics not compared')
+
+    rtol = expected['rtol']
     _assert_close(
         cif.scalar('reduced_chi_square'),
         expected['reduced_chi_square'],

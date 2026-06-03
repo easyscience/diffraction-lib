@@ -31,6 +31,14 @@ BAYESIAN_RTOL = 0.10
 # Optional deterministic fit-quality scalars to track when present.
 OPTIONAL_SCALARS = ('R_factor_all', 'wR_factor_all')
 
+# Tutorials whose fit metrics are not reproducible across platforms,
+# so they are exempted from the numeric baseline comparison. ed-7
+# fits on the compiled crysfml backend, whose reduced_chi_square
+# differs between arm64 macOS and x86-64 Linux/Windows. They still
+# run in script-/notebook-tests and are checked for result_kind;
+# only their numeric metrics are skipped. Add a name here to exempt.
+PLATFORM_SENSITIVE = frozenset({'ed_7_si_sepd'})
+
 # Number of refined parameters to track per tutorial (cell lengths and
 # phase scales preferred, topped up from the front of the loop).
 KEY_PARAMETER_COUNT = 2
@@ -66,7 +74,7 @@ def select_key_parameters(cif: AnalysisCif) -> dict[str, float]:
     return {name: round(cif.parameter_value(name), ROUND_DIGITS) for name in ordered}
 
 
-def build_entry(cif: AnalysisCif) -> dict | None:
+def build_entry(name: str, cif: AnalysisCif) -> dict | None:
     """Build a baseline entry, or ``None`` if the project has no fit."""
     reduced_chi_square = cif.scalar('reduced_chi_square')
     if reduced_chi_square is None or reduced_chi_square <= 0:
@@ -78,6 +86,8 @@ def build_entry(cif: AnalysisCif) -> dict | None:
         'rtol': BAYESIAN_RTOL if kind == 'bayesian' else DETERMINISTIC_RTOL,
         'reduced_chi_square': round(reduced_chi_square, ROUND_DIGITS),
     }
+    if name in PLATFORM_SENSITIVE:
+        entry['platform_sensitive'] = True
     for scalar_name in OPTIONAL_SCALARS:
         value = cif.scalar(scalar_name)
         if value is not None:
@@ -94,7 +104,7 @@ def collect_baseline(root: Path) -> dict[str, dict]:
         name = cif_path.parents[1].name
         if not name.startswith('ed_'):
             continue
-        entry = build_entry(read_analysis_cif(cif_path))
+        entry = build_entry(name, read_analysis_cif(cif_path))
         if entry is not None:
             baseline[name] = entry
     return baseline

@@ -231,6 +231,7 @@
     "result_kind": "deterministic",
     "rtol": 0.02,
     "reduced_chi_square": 2.663955,
+    "platform_sensitive": true,
     "R_factor_all": 0.08004,
     "wR_factor_all": 0.059687,
     "parameters": {
