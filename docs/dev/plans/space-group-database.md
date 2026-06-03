@@ -362,10 +362,13 @@ cryspy's `wyckoff.dat`, already holds the canonical ITA form for them
    `wyckoff.dat` + `numpy`/`sympy` (already project deps); `cctbx` is not
    used at all (it stays generation-only, relevant only if the generator
    is ever fully re-run).
-5. **Guard both sides:** a generation-time invariant in the generator, a
+5. **Guard the output:** the canonicalize post-process is the
+   invariant-enforcing step — it refuses to write unless every template is
+   canonical and the orbit is distinct — backed by a
    `tools/check_packaged_db.py` assertion rejecting operator-form leakage
-   in the packaged wheel, and a unit data-invariant over loaded
-   `SPACE_GROUPS`.
+   in the packaged wheel and a unit data-invariant over loaded
+   `SPACE_GROUPS`. (The generator stays cctbx extraction and cannot
+   self-assert this; see Decision 1 and CT2.)
 6. **Record it in the ADR:** add the canonical-`coords_xyz` invariant as a
    decision and update _Build Provenance_ with the new DB SHA-256 and the
    transform's SHA-256.
@@ -386,9 +389,11 @@ cryspy's `wyckoff.dat`, already holds the canonical ITA form for them
   `_fract_constrained_flags`) → rewrite `coords_xyz` (all other fields
   byte-identical).
 - `tmp/space-groups/helper-tools/generate_space_groups.py` — **local,
-  ignored** future-proofing (CT2): `_extract_wyckoff_positions` sources
-  `coords_xyz` from cryspy (not cctbx) + a generation-time invariant
-  rejecting operator-form leakage. Not re-run now.
+  ignored**: stays cctbx extraction; it **cannot** self-canonicalize
+  (cctbx always emits operator form, and the canonical spelling + checks
+  need the project env — see CT2). Its `_extract_wyckoff_positions`
+  docstring directs to the mandatory `canonicalize_coords.py` second
+  stage. Not re-run now.
 - `docs/dev/adrs/accepted/space-group-database/space_groups_overrides.yaml`
   — record any position the orbit match leaves ambiguous (curated vs
   International Tables).
