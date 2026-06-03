@@ -411,7 +411,7 @@ commit stages only the tracked deliverable it produces, and the local
 tools are recorded by SHA-256 in the ADR provenance (CT4). No step commits
 only ignored files, and no empty commits.
 
-- [ ] **CT1 — Canonicalise the DB via the cctbx-free post-process.**
+- [x] **CT1 — Canonicalise the DB via the cctbx-free post-process.**
       Finish the local
       `tmp/space-groups/helper-tools/canonicalize_coords.py`: parse cryspy
       `wyckoff.dat`, **match each DB position to the orbit-equivalent
