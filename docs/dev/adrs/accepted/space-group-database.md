@@ -307,11 +307,18 @@ variable. cctbx's `unique_ops().as_xyz()` (the generator's raw output)
 emits **operator form** (e.g. `1/2*x-1/2*y`) for coupled special
 positions, which silently breaks
 `crystallography._fract_constrained_flags` so a refined special-position
-coordinate drifts off its symmetry site. Canonical `coords_xyz` are
-therefore re-sourced from cryspy's `wyckoff.dat` (the intended Wyckoff
-source), matched by orbit equivalence; the invariant is enforced in the
-unit tests and by `tools/check_packaged_db.py`, which rejects any
-operator-form template in the packaged wheel.
+coordinate drifts off its symmetry site. The **full** orbit is preserved
+(`coords_xyz` length equals the ITA multiplicity): each cctbx orbit
+element is re-spelled with cryspy's canonical integer direction — matched
+by column space, since centering shifts only the offset, never the
+direction — keeping the element's own offset. Every replacement is
+verified **exactly**: symbolic orbit equivalence as rational affine point
+sets (not sampled), plus a constraint check that `_fract_constrained_flags`
+reports a free-axis count equal to the manifold's rank (which rejects both
+operator form and non-minimal spellings such as `(x-y,-x+y,z)`). The
+no-operator-form invariant is enforced by the post-process before it
+writes, in the unit tests, and by `tools/check_packaged_db.py`, which
+rejects any operator-form template in the packaged wheel.
 
 ## Consequences
 
@@ -434,11 +441,14 @@ canonical-templates post-process then re-sources canonical ITA
 python tmp/space-groups/helper-tools/canonicalize_coords.py --write
 ```
 
-It matches each of the 288 coupled positions to the orbit-equivalent
-cryspy position (one, IT 228 origin-1 `g`, is re-parametrised from
-cctbx's own orbit), changes only `coords_xyz`, and asserts no
-operator-form template remains. The `space_groups.json.gz` SHA-256 below
-is **after** this correction.
+It re-spells each of the 288 coupled positions' **full** orbit
+(`coords_xyz` length equals the multiplicity) using cryspy's canonical
+integer directions, matched by column space (one, IT 228 origin-1 `g`,
+is re-parametrised from cctbx's own orbit). It changes only `coords_xyz`,
+verifies every replacement **exactly** (symbolic orbit equivalence as
+rational affine point sets plus a `_fract_constrained_flags` rank check),
+and asserts no operator-form or fractional-coefficient template remains.
+The `space_groups.json.gz` SHA-256 below is **after** this correction.
 
 Build environment:
 
@@ -456,12 +466,12 @@ Generated and curation artifacts:
 
 - `src/easydiffraction/crystallography/space_groups.json.gz`
   (after the §9 canonical-`coords_xyz` correction):
-  `234a9aeb9579c67fcb1a924554714407498cbb34fa94c8562b4dd454e9503225`
+  `9ef3e34cc7f88997028789701ba05374fe0999f1d16a80b14f2a381c022bc358`
 - `tmp/space-groups/helper-tools/generate_space_groups.py`:
   `3aa5f03cd1a69bdfe0a280158c9343b65d5eaa4d75a6d58f2606fb5fbe3df83d`
 - `tmp/space-groups/helper-tools/canonicalize_coords.py` (§9
   canonical-`coords_xyz` post-process):
-  `c6b2b1ac50d59f6546c9fc9eadebb49a637ac4d6fba589a2a4a1d80deeb10e37`
+  `1cd5b36542c034b530f6c90f30c7b4de0c291c16b7302c3d57730790570031d2`
 - `docs/dev/adrs/accepted/space-group-database/space_groups_overrides.yaml`:
   `7077eec25d0f3b852dd7096a24dc7ac438467f9cb594f91a65ce10cda0e0722a`
 - `tmp/space-groups/extracted-comparison/disagreements.md`:
