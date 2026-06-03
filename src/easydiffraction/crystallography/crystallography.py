@@ -255,14 +255,12 @@ def _get_wyckoff_exprs(
         return None
 
     coord_code = _normalize_coord_code(coord_code)
-    if coord_code is None:
-        log.error('IT_coordinate_system_code is not set')
-        return None
-
     if (it_number, coord_code) not in SPACE_GROUPS:
-        # Space group is not in the local SPACE_GROUPS table (e.g. P 1,
-        # where cryspy reports no coordinate-system codes). Treat as
-        # "no symmetry constraints to apply".
+        # Space group / coordinate-system combination is absent from the
+        # local SPACE_GROUPS table. Treat as "no symmetry constraints to
+        # apply". Triclinic groups are keyed ``(it_number, None)`` and
+        # resolve normally through this lookup, so a ``None`` code is not
+        # treated as unset.
         return None
 
     entry = SPACE_GROUPS[it_number, coord_code]
