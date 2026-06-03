@@ -108,7 +108,7 @@ composite path (`build_powder_meas_vs_calc_figure`):
 - [x] **P1.5 — Update tutorials.** Remove `include=` from tutorial
       sources; `pixi run notebook-prepare`. Commit:
       `Drop include= from tutorials for unified pattern view`
-- [ ] **P1.6 — Phase 1 review gate.** Commit:
+- [x] **P1.6 — Phase 1 review gate.** Commit:
       `Reach Phase 1 review gate`
 
 Each completed P1 step is staged with explicit paths and committed
@@ -131,7 +131,7 @@ x-range matching the composite main row, and the nothing-to-plot error.
 
 ## Status checklist
 
-- [ ] Phase 1 implementation complete
+- [x] Phase 1 implementation complete
 - [ ] Phase 1 reviewed
 - [ ] Phase 2 verification complete
 
