@@ -284,7 +284,7 @@ The ADR commit + design-phase review/reply cleanup are handled by
       mutation methods raising and a private `_replace_from_space_group`
       rebuild method that creates/adopts rows from `SPACE_GROUPS[key]`.
       Commit: `Add derived space group Wyckoff category`
-- [ ] **P1.3 — Wire `space_group_wyckoff` into `Structure`.** Add it as
+- [x] **P1.3 — Wire `space_group_wyckoff` into `Structure`.** Add it as
       a read-only sibling category on `Structure`, rebuild it when
       structure categories update so it tracks the current space group,
       keep it empty for absent groups, and exclude it from project CIF
