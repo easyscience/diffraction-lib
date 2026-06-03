@@ -6,8 +6,10 @@ Inspects a built wheel (not an installed package) so the check is independent
 of the project's full dependency tree: it opens the wheel, reads
 ``space_groups.json.gz`` straight from it, and asserts the data is shipped as
 package data, that the obsolete ``space_groups.pkl.gz`` is gone, and that the
-archive covers all 230 IT groups plus the cryspy coordinate-code alias surface.
-Exits non-zero on any problem so a packaging regression fails the caller.
+archive covers all 230 IT groups plus the cryspy coordinate-code alias
+surface, and that no Wyckoff ``coords_xyz`` template is in cctbx operator form
+(canonical ITA form only). Exits non-zero on any problem so a packaging
+regression fails the caller.
 
 Usage: ``python tools/check_packaged_db.py [path/to/wheel]`` (defaults to the
 newest wheel in ``dist/``).
@@ -17,6 +19,7 @@ from __future__ import annotations
 
 import gzip
 import json
+import re
 import sys
 import zipfile
 from pathlib import Path
@@ -26,6 +29,9 @@ _OBSOLETE_MEMBER = 'easydiffraction/crystallography/space_groups.pkl.gz'
 _REQUIRED_KEYS = [(14, '-b1'), (3, '-a1'), (1, None)]
 # Accepted seed record count (see the space-group-database ADR provenance).
 _EXPECTED_RECORD_COUNT = 816
+# Wyckoff coords_xyz must be canonical ITA form, never cctbx operator form
+# (e.g. ``1/2*x-1/2*y``), which breaks symmetry-constraint detection.
+_OPERATOR_FORM = re.compile(r'[0-9.]\s*\*\s*[xyz]|[xyz]\s*\*')
 
 
 def _wheel_path(argv: list[str]) -> Path:
@@ -58,6 +64,19 @@ def main(argv: list[str]) -> None:
         sys.exit(f'packaged database has {len(records)} records, expected {_EXPECTED_RECORD_COUNT}')
     if len(keys) != _EXPECTED_RECORD_COUNT:
         sys.exit(f'packaged database has {len(keys)} unique keys, expected {_EXPECTED_RECORD_COUNT}')
+
+    operator_form = [
+        (record['IT_number'], record['IT_coordinate_system_code'], letter, template)
+        for record in records
+        for letter, position in record['Wyckoff_positions'].items()
+        for template in position['coords_xyz']
+        if _OPERATOR_FORM.search(template)
+    ]
+    if operator_form:
+        sys.exit(
+            f'packaged database has {len(operator_form)} operator-form coords_xyz '
+            f'(canonical ITA form required); first: {operator_form[0]}'
+        )
 
     print(
         f'packaged DB OK in {wheel.name}: '

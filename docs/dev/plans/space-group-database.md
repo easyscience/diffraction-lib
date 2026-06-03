@@ -436,7 +436,7 @@ only ignored files, and no empty commits.
       future rebuild stays canonical. **No re-run now** (CT1's
       post-process already produced the canonical DB). Local curation
       tooling — not committed; its updated SHA-256 is recorded in CT4.
-- [ ] **CT3 — Packaging assertion.** Extend the tracked
+- [x] **CT3 — Packaging assertion.** Extend the tracked
       `tools/check_packaged_db.py` to assert no packaged `coords_xyz`
       template is operator-form (catches future regression at the wheel
       layer). Commit: `Assert canonical coords_xyz in packaged DB check`
