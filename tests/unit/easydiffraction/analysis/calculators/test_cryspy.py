@@ -101,6 +101,11 @@ def test_update_structure_restores_wyckoff_multiplicity_after_coordinate_wrappin
         wyckoff_letter='h',
         adp_iso=0.5,
     )
+    # The calculator reads the per-site multiplicity from the model, so
+    # run the update flow to populate it via Wyckoff detection (R-3m 'h'
+    # has multiplicity 18).
+    structure._update_categories()
+    assert structure.atom_sites['O'].multiplicity.value == 18
 
     cryspy_model_dict = {
         'unit_cell_parameters': [6.86, 6.86, 14.14, np.pi / 2, np.pi / 2, 2 * np.pi / 3],

@@ -112,10 +112,16 @@ class TestAtomSite:
         assert 'Fe' in allowed
 
     def test_wyckoff_letter_allowed_values(self):
-        from easydiffraction.datablocks.structure.categories.atom_sites.default import AtomSite
+        from easydiffraction.datablocks.structure.item.base import Structure
 
-        site = AtomSite()
-        allowed = site._wyckoff_letter_allowed_values
+        # Allowed letters are derived from the parent structure's space
+        # group, so the atom must live inside a structure with a
+        # tabulated space group; a parentless AtomSite has no allowed
+        # letters.
+        structure = Structure(name='s')
+        structure.space_group.name_h_m = 'P m -3 m'
+        structure.atom_sites.create(label='X', type_symbol='O', adp_iso=0.5)
+        allowed = structure.atom_sites['X']._wyckoff_letter_allowed_values
         assert 'a' in allowed
 
     def test_uses_iucr_casing_with_legacy_aliases(self):

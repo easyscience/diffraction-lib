@@ -14,13 +14,15 @@ class TestGetWyckoffExprs:
         assert result is None
         monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.RAISE, raising=True)
 
-    def test_none_coord_code_returns_none(self, monkeypatch):
+    def test_none_coord_code_resolves_triclinic(self):
         from easydiffraction.crystallography.crystallography import _get_wyckoff_exprs
 
-        monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.WARN, raising=True)
+        # Triclinic groups are keyed ``(IT_number, None)``: P 1 (IT 1)
+        # resolves through the ``None`` coordinate code to its general
+        # position (x, y, z) rather than being treated as unset.
         result = _get_wyckoff_exprs('P 1', None, 'a')
-        assert result is None
-        monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.RAISE, raising=True)
+        assert result is not None
+        assert len(result) == 3
 
     def test_valid_returns_three_expressions(self):
         from easydiffraction.crystallography.crystallography import _get_wyckoff_exprs
