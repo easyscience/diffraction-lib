@@ -102,3 +102,9 @@ project.display.fit.series(
 
 # %%
 project.display.fit.series(versus=temperature)
+
+# %% [markdown]
+# ## 💾 Save Project
+
+# %%
+project.save_as(dir_path='projects/ed_23_cosio_d20_scan')

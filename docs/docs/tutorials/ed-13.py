@@ -709,7 +709,7 @@ project_1.display.pattern(expt_name='sim_si', x='d_spacing')
 # directory specified by the `dir_path` attribute of the project object.
 
 # %%
-project_1.save_as(dir_path='data/powder_diffraction_Si')
+project_1.save_as(dir_path='projects/ed_13_si')
 
 # %% [markdown]
 # ## 💪 Exercise: Complex Fit – LBCO
@@ -1478,7 +1478,7 @@ project_2.display.pattern(expt_name='sim_lbco', x_min=88000, x_max=101000)
 # the analysis.
 
 # %%
-project_2.save_as(dir_path='data/powder_diffraction_LBCO_Si')
+project_2.save_as(dir_path='projects/ed_13_lbco_si')
 
 # %% [markdown]
 # #### Final Remarks

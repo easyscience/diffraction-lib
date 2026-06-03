@@ -344,3 +344,9 @@ project.display.pattern(expt_name='hrpt', x_min=48, x_max=51)
 #
 # The HTML report is written automatically when the project is saved;
 # enable `project.report.pdf` as well for a PDF version.
+
+# %% [markdown]
+# ## 💾 Save Project
+
+# %%
+project.save_as(dir_path='projects/ed_6_hs_hrpt')

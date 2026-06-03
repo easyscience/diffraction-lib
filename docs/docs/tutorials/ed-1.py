@@ -115,3 +115,9 @@ project.experiments.show_names()
 # %%
 # Plot measured vs. calculated diffraction patterns
 project.display.pattern(expt_name='hrpt')
+
+# %% [markdown]
+# ## 💾 Save Project
+
+# %%
+project.save_as(dir_path='projects/ed_1_lbco_hrpt')

@@ -140,3 +140,9 @@ project.display.pattern(expt_name='senju')
 
 # %%
 structure.show_as_cif()
+
+# %% [markdown]
+# ## 💾 Save Project
+
+# %%
+project.save_as(dir_path='projects/ed_15_taurine_senju')

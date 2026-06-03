@@ -131,3 +131,9 @@ project.display.fit.correlations()
 
 # %%
 project.display.pattern(expt_name='xray_pdf')
+
+# %% [markdown]
+# ## 💾 Save Project
+
+# %%
+project.save_as(dir_path='projects/ed_12_nacl_xray_pdf')

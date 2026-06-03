@@ -223,7 +223,7 @@ expt_n2.excluded_regions.create(id='2', start=130000, end=180000)
 
 # %%
 project = Project(name='beer')
-project.save_as(dir_path='projects/beer_mcstas')
+project.save_as(dir_path='projects/ed_20_beer_mcstas')
 
 # %% [markdown]
 # ### Add Structures
