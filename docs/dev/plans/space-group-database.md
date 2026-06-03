@@ -319,27 +319,30 @@ cryspy's `wyckoff.dat`, already holds the canonical ITA form for them
    generator's `_extract_wyckoff_positions` built `coords_xyz` from cctbx
    (`position.unique_ops().as_xyz()`, operator form) while cryspy's
    `wyckoff.dat` — the ADR's intended Wyckoff source — was read only for
-   count-validation. A local tool loads the bundled DB and, for each
-   cctbx orbit **element**, re-spells it with the cryspy **direction**
-   (canonical integer rotation) that shares its column space, keeping the
-   element's own offset. This **preserves the full (centered) orbit** —
-   `coords_xyz` length stays equal to the multiplicity, matching the #187
-   baseline — while fixing only the spelling. (cctbx stores the full
-   centered orbit; cryspy lists only the **primitive** orbit, but
-   centering shifts a position's offset, never its direction, so every
-   full-orbit element's column space appears in the cryspy position.)
-   Canonical form = each component a signed single free variable (or an
+   count-validation. A Wyckoff orbit is a list of **distinct
+   point-functions** (one per equivalent site), not a set of manifolds. A
+   local tool loads the bundled DB and, for each operator-form position,
+   builds the **full** canonical orbit by **expanding** the cryspy
+   primitive orbit over the group's centering translations (the
+   identity-rotation symops): each cryspy primitive element shifted by
+   each centering vector yields one canonical full-orbit element. This
+   **preserves the full (centered) orbit** — `coords_xyz` length stays
+   equal to the multiplicity, matching the #187 baseline — with
+   **distinct** elements. (cctbx stores the full centered orbit; cryspy
+   lists only the **primitive** orbit, with centering implicit.) Canonical
+   form = each component a signed single free variable (or an
    integer-coefficient ITA combination such as `x-y`) plus an optional
    rational constant — **no fractional coefficient on a variable** — with
    each genuine free DOF reduced to one canonical variable so dependent
-   axes' symbols are absent. _Rejected alternative — replacing
-   `coords_xyz` with cryspy's orbit **directly** — silently reduces
-   centered orbits to primitive (cryspy's printed style), breaking the
-   `coords_xyz`-length-equals-multiplicity invariant; the review-1
-   [Finding 2] exact check caught exactly that and the element-wise
-   re-spelling restores the full orbit. No cctbx re-run is needed; fixing
-   the generator + full cctbx re-run adds a heavy install + reproducibility
-   risk for the same cryspy↔cctbx reconciliation._
+   axes' symbols are absent. _Rejected alternatives: (a) replacing
+   `coords_xyz` with cryspy's orbit **directly** silently reduces centered
+   orbits to primitive, breaking the length-equals-multiplicity invariant
+   (review-1 [Finding 2]); (b) re-spelling each cctbx element by **column
+   space** collapses distinct point-functions sharing a manifold into
+   **duplicate** templates (review-2 [Finding 1]). The centering expansion
+   avoids both. No cctbx re-run is needed; fixing the generator + full
+   cctbx re-run adds a heavy install + reproducibility risk for the same
+   cryspy↔cctbx reconciliation._
 2. **Verify each replacement two ways** (review-1 [P1] plus the CT1
    correctness gap): (a) **exact symbolic orbit equivalence** (`sympy`) —
    the cryspy canonical orbit and the cctbx operator-form orbit describe
@@ -419,15 +422,16 @@ only ignored files, and no empty commits.
 - [x] **CT1 — Canonicalise the DB via the cctbx-free post-process.**
       Finish the local
       `tmp/space-groups/helper-tools/canonicalize_coords.py`: parse cryspy
-      `wyckoff.dat`, then **re-spell each cctbx orbit element with the
-      cryspy canonical direction sharing its column space** (keeping the
-      element's own offset), preserving the **full** centered orbit
-      (`coords_xyz` length stays equal to the multiplicity). Verify per
-      element, **exactly** — symbolic orbit equivalence as rational affine
-      point sets (not sampled) **and** correct `_fract_constrained_flags()`
-      (free-axis count equals the manifold rank), rejecting operator form
-      and any fractional coefficient. Curate against International Tables
-      any case the directions leave ambiguous, recording it in
+      `wyckoff.dat`, then build each operator-form position's **full**
+      canonical orbit by **expanding the cryspy primitive orbit over the
+      group's centering translations** (`coords_xyz` length equals the
+      multiplicity, all elements **distinct**). Verify per position,
+      **exactly** — `len(set) == multiplicity` (distinct full orbit), no
+      operator form, no fractional coefficient, correct
+      `_fract_constrained_flags()` (free-axis count equals the manifold
+      rank), and parametrization-independent geometric equivalence to the
+      cctbx orbit. Curate against International Tables any case the
+      cryspy match leaves ambiguous, recording it in
       `space_groups_overrides.yaml`. Run it to rewrite
       `src/easydiffraction/crystallography/space_groups.json.gz` (R-3m `h`
       → `(x,-x,z)`, 18-element full orbit; all non-`coords_xyz` fields

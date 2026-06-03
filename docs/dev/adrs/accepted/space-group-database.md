@@ -307,18 +307,25 @@ variable. cctbx's `unique_ops().as_xyz()` (the generator's raw output)
 emits **operator form** (e.g. `1/2*x-1/2*y`) for coupled special
 positions, which silently breaks
 `crystallography._fract_constrained_flags` so a refined special-position
-coordinate drifts off its symmetry site. The **full** orbit is preserved
-(`coords_xyz` length equals the ITA multiplicity): each cctbx orbit
-element is re-spelled with cryspy's canonical integer direction — matched
-by column space, since centering shifts only the offset, never the
-direction — keeping the element's own offset. Every replacement is
-verified **exactly**: symbolic orbit equivalence as rational affine point
-sets (not sampled), plus a constraint check that `_fract_constrained_flags`
-reports a free-axis count equal to the manifold's rank (which rejects both
-operator form and non-minimal spellings such as `(x-y,-x+y,z)`). The
-no-operator-form invariant is enforced by the post-process before it
-writes, in the unit tests, and by `tools/check_packaged_db.py`, which
-rejects any operator-form template in the packaged wheel.
+coordinate drifts off its symmetry site. A Wyckoff orbit is a list of
+**distinct point-functions** (one per symmetry-equivalent site), and the
+DB stores the **full** (centered) orbit — `coords_xyz` length equals the
+ITA multiplicity. cryspy lists only the **primitive** orbit, so the full
+orbit is built by **expanding** each cryspy primitive element over the
+group's centering translations (the identity-rotation symops):
+`full = {primitive element + centering vector}`, yielding exactly
+`multiplicity` distinct canonical templates. Every replacement is verified
+**exactly**: `len == multiplicity` and `len(set) == multiplicity` (a
+proper full orbit with distinct elements — no collapsed duplicates); no
+operator form and no fractional coefficient; the representative's
+`_fract_constrained_flags` free-axis count equals the manifold's rank
+(rejecting non-minimal spellings such as `(x-y,-x+y,z)`); and
+parametrization-independent geometric equivalence to the cctbx orbit
+(every element on a cctbx manifold, every cctbx manifold covered). The
+no-operator-form and no-duplicate invariants are enforced by the
+post-process before it writes, in the unit tests, and (for operator form)
+by `tools/check_packaged_db.py`, which rejects any operator-form template
+in the packaged wheel.
 
 ## Consequences
 
@@ -448,14 +455,15 @@ form, no fractional coefficient):
 python tmp/space-groups/helper-tools/canonicalize_coords.py --write
 ```
 
-It re-spells each of the 288 coupled positions' **full** orbit
-(`coords_xyz` length equals the multiplicity) using cryspy's canonical
-integer directions, matched by column space (one, IT 228 origin-1 `g`,
-is re-parametrised from cctbx's own orbit). It changes only `coords_xyz`,
-verifies every replacement **exactly** (symbolic orbit equivalence as
-rational affine point sets plus a `_fract_constrained_flags` rank check),
-and asserts no operator-form or fractional-coefficient template remains.
-The `space_groups.json.gz` SHA-256 below is **after** this correction.
+It rebuilds each of the 288 coupled positions' **full** orbit by
+**expanding** the cryspy primitive orbit over the group's centering
+translations — `coords_xyz` length equals the multiplicity and every
+element is distinct. It changes only `coords_xyz`, verifies every
+replacement **exactly** (distinct full orbit, canonical spelling, a
+`_fract_constrained_flags` rank check, and parametrization-independent
+geometric equivalence to the cctbx orbit), and asserts no operator-form
+and no duplicate template remains. The `space_groups.json.gz` SHA-256
+below is **after** this correction.
 
 Build environment:
 
@@ -473,12 +481,12 @@ Generated and curation artifacts:
 
 - `src/easydiffraction/crystallography/space_groups.json.gz`
   (after the §9 canonical-`coords_xyz` correction):
-  `9ef3e34cc7f88997028789701ba05374fe0999f1d16a80b14f2a381c022bc358`
+  `390f0e9d0ebe27a52ee5680a1bc686123ba84c8751302fed4dee4dfaf7edf7b4`
 - `tmp/space-groups/helper-tools/generate_space_groups.py`:
   `3aa5f03cd1a69bdfe0a280158c9343b65d5eaa4d75a6d58f2606fb5fbe3df83d`
 - `tmp/space-groups/helper-tools/canonicalize_coords.py` (§9
   canonical-`coords_xyz` post-process):
-  `1cd5b36542c034b530f6c90f30c7b4de0c291c16b7302c3d57730790570031d2`
+  `8f2e94b130481d2a11de057fe200d8e5fd5d3d5eec7cdd39f5d4afd13f5cb8f2`
 - `docs/dev/adrs/accepted/space-group-database/space_groups_overrides.yaml`:
   `7077eec25d0f3b852dd7096a24dc7ac438467f9cb594f91a65ce10cda0e0722a`
 - `tmp/space-groups/extracted-comparison/disagreements.md`:
