@@ -41,7 +41,7 @@ import easydiffraction as ed
 project = ed.Project()
 
 # %%
-project.save_as('projects/lbco_hrpt_emcee')
+project.save_as(dir_path='projects/ed_25_lbco_hrpt_emcee')
 
 # %% [markdown]
 # ## 🧩 Define Structure
@@ -299,6 +299,7 @@ project.analysis.minimizer.type = 'emcee'
 project.analysis.minimizer.sampling_steps = 100  # lower than the default 5000
 project.analysis.minimizer.burn_in_steps = 20  # lower than the default 1000
 project.analysis.minimizer.population_size = 16  # lower than the default 32
+project.analysis.minimizer.random_seed = 42  # fixed seed for reproducible output
 
 # %%
 project.analysis.fit()

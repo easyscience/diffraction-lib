@@ -124,6 +124,7 @@ project.display.posterior.predictive(expt_name='hrpt', x_min=92, x_max=93)
 # convergence and better posterior resolution.
 
 # %%
+project.analysis.minimizer.random_seed = 42  # fixed seed for reproducible output
 project.analysis.fit(resume=True, extra_steps=100)
 
 # %%
@@ -142,3 +143,9 @@ project.display.posterior.distribution()
 
 # %%
 project.display.posterior.predictive(expt_name='hrpt', x_min=92, x_max=93)
+
+# %% [markdown]
+# ## 💾 Save Project
+
+# %%
+project.save_as(dir_path='projects/ed_26_lbco_hrpt_emcee')
