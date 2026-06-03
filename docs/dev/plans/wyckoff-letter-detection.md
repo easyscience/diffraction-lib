@@ -264,7 +264,7 @@ The ADR commit + design-phase review/reply cleanup are handled by
       remains, **stop**: the space-group-database prerequisite must land
       before this plan's detection and snapping can be implemented.
       Commit: `Confirm wyckoff letter detection ADR gate`
-- [ ] **P1.1 — Orbit matcher in the crystallography submodule.** Add to
+- [x] **P1.1 — Orbit matcher in the crystallography submodule.** Add to
       `crystallography.py`: frozen
       `WyckoffPosition(letter, multiplicity, site_symmetry, coord_template)`,
       `_WYCKOFF_DETECTION_TOL = 1e-3`, `_normalize_coord_code()`,

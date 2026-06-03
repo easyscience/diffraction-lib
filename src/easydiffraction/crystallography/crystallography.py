@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
+import itertools
+from dataclasses import dataclass
 from fractions import Fraction
 from typing import Any
 
@@ -15,6 +17,56 @@ from sympy import sympify
 
 from easydiffraction.crystallography.space_groups import SPACE_GROUPS
 from easydiffraction.utils.logging import log
+
+# Maximum residual (in fractional units) for a coordinate to be considered
+# on a Wyckoff orbit during detection.
+_WYCKOFF_DETECTION_TOL = 1e-3
+
+
+@dataclass(frozen=True)
+class WyckoffPosition:
+    """A resolved Wyckoff position and the orbit representative matched.
+
+    Parameters
+    ----------
+    letter : str
+        Wyckoff letter (e.g. ``'h'``).
+    multiplicity : int
+        Site multiplicity (the full orbit size).
+    site_symmetry : str
+        International Tables site-symmetry symbol.
+    coord_template : str | None
+        Nearest matched orbit representative (e.g. ``'(x,-x,z)'``), or
+        ``None`` for a table lookup made without coordinates. This is what
+        coordinate snapping and constrained-axis flags consume.
+    """
+
+    letter: str
+    multiplicity: int
+    site_symmetry: str
+    coord_template: str | None
+
+
+def _normalize_coord_code(coord_code: str | None) -> str | None:
+    """Normalize a coordinate-system code to the ``SPACE_GROUPS`` key form.
+
+    The empty string (used by consumers for groups with no coordinate
+    code, e.g. triclinic P1/P-1) maps to ``None``, which is how those
+    settings are keyed in ``SPACE_GROUPS``.
+
+    Parameters
+    ----------
+    coord_code : str | None
+        Incoming coordinate-system code.
+
+    Returns
+    -------
+    str | None
+        ``None`` for the empty string, otherwise ``coord_code`` unchanged.
+    """
+    if coord_code == '':
+        return None
+    return coord_code
 
 
 def apply_cell_symmetry_constraints(
@@ -202,6 +254,7 @@ def _get_wyckoff_exprs(
         log.error(f"Failed to get IT_number for name_H-M '{name_hm}'")
         return None
 
+    coord_code = _normalize_coord_code(coord_code)
     if coord_code is None:
         log.error('IT_coordinate_system_code is not set')
         return None
@@ -415,7 +468,7 @@ def _get_general_position_ops(
     list[tuple[np.ndarray, np.ndarray]] | None
         List of (rotation, translation) pairs, or ``None`` on failure.
     """
-    key = (it_number, coord_code)
+    key = (it_number, _normalize_coord_code(coord_code))
     if key not in SPACE_GROUPS:
         # Not in the local SPACE_GROUPS table (e.g. P 1, where cryspy
         # reports no coordinate-system codes). The caller falls back to
@@ -428,6 +481,162 @@ def _get_general_position_ops(
     general_letter = next(iter(wyckoff_positions))
     general_coords = wyckoff_positions[general_letter]['coords_xyz']
     return [_parse_rotation_matrix(c) for c in general_coords]
+
+
+def _orbit_template_residual(point: np.ndarray, rot: np.ndarray, trans: np.ndarray) -> float:
+    """Return the mod-1 distance from ``point`` to an orbit template.
+
+    The template manifold is ``{rot·v + trans}``; the point lies on it for
+    some free ``v`` when the residual is ~0. Integer lattice shifts account
+    for unit-cell periodicity.
+
+    Parameters
+    ----------
+    point : np.ndarray
+        Fractional coordinate reduced into the unit cell.
+    rot : np.ndarray
+        (3, 3) rotation part of the template.
+    trans : np.ndarray
+        (3,) translation part of the template.
+
+    Returns
+    -------
+    float
+        Smallest residual over the candidate lattice shifts.
+    """
+    rot_float = rot.astype(float)
+    base = point - trans
+    best = np.inf
+    for shift in itertools.product((-1.0, 0.0, 1.0), repeat=3):
+        rhs = base - np.array(shift)
+        solution, *_ = np.linalg.lstsq(rot_float, rhs, rcond=None)
+        residual = float(np.linalg.norm(rot_float @ solution - rhs))
+        best = min(best, residual)
+    return best
+
+
+def _nearest_orbit_template(point: np.ndarray, coords_xyz: list[str]) -> tuple[str, float]:
+    """Return the orbit template nearest to ``point`` and its residual.
+
+    On near-ties (e.g. centering copies that share a manifold mod 1) the
+    earlier, canonical representative is kept for deterministic output; the
+    free-parameter-solving snap downstream is correct for any of them.
+    """
+    best_template = coords_xyz[0]
+    best_residual = np.inf
+    for template in coords_xyz:
+        rot, trans = _parse_rotation_matrix(template)
+        residual = _orbit_template_residual(point, rot, trans)
+        if residual < best_residual - 1e-9:
+            best_residual = residual
+            best_template = template
+    return best_template, best_residual
+
+
+def detect_wyckoff_position(
+    name_hm: str,
+    coord_code: str | None,
+    fract_xyz: tuple[float, float, float],
+    tol: float = _WYCKOFF_DETECTION_TOL,
+) -> WyckoffPosition | None:
+    """
+    Detect the Wyckoff position a fractional coordinate occupies.
+
+    Tests the coordinate for membership in every Wyckoff orbit of the
+    resolved space group and returns the matched position with its nearest
+    representative template. The winner is chosen by multiplicity
+    ascending, then residual ascending (the most special site first); a
+    rare same-multiplicity tie within ``tol`` is reported with a warning.
+
+    Parameters
+    ----------
+    name_hm : str
+        Hermann-Mauguin symbol of the space group.
+    coord_code : str | None
+        Coordinate-system code.
+    fract_xyz : tuple[float, float, float]
+        Fractional coordinate to classify.
+    tol : float, default _WYCKOFF_DETECTION_TOL
+        Maximum residual for orbit membership.
+
+    Returns
+    -------
+    WyckoffPosition | None
+        The matched position, or ``None`` when the space group is absent
+        from ``SPACE_GROUPS``.
+    """
+    it_number = get_it_number_by_name_hm_short(name_hm)
+    if it_number is None:
+        return None
+    key = (it_number, _normalize_coord_code(coord_code))
+    if key not in SPACE_GROUPS:
+        return None
+
+    point = np.asarray(fract_xyz, dtype=float) % 1.0
+    matches = []
+    for letter, position in SPACE_GROUPS[key]['Wyckoff_positions'].items():
+        template, residual = _nearest_orbit_template(point, position['coords_xyz'])
+        if residual <= tol:
+            matches.append(
+                (int(position['multiplicity']), residual, letter, position['site_symmetry'], template),
+            )
+
+    if not matches:
+        return None
+    matches.sort(key=lambda match: (match[0], match[1]))
+    multiplicity, _residual, letter, site_symmetry, template = matches[0]
+    ties = [match for match in matches[1:] if match[0] == multiplicity]
+    if ties:
+        others = ', '.join(repr(match[2]) for match in ties)
+        log.warning(
+            f"Wyckoff detection tie for {name_hm!r}: chose {letter!r} over {others} (same multiplicity)",
+        )
+    return WyckoffPosition(letter, multiplicity, site_symmetry, template)
+
+
+def wyckoff_position_info(
+    name_hm: str,
+    coord_code: str | None,
+    letter: str,
+    fract_xyz: tuple[float, float, float] | None = None,
+) -> WyckoffPosition | None:
+    """
+    Look up a known Wyckoff letter, optionally selecting a representative.
+
+    Parameters
+    ----------
+    name_hm : str
+        Hermann-Mauguin symbol of the space group.
+    coord_code : str | None
+        Coordinate-system code.
+    letter : str
+        Wyckoff letter to look up.
+    fract_xyz : tuple[float, float, float] | None, default None
+        When given, the nearest orbit representative for ``letter`` is
+        selected as ``coord_template``; otherwise ``coord_template`` is
+        ``None``.
+
+    Returns
+    -------
+    WyckoffPosition | None
+        The position record, or ``None`` when the group or letter is
+        absent.
+    """
+    it_number = get_it_number_by_name_hm_short(name_hm)
+    if it_number is None:
+        return None
+    key = (it_number, _normalize_coord_code(coord_code))
+    if key not in SPACE_GROUPS:
+        return None
+    positions = SPACE_GROUPS[key]['Wyckoff_positions']
+    if letter not in positions:
+        return None
+    position = positions[letter]
+    template = None
+    if fract_xyz is not None:
+        point = np.asarray(fract_xyz, dtype=float) % 1.0
+        template, _residual = _nearest_orbit_template(point, position['coords_xyz'])
+    return WyckoffPosition(letter, int(position['multiplicity']), position['site_symmetry'], template)
 
 
 def _site_stabilizer_rotations(
