@@ -93,7 +93,7 @@ composite path (`build_powder_meas_vs_calc_figure`):
 
 ## Implementation steps (Phase 1)
 
-- [ ] **P1.1 — Unify single-panel sizing/x-range.** Move
+- [x] **P1.1 — Unify single-panel sizing/x-range.** Move
   `DEFAULT_RESIDUAL_HEIGHT_FRACTION` to `base.py`; `plot_powder` sets
   explicit main-panel height and tight `(min,max)` x-range. Fixes
   issues #1 and #2.

@@ -16,6 +16,9 @@ from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 
 DEFAULT_HEIGHT = 25
+# Residual-to-main row height ratio shared by the composite figure and
+# the single-panel figure so both derive the same main-panel height.
+DEFAULT_RESIDUAL_HEIGHT_FRACTION = 0.25
 DEFAULT_MIN = -np.inf
 DEFAULT_MAX = np.inf
 

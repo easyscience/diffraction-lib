@@ -30,6 +30,7 @@ except ImportError:
     HTML = None
 
 from easydiffraction.display.plotters.base import DEFAULT_HEIGHT
+from easydiffraction.display.plotters.base import DEFAULT_RESIDUAL_HEIGHT_FRACTION
 from easydiffraction.display.plotters.base import SERIES_CONFIG
 from easydiffraction.display.plotters.base import BraggTickSet
 from easydiffraction.display.plotters.base import PlotterBase
@@ -2114,7 +2115,8 @@ scheduleResize();
         excluded_ranges : tuple[tuple[float, float], ...], default=()
             Excluded x-ranges to shade on the figure.
         """
-        # Intentionally unused; accepted for API compatibility
+        # The passed height is an ASCII row count; the Plotly single
+        # panel is sized to the composite main row below instead.
         del height
 
         data = []
@@ -2129,6 +2131,18 @@ scheduleResize();
         )
 
         fig = self._get_figure(data, layout)
+        # Share the composite's sizing and range primitives so a single
+        # panel is its main row by construction: the same explicit
+        # height (otherwise the docs skeleton falls back to the full
+        # three-panel height) and the same tight x-range with no
+        # autoscale padding. ``_get_layout`` already uses the composite
+        # margins, so the drawable area matches pixel-for-pixel.
+        fig.update_layout(
+            height=self._single_main_panel_height_pixels(DEFAULT_RESIDUAL_HEIGHT_FRACTION),
+        )
+        x_min, x_max = self._composite_x_range(np.asarray(x))
+        if x_min is not None and x_max is not None:
+            fig.update_xaxes(range=[x_min, x_max])
         self._add_excluded_region_vrects(fig=fig, excluded_ranges=excluded_ranges)
         self._show_figure(fig)
 

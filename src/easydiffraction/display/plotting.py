@@ -30,6 +30,7 @@ from easydiffraction.display.plotters.base import DEFAULT_AXES_LABELS
 from easydiffraction.display.plotters.base import DEFAULT_HEIGHT
 from easydiffraction.display.plotters.base import DEFAULT_MAX
 from easydiffraction.display.plotters.base import DEFAULT_MIN
+from easydiffraction.display.plotters.base import DEFAULT_RESIDUAL_HEIGHT_FRACTION
 from easydiffraction.display.plotters.base import DEFAULT_X_AXIS
 from easydiffraction.display.plotters.base import BraggTickSet
 from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
@@ -82,7 +83,6 @@ class PosteriorPairPlotStyleEnum(StrEnum):
 DEFAULT_CORRELATION_THRESHOLD: float | None = None
 DEFAULT_CORRELATION_MAX_PARAMETERS = 6
 EXPECTED_COVAR_NDIM = 2
-DEFAULT_RESIDUAL_HEIGHT_FRACTION = 0.25
 DEFAULT_BRAGG_PEAKS_HEIGHT_FRACTION = 0.10
 DEFAULT_RESID_HEIGHT = DEFAULT_RESIDUAL_HEIGHT_FRACTION
 DEFAULT_BRAGG_ROW = DEFAULT_BRAGG_PEAKS_HEIGHT_FRACTION
