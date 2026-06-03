@@ -66,6 +66,10 @@ def test_tutorial_output(name: str) -> None:
     cif = read_analysis_cif(cif_path)
     rtol = expected['rtol']
 
+    assert cif.result_kind == expected['result_kind'], (
+        f"{name}: result_kind '{cif.result_kind}' != expected '{expected['result_kind']}'"
+    )
+
     _assert_close(
         cif.scalar('reduced_chi_square'),
         expected['reduced_chi_square'],
