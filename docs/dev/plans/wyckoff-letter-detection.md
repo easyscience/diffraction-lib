@@ -9,7 +9,7 @@ ADR. No deliberate exception to `AGENTS.md` is taken.
 - [x] ADR review gate closed
 - [x] Phase 1 — Implementation (code + docs)
 - [x] Phase 1 review gate
-- [ ] Phase 2 — Verification (tests + `pixi` checks)
+- [x] Phase 2 — Verification (tests + `pixi` checks)
 
 ## ADR
 
