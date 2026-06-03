@@ -47,8 +47,7 @@ dependencies = [
   'darkdetect',     # Detecting dark mode (system-level)
   'pandas',         # Displaying tables in Jupyter notebooks
   'plotly',         # Interactive plots
-  'py3Dmol',        # Visualisation of crystal structures
-  'pillow>=10.1',   # Rendering structure figures (labels, legend) for reports
+  'pillow',         # Rendering structure figures (labels, legend) for reports
 ]
 
 [project.optional-dependencies]
