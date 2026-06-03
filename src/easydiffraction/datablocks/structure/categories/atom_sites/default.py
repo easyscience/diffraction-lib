@@ -19,6 +19,7 @@ from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import MembershipValidator
+from easydiffraction.core.validation import PermissiveMembershipValidator
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import RegexValidator
 from easydiffraction.core.variable import EnumDescriptor
@@ -45,6 +46,10 @@ class AtomSite(CategoryItem):
     def __init__(self) -> None:
         """Initialise the atom site with default descriptor values."""
         super().__init__()
+        # Set when a Wyckoff letter is assigned without a parent context
+        # (e.g. create() before the atom is added); the update flow then
+        # validates it once the parent structure is available.
+        self._wyckoff_letter_needs_validation = False
 
         self._label = StringDescriptor(
             name='label',
@@ -124,7 +129,9 @@ class AtomSite(CategoryItem):
             ),
             value_spec=AttributeSpec(
                 default=self._wyckoff_letter_default_value,
-                validator=MembershipValidator(allowed=self._wyckoff_letter_allowed_values),
+                validator=PermissiveMembershipValidator(
+                    allowed=lambda: self._wyckoff_letter_allowed_values,
+                ),
             ),
             cif_handler=CifHandler(
                 names=[
@@ -208,21 +215,39 @@ class AtomSite(CategoryItem):
         """
         return list({key[1] for key in DATABASE['Isotopes']})
 
+    def _resolve_structure_space_group(self) -> object | None:
+        """
+        Return the parent structure's space-group category, or ``None``.
+
+        Walks ``AtomSite`` → atom-sites collection → structure; returns
+        ``None`` when any link is missing (no parent context yet).
+        """
+        collection = getattr(self, '_parent', None)
+        structure = getattr(collection, '_parent', None) if collection is not None else None
+        return getattr(structure, 'space_group', None) if structure is not None else None
+
     @property
     def _wyckoff_letter_allowed_values(self) -> list[str]:
         """
-        Return allowed Wyckoff-letter symbols.
+        Allowed Wyckoff letters for the current space group.
 
         Returns
         -------
         list[str]
-            Currently a hard-coded placeholder list.
+            ``['', *letters]`` for a tabulated space group (empty first, so
+            an unset letter is valid); ``[]`` when there is no parent
+            context or the space group is untabulated.
         """
-        # TODO: Need to now current space group. How to access it? Via
-        #  parent Cell? Then letters =
-        #  list(SPACE_GROUPS[62, 'cab']['Wyckoff_positions'].keys())
-        #  Temporarily return hardcoded list:
-        return ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i']
+        space_group = self._resolve_structure_space_group()
+        if space_group is None:
+            return []
+        positions = ecr.space_group_wyckoff_table(
+            space_group.name_h_m.value,
+            space_group.it_coordinate_system_code.value,
+        )
+        if positions is None:
+            return []
+        return ['', *positions]
 
     @property
     def _wyckoff_letter_default_value(self) -> str:
@@ -232,10 +257,11 @@ class AtomSite(CategoryItem):
         Returns
         -------
         str
-            First element of the allowed values list.
+            The first allowed value (empty string), or ``''`` when no
+            letters are allowed.
         """
-        # TODO: What to pass as default?
-        return self._wyckoff_letter_allowed_values[0]
+        allowed = self._wyckoff_letter_allowed_values
+        return allowed[0] if allowed else ''
 
     def _convert_adp_values(self, old_type: str, new_type: str) -> None:
         """
@@ -456,7 +482,14 @@ class AtomSite(CategoryItem):
 
     @wyckoff_letter.setter
     def wyckoff_letter(self, value: str) -> None:
-        self._wyckoff_letter.value = value
+        if self._resolve_structure_space_group() is None:
+            # No parent context yet (e.g. create() before the atom is
+            # added): store the raw value and defer validation to the
+            # update flow, which resolves it once context is available.
+            self._wyckoff_letter_needs_validation = True
+            self._wyckoff_letter._set_value_from_minimizer(value)
+        else:
+            self._wyckoff_letter.value = value
 
     @property
     def multiplicity(self) -> IntegerDescriptor:

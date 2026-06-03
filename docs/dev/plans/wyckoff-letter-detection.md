@@ -301,7 +301,7 @@ The ADR commit + design-phase review/reply cleanup are handled by
       public setter. Add `_set_wyckoff_letter_detected()` modelled on
       `_set_value_from_minimizer`. Do not add `site_symmetry` to
       `AtomSite`. Commit: `Add read-only multiplicity to AtomSite`
-- [ ] **P1.5 — Dynamic allowed letters + unsupported-group validation.**
+- [x] **P1.5 — Dynamic allowed letters + unsupported-group validation.**
       Make `_wyckoff_letter_allowed_values` return
       `['', *list(SPACE_GROUPS[key]['Wyckoff_positions'])]` for a
       supported group and `[]` for an absent one. Add the
