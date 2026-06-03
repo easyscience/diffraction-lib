@@ -533,6 +533,90 @@ def _nearest_orbit_template(point: np.ndarray, coords_xyz: list[str]) -> tuple[s
     return best_template, best_residual
 
 
+def _wyckoff_template_constrained_flags(rot: np.ndarray) -> dict[str, bool]:
+    """
+    Return per-axis symmetry-constraint flags for a parsed template.
+
+    An axis is **free** when its coordinate is the first (in x, y, z order)
+    to introduce a free parameter, and **constrained** otherwise (a
+    constant, or a coordinate slaved to an earlier axis's parameter). This
+    is slot-based, so it is correct for off-canonical representatives such
+    as ``(0,x,0)`` (``fract_x`` constrained, ``fract_y`` free) where the
+    symbol-presence test would be wrong.
+
+    Parameters
+    ----------
+    rot : np.ndarray
+        (3, 3) rotation part from :func:`_parse_rotation_matrix`.
+
+    Returns
+    -------
+    dict[str, bool]
+        Mapping ``'fract_x'/'fract_y'/'fract_z'`` to ``True`` if the axis
+        is fully fixed by site symmetry.
+    """
+    claimed: set[int] = set()
+    flags: dict[str, bool] = {}
+    for axis, name in enumerate(('fract_x', 'fract_y', 'fract_z')):
+        used = {col for col in range(3) if rot[axis, col] != 0}
+        if used - claimed:
+            flags[name] = False
+            claimed |= used
+        else:
+            flags[name] = True
+    return flags
+
+
+def snap_to_wyckoff_template(
+    coord_template: str,
+    fract_xyz: tuple[float, float, float],
+) -> tuple[tuple[float, float, float], dict[str, bool]]:
+    """
+    Project a coordinate onto a Wyckoff orbit-representative manifold.
+
+    Solves the free Wyckoff parameters from the **free (refinable) axes**
+    only — keeping those axes' values, so a minimizer's refined free
+    coordinate is preserved — then derives the constrained axes from the
+    template. Replaces per-axis symbol substitution: it handles coupled
+    axes (e.g. ``(x,-x,z)``: keep ``fract_x``, set ``fract_y=-fract_x``)
+    and off-canonical representatives (e.g. ``(0,x,0)``: keep ``fract_y``,
+    set ``fract_x=fract_z=0``).
+
+    Parameters
+    ----------
+    coord_template : str
+        Selected orbit representative, e.g. ``'(x,-x,z)'`` or ``'(0,x,0)'``.
+    fract_xyz : tuple[float, float, float]
+        Current fractional coordinate.
+
+    Returns
+    -------
+    tuple[tuple[float, float, float], dict[str, bool]]
+        The snapped ``(x, y, z)`` (free axes kept, constrained axes derived;
+        not reduced mod 1), and the per-axis constraint flags.
+    """
+    rot, trans = _parse_rotation_matrix(coord_template)
+    rot_float = rot.astype(float)
+    point = np.asarray(fract_xyz, dtype=float)
+    axes = ('fract_x', 'fract_y', 'fract_z')
+    flags = _wyckoff_template_constrained_flags(rot)
+    free_rows = [axis for axis, name in enumerate(axes) if not flags[name]]
+    if free_rows:
+        solution, *_ = np.linalg.lstsq(
+            rot_float[free_rows, :],
+            point[free_rows] - trans[free_rows],
+            rcond=None,
+        )
+    else:
+        solution = np.zeros(3)
+    derived = rot_float @ solution + trans
+    snapped = tuple(
+        float(point[axis]) if not flags[name] else float(derived[axis])
+        for axis, name in enumerate(axes)
+    )
+    return snapped, flags
+
+
 def detect_wyckoff_position(
     name_hm: str,
     coord_code: str | None,

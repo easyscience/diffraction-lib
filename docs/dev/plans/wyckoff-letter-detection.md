@@ -342,6 +342,32 @@ The ADR commit + design-phase review/reply cleanup are handled by
       Site-symmetry display data comes from
       `structure.space_group_wyckoff`, not from `AtomSite`. Commit:
       `Detect and track Wyckoff letters in the update flow`
+
+  _P1.6 implementation decisions (in progress):_
+
+  - **Snap = slot-aware free-parameter-solving**
+    (`crystallography.snap_to_wyckoff_template`, already committed): solve
+    the free params from the **free (refinable) axes**, keep those axes,
+    and derive the constrained axes. **Not** manifold projection — that
+    averaged/moved the free axis and fought the minimizer. Handles
+    off-canonical reps like 6e `(0,x,0)` (keep `fract_y`, set
+    `fract_x=fract_z=0`); matches the old substitution for canonical
+    sites, so the fit is unaffected. Per-axis constraint flags are
+    slot-based (first-occurrence), not symbol-based.
+  - **Warning gating (per the chosen option):** pass
+    `called_by_minimizer=True` **only at the per-iteration minimizer
+    objective** — `analysis/fit_helpers/metrics.py:181` (residual calc;
+    verify `analysis/fitting.py:382` too) — and **leave** the fit-setup
+    (`fitting.py:209`) and flush (`analysis.py:174`) sites `False` so
+    detection still runs there. Gate re-detection **and** the
+    "adjusted"/"moved-letter" warnings on `not called_by_minimizer`, so
+    they never fire per fit step.
+  - **Remaining:** rewrite `_apply_atomic_coordinates_symmetry_constraints`
+    (per atom: resolve the `_wyckoff_letter_needs_validation` marker →
+    decide detect/trigger → snap → set `multiplicity` + constrained flags
+    → refresh baselines), thread `called_by_minimizer` through
+    `AtomSites._update`, change the objective call site(s), then **verify
+    by running `test_fit_neutron_pd_cwl_hs`** and smoke tests.
 - [ ] **P1.7 — Calculator consumes model multiplicity.** Replace the
       `SPACE_GROUPS` lookup in `cryspy._update_atom_multiplicity` with
       `atom_site.multiplicity.value`; when it is `None`, leave the
