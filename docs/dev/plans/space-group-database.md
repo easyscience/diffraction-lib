@@ -498,6 +498,17 @@ Then the packaging regression from #187's Phase 2 (build the wheel +
 `python tools/check_packaged_db.py dist/*.whl`), which now also
 exercises the new operator-form assertion.
 
+**Verification note (for `/review-impl-2`).** Phase 2's `pixi run fix`
+also reformatted docstrings in
+`src/easydiffraction/display/plotters/plotly.py` and
+`src/easydiffraction/report/fit_plot.py` — **pre-existing** debt from
+this branch's plotting commits (`bb817a5fd`, `176e6e682`, `bec2f5e73`),
+surfaced by the recently-enabled `format-docstring` hook and required
+for `pixi run check` to pass. It is **unrelated** to canonical-templates
+and was folded into the verification commit `92c41124b` (authored
+manually); drop or move it if this branch is split from the plotting
+stream.
+
 ### Suggested Pull Request — canonical-templates fix
 
 **Title:** Store space-group Wyckoff coordinates in canonical form
