@@ -14,7 +14,7 @@ import pytest
 from pooch import retrieve
 
 # Remote CIF file URL (regenerated nightly by scipp reduction pipeline)
-CIF_URL = 'https://pub-6c25ef91903d4301a3338bd53b370098.r2.dev/dream_reduced.cif'
+CIF_URL = 'https://github.com/scipp/ess/releases/download/reduced_data_nightly/dream_reduced.cif'
 
 # Expected datablock name in the CIF file
 DATABLOCK_NAME = 'reduced_tof'
