@@ -114,40 +114,14 @@ project.display.pattern(expt_name='hrpt')
 project.display.pattern(expt_name='hrpt', x_min=40, x_max=55)
 ```
 
-`pattern()` always displays as much useful information as the project
-state supports; there is no view-selection argument:
-
-- measured data if present
-- calculated data if linked structure state and calculated intensities
-  are available
-- background if powder Bragg measured and calculated data plus defined
-  background points are available
-- Bragg ticks if powder Bragg measured and calculated data plus
-  reflection rows are available
-- residual if both measured and calculated data are available and the
-  experiment type supports a residual panel
-- excluded regions whenever defined on the experiment
-- uncertainty bands where posterior predictive data exists and the chart
-  engine supports them
-
-Excluded regions are a property of the experiment, not a viewing choice,
-so they are always shaded when present, skipped only when a custom `x`
-axis variable is selected (the overlay cannot be mapped onto it).
-`uncertainty` is shown where posterior predictive data exists for a
-supported experiment and the active chart engine can render bands.
-
-Single-panel views (for example measured-only, before a structure is
-linked) and the full composite share one figure-sizing and x-range core,
-so a one-row chart is the top row of the multi-row chart pixel for
-pixel: the same height and the same tick-to-tick x-range with no
-autoscale padding.
-
-This supersedes the earlier design, which assembled a view from an
-`include=('measured', 'calculated', ...)` argument and exposed a
-`show_pattern_options()` discovery table. Selecting a strict subset of
-the available data is no longer supported; the project is in beta, so
-this simplification replaces the previous API rather than carrying a
-compatibility shim.
+`pattern()` renders every kind of data the project state supports —
+measured, calculated, residual, Bragg ticks, background, excluded
+regions, and posterior predictive uncertainty, each shown when
+available. It takes no view-selection argument. The content rules, the
+removed `include` / `show_pattern_options` design, and the shared
+single- and multi-panel figure sizing are recorded in the
+[Unified Pattern View](pattern-display-unification.md) ADR, which
+supersedes the `include`-based pattern design once described here.
 
 ## Deterministic And Bayesian Consistency
 

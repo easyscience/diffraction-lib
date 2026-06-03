@@ -4,13 +4,13 @@ Follows [`AGENTS.md`](../../../AGENTS.md). No deliberate exceptions.
 
 ## ADR
 
-Amends the accepted ADR
-[`display-ux.md`](../adrs/accepted/display-ux.md): the `pattern()` API
-drops the `include` parameter and `show_pattern_options()`, and always
-renders every kind of data the project state supports. Relates to
+Recorded as the
+[`pattern-display-unification`](../adrs/accepted/pattern-display-unification.md)
+ADR (Accepted), which supersedes the `include`-based pattern design in
+[`display-ux.md`](../adrs/accepted/display-ux.md). Relates to
 [`plotting-docs-performance.md`](../adrs/accepted/plotting-docs-performance.md)
 (the lazy figure skeleton that exposed the height bug) and open issue
-#93 (future of `show_residual`). No new ADR file is required.
+#93 (future of `show_residual`).
 
 ## Branch / PR
 
