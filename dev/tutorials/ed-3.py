@@ -58,7 +58,7 @@ project.info.show_as_cif()
 # directory path.
 
 # %%
-project.save_as(dir_path='projects/lbco_hrpt')
+project.save_as(dir_path='projects/ed_3_lbco_hrpt')
 
 # %% [markdown]
 # ## 🧩 Define Structure

@@ -304,3 +304,9 @@ project.display.fit.correlations()
 
 # %%
 project.display.pattern(expt_name='mcstas')
+
+# %% [markdown]
+# ## 💾 Save Project
+
+# %%
+project.save_as(dir_path='projects/ed_9_lbco_si_mcstas')

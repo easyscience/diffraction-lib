@@ -18239,6 +18239,8 @@ back-to-back exponential (BBE) formalism:</p>
 
 
         <p>TOF Gaussian broadening parameters σ₀, σ₁, σ₂.</p>
+<p>The constant term σ₀ defaults nonzero so every TOF profile has a
+finite peak width out of the box; σ₁ and σ₂ default to 0.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -18350,8 +18352,18 @@ back-to-back exponential (BBE) formalism:</p>
 <span class="normal">120</span>
 <span class="normal">121</span>
 <span class="normal">122</span>
-<span class="normal">123</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TofGaussianBroadeningMixin</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;TOF Gaussian broadening parameters σ₀, σ₁, σ₂.&quot;&quot;&quot;</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TofGaussianBroadeningMixin</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    TOF Gaussian broadening parameters σ₀, σ₁, σ₂.</span>
+
+<span class="sd">    The constant term σ₀ defaults nonzero so every TOF profile has a</span>
+<span class="sd">    finite peak width out of the box; σ₁ and σ₂ default to 0.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
@@ -18365,7 +18377,7 @@ back-to-back exponential (BBE) formalism:</p>
                 <span class="n">latex_units</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$\mu\mathrm</span><span class="si">{s}</span><span class="s1">^2$&#39;</span><span class="p">,</span>
             <span class="p">),</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
-                <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                <span class="n">default</span><span class="o">=</span><span class="mf">7.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
             <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
@@ -18586,12 +18598,7 @@ object. Assigning to it updates the parameter value.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/categories/peak/tof_mixins.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">126</span>
-<span class="normal">127</span>
-<span class="normal">128</span>
-<span class="normal">129</span>
-<span class="normal">130</span>
-<span class="normal">131</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">131</span>
 <span class="normal">132</span>
 <span class="normal">133</span>
 <span class="normal">134</span>
@@ -18684,7 +18691,12 @@ object. Assigning to it updates the parameter value.</p>
 <span class="normal">221</span>
 <span class="normal">222</span>
 <span class="normal">223</span>
-<span class="normal">224</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TofLorentzianBroadeningMixin</span><span class="p">:</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TofLorentzianBroadeningMixin</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;TOF Lorentzian broadening parameters γ₀, γ₁, γ₂.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -18909,6 +18921,8 @@ object. Assigning to it updates the parameter value.</p>
         <p>Back-to-back exponential (BBE) rise and decay parameters.</p>
 <p>Rise parameters α₀, α₁ and decay parameters β₀, β₁ follow Von
 Dreele, Jorgensen &amp; Windsor, J. Appl. Cryst. 15, 581 (1982).</p>
+<p>The rise α₁ and decay β₀ default nonzero so the profile is
+normalisable and the peak is visible; refine per instrument.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -18922,12 +18936,7 @@ Dreele, Jorgensen &amp; Windsor, J. Appl. Cryst. 15, 581 (1982).</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/categories/peak/tof_mixins.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">227</span>
-<span class="normal">228</span>
-<span class="normal">229</span>
-<span class="normal">230</span>
-<span class="normal">231</span>
-<span class="normal">232</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">232</span>
 <span class="normal">233</span>
 <span class="normal">234</span>
 <span class="normal">235</span>
@@ -19056,12 +19065,23 @@ Dreele, Jorgensen &amp; Windsor, J. Appl. Cryst. 15, 581 (1982).</p>
 <span class="normal">358</span>
 <span class="normal">359</span>
 <span class="normal">360</span>
-<span class="normal">361</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TofBackToBackExponentialMixin</span><span class="p">:</span>
+<span class="normal">361</span>
+<span class="normal">362</span>
+<span class="normal">363</span>
+<span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span>
+<span class="normal">367</span>
+<span class="normal">368</span>
+<span class="normal">369</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TofBackToBackExponentialMixin</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Back-to-back exponential (BBE) rise and decay parameters.</span>
 
 <span class="sd">    Rise parameters α₀, α₁ and decay parameters β₀, β₁ follow Von</span>
 <span class="sd">    Dreele, Jorgensen &amp; Windsor, J. Appl. Cryst. 15, 581 (1982).</span>
+
+<span class="sd">    The rise α₁ and decay β₀ default nonzero so the profile is</span>
+<span class="sd">    normalisable and the peak is visible; refine per instrument.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -19076,7 +19096,7 @@ Dreele, Jorgensen &amp; Windsor, J. Appl. Cryst. 15, 581 (1982).</p>
                 <span class="n">latex_units</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$\mu\mathrm</span><span class="si">{s}</span><span class="s1">$&#39;</span><span class="p">,</span>
             <span class="p">),</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
-                <span class="n">default</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+                <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
             <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
@@ -19093,7 +19113,7 @@ Dreele, Jorgensen &amp; Windsor, J. Appl. Cryst. 15, 581 (1982).</p>
                 <span class="n">latex_units</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$\mu\mathrm</span><span class="si">{s}</span><span class="s1">/\mathrm{\AA}$&#39;</span><span class="p">,</span>
             <span class="p">),</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
-                <span class="n">default</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span>
+                <span class="n">default</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
             <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
@@ -19110,7 +19130,7 @@ Dreele, Jorgensen &amp; Windsor, J. Appl. Cryst. 15, 581 (1982).</p>
                 <span class="n">latex_units</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$\mu\mathrm</span><span class="si">{s}</span><span class="s1">$&#39;</span><span class="p">,</span>
             <span class="p">),</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
-                <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                <span class="n">default</span><span class="o">=</span><span class="mf">0.04</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
             <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
@@ -19346,6 +19366,8 @@ object. Assigning to it updates the parameter value.</p>
 <p>Rise parameters α₁, α₂, decay parameters β₀₀, β₀₁, β₁₀ for two
 exponential regimes, and switching-function parameters r₀₁, r₀₂,
 r₀₃.</p>
+<p>α₁, β₀₀, β₁₀ and r₀₁ default nonzero so both regimes stay finite and
+blended; an all-zero set produces NaN. Refine per instrument.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -19359,15 +19381,7 @@ r₀₃.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/categories/peak/tof_mixins.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">364</span>
-<span class="normal">365</span>
-<span class="normal">366</span>
-<span class="normal">367</span>
-<span class="normal">368</span>
-<span class="normal">369</span>
-<span class="normal">370</span>
-<span class="normal">371</span>
-<span class="normal">372</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">372</span>
 <span class="normal">373</span>
 <span class="normal">374</span>
 <span class="normal">375</span>
@@ -19606,13 +19620,27 @@ r₀₃.</p>
 <span class="normal">608</span>
 <span class="normal">609</span>
 <span class="normal">610</span>
-<span class="normal">611</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TofDoubleExponentialMixin</span><span class="p">:</span>
+<span class="normal">611</span>
+<span class="normal">612</span>
+<span class="normal">613</span>
+<span class="normal">614</span>
+<span class="normal">615</span>
+<span class="normal">616</span>
+<span class="normal">617</span>
+<span class="normal">618</span>
+<span class="normal">619</span>
+<span class="normal">620</span>
+<span class="normal">621</span>
+<span class="normal">622</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TofDoubleExponentialMixin</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Double back-to-back exponential parameters for Z-Rietveld type0m.</span>
 
 <span class="sd">    Rise parameters α₁, α₂, decay parameters β₀₀, β₀₁, β₁₀ for two</span>
 <span class="sd">    exponential regimes, and switching-function parameters r₀₁, r₀₂,</span>
 <span class="sd">    r₀₃.</span>
+
+<span class="sd">    α₁, β₀₀, β₁₀ and r₀₁ default nonzero so both regimes stay finite and</span>
+<span class="sd">    blended; an all-zero set produces NaN. Refine per instrument.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -19627,7 +19655,7 @@ r₀₃.</p>
                 <span class="n">latex_units</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$\mu\mathrm</span><span class="si">{s}</span><span class="s1">$&#39;</span><span class="p">,</span>
             <span class="p">),</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
-                <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                <span class="n">default</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
             <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
@@ -19661,7 +19689,7 @@ r₀₃.</p>
                 <span class="n">latex_units</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$\mu\mathrm</span><span class="si">{s}</span><span class="s1">$&#39;</span><span class="p">,</span>
             <span class="p">),</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
-                <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                <span class="n">default</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
             <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
@@ -19695,7 +19723,7 @@ r₀₃.</p>
                 <span class="n">latex_units</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$\mu\mathrm</span><span class="si">{s}</span><span class="s1">$&#39;</span><span class="p">,</span>
             <span class="p">),</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
-                <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                <span class="n">default</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
             <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
@@ -19708,7 +19736,7 @@ r₀₃.</p>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Double-exp switching function r₀₁&#39;</span><span class="p">,</span>
             <span class="n">units</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">,</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
-                <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                <span class="n">default</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
             <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>

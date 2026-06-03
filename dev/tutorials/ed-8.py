@@ -360,3 +360,9 @@ project.display.pattern(expt_name='wish_4_7')
 #
 # The HTML report is written automatically when the project is saved;
 # enable `project.report.pdf` as well for a PDF version.
+
+# %% [markdown]
+# ## 💾 Save Project
+
+# %%
+project.save_as(dir_path='projects/ed_8_ncaf_wish')

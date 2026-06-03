@@ -101,3 +101,9 @@ project.display.fit.correlations(threshold=0.75)
 
 # %%
 project.display.pattern(expt_name='pdf')
+
+# %% [markdown]
+# ## 💾 Save Project
+
+# %%
+project.save_as(dir_path='projects/ed_10_ni_pdf')
