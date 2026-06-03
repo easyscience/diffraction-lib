@@ -294,7 +294,7 @@ The ADR commit + design-phase review/reply cleanup are handled by
       reads `SPACE_GROUPS` through the crystallography helpers rather
       than depending on this collection. Commit:
       `Wire derived Wyckoff table into Structure`
-- [ ] **P1.4 — Read-only multiplicity + detection mutator on
+- [x] **P1.4 — Read-only multiplicity + detection mutator on
       `AtomSite`.** Add only `multiplicity` as a read-only derived
       descriptor on `AtomSite` with `CifHandler` for
       `_atom_site.site_symmetry_multiplicity`, empty form `None`, and no

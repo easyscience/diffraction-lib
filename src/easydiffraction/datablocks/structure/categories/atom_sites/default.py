@@ -22,6 +22,7 @@ from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import RegexValidator
 from easydiffraction.core.variable import EnumDescriptor
+from easydiffraction.core.variable import IntegerDescriptor
 from easydiffraction.core.variable import Parameter
 from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.crystallography import crystallography as ecr
@@ -132,6 +133,17 @@ class AtomSite(CategoryItem):
                     '_atom_site.wyckoff_letter',
                 ]
             ),
+        )
+        self._multiplicity = IntegerDescriptor(
+            name='multiplicity',
+            description='Site multiplicity derived from the Wyckoff '
+            'position; None for an untabulated space group.',
+            display_handler=DisplayHandler(
+                display_name='Mult.',
+                latex_name='Mult.',
+            ),
+            value_spec=AttributeSpec(default=None, allow_none=True),
+            cif_handler=CifHandler(names=['_atom_site.site_symmetry_multiplicity']),
         )
         self._occupancy = Parameter(
             name='occupancy',
@@ -445,6 +457,26 @@ class AtomSite(CategoryItem):
     @wyckoff_letter.setter
     def wyckoff_letter(self, value: str) -> None:
         self._wyckoff_letter.value = value
+
+    @property
+    def multiplicity(self) -> IntegerDescriptor:
+        """
+        Read-only site multiplicity derived from the Wyckoff position.
+
+        Populated by Wyckoff detection; ``value`` is ``None`` when the
+        space group is untabulated. There is no public setter.
+        """
+        return self._multiplicity
+
+    def _set_wyckoff_letter_detected(self, letter: str) -> None:
+        """
+        Set the auto-detected Wyckoff letter, bypassing membership validation.
+
+        Modelled on ``_set_value_from_minimizer``: detection supplies a
+        trusted letter, written directly rather than re-validated against
+        the (dynamic) allowed-letters set.
+        """
+        self._wyckoff_letter._set_value_from_minimizer(letter)
 
     @property
     def fract_x(self) -> Parameter:
