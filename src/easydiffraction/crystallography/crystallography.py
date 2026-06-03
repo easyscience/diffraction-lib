@@ -639,6 +639,33 @@ def wyckoff_position_info(
     return WyckoffPosition(letter, int(position['multiplicity']), position['site_symmetry'], template)
 
 
+def space_group_wyckoff_table(name_hm: str, coord_code: str | None) -> dict[str, dict] | None:
+    """
+    Return the Wyckoff-position table for a space group, or ``None``.
+
+    Parameters
+    ----------
+    name_hm : str
+        Hermann-Mauguin symbol of the space group.
+    coord_code : str | None
+        Coordinate-system code.
+
+    Returns
+    -------
+    dict[str, dict] | None
+        Mapping of Wyckoff letter to its ``multiplicity``,
+        ``site_symmetry``, and ``coords_xyz`` record, or ``None`` when the
+        space group is absent from ``SPACE_GROUPS``.
+    """
+    it_number = get_it_number_by_name_hm_short(name_hm)
+    if it_number is None:
+        return None
+    key = (it_number, _normalize_coord_code(coord_code))
+    if key not in SPACE_GROUPS:
+        return None
+    return SPACE_GROUPS[key]['Wyckoff_positions']
+
+
 def _site_stabilizer_rotations(
     ops: list[tuple[np.ndarray, np.ndarray]],
     site_coords: tuple[float, float, float],

@@ -276,7 +276,7 @@ The ADR commit + design-phase review/reply cleanup are handled by
       Export new public names via `crystallography/__init__.py` if
       public. Commit:
       `Add Wyckoff orbit detection to crystallography module`
-- [ ] **P1.2 — Derived `space_group_wyckoff` category.** Add the
+- [x] **P1.2 — Derived `space_group_wyckoff` category.** Add the
       `space_group_wyckoff` package with a `SpaceGroupWyckoff` item
       keyed by `id` (`_space_group_Wyckoff.id`) and read-only
       descriptors for `id`, `letter`, `multiplicity`, `site_symmetry`,
