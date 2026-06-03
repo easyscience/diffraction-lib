@@ -118,23 +118,23 @@ class SpaceGroupWyckoffCollection(CategoryCollection):
 
     def add(self, item: object) -> None:
         """Reject public mutation; the collection is derived (read-only)."""
-        raise TypeError(_READ_ONLY_MESSAGE)
+        raise ValueError(_READ_ONLY_MESSAGE)
 
     def create(self, **kwargs: object) -> None:
         """Reject public mutation; the collection is derived (read-only)."""
-        raise TypeError(_READ_ONLY_MESSAGE)
+        raise ValueError(_READ_ONLY_MESSAGE)
 
     def remove(self, name: str) -> None:
         """Reject public mutation; the collection is derived (read-only)."""
-        raise TypeError(_READ_ONLY_MESSAGE)
+        raise ValueError(_READ_ONLY_MESSAGE)
 
     def __setitem__(self, name: str, item: object) -> None:
         """Reject item assignment; the collection is derived (read-only)."""
-        raise TypeError(_READ_ONLY_MESSAGE)
+        raise ValueError(_READ_ONLY_MESSAGE)
 
     def __delitem__(self, name: str) -> None:
         """Reject item deletion; the collection is derived (read-only)."""
-        raise TypeError(_READ_ONLY_MESSAGE)
+        raise ValueError(_READ_ONLY_MESSAGE)
 
     def from_cif(self, block: object) -> None:
         """
