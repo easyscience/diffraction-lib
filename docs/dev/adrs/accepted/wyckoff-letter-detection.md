@@ -1,6 +1,6 @@
 # ADR: Automatic Wyckoff Position Detection
 
-**Status:** Proposed **Date:** 2026-06-01
+**Status:** Accepted **Date:** 2026-06-01
 
 ## Group
 

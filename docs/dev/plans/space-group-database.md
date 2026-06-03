@@ -26,7 +26,7 @@ This plan owns the ADR
 [`docs/dev/adrs/accepted/space-group-database.md`](../adrs/accepted/space-group-database.md)
 (drafted via `/draft-adr`, review cycle closed). It is a
 **prerequisite** for
-[`wyckoff-letter-detection`](../adrs/suggestions/wyckoff-letter-detection.md):
+[`wyckoff-letter-detection`](../adrs/accepted/wyckoff-letter-detection.md):
 this plan delivers the complete data; that feature delivers the
 `''`→`None` consumer handling so the triclinic groups use it.
 
@@ -279,7 +279,7 @@ previously-missing groups now get correct symmetry handling.
 
 _Added after #187 shipped — a second, standalone cycle of this ADR's
 implementation. It is the **prerequisite** that
-[`wyckoff-letter-detection`](../adrs/suggestions/wyckoff-letter-detection.md)
+[`wyckoff-letter-detection`](../adrs/accepted/wyckoff-letter-detection.md)
 §10 / Decision 15 depends on and gates on at its P1.0, and it ships on
 its **own PR** (separate from #187). When implementing this phase, treat
 the `CT` checklist below as the active Phase 1 steps — the #187 Phase 1

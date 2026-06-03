@@ -1,7 +1,7 @@
 # Plan: Automatic Wyckoff Position Detection
 
 This plan follows [`AGENTS.md`](../../../AGENTS.md) and implements the
-[`wyckoff-letter-detection`](../adrs/suggestions/wyckoff-letter-detection.md)
+[`wyckoff-letter-detection`](../adrs/accepted/wyckoff-letter-detection.md)
 ADR. No deliberate exception to `AGENTS.md` is taken.
 
 ## Status
@@ -14,7 +14,7 @@ ADR. No deliberate exception to `AGENTS.md` is taken.
 ## ADR
 
 This plan implements the
-[`wyckoff-letter-detection`](../adrs/suggestions/wyckoff-letter-detection.md)
+[`wyckoff-letter-detection`](../adrs/accepted/wyckoff-letter-detection.md)
 ADR. Earlier ADR review cycles closed at review 10 and then review 16
 (adding the derived `space_group_Wyckoff` category and space-group-key
 re-detection); that text was committed as `0f3bc269c`
@@ -413,13 +413,31 @@ The ADR commit + design-phase review/reply cleanup are handled by
         matches the conventional ITA "Coordinates" entry. Decision
         confirmed with the user during P1.8. The full orbit remains
         available on the in-memory `space_group_wyckoff` category.
-- [ ] **P1.9 — Promote ADR, close #51, remove stale TODOs.** `git mv`
+- [x] **P1.9 — Promote ADR, close #51, remove stale TODOs.** `git mv`
       `wyckoff-letter-detection.md` from `suggestions/` to `accepted/`,
       set `**Status:** Accepted`, flip its `docs/dev/adrs/index.md` row
       to `Accepted`, and fix links with `git grep -n`. Move issue #51
       from `open.md` to `closed.md` and delete the resolved TODOs in
       `default.py` (~200–211, ~225, ~569). Commit:
       `Promote wyckoff-letter-detection ADR and close issue #51`
+
+      _P1.9 notes (implemented):_
+      - ADR moved with `git mv` to `accepted/`, `**Status:** Accepted`,
+        `index.md` row flipped to `Accepted` with the `accepted/` link.
+      - Inbound links to the old `suggestions/` path fixed in
+        `accepted/space-group-database.md` (5) and
+        `plans/space-group-database.md` (2), plus this plan's own ADR
+        cross-references. The ADR's `../../../../` root paths are
+        depth-invariant and its `../accepted/` sibling links still
+        resolve, so they were left unchanged (minimal diff).
+      - #51 moved from `open.md` (detailed section + summary-table row)
+        to `closed.md`.
+      - The `default.py` TODOs #51 referenced (old lines ~163/179/353,
+        about the hardcoded allowed-letter list and the missing-letter
+        case) were **already removed** when P1.5/P1.6 rewrote those
+        methods to resolve #51, so there is no `default.py` change in
+        this step. The only remaining TODO (label-regex/dict-key, line
+        ~68) is unrelated to #51 and was intentionally left.
 - [ ] **P1.10 — Phase 1 review gate.** No code. Mark this `[x]`, commit
       the checklist update alone, then stop for the Phase 1 review.
       Commit: `Reach Phase 1 review gate`

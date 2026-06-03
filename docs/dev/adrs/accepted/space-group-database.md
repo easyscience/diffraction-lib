@@ -8,7 +8,7 @@ Structure model.
 
 > This ADR follows [`AGENTS.md`](../../../../AGENTS.md). It was a
 > prerequisite for
-> [`wyckoff-letter-detection.md`](../suggestions/wyckoff-letter-detection.md):
+> [`wyckoff-letter-detection.md`](wyckoff-letter-detection.md):
 > Wyckoff detection can only resolve letters for space groups present in
 > the bundled table, which this ADR's implementation completed for all
 > 230 groups.
@@ -103,7 +103,7 @@ Coordinates and operators stay **strings** (e.g. `'(x,1/2,0)'`,
 `sympify`) in `crystallography.py` and to keep the file JSON-native
 (§2). Triclinic no-setting groups keep the `None` coordinate code, as
 today (see the `''`→`None` normalisation in
-[`wyckoff-letter-detection.md`](../suggestions/wyckoff-letter-detection.md)
+[`wyckoff-letter-detection.md`](wyckoff-letter-detection.md)
 §2).
 
 **Query surface preserved.** On disk the JSON is a list of setting
@@ -286,7 +286,7 @@ coordinate-system code": EasyDiffraction's `SpaceGroup` category uses
 the empty string `''`, while the table key uses `None`. The database
 keeps `(1, None)` and `(2, None)`; callers normalise `''` to `None` at
 lookup boundaries, as specified in
-[`wyckoff-letter-detection.md`](../suggestions/wyckoff-letter-detection.md).
+[`wyckoff-letter-detection.md`](wyckoff-letter-detection.md).
 This is the least surprising solution because it keeps "no setting"
 distinct from any real coordinate-code string without inventing a
 sentinel value.
@@ -376,7 +376,7 @@ which rejects any operator-form template in the packaged wheel.
   early when `coord_code is None` and `_get_general_position_ops()`
   indexes the raw key, so they need the `''`→`None` normalisation
   defined in
-  [`wyckoff-letter-detection.md`](../suggestions/wyckoff-letter-detection.md)
+  [`wyckoff-letter-detection.md`](wyckoff-letter-detection.md)
   §2 (which also updates these call sites). This ADR delivers the data;
   that ADR delivers the `None`-code consumer handling.
 
@@ -571,7 +571,7 @@ respectively.
 
 ## Related ADRs
 
-- [`wyckoff-letter-detection.md`](../suggestions/wyckoff-letter-detection.md)
+- [`wyckoff-letter-detection.md`](wyckoff-letter-detection.md)
   — the dependent feature; its `''`→`None` coordinate-code normalisation
   and its "unsupported group" handling both build on this database.
 - [`iucr-cif-tag-alignment.md`](../accepted/iucr-cif-tag-alignment.md) —

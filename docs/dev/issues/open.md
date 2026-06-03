@@ -996,24 +996,6 @@ generation.
 
 ---
 
-## 51. 🟢 Access Space Group from `AtomSites` for Wyckoff Letters
-
-**Type:** Design
-
-`AtomSite` needs the current space group to determine allowed Wyckoff
-letters but currently returns a hardcoded list. Also, a missing Wyckoff
-letter case needs a decision.
-
-**TODOs:**
-
-- [default.py](src/easydiffraction/datablocks/structure/categories/atom_sites/default.py#L163)
-- [default.py](src/easydiffraction/datablocks/structure/categories/atom_sites/default.py#L179)
-- [default.py](src/easydiffraction/datablocks/structure/categories/atom_sites/default.py#L353)
-
-**Depends on:** nothing.
-
----
-
 ## 52. 🟢 Rename Line-Segment Background `y` to `intensity`
 
 **Type:** Naming
@@ -1951,7 +1933,6 @@ only render the index column when no explicit id column is present.
 | 48  | Fix CrysPy TOF instrument default                 | 🟢 Low   | Bug workaround               |
 | 49  | Automate space group CIF name variants            | 🟢 Low   | Maintainability              |
 | 50  | Clarify `Cell._update` minimizer param            | 🟢 Low   | Cleanup                      |
-| 51  | Access space group for Wyckoff letters            | 🟢 Low   | Design                       |
 | 52  | Rename line-segment `y` to `intensity`            | 🟢 Low   | Naming                       |
 | 53  | Move `show()` to `CategoryCollection`             | 🟢 Low   | Maintainability              |
 | 54  | Add `point_id` to excluded regions                | 🟢 Low   | Completeness                 |
