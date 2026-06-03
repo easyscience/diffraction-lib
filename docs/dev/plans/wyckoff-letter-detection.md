@@ -7,8 +7,8 @@ ADR. No deliberate exception to `AGENTS.md` is taken.
 ## Status
 
 - [x] ADR review gate closed
-- [ ] Phase 1 — Implementation (code + docs)
-- [ ] Phase 1 review gate
+- [x] Phase 1 — Implementation (code + docs)
+- [x] Phase 1 review gate
 - [ ] Phase 2 — Verification (tests + `pixi` checks)
 
 ## ADR
