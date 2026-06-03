@@ -171,6 +171,7 @@ def _write_sc_block(
     _write_cell_section(lines, structure)
     _write_space_group_section(lines, structure)
     _write_symmetry_operations_section(lines, structure)
+    _write_space_group_wyckoff_section(lines, structure)
     _write_diffrn_section(lines, experiment)
     _write_wavelength_section(lines, experiment)
     _write_atom_site_sections(lines, structure)
@@ -220,6 +221,49 @@ def _write_symmetry_operations_section(lines: list[str], structure: object) -> N
     loop = transformer.loop(structure)
     _section(lines, 'Symmetry operations')
     _write_loop(lines, loop.tags, loop.rows)
+
+
+def _write_space_group_wyckoff_section(lines: list[str], structure: object) -> None:
+    """Append the derived space-group Wyckoff-position loop.
+
+    This loop is report-only: it summarises every Wyckoff position of the
+    structure's space group. ``coords_xyz`` reports the representative
+    orbit coordinate (the first orbit member) to keep loop cells compact.
+    """
+    positions = list(_collection_values(getattr(structure, 'space_group_wyckoff', None)))
+    if not positions:
+        return
+
+    rows = [
+        (
+            _attribute_descriptor(position, 'id'),
+            _attribute_descriptor(position, 'letter'),
+            _attribute_descriptor(position, 'multiplicity'),
+            _attribute_descriptor(position, 'site_symmetry'),
+            _wyckoff_representative_coord(position),
+        )
+        for position in positions
+    ]
+    _section(lines, 'Wyckoff positions')
+    _write_loop(
+        lines,
+        (
+            '_space_group_Wyckoff.id',
+            '_space_group_Wyckoff.letter',
+            '_space_group_Wyckoff.multiplicity',
+            '_space_group_Wyckoff.site_symmetry',
+            '_space_group_Wyckoff.coords_xyz',
+        ),
+        rows,
+    )
+
+
+def _wyckoff_representative_coord(position: object) -> str:
+    """Return the representative (first) orbit coordinate of a position."""
+    coords = _attribute_value(position, 'coords_xyz')
+    if not coords:
+        return '?'
+    return str(coords).split()[0]
 
 
 def _write_diffrn_section(lines: list[str], experiment: object) -> None:
@@ -449,6 +493,7 @@ def _write_powder_phase_block(phase: _PowderPhase) -> str:
     _write_cell_section(lines, phase.structure)
     _write_space_group_section(lines, phase.structure)
     _write_symmetry_operations_section(lines, phase.structure)
+    _write_space_group_wyckoff_section(lines, phase.structure)
     _write_atom_site_sections(lines, phase.structure)
     _write_atom_site_aniso_sections(lines, phase.structure)
     _write_powder_phase_reference_section(lines, phase)
@@ -874,6 +919,7 @@ def _atom_site_tags(family: str) -> tuple[str, ...]:
         '_atom_site.ADP_type',
         f'_atom_site.{family}_iso_or_equiv',
         '_atom_site.Wyckoff_symbol',
+        '_atom_site.site_symmetry_multiplicity',
     )
 
 
@@ -889,6 +935,7 @@ def _atom_site_row(atom_site: object) -> tuple[object, ...]:
         _attribute_descriptor(atom_site, 'adp_type'),
         _attribute_descriptor(atom_site, 'adp_iso'),
         _attribute_descriptor(atom_site, 'wyckoff_letter'),
+        _attribute_descriptor(atom_site, 'multiplicity'),
     )
 
 

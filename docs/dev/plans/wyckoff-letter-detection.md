@@ -373,7 +373,7 @@ The ADR commit + design-phase review/reply cleanup are handled by
       `atom_site.multiplicity.value`; when it is `None`, leave the
       backend's inferred multiplicity in place. Commit:
       `Read multiplicity from the model in the cryspy calculator`
-- [ ] **P1.8 — CIF and report output.** Ensure project CIF writes
+- [x] **P1.8 — CIF and report output.** Ensure project CIF writes
       `_atom_site.Wyckoff_symbol` and
       `_atom_site.site_symmetry_multiplicity` but excludes the derived
       `space_group_Wyckoff` loop. Ensure read ignores incoming
@@ -385,6 +385,34 @@ The ADR commit + design-phase review/reply cleanup are handled by
       `_space_group_Wyckoff.{id,letter,multiplicity,site_symmetry,coords_xyz}`
       loop. Commit:
       `Serialize Wyckoff multiplicity and report Wyckoff table`
+
+      _P1.8 implementation decisions (implemented):_
+      - **Project-CIF write of `_atom_site.site_symmetry_multiplicity`**
+        is already automatic: P1.4 added the `multiplicity` descriptor
+        with that CIF handler, and it is part of `AtomSite.parameters`,
+        so the atom-site loop emits it (value `?` for untabulated
+        sites). The `_space_group_Wyckoff` loop exclusion is already
+        provided by P1.3's `Structure._serializable_categories`
+        override. No new write-side code was needed in P1.8.
+      - **Read ignore of incoming `_space_group_Wyckoff.*`** is done by
+        a no-op `SpaceGroupWyckoffCollection.from_cif` override (the
+        structure read loop iterates *all* categories, including the
+        derived one). A hand-edited `_space_group_Wyckoff` loop is
+        discarded; the table is rebuilt from the space group on update.
+      - **Read ignore of incoming `_atom_site.site_symmetry_multiplicity`**
+        relies on re-derivation: the value is parsed into the
+        descriptor but overwritten by detection on the next
+        `_update_categories` (verified: file value `777` → re-derived
+        `1`). No extra read-side code.
+      - **Report `_space_group_Wyckoff.coords_xyz` = representative
+        coordinate only** (first orbit member, e.g. `(x,x,z)`), not the
+        full orbit. The collection stores the full centred orbit (up to
+        ~3551 chars for multiplicity-192 cubic positions), but the IUCr
+        report loop formatter rejects loop cells > 80 chars. Emitting
+        the representative keeps every space group's report valid and
+        matches the conventional ITA "Coordinates" entry. Decision
+        confirmed with the user during P1.8. The full orbit remains
+        available on the in-memory `space_group_wyckoff` category.
 - [ ] **P1.9 — Promote ADR, close #51, remove stale TODOs.** `git mv`
       `wyckoff-letter-detection.md` from `suggestions/` to `accepted/`,
       set `**Status:** Accepted`, flip its `docs/dev/adrs/index.md` row

@@ -128,6 +128,18 @@ class SpaceGroupWyckoffCollection(CategoryCollection):
         """Reject public mutation; the collection is derived (read-only)."""
         raise TypeError(_READ_ONLY_MESSAGE)
 
+    def from_cif(self, block: object) -> None:
+        """
+        Ignore incoming CIF values for this derived category.
+
+        The Wyckoff table is derived from the structure's space group and
+        is never read back from a CIF file: any ``_space_group_Wyckoff.*``
+        loop in incoming CIF (for example a hand-edited project file) is
+        discarded and the table is rebuilt from the space group on the
+        next update.
+        """
+        return
+
     def _replace_from_space_group(self) -> None:
         """
         Rebuild the rows from the parent structure's current space group.
