@@ -794,7 +794,11 @@ def test_build_param_distribution_plot_returns_plotly_figure():
     assert marginal_trace.line.width == POSTERIOR_PAIR_MARGINAL_DENSITY_LINE_WIDTH
     assert marginal_trace.fillcolor == POSTERIOR_PAIR_MARGINAL_DENSITY_FILL_COLOR
     assert marginal_trace.hovertemplate == 'length_a: %{x:.4f}<br>density: %{y:.4f}<extra></extra>'
-    assert histogram_trace.xbins.size is not None
+    # The histogram is pre-binned server-side into a Bar trace (per-bin
+    # densities only) so the raw posterior samples never enter the payload.
+    assert histogram_trace.type == 'bar'
+    assert histogram_trace.width is not None
+    assert len(histogram_trace.x) == len(histogram_trace.y)
     assert '68% credible interval' not in {trace.name for trace in figure.data}
     assert interval_trace.fillcolor == POSTERIOR_INTERVAL_95_FILL_COLOR
     assert max_posterior_trace.line.dash == POSTERIOR_POINT_ESTIMATE_LINE_DASH
@@ -804,6 +808,65 @@ def test_build_param_distribution_plot_returns_plotly_figure():
         float(marginal_trace.x[-1]),
     )
     assert figure.layout.yaxis.range is not None
+
+
+def test_param_distribution_histogram_is_prebinned_not_raw_samples():
+    """Distribution histogram embeds per-bin densities, not raw draws.
+
+    A ``go.Histogram`` fed the full posterior sample array serialises
+    every draw into the figure (megabytes for real chains), which left
+    the lazy-figure "Loading plot…" skeleton unable to paint until the
+    browser parsed the whole payload. The trace must instead carry only
+    the pre-computed per-bin densities.
+    """
+    from easydiffraction.analysis.fit_helpers.bayesian import PosteriorParameterSummary
+    from easydiffraction.analysis.fit_helpers.bayesian import PosteriorSamples
+    from easydiffraction.display.plotting import Plotter
+
+    rng = np.random.default_rng(0)
+    sample_count = 5000
+    draws = rng.normal(3.89, 0.001, size=(1, sample_count, 1))
+    posterior_samples = PosteriorSamples(
+        parameter_names=['length_a'],
+        parameter_samples=draws,
+        log_posterior=np.zeros((1, sample_count), dtype=float),
+    )
+    parameter = SimpleNamespace(
+        unique_name='length_a', name='length_a', fit_min=3.885, fit_max=3.895
+    )
+    summary = PosteriorParameterSummary(
+        unique_name='length_a',
+        display_name='length_a',
+        best_sample_value=float(draws[0, -1, 0]),
+        median=float(np.median(draws)),
+        standard_deviation=float(np.std(draws, ddof=1)),
+        interval_68=tuple(np.quantile(draws, [0.16, 0.84]).tolist()),
+        interval_95=tuple(np.quantile(draws, [0.025, 0.975]).tolist()),
+    )
+    fit_results = SimpleNamespace(
+        posterior_samples=posterior_samples,
+        posterior_parameter_summaries=[summary],
+        posterior_predictive={},
+        parameters=[parameter],
+    )
+    plotter = Plotter()
+    plotter._get_posterior_samples_and_fit_results = MethodType(
+        lambda self: (posterior_samples, fit_results), plotter
+    )
+    plotter._get_fit_result_for_correlation = MethodType(lambda self: fit_results, plotter)
+
+    figure = plotter._build_param_distribution_plot(parameter)
+    histogram_trace = next(t for t in figure.data if t.name == 'Posterior histogram')
+
+    assert histogram_trace.type == 'bar'
+    # Only per-bin densities ride along, far fewer than the raw draws.
+    assert len(histogram_trace.y) < sample_count // 10
+    assert len(histogram_trace.x) == len(histogram_trace.y)
+    # Density-normalised bars integrate to ~1 across their bin widths.
+    integral = float(
+        np.sum(np.asarray(histogram_trace.y) * np.asarray(histogram_trace.width))
+    )
+    assert integral == pytest.approx(1.0, abs=1e-3)
 
 
 def test_plot_param_distribution_routes_ascii_to_marginal_density(monkeypatch):

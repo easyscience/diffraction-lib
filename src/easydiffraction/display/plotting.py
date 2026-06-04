@@ -3043,29 +3043,46 @@ class Plotter(RendererBase):
         histogram_bin_edges: np.ndarray | None,
     ) -> None:
         """Add the histogram trace for a posterior distribution plot."""
-        histogram_kwargs: dict[str, object] = {}
-        if (
-            histogram_bin_edges is not None
-            and histogram_bin_edges.size >= MIN_POSTERIOR_SAMPLE_COUNT
-        ):
-            histogram_kwargs['xbins'] = {
-                'start': float(histogram_bin_edges[0]),
-                'end': float(histogram_bin_edges[-1]),
-                'size': float(histogram_bin_edges[1] - histogram_bin_edges[0]),
-            }
+        marker = {
+            'color': POSTERIOR_HISTOGRAM_FILL_COLOR,
+            'line': {'color': POSTERIOR_HISTOGRAM_LINE_COLOR, 'width': 1},
+        }
+        densities = Plotter._posterior_distribution_histogram_density(
+            values,
+            histogram_bin_edges,
+        )
+        if densities is None or histogram_bin_edges is None:
+            # Degenerate sample (no usable bins): let Plotly bin the few
+            # raw values client-side; the embedded payload stays tiny.
+            fig.add_trace(
+                go.Histogram(
+                    x=values,
+                    histnorm='probability density',
+                    marker=marker,
+                    opacity=0.82,
+                    name='Posterior histogram',
+                    hovertemplate='sample=%{x:.4f}<br>density: %{y:.2f}<extra></extra>',
+                )
+            )
+            return
 
+        # Pre-bin server-side and emit a Bar trace so only the per-bin
+        # densities ride in the page, not every raw posterior sample.
+        # ``go.Histogram(x=values)`` serializes the full sample array
+        # (hundreds of thousands of values per parameter), bloating the
+        # docs page and stalling the "Loading plot…" skeleton paint.
+        edges = np.asarray(histogram_bin_edges, dtype=float)
+        bin_centers = (edges[:-1] + edges[1:]) / 2.0
+        bin_widths = np.diff(edges)
         fig.add_trace(
-            go.Histogram(
-                x=values,
-                histnorm='probability density',
-                marker={
-                    'color': POSTERIOR_HISTOGRAM_FILL_COLOR,
-                    'line': {'color': POSTERIOR_HISTOGRAM_LINE_COLOR, 'width': 1},
-                },
+            go.Bar(
+                x=bin_centers,
+                y=densities,
+                width=bin_widths,
+                marker=marker,
                 opacity=0.82,
                 name='Posterior histogram',
                 hovertemplate='sample=%{x:.4f}<br>density: %{y:.2f}<extra></extra>',
-                **histogram_kwargs,
             )
         )
 
