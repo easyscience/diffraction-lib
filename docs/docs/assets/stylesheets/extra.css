@@ -202,12 +202,12 @@ label.md-nav__title[for="__drawer"] {
 
 /* Change the overall width of the page */
 .md-grid {
-  max-width: 118em;
+  max-width: 125em;
 }
 
 /* Keep prose line length stable when sidebars are hidden at narrower widths */
 .md-main .md-content > .md-content__inner {
-  width: min(100%, 40.5em);
+  width: min(100%, 45em);
   margin-left: auto !important;
   margin-right: auto !important;
 }
