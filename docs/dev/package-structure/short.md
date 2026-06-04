@@ -131,6 +131,7 @@
 │   │   │   │   ├── 📄 base.py
 │   │   │   │   ├── 📄 chebyshev.py
 │   │   │   │   ├── 📄 enums.py
+│   │   │   │   ├── 📄 estimate.py
 │   │   │   │   ├── 📄 factory.py
 │   │   │   │   └── 📄 line_segment.py
 │   │   │   ├── 📁 calculator
@@ -289,8 +290,6 @@
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
 │   │   │   └── 📄 factory.py
-│   │   ├── 📁 publication
-│   │   ├── 📁 rendering
 │   │   ├── 📁 rendering_plot
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
@@ -330,7 +329,6 @@
 │   │   ├── 📁 html
 │   │   │   └── 📁 vendor
 │   │   └── 📁 tex
-│   │       └── 📁 styles
 │   ├── 📄 __init__.py
 │   ├── 📄 data_context.py
 │   ├── 📄 enums.py

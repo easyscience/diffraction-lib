@@ -126,6 +126,16 @@ class CollectionBase(GuardedBase):
         """
         del self[name]
 
+    def clear(self) -> None:
+        """
+        Remove every item, unlinking each from this collection.
+
+        Delegates to :meth:`_adopt_items` with an empty list: every
+        child has ``_parent`` cleared, ``_items`` is emptied, and the
+        index is rebuilt, matching the invariants ``__delitem__`` keeps.
+        """
+        self._adopt_items([])
+
     def _key_for(self, item: GuardedBase) -> str | None:  # noqa: PLR6301
         """
         Return the identity key for *item*.

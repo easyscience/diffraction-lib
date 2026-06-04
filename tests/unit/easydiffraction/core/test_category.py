@@ -251,3 +251,19 @@ def test_category_collection_help(capsys):
     assert 'Items (2)' in out
     assert 'n1' in out
     assert 'n2' in out
+
+
+def test_category_collection_clear_marks_parent_dirty():
+    from types import SimpleNamespace
+
+    c = SimpleCollection()
+    c.create(a='n1')
+    c.create(a='n2')
+    assert len(c) == 2
+
+    parent = SimpleNamespace(_need_categories_update=False)
+    object.__setattr__(c, '_parent', parent)
+
+    c.clear()
+    assert len(c) == 0
+    assert parent._need_categories_update is True

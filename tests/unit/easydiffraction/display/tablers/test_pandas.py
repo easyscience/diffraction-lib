@@ -56,6 +56,11 @@ class TestPandasTableBackend:
         assert f'border: 1px solid {BORDER_COLOR}' in html
         assert f'border-bottom: 1px solid {BORDER_COLOR}' in html
 
+    def test_cells_do_not_wrap_so_wide_tables_scroll(self):
+        """Cells stay on one line; wide tables scroll, not fold to rows."""
+        html = _backend().build_renderable(['left'], _indexed({'A': [1.0]}))
+        assert 'white-space: nowrap' in html
+
     def test_per_column_alignment_is_inline(self):
         html = _backend().build_renderable(['left', 'right'], _indexed({'A': ['x'], 'B': ['y']}))
         assert 'text-align: left' in html

@@ -1,6 +1,6 @@
 # ADR: Automatic Line-Segment Background Estimation
 
-**Status:** Proposed **Date:** 2026-06-01
+**Status:** Accepted **Date:** 2026-06-01
 
 ## Group
 
@@ -299,19 +299,24 @@ The intended usage is a loop, and the API supports it directly:
    background and clip heights to the original measured intensities
    (§2).
 
-**Every call overwrites and re-fixes.** `auto_estimate()` always clears
-the collection and rebuilds it — there is no append mode — and the
-rebuilt points are **fixed** (`free=False`) regardless of whether the
-previous points had been freed during refinement. A second call is
-therefore a fresh fixed seed, not a merge: calling it again overwrites
-the points and re-fixes them even if they were free. This keeps the loop
-predictable (each pass starts from a clean, fixed background) and
-idempotent (same inputs → same points). Clearing everything — including
-any hand-added points — is the deliberate "overwrite" contract;
-preserving manual points is deferred. When the collection is non-empty,
-the call logs a one-line notice that it is replacing the existing
-points, so a user who hand-tuned a background is not surprised; the
-first call, with nothing to replace, is silent.
+**Every call overwrites and re-fixes.** Whenever it produces an
+estimate, `auto_estimate()` clears the collection and rebuilds it —
+there is no append mode — and the rebuilt points are **fixed**
+(`free=False`) regardless of whether the previous points had been freed
+during refinement. A second call is therefore a fresh fixed seed, not a
+merge: calling it again overwrites the points and re-fixes them even if
+they were free. This keeps the loop predictable (each pass starts from a
+clean, fixed background) and idempotent (same inputs → same points).
+Clearing everything — including any hand-added points — is the
+deliberate "overwrite" contract; preserving manual points is deferred.
+When the collection is non-empty, the call logs a one-line notice that
+it is replacing the existing points, so a user who hand-tuned a
+background is not surprised; the first call, with nothing to replace, is
+silent. The one exception is degenerate input: when no active data
+remain (every point excluded, or data not yet loaded), the call emits a
+single warning and returns **without touching the existing points**, so
+an accidental call on an unloaded experiment does not wipe a hand-tuned
+background.
 
 **Always fixed; no `free` argument.** Generated points are always
 created fixed (`intensity.free = False`) — there is no caller-selectable
@@ -329,18 +334,24 @@ active points only.
 ### 6. Where the code lives
 
 A backend-agnostic estimator helper —
-`estimate_background_curve(x, y, *, beam_mode, peaks=None, width=None, ...) -> (curve, anchors)`
+`estimate_background_curve(x, y, *, method='arpls', peaks=None, width=None, ...) -> BackgroundEstimate`
 — lives in a new small module in the background package (e.g.
 `datablocks/experiment/categories/background/estimate.py`). It is pure
-array-in/array-out (the optional `peaks` argument carries model peak
-positions detected from the peak-only model array per §5 — not
+array-in/array-out (the optional `peaks` argument is a boolean mask
+aligned with `x` that forbids non-endpoint anchors on peak samples,
+built by the adapter from the peak-only model array per §5 — not
 reflection metadata), holds no model state, wraps `pybaselines` for
 Stage 1, and keeps the §3 parameterization and Stage-2 thinning in-house
 — so it stays unit-testable in isolation and pulls no domain logic into
-`core/`. `LineSegmentBackground.auto_estimate()` is a thin adapter: read
-the pattern (and model, if present), call the helper, clip, and
-`create()` the points. Helpers are extracted as needed to stay under the
-lint complexity thresholds
+`core/`. It returns a small `BackgroundEstimate` result object (curve,
+anchors, and the method/width/noise/tolerance/backend-params metadata
+the adapter logs). The `beam_mode` argument from earlier drafts is
+deferred with the per-beam-mode policy (see _Deferred Work_); omitting
+it also keeps the helper within the project's argument-count guardrail.
+`LineSegmentBackground.auto_estimate()` is a thin adapter: read the
+pattern (and model, if present), call the helper, clip, and `create()`
+the points. Helpers are extracted as needed to stay under the lint
+complexity thresholds
 ([`lint-complexity-thresholds.md`](../accepted/lint-complexity-thresholds.md))
 rather than raising them.
 
@@ -353,15 +364,17 @@ Work_ — to avoid an abstraction before its second concrete use.
 The four design questions raised in review are resolved: noise-relative
 Stage-2 thinning (§3), always-overwrite with a replace notice (§5), a
 single Stage-1 method for now (§3), and a void method that logs a
-one-line summary (§1). What remains is empirical calibration, done
-against the tutorial corpus during implementation:
+one-line summary (§1). Empirical calibration was carried out in Phase 2:
 
-- The exact Stage-2 tolerance multiplier (`c · σ`, proposed `c ≈ 2`) and
-  the width percentile (proposed ~75th) need tuning against real
-  datasets.
-- Whether the single Stage-1 method holds across the whole corpus
-  (CWL/TOF, neutron/X-ray) or a `beam_mode`/`radiation_probe` policy is
-  eventually needed (see §Deferred Work).
+- The Stage-2 tolerance multiplier (`c · σ`, `c = 2`) and the width
+  percentile (~75th) are first-cut constants; they were validated — not
+  exhaustively swept — against the representative CWL (`ed-2`) and TOF
+  (`ed-13`) datasets plus the analytic unit cases, and produce sensible
+  backgrounds there. Re-tuning stays possible if a future dataset needs
+  it.
+- The single Stage-1 method (`arpls`) holds for both validated beam
+  modes; no `beam_mode`/`radiation_probe` policy was required (it stays
+  in §Deferred Work should a future corpus show otherwise).
 
 ## Consequences
 
@@ -465,22 +478,22 @@ helper:
   the single fallback warning rather than an exception or a garbage
   background.
 
-**Tutorial corpus as real-world reference.** The ~25 tutorial scripts in
-`docs/docs/tutorials/*.py` already build real experiments with
-well-defined backgrounds across both beam modes and both probes — CWL
-(e.g. the sloping background in
-[`ed-17.py`](../../../../docs/docs/tutorials/ed-17.py) and
-[`ed-2.py`](../../../../docs/docs/tutorials/ed-2.py)) and TOF (e.g.
-[`ed-13.py`](../../../../docs/docs/tutorials/ed-13.py),
-[`ed-16.py`](../../../../docs/docs/tutorials/ed-16.py)). Their
-hand-placed line-segment points are ground truth: stripping them and
+**Tutorial corpus as real-world reference.** The tutorial scripts in
+`docs/docs/tutorials/*.py` build real experiments with well-defined
+backgrounds across both beam modes and both probes. Their hand-placed
+line-segment points are a real-world reference: stripping them and
 re-running `auto_estimate()` should reproduce a comparable background
-curve within tolerance. This gives broad, real coverage across space
-groups, beam modes, and probes at almost no authoring cost, and is the
-reference set used to calibrate the default constants and confirm the
-single Stage-1 method. These corpus checks run at the functional /
-script level where the tutorial experiments are already loaded, not at
-unit level.
+curve. **Phase 2 outcome:** the functional regression validates two
+representative datasets — CWL
+[`ed-2.py`](../../../../docs/docs/tutorials/ed-2.py) and TOF
+[`ed-13.py`](../../../../docs/docs/tutorials/ed-13.py) — comparing the
+estimated curve against the hand-placed reference to within a fraction
+of the measured signal scale; the single `arpls` default and the
+first-cut constants hold for both. Sloping and curved backgrounds are
+covered against exact analytic ground truth by the unit tests, not the
+corpus. A broader per-tutorial sweep (e.g. `ed-17`, `ed-16`) was not
+needed and stays available if a future dataset misbehaves. These checks
+run at the functional / unit level.
 
 The estimator module mirrors into
 `tests/unit/easydiffraction/datablocks/experiment/categories/background/`

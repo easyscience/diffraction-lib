@@ -227,6 +227,36 @@ project.experiments['hrpt'].background.create(x=110, y=170)
 project.experiments['hrpt'].background.create(x=165, y=170)
 ```
 
+Instead of placing every point by hand, you can let EasyDiffraction
+detect a sensible set of background points directly from the measured
+pattern with the `auto_estimate` method. Called with no arguments, it
+builds a peak-insensitive background curve, places points between the
+peaks, and reads their heights from that curve so they do not eat into
+peak intensities:
+
+```python
+# Automatically estimate background points from the measured pattern
+project.experiments['hrpt'].background.auto_estimate()
+```
+
+The generated points are ordinary, editable control points. They are
+created **fixed** (not refined); you can review them, keep them, or free
+any of them for refinement (see [Analysis](analysis.md)). Each call
+**overwrites** the existing points (when there are active data to
+estimate from), so you always start from a clean, reproducible
+background; if no active data remain — for example every point is
+excluded, or data are not yet loaded — it warns and leaves your existing
+points unchanged. It works for both constant-wavelength and
+time-of-flight data, neutron and X-ray.
+
+You can also guide the estimate with optional arguments, for example to
+cap the number of points or choose a specific method:
+
+```python
+# Estimate with at most 10 background points
+project.experiments['hrpt'].background.auto_estimate(n_points=10)
+```
+
 ### 5. Linked Phases Category { #linked-phases-category }
 
 ```python
