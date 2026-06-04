@@ -42,3 +42,30 @@ def test_auto_estimate_recovers_cwl_background(tmp_path):
     # Points span the active measured range.
     assert positions.min() < 20.0
     assert positions.max() > 150.0
+
+
+def test_auto_estimate_recovers_tof_background(tmp_path):
+    project = ed.Project()
+    data_path = ed.download_data(id=17, destination=str(tmp_path))
+    project.experiments.add_from_data_path(
+        name='sim_si',
+        data_path=data_path,
+        sample_form='powder',
+        beam_mode='time-of-flight',
+        radiation_probe='neutron',
+    )
+    experiment = project.experiments['sim_si']
+    experiment.excluded_regions.create(id='1', start=0, end=55000)
+    experiment.excluded_regions.create(id='2', start=105500, end=200000)
+
+    experiment.background.auto_estimate()
+
+    points = list(experiment.background)
+    heights = np.array([p.y.value for p in points])
+    # Sparse, non-negative anchors on the real TOF pattern (different beam
+    # mode and a curved/decaying regime), confirming the single arpls
+    # default holds across beam modes.
+    assert 2 <= len(points) < 100
+    assert np.all(heights >= 0)
+    # The hand-placed TOF background is flat at ~0.01; recovered stays small.
+    assert float(np.median(heights)) < 5.0
