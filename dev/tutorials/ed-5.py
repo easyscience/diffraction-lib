@@ -171,7 +171,7 @@ expt.linked_phases.create(id='cosio', scale=1.0)
 # ### Create Project
 
 # %%
-project = Project()
+project = Project(name='cosio_d20')
 
 # %%
 project.save_as(dir_path='projects/ed_5_cosio_d20')

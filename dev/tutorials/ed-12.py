@@ -21,7 +21,7 @@ import easydiffraction as ed
 # ### Create Project
 
 # %%
-project = ed.Project()
+project = ed.Project(name='nacl_xray_pdf')
 
 # %% [markdown]
 # ### Set Plotting Engine

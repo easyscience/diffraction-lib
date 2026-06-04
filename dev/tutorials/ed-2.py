@@ -31,7 +31,7 @@ import easydiffraction as ed
 # ## 📦 Define Project
 
 # %%
-project = ed.Project()
+project = ed.Project(name='lbco_hrpt')
 
 # %% [markdown]
 # ## 🧩 Define Structure

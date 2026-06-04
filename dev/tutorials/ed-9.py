@@ -195,7 +195,7 @@ experiment.linked_phases.create(id='si', scale=0.2)
 # ### Create Project
 
 # %%
-project = Project()
+project = Project(name='lbco_si_mcstas')
 
 # %% [markdown]
 # ### Add Structures

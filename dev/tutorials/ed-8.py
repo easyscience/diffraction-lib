@@ -268,7 +268,7 @@ expt47.excluded_regions.create(id='2', start=100004, end=200000)
 # ### Create Project
 
 # %%
-project = Project()
+project = Project(name='ncaf_wish')
 
 # %% [markdown]
 # ### Add Structure

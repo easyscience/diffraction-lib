@@ -18,7 +18,7 @@ import easydiffraction as ed
 # ### Create Project
 
 # %%
-project = ed.Project()
+project = ed.Project(name='si_nomad_pdf')
 
 # %% [markdown]
 # ### Set Plotting Engine

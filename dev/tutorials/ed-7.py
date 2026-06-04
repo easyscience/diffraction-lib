@@ -117,7 +117,7 @@ expt.linked_phases.create(id='si', scale=10.0)
 # ### Create Project
 
 # %%
-project = Project()
+project = Project(name='si_sepd')
 
 # %% [markdown]
 # ### Add Structure

@@ -15456,7 +15456,7 @@ in different environments:</p>
             <td><code><a class="autorefs autorefs-internal" title="&lt;code&gt;pandas&lt;/code&gt; (&lt;code&gt;easydiffraction.display.tablers.pandas&lt;/code&gt;)" href="#easydiffraction.display.tablers.pandas">pandas</a></code></td>
             <td>
               <div class="doc-md-description">
-                <p>Pandas-based table renderer for notebooks using DataFrame Styler.</p>
+                <p>Pandas-input table renderer emitting inline-styled HTML for notebooks.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -15935,7 +15935,7 @@ updates.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Pandas-based table renderer for notebooks using DataFrame Styler.</p>
+        <p>Pandas-input table renderer emitting inline-styled HTML for notebooks.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -15962,7 +15962,7 @@ updates.</p>
             <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;PandasTableBackend&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.display.tablers.pandas.PandasTableBackend&lt;/code&gt;)" href="#easydiffraction.display.tablers.pandas.PandasTableBackend">PandasTableBackend</a></code></td>
             <td>
               <div class="doc-md-description">
-                <p>Render tables using the pandas Styler in Jupyter environments.</p>
+                <p>Render tables as inline-styled HTML for Jupyter notebooks.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -16002,7 +16002,12 @@ updates.</p>
 
 
 
-        <p>Render tables using the pandas Styler in Jupyter environments.</p>
+        <p>Render tables as inline-styled HTML for Jupyter notebooks.</p>
+<p>Every style is inlined on the table elements rather than collected
+in a pandas <code>Styler</code> <code>&lt;style&gt;</code> block. Inline styles survive
+<abbr title="Web-based interactive development environment for notebooks, code, and data.">JupyterLab</abbr>'s untrusted-output sanitisation, so a saved notebook
+reopened before re-execution still shows the themed table instead of
+falling back to the host default (bold index, row striping).</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -16028,10 +16033,10 @@ updates.</p>
       </thead>
       <tbody>
             <tr class="doc-section-item">
-              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;render&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;alignments&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;df&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;display_handle&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;width&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.display.tablers.pandas.PandasTableBackend.render&lt;/code&gt;)" href="#easydiffraction.display.tablers.pandas.PandasTableBackend.render">render</a></code></td>
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;build_renderable&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;alignments&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;df&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.display.tablers.pandas.PandasTableBackend.build_renderable&lt;/code&gt;)" href="#easydiffraction.display.tablers.pandas.PandasTableBackend.build_renderable">build_renderable</a></code></td>
               <td>
                 <div class="doc-md-description">
-                  <p>Render a styled DataFrame.</p>
+                  <p>Build notebook HTML for the provided table.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -16039,10 +16044,10 @@ updates.</p>
               </td>
             </tr>
             <tr class="doc-section-item">
-              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;build_renderable&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;alignments&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;df&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.display.tablers.pandas.PandasTableBackend.build_renderable&lt;/code&gt;)" href="#easydiffraction.display.tablers.pandas.PandasTableBackend.build_renderable">build_renderable</a></code></td>
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;render&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;alignments&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;df&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;display_handle&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;width&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.display.tablers.pandas.PandasTableBackend.render&lt;/code&gt;)" href="#easydiffraction.display.tablers.pandas.PandasTableBackend.render">render</a></code></td>
               <td>
                 <div class="doc-md-description">
-                  <p>Build notebook HTML for the provided table.</p>
+                  <p>Render an inline-styled HTML table in Jupyter.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -16067,146 +16072,6 @@ updates.</p>
 
 
 <h8 id="easydiffraction.display.tablers.pandas.PandasTableBackend-functions">Functions</h8>
-
-<div class="doc doc-object doc-function">
-
-
-<h9 id="easydiffraction.display.tablers.pandas.PandasTableBackend.render" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">render</span><span class="p">(</span><span class="n">alignments</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">display_handle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
-
-</h9>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Render a styled DataFrame.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-
-
-<p><span class="doc-section-title">Parameters:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Description</th>
-          <th>Default</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>alignments</code>
-            </td>
-            <td>
-                  <code><span title="object">object</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Iterable of column justifications (e.g. 'left').</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>df</code>
-            </td>
-            <td>
-                  <code><span title="object">object</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>DataFrame whose index is displayed as the first column.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>display_handle</code>
-            </td>
-            <td>
-                  <code><span title="object">object</span> | None</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Optional IPython DisplayHandle to update an existing output
-area in place when running in Jupyter.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-              </div>
-            </td>
-            <td>
-                  <code>None</code>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>width</code>
-            </td>
-            <td>
-                  <code><span title="int">int</span> | None</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Ignored. HTML tables reflow to the available width, so no
-fixed table width is applied.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-              </div>
-            </td>
-            <td>
-                  <code>None</code>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-    <p><span class="doc-section-title">Returns:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="object">object</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Backend-defined return value (commonly <code>None</code>).</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-    </div>
-
-</div>
 
 <div class="doc doc-object doc-function">
 
@@ -16245,7 +16110,7 @@ fixed table width is applied.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Iterable of column justifications (e.g. 'left').</p>
+                <p>Per-column text alignments.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -16294,7 +16159,146 @@ column.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>HTML string representation of the styled table.</p>
+                <p>Inline-styled HTML string for the table.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h9 id="easydiffraction.display.tablers.pandas.PandasTableBackend.render" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">render</span><span class="p">(</span><span class="n">alignments</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">display_handle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+</h9>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Render an inline-styled HTML table in Jupyter.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>alignments</code>
+            </td>
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Per-column text alignments.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>df</code>
+            </td>
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Index-aware DataFrame whose index is shown as the first
+column.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>display_handle</code>
+            </td>
+            <td>
+                  <code><span title="object">object</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Optional IPython DisplayHandle for in-place updates.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>width</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Ignored. HTML tables reflow to the available width.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>None</code>; the table is displayed as a side effect.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->

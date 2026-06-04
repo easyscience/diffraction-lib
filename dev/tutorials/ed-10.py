@@ -21,7 +21,7 @@ import easydiffraction as ed
 # ### Create Project
 
 # %%
-project = ed.Project()
+project = ed.Project(name='ni_pdf')
 
 # %% [markdown]
 # ### Add Structure

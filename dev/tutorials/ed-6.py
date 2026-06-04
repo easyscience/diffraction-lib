@@ -150,7 +150,7 @@ expt.linked_phases.create(id='hs', scale=0.5)
 # ### Create Project
 
 # %%
-project = Project()
+project = Project(name='hs_hrpt')
 
 # %% [markdown]
 # ### Add Structure

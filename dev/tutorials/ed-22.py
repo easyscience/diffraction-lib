@@ -35,7 +35,7 @@ import easydiffraction as ed
 # workflow inside this object.
 
 # %%
-project = ed.Project()
+project = ed.Project(name='tbti_heidi_emcee')
 
 # %%
 project.save_as(dir_path='projects/ed_22_tbti_heidi_emcee')

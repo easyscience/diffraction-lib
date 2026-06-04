@@ -14,7 +14,7 @@ import easydiffraction as ed
 # ## 📦 Define Project
 
 # %%
-# Create minimal project without name and description
+# Create a minimal project with a short name
 project = ed.Project(name='tbti_heidi')
 project.info.title = 'Tb2Ti2O7 at HEiDi@FRMII'
 project.info.description = """This project demonstrates a standard
