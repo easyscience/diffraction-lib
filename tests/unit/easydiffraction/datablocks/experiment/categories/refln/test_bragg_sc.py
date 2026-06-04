@@ -29,14 +29,22 @@ def test_refln_data_point_defaults():
     assert pt.intensity_meas.value == 0.0
     assert pt.intensity_meas_su.value == 0.0
     assert pt.intensity_calc.value == 0.0
-    assert pt.wavelength.value == 0.0
+    assert not hasattr(type(pt), 'wavelength')
     assert pt._identity.category_code == 'refln'
 
 
-def test_refln_data_collection_create_and_properties():
-    from easydiffraction.datablocks.experiment.categories.refln.bragg_sc import ReflnData
+def test_tof_refln_data_point_has_wavelength():
+    from easydiffraction.datablocks.experiment.categories.refln.bragg_sc import TofRefln
 
-    coll = ReflnData()
+    pt = TofRefln()
+    assert pt.wavelength.value == 0.0
+    assert pt.intensity_calc.value == 0.0
+
+
+def test_refln_data_collection_create_and_properties():
+    from easydiffraction.datablocks.experiment.categories.refln.bragg_sc import TofReflnData
+
+    coll = TofReflnData()
 
     h = np.array([1.0, 2.0, 0.0])
     k = np.array([0.0, 1.0, 0.0])
@@ -68,10 +76,18 @@ def test_refln_data_collection_create_and_properties():
     np.testing.assert_array_almost_equal(coll.intensity_calc, calc)
 
 
-def test_refln_data_d_spacing_and_stol():
-    from easydiffraction.datablocks.experiment.categories.refln.bragg_sc import ReflnData
+def test_cwl_refln_data_has_no_wavelength():
+    from easydiffraction.datablocks.experiment.categories.refln.bragg_sc import CwlReflnData
 
-    coll = ReflnData()
+    coll = CwlReflnData()
+    assert not hasattr(type(coll), 'wavelength')
+    assert not hasattr(type(coll), '_set_wavelength')
+
+
+def test_refln_data_d_spacing_and_stol():
+    from easydiffraction.datablocks.experiment.categories.refln.bragg_sc import CwlReflnData
+
+    coll = CwlReflnData()
     h = np.array([1.0, 2.0])
     k = np.array([0.0, 0.0])
     l = np.array([0.0, 0.0])
@@ -87,9 +103,9 @@ def test_refln_data_d_spacing_and_stol():
 
 
 def test_refln_items_resolve_experiment_datablock_name():
-    from easydiffraction.datablocks.experiment.categories.refln.bragg_sc import ReflnData
+    from easydiffraction.datablocks.experiment.categories.refln.bragg_sc import CwlReflnData
 
-    coll = ReflnData()
+    coll = CwlReflnData()
     coll._parent = _experiment_stub('sc-exp')
 
     coll._create_items_set_hkl_and_id(
@@ -104,7 +120,10 @@ def test_refln_items_resolve_experiment_datablock_name():
 
 
 def test_refln_data_type_info():
-    from easydiffraction.datablocks.experiment.categories.refln.bragg_sc import ReflnData
+    from easydiffraction.datablocks.experiment.categories.refln.bragg_sc import CwlReflnData
+    from easydiffraction.datablocks.experiment.categories.refln.bragg_sc import TofReflnData
 
-    assert ReflnData.type_info.tag == 'bragg-sc'
-    assert ReflnData.type_info.description == 'Bragg single-crystal reflection data'
+    assert CwlReflnData.type_info.tag == 'bragg-sc-cwl'
+    assert CwlReflnData.type_info.description == 'Bragg CWL single-crystal reflection data'
+    assert TofReflnData.type_info.tag == 'bragg-sc-tof'
+    assert TofReflnData.type_info.description == 'Bragg TOF single-crystal reflection data'

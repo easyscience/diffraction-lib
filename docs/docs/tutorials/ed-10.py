@@ -9,19 +9,22 @@
 # https://github.com/diffpy/cmi_exchange/tree/main/cmi_scripts/fitNiPDF
 
 # %% [markdown]
-# ## Import Library
+# ## 🛠️ Import Library
 
 # %%
 import easydiffraction as ed
 
 # %% [markdown]
-# ## Create Project
-
-# %%
-project = ed.Project()
+# ## 📦 Define Project
 
 # %% [markdown]
-# ## Add Structure
+# ### Create Project
+
+# %%
+project = ed.Project(name='ni_pdf')
+
+# %% [markdown]
+# ### Add Structure
 
 # %%
 project.structures.create(name='ni')
@@ -36,12 +39,17 @@ project.structures['ni'].atom_sites.create(
     fract_x=0.0,
     fract_y=0.0,
     fract_z=0.0,
-    wyckoff_letter='a',
     adp_iso=0.5,
 )
 
 # %% [markdown]
-# ## Add Experiment
+# ### Display Structure
+
+# %%
+project.display.structure(struct_name='ni')
+
+# %% [markdown]
+# ### Add Experiment
 
 # %%
 data_path = ed.download_data(id=6, destination='data')
@@ -66,7 +74,10 @@ project.experiments['pdf'].peak.sharp_delta_2 = 2.0
 project.experiments['pdf'].peak.damp_particle_diameter = 0
 
 # %% [markdown]
-# ## Select Fitting Parameters
+# ## 🚀 Perform Analysis
+
+# %% [markdown]
+# ### Set Free Parameters
 
 # %%
 project.structures['ni'].cell.length_a.free = True
@@ -78,7 +89,7 @@ project.experiments['pdf'].peak.broad_q.free = True
 project.experiments['pdf'].peak.sharp_delta_2.free = True
 
 # %% [markdown]
-# ## Run Fitting
+# ### Run Fitting
 
 # %%
 project.analysis.fit()
@@ -86,7 +97,13 @@ project.display.fit.results()
 project.display.fit.correlations(threshold=0.75)
 
 # %% [markdown]
-# ## Plot Measured vs Calculated
+# ### Display Pattern
 
 # %%
 project.display.pattern(expt_name='pdf')
+
+# %% [markdown]
+# ## 💾 Save Project
+
+# %%
+project.save_as(dir_path='projects/ed_10_ni_pdf')

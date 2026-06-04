@@ -5,8 +5,6 @@ from __future__ import annotations
 
 import re
 
-import pytest
-
 ANSI_ESCAPE_RE = re.compile(r'\x1b\[[0-?]*[ -/]*[@-~]')
 
 
@@ -87,94 +85,28 @@ def test_fit_mode_enum_members_default_and_descriptions():
     assert all(member.description() for member in FitModeEnum)
 
 
-def test_fitting_instantiation_defaults_and_helpers():
-    from easydiffraction.analysis.categories.fitting.default import Fitting
-    import easydiffraction.analysis.categories.fitting.default as fitting_mod
-
-    fitting = Fitting()
-
-    assert fitting._identity.category_code == 'fitting'
-    assert fitting.minimizer_type.value == 'lmfit (leastsq)'
-    assert fitting.minimizer is None
-
-    class ParentWithMinimizer:
-        fitter = type('FitterHolder', (), {'minimizer': 'MIN'})()
-
-    fitting._parent = ParentWithMinimizer()
-    assert fitting.minimizer == 'MIN'
-
-    shown: list[str] = []
-    monkeypatch = pytest.MonkeyPatch()
-    monkeypatch.setattr(
-        fitting_mod.MinimizerFactory,
-        'show_supported',
-        lambda: shown.append('shown'),
-    )
-    Fitting.show_available_minimizers()
-    monkeypatch.undo()
-
-    assert shown == ['shown']
-
-
-def test_fit_from_cif_warns_on_invalid_minimizer(monkeypatch):
-    import easydiffraction.analysis.categories.fitting.default as fitting_mod
-    from easydiffraction.analysis.categories.fitting.default import Fitting
-
-    fitting = Fitting()
-    fitting._minimizer_type._value = 'bad-minimizer'
-
-    class Parent:
-        fitter = None
-
-    warnings: list[str] = []
-    fitting._parent = Parent()
-    monkeypatch.setattr(fitting_mod.CategoryItem, 'from_cif', lambda self, block, idx=0: None)
-    monkeypatch.setattr(
-        fitting_mod,
-        'Fitter',
-        lambda value: (_ for _ in ()).throw(ValueError('bad minimizer')),
-    )
-    monkeypatch.setattr(fitting_mod.log, 'warning', lambda message: warnings.append(message))
-
-    fitting.from_cif(object())
-
-    assert warnings == ['bad minimizer']
-
-
-def test_fitting_fallback_paths_without_parent(monkeypatch):
-    import easydiffraction.analysis.categories.fitting.default as fitting_mod
-    from easydiffraction.analysis.categories.fitting.default import Fitting
-
-    fitting = Fitting()
-
-    assert fitting.minimizer is None
-
-    monkeypatch.setattr(fitting_mod.CategoryItem, 'from_cif', lambda self, block, idx=0: None)
-    fitting.from_cif(object())
-
-
-def test_show_fitting_mode_types_for_single_and_multiple_experiments(capsys):
+def test_fitting_mode_show_supported_for_single_and_multiple_experiments(capsys):
     from easydiffraction.analysis.analysis import Analysis
 
     single = Analysis(project=_make_project_with_names(['e1']))
-    single.show_fitting_mode_types()
+    single.fitting_mode.show_supported()
     out_single = capsys.readouterr().out
-    assert 'Fitting mode types' in out_single
+    assert 'Fitting Mode types' in out_single
     assert 'single' in out_single
     assert 'joint' in out_single
 
     multi = Analysis(project=_make_project_with_names(['e1', 'e2']))
-    multi.show_fitting_mode_types()
+    multi.fitting_mode.show_supported()
     out_multi = capsys.readouterr().out
     assert 'joint' in out_multi
     assert 'sequential' in out_multi
 
 
-def test_show_minimizer_types_prints(capsys):
+def test_minimizer_show_supported_prints(capsys):
     from easydiffraction.analysis.analysis import Analysis
 
     analysis = Analysis(project=_make_project_with_names([]))
-    analysis.fitting.show_minimizer_types()
+    analysis.minimizer.show_supported()
     out = capsys.readouterr().out
     assert 'Minimizer types' in out
     assert 'lmfit (leastsq)' in out
@@ -184,14 +116,13 @@ def test_analysis_help_and_mode_switching(capsys):
     from easydiffraction.analysis.analysis import Analysis
 
     analysis = Analysis(project=_make_project_with_names(['e1', 'e2']))
-    assert analysis.fitting_mode_type == 'single'
-    analysis.fitting_mode_type = 'joint'
-    assert analysis.fitting_mode_type == 'joint'
+    assert analysis.fitting_mode.type == 'single'
+    analysis.fitting_mode.type = 'joint'
+    assert analysis.fitting_mode.type == 'joint'
     assert len(analysis.joint_fit) == 0
 
     analysis.help()
     out = _unstyled_output(capsys.readouterr().out)
-    assert "Help for 'Analysis'" in out
     assert 'fitting' in out
     assert 'display' in out
     assert 'Properties' in out
@@ -317,10 +248,10 @@ def test_discover_helpers_and_snapshot_params():
     method_rows = _discover_method_rows(Demo)
 
     assert len(property_rows) == 2
-    assert 'alpha' in [row[1] for row in property_rows]
-    assert next(row for row in property_rows if row[1] == 'beta')[2] == '✓'
-    assert 'do_thing()' in [row[1] for row in method_rows]
-    assert '_private()' not in [row[1] for row in method_rows]
+    assert 'alpha' in [row[0] for row in property_rows]
+    assert next(row for row in property_rows if row[0] == 'beta')[1] == '✓'
+    assert 'do_thing()' in [row[0] for row in method_rows]
+    assert '_private()' not in [row[0] for row in method_rows]
 
     analysis = Analysis(project=_make_project())
 

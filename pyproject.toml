@@ -34,6 +34,7 @@ dependencies = [
   'sympy',          # Symbolic mathematics library
   'lmfit',          # Non-linear optimization and curve fitting
   'bumps',          # Non-linear optimization and curve fitting
+  'emcee',          # Affine-invariant MCMC sampler
   'dfo-ls',         # Non-linear optimization and curve fitting
   'gemmi',          # Crystallography library
   'cryspy',         # Calculations of diffraction patterns
@@ -46,13 +47,11 @@ dependencies = [
   'darkdetect',     # Detecting dark mode (system-level)
   'pandas',         # Displaying tables in Jupyter notebooks
   'plotly',         # Interactive plots
-  'arviz',          # Bayesian analysis summaries and posterior plotting
-  'py3Dmol',        # Visualisation of crystal structures
+  'pillow',         # Rendering structure figures (labels, legend) for reports
 ]
 
 [project.optional-dependencies]
 dev = [
-  'essdiffraction',                  # ESS-specific diffraction library
   'GitPython',                       # Interact with Git repositories
   'build',                           # Building the package
   'pre-commit',                      # Pre-commit hooks
@@ -151,9 +150,15 @@ default-tag = 'v999.0.0'
 # https://interrogate.readthedocs.io/en/latest/
 
 [tool.interrogate]
-fail-under = 75 # Minimum docstring coverage percentage to pass
+# Minimum docstring coverage percentage to pass.
+fail-under = 75
 verbose = 1
-#exclude = ['src/**/__init__.py']
+exclude = [
+  'src/easydiffraction/report/templates/html/vendor',
+  'src/easydiffraction/report/templates/tex/styles',
+  'src/easydiffraction/utils/_vendored/jupyter_dark_detect',
+  'src/easydiffraction/display/structure/renderers/vendor',
+]
 
 #######################################
 # Configuration for coverage/pytest-cov
@@ -163,8 +168,16 @@ verbose = 1
 # https://coverage.readthedocs.io/en/latest/
 
 [tool.coverage.run]
-branch = true    # Measure branch coverage as well
-source = ['src'] # Limit coverage to the source code directory
+# Measure branch coverage as well.
+branch = true
+# Limit coverage to the source code directory.
+source = ['src']
+omit = [
+  'src/easydiffraction/report/templates/html/vendor/*',
+  'src/easydiffraction/report/templates/tex/styles/*',
+  'src/easydiffraction/utils/_vendored/jupyter_dark_detect/*',
+  'src/easydiffraction/display/structure/renderers/vendor/*',
+]
 
 [tool.coverage.report]
 show_missing = true  # Show missing lines
@@ -203,14 +216,17 @@ filterwarnings = [
 [tool.ruff]
 exclude = [
   'tmp',
-  # Vendored jupyter_dark_detect: keep as-is from upstream for easy updates
-  # https://github.com/OpenMined/jupyter-dark-detect/tree/main/jupyter_dark_detect
+  'src/easydiffraction/report/templates/html/vendor',
+  'src/easydiffraction/report/templates/tex/styles',
   'src/easydiffraction/utils/_vendored/jupyter_dark_detect',
+  'src/easydiffraction/display/structure/renderers/vendor',
 ]
 indent-width = 4
 line-length = 99 # See also `max-line-length` in [tool.ruff.lint.pycodestyle]
 preview = true # Enable new rules that are not yet stable, like DOC
-
+builtins = [
+  'display',
+] # Clutch-fix/patch to https://github.com/nbQA-dev/nbQA/issues/882
 # Formatting options for Ruff
 
 [tool.ruff.format]
@@ -343,6 +359,9 @@ ignore = [
   'D',
   'W',
 ]
+'docs/docs/tutorials/**' = [
+  'E402', # https://docs.astral.sh/ruff/rules/module-import-not-at-top-of-file/
+]
 
 # Specific options for certain rules
 
@@ -391,7 +410,8 @@ max-positional-args = 7
 
 [tool.pydoclint]
 #exclude = '\.' # Temporarily disable pydoclint until we are ready
-exclude = 'src/easydiffraction/utils/_vendored/jupyter_dark_detect' # ED only
+# ED only.
+exclude = 'src/easydiffraction/(report/templates/html/vendor|report/templates/tex/styles|utils/_vendored/jupyter_dark_detect|display/structure/renderers/vendor)'
 style = 'numpy'
 check-style-mismatch = true
 check-arg-defaults = true
@@ -406,7 +426,8 @@ allow-init-docstring = true
 
 [tool.format_docstring]
 #exclude = '\.' # Temporarily disable format-docstring until we are ready
-exclude = 'src/easydiffraction/utils/_vendored/jupyter_dark_detect' # ED only
+# ED only.
+exclude = 'src/easydiffraction/(report/templates/html/vendor|report/templates/tex/styles|utils/_vendored/jupyter_dark_detect|display/structure/renderers/vendor)'
 docstring_style = 'numpy'
 line_length = 72
 fix_rst_backticks = true

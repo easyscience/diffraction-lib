@@ -6,7 +6,7 @@
 # from HRPT at PSI.
 
 # %% [markdown]
-# ## Import Library
+# ## 🛠️ Import Library
 
 # %%
 from easydiffraction import ExperimentFactory
@@ -15,25 +15,25 @@ from easydiffraction import StructureFactory
 from easydiffraction import download_data
 
 # %% [markdown]
-# ## Define Structure
+# ## 🧩 Define Structure
 #
 # This section shows how to add structures and modify their
 # parameters.
 #
-# #### Create Structure
+# ### Create Structure
 
 # %%
 structure = StructureFactory.from_scratch(name='hs')
 
 # %% [markdown]
-# #### Set Space Group
+# ### Set Space Group
 
 # %%
 structure.space_group.name_h_m = 'R -3 m'
 structure.space_group.it_coordinate_system_code = 'h'
 
 # %% [markdown]
-# #### Set Unit Cell
+# ### Set Unit Cell
 
 
 # %%
@@ -41,7 +41,7 @@ structure.cell.length_a = 6.9
 structure.cell.length_c = 14.1
 
 # %% [markdown]
-# #### Set Atom Sites
+# ### Set Atom Sites
 
 # %%
 structure.atom_sites.create(
@@ -50,7 +50,6 @@ structure.atom_sites.create(
     fract_x=0,
     fract_y=0,
     fract_z=0.5,
-    wyckoff_letter='b',
     adp_iso=0.5,
 )
 structure.atom_sites.create(
@@ -59,7 +58,6 @@ structure.atom_sites.create(
     fract_x=0.5,
     fract_y=0,
     fract_z=0,
-    wyckoff_letter='e',
     adp_iso=0.5,
 )
 structure.atom_sites.create(
@@ -68,7 +66,6 @@ structure.atom_sites.create(
     fract_x=0.21,
     fract_y=-0.21,
     fract_z=0.06,
-    wyckoff_letter='h',
     adp_iso=0.5,
 )
 structure.atom_sites.create(
@@ -77,7 +74,6 @@ structure.atom_sites.create(
     fract_x=0,
     fract_y=0,
     fract_z=0.197,
-    wyckoff_letter='c',
     adp_iso=0.5,
 )
 structure.atom_sites.create(
@@ -86,40 +82,39 @@ structure.atom_sites.create(
     fract_x=0.13,
     fract_y=-0.13,
     fract_z=0.08,
-    wyckoff_letter='h',
     adp_iso=0.5,
 )
 
 # %% [markdown]
-# ## Define Experiment
+# ## 🔬 Define Experiment
 #
 # This section shows how to add experiments, configure their parameters,
 # and link the structures defined in the previous step.
 #
-# #### Download Measured Data
+# ### Download Data
 
 # %%
 data_path = download_data(id=11, destination='data')
 
 # %% [markdown]
-# #### Create Experiment
+# ### Create Experiment
 
 # %%
 expt = ExperimentFactory.from_data_path(name='hrpt', data_path=data_path)
 
 # %% [markdown]
-# #### Set Instrument
+# ### Set Instrument
 
 # %%
 expt.instrument.setup_wavelength = 1.89
 expt.instrument.calib_twotheta_offset = 0.0
 
 # %% [markdown]
-# #### Set Peak Profile
+# ### Set Peak Profile
 
 # %%
-expt.show_peak_profile_types()
-expt.peak_profile_type = 'pseudo-voigt + empirical asymmetry'
+expt.peak.show_supported()
+expt.peak.type = 'pseudo-voigt + empirical asymmetry'
 expt.peak.broad_gauss_u = 0.1
 expt.peak.broad_gauss_v = -0.2
 expt.peak.broad_gauss_w = 0.2
@@ -127,7 +122,7 @@ expt.peak.broad_lorentz_x = 0.0
 expt.peak.broad_lorentz_y = 0
 
 # %% [markdown]
-# #### Set Background
+# ### Set Background
 
 # %%
 expt.background.create(id='1', x=4.4196, y=500)
@@ -141,42 +136,48 @@ expt.background.create(id='8', x=121.6311, y=500)
 expt.background.create(id='9', x=159.4116, y=500)
 
 # %% [markdown]
-# #### Set Linked Phases
+# ### Set Linked Phases
 
 # %%
 expt.linked_phases.create(id='hs', scale=0.5)
 
 # %% [markdown]
-# ## Define Project
+# ## 📦 Define Project
 #
 # The project object is used to manage the structure, experiment, and
 # analysis.
 #
-# #### Create Project
+# ### Create Project
 
 # %%
-project = Project()
+project = Project(name='hs_hrpt')
 
 # %% [markdown]
-# #### Add Structure
+# ### Add Structure
 
 # %%
 project.structures.add(structure)
 
 # %% [markdown]
-# #### Add Experiment
+# ### Add Experiment
 
 # %%
 project.experiments.add(expt)
 
 # %% [markdown]
-# ## Perform Analysis
+# ## 🚀 Perform Analysis
 #
 # This section shows the analysis process, including how to set up
 # calculation and fitting engines.
 #
 #
-# #### Plot Measured vs Calculated
+# ### Display Structure
+
+# %%
+project.display.structure(struct_name='hs')
+
+# %% [markdown]
+# ### Display Pattern
 
 # %%
 project.display.pattern(expt_name='hrpt')
@@ -212,7 +213,7 @@ project.analysis.fit()
 project.display.fit.results()
 
 # %% [markdown]
-# #### Plot Measured vs Calculated
+# #### Display Pattern
 
 # %%
 project.display.pattern(expt_name='hrpt')
@@ -250,7 +251,7 @@ project.analysis.fit()
 project.display.fit.results()
 
 # %% [markdown]
-# #### Plot Measured vs Calculated
+# #### Display Pattern
 
 # %%
 project.display.pattern(expt_name='hrpt')
@@ -286,7 +287,7 @@ project.analysis.fit()
 project.display.fit.results()
 
 # %% [markdown]
-# #### Plot Measured vs Calculated
+# #### Display Pattern
 
 # %%
 project.display.pattern(expt_name='hrpt')
@@ -330,7 +331,7 @@ project.display.fit.results()
 project.display.fit.correlations()
 
 # %% [markdown]
-# #### Plot Measured vs Calculated
+# #### Display Pattern
 
 # %%
 project.display.pattern(expt_name='hrpt')
@@ -339,12 +340,13 @@ project.display.pattern(expt_name='hrpt')
 project.display.pattern(expt_name='hrpt', x_min=48, x_max=51)
 
 # %% [markdown]
-# ## Summary
+# ## 📊 Report
 #
-# This final section shows how to review the results of the analysis.
+# The HTML report is written automatically when the project is saved;
+# enable `project.report.pdf` as well for a PDF version.
 
 # %% [markdown]
-# #### Show Project Summary
+# ## 💾 Save Project
 
 # %%
-project.summary.show_report()
+project.save_as(dir_path='projects/ed_6_hs_hrpt')

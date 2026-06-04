@@ -276,6 +276,7 @@ def test_plotter_routes_to_ascii_plotter(monkeypatch):
         def __init__(self):
             self.two_theta = np.array([0.0, 1.0])
             self.intensity_meas = np.array([1.0, 2.0])
+            self.intensity_calc = np.array([1.0, 2.0])
             self.d_spacing = self.two_theta
 
     class ExptType:
@@ -294,7 +295,18 @@ def test_plotter_routes_to_ascii_plotter(monkeypatch):
         _MeasVsCalcPlotOptions(),
     )
     assert called['labels'] == ('meas',)
-    assert 'Measured data' in called['title']
+    assert called['title'] == "Diffraction pattern for experiment 🔬 'E'"
+    assert called['excluded_ranges'] == ()
+
+    p._plot_calc_data(
+        object(),
+        Ptn(),
+        'E',
+        ExptType(),
+        _MeasVsCalcPlotOptions(),
+    )
+    assert called['labels'] == ('calc',)
+    assert called['title'] == "Diffraction pattern for experiment 🔬 'E'"
     assert called['excluded_ranges'] == ()
 
 
@@ -422,7 +434,6 @@ def test_correlation_from_posterior_samples_returns_labeled_dataframe():
 
 
 def test_build_posterior_pairs_plot_hides_diagonal_ticks_and_uses_annotations():
-    from easydiffraction.display.plotting import POSTERIOR_PAIR_SAMPLE_HOVER_MARKER_SIZE
     from easydiffraction.display.plotting import POSTERIOR_PAIR_SAMPLE_MARKER_SIZE
     from easydiffraction.display.plotting import POSTERIOR_PAIR_TITLE_FONT_SIZE
     from easydiffraction.display.plotting import SQUARE_MATRIX_BOTTOM_MARGIN_PIXELS
@@ -449,6 +460,10 @@ def test_build_posterior_pairs_plot_hides_diagonal_ticks_and_uses_annotations():
             ],
         )['fixed_aspect_wrapper']['aspect_ratio']
     )
+    theme_sync = figure.layout.meta['ed_plotly_theme_sync']
+    assert theme_sync['axis_frame_shape_indexes'] == [
+        index for index, shape in enumerate(figure.layout.shapes) if shape.type == 'rect'
+    ]
     assert [annotation.text for annotation in figure.layout.annotations] == [
         'Posterior pair plot',
         'length_a',
@@ -483,14 +498,15 @@ def test_build_posterior_pairs_plot_hides_diagonal_ticks_and_uses_annotations():
     assert len(figure.layout.shapes) == 30
     assert any(trace.name == 'Posterior contours' for trace in figure.data)
     sample_trace = next(trace for trace in figure.data if trace.name == 'Posterior samples')
-    hover_trace = next(
-        trace
-        for trace in figure.data
-        if getattr(trace, 'mode', None) == 'markers'
-        and getattr(trace.marker, 'color', None) == 'rgba(0, 0, 0, 0)'
-    )
     assert sample_trace.marker.size == POSTERIOR_PAIR_SAMPLE_MARKER_SIZE
-    assert hover_trace.marker.size == POSTERIOR_PAIR_SAMPLE_HOVER_MARKER_SIZE
+    # The visible scatter carries hover directly -- no duplicate transparent
+    # layer embedding a second copy of every sample point.
+    assert sample_trace.hovertemplate is not None
+    assert not any(
+        getattr(trace, 'mode', None) == 'markers'
+        and getattr(trace.marker, 'color', None) == 'rgba(0, 0, 0, 0)'
+        for trace in figure.data
+    )
 
 
 def test_build_posterior_pairs_plot_fast_mode_skips_contours():
@@ -778,7 +794,11 @@ def test_build_param_distribution_plot_returns_plotly_figure():
     assert marginal_trace.line.width == POSTERIOR_PAIR_MARGINAL_DENSITY_LINE_WIDTH
     assert marginal_trace.fillcolor == POSTERIOR_PAIR_MARGINAL_DENSITY_FILL_COLOR
     assert marginal_trace.hovertemplate == 'length_a: %{x:.4f}<br>density: %{y:.4f}<extra></extra>'
-    assert histogram_trace.xbins.size is not None
+    # The histogram is pre-binned server-side into a Bar trace (per-bin
+    # densities only) so the raw posterior samples never enter the payload.
+    assert histogram_trace.type == 'bar'
+    assert histogram_trace.width is not None
+    assert len(histogram_trace.x) == len(histogram_trace.y)
     assert '68% credible interval' not in {trace.name for trace in figure.data}
     assert interval_trace.fillcolor == POSTERIOR_INTERVAL_95_FILL_COLOR
     assert max_posterior_trace.line.dash == POSTERIOR_POINT_ESTIMATE_LINE_DASH
@@ -788,6 +808,63 @@ def test_build_param_distribution_plot_returns_plotly_figure():
         float(marginal_trace.x[-1]),
     )
     assert figure.layout.yaxis.range is not None
+
+
+def test_param_distribution_histogram_is_prebinned_not_raw_samples():
+    """Distribution histogram embeds per-bin densities, not raw draws.
+
+    A ``go.Histogram`` fed the full posterior sample array serialises
+    every draw into the figure (megabytes for real chains), which left
+    the lazy-figure "Loading plot…" skeleton unable to paint until the
+    browser parsed the whole payload. The trace must instead carry only
+    the pre-computed per-bin densities.
+    """
+    from easydiffraction.analysis.fit_helpers.bayesian import PosteriorParameterSummary
+    from easydiffraction.analysis.fit_helpers.bayesian import PosteriorSamples
+    from easydiffraction.display.plotting import Plotter
+
+    rng = np.random.default_rng(0)
+    sample_count = 5000
+    draws = rng.normal(3.89, 0.001, size=(1, sample_count, 1))
+    posterior_samples = PosteriorSamples(
+        parameter_names=['length_a'],
+        parameter_samples=draws,
+        log_posterior=np.zeros((1, sample_count), dtype=float),
+    )
+    parameter = SimpleNamespace(
+        unique_name='length_a', name='length_a', fit_min=3.885, fit_max=3.895
+    )
+    summary = PosteriorParameterSummary(
+        unique_name='length_a',
+        display_name='length_a',
+        best_sample_value=float(draws[0, -1, 0]),
+        median=float(np.median(draws)),
+        standard_deviation=float(np.std(draws, ddof=1)),
+        interval_68=tuple(np.quantile(draws, [0.16, 0.84]).tolist()),
+        interval_95=tuple(np.quantile(draws, [0.025, 0.975]).tolist()),
+    )
+    fit_results = SimpleNamespace(
+        posterior_samples=posterior_samples,
+        posterior_parameter_summaries=[summary],
+        posterior_predictive={},
+        parameters=[parameter],
+    )
+    plotter = Plotter()
+    plotter._get_posterior_samples_and_fit_results = MethodType(
+        lambda self: (posterior_samples, fit_results), plotter
+    )
+    plotter._get_fit_result_for_correlation = MethodType(lambda self: fit_results, plotter)
+
+    figure = plotter._build_param_distribution_plot(parameter)
+    histogram_trace = next(t for t in figure.data if t.name == 'Posterior histogram')
+
+    assert histogram_trace.type == 'bar'
+    # Only per-bin densities ride along, far fewer than the raw draws.
+    assert len(histogram_trace.y) < sample_count // 10
+    assert len(histogram_trace.x) == len(histogram_trace.y)
+    # Density-normalised bars integrate to ~1 across their bin widths.
+    integral = float(np.sum(np.asarray(histogram_trace.y) * np.asarray(histogram_trace.width)))
+    assert integral == pytest.approx(1.0, abs=1e-3)
 
 
 def test_plot_param_distribution_routes_ascii_to_marginal_density(monkeypatch):
@@ -843,7 +920,7 @@ def test_plot_posterior_predictive_summary_uses_consistent_labels_and_styles(mon
             best_sample_prediction=np.array([9.0, 10.0, 11.0]),
         ),
         y_meas=np.array([9.5, 10.5, 11.5]),
-        axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+        axes_labels=['2θ (deg)', 'Intensity (arb. units)'],
         show_band=True,
         show_draws=False,
     )
@@ -861,8 +938,8 @@ def test_plot_posterior_predictive_summary_uses_consistent_labels_and_styles(mon
     assert measured_trace.legendrank == 10
     assert max_posterior_trace.legendrank == 20
     assert max_posterior_trace.line.dash == POSTERIOR_POINT_ESTIMATE_LINE_DASH
-    assert fig.layout.legend.x == 1.0
-    assert fig.layout.legend.y == 1.0
+    assert fig.layout.legend.x == 0.99
+    assert fig.layout.legend.y == 0.99
     assert fig.layout.legend.bgcolor == PlotlyPlotter._legend_background_color()
     assert fig.layout.margin.r == 30
     assert fig.layout.margin.t == 40
@@ -1046,7 +1123,7 @@ def test_plot_posterior_predictive_summary_routes_ascii_to_measured_and_map(monk
             draws=np.array([[8.5, 9.5, 10.5]]),
         ),
         y_meas=np.array([9.5, 10.5, 11.5]),
-        axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+        axes_labels=['2θ (deg)', 'Intensity (arb. units)'],
         show_band=True,
         show_draws=True,
         excluded_ranges=((1.2, 1.4),),
@@ -1644,6 +1721,7 @@ def test_plot_meas_vs_calc_routes_powder_bragg_to_composite_backend():
         two_theta = np.array([0.0, 1.0, 2.0, 3.0])
         d_spacing = two_theta
         intensity_meas = np.array([10.0, 20.0, 30.0, 40.0])
+        intensity_meas_su = np.array([0.1, 0.2, 0.3, 0.4])
         intensity_bkg = np.array([1.0, 2.0, 3.0, 4.0])
         intensity_calc = np.array([9.0, 18.0, 27.0, 39.0])
 
@@ -1679,6 +1757,7 @@ def test_plot_meas_vs_calc_routes_powder_bragg_to_composite_backend():
     call = captured['powder_meas_vs_calc']
     assert np.allclose(call.x, np.array([1.0, 2.0]))
     assert np.allclose(call.y_meas, np.array([20.0, 30.0]))
+    assert np.allclose(call.y_meas_su, np.array([0.2, 0.3]))
     assert np.allclose(call.y_bkg, np.array([2.0, 3.0]))
     assert np.allclose(call.y_calc, np.array([18.0, 27.0]))
     assert np.allclose(call.y_resid, np.array([2.0, 3.0]))
@@ -2093,18 +2172,29 @@ def test_plot_param_correlations_renders_plotly_heatmap(monkeypatch):
     assert fig.layout.margin.b == (
         SQUARE_MATRIX_BOTTOM_MARGIN_PIXELS + 2 * SQUARE_MATRIX_AXIS_TITLE_LINE_HEIGHT_PIXELS
     )
+    correlation_wrapper_meta = Plotter._square_matrix_layout_meta(
+        n_parameters=2,
+        annotation_labels=[
+            'phase.<br>scale',
+            'phase.<br>cell.<br>length_c',
+            'phase.<br>scale',
+            'phase.<br>cell.<br>length_c',
+        ],
+        cell_size_pixels=Plotter._correlation_cell_size_pixels(),
+        cap_width=True,
+    )['fixed_aspect_wrapper']
     assert (
         fig.layout.meta['fixed_aspect_wrapper']['aspect_ratio']
-        == Plotter._square_matrix_layout_meta(
-            n_parameters=2,
-            annotation_labels=[
-                'phase.<br>scale',
-                'phase.<br>cell.<br>length_c',
-                'phase.<br>scale',
-                'phase.<br>cell.<br>length_c',
-            ],
-        )['fixed_aspect_wrapper']['aspect_ratio']
+        == correlation_wrapper_meta['aspect_ratio']
     )
+    # Cells are capped to ~16 label characters wide via the wrapper max-width.
+    assert (
+        fig.layout.meta['fixed_aspect_wrapper']['max_width_pixels']
+        == correlation_wrapper_meta['max_width_pixels']
+    )
+    theme_sync = fig.layout.meta['ed_plotly_theme_sync']
+    assert theme_sync['correlation_heatmap'] is True
+    assert theme_sync['axis_frame_shape_indexes'] == list(range(len(fig.layout.shapes)))
     assert fig.layout.xaxis.showline is False
     assert fig.layout.xaxis.mirror is False
     assert fig.layout.yaxis.showline is False
@@ -2117,6 +2207,9 @@ def test_plot_param_correlations_renders_plotly_heatmap(monkeypatch):
     assert fig.layout.plot_bgcolor is None
     assert len(fig.layout.shapes) == 3
     assert all(shape.type == 'rect' for shape in fig.layout.shapes)
+    assert {shape.line.color for shape in fig.layout.shapes} == {
+        plotly_mod.PlotlyPlotter._axis_frame_color(),
+    }
 
 
 def test_plot_param_correlations_plotly_labels_respect_threshold(monkeypatch):

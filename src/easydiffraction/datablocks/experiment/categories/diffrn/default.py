@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
@@ -30,7 +31,13 @@ class DefaultDiffrn(CategoryItem):
         self._ambient_temperature = NumericDescriptor(
             name='ambient_temperature',
             description='Mean temperature during measurement',
-            units='K',
+            units='kelvins',
+            display_handler=DisplayHandler(
+                display_name='Temperature',
+                display_units='K',
+                latex_name='Temperature',
+                latex_units=r'\mathrm{K}',
+            ),
             value_spec=AttributeSpec(
                 default=None,
                 allow_none=True,
@@ -42,7 +49,13 @@ class DefaultDiffrn(CategoryItem):
         self._ambient_pressure = NumericDescriptor(
             name='ambient_pressure',
             description='Mean hydrostatic pressure during measurement',
-            units='kPa',
+            units='kilopascals',
+            display_handler=DisplayHandler(
+                display_name='Pressure',
+                display_units='kPa',
+                latex_name='Pressure',
+                latex_units=r'\mathrm{kPa}',
+            ),
             value_spec=AttributeSpec(
                 default=None,
                 allow_none=True,
@@ -54,25 +67,43 @@ class DefaultDiffrn(CategoryItem):
         self._ambient_magnetic_field = NumericDescriptor(
             name='ambient_magnetic_field',
             description='Mean magnetic field during measurement',
-            units='T',
+            units='teslas',
+            display_handler=DisplayHandler(
+                display_name='Magnetic field',
+                display_units='T',
+                latex_name='Magnetic field',
+                latex_units=r'\mathrm{T}',
+            ),
             value_spec=AttributeSpec(
                 default=None,
                 allow_none=True,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_diffrn.ambient_magnetic_field']),
+            cif_handler=CifHandler(
+                names=['_diffrn.ambient_magnetic_field'],
+                iucr_name='_easydiffraction_diffrn.ambient_magnetic_field',
+            ),
         )
 
         self._ambient_electric_field = NumericDescriptor(
             name='ambient_electric_field',
             description='Mean electric field during measurement',
-            units='V/m',
+            units='volts_per_metre',
+            display_handler=DisplayHandler(
+                display_name='Electric field',
+                display_units='V/m',
+                latex_name='Electric field',
+                latex_units=r'\mathrm{V}/\mathrm{m}',
+            ),
             value_spec=AttributeSpec(
                 default=None,
                 allow_none=True,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_diffrn.ambient_electric_field']),
+            cif_handler=CifHandler(
+                names=['_diffrn.ambient_electric_field'],
+                iucr_name='_easydiffraction_diffrn.ambient_electric_field',
+            ),
         )
 
     # ------------------------------------------------------------------

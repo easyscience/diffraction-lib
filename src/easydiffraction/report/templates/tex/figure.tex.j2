@@ -1,0 +1,94 @@
+\documentclass[border=2pt]{standalone}
+\usepackage{fourier}
+\let\utopiarm\rmdefault
+\usepackage{paratype}
+\let\rmdefault\utopiarm
+\renewcommand{\familydefault}{\rmdefault}
+\usepackage{pgfplots}
+\usepgfplotslibrary{groupplots}
+\pgfplotsset{compat=1.18}
+\pgfplotsset{set layers}
+{% for style in styles.values() %}
+\definecolor{ {{- style.color_name -}} }{RGB}{ {{- style.rgb -}} }
+{% endfor %}
+{% for style in bragg_styles %}
+\definecolor{ {{- style.color_name -}} }{RGB}{ {{- style.rgb -}} }
+{% endfor %}
+\definecolor{edAxis}{RGB}{ {{- axis_styles.axis_rgb -}} }
+\definecolor{edGrid}{RGB}{ {{- axis_styles.grid_rgb -}} }
+{% set axes_labels = fit_data.axes_labels | default(["", "Intensity"], true) -%}
+{% set x_label = axes_labels[0] | tex_axis_label -%}
+{% set y_label = axes_labels[1] | tex_axis_label -%}
+{% set bragg_tick_sources = bragg_tick_sources | default([], true) -%}
+\begin{document}
+\begin{tikzpicture}
+\begin{groupplot}[
+group style={
+group size=1 by {% if bragg_tick_sources %}3{% else %}2{% endif %},
+vertical sep={{ geometry.vertical_sep_cm | tex_number }}cm,
+x descriptions at=edge bottom,
+},
+width={{ geometry.axis_width_cm | tex_number }}cm,
+scale only axis,
+xmin={{ ranges.x_min | tex_number }},
+xmax={{ ranges.x_max | tex_number }},
+mark layer=like plot,
+axis line style={draw=edAxis},
+tick style={draw=none},
+label style={font=\footnotesize},
+tick label style={font=\footnotesize},
+major grid style={draw=edGrid, line width=0.4pt},
+xmajorgrids=true,
+]
+\nextgroupplot[
+height={{ geometry.main_height_cm | tex_number }}cm,
+ymin={{ ranges.y_min | tex_number }},
+ymax={{ ranges.y_max | tex_number }},
+ymajorgrids=true,
+xticklabels=\empty,
+ylabel={ {{ y_label }} },
+legend pos=north east,
+legend style={draw=none, fill=white, fill opacity=0.5, text opacity=1, font=\footnotesize},
+]
+\addplot+[mark=*, mark size={{ styles.meas.marker_size_pt | tex_number }}pt, color={{ styles.meas.color_name }}, line width={{ styles.meas.line_width_pt | tex_number }}pt, line join=bevel, mark options={fill={{ styles.meas.color_name }}, draw={{ styles.meas.color_name }}, fill opacity=1, draw opacity=1, line width={{ styles.meas.marker_line_width_pt | tex_number }}pt}] table[x={ {{- fit_csv.x -}} }, y={ {{- fit_csv.meas -}} }, col sep=comma] { {{- csv_filename -}} };
+\addlegendentry{ {{- styles.meas.name | tex -}} }
+\addplot+[color={{ styles.calc.color_name }}, line width={{ styles.calc.line_width_pt | tex_number }}pt, line join=bevel, no markers] table[x={ {{- fit_csv.x -}} }, y={ {{- fit_csv.calc -}} }, col sep=comma] { {{- csv_filename -}} };
+\addlegendentry{ {{- styles.calc.name | tex -}} }
+\addlegendimage{color={{ styles.diff.color_name }}, line width={{ styles.diff.line_width_pt | tex_number }}pt, line join=bevel, no markers}
+\addlegendentry{ {{- styles.diff.name | tex -}} }
+{% for tick_set in bragg_tick_sources %}
+{% set tick_style = bragg_styles[loop.index0 % (bragg_styles | length)] -%}
+\addlegendimage{color={{ tick_style.color_name }}, only marks, mark=|, mark size=5pt}
+\addlegendentry{Bragg peaks: {{ tick_set.phase_id | tex }}}
+{% endfor %}
+{% if bragg_tick_sources %}
+\nextgroupplot[
+height={{ geometry.bragg_height_cm | tex_number }}cm,
+ymin=0.5,
+ymax={{ (bragg_tick_sources | length) + 0.5 }},
+y dir=reverse,
+ytick={{ "{" }}{% for tick_set in bragg_tick_sources %}{{ loop.index }}{% if not loop.last %},{% endif %}{% endfor %}{{ "}" }},
+yticklabels={{ "{" }}{% for tick_set in bragg_tick_sources %}{{ "{" }}{{ tick_set.phase_id | tex }}{{ "}" }}{% if not loop.last %},{% endif %}{% endfor %}{{ "}" }},
+yticklabel style={font=\footnotesize},
+ymajorgrids=false,
+xticklabels=\empty,
+]
+{% for tick_set in bragg_tick_sources %}
+{% set bragg_row = loop.index -%}
+{% set tick_style = bragg_styles[loop.index0 % (bragg_styles | length)] -%}
+\addplot+[color={{ tick_style.color_name }}, only marks, mark=|, mark size=5pt] table[x={ {{- tick_set.x_column -}} }, y expr={{ bragg_row }}, col sep=comma] { {{- tick_set.csv_filename -}} };
+{% endfor %}
+{% endif %}
+\nextgroupplot[
+height={{ geometry.residual_height_cm | tex_number }}cm,
+ymin={{ ranges.residual_y_min | tex_number }},
+ymax={{ ranges.residual_y_max | tex_number }},
+ytick={-{{ ranges.residual_y_tick | tex_number }},0,{{ ranges.residual_y_tick | tex_number }}},
+ymajorgrids=true,
+xlabel={ {{ x_label }} },
+yticklabel style={font=\footnotesize},
+]
+\addplot+[color={{ styles.diff.color_name }}, line width={{ styles.diff.line_width_pt | tex_number }}pt, line join=bevel, no markers] table[x={ {{- fit_csv.x -}} }, y expr=\thisrow{ {{- fit_csv.meas -}} }-\thisrow{ {{- fit_csv.calc -}} }, col sep=comma] { {{- csv_filename -}} };
+\end{groupplot}
+\end{tikzpicture}
+\end{document}

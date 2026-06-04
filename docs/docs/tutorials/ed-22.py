@@ -1,5 +1,5 @@
 # %% [markdown]
-# # Bayesian Analysis: Tb2TiO7, HEiDi
+# # Bayesian Analysis: Tb2TiO7 (`emcee`), HEiDi
 #
 # This tutorial demonstrates a practical two-stage workflow for single-crystal
 # diffraction analysis with EasyDiffraction.
@@ -7,7 +7,7 @@
 # In the first stage, we run a fast local refinement to obtain a sensible
 # point estimate and parameter uncertainties. In the second stage, we use
 # these refined values to define fit bounds and then sample the posterior
-# distribution with BUMPS-DREAM.
+# distribution with emcee.
 #
 # The example uses constant-wavelength neutron single-crystal diffraction data
 # for Tb2TiO7 measured on HEiDi at FRM II.
@@ -22,23 +22,26 @@
 #   intensities?
 
 # %% [markdown]
-# ## Import Library
+# ## 🛠️ Import Library
 
 # %%
 import easydiffraction as ed
 
 # %% [markdown]
-# ## Step 1: Create a Project Container
+# ## 📦 Define Project
 #
 # The project object keeps structures, experiments, fit settings, and
 # plotting utilities together in a single place. We will build the full
 # workflow inside this object.
 
 # %%
-project = ed.Project()
+project = ed.Project(name='tbti_heidi_emcee')
+
+# %%
+project.save_as(dir_path='projects/ed_22_tbti_heidi_emcee')
 
 # %% [markdown]
-# ## Step 2: Build the Structural Model
+# ## 🧩 Define Structure
 #
 # For this example we start from a CIF file describing the Tb2TiO7
 # pyrochlore structure. Loading the structure from CIF is convenient
@@ -55,7 +58,14 @@ project.structures.add_from_cif_path(structure_path)
 structure = project.structures['tbti']
 
 # %% [markdown]
-# ## Step 3: Define the Diffraction Experiment
+# Render the structure to confirm the pyrochlore model loaded from CIF as
+# expected before configuring the experiment.
+
+# %%
+project.display.structure(struct_name='tbti')
+
+# %% [markdown]
+# ## 🔬 Define Experiment
 #
 # Next we download the measured reflection data, create a neutron
 # single-crystal experiment, and configure the crystal link,
@@ -96,7 +106,7 @@ experiment.extinction.mosaicity = 35000
 experiment.extinction.radius = 10
 
 # %% [markdown]
-# ## Step 4: Run an Initial Local Refinement
+# ## 🚀 Initial Refinement
 #
 # Before Bayesian sampling, it is useful to run a deterministic fit. This
 # gives us:
@@ -131,7 +141,7 @@ experiment.extinction.radius.free = True
 # and uncertainty estimates for the Bayesian run.
 
 # %%
-project.analysis.fitting.show_minimizer_types()
+project.analysis.minimizer.show_supported()
 
 # %%
 project.analysis.fit()
@@ -156,9 +166,9 @@ project.display.fit.correlations()
 project.display.pattern(expt_name='heidi')
 
 # %% [markdown]
-# ## Step 5: Prepare for Bayesian Sampling
+# ## 🎲 Prepare Sampling
 #
-# DREAM requires finite bounds for the free parameters. Instead of
+# Bayesian samplers require finite bounds for the free parameters. Instead of
 # setting them manually, we derive them from the uncertainties estimated
 # in the local refinement.
 #
@@ -195,38 +205,37 @@ for param in project.free_parameters:
 project.display.parameters.free()
 
 # %% [markdown]
-# ## Step 6: Configure and Run DREAM
+# ## 🎲 Run Sampling
 #
-# We now switch from the local minimizer to the Bayesian DREAM sampler.
+# We now switch from the local minimizer to the Bayesian emcee sampler.
 #
 # The settings below are intentionally small so the tutorial runs
 # quickly. For production analysis you would usually increase the number
-# of steps (`steps`) and often the burn-in (`burn`) as well. When
-# needed, the DREAM API also lets you tune how chains are initialized
-# through the `init` setting. Other sampler settings such as `thin` and
-# `pop` can be adjusted as well. The current EasyDiffraction defaults
-# use `steps=3000`, `init='lhs'`, and `parallel=0`, which tells
-# BUMPS-DREAM to use all available CPUs for population evaluations.
+# of steps and often the burn-in as well. emcee also lets you tune how
+# walkers are initialized, how many walkers are used, and which proposal
+# move drives the ensemble.
 #
 # The `burn` setting is auto-resolved when left unset. Here we override
 # `steps` with a smaller value to keep the tutorial fast, and the
 # effective burn-in is recomputed automatically.
 
 # %%
-project.analysis.fitting.show_minimizer_types()
+project.analysis.minimizer.show_supported()
 
 # %%
-project.analysis.fitting.minimizer_type = 'bumps (dream)'
+project.analysis.minimizer.type = 'emcee'
 
 # %%
-project.analysis.fitting.minimizer.steps = 100  # lower than the default 3000
-project.analysis.fitting.minimizer.burn = 20  # lower than the default 600
+project.analysis.minimizer.sampling_steps = 500  # lower than the default 3000
+project.analysis.minimizer.burn_in_steps = 100  # lower than the default 600
+project.analysis.minimizer.population_size = 16  # lower than the default 32
+project.analysis.minimizer.random_seed = 42  # fixed seed for reproducible output
 
 # %%
 project.analysis.fit()
 
 # %% [markdown]
-# ## Step 7: Inspect Bayesian Results
+# ## 📊 Inspect Results
 #
 # The fit-results display now includes sampler settings, convergence
 # diagnostics, committed parameter values, and posterior summary

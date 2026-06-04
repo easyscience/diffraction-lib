@@ -19,9 +19,8 @@ from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 from easydiffraction.datablocks.experiment.item.factory import ExperimentFactory
 from easydiffraction.io.ascii import load_numeric_block
-from easydiffraction.utils.logging import console
+from easydiffraction.io.cif.parse import read_cif_str
 from easydiffraction.utils.logging import log
-from easydiffraction.utils.utils import render_table
 
 if TYPE_CHECKING:
     from easydiffraction.datablocks.experiment.categories.experiment_type import ExperimentType
@@ -62,10 +61,10 @@ class BraggPdExperiment(PdExperimentBase):
             sample_form=self.type.sample_form.value,
         )
         self._instrument = InstrumentFactory.create(self._instrument_type)
-        self._background_type: str = BackgroundFactory.default_tag()
-        self._background = BackgroundFactory.create(self._background_type)
+        self._background = BackgroundFactory.create(BackgroundFactory.default_tag())
         self._refln = None
         self._sync_refln_category()
+        self._attach_category_parents()
 
     def _refln_collection_tag(self) -> str:
         """
@@ -86,9 +85,9 @@ class BraggPdExperiment(PdExperimentBase):
 
     def _sync_refln_category(self) -> None:
         """Create or remove ``refln`` for the active calculator."""
-        calculator_type = self._calculator_type or self._default_calculator_tag()
+        calculator_tag = self.calculator.type
         refln_collection_type = self._refln_collection_type()
-        calculator = CalculatorEnum(calculator_type)
+        calculator = CalculatorEnum(calculator_tag)
         if refln_collection_type.calculator_support.supports(calculator):
             if not isinstance(self._refln, refln_collection_type):
                 self._refln = ReflnFactory.create(self._refln_collection_tag())
@@ -96,14 +95,15 @@ class BraggPdExperiment(PdExperimentBase):
 
         self._refln = None
 
-    def _set_calculator_type(
+    def _swap_calculator(
         self,
         tag: str,
         *,
         announce: bool = True,
+        strict: bool = True,
     ) -> None:
         """Switch calculator backend and sync ``refln`` availability."""
-        super()._set_calculator_type(tag, announce=announce)
+        super()._swap_calculator(tag, announce=announce, strict=strict)
         self._sync_refln_category()
 
     def _load_ascii_data_to_experiment(
@@ -182,62 +182,15 @@ class BraggPdExperiment(PdExperimentBase):
     # ------------------------------------------------------------------
 
     @property
-    def background_type(self) -> object:
-        """Current background type enum value."""
-        return self._background_type
-
-    @background_type.setter
-    def background_type(self, new_type: str) -> None:
-        """Set a new background type and recreate background object."""
-        if self._background_type == new_type:
-            console.paragraph(f"Background type for experiment '{self.name}' already set to")
-            console.print(new_type)
-            return
-
-        supported = BackgroundFactory.supported_for(
-            calculator=self.calculation.calculator_type.value,
-        )
-        supported_tags = [k.type_info.tag for k in supported]
-        if new_type not in supported_tags:
-            log.warning(
-                f"Unsupported background type '{new_type}'. "
-                f'Supported: {supported_tags}. '
-                f"For more information, use 'show_background_types()'",
-            )
-            return
-
-        if len(self._background) > 0:
-            log.warning(
-                f'Switching background type discards {len(self._background)} '
-                f'existing background point(s).',
-            )
-
-        self._background = BackgroundFactory.create(new_type)
-        self._background_type = new_type
-        console.paragraph(f"Background type for experiment '{self.name}' changed to")
-        console.print(new_type)
-
-    @property
     def background(self) -> object:
         """Active background model for this experiment."""
         return self._background
 
-    def show_background_types(self) -> None:
-        """Print supported background types and mark current type."""
-        supported = BackgroundFactory.supported_for(
-            calculator=self.calculation.calculator_type.value,
-        )
-        columns_data = [
-            [
-                '*' if klass.type_info.tag == self._background_type else '',
-                klass.type_info.tag,
-                klass.type_info.description,
-            ]
-            for klass in supported
-        ]
-        console.paragraph('Background types')
-        render_table(
-            columns_headers=['', 'Type', 'Description'],
-            columns_alignment=['left', 'left', 'left'],
-            columns_data=columns_data,
-        )
+    def _restore_switchable_types(self, block: object) -> None:
+        """
+        Restore Bragg powder switchable category types from CIF.
+        """
+        super()._restore_switchable_types(block)
+        background_tag = read_cif_str(block, '_background.type')
+        if background_tag is not None:
+            self._replace_background(background_tag, announce=False, strict=False)

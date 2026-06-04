@@ -996,24 +996,6 @@ generation.
 
 ---
 
-## 51. 🟢 Access Space Group from `AtomSites` for Wyckoff Letters
-
-**Type:** Design
-
-`AtomSite` needs the current space group to determine allowed Wyckoff
-letters but currently returns a hardcoded list. Also, a missing Wyckoff
-letter case needs a decision.
-
-**TODOs:**
-
-- [default.py](src/easydiffraction/datablocks/structure/categories/atom_sites/default.py#L163)
-- [default.py](src/easydiffraction/datablocks/structure/categories/atom_sites/default.py#L179)
-- [default.py](src/easydiffraction/datablocks/structure/categories/atom_sites/default.py#L353)
-
-**Depends on:** nothing.
-
----
-
 ## 52. 🟢 Rename Line-Segment Background `y` to `intensity`
 
 **Type:** Naming
@@ -1319,19 +1301,6 @@ order explicit and helps catch priority conflicts.
 
 ---
 
-## 72. 🟡 Warn on All Switchable-Category Type Changes
-
-**Type:** UX / Consistency
-
-Switching `background_type` already warns: "Switching background type
-discards 1 existing background point(s)." The same warning pattern
-should apply to all other switchable types (`peak_profile_type`,
-`data_type`, etc.) so users know their values will be lost.
-
-**Depends on:** nothing.
-
----
-
 ## 73. 🟢 Unify Setter Parameter Naming Convention
 
 **Type:** Code style
@@ -1378,20 +1347,6 @@ check. Options:
 project/analysis-level method to list all available calculator engines.
 Users exploring the API have no single entry point to see what
 calculators are installed.
-
-**Depends on:** nothing.
-
----
-
-## 76. 🟡 Consistent `_type` Suffix in Switchable-Category API Names
-
-**Type:** Naming / Consistency
-
-The switchable-category naming convention prescribes `<category>_type`
-(getter/setter) and `show_supported_<category>_types()`. But some names
-deviate: e.g. `show_minimizer_types()` instead of
-`show_supported_minimizer_types()`, and `minimizer_type` instead of
-`minimizer_type`. Audit and align all switchable-category APIs.
 
 **Depends on:** nothing.
 
@@ -1695,6 +1650,242 @@ sampler progress displays — any fix should keep their visuals consistent
 
 ---
 
+## 102. 🟢 Drop Compute-and-Ignore `result_kind` Validation in CIF Restore
+
+**Type:** Dead code / clarity **Source:** Review 8 finding F7.
+**Recommended:** fold into the emcee-minimizer plan.
+
+`_restore_persisted_fit_state`
+([serialize.py:595-611](../../../src/easydiffraction/io/cif/serialize.py))
+calls `FitResultKindEnum(result_kind_value)` purely for the warning side
+effect; the result is discarded. After P1.10 absorbed the
+Bayesian-specific categories there is nothing else to do per
+`result_kind`.
+
+**Fix:** replace with a validator helper that takes a string and logs
+the warning, or move the warning into `fit_result.result_kind` setter so
+invalid values are caught on read. Either removes the "compute and
+ignore" pattern.
+
+**Depends on:** nothing.
+
+---
+
+## 104. 🟢 Tighten `FitParameterItem.posterior_summary` NaN Behaviour
+
+**Type:** Robustness / partial-data edge case **Source:** Review 8
+finding F9.
+
+`FitParameterItem.has_posterior_summary` returns `True` if any posterior
+field is set, and `posterior_summary` then builds a
+`PosteriorParameterSummary` whose missing floats become `NaN`. A
+hand-edited or partially-written CIF row with only
+`posterior_gelman_rubin = 1.02` and the rest unset produces a summary
+whose `median`, `standard_deviation`, and both interval bounds are
+`NaN`. Downstream plotting and the `display.fit_results` table render
+NaN intervals — harder to debug than a clean "no posterior" outcome.
+
+The deterministic-fit case is fine: deterministic fits set all required
+fields to `None`, so `has_posterior_summary()` returns `False`.
+
+**Fix:** tighten `has_posterior_summary` to require the core stats (at
+least `posterior_median` and one interval bound) before emitting a
+summary, or split the dataclass into required-statistics and
+optional-diagnostics components.
+
+**Depends on:** nothing.
+
+---
+
+## 105. 🟢 Remove Orphaned Fit-Result Reset Helper
+
+**Type:** Cleanup **Source:** `minimizer-input-output-split` review 6.
+
+`Analysis._clear_fit_result_projection` is a private method with no
+callers after `_clear_persisted_fit_state` switched to replacing
+`self._fit_result` with a fresh paired result instance.
+
+**TODOs:**
+
+- [analysis.py](src/easydiffraction/analysis/analysis.py#L1217)
+
+**Fix:** delete the unused helper, or reintroduce a caller only if a
+future fit-result reset path genuinely needs to preserve the active
+instance.
+
+**Depends on:** nothing.
+
+---
+
+## 106. 🟢 Document `FitResultBase.result_kind` Default Rationale
+
+**Type:** Code readability **Source:** `minimizer-input-output-split`
+review 6.
+
+Most `FitResultBase` descriptors use `default=None, allow_none=True` so
+pre-fit CIF output serializes unknown values as `?`. `result_kind`
+intentionally keeps a valid enum default because it drives deterministic
+versus Bayesian projection handling, but that exception is not
+documented in code.
+
+**TODOs:**
+
+- [base.py](src/easydiffraction/analysis/categories/fit_result/base.py#L44)
+
+**Fix:** add a short code comment near the `result_kind` descriptor
+explaining why it keeps a concrete default while unknown result values
+use `None`.
+
+**Depends on:** nothing.
+
+---
+
+## 107. 🟡 Validate Generated CIF Report Against Official IUCr Dictionaries
+
+**Type:** Test coverage
+
+The runtime gemmi self-check in the IUCr CIF writer was removed (it
+validated our own deterministic output at write time and depended on
+dictionaries under `tmp/iucr-dicts/`; see the §2.5 amendment in
+[`iucr-cif-tag-alignment.md`](../adrs/accepted/iucr-cif-tag-alignment.md)).
+That spec-compliance guarantee now needs to live in a dev-time test
+instead.
+
+**Fix:** add a unit or functional test that renders both a powder and a
+single-crystal IUCr report CIF and validates every emitted tag against
+the latest official COMCIFS `cif_core.dic` and `cif_pow.dic`.
+Requirements:
+
+- Cover both powder (`_pd_*`, profile/reflection loops) and
+  single-crystal report outputs.
+- Do **not** read `tmp/` at runtime — pass the dictionaries explicitly
+  as a committed test fixture (or fetch them in test setup and pass the
+  path in). The check belongs in the test suite, not in the user's write
+  path.
+- Parse the DDLm/CIF2 form correctly: the current dictionaries use
+  `save_<name>` frames with `_definition.id`, which the removed helper's
+  `save__tag` regex and a plain `gemmi.cif.read_file` could not handle.
+  Use gemmi's DDL reader or a scan adapted to the DDLm layout.
+- Allow the project's private `_easydiffraction_*` extension namespace.
+
+**Depends on:** nothing.
+
+---
+
+## 108. 🟢 Smarter Automatic Bond Detection (Near-Neighbour Analysis)
+
+**Type:** UX / Visualization
+
+crysview generates bonds with the cif_core distance rule
+(`min_bond_distance_cutoff ≤ d ≤ r_bond(A) + r_bond(B) + bond_distance_incr`),
+then prunes to the first coordination shell — a contact survives only if
+it is within `1.3×` the nearer atom's nearest-neighbour distance
+(`COORDINATION_SHELL_FACTOR` in `display/structure/builder.py`). This
+stop-gap handles the common cases (e.g. LBCO renders just the Co–O
+octahedron) without a new dependency, but the fixed factor is still a
+heuristic: it can over-prune strongly distorted shells (e.g. elongated
+Jahn–Teller octahedra) or under-prune others, and it is not yet
+user-configurable.
+
+**Fix:** consider a robust, configurable near-neighbour algorithm for
+automatic "reasonable" bonding — e.g. a Voronoi / solid-angle method
+such as pymatgen's `CrystalNN` or `VoronoiNN`, which weights neighbours
+by solid angle instead of a single relative cutoff. The Voronoi route is
+the most robust across arbitrary structures but introduces a heavyweight
+dependency (pymatgen), so it needs a dependency decision; an
+ASE/Jmol-style multiplicative covalent tolerance is lighter but, like
+the current factor, cannot separate shells when ionic-cation covalent
+radii are large.
+
+**Depends on:** dependency decision for pymatgen (if the Voronoi route
+is chosen).
+
+---
+
+## 109. 🟢 Let More Tables Adapt to Terminal Width
+
+**Type:** UX / Display
+
+`list_tutorials` now renders its table at the real terminal width via a
+new optional `width` parameter threaded through the table render path
+(`render_table` → `TableRenderer.render` → backend `render`; Rich
+applies it, the HTML backend ignores it). Every other table and all log
+output still go through the shared Rich console, whose width is floored
+at `ConsoleManager._MIN_CONSOLE_WIDTH = 130` ("to avoid cramped
+layouts"). On a standard ~80-column terminal that floor makes wide
+tables overflow and soft-wrap badly.
+
+**Fix:** decide on a global policy — either have `_detect_width` trust
+the detected terminal width (keeping 130 only as a fallback when
+detection fails), or pass the terminal width into more table call sites
+the way `list_tutorials` now does. A global change affects every table
+(fit results, parameters, ...) and all logs, so weigh it against the
+deliberate minimum-width choice.
+
+**Depends on:** related to issue 62.
+
+---
+
+## 110. 🟢 Render Styled Multi-Line Table Cells in the HTML Backend
+
+**Type:** Display / Notebook parity
+
+`list_tutorials` shows a two-line cell in the terminal — a colored title
+on the first line and a dimmed description on the second — using Rich
+markup and an embedded newline. The Jupyter table backend
+(`PandasTableBackend`) cannot render this: `_strip_rich_markup` only
+matches a single full-cell `[color]text[/color]`, and HTML collapses the
+newline, so the markup would show as literal text. `list_tutorials` is
+therefore gated via `in_jupyter()` to show only the plain title in
+notebooks, which drops the description and the color there.
+
+**Fix:** teach the HTML backend to render the same styling — translate
+embedded newlines to `<br>`, map `[dim]` to reduced opacity, and accept
+multiple/mixed markup tags per cell — then remove the terminal-only gate
+in `list_tutorials` so notebooks also get the styled two-line entry.
+
+**Depends on:** related to issue 62.
+
+---
+
+## 111. 🟢 Add Test Coverage for `list_tutorials` Two-Line Rendering
+
+**Type:** Test coverage
+
+The `list_tutorials` table gained a styled two-line cell (colored title
+plus dimmed description), a terminal-only `in_jupyter()` gate that falls
+back to the plain title, and a new optional `width` parameter on the
+table render path. Existing tests only assert that titles appear in the
+output.
+
+**Fix:** add unit tests for the description line appearing in the
+terminal (non-Jupyter) path, the Jupyter-gated path showing the plain
+title with no literal Rich markup, and the `width` parameter sizing the
+rendered Rich table. Run `pixi run fix` / `check` / `unit-tests` to
+confirm the shared-renderer signature change.
+
+**Depends on:** nothing.
+
+---
+
+## 112. 🟢 Suppress the Redundant Row-Index Column in Tables
+
+**Type:** Display / UX
+
+`TableRenderer._prepare_dataframe` bumps the DataFrame index to 1-based,
+and both the Rich and pandas backends always render it as the first
+column. For tables that already carry an explicit identifier — e.g.
+`list_tutorials`, whose `id` column duplicates that 1-based counter —
+the leading index column is redundant and reads as a duplicate.
+
+**Fix:** add an opt-out (e.g. a `show_index` flag on the render path) so
+callers with their own id column can hide the auto-generated index, or
+only render the index column when no explicit id column is present.
+
+**Depends on:** nothing.
+
+---
+
 ## Summary
 
 | #   | Issue                                             | Severity | Type                         |
@@ -1742,7 +1933,6 @@ sampler progress displays — any fix should keep their visuals consistent
 | 48  | Fix CrysPy TOF instrument default                 | 🟢 Low   | Bug workaround               |
 | 49  | Automate space group CIF name variants            | 🟢 Low   | Maintainability              |
 | 50  | Clarify `Cell._update` minimizer param            | 🟢 Low   | Cleanup                      |
-| 51  | Access space group for Wyckoff letters            | 🟢 Low   | Design                       |
 | 52  | Rename line-segment `y` to `intensity`            | 🟢 Low   | Naming                       |
 | 53  | Move `show()` to `CategoryCollection`             | 🟢 Low   | Maintainability              |
 | 54  | Add `point_id` to excluded regions                | 🟢 Low   | Completeness                 |
@@ -1763,11 +1953,9 @@ sampler progress displays — any fix should keep their visuals consistent
 | 69  | Shorter public API names via `__init__`           | 🟢 Low   | API ergonomics               |
 | 70  | Standardise class member ordering + headers       | 🟡 Med   | Code style                   |
 | 71  | `_update_priority` reference table                | 🟢 Low   | Documentation                |
-| 72  | Warn on all switchable-category type changes      | 🟡 Med   | UX                           |
 | 73  | Unify setter parameter naming                     | 🟢 Low   | Code style                   |
 | 74  | Sync property type hints + custom lint rules      | 🟡 Med   | Tooling                      |
 | 75  | `show_supported_calculators()` on Analysis        | 🟢 Low   | API completeness             |
-| 76  | Consistent `_type` suffix in switchable APIs      | 🟡 Med   | Naming                       |
 | 79  | Verify analysis CIF serialisation completeness    | 🟢 Low   | Correctness                  |
 | 80  | Resolve `Any` vs `object` annotation policy       | 🟢 Low   | Code style                   |
 | 81  | Enforce docstrings on all public methods          | 🟡 Med   | Code quality                 |
@@ -1784,3 +1972,11 @@ sampler progress displays — any fix should keep their visuals consistent
 | 91  | Disable TODO checks in CodeFactor PRs             | 🟢 Low   | CI / Tooling                 |
 | 92  | Make `save()` respect verbosity                   | 🟢 Low   | UX                           |
 | 93  | Eliminate flicker in live progress tables         | 🟡 Med   | UX                           |
+| 105 | Remove orphaned fit-result reset helper           | 🟢 Low   | Cleanup                      |
+| 106 | Document `FitResultBase.result_kind` default      | 🟢 Low   | Code readability             |
+| 107 | Validate CIF report vs IUCr dictionaries          | 🟡 Med   | Test coverage                |
+| 108 | Smarter automatic bond detection (near-neighbour) | 🟢 Low   | UX / Visualization           |
+| 109 | Let more tables adapt to terminal width           | 🟢 Low   | UX / Display                 |
+| 110 | Styled multi-line table cells in HTML backend     | 🟢 Low   | Display / Notebook parity    |
+| 111 | Test coverage for `list_tutorials` rendering      | 🟢 Low   | Test coverage                |
+| 112 | Suppress redundant row-index column in tables     | 🟢 Low   | Display / UX                 |

@@ -8,6 +8,7 @@ parameters. They are composed into concrete peak classes elsewhere via
 multiple inheritance.
 """
 
+from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.variable import Parameter
@@ -23,62 +24,104 @@ class TotalBroadeningMixin:
         self._damp_q = Parameter(
             name='damp_q',
             description='Q-resolution damping for high-r PDF peak amplitude',
-            units='Å⁻¹',
+            units='reciprocal_angstroms',
+            display_handler=DisplayHandler(
+                display_units='Å⁻¹',
+                latex_units=r'\AA$^{-1}$',
+            ),
             value_spec=AttributeSpec(
                 default=0.05,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.damp_q']),
+            cif_handler=CifHandler(
+                names=['_peak.damp_q'],
+                iucr_name='_easydiffraction_peak.damp_q',
+            ),
         )
         self._broad_q = Parameter(
             name='broad_q',
             description='Quadratic peak broadening from thermal uncertainty',
-            units='Å⁻²',
+            units='reciprocal_angstrom_squared',
+            display_handler=DisplayHandler(
+                display_units='Å⁻²',
+                latex_units=r'\AA$^{-2}$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.broad_q']),
+            cif_handler=CifHandler(
+                names=['_peak.broad_q'],
+                iucr_name='_easydiffraction_peak.broad_q',
+            ),
         )
         self._cutoff_q = Parameter(
             name='cutoff_q',
             description='Q-value cutoff for Fourier transform',
-            units='Å⁻¹',
+            units='reciprocal_angstroms',
+            display_handler=DisplayHandler(
+                display_units='Å⁻¹',
+                latex_units=r'\AA$^{-1}$',
+            ),
             value_spec=AttributeSpec(
                 default=25.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.cutoff_q']),
+            cif_handler=CifHandler(
+                names=['_peak.cutoff_q'],
+                iucr_name='_easydiffraction_peak.cutoff_q',
+            ),
         )
         self._sharp_delta_1 = Parameter(
             name='sharp_delta_1',
             description='Peak sharpening coefficient (1/r dependence)',
-            units='Å',
+            units='angstroms',
+            display_handler=DisplayHandler(
+                display_units='Å',
+                latex_units=r'\AA',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.sharp_delta_1']),
+            cif_handler=CifHandler(
+                names=['_peak.sharp_delta_1'],
+                iucr_name='_easydiffraction_peak.sharp_delta_1',
+            ),
         )
         self._sharp_delta_2 = Parameter(
             name='sharp_delta_2',
             description='Peak sharpening coefficient (1/r² dependence)',
-            units='Å²',
+            units='angstrom_squared',
+            display_handler=DisplayHandler(
+                display_units='Å²',
+                latex_units=r'\AA$^2$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.sharp_delta_2']),
+            cif_handler=CifHandler(
+                names=['_peak.sharp_delta_2'],
+                iucr_name='_easydiffraction_peak.sharp_delta_2',
+            ),
         )
         self._damp_particle_diameter = Parameter(
             name='damp_particle_diameter',
             description='Particle diameter for spherical envelope damping correction',
-            units='Å',
+            units='angstroms',
+            display_handler=DisplayHandler(
+                display_units='Å',
+                latex_units=r'\AA',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.damp_particle_diameter']),
+            cif_handler=CifHandler(
+                names=['_peak.damp_particle_diameter'],
+                iucr_name='_easydiffraction_peak.damp_particle_diameter',
+            ),
         )
 
     # ------------------------------------------------------------------

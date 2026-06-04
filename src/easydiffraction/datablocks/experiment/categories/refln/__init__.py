@@ -6,5 +6,7 @@ from easydiffraction.datablocks.experiment.categories.refln.bragg_pd import Powd
 from easydiffraction.datablocks.experiment.categories.refln.bragg_pd import PowderReflnBase
 from easydiffraction.datablocks.experiment.categories.refln.bragg_pd import PowderTofRefln
 from easydiffraction.datablocks.experiment.categories.refln.bragg_pd import PowderTofReflnData
+from easydiffraction.datablocks.experiment.categories.refln.bragg_sc import CwlReflnData
 from easydiffraction.datablocks.experiment.categories.refln.bragg_sc import Refln
-from easydiffraction.datablocks.experiment.categories.refln.bragg_sc import ReflnData
+from easydiffraction.datablocks.experiment.categories.refln.bragg_sc import TofRefln
+from easydiffraction.datablocks.experiment.categories.refln.bragg_sc import TofReflnData

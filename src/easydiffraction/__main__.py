@@ -56,7 +56,8 @@ def _display_project_patterns(project: object) -> None:
 
 def _project_fit_mode(project: object) -> str | None:
     """Return the resolved fitting mode type for one project."""
-    return getattr(project.analysis, 'fitting_mode_type', None)
+    fitting_mode = getattr(project.analysis, 'fitting_mode', None)
+    return getattr(fitting_mode, 'type', None)
 
 
 def _project_result_kind(project: object) -> str | None:
@@ -84,13 +85,53 @@ def _display_project_outputs(project: object) -> None:
     project.display.fit.correlations()
 
     if _project_result_kind(project) == 'bayesian':
-        if project.rendering.plotter.engine == 'plotly':
+        if project.rendering_plot.plotter.engine == 'plotly':
             project.display.posterior.pairs()
         project.display.posterior.distribution()
         for experiment in project.experiments:
             project.display.posterior.predictive(expt_name=experiment.name)
 
     _display_project_patterns(project)
+
+
+def _project_name(project: object, fallback: str) -> str:
+    """Return a display name for one project."""
+    name = getattr(project, 'name', None)
+    return str(name) if name else fallback
+
+
+def _display_undo_summary(
+    *,
+    project: object,
+    project_dir: str,
+    dry: bool,
+) -> None:
+    """Run undo and render its command-line summary."""
+    project_name = _project_name(project, project_dir)
+    outcome = project.analysis.undo_fit()
+
+    if outcome.was_no_op:
+        typer.echo(f"No fit to undo for '{project_name}'. Project state is unchanged.")
+        return
+
+    restored_count = len(outcome.restored_parameter_names)
+    if dry:
+        typer.echo(f"Would undo last fit for '{project_name}' (dry run, no files written):")
+        typer.echo(f'  - {restored_count} parameters would be restored to pre-fit values')
+        if outcome.cleared_fit_result:
+            typer.echo('  - analysis.fit_results would be cleared')
+        if outcome.cleared_sidecar:
+            typer.echo('  - analysis/results.h5 (Bayesian sidecar) would be cleared')
+        return
+
+    typer.echo(f"Undoing last fit for '{project_name}'...")
+    typer.echo(f'✅ Restored {restored_count} parameters to their pre-fit values.')
+    if outcome.cleared_fit_result:
+        typer.echo('✅ Cleared analysis.fit_results.')
+    if outcome.cleared_sidecar:
+        typer.echo('✅ Cleared analysis/results.h5 (Bayesian sidecar).')
+    project.save()
+    typer.echo(f'✅ Saved project to {project_dir}.')
 
 
 def run_cli(args: list[str] | None = None) -> None:
@@ -232,13 +273,15 @@ def undo(
         ...,
         help='Path to the project directory (must contain project.cif).',
     ),
+    dry: bool = typer.Option(  # noqa: FBT001
+        False,  # noqa: FBT003
+        '--dry',
+        help='Undo fitting without saving results back to the project directory.',
+    ),
 ) -> None:
-    """
-    Undo the last fit when fit-history support exists (not implemented).
-    """
-    _load_project(project_dir)
-    typer.echo('Undo is not yet implemented.')
-    raise typer.Exit(code=1)
+    """Undo the last fit: easydiffraction PROJECT_DIR undo [--dry]."""
+    project = _load_project(project_dir)
+    _display_undo_summary(project=project, project_dir=project_dir, dry=dry)
 
 
 if __name__ == '__main__':

@@ -2,46 +2,94 @@
 # SPDX-License-Identifier: BSD-3-Clause
 """Tests for display/tablers/pandas.py (PandasTableBackend)."""
 
+import re
+
 import pandas as pd
-import pytest
+
+
+def _backend():
+    from easydiffraction.display.tablers.pandas import PandasTableBackend
+
+    return PandasTableBackend()
+
+
+def _indexed(data):
+    df = pd.DataFrame(data)
+    df.index += 1
+    return df
 
 
 class TestPandasTableBackend:
-    def test_build_base_styles(self):
-        from easydiffraction.display.tablers.pandas import PandasTableBackend
-
-        backend = PandasTableBackend()
-        styles = backend._build_base_styles('#aabbcc')
-        assert isinstance(styles, list)
-        assert len(styles) > 0
-        selectors = [s['selector'] for s in styles]
-        assert 'thead' in selectors
-
-    def test_build_header_alignment_styles(self):
-        from easydiffraction.display.tablers.pandas import PandasTableBackend
-
-        backend = PandasTableBackend()
-        df = pd.DataFrame({'A': [1], 'B': [2]})
-        styles = backend._build_header_alignment_styles(df, ['left', 'right'])
-        assert len(styles) == 2
-
-    def test_apply_styling_returns_styler(self):
-        from easydiffraction.display.tablers.pandas import PandasTableBackend
-
-        pytest.importorskip('jinja2')
-        backend = PandasTableBackend()
-        df = pd.DataFrame({'A': [1.0], 'B': [2.0]})
-        styler = backend._apply_styling(df, ['left', 'right'], '#aabbcc')
-        assert hasattr(styler, 'to_html')
-
-    def test_build_renderable_returns_html(self):
-        from easydiffraction.display.tablers.pandas import PandasTableBackend
-
-        pytest.importorskip('jinja2')
-        backend = PandasTableBackend()
-        df = pd.DataFrame({'A': [1.0], 'B': [2.0]})
-
-        html = backend.build_renderable(['left', 'right'], df)
-
+    def test_build_renderable_returns_table_html(self):
+        html = _backend().build_renderable(['left', 'right'], _indexed({'A': [1.0], 'B': [2.0]}))
         assert isinstance(html, str)
-        assert '<table' in html
+        assert html.startswith('<table')
+        assert '<thead>' in html
+        assert '<tbody>' in html
+
+    def test_no_style_or_script_block_survives_untrusted_reopen(self):
+        """All styling is inline -- no <style>/<script> to be stripped.
+
+        JupyterLab strips ``<style>``/``<script>`` from untrusted
+        (reopened, not-yet-re-run) outputs, which made saved tables lose
+        their theming until re-execution. Inline styles survive that.
+        """
+        html = _backend().build_renderable(['left'], _indexed({'A': [1.0]}))
+        assert '<style' not in html
+        assert '<script' not in html
+        assert 'style="' in html
+
+    def test_index_is_dimmed_and_non_bold(self):
+        from easydiffraction.display.tablers.pandas import INDEX_COLOR
+
+        html = _backend().build_renderable(['left'], _indexed({'A': [1.0]}))
+        index_th = re.search(r'<th style="([^"]*)">1</th>', html)
+        assert index_th is not None
+        style = index_th.group(1)
+        assert INDEX_COLOR in style
+        assert 'font-weight: normal' in style
+
+    def test_border_and_divider_use_translucent_grey(self):
+        from easydiffraction.display.tablers.pandas import BORDER_COLOR
+
+        html = _backend().build_renderable(['left'], _indexed({'A': [1.0]}))
+        assert f'border: 1px solid {BORDER_COLOR}' in html
+        assert f'border-bottom: 1px solid {BORDER_COLOR}' in html
+
+    def test_per_column_alignment_is_inline(self):
+        html = _backend().build_renderable(['left', 'right'], _indexed({'A': ['x'], 'B': ['y']}))
+        assert 'text-align: left' in html
+        assert 'text-align: right' in html
+
+    def test_rows_override_host_striping(self):
+        html = _backend().build_renderable(['left'], _indexed({'A': [1, 2, 3]}))
+        # header row + 3 body rows each pin a transparent background
+        assert html.count('background-color: transparent') >= 4
+
+    def test_rich_markup_becomes_inline_colour(self):
+        html = _backend().build_renderable(['left'], _indexed({'A': ['[red]warn[/red]']}))
+        assert 'color: red' in html
+        assert 'warn' in html
+        assert '[red]' not in html
+
+    def test_floats_use_fixed_precision(self):
+        html = _backend().build_renderable(['left'], _indexed({'A': [1.23456789]}))
+        assert '1.23457' in html
+
+    def test_html_special_characters_are_escaped(self):
+        html = _backend().build_renderable(['left'], _indexed({'A': ['<b>&x']}))
+        assert '&lt;b&gt;&amp;x' in html
+        assert '<b>' not in html
+
+    def test_render_displays_inline_html(self, monkeypatch):
+        import easydiffraction.display.tablers.pandas as mod
+
+        captured = {}
+        monkeypatch.setattr(mod, 'HTML', lambda payload: ('HTML', payload))
+        monkeypatch.setattr(mod, 'display', lambda obj: captured.__setitem__('obj', obj))
+
+        mod.PandasTableBackend().render(['left'], _indexed({'A': [1.0]}))
+
+        assert captured['obj'][0] == 'HTML'
+        assert '<table' in captured['obj'][1]
+        assert '<style' not in captured['obj'][1]

@@ -5,20 +5,26 @@
 # diffraction data from HEiDi at FRM II.
 
 # %% [markdown]
-# ## Import Library
+# ## 🛠️ Import Library
 
 # %%
 import easydiffraction as ed
 
 # %% [markdown]
-# ## Step 1: Define Project
+# ## 📦 Define Project
 
 # %%
-# Create minimal project without name and description
-project = ed.Project()
+# Create a minimal project with a short name
+project = ed.Project(name='tbti_heidi')
+project.info.title = 'Tb2Ti2O7 at HEiDi@FRMII'
+project.info.description = """This project demonstrates a standard
+refinement of the crystal structure of Tb2Ti2O7 using single crystal 
+neutron diffraction data from HEiDi at FRM II."""
+
+project.save_as(dir_path='projects/ed_14_tbti_heidi')
 
 # %% [markdown]
-# ## Step 2: Define Structure
+# ## 🧩 Define Structure
 
 # %%
 # Download CIF file from repository
@@ -52,7 +58,20 @@ structure.atom_sites['O1'].adp_iso = 0.0
 structure.atom_sites['O2'].adp_iso = 0.0
 
 # %% [markdown]
-# ## Step 3: Define Experiment
+# ### Display Structure (ADP)
+#
+# Select the ADP atom view. With the starting isotropic displacements every
+# atom is drawn as a sphere; after the anisotropic refinement below, the same
+# view will draw probability ellipsoids for the anisotropic sites.
+
+# %%
+project.structure_style.atom_view = 'adp'
+
+# %%
+project.display.structure(struct_name='tbti')
+
+# %% [markdown]
+# ## 🔬 Define Experiment
 
 # %%
 # Download data file from repository
@@ -82,7 +101,10 @@ experiment.extinction.mosaicity = 35000
 experiment.extinction.radius = 10
 
 # %% [markdown]
-# ## Step 4: Perform Analysis I (ADP iso)
+# ## 🚀 Perform Analysis
+
+# %% [markdown]
+# ### ADP iso
 
 # %%
 project.display.pattern(expt_name='heidi')
@@ -116,13 +138,16 @@ project.display.fit.results()
 structure.show_as_cif()
 
 # %%
+project.display.structure(struct_name='tbti')
+
+# %%
 project.experiments.show_names()
 
 # %%
 project.display.pattern(expt_name='heidi')
 
 # %% [markdown]
-# ## Step 5: Perform Analysis (ADP aniso)
+# ### ADP aniso
 
 # %%
 structure.atom_sites['Tb'].adp_type = 'Uani'
@@ -157,3 +182,22 @@ project.display.pattern(expt_name='heidi')
 
 # %%
 structure.show_as_cif()
+
+# %% [markdown]
+# ### Display Structure (final)
+#
+# Tb, Ti and O1 were refined with anisotropic displacements (`Uani`), so the
+# ADP view now draws them as probability ellipsoids, while O2 stayed isotropic
+# (`Uiso`) and remains a sphere — highlighting how the view changed from the
+# initial spheres to ellipsoids.
+
+# %%
+project.display.structure(struct_name='tbti')
+
+# %% [markdown]
+# ## 📊 Report
+
+# %%
+# Enable PDF report generation before the last save (time consuming)
+project.report.pdf = True
+project.save()

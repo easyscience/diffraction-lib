@@ -10,6 +10,13 @@ def test_module_import():
     assert expected_module_name == actual_module_name
 
 
+def test_overall_status_row_label_uses_failure_icon():
+    from easydiffraction.analysis.fit_helpers.reporting import _overall_status_row_label
+
+    assert _overall_status_row_label('success') == '✅ Overall status'
+    assert _overall_status_row_label('failed') == '❌ Overall status'
+
+
 def test_fitresults_display_results_prints_and_table(capsys, monkeypatch):
     # Arrange: build a minimal fake parameter object with required attributes
     class Identity:
@@ -49,14 +56,16 @@ def test_fitresults_display_results_prints_and_table(capsys, monkeypatch):
 
     # Assert: key lines printed and a table rendered
     out = capsys.readouterr().out
-    assert 'Fit results' in out
-    assert 'Success: True' in out
+    assert 'Least-squares fit results:' in out
+    assert '✅ Overall status' in out
+    assert 'success' in out
     assert 'reduced χ²' in out
-    assert 'R-factor (Rf)' in out
-    assert 'R-factor squared (Rf²)' in out
-    assert 'Weighted R-factor (wR)' in out
-    assert 'Bragg R-factor (BR)' in out
-    assert 'Fitted parameters:' in out
+    assert 'R-factor (Rf' in out
+    assert 'R-factor squared (Rf²' in out
+    assert 'Weighted R-factor (wR' in out
+    assert 'Bragg R-factor (BR' in out
+    assert 'Refined parameters:' in out
+    assert 'Success: True' not in out  # replaced by Overall status row
     # Table border: accept common border glyphs from Rich
     assert any(ch in out for ch in ('╒', '┌', '+', '─'))
 
@@ -75,7 +84,11 @@ def test_fitresults_display_results_places_units_after_parameter(monkeypatch):
             self.value = 1.2
             self.uncertainty = 0.05
             self.name = 'a'
-            self.units = 'arb'
+            self.units = 'angstrom_squared'
+
+        def resolve_display_units(self, context):
+            assert context == 'gui'
+            return 'Å²'
 
     from easydiffraction.analysis.fit_helpers import reporting
 
@@ -97,8 +110,8 @@ def test_fitresults_display_results_places_units_after_parameter(monkeypatch):
         'parameter',
         'units',
         'start',
-        'fitted',
-        'uncertainty',
+        'value',
+        's.u.',
         'change',
     ]
     assert captured['columns_alignment'] == [
@@ -118,7 +131,7 @@ def test_fitresults_display_results_places_units_after_parameter(monkeypatch):
             'cat',
             'entry',
             'a',
-            'arb',
+            'Å²',
             '1.0000',
             '1.2000',
             '0.0500',

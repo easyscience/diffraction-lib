@@ -7,6 +7,8 @@ from easydiffraction.core.category_owner import CategoryOwner
 from easydiffraction.core.collection import CollectionBase
 from easydiffraction.core.variable import Parameter
 
+DEFAULT_LOOP_DISPLAY_LIMIT = 20
+
 
 class DatablockItem(CategoryOwner):
     """Base class for items in a datablock collection."""
@@ -38,13 +40,16 @@ class DatablockItem(CategoryOwner):
         self._update_categories()
         return datablock_item_to_cif(self)
 
-    def _cif_for_display(self, max_loop_display: int = 20) -> str:
+    def _cif_for_display(
+        self,
+        max_loop_display: int = DEFAULT_LOOP_DISPLAY_LIMIT,
+    ) -> str:
         """
         Return CIF text with loop categories truncated for display.
 
         Parameters
         ----------
-        max_loop_display : int, default=20
+        max_loop_display : int, default=DEFAULT_LOOP_DISPLAY_LIMIT
             Maximum number of rows to show per loop category.
 
         Returns

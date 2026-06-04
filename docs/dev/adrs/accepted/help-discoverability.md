@@ -9,14 +9,14 @@ Accepted and implemented.
 EasyDiffraction is used by scientists who often explore the API in
 notebooks. The main object graph already exposes many focused objects:
 projects, project metadata, structures, experiments, categories,
-parameters, analysis helpers, summaries, and display facades. Users need
-a consistent way to discover the next useful operation from any of these
+parameters, analysis helpers, reports, and display facades. Users need a
+consistent way to discover the next useful operation from any of these
 objects without reading source code.
 
 Most model objects inherit `GuardedBase`, `CategoryItem`,
 `CategoryCollection`, `DatablockItem`, or `DatablockCollection`, which
 already provide `help()` output. Plain facade classes such as display
-namespaces and summaries do not inherit those base classes, so they need
+namespaces and reports do not inherit those base classes, so they need
 the same discovery behavior explicitly.
 
 ## Decision
@@ -28,7 +28,7 @@ includes:
 - category items and category collections
 - datablock items and datablock collections
 - project-level objects such as `Project`, `ProjectInfo`, `Analysis`,
-  `Summary`, and `Rendering`
+  `Report`, and `Rendering`
 - display facades such as `project.display`,
   `project.display.parameters`, `project.display.fit`,
   `project.display.posterior`, and `analysis.display`
@@ -52,7 +52,7 @@ project.help()
 project.display.help()
 project.display.parameters.help()
 project.analysis.display.help()
-project.summary.help()
+project.report.help()
 project.experiments.help()
 project.experiments['hrpt'].help()
 project.experiments['hrpt'].background.help()

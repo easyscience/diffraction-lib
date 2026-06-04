@@ -8,7 +8,7 @@
 # It also shows how to switch calculation engine and peak profile type.
 
 # %% [markdown]
-# ## Import Library
+# ## 🛠️ Import Library
 
 # %%
 from easydiffraction import ExperimentFactory
@@ -17,31 +17,31 @@ from easydiffraction import StructureFactory
 from easydiffraction import download_data
 
 # %% [markdown]
-# ## Define Structure
+# ## 🧩 Define Structure
 #
 # This section shows how to add structures and modify their
 # parameters.
 #
-# #### Create Structure
+# ### Create Structure
 
 # %%
 structure = StructureFactory.from_scratch(name='si')
 
 # %% [markdown]
-# #### Set Space Group
+# ### Set Space Group
 
 # %%
 structure.space_group.name_h_m = 'F d -3 m'
 structure.space_group.it_coordinate_system_code = '2'
 
 # %% [markdown]
-# #### Set Unit Cell
+# ### Set Unit Cell
 
 # %%
 structure.cell.length_a = 5.431
 
 # %% [markdown]
-# #### Set Atom Sites
+# ### Set Atom Sites
 
 # %%
 structure.atom_sites.create(
@@ -54,18 +54,18 @@ structure.atom_sites.create(
 )
 
 # %% [markdown]
-# ## Define Experiment
+# ## 🔬 Define Experiment
 #
 # This section shows how to add experiments, configure their
 # parameters, and link the structures defined in the previous step.
 #
-# #### Download Measured Data
+# ### Download Data
 
 # %%
 data_path = download_data(id=7, destination='data')
 
 # %% [markdown]
-# #### Create Experiment
+# ### Create Experiment
 
 # %%
 expt = ExperimentFactory.from_data_path(
@@ -73,7 +73,7 @@ expt = ExperimentFactory.from_data_path(
 )
 
 # %% [markdown]
-# #### Set Instrument
+# ### Set Instrument
 
 # %%
 expt.instrument.setup_twotheta_bank = 144.845
@@ -82,10 +82,10 @@ expt.instrument.calib_d_to_tof_linear = 7476.91
 expt.instrument.calib_d_to_tof_quad = -1.54
 
 # %% [markdown]
-# #### Set Peak Profile
+# ### Set Peak Profile
 
 # %%
-expt.show_peak_profile_types()
+expt.peak.show_supported()
 expt.peak.broad_gauss_sigma_0 = 3.0
 expt.peak.broad_gauss_sigma_1 = 40.0
 expt.peak.broad_gauss_sigma_2 = 2.0
@@ -95,49 +95,55 @@ expt.peak.exp_rise_alpha_0 = 0.0
 expt.peak.exp_rise_alpha_1 = 0.5971
 
 # %% [markdown]
-# #### Set Background
+# ### Set Background
 
 # %%
-expt.background_type = 'line-segment'
+expt.background.type = 'line-segment'
 for x in range(0, 35000, 5000):
     expt.background.create(id=str(x), x=x, y=200)
 
 # %% [markdown]
-# #### Set Linked Phases
+# ### Set Linked Phases
 
 # %%
 expt.linked_phases.create(id='si', scale=10.0)
 
 # %% [markdown]
-# ## Define Project
+# ## 📦 Define Project
 #
 # The project object is used to manage the structure, experiment, and
 # analysis.
 #
-# #### Create Project
+# ### Create Project
 
 # %%
-project = Project()
+project = Project(name='si_sepd')
 
 # %% [markdown]
-# #### Add Structure
+# ### Add Structure
 
 # %%
 project.structures.add(structure)
 
 # %% [markdown]
-# #### Add Experiment
+# ### Add Experiment
 
 # %%
 project.experiments.add(expt)
 
 # %% [markdown]
-# ## Perform Analysis
+# ## 🚀 Perform Analysis
 #
 # This section shows the analysis process, including how to set up
 # calculation and fitting engines.
 #
-# #### Plot Measured vs Calculated
+# ### Display Structure
+
+# %%
+project.display.structure(struct_name='si')
+
+# %% [markdown]
+# ### Display Pattern
 
 # %%
 project.display.pattern(expt_name='sepd')
@@ -168,7 +174,7 @@ project.analysis.fit()
 project.display.fit.results()
 
 # %% [markdown]
-# #### Plot Measured vs Calculated
+# #### Display Pattern
 
 # %%
 project.display.pattern(expt_name='sepd')
@@ -199,7 +205,7 @@ project.analysis.fit()
 project.display.fit.results()
 
 # %% [markdown]
-# #### Plot Measured vs Calculated
+# #### Display Pattern
 
 # %%
 project.display.pattern(expt_name='sepd')
@@ -238,7 +244,7 @@ project.analysis.fit()
 project.display.fit.results()
 
 # %% [markdown]
-# #### Plot Measured vs Calculated
+# #### Display Pattern
 
 # %%
 project.display.pattern(expt_name='sepd')
@@ -272,13 +278,13 @@ project.analysis.fit()
 project.display.fit.results()
 
 # %% [markdown]
-# #### Show parameter correlations
+# #### Display Correlations
 
 # %%
 project.display.fit.correlations()
 
 # %% [markdown]
-# #### Plot Measured vs Calculated
+# #### Display Pattern
 
 # %%
 project.display.pattern(expt_name='sepd')
@@ -296,19 +302,19 @@ project.display.pattern(expt_name='sepd', x='d_spacing')
 # #### Switch calculator engine
 
 # %%
-expt.calculation.show_calculator_types()
+expt.calculator.show_supported()
 
 # %%
-expt.calculation.calculator_type = 'crysfml'
+expt.calculator.type = 'crysfml'
 
 # %% [markdown]
 # #### Change peak profile type
 
 # %%
-expt.show_peak_profile_types()
+expt.peak.show_supported()
 
 # %%
-expt.peak_profile_type = 'jorgensen-von-dreele'
+expt.peak.type = 'jorgensen-von-dreele'
 
 # %%
 expt.peak.broad_gauss_sigma_0 = 3.0148
@@ -337,16 +343,22 @@ project.analysis.fit()
 project.display.fit.results()
 
 # %% [markdown]
-# #### Show parameter correlations
+# #### Display Correlations
 
 # %%
 project.display.fit.correlations()
 
 # %% [markdown]
-# #### Plot Measured vs Calculated
+# #### Display Pattern
 
 # %%
 project.display.pattern(expt_name='sepd', x_min=23200, x_max=23700)
 
 # %%
 project.display.pattern(expt_name='sepd', x='d_spacing')
+
+# %% [markdown]
+# ## 💾 Save Project
+
+# %%
+project.save_as(dir_path='projects/ed_7_si_sepd')

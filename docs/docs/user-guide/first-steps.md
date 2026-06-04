@@ -95,11 +95,11 @@ different categories.
 ### Supported calculators
 
 The calculator is automatically selected based on the experiment type.
-You can use the experiment `calculation` category to see which
-calculation engines are compatible:
+Use the experiment `calculator` category to see which calculation
+engines are compatible:
 
 ```python
-project.experiments['hrpt'].calculation.show_calculator_types()
+project.experiments['hrpt'].calculator.show_supported()
 ```
 
 This will display a list of supported calculators along with their
@@ -113,11 +113,11 @@ An example of the output for a Bragg diffraction experiment:
 
 ### Supported minimizers
 
-You can also check the available minimizers using the
-`show_minimizer_types()` method:
+You can also check the available minimizers from the active minimizer
+category:
 
 ```python
-project.analysis.fitting.show_minimizer_types()
+project.analysis.minimizer.show_supported()
 ```
 
 ### Available parameters
@@ -142,24 +142,24 @@ with parameters in their projects.
 An example of the output for the `project.display.parameters.access()`
 method is:
 
-|     | Code variable                                       | Unique ID for CIF          |
-| --- | --------------------------------------------------- | -------------------------- |
-| 1   | project.structures['lbco'].atom_site['La'].adp_type | lbco.atom_site.La.ADP_type |
-| 2   | project.structures['lbco'].atom_site['La'].adp_iso  | lbco.atom_site.La.adp_iso  |
-| 3   | project.structures['lbco'].atom_site['La'].fract_x  | lbco.atom_site.La.fract_x  |
-| 4   | project.structures['lbco'].atom_site['La'].fract_y  | lbco.atom_site.La.fract_y  |
-| ... | ...                                                 | ...                        |
-| 59  | project.experiments['hrpt'].peak.broad_gauss_u      | hrpt.peak.broad_gauss_u    |
-| 60  | project.experiments['hrpt'].peak.broad_gauss_v      | hrpt.peak.broad_gauss_v    |
-| 61  | project.experiments['hrpt'].peak.broad_gauss_w      | hrpt.peak.broad_gauss_w    |
+|     | Code variable                                        | Unique ID for CIF          |
+| --- | ---------------------------------------------------- | -------------------------- |
+| 1   | project.structures['lbco'].atom_sites['La'].adp_type | lbco.atom_site.La.ADP_type |
+| 2   | project.structures['lbco'].atom_sites['La'].adp_iso  | lbco.atom_site.La.adp_iso  |
+| 3   | project.structures['lbco'].atom_sites['La'].fract_x  | lbco.atom_site.La.fract_x  |
+| 4   | project.structures['lbco'].atom_sites['La'].fract_y  | lbco.atom_site.La.fract_y  |
+| ... | ...                                                  | ...                        |
+| 59  | project.experiments['hrpt'].peak.broad_gauss_u       | hrpt.peak.broad_gauss_u    |
+| 60  | project.experiments['hrpt'].peak.broad_gauss_v       | hrpt.peak.broad_gauss_v    |
+| 61  | project.experiments['hrpt'].peak.broad_gauss_w       | hrpt.peak.broad_gauss_w    |
 
 ### Supported plotters
 
-To see the available plotters, you can use the `display` category on the
-`Project` instance:
+To see the available plotters, use the project rendering categories:
 
 ```python
-project.rendering.show_chart_engines()
+project.rendering_plot.show_supported()
+project.rendering_table.show_supported()
 ```
 
 An example of the output is:

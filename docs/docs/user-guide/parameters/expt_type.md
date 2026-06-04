@@ -1,27 +1,30 @@
-[coreCIF][1]{:.label-cif}
+[customCIF][0]{:.label-cif}
 
-# \_cell
+# \_expt_type
 
-Data items in this category record details about the crystallographic
-cell parameters and their measurement. Please see the
-[IUCr page](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/CCELL.html)
-for further details.
+This EasyDiffraction category records the experiment type. The type
+selects compatible experiment categories, calculators, peak profiles,
+and data handling.
 
-## \_cell.angle
+## \_expt_type.beam_mode
 
-The angles between the bounding cell axes in degrees.
+Beam mode used by the experiment. Supported values include
+`constant wavelength` and `time-of-flight`.
 
-- [\_cell.angle_alpha](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Icell.angle_alpha.html)
-- [\_cell.angle_beta](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Icell.angle_beta.html)
-- [\_cell.angle_gamma](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Icell.angle_gamma.html)
+## \_expt_type.radiation_probe
 
-## \_cell.length
+Radiation probe used by the experiment. Supported values include
+`neutron` and `x-ray`.
 
-The lengths of each cell axis in angstroms.
+## \_expt_type.sample_form
 
-- [\_cell.length_a](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Icell.length_a.html)
-- [\_cell.length_b](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Icell.length_b.html)
-- [\_cell.length_c](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Icell.length_c.html)
+Sample form used by the experiment. Supported values include `powder`
+and `single crystal`.
+
+## \_expt_type.scattering_type
+
+Scattering type used by the experiment. Supported values include `bragg`
+and `total`.
 
 <!-- prettier-ignore-start -->
 [0]: #

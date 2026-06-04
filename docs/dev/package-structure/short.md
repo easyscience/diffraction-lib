@@ -15,39 +15,7 @@
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
 │   │   │   └── 📄 factory.py
-│   │   ├── 📁 bayesian_convergence
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   └── 📄 factory.py
-│   │   ├── 📁 bayesian_distribution_caches
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   └── 📄 factory.py
-│   │   ├── 📁 bayesian_pair_caches
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   └── 📄 factory.py
-│   │   ├── 📁 bayesian_parameter_posteriors
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   └── 📄 factory.py
-│   │   ├── 📁 bayesian_predictive_datasets
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   └── 📄 factory.py
-│   │   ├── 📁 bayesian_result
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   └── 📄 factory.py
-│   │   ├── 📁 bayesian_sampler
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   └── 📄 factory.py
 │   │   ├── 📁 constraints
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   └── 📄 factory.py
-│   │   ├── 📁 deterministic_result
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
 │   │   │   └── 📄 factory.py
@@ -61,10 +29,12 @@
 │   │   │   └── 📄 factory.py
 │   │   ├── 📁 fit_result
 │   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 base.py
+│   │   │   ├── 📄 bayesian.py
 │   │   │   ├── 📄 default.py
-│   │   │   └── 📄 factory.py
-│   │   ├── 📁 fit_state
-│   │   ├── 📁 fitting
+│   │   │   ├── 📄 factory.py
+│   │   │   └── 📄 lsq.py
+│   │   ├── 📁 fitting_mode
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
 │   │   │   └── 📄 factory.py
@@ -72,6 +42,22 @@
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
 │   │   │   └── 📄 factory.py
+│   │   ├── 📁 minimizer
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 base.py
+│   │   │   ├── 📄 bayesian_base.py
+│   │   │   ├── 📄 bumps.py
+│   │   │   ├── 📄 bumps_amoeba.py
+│   │   │   ├── 📄 bumps_de.py
+│   │   │   ├── 📄 bumps_dream.py
+│   │   │   ├── 📄 bumps_lm.py
+│   │   │   ├── 📄 dfols.py
+│   │   │   ├── 📄 emcee.py
+│   │   │   ├── 📄 factory.py
+│   │   │   ├── 📄 lmfit.py
+│   │   │   ├── 📄 lmfit_least_squares.py
+│   │   │   ├── 📄 lmfit_leastsq.py
+│   │   │   └── 📄 lsq_base.py
 │   │   ├── 📁 sequential_fit
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
@@ -80,9 +66,15 @@
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
 │   │   │   └── 📄 factory.py
+│   │   ├── 📁 software
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 base.py
+│   │   │   ├── 📄 default.py
+│   │   │   └── 📄 factory.py
 │   │   └── 📄 __init__.py
 │   ├── 📁 fit_helpers
 │   │   ├── 📄 __init__.py
+│   │   ├── 📄 _diagnostics.py
 │   │   ├── 📄 bayesian.py
 │   │   ├── 📄 metrics.py
 │   │   ├── 📄 reporting.py
@@ -96,6 +88,8 @@
 │   │   ├── 📄 bumps_dream.py
 │   │   ├── 📄 bumps_lm.py
 │   │   ├── 📄 dfols.py
+│   │   ├── 📄 emcee.py
+│   │   ├── 📄 emcee_defaults.py
 │   │   ├── 📄 enums.py
 │   │   ├── 📄 factory.py
 │   │   ├── 📄 lmfit.py
@@ -113,11 +107,16 @@
 │   ├── 📄 collection.py
 │   ├── 📄 datablock.py
 │   ├── 📄 diagnostic.py
+│   ├── 📄 display_handler.py
+│   ├── 📄 errors.py
 │   ├── 📄 factory.py
 │   ├── 📄 guard.py
 │   ├── 📄 identity.py
 │   ├── 📄 metadata.py
+│   ├── 📄 posterior.py
 │   ├── 📄 singleton.py
+│   ├── 📄 switchable.py
+│   ├── 📄 units_vocabulary.py
 │   ├── 📄 validation.py
 │   └── 📄 variable.py
 ├── 📁 crystallography
@@ -134,7 +133,7 @@
 │   │   │   │   ├── 📄 enums.py
 │   │   │   │   ├── 📄 factory.py
 │   │   │   │   └── 📄 line_segment.py
-│   │   │   ├── 📁 calculation
+│   │   │   ├── 📁 calculator
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 default.py
 │   │   │   │   └── 📄 factory.py
@@ -157,6 +156,7 @@
 │   │   │   │   └── 📄 factory.py
 │   │   │   ├── 📁 extinction
 │   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 base.py
 │   │   │   │   ├── 📄 becker_coppens.py
 │   │   │   │   └── 📄 factory.py
 │   │   │   ├── 📁 instrument
@@ -214,7 +214,15 @@
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 default.py
 │   │   │   │   └── 📄 factory.py
+│   │   │   ├── 📁 geom
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 default.py
+│   │   │   │   └── 📄 factory.py
 │   │   │   ├── 📁 space_group
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 default.py
+│   │   │   │   └── 📄 factory.py
+│   │   │   ├── 📁 space_group_wyckoff
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 default.py
 │   │   │   │   └── 📄 factory.py
@@ -232,6 +240,26 @@
 │   │   ├── 📄 ascii.py
 │   │   ├── 📄 base.py
 │   │   └── 📄 plotly.py
+│   ├── 📁 structure
+│   │   ├── 📁 assets
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 colors.py
+│   │   │   ├── 📄 elements.py
+│   │   │   └── 📄 radii.py
+│   │   ├── 📁 renderers
+│   │   │   ├── 📁 vendor
+│   │   │   │   └── 📁 threejs
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 ascii.py
+│   │   │   ├── 📄 base.py
+│   │   │   ├── 📄 raster.py
+│   │   │   └── 📄 threejs.py
+│   │   ├── 📁 templates
+│   │   ├── 📄 __init__.py
+│   │   ├── 📄 builder.py
+│   │   ├── 📄 enums.py
+│   │   ├── 📄 scene.py
+│   │   └── 📄 viewing.py
 │   ├── 📁 tablers
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 base.py
@@ -242,11 +270,14 @@
 │   ├── 📄 plotting.py
 │   ├── 📄 progress.py
 │   ├── 📄 tables.py
+│   ├── 📄 theme.py
 │   └── 📄 utils.py
 ├── 📁 io
 │   ├── 📁 cif
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 handler.py
+│   │   ├── 📄 iucr_transformers.py
+│   │   ├── 📄 iucr_writer.py
 │   │   ├── 📄 parse.py
 │   │   └── 📄 serialize.py
 │   ├── 📄 __init__.py
@@ -258,7 +289,29 @@
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
 │   │   │   └── 📄 factory.py
+│   │   ├── 📁 publication
 │   │   ├── 📁 rendering
+│   │   ├── 📁 rendering_plot
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   └── 📄 factory.py
+│   │   ├── 📁 rendering_structure
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   └── 📄 factory.py
+│   │   ├── 📁 rendering_table
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   └── 📄 factory.py
+│   │   ├── 📁 report
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   └── 📄 factory.py
+│   │   ├── 📁 structure_style
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   └── 📄 factory.py
+│   │   ├── 📁 structure_view
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
 │   │   │   └── 📄 factory.py
@@ -272,9 +325,20 @@
 │   ├── 📄 project.py
 │   ├── 📄 project_config.py
 │   └── 📄 project_info.py
-├── 📁 summary
+├── 📁 report
+│   ├── 📁 templates
+│   │   ├── 📁 html
+│   │   │   └── 📁 vendor
+│   │   └── 📁 tex
+│   │       └── 📁 styles
 │   ├── 📄 __init__.py
-│   └── 📄 summary.py
+│   ├── 📄 data_context.py
+│   ├── 📄 enums.py
+│   ├── 📄 fit_plot.py
+│   ├── 📄 html_renderer.py
+│   ├── 📄 pdf_compiler.py
+│   ├── 📄 style.py
+│   └── 📄 tex_renderer.py
 ├── 📁 utils
 │   ├── 📁 _vendored
 │   │   ├── 📁 jupyter_dark_detect
@@ -286,6 +350,7 @@
 │   ├── 📄 enums.py
 │   ├── 📄 environment.py
 │   ├── 📄 logging.py
+│   ├── 📄 matplotlib_config.py
 │   └── 📄 utils.py
 ├── 📄 __init__.py
 └── 📄 __main__.py

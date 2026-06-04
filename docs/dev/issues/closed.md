@@ -4,6 +4,42 @@ Issues that have been fully resolved. Kept for historical reference.
 
 ---
 
+## 51. Access Space Group from `AtomSites` for Wyckoff Letters
+
+Closed by the Wyckoff-letter-detection implementation. `AtomSite` now
+derives its allowed Wyckoff letters from the parent structure's space
+group (via `_resolve_structure_space_group`) instead of a hardcoded
+list, and the missing-letter case is handled explicitly: untabulated
+space groups leave the Wyckoff letter and multiplicity unset, while
+tabulated groups detect and fill them during the update flow.
+
+---
+
+## 103. Make `_sync_engine_from_minimizer_category` Skip-Keys Declarative
+
+Closed by the emcee minimizer implementation. Minimizer categories now
+declare `_engine_sync_skip_keys`, and analysis sync filters against that
+set instead of hardcoding skipped keys.
+
+---
+
+## 101. Remove Dead Branch in `_fit_state_categories`
+
+Closed by the emcee minimizer implementation. The deterministic branch
+that returned the same category list as the fallthrough path was removed
+while preserving unsupported `result_kind` warning behavior.
+
+---
+
+## 100. Collapse Duplicate Predictive-Cache-Key Helpers
+
+Closed by the emcee minimizer implementation.
+`posterior_predictive_cache_key()` in `analysis.fit_helpers.bayesian` is
+now the single helper used by analysis, plotting, and project display
+code.
+
+---
+
 ## 77. Add Help Methods to Public Discovery Facades
 
 Added consistent `help()` methods for plain user-facing facade classes
@@ -14,6 +50,26 @@ Introduced `render_object_help()` so these helpers share the same
 property and method table style as `GuardedBase.help()`. Documented the
 convention in
 [`help-discoverability.md`](../adrs/accepted/help-discoverability.md).
+
+---
+
+## 72. Warn on All Switchable-Category Type Changes
+
+Closed by
+[`switchable-category-owned-selectors.md`](../adrs/accepted/switchable-category-owned-selectors.md).
+Type-change warnings now run through owner `_swap_<name>` hooks, so
+every category-owned selector assignment has a uniform owner-mediated
+place to warn about values that will be discarded.
+
+---
+
+## 76. Consistent `_type` Suffix in Switchable-Category API Names
+
+Closed by
+[`switchable-category-owned-selectors.md`](../adrs/accepted/switchable-category-owned-selectors.md).
+The public suffix is dropped: owners expose categories, categories
+expose a uniform `type` property plus `show_supported()`, and CIF uses
+one `_<cat>.type` selector tag per category.
 
 ---
 

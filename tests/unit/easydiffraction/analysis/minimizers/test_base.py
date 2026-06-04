@@ -237,6 +237,7 @@ def test_minimizer_base_fit_preserves_solver_prep_error_during_cleanup(monkeypat
 
 def test_minimizer_base_stop_tracking_backfills_result_fitting_time():
     from easydiffraction.analysis.minimizers.base import MinimizerBase
+    from easydiffraction.analysis.minimizers.base import MinimizerFitOptions
 
     class DummyResult:
         success = True
@@ -280,7 +281,7 @@ def test_minimizer_base_stop_tracking_backfills_result_fitting_time():
     result = minimizer.fit(
         parameters=params,
         objective_function=objective,
-        finalize_tracking=False,
+        options=MinimizerFitOptions(finalize_tracking=False),
     )
 
     assert result.fitting_time is None

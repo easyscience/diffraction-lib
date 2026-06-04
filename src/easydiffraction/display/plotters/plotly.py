@@ -10,6 +10,9 @@ renderer may be used depending on configuration.
 
 from __future__ import annotations
 
+import base64
+import json
+import uuid
 from dataclasses import dataclass
 
 import darkdetect
@@ -17,6 +20,7 @@ import numpy as np
 import plotly.graph_objects as go
 import plotly.io as pio
 from plotly.subplots import make_subplots
+from plotly.utils import PlotlyJSONEncoder
 
 try:
     from IPython.display import HTML
@@ -26,13 +30,32 @@ except ImportError:
     HTML = None
 
 from easydiffraction.display.plotters.base import DEFAULT_HEIGHT
+from easydiffraction.display.plotters.base import DEFAULT_RESIDUAL_HEIGHT_FRACTION
 from easydiffraction.display.plotters.base import SERIES_CONFIG
 from easydiffraction.display.plotters.base import BraggTickSet
 from easydiffraction.display.plotters.base import PlotterBase
 from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
+from easydiffraction.display.theme import DARK_AXIS_FRAME_COLOR
+from easydiffraction.display.theme import DARK_BACKGROUND_COLOR
+from easydiffraction.display.theme import DARK_FOREGROUND_COLOR
+from easydiffraction.display.theme import DARK_HOVER_BACKGROUND_COLOR
+from easydiffraction.display.theme import DARK_INNER_TICK_GRID_COLOR
+from easydiffraction.display.theme import DARK_LEGEND_BACKGROUND_COLOR
+from easydiffraction.display.theme import LIGHT_AXIS_FRAME_COLOR
+from easydiffraction.display.theme import LIGHT_BACKGROUND_COLOR
+from easydiffraction.display.theme import LIGHT_FOREGROUND_COLOR
+from easydiffraction.display.theme import LIGHT_HOVER_BACKGROUND_COLOR
+from easydiffraction.display.theme import LIGHT_INNER_TICK_GRID_COLOR
+from easydiffraction.display.theme import LIGHT_LEGEND_BACKGROUND_COLOR
+from easydiffraction.display.theme import PAPER_BACKGROUND_COLOR
+from easydiffraction.display.theme import DisplayThemeColors
+from easydiffraction.display.theme import display_theme_colors
+from easydiffraction.display.theme import display_theme_colors_for_template
 from easydiffraction.utils._vendored.theme_detect import is_dark
+from easydiffraction.utils.environment import FigureEmbedMode
 from easydiffraction.utils.environment import in_jupyter
 from easydiffraction.utils.environment import in_pycharm
+from easydiffraction.utils.environment import resolve_figure_embed_mode
 
 DEFAULT_COLORS = {
     'meas': 'rgb(31, 119, 180)',
@@ -46,6 +69,27 @@ MEASURED_LINE_WIDTH = 2.0
 BACKGROUND_LINE_WIDTH = 1.0
 CALCULATED_LINE_WIDTH = 2.0
 RESIDUAL_LINE_WIDTH = 2.0
+MEASURED_MARKER_SIZE = 6
+MEASURED_MARKER_LINE_WIDTH = 0
+SINGLE_CRYSTAL_MARKER_LINE_WIDTH = 0.5
+MEASURED_ERROR_BAR_THICKNESS = 0.5
+MEASURED_ERROR_BAR_WIDTH = 2
+# Correlation-heatmap cell borders. Internal cell separators sit inside
+# the plot area and render at their full width. The outer frame sits on
+# the plot-area boundary, where Plotly clips half of the stroke, so it
+# is drawn at double width to keep its visible half matching the
+# internal separators.
+CORRELATION_GRID_LINE_WIDTH = 1
+CORRELATION_FRAME_LINE_WIDTH = 2 * CORRELATION_GRID_LINE_WIDTH
+# Single source for the y=x reference-line colour, shared with the
+# report axis gray (report.style.REPORT_AXIS_RGB) and imported by
+# report.fit_plot so the diagonal looks identical in the Plotly and
+# pgfplots renderers.
+DIAGONAL_LINE_RGB = (190, 199, 208)
+DIAGONAL_LINE_COLOR = (
+    f'rgb({DIAGONAL_LINE_RGB[0]}, {DIAGONAL_LINE_RGB[1]}, {DIAGONAL_LINE_RGB[2]})'
+)
+DIAGONAL_LINE_WIDTH = 0.5
 
 BRAGG_TICK_COLORS = (
     'rgb(255, 127, 14)',
@@ -56,6 +100,7 @@ BRAGG_TICK_COLORS = (
 )
 
 NICE_AXIS_FRACTIONS = (1.0, 2.0, 5.0, 10.0)
+NICE_AXIS_FRACTION_THRESHOLDS = (1.5, 3.0, 7.0)
 DISPLAY_TICK_FRACTIONS = (1.0, 2.0, 2.5, 4.0, 5.0, 7.5, 10.0)
 PLOTLY_HEIGHT_PER_UNIT = 24
 BRAGG_TICK_MARKER_SIZE = 12
@@ -68,6 +113,16 @@ COMPOSITE_MARGIN_TOP = 40
 COMPOSITE_MARGIN_BOTTOM = 45
 TITLE_FONT_SIZE = 14
 AXIS_TITLE_FONT_SIZE = 12
+X_AXIS_TICK_LABEL_STANDOFF = 5
+Y_AXIS_TICK_LABEL_STANDOFF = 6
+HOVER_LABEL_FONT_SIZE = 12
+# Plotly has no hover-label padding, so a non-breaking space is baked
+# into each template line to hold the text off the left and right frame.
+# Vertical spacing is left to Plotly's own ~3px line box: a blank spacer
+# line reserves a full content-line height, which inflates the bottom
+# margin and cannot be tuned, so a single space keeps all four margins
+# small and even.
+HOVER_HORIZONTAL_PAD = '\u00a0'
 PREDICTIVE_BAND_COLOR = 'rgba(214, 39, 40, 0.14)'
 PREDICTIVE_BAND_EDGE_COLOR = 'rgba(214, 39, 40, 0.45)'
 PREDICTIVE_DRAW_COLOR = 'rgba(140, 140, 140, 0.18)'
@@ -76,6 +131,140 @@ PREDICTIVE_DRAW_PLOT_CAP = 50
 PREDICTIVE_DRAW_ARRAY_NDIM = 2
 FIXED_ASPECT_WRAPPER_META_KEY = 'fixed_aspect_wrapper'
 FIXED_ASPECT_WRAPPER_CLASS_NAME = 'ed-fixed-aspect-plotly-wrapper'
+THEME_SYNC_META_KEY = 'ed_plotly_theme_sync'
+THEME_SYNC_AXIS_FRAME_SHAPE_INDEXES_KEY = 'axis_frame_shape_indexes'
+THEME_SYNC_CORRELATION_HEATMAP_KEY = 'correlation_heatmap'
+
+
+def _typed_arrays_to_float32(value: object) -> object:
+    """
+    Recursively transcode float64 Plotly typed-array specs to float32.
+
+    Plotly serializes numpy arrays as base64 typed-array specs
+    (``{'dtype': 'f8', 'bdata': ...}``). For the docs display, float32
+    (~7 significant figures) is visually lossless and halves the bulk
+    data size. Scalars and small inline lists are left untouched.
+
+    Parameters
+    ----------
+    value : object
+        A figure dict, list, or leaf from ``fig.to_plotly_json()``.
+
+    Returns
+    -------
+    object
+        The same structure with float64 typed arrays downcast to
+        float32.
+    """
+    if isinstance(value, dict):
+        if value.get('dtype') == 'f8' and 'bdata' in value:
+            downcast = np.frombuffer(
+                base64.b64decode(value['bdata']),
+                dtype='<f8',
+            ).astype('<f4')
+            return {
+                **value,
+                'dtype': 'f4',
+                'bdata': base64.b64encode(downcast.tobytes()).decode('ascii'),
+            }
+        return {key: _typed_arrays_to_float32(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_typed_arrays_to_float32(item) for item in value]
+    return value
+
+
+def single_crystal_axis_range(
+    x_calc: object,
+    y_meas: object,
+    y_meas_su: object,
+) -> tuple[float, float]:
+    """
+    Return one shared (min, max) range for a single-crystal scatter.
+
+    The range spans the calculated values and the measured values
+    widened by their standard uncertainties, then pads both ends by
+    ``MAIN_INTENSITY_RANGE_MARGIN_FRACTION``. Applying the same range to
+    both axes keeps the y=x diagonal meaningful.
+
+    Parameters
+    ----------
+    x_calc : object
+        1D array-like of calculated values (x-axis).
+    y_meas : object
+        1D array-like of measured values (y-axis).
+    y_meas_su : object
+        1D array-like of measurement uncertainties, or None.
+
+    Returns
+    -------
+    tuple[float, float]
+        The padded ``(minimum, maximum)`` shared by both axes.
+    """
+    calc = [float(value) for value in x_calc]
+    meas = [float(value) for value in y_meas]
+    if y_meas_su is not None:
+        su = [float(value) for value in y_meas_su]
+        low = [value - error for value, error in zip(meas, su, strict=True)]
+        high = [value + error for value, error in zip(meas, su, strict=True)]
+    else:
+        low = meas
+        high = meas
+    candidates_low = [*calc, *low]
+    candidates_high = [*calc, *high]
+    if not candidates_low or not candidates_high:
+        return 0.0, 1.0
+    minimum = min(candidates_low)
+    maximum = max(candidates_high)
+    margin = max(maximum - minimum, 0.0) * MAIN_INTENSITY_RANGE_MARGIN_FRACTION
+    if margin <= 0.0:
+        margin = 1.0
+    return minimum - margin, maximum + margin
+
+
+def single_crystal_tick_step(
+    minimum: float,
+    maximum: float,
+    target_ticks: int = 6,
+) -> float:
+    """
+    Return a 'nice' tick step covering ``[minimum, maximum]``.
+
+    The raw step ``span / target_ticks`` is rounded to the nearest 1/2/5
+    multiple of a power of ten (the classic axis-label rounding), so the
+    ticks read as round numbers and the same step gives identical x and
+    y ticks over a shared range. Combined with a tick origin of 0 this
+    reproduces Plotly's own choice (e.g. a 500 step, not 750).
+
+    Parameters
+    ----------
+    minimum : float
+        Lower bound of the shared axis range.
+    maximum : float
+        Upper bound of the shared axis range.
+    target_ticks : int, default=6
+        Approximate number of tick intervals to aim for.
+
+    Returns
+    -------
+    float
+        The rounded tick step.
+    """
+    span = maximum - minimum
+    if span <= 0.0 or target_ticks <= 0:
+        return 1.0
+    raw_step = span / target_ticks
+    exponent = float(np.floor(np.log10(raw_step)))
+    base = 10.0**exponent
+    fraction = raw_step / base
+    if fraction < NICE_AXIS_FRACTION_THRESHOLDS[0]:
+        nice_fraction = 1.0
+    elif fraction < NICE_AXIS_FRACTION_THRESHOLDS[1]:
+        nice_fraction = 2.0
+    elif fraction < NICE_AXIS_FRACTION_THRESHOLDS[2]:
+        nice_fraction = 5.0
+    else:
+        nice_fraction = 10.0
+    return nice_fraction * base
 
 
 @dataclass(frozen=True)
@@ -134,23 +323,25 @@ class PlotlyPlotter(PlotterBase):
         """
         Return a diverging colorscale for correlation heatmaps.
 
-        Dark mode uses black at zero correlation for lower visual
-        prominence. Light mode uses white at zero correlation.
+        The midpoint uses the active plot background so correlations
+        fade from red-like negative values through the host surface to
+        blue-like positive values.
 
         Returns
         -------
         list[tuple[float, str]]
             Plotly-compatible colorscale definition.
         """
-        if cls._is_dark_mode():
-            return [
-                (0.0, '#d73027'),
-                (0.5, '#000000'),
-                (1.0, '#4575b4'),
-            ]
+        return cls._correlation_colorscale_for_background(cls._background_color())
+
+    @staticmethod
+    def _correlation_colorscale_for_background(
+        background_color: str,
+    ) -> list[tuple[float, str]]:
+        """Return the correlation colorscale for a theme background."""
         return [
             (0.0, '#d73027'),
-            (0.5, '#f7f7f7'),
+            (0.5, background_color),
             (1.0, '#4575b4'),
         ]
 
@@ -164,9 +355,7 @@ class PlotlyPlotter(PlotterBase):
         str
             RGBA color string tuned for the active theme.
         """
-        if cls._is_dark_mode():
-            return 'rgba(110, 145, 190, 0.35)'
-        return 'rgba(120, 140, 160, 0.28)'
+        return cls._theme_colors().axis_frame
 
     @classmethod
     def _axis_frame_color(cls) -> str:
@@ -174,11 +363,93 @@ class PlotlyPlotter(PlotterBase):
         return cls._correlation_grid_color()
 
     @classmethod
+    def _theme_colors(cls) -> DisplayThemeColors:
+        """Return display theme colors for the active theme."""
+        return display_theme_colors(is_dark_theme=cls._is_dark_mode())
+
+    @classmethod
+    def _background_color(cls) -> str:
+        """Return the plot background color for the active theme."""
+        return cls._theme_colors().background
+
+    @staticmethod
+    def _paper_background_color() -> str:
+        """Return the transparent figure-paper (outer margin) color."""
+        return PAPER_BACKGROUND_COLOR
+
+    @classmethod
+    def _inner_tick_grid_color(cls) -> str:
+        """Return the inner tick-grid color for the active theme."""
+        return cls._theme_colors().inner_tick_grid
+
+    @classmethod
     def _legend_background_color(cls) -> str:
         """Return a half-transparent legend background color."""
-        if cls._is_dark_mode():
-            return 'rgba(0, 0, 0, 0.5)'
-        return 'rgba(255, 255, 255, 0.5)'
+        return cls._theme_colors().legend_background
+
+    @classmethod
+    def _hover_label_style(
+        cls,
+        theme_colors: DisplayThemeColors | None = None,
+    ) -> dict:
+        """
+        Return the shared hover-label style for every Plotly figure.
+
+        This is the single source of truth for tooltip framing. The
+        border matches the Axes-rectangle (axis-frame) color and the
+        background follows the active theme. Per-line text colors live
+        in each trace's hover template, not here.
+
+        Parameters
+        ----------
+        theme_colors : DisplayThemeColors | None, default=None
+            Explicit theme colors; the active theme is used when
+            omitted.
+
+        Returns
+        -------
+        dict
+            A Plotly ``hoverlabel`` style dictionary.
+        """
+        colors = theme_colors if theme_colors is not None else cls._theme_colors()
+        return {
+            'bgcolor': colors.hover_background,
+            'bordercolor': colors.axis_frame,
+            'font': {'color': colors.foreground, 'size': HOVER_LABEL_FONT_SIZE},
+            'align': 'left',
+        }
+
+    @classmethod
+    def _apply_hover_label_style(
+        cls,
+        fig: object,
+        *,
+        theme_colors: DisplayThemeColors | None = None,
+    ) -> None:
+        """Apply the shared hover-label style to a Plotly figure."""
+        update_layout = getattr(fig, 'update_layout', None)
+        if callable(update_layout):
+            update_layout(hoverlabel=cls._hover_label_style(theme_colors))
+
+    @staticmethod
+    def _background_color_for_template(template: str) -> str | None:
+        theme_colors = display_theme_colors_for_template(template)
+        return theme_colors.background if theme_colors is not None else None
+
+    @staticmethod
+    def _axis_frame_color_for_template(template: str) -> str | None:
+        theme_colors = display_theme_colors_for_template(template)
+        return theme_colors.axis_frame if theme_colors is not None else None
+
+    @staticmethod
+    def _inner_tick_grid_color_for_template(template: str) -> str | None:
+        theme_colors = display_theme_colors_for_template(template)
+        return theme_colors.inner_tick_grid if theme_colors is not None else None
+
+    @staticmethod
+    def _legend_background_color_for_template(template: str) -> str | None:
+        theme_colors = display_theme_colors_for_template(template)
+        return theme_colors.legend_background if theme_colors is not None else None
 
     def plot_correlation_heatmap(
         self,
@@ -244,7 +515,7 @@ class PlotlyPlotter(PlotterBase):
                 'xref': 'x',
                 'yref': 'y',
                 'layer': 'above',
-                'line': {'color': grid_color, 'width': 1},
+                'line': {'color': grid_color, 'width': CORRELATION_GRID_LINE_WIDTH},
             }
             for x_pos in x_edges[1:-1]
         ]
@@ -258,7 +529,7 @@ class PlotlyPlotter(PlotterBase):
                 'xref': 'x',
                 'yref': 'y',
                 'layer': 'above',
-                'line': {'color': grid_color, 'width': 1},
+                'line': {'color': grid_color, 'width': CORRELATION_GRID_LINE_WIDTH},
             }
             for y_pos in y_edges[1:-1]
         )
@@ -271,7 +542,7 @@ class PlotlyPlotter(PlotterBase):
             'xref': 'paper',
             'yref': 'paper',
             'layer': 'above',
-            'line': {'color': grid_color, 'width': 1},
+            'line': {'color': grid_color, 'width': CORRELATION_FRAME_LINE_WIDTH},
             'fillcolor': 'rgba(0, 0, 0, 0)',
         })
 
@@ -284,6 +555,11 @@ class PlotlyPlotter(PlotterBase):
         if label_trace is not None:
             traces.append(label_trace)
         fig = self._get_figure(traces, layout)
+        self._apply_theme_sync_meta(
+            fig,
+            axis_frame_shape_indexes=range(len(shapes)),
+            correlation_heatmap=True,
+        )
         fig.update_xaxes(
             side='bottom',
             tickangle=-10,
@@ -291,6 +567,7 @@ class PlotlyPlotter(PlotterBase):
             tickmode='array',
             tickvals=x_centers.tolist(),
             ticktext=corr_df.columns.tolist(),
+            ticklabelstandoff=X_AXIS_TICK_LABEL_STANDOFF,
             range=[0.0, float(num_cols)],
             showgrid=False,
             showline=False,
@@ -304,7 +581,7 @@ class PlotlyPlotter(PlotterBase):
             tickmode='array',
             tickvals=y_centers.tolist(),
             ticktext=corr_df.index.tolist(),
-            ticklabelstandoff=8,
+            ticklabelstandoff=Y_AXIS_TICK_LABEL_STANDOFF,
             range=[float(num_rows), 0.0],
             showgrid=False,
             showline=False,
@@ -386,8 +663,9 @@ class PlotlyPlotter(PlotterBase):
             showlegend=False,
         )
 
-    @staticmethod
+    @classmethod
     def _get_powder_trace(
+        cls,
         x: object,
         y: object,
         label: str,
@@ -428,6 +706,14 @@ class PlotlyPlotter(PlotterBase):
             'resid': RESIDUAL_LINE_WIDTH,
         }[label]
         line = {'color': color, 'width': line_width}
+        marker = None
+        if label == 'meas':
+            marker = {
+                'symbol': 'circle',
+                'size': MEASURED_MARKER_SIZE,
+                'line': {'width': MEASURED_MARKER_LINE_WIDTH},
+                'color': color,
+            }
         legend_rank = {
             'meas': 10,
             'bkg': 20,
@@ -442,13 +728,54 @@ class PlotlyPlotter(PlotterBase):
             mode=mode,
             name=name,
             legendrank=legend_rank,
+            marker=marker,
             customdata=customdata,
             hovertemplate=(
                 hovertemplate
                 if hovertemplate is not None
-                else f'{name}<br>x: %{{x}}<br>y: %{{y}}<extra></extra>'
+                else cls._format_hover_lines([
+                    cls._hover_color_span(name, color),
+                    cls._hover_color_span('x: %{x}', color),
+                    cls._hover_color_span('y: %{y}', color),
+                ])
             ),
         )
+
+    @staticmethod
+    def _hover_text_color(color: str) -> str:
+        """Return a span-safe CSS color (no internal whitespace)."""
+        return color.replace(' ', '')
+
+    @classmethod
+    def _hover_color_span(cls, text: str, color: str) -> str:
+        """Wrap hover text in a span colored to match a trace."""
+        return f'<span style="color:{cls._hover_text_color(color)}">{text}</span>'
+
+    @classmethod
+    def _format_hover_lines(
+        cls,
+        lines: list[str],
+        *,
+        extra: str = '<extra></extra>',
+    ) -> str:
+        """
+        Join hover lines with the padding shared by every tooltip.
+
+        Parameters
+        ----------
+        lines : list[str]
+            Per-line hover content, already colored where needed.
+        extra : str, default='<extra></extra>'
+            Trailing Plotly hover directive (the secondary box).
+
+        Returns
+        -------
+        str
+            A hover-template body padded left and right; top and bottom
+            spacing is supplied by Plotly's own line box.
+        """
+        padded = [f'{HOVER_HORIZONTAL_PAD}{line}{HOVER_HORIZONTAL_PAD}' for line in lines]
+        return '<br>'.join(padded) + extra
 
     @staticmethod
     def _powder_meas_vs_calc_hover_data(plot_spec: PowderMeasVsCalcSpec) -> np.ndarray:
@@ -472,29 +799,54 @@ class PlotlyPlotter(PlotterBase):
             residual_values,
         ))
 
-    @staticmethod
-    def _powder_meas_vs_calc_hover_template(plot_spec: PowderMeasVsCalcSpec) -> str:
+    @classmethod
+    def _powder_meas_vs_calc_hover_template(
+        cls,
+        plot_spec: PowderMeasVsCalcSpec,
+    ) -> str:
         """
         Return a shared hover template for composite powder traces.
+
+        Each line is colored to match its curve and padded away from the
+        tooltip frame through the shared hover formatter.
         """
         calc_label = plot_spec.y_calc_name or 'Icalc'
         if plot_spec.y_bkg is None:
-            return (
-                'x: %{x:,.2f}<br>'
-                'Imeas: %{customdata[0]:,.2f}<br>'
-                f'{calc_label}: %{{customdata[1]:,.2f}}<br>'
-                f'Imeas - {calc_label}: %{{customdata[2]:,.2f}}'
-                '<extra></extra>'
-            )
+            return cls._format_hover_lines([
+                'x: %{x:,.2f}',
+                cls._hover_color_span(
+                    'Imeas: %{customdata[0]:,.2f}',
+                    DEFAULT_COLORS['meas'],
+                ),
+                cls._hover_color_span(
+                    f'{calc_label}: %{{customdata[1]:,.2f}}',
+                    DEFAULT_COLORS['calc'],
+                ),
+                cls._hover_color_span(
+                    f'Imeas - {calc_label}: %{{customdata[2]:,.2f}}',
+                    DEFAULT_COLORS['resid'],
+                ),
+            ])
 
-        return (
-            'x: %{x:,.2f}<br>'
-            'Imeas: %{customdata[0]:,.2f}<br>'
-            'Ibkg: %{customdata[1]:,.2f}<br>'
-            f'{calc_label}: %{{customdata[2]:,.2f}}<br>'
-            f'Imeas - {calc_label}: %{{customdata[3]:,.2f}}'
-            '<extra></extra>'
-        )
+        return cls._format_hover_lines([
+            'x: %{x:,.2f}',
+            cls._hover_color_span(
+                'Imeas: %{customdata[0]:,.2f}',
+                DEFAULT_COLORS['meas'],
+            ),
+            cls._hover_color_span(
+                'Ibkg: %{customdata[1]:,.2f}',
+                DEFAULT_COLORS['bkg'],
+            ),
+            cls._hover_color_span(
+                f'{calc_label}: %{{customdata[2]:,.2f}}',
+                DEFAULT_COLORS['calc'],
+            ),
+            cls._hover_color_span(
+                f'Imeas - {calc_label}: %{{customdata[3]:,.2f}}',
+                DEFAULT_COLORS['resid'],
+            ),
+        ])
 
     @staticmethod
     def _get_single_crystal_trace(
@@ -526,41 +878,58 @@ class PlotlyPlotter(PlotterBase):
             mode='markers',
             marker={
                 'symbol': 'circle',
-                'size': 10,
-                'line': {'width': 0.5},
+                'size': MEASURED_MARKER_SIZE,
+                # Stroke colour matches the fill (like the pgfplots
+                # PDF) so there is no contrasting ring around markers.
+                'line': {
+                    'width': SINGLE_CRYSTAL_MARKER_LINE_WIDTH,
+                    'color': DEFAULT_COLORS['meas'],
+                },
                 'color': DEFAULT_COLORS['meas'],
             },
             error_y={
                 'type': 'data',
                 'array': y_meas_su,
                 'visible': True,
+                'color': DEFAULT_COLORS['meas'],
+                'thickness': MEASURED_ERROR_BAR_THICKNESS,
+                'width': MEASURED_ERROR_BAR_WIDTH,
             },
             hovertemplate='calc: %{x}<br>meas: %{y}<br><extra></extra>',
         )
 
     @staticmethod
-    def _get_diagonal_shape() -> dict:
+    def _get_diagonal_shape(minimum: float, maximum: float) -> dict:
         """
-        Create a diagonal reference line shape.
+        Create a y=x reference line in data coordinates.
 
-        Returns a y=x diagonal line spanning the plot area using paper
-        coordinates (0,0) to (1,1).
+        The line runs from ``(minimum, minimum)`` to ``(maximum,
+        maximum)`` in axis (data) coordinates, so it tracks y=x
+        regardless of the axis aspect ratio rather than the
+        paper-rectangle diagonal.
+
+        Parameters
+        ----------
+        minimum : float
+            Lower bound of the shared axis range.
+        maximum : float
+            Upper bound of the shared axis range.
 
         Returns
         -------
         dict
-            A dict configuring a diagonal line shape.
+            A dict configuring the diagonal line shape.
         """
         return {
             'type': 'line',
-            'x0': 0,
-            'y0': 0,
-            'x1': 1,
-            'y1': 1,
-            'xref': 'paper',
-            'yref': 'paper',
+            'x0': minimum,
+            'y0': minimum,
+            'x1': maximum,
+            'y1': maximum,
+            'xref': 'x',
+            'yref': 'y',
             'layer': 'below',
-            'line': {'width': 0.5},
+            'line': {'color': DIAGONAL_LINE_COLOR, 'width': DIAGONAL_LINE_WIDTH},
         }
 
     @staticmethod
@@ -576,6 +945,7 @@ class PlotlyPlotter(PlotterBase):
         return {
             'displayModeBar': True,
             'displaylogo': False,
+            'responsive': True,
             'modeBarButtonsToRemove': [
                 'select2d',
                 'lasso2d',
@@ -795,14 +1165,388 @@ syncLegendVisibility();
 window.requestAnimationFrame(installLegendToggleButton);
 """
 
+    @staticmethod
+    def _theme_sync_post_script() -> str:
+        """
+        Return client-side code for host dark/light theme changes.
+        """
+        script = r"""
+const graphDiv = document.getElementById('{plot_id}');
+if (!graphDiv || !window.Plotly) {
+    return;
+}
+
+// Theme this figure was rendered with (Python-detected), used as the
+// fallback when the host page exposes no detectable theme attribute --
+// e.g. some Jupyter front-ends -- so icons match the baked plot instead
+// of defaulting to light.
+const bakedThemeLayout = graphDiv._fullLayout || graphDiv.layout || {};
+const bakedTheme = bakedThemeLayout.plot_bgcolor === '__DARK_BACKGROUND_COLOR__'
+    ? 'dark'
+    : 'light';
+
+const hostTheme = function () {
+    const materialScheme = (
+        (document.body && document.body.getAttribute('data-md-color-scheme'))
+        || (
+            document.documentElement
+            && document.documentElement.getAttribute('data-md-color-scheme')
+        )
+    );
+    if (materialScheme === 'slate') {
+        return 'dark';
+    }
+    if (materialScheme === 'default') {
+        return 'light';
+    }
+
+    const jupyterThemeLight = (
+        (document.body && document.body.getAttribute('data-jp-theme-light'))
+        || (
+            document.documentElement
+            && document.documentElement.getAttribute('data-jp-theme-light')
+        )
+    );
+    if (jupyterThemeLight === 'false') {
+        return 'dark';
+    }
+    if (jupyterThemeLight === 'true') {
+        return 'light';
+    }
+    return bakedTheme;
+};
+
+const themeColors = function (theme) {
+    if (theme === 'dark') {
+        return {
+            background: '__DARK_BACKGROUND_COLOR__',
+            paperBackground: '__PAPER_BACKGROUND_COLOR__',
+            foreground: '__DARK_FOREGROUND_COLOR__',
+            axisFrame: '__DARK_AXIS_FRAME_COLOR__',
+            innerTickGrid: '__DARK_INNER_TICK_GRID_COLOR__',
+            hoverBackground: '__DARK_HOVER_BACKGROUND_COLOR__',
+            legend: '__DARK_LEGEND_BACKGROUND_COLOR__',
+        };
+    }
+    return {
+        background: '__LIGHT_BACKGROUND_COLOR__',
+        paperBackground: '__PAPER_BACKGROUND_COLOR__',
+        foreground: '__LIGHT_FOREGROUND_COLOR__',
+        axisFrame: '__LIGHT_AXIS_FRAME_COLOR__',
+        innerTickGrid: '__LIGHT_INNER_TICK_GRID_COLOR__',
+        hoverBackground: '__LIGHT_HOVER_BACKGROUND_COLOR__',
+        legend: '__LIGHT_LEGEND_BACKGROUND_COLOR__',
+    };
+};
+
+const correlationColorscale = function (colors) {
+    return [
+        [0.0, '#d73027'],
+        [0.5, colors.background],
+        [1.0, '#4575b4'],
+    ];
+};
+
+const themeSyncMeta = function () {
+    const meta = (
+        (graphDiv.layout && graphDiv.layout.meta)
+        || (graphDiv._fullLayout && graphDiv._fullLayout.meta)
+    );
+    if (!meta || typeof meta !== 'object') {
+        return {};
+    }
+    const themeSync = meta.__THEME_SYNC_META_KEY__;
+    if (!themeSync || typeof themeSync !== 'object') {
+        return {};
+    }
+    return themeSync;
+};
+
+const axisNames = function () {
+    const names = new Set(['xaxis', 'yaxis']);
+    [graphDiv.layout, graphDiv._fullLayout].forEach(function (layout) {
+        if (!layout) {
+            return;
+        }
+        Object.keys(layout).forEach(function (key) {
+            if (/^[xyz]axis[0-9]*$/.test(key)) {
+                names.add(key);
+            }
+        });
+    });
+    return names;
+};
+
+const applyAnnotationTheme = function (update, colors) {
+    const annotations = (
+        (graphDiv.layout && graphDiv.layout.annotations)
+        || (graphDiv._fullLayout && graphDiv._fullLayout.annotations)
+        || []
+    );
+    for (let index = 0; index < annotations.length; index += 1) {
+        update['annotations[' + index + '].font.color'] = colors.foreground;
+    }
+};
+
+const applyAxisFrameShapeTheme = function (update, colors, themeSync) {
+    const shapeIndexes = themeSync.__THEME_SYNC_AXIS_FRAME_SHAPE_INDEXES_KEY__;
+    if (!Array.isArray(shapeIndexes)) {
+        return;
+    }
+    shapeIndexes.forEach(function (shapeIndex) {
+        if (!Number.isInteger(shapeIndex) || shapeIndex < 0) {
+            return;
+        }
+        update['shapes[' + shapeIndex + '].line.color'] = colors.axisFrame;
+    });
+};
+
+const correlationHeatmapTraceIndexes = function (themeSync) {
+    if (themeSync.__THEME_SYNC_CORRELATION_HEATMAP_KEY__ !== true) {
+        return [];
+    }
+    const traces = graphDiv.data || [];
+    const indexes = [];
+    traces.forEach(function (trace, index) {
+        if (trace && trace.type === 'heatmap') {
+            indexes.push(index);
+        }
+    });
+    return indexes;
+};
+
+const restyleCorrelationHeatmaps = function (colors, themeSync) {
+    const colorscale = correlationColorscale(colors);
+    return correlationHeatmapTraceIndexes(themeSync).map(function (traceIndex) {
+        return window.Plotly.restyle(
+            graphDiv,
+            {colorscale: [colorscale]},
+            [traceIndex],
+        );
+    });
+};
+
+const rgbaFromColor = function (color, alpha) {
+    const hexMatch = color.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i);
+    let red;
+    let green;
+    let blue;
+    if (hexMatch) {
+        let hex = hexMatch[1];
+        if (hex.length === 3) {
+            hex = hex.split('').map(function (part) {
+                return part + part;
+            }).join('');
+        }
+        red = parseInt(hex.slice(0, 2), 16);
+        green = parseInt(hex.slice(2, 4), 16);
+        blue = parseInt(hex.slice(4, 6), 16);
+    } else {
+        const parts = color.match(/(\d+(?:\.\d+)?)/g);
+        if (!parts || parts.length < 3) {
+            return color;
+        }
+        red = Number(parts[0]);
+        green = Number(parts[1]);
+        blue = Number(parts[2]);
+    }
+    return 'rgba(' + red + ', ' + green + ', ' + blue + ', ' + alpha + ')';
+};
+
+const installModebarIconStyle = function (theme, colors) {
+    // Plotly paints modebar icon fills with non-important inline styles
+    // (and re-paints on hover), and the host plot id can start with a
+    // digit, so an id-based rule is invalid. A class-based !important
+    // rule with direct colors reliably themes every icon, inactive and
+    // hovered, in both light and dark hosts.
+    graphDiv.classList.add('ed-plotly-themed-modebar');
+    const styleId = 'ed-plotly-modebar-icon-style';
+    let style = document.getElementById(styleId);
+    if (!style) {
+        style = document.createElement('style');
+        style.id = styleId;
+        document.head.appendChild(style);
+    }
+    const inactive = rgbaFromColor(colors.foreground, theme === 'dark' ? 0.62 : 0.55);
+    const active = rgbaFromColor(colors.foreground, theme === 'dark' ? 0.95 : 0.9);
+    style.textContent = (
+        '.ed-plotly-themed-modebar .modebar-btn path { fill: ' + inactive + ' !important; }'
+        + '.ed-plotly-themed-modebar .modebar-btn:hover path,'
+        + '.ed-plotly-themed-modebar .modebar-btn.active path { fill: ' + active + ' !important; }'
+    );
+};
+
+const applyTheme = function () {
+    const theme = hostTheme();
+    const colors = themeColors(theme);
+    const syncMeta = themeSyncMeta();
+    installModebarIconStyle(theme, colors);
+
+    if (graphDiv.dataset.edPlotlyTheme === theme) {
+        return;
+    }
+    graphDiv.dataset.edPlotlyTheme = theme;
+
+    const transparentPlot = syncMeta.__THEME_SYNC_CORRELATION_HEATMAP_KEY__ === true;
+    const modebarColor = rgbaFromColor(colors.foreground, theme === 'dark' ? 0.62 : 0.42);
+    const modebarActiveColor = rgbaFromColor(colors.foreground, theme === 'dark' ? 0.95 : 0.85);
+    const update = {
+        paper_bgcolor: colors.paperBackground,
+        plot_bgcolor: transparentPlot ? colors.paperBackground : colors.background,
+        'modebar.bgcolor': colors.paperBackground,
+        'modebar.color': modebarColor,
+        'modebar.activecolor': modebarActiveColor,
+        'font.color': colors.foreground,
+        'title.font.color': colors.foreground,
+        'legend.bgcolor': colors.legend,
+        'legend.font.color': colors.foreground,
+        'hoverlabel.bgcolor': colors.hoverBackground,
+        'hoverlabel.bordercolor': colors.axisFrame,
+        'hoverlabel.font.color': colors.foreground,
+    };
+
+    axisNames().forEach(function (axisName) {
+        update[axisName + '.color'] = colors.foreground;
+        update[axisName + '.gridcolor'] = colors.innerTickGrid;
+        update[axisName + '.linecolor'] = colors.axisFrame;
+        update[axisName + '.zerolinecolor'] = colors.innerTickGrid;
+        update[axisName + '.title.font.color'] = colors.foreground;
+        update[axisName + '.tickfont.color'] = colors.foreground;
+    });
+    applyAnnotationTheme(update, colors);
+    applyAxisFrameShapeTheme(update, colors, syncMeta);
+
+    try {
+        const result = window.Plotly.relayout(graphDiv, update);
+        const restyleResults = restyleCorrelationHeatmaps(colors, syncMeta);
+        const pending = [result].concat(restyleResults).filter(function (item) {
+            return item && typeof item.then === 'function';
+        });
+        if (pending.length > 0) {
+            Promise.all(pending).then(function () {
+                window.Plotly.redraw(graphDiv);
+            });
+        } else {
+            window.Plotly.redraw(graphDiv);
+        }
+    } catch (_error) {
+        // Keep theme switching from breaking interaction with the figure.
+    }
+};
+
+if (graphDiv.on) {
+    graphDiv.on('plotly_afterplot', applyTheme);
+}
+
+if (window.MutationObserver) {
+    const themeObserver = new MutationObserver(function () {
+        graphDiv.dataset.edPlotlyTheme = '';
+        applyTheme();
+    });
+    const attributeFilter = [
+        'data-md-color-scheme',
+        'data-jp-theme-light',
+        'data-jp-theme-name',
+    ];
+    themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: attributeFilter,
+    });
+    if (document.body) {
+        themeObserver.observe(document.body, {
+            attributes: true,
+            attributeFilter: attributeFilter,
+        });
+    }
+}
+
+applyTheme();
+"""
+        return (
+            script
+            .replace('__THEME_SYNC_META_KEY__', THEME_SYNC_META_KEY)
+            .replace(
+                '__THEME_SYNC_AXIS_FRAME_SHAPE_INDEXES_KEY__',
+                THEME_SYNC_AXIS_FRAME_SHAPE_INDEXES_KEY,
+            )
+            .replace(
+                '__THEME_SYNC_CORRELATION_HEATMAP_KEY__',
+                THEME_SYNC_CORRELATION_HEATMAP_KEY,
+            )
+            .replace('__PAPER_BACKGROUND_COLOR__', PAPER_BACKGROUND_COLOR)
+            .replace('__DARK_BACKGROUND_COLOR__', DARK_BACKGROUND_COLOR)
+            .replace('__DARK_FOREGROUND_COLOR__', DARK_FOREGROUND_COLOR)
+            .replace('__DARK_AXIS_FRAME_COLOR__', DARK_AXIS_FRAME_COLOR)
+            .replace('__DARK_INNER_TICK_GRID_COLOR__', DARK_INNER_TICK_GRID_COLOR)
+            .replace('__DARK_HOVER_BACKGROUND_COLOR__', DARK_HOVER_BACKGROUND_COLOR)
+            .replace('__DARK_LEGEND_BACKGROUND_COLOR__', DARK_LEGEND_BACKGROUND_COLOR)
+            .replace('__LIGHT_BACKGROUND_COLOR__', LIGHT_BACKGROUND_COLOR)
+            .replace('__LIGHT_FOREGROUND_COLOR__', LIGHT_FOREGROUND_COLOR)
+            .replace('__LIGHT_AXIS_FRAME_COLOR__', LIGHT_AXIS_FRAME_COLOR)
+            .replace('__LIGHT_INNER_TICK_GRID_COLOR__', LIGHT_INNER_TICK_GRID_COLOR)
+            .replace('__LIGHT_HOVER_BACKGROUND_COLOR__', LIGHT_HOVER_BACKGROUND_COLOR)
+            .replace('__LIGHT_LEGEND_BACKGROUND_COLOR__', LIGHT_LEGEND_BACKGROUND_COLOR)
+        )
+
+    @staticmethod
+    def _resize_sync_post_script() -> str:
+        """
+        Return client-side code to resize hidden-tab Plotly outputs.
+        """
+        return r"""
+const graphDiv = document.getElementById('{plot_id}');
+if (!graphDiv || !window.Plotly || !window.Plotly.Plots) {
+    return;
+}
+
+let pendingResize = false;
+const resizePlot = function () {
+    if (pendingResize) {
+        return;
+    }
+    pendingResize = true;
+    window.requestAnimationFrame(function () {
+        pendingResize = false;
+        if (!graphDiv.isConnected || graphDiv.offsetParent === null) {
+            return;
+        }
+        window.Plotly.Plots.resize(graphDiv);
+    });
+};
+
+const scheduleResize = function () {
+    resizePlot();
+    window.setTimeout(resizePlot, 50);
+    window.setTimeout(resizePlot, 250);
+};
+
+if (window.ResizeObserver) {
+    const resizeObserver = new ResizeObserver(scheduleResize);
+    resizeObserver.observe(graphDiv);
+    if (graphDiv.parentElement) {
+        resizeObserver.observe(graphDiv.parentElement);
+    }
+}
+
+document.addEventListener('visibilitychange', function () {
+    if (!document.hidden) {
+        scheduleResize();
+    }
+});
+window.addEventListener('focus', scheduleResize);
+window.addEventListener('pageshow', scheduleResize);
+scheduleResize();
+"""
+
     @classmethod
     def _html_post_script(cls, fig: object) -> str | None:
         """Return concatenated HTML post scripts for a Plotly figure."""
-        scripts: list[str] = []
+        scripts: list[str] = [
+            cls._theme_sync_post_script(),
+            cls._resize_sync_post_script(),
+        ]
         if cls._has_visible_legend(fig):
             scripts.append(cls._modebar_legend_toggle_post_script())
-        if not scripts:
-            return None
         return '\n'.join(cls._scoped_html_post_script(script) for script in scripts)
 
     @staticmethod
@@ -831,6 +1575,39 @@ window.requestAnimationFrame(installLegendToggleButton);
         return None
 
     @classmethod
+    def _apply_theme_sync_meta(
+        cls,
+        fig: object,
+        *,
+        axis_frame_shape_indexes: object = (),
+        correlation_heatmap: bool = False,
+    ) -> None:
+        """Store figure-specific live theme-sync metadata."""
+        meta = cls._figure_meta(fig)
+        updated_meta = dict(meta) if isinstance(meta, dict) else {}
+
+        theme_sync = updated_meta.get(THEME_SYNC_META_KEY)
+        updated_theme_sync = dict(theme_sync) if isinstance(theme_sync, dict) else {}
+
+        indexes = [
+            int(index)
+            for index in axis_frame_shape_indexes
+            if isinstance(index, int) and not isinstance(index, bool) and index >= 0
+        ]
+        if indexes:
+            updated_theme_sync[THEME_SYNC_AXIS_FRAME_SHAPE_INDEXES_KEY] = indexes
+        if correlation_heatmap:
+            updated_theme_sync[THEME_SYNC_CORRELATION_HEATMAP_KEY] = True
+
+        if not updated_theme_sync:
+            return
+
+        updated_meta[THEME_SYNC_META_KEY] = updated_theme_sync
+        update_layout = getattr(fig, 'update_layout', None)
+        if callable(update_layout):
+            update_layout(meta=updated_meta)
+
+    @classmethod
     def _fixed_aspect_wrapper_aspect_ratio(cls, fig: object) -> str | None:
         """Return the fixed aspect ratio requested for inline HTML."""
         meta = cls._figure_meta(fig)
@@ -851,16 +1628,40 @@ window.requestAnimationFrame(installLegendToggleButton);
         return aspect_ratio
 
     @classmethod
+    def _fixed_aspect_wrapper_max_width(cls, fig: object) -> int | None:
+        """
+        Return the max wrapper width in pixels, if one was requested.
+        """
+        meta = cls._figure_meta(fig)
+        if not isinstance(meta, dict):
+            return None
+
+        wrapper = meta.get(FIXED_ASPECT_WRAPPER_META_KEY)
+        if not isinstance(wrapper, dict):
+            return None
+
+        max_width = wrapper.get('max_width_pixels')
+        if not isinstance(max_width, (int, float)) or isinstance(max_width, bool):
+            return None
+        if max_width <= 0:
+            return None
+        return int(max_width)
+
+    @classmethod
     def _wrap_html_figure(cls, fig: object, html_fig: str) -> str:
         """Wrap inline Plotly HTML in a fixed-aspect container."""
         aspect_ratio = cls._fixed_aspect_wrapper_aspect_ratio(fig)
         if aspect_ratio is None:
             return html_fig
 
+        max_width = cls._fixed_aspect_wrapper_max_width(fig)
+        max_width_css = f'    max-width: {max_width}px;\n' if max_width is not None else ''
+
         return (
             '<style>\n'
             f'.{FIXED_ASPECT_WRAPPER_CLASS_NAME} {{\n'
             '    width: 100%;\n'
+            f'{max_width_css}'
             f'    aspect-ratio: {aspect_ratio};\n'
             '}\n\n'
             f'.{FIXED_ASPECT_WRAPPER_CLASS_NAME} > div,\n'
@@ -952,20 +1753,242 @@ window.requestAnimationFrame(installLegendToggleButton);
             A :class:`plotly.graph_objects.Figure` to display.
         """
         config = self._get_config()
+        self._apply_background_color(fig)
+        self._apply_hover_label_style(fig)
 
         if in_pycharm() or display is None or HTML is None:
             fig.show(config=config)
+            return
+
+        # Docs execution sets SHARED, baking a lazy placeholder into
+        # the cell HTML. Live Jupyter stays INLINE (eager, CDN).
+        if resolve_figure_embed_mode() is FigureEmbedMode.SHARED:
+            html_fig = self.serialize_html(
+                fig,
+                include_plotlyjs=False,
+                mode=FigureEmbedMode.SHARED,
+            )
         else:
-            post_script = self._html_post_script(fig)
-            html_fig = pio.to_html(
+            html_fig = self.serialize_html(
                 fig,
                 include_plotlyjs='cdn',
-                full_html=False,
-                config=config,
-                post_script=post_script,
+                mode=FigureEmbedMode.INLINE,
             )
-            html_fig = self._wrap_html_figure(fig, html_fig)
-            display(HTML(html_fig))
+        display(HTML(html_fig))
+
+    @staticmethod
+    def _ed_theme_payload() -> dict:
+        """Return light and dark theme colors for the shared loader."""
+        return {
+            'light': {
+                'background': LIGHT_BACKGROUND_COLOR,
+                'paperBackground': PAPER_BACKGROUND_COLOR,
+                'foreground': LIGHT_FOREGROUND_COLOR,
+                'axisFrame': LIGHT_AXIS_FRAME_COLOR,
+                'innerTickGrid': LIGHT_INNER_TICK_GRID_COLOR,
+                'hoverBackground': LIGHT_HOVER_BACKGROUND_COLOR,
+                'legend': LIGHT_LEGEND_BACKGROUND_COLOR,
+            },
+            'dark': {
+                'background': DARK_BACKGROUND_COLOR,
+                'paperBackground': PAPER_BACKGROUND_COLOR,
+                'foreground': DARK_FOREGROUND_COLOR,
+                'axisFrame': DARK_AXIS_FRAME_COLOR,
+                'innerTickGrid': DARK_INNER_TICK_GRID_COLOR,
+                'hoverBackground': DARK_HOVER_BACKGROUND_COLOR,
+                'legend': DARK_LEGEND_BACKGROUND_COLOR,
+            },
+        }
+
+    @classmethod
+    def _ed_theme_sync_payload(cls, fig: object) -> dict:
+        """Return live theme-sync metadata for the shared loader."""
+        meta = cls._figure_meta(fig)
+        theme_sync = meta.get(THEME_SYNC_META_KEY) if isinstance(meta, dict) else None
+        if not isinstance(theme_sync, dict):
+            return {}
+        payload: dict = {}
+        indexes = theme_sync.get(THEME_SYNC_AXIS_FRAME_SHAPE_INDEXES_KEY)
+        if isinstance(indexes, list):
+            payload['axisFrameShapeIndexes'] = indexes
+        if theme_sync.get(THEME_SYNC_CORRELATION_HEATMAP_KEY):
+            payload['correlationHeatmap'] = True
+        return payload
+
+    @staticmethod
+    def _figure_height(fig: object) -> int:
+        """
+        Return the figure height in pixels for the loading skeleton.
+        """
+        layout = getattr(fig, 'layout', None)
+        height = getattr(layout, 'height', None) if layout is not None else None
+        if isinstance(height, (int, float)) and not isinstance(height, bool) and height > 0:
+            return int(height)
+        # DEFAULT_HEIGHT is a unit count; convert to pixels like the
+        # non-shared default so height-less figures (e.g. posterior
+        # distribution plots) don't collapse into a tiny skeleton.
+        return DEFAULT_HEIGHT * PLOTLY_HEIGHT_PER_UNIT
+
+    @classmethod
+    def _serialize_html_shared(cls, fig: object) -> str:
+        """
+        Serialize a figure as a lazy SHARED-mode placeholder.
+
+        Emits a skeleton plus the figure spec as ``application/json``
+        for the shared ``ed-figures.js`` loader to render on demand. No
+        Plotly bundle or per-figure post-script is embedded; the runtime
+        loads once per page and the loader owns theme-sync, resize, and
+        legend. Bulk float64 arrays are downcast to float32 (visually
+        lossless, ~7 significant figures) to roughly halve the embedded
+        data.
+
+        Parameters
+        ----------
+        fig : object
+            Plotly figure to serialize.
+
+        Returns
+        -------
+        str
+            Placeholder HTML carrying the figure spec.
+        """
+        figure_dict = _typed_arrays_to_float32(fig.to_plotly_json())
+        spec = {
+            'data': figure_dict.get('data', []),
+            'layout': figure_dict.get('layout', {}),
+            'config': cls._get_config(),
+            'edTheme': cls._ed_theme_payload(),
+            'edThemeSync': cls._ed_theme_sync_payload(fig),
+            'edHasLegend': cls._has_visible_legend(fig),
+        }
+        # Escape '<' so the JSON cannot terminate the <script> element.
+        spec_json = json.dumps(spec, cls=PlotlyJSONEncoder).replace('<', '\\u003c')
+        plot_id = f'ed-fig-{uuid.uuid4().hex}'
+        height = cls._figure_height(fig)
+        html_fig = (
+            '<div class="ed-figure" data-ed-figure="plotly">'
+            f'<div class="ed-figure-skeleton" style="height: {height}px">'
+            'Loading plot…</div>'
+            f'<div class="ed-figure-target" id="{plot_id}" '
+            f'style="min-height: {height}px"></div>'
+            '<script type="application/json" class="ed-figure-spec">'
+            f'{spec_json}</script>'
+            '</div>'
+        )
+        return cls._wrap_html_figure(fig, html_fig)
+
+    @classmethod
+    def serialize_html(
+        cls,
+        fig: object,
+        *,
+        include_plotlyjs: bool | str,
+        mode: FigureEmbedMode = FigureEmbedMode.STANDALONE,
+        force_template: str | None = None,
+        axis_frame_color: str | None = None,
+        grid_color: str | None = None,
+    ) -> str:
+        """
+        Serialize a Plotly figure with EasyDiffraction controls.
+
+        Parameters
+        ----------
+        fig : object
+            Plotly figure to serialize.
+        include_plotlyjs : bool | str
+            Plotly JavaScript inclusion mode passed to Plotly.
+        mode : FigureEmbedMode, default=FigureEmbedMode.STANDALONE
+            Embedding mode. ``SHARED`` emits a lazy placeholder for the
+            docs loader; ``INLINE``/``STANDALONE`` serialize eagerly.
+        force_template : str | None, default=None
+            Optional template name applied before serialization.
+        axis_frame_color : str | None, default=None
+            Optional explicit axis-frame color.
+        grid_color : str | None, default=None
+            Optional explicit major-grid color.
+
+        Returns
+        -------
+        str
+            Inline HTML containing the figure and helper scripts.
+        """
+        if mode is FigureEmbedMode.SHARED:
+            return cls._serialize_html_shared(fig)
+        background_color = None
+        if force_template is not None:
+            fig.update_layout(template=force_template)
+            background_color = cls._background_color_for_template(force_template)
+            resolved_axis_color = axis_frame_color
+            if resolved_axis_color is None:
+                resolved_axis_color = cls._axis_frame_color_for_template(force_template)
+            if resolved_axis_color is not None:
+                fig.update_xaxes(linecolor=resolved_axis_color)
+                fig.update_yaxes(linecolor=resolved_axis_color)
+            resolved_grid_color = grid_color
+            if resolved_grid_color is None:
+                resolved_grid_color = cls._inner_tick_grid_color_for_template(
+                    force_template,
+                )
+            if resolved_grid_color is not None:
+                fig.update_xaxes(
+                    gridcolor=resolved_grid_color,
+                    zerolinecolor=resolved_grid_color,
+                )
+                fig.update_yaxes(
+                    gridcolor=resolved_grid_color,
+                    zerolinecolor=resolved_grid_color,
+                )
+            legend_bgcolor = cls._legend_background_color_for_template(force_template)
+            if legend_bgcolor is not None:
+                fig.update_layout(legend={'bgcolor': legend_bgcolor})
+        cls._apply_background_color(fig, background_color=background_color)
+        hover_theme_colors = (
+            display_theme_colors_for_template(force_template)
+            if force_template is not None
+            else None
+        )
+        cls._apply_hover_label_style(fig, theme_colors=hover_theme_colors)
+        html_fig = pio.to_html(
+            fig,
+            include_plotlyjs=include_plotlyjs,
+            full_html=False,
+            config=cls._get_config(),
+            post_script=cls._html_post_script(fig),
+        )
+        return cls._wrap_html_figure(fig, html_fig)
+
+    @classmethod
+    def _apply_background_color(
+        cls,
+        fig: object,
+        *,
+        background_color: str | None = None,
+    ) -> None:
+        """Apply the theme background to Plotly paper and plot areas."""
+        update_layout = getattr(fig, 'update_layout', None)
+        if callable(update_layout):
+            resolved_background = background_color
+            if resolved_background is None:
+                resolved_background = cls._background_color()
+            if cls._figure_is_correlation_heatmap(fig):
+                # Correlation cells carry their own colors; keep the
+                # area outside the cells transparent.
+                resolved_background = cls._paper_background_color()
+            update_layout(
+                paper_bgcolor=cls._paper_background_color(),
+                plot_bgcolor=resolved_background,
+            )
+
+    @classmethod
+    def _figure_is_correlation_heatmap(cls, fig: object) -> bool:
+        """
+        Return whether a figure is flagged as a correlation heatmap.
+        """
+        meta = cls._figure_meta(fig)
+        theme_sync = meta.get(THEME_SYNC_META_KEY) if isinstance(meta, dict) else None
+        if not isinstance(theme_sync, dict):
+            return False
+        return bool(theme_sync.get(THEME_SYNC_CORRELATION_HEATMAP_KEY))
 
     @classmethod
     def _get_layout(
@@ -973,6 +1996,10 @@ window.requestAnimationFrame(installLegendToggleButton);
         title: str,
         axes_labels: object,
         shapes: list | None = None,
+        *,
+        axis_range: tuple[float, float] | None = None,
+        axis_dtick: float | None = None,
+        height: int | None = None,
     ) -> object:
         """
         Create a Plotly layout configuration.
@@ -985,12 +2012,54 @@ window.requestAnimationFrame(installLegendToggleButton);
             Pair of strings for the x and y titles.
         shapes : list | None, default=None
             Optional list of shape dicts to overlay on the plot.
+        axis_range : tuple[float, float] | None, default=None
+            When given, the same explicit range applied to both axes.
+        axis_dtick : float | None, default=None
+            When given, the same tick step applied to both axes, so the
+            x and y ticks match.
+        height : int | None, default=None
+            Explicit figure height in pixels; ``None`` auto-sizes.
 
         Returns
         -------
         object
             A configured :class:`plotly.graph_objects.Layout`.
         """
+        xaxis = {
+            'title': {
+                'text': axes_labels[0],
+                'font': {'size': AXIS_TITLE_FONT_SIZE},
+            },
+            'showline': True,
+            'linecolor': cls._axis_frame_color(),
+            'gridcolor': cls._inner_tick_grid_color(),
+            'mirror': True,
+            'ticklabelstandoff': X_AXIS_TICK_LABEL_STANDOFF,
+            'zeroline': False,
+            'zerolinecolor': cls._inner_tick_grid_color(),
+        }
+        yaxis = {
+            'title': {
+                'text': axes_labels[1],
+                'font': {'size': AXIS_TITLE_FONT_SIZE},
+            },
+            'showline': True,
+            'linecolor': cls._axis_frame_color(),
+            'gridcolor': cls._inner_tick_grid_color(),
+            'mirror': True,
+            'ticklabelstandoff': Y_AXIS_TICK_LABEL_STANDOFF,
+            'zeroline': False,
+            'zerolinecolor': cls._inner_tick_grid_color(),
+        }
+        if axis_range is not None:
+            for axis in (xaxis, yaxis):
+                axis['range'] = list(axis_range)
+        if axis_dtick is not None:
+            for axis in (xaxis, yaxis):
+                # Anchor ticks at 0 so they read as round numbers
+                # (0, 500, 1000, ...) instead of at the padded minimum.
+                axis['tick0'] = 0
+                axis['dtick'] = axis_dtick
         return go.Layout(
             margin={
                 'autoexpand': True,
@@ -1002,33 +2071,18 @@ window.requestAnimationFrame(installLegendToggleButton);
                 'text': title,
                 'font': {'size': TITLE_FONT_SIZE},
             },
+            paper_bgcolor=cls._paper_background_color(),
+            plot_bgcolor=cls._background_color(),
             legend={
                 'bgcolor': cls._legend_background_color(),
                 'xanchor': 'right',
-                'x': 1.0,
+                'x': 0.99,
                 'yanchor': 'top',
-                'y': 1.0,
+                'y': 0.99,
             },
-            xaxis={
-                'title': {
-                    'text': axes_labels[0],
-                    'font': {'size': AXIS_TITLE_FONT_SIZE},
-                },
-                'showline': True,
-                'linecolor': cls._axis_frame_color(),
-                'mirror': True,
-                'zeroline': False,
-            },
-            yaxis={
-                'title': {
-                    'text': axes_labels[1],
-                    'font': {'size': AXIS_TITLE_FONT_SIZE},
-                },
-                'showline': True,
-                'linecolor': cls._axis_frame_color(),
-                'mirror': True,
-                'zeroline': False,
-            },
+            height=height,
+            xaxis=xaxis,
+            yaxis=yaxis,
             shapes=shapes,
         )
 
@@ -1065,7 +2119,8 @@ window.requestAnimationFrame(installLegendToggleButton);
         excluded_ranges : tuple[tuple[float, float], ...], default=()
             Excluded x-ranges to shade on the figure.
         """
-        # Intentionally unused; accepted for API compatibility
+        # The passed height is an ASCII row count; the Plotly single
+        # panel is sized to the composite main row below instead.
         del height
 
         data = []
@@ -1074,12 +2129,22 @@ window.requestAnimationFrame(installLegendToggleButton);
             trace = self._get_powder_trace(x, y, label)
             data.append(trace)
 
+        # Share the composite's sizing and range primitives so a single
+        # panel is its main row by construction: the same explicit
+        # height (otherwise the docs skeleton falls back to the full
+        # three-panel height) and the same tight x-range with no
+        # autoscale padding. ``_get_layout`` already uses the composite
+        # margins, so the drawable area matches pixel-for-pixel.
         layout = self._get_layout(
             title,
             axes_labels,
+            height=self._single_main_panel_height_pixels(DEFAULT_RESIDUAL_HEIGHT_FRACTION),
         )
 
         fig = self._get_figure(data, layout)
+        x_min, x_max = self._composite_x_range(np.asarray(x))
+        if x_min is not None and x_max is not None:
+            fig.update_xaxes(range=[x_min, x_max])
         self._add_excluded_region_vrects(fig=fig, excluded_ranges=excluded_ranges)
         self._show_figure(fig)
 
@@ -1107,14 +2172,20 @@ window.requestAnimationFrame(installLegendToggleButton);
                 add_kwargs['col'] = col
             fig.add_vrect(**add_kwargs)
 
-    @staticmethod
+    @classmethod
     def _get_bragg_tick_trace(
+        cls,
         tick_set: BraggTickSet,
         row_y: float,
         color: str,
     ) -> object:
         """
         Create a hover-capable Bragg tick trace for one linked phase.
+
+        Only the Miller-index line is colored to match the phase tick
+        marker; the phase name and x line use the default tooltip text
+        color, and all lines share the padding and themed frame used by
+        every other tooltip.
         """
         y = np.full(tick_set.x.shape, row_y, dtype=float)
         hover_text = []
@@ -1122,14 +2193,17 @@ window.requestAnimationFrame(installLegendToggleButton);
             index_h = int(tick_set.h[idx])
             index_k = int(tick_set.k[idx])
             index_l = int(tick_set.ell[idx])
-            hover_text.append(
-                f'{tick_set.phase_id}<br>'
-                f'x: {float(x_value):,.2f}<br>'
-                f'Miller indices: ({index_h} {index_k} {index_l})<br>'
-                # f'F²cal:{float(tick_set.f_squared_calc[idx]):.6g}<br>'
-                # f'Fcalc:{float(tick_set.f_calc[idx]):.6g}'
-                '<extra></extra>'
-            )
+            lines = [
+                tick_set.phase_id,
+                f'x: {float(x_value):,.2f}',
+                cls._hover_color_span(
+                    f'Miller indices: ({index_h} {index_k} {index_l})',
+                    color,
+                ),
+                # f'F²cal: {float(tick_set.f_squared_calc[idx]):.6g}',
+                # f'Fcalc: {float(tick_set.f_calc[idx]):.6g}',
+            ]
+            hover_text.append(cls._format_hover_lines(lines))
 
         return go.Scatter(
             x=tick_set.x,
@@ -1143,10 +2217,6 @@ window.requestAnimationFrame(installLegendToggleButton);
             },
             name=f'Bragg peaks: {tick_set.phase_id}',
             text=hover_text,
-            hoverlabel={
-                'font': {'color': 'white'},
-                'bordercolor': 'white',
-            },
             hovertemplate='%{text}',
         )
 
@@ -1187,6 +2257,36 @@ window.requestAnimationFrame(installLegendToggleButton);
             return float(DEFAULT_HEIGHT * PLOTLY_HEIGHT_PER_UNIT)
         return float(plot_spec.height)
 
+    @classmethod
+    def _single_main_panel_height_pixels(cls, residual_height_fraction: float) -> int:
+        """
+        Return figure height matching the composite main panel.
+
+        Standalone single-panel figures (e.g. posterior distribution
+        plots) use this so their plot area matches the pattern plot's
+        top panel rather than the full three-row composite. Mirrors the
+        baseline main-row math in ``_baseline_non_bragg_row_heights``
+        for the default main + Bragg ticks + residual layout, then adds
+        the figure's vertical margins so the drawable area (not the
+        outer height) equals that panel.
+
+        Parameters
+        ----------
+        residual_height_fraction : float
+            Residual-to-main row ratio of the reference composite.
+
+        Returns
+        -------
+        int
+            Figure height in pixels.
+        """
+        base = float(DEFAULT_HEIGHT * PLOTLY_HEIGHT_PER_UNIT)
+        plot_area = cls._composite_plot_area_height(base)
+        available = plot_area * cls._subplot_available_height_fraction(3)
+        non_bragg = max(available - cls._bragg_tick_symbol_height_pixels(), 1.0)
+        main = non_bragg / (1.0 + residual_height_fraction)
+        return round(main + COMPOSITE_MARGIN_TOP + COMPOSITE_MARGIN_BOTTOM)
+
     @staticmethod
     def _composite_plot_area_height(full_height: float) -> float:
         """
@@ -1221,24 +2321,25 @@ window.requestAnimationFrame(installLegendToggleButton);
     def _baseline_non_bragg_row_heights(
         cls,
         plot_spec: PowderMeasVsCalcSpec,
-        row_count: int,
         *,
-        has_bragg_ticks: bool,
         has_residual: bool,
     ) -> tuple[float, float | None]:
-        """Return baseline main and residual row heights in pixels."""
+        """
+        Return fixed main and residual row heights in pixels.
+
+        Anchored to the reference three-row layout so the main and
+        residual rows keep their pixel height regardless of which rows
+        are shown; ``_composite_figure_height`` adapts instead.
+        """
         baseline_height = cls._base_composite_height_pixels(plot_spec)
         plot_area_height = cls._composite_plot_area_height(baseline_height)
-        available_row_pixels = plot_area_height * cls._subplot_available_height_fraction(row_count)
-        baseline_bragg_pixels = float(
-            cls._bragg_tick_symbol_height_pixels() if has_bragg_ticks else 0
-        )
-        non_bragg_pixels = max(available_row_pixels - baseline_bragg_pixels, 1.0)
-
-        if not has_residual:
-            return non_bragg_pixels, None
+        available_row_pixels = plot_area_height * cls._subplot_available_height_fraction(3)
+        non_bragg_pixels = max(available_row_pixels - cls._bragg_tick_symbol_height_pixels(), 1.0)
 
         main_pixels = non_bragg_pixels / (1.0 + plot_spec.residual_height_fraction)
+        if not has_residual:
+            return main_pixels, None
+
         residual_pixels = main_pixels * plot_spec.residual_height_fraction
         return main_pixels, residual_pixels
 
@@ -1250,8 +2351,6 @@ window.requestAnimationFrame(installLegendToggleButton);
         row_count = 1 + int(has_bragg_ticks) + int(has_residual)
         main_row_height, residual_row_height = PlotlyPlotter._baseline_non_bragg_row_heights(
             plot_spec=plot_spec,
-            row_count=row_count,
-            has_bragg_ticks=has_bragg_ticks,
             has_residual=has_residual,
         )
         row_heights = [main_row_height]
@@ -1275,22 +2374,20 @@ window.requestAnimationFrame(installLegendToggleButton);
         )
 
     @classmethod
-    def _composite_figure_height(
-        cls,
-        plot_spec: PowderMeasVsCalcSpec,
-        layout: PowderCompositeRows,
-    ) -> float:
-        """Return figure height for Bragg row growth."""
-        base_pixels = cls._base_composite_height_pixels(plot_spec)
-        phase_count = len(plot_spec.bragg_tick_sets)
-        if phase_count <= 1:
-            return base_pixels
+    def _composite_figure_height(cls, layout: PowderCompositeRows) -> float:
+        """
+        Return figure height matching the row pixel heights.
 
-        added_bragg_pixels = float((phase_count - 1) * cls._bragg_tick_symbol_height_pixels())
-        growth_pixels = added_bragg_pixels / cls._subplot_available_height_fraction(
-            layout.row_count
-        )
-        return base_pixels + growth_pixels
+        Each entry in ``layout.row_heights`` is an absolute pixel
+        target. Plotly distributes the plot area across rows by
+        fraction, so the figure height is the row-pixel sum scaled up
+        for the inter-row spacing, plus the vertical margins. The main
+        and residual rows stay fixed while the Bragg row (and the
+        figure) grow with the phase count.
+        """
+        row_pixels = sum(layout.row_heights)
+        plot_area_height = row_pixels / cls._subplot_available_height_fraction(layout.row_count)
+        return plot_area_height + COMPOSITE_MARGIN_TOP + COMPOSITE_MARGIN_BOTTOM
 
     @classmethod
     def _get_main_intensity_range(cls, plot_spec: PowderMeasVsCalcSpec) -> tuple[float, float]:
@@ -1394,6 +2491,26 @@ window.requestAnimationFrame(installLegendToggleButton);
         Bragg row is added only when tick data is available. The
         residual row is added only when residual data is requested.
         """
+        fig = self.build_powder_meas_vs_calc_figure(plot_spec=plot_spec)
+        self._show_figure(fig)
+
+    def build_powder_meas_vs_calc_figure(
+        self,
+        plot_spec: PowderMeasVsCalcSpec,
+    ) -> object:
+        """
+        Build a composite powder Plotly figure without displaying it.
+
+        Parameters
+        ----------
+        plot_spec : PowderMeasVsCalcSpec
+            Composite powder-plot inputs and layout settings.
+
+        Returns
+        -------
+        object
+            Configured :class:`plotly.graph_objects.Figure`.
+        """
         layout = self._get_powder_composite_rows(plot_spec)
         x_min, x_max = self._composite_x_range(np.asarray(plot_spec.x))
         main_y_min, main_y_max = self._get_main_intensity_range(plot_spec)
@@ -1432,7 +2549,7 @@ window.requestAnimationFrame(installLegendToggleButton);
             residual_limit=residual_limit,
         )
 
-        self._show_figure(fig)
+        return fig
 
     @staticmethod
     def _create_powder_composite_figure(layout: PowderCompositeRows) -> object:
@@ -1476,6 +2593,15 @@ window.requestAnimationFrame(installLegendToggleButton);
             customdata=hover_data,
             hovertemplate=hover_template,
         )
+        if plot_spec.y_meas_su is not None:
+            meas_trace.error_y = {
+                'type': 'data',
+                'array': plot_spec.y_meas_su,
+                'visible': True,
+                'color': DEFAULT_COLORS['meas'],
+                'thickness': MEASURED_ERROR_BAR_THICKNESS,
+                'width': MEASURED_ERROR_BAR_WIDTH,
+            }
         fig.add_trace(meas_trace, row=1, col=1)
 
         if plot_spec.y_bkg is not None:
@@ -1585,7 +2711,7 @@ window.requestAnimationFrame(installLegendToggleButton);
         layout: PowderCompositeRows,
     ) -> None:
         fig.update_layout(
-            height=self._composite_figure_height(plot_spec, layout),
+            height=self._composite_figure_height(layout),
             margin={
                 'autoexpand': True,
                 'r': COMPOSITE_MARGIN_RIGHT,
@@ -1599,9 +2725,9 @@ window.requestAnimationFrame(installLegendToggleButton);
             legend={
                 'bgcolor': self._legend_background_color(),
                 'xanchor': 'right',
-                'x': 1.0,
+                'x': 0.99,
                 'yanchor': 'top',
-                'y': 1.0,
+                'y': 0.99,
             },
         )
 
@@ -1666,6 +2792,7 @@ window.requestAnimationFrame(installLegendToggleButton);
                 'mirror': True,
                 'zeroline': False,
                 'tickformat': ',.6~g',
+                'ticklabelstandoff': X_AXIS_TICK_LABEL_STANDOFF,
                 'separatethousands': True,
             }
             if x_min is not None and x_max is not None:
@@ -1677,6 +2804,7 @@ window.requestAnimationFrame(installLegendToggleButton);
                 mirror=True,
                 zeroline=False,
                 tickformat=',.6~g',
+                ticklabelstandoff=Y_AXIS_TICK_LABEL_STANDOFF,
                 separatethousands=True,
                 row=row_idx,
                 col=1,
@@ -1797,6 +2925,45 @@ window.requestAnimationFrame(installLegendToggleButton);
         # Intentionally unused; accepted for API compatibility
         del height
 
+        fig = self.build_single_crystal_figure(
+            x_calc=x_calc,
+            y_meas=y_meas,
+            y_meas_su=y_meas_su,
+            axes_labels=axes_labels,
+            title=title,
+        )
+        self._show_figure(fig)
+
+    def build_single_crystal_figure(
+        self,
+        *,
+        x_calc: object,
+        y_meas: object,
+        y_meas_su: object,
+        axes_labels: object,
+        title: str,
+    ) -> object:
+        """
+        Build a single-crystal Plotly figure without displaying it.
+
+        Parameters
+        ----------
+        x_calc : object
+            1D array-like of calculated values (x-axis).
+        y_meas : object
+            1D array-like of measured values (y-axis).
+        y_meas_su : object
+            1D array-like of measurement uncertainties.
+        axes_labels : object
+            Pair of strings for the x and y titles.
+        title : str
+            Figure title.
+
+        Returns
+        -------
+        object
+            Configured :class:`plotly.graph_objects.Figure`.
+        """
         data = [
             self._get_single_crystal_trace(
                 x_calc,
@@ -1805,14 +2972,17 @@ window.requestAnimationFrame(installLegendToggleButton);
             )
         ]
 
+        axis_min, axis_max = single_crystal_axis_range(x_calc, y_meas, y_meas_su)
+        tick_step = single_crystal_tick_step(axis_min, axis_max)
         layout = self._get_layout(
             title,
             axes_labels,
-            shapes=[self._get_diagonal_shape()],
+            shapes=[self._get_diagonal_shape(axis_min, axis_max)],
+            axis_range=(axis_min, axis_max),
+            axis_dtick=tick_step,
         )
 
-        fig = self._get_figure(data, layout)
-        self._show_figure(fig)
+        return self._get_figure(data, layout)
 
     def plot_scatter(
         self,
@@ -1824,7 +2994,10 @@ window.requestAnimationFrame(installLegendToggleButton);
         height: int | None = None,
     ) -> None:
         """Render a scatter plot with error bars via Plotly."""
-        _ = height  # not used by Plotly backend
+        # The passed height is an ASCII row count; the Plotly scatter
+        # panel is sized to the composite main row instead, so it
+        # matches the pattern plot's top panel.
+        del height
 
         trace = go.Scatter(
             x=x,
@@ -1851,6 +3024,7 @@ window.requestAnimationFrame(installLegendToggleButton);
         layout = self._get_layout(
             title,
             axes_labels,
+            height=self._single_main_panel_height_pixels(DEFAULT_RESIDUAL_HEIGHT_FRACTION),
         )
 
         fig = self._get_figure(trace, layout)

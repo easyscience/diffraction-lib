@@ -9,7 +9,7 @@
 # fitting.
 
 # %% [markdown]
-# ## Import Library
+# ## 🛠️ Import Library
 
 # %%
 from easydiffraction import ExperimentFactory
@@ -18,31 +18,31 @@ from easydiffraction import StructureFactory
 from easydiffraction import download_data
 
 # %% [markdown]
-# ## Define Structure
+# ## 🧩 Define Structure
 #
 # This section covers how to add structures and modify their
 # parameters.
 #
-# #### Create Structure
+# ### Create Structure
 
 # %%
 structure = StructureFactory.from_scratch(name='ncaf')
 
 # %% [markdown]
-# #### Set Space Group
+# ### Set Space Group
 
 # %%
 structure.space_group.name_h_m = 'I 21 3'
 structure.space_group.it_coordinate_system_code = '1'
 
 # %% [markdown]
-# #### Set Unit Cell
+# ### Set Unit Cell
 
 # %%
 structure.cell.length_a = 10.250256
 
 # %% [markdown]
-# #### Set Atom Sites
+# ### Set Atom Sites
 
 # %%
 structure.atom_sites.create(
@@ -51,7 +51,6 @@ structure.atom_sites.create(
     fract_x=0.4663,
     fract_y=0.0,
     fract_z=0.25,
-    wyckoff_letter='b',
     adp_iso=0.92,
 )
 structure.atom_sites.create(
@@ -60,7 +59,6 @@ structure.atom_sites.create(
     fract_x=0.2521,
     fract_y=0.2521,
     fract_z=0.2521,
-    wyckoff_letter='a',
     adp_iso=0.73,
 )
 structure.atom_sites.create(
@@ -69,7 +67,6 @@ structure.atom_sites.create(
     fract_x=0.0851,
     fract_y=0.0851,
     fract_z=0.0851,
-    wyckoff_letter='a',
     adp_iso=2.08,
 )
 structure.atom_sites.create(
@@ -78,7 +75,6 @@ structure.atom_sites.create(
     fract_x=0.1377,
     fract_y=0.3054,
     fract_z=0.1195,
-    wyckoff_letter='c',
     adp_iso=0.90,
 )
 structure.atom_sites.create(
@@ -87,7 +83,6 @@ structure.atom_sites.create(
     fract_x=0.3625,
     fract_y=0.3633,
     fract_z=0.1867,
-    wyckoff_letter='c',
     adp_iso=1.37,
 )
 structure.atom_sites.create(
@@ -96,17 +91,16 @@ structure.atom_sites.create(
     fract_x=0.4612,
     fract_y=0.4612,
     fract_z=0.4612,
-    wyckoff_letter='a',
     adp_iso=0.88,
 )
 
 # %% [markdown]
-# ## Define Experiment
+# ## 🔬 Define Experiment
 #
 # This section shows how to add experiments, configure their parameters,
 # and link the structures defined in the previous step.
 #
-# #### Download Measured Data
+# ### Download Data
 
 # %%
 data_path56 = download_data(id=9, destination='data')
@@ -115,7 +109,7 @@ data_path56 = download_data(id=9, destination='data')
 data_path47 = download_data(id=10, destination='data')
 
 # %% [markdown]
-# #### Create Experiment
+# ### Create Experiment
 
 # %%
 expt56 = ExperimentFactory.from_data_path(
@@ -132,7 +126,7 @@ expt47 = ExperimentFactory.from_data_path(
 )
 
 # %% [markdown]
-# #### Set Instrument
+# ### Set Instrument
 
 # %%
 expt56.instrument.setup_twotheta_bank = 152.827
@@ -147,10 +141,10 @@ expt47.instrument.calib_d_to_tof_linear = 18660.0
 expt47.instrument.calib_d_to_tof_quad = -0.47488
 
 # %% [markdown]
-# #### Set Peak Profile
+# ### Set Peak Profile
 
 # %%
-expt56.show_peak_profile_types()
+expt56.peak.show_supported()
 expt56.peak.broad_gauss_sigma_0 = 0.0
 expt56.peak.broad_gauss_sigma_1 = 0.0
 expt56.peak.broad_gauss_sigma_2 = 15.5
@@ -169,11 +163,11 @@ expt47.peak.exp_rise_alpha_0 = -0.0115
 expt47.peak.exp_rise_alpha_1 = 0.1
 
 # %% [markdown]
-# #### Set Background
+# ### Set Background
 
 # %%
-expt56.show_background_types()
-expt56.background_type = 'line-segment'
+expt56.background.show_supported()
+expt56.background.type = 'line-segment'
 for idx, (x, y) in enumerate(
     [
         (9162, 465),
@@ -210,7 +204,7 @@ for idx, (x, y) in enumerate(
     expt56.background.create(id=str(idx), x=x, y=y)
 
 # %%
-expt47.background_type = 'line-segment'
+expt47.background.type = 'line-segment'
 for idx, (x, y) in enumerate(
     [
         (9090, 488),
@@ -246,7 +240,7 @@ for idx, (x, y) in enumerate(
     expt47.background.create(id=str(idx), x=x, y=y)
 
 # %% [markdown]
-# #### Set Linked Phases
+# ### Set Linked Phases
 
 # %%
 expt56.linked_phases.create(id='ncaf', scale=1.0)
@@ -255,7 +249,7 @@ expt56.linked_phases.create(id='ncaf', scale=1.0)
 expt47.linked_phases.create(id='ncaf', scale=2.0)
 
 # %% [markdown]
-# #### Set Excluded Regions
+# ### Set Excluded Regions
 
 # %%
 expt56.excluded_regions.create(id='1', start=0, end=10010)
@@ -266,43 +260,43 @@ expt47.excluded_regions.create(id='1', start=0, end=10006)
 expt47.excluded_regions.create(id='2', start=100004, end=200000)
 
 # %% [markdown]
-# ## Define Project
+# ## 📦 Define Project
 #
 # The project object is used to manage the structure, experiments,
 # and analysis
 #
-# #### Create Project
+# ### Create Project
 
 # %%
-project = Project()
+project = Project(name='ncaf_wish')
 
 # %% [markdown]
-# #### Add Structure
+# ### Add Structure
 
 # %%
 project.structures.add(structure)
 
 # %% [markdown]
-# #### Add Experiment
+# ### Add Experiment
 
 # %%
 project.experiments.add(expt56)
 project.experiments.add(expt47)
 
 # %% [markdown]
-# ## Perform Analysis
+# ## 🚀 Perform Analysis
 #
 # This section shows the analysis process, including how to set up
 # calculation and fitting engines.
 #
-# #### Set Fit Mode
+# ### Set Fit Mode
 
 # %%
-project.analysis.show_fitting_mode_types()
-project.analysis.fitting_mode_type = 'joint'
+project.analysis.fitting_mode.show_supported()
+project.analysis.fitting_mode.type = 'joint'
 
 # %% [markdown]
-# #### Set Free Parameters
+# ### Set Free Parameters
 
 # %%
 structure.atom_sites['Ca'].adp_iso.free = True
@@ -330,7 +324,13 @@ expt47.peak.exp_decay_beta_1.free = True
 expt47.peak.exp_rise_alpha_1.free = True
 
 # %% [markdown]
-# #### Plot Measured vs Calculated
+# ### Display Structure
+
+# %%
+project.display.structure(struct_name='ncaf')
+
+# %% [markdown]
+# ### Display Pattern
 
 # %%
 project.display.pattern(expt_name='wish_5_6')
@@ -339,7 +339,7 @@ project.display.pattern(expt_name='wish_5_6')
 project.display.pattern(expt_name='wish_4_7')
 
 # %% [markdown]
-# #### Run Fitting
+# ### Run Fitting
 
 # %%
 project.analysis.fit()
@@ -347,7 +347,7 @@ project.display.fit.results()
 project.display.fit.correlations()
 
 # %% [markdown]
-# #### Plot Measured vs Calculated
+# ### Display Pattern
 
 # %%
 project.display.pattern(expt_name='wish_5_6')
@@ -356,12 +356,13 @@ project.display.pattern(expt_name='wish_5_6')
 project.display.pattern(expt_name='wish_4_7')
 
 # %% [markdown]
-# ## Summary
+# ## 📊 Report
 #
-# This final section shows how to review the results of the analysis.
+# The HTML report is written automatically when the project is saved;
+# enable `project.report.pdf` as well for a PDF version.
 
 # %% [markdown]
-# #### Show Project Summary
+# ## 💾 Save Project
 
 # %%
-project.summary.show_report()
+project.save_as(dir_path='projects/ed_8_ncaf_wish')

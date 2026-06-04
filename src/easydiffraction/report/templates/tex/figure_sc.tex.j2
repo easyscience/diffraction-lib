@@ -1,0 +1,42 @@
+\documentclass[border=2pt]{standalone}
+\usepackage{fourier}
+\let\utopiarm\rmdefault
+\usepackage{paratype}
+\let\rmdefault\utopiarm
+\renewcommand{\familydefault}{\rmdefault}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\definecolor{ {{- style.color_name -}} }{RGB}{ {{- style.rgb -}} }
+\definecolor{edAxis}{RGB}{ {{- axis_styles.axis_rgb -}} }
+\definecolor{edGrid}{RGB}{ {{- axis_styles.grid_rgb -}} }
+\definecolor{edDiag}{RGB}{ {{- axis_styles.diag_rgb -}} }
+{% set axes_labels = fit_data.axes_labels | default(["Icalc", "Imeas"], true) -%}
+{% set x_label = axes_labels[0] | tex_axis_label -%}
+{% set y_label = axes_labels[1] | tex_axis_label -%}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[
+width={{ geometry.axis_width_cm | tex_number }}cm,
+height={{ geometry.axis_height_cm | tex_number }}cm,
+scale only axis,
+xmin={{ ranges.x_min | tex_number }},
+xmax={{ ranges.x_max | tex_number }},
+ymin={{ ranges.y_min | tex_number }},
+ymax={{ ranges.y_max | tex_number }},
+xtick distance={{ ranges.tick_step | tex_number }},
+ytick distance={{ ranges.tick_step | tex_number }},
+xlabel={ {{ x_label }} },
+ylabel={ {{ y_label }} },
+axis line style={draw=edAxis},
+tick style={draw=none},
+label style={font=\footnotesize},
+tick label style={font=\footnotesize},
+major grid style={draw=edGrid, line width=0.4pt},
+xmajorgrids=true,
+ymajorgrids=true,
+]
+\addplot[domain={{ ranges.diag_min | tex_number }}:{{ ranges.diag_max | tex_number }}, samples=2, color=edDiag, line width=0.4pt, forget plot] {x};
+\addplot[only marks, mark=*, mark size={{ style.marker_size_pt | tex_number }}pt, color={{ style.color_name }}, mark options={fill={{ style.color_name }}, draw={{ style.color_name }}, line width={{ style.marker_line_width_pt | tex_number }}pt}, error bars/.cd, y dir=both, y explicit] table[x={ {{- fit_csv.x -}} }, y={ {{- fit_csv.meas -}} }, y error={ {{- fit_csv.meas_su -}} }, col sep=comma] { {{- csv_filename -}} };
+\end{axis}
+\end{tikzpicture}
+\end{document}

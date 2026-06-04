@@ -19,6 +19,7 @@ class MinimizerTypeEnum(StrEnum):
     BUMPS_DREAM = 'bumps (dream)'
     BUMPS_AMOEBA = 'bumps (amoeba)'
     BUMPS_DE = 'bumps (de)'
+    EMCEE = 'emcee'
 
     @classmethod
     def default(cls) -> MinimizerTypeEnum:
@@ -49,8 +50,18 @@ class MinimizerTypeEnum(StrEnum):
             MinimizerTypeEnum.BUMPS_DREAM: ('BUMPS library with DREAM Bayesian sampling'),
             MinimizerTypeEnum.BUMPS_AMOEBA: ('BUMPS library with Nelder-Mead simplex method'),
             MinimizerTypeEnum.BUMPS_DE: ('BUMPS library with differential evolution method'),
+            MinimizerTypeEnum.EMCEE: ('emcee affine-invariant ensemble Bayesian sampling'),
         }
         return descriptions.get(self, '')
+
+
+class InitializationMethodEnum(StrEnum):
+    """Supported Bayesian sampler initialization methods."""
+
+    LATIN_HYPERCUBE = 'latin_hypercube'
+    BALL = 'ball'
+    UNIFORM = 'uniform'
+    PRIOR = 'prior'
 
 
 class DreamPopulationInitializationEnum(StrEnum):

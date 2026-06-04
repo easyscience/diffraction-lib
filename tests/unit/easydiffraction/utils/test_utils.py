@@ -13,6 +13,14 @@ def test_module_import():
     assert expected_module_name == actual_module_name
 
 
+def test_format_bulleted_warning():
+    import easydiffraction.utils.utils as MUT
+
+    warning = MUT.format_bulleted_warning('Header:', ['first', 'second'])
+
+    assert warning == 'Header:\n• first\n• second'
+
+
 def test_twotheta_to_d_scalar_and_array():
     import easydiffraction.utils.utils as MUT
 
@@ -159,7 +167,6 @@ def test_render_object_help_prints_public_api(capsys):
 
     MUT.render_object_help(Example())
     out = capsys.readouterr().out
-    assert "Help for 'Example'" in out
     assert 'Properties' in out
     assert 'value' in out
     assert 'Visible value.' in out
@@ -307,6 +314,39 @@ def test_download_tutorial_success(monkeypatch, tmp_path):
     assert (tmp_path / 'ed-1.ipynb').exists()
 
 
+def test_download_tutorial_uses_artifact_root(monkeypatch, tmp_path):
+    import easydiffraction.utils.utils as MUT
+
+    fake_index = {
+        '1': {
+            'url': 'https://example.com/{version}/tutorials/ed-1/ed-1.ipynb',
+            'title': 'Quick Start',
+        },
+    }
+    artifact_root = tmp_path / 'artifacts'
+    monkeypatch.setenv('EASYDIFFRACTION_ARTIFACT_ROOT', str(artifact_root))
+    monkeypatch.setattr(MUT, '_fetch_tutorials_index', lambda: fake_index)
+    monkeypatch.setattr(MUT, '_get_version_for_url', lambda: '0.8.0')
+
+    class DummyResp:
+        def read(self):
+            return b'{"cells": []}'
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return False
+
+    monkeypatch.setattr(MUT, '_safe_urlopen', lambda url: DummyResp())
+
+    result = MUT.download_tutorial(id=1, destination='tutorials')
+
+    expected_path = artifact_root / 'tutorials' / 'ed-1.ipynb'
+    assert result == str(expected_path)
+    assert expected_path.exists()
+
+
 def test_download_tutorial_already_exists_no_overwrite(monkeypatch, tmp_path, capsys):
     import easydiffraction.utils.utils as MUT
 
@@ -381,6 +421,47 @@ def test_download_all_tutorials_success(monkeypatch, tmp_path, capsys):
     assert len(result) == 2
     assert (tmp_path / 'ed-1.ipynb').exists()
     assert (tmp_path / 'ed-2.ipynb').exists()
+
+
+def test_download_all_tutorials_reports_resolved_artifact_root(
+    monkeypatch,
+    tmp_path,
+    capsys,
+):
+    import easydiffraction.utils.utils as MUT
+
+    fake_index = {
+        '1': {
+            'url': 'https://example.com/{version}/tutorials/ed-1/ed-1.ipynb',
+            'title': 'Quick Start',
+        },
+    }
+    artifact_root = tmp_path / 'artifacts'
+    monkeypatch.setenv('EASYDIFFRACTION_ARTIFACT_ROOT', str(artifact_root))
+    monkeypatch.setattr(MUT, '_fetch_tutorials_index', lambda: fake_index)
+    monkeypatch.setattr(MUT, '_get_version_for_url', lambda: '0.8.0')
+
+    class DummyResp:
+        def read(self):
+            return b'{"cells": []}'
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return False
+
+    monkeypatch.setattr(MUT, '_safe_urlopen', lambda url: DummyResp())
+
+    result = MUT.download_all_tutorials(destination='tutorials')
+
+    expected_dir = artifact_root / 'tutorials'
+    assert result == [str(expected_dir / 'ed-1.ipynb')]
+    assert (expected_dir / 'ed-1.ipynb').exists()
+    out = capsys.readouterr().out
+    assert 'Downloaded 1 tutorials' in out
+    normalized_out = out.replace('\\', '/').replace('\n', '')
+    assert str(expected_dir).replace('\\', '/') in normalized_out
 
 
 def test_resolve_tutorial_url():

@@ -8,6 +8,7 @@ from contextlib import nullcontext
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from easydiffraction.analysis.fit_helpers.bayesian import posterior_predictive_cache_key
 from easydiffraction.datablocks.experiment.item.base import intensity_category_for
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
@@ -17,12 +18,16 @@ from easydiffraction.display.plotting import _MeasVsCalcPlotOptions
 from easydiffraction.display.progress import ACTIVITY_LABEL_PROCESSING
 from easydiffraction.display.progress import activity_indicator
 from easydiffraction.utils.enums import VerbosityEnum
+from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_object_help
 from easydiffraction.utils.utils import render_table
 
 if TYPE_CHECKING:
     from easydiffraction.project.project import Project
+
+
+StructureViewRange = tuple[tuple[float, float], tuple[float, float], tuple[float, float]]
 
 
 _PATTERN_OPTION_DESCRIPTIONS: dict[str, str] = {
@@ -34,6 +39,17 @@ _PATTERN_OPTION_DESCRIPTIONS: dict[str, str] = {
     'bragg': 'Bragg reflection tick marks when reflection data exists.',
     'excluded': 'Excluded fitting regions when defined on the experiment.',
     'uncertainty': 'Posterior predictive uncertainty bands when available.',
+}
+
+
+_STRUCTURE_OPTION_DESCRIPTIONS: dict[str, str] = {
+    'auto': 'Show the features the structure and engine support.',
+    'atoms': 'Atoms as spheres, occupancy wedges, or ADP ellipsoids.',
+    'bonds': 'Bonds between atoms within the per-structure cutoffs.',
+    'cell': 'Unit-cell edges.',
+    'axes': 'The a/b/c axis triad.',
+    'moments': 'Magnetic-moment arrows (no moment data in version 1).',
+    'labels': 'Atom labels at each site.',
 }
 
 
@@ -87,7 +103,39 @@ class FitDisplay:
 
     def results(self) -> None:
         """Show the latest fit summary and fitted parameter table."""
-        self._project.analysis.display.fit_results()
+        analysis = self._project.analysis
+        if analysis.fit_results is None:
+            analysis.display.fit_results()
+            return
+
+        self._show_settings_used()
+        analysis.display.fit_results()
+
+    def _show_settings_used(self) -> None:
+        """Show minimizer settings used for the latest fit."""
+        rows = self._settings_used_rows()
+        if not rows:
+            return
+
+        console.print('⚙️ Settings used:')
+        render_table(
+            columns_headers=['Name', 'Value', 'Description'],
+            columns_alignment=['left', 'right', 'left'],
+            columns_data=rows,
+        )
+
+    def _settings_used_rows(self) -> list[list[str]]:
+        """Return minimizer setting rows for display."""
+        minimizer = self._project.analysis.minimizer
+        rows: list[list[str]] = []
+        for name in minimizer._setting_descriptor_names:
+            descriptor = getattr(minimizer, name)
+            rows.append([
+                name,
+                str(descriptor.value),
+                descriptor.description or '',
+            ])
+        return rows
 
     def correlations(
         self,
@@ -98,7 +146,7 @@ class FitDisplay:
         show_diagonal: bool = True,
     ) -> None:
         """Show parameter correlations from the latest fit."""
-        self._project.rendering.plotter.plot_param_correlations(
+        self._project.rendering_plot.plotter.plot_param_correlations(
             threshold=threshold,
             precision=precision,
             max_parameters=max_parameters,
@@ -120,9 +168,9 @@ class FitDisplay:
             another.
         """
         if param is None:
-            self._project.rendering.plotter.plot_all_param_series(versus=versus)
+            self._project.rendering_plot.plotter.plot_all_param_series(versus=versus)
         else:
-            self._project.rendering.plotter.plot_param_series(param=param, versus=versus)
+            self._project.rendering_plot.plotter.plot_param_series(param=param, versus=versus)
 
     def help(self) -> None:
         """Print available fit-display methods."""
@@ -147,13 +195,13 @@ class PosteriorDisplay:
             return True
 
         analysis = self._project.analysis
+        fit_results = getattr(analysis, 'fit_results', None)
+        runtime_pair_caches = getattr(fit_results, 'posterior_pair_caches', None)
+        if runtime_pair_caches:
+            return False
+
         sidecar_data = getattr(analysis, '_persisted_fit_state_sidecar', {})
-        pair_caches = sidecar_data.get('pair_caches', {})
-        return not (
-            analysis.bayesian_result.has_pair_cache.value
-            and len(analysis.bayesian_pair_caches) > 0
-            and bool(pair_caches)
-        )
+        return not bool(sidecar_data.get('pair_caches', {}))
 
     def _predictive_needs_processing_indicator(
         self,
@@ -164,38 +212,39 @@ class PosteriorDisplay:
     ) -> bool:
         """Return whether predictive plotting still needs processing."""
         analysis = self._project.analysis
-        sidecar_data = getattr(analysis, '_persisted_fit_state_sidecar', {})
-        predictive_datasets = sidecar_data.get('predictive_datasets', {})
-        if not (
-            analysis.bayesian_result.has_posterior_predictive.value
-            and bool(predictive_datasets)
-            and expt_name in predictive_datasets
-        ):
-            return True
-
         experiment = self._project.experiments[expt_name]
-        plotter = self._project.rendering.plotter
+        plotter = self._project.rendering_plot.plotter
         _, x_axis_name, _, _, _ = plotter._resolve_x_axis(experiment.type, x)
+        x_axis_name = str(x_axis_name)
         require_draws = plotter.engine == PlotterEngineEnum.PLOTLY.value and style in {
             'draws',
             'band+draws',
         }
 
-        matching_rows = [
-            row
-            for row in analysis.bayesian_predictive_datasets
-            if row.experiment_name.value == expt_name
-            and str(row.x_axis_name.value) == str(x_axis_name)
-        ]
-        if not matching_rows:
+        sidecar_data = getattr(analysis, '_persisted_fit_state_sidecar', {})
+        predictive_dataset = sidecar_data.get('predictive_datasets', {}).get(expt_name)
+        if predictive_dataset is not None:
+            dataset_axis_name = str(predictive_dataset.get('x_axis_name', ''))
+            if dataset_axis_name in {'', x_axis_name}:
+                return require_draws and predictive_dataset.get('draws') is None
+
+        fit_results = getattr(analysis, 'fit_results', None)
+        posterior_predictive = getattr(fit_results, 'posterior_predictive', None)
+        if not posterior_predictive:
             return True
-        if not require_draws:
-            return False
-        return not any(
-            row.draws_path.value is not None
-            and predictive_datasets[expt_name].get('draws') is not None
-            for row in matching_rows
-        )
+
+        cache_keys = [
+            posterior_predictive_cache_key(expt_name, x_axis_name, include_draws=True),
+            posterior_predictive_cache_key(expt_name, x_axis_name, include_draws=False),
+            expt_name,
+        ]
+        for cache_key in cache_keys:
+            summary = posterior_predictive.get(cache_key)
+            if summary is None or str(getattr(summary, 'x_axis_name', '')) != x_axis_name:
+                continue
+            return require_draws and getattr(summary, 'draws', None) is None
+
+        return True
 
     def pairs(
         self,
@@ -215,7 +264,7 @@ class PosteriorDisplay:
             else nullcontext()
         )
         with indicator_context:
-            self._project.rendering.plotter.plot_posterior_pairs(
+            self._project.rendering_plot.plotter.plot_posterior_pairs(
                 parameters=parameters,
                 style=style,
                 threshold=threshold,
@@ -226,7 +275,7 @@ class PosteriorDisplay:
         """
         Plot posterior distributions for one or all free parameters.
         """
-        plotter = self._project.rendering.plotter
+        plotter = self._project.rendering_plot.plotter
         if param is not None:
             plotter.plot_param_distribution(param)
             return
@@ -263,7 +312,7 @@ class PosteriorDisplay:
             else nullcontext()
         )
         with indicator_context:
-            self._project.rendering.plotter.plot_posterior_predictive(
+            self._project.rendering_plot.plotter.plot_posterior_predictive(
                 expt_name=expt_name,
                 style=style,
                 x_min=x_min,
@@ -310,65 +359,42 @@ class ProjectDisplay:
         expt_name: str,
         x_min: float | None = None,
         x_max: float | None = None,
-        include: str | tuple[str, ...] = 'auto',
         *,
         x: object | None = None,
     ) -> None:
-        """Show a pattern view for one experiment."""
-        normalized_include = self._normalize_include(include)
+        """
+        Show the experiment's diffraction pattern.
+
+        Renders every kind of data the project state supports for the
+        experiment: measured and calculated intensities, the residual,
+        Bragg ticks, background, excluded regions, and posterior
+        predictive uncertainty bands, each shown when available.
+
+        Parameters
+        ----------
+        expt_name : str
+            Name of the experiment to plot.
+        x_min : float | None, default=None
+            Lower bound for the x-axis range.
+        x_max : float | None, default=None
+            Upper bound for the x-axis range.
+        x : object | None, default=None
+            Optional x-axis variable overriding the experiment default
+            (excluded-region overlays are skipped for a custom axis).
+
+        Raises
+        ------
+        ValueError
+            If no pattern content is available for the experiment.
+        """
         statuses = self._pattern_option_statuses(expt_name)
+        content = self._auto_include(statuses)
+        if x is not None:
+            content = tuple(option for option in content if option != 'excluded')
+        if not content:
+            raise ValueError(self._status_by_name(statuses, 'auto').reason)
 
-        if normalized_include == ('auto',):
-            auto_include = self._auto_include(statuses)
-            if x is not None:
-                auto_include = tuple(option for option in auto_include if option != 'excluded')
-            if not auto_include:
-                msg = self._status_by_name(statuses, 'auto').reason
-                raise ValueError(msg)
-            if 'uncertainty' in auto_include:
-                indicator_context = (
-                    activity_indicator(
-                        ACTIVITY_LABEL_PROCESSING,
-                        verbosity=VerbosityEnum(self._project.verbosity.fit.value),
-                    )
-                    if self._posterior._predictive_needs_processing_indicator(
-                        expt_name=expt_name,
-                        style='band',
-                        x=x,
-                    )
-                    else nullcontext()
-                )
-                with indicator_context:
-                    self._project.rendering.plotter._plot_posterior_predictive_request(
-                        expt_name=expt_name,
-                        style='band',
-                        plot_options=_MeasVsCalcPlotOptions(
-                            x_min=x_min,
-                            x_max=x_max,
-                            show_residual=True if 'residual' in auto_include else None,
-                            show_background='background' in auto_include,
-                            show_bragg='bragg' in auto_include,
-                            show_excluded='excluded' in auto_include,
-                            x=x,
-                        ),
-                    )
-                return
-            self._show_point_estimate_pattern(
-                expt_name=expt_name,
-                x_min=x_min,
-                x_max=x_max,
-                include=auto_include,
-                statuses=statuses,
-                x=x,
-            )
-            return
-
-        self._validate_requested_include(statuses, normalized_include)
-        if x is not None and 'excluded' in normalized_include:
-            msg = "Excluded-region overlays currently require the experiment's default x-axis."
-            raise ValueError(msg)
-
-        if 'uncertainty' in normalized_include:
+        if 'uncertainty' in content:
             indicator_context = (
                 activity_indicator(
                     ACTIVITY_LABEL_PROCESSING,
@@ -382,16 +408,16 @@ class ProjectDisplay:
                 else nullcontext()
             )
             with indicator_context:
-                self._project.rendering.plotter._plot_posterior_predictive_request(
+                self._project.rendering_plot.plotter._plot_posterior_predictive_request(
                     expt_name=expt_name,
                     style='band',
                     plot_options=_MeasVsCalcPlotOptions(
                         x_min=x_min,
                         x_max=x_max,
-                        show_residual=True if 'residual' in normalized_include else None,
-                        show_background='background' in normalized_include,
-                        show_bragg='bragg' in normalized_include,
-                        show_excluded='excluded' in normalized_include,
+                        show_residual=True if 'residual' in content else None,
+                        show_background='background' in content,
+                        show_bragg='bragg' in content,
+                        show_excluded='excluded' in content,
                         x=x,
                     ),
                 )
@@ -401,46 +427,165 @@ class ProjectDisplay:
             expt_name=expt_name,
             x_min=x_min,
             x_max=x_max,
-            include=normalized_include,
-            statuses=statuses,
+            include=content,
             x=x,
         )
 
-    def show_pattern_options(self, expt_name: str) -> None:
-        """Show available ``pattern(include=...)`` options."""
-        statuses = self._pattern_option_statuses(expt_name)
-        render_table(
-            columns_headers=['Option', 'Description', 'Available', 'Auto', 'Reason'],
-            columns_alignment=['left', 'left', 'center', 'center', 'left'],
-            columns_data=[
-                [
-                    status.name,
-                    status.description,
-                    'yes' if status.available else 'no',
-                    'yes' if status.auto_included else 'no',
-                    status.reason or '-',
-                ]
-                for status in statuses
-            ],
+    def structure(
+        self,
+        struct_name: str,
+        include: str | tuple[str, ...] = 'auto',
+        range: StructureViewRange | None = None,
+        path: str | None = None,
+    ) -> None:
+        """
+        Show a 3D structure view for one structure.
+
+        Parallels :meth:`pattern`: it draws with the active
+        ``project.rendering_structure`` engine and displays directly (no
+        return value). Feature visibility is resolved per ADR section 8;
+        the renderer announces and skips any feature it cannot draw.
+
+        Parameters
+        ----------
+        struct_name : str
+            Name of the structure to draw.
+        include : str | tuple[str, ...], default='auto'
+            ``'auto'`` (default) resolves features from data
+            availability, persisted ``project.rendering_structure``
+            flags, then built-in defaults; an explicit tuple of
+            ``atoms``/``bonds``/``cell``/``axes``/
+            ``moments``/``labels`` wins outright.
+        range : StructureViewRange | None, default=None
+            Optional per-axis ``((min, max), ...)`` window overriding
+            the persisted ``project.rendering_structure`` range for this
+            call only.
+        path : str | None, default=None
+            When given, write the rendered view to this path instead of
+            displaying it (a standalone HTML file for the Three.js
+            engine).
+        """
+        from easydiffraction.display.structure.builder import build_scene  # noqa: PLC0415
+        from easydiffraction.display.structure.builder import (  # noqa: PLC0415
+            structure_feature_availability,
         )
 
+        structure = self._project.structures[struct_name]
+        structure._update_categories()
+        availability = structure_feature_availability(
+            structure, style=self._project.structure_style
+        )
+        features = self._resolve_structure_features(include, availability)
+        window = range if range is not None else self._project.structure_view.view_range()
+        scene = build_scene(
+            structure,
+            style=self._project.structure_style,
+            view_range=window,
+            features=features,
+        )
+        output = self._project.rendering_structure.viewer.render(scene, features=features)
+        if path is not None:
+            import pathlib  # noqa: PLC0415
+
+            pathlib.Path(path).write_text(output, encoding='utf-8')
+            return
+        atom_view = self._project.structure_style.atom_view.value
+        console.paragraph(f"Structure 🧩 '{struct_name}' (Atom view type: '{atom_view}')")
+        self._emit_structure_output(output)
+
+    def show_structure_options(self, struct_name: str) -> None:
+        """
+        Show available ``structure(include=...)`` options.
+        """
+        from easydiffraction.display.structure.builder import (  # noqa: PLC0415
+            structure_feature_availability,
+        )
+
+        structure = self._project.structures[struct_name]
+        structure._update_categories()
+        availability = structure_feature_availability(
+            structure, style=self._project.structure_style
+        )
+        supported = self._project.rendering_structure.viewer.supported_features()
+        auto = self._resolve_structure_features('auto', availability)
+
+        rows = []
+        for option in ('atoms', 'bonds', 'cell', 'axes', 'moments', 'labels'):
+            in_data = option in availability.available
+            in_engine = option in supported
+            rows.append([
+                option,
+                _STRUCTURE_OPTION_DESCRIPTIONS[option],
+                'yes' if (in_data and in_engine) else 'no',
+                'yes' if (option in auto and in_engine) else 'no',
+            ])
+        render_table(
+            columns_headers=['Option', 'Description', 'Available', 'Auto'],
+            columns_alignment=['left', 'left', 'center', 'center'],
+            columns_data=rows,
+        )
+        if availability.radius_substitutions:
+            console.paragraph('Radius substitutions (fell back to covalent)')
+            console.print(', '.join(availability.radius_substitutions))
+
+    def _resolve_structure_features(
+        self,
+        include: str | tuple[str, ...],
+        availability: object,
+    ) -> frozenset[str]:
+        """
+        Resolve the concrete feature set per ADR section 8 precedence.
+        """
+        normalized = self._normalize_structure_include(include)
+        if normalized != ('auto',):
+            return frozenset(normalized)
+        view = self._project.structure_view
+        resolved = {f for f in ('atoms', 'bonds', 'cell', 'axes') if f in availability.available}
+        if 'labels' in availability.available and view.show_labels.value:
+            resolved.add('labels')
+        if 'moments' in availability.available and view.show_moments.value:
+            resolved.add('moments')
+        return frozenset(resolved)
+
     @staticmethod
-    def _normalize_include(include: str | tuple[str, ...]) -> tuple[str, ...]:
-        """Validate and normalize a ``pattern(include=...)`` value."""
+    def _normalize_structure_include(include: str | tuple[str, ...]) -> tuple[str, ...]:
+        """Validate and normalize a ``structure(include=...)`` value."""
         values = (include,) if isinstance(include, str) else include
         if not values:
             msg = 'include must contain at least one option.'
             raise ValueError(msg)
-
         normalized = tuple(dict.fromkeys(values))
-        unknown = [value for value in normalized if value not in _PATTERN_OPTION_DESCRIPTIONS]
+        unknown = [value for value in normalized if value not in _STRUCTURE_OPTION_DESCRIPTIONS]
         if unknown:
-            msg = f'Unknown pattern include option(s): {unknown}.'
+            msg = f'Unknown structure include option(s): {unknown}.'
             raise ValueError(msg)
         if 'auto' in normalized and len(normalized) > 1:
             msg = "include='auto' cannot be combined with other options."
             raise ValueError(msg)
         return normalized
+
+    def _emit_structure_output(self, output: str) -> None:
+        """Display ASCII text in the console or HTML in a notebook."""
+        from easydiffraction.display.structure.enums import ViewerEngineEnum  # noqa: PLC0415
+        from easydiffraction.utils.environment import in_jupyter  # noqa: PLC0415
+
+        if self._project.rendering_structure.viewer.engine == ViewerEngineEnum.ASCII.value:
+            # Built-in print keeps the renderer's raw ANSI colour
+            # codes (Jupyter and terminals interpret them); Rich's
+            # console.print would escape and garble them. Mirrors
+            # the ASCII pattern plotter.
+            print(output)
+            return
+        if in_jupyter():
+            from IPython.display import HTML  # noqa: PLC0415
+            from IPython.display import display  # noqa: PLC0415
+
+            display(HTML(output))
+            return
+        console.print(
+            'Three.js structure view generated as HTML. Pass path=... to save it, '
+            "or set project.rendering_structure.type = 'ascii' for a terminal view.",
+        )
 
     @staticmethod
     def _status_by_name(
@@ -472,7 +617,9 @@ class ProjectDisplay:
         cls,
         statuses: list[PatternOptionStatus],
     ) -> tuple[str, ...]:
-        """Return the effective include tuple for ``include='auto'``."""
+        """
+        Return the kinds of pattern content to render by availability.
+        """
         status_by_name = {status.name: status for status in statuses}
         optional_point_estimate = ('background', 'residual', 'bragg', 'excluded')
 
@@ -502,44 +649,6 @@ class ProjectDisplay:
             )
         return ()
 
-    @classmethod
-    def _validate_requested_include(
-        cls,
-        statuses: list[PatternOptionStatus],
-        include: tuple[str, ...],
-    ) -> None:
-        """
-        Raise a clear error when a requested include is unavailable.
-        """
-        status_by_name = {status.name: status for status in statuses}
-        unavailable = [
-            option_name
-            for option_name in include
-            if option_name != 'auto' and not status_by_name[option_name].available
-        ]
-        if unavailable:
-            option_name = unavailable[0]
-            msg = status_by_name[option_name].reason
-            raise ValueError(msg)
-
-        include_set = set(include)
-        if 'background' in include_set and not {'measured', 'calculated'}.issubset(include_set):
-            msg = 'background requires both measured and calculated data in the same view.'
-            raise ValueError(msg)
-        if 'bragg' in include_set and not {'measured', 'calculated'}.issubset(include_set):
-            msg = 'bragg requires both measured and calculated data in the same view.'
-            raise ValueError(msg)
-        if 'residual' in include_set and not {'measured', 'calculated'}.issubset(include_set):
-            msg = 'residual requires both measured and calculated data in the same view.'
-            raise ValueError(msg)
-        if 'excluded' in include_set and not include_set.intersection({
-            'measured',
-            'calculated',
-            'uncertainty',
-        }):
-            msg = 'excluded requires measured, calculated, or uncertainty data in the same view.'
-            raise ValueError(msg)
-
     def _show_point_estimate_pattern(
         self,
         *,
@@ -547,16 +656,14 @@ class ProjectDisplay:
         x_min: float | None,
         x_max: float | None,
         include: tuple[str, ...],
-        statuses: list[PatternOptionStatus],
         x: object | None,
     ) -> None:
         """
         Dispatch a point-estimate pattern view to the live plotter.
         """
-        self._validate_requested_include(statuses, include)
         include_set = set(include)
         if include_set == {'measured'}:
-            self._project.rendering.plotter.plot_meas(
+            self._project.rendering_plot.plotter.plot_meas(
                 expt_name=expt_name,
                 x_min=x_min,
                 x_max=x_max,
@@ -565,7 +672,7 @@ class ProjectDisplay:
             )
             return
         if include_set == {'measured', 'excluded'}:
-            self._project.rendering.plotter.plot_meas(
+            self._project.rendering_plot.plotter.plot_meas(
                 expt_name=expt_name,
                 x_min=x_min,
                 x_max=x_max,
@@ -574,7 +681,7 @@ class ProjectDisplay:
             )
             return
         if include_set == {'calculated'}:
-            self._project.rendering.plotter.plot_calc(
+            self._project.rendering_plot.plotter.plot_calc(
                 expt_name=expt_name,
                 x_min=x_min,
                 x_max=x_max,
@@ -583,7 +690,7 @@ class ProjectDisplay:
             )
             return
         if include_set == {'calculated', 'excluded'}:
-            self._project.rendering.plotter.plot_calc(
+            self._project.rendering_plot.plotter.plot_calc(
                 expt_name=expt_name,
                 x_min=x_min,
                 x_max=x_max,
@@ -592,7 +699,7 @@ class ProjectDisplay:
             )
             return
         if {'measured', 'calculated'}.issubset(include_set):
-            self._project.rendering.plotter._plot_meas_vs_calc_request(
+            self._project.rendering_plot.plotter._plot_meas_vs_calc_request(
                 expt_name=expt_name,
                 plot_options=_MeasVsCalcPlotOptions(
                     x_min=x_min,
@@ -614,7 +721,7 @@ class ProjectDisplay:
 
     def _pattern_option_statuses(self, expt_name: str) -> list[PatternOptionStatus]:
         """Return availability details for the requested experiment."""
-        self._project.rendering.plotter._update_project_categories(expt_name)
+        self._project.rendering_plot.plotter._update_project_categories(expt_name)
         experiment = self._project.experiments[expt_name]
         pattern = intensity_category_for(experiment)
         sample_form = experiment.type.sample_form.value
@@ -838,10 +945,9 @@ class ProjectDisplay:
         if not posterior_predictive:
             return False, 'Posterior predictive data is unavailable.'
 
-        active_chart_engine = getattr(self._project.rendering.plotter, 'engine', None)
+        active_chart_engine = getattr(self._project.rendering_plot.plotter, 'engine', None)
         if active_chart_engine is None:
-            chart_engine = getattr(self._project.rendering, 'chart_engine', None)
-            active_chart_engine = getattr(chart_engine, 'value', None)
+            active_chart_engine = self._project.rendering_plot.type
 
         if active_chart_engine != PlotterEngineEnum.PLOTLY.value:
             return False, 'Uncertainty bands currently require the Plotly chart engine.'

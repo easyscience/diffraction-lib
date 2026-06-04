@@ -134,12 +134,12 @@ class TestDiscoverHelpers:
 
         rows = _discover_property_rows(MyClass)
         assert len(rows) == 2
-        names = [row[1] for row in rows]
+        names = [row[0] for row in rows]
         assert 'alpha' in names
         assert 'beta' in names
         # beta is writable
-        beta_row = next(r for r in rows if r[1] == 'beta')
-        assert beta_row[2] == '✓'
+        beta_row = next(r for r in rows if r[0] == 'beta')
+        assert beta_row[1] == '✓'
 
     def test_discover_method_rows(self):
         from easydiffraction.analysis.analysis import _discover_method_rows
@@ -157,14 +157,14 @@ class TestDiscoverHelpers:
                 return 1
 
         rows = _discover_method_rows(MyClass)
-        names = [row[1] for row in rows]
+        names = [row[0] for row in rows]
         assert 'do_thing()' in names
         assert '_private()' not in names
         assert 'prop()' not in names
 
 
 # ------------------------------------------------------------------
-# Analysis.minimizer_type setter
+# Analysis.minimizer.type setter
 # ------------------------------------------------------------------
 
 
@@ -173,8 +173,8 @@ class TestCurrentMinimizerSetter:
         from easydiffraction.analysis.analysis import Analysis
 
         a = Analysis(project=_make_project())
-        assert a.fitting.minimizer_type.value == 'lmfit (leastsq)'
-        a.fitting.minimizer_type = 'lmfit (leastsq)'
+        assert a.minimizer.type == 'lmfit (leastsq)'
+        a.minimizer.type = 'lmfit'
         out = capsys.readouterr().out
         assert 'Current minimizer changed to' in out
 
@@ -194,7 +194,11 @@ class TestSnapshotParams:
             unique_name = 'p1'
             value = 1.23
             uncertainty = 0.01
-            units = 'Å'
+            units = 'angstroms'
+
+            def resolve_display_units(self, context):
+                assert context == 'gui'
+                return 'Å'
 
         class FakeResults:
             parameters = [FakeParam()]
@@ -203,6 +207,7 @@ class TestSnapshotParams:
         assert 'expt1' in a._parameter_snapshots
         assert a._parameter_snapshots['expt1']['p1']['value'] == 1.23
         assert a._parameter_snapshots['expt1']['p1']['uncertainty'] == 0.01
+        assert a._parameter_snapshots['expt1']['p1']['units'] == 'Å'
 
 
 class TestBayesianProjection:
@@ -261,7 +266,7 @@ class TestBayesianProjection:
         project = SimpleNamespace(
             experiments=Experiments(),
             structures=object(),
-            rendering=SimpleNamespace(plotter=Plotter()),
+            rendering_plot=SimpleNamespace(plotter=Plotter()),
             _varname='proj',
         )
         analysis = Analysis(project=project)
@@ -289,18 +294,17 @@ class TestBayesianProjection:
             convergence_diagnostics={},
         )
 
-        analysis._store_bayesian_result_projection(results)
+        analysis._store_posterior_plot_cache_projection(results)
 
-        assert analysis.bayesian_result.has_distribution_cache.value is True
-        assert analysis.bayesian_result.has_pair_cache.value is False
-        assert analysis.bayesian_result.has_posterior_predictive.value is True
+        sidecar = analysis._persisted_fit_state_sidecar
+        assert sidecar['distribution_caches']
+        assert sidecar['pair_caches'] == {}
+        assert sidecar['predictive_datasets']
         assert np.allclose(
-            analysis._persisted_fit_state_sidecar['distribution_caches']['alpha']['x'],
+            sidecar['distribution_caches']['alpha']['x'],
             np.asarray([0.5, 1.5], dtype=float),
         )
         assert np.allclose(
-            analysis._persisted_fit_state_sidecar['predictive_datasets']['hrpt'][
-                'best_sample_prediction'
-            ],
+            sidecar['predictive_datasets']['hrpt']['best_sample_prediction'],
             np.asarray([3.0, 4.0], dtype=float),
         )

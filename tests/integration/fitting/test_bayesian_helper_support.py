@@ -23,7 +23,15 @@ class Identity:
 
 
 class Param:
-    def __init__(self, unique_name: str, start: float, value: float, uncertainty: float) -> None:
+    def __init__(
+        self,
+        unique_name: str,
+        start: float,
+        value: float,
+        uncertainty: float,
+        *,
+        display_units: str | None = None,
+    ) -> None:
         self._identity = Identity()
         self._fit_start_value = start
         self.unique_name = unique_name
@@ -31,9 +39,14 @@ class Param:
         self.value = value
         self.uncertainty = uncertainty
         self.units = 'arb'
+        self._display_units = display_units
+
+    def resolve_display_units(self, context: str) -> str:
+        assert context == 'gui'
+        return self._display_units or self.units
 
 
-def test_posterior_samples_flatten_and_to_arviz():
+def test_posterior_samples_flatten():
     from easydiffraction.analysis.fit_helpers.bayesian import PosteriorSamples
 
     posterior_samples = PosteriorSamples(
@@ -49,17 +62,13 @@ def test_posterior_samples_flatten_and_to_arviz():
     )
 
     flattened = posterior_samples.flattened()
-    inference_data = posterior_samples.to_arviz()
 
     assert flattened.shape == (4, 2)
     np.testing.assert_allclose(flattened[:, 0], np.array([1.0, 2.0, 3.0, 4.0]))
     np.testing.assert_allclose(flattened[:, 1], np.array([10.0, 20.0, 30.0, 40.0]))
-    assert set(inference_data.posterior.data_vars) == {'a', 'b'}
-    assert inference_data.posterior['a'].shape == (2, 2)
-    assert inference_data.sample_stats['lp'].shape == (2, 2)
 
 
-def test_posterior_samples_to_arviz_validates_shapes():
+def test_posterior_samples_validate_shapes_rejects_wrong_ndim():
     from easydiffraction.analysis.fit_helpers.bayesian import PosteriorSamples
 
     posterior_samples = PosteriorSamples(
@@ -71,10 +80,10 @@ def test_posterior_samples_to_arviz_validates_shapes():
         ValueError,
         match=r'Posterior sample array must have shape \(n_draws, n_chains, n_parameters\)\.',
     ):
-        posterior_samples.to_arviz()
+        posterior_samples.validate_shapes()
 
 
-def test_posterior_samples_to_arviz_validates_name_and_log_posterior_lengths():
+def test_posterior_samples_validate_shapes_rejects_name_and_log_posterior_mismatches():
     from easydiffraction.analysis.fit_helpers.bayesian import PosteriorSamples
 
     wrong_names = PosteriorSamples(
@@ -85,7 +94,7 @@ def test_posterior_samples_to_arviz_validates_name_and_log_posterior_lengths():
         ValueError,
         match=r'Posterior sample array does not match the parameter name list length\.',
     ):
-        wrong_names.to_arviz()
+        wrong_names.validate_shapes()
 
     wrong_log_posterior = PosteriorSamples(
         parameter_names=['a'],
@@ -96,7 +105,7 @@ def test_posterior_samples_to_arviz_validates_name_and_log_posterior_lengths():
         ValueError,
         match=r'Log-posterior array must match the first two posterior sample axes\.',
     ):
-        wrong_log_posterior.to_arviz()
+        wrong_log_posterior.validate_shapes()
 
 
 def test_compute_convergence_diagnostics_treats_non_finite_values_as_not_converged(
@@ -110,17 +119,13 @@ def test_compute_convergence_diagnostics_treats_non_finite_values_as_not_converg
         parameter_samples=np.ones((4, 2, 1), dtype=float),
     )
 
-    fake_dataset = type('FakeDataset', (), {'data_vars': {'a': np.array([np.nan], dtype=float)}})
-
     monkeypatch.setattr(
-        'easydiffraction.analysis.fit_helpers.bayesian.az.rhat',
-        lambda inference_data: fake_dataset,
+        'easydiffraction.analysis.fit_helpers.bayesian.compute_r_hat',
+        lambda _samples: float('nan'),
     )
     monkeypatch.setattr(
-        'easydiffraction.analysis.fit_helpers.bayesian.az.ess',
-        lambda inference_data, method='bulk': type(
-            'FakeDataset', (), {'data_vars': {'a': np.array([4000.0], dtype=float)}}
-        ),
+        'easydiffraction.analysis.fit_helpers.bayesian.compute_ess_bulk',
+        lambda _samples: 4000.0,
     )
 
     diagnostics = compute_convergence_diagnostics(posterior_samples)
@@ -217,61 +222,47 @@ def test_standard_deviations_from_summaries_returns_float_array():
 
 
 def test_bayesian_format_helpers_cover_edge_cases():
+    from easydiffraction.analysis.fit_helpers.bayesian import _bayesian_overall_status
     from easydiffraction.analysis.fit_helpers.bayesian import _calculate_fit_quality_metrics
-    from easydiffraction.analysis.fit_helpers.bayesian import _dataset_to_scalar_dict
-    from easydiffraction.analysis.fit_helpers.bayesian import _format_bayesian_overall_status
-    from easydiffraction.analysis.fit_helpers.bayesian import _format_convergence_summary
-    from easydiffraction.analysis.fit_helpers.bayesian import _format_point_estimate_name
-    from easydiffraction.analysis.fit_helpers.bayesian import _format_sampler_settings
     from easydiffraction.analysis.fit_helpers.bayesian import _maybe_scalar
-
-    dataset = type(
-        'FakeDataset',
-        (),
-        {'data_vars': {'a': np.array([np.nan], dtype=float), 'b': np.array([3.0], dtype=float)}},
-    )
 
     assert _maybe_scalar(None) is None
     assert _maybe_scalar(float('inf')) is None
     assert _maybe_scalar(3.0) == pytest.approx(3.0)
-    assert _dataset_to_scalar_dict(dataset) == {'a': None, 'b': 3.0}
-    assert _format_sampler_settings({}) is None
+
+    # Two-state overall-status helper: 'success' only when sampler
+    # completed AND convergence passed.
     assert (
-        _format_sampler_settings({'steps': 10, 'burn': 2, 'samples': 40})
-        == 'steps=10, burn=2, samples=40'
+        _bayesian_overall_status(
+            success=False,
+            sampler_completed=False,
+            convergence_diagnostics={},
+        )
+        == 'failed'
     )
-    assert _format_point_estimate_name('map') == 'Best posterior sample'
-    assert _format_point_estimate_name('best_sample') == 'Best posterior sample'
-    assert _format_bayesian_overall_status(
-        success=False,
-        sampler_completed=False,
-        convergence_diagnostics={},
-    ) == ('❌', 'failed')
-    assert _format_bayesian_overall_status(
-        success=True,
-        sampler_completed=False,
-        convergence_diagnostics={'converged': False},
-    ) == ('⚠️', 'completed with warnings')
-    assert _format_bayesian_overall_status(
-        success=True,
-        sampler_completed=True,
-        convergence_diagnostics={'converged': True},
-    ) == ('✅', 'completed')
-    assert _format_bayesian_overall_status(
-        success=True,
-        sampler_completed=False,
-        convergence_diagnostics={},
-    ) == ('✅', 'posterior available')
-    assert _format_convergence_summary({}) is None
-    assert _format_convergence_summary({
-        'converged': False,
-        'max_r_hat': 1.02,
-        'min_ess_bulk': 200.0,
-        'n_draws': 30,
-        'n_chains': 8,
-    }) == (
-        'status=[red]failed[/red], max_r_hat=[red]1.020[/red], '
-        'min_ess_bulk=[red]200.0[/red], draws=30, chains=8'
+    assert (
+        _bayesian_overall_status(
+            success=True,
+            sampler_completed=False,
+            convergence_diagnostics={'converged': False},
+        )
+        == 'failed'
+    )
+    assert (
+        _bayesian_overall_status(
+            success=True,
+            sampler_completed=True,
+            convergence_diagnostics={'converged': True},
+        )
+        == 'success'
+    )
+    assert (
+        _bayesian_overall_status(
+            success=True,
+            sampler_completed=False,
+            convergence_diagnostics={},
+        )
+        == 'failed'
     )
 
     metrics = _calculate_fit_quality_metrics(
@@ -339,22 +330,24 @@ def test_bayesian_fit_results_display_results_prints_sampler_and_convergence(cap
 
     out = _unstyled_output(capsys.readouterr().out)
     assert 'Bayesian fit results' in out
-    assert 'Overall status: completed with warnings' in out
-    assert 'Sampler status: DREAM sampling completed' in out
-    assert 'Sampler: dream' in out
-    assert 'Sampler completed: yes' in out
-    assert 'steps=200' in out
-    assert 'init=lhs' in out
-    assert 'random_seed=1313900679' not in out
-    assert 'status=failed' in out
-    assert 'max_r_hat=1.107' in out
-    assert 'min_ess_bulk=125.9' in out
-    assert 'Posterior parameter summaries:' in out
+    assert 'Overall status' in out
+    assert 'failed' in out  # convergence failed → overall failed
+    assert 'DREAM sampling completed' in out  # engine message
+    assert 'Sampler' in out
+    assert 'Convergence status' in out
+    assert 'Max r-hat' in out
+    assert '1.107' in out
+    assert 'Min ess bulk' in out
+    assert '125.9' in out
+    assert 'Posterior distribution:' in out
     assert 'Success: True' not in out
+    assert 'Sampler completed' not in out  # dropped — redundant with Overall status
+    assert 'Sampler settings' not in out  # dropped — covered by Settings used table
+    assert 'Committed point estimate' not in out  # dropped — covered by footnote
     assert 'datablock' in out
     assert 'category' in out
     assert 'entry' in out
-    assert '95% interval' in out
+    assert '95% CI' in out
     assert '68% interval' not in out
     assert 'std' not in out
 
@@ -373,7 +366,13 @@ def test_build_posterior_summary_row_restores_identifier_columns():
     from easydiffraction.analysis.fit_helpers.bayesian import PosteriorParameterSummary
     from easydiffraction.analysis.fit_helpers.bayesian import _build_posterior_summary_row
 
-    parameter = Param(unique_name='a', start=1.0, value=1.2, uncertainty=0.05)
+    parameter = Param(
+        unique_name='a',
+        start=1.0,
+        value=1.2,
+        uncertainty=0.05,
+        display_units='Å²',
+    )
     summary = PosteriorParameterSummary(
         unique_name='a',
         display_name='a',
@@ -393,7 +392,7 @@ def test_build_posterior_summary_row_restores_identifier_columns():
         'cat',
         'entry',
         'a',
-        'arb',
+        'Å²',
         '1.1500',
         '[1.0000, 1.3000]',
         '[red]1.107[/red]',
@@ -414,7 +413,13 @@ def test_render_committed_parameter_table_places_units_after_parameter(monkeypat
     monkeypatch.setattr(bayesian, 'render_table', fake_render_table)
 
     bayesian._render_committed_parameter_table([
-        Param(unique_name='a', start=1.0, value=1.2, uncertainty=0.05)
+        Param(
+            unique_name='a',
+            start=1.0,
+            value=1.2,
+            uncertainty=0.05,
+            display_units='Å²',
+        )
     ])
 
     assert captured['columns_headers'] == [
@@ -424,8 +429,8 @@ def test_render_committed_parameter_table_places_units_after_parameter(monkeypat
         'parameter',
         'units',
         'start',
-        'best posterior sample',
-        'uncertainty',
+        'value',
+        's.u.',
         'change',
     ]
     assert captured['columns_alignment'] == [
@@ -445,7 +450,7 @@ def test_render_committed_parameter_table_places_units_after_parameter(monkeypat
             'cat',
             'entry',
             'a',
-            'arb',
+            'Å²',
             '1.0000',
             '1.2000',
             '0.0500',
@@ -468,7 +473,15 @@ def test_render_posterior_summary_table_places_units_after_parameter(monkeypatch
     monkeypatch.setattr(bayesian, 'render_table', fake_render_table)
 
     bayesian._render_posterior_summary_table(
-        parameters=[Param(unique_name='a', start=1.0, value=1.2, uncertainty=0.05)],
+        parameters=[
+            Param(
+                unique_name='a',
+                start=1.0,
+                value=1.2,
+                uncertainty=0.05,
+                display_units='Å²',
+            )
+        ],
         posterior_parameter_summaries=[
             PosteriorParameterSummary(
                 unique_name='a',
@@ -491,7 +504,7 @@ def test_render_posterior_summary_table_places_units_after_parameter(monkeypatch
         'parameter',
         'units',
         'median',
-        '95% interval',
+        '95% CI',
         'r-hat',
         'ess bulk',
     ]
@@ -512,7 +525,7 @@ def test_render_posterior_summary_table_places_units_after_parameter(monkeypatch
             'cat',
             'entry',
             'a',
-            'arb',
+            'Å²',
             '1.1500',
             '[1.0000, 1.3000]',
             '[red]1.107[/red]',
@@ -605,14 +618,16 @@ def test_fitresults_display_results_prints_and_table(capsys):
     )
 
     out = _unstyled_output(capsys.readouterr().out)
-    assert 'Fit results' in out
-    assert 'Success: True' in out
+    assert 'Least-squares fit results:' in out
+    assert 'Overall status' in out
+    assert 'success' in out
     assert 'reduced χ²' in out
-    assert 'R-factor (Rf)' in out
-    assert 'R-factor squared (Rf²)' in out
-    assert 'Weighted R-factor (wR)' in out
-    assert 'Bragg R-factor (BR)' in out
-    assert 'Fitted parameters:' in out
+    assert 'R-factor (Rf' in out
+    assert 'R-factor squared (Rf²' in out
+    assert 'Weighted R-factor (wR' in out
+    assert 'Bragg R-factor (BR' in out
+    assert 'Refined parameters:' in out
+    assert 'Success: True' not in out  # replaced by Overall status row
     assert any(char in out for char in ('╒', '┌', '+', '─'))
 
 
@@ -630,7 +645,15 @@ def test_fitresults_display_results_places_units_after_parameter(monkeypatch):
 
     reporting.FitResults(
         success=True,
-        parameters=[Param(unique_name='a', start=1.0, value=1.2, uncertainty=0.05)],
+        parameters=[
+            Param(
+                unique_name='a',
+                start=1.0,
+                value=1.2,
+                uncertainty=0.05,
+                display_units='Å²',
+            )
+        ],
     ).display_results()
 
     assert captured['columns_headers'] == [
@@ -640,8 +663,8 @@ def test_fitresults_display_results_places_units_after_parameter(monkeypatch):
         'parameter',
         'units',
         'start',
-        'fitted',
-        'uncertainty',
+        'value',
+        's.u.',
         'change',
     ]
     assert captured['columns_alignment'] == [
@@ -661,7 +684,7 @@ def test_fitresults_display_results_places_units_after_parameter(monkeypatch):
             'cat',
             'entry',
             'a',
-            'arb',
+            'Å²',
             '1.0000',
             '1.2000',
             '0.0500',

@@ -5,10 +5,13 @@
 from __future__ import annotations
 
 import html
+import uuid
 from contextlib import AbstractContextManager
 from contextlib import suppress
+from pathlib import Path
 from time import monotonic
 from typing import TYPE_CHECKING
+from typing import Self
 
 if TYPE_CHECKING:
     from types import TracebackType
@@ -16,9 +19,13 @@ if TYPE_CHECKING:
 try:
     from IPython.display import HTML
     from IPython.display import DisplayHandle
+    from IPython.display import Javascript
+    from IPython.display import display
 except ImportError:  # pragma: no cover - optional dependency
     HTML = None
     DisplayHandle = None
+    Javascript = None
+    display = None
 
 from rich.console import Group
 from rich.live import Live
@@ -489,3 +496,274 @@ def activity_indicator(
         on exit.
     """
     return _ActivityIndicatorContext(label=label, verbosity=verbosity)
+
+
+class NotebookFitStopControl(AbstractContextManager):
+    """Display a Jupyter stop button for fitting runs."""
+
+    def __init__(self, *, verbosity: VerbosityEnum) -> None:
+        self._verbosity = verbosity
+        self._display_handle: object | None = None
+        self._element_id = f'ed-fit-stop-{uuid.uuid4().hex}'
+        self._kernel_id = self._current_kernel_id()
+
+    def __enter__(self) -> Self:
+        """Show the stop button."""
+        self.show()
+        return self
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> None:
+        """Update or clear the stop button when leaving the context."""
+        del exc_type
+        del exc_value
+        del traceback
+        self.close()
+
+    def show(self) -> None:
+        """Render the stop button when running in a notebook."""
+        if not self._can_display():
+            return
+
+        handle = DisplayHandle()
+        self._display_handle = handle
+        with suppress(Exception):
+            handle.display(HTML(self._active_html()))
+            display(Javascript(self._interrupt_javascript()))
+
+    def close(self) -> None:
+        """Clear the stop button when fitting ends."""
+        if self._display_handle is None or HTML is None:
+            return
+
+        with suppress(Exception):
+            self._display_handle.update(HTML(''))
+        self._display_handle = None
+
+    def _can_display(self) -> bool:
+        return (
+            self._verbosity is not VerbosityEnum.SILENT
+            and in_jupyter()
+            and DisplayHandle is not None
+            and HTML is not None
+            and Javascript is not None
+            and display is not None
+        )
+
+    def _active_html(self) -> str:
+        return (
+            '<style>'
+            '.ed-fit-stop-control {'
+            'display: inline-flex;'
+            'align-items: center;'
+            'gap: 0.5rem;'
+            'margin: 0.35rem 0 0.45rem 0;'
+            'font-family: var(--jp-ui-font-family, -apple-system, BlinkMacSystemFont, '
+            '"Segoe UI", sans-serif);'
+            '}'
+            '.ed-fit-stop-button {'
+            'border: 1px solid #b91c1c;'
+            'border-radius: 4px;'
+            'background: #dc2626;'
+            'color: white;'
+            'font-size: 0.9rem;'
+            'line-height: 1.1;'
+            'padding: 0.35rem 0.65rem;'
+            'cursor: pointer;'
+            '}'
+            '.ed-fit-stop-button:disabled {'
+            'cursor: default;'
+            'opacity: 0.65;'
+            '}'
+            '.ed-fit-stop-status {'
+            'color: var(--jp-ui-font-color2, #6b7280);'
+            'font-size: 0.85rem;'
+            '}'
+            '</style>'
+            f'<div id="{self._element_id}" class="ed-fit-stop-control">'
+            f'<button id="{self._element_id}-button" '
+            'class="ed-fit-stop-button" type="button">Stop fitting</button>'
+            f'<span id="{self._element_id}-status" class="ed-fit-stop-status"></span>'
+            '</div>'
+        )
+
+    def _interrupt_javascript(self) -> str:
+        button_id = f'{self._element_id}-button'
+        status_id = f'{self._element_id}-status'
+        kernel_id = self._kernel_id
+        return f"""
+(function() {{
+  const button = document.getElementById({button_id!r});
+  const status = document.getElementById({status_id!r});
+  const kernelId = {kernel_id!r};
+  if (!button) {{
+    return;
+  }}
+
+  function setStatus(text) {{
+    if (status) {{
+      status.textContent = text;
+    }}
+  }}
+
+  function pageConfig() {{
+    const element = document.getElementById('jupyter-config-data');
+    if (!element || !element.textContent) {{
+      return {{}};
+    }}
+    try {{
+      return JSON.parse(element.textContent);
+    }} catch (error) {{
+      return {{}};
+    }}
+  }}
+
+  function baseUrl(config) {{
+    const configured = config.baseUrl || config.base_url ||
+      (window.Jupyter && Jupyter.notebook && Jupyter.notebook.base_url);
+    if (configured) {{
+      return configured.endsWith('/') ? configured : configured + '/';
+    }}
+    const markers = ['/lab/', '/notebooks/', '/tree/'];
+    for (const marker of markers) {{
+      const index = window.location.pathname.indexOf(marker);
+      if (index >= 0) {{
+        return window.location.pathname.slice(0, index + 1);
+      }}
+    }}
+    return '/';
+  }}
+
+  function token(config) {{
+    return config.token || new URLSearchParams(window.location.search).get('token') || '';
+  }}
+
+  function cookie(name) {{
+    const prefix = name + '=';
+    for (const part of document.cookie.split(';')) {{
+      const trimmed = part.trim();
+      if (trimmed.startsWith(prefix)) {{
+        return decodeURIComponent(trimmed.slice(prefix.length));
+      }}
+    }}
+    return '';
+  }}
+
+  function notebookPath() {{
+    const decoded = decodeURIComponent(window.location.pathname);
+    const markers = ['/lab/tree/', '/notebooks/', '/tree/'];
+    for (const marker of markers) {{
+      const index = decoded.indexOf(marker);
+      if (index >= 0) {{
+        return decoded.slice(index + marker.length);
+      }}
+    }}
+    return '';
+  }}
+
+  async function kernelFromSessions(config) {{
+    const url = new URL(baseUrl(config) + 'api/sessions', window.location.origin);
+    const authToken = token(config);
+    if (authToken) {{
+      url.searchParams.set('token', authToken);
+    }}
+    const response = await fetch(url, {{credentials: 'same-origin'}});
+    if (!response.ok) {{
+      return '';
+    }}
+    const sessions = await response.json();
+    const path = notebookPath();
+    const session = sessions.find((item) => item.path === path) || sessions[0];
+    return session && session.kernel ? session.kernel.id : '';
+  }}
+
+  async function interruptKernel(config, resolvedKernelId) {{
+    const url = new URL(
+      baseUrl(config) + 'api/kernels/' + resolvedKernelId + '/interrupt',
+      window.location.origin
+    );
+    const authToken = token(config);
+    if (authToken) {{
+      url.searchParams.set('token', authToken);
+    }}
+    const xsrfToken = cookie('_xsrf');
+    const headers = {{}};
+    if (xsrfToken) {{
+      headers['X-XSRFToken'] = xsrfToken;
+    }}
+    const response = await fetch(url, {{
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: headers
+    }});
+    return response.ok;
+  }}
+
+  button.addEventListener('click', async function() {{
+    button.disabled = true;
+    setStatus('Stopping...');
+    const config = pageConfig();
+    try {{
+      const resolvedKernelId = kernelId || await kernelFromSessions(config);
+      if (!resolvedKernelId) {{
+        throw new Error('Could not resolve the current kernel id.');
+      }}
+      const interrupted = await interruptKernel(config, resolvedKernelId);
+      if (!interrupted) {{
+        throw new Error('Jupyter Server rejected the interrupt request.');
+      }}
+      setStatus('Interrupt sent...');
+    }} catch (error) {{
+      button.disabled = false;
+      setStatus('Use Kernel > Interrupt to stop this fit.');
+    }}
+  }});
+}})();
+"""
+
+    @staticmethod
+    def _current_kernel_id() -> str:
+        """Return the active ipykernel id when available."""
+        try:
+            from IPython import get_ipython  # type: ignore[import-not-found]  # noqa: PLC0415
+        except ImportError:  # pragma: no cover - optional dependency
+            return ''
+
+        shell = get_ipython()
+        kernel = getattr(shell, 'kernel', None)
+        kernel_id = getattr(kernel, 'kernel_id', None)
+        if kernel_id:
+            return str(kernel_id)
+
+        try:
+            from ipykernel.connect import (  # type: ignore[import-not-found]  # noqa: PLC0415
+                get_connection_file,
+            )
+        except ImportError:  # pragma: no cover - optional dependency
+            return ''
+
+        with suppress(Exception):
+            return NotebookFitStopControl._kernel_id_from_connection_file(get_connection_file())
+        return ''
+
+    @staticmethod
+    def _kernel_id_from_connection_file(connection_file: str) -> str:
+        """Extract the kernel id from an ipykernel connection file."""
+        file_name = Path(connection_file).name
+        prefix = 'kernel-'
+        suffix = '.json'
+        if not file_name.startswith(prefix) or not file_name.endswith(suffix):
+            return ''
+        return file_name[len(prefix) : -len(suffix)]
+
+
+def notebook_fit_stop_control(
+    *,
+    verbosity: VerbosityEnum,
+) -> NotebookFitStopControl:
+    """Return a notebook stop-control context for fitting runs."""
+    return NotebookFitStopControl(verbosity=verbosity)

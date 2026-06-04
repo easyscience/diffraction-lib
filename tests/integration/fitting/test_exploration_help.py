@@ -82,7 +82,8 @@ def test_experiment_show_as_cif_omits_empty_category_gaps(lbco_fitted_project, m
     expt.show_as_cif()
 
     cif_text = captured['cif_text']
-    assert re.search(r'_pd_phase_block\.scale\n[^\n]+\n\nloop_', cif_text) is not None
+    assert re.search(r'_pd_phase_block\.scale\n[^\n]+\n\n_background\.type', cif_text) is not None
+    assert re.search(r'_background\.type [^\n]+\n\nloop_', cif_text) is not None
     assert '\n\n\n' not in cif_text
 
 
@@ -100,16 +101,16 @@ def test_experiment_switchable_category_types(lbco_fitted_project):
     # Instrument
     assert expt.instrument is not None
     # Background
-    expt.show_background_types()
-    assert isinstance(expt.background_type, str)
+    expt.background.show_supported()
+    assert isinstance(expt.background.type, str)
     # Peak profile
-    expt.show_peak_profile_types()
-    assert isinstance(expt.peak_profile_type, str)
+    expt.peak.show_supported()
+    assert isinstance(expt.peak.type, str)
     # Linked phases
     assert expt.linked_phases is not None
     # Calculator
-    expt.calculation.show_calculator_types()
-    assert isinstance(expt.calculation.calculator_type.value, str)
+    expt.calculator.show_supported()
+    assert isinstance(expt.calculator.type, str)
     # Diffrn
     assert expt.diffrn is not None
 

@@ -86,7 +86,7 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
     project.experiments.add(expt)
 
     # Prepare for fitting
-    project.analysis.fitting.minimizer_type = 'lmfit'
+    project.analysis.minimizer.type = 'lmfit'
 
     # ------------ 1st fitting ------------
 
@@ -234,7 +234,7 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
     project.experiments.add(expt)
 
     # Prepare for fitting
-    project.analysis.fitting.minimizer_type = 'lmfit'
+    project.analysis.minimizer.type = 'lmfit'
 
     # ------------ 1st fitting ------------
 
@@ -400,7 +400,7 @@ def test_fit_neutron_pd_cwl_hs() -> None:
     project.experiments.add(expt)
 
     # Prepare for fitting
-    project.analysis.fitting.minimizer_type = 'lmfit'
+    project.analysis.minimizer.type = 'lmfit'
 
     # ------------ 1st fitting ------------
 
@@ -476,6 +476,20 @@ def test_fit_neutron_pd_cwl_hs() -> None:
         project.analysis.fit_results.reduced_chi_square,
         desired=2.11,
         decimal=1,
+    )
+
+    # ed-6 regression: O and H sit on R-3m 'h' = (x,-x,z), so after freeing
+    # and refining fract_x, fract_y must stay slaved to -fract_x (on-site).
+    # Operator-form coords_xyz wrongly freed fract_y and let them drift.
+    assert_almost_equal(
+        model.atom_sites['O'].fract_y.value,
+        desired=-model.atom_sites['O'].fract_x.value,
+        decimal=6,
+    )
+    assert_almost_equal(
+        model.atom_sites['H'].fract_y.value,
+        desired=-model.atom_sites['H'].fract_x.value,
+        decimal=6,
     )
 
 

@@ -79,7 +79,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     expt1.peak.broad_lorentz_x = 0
     expt1.peak.broad_lorentz_y = 0.0878
     expt1.linked_phases.create(id='pbso4', scale=1.46)
-    expt1.background_type = 'line-segment'
+    expt1.background.type = 'line-segment'
     for id, x, y in [
         ('1', 11.0, 206.1624),
         ('2', 15.0, 194.75),
@@ -102,7 +102,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     expt2.peak.broad_lorentz_x = 0
     expt2.peak.broad_lorentz_y = 0.0878
     expt2.linked_phases.create(id='pbso4', scale=1.46)
-    expt2.background_type = 'line-segment'
+    expt2.background.type = 'line-segment'
     for id, x, y in [
         ('1', 11.0, 206.1624),
         ('2', 15.0, 194.75),
@@ -122,8 +122,8 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     project.experiments.add(expt2)
 
     # Prepare for fitting
-    project.analysis.fitting.minimizer_type = 'lmfit'
-    project.analysis.fitting_mode_type = 'joint'
+    project.analysis.minimizer.type = 'lmfit'
+    project.analysis.fitting_mode.type = 'joint'
 
     # Select fitting parameters
     model.cell.length_a.free = True
@@ -255,7 +255,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     project.experiments.add(expt2)
 
     # Prepare for fitting
-    project.analysis.fitting.minimizer_type = 'lmfit'
+    project.analysis.minimizer.type = 'lmfit'
 
     # Select fitting parameters
     model.cell.length_a.free = True
@@ -279,7 +279,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     # ------------ 2nd fitting ------------
 
     # Perform fit
-    project.analysis.fitting_mode_type = 'joint'
+    project.analysis.fitting_mode.type = 'joint'
     project.analysis.fit()
 
     # Compare fit quality

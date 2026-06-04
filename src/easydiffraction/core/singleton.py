@@ -112,28 +112,27 @@ class ConstraintsHandler(SingletonBase):
 
         for lhs_alias, rhs_expr in self._parsed_constraints:
             try:
-                # Evaluate the RHS expression using the current values
-                rhs_value = ae(rhs_expr)
-
-                # asteval silently returns None for undefined names
-                # instead of raising an exception; errors are stored in
-                # ae.error.
-                if ae.error:
-                    error_msgs = '; '.join(str(e.get_error()) for e in ae.error)
-                    ae.error.clear()
-                    log.error(
-                        f"Constraint '{lhs_alias} = {rhs_expr}' could not be "
-                        f'evaluated: {error_msgs}. '
-                        f'Make sure every name in the expression is registered '
-                        f'as an alias via analysis.aliases.create().',
-                        exc_type=ValueError,
-                    )
-
-                # Get the actual parameter object we want to update
-                param = self._alias_to_param[lhs_alias].param
-
-                # Update its value and mark it as user constrained
-                param._set_value_user_constrained(rhs_value)
-
+                self._apply_one_constraint(ae, lhs_alias, rhs_expr)
             except (ValueError, TypeError, ArithmeticError, KeyError, AttributeError) as error:
                 print(f"Failed to apply constraint '{lhs_alias} = {rhs_expr}': {error}")
+
+    def _apply_one_constraint(
+        self,
+        ae: Interpreter,
+        lhs_alias: str,
+        rhs_expr: str,
+    ) -> None:
+        """Evaluate and apply one parsed constraint expression."""
+        rhs_value = ae(rhs_expr)
+        if ae.error:
+            error_msgs = '; '.join(str(e.get_error()) for e in ae.error)
+            ae.error.clear()
+            log.error(
+                f"Constraint '{lhs_alias} = {rhs_expr}' could not be "
+                f'evaluated: {error_msgs}. '
+                f'Make sure every name in the expression is registered '
+                f'as an alias via analysis.aliases.create().',
+                exc_type=ValueError,
+            )
+        param = self._alias_to_param[lhs_alias].param
+        param._set_value_user_constrained(rhs_value)

@@ -9,6 +9,7 @@ import numpy as np
 
 from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.metadata import CalculatorSupport
 from easydiffraction.core.metadata import Compatibility
 from easydiffraction.core.metadata import TypeInfo
@@ -44,6 +45,10 @@ class PdDataPointBaseMixin:
         self._point_id = StringDescriptor(
             name='point_id',
             description='Identifier for this data point in the dataset',
+            display_handler=DisplayHandler(
+                display_name='ID',
+                latex_name='ID',
+            ),
             value_spec=AttributeSpec(
                 default='0',
                 # TODO: the following pattern is valid for dict key
@@ -60,6 +65,13 @@ class PdDataPointBaseMixin:
         self._d_spacing = NumericDescriptor(
             name='d_spacing',
             description='d-spacing value corresponding to this data point',
+            units='angstroms',
+            display_handler=DisplayHandler(
+                display_name='d',
+                display_units='Å',
+                latex_name=r'$d$',
+                latex_units=r'\AA',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0),
@@ -69,6 +81,10 @@ class PdDataPointBaseMixin:
         self._intensity_meas = NumericDescriptor(
             name='intensity_meas',
             description='Intensity recorded at each measurement point (angle/time)',
+            display_handler=DisplayHandler(
+                display_name='Imeas',
+                latex_name=r'$I_{\mathrm{meas}}$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0),
@@ -83,6 +99,10 @@ class PdDataPointBaseMixin:
         self._intensity_meas_su = NumericDescriptor(
             name='intensity_meas_su',
             description='Standard uncertainty of the measured intensity at this point',
+            display_handler=DisplayHandler(
+                display_name='s.u.(Imeas)',
+                latex_name=r'$\sigma(I_{\mathrm{meas}})$',
+            ),
             value_spec=AttributeSpec(
                 default=1.0,
                 validator=RangeValidator(ge=0),
@@ -97,6 +117,10 @@ class PdDataPointBaseMixin:
         self._intensity_calc = NumericDescriptor(
             name='intensity_calc',
             description='Intensity of a computed diffractogram at this point',
+            display_handler=DisplayHandler(
+                display_name='Icalc',
+                latex_name=r'$I_{\mathrm{calc}}$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0),
@@ -106,6 +130,10 @@ class PdDataPointBaseMixin:
         self._intensity_bkg = NumericDescriptor(
             name='intensity_bkg',
             description='Intensity of a computed background at this point',
+            display_handler=DisplayHandler(
+                display_name='Ibkg',
+                latex_name=r'$I_{\mathrm{bkg}}$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0),
@@ -115,6 +143,10 @@ class PdDataPointBaseMixin:
         self._calc_status = StringDescriptor(
             name='calc_status',
             description='Status code of the data point in the calculation process',
+            display_handler=DisplayHandler(
+                display_name='Status',
+                latex_name='Status',
+            ),
             value_spec=AttributeSpec(
                 default='incl',  # TODO: Make Enum
                 validator=MembershipValidator(allowed=['incl', 'excl']),
@@ -210,7 +242,13 @@ class PdCwlDataPointMixin:
         self._two_theta = NumericDescriptor(
             name='two_theta',
             description='Measured 2θ diffraction angle.',
-            units='deg',
+            units='degrees',
+            display_handler=DisplayHandler(
+                display_name='2θ',
+                display_units='deg',
+                latex_name=r'$2\theta$',
+                latex_units=r'\mathrm{deg}',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0, le=180),
@@ -247,7 +285,13 @@ class PdTofDataPointMixin:
         self._time_of_flight = NumericDescriptor(
             name='time_of_flight',
             description='Measured time for time-of-flight neutron measurement.',
-            units='μs',
+            units='microseconds',
+            display_handler=DisplayHandler(
+                display_name='TOF',
+                latex_name='TOF',
+                display_units='μs',
+                latex_units=r'$\mu\mathrm{s}$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0),
@@ -386,7 +430,7 @@ class PdDataBase(CategoryCollection):
         experiments = experiment._parent
         project = experiments._parent
         structures = project.structures
-        calculator = experiment.calculation.calculator
+        calculator = experiment.calculator.calculator
         refln = experiment.refln
 
         calc, refln_records, missing_refln_records = self._phase_calculation_results(
@@ -542,6 +586,19 @@ class PdDataBase(CategoryCollection):
             dtype=float,  # TODO: needed? DataTypes.NUMERIC?
         )
 
+    def fit_data_arrays(self) -> dict[str, np.ndarray | None]:
+        """Return arrays needed to draw the fit-data chart."""
+        meas = self.intensity_meas
+        calc = self.intensity_calc
+        return {
+            'x': self.x,
+            'meas': meas,
+            'meas_su': self.intensity_meas_su,
+            'calc': calc,
+            'diff': meas - calc,
+            'bkg': self.intensity_bkg,
+        }
+
 
 @DataFactory.register
 class PdCwlData(PdDataBase):
@@ -610,6 +667,13 @@ class PdCwlData(PdDataBase):
             (p.two_theta.value for p in self._calc_items),
             dtype=float,  # TODO: needed? DataTypes.NUMERIC?
         )
+
+    @property
+    def x_descriptor(self) -> NumericDescriptor:
+        """Descriptor that owns the 2θ x-axis metadata."""
+        if self._items:
+            return self._items[0].two_theta
+        return self._item_type().two_theta
 
     @property
     def x(self) -> np.ndarray:
@@ -691,6 +755,13 @@ class PdTofData(PdDataBase):
             (p.time_of_flight.value for p in self._calc_items),
             dtype=float,  # TODO: needed? DataTypes.NUMERIC?
         )
+
+    @property
+    def x_descriptor(self) -> NumericDescriptor:
+        """Descriptor that owns the TOF x-axis metadata."""
+        if self._items:
+            return self._items[0].time_of_flight
+        return self._item_type().time_of_flight
 
     @property
     def x(self) -> np.ndarray:

@@ -36,7 +36,6 @@ def test_append_result_writes_one_row(tmp_path):
             tutorial_name='ed-21.py',
             elapsed_seconds=12.3456,
             status='ok',
-            return_code=0,
         ),
     )
 
@@ -48,7 +47,6 @@ def test_append_result_writes_one_row(tmp_path):
             'tutorial_name': 'ed-21.py',
             'elapsed_seconds': '12.346',
             'status': 'ok',
-            'return_code': '0',
         }
     ]
 
@@ -80,8 +78,13 @@ def test_main_appends_first_result_before_second_tutorial_starts(monkeypatch, tm
         script_path: Path,
         tutorial_dir_path: Path,
         env: dict[str, str],
+        *,
+        index: int,
+        total: int,
+        name_width: int,
+        is_tty: bool,
     ) -> MUT.TutorialBenchmarkResult:
-        del tutorial_dir_path, env
+        del tutorial_dir_path, env, index, total, name_width, is_tty
         if script_path == first_tutorial:
             with output_path.open(encoding='utf-8', newline='') as handle:
                 rows = list(csv.reader(handle))
@@ -90,7 +93,6 @@ def test_main_appends_first_result_before_second_tutorial_starts(monkeypatch, tm
                 tutorial_name='ed-01.py',
                 elapsed_seconds=1.0,
                 status='ok',
-                return_code=0,
             )
 
         with output_path.open(encoding='utf-8', newline='') as handle:
@@ -100,14 +102,12 @@ def test_main_appends_first_result_before_second_tutorial_starts(monkeypatch, tm
                 'tutorial_name': 'ed-01.py',
                 'elapsed_seconds': '1.000',
                 'status': 'ok',
-                'return_code': '0',
             }
         ]
         return MUT.TutorialBenchmarkResult(
             tutorial_name='ed-02.py',
             elapsed_seconds=2.0,
             status='ok',
-            return_code=0,
         )
 
     monkeypatch.setattr(MUT, '_run_tutorial', fake_run_tutorial)
@@ -122,12 +122,10 @@ def test_main_appends_first_result_before_second_tutorial_starts(monkeypatch, tm
             'tutorial_name': 'ed-01.py',
             'elapsed_seconds': '1.000',
             'status': 'ok',
-            'return_code': '0',
         },
         {
             'tutorial_name': 'ed-02.py',
             'elapsed_seconds': '2.000',
             'status': 'ok',
-            'return_code': '0',
         },
     ]

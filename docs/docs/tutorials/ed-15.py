@@ -5,20 +5,20 @@
 # crystal neutron diffraction data from SENJU at J-PARC.
 
 # %% [markdown]
-# ## Import Library
+# ## 🛠️ Import Library
 
 # %%
 import easydiffraction as ed
 
 # %% [markdown]
-# ## Step 1: Define Project
+# ## 📦 Define Project
 
 # %%
-# Create minimal project without name and description
-project = ed.Project()
+# Create a minimal project with a short name
+project = ed.Project(name='taurine_senju')
 
 # %% [markdown]
-# ## Step 2: Define Structure
+# ## 🧩 Define Structure
 
 # %%
 # Download CIF file from repository
@@ -36,8 +36,11 @@ structure = project.structures['taurine']
 # %%
 structure.show_as_cif()
 
+# %%
+project.display.structure(struct_name='taurine')
+
 # %% [markdown]
-# ## Step 3: Define Experiment
+# ## 🔬 Define Experiment
 
 # %%
 # Download data file from repository
@@ -64,7 +67,10 @@ experiment.extinction.mosaicity = 1000.0
 experiment.extinction.radius = 100.0
 
 # %% [markdown]
-# ## Step 4: Perform Analysis I (ADP iso)
+# ## 🚀 Perform Analysis
+
+# %% [markdown]
+# ### ADP iso
 
 # %%
 project.display.pattern(expt_name='senju')
@@ -74,14 +80,14 @@ experiment.linked_crystal.scale.free = True
 experiment.extinction.radius.free = True
 
 # %%
-project.analysis.fitting.show_minimizer_types()
+project.analysis.minimizer.show_supported()
 
 # %%
-project.analysis.fitting.minimizer_type = 'bumps'
+project.analysis.minimizer.type = 'bumps'
 
 # %%
 # Limit number of iterations to prevent long calculation time in this tutorial.
-project.analysis.fitting.minimizer.max_iterations = 500
+project.analysis.minimizer.max_iterations = 500
 
 # %%
 # Start refinement. All parameters, which have standard uncertainties
@@ -102,7 +108,7 @@ project.experiments.show_names()
 project.display.pattern(expt_name='senju')
 
 # %% [markdown]
-# ## Step 5: Perform Analysis (ADP aniso)
+# ### ADP aniso
 
 # %%
 for atom_site in structure.atom_sites:
@@ -134,3 +140,9 @@ project.display.pattern(expt_name='senju')
 
 # %%
 structure.show_as_cif()
+
+# %% [markdown]
+# ## 💾 Save Project
+
+# %%
+project.save_as(dir_path='projects/ed_15_taurine_senju')

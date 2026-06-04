@@ -29,7 +29,7 @@
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See
-# [documentation](https://docs.easydiffraction.org/lib/user-guide/first-steps/#importing-easydiffraction)
+# [documentation](https://docs.easydiffraction.org/lib/latest/user-guide/first-steps/#importing-easydiffraction)
 # for more details about importing the EasyDiffraction library and its
 # components.
 
@@ -60,7 +60,7 @@ import easydiffraction as ed
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See
-# [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/project/)
+# [documentation](https://docs.easydiffraction.org/lib/latest/user-guide/analysis-workflow/project/)
 # for more details about creating a project and its purpose in the
 # analysis workflow.
 
@@ -87,7 +87,7 @@ project_1.info.description = 'Fitting simulated powder diffraction pattern of Si
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See
-# [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/experiment/)
+# [documentation](https://docs.easydiffraction.org/lib/latest/user-guide/analysis-workflow/experiment/)
 # for more details about experiments and their purpose in the analysis
 # workflow.
 
@@ -116,7 +116,7 @@ si_xye_path = ed.download_data(id=17, destination=data_dir)
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See
-# [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/experiment/#defining-an-experiment-manually)
+# [documentation](https://docs.easydiffraction.org/lib/latest/user-guide/analysis-workflow/experiment/#defining-an-experiment-manually)
 # for more details about different types of experiments.
 
 # %%
@@ -141,14 +141,14 @@ project_1.experiments.add_from_data_path(
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See
-# [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/experiment/#measured-data-category)
+# [documentation](https://docs.easydiffraction.org/lib/latest/user-guide/analysis-workflow/experiment/#measured-data-category)
 # for more details about the measured data and its format.
 #
 # To visualize the measured data, we can use the `pattern` method of
-# the project's `display` facade with `include='measured'`.
+# the project's `display` facade.
 
 # %%
-project_1.display.pattern(expt_name='sim_si', include='measured')
+project_1.display.pattern(expt_name='sim_si')
 
 # %% [markdown]
 # If you zoom in on the highest TOF peak (around 120,000 μs), you will
@@ -170,7 +170,7 @@ project_1.display.pattern(expt_name='sim_si', include='measured')
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See
-# [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/experiment/#excluded-regions-category)
+# [documentation](https://docs.easydiffraction.org/lib/latest/user-guide/analysis-workflow/experiment/#excluded-regions-category)
 # for more details about excluding regions from the measured data.
 
 # %%
@@ -183,10 +183,10 @@ project_1.experiments['sim_si'].excluded_regions.create(id='2', start=105500, en
 # the plot and is not used in the fitting process.
 
 # %%
-project_1.display.pattern(expt_name='sim_si', include=('measured', 'excluded'))
+project_1.display.pattern(expt_name='sim_si')
 
 # %% [markdown]
-# #### Set Instrument Parameters
+# #### Set Instrument
 #
 # After the experiment is created and measured data is loaded, we need
 # to set the instrument parameters.
@@ -205,7 +205,7 @@ project_1.display.pattern(expt_name='sim_si', include=('measured', 'excluded'))
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See
-# [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/experiment/#instrument-category)
+# [documentation](https://docs.easydiffraction.org/lib/latest/user-guide/analysis-workflow/experiment/#instrument-category)
 # for more details about the instrument parameters.
 
 # %%
@@ -251,12 +251,12 @@ print(project_1.experiments['sim_si'].instrument.calib_d_to_tof_linear.value)
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See
-# [documentation](https://docs.easydiffraction.org/lib/user-guide/parameters/)
+# [documentation](https://docs.easydiffraction.org/lib/latest/user-guide/parameters/)
 # for more details about parameters in EasyDiffraction and their
 # attributes.
 
 # %% [markdown]
-# #### Set Peak Profile Parameters
+# #### Set Peak Profile
 #
 # The next set of parameters is needed to define the peak profile used
 # in the fitting process. The peak profile describes the shape of the
@@ -308,11 +308,11 @@ print(project_1.experiments['sim_si'].instrument.calib_d_to_tof_linear.value)
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See
-# [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/experiment/#peak-category)
+# [documentation](https://docs.easydiffraction.org/lib/latest/user-guide/analysis-workflow/experiment/#peak-category)
 # for more details about the peak profile types.
 
 # %%
-project_1.experiments['sim_si'].show_peak_profile_types()
+project_1.experiments['sim_si'].peak.show_supported()
 
 # %%
 project_1.experiments['sim_si'].peak.broad_gauss_sigma_0 = 69498
@@ -355,14 +355,14 @@ project_1.experiments['sim_si'].peak.exp_rise_alpha_1 = 0.0147
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See
-# [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/experiment/#background-category)
+# [documentation](https://docs.easydiffraction.org/lib/latest/user-guide/analysis-workflow/experiment/#background-category)
 # for more details about the background and its types.
 
 # %%
-project_1.experiments['sim_si'].show_background_types()
+project_1.experiments['sim_si'].background.show_supported()
 
 # %%
-project_1.experiments['sim_si'].background_type = 'line-segment'
+project_1.experiments['sim_si'].background.type = 'line-segment'
 project_1.experiments['sim_si'].background.create(id='1', x=50000, y=0.01)
 project_1.experiments['sim_si'].background.create(id='2', x=60000, y=0.01)
 project_1.experiments['sim_si'].background.create(id='3', x=70000, y=0.01)
@@ -393,15 +393,16 @@ project_1.experiments['sim_si'].background.create(id='7', x=110000, y=0.01)
 # which is the length of the unit cell edge. The Si crystal structure
 # has a single atom in the unit cell, which is located at the origin (0,
 # 0, 0) of the unit cell. The symmetry of this site is defined by the
-# Wyckoff letter 'a'. The atomic displacement parameter defines the
-# thermal vibrations of the atoms in the unit cell and is presented as
-# an isotropic parameter (B_iso).
+# Wyckoff letter 'a', which is assigned automatically based on the space
+# group and the atomic coordinates. The atomic displacement parameter
+# defines the thermal vibrations of the atoms in the unit cell and is
+# presented as an isotropic parameter (B_iso).
 #
 # Sometimes, the initial crystal structure parameters can be obtained
 # from one of the crystallographic databases, like for example the
 # Crystallography Open Database (COD). In this case, we use the COD
 # entry for silicon as a reference for the initial crystal structure
-# model: https://www.crystallography.net/cod/4507226.html
+# model: https://www.crystallography.net/cod/9008565.html
 #
 # Usually, the crystal structure parameters are provided in a CIF file
 # format, which is a standard format for crystallographic data. An
@@ -411,7 +412,7 @@ project_1.experiments['sim_si'].background.create(id='7', x=110000, y=0.01)
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See
-# [documentation](https://docs.easydiffraction.org/lib/user-guide/data-format/)
+# [documentation](https://docs.easydiffraction.org/lib/latest/user-guide/data-format/)
 # for more details about the CIF format and its use in EasyDiffraction.
 
 # %% [markdown]
@@ -419,7 +420,7 @@ project_1.experiments['sim_si'].background.create(id='7', x=110000, y=0.01)
 # data_si
 #
 # _space_group.name_H-M_alt  "F d -3 m"
-# _space_group.IT_coordinate_system_code  2
+# _space_group.IT_coordinate_system_code  1
 #
 # _cell.length_a      5.43
 # _cell.length_b      5.43
@@ -434,11 +435,10 @@ project_1.experiments['sim_si'].background.create(id='7', x=110000, y=0.01)
 # _atom_site.fract_x
 # _atom_site.fract_y
 # _atom_site.fract_z
-# _atom_site.wyckoff_letter
 # _atom_site.occupancy
 # _atom_site.ADP_type
 # _atom_site.B_iso_or_equiv
-# Si Si   0 0 0   a  1.0   Biso 0.89
+# Si Si   0 0 0   1.0   Biso 0.89
 # ```
 
 # %% [markdown]
@@ -448,7 +448,7 @@ project_1.experiments['sim_si'].background.create(id='7', x=110000, y=0.01)
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See
-# [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/structure/)
+# [documentation](https://docs.easydiffraction.org/lib/latest/user-guide/analysis-workflow/structure/)
 # for more details about structures and their purpose in the data
 # analysis workflow.
 
@@ -463,19 +463,19 @@ project_1.structures.create(name='si')
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See
-# [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/structure/#space-group-category)
+# [documentation](https://docs.easydiffraction.org/lib/latest/user-guide/analysis-workflow/structure/#space-group-category)
 # for more details about the space group.
 
 # %%
 project_1.structures['si'].space_group.name_h_m = 'F d -3 m'
-project_1.structures['si'].space_group.it_coordinate_system_code = '2'
+project_1.structures['si'].space_group.it_coordinate_system_code = '1'
 
 # %% [markdown]
-# #### Set Lattice Parameters
+# #### Set Unit Cell
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See
-# [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/structure/#cell-category)
+# [documentation](https://docs.easydiffraction.org/lib/latest/user-guide/analysis-workflow/structure/#cell-category)
 # for more details about the unit cell parameters.
 
 # %%
@@ -486,19 +486,28 @@ project_1.structures['si'].cell.length_a = 5.43
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See
-# [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/structure/#atom-sites-category)
+# [documentation](https://docs.easydiffraction.org/lib/latest/user-guide/analysis-workflow/structure/#atom-sites-category)
 # for more details about the atom sites category.
 
 # %%
 project_1.structures['si'].atom_sites.create(
     label='Si',
     type_symbol='Si',
-    fract_x=0,
-    fract_y=0,
-    fract_z=0,
-    wyckoff_letter='a',
+    fract_x=0.0,
+    fract_y=0.0,
+    fract_z=0.0,
+    adp_type='Biso',
     adp_iso=0.89,
 )
+
+# %% [markdown]
+# #### Display Structure
+#
+# Render the Si structure to confirm the model was built correctly before
+# linking it to the experiment.
+
+# %%
+project_1.display.structure(struct_name='si')
 
 # %% [markdown]
 # ### 🔗 Assign Structure to Experiment
@@ -510,7 +519,7 @@ project_1.structures['si'].atom_sites.create(
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See
-# [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/experiment/#linked-phases-category)
+# [documentation](https://docs.easydiffraction.org/lib/latest/user-guide/analysis-workflow/experiment/#linked-phases-category)
 # for more details about linking a structure to an experiment.
 
 # %%
@@ -545,11 +554,11 @@ project_1.experiments['sim_si'].linked_phases.create(id='si', scale=1.0)
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See
-# [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/analysis/#minimization-optimization)
+# [documentation](https://docs.easydiffraction.org/lib/latest/user-guide/analysis-workflow/analysis/#minimization-optimization)
 # for more details about the fitting process in EasyDiffraction.
 
 # %% [markdown]
-# #### Set Fit Parameters
+# #### Set Free Parameters
 #
 # To perform the fit, we need to specify the refinement parameters.
 # These are the parameters that will be adjusted during the fitting
@@ -580,7 +589,7 @@ project_1.experiments['sim_si'].peak.exp_rise_alpha_0.free = True
 project_1.experiments['sim_si'].peak.exp_rise_alpha_1.free = True
 
 # %% [markdown]
-# #### Show Free Parameters
+# #### Display Free Parameters
 #
 # We can check which parameters are free to be refined by calling the
 # `free` method of the `display.parameters` object of the project.
@@ -597,7 +606,7 @@ project_1.experiments['sim_si'].peak.exp_rise_alpha_1.free = True
 project_1.display.parameters.free()
 
 # %% [markdown]
-# #### Visualize Diffraction Patterns
+# #### Display Pattern
 #
 # Before performing the fit, we can visually compare the measured
 # diffraction pattern with the calculated diffraction pattern based on
@@ -617,7 +626,7 @@ project_1.display.pattern(expt_name='sim_si')
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See
-# [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/analysis/#perform-fit)
+# [documentation](https://docs.easydiffraction.org/lib/latest/user-guide/analysis-workflow/analysis/#perform-fit)
 # for more details about the fitting process.
 
 # %%
@@ -625,7 +634,7 @@ project_1.analysis.fit()
 project_1.display.fit.results()
 
 # %% [markdown]
-# #### Check Fit Results
+# #### Display Fit Results
 #
 # You can see that the agreement between the measured and calculated
 # diffraction patterns is now much improved and that the intensities of
@@ -639,7 +648,7 @@ project_1.display.fit.results()
 # 1, indicating a good fit.
 
 # %% [markdown]
-# #### Visualize Fit Results
+# #### Display Fit Results
 #
 # After the fit is completed, we can plot the comparison between the
 # measured and calculated diffraction patterns again to see how well the
@@ -701,7 +710,7 @@ project_1.display.pattern(expt_name='sim_si', x='d_spacing')
 # directory specified by the `dir_path` attribute of the project object.
 
 # %%
-project_1.save_as(dir_path='data/powder_diffraction_Si')
+project_1.save_as(dir_path='projects/ed_13_reference')
 
 # %% [markdown]
 # ## 💪 Exercise: Complex Fit – LBCO
@@ -789,15 +798,15 @@ project_2.experiments.add_from_data_path(
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2.display.pattern(expt_name='sim_lbco', include='measured')
+project_2.display.pattern(expt_name='sim_lbco')
 
 project_2.experiments['sim_lbco'].excluded_regions.create(id='1', start=0, end=55000)
 project_2.experiments['sim_lbco'].excluded_regions.create(id='2', start=105500, end=200000)
 
-project_2.display.pattern(expt_name='sim_lbco', include=('measured', 'excluded'))
+project_2.display.pattern(expt_name='sim_lbco')
 
 # %% [markdown]
-# #### Exercise 2.2: Set Instrument Parameters
+# #### Exercise 2.2: Set Instrument
 #
 # Set the instrument parameters for the LBCO experiment.
 
@@ -820,7 +829,7 @@ project_2.experiments['sim_lbco'].instrument.calib_d_to_tof_linear = ed.extract_
 )
 
 # %% [markdown]
-# #### Exercise 2.3: Set Peak Profile Parameters
+# #### Exercise 2.3: Set Peak Profile
 #
 # Set the peak profile parameters for the LBCO experiment.
 
@@ -908,14 +917,13 @@ project_2.experiments['sim_lbco'].background.create(id='7', x=110000, y=0.2)
 # _atom_site.fract_x
 # _atom_site.fract_y
 # _atom_site.fract_z
-# _atom_site.wyckoff_letter
 # _atom_site.occupancy
 # _atom_site.ADP_type
 # _atom_site.B_iso_or_equiv
-# La La   0.0 0.0 0.0   a   0.5   Biso 0.95
-# Ba Ba   0.0 0.0 0.0   a   0.5   Biso 0.95
-# Co Co   0.5 0.5 0.5   b   1.0   Biso 0.80
-# O  O    0.0 0.5 0.5   c   1.0   Biso 1.66
+# La La   0.0 0.0 0.0   0.5   Biso 0.95
+# Ba Ba   0.0 0.0 0.0   0.5   Biso 0.95
+# Co Co   0.5 0.5 0.5   1.0   Biso 0.80
+# O  O    0.0 0.5 0.5   1.0   Biso 1.66
 # ```
 
 # %% [markdown]
@@ -983,7 +991,7 @@ project_2.structures['lbco'].space_group.name_h_m = 'P m -3 m'
 project_2.structures['lbco'].space_group.it_coordinate_system_code = '1'
 
 # %% [markdown]
-# #### Exercise 3.3: Set Lattice Parameters
+# #### Exercise 3.3: Set Unit Cell
 #
 # Set the lattice parameters for the LBCO structure.
 
@@ -1021,9 +1029,9 @@ project_2.structures['lbco'].atom_sites.create(
     fract_x=0,
     fract_y=0,
     fract_z=0,
-    wyckoff_letter='a',
-    adp_iso=0.95,
     occupancy=0.5,
+    adp_type='Biso',
+    adp_iso=0.95,
 )
 project_2.structures['lbco'].atom_sites.create(
     label='Ba',
@@ -1031,9 +1039,9 @@ project_2.structures['lbco'].atom_sites.create(
     fract_x=0,
     fract_y=0,
     fract_z=0,
-    wyckoff_letter='a',
-    adp_iso=0.95,
     occupancy=0.5,
+    adp_type='Biso',
+    adp_iso=0.95,
 )
 project_2.structures['lbco'].atom_sites.create(
     label='Co',
@@ -1041,7 +1049,7 @@ project_2.structures['lbco'].atom_sites.create(
     fract_x=0.5,
     fract_y=0.5,
     fract_z=0.5,
-    wyckoff_letter='b',
+    adp_type='Biso',
     adp_iso=0.80,
 )
 project_2.structures['lbco'].atom_sites.create(
@@ -1050,9 +1058,18 @@ project_2.structures['lbco'].atom_sites.create(
     fract_x=0,
     fract_y=0.5,
     fract_z=0.5,
-    wyckoff_letter='c',
+    adp_type='Biso',
     adp_iso=1.66,
 )
+
+# %% [markdown]
+# #### Display Structure
+#
+# Render the LBCO structure you just built before linking it to the
+# experiment.
+
+# %%
+project_2.display.structure(struct_name='lbco')
 
 # %% [markdown]
 # ### 🔗 Exercise 4: Assign Structure to Experiment
@@ -1075,7 +1092,7 @@ project_2.experiments['sim_lbco'].linked_phases.create(id='lbco', scale=1.0)
 # %% [markdown]
 # ### 🚀 Exercise 5: Analyze and Fit the Data
 #
-# #### Exercise 5.1: Set Fit Parameters
+# #### Exercise 5.1: Set Free Parameters
 #
 # Select the initial set of parameters to be refined during the fitting
 # process.
@@ -1200,7 +1217,7 @@ project_2.display.pattern(expt_name='sim_lbco')
 # substantial impact on the quality of the fit.
 
 # %% [markdown]
-# #### Exercise 5.5: Visualize the Fit Results in d-spacing
+# #### Exercise 5.5: Display Fit Results (d-spacing)
 #
 # Plot measured vs calculated diffraction patterns in d-spacing instead
 # of TOF.
@@ -1390,10 +1407,9 @@ project_2.structures['si'].cell.length_a = 5.43
 project_2.structures['si'].atom_sites.create(
     label='Si',
     type_symbol='Si',
-    fract_x=0,
-    fract_y=0,
-    fract_z=0,
-    wyckoff_letter='a',
+    fract_x=0.125,
+    fract_y=0.125,
+    fract_z=0.125,
     adp_iso=0.89,
 )
 
@@ -1449,10 +1465,11 @@ project_2.display.pattern(expt_name='sim_lbco', x_min=88000, x_max=101000)
 # remain, but further improvements would require more advanced data
 # reduction and analysis, which are beyond the scope of this school.
 #
-# To review the analysis results, you can generate and print a summary
-# report using the `show_report()` method, as demonstrated in the cell
-# below. The report includes parameters related to the structure and
-# the experiment, such as the refined unit cell parameter `a` of LBCO.
+# To review the analysis results, you can generate a summary report.
+# The HTML report is written automatically when the project is saved
+# (see below). The report includes parameters related to the structure
+# and the experiment, such as the refined unit cell parameter `a` of
+# LBCO.
 #
 # Information about the crystal or magnetic structure, along with
 # experimental details, fitting quality, and other relevant data, is
@@ -1460,15 +1477,12 @@ project_2.display.pattern(expt_name='sim_lbco', x_min=88000, x_max=101000)
 # publication. It can also be deposited in crystallographic databases
 # when relevant.
 
-# %%
-project_2.summary.show_report()
-
 # %% [markdown]
 # Finally, we save the project to disk to preserve the current state of
 # the analysis.
 
 # %%
-project_2.save_as(dir_path='data/powder_diffraction_LBCO_Si')
+project_2.save_as(dir_path='projects/ed_13_main')
 
 # %% [markdown]
 # #### Final Remarks
@@ -1492,7 +1506,7 @@ project_2.save_as(dir_path='data/powder_diffraction_LBCO_Si')
 #
 # If you'd like to keep exploring, the EasyDiffraction library offers
 # many additional tutorials and examples on the official documentation
-# site: 👉 https://docs.easydiffraction.org/lib/tutorials/
+# site: 👉 https://docs.easydiffraction.org/lib/latest/tutorials
 #
 # Besides the Python package, EasyDiffraction also comes with a
 # graphical user interface (GUI) that lets you perform similar analyses

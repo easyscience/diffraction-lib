@@ -1,0 +1,296 @@
+% ====================================================================
+%  EasyDiffraction report -- auto-generated LaTeX source
+%
+%  The document layout mirrors tmp/latex/table-style.tex: bundled
+%  Utopia/Fourier body text, PT Sans headings, numbered sections,
+%  shaded tables, and fit figures placed exactly where declared.
+% ====================================================================
+
+\documentclass[11pt]{article}
+\usepackage[margin=2cm]{geometry}
+
+% --------------------------------------------------------------------
+%  Packages
+% --------------------------------------------------------------------
+\usepackage{fourier}        % Utopia text + matching Fourier math
+\let\utopiarm\rmdefault     % save Utopia's roman code
+\usepackage{graphicx}       % \includegraphics for fit-quality figures
+\usepackage{siunitx}        % S columns: align numeric data on decimal
+\usepackage{float}          % [H] float placement
+\usepackage[table]{xcolor}  % row shading and rule colours
+\usepackage{titlesec}       % heading numbering, spacing and fonts
+\usepackage{paratype}       % PT Sans headings; bundled and portable
+\usepackage{longtable}      % multi-page loop tables (e.g. reflections)
+\usepackage{hyperref}       % \href links for software package names
+\usepackage[normalem]{ulem} % thin, font-positioned underline for links
+\renewcommand{\ULthickness}{0.4pt}
+
+% --------------------------------------------------------------------
+%  Line and paragraph spacing
+% --------------------------------------------------------------------
+\linespread{1.5}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1\baselineskip}
+\setlength{\intextsep}{0pt}
+
+% --------------------------------------------------------------------
+%  Tables: number format, colours, row shading
+% --------------------------------------------------------------------
+\sisetup{group-digits=false}
+
+\definecolor{rowshade}{RGB}{ {{- report_style.row_rgb -}} }
+\definecolor{tableborder}{RGB}{ {{- report_style.axis_rgb -}} }
+\definecolor{linkblue}{RGB}{ {{- report_style.link_rgb -}} }
+\definecolor{structframe}{RGB}{217, 217, 217}  % structure-figure frame; matches the interactive view
+\arrayrulecolor{tableborder}
+\hypersetup{colorlinks=true, urlcolor=linkblue}
+
+\newcommand{\rowColorsWithHeader}{\rowcolors{1}{rowshade}{white}}
+\newcommand{\rowColorsWithoutHeader}{\rowcolors{1}{white}{rowshade}}
+\newlength{\ReportTableColSep}
+\setlength{\ReportTableColSep}{0.5em}
+\setlength{\tabcolsep}{\ReportTableColSep}
+
+\setlength{\LTleft}{0pt}      % left-align longtables, like the item tables
+\setlength{\LTright}{\fill}
+
+% --------------------------------------------------------------------
+%  Section headings: numbering dot, spacing, font
+% --------------------------------------------------------------------
+\titlelabel{\thetitle.\enspace}
+
+\titlespacing*{\section}      {0pt}{3.5ex plus 1ex minus .2ex}{0.5ex plus .2ex}
+\titlespacing*{\subsection}   {0pt}{3.25ex plus 1ex minus .2ex}{0.5ex plus .2ex}
+\titlespacing*{\subsubsection}{0pt}{3.25ex plus 1ex minus .2ex}{0.5ex plus .2ex}
+
+\let\rmdefault\utopiarm
+\renewcommand{\familydefault}{\rmdefault}
+\newcommand{\HeadFont}{\sffamily}
+\titleformat*{\section}      {\normalfont\Large\HeadFont}
+\titleformat*{\subsection}   {\normalfont\large\HeadFont}
+\titleformat*{\subsubsection}{\normalfont\normalsize\HeadFont}
+{% macro tex_field_header(field, fallback) -%}
+{% set label = (field.label or fallback) | tex_markup -%}
+{% set units = field.units | tex_unit -%}
+{{ label }}{% if field.units %} ({{ units }}){% endif %}
+{%- endmacro %}
+{% macro tex_category_label(row) -%}
+{% set label = (row.latex_label or row.name) | tex_markup -%}
+{% set units = row.latex_units | tex_unit -%}
+{{ label }}{% if row.latex_units %} ({{ units }}){% endif %}
+{%- endmacro %}
+{% macro tex_category_header(column) -%}
+{% set label = (column.latex_label or column.name) | tex_markup -%}
+{% set units = column.latex_units | tex_unit -%}
+{{ label }}{% if column.latex_units %} ({{ units }}){% endif %}
+{%- endmacro %}
+{% macro tex_numeric_header(column, first, last) -%}
+\multicolumn{{ "{" }}1{{ "}" }}{{ "{" }}{% if first %}|{% endif %}c{% if last %}|{% endif %}{{ "}" }}{{ "{" }}{{ tex_category_header(column) }}{{ "}" }}
+{%- endmacro %}
+{% macro tex_category_cell(cell) -%}
+{% if cell.numeric %}{{ cell.value | tex_number }}{% else %}{ {{- cell.value | tex -}} }{% endif %}
+{%- endmacro %}
+{% macro tex_category_value(row, numeric_column) -%}
+{% if row.numeric %}{{ row.value | tex_number }}{% elif numeric_column %}\multicolumn{1}{c|}{ {{- row.value | tex -}} }{% else %}{{ row.value | tex }}{% endif %}
+{%- endmacro %}
+{% macro tex_software_name(role) -%}
+{% if role.url %}\href{ {{- role.url -}} }{\uline{ {{- role.name | tex -}} }}{% else %}{{ role.name | tex }}{% endif %}
+{%- endmacro %}
+{% macro tex_loop_table(category) -%}
+\rowColorsWithHeader
+\begin{longtable}{|{{ category.colspec }}|}
+\hline
+{% for column in category.columns %}{% if column.numeric %}{{ tex_numeric_header(column, loop.first, loop.last) }}{% else %}{{ tex_category_header(column) }}{% endif %}{% if not loop.last %} & {% endif %}{% endfor %} \\
+\hline
+\endhead
+{% for row in category.rows %}
+{% for cell in row.cells %}{{ tex_category_cell(cell) }}{% if not loop.last %} & {% endif %}{% endfor %} \\
+{% endfor %}
+\hline
+\end{longtable}
+{%- endmacro %}
+
+\begin{document}
+
+% ====================================================================
+%  Title block -- hand-set, not a \section.
+% ====================================================================
+\begin{flushleft}
+\HeadFont
+{\Large {{ report_style.subtitle | tex }}\newline}
+{\LARGE {{ (project.title or project.name or "EasyDiffraction report") | tex }}\par}
+\end{flushleft}
+
+{% if project.description %}
+% --------------------------------------------------------------------
+%  Project Description
+% --------------------------------------------------------------------
+\section*{Project Description}
+{{ project.description | tex }}
+{% endif %}
+
+% ====================================================================
+%  Project Summary
+% ====================================================================
+\section{Project Summary}
+
+\begin{table}[H]
+\rowColorsWithoutHeader
+\begin{tabular}{|ll|}
+\hline
+Short name & {{ project.name | tex }} \\
+Title & {{ project.title | tex }} \\
+Structures & {{ project.n_phases }} \\
+Experiments & {{ project.n_experiments }} \\
+Generated & {{ metadata.generated_at | tex }} \\
+\hline
+\end{tabular}
+\end{table}
+
+% ====================================================================
+%  Analysis
+% ====================================================================
+\section{Analysis}
+
+\subsection*{software}
+
+\begin{table}[H]
+\rowColorsWithHeader
+\begin{tabular}{|lll|}
+\hline
+Role & Name & Version \\
+\hline
+Framework & {{ tex_software_name(analysis.software.framework) }} & {{ analysis.software.framework.version | tex }} \\
+Calculator & {{ tex_software_name(analysis.software.calculator) }} & {{ analysis.software.calculator.version | tex }} \\
+Minimizer & {{ tex_software_name(analysis.software.minimizer) }} & {{ analysis.software.minimizer.version | tex }} \\
+\hline
+\end{tabular}
+\end{table}
+
+{% for category in analysis.categories %}
+\subsection*{ {{- category.title | tex -}} }
+
+{% if category.kind == "item" %}
+\begin{table}[H]
+\rowColorsWithoutHeader
+\begin{tabular}{|{{ category.colspec }}|}
+\hline
+{% for row in category.rows %}
+{{ tex_category_label(row) }} & {{ tex_category_value(row, category.has_numeric_values) }} \\
+{% endfor %}
+\hline
+\end{tabular}
+\end{table}
+{% endif %}
+{% endfor %}
+
+% ====================================================================
+%  Structures
+% ====================================================================
+\section{Structures}
+
+{% for structure in structures %}
+% --------------------------------------------------------------------
+%  Structure: {{ structure.id | tex }}
+% --------------------------------------------------------------------
+\subsection{ {{- structure.id | tex -}} }
+
+{% if tex.structure_figure_paths[structure.id] %}
+\begin{figure}[H]
+\centering
+\begingroup
+\setlength{\fboxsep}{0pt}
+\setlength{\fboxrule}{0.4pt}
+\fcolorbox{structframe}{white}{\makebox[\dimexpr\linewidth-2\fboxrule\relax][c]{\includegraphics[width=\dimexpr\linewidth-2\fboxrule\relax,height=0.5\textheight,keepaspectratio]{ {{- tex.structure_figure_paths[structure.id] -}} }}}
+\endgroup
+\end{figure}
+{% endif %}
+
+{% for category in structure.categories %}
+\subsubsection*{ {{- category.title | tex -}} }
+
+{% if category.kind == "item" %}
+\begin{table}[H]
+\rowColorsWithoutHeader
+\begin{tabular}{|{{ category.colspec }}|}
+\hline
+{% for row in category.rows %}
+{{ tex_category_label(row) }} & {{ tex_category_value(row, category.has_numeric_values) }} \\
+{% endfor %}
+\hline
+\end{tabular}
+\end{table}
+{% else %}
+{% if category.scalar_rows %}
+\begin{table}[H]
+\rowColorsWithoutHeader
+\begin{tabular}{|{{ category.scalar_colspec }}|}
+\hline
+{% for row in category.scalar_rows %}
+{{ tex_category_label(row) }} & {{ tex_category_value(row, category.scalar_has_numeric_values) }} \\
+{% endfor %}
+\hline
+\end{tabular}
+\end{table}
+{% endif %}
+{% if category.rows %}
+{{ tex_loop_table(category) }}
+{% endif %}
+{% endif %}
+{% endfor %}
+{% endfor %}
+
+% ====================================================================
+%  Experiments
+% ====================================================================
+\section{Experiments}
+
+{% for experiment in experiments %}
+% --------------------------------------------------------------------
+%  Experiment: {{ experiment.id | tex }}
+% --------------------------------------------------------------------
+\subsection{ {{- experiment.id | tex -}} }
+
+{% if experiment.fit_data and tex.fit_figure_paths[experiment.id] %}
+\begin{figure}[H]
+\centering
+Measured and calculated fit for {{ experiment.id | tex }}.
+\includegraphics[width=\linewidth]{ {{- tex.fit_figure_paths[experiment.id] -}} }
+\end{figure}
+{% endif %}
+
+{% for category in experiment.categories %}
+\subsubsection*{ {{- category.title | tex -}} }
+
+{% if category.kind == "item" %}
+\begin{table}[H]
+\rowColorsWithoutHeader
+\begin{tabular}{|{{ category.colspec }}|}
+\hline
+{% for row in category.rows %}
+{{ tex_category_label(row) }} & {{ tex_category_value(row, category.has_numeric_values) }} \\
+{% endfor %}
+\hline
+\end{tabular}
+\end{table}
+{% else %}
+{% if category.scalar_rows %}
+\begin{table}[H]
+\rowColorsWithoutHeader
+\begin{tabular}{|{{ category.scalar_colspec }}|}
+\hline
+{% for row in category.scalar_rows %}
+{{ tex_category_label(row) }} & {{ tex_category_value(row, category.scalar_has_numeric_values) }} \\
+{% endfor %}
+\hline
+\end{tabular}
+\end{table}
+{% endif %}
+{% if category.rows %}
+{{ tex_loop_table(category) }}
+{% endif %}
+{% endif %}
+{% endfor %}
+{% endfor %}
+
+\end{document}

@@ -8,19 +8,19 @@
 # file independently without loading all datasets into memory at once.
 
 # %% [markdown]
-# ## Import Library
+# ## 🛠️ Import Library
 
 # %%
 import easydiffraction as ed
 
 # %% [markdown]
-# ## Step 1: Define Project
+# ## 📦 Define Project
 #
 # The project object manages structures, experiments, analysis, display,
 # and other related components.
 
 # %%
-project = ed.Project(name='cosio_d20')
+project = ed.Project(name='cosio_d20_scan')
 analysis = project.analysis
 display = project.display
 
@@ -29,29 +29,29 @@ display = project.display
 # results can be written to `analysis/results.csv`.
 
 # %%
-project.save_as(dir_path='projects/cosio_d20')
+project.save_as(dir_path='projects/ed_17_cosio_d20_scan')
 
 # %% [markdown]
-# ## Step 2: Define Crystal Structure
+# ## 🧩 Define Structure
 #
 # This section shows how to add structures and modify their
 # parameters.
 #
-# #### Create Structure
+# ### Create Structure
 
 # %%
 project.structures.create(name='cosio')
 struct = project.structures['cosio']
 
 # %% [markdown]
-# #### Set Space Group
+# ### Set Space Group
 
 # %%
 struct.space_group.name_h_m = 'P n m a'
 struct.space_group.it_coordinate_system_code = 'abc'
 
 # %% [markdown]
-# #### Set Unit Cell
+# ### Set Unit Cell
 
 # %%
 struct.cell.length_a = 10.31
@@ -59,7 +59,7 @@ struct.cell.length_b = 6.0
 struct.cell.length_c = 4.79
 
 # %% [markdown]
-# #### Set Atom Sites
+# ### Set Atom Sites
 
 # %%
 struct.atom_sites.create(
@@ -68,7 +68,6 @@ struct.atom_sites.create(
     fract_x=0,
     fract_y=0,
     fract_z=0,
-    wyckoff_letter='a',
     adp_iso=0.3,
 )
 struct.atom_sites.create(
@@ -77,7 +76,6 @@ struct.atom_sites.create(
     fract_x=0.279,
     fract_y=0.25,
     fract_z=0.985,
-    wyckoff_letter='c',
     adp_iso=0.3,
 )
 struct.atom_sites.create(
@@ -86,7 +84,6 @@ struct.atom_sites.create(
     fract_x=0.094,
     fract_y=0.25,
     fract_z=0.429,
-    wyckoff_letter='c',
     adp_iso=0.34,
 )
 struct.atom_sites.create(
@@ -95,7 +92,6 @@ struct.atom_sites.create(
     fract_x=0.091,
     fract_y=0.25,
     fract_z=0.771,
-    wyckoff_letter='c',
     adp_iso=0.63,
 )
 struct.atom_sites.create(
@@ -104,7 +100,6 @@ struct.atom_sites.create(
     fract_x=0.448,
     fract_y=0.25,
     fract_z=0.217,
-    wyckoff_letter='c',
     adp_iso=0.59,
 )
 struct.atom_sites.create(
@@ -113,25 +108,31 @@ struct.atom_sites.create(
     fract_x=0.164,
     fract_y=0.032,
     fract_z=0.28,
-    wyckoff_letter='d',
     adp_iso=0.83,
 )
 
 # %% [markdown]
-# ## Step 3: Define Template Experiment
+# ### Display Structure
+
+# %%
+project.structure_style.atom_view = 'adp'
+project.display.structure(struct_name='cosio')
+
+# %% [markdown]
+# ## 🔬 Define Experiment
 #
 # For sequential fitting, we create a single template experiment from
 # the first data file. This template defines the instrument, peak
 # profile, background, and linked phases that will be reused for every
 # data file in the scan.
 #
-# #### Download Measured Data
+# ### Download Data
 
 # %%
 zip_path = ed.download_data(id=25, destination='data')
 
 # %% [markdown]
-# #### Extract Data Files
+# ### Extract Data Files
 
 # %%
 scan_data_dir = 'experiments/d20_scan'
@@ -141,7 +142,7 @@ data_paths = ed.extract_data_paths_from_zip(
 )
 
 # %% [markdown]
-# #### Create Template Experiment from the First File
+# ### Create Template Experiment
 
 # %%
 project.experiments.add_from_data_path(
@@ -151,14 +152,14 @@ project.experiments.add_from_data_path(
 expt = project.experiments['d20']
 
 # %% [markdown]
-# #### Set Instrument
+# ### Set Instrument
 
 # %%
 expt.instrument.setup_wavelength = 1.87
 expt.instrument.calib_twotheta_offset = 0.29
 
 # %% [markdown]
-# #### Set Peak Profile
+# ### Set Peak Profile
 
 # %%
 expt.peak.broad_gauss_u = 0.24
@@ -167,14 +168,14 @@ expt.peak.broad_gauss_w = 0.38
 expt.peak.broad_lorentz_y = 0.02
 
 # %% [markdown]
-# #### Set Excluded Regions
+# ### Set Excluded Regions
 
 # %%
 expt.excluded_regions.create(id='1', start=0, end=8)
 expt.excluded_regions.create(id='2', start=150, end=180)
 
 # %% [markdown]
-# #### Set Background
+# ### Set Background
 
 # %%
 expt.background.create(id='1', x=8, y=609)
@@ -193,19 +194,19 @@ expt.background.create(id='13', x=130, y=292)
 expt.background.create(id='14', x=150, y=241)
 
 # %% [markdown]
-# #### Set Linked Phases
+# ### Set Linked Phases
 
 # %%
 expt.linked_phases.create(id='cosio', scale=1.2)
 
 # %% [markdown]
-# ## Step 4: Perform Analysis
+# ## 🚀 Perform Analysis
 #
 # This section shows how to set free parameters, define constraints,
 # and run the sequential refinement.
 
 # %% [markdown]
-# #### Set Free Parameters
+# ### Set Free Parameters
 
 # %%
 struct.cell.length_a.free = True
@@ -245,7 +246,7 @@ for point in expt.background:
     point.y.free = True
 
 # %% [markdown]
-# #### Set Constraints
+# ### Set Constraints
 #
 # Set aliases for parameters.
 
@@ -266,13 +267,13 @@ analysis.aliases.create(
 analysis.constraints.create(expression='biso_Co2 = biso_Co1')
 
 # %% [markdown]
-# #### Set Minimizer
+# ### Set Minimizer
 
 # %%
-analysis.fitting.minimizer_type = 'bumps (lm)'
+analysis.minimizer.type = 'bumps (lm)'
 
 # %% [markdown]
-# #### Run Single Fitting
+# ### Run Fitting
 #
 # This is the fitting of the first dataset to optimize the initial
 # parameters for the sequential fitting. This step is optional but can
@@ -286,19 +287,26 @@ analysis.fit()
 display.fit.results()
 
 # %% [markdown]
-# #### Show parameter correlations
+# ### Display Correlations
 
 # %%
 display.fit.correlations()
 
 # %% [markdown]
-# #### Compare measured and calculated patterns for the first fit.
+# ### Display Pattern
 
 # %%
 display.pattern(expt_name='d20')
 
 # %% [markdown]
-# #### Run Sequential Fitting
+# ### Display Structure
+
+# %%
+project.structure_style.atom_view = 'adp'
+project.display.structure(struct_name='cosio')
+
+# %% [markdown]
+# ### Run Sequential Fitting
 #
 # Set output verbosity level to "short" to show only one-line status
 # messages during the analysis process.
@@ -327,7 +335,7 @@ analysis.sequential_fit_extract.create(
 # Set the sequential fitting parameters.
 
 # %%
-analysis.fitting_mode_type = 'sequential'
+analysis.fitting_mode.type = 'sequential'
 analysis.sequential_fit.data_dir = scan_data_dir
 analysis.sequential_fit.max_workers = 'auto'
 analysis.sequential_fit.reverse = True
@@ -339,7 +347,7 @@ analysis.sequential_fit.reverse = True
 analysis.fit()
 
 # %% [markdown]
-# #### Replay a Dataset
+# ### Replay a Dataset
 #
 # Apply fitted parameters from the first CSV row and plot the result.
 
@@ -356,7 +364,7 @@ project.apply_params_from_csv(row_index=-1)
 display.pattern(expt_name='d20')
 
 # %% [markdown]
-# #### Plot Parameter Evolution
+# ### Display Parameter Evolution
 #
 # Reuse the extracted diffrn path as the x-axis in the following plots.
 

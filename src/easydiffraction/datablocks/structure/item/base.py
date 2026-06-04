@@ -15,8 +15,16 @@ from easydiffraction.datablocks.structure.categories.atom_sites.enums import Adp
 from easydiffraction.datablocks.structure.categories.atom_sites.factory import AtomSitesFactory
 from easydiffraction.datablocks.structure.categories.cell import Cell
 from easydiffraction.datablocks.structure.categories.cell.factory import CellFactory
+from easydiffraction.datablocks.structure.categories.geom import Geom
+from easydiffraction.datablocks.structure.categories.geom.factory import GeomFactory
 from easydiffraction.datablocks.structure.categories.space_group import SpaceGroup
 from easydiffraction.datablocks.structure.categories.space_group.factory import SpaceGroupFactory
+from easydiffraction.datablocks.structure.categories.space_group_wyckoff import (
+    SpaceGroupWyckoffCollection,
+)
+from easydiffraction.datablocks.structure.categories.space_group_wyckoff.factory import (
+    SpaceGroupWyckoffFactory,
+)
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.utils import render_cif
 
@@ -39,6 +47,10 @@ class Structure(DatablockItem):
         self._atom_sites = AtomSitesFactory.create(self._atom_sites_type)
         self._atom_site_aniso_type: str = AtomSiteAnisoFactory.default_tag()
         self._atom_site_aniso = AtomSiteAnisoFactory.create(self._atom_site_aniso_type)
+        self._geom_type: str = GeomFactory.default_tag()
+        self._geom = GeomFactory.create(self._geom_type)
+        self._space_group_wyckoff_type: str = SpaceGroupWyckoffFactory.default_tag()
+        self._space_group_wyckoff = SpaceGroupWyckoffFactory.create(self._space_group_wyckoff_type)
         self._identity.datablock_entry_name = lambda: self.name
 
     # ------------------------------------------------------------------
@@ -158,6 +170,31 @@ class Structure(DatablockItem):
         """
         self._atom_site_aniso = new
 
+    @property
+    def geom(self) -> Geom:
+        """Bond-geometry cutoffs for this structure."""
+        return self._geom
+
+    @geom.setter
+    @typechecked
+    def geom(self, new: Geom) -> None:
+        """
+        Replace the bond-geometry cutoffs for this structure.
+
+        Parameters
+        ----------
+        new : Geom
+            New bond-geometry-cutoff category.
+        """
+        self._geom = new
+
+    @property
+    def space_group_wyckoff(self) -> SpaceGroupWyckoffCollection:
+        """
+        Read-only Wyckoff table derived from the current space group.
+        """
+        return self._space_group_wyckoff
+
     # ------------------------------------------------------------------
     # Private methods
     # ------------------------------------------------------------------
@@ -208,6 +245,7 @@ class Structure(DatablockItem):
         if not called_by_minimizer and not self._need_categories_update:
             return
 
+        self._space_group_wyckoff._replace_from_space_group()
         self._sync_atom_site_aniso()
 
         for category in self.categories:
@@ -218,11 +256,6 @@ class Structure(DatablockItem):
     # ------------------------------------------------------------------
     # Public methods
     # ------------------------------------------------------------------
-
-    def show(self) -> None:
-        """Display an ASCII projection of the structure in 2D."""
-        console.paragraph(f"Structure 🧩 '{self.name}'")
-        console.print('Not implemented yet.')
 
     def show_as_cif(self) -> None:
         """Render the CIF text for this structure in the terminal."""

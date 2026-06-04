@@ -40,6 +40,17 @@ class TestTableBackendBase:
         # Outside Jupyter, default is True
         assert backend._is_dark_theme() is True
 
+    def test_is_dark_theme_without_ipython_installed(self, monkeypatch):
+        # Regression: base.py must tolerate IPython being absent (it is an
+        # optional display dependency, guarded at import). Without the guard
+        # `import easydiffraction` fails in a clean install.
+        import easydiffraction.display.tablers.base as base_module
+        from easydiffraction.display.tablers.rich import RichTableBackend
+
+        monkeypatch.setattr(base_module, 'get_ipython', None)
+        backend = RichTableBackend()
+        assert backend._is_dark_theme() is True
+
     def test_rich_border_color_property(self):
         from easydiffraction.display.tablers.rich import RichTableBackend
 
@@ -48,8 +59,9 @@ class TestTableBackendBase:
         assert isinstance(color, str)
 
     def test_pandas_border_color_property(self):
+        from easydiffraction.display.theme import DARK_AXIS_FRAME_COLOR
         from easydiffraction.display.tablers.rich import RichTableBackend
 
         backend = RichTableBackend()
         color = backend._pandas_border_color
-        assert color.startswith('#')
+        assert color == DARK_AXIS_FRAME_COLOR

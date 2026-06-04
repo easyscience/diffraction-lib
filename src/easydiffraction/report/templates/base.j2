@@ -1,0 +1,26 @@
+{# Shared report-rendering helpers. #}
+
+{% macro format_number(value, digits=6) -%}
+{%- if value is number -%}
+{{- ("%.{}g".format(digits)) | format(value) -}}
+{%- elif value is none -%}
+{%- else -%}
+{{- value -}}
+{%- endif -%}
+{%- endmacro %}
+
+{% macro format_uncertainty(uncertainty, digits=2) -%}
+{%- if uncertainty is number -%}
+{{- ("%.{}g".format(digits)) | format(uncertainty) -}}
+{%- elif uncertainty is none or uncertainty == "" -%}
+{%- else -%}
+{{- uncertainty -}}
+{%- endif -%}
+{%- endmacro %}
+
+{% macro parameter_row(label, value, uncertainty=none, unit=none, separator=" | ") -%}
+{{- label -}}{{ separator -}}
+{{- format_number(value) -}}{{ separator -}}
+{{- format_uncertainty(uncertainty) -}}
+{%- if unit -%}{{ separator }}{{ unit }}{%- endif -%}
+{%- endmacro %}

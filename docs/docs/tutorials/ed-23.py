@@ -8,13 +8,16 @@
 # datasets and appends the missing results.
 
 # %% [markdown]
-# ## Import Library
+# ## 🛠️ Import Library
 
 # %%
 import easydiffraction as ed
 
 # %% [markdown]
-# ## Download Saved Project
+# ## 📂 Load Project
+
+# %% [markdown]
+# ### Download Project
 #
 # The returned path points directly to the saved project directory with
 # a partially completed sequential fit, including
@@ -24,13 +27,24 @@ import easydiffraction as ed
 project_dir = ed.download_data(id=37, destination='projects')
 
 # %% [markdown]
-# ## Load Saved Project
+# ### Load Project
 
 # %%
 project = ed.Project.load(project_dir)
 
 # %% [markdown]
-# ## Resume Sequential Analysis
+# ## 🚀 Perform Analysis
+
+# %% [markdown]
+# ### Display Structure
+#
+# Render the Co2SiO4 structure restored from the saved project.
+
+# %%
+project.display.structure(struct_name='cosio')
+
+# %% [markdown]
+# ### Resume Sequential Analysis
 #
 # This project already stores the template experiment, sequential-fit
 # settings, and the partial `analysis/results.csv` from the previous
@@ -41,7 +55,7 @@ project = ed.Project.load(project_dir)
 project.analysis.fit()
 
 # %% [markdown]
-# ## Replay Fitted Datasets
+# ### Replay Fitted Datasets
 #
 # Apply fitted parameters from the first CSV row and plot the result.
 
@@ -58,7 +72,7 @@ project.apply_params_from_csv(row_index=-1)
 project.display.pattern(expt_name='d20')
 
 # %% [markdown]
-# ## Plot Parameter Evolution
+# ### Display Parameter Evolution
 #
 # Use the same persisted diffrn path stored in `analysis/results.csv`
 # for the x-axis.
@@ -88,3 +102,9 @@ project.display.fit.series(
 
 # %%
 project.display.fit.series(versus=temperature)
+
+# %% [markdown]
+# ## 💾 Save Project
+
+# %%
+project.save_as(dir_path='projects/ed_23_cosio_d20_scan')

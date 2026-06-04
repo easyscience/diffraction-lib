@@ -21,8 +21,8 @@ def test_peak_base_profile_type_defaults_to_empty_without_type_info():
             super().__init__()
 
     p = DummyPeak()
-    assert isinstance(p.profile_type, StringDescriptor)
-    assert p.profile_type.value == ''
+    assert isinstance(p._type, StringDescriptor)
+    assert p.type == ''
 
 
 def test_peak_base_profile_type_reflects_type_info_tag():
@@ -33,7 +33,7 @@ def test_peak_base_profile_type_reflects_type_info_tag():
             super().__init__()
 
     p = TaggedPeak()
-    assert p.profile_type.value == 'my-profile'
+    assert p.type == 'my-profile'
 
 
 def test_peak_base_profile_type_in_parameters():
@@ -45,4 +45,4 @@ def test_peak_base_profile_type_in_parameters():
 
     p = TaggedPeak()
     param_names = {param.name for param in p.parameters}
-    assert 'profile_type' in param_names
+    assert 'type' in param_names

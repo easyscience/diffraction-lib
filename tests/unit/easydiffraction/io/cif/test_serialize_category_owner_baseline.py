@@ -5,6 +5,7 @@ from __future__ import annotations
 
 from easydiffraction.datablocks.experiment.item.factory import ExperimentFactory
 from easydiffraction.datablocks.structure.item.base import Structure
+from easydiffraction.io.cif.serialize import analysis_from_cif
 from easydiffraction.project.project import Project
 
 
@@ -31,12 +32,52 @@ def test_real_analysis_as_cif_is_singleton_section_without_data_header() -> None
 
     analysis_cif = project.analysis.as_cif
 
-    assert analysis_cif.startswith('_fitting.mode_type single')
+    assert analysis_cif.startswith('_fitting_mode.type single')
     assert not analysis_cif.startswith('data_')
-    assert '_fitting.minimizer_type' in analysis_cif
+    assert '_minimizer.type' in analysis_cif
+    assert '_software.framework_name' not in analysis_cif
     assert '_joint_fit.experiment_id' not in analysis_cif
     assert '_sequential_fit.data_dir' not in analysis_cif
     assert '_sequential_fit_extract.id' not in analysis_cif
+
+
+def test_real_analysis_as_cif_includes_stamped_software() -> None:
+    project = Project(name='proj')
+    analysis = project.analysis
+    analysis.software.framework.name = 'EasyDiffraction'
+    analysis.software.framework.version = '0.17.0'
+    analysis.software.framework.url = 'https://github.com/easyscience/diffraction-lib'
+    analysis.software.calculator.name = 'cryspy'
+    analysis.software.calculator.version = '0.11.0'
+    analysis.software.minimizer.name = 'lmfit'
+    analysis.software.minimizer.version = '1.3.4'
+    analysis.software.timestamp = '2026-05-29T12:00:00+00:00'
+
+    analysis_cif = analysis.as_cif
+
+    assert '_software.framework_name EasyDiffraction' in analysis_cif
+    assert '_software.framework_version 0.17.0' in analysis_cif
+    assert '_software.calculator_name cryspy' in analysis_cif
+    assert '_software.calculator_version 0.11.0' in analysis_cif
+    assert '_software.minimizer_name lmfit' in analysis_cif
+    assert '_software.minimizer_version 1.3.4' in analysis_cif
+    assert '_software.timestamp 2026-05-29T12:00:00+00:00' in analysis_cif
+
+
+def test_real_analysis_from_cif_restores_stamped_software() -> None:
+    source = Project(name='proj')
+    source.analysis.software.framework.name = 'EasyDiffraction'
+    source.analysis.software.framework.version = '0.17.0'
+    source.analysis.software.calculator.name = 'cryspy'
+    source.analysis.software.minimizer.name = 'lmfit'
+
+    target = Project(name='restored')
+    analysis_from_cif(target.analysis, source.analysis.as_cif)
+
+    assert target.analysis.software.framework.name.value == 'EasyDiffraction'
+    assert target.analysis.software.framework.version.value == '0.17.0'
+    assert target.analysis.software.calculator.name.value == 'cryspy'
+    assert target.analysis.software.minimizer.name.value == 'lmfit'
 
 
 def test_real_analysis_as_cif_includes_aliases_and_constraints_when_present() -> None:
@@ -66,7 +107,7 @@ def test_real_analysis_as_cif_includes_joint_fit_only_in_joint_mode() -> None:
     analysis_cif = analysis.as_cif
 
     assert not analysis_cif.startswith('data_')
-    assert '_fitting.mode_type joint' in analysis_cif
+    assert '_fitting_mode.type joint' in analysis_cif
     assert '_joint_fit.experiment_id' in analysis_cif
     assert '_joint_fit.weight' in analysis_cif
     assert '_sequential_fit.data_dir' not in analysis_cif
@@ -89,7 +130,7 @@ def test_real_analysis_as_cif_includes_sequential_sections_only_in_sequential_mo
     analysis_cif = analysis.as_cif
 
     assert not analysis_cif.startswith('data_')
-    assert '_fitting.mode_type sequential' in analysis_cif
+    assert '_fitting_mode.type sequential' in analysis_cif
     assert '_sequential_fit.data_dir scans' in analysis_cif
     assert '_sequential_fit.file_pattern *.xye' in analysis_cif
     assert '_sequential_fit_extract.id' in analysis_cif

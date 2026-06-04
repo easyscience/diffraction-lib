@@ -1,0 +1,266 @@
+{% import "base.j2" as base %}
+{% macro category_label(row) -%}
+{{ row.html_label or row.label or row.name }}{% if row.html_units %} ({{ row.html_units }}){% endif %}
+{%- endmacro %}
+{% macro aligned_number(number, value) -%}
+{% if number %}
+<span class="number" role="text" aria-label="{{ base.format_number(value) }}" style="--number-left: {{ number.left_ch }}ch; --number-right: {{ number.right_ch }}ch">
+  <span class="number-left">{{ number.left }}</span><span class="number-dot{% if not number.has_decimal %} number-dot-placeholder{% endif %}">.</span><span class="number-right">{{ number.right }}</span>
+</span>
+{% else %}{{ base.format_number(value) }}{% endif %}
+{%- endmacro %}
+{% macro category_cell(cell) -%}
+{% if cell.numeric %}{{ aligned_number(cell.number, cell.value) }}{% elif cell.value is none %}{% else %}{{ cell.value }}{% endif %}
+{%- endmacro %}
+{% macro category_value(row) -%}
+{% if row.numeric %}{{ aligned_number(row.number, row.value) }}{% elif row.value is none %}{% else %}{{ row.value }}{% endif %}
+{%- endmacro %}
+{% macro software_name(role) -%}
+{% if role.url %}<a href="{{ role.url }}">{{ role.name or "" }}</a>{% else %}{{ role.name or "" }}{% endif %}
+{%- endmacro %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ project.title or project.name or "EasyDiffraction Report" }}</title>
+  {% if not html_offline %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  {% endif %}
+  <style>
+    :root {
+      --ed-font-family: {{ report_style.html_font_family | safe }};
+      --ed-axis-color: {{ report_style.axis_hex }};
+      --ed-grid-color: {{ report_style.grid_hex }};
+      --ed-row-color: {{ report_style.row_hex }};
+    }
+    {{ stylesheet | safe }}
+  </style>
+  {% if html_offline %}
+  <script src="vendor/mathjax-tex-mml-chtml.js"></script>
+  {% else %}
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  {% endif %}
+</head>
+<body>
+  <main class="report-shell page">
+    <header class="report-title title">
+      <div class="t1">{{ report_style.subtitle }}</div>
+      <div class="t2">{{ project.title or project.name or "EasyDiffraction Report" }}</div>
+    </header>
+
+    {% if project.description %}
+    <section class="description-section">
+      <h2>Project Description</h2>
+      <p>{{ project.description }}</p>
+    </section>
+    {% endif %}
+
+    <section class="numbered-section">
+      <h2>Project Summary</h2>
+      <table class="key-value">
+        <tbody>
+          <tr>
+            <td class="key">Short name</td>
+            <td>{{ project.name }}</td>
+          </tr>
+          <tr>
+            <td class="key">Title</td>
+            <td>{{ project.title }}</td>
+          </tr>
+          <tr>
+            <td class="key">Structures</td>
+            <td>{{ project.n_phases }}</td>
+          </tr>
+          <tr>
+            <td class="key">Experiments</td>
+            <td>{{ project.n_experiments }}</td>
+          </tr>
+          <tr>
+            <td class="key">Generated</td>
+            <td>{{ metadata.generated_at }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="numbered-section">
+      <h2>Analysis</h2>
+
+      <h3>software</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Role</th>
+            <th>Name</th>
+            <th>Version</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Framework</td>
+            <td>{{ software_name(analysis.software.framework) }}</td>
+            <td>{{ analysis.software.framework.version or "" }}</td>
+          </tr>
+          <tr>
+            <td>Calculator</td>
+            <td>{{ software_name(analysis.software.calculator) }}</td>
+            <td>{{ analysis.software.calculator.version or "" }}</td>
+          </tr>
+          <tr>
+            <td>Minimizer</td>
+            <td>{{ software_name(analysis.software.minimizer) }}</td>
+            <td>{{ analysis.software.minimizer.version or "" }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      {% for category in analysis.categories %}
+      <h3>{{ category.title }}</h3>
+      {% if category.kind == "item" %}
+      <table class="key-value">
+        <tbody>
+          {% for row in category.rows %}
+          <tr>
+            <td class="key">{{ category_label(row) }}</td>
+            <td{% if row.numeric %} class="numeric"{% endif %}>{{ category_value(row) }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% endif %}
+      {% endfor %}
+    </section>
+
+    <section class="numbered-section">
+      <h2>Structures</h2>
+      {% for structure in structures %}
+      <article class="record">
+        <h3>{{ structure.id }}</h3>
+
+        {% if structure_figures[structure.id] %}
+        <div class="figure">{{ structure_figures[structure.id] | safe }}</div>
+        {% endif %}
+
+        {% for category in structure.categories %}
+        <h4>{{ category.title }}</h4>
+        {% if category.kind == "item" %}
+        <table class="key-value">
+          <tbody>
+            {% for row in category.rows %}
+            <tr>
+              <td class="key">{{ category_label(row) }}</td>
+              <td{% if row.numeric %} class="numeric"{% endif %}>{{ category_value(row) }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        {% if category.scalar_rows %}
+        <table class="key-value">
+          <tbody>
+            {% for row in category.scalar_rows %}
+            <tr>
+              <td class="key">{{ category_label(row) }}</td>
+              <td{% if row.numeric %} class="numeric"{% endif %}>{{ category_value(row) }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% endif %}
+        {% if category.rows %}
+        <div class="table-scroll">
+          <table{% if category.table_width == "full" %} class="wide-table"{% endif %}>
+            <thead>
+              <tr>
+                {% for column in category.columns %}
+                <th{% if column.numeric %} class="numeric-header"{% endif %}>{{ category_label(column) }}</th>
+                {% endfor %}
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in category.rows %}
+              <tr>
+                {% for cell in row.cells %}
+                <td{% if cell.numeric %} class="numeric"{% endif %}>{{ category_cell(cell) }}</td>
+                {% endfor %}
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% endif %}
+        {% endif %}
+        {% endfor %}
+      </article>
+      {% endfor %}
+    </section>
+
+    <section class="numbered-section">
+      <h2>Experiments</h2>
+      {% for experiment in experiments %}
+      <article class="record">
+        <h3>{{ experiment.id }}</h3>
+
+        {% if fit_figures[experiment.id] %}
+        <div class="figure">{{ fit_figures[experiment.id] | safe }}</div>
+        {% endif %}
+
+        {% for category in experiment.categories %}
+        <h4>{{ category.title }}</h4>
+        {% if category.kind == "item" %}
+        <table class="key-value">
+          <tbody>
+            {% for row in category.rows %}
+            <tr>
+              <td class="key">{{ category_label(row) }}</td>
+              <td{% if row.numeric %} class="numeric"{% endif %}>{{ category_value(row) }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        {% if category.scalar_rows %}
+        <table class="key-value">
+          <tbody>
+            {% for row in category.scalar_rows %}
+            <tr>
+              <td class="key">{{ category_label(row) }}</td>
+              <td{% if row.numeric %} class="numeric"{% endif %}>{{ category_value(row) }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% endif %}
+        {% if category.rows %}
+        <div class="table-scroll">
+          <table{% if category.table_width == "full" %} class="wide-table"{% endif %}>
+            <thead>
+              <tr>
+                {% for column in category.columns %}
+                <th{% if column.numeric %} class="numeric-header"{% endif %}>{{ category_label(column) }}</th>
+                {% endfor %}
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in category.rows %}
+              <tr>
+                {% for cell in row.cells %}
+                <td{% if cell.numeric %} class="numeric"{% endif %}>{{ category_cell(cell) }}</td>
+                {% endfor %}
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% endif %}
+        {% endif %}
+        {% endfor %}
+      </article>
+      {% endfor %}
+    </section>
+  </main>
+</body>
+</html>

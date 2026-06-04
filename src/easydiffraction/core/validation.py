@@ -17,6 +17,8 @@ import numpy as np
 
 from easydiffraction.core.diagnostic import Diagnostics
 
+_MISSING_DEFAULT = object()
+
 # ======================================================================
 # Shared constants
 # ======================================================================
@@ -165,15 +167,17 @@ class TypeValidator(ValidatorBase):
 
 
 class RangeValidator(ValidatorBase):
-    """Ensure a numeric value lies within [ge, le]."""
+    """Ensure a numeric value lies within [ge, le] and (gt, lt)."""
 
     def __init__(
         self,
         *,
         ge: float = -np.inf,
         le: float = np.inf,
+        gt: float = -np.inf,
+        lt: float = np.inf,
     ) -> None:
-        self.ge, self.le = ge, le
+        self.ge, self.le, self.gt, self.lt = ge, le, gt, lt
 
     def validated(
         self,
@@ -183,12 +187,12 @@ class RangeValidator(ValidatorBase):
         current: object = None,
     ) -> object:
         """Validate range and return value or fallback."""
-        if not (self.ge <= value <= self.le):
+        if not (self.ge <= value <= self.le and self.gt < value < self.lt):
             Diagnostics.range_mismatch(
                 name,
                 value,
-                self.ge,
-                self.le,
+                max(self.ge, self.gt),
+                min(self.le, self.lt),
                 current=current,
                 default=default,
             )
@@ -248,6 +252,36 @@ class MembershipValidator(ValidatorBase):
 # ======================================================================
 
 
+class PermissiveMembershipValidator(MembershipValidator):
+    """
+    Membership validator accepting any value when choices are empty.
+
+    Used where the allowed set is derived dynamically and may
+    legitimately be empty (for example a Wyckoff letter under an
+    untabulated space group, or before a parent context is available):
+    an empty allowed set stores the value verbatim instead of rejecting
+    it. A non-empty allowed set validates membership as usual.
+    """
+
+    def validated(
+        self,
+        value: object,
+        name: str,
+        default: object = None,
+        current: object = None,
+    ) -> object:
+        """
+        Accept any value when allowed is empty, else check membership.
+        """
+        allowed_values = self.allowed() if callable(self.allowed) else self.allowed
+        if not allowed_values:
+            return value
+        return super().validated(value, name, default=default, current=current)
+
+
+# ======================================================================
+
+
 class RegexValidator(ValidatorBase):
     """Ensure that a string matches a given regular expression."""
 
@@ -291,15 +325,20 @@ class AttributeSpec:
     def __init__(
         self,
         *,
-        default: object = None,
+        default: object = _MISSING_DEFAULT,
         data_type: DataTypes | None = None,
         validator: ValidatorBase | None = None,
         allow_none: bool = False,
     ) -> None:
-        self.default = default
+        self.has_default = default is not _MISSING_DEFAULT
+        self.default = None if default is _MISSING_DEFAULT else default
         self.allow_none = allow_none
         self._data_type_validator = TypeValidator(data_type) if data_type else None
         self._validator = validator
+
+    def default_value(self) -> object:
+        """Return the resolved static default value."""
+        return self.default() if callable(self.default) else self.default
 
     def validated(
         self,
@@ -315,7 +354,7 @@ class AttributeSpec:
         """
         val = value
         # Evaluate callable defaults dynamically
-        default = self.default() if callable(self.default) else self.default
+        default = self.default_value()
 
         # Type validation
         if self._data_type_validator:

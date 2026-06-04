@@ -16,6 +16,9 @@ from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 
 DEFAULT_HEIGHT = 25
+# Residual-to-main row height ratio shared by the composite figure and
+# the single-panel figure so both derive the same main-panel height.
+DEFAULT_RESIDUAL_HEIGHT_FRACTION = 0.25
 DEFAULT_MIN = -np.inf
 DEFAULT_MAX = np.inf
 
@@ -66,6 +69,7 @@ class PowderMeasVsCalcSpec:
     y_calc_name: str | None = None
     y_calc_line_dash: str | None = None
     excluded_ranges: tuple[tuple[float, float], ...] = ()
+    y_meas_su: np.ndarray | None = None
 
 
 class XAxisType(StrEnum):
@@ -131,7 +135,7 @@ DEFAULT_AXES_LABELS = {
         ScatteringTypeEnum.BRAGG,
         XAxisType.TWO_THETA,
     ): [
-        '2θ (degree)',
+        '2θ (deg)',
         'Intensity (arb. units)',
     ],
     (

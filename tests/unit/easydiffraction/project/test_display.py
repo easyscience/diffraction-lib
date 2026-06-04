@@ -11,8 +11,11 @@ import pytest
 
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
+from easydiffraction.datablocks.structure.item.base import Structure
 from easydiffraction.display.progress import ACTIVITY_LABEL_PROCESSING
 from easydiffraction.display.plotting import _MeasVsCalcPlotOptions
+from easydiffraction.display.structure.builder import FeatureAvailability
+from easydiffraction.project.categories.structure_style.default import StructureStyle
 from easydiffraction.project.display import PatternOptionStatus
 from easydiffraction.project.display import ProjectDisplay
 from easydiffraction.utils.enums import VerbosityEnum
@@ -54,6 +57,7 @@ def _make_project_stub() -> tuple[SimpleNamespace, list[tuple[str, tuple, dict]]
         analysis=SimpleNamespace(
             display=analysis_display,
             fit_results=SimpleNamespace(posterior_predictive={}),
+            minimizer=SimpleNamespace(_setting_descriptor_names=()),
             bayesian_result=SimpleNamespace(
                 has_pair_cache=SimpleNamespace(value=False),
                 has_posterior_predictive=SimpleNamespace(value=False),
@@ -62,12 +66,30 @@ def _make_project_stub() -> tuple[SimpleNamespace, list[tuple[str, tuple, dict]]
             bayesian_predictive_datasets=[],
             _persisted_fit_state_sidecar={},
         ),
-        rendering=SimpleNamespace(plotter=plotter),
+        rendering_plot=SimpleNamespace(plotter=plotter),
         experiments={'hrpt': SimpleNamespace(type=SimpleNamespace())},
         free_parameters=[],
         verbosity=SimpleNamespace(fit=SimpleNamespace(value='full')),
     )
     return project, calls
+
+
+def _make_structure_display_project(structure: object) -> SimpleNamespace:
+    return SimpleNamespace(
+        structures={'lbco': structure},
+        structure_style=StructureStyle(),
+        structure_view=SimpleNamespace(
+            view_range=lambda: ((0.0, 1.0), (0.0, 1.0), (0.0, 1.0)),
+            show_labels=SimpleNamespace(value=False),
+            show_moments=SimpleNamespace(value=False),
+        ),
+        rendering_structure=SimpleNamespace(
+            viewer=SimpleNamespace(
+                render=lambda scene, *, features: '<html></html>',
+                supported_features=lambda: frozenset({'atoms', 'bonds', 'cell', 'axes'}),
+            ),
+        ),
+    )
 
 
 def _make_statuses(
@@ -85,9 +107,11 @@ def _make_statuses(
         PatternOptionStatus(
             name='auto',
             description='auto',
-            available=True,
+            available=measured or calculated or uncertainty,
             auto_included=True,
-            reason='',
+            reason=''
+            if (measured or calculated or uncertainty)
+            else 'No supported pattern content is available.',
         ),
         PatternOptionStatus(
             name='measured',
@@ -167,12 +191,10 @@ def test_project_display_help_lists_namespaces_and_methods(capsys):
     display.help()
     out = capsys.readouterr().out
 
-    assert "Help for 'ProjectDisplay'" in out
     assert 'parameters' in out
     assert 'fit' in out
     assert 'posterior' in out
     assert 'pattern()' in out
-    assert 'show_pattern_options()' in out
 
 
 def test_nested_project_display_help_lists_methods(capsys):
@@ -184,18 +206,15 @@ def test_nested_project_display_help_lists_methods(capsys):
     display.posterior.help()
     out = capsys.readouterr().out
 
-    assert "Help for 'ParameterDisplay'" in out
     assert 'all()' in out
     assert 'access()' in out
-    assert "Help for 'FitDisplay'" in out
     assert 'results()' in out
     assert 'correlations()' in out
-    assert "Help for 'PosteriorDisplay'" in out
     assert 'pairs()' in out
     assert 'predictive()' in out
 
 
-def test_fit_display_delegates_to_analysis_and_rendering():
+def test_fit_display_delegates_to_analysis_and_chart():
     project, calls = _make_project_stub()
     display = ProjectDisplay(project)
 
@@ -232,7 +251,7 @@ def test_fit_display_delegates_to_analysis_and_rendering():
     )
 
 
-def test_posterior_display_delegates_to_rendering_plotter(monkeypatch):
+def test_posterior_display_delegates_to_chart_plotter(monkeypatch):
     import easydiffraction.project.display as display_mod
 
     project, calls = _make_project_stub()
@@ -304,8 +323,8 @@ def test_posterior_predictive_skips_processing_indicator_for_restored_cache(monk
         },
     )
     project.experiments = {'hrpt': SimpleNamespace(type=SimpleNamespace())}
-    project.rendering.plotter.engine = 'plotly'
-    project.rendering.plotter._resolve_x_axis = lambda expt_type, x: (
+    project.rendering_plot.plotter.engine = 'plotly'
+    project.rendering_plot.plotter._resolve_x_axis = lambda expt_type, x: (
         'two_theta',
         'two_theta',
         None,
@@ -344,7 +363,7 @@ def test_posterior_predictive_skips_processing_indicator_for_restored_cache(monk
 def test_posterior_distribution_without_param_plots_all_free_parameters():
     project, calls = _make_project_stub()
     project.free_parameters = ['a', 'b']
-    project.rendering.plotter.engine = 'plotly'
+    project.rendering_plot.plotter.engine = 'plotly'
     display = ProjectDisplay(project)
 
     display.posterior.distribution()
@@ -358,7 +377,7 @@ def test_posterior_distribution_without_param_plots_all_free_parameters():
 def test_posterior_distribution_without_param_plots_all_free_parameters_for_ascii():
     project, calls = _make_project_stub()
     project.free_parameters = ['a', 'b']
-    project.rendering.plotter.engine = 'asciichartpy'
+    project.rendering_plot.plotter.engine = 'asciichartpy'
     display = ProjectDisplay(project)
 
     display.posterior.distribution()
@@ -434,7 +453,6 @@ def test_pattern_uncertainty_routes_to_posterior_predictive(monkeypatch):
         'hrpt',
         x_min=1.0,
         x_max=2.0,
-        include=('measured', 'calculated', 'uncertainty', 'residual', 'excluded'),
     )
 
     assert calls == [
@@ -459,17 +477,15 @@ def test_pattern_uncertainty_routes_to_posterior_predictive(monkeypatch):
     assert indicator_calls == [(ACTIVITY_LABEL_PROCESSING, VerbosityEnum.FULL)]
 
 
-def test_pattern_measured_and_calculated_suppresses_background_and_bragg():
+def test_pattern_measured_and_calculated_only_shows_available():
     project, calls = _make_project_stub()
     display = ProjectDisplay(project)
     display._pattern_option_statuses = lambda expt_name: _make_statuses(
         measured=True,
         calculated=True,
-        background=True,
-        bragg=True,
     )
 
-    display.pattern('hrpt', include=('measured', 'calculated'))
+    display.pattern('hrpt')
 
     assert calls == [
         (
@@ -491,7 +507,7 @@ def test_pattern_measured_and_calculated_suppresses_background_and_bragg():
     ]
 
 
-def test_pattern_measured_and_calculated_can_enable_background_and_bragg():
+def test_pattern_shows_all_available_content():
     project, calls = _make_project_stub()
     display = ProjectDisplay(project)
     display._pattern_option_statuses = lambda expt_name: _make_statuses(
@@ -503,10 +519,7 @@ def test_pattern_measured_and_calculated_can_enable_background_and_bragg():
         excluded=True,
     )
 
-    display.pattern(
-        'hrpt',
-        include=('measured', 'calculated', 'background', 'residual', 'bragg', 'excluded'),
-    )
+    display.pattern('hrpt')
 
     assert calls == [
         (
@@ -549,9 +562,9 @@ def test_pattern_option_statuses_ignore_placeholder_arrays_without_usable_state(
         experiments={'hrpt': experiment},
         structures=SimpleNamespace(names=['phase-a']),
         analysis=SimpleNamespace(fit_results=None),
-        rendering=SimpleNamespace(
+        rendering_plot=SimpleNamespace(
             plotter=SimpleNamespace(_update_project_categories=lambda expt_name: None),
-            chart_engine=SimpleNamespace(value='plotly'),
+            type='plotly',
         ),
     )
     display = ProjectDisplay(project)
@@ -595,12 +608,12 @@ def test_pattern_auto_routes_single_crystal_with_calculated_data(monkeypatch):
         experiments={'heidi': experiment},
         structures=SimpleNamespace(names=['si']),
         analysis=SimpleNamespace(fit_results=None),
-        rendering=SimpleNamespace(
+        rendering_plot=SimpleNamespace(
             plotter=SimpleNamespace(
                 _update_project_categories=lambda expt_name: None,
                 _plot_meas_vs_calc_request=record('_plot_meas_vs_calc_request'),
             ),
-            chart_engine=SimpleNamespace(value='plotly'),
+            type='plotly',
         ),
     )
     display = ProjectDisplay(project)
@@ -632,37 +645,151 @@ def test_pattern_auto_routes_single_crystal_with_calculated_data(monkeypatch):
     ]
 
 
-def test_pattern_rejects_excluded_with_custom_x():
-    project, _calls = _make_project_stub()
+def test_pattern_with_custom_x_drops_excluded_overlay():
+    project, calls = _make_project_stub()
     display = ProjectDisplay(project)
     display._pattern_option_statuses = lambda expt_name: _make_statuses(
         measured=True,
         excluded=True,
     )
 
-    with pytest.raises(ValueError, match='default x-axis'):
-        display.pattern('hrpt', include=('measured', 'excluded'), x='d_spacing')
+    display.pattern('hrpt', x='d_spacing')
+
+    assert calls == [
+        (
+            'plot_meas',
+            (),
+            {
+                'expt_name': 'hrpt',
+                'x_min': None,
+                'x_max': None,
+                'x': 'd_spacing',
+                'show_excluded': False,
+            },
+        )
+    ]
 
 
-def test_show_pattern_options_renders_table(monkeypatch):
-    project, _calls = _make_project_stub()
+def test_pattern_measured_only_shades_excluded_when_present():
+    project, calls = _make_project_stub()
     display = ProjectDisplay(project)
     display._pattern_option_statuses = lambda expt_name: _make_statuses(
         measured=True,
-        calculated=True,
+        excluded=True,
     )
+
+    display.pattern('hrpt')
+
+    assert calls == [
+        (
+            'plot_meas',
+            (),
+            {
+                'expt_name': 'hrpt',
+                'x_min': None,
+                'x_max': None,
+                'x': None,
+                'show_excluded': True,
+            },
+        )
+    ]
+
+
+def test_pattern_raises_when_nothing_available():
+    project, _calls = _make_project_stub()
+    display = ProjectDisplay(project)
+    display._pattern_option_statuses = lambda expt_name: _make_statuses()
+
+    with pytest.raises(ValueError, match='No supported pattern content'):
+        display.pattern('hrpt')
+
+
+def test_structure_updates_categories_before_building_scene(monkeypatch, tmp_path):
+    structure = Structure(name='lbco')
+    structure.space_group.name_h_m = 'P m -3 m'
+    structure.cell.length_a = 3.88
+    assert structure.cell.length_b.value == 10.0
+
+    project = _make_structure_display_project(structure)
+    display = ProjectDisplay(project)
     captured: dict[str, object] = {}
+
+    def fake_build_scene(structure_arg, *, style, view_range, features):
+        captured['cell_lengths'] = (
+            structure_arg.cell.length_a.value,
+            structure_arg.cell.length_b.value,
+            structure_arg.cell.length_c.value,
+        )
+        captured['style'] = style
+        captured['view_range'] = view_range
+        captured['features'] = features
+        return SimpleNamespace()
+
+    monkeypatch.setattr(
+        'easydiffraction.display.structure.builder.build_scene',
+        fake_build_scene,
+    )
+
+    display.structure('lbco', path=str(tmp_path / 'lbco.html'))
+
+    assert captured['cell_lengths'] == pytest.approx((3.88, 3.88, 3.88))
+    assert captured['style'] is project.structure_style
+    assert captured['view_range'] == ((0.0, 1.0), (0.0, 1.0), (0.0, 1.0))
+    assert captured['features'] == frozenset({'cell', 'axes'})
+
+
+def test_show_structure_options_updates_categories_before_availability(monkeypatch):
+    calls: list[str] = []
+    structure = SimpleNamespace(updated=False)
+
+    def update_categories():
+        calls.append('update')
+        structure.updated = True
+
+    def fake_structure_feature_availability(structure_arg, *, style):
+        calls.append('availability')
+        assert structure_arg.updated is True
+        return FeatureAvailability(frozenset({'cell', 'axes'}), ())
+
+    structure._update_categories = update_categories
+    project = _make_structure_display_project(structure)
+    display = ProjectDisplay(project)
+
+    monkeypatch.setattr(
+        'easydiffraction.display.structure.builder.structure_feature_availability',
+        fake_structure_feature_availability,
+    )
+    monkeypatch.setattr('easydiffraction.project.display.render_table', lambda **kwargs: None)
+
+    display.show_structure_options('lbco')
+
+    assert calls == ['update', 'availability']
+
+
+def test_show_structure_options_omits_reason_column(monkeypatch):
+    structure = Structure(name='lbco')
+    project = _make_structure_display_project(structure)
+    display = ProjectDisplay(project)
+    captured: dict[str, object] = {}
+
+    def fake_structure_feature_availability(structure_arg, *, style):
+        assert structure_arg is structure
+        assert style is project.structure_style
+        return FeatureAvailability(frozenset({'cell', 'axes'}), ())
 
     def fake_render_table(*, columns_headers, columns_alignment, columns_data):
         captured['columns_headers'] = columns_headers
         captured['columns_alignment'] = columns_alignment
         captured['columns_data'] = columns_data
 
+    monkeypatch.setattr(
+        'easydiffraction.display.structure.builder.structure_feature_availability',
+        fake_structure_feature_availability,
+    )
     monkeypatch.setattr('easydiffraction.project.display.render_table', fake_render_table)
 
-    display.show_pattern_options('hrpt')
+    display.show_structure_options('lbco')
 
-    assert captured['columns_headers'] == ['Option', 'Description', 'Available', 'Auto', 'Reason']
-    assert captured['columns_alignment'] == ['left', 'left', 'center', 'center', 'left']
-    assert captured['columns_data'][0][0] == 'auto'
-    assert captured['columns_data'][1][0] == 'measured'
+    assert captured['columns_headers'] == ['Option', 'Description', 'Available', 'Auto']
+    assert captured['columns_alignment'] == ['left', 'left', 'center', 'center']
+    assert all(len(row) == 4 for row in captured['columns_data'])

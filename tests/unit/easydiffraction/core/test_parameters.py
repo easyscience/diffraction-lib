@@ -35,14 +35,32 @@ def test_numeric_descriptor_str_includes_units():
     d = NumericDescriptor(
         name='w',
         value_spec=AttributeSpec(default=1.23),
-        units='deg',
+        units='degrees',
         cif_handler=CifHandler(names=['_x.w']),
     )
     s = str(d)
     assert s.startswith('<')
     assert s.endswith('>')
-    assert 'deg' in s
+    assert 'degrees' in s
     assert 'w' in s
+
+
+def test_numeric_descriptor_str_uses_pretty_display_units():
+    from easydiffraction.core.display_handler import DisplayHandler
+    from easydiffraction.core.validation import AttributeSpec
+    from easydiffraction.core.variable import NumericDescriptor
+    from easydiffraction.io.cif.handler import CifHandler
+
+    d = NumericDescriptor(
+        name='a',
+        value_spec=AttributeSpec(default=5.43),
+        units='angstroms',
+        cif_handler=CifHandler(names=['_cell.a']),
+        display_handler=DisplayHandler(display_units='Å'),
+    )
+    s = str(d)
+    assert 'Å' in s  # pretty symbol shown
+    assert 'angstroms' not in s  # raw code suppressed
 
 
 def test_parameter_string_repr_and_as_cif_and_flags():
@@ -53,7 +71,7 @@ def test_parameter_string_repr_and_as_cif_and_flags():
     p = Parameter(
         name='a',
         value_spec=AttributeSpec(default=0.0),
-        units='A',
+        units='angstroms',
         cif_handler=CifHandler(names=['_param.a']),
     )
     p.value = 2.5
@@ -63,7 +81,7 @@ def test_parameter_string_repr_and_as_cif_and_flags():
 
     s = str(p)
     assert '± 0.1' in s
-    assert 'A' in s
+    assert 'angstroms' in s
     assert '(free=True)' in s
 
     # CIF line: free param with uncertainty uses 2-sig-digit esd brackets
@@ -71,6 +89,30 @@ def test_parameter_string_repr_and_as_cif_and_flags():
 
     # CifHandler uid is owner's unique_name (parameter name here)
     assert p._cif_handler.uid == p.unique_name == 'a'
+
+
+def test_parameter_str_uses_pretty_display_units():
+    from easydiffraction.core.display_handler import DisplayHandler
+    from easydiffraction.core.validation import AttributeSpec
+    from easydiffraction.core.variable import Parameter
+    from easydiffraction.io.cif.handler import CifHandler
+
+    p = Parameter(
+        name='a',
+        value_spec=AttributeSpec(default=0.0),
+        units='angstroms',
+        cif_handler=CifHandler(names=['_cell.a']),
+        display_handler=DisplayHandler(display_units='Å'),
+    )
+    p.value = 5.43
+    p.uncertainty = 0.01
+    p.free = True
+
+    s = str(p)
+    assert '± 0.01' in s
+    assert 'Å' in s  # pretty symbol shown
+    assert 'angstroms' not in s  # raw code suppressed
+    assert '(free=True)' in s
 
 
 def test_parameter_uncertainty_must_be_non_negative():

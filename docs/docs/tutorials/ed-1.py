@@ -17,20 +17,20 @@
 # explanation of the code, please refer to the other tutorials.
 
 # %% [markdown]
-# ## Import Library
+# ## 🛠️ Import Library
 
 # %%
 import easydiffraction as ed
 
 # %% [markdown]
-# ## Step 1: Define Project
+# ## 📦 Define Project
 
 # %%
-# Create minimal project without name and description
-project = ed.Project()
+# Create a minimal project with a short name
+project = ed.Project(name='lbco_hrpt')
 
 # %% [markdown]
-# ## Step 2: Define Crystal Structure
+# ## 🧩 Define Structure
 
 # %%
 # Download CIF file from repository
@@ -40,8 +40,12 @@ structure_path = ed.download_data(id=1, destination='data')
 # Add structure from downloaded CIF
 project.structures.add_from_cif_path(structure_path)
 
+# %%
+# Plot the crystal structure
+project.display.structure(struct_name='lbco')
+
 # %% [markdown]
-# ## Step 3: Define Experiment
+# ## 🔬 Define Experiment
 
 # %%
 # Download CIF file from repository
@@ -52,7 +56,10 @@ expt_path = ed.download_data(id=2, destination='data')
 project.experiments.add_from_cif_path(expt_path)
 
 # %% [markdown]
-# ## Step 4: Perform Analysis (no constraints)
+# ## 🚀 Perform Analysis
+
+# %% [markdown]
+# ### Without Constraints
 
 # %%
 # Start refinement. All parameters, which have standard uncertainties
@@ -68,7 +75,7 @@ project.display.fit.results()
 project.display.fit.correlations()
 
 # %% [markdown]
-# ## Step 5: Perform Analysis (with constraints)
+# ### With Constraints
 
 # %%
 # As can be seen from the parameter-correlation plot, the isotropic
@@ -108,3 +115,9 @@ project.experiments.show_names()
 # %%
 # Plot measured vs. calculated diffraction patterns
 project.display.pattern(expt_name='hrpt')
+
+# %% [markdown]
+# ## 💾 Save Project
+
+# %%
+project.save_as(dir_path='projects/ed_1_lbco_hrpt')

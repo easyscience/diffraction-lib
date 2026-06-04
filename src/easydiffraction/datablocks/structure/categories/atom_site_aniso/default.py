@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
@@ -49,7 +50,13 @@ class AtomSiteAniso(CategoryItem):
         self._adp_11 = Parameter(
             name='adp_11',
             description='Anisotropic ADP tensor component (1,1).',
-            units='Å²',
+            units='angstrom_squared',
+            display_handler=DisplayHandler(
+                display_name='U11',
+                display_units='Å²',
+                latex_name=r'$U_{11}$',
+                latex_units=r'\AA$^2$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0.0, le=10.0),
@@ -64,7 +71,13 @@ class AtomSiteAniso(CategoryItem):
         self._adp_22 = Parameter(
             name='adp_22',
             description='Anisotropic ADP tensor component (2,2).',
-            units='Å²',
+            units='angstrom_squared',
+            display_handler=DisplayHandler(
+                display_name='U22',
+                display_units='Å²',
+                latex_name=r'$U_{22}$',
+                latex_units=r'\AA$^2$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0.0, le=10.0),
@@ -79,7 +92,13 @@ class AtomSiteAniso(CategoryItem):
         self._adp_33 = Parameter(
             name='adp_33',
             description='Anisotropic ADP tensor component (3,3).',
-            units='Å²',
+            units='angstrom_squared',
+            display_handler=DisplayHandler(
+                display_name='U33',
+                display_units='Å²',
+                latex_name=r'$U_{33}$',
+                latex_units=r'\AA$^2$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0.0, le=10.0),
@@ -94,7 +113,13 @@ class AtomSiteAniso(CategoryItem):
         self._adp_12 = Parameter(
             name='adp_12',
             description='Anisotropic ADP tensor component (1,2).',
-            units='Å²',
+            units='angstrom_squared',
+            display_handler=DisplayHandler(
+                display_name='U12',
+                display_units='Å²',
+                latex_name=r'$U_{12}$',
+                latex_units=r'\AA$^2$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
@@ -109,7 +134,13 @@ class AtomSiteAniso(CategoryItem):
         self._adp_13 = Parameter(
             name='adp_13',
             description='Anisotropic ADP tensor component (1,3).',
-            units='Å²',
+            units='angstrom_squared',
+            display_handler=DisplayHandler(
+                display_name='U13',
+                display_units='Å²',
+                latex_name=r'$U_{13}$',
+                latex_units=r'\AA$^2$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
@@ -124,7 +155,13 @@ class AtomSiteAniso(CategoryItem):
         self._adp_23 = Parameter(
             name='adp_23',
             description='Anisotropic ADP tensor component (2,3).',
-            units='Å²',
+            units='angstrom_squared',
+            display_handler=DisplayHandler(
+                display_name='U23',
+                display_units='Å²',
+                latex_name=r'$U_{23}$',
+                latex_units=r'\AA$^2$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),

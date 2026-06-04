@@ -236,7 +236,6 @@ def test_category_item_help(capsys):
     it.a = 'name1'
     it.help()
     out = capsys.readouterr().out
-    assert 'Help for' in out
     assert 'Parameters' in out
     assert 'string' in out  # Type column
     assert '✓' in out  # a and b are writable
@@ -249,7 +248,6 @@ def test_category_collection_help(capsys):
     c.create(a='n2')
     c.help()
     out = capsys.readouterr().out
-    assert 'Help for' in out
     assert 'Items (2)' in out
     assert 'n1' in out
     assert 'n2' in out

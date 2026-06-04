@@ -6,15 +6,15 @@ Becker-Coppens isotropic extinction correction for single crystals.
 
 from __future__ import annotations
 
-from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.metadata import CalculatorSupport
 from easydiffraction.core.metadata import Compatibility
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
-from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.validation import RangeValidator
+from easydiffraction.core.variable import EnumDescriptor
 from easydiffraction.core.variable import Parameter
-from easydiffraction.core.variable import StringDescriptor
+from easydiffraction.datablocks.experiment.categories.extinction.base import ExtinctionBase
 from easydiffraction.datablocks.experiment.categories.extinction.factory import ExtinctionFactory
 from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
 from easydiffraction.datablocks.experiment.item.enums import ExtinctionModelEnum
@@ -23,7 +23,7 @@ from easydiffraction.io.cif.handler import CifHandler
 
 
 @ExtinctionFactory.register
-class BeckerCoppensExtinction(CategoryItem):
+class BeckerCoppensExtinction(ExtinctionBase):
     """
     Becker-Coppens spherical extinction correction for single crystals.
 
@@ -35,8 +35,6 @@ class BeckerCoppensExtinction(CategoryItem):
     Parameters are the crystal ``radius`` (in μm) and the ``mosaicity``
     (in arc-minutes, as expected by CrysPy).
     """
-
-    _category_code = 'extinction'
 
     type_info = TypeInfo(
         tag='becker-coppens',
@@ -52,37 +50,49 @@ class BeckerCoppensExtinction(CategoryItem):
     def __init__(self) -> None:
         super().__init__()
 
-        self._model = StringDescriptor(
+        self._model = EnumDescriptor(
             name='model',
+            enum=ExtinctionModelEnum,
             description='Mosaicity distribution model (gauss or lorentz)',
-            value_spec=AttributeSpec(
-                default=ExtinctionModelEnum.default().value,
-                validator=MembershipValidator(
-                    allowed=[member.value for member in ExtinctionModelEnum],
-                ),
+            cif_handler=CifHandler(
+                names=['_extinction.model'],
+                iucr_name='_easydiffraction_extinction.model',
             ),
-            cif_handler=CifHandler(names=['_extinction.model']),
         )
 
         self._mosaicity = Parameter(
             name='mosaicity',
             description='Mosaicity of the crystal',
-            units='arcmin',
+            units='arcminutes',
+            display_handler=DisplayHandler(
+                display_units='arcmin',
+                latex_units=r'\mathrm{arcmin}',
+            ),
             value_spec=AttributeSpec(
                 default=1.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_extinction.mosaicity']),
+            cif_handler=CifHandler(
+                names=['_extinction.mosaicity'],
+                iucr_name='_easydiffraction_extinction.mosaicity',
+            ),
         )
         self._radius = Parameter(
             name='radius',
             description='Mean radius of the crystal',
-            units='μm',
+            units='micrometres',
+            display_handler=DisplayHandler(
+                display_units='μm',
+                latex_units=r'$\mu\mathrm{m}$',
+            ),
             value_spec=AttributeSpec(
                 default=1.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_extinction.radius']),
+            cif_handler=CifHandler(
+                names=['_extinction.radius'],
+                iucr_name='_easydiffraction_extinction.radius',
+            ),
         )
 
     # ------------------------------------------------------------------
@@ -90,13 +100,12 @@ class BeckerCoppensExtinction(CategoryItem):
     # ------------------------------------------------------------------
 
     @property
-    def model(self) -> StringDescriptor:
+    def model(self) -> EnumDescriptor:
         """
         Mosaicity distribution model (``'gauss'`` or ``'lorentz'``).
 
-        Reading this property returns the underlying
-        ``StringDescriptor`` object. Assigning to it updates the
-        descriptor value.
+        Reading this property returns the underlying ``EnumDescriptor``
+        object. Assigning to it updates the descriptor value.
         """
         return self._model
 

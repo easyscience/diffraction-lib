@@ -13,8 +13,9 @@ class CifHandler:
     can derive a stable uid if needed.
     """
 
-    def __init__(self, *, names: list[str]) -> None:
+    def __init__(self, *, names: list[str], iucr_name: str | None = None) -> None:
         self._names = names
+        self._iucr_name = iucr_name
         self._owner = None  # set by attach
 
     def attach(self, owner: object) -> None:
@@ -25,6 +26,13 @@ class CifHandler:
     def names(self) -> list[str]:
         """List of CIF tag names associated with the owner."""
         return self._names
+
+    @property
+    def iucr_name(self) -> str:
+        """IUCr-side CIF tag name for export writers."""
+        if self._iucr_name is not None:
+            return self._iucr_name
+        return self._names[0]
 
     @property
     def uid(self) -> str | None:

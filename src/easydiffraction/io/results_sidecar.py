@@ -4,19 +4,31 @@
 
 from __future__ import annotations
 
-from pathlib import Path
-from tempfile import NamedTemporaryFile
+from typing import TYPE_CHECKING
 
 import numpy as np
 
+from easydiffraction.analysis.enums import FitResultKindEnum
 from easydiffraction.utils.logging import log
 
-_DEFAULT_SIDECAR_FILE_NAME = 'results.h5'
+if TYPE_CHECKING:
+    from pathlib import Path
+
+SidecarPayload = dict[str, dict[str, object]]
+SIDECAR_FILE_NAME = 'results.h5'
 _POSTERIOR_PARAMETER_SAMPLES_PATH = '/posterior/parameter_samples'
 _POSTERIOR_LOG_POSTERIOR_PATH = '/posterior/log_posterior'
 _POSTERIOR_DRAW_INDEX_PATH = '/posterior/draw_index'
+_DISTRIBUTION_CACHE_GROUP = '/distribution_cache'
+_PAIR_CACHE_GROUP = '/pair_cache'
+_PREDICTIVE_GROUP = '/predictive'
+_CANONICAL_GROUPS = (
+    'posterior',
+    'distribution_cache',
+    'pair_cache',
+    'predictive',
+)
 _POSTERIOR_SAMPLE_NDIM = 3
-_PREDICTIVE_DRAWS_NDIM = 2
 
 
 def _normalized_hdf5_path(path: str) -> str:
@@ -24,43 +36,9 @@ def _normalized_hdf5_path(path: str) -> str:
     return path.lstrip('/')
 
 
-def _sidecar_file_name(analysis: object) -> str:
-    """Return the configured sidecar file name for an analysis."""
-    bayesian_result = getattr(analysis, 'bayesian_result', None)
-    if bayesian_result is None:
-        return _DEFAULT_SIDECAR_FILE_NAME
-
-    file_name = bayesian_result.sidecar_file.value
-    if not isinstance(file_name, str) or not file_name.strip():
-        return _DEFAULT_SIDECAR_FILE_NAME
-
-    normalized_name = file_name.strip()
-    normalized_path = Path(normalized_name)
-    if (
-        normalized_path.is_absolute()
-        or normalized_path.name in {'', '.', '..'}
-        or normalized_path.name != normalized_name
-    ):
-        log.warning(
-            'Ignoring Bayesian sidecar file path outside the analysis directory: '
-            f'{normalized_name!r}. Using {_DEFAULT_SIDECAR_FILE_NAME!r} instead.'
-        )
-        return _DEFAULT_SIDECAR_FILE_NAME
-
-    return normalized_path.name
-
-
-def _sidecar_path(*, analysis: object, analysis_dir: Path) -> Path:
+def _sidecar_path(*, analysis_dir: Path) -> Path:
     """Return the results sidecar path inside the analysis directory."""
-    resolved_analysis_dir = analysis_dir.resolve()
-    sidecar_path = (resolved_analysis_dir / _sidecar_file_name(analysis)).resolve()
-    if sidecar_path.parent != resolved_analysis_dir:
-        log.warning(
-            'Resolved Bayesian sidecar file path escaped the analysis directory. '
-            f'Using {_DEFAULT_SIDECAR_FILE_NAME!r} instead.'
-        )
-        return resolved_analysis_dir / _DEFAULT_SIDECAR_FILE_NAME
-    return sidecar_path
+    return analysis_dir.resolve() / SIDECAR_FILE_NAME
 
 
 def _should_use_sidecar(analysis: object) -> bool:
@@ -71,21 +49,32 @@ def _should_use_sidecar(analysis: object) -> bool:
     if not callable(has_fit_state) or not has_fit_state():
         return False
 
-    if analysis.fit_result.result_kind.value != 'bayesian':
-        return False
-
-    return any((
-        analysis.bayesian_result.has_posterior_samples.value,
-        len(analysis.bayesian_distribution_caches) > 0,
-        len(analysis.bayesian_pair_caches) > 0,
-        len(analysis.bayesian_predictive_datasets) > 0,
-    ))
+    return analysis.fit_result.result_kind.value == FitResultKindEnum.BAYESIAN.value
 
 
 def _delete_stale_sidecar(sidecar_path: Path) -> None:
     """
     Delete an existing sidecar when no persisted arrays should remain.
     """
+    if sidecar_path.is_file():
+        sidecar_path.unlink()
+
+
+def _warn_existing_sidecar_overwrite(sidecar_path: Path) -> None:
+    """Warn when a new fit will overwrite existing sidecar arrays."""
+    if not sidecar_path.is_file() or sidecar_path.stat().st_size == 0:
+        return
+
+    log.warning(
+        f"Existing fit results sidecar '{sidecar_path}' will be overwritten "
+        'when the new fit is saved.'
+    )
+
+
+def prepare_analysis_results_sidecar_for_new_fit(*, analysis_dir: Path) -> None:
+    """Warn and remove the results sidecar before a fresh fit starts."""
+    sidecar_path = _sidecar_path(analysis_dir=analysis_dir)
+    _warn_existing_sidecar_overwrite(sidecar_path)
     if sidecar_path.is_file():
         sidecar_path.unlink()
 
@@ -98,6 +87,22 @@ def _create_dataset(handle: object, path: str, data: np.ndarray) -> None:
     if dataset_name in group:
         del group[dataset_name]
     group.create_dataset(dataset_name, data=data)
+
+
+def _delete_group_if_present(handle: object, group_name: str) -> None:
+    """
+    Delete one top-level group from an open HDF5 file when present.
+    """
+    if group_name in handle:
+        del handle[group_name]
+
+
+def _delete_canonical_groups(handle: object) -> None:
+    """
+    Delete EasyDiffraction-owned top-level groups before append writes.
+    """
+    for group_name in _CANONICAL_GROUPS:
+        _delete_group_if_present(handle, group_name)
 
 
 def _read_dataset(handle: object, path: str) -> np.ndarray | None:
@@ -131,30 +136,41 @@ def _posterior_payload_from_analysis(analysis: object) -> dict[str, np.ndarray |
     return dict(sidecar_data.get('posterior', {}))
 
 
-def _distribution_cache_payload(analysis: object) -> dict[str, dict[str, np.ndarray]]:
-    """Return persisted distribution caches keyed by parameter name."""
+def _distribution_cache_payload(analysis: object) -> SidecarPayload:
+    """Return distribution caches keyed by parameter name."""
+    fit_results = getattr(analysis, 'fit_results', None)
+    distribution_caches = getattr(fit_results, 'posterior_distribution_caches', None)
+    if distribution_caches:
+        return dict(distribution_caches)
+
     sidecar_data = getattr(analysis, '_persisted_fit_state_sidecar', {})
     return dict(sidecar_data.get('distribution_caches', {}))
 
 
-def _pair_cache_payload(analysis: object) -> dict[str, dict[str, np.ndarray]]:
-    """Return persisted pair-cache arrays keyed by cache id."""
+def _pair_cache_payload(analysis: object) -> SidecarPayload:
+    """Return pair-cache arrays keyed by cache id."""
+    fit_results = getattr(analysis, 'fit_results', None)
+    pair_caches = getattr(fit_results, 'posterior_pair_caches', None)
+    if pair_caches:
+        return dict(pair_caches)
+
     sidecar_data = getattr(analysis, '_persisted_fit_state_sidecar', {})
     return dict(sidecar_data.get('pair_caches', {}))
 
 
-def _predictive_payload(analysis: object) -> dict[str, dict[str, np.ndarray]]:
+def _predictive_payload(analysis: object) -> SidecarPayload:
     """Return persisted predictive arrays keyed by experiment name."""
     fit_results = getattr(analysis, 'fit_results', None)
     posterior_predictive = getattr(fit_results, 'posterior_predictive', None)
     if posterior_predictive:
-        payload: dict[str, dict[str, np.ndarray]] = {}
+        payload: SidecarPayload = {}
         for runtime_key, summary in posterior_predictive.items():
             experiment_name = getattr(summary, 'experiment_name', None)
             if not isinstance(experiment_name, str) or not experiment_name.strip():
                 experiment_name = runtime_key
 
             dataset_payload = payload.setdefault(experiment_name, {})
+            dataset_payload['x_axis_name'] = str(summary.x_axis_name)
             dataset_payload['x'] = np.asarray(summary.x, dtype=float)
             dataset_payload['best_sample_prediction'] = np.asarray(
                 summary.best_sample_prediction,
@@ -177,14 +193,11 @@ def _predictive_payload(analysis: object) -> dict[str, dict[str, np.ndarray]]:
 
 
 def _validate_posterior_payload(
-    analysis: object,
     payload: dict[str, np.ndarray | None],
 ) -> bool:
     """Return whether posterior arrays match stored metadata."""
     parameter_samples = payload.get('parameter_samples')
     if parameter_samples is None:
-        if analysis.bayesian_result.has_posterior_samples.value:
-            log.warning('Bayesian fit-state expects posterior samples, but none are available.')
         return False
 
     parameter_samples = np.asarray(parameter_samples, dtype=float)
@@ -194,43 +207,12 @@ def _validate_posterior_payload(
         )
         return False
 
-    n_draws, n_chains, n_parameters = parameter_samples.shape
-    if not _posterior_manifest_counts_match(
-        analysis,
-        n_draws=n_draws,
-        n_chains=n_chains,
-        n_parameters=n_parameters,
-    ):
-        return False
-
+    n_draws, n_chains, _ = parameter_samples.shape
     return _posterior_aux_shapes_match(
         payload,
         n_draws=n_draws,
         n_chains=n_chains,
     )
-
-
-def _posterior_manifest_counts_match(
-    analysis: object,
-    *,
-    n_draws: int,
-    n_chains: int,
-    n_parameters: int,
-) -> bool:
-    """Return whether manifest counts match the sample shape."""
-    if analysis.bayesian_convergence.n_draws.value not in {0, n_draws}:
-        log.warning('Posterior sample draw count does not match bayesian_convergence.n_draws.')
-        return False
-    if analysis.bayesian_convergence.n_chains.value not in {0, n_chains}:
-        log.warning('Posterior sample chain count does not match bayesian_convergence.n_chains.')
-        return False
-    if analysis.bayesian_convergence.n_parameters.value not in {0, n_parameters}:
-        log.warning(
-            'Posterior sample parameter count does not match bayesian_convergence.n_parameters.'
-        )
-        return False
-
-    return True
 
 
 def _posterior_aux_shapes_match(
@@ -258,7 +240,7 @@ def _posterior_aux_shapes_match(
 def _write_posterior_payload(handle: object, analysis: object) -> bool:
     """Write canonical posterior arrays when they are available."""
     payload = _posterior_payload_from_analysis(analysis)
-    if not _validate_posterior_payload(analysis, payload):
+    if not _validate_posterior_payload(payload):
         return False
 
     parameter_samples = np.asarray(payload['parameter_samples'], dtype=float)
@@ -275,134 +257,51 @@ def _write_posterior_payload(handle: object, analysis: object) -> bool:
     return True
 
 
-def _write_distribution_caches(handle: object, analysis: object) -> bool:
-    """Write cached posterior distribution arrays for manifest rows."""
-    payload = _distribution_cache_payload(analysis)
+def _write_payload_group(
+    handle: object,
+    group_name: str,
+    payload: SidecarPayload,
+) -> bool:
+    """Write a mapping payload under one HDF5 group."""
     wrote_any = False
-    for cache in analysis.bayesian_distribution_caches:
-        cache_data = payload.get(cache.param_unique_name.value)
-        if cache_data is None:
-            continue
-
-        x_values = np.asarray(cache_data.get('x'))
-        density_values = np.asarray(cache_data.get('density'))
-        n_grid = int(cache.n_grid.value)
-        if x_values.shape != (n_grid,) or density_values.shape != (n_grid,):
-            log.warning(
-                'Skipping Bayesian distribution cache with shape mismatch for '
-                f'{cache.param_unique_name.value!r}.'
-            )
-            continue
-
-        _create_dataset(handle, cache.x_path.value, x_values)
-        _create_dataset(handle, cache.density_path.value, density_values)
-        wrote_any = True
-
+    root = handle.require_group(_normalized_hdf5_path(group_name))
+    for item_id, item_payload in payload.items():
+        base_group_name = str(item_id).strip('/').replace('/', '_') or 'item'
+        item_group_name = base_group_name
+        suffix = 2
+        while item_group_name in root:
+            item_group_name = f'{base_group_name}_{suffix}'
+            suffix += 1
+        item_group = root.create_group(item_group_name)
+        item_group.attrs['id'] = str(item_id)
+        for dataset_name, values in item_payload.items():
+            if values is None:
+                continue
+            if isinstance(values, str):
+                item_group.attrs[dataset_name] = values
+                wrote_any = True
+                continue
+            item_group.create_dataset(dataset_name, data=np.asarray(values))
+            wrote_any = True
     return wrote_any
+
+
+def _write_distribution_caches(handle: object, analysis: object) -> bool:
+    """Write cached posterior distribution arrays."""
+    payload = _distribution_cache_payload(analysis)
+    return _write_payload_group(handle, _DISTRIBUTION_CACHE_GROUP, payload)
 
 
 def _write_pair_caches(handle: object, analysis: object) -> bool:
-    """Write cached posterior pair-density arrays for manifest rows."""
+    """Write cached posterior pair-density arrays."""
     payload = _pair_cache_payload(analysis)
-    wrote_any = False
-    for cache in analysis.bayesian_pair_caches:
-        cache_data = payload.get(cache.id.value)
-        if cache_data is None:
-            continue
-
-        x_values = np.asarray(cache_data.get('x'))
-        y_values = np.asarray(cache_data.get('y'))
-        density_values = np.asarray(cache_data.get('density'))
-        contour_levels = np.asarray(cache_data.get('contour_levels'))
-        n_grid_x = int(cache.n_grid_x.value)
-        n_grid_y = int(cache.n_grid_y.value)
-
-        valid_density_shape = density_values.shape in {
-            (n_grid_y, n_grid_x),
-            (n_grid_x, n_grid_y),
-        }
-        if (
-            x_values.shape != (n_grid_x,)
-            or y_values.shape != (n_grid_y,)
-            or not valid_density_shape
-        ):
-            log.warning(
-                f'Skipping Bayesian pair cache with shape mismatch for {cache.id.value!r}.'
-            )
-            continue
-
-        _create_dataset(handle, cache.x_path.value, x_values)
-        _create_dataset(handle, cache.y_path.value, y_values)
-        _create_dataset(handle, cache.density_path.value, density_values)
-        _create_dataset(handle, cache.contour_level_path.value, contour_levels)
-        wrote_any = True
-
-    return wrote_any
+    return _write_payload_group(handle, _PAIR_CACHE_GROUP, payload)
 
 
 def _write_predictive_datasets(handle: object, analysis: object) -> bool:
-    """Write cached posterior predictive arrays for manifest rows."""
+    """Write cached posterior predictive arrays."""
     payload = _predictive_payload(analysis)
-    wrote_any = False
-    for dataset in analysis.bayesian_predictive_datasets:
-        dataset_data = payload.get(dataset.experiment_name.value)
-        if dataset_data is None:
-            continue
-
-        x_values = np.asarray(dataset_data.get('x'))
-        best_sample_prediction = np.asarray(dataset_data.get('best_sample_prediction'))
-        n_x = int(dataset.n_x.value)
-        if x_values.shape != (n_x,) or best_sample_prediction.shape != (n_x,):
-            log.warning(
-                'Skipping Bayesian predictive dataset with shape mismatch for '
-                f'{dataset.experiment_name.value!r}.'
-            )
-            continue
-
-        _create_dataset(handle, dataset.x_path.value, x_values)
-        _create_dataset(
-            handle,
-            dataset.best_sample_prediction_path.value,
-            best_sample_prediction,
-        )
-
-        for field_name, path_value in (
-            ('lower_95', dataset.lower_95_path.value),
-            ('upper_95', dataset.upper_95_path.value),
-            ('lower_68', dataset.lower_68_path.value),
-            ('upper_68', dataset.upper_68_path.value),
-        ):
-            values = dataset_data.get(field_name)
-            if values is None or path_value is None:
-                continue
-            values_array = np.asarray(values)
-            if values_array.shape != (n_x,):
-                log.warning(
-                    'Skipping Bayesian predictive band with shape mismatch for '
-                    f'{dataset.experiment_name.value!r}:{field_name}.'
-                )
-                continue
-            _create_dataset(handle, path_value, values_array)
-
-        draws = dataset_data.get('draws')
-        if draws is not None and dataset.draws_path.value is not None:
-            draws_array = np.asarray(draws)
-            if draws_array.ndim != _PREDICTIVE_DRAWS_NDIM or draws_array.shape[1] != n_x:
-                log.warning(
-                    'Skipping Bayesian predictive draws with shape mismatch for '
-                    f'{dataset.experiment_name.value!r}.'
-                )
-            elif dataset.n_draws_cached.value not in {0, draws_array.shape[0]}:
-                log.warning(
-                    'Skipping Bayesian predictive draws whose draw count does not match '
-                    'the manifest metadata.'
-                )
-            else:
-                _create_dataset(handle, dataset.draws_path.value, draws_array)
-
-        wrote_any = True
-
-    return wrote_any
+    return _write_payload_group(handle, _PREDICTIVE_GROUP, payload)
 
 
 def write_analysis_results_sidecar(
@@ -420,14 +319,8 @@ def write_analysis_results_sidecar(
         results.
     analysis_dir : Path
         The project ``analysis/`` directory.
-
-    Raises
-    ------
-    Exception
-        Propagated when sidecar writing fails after temporary-file
-        cleanup.
     """
-    sidecar_path = _sidecar_path(analysis=analysis, analysis_dir=analysis_dir)
+    sidecar_path = _sidecar_path(analysis_dir=analysis_dir)
     if not _should_use_sidecar(analysis):
         _delete_stale_sidecar(sidecar_path)
         return
@@ -435,34 +328,18 @@ def write_analysis_results_sidecar(
     import h5py  # noqa: PLC0415
 
     analysis_dir.mkdir(parents=True, exist_ok=True)
-    with NamedTemporaryFile(
-        delete=False,
-        dir=analysis_dir,
-        prefix=f'{sidecar_path.stem}.',
-        suffix=sidecar_path.suffix,
-    ) as temporary_file:
-        temporary_path = Path(temporary_file.name)
-
-    try:
-        with h5py.File(temporary_path, 'w') as handle:
-            wrote_any = _write_posterior_payload(handle, analysis)
-            wrote_any = _write_distribution_caches(handle, analysis) or wrote_any
-            wrote_any = _write_pair_caches(handle, analysis) or wrote_any
-            wrote_any = _write_predictive_datasets(handle, analysis) or wrote_any
-    except Exception:
-        if temporary_path.exists():
-            temporary_path.unlink()
-        raise
+    with h5py.File(sidecar_path, 'a') as handle:
+        _delete_canonical_groups(handle)
+        wrote_any = _write_posterior_payload(handle, analysis)
+        wrote_any = _write_distribution_caches(handle, analysis) or wrote_any
+        wrote_any = _write_pair_caches(handle, analysis) or wrote_any
+        wrote_any = _write_predictive_datasets(handle, analysis) or wrote_any
 
     if not wrote_any:
-        temporary_path.unlink()
         _delete_stale_sidecar(sidecar_path)
-        return
-
-    temporary_path.replace(sidecar_path)
 
 
-def _read_posterior_payload(handle: object, analysis: object) -> dict[str, np.ndarray]:
+def _read_posterior_payload(handle: object) -> dict[str, np.ndarray]:
     """Read canonical posterior arrays from a sidecar file."""
     parameter_samples = _read_dataset(handle, _POSTERIOR_PARAMETER_SAMPLES_PATH)
     if parameter_samples is None:
@@ -478,127 +355,52 @@ def _read_posterior_payload(handle: object, analysis: object) -> dict[str, np.nd
     if draw_index is not None:
         payload['draw_index'] = np.asarray(draw_index)
 
-    if not _validate_posterior_payload(analysis, payload):
+    if not _validate_posterior_payload(payload):
         return {}
     return payload
 
 
-def _read_distribution_caches(
-    handle: object, analysis: object
-) -> dict[str, dict[str, np.ndarray]]:
-    """Read cached posterior distribution arrays for manifest rows."""
-    payload: dict[str, dict[str, np.ndarray]] = {}
-    for cache in analysis.bayesian_distribution_caches:
-        x_values = _read_dataset(handle, cache.x_path.value)
-        density_values = _read_dataset(handle, cache.density_path.value)
-        if x_values is None or density_values is None:
-            continue
-        if x_values.shape != (int(cache.n_grid.value),) or density_values.shape != (
-            int(cache.n_grid.value),
-        ):
-            log.warning(
-                'Skipping restored Bayesian distribution cache with shape mismatch for '
-                f'{cache.param_unique_name.value!r}.'
-            )
-            continue
-        payload[cache.param_unique_name.value] = {
-            'x': np.asarray(x_values),
-            'density': np.asarray(density_values),
+def _read_hdf5_attr(value: object) -> object:
+    """Return one HDF5 attribute as a plain Python value."""
+    if isinstance(value, bytes):
+        return value.decode('utf-8')
+    return value
+
+
+def _read_payload_group(handle: object, group_name: str) -> SidecarPayload:
+    """Read a mapping payload from one HDF5 group."""
+    payload: SidecarPayload = {}
+    normalized_group = _normalized_hdf5_path(group_name)
+    if normalized_group not in handle:
+        return payload
+
+    root = handle[normalized_group]
+    for item_name, item_group in root.items():
+        item_id = str(item_group.attrs.get('id', item_name))
+        item_payload: dict[str, object] = {
+            dataset_name: np.asarray(dataset) for dataset_name, dataset in item_group.items()
         }
+        for attr_name, attr_value in item_group.attrs.items():
+            if attr_name == 'id':
+                continue
+            item_payload[attr_name] = _read_hdf5_attr(attr_value)
+        payload[item_id] = item_payload
     return payload
 
 
-def _read_pair_caches(handle: object, analysis: object) -> dict[str, dict[str, np.ndarray]]:
-    """Read cached posterior pair-density arrays for manifest rows."""
-    payload: dict[str, dict[str, np.ndarray]] = {}
-    for cache in analysis.bayesian_pair_caches:
-        x_values = _read_dataset(handle, cache.x_path.value)
-        y_values = _read_dataset(handle, cache.y_path.value)
-        density_values = _read_dataset(handle, cache.density_path.value)
-        contour_levels = _read_dataset(handle, cache.contour_level_path.value)
-        if any(value is None for value in (x_values, y_values, density_values, contour_levels)):
-            continue
-
-        n_grid_x = int(cache.n_grid_x.value)
-        n_grid_y = int(cache.n_grid_y.value)
-        valid_density_shape = density_values.shape in {
-            (n_grid_y, n_grid_x),
-            (n_grid_x, n_grid_y),
-        }
-        if (
-            x_values.shape != (n_grid_x,)
-            or y_values.shape != (n_grid_y,)
-            or not valid_density_shape
-        ):
-            log.warning(
-                'Skipping restored Bayesian pair cache with shape mismatch for '
-                f'{cache.id.value!r}.'
-            )
-            continue
-
-        payload[cache.id.value] = {
-            'x': np.asarray(x_values),
-            'y': np.asarray(y_values),
-            'density': np.asarray(density_values),
-            'contour_levels': np.asarray(contour_levels),
-        }
-    return payload
+def _read_distribution_caches(handle: object) -> SidecarPayload:
+    """Read cached posterior distribution arrays."""
+    return _read_payload_group(handle, _DISTRIBUTION_CACHE_GROUP)
 
 
-def _read_predictive_datasets(
-    handle: object, analysis: object
-) -> dict[str, dict[str, np.ndarray]]:
-    """Read cached posterior predictive arrays for manifest rows."""
-    payload: dict[str, dict[str, np.ndarray]] = {}
-    for dataset in analysis.bayesian_predictive_datasets:
-        x_values = _read_dataset(handle, dataset.x_path.value)
-        best_sample_prediction = _read_dataset(handle, dataset.best_sample_prediction_path.value)
-        if x_values is None or best_sample_prediction is None:
-            continue
+def _read_pair_caches(handle: object) -> SidecarPayload:
+    """Read cached posterior pair-density arrays."""
+    return _read_payload_group(handle, _PAIR_CACHE_GROUP)
 
-        n_x = int(dataset.n_x.value)
-        if x_values.shape != (n_x,) or best_sample_prediction.shape != (n_x,):
-            log.warning(
-                'Skipping restored Bayesian predictive dataset with shape mismatch for '
-                f'{dataset.experiment_name.value!r}.'
-            )
-            continue
 
-        dataset_payload: dict[str, np.ndarray] = {
-            'x': np.asarray(x_values),
-            'best_sample_prediction': np.asarray(best_sample_prediction),
-        }
-
-        for field_name, path_value in (
-            ('lower_95', dataset.lower_95_path.value),
-            ('upper_95', dataset.upper_95_path.value),
-            ('lower_68', dataset.lower_68_path.value),
-            ('upper_68', dataset.upper_68_path.value),
-            ('draws', dataset.draws_path.value),
-        ):
-            if path_value is None:
-                continue
-            values = _read_dataset(handle, path_value)
-            if values is None:
-                continue
-            values_array = np.asarray(values)
-            if field_name == 'draws':
-                if values_array.ndim != _PREDICTIVE_DRAWS_NDIM or values_array.shape[1] != n_x:
-                    log.warning(
-                        'Skipping restored Bayesian predictive draws with shape mismatch for '
-                        f'{dataset.experiment_name.value!r}.'
-                    )
-                    continue
-            elif values_array.shape != (n_x,):
-                log.warning(
-                    'Skipping restored Bayesian predictive band with shape mismatch for '
-                    f'{dataset.experiment_name.value!r}:{field_name}.'
-                )
-                continue
-            dataset_payload[field_name] = values_array
-
-        payload[dataset.experiment_name.value] = dataset_payload
-    return payload
+def _read_predictive_datasets(handle: object) -> SidecarPayload:
+    """Read cached posterior predictive arrays."""
+    return _read_payload_group(handle, _PREDICTIVE_GROUP)
 
 
 def read_analysis_results_sidecar(
@@ -620,7 +422,7 @@ def read_analysis_results_sidecar(
     if not _should_use_sidecar(analysis):
         return
 
-    sidecar_path = _sidecar_path(analysis=analysis, analysis_dir=analysis_dir)
+    sidecar_path = _sidecar_path(analysis_dir=analysis_dir)
     if not sidecar_path.is_file():
         log.warning(
             'Expected Bayesian results sidecar is missing: '
@@ -633,19 +435,19 @@ def read_analysis_results_sidecar(
     with h5py.File(sidecar_path, 'r') as handle:
         sidecar_data: dict[str, object] = {}
 
-        posterior_payload = _read_posterior_payload(handle, analysis)
+        posterior_payload = _read_posterior_payload(handle)
         if posterior_payload:
             sidecar_data['posterior'] = posterior_payload
 
-        distribution_caches = _read_distribution_caches(handle, analysis)
+        distribution_caches = _read_distribution_caches(handle)
         if distribution_caches:
             sidecar_data['distribution_caches'] = distribution_caches
 
-        pair_caches = _read_pair_caches(handle, analysis)
+        pair_caches = _read_pair_caches(handle)
         if pair_caches:
             sidecar_data['pair_caches'] = pair_caches
 
-        predictive_datasets = _read_predictive_datasets(handle, analysis)
+        predictive_datasets = _read_predictive_datasets(handle)
         if predictive_datasets:
             sidecar_data['predictive_datasets'] = predictive_datasets
 

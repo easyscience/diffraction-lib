@@ -9,6 +9,7 @@
   --sz-body-text-color--lightmode:        #525252;
   --sz-body-heading-color--lightmode:     #434343;
   --sz-code-background-color--lightmode:  #ececec;
+  --sz-code-border-color--lightmode:      #d3d3d3;
 
   --sz-link-color--darkmode:              #37bdf9;
   --sz-hovered-link-color--darkmode:      #2890c0;
@@ -16,6 +17,7 @@
   --sz-body-text-color--darkmode:         #a3a3a3;
   --sz-body-heading-color--darkmode:      #e5e5e5;
   --sz-code-background-color--darkmode:   #212121;
+  --sz-code-border-color--darkmode:       #444;
 }
 
 /****************/
@@ -200,12 +202,33 @@ label.md-nav__title[for="__drawer"] {
 
 /* Change the overall width of the page */
 .md-grid {
-  max-width: 1280px;
+  max-width: 125em;
 }
 
-/* Needed for mkdocs-jupyter to show download and other buttons on top of the notebook */
-.md-content__button {
-  position: relative !important;
+/* Keep prose line length stable when sidebars are hidden at narrower widths */
+.md-main .md-content > .md-content__inner {
+  width: min(100%, 45em);
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* Notebook action buttons (Open in Colab, Download). The page title is the
+   notebook's own H1 rendered just below, so lay the buttons out as a
+   left-aligned row above it instead of the theme's default right float,
+   which overlapped long titles. */
+.md-content__nb-actions {
+  display: flex;
+  gap: 0.4rem;
+  /* Empty line of separation between the button row and the title */
+  margin-bottom: 1.2em;
+  /* Keep the row above the notebook, which is pulled up via margin-top */
+  position: relative;
+  z-index: 1;
+}
+
+.md-content__nb-actions .md-content__button {
+  float: none;
+  margin: 0;
 }
 
 /* Background color of the search input field */
@@ -223,9 +246,25 @@ Adjust the margins and paddings to fit the defaults in MkDocs Material and do no
   display: flex !important;
 }
 
+/* Jupyter code-cell (input) border color, per theme.
+   mkdocs-jupyter inlines its own index.css inside the notebook body,
+   after this stylesheet, and already sets --jp-cell-editor-border-color
+   on `[data-md-color-scheme=slate] .jupyter-wrapper` (same specificity,
+   later in source order, so an equal-specificity override would lose).
+   Prefix `body` (which carries data-md-color-scheme) to out-specify the
+   plugin's rule and win the cascade. */
+body[data-md-color-scheme="default"] .jupyter-wrapper {
+  --jp-cell-editor-border-color: var(--sz-code-border-color--lightmode);
+}
+body[data-md-color-scheme="slate"] .jupyter-wrapper {
+  --jp-cell-editor-border-color: var(--sz-code-border-color--darkmode);
+}
+
 .jp-Notebook {
   padding: 0 !important;
-  margin-top: -3em !important;
+  /* Pull the notebook up to absorb the jupyter wrapper's intrinsic top
+     whitespace while leaving a small gap below the action-button row. */
+  margin-top: -0.5em !important;
 
   /* Ensure notebook content stretches across the page */
   width: 100% !important;
@@ -255,6 +294,82 @@ Adjust the margins and paddings to fit the defaults in MkDocs Material and do no
 /* Removes jupyter output cell padding to align with input cell text */
 .jp-RenderedText {
   padding-left: 0.85em !important;
+}
+
+/* Keep inline Three.js structure outputs inside the notebook stacking context.
+   Generated notebook HTML contains internal z-index values, so isolate the
+   viewer to stop its controls from painting over the sticky MkDocs header. */
+.md-typeset .crysview {
+  isolation: isolate;
+  z-index: 0;
+}
+
+.md-typeset .crysview .cv-card,
+.md-typeset .crysview .cv-download,
+.md-typeset .crysview .cv-hint {
+  z-index: 2 !important;
+}
+
+.md-typeset .crysview .cv-tooltip {
+  z-index: 4 !important;
+}
+
+.md-typeset .crysview .mb-select {
+  height: calc(var(--cv-control-h, 32px) + 2px) !important;
+  min-height: calc(var(--cv-control-h, 32px) + 2px) !important;
+  max-height: calc(var(--cv-control-h, 32px) + 2px) !important;
+  box-sizing: border-box !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  margin: -1px 0 !important;
+  vertical-align: top !important;
+  font-family: inherit !important;
+  font-size: 12px !important;
+  line-height: calc(var(--cv-control-h, 32px) - 2px) !important;
+  padding: 0 22px 0 8px !important;
+}
+
+.md-typeset .crysview.cv-host-theme-dark {
+  --cv-scene-bg: transparent !important;
+  --cv-scene-fg: #e6e8ee !important;
+  --cv-label-shadow-bg: #212121 !important;
+  --cv-panel-bg: rgba(37, 37, 43, 0.95) !important;
+  --cv-panel-border: #52545c !important;
+  --cv-panel-fg: var(--cv-scene-fg) !important;
+  --cv-control-bg: #2c2f37 !important;
+  --cv-control-hover-bg: #373b45 !important;
+  --cv-control-active-bg: #3d4657 !important;
+  --cv-control-active-border: #63708a !important;
+  --cv-control-fg: var(--cv-scene-fg) !important;
+  --cv-control-muted: #8d929e !important;
+  background: transparent !important;
+  color: var(--cv-scene-fg) !important;
+}
+
+.md-typeset .crysview.cv-host-theme-light {
+  --cv-scene-bg: transparent !important;
+  --cv-scene-fg: #222 !important;
+  --cv-label-shadow-bg: #fff !important;
+  --cv-panel-bg: rgba(255, 255, 255, 0.94) !important;
+  --cv-panel-border: #e2e2e2 !important;
+  --cv-panel-fg: #222 !important;
+  --cv-control-bg: #f5f5f6 !important;
+  --cv-control-hover-bg: #e9eaef !important;
+  --cv-control-active-bg: #e7ecf5 !important;
+  --cv-control-active-border: #c6d0e2 !important;
+  --cv-control-fg: #2a3f5f !important;
+  --cv-control-muted: #b9bdc6 !important;
+  background: transparent !important;
+  color: var(--cv-scene-fg) !important;
+}
+
+.md-typeset .crysview.cv-host-theme-dark .cv-atom-label,
+.md-typeset .crysview.cv-host-theme-light .cv-atom-label {
+  color: var(--cv-scene-fg) !important;
+  text-shadow:
+    0 0 3px var(--cv-label-shadow-bg),
+    0 0 3px var(--cv-label-shadow-bg),
+    0 0 3px var(--cv-label-shadow-bg) !important;
 }
 
 /* Extra styling the panda dataframes, on top of the style included in the code */
@@ -356,4 +471,41 @@ h1 .label-experiment {
 
 .label-experiment:hover {
   color: white !important;
+}
+
+/* ----------------------------------------------------------------------
+ * Lazy interactive figures (ed-figures.js, SHARED embedding mode).
+ * The skeleton reserves the figure height (set inline) to avoid layout
+ * shift, and is hidden once the figure renders.
+ * ------------------------------------------------------------------- */
+
+.ed-figure {
+  position: relative;
+  margin: 0.6rem 0;
+}
+
+.ed-figure-skeleton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 120px;
+  color: var(--md-default-fg-color--light);
+  /* Blend with the page background (the figure paper is transparent),
+     so the loading box tracks light/dark. Do not use
+     --md-default-fg-color--lightest here: this site repurposes that
+     variable as a text color, which painted a solid grey block that
+     ignored the theme. */
+  background: var(--md-default-bg-color);
+  border-radius: 2px;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+}
+
+.ed-figure--ready .ed-figure-skeleton {
+  display: none;
+}
+
+.ed-figure-target {
+  width: 100%;
 }

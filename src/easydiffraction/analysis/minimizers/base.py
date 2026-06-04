@@ -4,6 +4,7 @@
 from abc import ABC
 from abc import abstractmethod
 from collections.abc import Callable
+from dataclasses import dataclass
 from typing import Any
 
 import numpy as np
@@ -14,6 +15,17 @@ from easydiffraction.utils.enums import VerbosityEnum
 from easydiffraction.utils.logging import log
 
 BOUNDARY_PROXIMITY_FRACTION = 0.01
+
+
+@dataclass(frozen=True, slots=True)
+class MinimizerFitOptions:
+    """Execution options for one minimizer run."""
+
+    finalize_tracking: bool = True
+    use_physical_limits: bool = False
+    random_seed: int | None = None
+    resume: bool = False
+    extra_steps: int | None = None
 
 
 class MinimizerBase(ABC):
@@ -43,6 +55,7 @@ class MinimizerBase(ABC):
         self._fitting_time: float | None = None
         self._resolved_random_seed: int | None = None
         self._tracking_active: bool = False
+        self._timing_finalized: bool = False
         self._deferred_warning_messages: list[str] = []
         self.tracker: FitProgressTracker = FitProgressTracker()
 
@@ -73,9 +86,25 @@ class MinimizerBase(ABC):
         self.tracker.reset()
         self.tracker._verbosity = verbosity
         self._tracking_active = True
+        self._timing_finalized = False
         self._deferred_warning_messages = []
         self.tracker.start_tracking(minimizer_name, mode=self._tracking_mode())
         self.tracker.start_timer()
+
+    def _finalize_timing(self) -> None:
+        """
+        Stop the timer and propagate fitting_time to the result.
+
+        Idempotent: subsequent calls within the same run are no-ops, so
+        callers can finalize timing before post-processing without the
+        later display teardown overwriting the recorded duration.
+        """
+        if not self._tracking_active or self._timing_finalized:
+            return
+        self.tracker.stop_timer()
+        if self.result is not None:
+            self.result.fitting_time = self.tracker.fitting_time
+        self._timing_finalized = True
 
     def _stop_tracking(self) -> None:
         """Stop timer and finalize tracking."""
@@ -83,11 +112,9 @@ class MinimizerBase(ABC):
             self._emit_deferred_warnings()
             return
 
+        self._finalize_timing()
         self._tracking_active = False
-        self.tracker.stop_timer()
         self.tracker.finish_tracking()
-        if self.result is not None:
-            self.result.fitting_time = self.tracker.fitting_time
         self._emit_deferred_warnings()
 
     def _warn_after_tracking(self, message: str) -> None:
@@ -339,9 +366,7 @@ class MinimizerBase(ABC):
         objective_function: Callable[..., object],
         verbosity: VerbosityEnum = VerbosityEnum.FULL,
         *,
-        finalize_tracking: bool = True,
-        use_physical_limits: bool = False,
-        random_seed: int | None = None,
+        options: MinimizerFitOptions | None = None,
     ) -> FitResults:
         """
         Run the full minimization workflow.
@@ -355,24 +380,31 @@ class MinimizerBase(ABC):
             arguments.
         verbosity : VerbosityEnum, default=VerbosityEnum.FULL
             Console output verbosity.
-        finalize_tracking : bool, default=True
-            Whether to stop and finalize live tracking before returning.
-        use_physical_limits : bool, default=False
-            When ``True``, fall back to physical limits from the value
-            spec for parameters whose ``fit_min``/``fit_max`` are
-            unbounded.
-        random_seed : int | None, default=None
-            Optional random seed passed to stochastic minimizers.
+        options : MinimizerFitOptions | None, default=None
+            Execution options controlling limits, randomness, resume,
+            and tracker finalization.
 
         Returns
         -------
         FitResults
             FitResults with success flag, best chi2 and timing.
+
+        Raises
+        ------
+        NotImplementedError
+            If resume is requested for a minimizer that does not support
+            it.
         """
-        if use_physical_limits:
+        fit_options = options or MinimizerFitOptions()
+        if fit_options.resume:
+            minimizer_name = self.name or self.__class__.__name__
+            msg = f"Minimizer '{minimizer_name}' does not support resume."
+            raise NotImplementedError(msg)
+
+        if fit_options.use_physical_limits:
             self._apply_physical_limits(parameters)
 
-        resolved_random_seed = self._resolve_random_seed(random_seed)
+        resolved_random_seed = self._resolve_random_seed(fit_options.random_seed)
 
         minimizer_name = self.name or 'Unnamed Minimizer'
         if self.method is not None and f'({self.method})' not in minimizer_name:
@@ -387,7 +419,7 @@ class MinimizerBase(ABC):
             raw_result = self._run_solver(objective_function, **solver_args)
             return self._finalize_fit(parameters, raw_result)
         finally:
-            if finalize_tracking:
+            if fit_options.finalize_tracking:
                 self._stop_tracking()
 
     def _objective_function(

@@ -9,17 +9,25 @@ def _make_param(
     name,
     val,
     *,
+    units='none',
+    display_units=None,
     user_constrained=False,
     symmetry_constrained=False,
 ):
+    from easydiffraction.core.display_handler import DisplayHandler
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
     from easydiffraction.io.cif.handler import CifHandler
 
+    display_handler = (
+        DisplayHandler(display_units=display_units) if display_units is not None else None
+    )
     param = Parameter(
         name=name,
+        units=units,
         value_spec=AttributeSpec(default=0.0),
         cif_handler=CifHandler(names=[f'_{cat}.{name}']),
+        display_handler=display_handler,
     )
     param.value = val
     param._identity.datablock_entry_name = lambda: db
@@ -33,6 +41,26 @@ def _make_param(
     if symmetry_constrained:
         param._set_symmetry_constrained(value=True)
     return param
+
+
+def _make_int_descriptor(db, cat, entry, name, val):
+    """Build a read-only IntegerDescriptor (e.g. atom_site.multiplicity)."""
+    from easydiffraction.core.display_handler import DisplayHandler
+    from easydiffraction.core.validation import AttributeSpec
+    from easydiffraction.core.variable import IntegerDescriptor
+    from easydiffraction.io.cif.handler import CifHandler
+
+    descriptor = IntegerDescriptor(
+        name=name,
+        value_spec=AttributeSpec(default=None, allow_none=True),
+        cif_handler=CifHandler(names=[f'_{cat}.{name}']),
+        display_handler=DisplayHandler(),
+    )
+    descriptor.value = val
+    descriptor._identity.datablock_entry_name = lambda: db
+    descriptor._identity.category_code = cat
+    descriptor._identity.category_entry_name = (lambda: entry) if entry else (lambda: '')
+    return descriptor
 
 
 def test_how_to_access_parameters_prints_paths_and_uids(capsys, monkeypatch):
@@ -295,3 +323,150 @@ def test_fittable_params_excludes_symmetry_constrained_parameters(monkeypatch):
 
     structure_df = rendered[0]
     assert structure_df['parameter', 'left'].tolist() == ['length_a']
+
+
+def test_free_params_uses_display_units_for_structures_and_experiments(monkeypatch):
+    import easydiffraction.analysis.analysis as analysis_mod
+    from easydiffraction.analysis.analysis import Analysis
+
+    structure_param = _make_param(
+        's1',
+        'cell',
+        '',
+        'length_a',
+        4.0,
+        units='angstrom_squared',
+        display_units='Å²',
+    )
+    experiment_param = _make_param(
+        'e1',
+        'time_of_flight',
+        '',
+        'time_offset',
+        12.0,
+        units='microseconds',
+        display_units='μs',
+    )
+
+    class Coll:
+        def __init__(self, params):
+            self.parameters = params
+            self.free_parameters = params
+
+        def __iter__(self):
+            return iter(())
+
+    class Project:
+        def __init__(self):
+            self.structures = Coll([structure_param])
+            self.experiments = Coll([experiment_param])
+
+    rendered = []
+
+    class FakeTableRenderer:
+        def render(self, df):
+            rendered.append(df)
+
+    monkeypatch.setattr(
+        analysis_mod.TableRenderer, 'get', staticmethod(lambda: FakeTableRenderer())
+    )
+    Analysis(Project()).display.free_params()
+
+    free_df = rendered[0]
+    assert free_df['parameter', 'left'].tolist() == ['length_a', 'time_offset']
+    assert free_df['units', 'left'].tolist() == ['Å²', 'μs']
+
+
+def test_summary_parameters_excludes_space_group_wyckoff():
+    from easydiffraction.analysis.analysis import AnalysisDisplay
+
+    visible = _make_param('lbco', 'cell', '', 'length_a', 4.0)
+    # The derived space_group_Wyckoff table (read-only, with unreadably
+    # long coords_xyz) must not clutter the parameter summary tables.
+    wyckoff = _make_param('lbco', 'space_group_Wyckoff', '48n', 'coords_xyz', 0.0)
+
+    summary = AnalysisDisplay._summary_parameters([visible, wyckoff])
+
+    assert [param._identity.category_code for param in summary] == ['cell']
+
+
+def test_all_params_renders_integer_descriptors_without_nan(monkeypatch):
+    import easydiffraction.analysis.analysis as analysis_mod
+    from easydiffraction.analysis.analysis import Analysis
+
+    occupancy = _make_param('lbco', 'atom_site', 'O', 'occupancy', 1.0)
+    # IntegerDescriptors (e.g. atom_site.multiplicity) used to render as
+    # all-nan rows; None multiplicity occurs for an untabulated group.
+    multiplicity = _make_int_descriptor('lbco', 'atom_site', 'O', 'multiplicity', 3)
+    multiplicity_none = _make_int_descriptor('lbco', 'atom_site', 'X', 'multiplicity', None)
+
+    class Coll:
+        def __init__(self, params):
+            self.parameters = params
+
+        def __iter__(self):
+            return iter(())
+
+    class Project:
+        def __init__(self):
+            self.structures = Coll([occupancy, multiplicity, multiplicity_none])
+            self.experiments = Coll([])
+
+    rendered = []
+
+    class FakeTableRenderer:
+        def render(self, df):
+            rendered.append(df)
+
+    monkeypatch.setattr(
+        analysis_mod.TableRenderer, 'get', staticmethod(lambda: FakeTableRenderer())
+    )
+    Analysis(Project()).display.all_params()
+
+    structure_df = rendered[0]
+    assert structure_df['parameter', 'left'].tolist() == [
+        'occupancy',
+        'multiplicity',
+        'multiplicity',
+    ]
+    # Integer value rendered as-is; None renders blank; no nan cells.
+    assert structure_df['value', 'right'].tolist() == [1.0, 3, '']
+    assert int(structure_df.isna().sum().sum()) == 0
+
+
+def test_how_to_access_and_cif_uids_include_integer_descriptors(monkeypatch):
+    import easydiffraction.analysis.analysis as analysis_mod
+    from easydiffraction.analysis.analysis import Analysis
+
+    # An IntegerDescriptor used to be dropped from both tables by a
+    # too-narrow isinstance guard; it must now appear in each.
+    multiplicity = _make_int_descriptor('lbco', 'atom_site', 'O', 'multiplicity', 3)
+
+    class Coll:
+        def __init__(self, params):
+            self.parameters = params
+
+    class Project:
+        _varname = 'proj'
+
+        def __init__(self):
+            self.structures = Coll([multiplicity])
+            self.experiments = Coll([])
+
+    captured = {}
+
+    def fake_render_table(**kwargs):
+        captured.update(kwargs)
+
+    monkeypatch.setattr(analysis_mod, 'render_table', fake_render_table)
+    a = Analysis(Project())
+    a.display.how_to_access_parameters()
+
+    access_rows = [' '.join(map(str, row)) for row in captured.get('columns_data') or []]
+    assert any("proj.structures['lbco'].atom_site['O'].multiplicity" in row for row in access_rows)
+
+    captured.clear()
+    a.display.parameter_cif_uids()
+
+    uid_rows = [' '.join(map(str, row)) for row in captured.get('columns_data') or []]
+    assert any('multiplicity' in row for row in uid_rows)

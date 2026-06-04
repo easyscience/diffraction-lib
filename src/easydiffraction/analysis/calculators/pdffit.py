@@ -7,29 +7,36 @@ The class adapts the engine to EasyDiffraction calculator interface and
 silences stdio on import to avoid noisy output in notebooks and logs.
 """
 
+from __future__ import annotations
+
 import os
 import re
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import numpy as np
 
 from easydiffraction.analysis.calculators.base import CalculatorBase
 from easydiffraction.analysis.calculators.factory import CalculatorFactory
 from easydiffraction.core.metadata import TypeInfo
-from easydiffraction.datablocks.experiment.item.base import ExperimentBase
-from easydiffraction.datablocks.structure.item.base import Structure
+
+if TYPE_CHECKING:
+    from easydiffraction.datablocks.experiment.item.base import ExperimentBase
+    from easydiffraction.datablocks.structure.item.base import Structure
+
+
+def _open_pdffit_devnull() -> object:
+    """Open a durable devnull handle for PDFfit stdout redirection."""
+    with Path(os.devnull).open('w', encoding='utf-8') as tmp_devnull:
+        return os.fdopen(os.dup(tmp_devnull.fileno()), 'w')
+
 
 try:
     from diffpy.pdffit2 import PdfFit
     from diffpy.pdffit2 import redirect_stdout
     from diffpy.structure.parsers.p_cif import P_cif as pdffit_cif_parser
 
-    # Silence the C++ engine output while keeping the handle open
-    _pdffit_devnull: object | None
-    with Path(os.devnull).open('w', encoding='utf-8') as _tmp_devnull:
-        # Duplicate file descriptor so the handle remains
-        # valid after the context
-        _pdffit_devnull = os.fdopen(os.dup(_tmp_devnull.fileno()), 'w')
+    _pdffit_devnull = _open_pdffit_devnull()
     redirect_stdout(_pdffit_devnull)
     # TODO: Add the following print to debug mode
     # print("✅ 'pdffit' calculation engine is successfully imported.")
@@ -52,6 +59,7 @@ class PdffitCalculator(CalculatorBase):
         description='PDFfit2 for pair distribution function calculations',
     )
     engine_imported: bool = PdfFit is not None
+    url: str = 'https://www.diffpy.org/products/pdffit2.html'
 
     @property
     def name(self) -> str:

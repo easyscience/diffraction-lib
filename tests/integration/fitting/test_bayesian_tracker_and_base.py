@@ -413,6 +413,8 @@ def test_minimizer_base_fit_stops_tracking_when_solver_prep_fails():
 
 
 def test_minimizer_base_applies_physical_limits_and_warns(monkeypatch):
+    from easydiffraction.analysis.minimizers.base import MinimizerFitOptions
+
     from easydiffraction.analysis.minimizers.base import MinimizerBase
 
     warnings: list[str] = []
@@ -470,7 +472,7 @@ def test_minimizer_base_applies_physical_limits_and_warns(monkeypatch):
     result = minimizer.fit(
         parameters=[parameter],
         objective_function=objective,
-        use_physical_limits=True,
+        options=MinimizerFitOptions(use_physical_limits=True),
     )
 
     assert result.success is True
@@ -483,6 +485,7 @@ def test_minimizer_base_applies_physical_limits_and_warns(monkeypatch):
 
 def test_minimizer_base_rejects_random_seed_when_not_supported():
     from easydiffraction.analysis.minimizers.base import MinimizerBase
+    from easydiffraction.analysis.minimizers.base import MinimizerFitOptions
 
     class Minimizer(MinimizerBase):
         def _prepare_solver_args(self, parameters):
@@ -508,4 +511,8 @@ def test_minimizer_base_rejects_random_seed_when_not_supported():
         ValueError,
         match=r"Minimizer 'dummy' does not support random_seed\.",
     ):
-        minimizer.fit(parameters=[], objective_function=lambda _: np.array([0.0]), random_seed=7)
+        minimizer.fit(
+            parameters=[],
+            objective_function=lambda _: np.array([0.0]),
+            options=MinimizerFitOptions(random_seed=7),
+        )

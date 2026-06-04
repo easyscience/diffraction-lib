@@ -31,6 +31,9 @@ macos = '14.0'
 #libc = { family = 'glibc', version = '2.35' }
 libc = '2.35'
 
+[pypi-dependencies]
+emcee = '>=3.1'
+
 # Non-default features:
 
 # Set specific Python versions to be used in CI testing.
@@ -50,6 +53,7 @@ jupyterlab = '*'  # Jupyter notebooks
 ipython = '*'     # Interactive Python shell
 pixi-kernel = '*' # Pixi Jupyter kernel
 gsl = '*'         # GNU Scientific Library; required for diffpy.pdffit2
+tectonic = '*'    # LaTeX engine for PDF report generation
 
 [feature.dev.pypi-dependencies]
 pip = '*'
@@ -102,8 +106,30 @@ user = { features = ['py-max', 'user'] }
 unit-tests = 'python -m pytest tests/unit/ --color=yes -v'
 functional-tests = 'python -m pytest tests/functional/ --color=yes -v'
 integration-tests = 'python -m pytest tests/integration/ --color=yes -n auto -v'
-script-tests = { cmd = 'python -m pytest tools/test_scripts.py --color=yes -n auto -v', env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials' } }
-notebook-tests = { cmd = 'python -m pytest --nbmake docs/docs/tutorials/ --nbmake-timeout=1200 --color=yes -n auto -v', env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials' } }
+
+# Remove previously saved tutorial output projects (projects/ed_*) so the
+# tutorial-output checks cannot pass against a stale artifact from an earlier
+# run. Downloaded input projects (projects/ed-NN) are preserved.
+clean-tutorial-projects = { cmd = 'python tools/clean_tutorial_projects.py', env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials' } }
+script-tests = { cmd = 'python -m pytest tools/test_scripts.py --color=yes -n auto -v', depends-on = [
+  'clean-tutorial-projects',
+], env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials' } }
+notebook-tests = { cmd = 'python -m pytest --nbmake docs/docs/tutorials/ --nbmake-timeout=1200 --color=yes -n auto -v', depends-on = [
+  'clean-tutorial-projects',
+], env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials' } }
+
+# Parse the analysis.cif of every saved tutorial project and assert its
+# refined fit results against tests/tutorials/baseline.json. Run only after
+# the tutorials have been executed (script-tests or notebook-tests), so the
+# saved projects exist under tmp/tutorials/projects/.
+tutorial-output-tests = { cmd = 'python -m pytest tests/tutorials/ --color=yes -v', env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials' } }
+# Run the tutorials and then verify their saved outputs in a single step.
+script-tests-checked = { cmd = 'python -m pytest tests/tutorials/ --color=yes -v', depends-on = [
+  'script-tests',
+], env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials' } }
+notebook-tests-checked = { cmd = 'python -m pytest tests/tutorials/ --color=yes -v', depends-on = [
+  'notebook-tests',
+], env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials' } }
 
 test = { depends-on = ['unit-tests', 'functional-tests'] }
 test-all = { depends-on = [
@@ -192,8 +218,8 @@ jupyter = { cmd = 'jupyter', env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutori
 notebook-convert = 'jupytext docs/docs/tutorials/*.py --from py:percent --to ipynb'
 notebook-strip = 'nbstripout docs/docs/tutorials/*.ipynb'
 notebook-tweak = 'python tools/tweak_notebooks.py docs/docs/tutorials/'
-notebook-exec = { cmd = 'python -m pytest --nbmake docs/docs/tutorials/ --overwrite --color=yes -n auto -v', env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials' } }
-notebook-exec-ci = { cmd = 'python -m pytest --nbmake docs/docs/tutorials/ --nbmake-timeout=1200 --overwrite --color=yes -n auto -v', env = { EASYDIFFRACTION_ARTIFACT_ROOT = '.' } }
+notebook-exec = { cmd = 'python -m pytest --nbmake docs/docs/tutorials/ --overwrite --color=yes -n auto -v', env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials', EASYDIFFRACTION_FIGURE_EMBED_MODE = 'shared' } }
+notebook-exec-ci = { cmd = 'python -m pytest --nbmake docs/docs/tutorials/ --nbmake-timeout=1200 --overwrite --color=yes -n auto -v', env = { EASYDIFFRACTION_ARTIFACT_ROOT = '.', EASYDIFFRACTION_FIGURE_EMBED_MODE = 'shared' } }
 
 notebook-prepare = { depends-on = [
   'notebook-convert',
@@ -207,15 +233,28 @@ notebook-prepare = { depends-on = [
 
 docs-vars = "JUPYTER_PLATFORM_DIRS=1 PYTHONWARNINGS='ignore::RuntimeWarning'"
 docs-pre = 'pixi run docs-vars python -m mkdocs'
-docs-serve = 'pixi run docs-pre serve -f docs/mkdocs.yml'
+# Copy the canonical Three.js snapshot into the (git-ignored) docs
+# assets before any build/serve so MkDocs can serve it.
+docs-sync-vendored-js = 'python tools/sync_docs_vendored_js.py'
+docs-serve = { cmd = 'pixi run docs-pre serve -f docs/mkdocs.yml', depends-on = [
+  'docs-sync-vendored-js',
+] }
 docs-serve-dirty = 'pixi run docs-serve --dirty'
-docs-build = 'pixi run docs-pre build -f docs/mkdocs.yml'
+docs-build = { cmd = 'pixi run docs-pre build -f docs/mkdocs.yml', depends-on = [
+  'docs-sync-vendored-js',
+] }
 docs-build-local = 'pixi run docs-build --no-directory-urls'
 
 docs-deploy-pre = 'mike deploy -F docs/mkdocs.yml --push --branch gh-pages --update-aliases --alias-type redirect'
 docs-set-default-pre = 'mike set-default -F docs/mkdocs.yml --push --branch gh-pages'
 
 docs-update-assets = 'python tools/update_docs_assets.py'
+
+# Vendored JavaScript runtimes (Plotly cartesian bundle + Three.js).
+# vendor-update-js re-fetches the pinned versions; vendor-check-js is a
+# no-network drift guard for CI.
+vendor-update-js = 'python tools/bump_vendored_js.py'
+vendor-check-js = 'python tools/bump_vendored_js.py --check'
 
 ##############################
 # 📦 Template Management Tasks

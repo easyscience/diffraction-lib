@@ -1,6 +1,9 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 from typing import Any
 
 import numpy as np
@@ -8,11 +11,13 @@ import numpy as np
 from easydiffraction.analysis.calculators.base import CalculatorBase
 from easydiffraction.analysis.calculators.factory import CalculatorFactory
 from easydiffraction.core.metadata import TypeInfo
-from easydiffraction.datablocks.experiment.collection import Experiments
-from easydiffraction.datablocks.experiment.item.base import ExperimentBase
 from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
-from easydiffraction.datablocks.structure.collection import Structures
-from easydiffraction.datablocks.structure.item.base import Structure
+
+if TYPE_CHECKING:
+    from easydiffraction.datablocks.experiment.collection import Experiments
+    from easydiffraction.datablocks.experiment.item.base import ExperimentBase
+    from easydiffraction.datablocks.structure.collection import Structures
+    from easydiffraction.datablocks.structure.item.base import Structure
 
 try:
     from crysfml import cfml_py_utilities
@@ -70,6 +75,7 @@ class CrysfmlCalculator(CalculatorBase):
         description='CrysFML library for crystallographic calculations',
     )
     engine_imported: bool = cfml_py_utilities is not None
+    url: str = 'https://code.ill.fr/scientific-software/crysfml'
 
     @property
     def name(self) -> str:
@@ -129,21 +135,39 @@ class CrysfmlCalculator(CalculatorBase):
 
         crysfml_dict = self._crysfml_dict(structure, experiment)
         try:
-            if experiment.type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH:
-                _, y = cfml_py_utilities.cw_powder_pattern_from_dict(crysfml_dict)
-            elif experiment.type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
-                _, y = cfml_py_utilities.tof_powder_pattern_from_dict(crysfml_dict)
-            else:
-                print(
-                    f'[CrysfmlCalculator] Error: '
-                    f'Unsupported beam mode {experiment.type.beam_mode.value}'
-                )
-                return np.array([])
-            y = self._adjust_pattern_length(y, len(experiment.data.x))
+            y = self._calculate_adjusted_pattern(crysfml_dict, experiment)
         except KeyError:
             print('[CrysfmlCalculator] Error: No calculated data')
             y = []
         return np.asarray(y)
+
+    def _calculate_adjusted_pattern(
+        self,
+        crysfml_dict: dict[str, object],
+        experiment: ExperimentBase,
+    ) -> list[float]:
+        """Calculate a Crysfml pattern and match experiment length."""
+        y = self._calculate_raw_pattern(crysfml_dict, experiment)
+        if y is None:
+            return []
+        return self._adjust_pattern_length(y, len(experiment.data.x))
+
+    @staticmethod
+    def _calculate_raw_pattern(
+        crysfml_dict: dict[str, object],
+        experiment: ExperimentBase,
+    ) -> list[float] | None:
+        """Calculate a Crysfml pattern without length adjustment."""
+        if experiment.type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH:
+            _, y = cfml_py_utilities.cw_powder_pattern_from_dict(crysfml_dict)
+            return y
+        if experiment.type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
+            _, y = cfml_py_utilities.tof_powder_pattern_from_dict(crysfml_dict)
+            return y
+        print(
+            f'[CrysfmlCalculator] Error: Unsupported beam mode {experiment.type.beam_mode.value}'
+        )
+        return None
 
     def _adjust_pattern_length(  # noqa: PLR6301
         self,

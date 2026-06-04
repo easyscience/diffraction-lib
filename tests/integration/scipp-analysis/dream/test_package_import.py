@@ -3,17 +3,16 @@
 
 """Tests for verifying package installation and version consistency.
 
-These tests check that easydiffraction and essdiffraction packages are
-installed and are not older than the latest PyPI release.
+These tests check that easydiffraction is installed and can be found on
+PyPI.
 """
 
 import importlib.metadata
 
 import pytest
 import requests
-from packaging.version import Version
 
-PACKAGE_NAMES = ['easydiffraction', 'essdiffraction']
+PACKAGE_NAMES = ['easydiffraction']
 PYPI_URL = 'https://pypi.org/pypi/{}/json'
 
 
@@ -35,16 +34,6 @@ def get_latest_version(
     if response.status_code == 200:
         return response.json()['info']['version']
     return None
-
-
-def get_base_version(
-    version_str: str,
-) -> str:
-    """Extract MAJOR.MINOR.PATCH from version string, ignoring local
-    identifiers.
-    """
-    v = Version(version_str)
-    return v.base_version
 
 
 @pytest.mark.parametrize('package_name', PACKAGE_NAMES)

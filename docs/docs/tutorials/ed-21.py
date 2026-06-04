@@ -1,5 +1,5 @@
 # %% [markdown]
-# # Bayesian Analysis: LBCO, HRPT
+# # Bayesian Analysis (`bumps-dream`): LBCO, HRPT
 #
 # This tutorial demonstrates a practical two-stage workflow for powder
 # diffraction analysis with EasyDiffraction.
@@ -22,13 +22,13 @@
 #   pattern?
 
 # %% [markdown]
-# ## Import Library
+# ## 🛠️ Import Library
 
 # %%
 import easydiffraction as ed
 
 # %% [markdown]
-# ## Step 1: Create a Project Container
+# ## 📦 Define Project
 #
 # The project object keeps structures, experiments, fit settings, and
 # plotting utilities together in a single place. We will build the full
@@ -38,13 +38,13 @@ import easydiffraction as ed
 # it later if needed.
 
 # %%
-project = ed.Project()
+project = ed.Project(name='lbco_hrpt_bumps_dream')
 
 # %%
-project.save_as('projects/lbco_hrpt_bayesian')
+project.save_as(dir_path='projects/ed_21_lbco_hrpt_bumps_dream')
 
 # %% [markdown]
-# ## Step 2: Build the Structural Model
+# ## 🧩 Define Structure
 #
 # We define a simple cubic perovskite model for LBCO. La and Ba share the
 # same crystallographic site with equal occupancy, while Co and O occupy
@@ -113,7 +113,14 @@ structure.atom_sites.create(
 )
 
 # %% [markdown]
-# ## Step 3: Define the Diffraction Experiment
+# With the structural model complete, render it to confirm the perovskite
+# framework before configuring the experiment.
+
+# %%
+project.display.structure(struct_name='lbco')
+
+# %% [markdown]
+# ## 🔬 Define Experiment
 #
 # Next we download the measured powder pattern, create a neutron powder
 # experiment, and configure the instrument, profile, background, and
@@ -182,7 +189,7 @@ experiment.excluded_regions.create(id='1', start=0, end=10)
 experiment.excluded_regions.create(id='2', start=100, end=180)
 
 # %% [markdown]
-# ## Step 4: Run an Initial Local Refinement
+# ## 🚀 Initial Refinement
 #
 # Before Bayesian sampling, it is useful to run a deterministic fit. This
 # gives us:
@@ -210,10 +217,10 @@ experiment.instrument.calib_twotheta_offset.free = True
 # and uncertainty estimates for the Bayesian run.
 
 # %%
-project.analysis.fitting.show_minimizer_types()
+project.analysis.minimizer.show_supported()
 
 # %%
-project.analysis.fitting.minimizer_type = 'bumps (lm)'
+project.analysis.minimizer.type = 'bumps (lm)'
 
 # %%
 project.analysis.fit()
@@ -234,7 +241,7 @@ project.display.fit.correlations()
 project.display.pattern(expt_name='hrpt')
 
 # %% [markdown]
-# ## Step 5: Prepare for Bayesian Sampling
+# ## 🎲 Prepare Sampling
 #
 # DREAM requires finite bounds for the free parameters. Instead of
 # setting them manually, we derive them from the uncertainties estimated
@@ -271,7 +278,7 @@ for param in project.free_parameters:
 project.display.parameters.free()
 
 # %% [markdown]
-# ## Step 6: Configure and Run DREAM
+# ## 🎲 Run Sampling
 #
 # We now switch from the local minimizer to the Bayesian DREAM sampler.
 #
@@ -291,20 +298,21 @@ project.display.parameters.free()
 # this is not recommended for production analysis.
 
 # %%
-project.analysis.fitting.show_minimizer_types()
+project.analysis.minimizer.show_supported()
 
 # %%
-project.analysis.fitting.minimizer_type = 'bumps (dream)'
+project.analysis.minimizer.type = 'bumps (dream)'
 
 # %%
-project.analysis.fitting.minimizer.steps = 100  # lower than the default 3000
-project.analysis.fitting.minimizer.burn = 20  # lower than the default 600
+project.analysis.minimizer.sampling_steps = 100  # lower than the default 3000
+project.analysis.minimizer.burn_in_steps = 20  # lower than the default 600
+project.analysis.minimizer.random_seed = 42  # fixed seed for reproducible output
 
 # %%
 project.analysis.fit()
 
 # %% [markdown]
-# ## Step 7: Inspect Bayesian Results
+# ## 📊 Inspect Results
 #
 # The fit-results display now includes sampler settings, convergence
 # diagnostics, committed parameter values, and posterior summary

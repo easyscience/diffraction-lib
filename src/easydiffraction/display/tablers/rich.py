@@ -157,6 +157,7 @@ class RichTableBackend(TableBackendBase):
         alignments: object,
         df: object,
         display_handle: object = None,
+        width: int | None = None,
     ) -> object:
         """
         Render a styled table using Rich.
@@ -169,6 +170,9 @@ class RichTableBackend(TableBackendBase):
             Index-aware DataFrame to render.
         display_handle : object, default=None
             Optional environment handle for in-place updates.
+        width : int | None, default=None
+            Optional target table width. When set, the table is sized to
+            this width so long cells wrap to fit the terminal.
 
         Returns
         -------
@@ -176,4 +180,6 @@ class RichTableBackend(TableBackendBase):
             Backend-defined return value (commonly ``None``).
         """
         table = self.build_renderable(alignments, df)
+        if width is not None:
+            table.width = width
         self._update_display(table, display_handle)

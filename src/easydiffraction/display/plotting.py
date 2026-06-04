@@ -19,6 +19,7 @@ import pandas as pd
 from easydiffraction.analysis.enums import FitCorrelationSourceEnum
 from easydiffraction.analysis.enums import FitResultKindEnum
 from easydiffraction.analysis.fit_helpers.bayesian import PosteriorPredictiveSummary
+from easydiffraction.analysis.fit_helpers.bayesian import posterior_predictive_cache_key
 from easydiffraction.datablocks.experiment.item.base import intensity_category_for
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
@@ -29,6 +30,7 @@ from easydiffraction.display.plotters.base import DEFAULT_AXES_LABELS
 from easydiffraction.display.plotters.base import DEFAULT_HEIGHT
 from easydiffraction.display.plotters.base import DEFAULT_MAX
 from easydiffraction.display.plotters.base import DEFAULT_MIN
+from easydiffraction.display.plotters.base import DEFAULT_RESIDUAL_HEIGHT_FRACTION
 from easydiffraction.display.plotters.base import DEFAULT_X_AXIS
 from easydiffraction.display.plotters.base import BraggTickSet
 from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
@@ -81,11 +83,10 @@ class PosteriorPairPlotStyleEnum(StrEnum):
 DEFAULT_CORRELATION_THRESHOLD: float | None = None
 DEFAULT_CORRELATION_MAX_PARAMETERS = 6
 EXPECTED_COVAR_NDIM = 2
-DEFAULT_RESIDUAL_HEIGHT_FRACTION = 0.25
 DEFAULT_BRAGG_PEAKS_HEIGHT_FRACTION = 0.10
 DEFAULT_RESID_HEIGHT = DEFAULT_RESIDUAL_HEIGHT_FRACTION
 DEFAULT_BRAGG_ROW = DEFAULT_BRAGG_PEAKS_HEIGHT_FRACTION
-DEFAULT_POSTERIOR_PREDICTIVE_DRAWS = 200
+DEFAULT_POSTERIOR_PREDICTIVE_DRAWS = 50
 DEFAULT_POSTERIOR_PREDICTIVE_DRAW_PLOT_CAP = 50
 FULL_POSTERIOR_PAIR_COVARIANCE_RANK = 2
 POSTERIOR_FLATTENED_SAMPLE_NDIM = 2
@@ -141,7 +142,7 @@ POSTERIOR_NEGATIVE_CONTOUR_LINE_COLORSCALE = [
     [0.82, 'rgba(215, 48, 39, 0.98)'],
     [1.0, 'rgba(215, 48, 39, 0.98)'],
 ]
-POSTERIOR_PAIR_SCATTER_MAX_POINTS = 1500
+POSTERIOR_PAIR_SCATTER_MAX_POINTS = 750  # keep embedded pair scatter small
 POSTERIOR_PAIR_MAX_DENSITY_SAMPLES = 4000
 POSTERIOR_PAIR_MIN_DENSITY_SAMPLES = 800
 POSTERIOR_PAIR_TARGET_DENSITY_SAMPLE_BUDGET = 24000
@@ -170,8 +171,12 @@ SQUARE_MATRIX_TOP_MARGIN_PIXELS = 40
 SQUARE_MATRIX_BOTTOM_MARGIN_PIXELS = 40
 SQUARE_MATRIX_AXIS_TITLE_LINE_HEIGHT_PIXELS = 18
 SQUARE_MATRIX_TITLE_LEFT_PADDING_PIXELS = 14
+# Correlation-matrix cells are sized to roughly this many label-font
+# characters; the factor approximates one glyph's width per font pixel
+# for Plotly's default sans-serif axis labels.
+CORRELATION_CELL_LABEL_CHAR_COUNT = 16
+CORRELATION_LABEL_CHAR_WIDTH_FACTOR = 0.6
 POSTERIOR_PAIR_SAMPLE_MARKER_SIZE = 6
-POSTERIOR_PAIR_SAMPLE_HOVER_MARKER_SIZE = 6
 
 
 @dataclass(frozen=True)
@@ -193,6 +198,7 @@ class _PowderMeasVsCalcSeries:
 
     y_meas: np.ndarray
     y_calc: np.ndarray
+    y_meas_su: np.ndarray | None = None
     y_bkg: np.ndarray | None = None
 
 
@@ -2089,7 +2095,7 @@ class Plotter(RendererBase):
                 name='Posterior samples',
                 legendgroup='posterior-samples',
                 showlegend=legend_state.show_scatter,
-                hoverinfo='skip',
+                hovertemplate=sample_hovertemplate,
                 zorder=0,
             ),
             row=row,
@@ -2105,22 +2111,6 @@ class Plotter(RendererBase):
             fig.add_trace(contour_traces[0], row=row, col=col)
             fig.add_trace(contour_traces[1], row=row, col=col)
             legend_state.show_contour = False
-        fig.add_trace(
-            go.Scatter(
-                x=x_scatter_values,
-                y=y_scatter_values,
-                mode='markers',
-                marker={
-                    'color': 'rgba(0, 0, 0, 0)',
-                    'size': POSTERIOR_PAIR_SAMPLE_HOVER_MARKER_SIZE,
-                },
-                showlegend=False,
-                hovertemplate=sample_hovertemplate,
-                zorder=3,
-            ),
-            row=row,
-            col=col,
-        )
 
     @staticmethod
     def _configure_posterior_pair_panel_axes(
@@ -2334,23 +2324,40 @@ class Plotter(RendererBase):
         )
         return cell_size * cls._square_matrix_plot_extent(n_parameters)
 
+    @staticmethod
+    def _correlation_cell_size_pixels() -> int:
+        """
+        Return the correlation cell width in pixels (~16 label chars).
+        """
+        return round(
+            CORRELATION_CELL_LABEL_CHAR_COUNT
+            * CORRELATION_LABEL_CHAR_WIDTH_FACTOR
+            * POSTERIOR_PAIR_AXIS_TITLE_FONT_SIZE
+        )
+
     @classmethod
     def _square_matrix_layout_meta(
         cls,
         *,
         n_parameters: int,
         annotation_labels: list[str],
+        cell_size_pixels: int | None = None,
+        cap_width: bool = False,
     ) -> dict[str, object]:
         """Return wrapper metadata for square matrix plots."""
         margins = cls._square_matrix_layout_margin(annotation_labels)
-        plot_size = cls._square_matrix_target_plot_size_pixels(n_parameters)
+        if cell_size_pixels is None:
+            plot_size = cls._square_matrix_target_plot_size_pixels(n_parameters)
+        else:
+            plot_size = cell_size_pixels * cls._square_matrix_plot_extent(n_parameters)
         aspect_width = round(plot_size + int(margins['l']) + int(margins['r']))
         aspect_height = round(plot_size + int(margins['t']) + int(margins['b']))
-        return {
-            SQUARE_MATRIX_FIXED_ASPECT_META_KEY: {
-                'aspect_ratio': f'{aspect_width} / {aspect_height}',
-            }
+        wrapper: dict[str, object] = {
+            'aspect_ratio': f'{aspect_width} / {aspect_height}',
         }
+        if cap_width:
+            wrapper['max_width_pixels'] = aspect_width
+        return {SQUARE_MATRIX_FIXED_ASPECT_META_KEY: wrapper}
 
     def _finalize_posterior_pairs_figure(
         self,
@@ -2361,6 +2368,11 @@ class Plotter(RendererBase):
         subplot_border_shapes: list[dict[str, object]],
     ) -> None:
         """Apply final layout settings to the posterior pair plot."""
+        axis_frame_shape_indexes = [
+            index
+            for index, shape in enumerate(subplot_border_shapes)
+            if shape.get('type') == 'rect'
+        ]
         fig.update_layout(
             autosize=True,
             margin=self._square_matrix_layout_margin(context.annotation_labels),
@@ -2385,6 +2397,10 @@ class Plotter(RendererBase):
                 'y': 0.995,
                 'groupclick': 'togglegroup',
             },
+        )
+        PlotlyPlotter._apply_theme_sync_meta(
+            fig,
+            axis_frame_shape_indexes=axis_frame_shape_indexes,
         )
 
     @staticmethod
@@ -2659,15 +2675,11 @@ class Plotter(RendererBase):
         analysis = self._project.analysis
         sidecar_data = getattr(analysis, '_persisted_fit_state_sidecar', {})
         pair_caches = sidecar_data.get('pair_caches', {})
-        for cache in analysis.bayesian_pair_caches:
-            cache_x = cache.param_unique_name_x.value
-            cache_y = cache.param_unique_name_y.value
+        for cache_data in pair_caches.values():
+            cache_x = str(cache_data.get('param_unique_name_x', ''))
+            cache_y = str(cache_data.get('param_unique_name_y', ''))
             if {cache_x, cache_y} != {x_parameter_name, y_parameter_name}:
                 continue
-
-            cache_data = pair_caches.get(cache.id.value)
-            if cache_data is None:
-                return None
 
             x_grid = np.asarray(cache_data.get('x'), dtype=float)
             y_grid = np.asarray(cache_data.get('y'), dtype=float)
@@ -2795,6 +2807,9 @@ class Plotter(RendererBase):
             x_axis_range=x_axis_range,
             y_axis_range=y_axis_range,
         )
+        panel_height = getattr(self._backend, '_single_main_panel_height_pixels', None)
+        if callable(panel_height):
+            fig.update_layout(height=panel_height(DEFAULT_RESID_HEIGHT))
         return fig
 
     def _plot_ascii_param_distribution(
@@ -3011,29 +3026,46 @@ class Plotter(RendererBase):
         histogram_bin_edges: np.ndarray | None,
     ) -> None:
         """Add the histogram trace for a posterior distribution plot."""
-        histogram_kwargs: dict[str, object] = {}
-        if (
-            histogram_bin_edges is not None
-            and histogram_bin_edges.size >= MIN_POSTERIOR_SAMPLE_COUNT
-        ):
-            histogram_kwargs['xbins'] = {
-                'start': float(histogram_bin_edges[0]),
-                'end': float(histogram_bin_edges[-1]),
-                'size': float(histogram_bin_edges[1] - histogram_bin_edges[0]),
-            }
+        marker = {
+            'color': POSTERIOR_HISTOGRAM_FILL_COLOR,
+            'line': {'color': POSTERIOR_HISTOGRAM_LINE_COLOR, 'width': 1},
+        }
+        densities = Plotter._posterior_distribution_histogram_density(
+            values,
+            histogram_bin_edges,
+        )
+        if densities is None or histogram_bin_edges is None:
+            # Degenerate sample (no usable bins): let Plotly bin the few
+            # raw values client-side; the embedded payload stays tiny.
+            fig.add_trace(
+                go.Histogram(
+                    x=values,
+                    histnorm='probability density',
+                    marker=marker,
+                    opacity=0.82,
+                    name='Posterior histogram',
+                    hovertemplate='sample=%{x:.4f}<br>density: %{y:.2f}<extra></extra>',
+                )
+            )
+            return
 
+        # Pre-bin server-side and emit a Bar trace so only the per-bin
+        # densities ride in the page, not every raw posterior sample.
+        # ``go.Histogram(x=values)`` serializes the full sample array
+        # (hundreds of thousands of values per parameter), bloating the
+        # docs page and stalling the "Loading plot…" skeleton paint.
+        edges = np.asarray(histogram_bin_edges, dtype=float)
+        bin_centers = (edges[:-1] + edges[1:]) / 2.0
+        bin_widths = np.diff(edges)
         fig.add_trace(
-            go.Histogram(
-                x=values,
-                histnorm='probability density',
-                marker={
-                    'color': POSTERIOR_HISTOGRAM_FILL_COLOR,
-                    'line': {'color': POSTERIOR_HISTOGRAM_LINE_COLOR, 'width': 1},
-                },
+            go.Bar(
+                x=bin_centers,
+                y=densities,
+                width=bin_widths,
+                marker=marker,
                 opacity=0.82,
                 name='Posterior histogram',
                 hovertemplate='sample=%{x:.4f}<br>density: %{y:.2f}<extra></extra>',
-                **histogram_kwargs,
             )
         )
 
@@ -3546,12 +3578,12 @@ class Plotter(RendererBase):
             return None
 
         x_axis_name = getattr(x_axis, 'value', x_axis)
-        draw_cache_key = self._posterior_predictive_key(
+        draw_cache_key = posterior_predictive_cache_key(
             expt_name,
             str(x_axis_name),
             include_draws=True,
         )
-        band_cache_key = self._posterior_predictive_key(
+        band_cache_key = posterior_predictive_cache_key(
             expt_name,
             str(x_axis_name),
             include_draws=False,
@@ -3688,37 +3720,18 @@ class Plotter(RendererBase):
             dtype=float,
         )
         original_uncertainties = [parameter.uncertainty for parameter in sampled_parameters]
-        predictive_draws: list[np.ndarray] = []
         draw_indices = self._posterior_predictive_draw_indices(flattened_samples.shape[0])
 
         try:
-            best_sample_prediction, x_values = self._evaluate_posterior_predictive_state(
+            evaluated = self._evaluate_posterior_predictive_draw_values(
+                draw_indices=draw_indices,
+                flattened_samples=flattened_samples,
                 sampled_parameters=sampled_parameters,
-                values=original_values,
                 experiment=experiment,
                 expt_name=expt_name,
                 x_axis=x_axis,
+                original_values=original_values,
             )
-            if best_sample_prediction is None or x_values is None:
-                return None
-
-            for index in draw_indices:
-                prediction, current_x = self._evaluate_posterior_predictive_state(
-                    sampled_parameters=sampled_parameters,
-                    values=flattened_samples[index],
-                    experiment=experiment,
-                    expt_name=expt_name,
-                    x_axis=x_axis,
-                )
-                if prediction is None or current_x is None:
-                    return None
-                if (
-                    prediction.shape != best_sample_prediction.shape
-                    or current_x.shape != x_values.shape
-                ):
-                    log.warning('Posterior predictive draws returned inconsistent array shapes.')
-                    return None
-                predictive_draws.append(prediction)
         finally:
             self._restore_posterior_predictive_parameters(
                 sampled_parameters=sampled_parameters,
@@ -3727,11 +3740,57 @@ class Plotter(RendererBase):
                 expt_name=expt_name,
             )
 
+        if evaluated is None:
+            return None
+        best_sample_prediction, x_values, predictive_draws = evaluated
         return (
             np.asarray(best_sample_prediction, dtype=float),
             np.asarray(x_values, dtype=float),
             np.asarray(predictive_draws, dtype=float),
         )
+
+    def _evaluate_posterior_predictive_draw_values(
+        self,
+        *,
+        draw_indices: np.ndarray,
+        flattened_samples: np.ndarray,
+        sampled_parameters: list[object],
+        experiment: object,
+        expt_name: str,
+        x_axis: object,
+        original_values: np.ndarray,
+    ) -> tuple[np.ndarray, np.ndarray, list[np.ndarray]] | None:
+        """Evaluate posterior predictive best sample and draw curves."""
+        best_sample_prediction, x_values = self._evaluate_posterior_predictive_state(
+            sampled_parameters=sampled_parameters,
+            values=original_values,
+            experiment=experiment,
+            expt_name=expt_name,
+            x_axis=x_axis,
+        )
+        if best_sample_prediction is None or x_values is None:
+            return None
+
+        predictive_draws: list[np.ndarray] = []
+        for index in draw_indices:
+            prediction, current_x = self._evaluate_posterior_predictive_state(
+                sampled_parameters=sampled_parameters,
+                values=flattened_samples[index],
+                experiment=experiment,
+                expt_name=expt_name,
+                x_axis=x_axis,
+            )
+            if prediction is None or current_x is None:
+                return None
+            if (
+                prediction.shape != best_sample_prediction.shape
+                or current_x.shape != x_values.shape
+            ):
+                log.warning('Posterior predictive draws returned inconsistent array shapes.')
+                return None
+            predictive_draws.append(prediction)
+
+        return best_sample_prediction, x_values, predictive_draws
 
     def _restore_posterior_predictive_parameters(
         self,
@@ -3795,44 +3854,6 @@ class Plotter(RendererBase):
                 dtype=int,
             )
         )
-
-    @staticmethod
-    def _posterior_predictive_key(
-        expt_name: str,
-        x_axis_name: str,
-        *,
-        include_draws: bool = True,
-    ) -> str:
-        """Return the cache key for a posterior predictive summary."""
-        key_suffix = 'draws' if include_draws else 'band'
-        return f'{expt_name}:{x_axis_name}:{key_suffix}'
-
-    def _get_posterior_inference_data(
-        self,
-    ) -> tuple[object | None, object | None]:
-        """
-        Return posterior inference data for the current Bayesian fit.
-
-        Returns
-        -------
-        tuple[object | None, object | None]
-            ``(inference_data, fit_results)`` when posterior samples are
-            available, otherwise ``(None, None)``.
-        """
-        if self.engine != PlotterEngineEnum.PLOTLY.value:
-            log.warning('Posterior plots currently require the Plotly plotting backend.')
-            return None, None
-
-        fit_results = self._get_fit_result_for_correlation()
-        if fit_results is None:
-            return None, None
-
-        posterior_samples = getattr(fit_results, 'posterior_samples', None)
-        if posterior_samples is None:
-            log.warning('Posterior samples are unavailable. Run a Bayesian fit first.')
-            return None, None
-
-        return posterior_samples.to_arviz(), fit_results
 
     def _get_posterior_samples_and_fit_results(
         self,
@@ -3974,9 +3995,9 @@ class Plotter(RendererBase):
             legend={
                 'bgcolor': self._plot_legend_background_color(),
                 'xanchor': 'right',
-                'x': 1.0,
+                'x': 0.99,
                 'yanchor': 'top',
-                'y': 1.0,
+                'y': 0.99,
             },
             xaxis_title=axes_labels[0],
             yaxis_title=axes_labels[1],
@@ -4776,6 +4797,7 @@ class Plotter(RendererBase):
         if label_trace is not None:
             traces.append(label_trace)
         fig = go.Figure(data=traces)
+        shapes = self._correlation_heatmap_grid_shapes(context)
 
         fig.update_layout(
             autosize=True,
@@ -4790,10 +4812,12 @@ class Plotter(RendererBase):
                 x_centers=x_centers,
                 y_centers=y_centers,
             ),
-            shapes=self._correlation_heatmap_grid_shapes(context),
+            shapes=shapes,
             meta=self._square_matrix_layout_meta(
                 n_parameters=context.n_cols,
                 annotation_labels=[*context.row_labels, *context.col_labels],
+                cell_size_pixels=self._correlation_cell_size_pixels(),
+                cap_width=True,
             ),
             showlegend=False,
         )
@@ -4826,6 +4850,11 @@ class Plotter(RendererBase):
             constrain='domain',
             scaleanchor='x',
             scaleratio=1,
+        )
+        PlotlyPlotter._apply_theme_sync_meta(
+            fig,
+            axis_frame_shape_indexes=range(len(shapes)),
+            correlation_heatmap=True,
         )
         return fig
 
@@ -5271,7 +5300,7 @@ class Plotter(RendererBase):
             y_series=[y_meas],
             labels=['meas'],
             axes_labels=ctx['axes_labels'],
-            title=f"Measured data for experiment 🔬 '{expt_name}'",
+            title=f"Diffraction pattern for experiment 🔬 '{expt_name}'",
             height=self.height,
             excluded_ranges=excluded_ranges,
         )
@@ -5333,9 +5362,57 @@ class Plotter(RendererBase):
             y_series=[y_calc],
             labels=['calc'],
             axes_labels=ctx['axes_labels'],
-            title=f"Calculated data for experiment 🔬 '{expt_name}'",
+            title=f"Diffraction pattern for experiment 🔬 '{expt_name}'",
             height=self.height,
             excluded_ranges=excluded_ranges,
+        )
+
+    def _powder_meas_vs_calc_series(
+        self,
+        pattern: object,
+        ctx: dict[str, object],
+        plot_options: _MeasVsCalcPlotOptions,
+    ) -> _PowderMeasVsCalcSeries:
+        """Return filtered measured/calculated powder series."""
+        y_meas = self._filtered_y_array(
+            pattern.intensity_meas, ctx['x_array'], ctx['x_min'], ctx['x_max']
+        )
+        y_calc = self._filtered_y_array(
+            pattern.intensity_calc, ctx['x_array'], ctx['x_min'], ctx['x_max']
+        )
+        y_meas_su = self._optional_filtered_y_array(
+            getattr(pattern, 'intensity_meas_su', None),
+            ctx,
+        )
+        y_bkg = self._optional_filtered_y_array(
+            getattr(pattern, 'intensity_bkg', None),
+            ctx,
+        )
+        if not self._show_background_enabled(
+            plot_options,
+            background_available=y_bkg is not None,
+        ):
+            y_bkg = None
+        return _PowderMeasVsCalcSeries(
+            y_meas=y_meas,
+            y_calc=y_calc,
+            y_meas_su=y_meas_su,
+            y_bkg=y_bkg,
+        )
+
+    def _optional_filtered_y_array(
+        self,
+        values: object | None,
+        ctx: dict[str, object],
+    ) -> np.ndarray | None:
+        """Return filtered optional y values."""
+        if values is None:
+            return None
+        return self._filtered_y_array(
+            values,
+            ctx['x_array'],
+            ctx['x_min'],
+            ctx['x_max'],
         )
 
     def _plot_meas_vs_calc_data(
@@ -5383,7 +5460,7 @@ class Plotter(RendererBase):
             log.error(f'No calculated data available for experiment {expt_name}')
             return
 
-        title = f"Measured vs Calculated data for experiment 🔬 '{expt_name}'"
+        title = f"Diffraction pattern for experiment 🔬 '{expt_name}'"
 
         # Single crystal scatter plot (I²calc vs I²meas)
         if x_axis in {XAxisType.INTENSITY_CALC, 'intensity_calc'}:
@@ -5409,26 +5486,7 @@ class Plotter(RendererBase):
         if ctx is None:
             return
 
-        y_meas = self._filtered_y_array(
-            pattern.intensity_meas, ctx['x_array'], ctx['x_min'], ctx['x_max']
-        )
-        y_calc = self._filtered_y_array(
-            pattern.intensity_calc, ctx['x_array'], ctx['x_min'], ctx['x_max']
-        )
-        y_bkg_raw = getattr(pattern, 'intensity_bkg', None)
-        y_bkg = (
-            self._filtered_y_array(y_bkg_raw, ctx['x_array'], ctx['x_min'], ctx['x_max'])
-            if y_bkg_raw is not None
-            else None
-        )
-        if not self._show_background_enabled(plot_options, background_available=y_bkg is not None):
-            y_bkg = None
-
-        powder_series = _PowderMeasVsCalcSeries(
-            y_meas=y_meas,
-            y_calc=y_calc,
-            y_bkg=y_bkg,
-        )
+        powder_series = self._powder_meas_vs_calc_series(pattern, ctx, plot_options)
         excluded_ranges = (
             self._excluded_ranges(
                 experiment=experiment,
@@ -5453,8 +5511,8 @@ class Plotter(RendererBase):
 
         self._plot_line_meas_vs_calc(
             ctx=ctx,
-            y_meas=y_meas,
-            y_calc=y_calc,
+            y_meas=powder_series.y_meas,
+            y_calc=powder_series.y_calc,
             show_residual=False
             if plot_options.show_residual is None
             else plot_options.show_residual,
@@ -5529,6 +5587,7 @@ class Plotter(RendererBase):
             height=self._composite_plot_height(),
             y_bkg=series.y_bkg,
             excluded_ranges=excluded_ranges,
+            y_meas_su=series.y_meas_su,
         )
         self._backend.plot_powder_meas_vs_calc(plot_spec=plot_spec)
 
@@ -5836,7 +5895,11 @@ class Plotter(RendererBase):
             x_label = 'Experiment No.'
 
         # Y-axis label from descriptor
-        param_units = getattr(param_descriptor, 'units', '')
+        param_units = (
+            param_descriptor.resolve_display_units('gui')
+            if hasattr(param_descriptor, 'resolve_display_units')
+            else getattr(param_descriptor, 'units', '')
+        )
         y_label = f'Parameter value ({param_units})' if param_units else 'Parameter value'
 
         title = f"Parameter '{column_name}' across fit results"

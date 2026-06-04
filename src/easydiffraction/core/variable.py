@@ -9,8 +9,10 @@ import numpy as np
 
 from easydiffraction.core.diagnostic import Diagnostics
 from easydiffraction.core.guard import GuardedBase
+from easydiffraction.core.units_vocabulary import normalize_units_code
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import DataTypes
+from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import TypeValidator
 from easydiffraction.io.cif.serialize import param_from_cif
@@ -18,6 +20,10 @@ from easydiffraction.io.cif.serialize import param_to_cif
 from easydiffraction.utils.logging import log
 
 if TYPE_CHECKING:
+    from enum import StrEnum
+
+    from easydiffraction.core.display_handler import DisplayHandler
+    from easydiffraction.core.posterior import PosteriorParameterSummary
     from easydiffraction.io.cif.handler import CifHandler
 
 # ======================================================================
@@ -47,6 +53,7 @@ class GenericDescriptorBase(GuardedBase):
         value_spec: AttributeSpec,
         name: str,
         description: str | None = None,
+        display_handler: DisplayHandler | None = None,
     ) -> None:
         """
         Initialize the descriptor with validation and identity.
@@ -59,6 +66,8 @@ class GenericDescriptorBase(GuardedBase):
             Local name of the descriptor within its category.
         description : str | None, default=None
             Optional human-readable description.
+        display_handler : DisplayHandler | None, default=None
+            Optional labels and units for display contexts.
         """
         super().__init__()
 
@@ -83,6 +92,7 @@ class GenericDescriptorBase(GuardedBase):
         self._value_spec = value_spec
         self._name = name
         self._description = description
+        self._display_handler = display_handler
 
         # Initial validated states
         # self._value = self._value_spec.validated(
@@ -94,8 +104,7 @@ class GenericDescriptorBase(GuardedBase):
         # Skip validation — defaults are trusted.
         # Callable is needed for dynamic defaults like SpaceGroup
         # it_coordinate_system_code, and similar cases.
-        default = value_spec.default
-        self._value = default() if callable(default) else default
+        self._value = value_spec.default_value()
 
     def __str__(self) -> str:
         """Return the string representation of this descriptor."""
@@ -185,6 +194,63 @@ class GenericDescriptorBase(GuardedBase):
         return self._description
 
     @property
+    def display_handler(self) -> DisplayHandler | None:
+        """Optional labels and units for display contexts."""
+        return self._display_handler
+
+    def resolve_display_name(self, context: str) -> str:
+        """
+        Return the display label for the requested context.
+
+        Parameters
+        ----------
+        context : str
+            One of ``'latex'``, ``'html'``, or ``'gui'``.
+
+        Returns
+        -------
+        str
+            Resolved display label.
+        """
+        self._validate_display_context(context)
+        if self._display_handler is None:
+            return self.name
+        if context == 'latex':
+            return self._display_handler.latex_name or self.name
+        return self._display_handler.display_name or self.name
+
+    def resolve_display_units(self, context: str) -> str:
+        """
+        Return the display units for the requested context.
+
+        Parameters
+        ----------
+        context : str
+            One of ``'latex'``, ``'html'``, or ``'gui'``.
+
+        Returns
+        -------
+        str
+            Resolved display units.
+        """
+        self._validate_display_context(context)
+        fallback = str(getattr(self, '_units', ''))
+        if fallback == 'none':
+            fallback = ''
+        if self._display_handler is None:
+            return fallback
+        if context == 'latex':
+            return self._display_handler.latex_units or fallback
+        return self._display_handler.display_units or fallback
+
+    @staticmethod
+    def _validate_display_context(context: str) -> None:
+        """Validate a descriptor display context."""
+        if context not in {'latex', 'html', 'gui'}:
+            msg = "context must be one of 'latex', 'html', or 'gui'."
+            raise ValueError(msg)
+
+    @property
     def parameters(self) -> list[GenericDescriptorBase]:
         """
         Return a flat list of parameters contained by this object.
@@ -257,14 +323,15 @@ class GenericNumericDescriptor(GenericDescriptorBase):
         **kwargs: object,
     ) -> None:
         super().__init__(**kwargs)
-        self._units: str = units
+        self._units: str = normalize_units_code(units)
 
     def __str__(self) -> str:
         """Return the string representation including units."""
         s: str = super().__str__()
         s = s[1:-1]  # strip <>
-        if self.units:
-            s += f' {self.units}'
+        units = self.resolve_display_units('gui')
+        if units:
+            s += f' {units}'
         return f'<{s}>'
 
     @property
@@ -320,6 +387,7 @@ class GenericParameter(GenericNumericDescriptor):
         self._user_constrained = self._user_constrained_spec.default
         self._symmetry_constrained_spec = self._BOOL_SPEC_TEMPLATE
         self._symmetry_constrained = self._symmetry_constrained_spec.default
+        self._posterior: PosteriorParameterSummary | None = None
 
     def _physical_lower_bound(self) -> float:
         """
@@ -345,8 +413,9 @@ class GenericParameter(GenericNumericDescriptor):
         s = s[1:-1]  # strip <>
         if self.uncertainty is not None:
             s += f' ± {self.uncertainty}'
-        if self.units is not None:
-            s += f' {self.units}'
+        units = self.resolve_display_units('gui')
+        if units:
+            s += f' {units}'
         s += f' (free={self.free})'
         return f'<{s}>'
 
@@ -436,6 +505,15 @@ class GenericParameter(GenericNumericDescriptor):
         self._uncertainty = self._uncertainty_spec.validated(
             v, name=f'{self.unique_name}.uncertainty', current=self._uncertainty
         )
+
+    @property
+    def posterior(self) -> PosteriorParameterSummary | None:
+        """Posterior summary from a Bayesian fit, if available."""
+        return self._posterior
+
+    def _set_posterior(self, value: PosteriorParameterSummary | None) -> None:
+        """Set the posterior summary for internal callers."""
+        self._posterior = value
 
     @property
     def fit_min(self) -> float:
@@ -566,6 +644,89 @@ class StringDescriptor(GenericStringDescriptor):
         super().__init__(**kwargs)
         self._cif_handler = cif_handler
         self._cif_handler.attach(self)
+
+
+# ======================================================================
+
+
+class EnumDescriptor(StringDescriptor):
+    """
+    String descriptor bound to a closed ``(str, Enum)`` value set.
+
+    Derives validation and the default from ``enum`` and exposes
+    ``show_supported()`` listing the members with the active one marked,
+    matching the switchable-category table (value-selector-discovery
+    ADR).
+    """
+
+    def __init__(
+        self,
+        *,
+        name: str,
+        enum: type[StrEnum],
+        cif_handler: CifHandler,
+        description: str | None = None,
+        default: str | None = None,
+        display_handler: DisplayHandler | None = None,
+    ) -> None:
+        """
+        Initialize an enum-backed string descriptor.
+
+        Parameters
+        ----------
+        name : str
+            Local name of the descriptor within its category.
+        enum : type[StrEnum]
+            The ``(str, Enum)`` class whose members are the allowed
+            values.
+        cif_handler : CifHandler
+            Object that tracks CIF identifiers.
+        description : str | None, default=None
+            Optional human-readable description.
+        default : str | None, default=None
+            Default value; falls back to ``enum.default()`` when
+            omitted.
+        display_handler : DisplayHandler | None, default=None
+            Optional labels and units for display contexts.
+        """
+        self._enum = enum
+        resolved_default = enum.default().value if default is None else default
+        value_spec = AttributeSpec(
+            default=resolved_default,
+            validator=MembershipValidator(allowed=[member.value for member in enum]),
+        )
+        super().__init__(
+            name=name,
+            description=description,
+            value_spec=value_spec,
+            cif_handler=cif_handler,
+            display_handler=display_handler,
+        )
+
+    @property
+    def enum(self) -> type[StrEnum]:
+        """Return the ``(str, Enum)`` class backing this selector."""
+        return self._enum
+
+    def show_supported(self) -> None:
+        """List the accepted values, marking the active one."""
+        # Lazy display imports keep core/ free of heavy imports on this
+        # rarely-called path (mirrors help()).
+        from easydiffraction.utils.logging import console  # noqa: PLC0415
+        from easydiffraction.utils.utils import render_table  # noqa: PLC0415
+
+        current = self.value
+        columns_data = [
+            ['*' if member.value == current else '', member.value, member.description()]
+            for member in self._enum
+        ]
+        title = self._name.replace('_', ' ').title()
+        console.paragraph(f'{title} types')
+        render_table(
+            columns_headers=['', 'Value', 'Description'],
+            columns_alignment=['left', 'left', 'left'],
+            columns_data=columns_data,
+        )
 
 
 # ======================================================================

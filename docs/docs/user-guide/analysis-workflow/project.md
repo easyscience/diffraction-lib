@@ -75,18 +75,20 @@ The example below illustrates a typical **project structure** for a
 
 <div class="cif">
 <pre>
-📁 <span class="red"><b>La0.5Ba0.5CoO3</b></span>     - Project directory.
-├── 📄 <span class="orange"><b>project.cif</b></span>    - Main project description file.
-├── 📁 structures  - Folder with structures (crystallographic structures).
-│   ├── 📄 <span class="orange"><b>lbco.cif</b></span>   - File with La0.5Ba0.5CoO3 structure parameters.
+📁 <span class="red"><b>La0.5Ba0.5CoO3</b></span>     - project root
+├── 📄 <span class="orange"><b>project.cif</b></span>    - project configuration
+├── 📁 structures  - structures
+│   ├── 📄 <span class="orange"><b>lbco.cif</b></span>   - LBCO
 │   └── ...
-├── 📁 experiments    - Folder with experiment settings and measured data.
-│   ├── 📄 <span class="orange"><b>hrpt.cif</b></span>   - Instrumental parameters, calculator selection and measured data from HRPT@PSI.
+├── 📁 experiments - experiments
+│   ├── 📄 <span class="orange"><b>hrpt.cif</b></span>   - HRPT pattern
 │   └── ...
-├── 📁 analysis       - Analysis settings and optional persisted Bayesian arrays.
-│   ├── 📄 <span class="orange"><b>analysis.cif</b></span> - Settings for data analysis (minimizer, fit mode, constraints, persisted fit state).
-│   └── 📄 <span class="orange"><b>results.h5</b></span>   - Optional Bayesian sidecar with posterior and predictive arrays.
-└── 📄 <span class="orange"><b>summary.cif</b></span>    - Summary report after structure refinement.
+├── 📁 analysis    - analysis
+│   ├── 📄 <span class="orange"><b>analysis.cif</b></span> - fit state
+│   └── 📄 <span class="orange"><b>results.h5</b></span>   - Bayesian arrays
+└── 📁 reports     - reports
+    ├── 📄 <span class="orange"><b>La0.5Ba0.5CoO3.cif</b></span>  - IUCr
+    └── 📄 <span class="orange"><b>La0.5Ba0.5CoO3.html</b></span> - HTML
 </pre>
 </div>
 
@@ -94,15 +96,17 @@ The example below illustrates a typical **project structure** for a
 
 ## Project Files
 
-Below is a complete project example stored in the `La0.5Ba0.5CoO3`
-directory, showing the contents of all files in the project.
+Below is a representative project example stored in the `La0.5Ba0.5CoO3`
+directory, showing the main files created by a typical workflow.
 
 !!! warning "Important"
 
     If you save the project right after creating it, the project directory will
     only contain the `project.cif` file. The other folders and files will be
     created as you add structures, experiments, and set up the analysis. The
-    summary folder will be created after the analysis is completed.
+    reports folder is created only when at least one of
+    `project.report.cif`, `project.report.html`, `project.report.tex`,
+    or `project.report.pdf` is set to `True` before `project.save()`.
 
 ### 1. <span class="orange">project.cif</span>
 
@@ -119,8 +123,17 @@ This file stores project-level metadata and display configuration.
 <span class="blue"><b>_project</b>.created</span>     "18 May 2026 10:15:00"
 <span class="blue"><b>_project</b>.last_modified</span> "18 May 2026 10:20:00"
 
-<span class="blue"><b>_rendering</b>.chart_engine</span> auto
-<span class="blue"><b>_rendering</b>.table_engine</span> auto
+<span class="blue"><b>_rendering_plot</b>.type</span>      auto
+<span class="blue"><b>_report</b>.cif</span>               false
+<span class="blue"><b>_report</b>.html</span>              true
+<span class="blue"><b>_report</b>.tex</span>               false
+<span class="blue"><b>_report</b>.pdf</span>               false
+<span class="blue"><b>_report</b>.html_offline</span>      false
+<span class="blue"><b>_rendering_table</b>.type</span>     auto
+<span class="blue"><b>_rendering_structure</b>.type</span> auto
+<span class="blue"><b>_structure_view</b>.show_labels</span> false
+<span class="blue"><b>_structure_style</b>.atom_view</span> covalent
+<span class="blue"><b>_structure_style</b>.color_scheme</span> jmol
 <span class="blue"><b>_verbosity</b>.fit</span>         full
 </pre>
 </div>
@@ -155,9 +168,9 @@ loop_
 <span class="green"><b>_atom_site</b>.fract_x</span>
 <span class="green"><b>_atom_site</b>.fract_y</span>
 <span class="green"><b>_atom_site</b>.fract_z</span>
-<span class="green"><b>_atom_site</b>.Wyckoff_letter</span>
+<span class="green"><b>_atom_site</b>.Wyckoff_symbol</span>
 <span class="green"><b>_atom_site</b>.occupancy</span>
-<span class="green"><b>_atom_site</b>.adp_type</span>
+<span class="green"><b>_atom_site</b>.ADP_type</span>
 <span class="green"><b>_atom_site</b>.B_iso_or_equiv</span>
 La La   0   0   0     a   0.5  Biso 0.4958
 Ba Ba   0   0   0     a   0.5  Biso 0.4943
@@ -185,7 +198,7 @@ data_<span class="red"><b>hrpt</b></span>
 <span class="blue"><b>_expt_type</b>.sample_form</span>      powder
 <span class="blue"><b>_expt_type</b>.scattering_type</span>  bragg
 
-<span class="blue"><b>_calculation</b>.calculator_type</span> cryspy
+<span class="blue"><b>_calculator</b>.type</span> cryspy
 
 <span class="blue"><b>_instr</b>.wavelength</span>    1.494
 <span class="blue"><b>_instr</b>.2theta_offset</span> 0.6225(4)
@@ -248,21 +261,22 @@ of **calculation** and **fitting** engines, as well as user defined
 
 <div class="cif">
 <pre>
-<span class="blue"><b>_fitting</b>.mode_type</span>              single
-<span class="blue"><b>_fitting</b>.minimizer_type</span>         lmfit
+<span class="blue"><b>_fitting_mode</b>.type</span>              single
+<span class="blue"><b>_minimizer</b>.type</span>                 lmfit
 
 loop_
 <span class="green"><b>_alias</b>.label</span>
-<span class="green"><b>_alias</b>.param_uid</span>
+<span class="green"><b>_alias</b>.param_unique_name</span>
 biso_La  lbco.atom_site.La.B_iso_or_equiv
 biso_Ba  lbco.atom_site.Ba.B_iso_or_equiv
 occ_La   lbco.atom_site.La.occupancy
 occ_Ba   lbco.atom_site.Ba.occupancy
 
 loop_
+<span class="green"><b>_constraint</b>.id</span>
 <span class="green"><b>_constraint</b>.expression</span>
-"biso_Ba = biso_La"
-"occ_Ba = 1 - occ_La"
+biso_Ba  "biso_Ba = biso_La"
+occ_Ba   "occ_Ba = 1 - occ_La"
 </pre>
 </div>
 

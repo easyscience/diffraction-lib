@@ -121,6 +121,12 @@ jobs:
         # if: false # Temporarily disabled to speed up the docs build
         run: pixi run notebook-exec-ci
 
+      # Sync the canonical Three.js snapshot into the docs assets so
+      # MkDocs can serve it (belt-and-braces; docs-build also depends on
+      # this task).
+      - name: Sync vendored JS into docs assets
+        run: pixi run docs-sync-vendored-js
+
       # Build the static files for the documentation site for local inspection
       # Input: docs/ directory containing the Markdown files
       # Output: site/ directory containing the generated HTML files

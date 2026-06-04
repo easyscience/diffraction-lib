@@ -31,6 +31,9 @@ _CIF_UNCERTAINTY_SIG_DIGITS = 2
 # Maximum CIF description length before using semicolon-delimited block
 _CIF_DESCRIPTION_WRAP_LEN = 60
 
+_ADP_FAMILY_B = 'B'
+_ADP_FAMILY_U = 'U'
+
 
 def format_value(value: object) -> str:
     """
@@ -174,16 +177,18 @@ def category_item_to_cif(item: object) -> str:
     Expects ``item.parameters`` iterable of params with
     ``_cif_handler.names`` and ``value``.
     """
-    lines: list[str] = [param_to_cif(p) for p in item.parameters]
+    parameters_hook = getattr(item, '_cif_parameters', None)
+    parameters = parameters_hook() if parameters_hook is not None else item.parameters
+    lines: list[str] = [param_to_cif(p) for p in parameters]
     return '\n'.join(lines)
 
 
 def _validate_loop_tags(
-    item: object,
+    parameters: list[GenericDescriptorBase],
     header_tags: list[str],
 ) -> None:
     """Log an error if any row tag disagrees with *header_tags*."""
-    for col, p in enumerate(item.parameters):
+    for col, p in enumerate(parameters):
         tag = p._cif_handler.names[0]  # type: ignore[attr-defined]
         if tag != header_tags[col]:
             log.error(
@@ -197,6 +202,7 @@ def _validate_loop_tags(
 def _emit_loop_rows(
     items: list,
     row_fn: object,
+    row_parameters_fn: object,
     header_tags: list[str],
     max_display: int | None,
 ) -> list[str]:
@@ -205,17 +211,149 @@ def _emit_loop_rows(
     if max_display is not None and len(items) > max_display:
         half = max_display // 2
         for item in items[:half]:
-            _validate_loop_tags(item, header_tags)
+            _validate_loop_tags(row_parameters_fn(item), header_tags)
             lines.append(' '.join(row_fn(item)))
         lines.append('...')
         for item in items[-half:]:
-            _validate_loop_tags(item, header_tags)
+            _validate_loop_tags(row_parameters_fn(item), header_tags)
             lines.append(' '.join(row_fn(item)))
     else:
         for item in items:
-            _validate_loop_tags(item, header_tags)
+            _validate_loop_tags(row_parameters_fn(item), header_tags)
             lines.append(' '.join(row_fn(item)))
     return lines
+
+
+def _emit_rows_without_tag_validation(
+    items: list,
+    row_fn: object,
+    max_display: int | None,
+) -> list[str]:
+    """Build rows for loops whose tag family is chosen externally."""
+    if max_display is not None and len(items) > max_display:
+        half = max_display // 2
+        return [
+            *_rows_without_tag_validation(items[:half], row_fn),
+            '...',
+            *_rows_without_tag_validation(items[-half:], row_fn),
+        ]
+    return _rows_without_tag_validation(items, row_fn)
+
+
+def _rows_without_tag_validation(items: list, row_fn: object) -> list[str]:
+    """Return formatted row strings without header-tag validation."""
+    return [' '.join(row_fn(item)) for item in items]
+
+
+def _adp_family_from_type(adp_type: str) -> str:
+    """Return the CIF ADP tag family for an atom-site ADP type."""
+    from easydiffraction.datablocks.structure.categories.atom_sites.enums import (  # noqa: PLC0415
+        AdpTypeEnum,
+    )
+
+    adp_type_enum = AdpTypeEnum(adp_type)
+    if adp_type_enum in {AdpTypeEnum.UISO, AdpTypeEnum.UANI}:
+        return _ADP_FAMILY_U
+    return _ADP_FAMILY_B
+
+
+def _adp_family_for_atom_site(item: object) -> str:
+    """Return the ADP tag family for an atom-site row."""
+    return _adp_family_from_type(item.adp_type.value)
+
+
+def _adp_family_for_atom_site_aniso(collection: object, item: object) -> str:
+    """Return the ADP tag family for an atom-site-aniso row."""
+    structure = collection._parent
+    atom_site = structure.atom_sites[item.label.value]
+    return _adp_family_from_type(atom_site.adp_type.value)
+
+
+def _group_items_by_adp_family(
+    items: list,
+    family_fn: object,
+) -> list[tuple[str, list]]:
+    """Group items by B/U ADP tag family in deterministic order."""
+    groups = {
+        _ADP_FAMILY_B: [],
+        _ADP_FAMILY_U: [],
+    }
+    for item in items:
+        groups[family_fn(item)].append(item)
+    return [(family, group) for family, group in groups.items() if group]
+
+
+def _atom_site_tag_for_adp_family(parameter: object, family: str) -> str:
+    """Return the atom_site tag for the selected ADP family."""
+    if parameter.name == 'adp_iso':
+        return f'_atom_site.{family}_iso_or_equiv'
+    return parameter._cif_handler.names[0]
+
+
+def _atom_site_aniso_tag_for_adp_family(parameter: object, family: str) -> str:
+    """Return the atom_site_aniso tag for the selected ADP family."""
+    if parameter.name.startswith('adp_'):
+        suffix = parameter.name.removeprefix('adp_')
+        return f'_atom_site_aniso.{family}_{suffix}'
+    return parameter._cif_handler.names[0]
+
+
+def _adp_family_loop_to_cif(
+    items: list,
+    family: str,
+    tag_fn: object,
+    max_display: int | None,
+) -> str:
+    """Render one B-family or U-family ADP loop."""
+    first_item = items[0]
+    parameters = list(first_item.parameters)
+    lines: list[str] = ['loop_']
+    lines.extend(tag_fn(parameter, family) for parameter in parameters)
+
+    def _row(item: object) -> list[str]:
+        return [format_param_value(parameter) for parameter in item.parameters]
+
+    lines.extend(_emit_rows_without_tag_validation(items, _row, max_display))
+    return '\n'.join(lines)
+
+
+def _adp_collection_to_cif(
+    collection: object,
+    max_display: int | None,
+) -> str | None:
+    """
+    Render ADP-sensitive structure loops with one tag family per row.
+    """
+    items = list(collection.values())
+    category_code = collection._item_type._category_code
+    if category_code == 'atom_site':
+        groups = _group_items_by_adp_family(items, _adp_family_for_atom_site)
+        loops = [
+            _adp_family_loop_to_cif(
+                group,
+                family,
+                _atom_site_tag_for_adp_family,
+                max_display,
+            )
+            for family, group in groups
+        ]
+        return '\n\n'.join(loops)
+    if category_code == 'atom_site_aniso':
+        groups = _group_items_by_adp_family(
+            items,
+            lambda item: _adp_family_for_atom_site_aniso(collection, item),
+        )
+        loops = [
+            _adp_family_loop_to_cif(
+                group,
+                family,
+                _atom_site_aniso_tag_for_adp_family,
+                max_display,
+            )
+            for family, group in groups
+        ]
+        return '\n\n'.join(loops)
+    return None
 
 
 def category_collection_to_cif(
@@ -241,21 +379,56 @@ def category_collection_to_cif(
     str
         CIF text representing the collection as a loop.
     """
-    if not len(collection):
-        return ''
-
     # Allow collections to conditionally suppress CIF output
     skip = getattr(collection, '_skip_cif_serialization', None)
     if skip is not None and skip():
         return ''
 
-    lines: list[str] = []
+    lines = _scalar_descriptor_lines(collection)
+
+    if not len(collection):
+        return '\n'.join(lines)
+
+    adp_cif = _adp_collection_to_cif(collection, max_display)
+    if adp_cif is not None:
+        return _join_scalar_and_loop_lines(lines, adp_cif)
+
+    loop_cif = _standard_collection_loop_to_cif(collection, max_display)
+    return _join_scalar_and_loop_lines(lines, loop_cif)
+
+
+def _scalar_descriptor_lines(collection: object) -> list[str]:
+    """Return scalar descriptor CIF lines for a collection."""
+    scalar_descriptors = getattr(collection, 'scalar_descriptors', [])
+    return [param_to_cif(p) for p in scalar_descriptors]
+
+
+def _join_scalar_and_loop_lines(scalar_lines: list[str], loop_cif: str) -> str:
+    """Join optional scalar lines with a loop CIF body."""
+    lines = list(scalar_lines)
+    if lines:
+        lines.append('')
+    lines.append(loop_cif)
+    return '\n'.join(lines)
+
+
+def _standard_collection_loop_to_cif(
+    collection: object,
+    max_display: int | None,
+) -> str:
+    """Render a non-ADP collection loop."""
+    loop_parameters_hook = getattr(collection, '_cif_loop_parameters', None)
+
+    def _loop_parameters(item: object) -> list[GenericDescriptorBase]:
+        if loop_parameters_hook is not None:
+            return list(loop_parameters_hook(item))
+        return list(item.parameters)
 
     # Header — use first item's CIF tag names as the canonical columns
     first_item = next(iter(collection.values()))
-    lines.append('loop_')
+    lines = ['loop_']
     header_tags: list[str] = []
-    for p in first_item.parameters:
+    for p in _loop_parameters(first_item):
         tags = p._cif_handler.names  # type: ignore[attr-defined]
         header_tags.append(tags[0])
         lines.append(tags[0])
@@ -268,11 +441,10 @@ def category_collection_to_cif(
             override = row_hook(item)
             if override is not None:
                 return override
-        return [format_param_value(p) for p in item.parameters]
+        return [format_param_value(p) for p in _loop_parameters(item)]
 
     items = list(collection.values())
-    lines.extend(_emit_loop_rows(items, _row, header_tags, max_display))
-
+    lines.extend(_emit_loop_rows(items, _row, _loop_parameters, header_tags, max_display))
     return '\n'.join(lines)
 
 
@@ -393,15 +565,28 @@ def _as_cif_text(section: object) -> str:
 
 def project_config_to_cif(project: object) -> str:
     """Render project-level configuration to ``project.cif`` text."""
-    config = getattr(project, '_config', None)
-    if config is not None:
-        return category_owner_to_cif(config)
+    sections: list[str] = []
+    for attr_name in ('info', 'rendering_plot', 'report'):
+        section = getattr(project, attr_name, None)
+        if section is not None:
+            sections.append(_as_cif_text(section))
 
-    lines: list[str] = [_as_cif_text(project.info)]
-    rendering = getattr(project, 'rendering', None)
-    if rendering is not None:
-        lines.extend(('', _as_cif_text(rendering)))
-    return '\n'.join(lines)
+    publication = getattr(project, 'publication', None)
+    if publication is not None:
+        sections.append(category_owner_to_cif(publication))
+
+    for attr_name in (
+        'rendering_table',
+        'rendering_structure',
+        'structure_view',
+        'structure_style',
+        'verbosity',
+    ):
+        section = getattr(project, attr_name, None)
+        if section is not None:
+            sections.append(_as_cif_text(section))
+
+    return '\n\n'.join(section for section in sections if section)
 
 
 def project_to_cif(project: object) -> str:
@@ -415,8 +600,6 @@ def project_to_cif(project: object) -> str:
         parts.append(_as_cif_text(project.experiments))
     if getattr(project, 'analysis', None):
         parts.append(_as_cif_text(project.analysis))
-    if getattr(project, 'summary', None):
-        parts.append(project.summary.as_cif())
     return '\n\n'.join([p for p in parts if p])
 
 
@@ -427,37 +610,7 @@ def experiment_to_cif(experiment: object) -> str:
 
 def analysis_to_cif(analysis: object) -> str:
     """Render analysis metadata, aliases, and constraints to CIF."""
-    parts: list[str] = [f'_fitting.mode_type {format_value(analysis.fitting_mode_type)}']
-
-    body = category_owner_to_cif(analysis)
-    if not body:
-        fallback_sections = [
-            getattr(analysis, 'fitting', None),
-            getattr(analysis, 'aliases', None),
-            getattr(analysis, 'constraints', None),
-        ]
-
-        if analysis.fitting_mode_type == 'joint':
-            fallback_sections.append(getattr(analysis, 'joint_fit', None))
-        elif analysis.fitting_mode_type == 'sequential':
-            fallback_sections.extend([
-                getattr(analysis, 'sequential_fit', None),
-                getattr(analysis, 'sequential_fit_extract', None),
-            ])
-
-        body = '\n\n'.join([
-            _as_cif_text(section) for section in fallback_sections if section is not None
-        ])
-
-    if body:
-        parts.append(body)
-
-    return '\n\n'.join(parts)
-
-
-def summary_to_cif(_summary: object) -> str:
-    """Render a summary CIF block (placeholder for now)."""
-    return 'To be added...'
+    return category_owner_to_cif(analysis)
 
 
 def _wrap_in_data_block(cif_text: str, block_name: str = '_') -> str:
@@ -537,13 +690,38 @@ def project_config_from_cif(project: object, cif_text: str) -> None:
 
     _populate_project_info_from_block(project.info, block)
 
-    rendering = getattr(project, 'rendering', None)
-    if rendering is not None:
-        rendering.from_cif(block)
+    rendering_plot = getattr(project, 'rendering_plot', None)
+    if rendering_plot is not None:
+        rendering_plot.from_cif(block)
+
+    report = getattr(project, 'report', None)
+    if report is not None:
+        # Missing _report.* items intentionally keep legacy defaults.
+        report.from_cif(block)
+
+    publication = getattr(project, 'publication', None)
+    if publication is not None:
+        publication.from_cif(block)
+
+    rendering_table = getattr(project, 'rendering_table', None)
+    if rendering_table is not None:
+        rendering_table.from_cif(block)
 
     verbosity = getattr(project, 'verbosity', None)
     if verbosity is not None:
         verbosity.from_cif(block)
+
+    rendering_structure = getattr(project, 'rendering_structure', None)
+    if rendering_structure is not None:
+        rendering_structure.from_cif(block)
+
+    structure_view = getattr(project, 'structure_view', None)
+    if structure_view is not None:
+        structure_view.from_cif(block)
+
+    structure_style = getattr(project, 'structure_style', None)
+    if structure_style is not None:
+        structure_style.from_cif(block)
 
 
 def analysis_from_cif(analysis: object, cif_text: str) -> None:
@@ -567,9 +745,9 @@ def analysis_from_cif(analysis: object, cif_text: str) -> None:
 
     _raise_for_legacy_analysis_tags(block)
     analysis._set_fitting_mode_type(_analysis_mode_from_cif_block(block))
-
-    # Restore fit configuration
-    analysis.fitting.from_cif(block)
+    analysis._set_minimizer_type(_analysis_minimizer_from_cif_block(block))
+    analysis.minimizer.from_cif(block)
+    analysis.software.from_cif(block)
     _restore_mode_specific_analysis_sections(analysis, block)
 
     # Restore aliases (loop)
@@ -580,55 +758,31 @@ def analysis_from_cif(analysis: object, cif_text: str) -> None:
     if analysis.constraints._items:
         analysis.constraints.enable()
 
+    if _has_fit_parameter_state_sections(block):
+        _restore_fit_parameter_state(analysis, block)
     if _has_persisted_fit_state_sections(block):
         _restore_persisted_fit_state(analysis, block)
 
 
+def _has_fit_parameter_state_sections(block: object) -> bool:
+    """Return True when persisted fit-parameter rows are present."""
+    return _has_cif_loop(block, '_fit_parameter.param_unique_name')
+
+
 def _has_persisted_fit_state_sections(block: object) -> bool:
-    """Return True when any persisted fit-state section is present."""
-    scalar_tags = (
-        '_fit_result.result_kind',
-        '_deterministic_result.optimizer_name',
-        '_bayesian_result.sampler_name',
-        '_bayesian_sampler.steps',
-        '_bayesian_convergence.converged',
-    )
-    loop_tags = (
-        '_fit_parameter.param_unique_name',
-        '_fit_parameter_correlation.param_unique_name_i',
-        '_bayesian_parameter_posterior.unique_name',
-        '_bayesian_distribution_cache.param_unique_name',
-        '_bayesian_pair_cache.param_unique_name_x',
-        '_bayesian_predictive_dataset.experiment_name',
-    )
-
-    return any(_has_cif_value(block, tag) for tag in scalar_tags) or any(
-        _has_cif_loop(block, tag) for tag in loop_tags
-    )
+    """Return True when a fit-result projection is present."""
+    return _has_cif_value(block, '_fit_result.result_kind')
 
 
-def _restore_common_fit_state(analysis: object, block: object) -> None:
-    """Restore fit-state categories shared by both fit kinds."""
+def _restore_fit_parameter_state(analysis: object, block: object) -> None:
+    """Restore fit-parameter rows independently of fit results."""
     analysis.fit_parameters.from_cif(block)
+
+
+def _restore_fit_result_state(analysis: object, block: object) -> None:
+    """Restore categories that describe the latest fit result."""
     analysis.fit_result.from_cif(block)
     analysis.fit_parameter_correlations.from_cif(block)
-
-
-def _restore_deterministic_fit_state(analysis: object, block: object) -> None:
-    """Restore deterministic-only persisted fit-state categories."""
-    analysis.deterministic_result.from_cif(block)
-
-
-def _restore_bayesian_fit_state(analysis: object, block: object) -> None:
-    """Restore Bayesian-only persisted fit-state categories."""
-    analysis.bayesian_result.from_cif(block)
-    analysis.bayesian_sampler.from_cif(block)
-    analysis.bayesian_convergence.from_cif(block)
-    analysis.bayesian_parameter_posteriors.from_cif(block)
-    analysis.bayesian_distribution_caches.from_cif(block)
-    analysis.bayesian_pair_caches.from_cif(block)
-    analysis.bayesian_predictive_datasets.from_cif(block)
-    analysis._sync_live_minimizer_from_persisted_fit_state()
 
 
 def _restore_persisted_fit_state(analysis: object, block: object) -> None:
@@ -638,36 +792,49 @@ def _restore_persisted_fit_state(analysis: object, block: object) -> None:
     from easydiffraction.analysis.enums import FitResultKindEnum  # noqa: PLC0415
 
     analysis._set_has_persisted_fit_state(value=True)
-    _restore_common_fit_state(analysis, block)
+    _restore_fit_result_state(analysis, block)
 
     result_kind_value = analysis.fit_result.result_kind.value
     try:
-        result_kind = FitResultKindEnum(result_kind_value)
+        FitResultKindEnum(result_kind_value)
     except ValueError:
         log.warning(
             'Unsupported _fit_result.result_kind in analysis CIF: '
             f'{result_kind_value!r}. Skipping kind-specific fit-state categories.',
         )
-        return
 
-    if result_kind is FitResultKindEnum.DETERMINISTIC:
-        _restore_deterministic_fit_state(analysis, block)
-        return
 
-    _restore_bayesian_fit_state(analysis, block)
+_MINIMIZER_OUTPUT_LEGACY_TAGS = (
+    '_minimizer.objective_name',
+    '_minimizer.objective_value',
+    '_minimizer.n_data_points',
+    '_minimizer.n_parameters',
+    '_minimizer.n_free_parameters',
+    '_minimizer.degrees_of_freedom',
+    '_minimizer.covariance_available',
+    '_minimizer.correlation_available',
+    '_minimizer.runtime_seconds',
+    '_minimizer.iterations_performed',
+    '_minimizer.exit_reason',
+    '_minimizer.point_estimate_name',
+    '_minimizer.sampler_completed',
+    '_minimizer.credible_interval_inner',
+    '_minimizer.credible_interval_outer',
+    '_minimizer.acceptance_rate_mean',
+    '_minimizer.gelman_rubin_max',
+    '_minimizer.effective_sample_size_min',
+    '_minimizer.best_log_posterior',
+)
 
 
 def _collect_legacy_analysis_tags(block: object) -> list[str]:
     """Return deprecated analysis CIF tags present in a block."""
     legacy_tags: list[str] = []
-    if _has_cif_value(block, '_fit.minimizer_type'):
-        legacy_tags.append('_fit.minimizer_type')
-    if _has_cif_value(block, '_fit.mode'):
-        legacy_tags.append('_fit.mode')
     if _has_cif_loop(block, '_joint_fit_experiment.id'):
         legacy_tags.append('_joint_fit_experiment.id')
     if _has_cif_loop(block, '_joint_fit_experiment.weight'):
         legacy_tags.append('_joint_fit_experiment.weight')
+    legacy_tags.extend(tag for tag in _MINIMIZER_OUTPUT_LEGACY_TAGS if _has_cif_value(block, tag))
     return legacy_tags
 
 
@@ -679,7 +846,8 @@ def _raise_for_legacy_analysis_tags(block: object) -> None:
 
     msg = (
         'Legacy analysis CIF tags are no longer supported: '
-        f'{legacy_tags}. Use _fitting.minimizer_type, _fitting.mode_type, '
+        f'{legacy_tags}. Use _minimizer.type, _fitting_mode.type, '
+        '_minimizer.* for settings, _fit_result.* for fit outputs, '
         '_joint_fit.experiment_id, and _joint_fit.weight.'
     )
     raise ValueError(msg)
@@ -688,13 +856,25 @@ def _raise_for_legacy_analysis_tags(block: object) -> None:
 def _analysis_mode_from_cif_block(block: object) -> str:
     """Return the fitting mode stored in an analysis CIF block."""
     read_cif_string = _make_cif_string_reader(block)
-    mode_value = read_cif_string('_fitting.mode_type')
+    mode_value = read_cif_string('_fitting_mode.type')
     if mode_value is not None:
         return mode_value
 
     from easydiffraction.analysis.enums import FitModeEnum  # noqa: PLC0415
 
     return FitModeEnum.default().value
+
+
+def _analysis_minimizer_from_cif_block(block: object) -> str:
+    """Return the minimizer type stored in an analysis CIF block."""
+    read_cif_string = _make_cif_string_reader(block)
+    minimizer_value = read_cif_string('_minimizer.type')
+    if minimizer_value is not None:
+        return minimizer_value
+
+    from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum  # noqa: PLC0415
+
+    return MinimizerTypeEnum.default().value
 
 
 def _has_joint_fit_rows(block: object) -> bool:
@@ -732,7 +912,7 @@ def _warn_inactive_analysis_sections(
     if has_sequential_settings or has_sequential_extract_rows:
         skipped_sections.append('sequential_fit')
     log.warning(
-        'Skipping inactive analysis CIF sections while fitting_mode_type is single: '
+        'Skipping inactive analysis CIF sections while fitting_mode is single: '
         f'{skipped_sections}.'
     )
 
@@ -743,12 +923,12 @@ def _restore_mode_specific_analysis_sections(analysis: object, block: object) ->
     has_sequential_settings = _has_sequential_fit_settings(block)
     has_sequential_extract_rows = _has_cif_loop(block, '_sequential_fit_extract.id')
 
-    if analysis.fitting_mode_type == 'joint':
+    if analysis.fitting_mode.type == 'joint':
         if has_joint_rows:
             analysis.joint_fit.from_cif(block)
         return
 
-    if analysis.fitting_mode_type == 'sequential':
+    if analysis.fitting_mode.type == 'sequential':
         if has_sequential_settings:
             analysis.sequential_fit.from_cif(block)
         if has_sequential_extract_rows:
@@ -841,13 +1021,41 @@ def param_from_cif(
             found_values = candidates
             break
 
-    # If no values found, the parameter keeps its default value.
+    # If no values found, use the descriptor default when available.
     if not found_values:
+        _set_param_to_default_from_cif(self, raw=None)
         return
 
     # If found, pick the one at the given index.
     raw = found_values[idx]
     _set_param_from_raw_cif_value(self, raw)
+
+
+def _set_param_to_default_from_cif(
+    param: GenericDescriptorBase,
+    *,
+    raw: str | None,
+) -> None:
+    """
+    Resolve missing or unknown CIF values to descriptor defaults.
+
+    Parameters
+    ----------
+    param : GenericDescriptorBase
+        Descriptor being populated from CIF.
+    raw : str | None
+        Raw CIF token, or ``None`` when no tag was present.
+    """
+    value_spec = getattr(param, '_value_spec', None)
+    if value_spec is not None and (value_spec.has_default or value_spec.allow_none):
+        param.value = value_spec.default_value()
+        return
+
+    detail = 'missing tag' if raw is None else f'value {raw!r}'
+    log.error(
+        f"Cannot load required CIF field '{param.unique_name}': {detail}.",
+        exc_type=ValueError,
+    )
 
 
 def category_item_from_cif(
@@ -879,8 +1087,9 @@ def _set_param_from_raw_cif_value(
     """
     raw = _strip_cif_text_field_delimiters(raw)
 
-    # CIF unknown / inapplicable markers → keep default
+    # CIF unknown / inapplicable markers → descriptor default
     if raw in {'?', '.'}:
+        _set_param_to_default_from_cif(param, raw=raw)
         return
 
     if param._value_type == DataTypes.INTEGER:
@@ -966,6 +1175,9 @@ def category_collection_from_cif(
         msg = 'Child class is not defined.'
         raise ValueError(msg)
 
+    for param in self.scalar_descriptors:
+        param.from_cif(block)
+
     # Create a temporary instance to access its parameters and
     # parameter CIF names
     category_item = self._item_type()
@@ -991,13 +1203,17 @@ def category_collection_from_cif(
     for row_idx in range(num_rows):
         current_item = self._items[row_idx]
         for param in current_item.parameters:
+            tag_found = False
             for cif_name in param._cif_handler.names:
                 if cif_name in loop.tags:
                     col_idx = loop.tags.index(cif_name)
                     # TODO: The following is duplication of
                     #  param_from_cif
                     _set_param_from_raw_cif_value(param, array[row_idx][col_idx])
+                    tag_found = True
                     break
+            if not tag_found:
+                _set_param_to_default_from_cif(param, raw=None)
 
     after_from_cif = getattr(self, '_after_from_cif', None)
     if callable(after_from_cif):

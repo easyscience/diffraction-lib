@@ -24,54 +24,6 @@
 │   │   │   │   └── 🏷️ class Aliases
 │   │   │   └── 📄 factory.py
 │   │   │       └── 🏷️ class AliasesFactory
-│   │   ├── 📁 bayesian_convergence
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   │   └── 🏷️ class BayesianConvergence
-│   │   │   └── 📄 factory.py
-│   │   │       └── 🏷️ class BayesianConvergenceFactory
-│   │   ├── 📁 bayesian_distribution_caches
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   │   ├── 🏷️ class BayesianDistributionCacheItem
-│   │   │   │   └── 🏷️ class BayesianDistributionCaches
-│   │   │   └── 📄 factory.py
-│   │   │       └── 🏷️ class BayesianDistributionCachesFactory
-│   │   ├── 📁 bayesian_pair_caches
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   │   ├── 🏷️ class BayesianPairCachePaths
-│   │   │   │   ├── 🏷️ class BayesianPairCacheItem
-│   │   │   │   └── 🏷️ class BayesianPairCaches
-│   │   │   └── 📄 factory.py
-│   │   │       └── 🏷️ class BayesianPairCachesFactory
-│   │   ├── 📁 bayesian_parameter_posteriors
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   │   ├── 🏷️ class BayesianParameterPosteriorItem
-│   │   │   │   └── 🏷️ class BayesianParameterPosteriors
-│   │   │   └── 📄 factory.py
-│   │   │       └── 🏷️ class BayesianParameterPosteriorsFactory
-│   │   ├── 📁 bayesian_predictive_datasets
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   │   ├── 🏷️ class BayesianPredictiveDatasetPaths
-│   │   │   │   ├── 🏷️ class BayesianPredictiveDatasetItem
-│   │   │   │   └── 🏷️ class BayesianPredictiveDatasets
-│   │   │   └── 📄 factory.py
-│   │   │       └── 🏷️ class BayesianPredictiveDatasetsFactory
-│   │   ├── 📁 bayesian_result
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   │   └── 🏷️ class BayesianResult
-│   │   │   └── 📄 factory.py
-│   │   │       └── 🏷️ class BayesianResultFactory
-│   │   ├── 📁 bayesian_sampler
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   │   └── 🏷️ class BayesianSampler
-│   │   │   └── 📄 factory.py
-│   │   │       └── 🏷️ class BayesianSamplerFactory
 │   │   ├── 📁 constraints
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
@@ -79,12 +31,6 @@
 │   │   │   │   └── 🏷️ class Constraints
 │   │   │   └── 📄 factory.py
 │   │   │       └── 🏷️ class ConstraintsFactory
-│   │   ├── 📁 deterministic_result
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   │   └── 🏷️ class DeterministicResult
-│   │   │   └── 📄 factory.py
-│   │   │       └── 🏷️ class DeterministicResultFactory
 │   │   ├── 📁 fit_parameter_correlations
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
@@ -101,17 +47,24 @@
 │   │   │       └── 🏷️ class FitParametersFactory
 │   │   ├── 📁 fit_result
 │   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 base.py
+│   │   │   │   └── 🏷️ class FitResultBase
+│   │   │   ├── 📄 bayesian.py
+│   │   │   │   └── 🏷️ class BayesianFitResult
 │   │   │   ├── 📄 default.py
-│   │   │   │   └── 🏷️ class FitResult
-│   │   │   └── 📄 factory.py
-│   │   │       └── 🏷️ class FitResultFactory
-│   │   ├── 📁 fit_state
-│   │   ├── 📁 fitting
+│   │   │   ├── 📄 factory.py
+│   │   │   │   └── 🏷️ class FitResultFactory
+│   │   │   └── 📄 lsq.py
+│   │   │       ├── 🏷️ class _LeastSquaresCoreProperties
+│   │   │       ├── 🏷️ class _LeastSquaresReflectionProperties
+│   │   │       ├── 🏷️ class _LeastSquaresPowderProperties
+│   │   │       └── 🏷️ class LeastSquaresFitResult
+│   │   ├── 📁 fitting_mode
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
-│   │   │   │   └── 🏷️ class Fitting
+│   │   │   │   └── 🏷️ class FittingMode
 │   │   │   └── 📄 factory.py
-│   │   │       └── 🏷️ class FittingFactory
+│   │   │       └── 🏷️ class FittingModeFactory
 │   │   ├── 📁 joint_fit
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
@@ -119,6 +72,36 @@
 │   │   │   │   └── 🏷️ class JointFitCollection
 │   │   │   └── 📄 factory.py
 │   │   │       └── 🏷️ class JointFitFactory
+│   │   ├── 📁 minimizer
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 base.py
+│   │   │   │   └── 🏷️ class MinimizerCategoryBase
+│   │   │   ├── 📄 bayesian_base.py
+│   │   │   │   └── 🏷️ class BayesianMinimizerBase
+│   │   │   ├── 📄 bumps.py
+│   │   │   │   └── 🏷️ class BumpsMinimizer
+│   │   │   ├── 📄 bumps_amoeba.py
+│   │   │   │   └── 🏷️ class BumpsAmoebaMinimizer
+│   │   │   ├── 📄 bumps_de.py
+│   │   │   │   └── 🏷️ class BumpsDeMinimizer
+│   │   │   ├── 📄 bumps_dream.py
+│   │   │   │   └── 🏷️ class BumpsDreamMinimizer
+│   │   │   ├── 📄 bumps_lm.py
+│   │   │   │   └── 🏷️ class BumpsLmMinimizer
+│   │   │   ├── 📄 dfols.py
+│   │   │   │   └── 🏷️ class DfolsMinimizer
+│   │   │   ├── 📄 emcee.py
+│   │   │   │   └── 🏷️ class EmceeMinimizer
+│   │   │   ├── 📄 factory.py
+│   │   │   │   └── 🏷️ class MinimizerCategoryFactory
+│   │   │   ├── 📄 lmfit.py
+│   │   │   │   └── 🏷️ class LmfitMinimizer
+│   │   │   ├── 📄 lmfit_least_squares.py
+│   │   │   │   └── 🏷️ class LmfitLeastSquaresMinimizer
+│   │   │   ├── 📄 lmfit_leastsq.py
+│   │   │   │   └── 🏷️ class LmfitLeastsqMinimizer
+│   │   │   └── 📄 lsq_base.py
+│   │   │       └── 🏷️ class LeastSquaresMinimizerBase
 │   │   ├── 📁 sequential_fit
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
@@ -132,11 +115,19 @@
 │   │   │   │   └── 🏷️ class SequentialFitExtractCollection
 │   │   │   └── 📄 factory.py
 │   │   │       └── 🏷️ class SequentialFitExtractFactory
+│   │   ├── 📁 software
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 base.py
+│   │   │   │   └── 🏷️ class SoftwareRole
+│   │   │   ├── 📄 default.py
+│   │   │   │   └── 🏷️ class Software
+│   │   │   └── 📄 factory.py
+│   │   │       └── 🏷️ class SoftwareFactory
 │   │   └── 📄 __init__.py
 │   ├── 📁 fit_helpers
 │   │   ├── 📄 __init__.py
+│   │   ├── 📄 _diagnostics.py
 │   │   ├── 📄 bayesian.py
-│   │   │   ├── 🏷️ class PosteriorParameterSummary
 │   │   │   ├── 🏷️ class PosteriorPredictiveSummary
 │   │   │   ├── 🏷️ class PosteriorSamples
 │   │   │   └── 🏷️ class BayesianFitResults
@@ -149,6 +140,7 @@
 │   ├── 📁 minimizers
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 base.py
+│   │   │   ├── 🏷️ class MinimizerFitOptions
 │   │   │   └── 🏷️ class MinimizerBase
 │   │   ├── 📄 bumps.py
 │   │   │   ├── 🏷️ class _BumpsEvaluationLimitError
@@ -168,8 +160,15 @@
 │   │   │   └── 🏷️ class BumpsLmMinimizer
 │   │   ├── 📄 dfols.py
 │   │   │   └── 🏷️ class DfolsMinimizer
+│   │   ├── 📄 emcee.py
+│   │   │   ├── 🏷️ class _EmceePoolContext
+│   │   │   ├── 🏷️ class _EmceeLogProbability
+│   │   │   ├── 🏷️ class _EmceeProgressReporter
+│   │   │   └── 🏷️ class EmceeMinimizer
+│   │   ├── 📄 emcee_defaults.py
 │   │   ├── 📄 enums.py
 │   │   │   ├── 🏷️ class MinimizerTypeEnum
+│   │   │   ├── 🏷️ class InitializationMethodEnum
 │   │   │   └── 🏷️ class DreamPopulationInitializationEnum
 │   │   ├── 📄 factory.py
 │   │   │   └── 🏷️ class MinimizerFactory
@@ -181,6 +180,7 @@
 │   │       └── 🏷️ class LmfitLeastsqMinimizer
 │   ├── 📄 __init__.py
 │   ├── 📄 analysis.py
+│   │   ├── 🏷️ class UndoFitOutcome
 │   │   ├── 🏷️ class AnalysisDisplay
 │   │   ├── 🏷️ class _AnalysisOwnerAccessorsMixin
 │   │   ├── 🏷️ class _AnalysisPersistedCategoryAccessorsMixin
@@ -190,6 +190,7 @@
 │   │   ├── 🏷️ class FitResultKindEnum
 │   │   └── 🏷️ class FitCorrelationSourceEnum
 │   ├── 📄 fitting.py
+│   │   ├── 🏷️ class FitterFitOptions
 │   │   └── 🏷️ class Fitter
 │   └── 📄 sequential.py
 │       ├── 🏷️ class SequentialFitExtractRule
@@ -212,6 +213,11 @@
 │   │   └── 🏷️ class DatablockCollection
 │   ├── 📄 diagnostic.py
 │   │   └── 🏷️ class Diagnostics
+│   ├── 📄 display_handler.py
+│   │   └── 🏷️ class DisplayHandler
+│   ├── 📄 errors.py
+│   │   ├── 🏷️ class EasyDiffractionError
+│   │   └── 🏷️ class EasyDiffractionWriterError
 │   ├── 📄 factory.py
 │   │   └── 🏷️ class FactoryBase
 │   ├── 📄 guard.py
@@ -222,9 +228,14 @@
 │   │   ├── 🏷️ class TypeInfo
 │   │   ├── 🏷️ class Compatibility
 │   │   └── 🏷️ class CalculatorSupport
+│   ├── 📄 posterior.py
+│   │   └── 🏷️ class PosteriorParameterSummary
 │   ├── 📄 singleton.py
 │   │   ├── 🏷️ class SingletonBase
 │   │   └── 🏷️ class ConstraintsHandler
+│   ├── 📄 switchable.py
+│   │   └── 🏷️ class SwitchableCategoryBase
+│   ├── 📄 units_vocabulary.py
 │   ├── 📄 validation.py
 │   │   ├── 🏷️ class DataTypeHints
 │   │   ├── 🏷️ class DataTypes
@@ -233,6 +244,7 @@
 │   │   ├── 🏷️ class TypeValidator
 │   │   ├── 🏷️ class RangeValidator
 │   │   ├── 🏷️ class MembershipValidator
+│   │   ├── 🏷️ class PermissiveMembershipValidator
 │   │   ├── 🏷️ class RegexValidator
 │   │   └── 🏷️ class AttributeSpec
 │   └── 📄 variable.py
@@ -243,6 +255,7 @@
 │       ├── 🏷️ class GenericIntegerDescriptor
 │       ├── 🏷️ class GenericParameter
 │       ├── 🏷️ class StringDescriptor
+│       ├── 🏷️ class EnumDescriptor
 │       ├── 🏷️ class BoolDescriptor
 │       ├── 🏷️ class NumericDescriptor
 │       ├── 🏷️ class IntegerDescriptor
@@ -250,8 +263,8 @@
 ├── 📁 crystallography
 │   ├── 📄 __init__.py
 │   ├── 📄 crystallography.py
+│   │   └── 🏷️ class WyckoffPosition
 │   └── 📄 space_groups.py
-│       └── 🏷️ class _RestrictedUnpickler
 ├── 📁 datablocks
 │   ├── 📁 experiment
 │   │   ├── 📁 categories
@@ -269,12 +282,12 @@
 │   │   │   │   └── 📄 line_segment.py
 │   │   │   │       ├── 🏷️ class LineSegment
 │   │   │   │       └── 🏷️ class LineSegmentBackground
-│   │   │   ├── 📁 calculation
+│   │   │   ├── 📁 calculator
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 default.py
-│   │   │   │   │   └── 🏷️ class Calculation
+│   │   │   │   │   └── 🏷️ class Calculator
 │   │   │   │   └── 📄 factory.py
-│   │   │   │       └── 🏷️ class CalculationFactory
+│   │   │   │       └── 🏷️ class CalculatorCategoryFactory
 │   │   │   ├── 📁 data
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 bragg_pd.py
@@ -313,6 +326,8 @@
 │   │   │   │       └── 🏷️ class ExperimentTypeFactory
 │   │   │   ├── 📁 extinction
 │   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 base.py
+│   │   │   │   │   └── 🏷️ class ExtinctionBase
 │   │   │   │   ├── 📄 becker_coppens.py
 │   │   │   │   │   └── 🏷️ class BeckerCoppensExtinction
 │   │   │   │   └── 📄 factory.py
@@ -382,7 +397,10 @@
 │   │   │   │   │   └── 🏷️ class PowderTofReflnData
 │   │   │   │   ├── 📄 bragg_sc.py
 │   │   │   │   │   ├── 🏷️ class Refln
-│   │   │   │   │   └── 🏷️ class ReflnData
+│   │   │   │   │   ├── 🏷️ class TofRefln
+│   │   │   │   │   ├── 🏷️ class ReflnDataBase
+│   │   │   │   │   ├── 🏷️ class CwlReflnData
+│   │   │   │   │   └── 🏷️ class TofReflnData
 │   │   │   │   └── 📄 factory.py
 │   │   │   │       └── 🏷️ class ReflnFactory
 │   │   │   └── 📄 __init__.py
@@ -436,12 +454,25 @@
 │   │   │   │   │   └── 🏷️ class Cell
 │   │   │   │   └── 📄 factory.py
 │   │   │   │       └── 🏷️ class CellFactory
+│   │   │   ├── 📁 geom
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 default.py
+│   │   │   │   │   └── 🏷️ class Geom
+│   │   │   │   └── 📄 factory.py
+│   │   │   │       └── 🏷️ class GeomFactory
 │   │   │   ├── 📁 space_group
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 default.py
 │   │   │   │   │   └── 🏷️ class SpaceGroup
 │   │   │   │   └── 📄 factory.py
 │   │   │   │       └── 🏷️ class SpaceGroupFactory
+│   │   │   ├── 📁 space_group_wyckoff
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 default.py
+│   │   │   │   │   ├── 🏷️ class SpaceGroupWyckoff
+│   │   │   │   │   └── 🏷️ class SpaceGroupWyckoffCollection
+│   │   │   │   └── 📄 factory.py
+│   │   │   │       └── 🏷️ class SpaceGroupWyckoffFactory
 │   │   │   └── 📄 __init__.py
 │   │   ├── 📁 item
 │   │   │   ├── 📄 __init__.py
@@ -466,6 +497,53 @@
 │   │   └── 📄 plotly.py
 │   │       ├── 🏷️ class PowderCompositeRows
 │   │       └── 🏷️ class PlotlyPlotter
+│   ├── 📁 structure
+│   │   ├── 📁 assets
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 colors.py
+│   │   │   ├── 📄 elements.py
+│   │   │   └── 📄 radii.py
+│   │   ├── 📁 renderers
+│   │   │   ├── 📁 vendor
+│   │   │   │   └── 📁 threejs
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 ascii.py
+│   │   │   │   ├── 🏷️ class _Orientation
+│   │   │   │   └── 🏷️ class AsciiStructureRenderer
+│   │   │   ├── 📄 base.py
+│   │   │   │   └── 🏷️ class StructureRendererBase
+│   │   │   ├── 📄 raster.py
+│   │   │   │   ├── 🏷️ class _Canvas
+│   │   │   │   └── 🏷️ class RasterStructureRenderer
+│   │   │   └── 📄 threejs.py
+│   │   │       └── 🏷️ class ThreeJsStructureRenderer
+│   │   ├── 📁 templates
+│   │   ├── 📄 __init__.py
+│   │   ├── 📄 builder.py
+│   │   │   ├── 🏷️ class FeatureAvailability
+│   │   │   ├── 🏷️ class _RenderContext
+│   │   │   └── 🏷️ class _SceneAtom
+│   │   ├── 📄 enums.py
+│   │   │   ├── 🏷️ class ViewerEngineEnum
+│   │   │   ├── 🏷️ class AtomViewEnum
+│   │   │   └── 🏷️ class ColorSchemeEnum
+│   │   ├── 📄 scene.py
+│   │   │   ├── 🏷️ class AtomSphere
+│   │   │   ├── 🏷️ class OccupancyWedge
+│   │   │   ├── 🏷️ class OccupancyWedgeSphere
+│   │   │   ├── 🏷️ class AdpEllipsoid
+│   │   │   ├── 🏷️ class Bond
+│   │   │   ├── 🏷️ class MomentArrow
+│   │   │   ├── 🏷️ class CellEdge
+│   │   │   ├── 🏷️ class CellEdges
+│   │   │   ├── 🏷️ class AxisArrow
+│   │   │   ├── 🏷️ class AxisTriad
+│   │   │   ├── 🏷️ class TextLabel
+│   │   │   ├── 🏷️ class LegendEntry
+│   │   │   └── 🏷️ class StructureScene
+│   │   └── 📄 viewing.py
+│   │       ├── 🏷️ class ViewerFactory
+│   │       └── 🏷️ class Viewer
 │   ├── 📁 tablers
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 base.py
@@ -492,11 +570,14 @@
 │   ├── 📄 progress.py
 │   │   ├── 🏷️ class _TerminalLiveHandle
 │   │   ├── 🏷️ class ActivityIndicator
-│   │   └── 🏷️ class _ActivityIndicatorContext
+│   │   ├── 🏷️ class _ActivityIndicatorContext
+│   │   └── 🏷️ class NotebookFitStopControl
 │   ├── 📄 tables.py
 │   │   ├── 🏷️ class TableEngineEnum
 │   │   ├── 🏷️ class TableRenderer
 │   │   └── 🏷️ class TableRendererFactory
+│   ├── 📄 theme.py
+│   │   └── 🏷️ class DisplayThemeColors
 │   └── 📄 utils.py
 │       └── 🏷️ class JupyterScrollManager
 ├── 📁 io
@@ -504,6 +585,19 @@
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 handler.py
 │   │   │   └── 🏷️ class CifHandler
+│   │   ├── 📄 iucr_transformers.py
+│   │   │   ├── 🏷️ class IucrItem
+│   │   │   ├── 🏷️ class IucrLoop
+│   │   │   ├── 🏷️ class IucrCategoryTransformer
+│   │   │   ├── 🏷️ class WavelengthTransformer
+│   │   │   ├── 🏷️ class TofCalibrationTransformer
+│   │   │   ├── 🏷️ class ExcludedRegionsTransformer
+│   │   │   ├── 🏷️ class SymmetryOperationsTransformer
+│   │   │   └── 🏷️ class ExtinctionTransformer
+│   │   ├── 📄 iucr_writer.py
+│   │   │   ├── 🏷️ class _FormulaValues
+│   │   │   ├── 🏷️ class _PowderPhase
+│   │   │   └── 🏷️ class _PowderPattern
 │   │   ├── 📄 parse.py
 │   │   └── 📄 serialize.py
 │   ├── 📄 __init__.py
@@ -517,12 +611,44 @@
 │   │   │   │   └── 🏷️ class ProjectInfo
 │   │   │   └── 📄 factory.py
 │   │   │       └── 🏷️ class ProjectInfoFactory
+│   │   ├── 📁 publication
 │   │   ├── 📁 rendering
+│   │   ├── 📁 rendering_plot
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
-│   │   │   │   └── 🏷️ class Rendering
+│   │   │   │   └── 🏷️ class RenderingPlot
 │   │   │   └── 📄 factory.py
-│   │   │       └── 🏷️ class RenderingFactory
+│   │   │       └── 🏷️ class RenderingPlotFactory
+│   │   ├── 📁 rendering_structure
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   │   └── 🏷️ class RenderingStructure
+│   │   │   └── 📄 factory.py
+│   │   │       └── 🏷️ class RenderingStructureFactory
+│   │   ├── 📁 rendering_table
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   │   └── 🏷️ class RenderingTable
+│   │   │   └── 📄 factory.py
+│   │   │       └── 🏷️ class RenderingTableFactory
+│   │   ├── 📁 report
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   │   └── 🏷️ class Report
+│   │   │   └── 📄 factory.py
+│   │   │       └── 🏷️ class ReportFactory
+│   │   ├── 📁 structure_style
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   │   └── 🏷️ class StructureStyle
+│   │   │   └── 📄 factory.py
+│   │   │       └── 🏷️ class StructureStyleFactory
+│   │   ├── 📁 structure_view
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   │   └── 🏷️ class StructureView
+│   │   │   └── 📄 factory.py
+│   │   │       └── 🏷️ class StructureViewFactory
 │   │   ├── 📁 verbosity
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
@@ -542,10 +668,22 @@
 │   ├── 📄 project_config.py
 │   │   └── 🏷️ class ProjectConfig
 │   └── 📄 project_info.py
-├── 📁 summary
+├── 📁 report
+│   ├── 📁 templates
+│   │   ├── 📁 html
+│   │   │   └── 📁 vendor
+│   │   └── 📁 tex
+│   │       └── 📁 styles
 │   ├── 📄 __init__.py
-│   └── 📄 summary.py
-│       └── 🏷️ class Summary
+│   ├── 📄 data_context.py
+│   │   └── 🏷️ class ReportDataContext
+│   ├── 📄 enums.py
+│   │   └── 🏷️ class ReportFormatEnum
+│   ├── 📄 fit_plot.py
+│   ├── 📄 html_renderer.py
+│   ├── 📄 pdf_compiler.py
+│   ├── 📄 style.py
+│   └── 📄 tex_renderer.py
 ├── 📁 utils
 │   ├── 📁 _vendored
 │   │   ├── 📁 jupyter_dark_detect
@@ -557,6 +695,7 @@
 │   ├── 📄 enums.py
 │   │   └── 🏷️ class VerbosityEnum
 │   ├── 📄 environment.py
+│   │   └── 🏷️ class FigureEmbedMode
 │   ├── 📄 logging.py
 │   │   ├── 🏷️ class IconifiedRichHandler
 │   │   ├── 🏷️ class ConsoleManager
@@ -564,6 +703,7 @@
 │   │   ├── 🏷️ class ExceptionHookManager
 │   │   ├── 🏷️ class Logger
 │   │   └── 🏷️ class ConsolePrinter
+│   ├── 📄 matplotlib_config.py
 │   └── 📄 utils.py
 ├── 📄 __init__.py
 └── 📄 __main__.py

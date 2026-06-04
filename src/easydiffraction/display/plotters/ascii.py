@@ -14,11 +14,13 @@ import shutil
 
 import asciichartpy
 import numpy as np
+from rich.text import Text
 
 from easydiffraction.display.plotters.base import DEFAULT_HEIGHT
 from easydiffraction.display.plotters.base import SERIES_CONFIG
 from easydiffraction.display.plotters.base import PlotterBase
 from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
+from easydiffraction.utils.logging import CONSOLE_PARAGRAPH_STYLE
 from easydiffraction.utils.logging import console
 
 DEFAULT_COLORS = {
@@ -33,6 +35,7 @@ ASCII_CHART_LEFT_PADDING = 15
 ASCII_CHART_FALLBACK_POINT_COUNT = 80
 ASCII_CHART_MIN_POINT_COUNT = 2
 ASCII_CHART_CROP_TRIGGER_MULTIPLIER = 2
+SINGLE_CRYSTAL_SCATTER_SYMBOL = '●'
 
 
 class AsciiPlotter(PlotterBase):
@@ -129,6 +132,17 @@ class AsciiPlotter(PlotterBase):
         line = '────'
         name = SERIES_CONFIG[label]['name']
         return f'{color_start}{line}{color_end} {name}'
+
+    @staticmethod
+    def _single_crystal_grid_line(row: list[str]) -> Text:
+        """Return one scatter grid line with styled data markers."""
+        line = Text('  │')
+        for cell in row:
+            if cell == SINGLE_CRYSTAL_SCATTER_SYMBOL:
+                line.append(cell, style=CONSOLE_PARAGRAPH_STYLE)
+            else:
+                line.append(cell)
+        return line
 
     def plot_powder(
         self,
@@ -286,13 +300,7 @@ class AsciiPlotter(PlotterBase):
             col = int((xv - vmin) / (vmax - vmin) * (width - 1))
             row = height - 1 - int((yv - vmin) / (vmax - vmin) * (height - 1))
             if 0 <= row < height and 0 <= col < width:
-                grid[row][col] = '●'
-
-        # Build chart string with axes
-        chart_lines = []
-        for row in grid:
-            label = '│'
-            chart_lines.append(label + ''.join(row))
+                grid[row][col] = SINGLE_CRYSTAL_SCATTER_SYMBOL
 
         # X-axis
         x_axis = '└' + '─' * width
@@ -300,9 +308,9 @@ class AsciiPlotter(PlotterBase):
         # Print output
         console.paragraph(f'{title}')
         console.print(f'{axes_labels[1]}')
-        for line in chart_lines:
-            print(f'  {line}')
-        print(f'  {x_axis}')
+        for row in grid:
+            console.print(self._single_crystal_grid_line(row))
+        console.print(f'  {x_axis}')
         console.print(f'{" " * (width - 3)}{axes_labels[0]}')
 
     def plot_scatter(

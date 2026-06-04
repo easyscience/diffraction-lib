@@ -6,30 +6,32 @@
 # diffraction experiment at NOMAD at SNS.
 
 # %% [markdown]
-# ## Import Library
+# ## 🛠️ Import Library
 
 # %%
 import easydiffraction as ed
 
 # %% [markdown]
-# ## Create Project
-
-# %%
-project = ed.Project()
+# ## 📦 Define Project
 
 # %% [markdown]
-# ## Set Plotting Engine
+# ### Create Project
 
 # %%
-project.rendering.show_chart_engines()
-project.rendering.show_config()
+project = ed.Project(name='si_nomad_pdf')
+
+# %% [markdown]
+# ### Set Plotting Engine
+
+# %%
+project.rendering_plot.show_supported()
 
 # %%
 # Set global plot range for plots
-project.rendering.plotter.x_max = 40
+project.rendering_plot.plotter.x_max = 40
 
 # %% [markdown]
-# ## Add Structure
+# ### Add Structure
 
 # %%
 project.structures.create(name='si')
@@ -45,12 +47,17 @@ structure.atom_sites.create(
     fract_x=0,
     fract_y=0,
     fract_z=0,
-    wyckoff_letter='a',
     adp_iso=0.5,
 )
 
 # %% [markdown]
-# ## Add Experiment
+# ### Display Structure
+
+# %%
+project.display.structure(struct_name='si')
+
+# %% [markdown]
+# ### Add Experiment
 
 # %%
 data_path = ed.download_data(id=5, destination='data')
@@ -76,7 +83,10 @@ experiment.peak.sharp_delta_2 = 4.0
 experiment.peak.damp_particle_diameter = 0
 
 # %% [markdown]
-# ## Select Fitting Parameters
+# ## 🚀 Perform Analysis
+
+# %% [markdown]
+# ### Set Free Parameters
 
 # %%
 project.structures['si'].cell.length_a.free = True
@@ -90,7 +100,7 @@ experiment.peak.sharp_delta_1.free = True
 experiment.peak.sharp_delta_2.free = True
 
 # %% [markdown]
-# ## Run Fitting
+# ### Run Fitting
 
 # %%
 project.analysis.fit()
@@ -98,7 +108,13 @@ project.display.fit.results()
 project.display.fit.correlations()
 
 # %% [markdown]
-# ## Plot Measured vs Calculated
+# ### Display Pattern
 
 # %%
-project.display.pattern(expt_name='nomad', include=('measured', 'calculated'))
+project.display.pattern(expt_name='nomad')
+
+# %% [markdown]
+# ## 💾 Save Project
+
+# %%
+project.save_as(dir_path='projects/ed_11_si_nomad_pdf')

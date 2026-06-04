@@ -15,6 +15,7 @@ back-to-back exponential (BBE) formalism:
 These are composed into concrete peak classes in ``tof.py``.
 """
 
+from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.variable import Parameter
@@ -22,7 +23,12 @@ from easydiffraction.io.cif.handler import CifHandler
 
 
 class TofGaussianBroadeningMixin:
-    """TOF Gaussian broadening parameters σ₀, σ₁, σ₂."""
+    """
+    TOF Gaussian broadening parameters σ₀, σ₁, σ₂.
+
+    The constant term σ₀ defaults nonzero so every TOF profile has a
+    finite peak width out of the box; σ₁ and σ₂ default to 0.
+    """
 
     def __init__(self) -> None:
         super().__init__()
@@ -30,32 +36,53 @@ class TofGaussianBroadeningMixin:
         self._broad_gauss_sigma_0 = Parameter(
             name='gauss_sigma_0',
             description='Gaussian broadening (instrumental resolution)',
-            units='μs²',
+            units='microseconds_squared',
+            display_handler=DisplayHandler(
+                display_units='μs²',
+                latex_units=r'$\mu\mathrm{s}^2$',
+            ),
             value_spec=AttributeSpec(
-                default=0.0,
+                default=7.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.gauss_sigma_0']),
+            cif_handler=CifHandler(
+                names=['_peak.gauss_sigma_0'],
+                iucr_name='_easydiffraction_peak.gauss_sigma_0',
+            ),
         )
         self._broad_gauss_sigma_1 = Parameter(
             name='gauss_sigma_1',
             description='Gaussian broadening (dependent on d-spacing)',
-            units='μs/Å',
+            units='microseconds_per_angstrom',
+            display_handler=DisplayHandler(
+                display_units='μs/Å',
+                latex_units=r'$\mu\mathrm{s}/\mathrm{\AA}$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.gauss_sigma_1']),
+            cif_handler=CifHandler(
+                names=['_peak.gauss_sigma_1'],
+                iucr_name='_easydiffraction_peak.gauss_sigma_1',
+            ),
         )
         self._broad_gauss_sigma_2 = Parameter(
             name='gauss_sigma_2',
             description='Gaussian broadening (instrument-dependent term)',
-            units='μs²/Å²',
+            units='microseconds_squared_per_angstrom_squared',
+            display_handler=DisplayHandler(
+                display_units='μs²/Å²',
+                latex_units=r'$\mu\mathrm{s}^2/\mathrm{\AA}^2$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.gauss_sigma_2']),
+            cif_handler=CifHandler(
+                names=['_peak.gauss_sigma_2'],
+                iucr_name='_easydiffraction_peak.gauss_sigma_2',
+            ),
         )
 
     @property
@@ -110,32 +137,53 @@ class TofLorentzianBroadeningMixin:
         self._broad_lorentz_gamma_0 = Parameter(
             name='lorentz_gamma_0',
             description='Lorentzian broadening (microstrain effects)',
-            units='μs',
+            units='microseconds',
+            display_handler=DisplayHandler(
+                display_units='μs',
+                latex_units=r'$\mu\mathrm{s}$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.lorentz_gamma_0']),
+            cif_handler=CifHandler(
+                names=['_peak.lorentz_gamma_0'],
+                iucr_name='_easydiffraction_peak.lorentz_gamma_0',
+            ),
         )
         self._broad_lorentz_gamma_1 = Parameter(
             name='lorentz_gamma_1',
             description='Lorentzian broadening (dependent on d-spacing)',
-            units='μs/Å',
+            units='microseconds_per_angstrom',
+            display_handler=DisplayHandler(
+                display_units='μs/Å',
+                latex_units=r'$\mu\mathrm{s}/\mathrm{\AA}$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.lorentz_gamma_1']),
+            cif_handler=CifHandler(
+                names=['_peak.lorentz_gamma_1'],
+                iucr_name='_easydiffraction_peak.lorentz_gamma_1',
+            ),
         )
         self._broad_lorentz_gamma_2 = Parameter(
             name='lorentz_gamma_2',
             description='Lorentzian broadening (instrument-dependent term)',
-            units='μs²/Å²',
+            units='microseconds_squared_per_angstrom_squared',
+            display_handler=DisplayHandler(
+                display_units='μs²/Å²',
+                latex_units=r'$\mu\mathrm{s}^2/\mathrm{\AA}^2$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.lorentz_gamma_2']),
+            cif_handler=CifHandler(
+                names=['_peak.lorentz_gamma_2'],
+                iucr_name='_easydiffraction_peak.lorentz_gamma_2',
+            ),
         )
 
     @property
@@ -187,6 +235,9 @@ class TofBackToBackExponentialMixin:
 
     Rise parameters α₀, α₁ and decay parameters β₀, β₁ follow Von
     Dreele, Jorgensen & Windsor, J. Appl. Cryst. 15, 581 (1982).
+
+    The rise α₁ and decay β₀ default nonzero so the profile is
+    normalisable and the peak is visible; refine per instrument.
     """
 
     def __init__(self) -> None:
@@ -195,42 +246,70 @@ class TofBackToBackExponentialMixin:
         self._exp_rise_alpha_0 = Parameter(
             name='rise_alpha_0',
             description='Back-to-back exponential rise α₀',
-            units='μs',
+            units='microseconds',
+            display_handler=DisplayHandler(
+                display_units='μs',
+                latex_units=r'$\mu\mathrm{s}$',
+            ),
             value_spec=AttributeSpec(
-                default=0.01,
+                default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.rise_alpha_0']),
+            cif_handler=CifHandler(
+                names=['_peak.rise_alpha_0'],
+                iucr_name='_easydiffraction_peak.rise_alpha_0',
+            ),
         )
         self._exp_rise_alpha_1 = Parameter(
             name='rise_alpha_1',
             description='Back-to-back exponential rise α₁',
-            units='μs/Å',
+            units='microseconds_per_angstrom',
+            display_handler=DisplayHandler(
+                display_units='μs/Å',
+                latex_units=r'$\mu\mathrm{s}/\mathrm{\AA}$',
+            ),
             value_spec=AttributeSpec(
-                default=0.02,
+                default=0.2,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.rise_alpha_1']),
+            cif_handler=CifHandler(
+                names=['_peak.rise_alpha_1'],
+                iucr_name='_easydiffraction_peak.rise_alpha_1',
+            ),
         )
         self._exp_decay_beta_0 = Parameter(
             name='decay_beta_0',
             description='Back-to-back exponential decay β₀',
-            units='μs',
+            units='microseconds',
+            display_handler=DisplayHandler(
+                display_units='μs',
+                latex_units=r'$\mu\mathrm{s}$',
+            ),
             value_spec=AttributeSpec(
-                default=0.0,
+                default=0.04,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.decay_beta_0']),
+            cif_handler=CifHandler(
+                names=['_peak.decay_beta_0'],
+                iucr_name='_easydiffraction_peak.decay_beta_0',
+            ),
         )
         self._exp_decay_beta_1 = Parameter(
             name='decay_beta_1',
             description='Back-to-back exponential decay β₁',
-            units='μs/Å',
+            units='microseconds_per_angstrom',
+            display_handler=DisplayHandler(
+                display_units='μs/Å',
+                latex_units=r'$\mu\mathrm{s}/\mathrm{\AA}$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.decay_beta_1']),
+            cif_handler=CifHandler(
+                names=['_peak.decay_beta_1'],
+                iucr_name='_easydiffraction_peak.decay_beta_1',
+            ),
         )
 
     @property
@@ -297,6 +376,9 @@ class TofDoubleExponentialMixin:
     Rise parameters α₁, α₂, decay parameters β₀₀, β₀₁, β₁₀ for two
     exponential regimes, and switching-function parameters r₀₁, r₀₂,
     r₀₃.
+
+    α₁, β₀₀, β₁₀ and r₀₁ default nonzero so both regimes stay finite and
+    blended; an all-zero set produces NaN. Refine per instrument.
     """
 
     def __init__(self) -> None:
@@ -305,82 +387,126 @@ class TofDoubleExponentialMixin:
         self._dexp_rise_alpha_1 = Parameter(
             name='dexp_rise_alpha_1',
             description='Double-exp rise parameter α₁',
-            units='μs',
+            units='microseconds',
+            display_handler=DisplayHandler(
+                display_units='μs',
+                latex_units=r'$\mu\mathrm{s}$',
+            ),
             value_spec=AttributeSpec(
-                default=0.0,
+                default=0.25,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.dexp_rise_alpha_1']),
+            cif_handler=CifHandler(
+                names=['_peak.dexp_rise_alpha_1'],
+                iucr_name='_easydiffraction_peak.dexp_rise_alpha_1',
+            ),
         )
         self._dexp_rise_alpha_2 = Parameter(
             name='dexp_rise_alpha_2',
             description='Double-exp rise parameter α₂',
-            units='μs/Å',
+            units='microseconds_per_angstrom',
+            display_handler=DisplayHandler(
+                display_units='μs/Å',
+                latex_units=r'$\mu\mathrm{s}/\mathrm{\AA}$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.dexp_rise_alpha_2']),
+            cif_handler=CifHandler(
+                names=['_peak.dexp_rise_alpha_2'],
+                iucr_name='_easydiffraction_peak.dexp_rise_alpha_2',
+            ),
         )
         self._dexp_decay_beta_00 = Parameter(
             name='dexp_decay_beta_00',
             description='Double-exp first-regime decay β₀₀',
-            units='μs',
+            units='microseconds',
+            display_handler=DisplayHandler(
+                display_units='μs',
+                latex_units=r'$\mu\mathrm{s}$',
+            ),
             value_spec=AttributeSpec(
-                default=0.0,
+                default=4.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.dexp_decay_beta_00']),
+            cif_handler=CifHandler(
+                names=['_peak.dexp_decay_beta_00'],
+                iucr_name='_easydiffraction_peak.dexp_decay_beta_00',
+            ),
         )
         self._dexp_decay_beta_01 = Parameter(
             name='dexp_decay_beta_01',
             description='Double-exp first-regime decay β₀₁',
-            units='μs/Å',
+            units='microseconds_per_angstrom',
+            display_handler=DisplayHandler(
+                display_units='μs/Å',
+                latex_units=r'$\mu\mathrm{s}/\mathrm{\AA}$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.dexp_decay_beta_01']),
+            cif_handler=CifHandler(
+                names=['_peak.dexp_decay_beta_01'],
+                iucr_name='_easydiffraction_peak.dexp_decay_beta_01',
+            ),
         )
         self._dexp_decay_beta_10 = Parameter(
             name='dexp_decay_beta_10',
             description='Double-exp second-regime decay β₁₀',
-            units='μs',
+            units='microseconds',
+            display_handler=DisplayHandler(
+                display_units='μs',
+                latex_units=r'$\mu\mathrm{s}$',
+            ),
             value_spec=AttributeSpec(
-                default=0.0,
+                default=2.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.dexp_decay_beta_10']),
+            cif_handler=CifHandler(
+                names=['_peak.dexp_decay_beta_10'],
+                iucr_name='_easydiffraction_peak.dexp_decay_beta_10',
+            ),
         )
         self._dexp_switch_r_01 = Parameter(
             name='dexp_switch_r_01',
             description='Double-exp switching function r₀₁',
-            units='',
+            units='none',
             value_spec=AttributeSpec(
-                default=0.0,
+                default=0.5,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.dexp_switch_r_01']),
+            cif_handler=CifHandler(
+                names=['_peak.dexp_switch_r_01'],
+                iucr_name='_easydiffraction_peak.dexp_switch_r_01',
+            ),
         )
         self._dexp_switch_r_02 = Parameter(
             name='dexp_switch_r_02',
             description='Double-exp switching function r₀₂',
-            units='',
+            units='none',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.dexp_switch_r_02']),
+            cif_handler=CifHandler(
+                names=['_peak.dexp_switch_r_02'],
+                iucr_name='_easydiffraction_peak.dexp_switch_r_02',
+            ),
         )
         self._dexp_switch_r_03 = Parameter(
             name='dexp_switch_r_03',
             description='Double-exp switching function r₀₃',
-            units='',
+            units='none',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.dexp_switch_r_03']),
+            cif_handler=CifHandler(
+                names=['_peak.dexp_switch_r_03'],
+                iucr_name='_easydiffraction_peak.dexp_switch_r_03',
+            ),
         )
 
     @property

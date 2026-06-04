@@ -98,6 +98,23 @@ def test_ascii_plotter_plot_single_crystal(capsys):
     assert '·' in out
 
 
+def test_ascii_plotter_single_crystal_marker_uses_paragraph_style():
+    from easydiffraction.display.plotters.ascii import AsciiPlotter
+    from easydiffraction.display.plotters.ascii import SINGLE_CRYSTAL_SCATTER_SYMBOL
+    from easydiffraction.utils.logging import CONSOLE_PARAGRAPH_STYLE
+
+    line = AsciiPlotter._single_crystal_grid_line([
+        ' ',
+        SINGLE_CRYSTAL_SCATTER_SYMBOL,
+        '·',
+    ])
+
+    marker_start = line.plain.index(SINGLE_CRYSTAL_SCATTER_SYMBOL)
+    assert line.spans[0].start == marker_start
+    assert line.spans[0].end == marker_start + 1
+    assert line.spans[0].style == CONSOLE_PARAGRAPH_STYLE
+
+
 def test_ascii_plotter_plot_powder_meas_vs_calc_announces_plotly_only_bragg_row(capsys):
     from easydiffraction.display.plotters.ascii import AsciiPlotter
     from easydiffraction.display.plotters.base import BraggTickSet
@@ -121,7 +138,7 @@ def test_ascii_plotter_plot_powder_meas_vs_calc_announces_plotly_only_bragg_row(
                     f_calc=np.array([10.0]),
                 ),
             ),
-            axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+            axes_labels=['2θ (deg)', 'Intensity (arb. units)'],
             title='Powder plot',
             residual_height_fraction=0.25,
             bragg_peaks_height_fraction=0.15,

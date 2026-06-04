@@ -1,12 +1,16 @@
-"""Insert a bootstrap code cell as the first cell of every notebook.
+"""Post-process generated tutorial notebooks.
 
 Usage::
         python tools/tweak_notebooks.py tutorials/ [more_paths ...]
 
-The bootstrap cell:
+Inserts a bootstrap code cell as the first cell of every notebook. The
+bootstrap cell:
 - Checks if ``easydiffraction`` is importable; if not, installs it.
 - Adds the tag ``hide-in-docs``.
 - Idempotent: skipped if already present and identical.
+
+Also sorts each notebook's jupytext ``cell_metadata_filter`` so its entry
+order stays stable across runs and does not create noisy diffs.
 """
 
 from __future__ import annotations
@@ -94,7 +98,33 @@ def ensure_bootstrap(nb, bootstrap_source: str) -> bool:
     return True
 
 
-def process_notebook(path: Path, bootstrap_source: str) -> int:
+def normalize_cell_metadata_filter(nb) -> bool:
+    """Sort the jupytext ``cell_metadata_filter`` for a stable order.
+
+    jupytext derives this filter from an unordered set, so multi-entry
+    values (e.g. ``title,tags``) can swap order between runs and produce
+    noisy diffs. Sort the positive entries alphabetically and keep any
+    ``-``-prefixed directives (e.g. ``-all``) last.
+
+    Returns True if the stored value changed.
+    """
+    jupytext_meta = nb.metadata.get('jupytext')
+    if not isinstance(jupytext_meta, dict):
+        return False
+    current = jupytext_meta.get('cell_metadata_filter')
+    if not isinstance(current, str):
+        return False
+    entries = [part.strip() for part in current.split(',') if part.strip()]
+    positives = sorted(entry for entry in entries if not entry.startswith('-'))
+    negatives = sorted(entry for entry in entries if entry.startswith('-'))
+    normalized = ','.join(positives + negatives)
+    if normalized == current:
+        return False
+    jupytext_meta['cell_metadata_filter'] = normalized
+    return True
+
+
+def process_notebook(path: Path, bootstrap_source: str) -> list[str]:
     nb = nbformat.read(path, as_version=4)
 
     # Remove all 'tags' metadata from cells
@@ -102,16 +132,17 @@ def process_notebook(path: Path, bootstrap_source: str) -> int:
         if 'tags' in cell.metadata:
             cell.metadata.pop('tags')
 
-    # Add the bootstrap cell if needed
-    changed = 0
+    reasons: list[str] = []
     if ensure_bootstrap(nb, bootstrap_source):
-        changed += 1
+        reasons.append('inserted bootstrap cell')
+    if normalize_cell_metadata_filter(nb):
+        reasons.append('sorted cell_metadata_filter')
 
     # Normalize to ensure cell ids exist and structure is valid
-    if changed or any('id' not in c for c in nb.cells):
+    if reasons or any('id' not in c for c in nb.cells):
         normalize(nb)
         nbformat.write(nb, path)
-    return changed
+    return reasons
 
 
 def main(argv: list[str]) -> int:
@@ -131,9 +162,9 @@ def main(argv: list[str]) -> int:
 
     updated = 0
     for nb_path in targets:
-        changes = process_notebook(nb_path, bootstrap_source)
-        if changes:
-            print(f'UPDATED: {nb_path} (inserted bootstrap cell)')
+        reasons = process_notebook(nb_path, bootstrap_source)
+        if reasons:
+            print(f'UPDATED: {nb_path} ({"; ".join(reasons)})')
             updated += 1
 
     if updated == 0:

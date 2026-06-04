@@ -12,9 +12,14 @@ from __future__ import annotations
 from abc import ABC
 from abc import abstractmethod
 
-from IPython import get_ipython
+try:
+    from IPython import get_ipython
+except ImportError:  # IPython is an optional display dependency
+    get_ipython = None
 from rich.color import Color
 
+from easydiffraction.display.theme import DARK_AXIS_FRAME_COLOR
+from easydiffraction.display.theme import LIGHT_AXIS_FRAME_COLOR
 from easydiffraction.utils._vendored.theme_detect import is_dark
 
 
@@ -61,7 +66,9 @@ class TableBackendBase(ABC):
         default = True
 
         in_jupyter = (
-            get_ipython() is not None and get_ipython().__class__.__name__ == 'ZMQInteractiveShell'
+            get_ipython is not None
+            and get_ipython() is not None
+            and get_ipython().__class__.__name__ == 'ZMQInteractiveShell'
         )
 
         if not in_jupyter:
@@ -96,7 +103,9 @@ class TableBackendBase(ABC):
 
     @property
     def _pandas_border_color(self) -> str:
-        return self._rich_to_hex(self._rich_border_color)
+        if self._is_dark_theme():
+            return DARK_AXIS_FRAME_COLOR
+        return LIGHT_AXIS_FRAME_COLOR
 
     @abstractmethod
     def build_renderable(
@@ -127,6 +136,7 @@ class TableBackendBase(ABC):
         alignments: object,
         df: object,
         display_handle: object | None = None,
+        width: int | None = None,
     ) -> object:
         """
         Render the provided DataFrame with backend-specific styling.
@@ -141,6 +151,9 @@ class TableBackendBase(ABC):
         display_handle : object | None, default=None
             Optional environment-specific handle to enable in-place
             updates.
+        width : int | None, default=None
+            Optional target table width. Honored by fixed-width backends
+            (e.g. Rich); ignored by reflowing ones (e.g. HTML).
 
         Returns
         -------

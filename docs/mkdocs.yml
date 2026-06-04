@@ -87,6 +87,10 @@ extra_css:
 
 extra_javascript:
   - assets/javascripts/extra.js
+  # Self-hosted Plotly (cartesian bundle) plus the shared lazy loader for
+  # SHARED-mode figures. Plotly must load before ed-figures.js, which uses it.
+  - assets/javascripts/vendor/plotly/plotly-cartesian.min.js
+  - assets/javascripts/ed-figures.js
   # MathJax for rendering mathematical expressions
   - assets/javascripts/mathjax.js # Custom MathJax config to ensure compatibility with mkdocs-jupyter
   - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js # Official MathJax CDN
@@ -140,6 +144,7 @@ plugins:
       include_requirejs: true # Required for Plotly
       #custom_mathjax_url: 'https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js' # See 'extra_javascript' above
       ignore_h1_titles: true # Use titles defined in the nav section below
+      toc_depth: 3 # Notebook-only TOC depth: show `##`/`###`, hide deeper steps (`####`)
       remove_tag_config:
         remove_input_tags:
           - hide-in-docs
@@ -156,7 +161,18 @@ plugins:
             show_root_heading: true
             show_root_full_path: false
             show_submodules: true
-            show_source: true
+            show_source: false
+            show_bases: false
+            # Uncomment when the project depends on `easyscience` and inherited
+            # EasyScience base-class members should be shown in the API docs.
+            # preload_modules:
+            #   - easyscience
+            inherited_members: true
+            show_category_heading: true
+            merge_init_into_class: true
+            docstring_options:
+              ignore_init_summary: true
+            summary: true
   - search
 
 # Determines additional directories to watch when running mkdocs serve
@@ -169,6 +185,7 @@ watch:
 not_in_nav: |
   index.md
   user-guide/parameters
+  assets/javascripts/vendor/**/*.md
 
 # Format and layout of the global navigation for the site
 nav:
@@ -189,7 +206,7 @@ nav:
           - Structure: user-guide/analysis-workflow/model.md
           - Experiment: user-guide/analysis-workflow/experiment.md
           - Analysis: user-guide/analysis-workflow/analysis.md
-          - Summary: user-guide/analysis-workflow/summary.md
+          - Report: user-guide/analysis-workflow/report.md
   - Tutorials:
       - Tutorials: tutorials/index.md
       - Getting Started:
@@ -199,7 +216,6 @@ nav:
       - Load Project:
           - LBCO Single: tutorials/ed-18.ipynb
           - Co2SiO4 Sequential: tutorials/ed-23.ipynb
-          - LBCO Bayesian: tutorials/ed-24.ipynb
       - Powder Diffraction:
           - Co2SiO4 pd-neut-cwl: tutorials/ed-5.ipynb
           - HS pd-neut-cwl: tutorials/ed-6.ipynb
@@ -220,8 +236,11 @@ nav:
           - LBCO+Si McStas: tutorials/ed-9.ipynb
           - BEER McStas: tutorials/ed-20.ipynb
       - Bayesian Analysis:
-          - LBCO Bayesian: tutorials/ed-21.ipynb
-          - Tb2TiO7 Bayesian: tutorials/ed-22.ipynb
+          - LBCO pd bumps-dream: tutorials/ed-21.ipynb
+          - LBCO pd bumps-dream Display: tutorials/ed-24.ipynb
+          - LBCO pd emcee: tutorials/ed-25.ipynb
+          - LBCO pd emcee Resume: tutorials/ed-26.ipynb
+          - Tb2TiO7 sg bumps-dream: tutorials/ed-22.ipynb
       - Workshops & Schools:
           - DMSC Summer School: tutorials/ed-13.ipynb
   - Command-Line:
@@ -237,7 +256,7 @@ nav:
       - display: api-reference/display.md
       - io: api-reference/io.md
       - project: api-reference/project.md
-      - summary: api-reference/summary.md
+      - report: api-reference/report.md
       - utils: api-reference/utils.md
   - Quick Reference:
       - Quick Reference: quick-reference/index.md

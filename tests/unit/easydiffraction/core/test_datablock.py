@@ -172,7 +172,6 @@ def test_datablock_item_help(capsys):
     b = Block()
     b.help()
     out = capsys.readouterr().out
-    assert 'Help for' in out
     assert 'Categories' in out
     assert 'cat' in out
 

@@ -11,10 +11,9 @@ experiment configuration and handles CIF serialization via
 from __future__ import annotations
 
 from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.metadata import TypeInfo
-from easydiffraction.core.validation import AttributeSpec
-from easydiffraction.core.validation import MembershipValidator
-from easydiffraction.core.variable import StringDescriptor
+from easydiffraction.core.variable import EnumDescriptor
 from easydiffraction.datablocks.experiment.categories.experiment_type.factory import (
     ExperimentTypeFactory,
 )
@@ -39,46 +38,58 @@ class ExperimentType(CategoryItem):
     def __init__(self) -> None:
         super().__init__()
 
-        self._sample_form = StringDescriptor(
+        self._sample_form = EnumDescriptor(
             name='sample_form',
+            enum=SampleFormEnum,
             description='Powder diffraction or single crystal diffraction',
-            value_spec=AttributeSpec(
-                default=SampleFormEnum.default().value,
-                validator=MembershipValidator(allowed=[member.value for member in SampleFormEnum]),
+            cif_handler=CifHandler(
+                names=['_expt_type.sample_form'],
+                iucr_name='_easydiffraction_experiment_type.sample_form',
             ),
-            cif_handler=CifHandler(names=['_expt_type.sample_form']),
+            display_handler=DisplayHandler(
+                display_name='Sample form',
+                latex_name='Sample form',
+            ),
         )
 
-        self._beam_mode = StringDescriptor(
+        self._beam_mode = EnumDescriptor(
             name='beam_mode',
+            enum=BeamModeEnum,
             description='Constant wavelength (CW) or time-of-flight (TOF) measurement',
-            value_spec=AttributeSpec(
-                default=BeamModeEnum.default().value,
-                validator=MembershipValidator(allowed=[member.value for member in BeamModeEnum]),
+            cif_handler=CifHandler(
+                names=['_expt_type.beam_mode'],
+                iucr_name='_easydiffraction_experiment_type.beam_mode',
             ),
-            cif_handler=CifHandler(names=['_expt_type.beam_mode']),
+            display_handler=DisplayHandler(
+                display_name='Beam mode',
+                latex_name='Beam mode',
+            ),
         )
-        self._radiation_probe = StringDescriptor(
+        self._radiation_probe = EnumDescriptor(
             name='radiation_probe',
+            enum=RadiationProbeEnum,
             description='Neutron or X-ray diffraction measurement',
-            value_spec=AttributeSpec(
-                default=RadiationProbeEnum.default().value,
-                validator=MembershipValidator(
-                    allowed=[member.value for member in RadiationProbeEnum]
-                ),
+            cif_handler=CifHandler(
+                names=['_expt_type.radiation_probe'],
+                iucr_name='_easydiffraction_experiment_type.radiation_probe',
             ),
-            cif_handler=CifHandler(names=['_expt_type.radiation_probe']),
+            display_handler=DisplayHandler(
+                display_name='Probe',
+                latex_name='Probe',
+            ),
         )
-        self._scattering_type = StringDescriptor(
+        self._scattering_type = EnumDescriptor(
             name='scattering_type',
+            enum=ScatteringTypeEnum,
             description='Conventional Bragg diffraction or total scattering (PDF)',
-            value_spec=AttributeSpec(
-                default=ScatteringTypeEnum.default().value,
-                validator=MembershipValidator(
-                    allowed=[member.value for member in ScatteringTypeEnum]
-                ),
+            cif_handler=CifHandler(
+                names=['_expt_type.scattering_type'],
+                iucr_name='_easydiffraction_experiment_type.scattering_type',
             ),
-            cif_handler=CifHandler(names=['_expt_type.scattering_type']),
+            display_handler=DisplayHandler(
+                display_name='Scattering type',
+                latex_name='Scattering type',
+            ),
         )
 
     # ------------------------------------------------------------------
@@ -102,41 +113,41 @@ class ExperimentType(CategoryItem):
     # ------------------------------------------------------------------
 
     @property
-    def sample_form(self) -> StringDescriptor:
+    def sample_form(self) -> EnumDescriptor:
         """
         Powder diffraction or single crystal diffraction.
 
-        Reading this property returns the underlying
-        ``StringDescriptor`` object.
+        Reading this property returns the underlying ``EnumDescriptor``
+        object.
         """
         return self._sample_form
 
     @property
-    def beam_mode(self) -> StringDescriptor:
+    def beam_mode(self) -> EnumDescriptor:
         """
         Constant wavelength (CW) or time-of-flight (TOF) measurement.
 
-        Reading this property returns the underlying
-        ``StringDescriptor`` object.
+        Reading this property returns the underlying ``EnumDescriptor``
+        object.
         """
         return self._beam_mode
 
     @property
-    def radiation_probe(self) -> StringDescriptor:
+    def radiation_probe(self) -> EnumDescriptor:
         """
         Neutron or X-ray diffraction measurement.
 
-        Reading this property returns the underlying
-        ``StringDescriptor`` object.
+        Reading this property returns the underlying ``EnumDescriptor``
+        object.
         """
         return self._radiation_probe
 
     @property
-    def scattering_type(self) -> StringDescriptor:
+    def scattering_type(self) -> EnumDescriptor:
         """
         Conventional Bragg diffraction or total scattering (PDF).
 
-        Reading this property returns the underlying
-        ``StringDescriptor`` object.
+        Reading this property returns the underlying ``EnumDescriptor``
+        object.
         """
         return self._scattering_type

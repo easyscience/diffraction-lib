@@ -16,7 +16,8 @@ Persistence.
 
 `Project` is the top-level user facade. It owns project metadata,
 structures, experiments, rendering preferences, display helpers,
-analysis, summaries, verbosity, and save/load behavior.
+analysis, report helpers, verbosity, and save/load behavior. Journal and
+publication metadata are deferred from the v1 facade.
 
 A later proposal considered renaming this facade to `Workspace` so that
 `project` could be reserved for the scientific project information
@@ -35,16 +36,35 @@ directory of CIF files:
 ```text
 project_dir/
 |-- project.cif
-|-- summary.cif
 |-- structures/
 |-- experiments/
-`-- analysis/
-    `-- analysis.cif
+|-- analysis/
+|   `-- analysis.cif
+`-- reports/
+    `-- <project>.cif
 ```
 
 Real structures and experiments serialize as `data_<id>` datablocks.
-Singleton sections such as project configuration, analysis, and summary
-serialize without fake `data_` headers.
+Singleton sections such as project configuration and analysis serialize
+without fake `data_` headers. Journal-submission reports are generated
+through `project.report` and written only when requested, using
+`reports/<project>.cif`; default project saves do not write
+`summary.cif`.
+
+Expose submission-report helpers as `project.report`. This facade is a
+hybrid surface: its scalar output configuration persists to
+`project.cif` as `_report.*`, while its methods render report artifacts
+under `reports/`. The previous `project.summary` placeholder and its
+`summary.cif` output are not part of the persistence layout.
+
+Do not expose journal-submission metadata as `project.publication` in
+v1. The clean report policy in
+[`project-summary-rendering.md`](project-summary-rendering.md) §5 keeps
+`project.cif` and generated report CIFs free of empty `_journal.*`,
+`_journal_date.*`, `_journal_coeditor.*`, `_publ_contact_author.*`,
+`_publ_body.*`, `_publ_author.*`, and `_pd_meas.info_author_*` fields.
+Those tags are deferred for a future journal-submission metadata
+surface.
 
 Keep project information available as `project.info`. The Python name
 avoids a confusing `project.project` access path, while the persisted
@@ -70,6 +90,10 @@ while `Project` remains the root facade. Do not rename it to
 The saved project directory path is runtime file-I/O state, not a
 serialized project-information field. If the path is exposed in Python,
 it must not emit a `_project.path` CIF item.
+
+The project-level singleton categories currently persisted in
+`project.cif` are `_project.*`, `_rendering_plot.*`, `_report.*`,
+`_rendering_table.*`, and `_verbosity.*`.
 
 ## Consequences
 

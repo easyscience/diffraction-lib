@@ -25,18 +25,23 @@ from easydiffraction.io.results_sidecar import read_analysis_results_sidecar
 from easydiffraction.io.results_sidecar import write_analysis_results_sidecar
 from easydiffraction.project.display import ProjectDisplay
 from easydiffraction.project.project_config import ProjectConfig
-from easydiffraction.summary.summary import Summary
 from easydiffraction.utils.enums import VerbosityEnum
 from easydiffraction.utils.environment import resolve_artifact_path
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
+from easydiffraction.utils.utils import display_path
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from easydiffraction.project.categories.rendering import Rendering
+    from easydiffraction.project.categories.rendering_plot import RenderingPlot
+    from easydiffraction.project.categories.rendering_structure import RenderingStructure
+    from easydiffraction.project.categories.rendering_table import RenderingTable
+    from easydiffraction.project.categories.structure_style import StructureStyle
+    from easydiffraction.project.categories.structure_view import StructureView
     from easydiffraction.project.categories.verbosity import Verbosity
     from easydiffraction.project.project_info import ProjectInfo
+    from easydiffraction.report import Report
 
 
 def _apply_csv_row_to_params(
@@ -170,15 +175,18 @@ def _load_project_analysis(project: Project, project_path: pathlib.Path) -> None
         analysis=project._analysis,
         analysis_dir=analysis_cif_path.parent,
     )
+    param_map = project._build_parameter_map()
+    if project._analysis.fit_parameters:
+        project._analysis._restore_live_parameter_bounds_and_anchors(param_map)
     if project._analysis._has_persisted_fit_state():
-        project._analysis._restore_live_parameter_state(project._build_parameter_map())
+        project._analysis._restore_live_parameter_posterior(param_map)
 
 
-class Project(GuardedBase):
+class Project(GuardedBase):  # noqa: PLR0904
     """
     Central API for managing a diffraction data analysis project.
 
-    Provides access to structures, experiments, analysis, and summary.
+    Provides access to structures, experiments, analysis, and reports.
     """
 
     # ------------------------------------------------------------------
@@ -200,14 +208,49 @@ class Project(GuardedBase):
         object.__setattr__(self, '_info', self._config.info)
         self._structures = Structures()
         self._experiments = Experiments()
-        object.__setattr__(self, '_rendering', self._config.rendering)
+        object.__setattr__(self, '_rendering_plot', self._config.rendering_plot)
+        object.__setattr__(self, '_rendering_table', self._config.rendering_table)
         object.__setattr__(self, '_verbosity', self._config.verbosity)
+        object.__setattr__(self, '_rendering_structure', self._config.rendering_structure)
+        object.__setattr__(self, '_structure_view', self._config.structure_view)
+        object.__setattr__(self, '_structure_style', self._config.structure_style)
+        object.__setattr__(self, '_report', self._config.report)
         self._display = ProjectDisplay(self)
         self._analysis = Analysis(self)
-        self._summary = Summary(self)
         self._saved = False
         self._varname = 'project' if type(self)._loading else varname()
         type(self)._current_project = self
+        self._attach_category_parents()
+
+    def _attach_category_parents(self) -> None:
+        """Link directly owned project sections back to this project."""
+        self._structures._parent = self
+        self._experiments._parent = self
+        self._analysis._parent = self
+        self._rendering_plot._parent = self
+        self._rendering_table._parent = self
+        self._rendering_structure._parent = self
+        self._structure_view._parent = self
+        self._structure_style._parent = self
+        self._report._parent = self
+
+    @staticmethod
+    def _supported_filters_for(category: object) -> dict[str, object]:
+        """Return owner context filters for a switchable category."""
+        del category
+        return {}
+
+    def _swap_rendering_plot(self, new_type: str, *, strict: bool = True) -> None:
+        """Switch the active chart renderer."""
+        self._rendering_plot._set_type(new_type, strict=strict)
+
+    def _swap_rendering_table(self, new_type: str, *, strict: bool = True) -> None:
+        """Switch the active table renderer."""
+        self._rendering_table._set_type(new_type, strict=strict)
+
+    def _swap_rendering_structure(self, new_type: str, *, strict: bool = True) -> None:
+        """Switch the active structure-view renderer."""
+        self._rendering_structure._set_type(new_type, strict=strict)
 
     @classmethod
     def current_project_path(cls) -> pathlib.Path | None:
@@ -279,9 +322,29 @@ class Project(GuardedBase):
         self._experiments = experiments
 
     @property
-    def rendering(self) -> Rendering:
-        """Rendering configuration bound to the project."""
-        return self._rendering
+    def rendering_plot(self) -> RenderingPlot:
+        """Chart configuration bound to the project."""
+        return self._rendering_plot
+
+    @property
+    def rendering_table(self) -> RenderingTable:
+        """Table configuration bound to the project."""
+        return self._rendering_table
+
+    @property
+    def rendering_structure(self) -> RenderingStructure:
+        """Structure-view configuration bound to the project."""
+        return self._rendering_structure
+
+    @property
+    def structure_view(self) -> StructureView:
+        """Structure-view content and region bound to the project."""
+        return self._structure_view
+
+    @property
+    def structure_style(self) -> StructureStyle:
+        """Structure-view appearance bound to the project."""
+        return self._structure_style
 
     @property
     def display(self) -> ProjectDisplay:
@@ -294,9 +357,9 @@ class Project(GuardedBase):
         return self._analysis
 
     @property
-    def summary(self) -> Summary:
-        """Summary report builder bound to the project."""
-        return self._summary
+    def report(self) -> Report:
+        """Submission report builder bound to the project."""
+        return self._report
 
     @property
     def parameters(self) -> list:
@@ -428,13 +491,14 @@ class Project(GuardedBase):
         return param_map
 
     def save(self) -> None:
-        """Save the project into the existing project directory."""
+        """
+        Save the project into the existing project directory.
+        """
         if self.info.path is None:
             log.error('Project path not specified. Use save_as() to define the path first.')
             return
 
-        console.paragraph(f"Saving project 📦 '{self.name}' to")
-        console.print(self.info.path.resolve())
+        console.paragraph(f"Saving project 📦 '{self.name}' to '{display_path(self.info.path)}'")
 
         # Apply constraints so dependent parameters are flagged
         # before serialization (user-constrained params are written
@@ -489,10 +553,14 @@ class Project(GuardedBase):
             branch = '└──' if index == len(analysis_file_names) - 1 else '├──'
             console.print(f'│   {branch} 📄 {file_name}')
 
-        # Save summary
-        with (self.info.path / 'summary.cif').open('w') as f:
-            f.write(self.summary.as_cif())
-            console.print('└── 📄 summary.cif')
+        report_paths = self.report._save_configured()
+        if report_paths:
+            reports_dir = self.info.path / 'reports'
+            console.print('└── 📁 reports/')
+            for index, report_path in enumerate(report_paths):
+                branch = '└──' if index == len(report_paths) - 1 else '├──'
+                relative_path = report_path.relative_to(reports_dir)
+                console.print(f'    {branch} 📄 {relative_path}')
 
         self.info.update_last_modified()
         self._saved = True

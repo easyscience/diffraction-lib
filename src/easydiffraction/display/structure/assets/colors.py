@@ -1,0 +1,82 @@
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
+# SPDX-License-Identifier: BSD-3-Clause
+"""
+Per-element colours, axis colours, and theme-dependent contrast colours.
+"""
+
+from __future__ import annotations
+
+from easydiffraction.display.structure.assets.elements import ELEMENT_COLORS
+from easydiffraction.display.theme import DARK_BACKGROUND_COLOR
+from easydiffraction.display.theme import DARK_FOREGROUND_COLOR
+from easydiffraction.display.theme import LIGHT_BACKGROUND_COLOR
+from easydiffraction.display.theme import LIGHT_FOREGROUND_COLOR
+from easydiffraction.display.theme import hex_to_rgb
+
+Rgb = tuple[int, int, int]
+
+# Fallback element colour (pale pink) for an unknown element.
+DEFAULT_COLOR: Rgb = (255, 192, 203)
+
+# Crystallographic axis colours (a=red, b=green, c=blue), as in VESTA.
+AXIS_COLORS: dict[str, Rgb] = {'a': (220, 40, 40), 'b': (40, 180, 40), 'c': (40, 80, 220)}
+
+# Neutral wedge colour for the vacant fraction of a mixed site.
+VACANCY_COLOR: Rgb = (210, 210, 210)
+
+# Light/dark annotation contrast colours, derived from the shared
+# display theme (``display/theme.py``) so plots and the structure
+# view share one background/foreground source of truth.
+LIGHT_THEME: dict[str, Rgb] = {
+    'background': hex_to_rgb(LIGHT_BACKGROUND_COLOR),
+    'foreground': hex_to_rgb(LIGHT_FOREGROUND_COLOR),
+}
+DARK_THEME: dict[str, Rgb] = {
+    'background': hex_to_rgb(DARK_BACKGROUND_COLOR),
+    'foreground': hex_to_rgb(DARK_FOREGROUND_COLOR),
+}
+
+
+def color_for(element: str, scheme: str) -> Rgb:
+    """
+    Return the RGB colour for an element under a colour scheme.
+
+    Falls back to the element's Jmol colour when the scheme has no
+    entry, and to :data:`DEFAULT_COLOR` when the element is unknown.
+
+    Parameters
+    ----------
+    element : str
+        Bare element symbol, e.g. ``'Fe'``.
+    scheme : str
+        One of ``'jmol'``, ``'vesta'``.
+
+    Returns
+    -------
+    Rgb
+        RGB triple in the 0-255 range.
+    """
+    entry = ELEMENT_COLORS.get(element)
+    if entry is None:
+        return DEFAULT_COLOR
+    value = entry.get(scheme)
+    if value is not None:
+        return value
+    return entry.get('jmol') or DEFAULT_COLOR
+
+
+def theme_colors(*, dark: bool) -> dict[str, Rgb]:
+    """
+    Return annotation contrast colours for the detected theme.
+
+    Parameters
+    ----------
+    dark : bool
+        ``True`` for a dark host theme, ``False`` for light.
+
+    Returns
+    -------
+    dict[str, Rgb]
+        Mapping with ``'background'`` and ``'foreground'`` colours.
+    """
+    return DARK_THEME if dark else LIGHT_THEME

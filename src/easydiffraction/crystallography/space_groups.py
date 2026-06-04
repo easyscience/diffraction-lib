@@ -3,96 +3,34 @@
 """
 Space group reference data.
 
-Loads a gzipped, packaged pickle with crystallographic space-group
+Loads gzipped, packaged JSON with crystallographic space-group
 information. The file is part of the distribution; user input is not
 involved.
 """
 
-import builtins
+from __future__ import annotations
+
 import gzip
-import io
-import pickle  # noqa: S403
+import json
 from pathlib import Path
-from typing import override
+from typing import Any
 
-_SAFE_BUILTINS = frozenset({
-    'dict',
-    'frozenset',
-    'list',
-    'set',
-    'tuple',
-})
+_SpaceGroupKey = tuple[int, str | None]
+_SpaceGroupRecord = dict[str, Any]
 
 
-class _RestrictedUnpickler(pickle.Unpickler):  # noqa: S301
-    """
-    Unpickler that only allows safe built-in types.
-
-    Rejects any ``GLOBAL`` opcode that references modules or classes
-    outside of ``builtins``, limiting deserialisation to plain Python
-    data structures (dicts, lists, tuples, sets, frozensets) plus
-    primitive scalars (str, int, float, bool, None) which the pickle
-    protocol handles without ``GLOBAL``.
-    """
-
-    @override
-    def find_class(
-        self,
-        module: str,
-        name: str,
-    ) -> type:
-        """
-        Allow only safe built-in types.
-
-        Parameters
-        ----------
-        module : str
-            The module name from the pickle stream.
-        name : str
-            The class/function name from the pickle stream.
-
-        Returns
-        -------
-        type
-            The resolved built-in type.
-
-        Raises
-        ------
-        pickle.UnpicklingError
-            If the requested type is not in the safe set.
-        """
-        if module == 'builtins' and name in _SAFE_BUILTINS:
-            return getattr(builtins, name)
-        msg = f'Restricted unpickler refused {module}.{name}'
-        raise pickle.UnpicklingError(msg)
-
-
-def _restricted_pickle_load(file_obj: io.BufferedIOBase) -> object:
-    """
-    Load pickle data using a restricted unpickler.
-
-    Only safe built-in types (dict, list, tuple, set, frozenset, and
-    primitive scalars) are permitted. The archive lives in the package;
-    no user-controlled input enters this function.
-
-    Parameters
-    ----------
-    file_obj : io.BufferedIOBase
-        Binary file object to read pickle data from.
-
-    Returns
-    -------
-    object
-        The deserialised Python data structure.
-    """
-    return _RestrictedUnpickler(file_obj).load()
-
-
-def _load() -> object:
+def _load() -> dict[_SpaceGroupKey, _SpaceGroupRecord]:
     """Load space-group data from the packaged archive."""
-    path = Path(__file__).with_name('space_groups.pkl.gz')
-    with gzip.open(path, 'rb') as f:
-        return _restricted_pickle_load(f)
+    path = Path(__file__).with_name('space_groups.json.gz')
+    with gzip.open(path, 'rt', encoding='utf-8') as file_handle:
+        records = json.load(file_handle)
+    return {
+        (
+            record['IT_number'],
+            record['IT_coordinate_system_code'],
+        ): record
+        for record in records
+    }
 
 
-SPACE_GROUPS = _load()
+SPACE_GROUPS: dict[_SpaceGroupKey, _SpaceGroupRecord] = _load()

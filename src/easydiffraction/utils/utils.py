@@ -16,24 +16,123 @@ import numpy as np
 import pandas as pd
 import pooch
 from packaging.version import Version
+from rich.markup import escape
 from uncertainties import UFloat
 from uncertainties import ufloat
 from uncertainties import ufloat_fromstr
 
 from easydiffraction.display.tables import TableRenderer
 from easydiffraction.io.ascii import extract_project_from_zip
+from easydiffraction.utils.environment import in_jupyter
 from easydiffraction.utils.environment import resolve_artifact_path
+from easydiffraction.utils.logging import CONSOLE_PARAGRAPH_STYLE
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 
 pooch.get_logger().setLevel('WARNING')  # Suppress pooch info messages
 
+
+def display_path(path: pathlib.Path | str) -> str:
+    """
+    Format a filesystem path for user-facing display.
+
+    Returns the path relative to the current working directory so
+    messages stay compact and avoid forced line breaks. Paths outside
+    the cwd subtree use ``..`` segments to walk up to a common ancestor
+    (e.g. ``../sibling/data.cif``) rather than falling back to an
+    absolute path. The absolute path is only used when no relative form
+    is possible — on Windows that happens when the path is on a
+    different drive from the cwd.
+
+    Parameters
+    ----------
+    path : pathlib.Path | str
+        Filesystem path to format.
+
+    Returns
+    -------
+    str
+        Display string suitable for inline use in console messages.
+    """
+    resolved = pathlib.Path(path).resolve()
+    cwd = pathlib.Path.cwd().resolve()
+    try:
+        return str(resolved.relative_to(cwd, walk_up=True))
+    except ValueError:
+        return str(resolved)
+
+
+def print_metrics_table(rows: list[list[str]]) -> None:
+    """
+    Render a two-column ``Metric | Value`` table.
+
+    Used for fit-results, settings, and similar summary blocks where
+    each row is one labelled scalar. Skips rendering entirely when
+    ``rows`` is empty.
+
+    Parameters
+    ----------
+    rows : list[list[str]]
+        Each inner list is ``[label, value_string]``.
+    """
+    if not rows:
+        return
+    render_table(
+        columns_headers=['Metric', 'Value'],
+        columns_alignment=['left', 'right'],
+        columns_data=rows,
+    )
+
+
+def print_table_footnote(entries: list[tuple[str, str]]) -> None:
+    """
+    Print a glossary block below a fit-results-style table.
+
+    Each entry renders as a left-aligned ``• header = description``
+    bullet line. The block uses :meth:`ConsolePrinter.small` so it shows
+    as dim, smaller supplementary text — in Jupyter the font size
+    matches the table-cell text.
+
+    Parameters
+    ----------
+    entries : list[tuple[str, str]]
+        Each tuple is ``(column header, one-line description)``.
+    """
+    if not entries:
+        return
+    width = max(len(name) for name, _ in entries) + 4
+    lines = [f'  • {name:<{width}} = {description}' for name, description in entries]
+    console.small(*lines)
+
+
+def format_bulleted_warning(header: str, items: list[str]) -> str:
+    """
+    Format a warning as a header followed by indented bullets.
+
+    Parameters
+    ----------
+    header : str
+        First warning line. Use a trailing colon when bullets follow.
+    items : list[str]
+        Bullet line bodies.
+
+    Returns
+    -------
+    str
+        Multiline warning text.
+    """
+    if not items:
+        return header
+    bullet_lines = [f'• {item}' for item in items]
+    return '\n'.join([header, *bullet_lines])
+
+
 _DATA_REPO = 'easyscience/diffraction'
 _DATA_ROOT = 'data'
 # commit SHA preferred
-_DATA_INDEX_REF = 'dbe92a87e0106c4742eee0ff9a8e32bdb8b483cb'
+_DATA_INDEX_REF = '83657ee120fc6a30fda231649692930eaa038758'
 # macOS: sha256sum index.json
-_DATA_INDEX_HASH = 'sha256:9e7bbaf2cb650f4126572e85157c63bc76f201408856fe4af566bee55dcdfbb4'
+_DATA_INDEX_HASH = 'sha256:e7685d7c81c3b3559a7f630178f4d1b7f441fb1ed14388c10ab9f6aeb93927a7'
 
 
 def _build_data_url(path: str) -> str:
@@ -241,8 +340,8 @@ def download_data(
         existing_project_dir = _existing_project_dir(extraction_dir)
         if existing_project_dir is not None:
             console.print(
-                f"✅ Data #{id} already extracted at '{existing_project_dir}'. "
-                'Keeping existing project.'
+                f"✅ Data #{id} already extracted at '{display_path(existing_project_dir)}'. "
+                'Keeping existing.'
             )
             return str(existing_project_dir)
 
@@ -250,14 +349,16 @@ def download_data(
         if is_project_archive and not overwrite:
             project_dir = extract_project_from_zip(file_path, destination=extraction_dir)
             file_path.unlink()
-            console.print(f"✅ Data #{id} extracted to '{project_dir}'")
+            console.print(f"✅ Data #{id} extracted to '{display_path(project_dir)}'")
             return str(project_dir)
         if not overwrite:
             console.print(
-                f"✅ Data #{id} already present at '{file_path}'. Keeping existing file."
+                f"✅ Data #{id} already present at '{display_path(file_path)}'. Keeping existing."
             )
             return str(file_path)
-        log.debug(f"Data #{id} already present at '{file_path}', but will be overwritten.")
+        log.debug(
+            f"Data #{id} already present at '{display_path(file_path)}', but will be overwritten."
+        )
         file_path.unlink()
 
     known_hash = _normalize_known_hash(record.get('hash'))
@@ -276,10 +377,10 @@ def download_data(
     if is_project_archive:
         project_dir = extract_project_from_zip(file_path, destination=extraction_dir)
         file_path.unlink()
-        console.print(f"✅ Data #{id} downloaded and extracted to\n'{project_dir}'")
+        console.print(f"✅ Data #{id} downloaded and extracted to '{display_path(project_dir)}'")
         return str(project_dir)
 
-    console.print(f"✅ Data #{id} downloaded to:\n'{file_path}'")
+    console.print(f"✅ Data #{id} downloaded to '{display_path(file_path)}'")
     return str(file_path)
 
 
@@ -460,8 +561,11 @@ def list_tutorials() -> None:
     """
     Display a table of available tutorial notebooks.
 
-    Shows tutorial ID, filename and title for all tutorials available
-    for the current version of easydiffraction.
+    In the terminal each row shows the tutorial ID, filename, and a
+    combined entry with the title on the first line and a dimmed
+    description on the second. In Jupyter the table shows the plain
+    title only, since the HTML backend cannot render the terminal
+    styling.
     """
     index = _fetch_tutorials_index()
     if not index:
@@ -471,20 +575,33 @@ def list_tutorials() -> None:
     version = _get_version_for_url()
     console.paragraph(f'Tutorials available for easydiffraction v{version}:')
 
-    columns_headers = ['id', 'file', 'title']
+    columns_headers = ['id', 'file', 'tutorial']
     columns_alignment = ['right', 'left', 'left']
     columns_data = []
 
+    use_markup = not in_jupyter()
     for tutorial_id in index:
         record = index[tutorial_id]
         filename = f'ed-{tutorial_id}.ipynb'
         title = record.get('title', '')
-        columns_data.append([tutorial_id, filename, title])
+        description = record.get('description', '')
+        if not use_markup:
+            # Jupyter uses the HTML table backend, which would show Rich
+            # markup as literal text; keep the plain title there.
+            details = title
+        else:
+            styled_title = f'[{CONSOLE_PARAGRAPH_STYLE}]{escape(title)}[/]'
+            if description:
+                details = f'{styled_title}\n[dim]{escape(description)}[/dim]'
+            else:
+                details = styled_title
+        columns_data.append([tutorial_id, filename, details])
 
     render_table(
         columns_headers=columns_headers,
         columns_data=columns_data,
         columns_alignment=columns_alignment,
+        width=shutil.get_terminal_size().columns,
     )
 
 
@@ -504,7 +621,9 @@ def download_tutorial(
     id : int | str
         Numeric tutorial id (e.g. 1).
     destination : str, default='tutorials'
-        Directory to save the file into (created if missing).
+        Directory to save the file into (created if missing). Relative
+        destinations are resolved against the configured artifact root
+        when ``EASYDIFFRACTION_ARTIFACT_ROOT`` is set.
     overwrite : bool, default=False
         Whether to overwrite the file if it already exists.
 
@@ -535,7 +654,7 @@ def download_tutorial(
 
     fname = f'ed-{id}.ipynb'
 
-    dest_path = pathlib.Path(destination)
+    dest_path = resolve_artifact_path(destination)
     dest_path.mkdir(parents=True, exist_ok=True)
     file_path = dest_path / fname
 
@@ -550,17 +669,21 @@ def download_tutorial(
     if file_path.exists():
         if not overwrite:
             console.print(
-                f"✅ Tutorial #{id} already present at '{file_path}'. Keeping existing file."
+                f"✅ Tutorial #{id} already present at '{display_path(file_path)}'. "
+                'Keeping existing.'
             )
             return str(file_path)
-        log.debug(f"Tutorial #{id} already present at '{file_path}', but will be overwritten.")
+        log.debug(
+            f"Tutorial #{id} already present at '{display_path(file_path)}', "
+            'but will be overwritten.'
+        )
         file_path.unlink()
 
     # Download the notebook
     with _safe_urlopen(url) as resp:
         file_path.write_bytes(resp.read())
 
-    console.print(f"✅ Tutorial #{id} downloaded to:\n'{file_path}'")
+    console.print(f"✅ Tutorial #{id} downloaded to '{display_path(file_path)}'")
     return str(file_path)
 
 
@@ -577,7 +700,9 @@ def download_all_tutorials(
     Parameters
     ----------
     destination : str, default='tutorials'
-        Directory to save the files into (created if missing).
+        Directory to save the files into (created if missing). Relative
+        destinations are resolved against the configured artifact root
+        when ``EASYDIFFRACTION_ARTIFACT_ROOT`` is set.
     overwrite : bool, default=False
         Whether to overwrite files if they already exist.
 
@@ -606,7 +731,11 @@ def download_all_tutorials(
         except (OSError, ValueError) as e:
             log.warning(f'Failed to download tutorial #{tutorial_id}: {e}')
 
-    console.print(f'✅ Downloaded {len(downloaded_paths)} tutorials to "{destination}/"')
+    resolved_destination = resolve_artifact_path(destination)
+    console.print(
+        f'✅ Downloaded {len(downloaded_paths)} tutorials to '
+        f"'{display_path(resolved_destination)}'"
+    )
     return downloaded_paths
 
 
@@ -623,6 +752,7 @@ def render_table(
     columns_alignment: object,
     columns_headers: object = None,
     display_handle: object = None,
+    width: int | None = None,
 ) -> None:
     """
     Render tabular data to the active display backend.
@@ -639,6 +769,9 @@ def render_table(
     display_handle : object, default=None
         Optional display handle for in-place updates (e.g. in Jupyter or
         a terminal Live context).
+    width : int | None, default=None
+        Optional target table width. Honored by fixed-width backends
+        (Rich); ignored by reflowing ones (HTML).
     """
     headers = [
         (col, align) for col, align in zip(columns_headers, columns_alignment, strict=False)
@@ -646,7 +779,7 @@ def render_table(
     df = pd.DataFrame(columns_data, columns=pd.MultiIndex.from_tuples(headers))
 
     tabler = TableRenderer.get()
-    tabler.render(df, display_handle=display_handle)
+    tabler.render(df, display_handle=display_handle, width=width)
 
 
 def build_table_renderable(
@@ -700,11 +833,11 @@ def _help_property_rows(cls: type) -> list[list[str]]:
                 seen[key] = attr
 
     rows = []
-    for i, key in enumerate(sorted(seen), 1):
+    for key in sorted(seen):
         prop = seen[key]
-        writable = '✓' if prop.fset else '✗'
+        writable = '✓' if prop.fset else ''
         doc = _help_first_sentence(prop.fget.__doc__ if prop.fget else None)
-        rows.append([str(i), key, writable, doc])
+        rows.append([key, writable, doc])
     return rows
 
 
@@ -726,13 +859,13 @@ def _help_method_rows(cls: type) -> list[list[str]]:
                 methods.append((key, raw))
 
     rows = []
-    for i, (key, method) in enumerate(sorted(methods), 1):
+    for key, method in sorted(methods):
         doc = _help_first_sentence(getattr(method, '__doc__', None))
-        rows.append([str(i), f'{key}()', doc])
+        rows.append([f'{key}()', doc])
     return rows
 
 
-def render_object_help(obj: object, title: str | None = None) -> None:
+def render_object_help(obj: object) -> None:
     """
     Print public properties and methods for a plain helper object.
 
@@ -740,19 +873,15 @@ def render_object_help(obj: object, title: str | None = None) -> None:
     ----------
     obj : object
         Object whose public API should be summarized.
-    title : str | None, default=None
-        Optional display name. Uses the class name when omitted.
     """
     cls = type(obj)
-    display_title = title or cls.__name__
-    console.paragraph(f"Help for '{display_title}'")
 
     prop_rows = _help_property_rows(cls)
     if prop_rows:
         console.paragraph('Properties')
         render_table(
-            columns_headers=['#', 'Name', 'Writable', 'Description'],
-            columns_alignment=['right', 'left', 'center', 'left'],
+            columns_headers=['Name', 'Writable', 'Description'],
+            columns_alignment=['left', 'center', 'left'],
             columns_data=prop_rows,
         )
 
@@ -760,8 +889,8 @@ def render_object_help(obj: object, title: str | None = None) -> None:
     if method_rows:
         console.paragraph('Methods')
         render_table(
-            columns_headers=['#', 'Name', 'Description'],
-            columns_alignment=['right', 'left', 'left'],
+            columns_headers=['Name', 'Description'],
+            columns_alignment=['left', 'left'],
             columns_data=method_rows,
         )
 
@@ -934,13 +1063,13 @@ def str_to_ufloat(s: str | None, default: float | None = None) -> UFloat:
     Parse a CIF-style numeric string into a ufloat.
 
     Examples of supported input: - "3.566" → ufloat(3.566, nan) -
-    "3.566(2)" → ufloat(3.566, 0.002) - "3.566()" → ufloat(3.566, 0.0) -
+    "3.566(2)" → ufloat(3.566, 0.002) - "3.566()" → ufloat(3.566, nan) -
     None → ufloat(default, nan)
 
     Behavior: - If the input string contains a value with parentheses
     (e.g. "3.566(2)"), the number in parentheses is interpreted as an
     estimated standard deviation (esd) in the last digit(s). - Empty
-    parentheses (e.g. "3.566()") are treated as zero uncertainty. - If
+    parentheses (e.g. "3.566()") are treated as "no esd provided". - If
     the input string has no parentheses, an uncertainty of NaN is
     assigned to indicate "no esd provided". - If parsing fails, the
     function falls back to the given ``default`` value with uncertainty
@@ -967,8 +1096,8 @@ def str_to_ufloat(s: str | None, default: float | None = None) -> UFloat:
     if '(' not in s and ')' not in s:
         s = f'{s}(nan)'
     elif s.endswith('()'):
-        # Empty brackets → zero uncertainty (free parameter, no esd yet)
-        s = s[:-2] + '(0)'
+        # Empty brackets mark refinement intent, not a zero esd.
+        s = s[:-2] + '(nan)'
     try:
         return ufloat_fromstr(s)
     except ValueError:
