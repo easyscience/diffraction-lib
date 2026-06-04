@@ -293,6 +293,9 @@ class LineSegmentBackground(BackgroundBase):
         resolved = _resolve_method(method)
         data = self._parent.data
         x = np.asarray(data.x, dtype=float)
+        if x.size == 0:
+            log.warning('No active data points; cannot estimate a background.')
+            return
         intensity_meas = np.asarray(data.intensity_meas, dtype=float)
         intensity_calc = np.asarray(data.intensity_calc, dtype=float)
 
