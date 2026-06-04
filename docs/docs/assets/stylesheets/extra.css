@@ -202,7 +202,7 @@ label.md-nav__title[for="__drawer"] {
 
 /* Change the overall width of the page */
 .md-grid {
-  max-width: 116em;
+  max-width: 118em;
 }
 
 /* Keep prose line length stable when sidebars are hidden at narrower widths */
