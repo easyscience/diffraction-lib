@@ -329,8 +329,9 @@ class GenericNumericDescriptor(GenericDescriptorBase):
         """Return the string representation including units."""
         s: str = super().__str__()
         s = s[1:-1]  # strip <>
-        if self.units != 'none':
-            s += f' {self.units}'
+        units = self.resolve_display_units('gui')
+        if units:
+            s += f' {units}'
         return f'<{s}>'
 
     @property
@@ -412,8 +413,9 @@ class GenericParameter(GenericNumericDescriptor):
         s = s[1:-1]  # strip <>
         if self.uncertainty is not None:
             s += f' ± {self.uncertainty}'
-        if self.units != 'none':
-            s += f' {self.units}'
+        units = self.resolve_display_units('gui')
+        if units:
+            s += f' {units}'
         s += f' (free={self.free})'
         return f'<{s}>'
 
