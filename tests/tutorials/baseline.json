@@ -114,12 +114,12 @@
   "ed_20_beer_mcstas": {
     "result_kind": "deterministic",
     "rtol": 0.02,
-    "reduced_chi_square": 13.661849,
-    "R_factor_all": 0.049609,
-    "wR_factor_all": 0.071233,
+    "reduced_chi_square": 12.756675,
+    "R_factor_all": 0.049714,
+    "wR_factor_all": 0.068833,
     "parameters": {
-      "expt_s2.linked_phases.ferrite.scale": 50.36,
-      "expt_s2.linked_phases.austenite.scale": 11.985
+      "expt_s2.linked_phases.ferrite.scale": 50.33,
+      "expt_s2.linked_phases.austenite.scale": 12.005
     }
   },
   "ed_21_lbco_hrpt_bumps_dream": {
@@ -183,12 +183,12 @@
   "ed_2_lbco_hrpt": {
     "result_kind": "deterministic",
     "rtol": 0.02,
-    "reduced_chi_square": 1.285348,
-    "R_factor_all": 0.056189,
-    "wR_factor_all": 0.07197,
+    "reduced_chi_square": 1.265395,
+    "R_factor_all": 0.055898,
+    "wR_factor_all": 0.071409,
     "parameters": {
-      "lbco.cell.length_a": 3.890792,
-      "hrpt.linked_phases.lbco.scale": 9.144
+      "lbco.cell.length_a": 3.890758,
+      "hrpt.linked_phases.lbco.scale": 9.145
     }
   },
   "ed_3_lbco_hrpt": {
@@ -218,13 +218,13 @@
   "ed_6_hs_hrpt": {
     "result_kind": "deterministic",
     "rtol": 0.02,
-    "reduced_chi_square": 1.970653,
-    "R_factor_all": 0.0403,
-    "wR_factor_all": 0.050734,
+    "reduced_chi_square": 1.929924,
+    "R_factor_all": 0.03972,
+    "wR_factor_all": 0.050183,
     "parameters": {
-      "hs.cell.length_a": 6.86431,
-      "hs.cell.length_c": 14.1424,
-      "hrpt.linked_phases.hs.scale": 0.5138
+      "hs.cell.length_a": 6.864,
+      "hs.cell.length_c": 14.1418,
+      "hrpt.linked_phases.hs.scale": 0.5132
     }
   },
   "ed_7_si_sepd": {
