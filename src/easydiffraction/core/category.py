@@ -269,3 +269,13 @@ class CategoryCollection(CollectionBase):
             setattr(child_obj, attr, val)
 
         self.add(child_obj)
+
+    def clear(self) -> None:
+        """
+        Remove every item, then mark the parent datablock dirty.
+
+        Layers dirty-marking on :meth:`CollectionBase.clear`, mirroring
+        how :meth:`add` layers it on the base insert.
+        """
+        super().clear()
+        self._mark_parent_dirty()

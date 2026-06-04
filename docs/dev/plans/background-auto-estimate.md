@@ -246,7 +246,7 @@ step's `Commit:` message **before** moving to the next step or the Phase
         baseline (`m ≈ 1`).
       Commit: `Add background curve estimator helper`
 
-- [ ] **P1.4 — Add `CollectionBase.clear()`.** Add a bulk reset to
+- [x] **P1.4 — Add `CollectionBase.clear()`.** Add a bulk reset to
       `CollectionBase` (`core/collection.py`). It must **not** be a bare
       `self._items = []`: that would strand the name `_index` and leave
       removed children with a stale `_parent`. Implement it by
