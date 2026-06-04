@@ -3467,6 +3467,29 @@ aspects of the experiment:</p>
 <span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="p">[</span><span class="s1">&#39;hrpt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">background</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">110</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">170</span><span class="p">)</span>
 <span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="p">[</span><span class="s1">&#39;hrpt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">background</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">165</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">170</span><span class="p">)</span>
 </code></pre></div>
+<p>Instead of placing every point by hand, you can let EasyDiffraction
+detect a sensible set of background points directly from the measured
+pattern with the <code>auto_estimate</code> method. Called with no arguments, it
+builds a peak-insensitive background curve, places points between the
+peaks, and reads their heights from that curve so they do not eat into
+peak intensities:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="c1"># Automatically estimate background points from the measured pattern</span>
+<span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="p">[</span><span class="s1">&#39;hrpt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">background</span><span class="o">.</span><span class="n">auto_estimate</span><span class="p">()</span>
+</code></pre></div>
+<p>The generated points are ordinary, editable control points. They are
+created <strong>fixed</strong> (not refined); you can review them, keep them, or free
+any of them for refinement (see <a href="../analysis/">Analysis</a>). Each call
+<strong>overwrites</strong> the existing points (when there are active data to
+estimate from), so you always start from a clean, reproducible
+background; if no active data remain — for example every point is
+excluded, or data are not yet loaded — it warns and leaves your existing
+points unchanged. It works for both constant-wavelength and
+time-of-flight data, neutron and X-ray.</p>
+<p>You can also guide the estimate with optional arguments, for example to
+cap the number of points or choose a specific method:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="c1"># Estimate with at most 10 background points</span>
+<span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="p">[</span><span class="s1">&#39;hrpt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">background</span><span class="o">.</span><span class="n">auto_estimate</span><span class="p">(</span><span class="n">n_points</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</code></pre></div>
 <h3 id="linked-phases-category">5. Linked Phases Category</h3>
 <div class="language-python highlight"><pre><span></span><code><span class="c1"># Link the structure defined in the previous step to the experiment</span>
 <span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="p">[</span><span class="s1">&#39;hrpt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">linked_phases</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;lbco&#39;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span>

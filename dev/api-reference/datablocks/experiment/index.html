@@ -3227,7 +3227,18 @@
             <td><code><a class="autorefs autorefs-internal" title="&lt;code&gt;enums&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.background.enums&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.background.enums">enums</a></code></td>
             <td>
               <div class="doc-md-description">
-                <p>Enumerations for background model types.</p>
+                <p>Enumerations for background model types and estimation methods.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code&gt;estimate&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.background.estimate&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.background.estimate">estimate</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Automatic background-curve estimation for powder patterns.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -3534,6 +3545,17 @@ compute background intensities on the experiment grid.</p>
               <td>
                 <div class="doc-md-description">
                   <p>Remove an item by its key.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;clear&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.background.base.BackgroundBase.clear&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.background.base.BackgroundBase.clear">clear</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Remove every item, then mark the parent datablock dirty.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -4311,6 +4333,29 @@ compute background intensities on the experiment grid.</p>
           </tr>
       </tbody>
     </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.background.base.BackgroundBase.clear" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">clear</span><span class="p">()</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Remove every item, then mark the parent datablock dirty.</p>
+<p>Layers dirty-marking on :meth:<code>CollectionBase.clear</code>, mirroring
+how :meth:<code>add</code> layers it on the base insert.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
 
 
     </div>
@@ -5349,6 +5394,17 @@ object. Assigning to it updates the parameter value.</p>
               </td>
             </tr>
             <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;clear&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.background.chebyshev.ChebyshevPolynomialBackground.clear&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.background.chebyshev.ChebyshevPolynomialBackground.clear">clear</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Remove every item, then mark the parent datablock dirty.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
               <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.background.chebyshev.ChebyshevPolynomialBackground.keys&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.background.chebyshev.ChebyshevPolynomialBackground.keys">keys</a></code></td>
               <td>
                 <div class="doc-md-description">
@@ -6124,6 +6180,29 @@ object. Assigning to it updates the parameter value.</p>
 <div class="doc doc-object doc-function">
 
 
+<h11 id="easydiffraction.datablocks.experiment.categories.background.chebyshev.ChebyshevPolynomialBackground.clear" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">clear</span><span class="p">()</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Remove every item, then mark the parent datablock dirty.</p>
+<p>Layers dirty-marking on :meth:<code>CollectionBase.clear</code>, mirroring
+how :meth:<code>add</code> layers it on the base insert.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
 <h11 id="easydiffraction.datablocks.experiment.categories.background.chebyshev.ChebyshevPolynomialBackground.keys" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">keys</span><span class="p">()</span></code>
 
@@ -6346,7 +6425,7 @@ then each keyword argument is applied via <code>setattr</code>.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Enumerations for background model types.</p>
+        <p>Enumerations for background model types and estimation methods.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -6374,6 +6453,17 @@ then each keyword argument is applied via <code>setattr</code>.</p>
             <td>
               <div class="doc-md-description">
                 <p>Supported background model types.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code&gt;BackgroundEstimatorMethodEnum&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.background.enums.BackgroundEstimatorMethodEnum&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.background.enums.BackgroundEstimatorMethodEnum">BackgroundEstimatorMethodEnum</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Supported automatic background-estimation methods.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -6538,6 +6628,639 @@ then each keyword argument is applied via <code>setattr</code>.</p>
 
 </div>
 
+<div class="doc doc-object doc-class">
+
+
+
+<h9 id="easydiffraction.datablocks.experiment.categories.background.enums.BackgroundEstimatorMethodEnum" class="doc doc-heading">
+            <code>BackgroundEstimatorMethodEnum</code>
+
+
+</h9>
+
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>Supported automatic background-estimation methods.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Methods:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;default&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-classmethod&quot;&gt;&lt;code&gt;classmethod&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.background.enums.BackgroundEstimatorMethodEnum.default&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.background.enums.BackgroundEstimatorMethodEnum.default">default</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Return the default estimation method.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;description&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.background.enums.BackgroundEstimatorMethodEnum.description&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.background.enums.BackgroundEstimatorMethodEnum.description">description</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Human-friendly description for the enum value.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+<h10 id="easydiffraction.datablocks.experiment.categories.background.enums.BackgroundEstimatorMethodEnum-functions">Functions</h10>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.background.enums.BackgroundEstimatorMethodEnum.default" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">default</span><span class="p">()</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return the default estimation method.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.background.enums.BackgroundEstimatorMethodEnum.description" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">description</span><span class="p">()</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Human-friendly description for the enum value.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+<h7 id="easydiffraction.datablocks.experiment.categories.background.estimate" class="doc doc-heading">
+            <code>estimate</code>
+
+
+</h7>
+
+    <div class="doc doc-contents ">
+
+        <p>Automatic background-curve estimation for powder patterns.</p>
+<p>Pure, array-in / array-out helpers with no experiment-model state. The
+estimator runs in two stages (see the <code>background-auto-estimate</code> ADR):</p>
+<ul>
+<li>Stage 1 builds a peak-insensitive background curve <code>B(x)</code> over the
+  whole grid using :mod:<code>pybaselines</code>.</li>
+<li>Stage 2 thins <code>B(x)</code> to a sparse set of <code>(x, intensity)</code> anchors
+  with a vertical Ramer-Douglas-Peucker simplification, keeping the
+  endpoints and never placing a non-endpoint anchor on a peak.</li>
+</ul>
+<p>All per-dataset parameters (peak width, noise, smoothing penalty) are
+derived from the data so a bare call needs no tuning. The numeric
+constants below are first cuts; they are calibrated against the tutorial
+corpus in Phase 2.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Classes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;BackgroundEstimate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;curve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;anchors&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;method&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;width&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;noise&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tolerance&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;backend_params&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.background.estimate.BackgroundEstimate&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.background.estimate.BackgroundEstimate">BackgroundEstimate</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Result of a background-curve estimation.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+<p><span class="doc-section-title">Functions:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;estimate_background_curve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;method&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;arpls&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;peaks&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;width&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;smoothness&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n_points&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.background.estimate.estimate_background_curve&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.background.estimate.estimate_background_curve">estimate_background_curve</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Estimate background control points from a measured pattern.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+<h8 id="easydiffraction.datablocks.experiment.categories.background.estimate-classes">Classes</h8>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h9 id="easydiffraction.datablocks.experiment.categories.background.estimate.BackgroundEstimate" class="doc doc-heading">
+              <code class="highlight language-python"><span class="n">BackgroundEstimate</span><span class="p">(</span><span class="n">curve</span><span class="p">,</span> <span class="n">anchors</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">noise</span><span class="p">,</span> <span class="n">tolerance</span><span class="p">,</span> <span class="n">backend_params</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h9>
+
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>Result of a background-curve estimation.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="easydiffraction.datablocks.experiment.categories.background.estimate.BackgroundEstimate.curve">curve</span></code></td>
+            <td>
+                  <code><span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Dense peak-insensitive background <code>B(x)</code> over the input grid.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="easydiffraction.datablocks.experiment.categories.background.estimate.BackgroundEstimate.anchors">anchors</span></code></td>
+            <td>
+                  <code><span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Thinned control points with shape <code>(n_anchors, 2)</code> whose rows
+are <code>(x, intensity)</code>; heights are read from <code>curve</code>.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="easydiffraction.datablocks.experiment.categories.background.estimate.BackgroundEstimate.method">method</span></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Resolved Stage-1 method actually run (<code>snip</code>/<code>arpls</code>/
+<code>fabc</code>).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="easydiffraction.datablocks.experiment.categories.background.estimate.BackgroundEstimate.width">width</span></code></td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Effective peak width <code>W</code> in points (supplied, derived, or the
+degenerate-input fallback).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="easydiffraction.datablocks.experiment.categories.background.estimate.BackgroundEstimate.noise">noise</span></code></td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Robust noise estimate <code>sigma</code> from the second difference.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="easydiffraction.datablocks.experiment.categories.background.estimate.BackgroundEstimate.tolerance">tolerance</span></code></td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Stage-2 RDP tolerance actually used (<code>c * sigma</code>).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="easydiffraction.datablocks.experiment.categories.background.estimate.BackgroundEstimate.backend_params">backend_params</span></code></td>
+            <td>
+                  <code><span title="dict">dict</span>[<span title="str">str</span>, <span title="float">float</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Parameters handed to the :mod:<code>pybaselines</code> routine.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+<h8 id="easydiffraction.datablocks.experiment.categories.background.estimate-functions">Functions</h8>
+
+<div class="doc doc-object doc-function">
+
+
+<h9 id="easydiffraction.datablocks.experiment.categories.background.estimate.estimate_background_curve" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">estimate_background_curve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;arpls&#39;</span><span class="p">,</span> <span class="n">peaks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">smoothness</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_points</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+</h9>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Estimate background control points from a measured pattern.</p>
+<p>Stage 1 builds a peak-insensitive curve <code>B(x)</code> with the resolved
+<code>method</code>; Stage 2 thins it to sparse anchors. Every per-dataset
+parameter defaults to a data-derived value, so a bare call works.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>x</code>
+            </td>
+            <td>
+                  <code><span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Grid coordinates (e.g. 2theta or time-of-flight), monotonic.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>y</code>
+            </td>
+            <td>
+                  <code><span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Intensities to baseline: the measured pattern (data-only) or the
+peak-subtracted measured pattern (model-guided).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>method</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Resolved Stage-1 routine: <code>arpls</code> (default), <code>snip</code> or
+<code>fabc</code>. <code>auto</code> is resolved by the caller, never here.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                  <code>&#39;arpls&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>peaks</code>
+            </td>
+            <td>
+                  <code><span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Boolean mask aligned with <code>x</code>; <code>True</code> forbids a non-endpoint
+anchor. When <code>None</code> the mask is derived from <code>y</code> itself.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>width</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Peak width in points; derived from <code>y</code> when <code>None</code>.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>smoothness</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whittaker penalty override for <code>arpls</code>/<code>fabc</code>; ignored by
+<code>snip</code>.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>n_points</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Maximum number of anchors (endpoints included); uncapped when
+<code>None</code>.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;BackgroundEstimate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;curve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;anchors&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;method&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;width&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;noise&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tolerance&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;backend_params&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.background.estimate.BackgroundEstimate&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.background.estimate.BackgroundEstimate">BackgroundEstimate</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The curve, anchors, and metadata describing the run.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
 
 
 
@@ -8167,6 +8890,17 @@ object. Assigning to it updates the parameter value.</p>
       </thead>
       <tbody>
             <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;auto_estimate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;method&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;auto&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;width&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;smoothness&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n_points&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;use_model&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;True&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.background.line_segment.LineSegmentBackground.auto_estimate&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.background.line_segment.LineSegmentBackground.auto_estimate">auto_estimate</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Detect background control points from the measured pattern.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
               <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;show&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.background.line_segment.LineSegmentBackground.show&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.background.line_segment.LineSegmentBackground.show">show</a></code></td>
               <td>
                 <div class="doc-md-description">
@@ -8314,6 +9048,17 @@ object. Assigning to it updates the parameter value.</p>
               <td>
                 <div class="doc-md-description">
                   <p>Remove an item by its key.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;clear&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.background.line_segment.LineSegmentBackground.clear&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.background.line_segment.LineSegmentBackground.clear">clear</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Remove every item, then mark the parent datablock dirty.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -8678,6 +9423,145 @@ object. Assigning to it updates the parameter value.</p>
 
 
 <h10 id="easydiffraction.datablocks.experiment.categories.background.line_segment.LineSegmentBackground-functions">Functions</h10>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.background.line_segment.LineSegmentBackground.auto_estimate" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">auto_estimate</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">smoothness</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_points</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">use_model</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Detect background control points from the measured pattern.</p>
+<p>Builds a peak-insensitive background curve and thins it to a
+sparse set of fixed line-segment points, overwriting any
+existing ones. Heights come from the de-peaked curve, clipped to
+the measured intensities so they never eat into peaks. After at
+least one calculation, <code>use_model</code> lets the fitted model place
+better points across overlapped regions.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>method</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Estimation method: <code>auto</code> (default, resolves to
+<code>arpls</code>), <code>snip</code>, <code>arpls</code> or <code>fabc</code>.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                  <code>&#39;auto&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>width</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Peak width in points; measured from the data when <code>None</code>.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>smoothness</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Backend smoothing override; derived when <code>None</code>.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>n_points</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Maximum number of points; uncapped when <code>None</code>.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>use_model</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>When a calculation has run, subtract the fitted peaks before
+estimating so anchors land in true inter-peak gaps.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
 
 <div class="doc doc-object doc-function">
 
@@ -9096,6 +9980,29 @@ object. Assigning to it updates the parameter value.</p>
 <div class="doc doc-object doc-function">
 
 
+<h11 id="easydiffraction.datablocks.experiment.categories.background.line_segment.LineSegmentBackground.clear" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">clear</span><span class="p">()</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Remove every item, then mark the parent datablock dirty.</p>
+<p>Layers dirty-marking on :meth:<code>CollectionBase.clear</code>, mirroring
+how :meth:<code>add</code> layers it on the base insert.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
 <h11 id="easydiffraction.datablocks.experiment.categories.background.line_segment.LineSegmentBackground.keys" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">keys</span><span class="p">()</span></code>
 
@@ -9297,7 +10204,7 @@ then each keyword argument is applied via <code>setattr</code>.</p>
 
 </div>
 <h8 id="easydiffraction.datablocks.experiment.categories.background.line_segment-functions">Functions</h8>
-
+<h8 id="easydiffraction.datablocks.experiment.categories.background.line_segment-modules">Modules</h8>
 
 
   </div>
@@ -13481,6 +14388,17 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
               </td>
             </tr>
             <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;clear&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.data.bragg_pd.PdDataBase.clear&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.data.bragg_pd.PdDataBase.clear">clear</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Remove every item, then mark the parent datablock dirty.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
               <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.data.bragg_pd.PdDataBase.keys&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.data.bragg_pd.PdDataBase.keys">keys</a></code></td>
               <td>
                 <div class="doc-md-description">
@@ -14450,6 +15368,29 @@ fitting failures.</p>
 <div class="doc doc-object doc-function">
 
 
+<h11 id="easydiffraction.datablocks.experiment.categories.data.bragg_pd.PdDataBase.clear" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">clear</span><span class="p">()</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Remove every item, then mark the parent datablock dirty.</p>
+<p>Layers dirty-marking on :meth:<code>CollectionBase.clear</code>, mirroring
+how :meth:<code>add</code> layers it on the base insert.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
 <h11 id="easydiffraction.datablocks.experiment.categories.data.bragg_pd.PdDataBase.keys" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">keys</span><span class="p">()</span></code>
 
@@ -14816,6 +15757,17 @@ then each keyword argument is applied via <code>setattr</code>.</p>
               <td>
                 <div class="doc-md-description">
                   <p>Remove an item by its key.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;clear&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.data.bragg_pd.PdCwlData.clear&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.data.bragg_pd.PdCwlData.clear">clear</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Remove every item, then mark the parent datablock dirty.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -15954,6 +16906,29 @@ fitting failures.</p>
 <div class="doc doc-object doc-function">
 
 
+<h11 id="easydiffraction.datablocks.experiment.categories.data.bragg_pd.PdCwlData.clear" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">clear</span><span class="p">()</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Remove every item, then mark the parent datablock dirty.</p>
+<p>Layers dirty-marking on :meth:<code>CollectionBase.clear</code>, mirroring
+how :meth:<code>add</code> layers it on the base insert.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
 <h11 id="easydiffraction.datablocks.experiment.categories.data.bragg_pd.PdCwlData.keys" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">keys</span><span class="p">()</span></code>
 
@@ -16341,6 +17316,17 @@ then each keyword argument is applied via <code>setattr</code>.</p>
               <td>
                 <div class="doc-md-description">
                   <p>Remove an item by its key.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;clear&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.data.bragg_pd.PdTofData.clear&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.data.bragg_pd.PdTofData.clear">clear</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Remove every item, then mark the parent datablock dirty.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -17470,6 +18456,29 @@ fitting failures.</p>
           </tr>
       </tbody>
     </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.data.bragg_pd.PdTofData.clear" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">clear</span><span class="p">()</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Remove every item, then mark the parent datablock dirty.</p>
+<p>Layers dirty-marking on :meth:<code>CollectionBase.clear</code>, mirroring
+how :meth:<code>add</code> layers it on the base insert.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
 
 
     </div>
@@ -19612,6 +20621,17 @@ original measurement was CWL or TOF.</p>
               </td>
             </tr>
             <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;clear&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.data.total_pd.TotalDataBase.clear&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.data.total_pd.TotalDataBase.clear">clear</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Remove every item, then mark the parent datablock dirty.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
               <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.data.total_pd.TotalDataBase.keys&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.data.total_pd.TotalDataBase.keys">keys</a></code></td>
               <td>
                 <div class="doc-md-description">
@@ -20536,6 +21556,29 @@ original measurement was CWL or TOF.</p>
 <div class="doc doc-object doc-function">
 
 
+<h11 id="easydiffraction.datablocks.experiment.categories.data.total_pd.TotalDataBase.clear" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">clear</span><span class="p">()</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Remove every item, then mark the parent datablock dirty.</p>
+<p>Layers dirty-marking on :meth:<code>CollectionBase.clear</code>, mirroring
+how :meth:<code>add</code> layers it on the base insert.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
 <h11 id="easydiffraction.datablocks.experiment.categories.data.total_pd.TotalDataBase.keys" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">keys</span><span class="p">()</span></code>
 
@@ -20904,6 +21947,17 @@ transformed to r-space.</p>
               <td>
                 <div class="doc-md-description">
                   <p>Remove an item by its key.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;clear&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.data.total_pd.TotalData.clear&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.data.total_pd.TotalData.clear">clear</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Remove every item, then mark the parent datablock dirty.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -21945,6 +22999,29 @@ transformed to r-space.</p>
           </tr>
       </tbody>
     </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.data.total_pd.TotalData.clear" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">clear</span><span class="p">()</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Remove every item, then mark the parent datablock dirty.</p>
+<p>Layers dirty-marking on :meth:<code>CollectionBase.clear</code>, mirroring
+how :meth:<code>add</code> layers it on the base insert.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
 
 
     </div>
@@ -24774,6 +25851,17 @@ fitting and plotting.</p>
               </td>
             </tr>
             <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;clear&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.excluded_regions.default.ExcludedRegions.clear&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.excluded_regions.default.ExcludedRegions.clear">clear</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Remove every item, then mark the parent datablock dirty.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
               <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.excluded_regions.default.ExcludedRegions.keys&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.excluded_regions.default.ExcludedRegions.keys">keys</a></code></td>
               <td>
                 <div class="doc-md-description">
@@ -25474,6 +26562,29 @@ fitting and plotting.</p>
           </tr>
       </tbody>
     </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.excluded_regions.default.ExcludedRegions.clear" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">clear</span><span class="p">()</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Remove every item, then mark the parent datablock dirty.</p>
+<p>Layers dirty-marking on :meth:<code>CollectionBase.clear</code>, mirroring
+how :meth:<code>add</code> layers it on the base insert.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
 
 
     </div>
@@ -37216,6 +38327,17 @@ object. Assigning to it updates the parameter value.</p>
               </td>
             </tr>
             <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;clear&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.linked_phases.default.LinkedPhases.clear&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.linked_phases.default.LinkedPhases.clear">clear</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Remove every item, then mark the parent datablock dirty.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
               <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.linked_phases.default.LinkedPhases.keys&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.linked_phases.default.LinkedPhases.keys">keys</a></code></td>
               <td>
                 <div class="doc-md-description">
@@ -37895,6 +39017,29 @@ object. Assigning to it updates the parameter value.</p>
           </tr>
       </tbody>
     </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.linked_phases.default.LinkedPhases.clear" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">clear</span><span class="p">()</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Remove every item, then mark the parent datablock dirty.</p>
+<p>Layers dirty-marking on :meth:<code>CollectionBase.clear</code>, mirroring
+how :meth:<code>add</code> layers it on the base insert.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
 
 
     </div>
@@ -53592,6 +54737,17 @@ object. Assigning to it updates the parameter value.</p>
               </td>
             </tr>
             <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;clear&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.refln.bragg_pd.PowderReflnDataBase.clear&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.refln.bragg_pd.PowderReflnDataBase.clear">clear</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Remove every item, then mark the parent datablock dirty.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
               <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.refln.bragg_pd.PowderReflnDataBase.keys&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.refln.bragg_pd.PowderReflnDataBase.keys">keys</a></code></td>
               <td>
                 <div class="doc-md-description">
@@ -54667,6 +55823,29 @@ object. Assigning to it updates the parameter value.</p>
 <div class="doc doc-object doc-function">
 
 
+<h11 id="easydiffraction.datablocks.experiment.categories.refln.bragg_pd.PowderReflnDataBase.clear" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">clear</span><span class="p">()</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Remove every item, then mark the parent datablock dirty.</p>
+<p>Layers dirty-marking on :meth:<code>CollectionBase.clear</code>, mirroring
+how :meth:<code>add</code> layers it on the base insert.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
 <h11 id="easydiffraction.datablocks.experiment.categories.refln.bragg_pd.PowderReflnDataBase.keys" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">keys</span><span class="p">()</span></code>
 
@@ -55033,6 +56212,17 @@ then each keyword argument is applied via <code>setattr</code>.</p>
               <td>
                 <div class="doc-md-description">
                   <p>Remove an item by its key.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;clear&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.refln.bragg_pd.PowderCwlReflnData.clear&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.refln.bragg_pd.PowderCwlReflnData.clear">clear</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Remove every item, then mark the parent datablock dirty.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -56158,6 +57348,29 @@ then each keyword argument is applied via <code>setattr</code>.</p>
 <div class="doc doc-object doc-function">
 
 
+<h11 id="easydiffraction.datablocks.experiment.categories.refln.bragg_pd.PowderCwlReflnData.clear" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">clear</span><span class="p">()</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Remove every item, then mark the parent datablock dirty.</p>
+<p>Layers dirty-marking on :meth:<code>CollectionBase.clear</code>, mirroring
+how :meth:<code>add</code> layers it on the base insert.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
 <h11 id="easydiffraction.datablocks.experiment.categories.refln.bragg_pd.PowderCwlReflnData.keys" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">keys</span><span class="p">()</span></code>
 
@@ -56524,6 +57737,17 @@ then each keyword argument is applied via <code>setattr</code>.</p>
               <td>
                 <div class="doc-md-description">
                   <p>Remove an item by its key.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;clear&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.refln.bragg_pd.PowderTofReflnData.clear&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.refln.bragg_pd.PowderTofReflnData.clear">clear</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Remove every item, then mark the parent datablock dirty.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -57640,6 +58864,29 @@ then each keyword argument is applied via <code>setattr</code>.</p>
           </tr>
       </tbody>
     </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.refln.bragg_pd.PowderTofReflnData.clear" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">clear</span><span class="p">()</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Remove every item, then mark the parent datablock dirty.</p>
+<p>Layers dirty-marking on :meth:<code>CollectionBase.clear</code>, mirroring
+how :meth:<code>add</code> layers it on the base insert.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
 
 
     </div>
@@ -59792,6 +61039,17 @@ then each keyword argument is applied via <code>setattr</code>.</p>
               </td>
             </tr>
             <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;clear&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.refln.bragg_sc.ReflnDataBase.clear&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.refln.bragg_sc.ReflnDataBase.clear">clear</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Remove every item, then mark the parent datablock dirty.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
               <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.refln.bragg_sc.ReflnDataBase.keys&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.refln.bragg_sc.ReflnDataBase.keys">keys</a></code></td>
               <td>
                 <div class="doc-md-description">
@@ -60824,6 +62082,29 @@ then each keyword argument is applied via <code>setattr</code>.</p>
 <div class="doc doc-object doc-function">
 
 
+<h11 id="easydiffraction.datablocks.experiment.categories.refln.bragg_sc.ReflnDataBase.clear" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">clear</span><span class="p">()</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Remove every item, then mark the parent datablock dirty.</p>
+<p>Layers dirty-marking on :meth:<code>CollectionBase.clear</code>, mirroring
+how :meth:<code>add</code> layers it on the base insert.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
 <h11 id="easydiffraction.datablocks.experiment.categories.refln.bragg_sc.ReflnDataBase.keys" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">keys</span><span class="p">()</span></code>
 
@@ -61190,6 +62471,17 @@ then each keyword argument is applied via <code>setattr</code>.</p>
               <td>
                 <div class="doc-md-description">
                   <p>Remove an item by its key.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;clear&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.refln.bragg_sc.CwlReflnData.clear&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.refln.bragg_sc.CwlReflnData.clear">clear</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Remove every item, then mark the parent datablock dirty.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -62229,6 +63521,29 @@ then each keyword argument is applied via <code>setattr</code>.</p>
 <div class="doc doc-object doc-function">
 
 
+<h11 id="easydiffraction.datablocks.experiment.categories.refln.bragg_sc.CwlReflnData.clear" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">clear</span><span class="p">()</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Remove every item, then mark the parent datablock dirty.</p>
+<p>Layers dirty-marking on :meth:<code>CollectionBase.clear</code>, mirroring
+how :meth:<code>add</code> layers it on the base insert.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
 <h11 id="easydiffraction.datablocks.experiment.categories.refln.bragg_sc.CwlReflnData.keys" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">keys</span><span class="p">()</span></code>
 
@@ -62595,6 +63910,17 @@ then each keyword argument is applied via <code>setattr</code>.</p>
               <td>
                 <div class="doc-md-description">
                   <p>Remove an item by its key.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;clear&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.refln.bragg_sc.TofReflnData.clear&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.refln.bragg_sc.TofReflnData.clear">clear</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Remove every item, then mark the parent datablock dirty.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -63668,6 +64994,29 @@ then each keyword argument is applied via <code>setattr</code>.</p>
           </tr>
       </tbody>
     </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.refln.bragg_sc.TofReflnData.clear" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">clear</span><span class="p">()</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Remove every item, then mark the parent datablock dirty.</p>
+<p>Layers dirty-marking on :meth:<code>CollectionBase.clear</code>, mirroring
+how :meth:<code>add</code> layers it on the base insert.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
 
 
     </div>
@@ -65165,6 +66514,17 @@ helper methods for simple presentation of collection contents.</p>
               </td>
             </tr>
             <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;clear&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.collection.Experiments.clear&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.collection.Experiments.clear">clear</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Remove every item, unlinking each from this collection.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
               <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.collection.Experiments.keys&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.collection.Experiments.keys">keys</a></code></td>
               <td>
                 <div class="doc-md-description">
@@ -66298,6 +67658,30 @@ helper methods for simple presentation of collection contents.</p>
           </tr>
       </tbody>
     </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h7 id="easydiffraction.datablocks.experiment.collection.Experiments.clear" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">clear</span><span class="p">()</span></code>
+
+</h7>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Remove every item, unlinking each from this collection.</p>
+<p>Delegates to :meth:<code>_adopt_items</code> with an empty list: every
+child has <code>_parent</code> cleared, <code>_items</code> is emptied, and the
+index is rebuilt, matching the invariants <code>__delitem__</code> keeps.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
 
 
     </div>

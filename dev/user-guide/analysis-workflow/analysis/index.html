@@ -1028,6 +1028,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#re-estimating-the-background" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Re-estimating the Background
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3260,6 +3271,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#re-estimating-the-background" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Re-estimating the Background
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3645,6 +3667,22 @@ perform additional fits as needed.</p>
 <code>pattern</code> method of the <code>display</code> object:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">pattern</span><span class="p">(</span><span class="n">expt_name</span><span class="o">=</span><span class="s1">&#39;hrpt&#39;</span><span class="p">)</span>
 </code></pre></div>
+<h3 id="re-estimating-the-background">Re-estimating the Background</h3>
+<p>If you seeded the background automatically (see the
+<a href="../experiment/#background-category">Background Category</a> section), you
+can improve it once a fit has produced a model. Calling <code>auto_estimate</code>
+again after a fit automatically uses the fitted peaks (the default
+<code>use_model=True</code>) to place better points, especially across crowded
+regions where peaks overlap:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="c1"># Re-estimate the background using the fitted model</span>
+<span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="p">[</span><span class="s1">&#39;hrpt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">background</span><span class="o">.</span><span class="n">auto_estimate</span><span class="p">()</span>
+
+<span class="c1"># Optionally free some of the new (fixed) points and fit again</span>
+<span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="p">[</span><span class="s1">&#39;hrpt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">background</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">free</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+</code></pre></div>
+<p>This estimate → refine → re-estimate loop is safe to repeat: each call
+overwrites the previous points with a fresh, fixed background.</p>
 <h2 id="bayesian-analysis">Bayesian Analysis</h2>
 <p>Bayesian minimizers sample a posterior distribution rather than only
 optimizing to a single minimum. They are useful after a conventional
