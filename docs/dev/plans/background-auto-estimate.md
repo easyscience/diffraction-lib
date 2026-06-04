@@ -183,9 +183,14 @@ step's `Commit:` message **before** moving to the next step or the Phase
       No `__init__.py` change (the enum is imported directly, like
       `BackgroundTypeEnum`). Commit: `Add BackgroundEstimatorMethodEnum`
 
-- [ ] **P1.3 — Add the background curve estimator helper.** Create the
+- [x] **P1.3 — Add the background curve estimator helper.** Create the
       new module `estimate.py` with a pure
-      `estimate_background_curve(x, y, *, method='arpls', beam_mode, peaks=None, width=None, smoothness=None, n_points=None) -> BackgroundEstimate`.
+      `estimate_background_curve(x, y, *, method='arpls', peaks=None, width=None, smoothness=None, n_points=None) -> BackgroundEstimate`.
+      (The ADR §6 sketch also lists `beam_mode`; it is **omitted from the
+      Phase 1 helper** — unused until the deferred per-beam-mode policy,
+      and keeping it would push the signature past the project's
+      `PLR0913` 7-argument limit, which this plan honors rather than
+      bypasses.)
       `method` is the **resolved** Stage-1 algorithm (`snip` / `arpls` /
       `fabc` — never `auto`) and selects the `pybaselines` routine, so
       **all backend dispatch lives in the helper**, not the adapter.
