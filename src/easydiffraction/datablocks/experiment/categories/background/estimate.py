@@ -331,6 +331,53 @@ def _drop_forbidden(indices: np.ndarray, forbidden: np.ndarray, n: int) -> np.nd
     return np.array(sorted(set(kept)), dtype=int)
 
 
+def _cap_by_deviation(
+    x: np.ndarray,
+    curve: np.ndarray,
+    indices: np.ndarray,
+    n_points: int,
+) -> np.ndarray:
+    """
+    Reduce anchors to ``n_points``, keeping the endpoints.
+
+    The two endpoints are always retained; the remaining slots go to the
+    interior anchors that deviate most from the straight chord between
+    them. Guarantees the cap even when the RDP tolerance cannot reduce
+    the count (e.g. zero-noise data, where the tolerance stays zero).
+
+    Parameters
+    ----------
+    x : np.ndarray
+        Grid coordinates.
+    curve : np.ndarray
+        Background curve.
+    indices : np.ndarray
+        Candidate anchor indices (sorted, includes the endpoints).
+    n_points : int
+        Target maximum number of anchors (``>= 2``).
+
+    Returns
+    -------
+    np.ndarray
+        ``min(indices.size, n_points)`` sorted indices.
+    """
+    if indices.size <= n_points:
+        return indices
+    first = indices[0]
+    last = indices[-1]
+    interior = indices[1:-1]
+    keep_count = max(n_points - 2, 0)
+    span = x[last] - x[first]
+    if span <= 0 or keep_count == 0:
+        chosen = interior[:keep_count]
+    else:
+        line = curve[first] + (curve[last] - curve[first]) * (x[interior] - x[first]) / span
+        deviation = np.abs(curve[interior] - line)
+        start = interior.size - keep_count
+        chosen = interior[np.sort(np.argsort(deviation)[start:])]
+    return np.concatenate(([first], chosen, [last]))
+
+
 def _thin_to_anchors(
     x: np.ndarray,
     curve: np.ndarray,
@@ -342,8 +389,9 @@ def _thin_to_anchors(
     Select anchor indices: RDP, drop peak-region anchors, cap the count.
 
     When more than ``n_points`` anchors survive, the RDP tolerance is
-    grown geometrically and the simplification re-run until the count
-    fits (the endpoints are always retained).
+    grown geometrically and re-run until the count fits; if that cannot
+    reduce it (e.g. zero noise), a deviation-based cap guarantees the
+    bound. The endpoints are always retained.
 
     Parameters
     ----------
@@ -364,14 +412,16 @@ def _thin_to_anchors(
         Sorted anchor indices, always including the two endpoints.
     """
     indices = _drop_forbidden(_rdp_indices(x, curve, epsilon), forbidden, x.size)
-    if n_points is None:
+    if n_points is None or indices.size <= n_points:
         return indices
     tolerance = epsilon
     for _ in range(_MAX_CAP_ITERATIONS):
-        if indices.size <= n_points:
+        if tolerance <= 0 or indices.size <= n_points:
             break
         tolerance *= _TOLERANCE_GROWTH
         indices = _drop_forbidden(_rdp_indices(x, curve, tolerance), forbidden, x.size)
+    if indices.size > n_points:
+        indices = _cap_by_deviation(x, curve, indices, n_points)
     return indices
 
 
