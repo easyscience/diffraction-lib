@@ -669,9 +669,6 @@ project.display.pattern(expt_name='hrpt')
 # %%
 project.display.pattern(expt_name='hrpt', x_min=38, x_max=41)
 
-# %%
-project.display.structure(struct_name='lbco')
-
 # %% [markdown]
 # #### Display Structure
 
