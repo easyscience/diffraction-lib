@@ -31,6 +31,9 @@ src/easydiffraction/report/templates/html/vendor/
 src/easydiffraction/report/templates/tex/styles/
 src/easydiffraction/utils/_vendored/jupyter_dark_detect/
 
+# Tox
+.tox
+
 # Misc
 .benchmarks
 .cache
