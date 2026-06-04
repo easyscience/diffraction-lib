@@ -455,13 +455,17 @@ which fall out naturally below.
   already emits the resolved `Wyckoff_symbol` for every atom and now
   also emits `_atom_site.site_symmetry_multiplicity`.
 - **`space_group_Wyckoff` loop.** The derived category is model-owned
-  and code-facing only; it is not serialized. `Structure` excludes it
-  from project-save serialization via `_serializable_categories()`,
-  overriding `CategoryOwner`'s default of serializing all owned
-  categories, and the IUCr/report writer likewise does **not** emit the
-  `_space_group_Wyckoff.*` loop — the table is redundant derived state,
-  reachable in code via `structure.space_group_wyckoff` but excluded
-  from both project CIF and report output (amended 2026-06-04).
+  and code-facing only; it is not serialized. The collection suppresses
+  its own output through `_skip_cif_serialization()` returning `True`,
+  the same collection-owned hook `atom_site_aniso` uses (conditionally);
+  every serialization path that consults it honours the suppression —
+  `category_collection_to_cif` (project CIF) and the report data context
+  — so the `_space_group_Wyckoff.*` loop never appears in project CIF or
+  HTML/TeX reports, and the hand-rolled IUCr writer does not emit it
+  either. The decision lives on the category, so `Structure` needs no
+  `_serializable_categories()` override. The table is redundant derived
+  state, reachable in code via `structure.space_group_wyckoff` (amended
+  2026-06-04).
 - **Derived values on read.** Multiplicity is recomputed from the
   letter, so any incoming `_atom_site.site_symmetry_multiplicity` is
   ignored rather than trusted; the `space_group_Wyckoff` category is

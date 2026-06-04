@@ -123,7 +123,14 @@ class TestSerialization:
         structure = _cubic_structure()
         assert '_space_group_Wyckoff' not in structure.as_cif
 
-    # Report omission (the IUCr writer never emits the loop) is guarded by
-    # test_write_iucr_cif_omits_space_group_wyckoff_loop in
-    # tests/unit/easydiffraction/io/cif/test_iucr_writer.py, where the
-    # project-level writer fixtures live.
+    def test_skip_cif_serialization_is_true(self):
+        # Derived/code-only: the collection suppresses its own output on
+        # every serialization path that consults the hook.
+        structure = _cubic_structure()
+        assert structure.space_group_wyckoff._skip_cif_serialization() is True
+
+    # End-to-end report omission is guarded where each writer's fixtures
+    # live: test_write_iucr_cif_omits_space_group_wyckoff_loop in
+    # tests/unit/easydiffraction/io/cif/test_iucr_writer.py (IUCr export)
+    # and test_space_group_wyckoff_omitted_from_report_context in
+    # tests/unit/easydiffraction/report/test_data_context.py (HTML/TeX).

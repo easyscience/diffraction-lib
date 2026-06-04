@@ -407,6 +407,21 @@ def test_report_atom_site_aniso_adp_column_uses_active_b_label():
     assert adp_column['latex_label'] == r'$B_{11}$'
 
 
+def test_space_group_wyckoff_omitted_from_report_context():
+    from easydiffraction.datablocks.structure.item.base import Structure
+    from easydiffraction.report.data_context import _category_contexts
+
+    # P m -3 m has a non-empty Wyckoff table; the derived category must
+    # still be omitted from report output (it is code-only).
+    structure = Structure(name='phase')
+    structure.space_group.name_h_m = 'P m -3 m'
+    structure._update_categories()
+    assert len(structure.space_group_wyckoff) > 0
+
+    codes = {context['code'] for context in _category_contexts(structure)}
+    assert 'space_group_Wyckoff' not in codes
+
+
 def test_report_number_parts_split_decimal_and_uncertainty_text():
     from easydiffraction.report.data_context import _number_parts
 

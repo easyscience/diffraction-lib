@@ -253,16 +253,6 @@ class Structure(DatablockItem):
 
         self._need_categories_update = False
 
-    def _serializable_categories(self) -> list:
-        """
-        Project-CIF categories (excludes the derived Wyckoff table).
-        """
-        return [
-            category
-            for category in self.categories
-            if not isinstance(category, SpaceGroupWyckoffCollection)
-        ]
-
     # ------------------------------------------------------------------
     # Public methods
     # ------------------------------------------------------------------
