@@ -65,7 +65,7 @@ import easydiffraction as ed
 # analysis workflow.
 
 # %%
-project_1 = ed.Project(name='si')
+project_1 = ed.Project(name='reference')
 
 # %% [markdown]
 # You can set the title and description of the project to provide
@@ -422,9 +422,9 @@ project_1.experiments['sim_si'].background.create(id='7', x=110000, y=0.01)
 # _space_group.name_H-M_alt  "F d -3 m"
 # _space_group.IT_coordinate_system_code  1
 #
-# _cell.length_a      5.4307
-# _cell.length_b      5.4307
-# _cell.length_c      5.4307
+# _cell.length_a      5.43
+# _cell.length_b      5.43
+# _cell.length_c      5.43
 # _cell.angle_alpha  90.0
 # _cell.angle_beta   90.0
 # _cell.angle_gamma  90.0
@@ -479,7 +479,7 @@ project_1.structures['si'].space_group.it_coordinate_system_code = '1'
 # for more details about the unit cell parameters.
 
 # %%
-project_1.structures['si'].cell.length_a = 5.4307
+project_1.structures['si'].cell.length_a = 5.43
 
 # %% [markdown]
 # #### Set Atom Sites
@@ -710,7 +710,7 @@ project_1.display.pattern(expt_name='sim_si', x='d_spacing')
 # directory specified by the `dir_path` attribute of the project object.
 
 # %%
-project_1.save_as(dir_path='projects/ed_13_si')
+project_1.save_as(dir_path='projects/ed_13_reference')
 
 # %% [markdown]
 # ## 💪 Exercise: Complex Fit – LBCO
@@ -739,7 +739,7 @@ project_1.save_as(dir_path='projects/ed_13_si')
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2 = ed.Project(name='lbco_si')
+project_2 = ed.Project(name='main')
 project_2.info.title = 'La0.5Ba0.5CoO3 Fit'
 project_2.info.description = 'Fitting simulated powder diffraction pattern of La0.5Ba0.5CoO3.'
 
@@ -1482,7 +1482,7 @@ project_2.display.pattern(expt_name='sim_lbco', x_min=88000, x_max=101000)
 # the analysis.
 
 # %%
-project_2.save_as(dir_path='projects/ed_13_lbco_si')
+project_2.save_as(dir_path='projects/ed_13_main')
 
 # %% [markdown]
 # #### Final Remarks
