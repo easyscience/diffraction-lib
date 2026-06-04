@@ -11,6 +11,18 @@ ADR. No deliberate exception to `AGENTS.md` is taken.
 - [x] Phase 1 review gate
 - [x] Phase 2 — Verification (tests + `pixi` checks)
 
+> **Post-implementation amendment (2026-06-04).** Two follow-up changes
+> landed after this plan completed: (1) the `_space_group_Wyckoff.*`
+> loop is no longer emitted in IUCr/HTML/TeX report output — the derived
+> table is code-only; and (2) its exclusion from every serialization
+> path now comes from the collection's own `_skip_cif_serialization()`
+> hook (returning `True`), not from a
+> `Structure._serializable_categories()` override, which was removed.
+> References to `_serializable_categories()` and to "report-facing" /
+> "emits the loop" below describe the original implementation and are
+> superseded by this note and by the
+> [ADR amendment](../adrs/accepted/wyckoff-letter-detection.md).
+
 ## ADR
 
 This plan implements the
@@ -105,13 +117,15 @@ rotation/translation parser.
    `_replace_from_space_group()` path rebuilds the derived collection
    through internal adoption.
 10. **`space_group_Wyckoff` serialization policy.** The category is
-    model-owned and report-facing, but not persisted in project CIF.
-    `Structure._serializable_categories()` excludes it from
-    `structure.as_cif` / project saves, the IUCr/report writer emits the
-    `_space_group_Wyckoff.*` loop from the derived category, and
-    incoming `_space_group_Wyckoff.*` values are ignored/overwritten on
-    project load because the category is re-derived from the space
-    group.
+    model-owned and code-only: it is excluded from every serialization
+    path. The collection's own `_skip_cif_serialization()` hook (returns
+    `True`) suppresses its output in `structure.as_cif` / project saves
+    and in the report data context alike, and the IUCr writer does not
+    emit the `_space_group_Wyckoff.*` loop; incoming
+    `_space_group_Wyckoff.*` values are ignored/overwritten on project
+    load because the category is re-derived from the space group.
+    (Superseded the original `_serializable_categories()` +
+    report-emission design; see the Post-implementation amendment.)
 11. **Allowed letters come from the current space group.**
     `_wyckoff_letter_allowed_values` returns `['', *tabulated_letters]`
     for supported groups and `[]` for absent groups.
@@ -196,8 +210,9 @@ Phase 1 (implementation):
 - `src/easydiffraction/datablocks/structure/item/base.py` — add the
   `space_group_wyckoff` sibling category, expose it read-only, rebuild
   it from the current `space_group` before ordinary category update
-  hooks, and exclude it from project CIF through
-  `_serializable_categories()`.
+  hooks. (Project-CIF exclusion originally lived here via
+  `_serializable_categories()`; it now lives on the collection through
+  `_skip_cif_serialization()` — see the Post-implementation amendment.)
 - `src/easydiffraction/analysis/calculators/cryspy.py` —
   `_update_atom_multiplicity` reads `atom_site.multiplicity.value`.
 - `src/easydiffraction/io/cif/serialize.py` — only if atom-site CIF read
@@ -288,7 +303,9 @@ The ADR commit + design-phase review/reply cleanup are handled by
       a read-only sibling category on `Structure`, rebuild it when
       structure categories update so it tracks the current space group,
       keep it empty for absent groups, and exclude it from project CIF
-      by overriding `_serializable_categories()`. Rebuild it from
+      by overriding `_serializable_categories()` (later replaced by the
+      collection's `_skip_cif_serialization()` hook; see the
+      Post-implementation amendment). Rebuild it from
       `Structure._update_categories()` before ordinary category update
       hooks, with no special `_update_priority`; atom-site detection
       reads `SPACE_GROUPS` through the crystallography helpers rather
@@ -391,9 +408,11 @@ The ADR commit + design-phase review/reply cleanup are handled by
         is already automatic: P1.4 added the `multiplicity` descriptor
         with that CIF handler, and it is part of `AtomSite.parameters`,
         so the atom-site loop emits it (value `?` for untabulated
-        sites). The `_space_group_Wyckoff` loop exclusion is already
-        provided by P1.3's `Structure._serializable_categories`
-        override. No new write-side code was needed in P1.8.
+        sites). The `_space_group_Wyckoff` loop exclusion was originally
+        provided by P1.3's `Structure._serializable_categories` override
+        (later moved to the collection's `_skip_cif_serialization()`
+        hook; see the Post-implementation amendment). No new write-side
+        code was needed in P1.8.
       - **Read ignore of incoming `_space_group_Wyckoff.*`** is done by
         a no-op `SpaceGroupWyckoffCollection.from_cif` override (the
         structure read loop iterates *all* categories, including the
