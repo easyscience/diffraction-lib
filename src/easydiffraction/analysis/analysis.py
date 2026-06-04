@@ -76,7 +76,15 @@ if TYPE_CHECKING:
     from easydiffraction.analysis.categories.minimizer.base import MinimizerCategoryBase
     from easydiffraction.core.posterior import PosteriorParameterSummary
 
-_SUMMARY_HIDDEN_PARAMETER_CATEGORIES = frozenset({'pd_data', 'total_data', 'refln'})
+# Categories hidden from the parameter summary tables: bulky measured
+# data and derived, read-only tables that would only add noise. The
+# space_group_Wyckoff table also carries unreadably long coords_xyz.
+_SUMMARY_HIDDEN_PARAMETER_CATEGORIES = frozenset({
+    'pd_data',
+    'total_data',
+    'refln',
+    'space_group_Wyckoff',
+})
 _POSTERIOR_SAMPLE_NDIM = 3
 
 
