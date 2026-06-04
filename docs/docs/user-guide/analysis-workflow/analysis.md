@@ -271,6 +271,27 @@ To plot the measured and calculated data after the fit, you can use the
 project.display.pattern(expt_name='hrpt')
 ```
 
+### Re-estimating the Background
+
+If you seeded the background automatically (see the
+[Background Category](experiment.md#background-category) section), you
+can improve it once a fit has produced a model. Calling `auto_estimate`
+again after a fit automatically uses the fitted peaks (the default
+`use_model=True`) to place better points, especially across crowded
+regions where peaks overlap:
+
+```python
+# Re-estimate the background using the fitted model
+project.experiments['hrpt'].background.auto_estimate()
+
+# Optionally free some of the new (fixed) points and fit again
+project.experiments['hrpt'].background['1'].y.free = True
+project.analysis.fit()
+```
+
+This estimate → refine → re-estimate loop is safe to repeat: each call
+overwrites the previous points with a fresh, fixed background.
+
 ## Bayesian Analysis
 
 Bayesian minimizers sample a posterior distribution rather than only

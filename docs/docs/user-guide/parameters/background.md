@@ -7,6 +7,13 @@ when calculating diffractograms. Please see the
 [IUCr page](https://www.iucr.org/resources/cif/dictionaries/browse/cif_pd)
 for further details.
 
+!!! tip "Automatic background estimation"
+
+    Line-segment background points can be detected automatically from the
+    measured pattern with
+    [`background.auto_estimate()`](../analysis-workflow/experiment.md#background-category),
+    instead of entering them by hand.
+
 ## [\_pd_background.line_segment_X](https://www.iucr.org/resources/cif/dictionaries/browse/cif_pd)
 
 List of X-coordinates used to create many straight-line segments
