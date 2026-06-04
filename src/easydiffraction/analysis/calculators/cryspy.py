@@ -140,6 +140,11 @@ class CryspyCalculator(CalculatorBase):
 
         cryspy_in_out_dict: dict[str, Any] = {}
 
+        # TODO: This is temporary solution to mark all structures as
+        #  nuclear-only. Once magnetic structure is implemented, we
+        #  would need to auto-detect it.
+        cryspy_dict[f'crystal_{structure.name}']['flag_only_nuclear'] = True
+
         # Calculate the pattern using Cryspy
         # TODO: Redirect stderr to suppress Cryspy warnings.
         #  This is a temporary solution to avoid cluttering the output.
@@ -222,6 +227,11 @@ class CryspyCalculator(CalculatorBase):
         self._cryspy_dicts[combined_name] = copy.deepcopy(cryspy_dict)
 
         cryspy_in_out_dict: dict[str, Any] = {}
+
+        # TODO: This is temporary solution to mark all structures as
+        #  nuclear-only. Once magnetic structure is implemented, we
+        #  would need to auto-detect it.
+        cryspy_dict[f'crystal_{structure.name}']['flag_only_nuclear'] = True
 
         # Calculate the pattern using Cryspy
         # TODO: Redirect stderr to suppress Cryspy warnings.
