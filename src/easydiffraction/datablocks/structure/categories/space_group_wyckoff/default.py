@@ -125,9 +125,10 @@ class SpaceGroupWyckoffCollection(CategoryCollection):
         """Initialise an empty derived Wyckoff collection."""
         super().__init__(item_type=SpaceGroupWyckoff)
 
-    def _skip_cif_serialization(self) -> bool:
+    @staticmethod
+    def _skip_cif_serialization() -> bool:
         """
-        Always suppress serialized output for this derived category.
+        Suppress all serialized output for this derived category.
 
         The Wyckoff table is rebuilt from the structure's space group on
         every update, so it is code-only: reachable via
