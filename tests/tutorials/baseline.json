@@ -32,7 +32,7 @@
       "xray_pdf.linked_phases.nacl.scale": 0.5
     }
   },
-  "ed_13_lbco_si": {
+  "ed_13_main": {
     "result_kind": "deterministic",
     "rtol": 0.02,
     "reduced_chi_square": 1.537656,
@@ -44,7 +44,7 @@
       "sim_lbco.linked_phases.si.scale": 1.0
     }
   },
-  "ed_13_si": {
+  "ed_13_reference": {
     "result_kind": "deterministic",
     "rtol": 0.02,
     "reduced_chi_square": 2.30651,
