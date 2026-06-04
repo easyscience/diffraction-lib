@@ -222,7 +222,7 @@ expt_n2.excluded_regions.create(id='2', start=130000, end=180000)
 # ### Create Project
 
 # %%
-project = Project(name='beer')
+project = Project(name='beer_mcstas')
 project.save_as(dir_path='projects/ed_20_beer_mcstas')
 
 # %% [markdown]

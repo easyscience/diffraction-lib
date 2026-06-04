@@ -65,7 +65,7 @@ import easydiffraction as ed
 # analysis workflow.
 
 # %%
-project_1 = ed.Project(name='reference')
+project_1 = ed.Project(name='si')
 
 # %% [markdown]
 # You can set the title and description of the project to provide
@@ -739,7 +739,7 @@ project_1.save_as(dir_path='projects/ed_13_si')
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2 = ed.Project(name='main')
+project_2 = ed.Project(name='lbco_si')
 project_2.info.title = 'La0.5Ba0.5CoO3 Fit'
 project_2.info.description = 'Fitting simulated powder diffraction pattern of La0.5Ba0.5CoO3.'
 

@@ -20,7 +20,7 @@ import easydiffraction as ed
 # and other related components.
 
 # %%
-project = ed.Project(name='cosio_d20')
+project = ed.Project(name='cosio_d20_scan')
 analysis = project.analysis
 display = project.display
 

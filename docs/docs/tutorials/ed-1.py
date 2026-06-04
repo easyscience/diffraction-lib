@@ -26,8 +26,8 @@ import easydiffraction as ed
 # ## 📦 Define Project
 
 # %%
-# Create minimal project without name and description
-project = ed.Project()
+# Create a minimal project with a short name
+project = ed.Project(name='lbco_hrpt')
 
 # %% [markdown]
 # ## 🧩 Define Structure

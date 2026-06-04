@@ -157,7 +157,7 @@ pdf_expt.linked_phases.create(id='si', scale=1.0)
 # ### Create Project
 
 # %%
-project = Project()
+project = Project(name='si_bragg_pdf')
 
 # %% [markdown]
 # ### Add Structure

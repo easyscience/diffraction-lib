@@ -235,7 +235,7 @@ expt2.linked_phases.create(id='pbso4', scale=0.001)
 # ### Create Project
 
 # %%
-project = Project()
+project = Project(name='pbso4_joint')
 
 # %% [markdown]
 # ### Add Structure

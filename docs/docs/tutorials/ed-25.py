@@ -38,7 +38,7 @@ import easydiffraction as ed
 # it later if needed.
 
 # %%
-project = ed.Project()
+project = ed.Project(name='lbco_hrpt_emcee')
 
 # %%
 project.save_as(dir_path='projects/ed_25_lbco_hrpt_emcee')
