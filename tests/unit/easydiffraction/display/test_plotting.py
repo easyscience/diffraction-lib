@@ -434,7 +434,6 @@ def test_correlation_from_posterior_samples_returns_labeled_dataframe():
 
 
 def test_build_posterior_pairs_plot_hides_diagonal_ticks_and_uses_annotations():
-    from easydiffraction.display.plotting import POSTERIOR_PAIR_SAMPLE_HOVER_MARKER_SIZE
     from easydiffraction.display.plotting import POSTERIOR_PAIR_SAMPLE_MARKER_SIZE
     from easydiffraction.display.plotting import POSTERIOR_PAIR_TITLE_FONT_SIZE
     from easydiffraction.display.plotting import SQUARE_MATRIX_BOTTOM_MARGIN_PIXELS
@@ -499,14 +498,15 @@ def test_build_posterior_pairs_plot_hides_diagonal_ticks_and_uses_annotations():
     assert len(figure.layout.shapes) == 30
     assert any(trace.name == 'Posterior contours' for trace in figure.data)
     sample_trace = next(trace for trace in figure.data if trace.name == 'Posterior samples')
-    hover_trace = next(
-        trace
-        for trace in figure.data
-        if getattr(trace, 'mode', None) == 'markers'
-        and getattr(trace.marker, 'color', None) == 'rgba(0, 0, 0, 0)'
-    )
     assert sample_trace.marker.size == POSTERIOR_PAIR_SAMPLE_MARKER_SIZE
-    assert hover_trace.marker.size == POSTERIOR_PAIR_SAMPLE_HOVER_MARKER_SIZE
+    # The visible scatter carries hover directly -- no duplicate transparent
+    # layer embedding a second copy of every sample point.
+    assert sample_trace.hovertemplate is not None
+    assert not any(
+        getattr(trace, 'mode', None) == 'markers'
+        and getattr(trace.marker, 'color', None) == 'rgba(0, 0, 0, 0)'
+        for trace in figure.data
+    )
 
 
 def test_build_posterior_pairs_plot_fast_mode_skips_contours():

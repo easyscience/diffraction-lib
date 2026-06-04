@@ -142,7 +142,7 @@ POSTERIOR_NEGATIVE_CONTOUR_LINE_COLORSCALE = [
     [0.82, 'rgba(215, 48, 39, 0.98)'],
     [1.0, 'rgba(215, 48, 39, 0.98)'],
 ]
-POSTERIOR_PAIR_SCATTER_MAX_POINTS = 1500
+POSTERIOR_PAIR_SCATTER_MAX_POINTS = 750  # keep embedded pair scatter small
 POSTERIOR_PAIR_MAX_DENSITY_SAMPLES = 4000
 POSTERIOR_PAIR_MIN_DENSITY_SAMPLES = 800
 POSTERIOR_PAIR_TARGET_DENSITY_SAMPLE_BUDGET = 24000
@@ -177,7 +177,6 @@ SQUARE_MATRIX_TITLE_LEFT_PADDING_PIXELS = 14
 CORRELATION_CELL_LABEL_CHAR_COUNT = 16
 CORRELATION_LABEL_CHAR_WIDTH_FACTOR = 0.6
 POSTERIOR_PAIR_SAMPLE_MARKER_SIZE = 6
-POSTERIOR_PAIR_SAMPLE_HOVER_MARKER_SIZE = 6
 
 
 @dataclass(frozen=True)
@@ -2096,7 +2095,7 @@ class Plotter(RendererBase):
                 name='Posterior samples',
                 legendgroup='posterior-samples',
                 showlegend=legend_state.show_scatter,
-                hoverinfo='skip',
+                hovertemplate=sample_hovertemplate,
                 zorder=0,
             ),
             row=row,
@@ -2112,22 +2111,6 @@ class Plotter(RendererBase):
             fig.add_trace(contour_traces[0], row=row, col=col)
             fig.add_trace(contour_traces[1], row=row, col=col)
             legend_state.show_contour = False
-        fig.add_trace(
-            go.Scatter(
-                x=x_scatter_values,
-                y=y_scatter_values,
-                mode='markers',
-                marker={
-                    'color': 'rgba(0, 0, 0, 0)',
-                    'size': POSTERIOR_PAIR_SAMPLE_HOVER_MARKER_SIZE,
-                },
-                showlegend=False,
-                hovertemplate=sample_hovertemplate,
-                zorder=3,
-            ),
-            row=row,
-            col=col,
-        )
 
     @staticmethod
     def _configure_posterior_pair_panel_axes(
