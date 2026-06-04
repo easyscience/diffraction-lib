@@ -51,6 +51,7 @@ from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 from easydiffraction.core.category_owner import CategoryOwner
 from easydiffraction.core.guard import _apply_help_filter
 from easydiffraction.core.singleton import ConstraintsHandler
+from easydiffraction.core.variable import GenericNumericDescriptor
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import Parameter
 from easydiffraction.core.variable import StringDescriptor
@@ -1225,19 +1226,17 @@ class Analysis(
         """
         records = []
         for param in params:
-            record = {}
             # TODO: Merge into one. Add field if attr exists
             # TODO: f'{param.value!r}' for StringDescriptor?
-            if isinstance(param, (StringDescriptor, NumericDescriptor, Parameter)):
-                record = {
-                    ('fittable', 'left'): False,
-                    ('datablock', 'left'): param._identity.datablock_entry_name,
-                    ('category', 'left'): param._identity.category_code,
-                    ('entry', 'left'): param._identity.category_entry_name or '',
-                    ('parameter', 'left'): param.name,
-                    ('value', 'right'): param.value,
-                }
-            if isinstance(param, (NumericDescriptor, Parameter)):
+            record = {
+                ('fittable', 'left'): False,
+                ('datablock', 'left'): param._identity.datablock_entry_name,
+                ('category', 'left'): param._identity.category_code,
+                ('entry', 'left'): param._identity.category_entry_name or '',
+                ('parameter', 'left'): param.name,
+                ('value', 'right'): '' if param.value is None else param.value,
+            }
+            if isinstance(param, GenericNumericDescriptor):
                 record |= {
                     ('units', 'left'): _parameter_display_units(param),
                 }
