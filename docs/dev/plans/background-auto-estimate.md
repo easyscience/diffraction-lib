@@ -284,7 +284,7 @@ step's `Commit:` message **before** moving to the next step or the Phase
       Numpy-style docstring; no `**kwargs`. Commit:
       `Add auto_estimate to LineSegmentBackground`
 
-- [ ] **P1.6 — Phase 1 review gate.** No code. Mark this `[x]`, commit
+- [x] **P1.6 — Phase 1 review gate.** No code. Mark this `[x]`, commit
       the checklist update alone, and hand off to `/review-impl-1`.
       Commit: `Reach Phase 1 review gate`
 
