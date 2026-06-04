@@ -242,8 +242,11 @@ project.experiments['hrpt'].background.auto_estimate()
 The generated points are ordinary, editable control points. They are
 created **fixed** (not refined); you can review them, keep them, or free
 any of them for refinement (see [Analysis](analysis.md)). Each call
-**overwrites** the existing points, so you always start from a clean,
-reproducible background. It works for both constant-wavelength and
+**overwrites** the existing points (when there are active data to
+estimate from), so you always start from a clean, reproducible
+background; if no active data remain — for example every point is
+excluded, or data are not yet loaded — it warns and leaves your existing
+points unchanged. It works for both constant-wavelength and
 time-of-flight data, neutron and X-ray.
 
 You can also guide the estimate with optional arguments, for example to

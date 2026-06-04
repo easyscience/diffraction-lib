@@ -299,19 +299,24 @@ The intended usage is a loop, and the API supports it directly:
    background and clip heights to the original measured intensities
    (§2).
 
-**Every call overwrites and re-fixes.** `auto_estimate()` always clears
-the collection and rebuilds it — there is no append mode — and the
-rebuilt points are **fixed** (`free=False`) regardless of whether the
-previous points had been freed during refinement. A second call is
-therefore a fresh fixed seed, not a merge: calling it again overwrites
-the points and re-fixes them even if they were free. This keeps the loop
-predictable (each pass starts from a clean, fixed background) and
-idempotent (same inputs → same points). Clearing everything — including
-any hand-added points — is the deliberate "overwrite" contract;
-preserving manual points is deferred. When the collection is non-empty,
-the call logs a one-line notice that it is replacing the existing
-points, so a user who hand-tuned a background is not surprised; the
-first call, with nothing to replace, is silent.
+**Every call overwrites and re-fixes.** Whenever it produces an
+estimate, `auto_estimate()` clears the collection and rebuilds it —
+there is no append mode — and the rebuilt points are **fixed**
+(`free=False`) regardless of whether the previous points had been freed
+during refinement. A second call is therefore a fresh fixed seed, not a
+merge: calling it again overwrites the points and re-fixes them even if
+they were free. This keeps the loop predictable (each pass starts from a
+clean, fixed background) and idempotent (same inputs → same points).
+Clearing everything — including any hand-added points — is the
+deliberate "overwrite" contract; preserving manual points is deferred.
+When the collection is non-empty, the call logs a one-line notice that
+it is replacing the existing points, so a user who hand-tuned a
+background is not surprised; the first call, with nothing to replace, is
+silent. The one exception is degenerate input: when no active data
+remain (every point excluded, or data not yet loaded), the call emits a
+single warning and returns **without touching the existing points**, so
+an accidental call on an unloaded experiment does not wipe a hand-tuned
+background.
 
 **Always fixed; no `free` argument.** Generated points are always
 created fixed (`intensity.free = False`) — there is no caller-selectable
