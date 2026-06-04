@@ -7,7 +7,9 @@ import pytest
 from types import SimpleNamespace
 
 from easydiffraction.datablocks.experiment.categories.background import line_segment
-from easydiffraction.datablocks.experiment.categories.background.line_segment import LineSegmentBackground
+from easydiffraction.datablocks.experiment.categories.background.line_segment import (
+    LineSegmentBackground,
+)
 
 
 def test_line_segment_background_calculate_and_cif():
