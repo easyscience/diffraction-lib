@@ -305,8 +305,7 @@ def _rdp_indices(x: np.ndarray, curve: np.ndarray, epsilon: float) -> np.ndarray
         if deviation[local] > epsilon:
             index = start + local
             keep[index] = True
-            stack.append((start, index))
-            stack.append((index, end))
+            stack.extend(((start, index), (index, end)))
     return np.flatnonzero(keep)
 
 
