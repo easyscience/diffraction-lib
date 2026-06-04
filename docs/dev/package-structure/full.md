@@ -276,7 +276,10 @@
 │   │   │   │   │   ├── 🏷️ class PolynomialTerm
 │   │   │   │   │   └── 🏷️ class ChebyshevPolynomialBackground
 │   │   │   │   ├── 📄 enums.py
-│   │   │   │   │   └── 🏷️ class BackgroundTypeEnum
+│   │   │   │   │   ├── 🏷️ class BackgroundTypeEnum
+│   │   │   │   │   └── 🏷️ class BackgroundEstimatorMethodEnum
+│   │   │   │   ├── 📄 estimate.py
+│   │   │   │   │   └── 🏷️ class BackgroundEstimate
 │   │   │   │   ├── 📄 factory.py
 │   │   │   │   │   └── 🏷️ class BackgroundFactory
 │   │   │   │   └── 📄 line_segment.py
@@ -611,8 +614,6 @@
 │   │   │   │   └── 🏷️ class ProjectInfo
 │   │   │   └── 📄 factory.py
 │   │   │       └── 🏷️ class ProjectInfoFactory
-│   │   ├── 📁 publication
-│   │   ├── 📁 rendering
 │   │   ├── 📁 rendering_plot
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
@@ -673,7 +674,6 @@
 │   │   ├── 📁 html
 │   │   │   └── 📁 vendor
 │   │   └── 📁 tex
-│   │       └── 📁 styles
 │   ├── 📄 __init__.py
 │   ├── 📄 data_context.py
 │   │   └── 🏷️ class ReportDataContext

@@ -343,10 +343,10 @@ anchors, and the method/width/noise/tolerance/backend-params metadata
 the adapter logs). The `beam_mode` argument from earlier drafts is
 deferred with the per-beam-mode policy (see _Deferred Work_); omitting
 it also keeps the helper within the project's argument-count guardrail.
-`LineSegmentBackground.auto_estimate()` is a thin adapter: read
-the pattern (and model, if present), call the helper, clip, and
-`create()` the points. Helpers are extracted as needed to stay under the
-lint complexity thresholds
+`LineSegmentBackground.auto_estimate()` is a thin adapter: read the
+pattern (and model, if present), call the helper, clip, and `create()`
+the points. Helpers are extracted as needed to stay under the lint
+complexity thresholds
 ([`lint-complexity-thresholds.md`](../accepted/lint-complexity-thresholds.md))
 rather than raising them.
 

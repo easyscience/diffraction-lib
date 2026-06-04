@@ -17,21 +17,21 @@ autonomously. No other deliberate exception to `AGENTS.md` is taken.
 This plan owns the ADR at
 [`docs/dev/adrs/accepted/background-auto-estimate.md`](../adrs/accepted/background-auto-estimate.md)
 (Status: Accepted — promoted from `suggestions/` in step P1.0). Because
-this change **implements** that ADR,
-[`AGENTS.md`](../../../AGENTS.md) → **Change Discipline** requires the
-**same change** to promote it to `accepted/` before the PR is opened — a
-PR that implements an ADR must not leave it in `suggestions/`. Promotion
-is therefore **in scope and mandatory**, handled by the first Phase 1
-step (**P1.0**): `git mv` the ADR into `accepted/`, set its
-`**Status:**` to `Accepted`, flip its `docs/dev/adrs/index.md` row to
-`Accepted` with the `accepted/…` link, and rewrite every link that
-pointed at the old `suggestions/` path — in this plan and the ADR —
-located with `git grep -n`. The ordering relative to `/draft-impl-1` is:
-its **Phase A** runs **before** the checklist walk — committing the
-reviewed plan and the ADR (still in `suggestions/`) and removing the
-design-phase `_review-*` / `_reply-*` siblings — and then **P1.0**, the
-first checklist step in Phase B, performs the promotion above and commits
-the moved ADR, the `index.md` update, and the plan link rewrites.
+this change **implements** that ADR, [`AGENTS.md`](../../../AGENTS.md) →
+**Change Discipline** requires the **same change** to promote it to
+`accepted/` before the PR is opened — a PR that implements an ADR must
+not leave it in `suggestions/`. Promotion is therefore **in scope and
+mandatory**, handled by the first Phase 1 step (**P1.0**): `git mv` the
+ADR into `accepted/`, set its `**Status:**` to `Accepted`, flip its
+`docs/dev/adrs/index.md` row to `Accepted` with the `accepted/…` link,
+and rewrite every link that pointed at the old `suggestions/` path — in
+this plan and the ADR — located with `git grep -n`. The ordering
+relative to `/draft-impl-1` is: its **Phase A** runs **before** the
+checklist walk — committing the reviewed plan and the ADR (still in
+`suggestions/`) and removing the design-phase `_review-*` / `_reply-*`
+siblings — and then **P1.0**, the first checklist step in Phase B,
+performs the promotion above and commits the moved ADR, the `index.md`
+update, and the plan link rewrites.
 
 ## Branch and PR
 
@@ -101,7 +101,8 @@ the moved ADR, the `index.md` update, and the plan link rewrites.
   `snip`/`fabc` window factors `k`, `m`), and confirmation that the
   single `arpls` default holds across the tutorial corpus (CWL/TOF,
   neutron/X-ray). Only the constants are open; the parameter-to-backend
-  mapping itself is fixed in P1.3. Record anything surprising in the ADR.
+  mapping itself is fixed in P1.3. Record anything surprising in the
+  ADR.
 
 ## Concrete files likely to change
 
@@ -118,9 +119,10 @@ the moved ADR, the `index.md` update, and the plan link rewrites.
   `BackgroundTypeEnum`.
 - `src/easydiffraction/datablocks/experiment/categories/background/estimate.py`
   — **new** pure-function estimator module (parameterization + Stage-1
-  via `pybaselines` + Stage-2 thinning), returning a `BackgroundEstimate`
-  result object (curve, anchors, and the
-  method/width/noise/tolerance/backend-params metadata the adapter logs).
+  via `pybaselines` + Stage-2 thinning), returning a
+  `BackgroundEstimate` result object (curve, anchors, and the
+  method/width/noise/tolerance/backend-params metadata the adapter
+  logs).
 - `src/easydiffraction/core/collection.py` — reusable `clear()` on
   `CollectionBase` via `_adopt_items([])` (unlink children, empty
   `_items`, rebuild `_index`). Used by the overwrite contract.
@@ -131,12 +133,13 @@ the moved ADR, the `index.md` update, and the plan link rewrites.
   — add `LineSegmentBackground.auto_estimate()` (the thin adapter).
 - `docs/dev/adrs/{suggestions → accepted}/background-auto-estimate.md`
   and `docs/dev/adrs/index.md` — the ADR is promoted out of
-  `suggestions/` in **P1.0** (`git mv`, `**Status:** Accepted`, index row
-  flipped to `accepted/…`, `suggestions/` links rewritten); its technical
-  content is otherwise unchanged here. `/draft-impl-1`'s Phase A (before
-  the checklist) commits the reviewed plan and the still-in-`suggestions/`
-  ADR and removes the design siblings; the P1.0 step then commits the
-  promotion (moved ADR, index update, plan link rewrites).
+  `suggestions/` in **P1.0** (`git mv`, `**Status:** Accepted`, index
+  row flipped to `accepted/…`, `suggestions/` links rewritten); its
+  technical content is otherwise unchanged here. `/draft-impl-1`'s Phase
+  A (before the checklist) commits the reviewed plan and the
+  still-in-`suggestions/` ADR and removes the design siblings; the P1.0
+  step then commits the promotion (moved ADR, index update, plan link
+  rewrites).
 - Phase 2 (tests):
   `tests/unit/easydiffraction/datablocks/experiment/categories/background/test_estimate.py`
   (**new**), `…/test_line_segment.py` (update for `auto_estimate`), unit
@@ -153,9 +156,9 @@ step's `Commit:` message **before** moving to the next step or the Phase
 1 is **code + docs only — no tests** (those are Phase 2).
 
 - [x] **P1.0 — Promote the ADR to `accepted/`.** Per
-      [`AGENTS.md`](../../../AGENTS.md) → **Change Discipline**, a change
-      that implements an ADR must move it out of `suggestions/` in the
-      same change. `git mv`
+      [`AGENTS.md`](../../../AGENTS.md) → **Change Discipline**, a
+      change that implements an ADR must move it out of `suggestions/`
+      in the same change. `git mv`
       `docs/dev/adrs/suggestions/background-auto-estimate.md` →
       `docs/dev/adrs/accepted/background-auto-estimate.md`, set its
       `**Status:**` line to `Accepted`, flip the matching
@@ -186,21 +189,20 @@ step's `Commit:` message **before** moving to the next step or the Phase
 - [x] **P1.3 — Add the background curve estimator helper.** Create the
       new module `estimate.py` with a pure
       `estimate_background_curve(x, y, *, method='arpls', peaks=None, width=None, smoothness=None, n_points=None) -> BackgroundEstimate`.
-      (The ADR §6 sketch also lists `beam_mode`; it is **omitted from the
-      Phase 1 helper** — unused until the deferred per-beam-mode policy,
-      and keeping it would push the signature past the project's
+      (The ADR §6 sketch also lists `beam_mode`; it is **omitted from
+      the Phase 1 helper** — unused until the deferred per-beam-mode
+      policy, and keeping it would push the signature past the project's
       `PLR0913` 7-argument limit, which this plan honors rather than
-      bypasses.)
-      `method` is the **resolved** Stage-1 algorithm (`snip` / `arpls` /
-      `fabc` — never `auto`) and selects the `pybaselines` routine, so
-      **all backend dispatch lives in the helper**, not the adapter.
-      Derive `W` (find_peaks → peak_widths, ~75th percentile) and noise
-      σ (MAD of the second difference) when not supplied; compute the
-      Stage-1 `B(x)` via the selected `pybaselines` routine; thin `B(x)`
-      to anchors by RDP with tolerance `c · σ` (endpoints kept, optional
-      `n_points` cap). Array-in/array-out, no model state, no domain
-      imports. Extract helpers to stay under the lint complexity
-      thresholds.
+      bypasses.) `method` is the **resolved** Stage-1 algorithm (`snip`
+      / `arpls` / `fabc` — never `auto`) and selects the `pybaselines`
+      routine, so **all backend dispatch lives in the helper**, not the
+      adapter. Derive `W` (find_peaks → peak_widths, ~75th percentile)
+      and noise σ (MAD of the second difference) when not supplied;
+      compute the Stage-1 `B(x)` via the selected `pybaselines` routine;
+      thin `B(x)` to anchors by RDP with tolerance `c · σ` (endpoints
+      kept, optional `n_points` cap). Array-in/array-out, no model
+      state, no domain imports. Extract helpers to stay under the lint
+      complexity thresholds.
 
       **Return value.** Return a small frozen result object
       `BackgroundEstimate` (a `dataclass` or `NamedTuple` local to

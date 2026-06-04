@@ -23,31 +23,31 @@ classifiers = [
 ]
 requires-python = '>=3.12'
 dependencies = [
-  'numpy',          # Numerical computing library
-  'asciichartpy',   # ASCII charts for terminal output
-  'pooch',          # Data downloader
-  'typer',          # Command-line interface creation
-  'rich',           # Rich text and beautiful formatting in the terminal
-  'varname',        # Variable name introspection
-  'asteval',        # An expression evaluator for Python
-  'scipy',          # Scientific computing library
-  'sympy',          # Symbolic mathematics library
-  'lmfit',          # Non-linear optimization and curve fitting
-  'bumps',          # Non-linear optimization and curve fitting
-  'emcee',          # Affine-invariant MCMC sampler
-  'dfo-ls',         # Non-linear optimization and curve fitting
-  'gemmi',          # Crystallography library
-  'cryspy',         # Calculations of diffraction patterns
-  'crysfml',        # Calculations of diffraction patterns
-  'diffpy.pdffit2', # Calculations of Pair Distribution Function (PDF)
-  'diffpy.utils',   # Utilities for PDF calculations
-  'uncertainties',  # Propagation of uncertainties
-  'h5py',           # HDF5 file handling
-  'typeguard',      # Runtime type checking
-  'darkdetect',     # Detecting dark mode (system-level)
-  'pandas',         # Displaying tables in Jupyter notebooks
-  'plotly',         # Interactive plots
-  'pillow',         # Rendering structure figures (labels, legend) for reports
+  'numpy',            # Numerical computing library
+  'asciichartpy',     # ASCII charts for terminal output
+  'pooch',            # Data downloader
+  'typer',            # Command-line interface creation
+  'rich',             # Rich text and beautiful formatting in the terminal
+  'varname',          # Variable name introspection
+  'asteval',          # An expression evaluator for Python
+  'scipy',            # Scientific computing library
+  'sympy',            # Symbolic mathematics library
+  'lmfit',            # Non-linear optimization and curve fitting
+  'bumps',            # Non-linear optimization and curve fitting
+  'emcee',            # Affine-invariant MCMC sampler
+  'dfo-ls',           # Non-linear optimization and curve fitting
+  'gemmi',            # Crystallography library
+  'cryspy',           # Calculations of diffraction patterns
+  'crysfml',          # Calculations of diffraction patterns
+  'diffpy.pdffit2',   # Calculations of Pair Distribution Function (PDF)
+  'diffpy.utils',     # Utilities for PDF calculations
+  'uncertainties',    # Propagation of uncertainties
+  'h5py',             # HDF5 file handling
+  'typeguard',        # Runtime type checking
+  'darkdetect',       # Detecting dark mode (system-level)
+  'pandas',           # Displaying tables in Jupyter notebooks
+  'plotly',           # Interactive plots
+  'pillow',           # Rendering structure figures (labels, legend) for reports
   'pybaselines>=1.1', # Background curve estimation backend (SNIP, arPLS, fabc)
 ]
 
