@@ -117,11 +117,7 @@ experiment.peak.broad_gauss_w = 0.1
 experiment.peak.broad_lorentz_y = 0.1
 
 # %%
-experiment.background.create(id='1', x=10, y=170)
-experiment.background.create(id='2', x=30, y=170)
-experiment.background.create(id='3', x=50, y=170)
-experiment.background.create(id='4', x=110, y=170)
-experiment.background.create(id='5', x=165, y=170)
+experiment.background.auto_estimate()
 
 # %%
 experiment.excluded_regions.create(id='1', start=0, end=5)
@@ -152,11 +148,8 @@ experiment.peak.broad_gauss_v.free = True
 experiment.peak.broad_gauss_w.free = True
 experiment.peak.broad_lorentz_y.free = True
 
-experiment.background['1'].y.free = True
-experiment.background['2'].y.free = True
-experiment.background['3'].y.free = True
-experiment.background['4'].y.free = True
-experiment.background['5'].y.free = True
+for point in experiment.background:
+    point.y.free = True
 
 experiment.linked_phases['lbco'].scale.free = True
 
