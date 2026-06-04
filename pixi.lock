@@ -241,6 +241,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/38/8b/7ec325b4e9e78beefc2d025b01ee8a2fde771ef7c957c3bff99b9e1fbffa/xraydb-4.5.8-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3a/eb/fea4d1d51c49832120f7f285d07306db3960f423a2612c6057caf3e8196f/pip-26.1.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3c/26/1062c7ec1b053db9e499b4d2d5bc231743201b74051c973dadeac80a8f43/questionary-2.1.1-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/3d/66/f044d53935b142d47ce2a65b8c4f51fdb5ca85ee1035fb2b7857971b122e/pybaselines-1.2.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3e/17/1f31d8562e6f970d64911f1abc330d233bc0c0601411cf7e19c1292be6da/spdx_headers-1.5.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3e/5c/fb93d3092640a24dfb7bd7727a24016d7c01774ca013e60efd3f683c8002/backrefs-7.0-py314-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3f/d0/7b958df957e4827837b590944008f0b28078f552b451f7407b4b3d54f574/asciichartpy-1.5.25-py2.py3-none-any.whl
@@ -560,6 +561,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/38/8b/7ec325b4e9e78beefc2d025b01ee8a2fde771ef7c957c3bff99b9e1fbffa/xraydb-4.5.8-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3a/eb/fea4d1d51c49832120f7f285d07306db3960f423a2612c6057caf3e8196f/pip-26.1.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3c/26/1062c7ec1b053db9e499b4d2d5bc231743201b74051c973dadeac80a8f43/questionary-2.1.1-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/3d/66/f044d53935b142d47ce2a65b8c4f51fdb5ca85ee1035fb2b7857971b122e/pybaselines-1.2.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3e/17/1f31d8562e6f970d64911f1abc330d233bc0c0601411cf7e19c1292be6da/spdx_headers-1.5.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3e/5c/fb93d3092640a24dfb7bd7727a24016d7c01774ca013e60efd3f683c8002/backrefs-7.0-py314-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3f/d0/7b958df957e4827837b590944008f0b28078f552b451f7407b4b3d54f574/asciichartpy-1.5.25-py2.py3-none-any.whl
@@ -875,6 +877,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/38/8b/7ec325b4e9e78beefc2d025b01ee8a2fde771ef7c957c3bff99b9e1fbffa/xraydb-4.5.8-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3a/eb/fea4d1d51c49832120f7f285d07306db3960f423a2612c6057caf3e8196f/pip-26.1.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3c/26/1062c7ec1b053db9e499b4d2d5bc231743201b74051c973dadeac80a8f43/questionary-2.1.1-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/3d/66/f044d53935b142d47ce2a65b8c4f51fdb5ca85ee1035fb2b7857971b122e/pybaselines-1.2.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3e/14/615a450205e1b56d16c6783f5ccd116cde05550faad70ae077c955654a75/h5py-3.16.0-cp314-cp314-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/3e/17/1f31d8562e6f970d64911f1abc330d233bc0c0601411cf7e19c1292be6da/spdx_headers-1.5.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3e/5c/fb93d3092640a24dfb7bd7727a24016d7c01774ca013e60efd3f683c8002/backrefs-7.0-py314-none-any.whl
@@ -1218,6 +1221,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/38/8b/7ec325b4e9e78beefc2d025b01ee8a2fde771ef7c957c3bff99b9e1fbffa/xraydb-4.5.8-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3a/eb/fea4d1d51c49832120f7f285d07306db3960f423a2612c6057caf3e8196f/pip-26.1.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3c/26/1062c7ec1b053db9e499b4d2d5bc231743201b74051c973dadeac80a8f43/questionary-2.1.1-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/3d/66/f044d53935b142d47ce2a65b8c4f51fdb5ca85ee1035fb2b7857971b122e/pybaselines-1.2.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3e/17/1f31d8562e6f970d64911f1abc330d233bc0c0601411cf7e19c1292be6da/spdx_headers-1.5.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3f/d0/7b958df957e4827837b590944008f0b28078f552b451f7407b4b3d54f574/asciichartpy-1.5.25-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3f/f9/2b3ff4e56e5fa7debfaf9eb135d0da96f3e9a1d5b27222223c7296336e5f/typer-0.25.1-py3-none-any.whl
@@ -1547,6 +1551,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/38/8b/7ec325b4e9e78beefc2d025b01ee8a2fde771ef7c957c3bff99b9e1fbffa/xraydb-4.5.8-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3a/eb/fea4d1d51c49832120f7f285d07306db3960f423a2612c6057caf3e8196f/pip-26.1.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3c/26/1062c7ec1b053db9e499b4d2d5bc231743201b74051c973dadeac80a8f43/questionary-2.1.1-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/3d/66/f044d53935b142d47ce2a65b8c4f51fdb5ca85ee1035fb2b7857971b122e/pybaselines-1.2.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3e/17/1f31d8562e6f970d64911f1abc330d233bc0c0601411cf7e19c1292be6da/spdx_headers-1.5.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3f/d0/7b958df957e4827837b590944008f0b28078f552b451f7407b4b3d54f574/asciichartpy-1.5.25-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3f/f9/2b3ff4e56e5fa7debfaf9eb135d0da96f3e9a1d5b27222223c7296336e5f/typer-0.25.1-py3-none-any.whl
@@ -1859,6 +1864,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/38/8b/7ec325b4e9e78beefc2d025b01ee8a2fde771ef7c957c3bff99b9e1fbffa/xraydb-4.5.8-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3a/eb/fea4d1d51c49832120f7f285d07306db3960f423a2612c6057caf3e8196f/pip-26.1.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3c/26/1062c7ec1b053db9e499b4d2d5bc231743201b74051c973dadeac80a8f43/questionary-2.1.1-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/3d/66/f044d53935b142d47ce2a65b8c4f51fdb5ca85ee1035fb2b7857971b122e/pybaselines-1.2.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3e/17/1f31d8562e6f970d64911f1abc330d233bc0c0601411cf7e19c1292be6da/spdx_headers-1.5.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3f/d0/7b958df957e4827837b590944008f0b28078f552b451f7407b4b3d54f574/asciichartpy-1.5.25-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3f/f9/2b3ff4e56e5fa7debfaf9eb135d0da96f3e9a1d5b27222223c7296336e5f/typer-0.25.1-py3-none-any.whl
@@ -2200,6 +2206,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/38/8b/7ec325b4e9e78beefc2d025b01ee8a2fde771ef7c957c3bff99b9e1fbffa/xraydb-4.5.8-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3a/eb/fea4d1d51c49832120f7f285d07306db3960f423a2612c6057caf3e8196f/pip-26.1.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3c/26/1062c7ec1b053db9e499b4d2d5bc231743201b74051c973dadeac80a8f43/questionary-2.1.1-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/3d/66/f044d53935b142d47ce2a65b8c4f51fdb5ca85ee1035fb2b7857971b122e/pybaselines-1.2.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3e/17/1f31d8562e6f970d64911f1abc330d233bc0c0601411cf7e19c1292be6da/spdx_headers-1.5.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3e/5c/fb93d3092640a24dfb7bd7727a24016d7c01774ca013e60efd3f683c8002/backrefs-7.0-py314-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3f/d0/7b958df957e4827837b590944008f0b28078f552b451f7407b4b3d54f574/asciichartpy-1.5.25-py2.py3-none-any.whl
@@ -2519,6 +2526,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/38/8b/7ec325b4e9e78beefc2d025b01ee8a2fde771ef7c957c3bff99b9e1fbffa/xraydb-4.5.8-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3a/eb/fea4d1d51c49832120f7f285d07306db3960f423a2612c6057caf3e8196f/pip-26.1.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3c/26/1062c7ec1b053db9e499b4d2d5bc231743201b74051c973dadeac80a8f43/questionary-2.1.1-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/3d/66/f044d53935b142d47ce2a65b8c4f51fdb5ca85ee1035fb2b7857971b122e/pybaselines-1.2.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3e/17/1f31d8562e6f970d64911f1abc330d233bc0c0601411cf7e19c1292be6da/spdx_headers-1.5.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3e/5c/fb93d3092640a24dfb7bd7727a24016d7c01774ca013e60efd3f683c8002/backrefs-7.0-py314-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3f/d0/7b958df957e4827837b590944008f0b28078f552b451f7407b4b3d54f574/asciichartpy-1.5.25-py2.py3-none-any.whl
@@ -2834,6 +2842,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/38/8b/7ec325b4e9e78beefc2d025b01ee8a2fde771ef7c957c3bff99b9e1fbffa/xraydb-4.5.8-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3a/eb/fea4d1d51c49832120f7f285d07306db3960f423a2612c6057caf3e8196f/pip-26.1.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3c/26/1062c7ec1b053db9e499b4d2d5bc231743201b74051c973dadeac80a8f43/questionary-2.1.1-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/3d/66/f044d53935b142d47ce2a65b8c4f51fdb5ca85ee1035fb2b7857971b122e/pybaselines-1.2.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3e/14/615a450205e1b56d16c6783f5ccd116cde05550faad70ae077c955654a75/h5py-3.16.0-cp314-cp314-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/3e/17/1f31d8562e6f970d64911f1abc330d233bc0c0601411cf7e19c1292be6da/spdx_headers-1.5.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3e/5c/fb93d3092640a24dfb7bd7727a24016d7c01774ca013e60efd3f683c8002/backrefs-7.0-py314-none-any.whl
@@ -8757,6 +8766,7 @@ packages:
   - pillow
   - plotly
   - pooch
+  - pybaselines>=1.1
   - rich
   - scipy
   - sympy
@@ -9920,6 +9930,40 @@ packages:
   sha256: a51af13f345f1cdea62347589fbb6df3b290306ab8930713bfae4d475a7d4a59
   requires_dist:
   - prompt-toolkit>=2.0,<4.0
+  requires_python: '>=3.9'
+- pypi: https://files.pythonhosted.org/packages/3d/66/f044d53935b142d47ce2a65b8c4f51fdb5ca85ee1035fb2b7857971b122e/pybaselines-1.2.1-py3-none-any.whl
+  name: pybaselines
+  version: 1.2.1
+  sha256: d8f224a0b5ac4cdcef861bc60533131c37255b4d1193f18a410bc37fe5217c73
+  requires_dist:
+  - numpy>=1.20
+  - scipy>=1.6
+  - build ; extra == 'dev'
+  - bump-my-version ; extra == 'dev'
+  - matplotlib ; extra == 'dev'
+  - numba>=0.53 ; extra == 'dev'
+  - numpydoc ; extra == 'dev'
+  - pentapy>=1.1 ; extra == 'dev'
+  - pytest>=6.0 ; extra == 'dev'
+  - ruff ; extra == 'dev'
+  - sphinx ; extra == 'dev'
+  - sphinx-copybutton ; extra == 'dev'
+  - sphinx-gallery>=0.16 ; extra == 'dev'
+  - sphinx-rtd-theme ; extra == 'dev'
+  - twine ; extra == 'dev'
+  - matplotlib ; extra == 'docs'
+  - numpydoc ; extra == 'docs'
+  - sphinx ; extra == 'docs'
+  - sphinx-copybutton ; extra == 'docs'
+  - sphinx-gallery>=0.16 ; extra == 'docs'
+  - sphinx-rtd-theme ; extra == 'docs'
+  - numba>=0.53 ; extra == 'full'
+  - pentapy>=1.1 ; extra == 'full'
+  - build ; extra == 'release'
+  - bump-my-version ; extra == 'release'
+  - twine ; extra == 'release'
+  - pytest>=6.0 ; extra == 'test'
+  - ruff ; extra == 'test'
   requires_python: '>=3.9'
 - pypi: https://files.pythonhosted.org/packages/3e/14/615a450205e1b56d16c6783f5ccd116cde05550faad70ae077c955654a75/h5py-3.16.0-cp314-cp314-win_amd64.whl
   name: h5py

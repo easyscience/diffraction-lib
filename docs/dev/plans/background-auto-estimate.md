@@ -169,7 +169,7 @@ step's `Commit:` message **before** moving to the next step or the Phase
       `docs/dev/plans/background-auto-estimate.md`. Commit:
       `Promote background-auto-estimate ADR to accepted`
 
-- [ ] **P1.1 — Add `pybaselines` dependency.** Add `'pybaselines>=1.1'`
+- [x] **P1.1 — Add `pybaselines` dependency.** Add `'pybaselines>=1.1'`
       to the `dependencies` list in `pyproject.toml` (it is the new
       runtime backend, §4 of the ADR). Run `pixi lock` to regenerate
       `pixi.lock`. Stage `pyproject.toml` and `pixi.lock` (and

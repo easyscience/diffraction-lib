@@ -48,6 +48,7 @@ dependencies = [
   'pandas',         # Displaying tables in Jupyter notebooks
   'plotly',         # Interactive plots
   'pillow',         # Rendering structure figures (labels, legend) for reports
+  'pybaselines>=1.1', # Background curve estimation backend (SNIP, arPLS, fabc)
 ]
 
 [project.optional-dependencies]
