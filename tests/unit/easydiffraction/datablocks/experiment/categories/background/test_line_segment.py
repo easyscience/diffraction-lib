@@ -150,3 +150,76 @@ def test_auto_estimate_empty_data_warns(monkeypatch):
     bkg.auto_estimate()
     assert len(bkg) == 0
     assert any('No active data' in r for r in records)
+
+
+def _patch_helper(monkeypatch, captured, anchors=None):
+    """Replace the estimator helper with a fake that records its inputs."""
+
+    def fake(x, y, *, method, peaks, width, smoothness, n_points):
+        captured.update(
+            x=np.asarray(x),
+            y=np.asarray(y),
+            method=method,
+            peaks=(None if peaks is None else np.asarray(peaks)),
+            width=width,
+            n_points=n_points,
+        )
+        rows = anchors if anchors is not None else np.array([[x[0], 1.0], [x[-1], 1.0]])
+        return SimpleNamespace(anchors=rows, width=5.0)
+
+    monkeypatch.setattr(line_segment, 'estimate', SimpleNamespace(estimate_background_curve=fake))
+
+
+def test_auto_estimate_forwards_resolved_method(monkeypatch):
+    captured = {}
+    _patch_helper(monkeypatch, captured)
+    x, y = _synthetic(seed=20)
+    for requested, expected in (
+        ('auto', 'arpls'),
+        ('snip', 'snip'),
+        ('arpls', 'arpls'),
+        ('fabc', 'fabc'),
+    ):
+        _make_background(x, y).auto_estimate(method=requested)
+        assert captured['method'] == expected
+
+
+def test_auto_estimate_model_guided_passes_peak_subtracted_inputs(monkeypatch):
+    captured = {}
+    _patch_helper(monkeypatch, captured)
+    x = np.linspace(0.0, 10.0, 200)
+    peak = 40.0 * np.exp(-((x - 5.0) ** 2) / (2.0 * 0.2**2))
+    bkg = np.full_like(x, 90.0)
+    meas = bkg + peak + 3.0
+    calc = bkg + peak  # populated model -> model-guided path
+    obj = _make_background(x, meas, intensity_calc=calc, intensity_bkg=bkg)
+    obj.auto_estimate(use_model=True)
+    # Helper receives the peak-subtracted measured intensities, not the raw data.
+    assert np.allclose(captured['y'], meas - (calc - bkg))
+    # ...and a non-empty forbidden mask built from the model peak.
+    assert captured['peaks'] is not None
+    assert captured['peaks'].any()
+
+
+def test_auto_estimate_data_only_passes_raw_inputs(monkeypatch):
+    captured = {}
+    _patch_helper(monkeypatch, captured)
+    x, meas = _synthetic(seed=21)
+    calc = meas.copy()  # even with a populated model present...
+    obj = _make_background(x, meas, intensity_calc=calc)
+    obj.auto_estimate(use_model=False)  # ...use_model=False forces the data-only path
+    assert np.allclose(captured['y'], meas)
+    assert captured['peaks'] is None
+
+
+def test_auto_estimate_clips_heights_to_measured(monkeypatch):
+    captured = {}
+    x = np.linspace(0.0, 10.0, 101)
+    meas = np.full_like(x, 50.0)
+    anchors = np.array([[x[0], 80.0], [x[50], -10.0], [x[-1], 30.0]])
+    _patch_helper(monkeypatch, captured, anchors=anchors)
+    obj = _make_background(x, meas)
+    obj.auto_estimate()
+    heights = [p.y.value for p in obj._items]
+    # Absolute anchor heights clipped to [0, measured(=50)] -- no residual add-back.
+    assert heights == [50.0, 0.0, 30.0]
