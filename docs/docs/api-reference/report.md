@@ -1,1 +1,1 @@
-::: easydiffraction.project.categories.report.default.Report
+::: easydiffraction.report
