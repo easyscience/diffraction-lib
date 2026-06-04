@@ -263,7 +263,7 @@ step's `Commit:` message **before** moving to the next step or the Phase
       these invariants is added in Phase 2.) Commit:
       `Add clear method to CollectionBase`
 
-- [ ] **P1.5 — Add `LineSegmentBackground.auto_estimate()`.** In
+- [x] **P1.5 — Add `LineSegmentBackground.auto_estimate()`.** In
       `line_segment.py`, add the public method (signature in
       _Decisions_). It: reads `self._parent.data`; chooses the helper
       input `y` — data-only `intensity_meas`, or, when `use_model` and
