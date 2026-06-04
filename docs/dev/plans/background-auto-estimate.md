@@ -1,7 +1,7 @@
 # Plan: Automatic Line-Segment Background Estimation
 
 This plan follows [`AGENTS.md`](../../../AGENTS.md) and implements the
-[`background-auto-estimate`](../adrs/suggestions/background-auto-estimate.md)
+[`background-auto-estimate`](../adrs/accepted/background-auto-estimate.md)
 ADR (drafted via `/draft-adr`, review cycle closed at the sentinel).
 
 **Dependency authorization (for `/draft-impl-1`):** this plan **names
@@ -14,9 +14,10 @@ autonomously. No other deliberate exception to `AGENTS.md` is taken.
 
 ## ADR
 
-This plan owns the ADR, currently at
-[`docs/dev/adrs/suggestions/background-auto-estimate.md`](../adrs/suggestions/background-auto-estimate.md)
-(Status: Proposed). Because this change **implements** that ADR,
+This plan owns the ADR at
+[`docs/dev/adrs/accepted/background-auto-estimate.md`](../adrs/accepted/background-auto-estimate.md)
+(Status: Accepted — promoted from `suggestions/` in step P1.0). Because
+this change **implements** that ADR,
 [`AGENTS.md`](../../../AGENTS.md) → **Change Discipline** requires the
 **same change** to promote it to `accepted/` before the PR is opened — a
 PR that implements an ADR must not leave it in `suggestions/`. Promotion
@@ -151,7 +152,7 @@ step's `Commit:` message **before** moving to the next step or the Phase
 1 review gate. Mark `[x]` in this file as part of the same commit. Phase
 1 is **code + docs only — no tests** (those are Phase 2).
 
-- [ ] **P1.0 — Promote the ADR to `accepted/`.** Per
+- [x] **P1.0 — Promote the ADR to `accepted/`.** Per
       [`AGENTS.md`](../../../AGENTS.md) → **Change Discipline**, a change
       that implements an ADR must move it out of `suggestions/` in the
       same change. `git mv`
