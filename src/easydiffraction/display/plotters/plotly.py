@@ -2994,7 +2994,10 @@ scheduleResize();
         height: int | None = None,
     ) -> None:
         """Render a scatter plot with error bars via Plotly."""
-        _ = height  # not used by Plotly backend
+        # The passed height is an ASCII row count; the Plotly scatter
+        # panel is sized to the composite main row instead, so it
+        # matches the pattern plot's top panel.
+        del height
 
         trace = go.Scatter(
             x=x,
@@ -3021,6 +3024,7 @@ scheduleResize();
         layout = self._get_layout(
             title,
             axes_labels,
+            height=self._single_main_panel_height_pixels(DEFAULT_RESIDUAL_HEIGHT_FRACTION),
         )
 
         fig = self._get_figure(trace, layout)
