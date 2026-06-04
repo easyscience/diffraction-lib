@@ -12,6 +12,11 @@ TEMP_DIR = tempfile.gettempdir()
 @pytest.mark.fast
 def test_neutron_pd_cwl_lbco_crysfml(tmp_path) -> None:
     import easydiffraction as ed
+    from easydiffraction.analysis.calculators.crysfml import CrysfmlCalculator
+
+    # Fail clearly if the crysfml backend is not importable, rather than
+    # raising a generic "unsupported calculator" error further down.
+    assert CrysfmlCalculator.engine_imported is True
 
     # Create a project from CIF files
     project = ed.Project()
