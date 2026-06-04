@@ -359,15 +359,17 @@ Work_ — to avoid an abstraction before its second concrete use.
 The four design questions raised in review are resolved: noise-relative
 Stage-2 thinning (§3), always-overwrite with a replace notice (§5), a
 single Stage-1 method for now (§3), and a void method that logs a
-one-line summary (§1). What remains is empirical calibration, done
-against the tutorial corpus during implementation:
+one-line summary (§1). Empirical calibration was carried out in Phase 2:
 
-- The exact Stage-2 tolerance multiplier (`c · σ`, proposed `c ≈ 2`) and
-  the width percentile (proposed ~75th) need tuning against real
-  datasets.
-- Whether the single Stage-1 method holds across the whole corpus
-  (CWL/TOF, neutron/X-ray) or a `beam_mode`/`radiation_probe` policy is
-  eventually needed (see §Deferred Work).
+- The Stage-2 tolerance multiplier (`c · σ`, `c = 2`) and the width
+  percentile (~75th) are first-cut constants; they were validated — not
+  exhaustively swept — against the representative CWL (`ed-2`) and TOF
+  (`ed-13`) datasets plus the analytic unit cases, and produce sensible
+  backgrounds there. Re-tuning stays possible if a future dataset needs
+  it.
+- The single Stage-1 method (`arpls`) holds for both validated beam
+  modes; no `beam_mode`/`radiation_probe` policy was required (it stays
+  in §Deferred Work should a future corpus show otherwise).
 
 ## Consequences
 
@@ -471,22 +473,22 @@ helper:
   the single fallback warning rather than an exception or a garbage
   background.
 
-**Tutorial corpus as real-world reference.** The ~25 tutorial scripts in
-`docs/docs/tutorials/*.py` already build real experiments with
-well-defined backgrounds across both beam modes and both probes — CWL
-(e.g. the sloping background in
-[`ed-17.py`](../../../../docs/docs/tutorials/ed-17.py) and
-[`ed-2.py`](../../../../docs/docs/tutorials/ed-2.py)) and TOF (e.g.
-[`ed-13.py`](../../../../docs/docs/tutorials/ed-13.py),
-[`ed-16.py`](../../../../docs/docs/tutorials/ed-16.py)). Their
-hand-placed line-segment points are ground truth: stripping them and
+**Tutorial corpus as real-world reference.** The tutorial scripts in
+`docs/docs/tutorials/*.py` build real experiments with well-defined
+backgrounds across both beam modes and both probes. Their hand-placed
+line-segment points are a real-world reference: stripping them and
 re-running `auto_estimate()` should reproduce a comparable background
-curve within tolerance. This gives broad, real coverage across space
-groups, beam modes, and probes at almost no authoring cost, and is the
-reference set used to calibrate the default constants and confirm the
-single Stage-1 method. These corpus checks run at the functional /
-script level where the tutorial experiments are already loaded, not at
-unit level.
+curve. **Phase 2 outcome:** the functional regression validates two
+representative datasets — CWL
+[`ed-2.py`](../../../../docs/docs/tutorials/ed-2.py) and TOF
+[`ed-13.py`](../../../../docs/docs/tutorials/ed-13.py) — comparing the
+estimated curve against the hand-placed reference to within a fraction
+of the measured signal scale; the single `arpls` default and the
+first-cut constants hold for both. Sloping and curved backgrounds are
+covered against exact analytic ground truth by the unit tests, not the
+corpus. A broader per-tutorial sweep (e.g. `ed-17`, `ed-16`) was not
+needed and stays available if a future dataset misbehaves. These checks
+run at the functional / unit level.
 
 The estimator module mirrors into
 `tests/unit/easydiffraction/datablocks/experiment/categories/background/`

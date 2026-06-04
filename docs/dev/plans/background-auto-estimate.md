@@ -94,15 +94,16 @@ update, and the plan link rewrites.
 
 ## Open questions
 
-- **Empirical calibration (resolved during Phase 2, not blocking).** The
-  Stage-2 tolerance multiplier (`c · σ`, proposed `c ≈ 2`), the width
-  percentile (proposed ~75th), the numeric constants in the backend
-  dispatch contract (P1.3 — the `arpls`/`fabc` `lam` scaling and the
-  `snip`/`fabc` window factors `k`, `m`), and confirmation that the
-  single `arpls` default holds across the tutorial corpus (CWL/TOF,
-  neutron/X-ray). Only the constants are open; the parameter-to-backend
-  mapping itself is fixed in P1.3. Record anything surprising in the
-  ADR.
+- **Empirical calibration (carried out in Phase 2).** The Stage-2
+  tolerance multiplier (`c · σ`, `c = 2`), the width percentile (~75th),
+  and the backend dispatch constants (P1.3 — the `arpls`/`fabc` `lam`
+  scaling and the `snip`/`fabc` window factors `k`, `m`) are first-cut
+  values, validated against the representative CWL (`ed-2`) and TOF
+  (`ed-13`) datasets and the analytic unit cases rather than
+  exhaustively swept across all tutorials. The single `arpls` default
+  holds for both validated beam modes. The parameter-to-backend mapping
+  is fixed in P1.3; only the constants stay tunable if a future dataset
+  needs it.
 
 ## Concrete files likely to change
 
@@ -329,15 +330,18 @@ Tests to add/update (unit tests mirror the source tree per
   `CategoryCollection` marks its parent dirty — tested directly, not
   only via `auto_estimate()`.
 - **Functional tutorial-corpus comparison** in `tests/functional/`
-  (data-only, no engine; run by `pixi run functional-tests`): load
-  representative tutorial experiments — CWL
-  [`ed-2.py`](../../docs/tutorials/ed-2.py),
-  [`ed-17.py`](../../docs/tutorials/ed-17.py); TOF
-  [`ed-13.py`](../../docs/tutorials/ed-13.py),
-  [`ed-16.py`](../../docs/tutorials/ed-16.py) — strip their hand-placed
-  points, run `auto_estimate()`, and assert the recovered curve matches
-  the original within tolerance. Use this to calibrate `c` and the width
-  percentile and confirm the single `arpls` default.
+  (data-only, no engine; run by `pixi run functional-tests`): for each
+  case, record the hand-placed background, strip it, run
+  `auto_estimate()`, interpolate the generated curve over the active
+  data, and assert it tracks the reference to within a fraction of the
+  measured signal scale. As implemented this covers CWL
+  [`ed-2.py`](../../docs/tutorials/ed-2.py) and TOF
+  [`ed-13.py`](../../docs/tutorials/ed-13.py); `ed-17` (zip scan
+  directory) and `ed-16` (loop-defined background) are substituted with
+  the justification noted in the test, and sloping/curved backgrounds
+  are covered with analytic ground truth by the unit tests. Confirms the
+  single `arpls` default and the first-cut `c` / width-percentile
+  constants.
 - Verify the test-structure mirror with `pixi run test-structure-check`.
 
 Verification commands (zsh-safe log capture where output is needed):
