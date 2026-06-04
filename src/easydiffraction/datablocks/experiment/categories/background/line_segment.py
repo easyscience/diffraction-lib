@@ -190,11 +190,11 @@ def _validate_overrides(
 
     Parameters
     ----------
-    width : float or None
+    width : float | None
         Peak width override; must be positive when supplied.
-    smoothness : float or None
+    smoothness : float | None
         Smoothing override; must be positive when supplied.
-    n_points : int or None
+    n_points : int | None
         Anchor cap; must be an integer ``>= 2`` when supplied.
 
     Raises
@@ -224,7 +224,8 @@ def _model_peak_mask(peak_only: np.ndarray) -> np.ndarray:
     Parameters
     ----------
     peak_only : np.ndarray
-        Peak-only model intensities (``intensity_calc - intensity_bkg``).
+        Peak-only model intensities (``intensity_calc -
+        intensity_bkg``).
 
     Returns
     -------
@@ -304,24 +305,24 @@ class LineSegmentBackground(BackgroundBase):
         Detect background control points from the measured pattern.
 
         Builds a peak-insensitive background curve and thins it to a
-        sparse set of fixed line-segment points, overwriting any existing
-        ones. Heights come from the de-peaked curve, clipped to the
-        measured intensities so they never eat into peaks. After at least
-        one calculation, ``use_model`` lets the fitted model place better
-        points across overlapped regions.
+        sparse set of fixed line-segment points, overwriting any
+        existing ones. Heights come from the de-peaked curve, clipped to
+        the measured intensities so they never eat into peaks. After at
+        least one calculation, ``use_model`` lets the fitted model place
+        better points across overlapped regions.
 
         Parameters
         ----------
-        method : str, optional
-            Estimation method: ``auto`` (default, resolves to ``arpls``),
-            ``snip``, ``arpls`` or ``fabc``.
-        width : float or None, optional
+        method : str, default='auto'
+            Estimation method: ``auto`` (default, resolves to
+            ``arpls``), ``snip``, ``arpls`` or ``fabc``.
+        width : float | None, default=None
             Peak width in points; measured from the data when ``None``.
-        smoothness : float or None, optional
+        smoothness : float | None, default=None
             Backend smoothing override; derived when ``None``.
-        n_points : int or None, optional
+        n_points : int | None, default=None
             Maximum number of points; uncapped when ``None``.
-        use_model : bool, optional
+        use_model : bool, default=True
             When a calculation has run, subtract the fitted peaks before
             estimating so anchors land in true inter-peak gaps.
         """

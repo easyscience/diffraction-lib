@@ -119,9 +119,10 @@ def _measure_width(y: np.ndarray, sigma: float) -> tuple[float, np.ndarray]:
     """
     Measure a robust peak width and the prominent peak positions.
 
-    Peaks are found with a prominence threshold relative to the noise and
-    their full-width-at-half-maximum is summarised by a high percentile,
-    so the window clears the broadest (e.g. high-angle CWL) peaks.
+    Peaks are found with a prominence threshold relative to the noise
+    and their full-width-at-half-maximum is summarised by a high
+    percentile, so the window clears the broadest (e.g. high-angle CWL)
+    peaks.
 
     Parameters
     ----------
@@ -224,7 +225,7 @@ def _stage1_baseline(
         Resolved method: ``snip``, ``arpls`` or ``fabc``.
     width : float
         Peak width in points.
-    smoothness : float or None
+    smoothness : float | None
         Optional Whittaker penalty override.
 
     Returns
@@ -264,9 +265,10 @@ def _rdp_indices(x: np.ndarray, curve: np.ndarray, epsilon: float) -> np.ndarray
     """
     Vertical Ramer-Douglas-Peucker simplification of a curve.
 
-    Returns the indices of the points to keep so that every dropped point
-    lies within ``epsilon`` (in intensity units) of the piecewise-linear
-    interpolation through the kept points. The endpoints are always kept.
+    Returns the indices of the points to keep so that every dropped
+    point lies within ``epsilon`` (in intensity units) of the
+    piecewise-linear interpolation through the kept points. The
+    endpoints are always kept.
 
     Parameters
     ----------
@@ -403,7 +405,7 @@ def _thin_to_anchors(
         RDP tolerance (intensity units).
     forbidden : np.ndarray
         Boolean peak-region mask; non-endpoint anchors here are dropped.
-    n_points : int or None
+    n_points : int | None
         Optional maximum number of anchors (endpoints included).
 
     Returns
@@ -443,7 +445,7 @@ def _flat_estimate(
         Intensities.
     method : str
         Resolved method (recorded for the summary).
-    width : float or None
+    width : float | None
         Supplied width, if any.
     noise : float
         Noise estimate.
@@ -491,18 +493,18 @@ def estimate_background_curve(
     y : np.ndarray
         Intensities to baseline: the measured pattern (data-only) or the
         peak-subtracted measured pattern (model-guided).
-    method : str, optional
+    method : str, default='arpls'
         Resolved Stage-1 routine: ``arpls`` (default), ``snip`` or
         ``fabc``. ``auto`` is resolved by the caller, never here.
-    peaks : np.ndarray or None, optional
+    peaks : np.ndarray | None, default=None
         Boolean mask aligned with ``x``; ``True`` forbids a non-endpoint
         anchor. When ``None`` the mask is derived from ``y`` itself.
-    width : float or None, optional
+    width : float | None, default=None
         Peak width in points; derived from ``y`` when ``None``.
-    smoothness : float or None, optional
+    smoothness : float | None, default=None
         Whittaker penalty override for ``arpls``/``fabc``; ignored by
         ``snip``.
-    n_points : int or None, optional
+    n_points : int | None, default=None
         Maximum number of anchors (endpoints included); uncapped when
         ``None``.
 
