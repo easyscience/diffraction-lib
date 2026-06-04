@@ -125,15 +125,7 @@ expt.peak.broad_lorentz_y = 0
 # ### Set Background
 
 # %%
-expt.background.create(id='1', x=4.4196, y=500)
-expt.background.create(id='2', x=6.6207, y=500)
-expt.background.create(id='3', x=10.4918, y=500)
-expt.background.create(id='4', x=15.4634, y=500)
-expt.background.create(id='5', x=45.6041, y=500)
-expt.background.create(id='6', x=74.6844, y=500)
-expt.background.create(id='7', x=103.4187, y=500)
-expt.background.create(id='8', x=121.6311, y=500)
-expt.background.create(id='9', x=159.4116, y=500)
+expt.background.auto_estimate()
 
 # %% [markdown]
 # ### Set Linked Phases
