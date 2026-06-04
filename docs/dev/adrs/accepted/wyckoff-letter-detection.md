@@ -2,6 +2,14 @@
 
 **Status:** Accepted **Date:** 2026-06-01
 
+> **Amendment (2026-06-04):** the derived `space_group_Wyckoff` loop is
+> now **code-only** — it is excluded from IUCr/report output as well as
+> from project CIF. Wording below that calls the loop "report-facing" or
+> says the report writer "emits" it (the §"`space_group_Wyckoff` loop"
+> decision and the matching Consequences bullet) is superseded: the
+> table is reachable in code via `structure.space_group_wyckoff` but is
+> never serialized.
+
 ## Group
 
 Structure model.
@@ -447,13 +455,13 @@ which fall out naturally below.
   already emits the resolved `Wyckoff_symbol` for every atom and now
   also emits `_atom_site.site_symmetry_multiplicity`.
 - **`space_group_Wyckoff` loop.** The derived category is model-owned
-  and report-facing, but it is not persisted in project CIF. `Structure`
-  explicitly excludes it from project-save serialization via
-  `_serializable_categories()`, overriding `CategoryOwner`'s default of
-  serializing all owned categories. The IUCr/report writer emits the
-  `_space_group_Wyckoff.*` loop from the derived category because that
-  loop is useful report output even though it is redundant persisted
-  state.
+  and code-facing only; it is not serialized. `Structure` excludes it
+  from project-save serialization via `_serializable_categories()`,
+  overriding `CategoryOwner`'s default of serializing all owned
+  categories, and the IUCr/report writer likewise does **not** emit the
+  `_space_group_Wyckoff.*` loop — the table is redundant derived state,
+  reachable in code via `structure.space_group_wyckoff` but excluded
+  from both project CIF and report output (amended 2026-06-04).
 - **Derived values on read.** Multiplicity is recomputed from the
   letter, so any incoming `_atom_site.site_symmetry_multiplicity` is
   ignored rather than trusted; the `space_group_Wyckoff` category is
@@ -677,8 +685,8 @@ may miss:
   structure's space group (each entry's letter / multiplicity /
   site_symmetry / coords match `SPACE_GROUPS`), rebuilds when the space
   group changes, refuses all public mutation paths, is empty for an
-  absent group, is omitted from project CIF, and is emitted in
-  IUCr/report output;
+  absent group, and is omitted from both project CIF and IUCr/report
+  output (code-only, reachable via `structure.space_group_wyckoff`);
 - CIF round-trip stability — a written letter reloads verbatim, an
   omitted one re-derives to the same value, and an unsupported-group row
   keeps `None` multiplicity whether its letter is empty, explicitly
