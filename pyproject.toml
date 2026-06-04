@@ -224,7 +224,9 @@ exclude = [
 indent-width = 4
 line-length = 99 # See also `max-line-length` in [tool.ruff.lint.pycodestyle]
 preview = true # Enable new rules that are not yet stable, like DOC
-builtins = ['display']               # Clutch-fix/patch to https://github.com/nbQA-dev/nbQA/issues/882
+builtins = [
+  'display',
+] # Clutch-fix/patch to https://github.com/nbQA-dev/nbQA/issues/882
 # Formatting options for Ruff
 
 [tool.ruff.format]
