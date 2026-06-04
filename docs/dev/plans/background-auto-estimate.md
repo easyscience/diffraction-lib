@@ -176,7 +176,7 @@ step's `Commit:` message **before** moving to the next step or the Phase
       `pixi.toml` only if a direct pin was required). Commit:
       `Add pybaselines dependency`
 
-- [ ] **P1.2 — Add `BackgroundEstimatorMethodEnum`.** In `enums.py`, add
+- [x] **P1.2 — Add `BackgroundEstimatorMethodEnum`.** In `enums.py`, add
       a `StrEnum` with members `AUTO='auto'`, `SNIP='snip'`,
       `ARPLS='arpls'`, `FABC='fabc'`, plus `default()` (returns `AUTO`)
       and `description()`, following the existing `BackgroundTypeEnum`.
