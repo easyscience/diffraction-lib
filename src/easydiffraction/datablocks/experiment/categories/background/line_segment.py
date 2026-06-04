@@ -35,6 +35,8 @@ from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_table
 
+_MIN_ANCHOR_POINTS = 2  # Minimum line-segment anchors (the two endpoints)
+
 
 class LineSegment(CategoryItem):
     """Single background control point for interpolation."""
@@ -178,6 +180,39 @@ def _resolve_method(method: str) -> str:
     return chosen.value
 
 
+def _validate_overrides(
+    width: float | None,
+    smoothness: float | None,
+    n_points: int | None,
+) -> None:
+    """
+    Validate the public numeric overrides of ``auto_estimate``.
+
+    Parameters
+    ----------
+    width : float or None
+        Peak width override; must be positive when supplied.
+    smoothness : float or None
+        Smoothing override; must be positive when supplied.
+    n_points : int or None
+        Anchor cap; must be an integer ``>= 2`` when supplied.
+
+    Raises
+    ------
+    ValueError
+        If any supplied override is out of range.
+    """
+    if width is not None and width <= 0:
+        msg = f'width must be positive, got {width!r}.'
+        raise ValueError(msg)
+    if smoothness is not None and smoothness <= 0:
+        msg = f'smoothness must be positive, got {smoothness!r}.'
+        raise ValueError(msg)
+    if n_points is not None and (not isinstance(n_points, int) or n_points < _MIN_ANCHOR_POINTS):
+        msg = f'n_points must be an integer >= 2, got {n_points!r}.'
+        raise ValueError(msg)
+
+
 def _model_peak_mask(peak_only: np.ndarray) -> np.ndarray:
     """
     Build a forbidden-anchor mask from a peak-only model array.
@@ -291,6 +326,7 @@ class LineSegmentBackground(BackgroundBase):
             estimating so anchors land in true inter-peak gaps.
         """
         resolved = _resolve_method(method)
+        _validate_overrides(width, smoothness, n_points)
         data = self._parent.data
         x = np.asarray(data.x, dtype=float)
         if x.size == 0:
