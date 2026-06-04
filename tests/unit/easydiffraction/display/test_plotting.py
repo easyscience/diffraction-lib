@@ -863,9 +863,7 @@ def test_param_distribution_histogram_is_prebinned_not_raw_samples():
     assert len(histogram_trace.y) < sample_count // 10
     assert len(histogram_trace.x) == len(histogram_trace.y)
     # Density-normalised bars integrate to ~1 across their bin widths.
-    integral = float(
-        np.sum(np.asarray(histogram_trace.y) * np.asarray(histogram_trace.width))
-    )
+    integral = float(np.sum(np.asarray(histogram_trace.y) * np.asarray(histogram_trace.width)))
     assert integral == pytest.approx(1.0, abs=1e-3)
 
 
