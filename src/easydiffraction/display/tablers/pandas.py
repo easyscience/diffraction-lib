@@ -36,9 +36,13 @@ INDEX_COLOR = 'rgba(128, 128, 128, 0.7)'
 # ``min-width: 0`` neutralise MkDocs Material's ``table:not([class])``
 # rules, which otherwise inject a per-row ``border-top`` (stray rules
 # between rows) and ``th { min-width: 5rem }`` (over-wide columns) onto
-# class-less embedded tables. Inline values win over the theme
-# stylesheet, so no CSS class or ``<style>`` block is needed.
-_CELL_STYLE = 'padding: 0.25em 0.5em; line-height: 1.15em; border: 0; min-width: 0'
+# class-less embedded tables. ``white-space: nowrap`` keeps each cell on
+# one line so a wide table scrolls horizontally rather than folding into
+# multi-line rows. Inline values win over the theme stylesheet, so no
+# CSS class or ``<style>`` block is needed.
+_CELL_STYLE = (
+    'padding: 0.25em 0.5em; line-height: 1.15em; border: 0; min-width: 0; white-space: nowrap'
+)
 _TRANSPARENT_ROW = 'background-color: transparent'
 
 
