@@ -26,8 +26,8 @@ import easydiffraction as ed
 # ## 📦 Define Project
 
 # %%
-# Create minimal project without name and description
-project = ed.Project()
+# Create a minimal project with a short name
+project = ed.Project(name='lbco_hrpt')
 
 # %% [markdown]
 # ## 🧩 Define Structure
@@ -115,3 +115,9 @@ project.experiments.show_names()
 # %%
 # Plot measured vs. calculated diffraction patterns
 project.display.pattern(expt_name='hrpt')
+
+# %% [markdown]
+# ## 💾 Save Project
+
+# %%
+project.save_as(dir_path='projects/ed_1_lbco_hrpt')

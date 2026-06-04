@@ -47,8 +47,7 @@ dependencies = [
   'darkdetect',     # Detecting dark mode (system-level)
   'pandas',         # Displaying tables in Jupyter notebooks
   'plotly',         # Interactive plots
-  'py3Dmol',        # Visualisation of crystal structures
-  'pillow>=10.1',   # Rendering structure figures (labels, legend) for reports
+  'pillow',         # Rendering structure figures (labels, legend) for reports
 ]
 
 [project.optional-dependencies]
@@ -225,7 +224,9 @@ exclude = [
 indent-width = 4
 line-length = 99 # See also `max-line-length` in [tool.ruff.lint.pycodestyle]
 preview = true # Enable new rules that are not yet stable, like DOC
-
+builtins = [
+  'display',
+] # Clutch-fix/patch to https://github.com/nbQA-dev/nbQA/issues/882
 # Formatting options for Ruff
 
 [tool.ruff.format]
@@ -357,6 +358,9 @@ ignore = [
   'ANN',
   'D',
   'W',
+]
+'docs/docs/tutorials/**' = [
+  'E402', # https://docs.astral.sh/ruff/rules/module-import-not-at-top-of-file/
 ]
 
 # Specific options for certain rules

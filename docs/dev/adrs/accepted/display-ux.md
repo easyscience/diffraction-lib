@@ -82,8 +82,6 @@ project.display.fit.series(param, versus='diffrn.ambient_temperature')
 project.display.posterior.pairs()
 project.display.posterior.distribution(param)
 project.display.posterior.predictive(expt_name='hrpt')
-
-project.display.show_pattern_options(expt_name='hrpt')
 ```
 
 `project.analysis.display` is removed from the primary public API. Its
@@ -116,77 +114,14 @@ project.display.pattern(expt_name='hrpt')
 project.display.pattern(expt_name='hrpt', x_min=40, x_max=55)
 ```
 
-By default, `pattern()` uses `include='auto'` and displays as much
-useful information as the project state supports:
-
-- measured data if present
-- calculated data if linked structure state and calculated intensities
-  are available
-- background if powder Bragg measured and calculated data plus defined
-  background points are available
-- Bragg ticks if powder Bragg measured and calculated data plus
-  reflection rows are available
-- residual if both measured and calculated data are available and the
-  experiment type supports a residual panel
-- excluded regions if available on the experiment
-- uncertainty bands where posterior predictive data exists and the chart
-  engine supports them
-
-Specific subsets are selected with `include`:
-
-```python
-project.display.pattern(expt_name='hrpt', include='auto')
-project.display.pattern(expt_name='hrpt', include='measured')
-project.display.pattern(expt_name='hrpt', include='calculated')
-project.display.pattern(
-    expt_name='hrpt',
-    include=('measured', 'calculated', 'background', 'residual', 'bragg'),
-)
-```
-
-`include` was chosen over alternatives:
-
-| Name          | Reason not selected                             |
-| ------------- | ----------------------------------------------- |
-| `layers`      | Sounds graphical rather than user intent.       |
-| `components`  | Precise, but longer.                            |
-| `content`     | Too broad.                                      |
-| `view`        | Better for presets than arbitrary combinations. |
-| `series`      | Does not fit residual rows or Bragg ticks well. |
-| boolean flags | Explicit, but scales poorly.                    |
-
-Add discovery for supported pattern content:
-
-```python
-project.display.show_pattern_options(expt_name='hrpt')
-```
-
-The table shows option name, description, availability for the
-experiment, whether `include='auto'` includes it, and the reason an
-option is unavailable.
-
-Pattern option names:
-
-- `auto`
-- `measured`
-- `calculated`
-- `background`
-- `residual`
-- `bragg`
-- `excluded`
-- `uncertainty`
-
-`uncertainty` is available where posterior predictive data exists for a
-supported experiment and the active chart engine can render bands. It is
-unavailable, with a clear reason, when no posterior predictive data is
-present.
-
-Explicit combinations are validated against the same project state used
-by `include='auto'`. `background`, `bragg`, and `residual` require both
-measured and calculated data in the same view. `excluded` requires
-measured, calculated, or uncertainty content in the same view, and
-excluded-region overlays currently require the experiment's default
-x-axis.
+`pattern()` renders every kind of data the project state supports —
+measured, calculated, residual, Bragg ticks, background, excluded
+regions, and posterior predictive uncertainty, each shown when
+available. It takes no view-selection argument. The content rules, the
+removed `include` / `show_pattern_options` design, and the shared
+single- and multi-panel figure sizing are recorded in the
+[Unified Pattern View](pattern-display-unification.md) ADR, which
+supersedes the `include`-based pattern design once described here.
 
 ## Deterministic And Bayesian Consistency
 
@@ -230,8 +165,9 @@ users should not need to decide the output type before asking for
 information. Some outputs may render as a chart or a table depending on
 backend and state.
 
-Separate `measured()` and `calculated()` methods were rejected because
-they duplicate `pattern(..., include=...)`.
+Separate `measured()` and `calculated()` methods are unnecessary:
+`pattern()` shows every available kind of data directly, so there is no
+subset for them to select.
 
 ## Consequences
 

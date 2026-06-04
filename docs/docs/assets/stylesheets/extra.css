@@ -202,12 +202,33 @@ label.md-nav__title[for="__drawer"] {
 
 /* Change the overall width of the page */
 .md-grid {
-  max-width: 1280px;
+  max-width: 125em;
 }
 
-/* Needed for mkdocs-jupyter to show download and other buttons on top of the notebook */
-.md-content__button {
-  position: relative !important;
+/* Keep prose line length stable when sidebars are hidden at narrower widths */
+.md-main .md-content > .md-content__inner {
+  width: min(100%, 45em);
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* Notebook action buttons (Open in Colab, Download). The page title is the
+   notebook's own H1 rendered just below, so lay the buttons out as a
+   left-aligned row above it instead of the theme's default right float,
+   which overlapped long titles. */
+.md-content__nb-actions {
+  display: flex;
+  gap: 0.4rem;
+  /* Empty line of separation between the button row and the title */
+  margin-bottom: 1.2em;
+  /* Keep the row above the notebook, which is pulled up via margin-top */
+  position: relative;
+  z-index: 1;
+}
+
+.md-content__nb-actions .md-content__button {
+  float: none;
+  margin: 0;
 }
 
 /* Background color of the search input field */
@@ -241,7 +262,9 @@ body[data-md-color-scheme="slate"] .jupyter-wrapper {
 
 .jp-Notebook {
   padding: 0 !important;
-  margin-top: -3em !important;
+  /* Pull the notebook up to absorb the jupyter wrapper's intrinsic top
+     whitespace while leaving a small gap below the action-button row. */
+  margin-top: -0.5em !important;
 
   /* Ensure notebook content stretches across the page */
   width: 100% !important;

@@ -30,6 +30,7 @@ from easydiffraction.display.plotters.base import DEFAULT_AXES_LABELS
 from easydiffraction.display.plotters.base import DEFAULT_HEIGHT
 from easydiffraction.display.plotters.base import DEFAULT_MAX
 from easydiffraction.display.plotters.base import DEFAULT_MIN
+from easydiffraction.display.plotters.base import DEFAULT_RESIDUAL_HEIGHT_FRACTION
 from easydiffraction.display.plotters.base import DEFAULT_X_AXIS
 from easydiffraction.display.plotters.base import BraggTickSet
 from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
@@ -82,7 +83,6 @@ class PosteriorPairPlotStyleEnum(StrEnum):
 DEFAULT_CORRELATION_THRESHOLD: float | None = None
 DEFAULT_CORRELATION_MAX_PARAMETERS = 6
 EXPECTED_COVAR_NDIM = 2
-DEFAULT_RESIDUAL_HEIGHT_FRACTION = 0.25
 DEFAULT_BRAGG_PEAKS_HEIGHT_FRACTION = 0.10
 DEFAULT_RESID_HEIGHT = DEFAULT_RESIDUAL_HEIGHT_FRACTION
 DEFAULT_BRAGG_ROW = DEFAULT_BRAGG_PEAKS_HEIGHT_FRACTION
@@ -142,7 +142,7 @@ POSTERIOR_NEGATIVE_CONTOUR_LINE_COLORSCALE = [
     [0.82, 'rgba(215, 48, 39, 0.98)'],
     [1.0, 'rgba(215, 48, 39, 0.98)'],
 ]
-POSTERIOR_PAIR_SCATTER_MAX_POINTS = 1500
+POSTERIOR_PAIR_SCATTER_MAX_POINTS = 750  # keep embedded pair scatter small
 POSTERIOR_PAIR_MAX_DENSITY_SAMPLES = 4000
 POSTERIOR_PAIR_MIN_DENSITY_SAMPLES = 800
 POSTERIOR_PAIR_TARGET_DENSITY_SAMPLE_BUDGET = 24000
@@ -177,7 +177,6 @@ SQUARE_MATRIX_TITLE_LEFT_PADDING_PIXELS = 14
 CORRELATION_CELL_LABEL_CHAR_COUNT = 16
 CORRELATION_LABEL_CHAR_WIDTH_FACTOR = 0.6
 POSTERIOR_PAIR_SAMPLE_MARKER_SIZE = 6
-POSTERIOR_PAIR_SAMPLE_HOVER_MARKER_SIZE = 6
 
 
 @dataclass(frozen=True)
@@ -2096,7 +2095,7 @@ class Plotter(RendererBase):
                 name='Posterior samples',
                 legendgroup='posterior-samples',
                 showlegend=legend_state.show_scatter,
-                hoverinfo='skip',
+                hovertemplate=sample_hovertemplate,
                 zorder=0,
             ),
             row=row,
@@ -2112,22 +2111,6 @@ class Plotter(RendererBase):
             fig.add_trace(contour_traces[0], row=row, col=col)
             fig.add_trace(contour_traces[1], row=row, col=col)
             legend_state.show_contour = False
-        fig.add_trace(
-            go.Scatter(
-                x=x_scatter_values,
-                y=y_scatter_values,
-                mode='markers',
-                marker={
-                    'color': 'rgba(0, 0, 0, 0)',
-                    'size': POSTERIOR_PAIR_SAMPLE_HOVER_MARKER_SIZE,
-                },
-                showlegend=False,
-                hovertemplate=sample_hovertemplate,
-                zorder=3,
-            ),
-            row=row,
-            col=col,
-        )
 
     @staticmethod
     def _configure_posterior_pair_panel_axes(
@@ -3043,29 +3026,46 @@ class Plotter(RendererBase):
         histogram_bin_edges: np.ndarray | None,
     ) -> None:
         """Add the histogram trace for a posterior distribution plot."""
-        histogram_kwargs: dict[str, object] = {}
-        if (
-            histogram_bin_edges is not None
-            and histogram_bin_edges.size >= MIN_POSTERIOR_SAMPLE_COUNT
-        ):
-            histogram_kwargs['xbins'] = {
-                'start': float(histogram_bin_edges[0]),
-                'end': float(histogram_bin_edges[-1]),
-                'size': float(histogram_bin_edges[1] - histogram_bin_edges[0]),
-            }
+        marker = {
+            'color': POSTERIOR_HISTOGRAM_FILL_COLOR,
+            'line': {'color': POSTERIOR_HISTOGRAM_LINE_COLOR, 'width': 1},
+        }
+        densities = Plotter._posterior_distribution_histogram_density(
+            values,
+            histogram_bin_edges,
+        )
+        if densities is None or histogram_bin_edges is None:
+            # Degenerate sample (no usable bins): let Plotly bin the few
+            # raw values client-side; the embedded payload stays tiny.
+            fig.add_trace(
+                go.Histogram(
+                    x=values,
+                    histnorm='probability density',
+                    marker=marker,
+                    opacity=0.82,
+                    name='Posterior histogram',
+                    hovertemplate='sample=%{x:.4f}<br>density: %{y:.2f}<extra></extra>',
+                )
+            )
+            return
 
+        # Pre-bin server-side and emit a Bar trace so only the per-bin
+        # densities ride in the page, not every raw posterior sample.
+        # ``go.Histogram(x=values)`` serializes the full sample array
+        # (hundreds of thousands of values per parameter), bloating the
+        # docs page and stalling the "Loading plot…" skeleton paint.
+        edges = np.asarray(histogram_bin_edges, dtype=float)
+        bin_centers = (edges[:-1] + edges[1:]) / 2.0
+        bin_widths = np.diff(edges)
         fig.add_trace(
-            go.Histogram(
-                x=values,
-                histnorm='probability density',
-                marker={
-                    'color': POSTERIOR_HISTOGRAM_FILL_COLOR,
-                    'line': {'color': POSTERIOR_HISTOGRAM_LINE_COLOR, 'width': 1},
-                },
+            go.Bar(
+                x=bin_centers,
+                y=densities,
+                width=bin_widths,
+                marker=marker,
                 opacity=0.82,
                 name='Posterior histogram',
                 hovertemplate='sample=%{x:.4f}<br>density: %{y:.2f}<extra></extra>',
-                **histogram_kwargs,
             )
         )
 

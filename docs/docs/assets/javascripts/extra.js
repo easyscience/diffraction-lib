@@ -194,14 +194,6 @@
     })
   }
 
-  function syncPandasTableTheme() {
-    const colors = themeColors()
-    document.querySelectorAll('.ed-themed-table').forEach((table) => {
-      // TABLE_AXIS_FRAME_CSS_VAR
-      table.style.setProperty('--ed-axis-frame-color', colors.axisFrame)
-    })
-  }
-
   function syncCrysviewTheme() {
     const next = themeName()
     document.querySelectorAll('.crysview').forEach((viewer) => {
@@ -215,7 +207,6 @@
 
   function syncThemeAwareOutputs() {
     syncPlotlyTheme()
-    syncPandasTableTheme()
     syncCrysviewTheme()
   }
 

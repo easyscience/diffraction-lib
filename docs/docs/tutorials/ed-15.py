@@ -14,8 +14,8 @@ import easydiffraction as ed
 # ## 📦 Define Project
 
 # %%
-# Create minimal project without name and description
-project = ed.Project()
+# Create a minimal project with a short name
+project = ed.Project(name='taurine_senju')
 
 # %% [markdown]
 # ## 🧩 Define Structure
@@ -140,3 +140,9 @@ project.display.pattern(expt_name='senju')
 
 # %%
 structure.show_as_cif()
+
+# %% [markdown]
+# ## 💾 Save Project
+
+# %%
+project.save_as(dir_path='projects/ed_15_taurine_senju')

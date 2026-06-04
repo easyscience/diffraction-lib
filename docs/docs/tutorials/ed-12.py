@@ -21,7 +21,7 @@ import easydiffraction as ed
 # ### Create Project
 
 # %%
-project = ed.Project()
+project = ed.Project(name='nacl_xray_pdf')
 
 # %% [markdown]
 # ### Set Plotting Engine
@@ -131,3 +131,9 @@ project.display.fit.correlations()
 
 # %%
 project.display.pattern(expt_name='xray_pdf')
+
+# %% [markdown]
+# ## 💾 Save Project
+
+# %%
+project.save_as(dir_path='projects/ed_12_nacl_xray_pdf')

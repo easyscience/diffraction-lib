@@ -27,8 +27,6 @@ LIGHT_LEGEND_BACKGROUND_COLOR = 'rgba(255, 255, 255, 0.5)'
 
 PAPER_BACKGROUND_COLOR = 'rgba(0, 0, 0, 0)'
 
-TABLE_AXIS_FRAME_CSS_VAR = '--ed-axis-frame-color'
-
 
 def hex_to_rgb(value: str) -> tuple[int, int, int]:
     """

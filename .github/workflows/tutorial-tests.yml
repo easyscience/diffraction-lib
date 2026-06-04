@@ -47,7 +47,7 @@ jobs:
 
       - name: Test tutorials as python scripts
         shell: bash
-        run: pixi run script-tests
+        run: pixi run script-tests-checked
 
       - name: Prepare notebooks
         shell: bash
@@ -55,7 +55,7 @@ jobs:
 
       - name: Test tutorials as notebooks
         shell: bash
-        run: pixi run notebook-tests
+        run: pixi run notebook-tests-checked
 
   # Job 2: Build and publish dashboard (reusable workflow)
   run-reusable-workflows:

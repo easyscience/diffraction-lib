@@ -195,7 +195,7 @@ experiment.linked_phases.create(id='si', scale=0.2)
 # ### Create Project
 
 # %%
-project = Project()
+project = Project(name='lbco_si_mcstas')
 
 # %% [markdown]
 # ### Add Structures
@@ -229,7 +229,7 @@ project.display.structure(struct_name='si')
 # Show measured data as loaded from the file.
 
 # %%
-project.display.pattern(expt_name='mcstas', include='measured')
+project.display.pattern(expt_name='mcstas')
 
 # %% [markdown]
 # Add excluded regions.
@@ -248,7 +248,7 @@ experiment.excluded_regions.show()
 # Show measured data after adding excluded regions.
 
 # %%
-project.display.pattern(expt_name='mcstas', include=('measured', 'excluded'))
+project.display.pattern(expt_name='mcstas')
 
 # %% [markdown]
 # Show experiment as CIF.
@@ -304,3 +304,9 @@ project.display.fit.correlations()
 
 # %%
 project.display.pattern(expt_name='mcstas')
+
+# %% [markdown]
+# ## 💾 Save Project
+
+# %%
+project.save_as(dir_path='projects/ed_9_lbco_si_mcstas')

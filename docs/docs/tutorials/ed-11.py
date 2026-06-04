@@ -18,7 +18,7 @@ import easydiffraction as ed
 # ### Create Project
 
 # %%
-project = ed.Project()
+project = ed.Project(name='si_nomad_pdf')
 
 # %% [markdown]
 # ### Set Plotting Engine
@@ -111,4 +111,10 @@ project.display.fit.correlations()
 # ### Display Pattern
 
 # %%
-project.display.pattern(expt_name='nomad', include=('measured', 'calculated'))
+project.display.pattern(expt_name='nomad')
+
+# %% [markdown]
+# ## 💾 Save Project
+
+# %%
+project.save_as(dir_path='projects/ed_11_si_nomad_pdf')

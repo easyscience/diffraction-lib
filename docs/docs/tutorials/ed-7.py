@@ -117,7 +117,7 @@ expt.linked_phases.create(id='si', scale=10.0)
 # ### Create Project
 
 # %%
-project = Project()
+project = Project(name='si_sepd')
 
 # %% [markdown]
 # ### Add Structure
@@ -356,3 +356,9 @@ project.display.pattern(expt_name='sepd', x_min=23200, x_max=23700)
 
 # %%
 project.display.pattern(expt_name='sepd', x='d_spacing')
+
+# %% [markdown]
+# ## 💾 Save Project
+
+# %%
+project.save_as(dir_path='projects/ed_7_si_sepd')

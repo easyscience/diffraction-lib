@@ -20,7 +20,7 @@ import easydiffraction as ed
 # and other related components.
 
 # %%
-project = ed.Project(name='cosio_d20')
+project = ed.Project(name='cosio_d20_scan')
 analysis = project.analysis
 display = project.display
 
@@ -29,7 +29,7 @@ display = project.display
 # results can be written to `analysis/results.csv`.
 
 # %%
-project.save_as(dir_path='projects/cosio_d20_scan')
+project.save_as(dir_path='projects/ed_17_cosio_d20_scan')
 
 # %% [markdown]
 # ## 🧩 Define Structure

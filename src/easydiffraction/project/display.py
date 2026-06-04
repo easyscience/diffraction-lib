@@ -359,65 +359,42 @@ class ProjectDisplay:
         expt_name: str,
         x_min: float | None = None,
         x_max: float | None = None,
-        include: str | tuple[str, ...] = 'auto',
         *,
         x: object | None = None,
     ) -> None:
-        """Show a pattern view for one experiment."""
-        normalized_include = self._normalize_include(include)
+        """
+        Show the experiment's diffraction pattern.
+
+        Renders every kind of data the project state supports for the
+        experiment: measured and calculated intensities, the residual,
+        Bragg ticks, background, excluded regions, and posterior
+        predictive uncertainty bands, each shown when available.
+
+        Parameters
+        ----------
+        expt_name : str
+            Name of the experiment to plot.
+        x_min : float | None, default=None
+            Lower bound for the x-axis range.
+        x_max : float | None, default=None
+            Upper bound for the x-axis range.
+        x : object | None, default=None
+            Optional x-axis variable overriding the experiment default
+            (excluded-region overlays are skipped for a custom axis).
+
+        Raises
+        ------
+        ValueError
+            If no pattern content is available for the experiment.
+        """
         statuses = self._pattern_option_statuses(expt_name)
+        content = self._auto_include(statuses)
+        if x is not None:
+            content = tuple(option for option in content if option != 'excluded')
+        if not content:
+            raise ValueError(self._status_by_name(statuses, 'auto').reason)
 
-        if normalized_include == ('auto',):
-            auto_include = self._auto_include(statuses)
-            if x is not None:
-                auto_include = tuple(option for option in auto_include if option != 'excluded')
-            if not auto_include:
-                msg = self._status_by_name(statuses, 'auto').reason
-                raise ValueError(msg)
-            if 'uncertainty' in auto_include:
-                indicator_context = (
-                    activity_indicator(
-                        ACTIVITY_LABEL_PROCESSING,
-                        verbosity=VerbosityEnum(self._project.verbosity.fit.value),
-                    )
-                    if self._posterior._predictive_needs_processing_indicator(
-                        expt_name=expt_name,
-                        style='band',
-                        x=x,
-                    )
-                    else nullcontext()
-                )
-                with indicator_context:
-                    self._project.rendering_plot.plotter._plot_posterior_predictive_request(
-                        expt_name=expt_name,
-                        style='band',
-                        plot_options=_MeasVsCalcPlotOptions(
-                            x_min=x_min,
-                            x_max=x_max,
-                            show_residual=True if 'residual' in auto_include else None,
-                            show_background='background' in auto_include,
-                            show_bragg='bragg' in auto_include,
-                            show_excluded='excluded' in auto_include,
-                            x=x,
-                        ),
-                    )
-                return
-            self._show_point_estimate_pattern(
-                expt_name=expt_name,
-                x_min=x_min,
-                x_max=x_max,
-                include=auto_include,
-                statuses=statuses,
-                x=x,
-            )
-            return
-
-        self._validate_requested_include(statuses, normalized_include)
-        if x is not None and 'excluded' in normalized_include:
-            msg = "Excluded-region overlays currently require the experiment's default x-axis."
-            raise ValueError(msg)
-
-        if 'uncertainty' in normalized_include:
+        if 'uncertainty' in content:
             indicator_context = (
                 activity_indicator(
                     ACTIVITY_LABEL_PROCESSING,
@@ -437,10 +414,10 @@ class ProjectDisplay:
                     plot_options=_MeasVsCalcPlotOptions(
                         x_min=x_min,
                         x_max=x_max,
-                        show_residual=True if 'residual' in normalized_include else None,
-                        show_background='background' in normalized_include,
-                        show_bragg='bragg' in normalized_include,
-                        show_excluded='excluded' in normalized_include,
+                        show_residual=True if 'residual' in content else None,
+                        show_background='background' in content,
+                        show_bragg='bragg' in content,
+                        show_excluded='excluded' in content,
                         x=x,
                     ),
                 )
@@ -450,27 +427,8 @@ class ProjectDisplay:
             expt_name=expt_name,
             x_min=x_min,
             x_max=x_max,
-            include=normalized_include,
-            statuses=statuses,
+            include=content,
             x=x,
-        )
-
-    def show_pattern_options(self, expt_name: str) -> None:
-        """Show available ``pattern(include=...)`` options."""
-        statuses = self._pattern_option_statuses(expt_name)
-        render_table(
-            columns_headers=['Option', 'Description', 'Available', 'Auto', 'Reason'],
-            columns_alignment=['left', 'left', 'center', 'center', 'left'],
-            columns_data=[
-                [
-                    status.name,
-                    status.description,
-                    'yes' if status.available else 'no',
-                    'yes' if status.auto_included else 'no',
-                    status.reason or '-',
-                ]
-                for status in statuses
-            ],
         )
 
     def structure(
@@ -630,24 +588,6 @@ class ProjectDisplay:
         )
 
     @staticmethod
-    def _normalize_include(include: str | tuple[str, ...]) -> tuple[str, ...]:
-        """Validate and normalize a ``pattern(include=...)`` value."""
-        values = (include,) if isinstance(include, str) else include
-        if not values:
-            msg = 'include must contain at least one option.'
-            raise ValueError(msg)
-
-        normalized = tuple(dict.fromkeys(values))
-        unknown = [value for value in normalized if value not in _PATTERN_OPTION_DESCRIPTIONS]
-        if unknown:
-            msg = f'Unknown pattern include option(s): {unknown}.'
-            raise ValueError(msg)
-        if 'auto' in normalized and len(normalized) > 1:
-            msg = "include='auto' cannot be combined with other options."
-            raise ValueError(msg)
-        return normalized
-
-    @staticmethod
     def _status_by_name(
         statuses: list[PatternOptionStatus],
         option_name: str,
@@ -677,7 +617,9 @@ class ProjectDisplay:
         cls,
         statuses: list[PatternOptionStatus],
     ) -> tuple[str, ...]:
-        """Return the effective include tuple for ``include='auto'``."""
+        """
+        Return the kinds of pattern content to render by availability.
+        """
         status_by_name = {status.name: status for status in statuses}
         optional_point_estimate = ('background', 'residual', 'bragg', 'excluded')
 
@@ -707,44 +649,6 @@ class ProjectDisplay:
             )
         return ()
 
-    @classmethod
-    def _validate_requested_include(
-        cls,
-        statuses: list[PatternOptionStatus],
-        include: tuple[str, ...],
-    ) -> None:
-        """
-        Raise a clear error when a requested include is unavailable.
-        """
-        status_by_name = {status.name: status for status in statuses}
-        unavailable = [
-            option_name
-            for option_name in include
-            if option_name != 'auto' and not status_by_name[option_name].available
-        ]
-        if unavailable:
-            option_name = unavailable[0]
-            msg = status_by_name[option_name].reason
-            raise ValueError(msg)
-
-        include_set = set(include)
-        if 'background' in include_set and not {'measured', 'calculated'}.issubset(include_set):
-            msg = 'background requires both measured and calculated data in the same view.'
-            raise ValueError(msg)
-        if 'bragg' in include_set and not {'measured', 'calculated'}.issubset(include_set):
-            msg = 'bragg requires both measured and calculated data in the same view.'
-            raise ValueError(msg)
-        if 'residual' in include_set and not {'measured', 'calculated'}.issubset(include_set):
-            msg = 'residual requires both measured and calculated data in the same view.'
-            raise ValueError(msg)
-        if 'excluded' in include_set and not include_set.intersection({
-            'measured',
-            'calculated',
-            'uncertainty',
-        }):
-            msg = 'excluded requires measured, calculated, or uncertainty data in the same view.'
-            raise ValueError(msg)
-
     def _show_point_estimate_pattern(
         self,
         *,
@@ -752,13 +656,11 @@ class ProjectDisplay:
         x_min: float | None,
         x_max: float | None,
         include: tuple[str, ...],
-        statuses: list[PatternOptionStatus],
         x: object | None,
     ) -> None:
         """
         Dispatch a point-estimate pattern view to the live plotter.
         """
-        self._validate_requested_include(statuses, include)
         include_set = set(include)
         if include_set == {'measured'}:
             self._project.rendering_plot.plotter.plot_meas(

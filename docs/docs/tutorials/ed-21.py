@@ -38,10 +38,10 @@ import easydiffraction as ed
 # it later if needed.
 
 # %%
-project = ed.Project()
+project = ed.Project(name='lbco_hrpt_bumps_dream')
 
 # %%
-project.save_as('projects/lbco_hrpt_bumps-dream')
+project.save_as(dir_path='projects/ed_21_lbco_hrpt_bumps_dream')
 
 # %% [markdown]
 # ## 🧩 Define Structure
@@ -306,6 +306,7 @@ project.analysis.minimizer.type = 'bumps (dream)'
 # %%
 project.analysis.minimizer.sampling_steps = 100  # lower than the default 3000
 project.analysis.minimizer.burn_in_steps = 20  # lower than the default 600
+project.analysis.minimizer.random_seed = 42  # fixed seed for reproducible output
 
 # %%
 project.analysis.fit()

@@ -123,14 +123,14 @@ class TestSerialization:
         structure = _cubic_structure()
         assert '_space_group_Wyckoff' not in structure.as_cif
 
-    def test_appears_in_report_output(self):
-        from easydiffraction.io.cif import iucr_writer
-
+    def test_skip_cif_serialization_is_true(self):
+        # Derived/code-only: the collection suppresses its own output on
+        # every serialization path that consults the hook.
         structure = _cubic_structure()
-        lines: list[str] = []
-        iucr_writer._write_space_group_wyckoff_section(lines, structure)
-        body = '\n'.join(lines)
-        assert '_space_group_Wyckoff.id' in body
-        assert '_space_group_Wyckoff.coords_xyz' in body
-        # Representative coordinate only (compact), never the full orbit.
-        assert max(len(line) for line in lines) < 80
+        assert structure.space_group_wyckoff._skip_cif_serialization() is True
+
+    # End-to-end report omission is guarded where each writer's fixtures
+    # live: test_write_iucr_cif_omits_space_group_wyckoff_loop in
+    # tests/unit/easydiffraction/io/cif/test_iucr_writer.py (IUCr export)
+    # and test_space_group_wyckoff_omitted_from_report_context in
+    # tests/unit/easydiffraction/report/test_data_context.py (HTML/TeX).

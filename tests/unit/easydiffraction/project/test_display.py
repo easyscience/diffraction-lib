@@ -107,9 +107,11 @@ def _make_statuses(
         PatternOptionStatus(
             name='auto',
             description='auto',
-            available=True,
+            available=measured or calculated or uncertainty,
             auto_included=True,
-            reason='',
+            reason=''
+            if (measured or calculated or uncertainty)
+            else 'No supported pattern content is available.',
         ),
         PatternOptionStatus(
             name='measured',
@@ -193,7 +195,6 @@ def test_project_display_help_lists_namespaces_and_methods(capsys):
     assert 'fit' in out
     assert 'posterior' in out
     assert 'pattern()' in out
-    assert 'show_pattern_options()' in out
 
 
 def test_nested_project_display_help_lists_methods(capsys):
@@ -452,7 +453,6 @@ def test_pattern_uncertainty_routes_to_posterior_predictive(monkeypatch):
         'hrpt',
         x_min=1.0,
         x_max=2.0,
-        include=('measured', 'calculated', 'uncertainty', 'residual', 'excluded'),
     )
 
     assert calls == [
@@ -477,17 +477,15 @@ def test_pattern_uncertainty_routes_to_posterior_predictive(monkeypatch):
     assert indicator_calls == [(ACTIVITY_LABEL_PROCESSING, VerbosityEnum.FULL)]
 
 
-def test_pattern_measured_and_calculated_suppresses_background_and_bragg():
+def test_pattern_measured_and_calculated_only_shows_available():
     project, calls = _make_project_stub()
     display = ProjectDisplay(project)
     display._pattern_option_statuses = lambda expt_name: _make_statuses(
         measured=True,
         calculated=True,
-        background=True,
-        bragg=True,
     )
 
-    display.pattern('hrpt', include=('measured', 'calculated'))
+    display.pattern('hrpt')
 
     assert calls == [
         (
@@ -509,7 +507,7 @@ def test_pattern_measured_and_calculated_suppresses_background_and_bragg():
     ]
 
 
-def test_pattern_measured_and_calculated_can_enable_background_and_bragg():
+def test_pattern_shows_all_available_content():
     project, calls = _make_project_stub()
     display = ProjectDisplay(project)
     display._pattern_option_statuses = lambda expt_name: _make_statuses(
@@ -521,10 +519,7 @@ def test_pattern_measured_and_calculated_can_enable_background_and_bragg():
         excluded=True,
     )
 
-    display.pattern(
-        'hrpt',
-        include=('measured', 'calculated', 'background', 'residual', 'bragg', 'excluded'),
-    )
+    display.pattern('hrpt')
 
     assert calls == [
         (
@@ -650,40 +645,63 @@ def test_pattern_auto_routes_single_crystal_with_calculated_data(monkeypatch):
     ]
 
 
-def test_pattern_rejects_excluded_with_custom_x():
-    project, _calls = _make_project_stub()
+def test_pattern_with_custom_x_drops_excluded_overlay():
+    project, calls = _make_project_stub()
     display = ProjectDisplay(project)
     display._pattern_option_statuses = lambda expt_name: _make_statuses(
         measured=True,
         excluded=True,
     )
 
-    with pytest.raises(ValueError, match='default x-axis'):
-        display.pattern('hrpt', include=('measured', 'excluded'), x='d_spacing')
+    display.pattern('hrpt', x='d_spacing')
+
+    assert calls == [
+        (
+            'plot_meas',
+            (),
+            {
+                'expt_name': 'hrpt',
+                'x_min': None,
+                'x_max': None,
+                'x': 'd_spacing',
+                'show_excluded': False,
+            },
+        )
+    ]
 
 
-def test_show_pattern_options_renders_table(monkeypatch):
-    project, _calls = _make_project_stub()
+def test_pattern_measured_only_shades_excluded_when_present():
+    project, calls = _make_project_stub()
     display = ProjectDisplay(project)
     display._pattern_option_statuses = lambda expt_name: _make_statuses(
         measured=True,
-        calculated=True,
+        excluded=True,
     )
-    captured: dict[str, object] = {}
 
-    def fake_render_table(*, columns_headers, columns_alignment, columns_data):
-        captured['columns_headers'] = columns_headers
-        captured['columns_alignment'] = columns_alignment
-        captured['columns_data'] = columns_data
+    display.pattern('hrpt')
 
-    monkeypatch.setattr('easydiffraction.project.display.render_table', fake_render_table)
+    assert calls == [
+        (
+            'plot_meas',
+            (),
+            {
+                'expt_name': 'hrpt',
+                'x_min': None,
+                'x_max': None,
+                'x': None,
+                'show_excluded': True,
+            },
+        )
+    ]
 
-    display.show_pattern_options('hrpt')
 
-    assert captured['columns_headers'] == ['Option', 'Description', 'Available', 'Auto', 'Reason']
-    assert captured['columns_alignment'] == ['left', 'left', 'center', 'center', 'left']
-    assert captured['columns_data'][0][0] == 'auto'
-    assert captured['columns_data'][1][0] == 'measured'
+def test_pattern_raises_when_nothing_available():
+    project, _calls = _make_project_stub()
+    display = ProjectDisplay(project)
+    display._pattern_option_statuses = lambda expt_name: _make_statuses()
+
+    with pytest.raises(ValueError, match='No supported pattern content'):
+        display.pattern('hrpt')
 
 
 def test_structure_updates_categories_before_building_scene(monkeypatch, tmp_path):

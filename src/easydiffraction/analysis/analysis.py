@@ -51,9 +51,8 @@ from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 from easydiffraction.core.category_owner import CategoryOwner
 from easydiffraction.core.guard import _apply_help_filter
 from easydiffraction.core.singleton import ConstraintsHandler
-from easydiffraction.core.variable import NumericDescriptor
+from easydiffraction.core.variable import GenericNumericDescriptor
 from easydiffraction.core.variable import Parameter
-from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.datablocks.experiment.item.base import intensity_category_for
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.display.progress import make_display_handle
@@ -75,8 +74,17 @@ if TYPE_CHECKING:
     from easydiffraction.analysis.categories.fit_result import FitResultBase
     from easydiffraction.analysis.categories.minimizer.base import MinimizerCategoryBase
     from easydiffraction.core.posterior import PosteriorParameterSummary
+    from easydiffraction.core.variable import GenericDescriptorBase
 
-_SUMMARY_HIDDEN_PARAMETER_CATEGORIES = frozenset({'pd_data', 'total_data', 'refln'})
+# Categories hidden from the parameter summary tables: bulky measured
+# data and derived, read-only tables that would only add noise. The
+# space_group_Wyckoff table also carries unreadably long coords_xyz.
+_SUMMARY_HIDDEN_PARAMETER_CATEGORIES = frozenset({
+    'pd_data',
+    'total_data',
+    'refln',
+    'space_group_Wyckoff',
+})
 _POSTERIOR_SAMPLE_NDIM = 3
 
 
@@ -175,8 +183,8 @@ class AnalysisDisplay:
 
     @staticmethod
     def _summary_parameters(
-        params: list[StringDescriptor | NumericDescriptor | Parameter],
-    ) -> list[StringDescriptor | NumericDescriptor | Parameter]:
+        params: list[GenericDescriptorBase],
+    ) -> list[GenericDescriptorBase]:
         """Return parameters suitable for compact summary displays."""
         return [
             param
@@ -328,25 +336,23 @@ class AnalysisDisplay:
         project_varname = project._varname
         for datablock_code, params in all_params.items():
             for param in params:
-                if isinstance(param, (StringDescriptor, NumericDescriptor, Parameter)):
-                    datablock_entry_name = param._identity.datablock_entry_name
-                    category_code = param._identity.category_code
-                    category_entry_name = param._identity.category_entry_name or ''
-                    param_key = param.name
-                    code_variable = (
-                        f'{project_varname}.{datablock_code}'
-                        f"['{datablock_entry_name}'].{category_code}"
-                    )
-                    if category_entry_name:
-                        code_variable += f"['{category_entry_name}']"
-                    code_variable += f'.{param_key}'
-                    columns_data.append([
-                        datablock_entry_name,
-                        category_code,
-                        category_entry_name,
-                        param_key,
-                        code_variable,
-                    ])
+                datablock_entry_name = param._identity.datablock_entry_name
+                category_code = param._identity.category_code
+                category_entry_name = param._identity.category_entry_name or ''
+                param_key = param.name
+                code_variable = (
+                    f"{project_varname}.{datablock_code}['{datablock_entry_name}'].{category_code}"
+                )
+                if category_entry_name:
+                    code_variable += f"['{category_entry_name}']"
+                code_variable += f'.{param_key}'
+                columns_data.append([
+                    datablock_entry_name,
+                    category_code,
+                    category_entry_name,
+                    param_key,
+                    code_variable,
+                ])
 
         console.paragraph('How to access parameters')
         render_table(
@@ -393,19 +399,18 @@ class AnalysisDisplay:
         columns_data = []
         for params in all_params.values():
             for param in params:
-                if isinstance(param, (StringDescriptor, NumericDescriptor, Parameter)):
-                    datablock_entry_name = param._identity.datablock_entry_name
-                    category_code = param._identity.category_code
-                    category_entry_name = param._identity.category_entry_name or ''
-                    param_key = param.name
-                    cif_uid = param._cif_handler.uid
-                    columns_data.append([
-                        datablock_entry_name,
-                        category_code,
-                        category_entry_name,
-                        param_key,
-                        cif_uid,
-                    ])
+                datablock_entry_name = param._identity.datablock_entry_name
+                category_code = param._identity.category_code
+                category_entry_name = param._identity.category_entry_name or ''
+                param_key = param.name
+                cif_uid = param._cif_handler.uid
+                columns_data.append([
+                    datablock_entry_name,
+                    category_code,
+                    category_entry_name,
+                    param_key,
+                    cif_uid,
+                ])
 
         console.paragraph('Show parameter CIF unique identifiers')
         render_table(
@@ -1200,15 +1205,15 @@ class Analysis(
 
     @staticmethod
     def _get_params_as_dataframe(
-        params: list[NumericDescriptor | Parameter],
+        params: list[GenericDescriptorBase],
     ) -> pd.DataFrame:
         """
         Convert a list of parameters to a DataFrame.
 
         Parameters
         ----------
-        params : list[NumericDescriptor | Parameter]
-            List of DescriptorFloat or Parameter objects.
+        params : list[GenericDescriptorBase]
+            List of descriptor or parameter objects.
 
         Returns
         -------
@@ -1217,19 +1222,17 @@ class Analysis(
         """
         records = []
         for param in params:
-            record = {}
             # TODO: Merge into one. Add field if attr exists
             # TODO: f'{param.value!r}' for StringDescriptor?
-            if isinstance(param, (StringDescriptor, NumericDescriptor, Parameter)):
-                record = {
-                    ('fittable', 'left'): False,
-                    ('datablock', 'left'): param._identity.datablock_entry_name,
-                    ('category', 'left'): param._identity.category_code,
-                    ('entry', 'left'): param._identity.category_entry_name or '',
-                    ('parameter', 'left'): param.name,
-                    ('value', 'right'): param.value,
-                }
-            if isinstance(param, (NumericDescriptor, Parameter)):
+            record = {
+                ('fittable', 'left'): False,
+                ('datablock', 'left'): param._identity.datablock_entry_name,
+                ('category', 'left'): param._identity.category_code,
+                ('entry', 'left'): param._identity.category_entry_name or '',
+                ('parameter', 'left'): param.name,
+                ('value', 'right'): '' if param.value is None else param.value,
+            }
+            if isinstance(param, GenericNumericDescriptor):
                 record |= {
                     ('units', 'left'): _parameter_display_units(param),
                 }

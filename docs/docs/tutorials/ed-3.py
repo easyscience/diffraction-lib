@@ -58,7 +58,7 @@ project.info.show_as_cif()
 # directory path.
 
 # %%
-project.save_as(dir_path='projects/lbco_hrpt')
+project.save_as(dir_path='projects/ed_3_lbco_hrpt')
 
 # %% [markdown]
 # ## 🧩 Define Structure
@@ -257,7 +257,7 @@ project.experiments.show_names()
 # ### Show Measured Data
 
 # %%
-project.display.pattern(expt_name='hrpt', include='measured')
+project.display.pattern(expt_name='hrpt')
 
 # %% [markdown]
 # ### Set Instrument
@@ -379,12 +379,6 @@ project.rendering_plot.show_supported()
 
 # %%
 project.rendering_plot.help()
-
-# %% [markdown]
-# ### Show Calculated Data
-
-# %%
-project.display.pattern(expt_name='hrpt', include='calculated')
 
 # %% [markdown]
 # ### Display Pattern
@@ -674,9 +668,6 @@ project.display.pattern(expt_name='hrpt')
 
 # %%
 project.display.pattern(expt_name='hrpt', x_min=38, x_max=41)
-
-# %%
-project.display.structure(struct_name='lbco')
 
 # %% [markdown]
 # #### Display Structure

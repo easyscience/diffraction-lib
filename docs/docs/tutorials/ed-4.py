@@ -235,7 +235,7 @@ expt2.linked_phases.create(id='pbso4', scale=0.001)
 # ### Create Project
 
 # %%
-project = Project()
+project = Project(name='pbso4_joint')
 
 # %% [markdown]
 # ### Add Structure
@@ -320,3 +320,9 @@ project.display.pattern(expt_name='npd', x_min=35.5, x_max=38.3)
 
 # %%
 project.display.pattern(expt_name='xrd', x_min=29.0, x_max=30.4)
+
+# %% [markdown]
+# ## 💾 Save Project
+
+# %%
+project.save_as(dir_path='projects/ed_4_pbso4_joint')

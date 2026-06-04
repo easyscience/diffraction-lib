@@ -164,6 +164,56 @@ def test_get_trace_and_plot(monkeypatch):
     assert dummy_display_calls['count'] == 1 or shown['count'] == 1
 
 
+def test_single_panel_height_matches_composite_main_row():
+    import easydiffraction.display.plotters.plotly as pp
+
+    full_height = pp.DEFAULT_HEIGHT * pp.PLOTLY_HEIGHT_PER_UNIT
+    main_panel = pp.PlotlyPlotter._single_main_panel_height_pixels(
+        pp.DEFAULT_RESIDUAL_HEIGHT_FRACTION
+    )
+    # A single-panel view is sized to the composite main row, not the
+    # full three-panel height.
+    assert 0 < main_panel < full_height
+
+
+def test_plot_scatter_matches_single_main_panel_height(monkeypatch):
+    """Fit-series scatter matches the pattern plot's top panel."""
+    import easydiffraction.display.plotters.plotly as pp
+
+    captured = {}
+
+    def fake_show_figure(self, fig):
+        captured['fig'] = fig
+
+    monkeypatch.setattr(pp.PlotlyPlotter, '_show_figure', fake_show_figure)
+
+    plotter = pp.PlotlyPlotter()
+    # The facade passes an ASCII row count here; the Plotly backend
+    # ignores it and sizes the panel to the composite main row.
+    plotter.plot_scatter(
+        x=[1.0, 2.0, 3.0],
+        y=[10.0, 12.0, 11.0],
+        sy=[0.5, 0.4, 0.6],
+        axes_labels=['Experiment No.', 'Parameter value'],
+        title='Series',
+        height=25,
+    )
+
+    expected = pp.PlotlyPlotter._single_main_panel_height_pixels(
+        pp.DEFAULT_RESIDUAL_HEIGHT_FRACTION
+    )
+    assert captured['fig'].layout.height == expected
+
+
+def test_composite_x_range_is_tight():
+    import numpy as np
+
+    import easydiffraction.display.plotters.plotly as pp
+
+    assert pp.PlotlyPlotter._composite_x_range(np.array([10.0, 20.0, 30.0])) == (10.0, 30.0)
+    assert pp.PlotlyPlotter._composite_x_range(np.array([])) == (None, None)
+
+
 def test_show_figure_adds_legend_toggle_script_to_html_output(monkeypatch):
     import easydiffraction.display.plotters.plotly as pp
 

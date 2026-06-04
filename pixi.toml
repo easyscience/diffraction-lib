@@ -106,8 +106,30 @@ user = { features = ['py-max', 'user'] }
 unit-tests = 'python -m pytest tests/unit/ --color=yes -v'
 functional-tests = 'python -m pytest tests/functional/ --color=yes -v'
 integration-tests = 'python -m pytest tests/integration/ --color=yes -n auto -v'
-script-tests = { cmd = 'python -m pytest tools/test_scripts.py --color=yes -n auto -v', env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials' } }
-notebook-tests = { cmd = 'python -m pytest --nbmake docs/docs/tutorials/ --nbmake-timeout=1200 --color=yes -n auto -v', env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials' } }
+
+# Remove previously saved tutorial output projects (projects/ed_*) so the
+# tutorial-output checks cannot pass against a stale artifact from an earlier
+# run. Downloaded input projects (projects/ed-NN) are preserved.
+clean-tutorial-projects = { cmd = 'python tools/clean_tutorial_projects.py', env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials' } }
+script-tests = { cmd = 'python -m pytest tools/test_scripts.py --color=yes -n auto -v', depends-on = [
+  'clean-tutorial-projects',
+], env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials' } }
+notebook-tests = { cmd = 'python -m pytest --nbmake docs/docs/tutorials/ --nbmake-timeout=1200 --color=yes -n auto -v', depends-on = [
+  'clean-tutorial-projects',
+], env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials' } }
+
+# Parse the analysis.cif of every saved tutorial project and assert its
+# refined fit results against tests/tutorials/baseline.json. Run only after
+# the tutorials have been executed (script-tests or notebook-tests), so the
+# saved projects exist under tmp/tutorials/projects/.
+tutorial-output-tests = { cmd = 'python -m pytest tests/tutorials/ --color=yes -v', env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials' } }
+# Run the tutorials and then verify their saved outputs in a single step.
+script-tests-checked = { cmd = 'python -m pytest tests/tutorials/ --color=yes -v', depends-on = [
+  'script-tests',
+], env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials' } }
+notebook-tests-checked = { cmd = 'python -m pytest tests/tutorials/ --color=yes -v', depends-on = [
+  'notebook-tests',
+], env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials' } }
 
 test = { depends-on = ['unit-tests', 'functional-tests'] }
 test-all = { depends-on = [

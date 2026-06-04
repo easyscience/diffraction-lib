@@ -59,3 +59,9 @@ project.display.fit.correlations()
 
 # %%
 project.display.pattern(expt_name='hrpt')
+
+# %% [markdown]
+# ## 💾 Save Project
+
+# %%
+project.save_as(dir_path='projects/ed_18_lbco_hrpt')

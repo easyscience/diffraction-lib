@@ -302,6 +302,28 @@ def test_write_iucr_cif_emits_single_crystal_block(tmp_path):
     assert '_easydiffraction_calculator.type' in text
 
 
+def test_write_iucr_cif_omits_space_group_wyckoff_loop(tmp_path):
+    from easydiffraction.io.cif.iucr_writer import write_iucr_cif
+
+    # The derived Wyckoff table is code-only; reports never emit it, even
+    # for a space group whose table is non-empty.
+    structure = _structure()
+    structure.space_group.name_h_m = 'P m -3 m'
+    structure._update_categories()
+    assert len(structure.space_group_wyckoff) > 0
+
+    project = _project(
+        'wyckoff_omitted',
+        tmp_path,
+        _collection(structure),
+        _collection(_single_crystal_experiment()),
+    )
+
+    text = write_iucr_cif(project).read_text(encoding='utf-8')
+
+    assert '_space_group_Wyckoff' not in text
+
+
 def test_write_iucr_cif_emits_powder_cwl_blocks(tmp_path):
     from easydiffraction.io.cif.iucr_writer import write_iucr_cif
 

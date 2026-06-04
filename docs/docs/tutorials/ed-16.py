@@ -157,7 +157,7 @@ pdf_expt.linked_phases.create(id='si', scale=1.0)
 # ### Create Project
 
 # %%
-project = Project()
+project = Project(name='si_bragg_pdf')
 
 # %% [markdown]
 # ### Add Structure
@@ -254,3 +254,9 @@ project.display.pattern(expt_name='sepd')
 
 # %%
 project.display.pattern(expt_name='nomad')
+
+# %% [markdown]
+# ## 💾 Save Project
+
+# %%
+project.save_as(dir_path='projects/ed_16_si_bragg_pdf')
