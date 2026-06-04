@@ -165,3 +165,39 @@ def test_collection_datablock_keyed_items():
     del c['beta']
     assert 'beta' not in c
     assert len(c) == 1
+
+
+def test_collection_clear_empties_and_unlinks_children():
+    from easydiffraction.core.collection import CollectionBase
+    from easydiffraction.core.identity import Identity
+
+    class Item:
+        def __init__(self, name):
+            self._identity = Identity(owner=self, category_entry=lambda: name)
+
+    class MyCollection(CollectionBase):
+        @property
+        def parameters(self):
+            return []
+
+        @property
+        def as_cif(self) -> str:
+            return ''
+
+    c = MyCollection(item_type=Item)
+    a = Item('a')
+    b = Item('b')
+    c['a'] = a
+    c['b'] = b
+    assert len(c) == 2
+    assert a._parent is c
+
+    c.clear()
+
+    # Empty, with the name index cleared so lookups fail.
+    assert len(c) == 0
+    assert list(c.keys()) == []
+    assert 'a' not in c
+    # Every prior child is unlinked from the collection.
+    assert a._parent is None
+    assert b._parent is None
