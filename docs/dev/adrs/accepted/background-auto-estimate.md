@@ -329,15 +329,21 @@ active points only.
 ### 6. Where the code lives
 
 A backend-agnostic estimator helper —
-`estimate_background_curve(x, y, *, beam_mode, peaks=None, width=None, ...) -> (curve, anchors)`
+`estimate_background_curve(x, y, *, method='arpls', peaks=None, width=None, ...) -> BackgroundEstimate`
 — lives in a new small module in the background package (e.g.
 `datablocks/experiment/categories/background/estimate.py`). It is pure
-array-in/array-out (the optional `peaks` argument carries model peak
-positions detected from the peak-only model array per §5 — not
+array-in/array-out (the optional `peaks` argument is a boolean mask
+aligned with `x` that forbids non-endpoint anchors on peak samples,
+built by the adapter from the peak-only model array per §5 — not
 reflection metadata), holds no model state, wraps `pybaselines` for
 Stage 1, and keeps the §3 parameterization and Stage-2 thinning in-house
 — so it stays unit-testable in isolation and pulls no domain logic into
-`core/`. `LineSegmentBackground.auto_estimate()` is a thin adapter: read
+`core/`. It returns a small `BackgroundEstimate` result object (curve,
+anchors, and the method/width/noise/tolerance/backend-params metadata
+the adapter logs). The `beam_mode` argument from earlier drafts is
+deferred with the per-beam-mode policy (see _Deferred Work_); omitting
+it also keeps the helper within the project's argument-count guardrail.
+`LineSegmentBackground.auto_estimate()` is a thin adapter: read
 the pattern (and model, if present), call the helper, clip, and
 `create()` the points. Helpers are extracted as needed to stay under the
 lint complexity thresholds
