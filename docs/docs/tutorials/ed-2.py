@@ -117,11 +117,11 @@ experiment.peak.broad_gauss_w = 0.1
 experiment.peak.broad_lorentz_y = 0.1
 
 # %%
-experiment.background.auto_estimate()
-
-# %%
 experiment.excluded_regions.create(id='1', start=0, end=5)
 experiment.excluded_regions.create(id='2', start=165, end=180)
+
+# %%
+experiment.background.auto_estimate()
 
 # %%
 experiment.linked_phases.create(id='lbco', scale=10.0)
