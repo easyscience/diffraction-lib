@@ -30,8 +30,9 @@ it has begun acting on it. This branch lands the tutorial-baseline fix,
 this document, the regeneration helper (`tools/lint_rule_audit.py`), the
 **Priority 0** cleanup (R1, five zero-violation ignores), the
 **source-docstring** enablement (R3 / P1a — `D100`/`D104` plus 79 new
-module and package docstrings), and the **P1b** misc-src wins (`DTZ005`
-plus the `TD004`/`TD005` TODO-formatting rules). The remaining tiers
+module and package docstrings), the **P1b** misc-src wins (`DTZ005` plus
+the `TD004`/`TD005` TODO-formatting rules), and the **P1c** test hygiene
+(`I001` import sorting, `E501`, `F841`). The remaining Tier-B/C tiers
 follow in separate, reviewed steps, each agreed before it starts.
 
 ## ADR
@@ -129,10 +130,10 @@ overlap existing lint policy, so two points of coordination apply:
 
 > **Snapshot.** This inventory is the disabled-rule state at the
 > **start** of the audit, before any adoption. Rules enabled since
-> (Priority 0; `D100`/`D104` in P1a; `DTZ005`/`TD004`/`TD005` in P1b)
-> are now enforced and would no longer appear here — see the Adoption
-> roadmap below. Re-run `pixi run python tools/lint_rule_audit.py` for
-> live counts.
+> (Priority 0; `D100`/`D104` in P1a; `DTZ005`/`TD004`/`TD005` in P1b;
+> `I001`/`E501`/`F841` in P1c) are now enforced and would no longer
+> appear here — see the Adoption roadmap below. Re-run
+> `pixi run python tools/lint_rule_audit.py` for live counts.
 
 7144 violations total across all disabled rules. Scope columns: `src` =
 `src/`, `tst` = `tests/`, `tut` = `docs/docs/tutorials/`. `fix` = fixes
@@ -280,10 +281,10 @@ and the policy notes in the [ADR](#adr) section are **recommendations**,
 not decisions.
 
 - **Rule enablement is incremental and reviewed.** This branch has
-  landed the Priority 0 cleanup (R1), the source-docstring enablement
-  (R3 / P1a — `D100`/`D104`), and the P1b misc-src wins (`DTZ005`,
-  `TD004`/`TD005`). Each further tier is implemented only after explicit
-  approval, per the roadmap below.
+  landed the Priority 0 cleanup (R1) and all of Priority 1 — P1a
+  (`D100`/`D104` docstrings), P1b (`DTZ005`, `TD004`/`TD005`), and P1c
+  (`I001`/`E501`/`F841` test hygiene). Each further tier (Tier B/C) is
+  implemented only after explicit approval, per the roadmap below.
 - **Measurement method** is a non-destructive command-line overlay on
   the _unmodified_ `pyproject.toml` (see [Methodology](#methodology)),
   not literal one-at-a-time toggling — equivalent results because
@@ -323,10 +324,11 @@ proposed for un-ignoring.
   `tests/unit/tools/test_lint_rule_audit.py`, `pyproject.toml`
   (`[tool.ruff.lint]` — Priority 0 ignores removed; `D100`/`D104` and
   `TD004`/`TD005` enabled; `DTZ005` un-ignored), the 34 module + 45
-  `__init__.py` docstrings (P1a), and the `DTZ005` timestamp fix plus
-  four TODO-comment fixes (P1b).
-- Planned next: `pyproject.toml` again (per tier) and `ruff --fix` /
-  manual edits across `tests/` (`I001`, `E501`, `F841`) for P1c.
+  `__init__.py` docstrings (P1a), the `DTZ005` timestamp fix plus four
+  TODO-comment fixes (P1b), and sorted imports + an `E501`/`F841` fix
+  across ~60 test files (P1c).
+- Planned next: only the Tier-B/C tiers (R5–R7), each in its own
+  reviewed step.
 
 ## Implementation steps (Phase 1)
 
@@ -361,11 +363,12 @@ Adopted in this branch (reviewed step by step):
 - [x] **P1b — Misc src wins:** fixed `DTZ005` (naive `datetime.now()` →
       UTC-aware, also correcting a latent local-vs-UTC bug) and enabled
       `TD004`/`TD005`, fixing the four flagged TODO comments.
+- [x] **P1c — Tests clean items:** enabled `I001` (114 imports sorted
+      via safe `ruff --fix`), `E501` (wrapped one over-long docstring),
+      and `F841` (removed one dead assignment). `W291` skipped.
 
 Planned next (each gated on approval and its own review):
 
-- [ ] **P1c — Tests clean items:** `I001` (114, safe `ruff --fix`),
-      `E501` (1, manual wrap), `F841` (1). `W291` skipped.
 - [ ] **R5 — `T20` with a `display/plotters` per-file-ignore** (Tier B).
 - [ ] **R6 — `PLC1901` tests cleanup** (Tier B).
 - [ ] **R7 (optional) — dedicated src `SLF001` review** (Tier C).
