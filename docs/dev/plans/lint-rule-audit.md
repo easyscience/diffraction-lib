@@ -415,15 +415,17 @@ roadmap
 
 **Description:** Updates the saved tutorial fit-result baselines so the
 automatic-background feature's slightly different (and correct) results
-pass the tutorial checks again. Also adds a developer document that
+pass the tutorial checks again. Adds a developer document that
 inventories every currently-disabled code-style rule, measures how many
 issues each would surface today, and recommends — rule by rule — which
 to switch on (with fixes) and which to keep off because they reflect
-deliberate, well-reasoned conventions. A small developer helper
-(`tools/lint_rule_audit.py`) lets that inventory be regenerated on
-demand without touching the project's lint configuration. This is a
-planning document; it changes no linting behaviour on its own and sets
-up a clear, low-risk path to gradually raise code quality.
+deliberate, well-reasoned conventions, plus a small helper
+(`tools/lint_rule_audit.py`) that regenerates that inventory on demand.
+As the first concrete step it also applies the "Priority 0" cleanup —
+removing five lint ignores that currently flag nothing (`B011`, `B017`,
+`N805`, `PLE`, and docs `ANN`), so those rules are enforced from now on.
+It sets up a clear, low-risk path to gradually raise code quality, with
+larger rule enablement to follow in separate, reviewed steps.
 
 ## Appendix: all rules by priority (quick reference)
 
