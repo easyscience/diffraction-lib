@@ -193,7 +193,7 @@ files or generated artifacts. Do not run Phase 2 commands during Phase 1.
   Files: `pyproject.toml`, `tests/integration/fitting/*.py`.
   Commit: `Replace fast marker with pr and nightly test tiers`
 
-- [ ] **P1.3 — CI marker selection across all layers and nightly job (§2)**
+- [x] **P1.3 — CI marker selection across all layers and nightly job (§2)**
   Update `.github/workflows/test.yml` mark logic to
   `-m "not pr and not nightly"` (feature push) and `-m "not nightly"`
   (PR + `develop`/`master`), and apply the selected expression to

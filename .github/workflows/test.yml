@@ -56,15 +56,17 @@ jobs:
       pytest-marks: ${{ steps.set-mark.outputs.pytest_marks }}
 
     steps:
-      # Determine if integration tests should be run fully or only the fast ones
-      # (to save time on branches other than master and develop)
-      - name: Set mark for integration tests
+      # Select the test cost tier by branch (see ADR test-suite-and-validation):
+      # the pr tier runs on develop/master and pull requests; feature-branch
+      # pushes run only the default (fast) tier. The nightly tier runs
+      # separately in nightly.yml.
+      - name: Set test tier marker expression
         id: set-mark
         run: |
           if [[ "${{ env.CI_BRANCH }}" == "master" || "${{ env.CI_BRANCH }}" == "develop" ]]; then
-            echo "pytest_marks=" >> $GITHUB_OUTPUT
+            echo 'pytest_marks=-m "not nightly"' >> "$GITHUB_OUTPUT"
           else
-            echo "pytest_marks=-m fast" >> $GITHUB_OUTPUT
+            echo 'pytest_marks=-m "not pr and not nightly"' >> "$GITHUB_OUTPUT"
           fi
 
   # Job 2: Test code
@@ -99,7 +101,7 @@ jobs:
             env="py-$(echo $py_ver | tr -d .)-env" # Converts 3.XX -> py-3XX-env
 
             echo "Running tests in environment: $env"
-            pixi run --environment $env unit-tests
+            pixi run --environment $env unit-tests ${{ needs.env-prepare.outputs.pytest-marks }}
           done
 
       - name: Run functional tests
@@ -114,7 +116,7 @@ jobs:
             env="py-$(echo $py_ver | tr -d .)-env" # Converts 3.XX -> py-3XX-env
 
             echo "Running tests in environment: $env"
-            pixi run --environment $env functional-tests
+            pixi run --environment $env functional-tests ${{ needs.env-prepare.outputs.pytest-marks }}
           done
 
       - name: Run integration tests ${{ needs.env-prepare.outputs.pytest-marks }}
@@ -173,7 +175,8 @@ jobs:
 
   # Job 3: Test the package
   package-test:
-    needs: source-test # depend on previous job
+    # env-prepare provides the tier marker expression; source-test the wheel
+    needs: [env-prepare, source-test]
 
     strategy:
       fail-fast: false
@@ -270,7 +273,7 @@ jobs:
             cd easydiffraction_py$py_ver
 
             echo "Running tests"
-            pixi run python -m pytest ../tests/unit/ --color=yes -v
+            pixi run python -m pytest ../tests/unit/ --color=yes -v ${{ needs.env-prepare.outputs.pytest-marks }}
 
             echo "Exiting pixi project directory"
             cd ..
@@ -289,7 +292,7 @@ jobs:
             cd easydiffraction_py$py_ver
 
             echo "Running tests"
-            pixi run python -m pytest ../tests/functional/ --color=yes -v
+            pixi run python -m pytest ../tests/functional/ --color=yes -v ${{ needs.env-prepare.outputs.pytest-marks }}
 
             echo "Exiting pixi project directory"
             cd ..

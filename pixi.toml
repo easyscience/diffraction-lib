@@ -106,6 +106,8 @@ user = { features = ['py-max', 'user'] }
 unit-tests = 'python -m pytest tests/unit/ --color=yes -v'
 functional-tests = 'python -m pytest tests/functional/ --color=yes -v'
 integration-tests = 'python -m pytest tests/integration/ --color=yes -n auto -v'
+# Run only nightly-tier tests (e.g. performance benchmarks) across the suite.
+nightly-tests = 'python -m pytest tests/ -m nightly --color=yes -n auto -v'
 
 # Remove previously saved tutorial output projects (projects/ed_*) so the
 # tutorial-output checks cannot pass against a stale artifact from an earlier
