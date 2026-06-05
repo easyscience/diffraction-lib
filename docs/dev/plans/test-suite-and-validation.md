@@ -223,7 +223,7 @@ files or generated artifacts. Do not run Phase 2 commands during Phase 1.
   Files: new `docs/dev/` testing guide (or `test-strategy.md` update).
   Commit: `Document strict test layer placement criteria`
 
-- [ ] **P1.6 — Test relocation pass (§1)**
+- [x] **P1.6 — Test relocation pass (§1)**
   Move functional tests that call real `download_data()` into
   integration; relocate or correctly mark slow/engine/network-touching
   unit tests (the 16 `download_data()` unit call sites must be explicit
