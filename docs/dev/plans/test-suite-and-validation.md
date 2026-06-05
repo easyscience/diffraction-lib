@@ -177,7 +177,7 @@ files or generated artifacts. Do not run Phase 2 commands during Phase 1.
 
 ## Implementation steps (Phase 1)
 
-- [ ] **P1.1 — Codecov status policy (§5)**
+- [x] **P1.1 — Codecov status policy (§5)**
   Edit `.codecov.yml`: add `informational: true` to `patch.default`; set
   `project.default` to `target: 80%`, `informational: false`. Leave the
   unit-only upload untouched.
