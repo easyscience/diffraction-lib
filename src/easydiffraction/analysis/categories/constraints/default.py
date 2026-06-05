@@ -48,7 +48,7 @@ class Constraint(CategoryItem):
             name='expression',
             description='Constraint equation, e.g. "occ_Ba = 1 - occ_La".',
             value_spec=AttributeSpec(
-                default='_',  # TODO, Maybe None?
+                default='_',  # TODO: Maybe None?
                 validator=RegexValidator(pattern=r'.*'),
             ),
             cif_handler=CifHandler(

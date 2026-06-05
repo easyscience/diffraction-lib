@@ -40,7 +40,7 @@ class Alias(CategoryItem):
             name='label',
             description='Human-readable alias for a parameter.',
             value_spec=AttributeSpec(
-                default='_',  # TODO, Maybe None?
+                default='_',  # TODO: Maybe None?
                 validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
             ),
             cif_handler=CifHandler(

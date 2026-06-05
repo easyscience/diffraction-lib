@@ -294,6 +294,8 @@ select = [
   #'T20',   # https://docs.astral.sh/ruff/rules/#flake8-print-t20
   'TC', # https://docs.astral.sh/ruff/rules/#flake8-type-checking-tc
   #'TD',    # https://docs.astral.sh/ruff/rules/#flake8-todos-td
+  'TD004', # https://docs.astral.sh/ruff/rules/missing-todo-colon/ (TODO-format subset)
+  'TD005', # https://docs.astral.sh/ruff/rules/missing-todo-description/ (TODO-format subset)
   'TID', # https://docs.astral.sh/ruff/rules/#flake8-tidy-imports-tid
 ]
 
@@ -306,8 +308,6 @@ ignore = [
   'DOC', # https://docs.astral.sh/ruff/rules/#pydoclint-doc
   # Disable, as [tool.format_docstring] split one-line docstrings into the canonical multi-line layout
   'D200', # https://docs.astral.sh/ruff/rules/unnecessary-multiline-docstring/
-  # Temporary:
-  'DTZ005', # https://docs.astral.sh/ruff/rules/call-datetime-now-without-tzinfo/#call-datetime-now-without-tzinfo-dtz005
 ]
 
 # Ignore specific rules in certain files or directories
