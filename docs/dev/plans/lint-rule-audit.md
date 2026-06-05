@@ -205,8 +205,8 @@ signatures). These can be dropped from the ignore lists at no cost.
 | E               |     4 |   0 |    4 |   0 |
 | B/SIM/DTZ/TRY/F |     7 |   1 |    6 |   0 |
 
-The headline finding: **~92% of all violations live in `tests/**`\*\*,
-and most of them reflect deliberate, idiomatic test patterns rather than
+The headline finding: **~92%** of all violations live in `tests/**`, and
+most of them reflect deliberate, idiomatic test patterns rather than
 defects.
 
 ## Analysis and recommendations
