@@ -28,10 +28,10 @@ for `tests/**` and `docs/**`. This document:
 It is the **first draft** of a roadmap for tightening code quality — and
 it has begun acting on it. This branch lands the tutorial-baseline fix,
 this document, the regeneration helper (`tools/lint_rule_audit.py`), the
-**Priority 0** cleanup (R1, five zero-violation ignores), and the
+**Priority 0** cleanup (R1, five zero-violation ignores), the
 **source-docstring** enablement (R3 / P1a — `D100`/`D104` plus 79 new
 module and package docstrings), and the **P1b** misc-src wins (`DTZ005`
-and the `TD004`/`TD005` TODO-formatting rules). The remaining tiers
+plus the `TD004`/`TD005` TODO-formatting rules). The remaining tiers
 follow in separate, reviewed steps, each agreed before it starts.
 
 ## ADR
@@ -129,9 +129,10 @@ overlap existing lint policy, so two points of coordination apply:
 
 > **Snapshot.** This inventory is the disabled-rule state at the
 > **start** of the audit, before any adoption. Rules enabled since
-> (Priority 0; `D100`/`D104` in P1a) are now enforced and would no
-> longer appear here — see the Adoption roadmap below. Re-run
-> `pixi run python tools/lint_rule_audit.py` for live counts.
+> (Priority 0; `D100`/`D104` in P1a; `DTZ005`/`TD004`/`TD005` in P1b)
+> are now enforced and would no longer appear here — see the Adoption
+> roadmap below. Re-run `pixi run python tools/lint_rule_audit.py` for
+> live counts.
 
 7144 violations total across all disabled rules. Scope columns: `src` =
 `src/`, `tst` = `tests/`, `tut` = `docs/docs/tutorials/`. `fix` = fixes
@@ -300,8 +301,8 @@ proposed for un-ignoring.
 ## Open questions (for the reviewer)
 
 1. **Scope of this PR:** _resolved_ — this branch lands the Priority 0
-   cleanup (R1) and the source-docstring enablement (R3 / P1a); the
-   remaining "clean wins" (P1b, P1c) proceed only after explicit,
+   cleanup (R1), the source-docstring enablement (R3 / P1a), and the P1b
+   misc-src wins; only P1c (and later tiers) proceed after explicit,
    per-tier approval.
 2. **`T201` in `display/plotters/ascii.py`:** confirm those prints are
    the intended terminal-output path so we can per-file-ignore them
@@ -311,8 +312,9 @@ proposed for un-ignoring.
    instead?
 4. **src `SLF001` (517):** schedule a dedicated review pass, or accept
    as intentional intra-package access and leave disabled?
-5. **TODO policy:** is enabling the `TD004`/`TD005` _formatting_ subset
-   (not author/link) acceptable, given `AGENTS.md` keeps TODOs?
+5. **TODO policy:** _resolved_ — the `TD004`/`TD005` _formatting_ subset
+   (not author/link) is enabled in P1b; `TD002`/`TD003` stay off, so the
+   TODOs themselves are kept per `AGENTS.md`.
 
 ## Concrete files likely to change
 
@@ -440,12 +442,14 @@ each would surface today, and recommends — rule by rule — which to
 switch on (with fixes) and which to keep off because they reflect
 deliberate, well-reasoned conventions, plus a small helper
 (`tools/lint_rule_audit.py`) that regenerates that inventory on demand.
-As concrete first steps it also enforces two rule batches: the "Priority
-0" cleanup (removing five ignores that currently flag nothing — `B011`,
-`B017`, `N805`, `PLE`, docs `ANN`) and the source-docstring rules
-`D100`/`D104` (adding the 79 missing module and package docstrings). It
-sets up a clear, low-risk path to gradually raise code quality, with the
-remaining tiers to follow in separate, reviewed steps.
+As concrete first steps it also enforces three small rule batches: the
+"Priority 0" cleanup (removing five ignores that currently flag nothing
+— `B011`, `B017`, `N805`, `PLE`, docs `ANN`), the source-docstring rules
+`D100`/`D104` (adding the 79 missing module and package docstrings), and
+a few more source wins (`DTZ005` plus the `TD004`/`TD005`
+TODO-formatting rules). It sets up a clear, low-risk path to gradually
+raise code quality, with the remaining tiers to follow in separate,
+reviewed steps.
 
 ## Appendix: all rules by priority (quick reference)
 
