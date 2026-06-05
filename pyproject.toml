@@ -296,7 +296,7 @@ select = [
   #'TD',    # https://docs.astral.sh/ruff/rules/#flake8-todos-td
   'TD004', # https://docs.astral.sh/ruff/rules/missing-todo-colon/ (TODO-format subset)
   'TD005', # https://docs.astral.sh/ruff/rules/missing-todo-description/ (TODO-format subset)
-  'TID', # https://docs.astral.sh/ruff/rules/#flake8-tidy-imports-tid
+  'TID',   # https://docs.astral.sh/ruff/rules/#flake8-tidy-imports-tid
 ]
 
 # Exceptions to the linting rules
