@@ -308,8 +308,11 @@ proposed for un-ignoring.
 ## Open questions (for the reviewer)
 
 1. **Scope of this PR:** _resolved_ — this branch lands the Priority 0
-   cleanup (R1) and all of Priority 1 (P1a, P1b, P1c); only the Tier-B/C
-   follow-ups (R5–R7) remain, each pending explicit, per-tier approval.
+   cleanup (R1), all of Priority 1 (P1a, P1b, P1c), and two Tier-B
+   adoptions D1 (`PLR`/`PLW` sub-codes) and D2/R5 (`T20`). The remaining
+   items (R6 `PLC1901`, R7 src `SLF001`, and the test-complexity rules)
+   are **recommended to stay disabled** — see the Adoption roadmap and
+   Tier B/C rationale — pending any final user/ADR sign-off.
 2. **`T201` in `display/plotters/ascii.py`:** confirm those prints are
    the intended terminal-output path so we can per-file-ignore them
    rather than rewrite them.
@@ -387,10 +390,18 @@ Adopted in this branch (reviewed step by step):
       (`display/plotters/ascii.py`, `project/display.py`), and allowed
       `print` in tests.
 
-Planned next (each gated on approval and its own review):
+Remaining — **recommended to stay disabled** (grounded in the Tier-B/C
+analysis); revisit only if a future need arises:
 
-- [ ] **R6 — `PLC1901` tests cleanup** (Tier B).
-- [ ] **R7 (optional) — dedicated src `SLF001` review** (Tier C).
+- **R6 — `PLC1901`** (tests): marginal value — `== ''` is explicit and
+  safe, whereas `not x` conflates with `None`/`0`. Keep disabled.
+- **Test complexity** (`PLR0913`/`PLR0914`/`PLR0915`/`PLR0917`): the
+  complexity ADR targets `src`; forcing the ~16 long _test_ functions to
+  split usually hurts test locality. Keep the standing test exception.
+- **R7 — src `SLF001`** (517): blanket-enabling would force public-API
+  bloat or `# noqa` noise. A _targeted_ review of genuine
+  cross-subsystem reach-ins could help someday, but that is a separate
+  investigation, not a rule adoption.
 
 Deferred — none outstanding. The `PLR`/`PLW` sub-codes that needed the
 `tests/**` family-ignore split (`PLR0402`, `PLR1711`, `PLR6104`,
