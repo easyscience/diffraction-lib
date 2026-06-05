@@ -32,7 +32,6 @@ def test_param_to_cif_minimal():
 
 def test_format_param_value_with_uncertainty_uses_two_sig_digits():
     import easydiffraction.io.cif.serialize as MUT
-
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
     from easydiffraction.io.cif.handler import CifHandler
@@ -51,7 +50,6 @@ def test_format_param_value_with_uncertainty_uses_two_sig_digits():
 
 def test_format_param_value_with_large_uncertainty_is_readable():
     import easydiffraction.io.cif.serialize as MUT
-
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
     from easydiffraction.io.cif.handler import CifHandler
@@ -151,7 +149,6 @@ def test_project_to_cif_assembles_present_sections():
 
 def test_analysis_from_cif_restores_fit_parameters_without_fit_result():
     import easydiffraction.io.cif.serialize as MUT
-
     from easydiffraction.analysis.analysis import Analysis
 
     class Project:

@@ -12,8 +12,8 @@ import pytest
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 from easydiffraction.datablocks.structure.item.base import Structure
-from easydiffraction.display.progress import ACTIVITY_LABEL_PROCESSING
 from easydiffraction.display.plotting import _MeasVsCalcPlotOptions
+from easydiffraction.display.progress import ACTIVITY_LABEL_PROCESSING
 from easydiffraction.display.structure.builder import FeatureAvailability
 from easydiffraction.project.categories.structure_style.default import StructureStyle
 from easydiffraction.project.display import PatternOptionStatus

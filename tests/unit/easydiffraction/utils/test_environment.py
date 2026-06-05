@@ -12,10 +12,10 @@ class TestInPytest:
 
 class TestInWarp:
     def test_false_by_default(self):
-        from easydiffraction.utils.environment import in_warp
-
         # Unless running in Warp terminal
         import os
+
+        from easydiffraction.utils.environment import in_warp
 
         if os.getenv('TERM_PROGRAM') != 'WarpTerminal':
             assert in_warp() is False

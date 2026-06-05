@@ -80,9 +80,8 @@ def test_lmfit_prepare_and_sync(monkeypatch):
 
 
 def test_lmfit_max_iterations_is_user_facing_iteration_setting(monkeypatch):
-    from easydiffraction.analysis.minimizers.lmfit import LmfitMinimizer
-
     import easydiffraction.analysis.minimizers.lmfit as lm
+    from easydiffraction.analysis.minimizers.lmfit import LmfitMinimizer
 
     observed_max_nfev = {}
 

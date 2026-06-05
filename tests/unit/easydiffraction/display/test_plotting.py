@@ -7,7 +7,6 @@ from types import MethodType
 from types import SimpleNamespace
 
 import numpy as np
-
 import pytest
 
 
@@ -765,10 +764,10 @@ def test_build_posterior_pairs_plot_rejects_unknown_style():
 
 
 def test_build_param_distribution_plot_returns_plotly_figure():
+    from easydiffraction.display.plotting import POSTERIOR_INTERVAL_95_FILL_COLOR
     from easydiffraction.display.plotting import POSTERIOR_PAIR_MARGINAL_DENSITY_FILL_COLOR
     from easydiffraction.display.plotting import POSTERIOR_PAIR_MARGINAL_DENSITY_LINE_COLOR
     from easydiffraction.display.plotting import POSTERIOR_PAIR_MARGINAL_DENSITY_LINE_WIDTH
-    from easydiffraction.display.plotting import POSTERIOR_INTERVAL_95_FILL_COLOR
     from easydiffraction.display.plotting import POSTERIOR_POINT_ESTIMATE_LINE_DASH
 
     plotter, fit_results, _ = _make_bayesian_plotter_fixture()
@@ -898,10 +897,10 @@ def test_plot_param_distribution_routes_ascii_to_marginal_density(monkeypatch):
 def test_plot_posterior_predictive_summary_uses_consistent_labels_and_styles(monkeypatch):
     from types import SimpleNamespace
 
+    from easydiffraction.display.plotters.plotly import PlotlyPlotter
     from easydiffraction.display.plotting import POSTERIOR_INTERVAL_95_FILL_COLOR
     from easydiffraction.display.plotting import POSTERIOR_POINT_ESTIMATE_LINE_DASH
     from easydiffraction.display.plotting import Plotter
-    from easydiffraction.display.plotters.plotly import PlotlyPlotter
 
     captured: dict[str, object] = {}
 
@@ -2094,11 +2093,11 @@ def test_plot_param_correlations_renders_plotly_heatmap(monkeypatch):
 
     import easydiffraction.display.plotters.plotly as plotly_mod
     from easydiffraction.display.plotting import POSTERIOR_PAIR_TITLE_FONT_SIZE
-    from easydiffraction.display.plotting import Plotter
     from easydiffraction.display.plotting import SQUARE_MATRIX_AXIS_TITLE_LINE_HEIGHT_PIXELS
     from easydiffraction.display.plotting import SQUARE_MATRIX_BOTTOM_MARGIN_PIXELS
     from easydiffraction.display.plotting import SQUARE_MATRIX_TITLE_YSHIFT_PIXELS
     from easydiffraction.display.plotting import SQUARE_MATRIX_TOP_MARGIN_PIXELS
+    from easydiffraction.display.plotting import Plotter
 
     captured = {}
 
@@ -2386,7 +2385,6 @@ def test_plot_posterior_pairs_uses_default_max_parameter_limit(monkeypatch):
 
 def test_plot_posterior_pairs_prints_title_before_ascii_backend_warning(monkeypatch):
     import easydiffraction.display.plotting as plotting_mod
-
     from easydiffraction.display.plotting import Plotter
 
     events: list[tuple[str, str]] = []

@@ -6,12 +6,8 @@ from __future__ import annotations
 
 
 def test_bumps_dream_minimizer_registers_expected_tag():
-    from easydiffraction.analysis.categories.minimizer.bayesian_base import (
-        BayesianMinimizerBase,
-    )
-    from easydiffraction.analysis.categories.minimizer.bumps_dream import (
-        BumpsDreamMinimizer,
-    )
+    from easydiffraction.analysis.categories.minimizer.bayesian_base import BayesianMinimizerBase
+    from easydiffraction.analysis.categories.minimizer.bumps_dream import BumpsDreamMinimizer
     from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 
     assert issubclass(BumpsDreamMinimizer, BayesianMinimizerBase)

@@ -8,7 +8,6 @@ import urllib.request
 import numpy as np
 import pytest
 
-
 # --- _validate_url -----------------------------------------------------------
 
 

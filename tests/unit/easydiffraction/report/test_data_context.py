@@ -297,9 +297,7 @@ def test_report_data_loop_rows_are_display_truncated():
 
 
 def test_report_pd_data_columns_use_compact_labels():
-    from easydiffraction.datablocks.experiment.categories.data.bragg_pd import (
-        PdCwlData,
-    )
+    from easydiffraction.datablocks.experiment.categories.data.bragg_pd import PdCwlData
     from easydiffraction.report.data_context import _collection_category_context
 
     category = PdCwlData()
@@ -324,9 +322,7 @@ def test_report_pd_data_columns_use_compact_labels():
 
 def test_report_powder_refln_columns_use_compact_labels():
     from easydiffraction.analysis.calculators.base import PowderReflnRecord
-    from easydiffraction.datablocks.experiment.categories.refln.bragg_pd import (
-        PowderCwlReflnData,
-    )
+    from easydiffraction.datablocks.experiment.categories.refln.bragg_pd import PowderCwlReflnData
     from easydiffraction.report.data_context import _collection_category_context
 
     category = PowderCwlReflnData()

@@ -234,8 +234,8 @@ def test_fitness_raises_when_max_evaluations_is_reached():
 
 
 def test_bumps_progress_monitor_reports_evaluation_count():
-    from easydiffraction.analysis.minimizers.bumps import _EasyDiffractionFitness
     from easydiffraction.analysis.minimizers.bumps import _BumpsProgressMonitor
+    from easydiffraction.analysis.minimizers.bumps import _EasyDiffractionFitness
 
     tracker = MagicMock()
     fitness = _EasyDiffractionFitness([], lambda values: np.array([]))

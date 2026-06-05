@@ -17,9 +17,7 @@ def _analysis_with_sidecar_payload(
     include_pair: bool = True,
     include_predictive: bool = True,
 ) -> object:
-    from easydiffraction.analysis.categories.fit_result.bayesian import (
-        BayesianFitResult,
-    )
+    from easydiffraction.analysis.categories.fit_result.bayesian import BayesianFitResult
 
     fit_result = BayesianFitResult()
     fit_result._set_result_kind('bayesian')

@@ -61,9 +61,7 @@ def test_identity_category_code(view):
 
 
 def test_registered_with_factory():
-    from easydiffraction.project.categories.structure_view.factory import (
-        StructureViewFactory,
-    )
+    from easydiffraction.project.categories.structure_view.factory import StructureViewFactory
 
     # The @StructureViewFactory.register decorator in default.py must
     # register the concrete class under its type_info tag.

@@ -1,10 +1,10 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
+from types import SimpleNamespace
+
 import numpy as np
 import pytest
-
-from types import SimpleNamespace
 
 from easydiffraction.datablocks.experiment.categories.background import line_segment
 from easydiffraction.datablocks.experiment.categories.background.line_segment import (

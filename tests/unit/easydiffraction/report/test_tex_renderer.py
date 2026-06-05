@@ -445,7 +445,6 @@ def test_save_tex_report_removes_stale_managed_bundle_dirs(tmp_path):
 
 def test_save_tex_report_writes_structure_figure_png(tmp_path):
     import easydiffraction as ed
-
     from easydiffraction.report.tex_renderer import save_tex_report
 
     project = ed.Project(name='struct_fig')

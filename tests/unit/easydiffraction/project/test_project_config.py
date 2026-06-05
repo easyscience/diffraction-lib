@@ -9,8 +9,8 @@ import datetime
 def test_project_config_exposes_project_info_chart_and_table_categories():
     from easydiffraction.core.category_owner import CategoryOwner
     from easydiffraction.project.categories.rendering_plot import RenderingPlot
-    from easydiffraction.project.categories.report import Report
     from easydiffraction.project.categories.rendering_table import RenderingTable
+    from easydiffraction.project.categories.report import Report
     from easydiffraction.project.project_config import ProjectConfig
     from easydiffraction.project.project_info import ProjectInfo
 

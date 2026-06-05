@@ -99,8 +99,8 @@ def test_ascii_plotter_plot_single_crystal(capsys):
 
 
 def test_ascii_plotter_single_crystal_marker_uses_paragraph_style():
-    from easydiffraction.display.plotters.ascii import AsciiPlotter
     from easydiffraction.display.plotters.ascii import SINGLE_CRYSTAL_SCATTER_SYMBOL
+    from easydiffraction.display.plotters.ascii import AsciiPlotter
     from easydiffraction.utils.logging import CONSOLE_PARAGRAPH_STYLE
 
     line = AsciiPlotter._single_crystal_grid_line([

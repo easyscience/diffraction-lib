@@ -593,7 +593,6 @@ def test_get_bragg_tick_trace_includes_peak_metadata():
 
 def test_plot_powder_meas_vs_calc_creates_synced_three_panel_figure(monkeypatch):
     import easydiffraction.display.plotters.plotly as pp
-
     from easydiffraction.display.plotters.base import BraggTickSet
     from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
 
@@ -709,7 +708,6 @@ def test_plot_powder_meas_vs_calc_creates_synced_three_panel_figure(monkeypatch)
 
 def test_plot_powder_meas_vs_calc_adds_background_curve(monkeypatch):
     import easydiffraction.display.plotters.plotly as pp
-
     from easydiffraction.display.plotters.base import BraggTickSet
     from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
 
@@ -856,7 +854,6 @@ def test_bragg_row_height_pixels_scale_linearly_with_phase_count():
 
 def test_plot_powder_meas_vs_calc_grows_total_height_for_many_phases(monkeypatch):
     import easydiffraction.display.plotters.plotly as pp
-
     from easydiffraction.display.plotters.base import BraggTickSet
     from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
 
@@ -918,7 +915,6 @@ def test_plot_powder_meas_vs_calc_grows_total_height_for_many_phases(monkeypatch
 
 def test_plot_powder_meas_vs_calc_uses_explicit_plotly_height_as_pixels(monkeypatch):
     import easydiffraction.display.plotters.plotly as pp
-
     from easydiffraction.display.plotters.base import BraggTickSet
     from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
 
@@ -963,7 +959,6 @@ def test_plot_powder_meas_vs_calc_uses_explicit_plotly_height_as_pixels(monkeypa
 def test_plot_powder_meas_vs_calc_keeps_top_and_bottom_rows_fixed(monkeypatch):
     """Top and residual rows keep a fixed pixel height."""
     import easydiffraction.display.plotters.plotly as pp
-
     from easydiffraction.display.plotters.base import BraggTickSet
     from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
 
@@ -1025,7 +1020,6 @@ def test_plot_powder_meas_vs_calc_keeps_top_and_bottom_rows_fixed(monkeypatch):
 
 def test_plot_powder_meas_vs_calc_skips_bragg_row_when_no_ticks(monkeypatch):
     import easydiffraction.display.plotters.plotly as pp
-
     from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
 
     captured = {}
@@ -1069,7 +1063,6 @@ def test_plot_powder_meas_vs_calc_skips_bragg_row_when_no_ticks(monkeypatch):
 
 def test_plot_powder_meas_vs_calc_styles_predictive_max_posterior_and_band(monkeypatch):
     import easydiffraction.display.plotters.plotly as pp
-
     from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
 
     captured = {}
@@ -1116,7 +1109,6 @@ def test_plot_powder_meas_vs_calc_styles_predictive_max_posterior_and_band(monke
 
 def test_plot_powder_meas_vs_calc_keeps_exact_residual_scale_match(monkeypatch):
     import easydiffraction.display.plotters.plotly as pp
-
     from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
 
     captured = {}
@@ -1171,7 +1163,6 @@ def test_plot_powder_meas_vs_calc_keeps_exact_residual_scale_match(monkeypatch):
 
 def test_plot_powder_meas_vs_calc_clips_large_residual_spikes(monkeypatch):
     import easydiffraction.display.plotters.plotly as pp
-
     from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
 
     captured = {}
@@ -1210,7 +1201,6 @@ def test_plot_powder_meas_vs_calc_clips_large_residual_spikes(monkeypatch):
 
 def test_plot_powder_meas_vs_calc_accepts_empty_filtered_range(monkeypatch):
     import easydiffraction.display.plotters.plotly as pp
-
     from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
 
     captured = {}
@@ -1267,9 +1257,9 @@ def test_typed_arrays_to_float32_transcodes_and_preserves_shape():
 
 
 def test_serialize_html_shared_is_lazy_placeholder_with_float32():
-    import easydiffraction.display.plotters.plotly as pp
     import plotly.graph_objects as go
 
+    import easydiffraction.display.plotters.plotly as pp
     from easydiffraction.utils.environment import FigureEmbedMode
 
     fig = go.Figure(go.Scatter(x=np.arange(3000.0), y=np.arange(3000.0)))
@@ -1289,9 +1279,9 @@ def test_serialize_html_shared_is_lazy_placeholder_with_float32():
 
 
 def test_serialize_html_inline_is_eager_self_contained():
-    import easydiffraction.display.plotters.plotly as pp
     import plotly.graph_objects as go
 
+    import easydiffraction.display.plotters.plotly as pp
     from easydiffraction.utils.environment import FigureEmbedMode
 
     fig = go.Figure(go.Scatter(x=np.arange(10.0), y=np.arange(10.0)))
@@ -1328,9 +1318,10 @@ def test_typed_arrays_to_float32_leaves_integer_specs_untouched():
 def test_typed_arrays_to_float32_roundtrips_through_plotly():
     import base64
 
-    import easydiffraction.display.plotters.plotly as pp
     import plotly.graph_objects as go
     import plotly.io as pio
+
+    import easydiffraction.display.plotters.plotly as pp
 
     expected = np.arange(3000.0) * 1.5
     fig = go.Figure(go.Scatter(x=np.arange(3000.0), y=expected))

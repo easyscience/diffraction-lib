@@ -7,9 +7,7 @@ from __future__ import annotations
 
 def test_dfols_minimizer_registers_expected_tag():
     from easydiffraction.analysis.categories.minimizer.dfols import DfolsMinimizer
-    from easydiffraction.analysis.categories.minimizer.lsq_base import (
-        LeastSquaresMinimizerBase,
-    )
+    from easydiffraction.analysis.categories.minimizer.lsq_base import LeastSquaresMinimizerBase
     from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 
     assert issubclass(DfolsMinimizer, LeastSquaresMinimizerBase)

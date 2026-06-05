@@ -7,9 +7,7 @@ from __future__ import annotations
 
 def test_bumps_minimizer_registers_expected_tag():
     from easydiffraction.analysis.categories.minimizer.bumps import BumpsMinimizer
-    from easydiffraction.analysis.categories.minimizer.lsq_base import (
-        LeastSquaresMinimizerBase,
-    )
+    from easydiffraction.analysis.categories.minimizer.lsq_base import LeastSquaresMinimizerBase
     from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 
     assert issubclass(BumpsMinimizer, LeastSquaresMinimizerBase)

@@ -93,10 +93,9 @@ class _FakeParser:
 
 def test_pdffit_cif_v2_to_v1_regex_behavior(monkeypatch):
     # Exercise the regex conversion path indirectly by providing minimal objects
-    from easydiffraction.analysis.calculators.pdffit import PdffitCalculator
-
     # Monkeypatch PdfFit and parser to avoid real engine usage
     import easydiffraction.analysis.calculators.pdffit as mod
+    from easydiffraction.analysis.calculators.pdffit import PdffitCalculator
 
     monkeypatch.setattr(mod, 'PdfFit', _FakePdf)
     monkeypatch.setattr(mod, 'pdffit_cif_parser', lambda: _FakeParser())

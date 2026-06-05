@@ -21,7 +21,6 @@ import math
 from pathlib import Path
 
 import pytest
-
 from analysis_cif_reader import read_analysis_cif
 from generate_baseline import PLATFORM_SENSITIVE
 from generate_baseline import artifact_root

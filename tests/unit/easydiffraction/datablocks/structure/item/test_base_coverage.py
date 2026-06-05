@@ -13,7 +13,6 @@ from easydiffraction.datablocks.structure.categories.space_group import SpaceGro
 from easydiffraction.datablocks.structure.categories.space_group.factory import SpaceGroupFactory
 from easydiffraction.datablocks.structure.item.base import Structure
 
-
 # ------------------------------------------------------------------
 # Fixture
 # ------------------------------------------------------------------

@@ -10,8 +10,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from easydiffraction.analysis.sequential import SequentialFitTemplate
 from easydiffraction.analysis.sequential import _META_COLUMNS
+from easydiffraction.analysis.sequential import SequentialFitTemplate
 from easydiffraction.analysis.sequential import _append_to_csv
 from easydiffraction.analysis.sequential import _build_csv_header
 from easydiffraction.analysis.sequential import _chunk_file_range
