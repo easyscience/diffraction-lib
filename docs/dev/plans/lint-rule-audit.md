@@ -25,12 +25,13 @@ for `tests/**` and `docs/**`. This document:
 4. Recommends, per rule, whether to **adopt** (enable + fix) or **keep
    disabled** (with rationale).
 
-It is the **first draft** of a roadmap for tightening code quality. It
-lands the tutorial-baseline fix, this document, the regeneration helper
-(`tools/lint_rule_audit.py`), and the **Priority 0** cleanup (R1) — the
-removal of five zero-violation ignores. Larger enablement (Priority 1
-and up) follows in separate, reviewed steps, each agreed before it
-starts.
+It is the **first draft** of a roadmap for tightening code quality — and
+it has begun acting on it. This branch lands the tutorial-baseline fix,
+this document, the regeneration helper (`tools/lint_rule_audit.py`), the
+**Priority 0** cleanup (R1, five zero-violation ignores), and the
+**source-docstring** enablement (R3 / P1a — `D100`/`D104` plus 79 new
+module and package docstrings). The remaining tiers follow in separate,
+reviewed steps, each agreed before it starts.
 
 ## ADR
 
@@ -124,6 +125,12 @@ overlap existing lint policy, so two points of coordination apply:
   modifies the tracked `pyproject.toml`.
 
 ## Full violation inventory
+
+> **Snapshot.** This inventory is the disabled-rule state at the
+> **start** of the audit, before any adoption. Rules enabled since
+> (Priority 0; `D100`/`D104` in P1a) are now enforced and would no
+> longer appear here — see the Adoption roadmap below. Re-run
+> `pixi run python tools/lint_rule_audit.py` for live counts.
 
 7144 violations total across all disabled rules. Scope columns: `src` =
 `src/`, `tst` = `tests/`, `tut` = `docs/docs/tutorials/`. `fix` = fixes
@@ -270,9 +277,9 @@ These are the only firm decisions; everything in
 and the policy notes in the [ADR](#adr) section are **recommendations**,
 not decisions.
 
-- **Rule enablement is incremental and reviewed.** This PR lands the
-  Priority 0 cleanup (R1) — removing five zero-violation ignores from
-  `pyproject.toml`. Each further tier (Priority 1+) is implemented only
+- **Rule enablement is incremental and reviewed.** This branch has
+  landed the Priority 0 cleanup (R1) and the source-docstring enablement
+  (R3 / P1a — `D100`/`D104`). Each further tier is implemented only
   after explicit approval, per the roadmap below.
 - **Measurement method** is a non-destructive command-line overlay on
   the _unmodified_ `pyproject.toml` (see [Methodology](#methodology)),
@@ -338,22 +345,32 @@ proposed for un-ignoring.
       Ruff run). Commit: `Add lint-rule audit regeneration helper`.
 - [x] **P1.4 — Phase 1 review gate.** No code; await review.
 
-## Proposed adoption roadmap (R1 lands here; R2+ are follow-ups)
+## Adoption roadmap
 
-- [x] **R1 — Config cleanup:** remove dead ignores (`B011`, `B017`,
-      `N805`, `PLE`, docs `ANN`). Done on this branch; `py-lint-check`
-      stays clean (all five had 0 violations today).
-- [ ] **R2 — Tests fix batch:** enable, then `ruff --fix` (safe) `I001`,
-      `PLR0402`, `PLR1711`; `ruff --fix --unsafe-fixes` (with review)
-      `PLW0108`, `PLW1514`, `PLR6104`, `F841`; and wrap the one `E501`
-      line by hand (not auto-fixable).
-- [ ] **R3 — Source docstrings:** enable `D100`/`D104`, add the 79
-      missing module/package docstrings.
-- [ ] **R4 — Misc src wins:** `DTZ005` (1), `TD004`/`TD005` (6).
-- [ ] **R5 — `T20` with display per-file-ignore** (Tier B).
+Adopted in this branch (reviewed step by step):
+
+- [x] **R1 / Priority 0 — Config cleanup:** removed the dead ignores
+      `B011`, `B017`, `N805`, `PLE`, and docs `ANN` (all had 0
+      violations).
+- [x] **R3 / P1a — Source docstrings:** enabled `D100`/`D104` and added
+      the 79 missing module and package docstrings.
+
+Planned next (each gated on approval and its own review):
+
+- [ ] **P1b — Misc src wins:** `DTZ005` (1) and the `TD004`/`TD005`
+      TODO-formatting subset (6). _(Pending: confirm enabling
+      `TD004`/`TD005`.)_
+- [ ] **P1c — Tests clean items:** `I001` (114, safe `ruff --fix`),
+      `E501` (1, manual wrap), `F841` (1). `W291` skipped.
+- [ ] **R5 — `T20` with a `display/plotters` per-file-ignore** (Tier B).
 - [ ] **R6 — `PLC1901` tests cleanup** (Tier B).
-- [ ] **R7 (optional) — dedicated src `SLF001` review** (Tier C item
-      promoted only if desired).
+- [ ] **R7 (optional) — dedicated src `SLF001` review** (Tier C).
+
+Deferred — enabling these would mean breaking the `tests/**` family
+ignores (`PLR`/`PLW`) and surfacing their large siblings, so they are
+out of scope here: `PLR0402`, `PLR1711`, `PLR6104`, `PLW0108`,
+`PLW1514`. Revisit only as a dedicated "split family ignores into
+per-code" effort.
 
 ## Phase 2 — Verification
 
@@ -416,16 +433,17 @@ roadmap
 **Description:** Updates the saved tutorial fit-result baselines so the
 automatic-background feature's slightly different (and correct) results
 pass the tutorial checks again. Adds a developer document that
-inventories every currently-disabled code-style rule, measures how many
-issues each would surface today, and recommends — rule by rule — which
-to switch on (with fixes) and which to keep off because they reflect
+inventories every disabled code-style rule, measures how many issues
+each would surface today, and recommends — rule by rule — which to
+switch on (with fixes) and which to keep off because they reflect
 deliberate, well-reasoned conventions, plus a small helper
 (`tools/lint_rule_audit.py`) that regenerates that inventory on demand.
-As the first concrete step it also applies the "Priority 0" cleanup —
-removing five lint ignores that currently flag nothing (`B011`, `B017`,
-`N805`, `PLE`, and docs `ANN`), so those rules are enforced from now on.
-It sets up a clear, low-risk path to gradually raise code quality, with
-larger rule enablement to follow in separate, reviewed steps.
+As concrete first steps it also enforces two rule batches: the "Priority
+0" cleanup (removing five ignores that currently flag nothing — `B011`,
+`B017`, `N805`, `PLE`, docs `ANN`) and the source-docstring rules
+`D100`/`D104` (adding the 79 missing module and package docstrings). It
+sets up a clear, low-risk path to gradually raise code quality, with the
+remaining tiers to follow in separate, reviewed steps.
 
 ## Appendix: all rules by priority (quick reference)
 
