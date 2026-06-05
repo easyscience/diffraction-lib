@@ -70,7 +70,9 @@ overlap existing lint policy, so two points of coordination apply:
 
 ## Branch and PR
 
-- Branch: `lint-rule-audit` (off `develop`).
+- Branch: `lint-rule-audit` (off `develop`); the deferred / Tier-B/C
+  follow-on work continues on `lint-rule-deferred-adoption` (branched
+  off `lint-rule-audit`).
 - PR target: `develop`.
 - This PR bundles two things: the tutorial-baseline refresh that the
   merged `auto_estimate` background work (#193) made necessary, and this
@@ -131,8 +133,9 @@ overlap existing lint policy, so two points of coordination apply:
 > **Snapshot.** This inventory is the disabled-rule state at the
 > **start** of the audit, before any adoption. Rules enabled since
 > (Priority 0; `D100`/`D104` in P1a; `DTZ005`/`TD004`/`TD005` in P1b;
-> `I001`/`E501`/`F841` in P1c) are now enforced and would no longer
-> appear here — see the Adoption roadmap below. Re-run
+> `I001`/`E501`/`F841` in P1c; `PLR0402`/`PLR1711`/`PLR6104` and the
+> `PLW` family in D1) are now enforced and would no longer appear here —
+> see the Adoption roadmap below. Re-run
 > `pixi run python tools/lint_rule_audit.py` for live counts.
 
 7144 violations total across all disabled rules. Scope columns: `src` =
@@ -365,6 +368,11 @@ Adopted in this branch (reviewed step by step):
 - [x] **P1c — Tests clean items:** enabled `I001` (114 imports sorted
       via safe `ruff --fix`), `E501` (wrapped one over-long docstring),
       and `F841` (removed one dead assignment). `W291` skipped.
+- [x] **D1 — PLR/PLW sub-codes:** split the `tests/**` `PLR` family
+      ignore (kept the `PLR2004`/`PLR6301` idioms and the complexity
+      rules ignored; enforced the rest, fixing `PLR0402`/`PLR1711`/
+      `PLR6104`) and dropped the `PLW` family ignore, fixing `PLW0108`
+      (incl. two monkeypatch-adapter false positives) and `PLW1514`.
 
 Planned next (each gated on approval and its own review):
 
@@ -372,11 +380,9 @@ Planned next (each gated on approval and its own review):
 - [ ] **R6 — `PLC1901` tests cleanup** (Tier B).
 - [ ] **R7 (optional) — dedicated src `SLF001` review** (Tier C).
 
-Deferred — enabling these would mean breaking the `tests/**` family
-ignores (`PLR`/`PLW`) and surfacing their large siblings, so they are
-out of scope here: `PLR0402`, `PLR1711`, `PLR6104`, `PLW0108`,
-`PLW1514`. Revisit only as a dedicated "split family ignores into
-per-code" effort.
+Deferred — none outstanding. The `PLR`/`PLW` sub-codes that needed the
+`tests/**` family-ignore split (`PLR0402`, `PLR1711`, `PLR6104`,
+`PLW0108`, `PLW1514`) were adopted in **D1** above.
 
 ## Phase 2 — Verification
 
