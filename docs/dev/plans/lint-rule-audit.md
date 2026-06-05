@@ -333,7 +333,7 @@ proposed for un-ignoring.
   prints. The Phase 2 unit tests target the pure functions only (no
   subprocess, no Ruff run). Commit:
   `Add lint-rule audit regeneration helper`.
-- [ ] **P1.4 — Phase 1 review gate.** No code; await review.
+- [x] **P1.4 — Phase 1 review gate.** No code; await review.
 
 ## Proposed adoption roadmap (future PRs, not this one)
 
