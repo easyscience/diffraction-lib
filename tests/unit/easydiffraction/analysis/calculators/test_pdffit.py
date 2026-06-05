@@ -12,17 +12,24 @@ def test_module_import():
     assert MUT.__name__ == 'easydiffraction.analysis.calculators.pdffit'
 
 
-def test_pdffit_engine_flag_and_hkl_message(capsys):
+def test_pdffit_engine_flag_and_hkl_message(monkeypatch):
+    from easydiffraction.analysis.calculators import pdffit as pdffit_mod
     from easydiffraction.analysis.calculators.pdffit import PdffitCalculator
 
     calc = PdffitCalculator()
     assert isinstance(calc.engine_imported, bool)
-    # calculate_structure_factors prints fixed message and returns [] by contract
+
+    messages: list[str] = []
+
+    def fake_debug(*parts):
+        messages.append(' '.join(str(p) for p in parts))
+
+    monkeypatch.setattr(pdffit_mod.log, 'debug', fake_debug)
+
+    # calculate_structure_factors logs a not-applicable note and returns [] by contract
     out = calc.calculate_structure_factors(structures=None, experiments=None)
     assert out == []
-    # The method prints a note
-    printed = capsys.readouterr().out
-    assert 'HKLs (not applicable)' in printed
+    assert any('HKLs (not applicable)' in m for m in messages)
 
 
 # -- Stub classes for test_pdffit_cif_v2_to_v1_regex_behavior ----------

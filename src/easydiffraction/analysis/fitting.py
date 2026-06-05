@@ -17,6 +17,7 @@ from easydiffraction.analysis.minimizers.factory import MinimizerFactory
 from easydiffraction.core.variable import Parameter
 from easydiffraction.datablocks.experiment.item.base import intensity_category_for
 from easydiffraction.utils.enums import VerbosityEnum
+from easydiffraction.utils.logging import log
 
 if TYPE_CHECKING:
     from easydiffraction.analysis.fit_helpers.reporting import FitResults
@@ -219,7 +220,7 @@ class Fitter:
                 analysis._clear_persisted_fit_state()
                 analysis.fit_results = None
             self.results = None
-            print('⚠️ No parameters selected for fitting.')
+            log.warning('No parameters selected for fitting.')
             return
 
         if analysis is not None and not fit_options.resume:

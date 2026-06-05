@@ -115,7 +115,7 @@ class ConstraintsHandler(SingletonBase):
             try:
                 self._apply_one_constraint(ae, lhs_alias, rhs_expr)
             except (ValueError, TypeError, ArithmeticError, KeyError, AttributeError) as error:
-                print(f"Failed to apply constraint '{lhs_alias} = {rhs_expr}': {error}")
+                log.warning(f"Failed to apply constraint '{lhs_alias} = {rhs_expr}': {error}")
 
     def _apply_one_constraint(
         self,

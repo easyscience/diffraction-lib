@@ -19,6 +19,7 @@ from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import PeakProfileTypeEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
+from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import sin_theta_over_lambda_to_d_spacing
 
 if TYPE_CHECKING:
@@ -166,7 +167,7 @@ class CryspyCalculator(CalculatorBase):
             y_calc = cryspy_in_out_dict[cryspy_block_name]['intensity_calc']
             stol = cryspy_in_out_dict[cryspy_block_name]['sthovl']
         except KeyError:
-            print(f'[CryspyCalculator] Error: No calculated data for {cryspy_block_name}')
+            log.warning(f'[CryspyCalculator] No calculated data for {cryspy_block_name}')
             return [], []
 
         return stol, y_calc
@@ -256,7 +257,7 @@ class CryspyCalculator(CalculatorBase):
         if beam_mode in prefixes:
             cryspy_block_name = f'{prefixes[beam_mode]}_{experiment.name}'
         else:
-            print(f'[CryspyCalculator] Error: Unknown beam mode {experiment.type.beam_mode.value}')
+            log.warning(f'[CryspyCalculator] Unknown beam mode {experiment.type.beam_mode.value}')
             return []
 
         try:
@@ -268,7 +269,7 @@ class CryspyCalculator(CalculatorBase):
                 f'dict_in_out_{structure.name}'
             )
         except KeyError:
-            print(f'[CryspyCalculator] Error: No calculated data for {cryspy_block_name}')
+            log.warning(f'[CryspyCalculator] No calculated data for {cryspy_block_name}')
             return []
 
         return y_calc
