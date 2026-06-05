@@ -10,7 +10,6 @@ import easydiffraction as ed
 TEMP_DIR = tempfile.gettempdir()
 
 
-@pytest.mark.fast
 def test_single_fit_neut_sc_cwl_tbti() -> None:
     project = ed.Project()
 
@@ -48,7 +47,6 @@ def test_single_fit_neut_sc_cwl_tbti() -> None:
     assert chi2 == pytest.approx(expected=12.9, abs=0.1)
 
 
-@pytest.mark.fast
 def test_single_fit_neut_sc_tof_taurine() -> None:
     project = ed.Project()
 

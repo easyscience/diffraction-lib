@@ -194,7 +194,10 @@ fail_under = 65      # Minimum coverage percentage to pass
 
 [tool.pytest.ini_options]
 addopts = '--import-mode=importlib'
-markers = ['fast: mark test as fast (should be run on every push)']
+markers = [
+  'pr: heavier test; runs on pull requests and develop/master, not feature-branch pushes',
+  'nightly: very expensive test; runs only on the scheduled nightly job',
+]
 testpaths = ['tests']
 filterwarnings = [
   # TEMPRORARY: Suppress some warnings

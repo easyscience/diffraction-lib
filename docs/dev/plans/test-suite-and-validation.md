@@ -184,7 +184,7 @@ files or generated artifacts. Do not run Phase 2 commands during Phase 1.
   Files: `.codecov.yml`.
   Commit: `Make codecov patch informational and gate project at 80%`
 
-- [ ] **P1.2 — Cost-tier markers and test retagging (§2)**
+- [x] **P1.2 — Cost-tier markers and test retagging (§2)**
   Register `pr` and `nightly` markers in
   `[tool.pytest.ini_options].markers`; remove the `fast` marker
   definition. Remove `@pytest.mark.fast` from the 6
