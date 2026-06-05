@@ -28,12 +28,13 @@ for `tests/**` and `docs/**`. This document:
 It is the **first draft** of a roadmap for tightening code quality — and
 it has begun acting on it. This branch lands the tutorial-baseline fix,
 this document, the regeneration helper (`tools/lint_rule_audit.py`), the
-**Priority 0** cleanup (R1, five zero-violation ignores), the
-**source-docstring** enablement (R3 / P1a — `D100`/`D104` plus 79 new
-module and package docstrings), the **P1b** misc-src wins (`DTZ005` plus
-the `TD004`/`TD005` TODO-formatting rules), and the **P1c** test hygiene
-(`I001` import sorting, `E501`, `F841`). The remaining Tier-B/C tiers
-follow in separate, reviewed steps, each agreed before it starts.
+**Priority 0** cleanup (R1), all of **Priority 1** (P1a `D100`/`D104`
+docstrings, P1b `DTZ005` + `TD004`/`TD005`, P1c `I001`/`E501`/`F841`),
+and two **Tier-B** adoptions: **D1** (`PLR0402`/`PLR1711`/`PLR6104` +
+the `PLW` family in tests, via splitting the `tests/**` PLR ignore) and
+**D2** (`T20` — the library's stray `print()` diagnostics routed through
+the `Logger`). The remaining Tier-B/C items follow in separate, reviewed
+steps, each agreed before it starts.
 
 ## ADR
 
@@ -134,8 +135,8 @@ overlap existing lint policy, so two points of coordination apply:
 > **start** of the audit, before any adoption. Rules enabled since
 > (Priority 0; `D100`/`D104` in P1a; `DTZ005`/`TD004`/`TD005` in P1b;
 > `I001`/`E501`/`F841` in P1c; `PLR0402`/`PLR1711`/`PLR6104` and the
-> `PLW` family in D1) are now enforced and would no longer appear here —
-> see the Adoption roadmap below. Re-run
+> `PLW` family in D1; `T20` in D2) are now enforced and would no longer
+> appear here — see the Adoption roadmap below. Re-run
 > `pixi run python tools/lint_rule_audit.py` for live counts.
 
 7144 violations total across all disabled rules. Scope columns: `src` =
@@ -284,10 +285,12 @@ and the policy notes in the [ADR](#adr) section are **recommendations**,
 not decisions.
 
 - **Rule enablement is incremental and reviewed.** This branch has
-  landed the Priority 0 cleanup (R1) and all of Priority 1 — P1a
-  (`D100`/`D104` docstrings), P1b (`DTZ005`, `TD004`/`TD005`), and P1c
-  (`I001`/`E501`/`F841` test hygiene). Each further tier (Tier B/C) is
-  implemented only after explicit approval, per the roadmap below.
+  landed the Priority 0 cleanup (R1), all of Priority 1 — P1a
+  (`D100`/`D104` docstrings), P1b (`DTZ005`, `TD004`/`TD005`), P1c
+  (`I001`/`E501`/`F841` test hygiene) — and two Tier-B adoptions: D1
+  (`PLR`/`PLW` sub-codes in tests) and D2 (`T20`; src diagnostics routed
+  through the `Logger`). Each remaining tier is implemented only after
+  explicit approval, per the roadmap below.
 - **Measurement method** is a non-destructive command-line overlay on
   the _unmodified_ `pyproject.toml` (see [Methodology](#methodology)),
   not literal one-at-a-time toggling — equivalent results because
@@ -328,7 +331,11 @@ proposed for un-ignoring.
   `TD004`/`TD005` enabled; `DTZ005` un-ignored), the 34 module + 45
   `__init__.py` docstrings (P1a), the `DTZ005` timestamp fix plus four
   TODO-comment fixes (P1b), and sorted imports + an `E501`/`F841` fix
-  across ~60 test files (P1c).
+  across ~60 test files (P1c); the `tests/**` PLR/PLW ignore split plus
+  the `PLR0402`/`PLR1711`/`PLR6104`/`PLW0108`/`PLW1514` fixes across ~17
+  test files (D1); and `T20` enabled, with src `print()` diagnostics
+  converted to `log` calls (calculators/fitting/singleton/datablocks)
+  and the two display sinks per-file-ignored (D2).
 - Planned next: only the Tier-B/C tiers (R5–R7), each in its own
   reviewed step.
 
@@ -373,10 +380,15 @@ Adopted in this branch (reviewed step by step):
       rules ignored; enforced the rest, fixing `PLR0402`/`PLR1711`/
       `PLR6104`) and dropped the `PLW` family ignore, fixing `PLW0108`
       (incl. two monkeypatch-adapter false positives) and `PLW1514`.
+- [x] **D2 / R5 — `T20` (no `print`):** enabled `T20`; routed the src
+      `print()` diagnostics (calculators, fitting, singleton,
+      datablocks) through the `Logger` (`log.warning`/`log.debug`),
+      per-file-ignored the two intentional display sinks
+      (`display/plotters/ascii.py`, `project/display.py`), and allowed
+      `print` in tests.
 
 Planned next (each gated on approval and its own review):
 
-- [ ] **R5 — `T20` with a `display/plotters` per-file-ignore** (Tier B).
 - [ ] **R6 — `PLC1901` tests cleanup** (Tier B).
 - [ ] **R7 (optional) — dedicated src `SLF001` review** (Tier C).
 
@@ -456,9 +468,11 @@ As concrete first steps it also enforces the "Priority 0" cleanup
 rules `D100`/`D104` (adding the 79 missing module and package
 docstrings), a couple of source fixes (`DTZ005` and the `TD004`/`TD005`
 TODO-formatting rules), and test hygiene (`I001` import sorting plus
-`E501`/`F841`). It sets up a clear, low-risk path to gradually raise
-code quality, with the remaining Tier-B/C tiers to follow in separate,
-reviewed steps.
+`E501`/`F841`); plus two Tier-B wins — enforcing more pytest-lint rules
+(the `PLR`/`PLW` sub-codes in tests) and routing the library's stray
+diagnostic `print()`s through its logging system (`T20`). It sets up a
+clear, low-risk path to gradually raise code quality, with the remaining
+Tier-B/C items to follow in separate, reviewed steps.
 
 ## Appendix: all rules by priority (quick reference)
 
