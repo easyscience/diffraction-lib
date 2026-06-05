@@ -63,6 +63,7 @@ dev = [
   'pytest',                          # Testing
   'pytest-cov',                      # Test coverage
   'pytest-xdist',                    # Enable parallel testing
+  'hypothesis',                      # Property-based / input-domain testing
   'ruff',                            # Linting and formatting code
   'radon',                           # Code complexity and maintainability
   'validate-pyproject[all]',         # Validate pyproject.toml

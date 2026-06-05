@@ -235,7 +235,7 @@ files or generated artifacts. Do not run Phase 2 commands during Phase 1.
   `tests/unit/**`.
   Commit: `Relocate network and engine tests to correct layers`
 
-- [ ] **P1.7 — Shared fixtures, hypothesis profile, tolerance convention (§4)**
+- [x] **P1.7 — Shared fixtures, hypothesis profile, tolerance convention (§4)**
   Add `hypothesis` (dev dep) and a deterministic profile
   (`derandomize`, fixed seed, no committed `.hypothesis` DB). Add a root
   `tests/conftest.py` with seeded-RNG and one documented
