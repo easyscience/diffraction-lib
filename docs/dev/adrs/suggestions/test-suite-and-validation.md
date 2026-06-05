@@ -32,12 +32,14 @@ accumulated:
   call `download_data()` (mocked, but undocumented). There is no written
   rule an author can apply to a borderline test.
 - **Codecov patch status is always red.** `.codecov.yml` runs a
-  blocking `patch: target: auto` against a **unit-only** coverage
-  baseline (`coverage.yml` uploads only `coverage-unit.xml`). Any pull
-  request that touches code exercised mainly by functional, integration,
-  or script tests scores near-zero patch coverage and fails. `test.yml`
-  uploads no coverage at all, so most feature-branch pull requests grade
-  against a stale develop baseline. See
+  blocking `patch: target: auto` against a **unit-only** coverage upload
+  (`coverage.yml` uploads only `coverage-unit.xml`). Any pull request
+  that touches code exercised mainly by functional, integration, or
+  script tests scores near-zero patch coverage and fails the blocking
+  patch check. `coverage.yml` already runs on pull requests (not only on
+  push to `develop`), so the baseline is current — the failure is purely
+  a blocking patch status graded against unit-only data, not a stale
+  baseline. See
   [discussion #69](https://github.com/orgs/easyscience/discussions/69).
 - **Coverage is line-only and unenforced.** `fail_under = 65` is checked
   locally but never gated in CI, and line coverage says nothing about
@@ -195,19 +197,25 @@ guarantees.
 
 ### 5. Codecov policy
 
+The always-red patch status has a single cause: a **blocking `patch`
+status (`target: auto`) graded against a unit-only coverage upload**.
+Diff lines exercised mainly by functional, integration, or script tests
+show near-zero unit coverage and fail the patch check. `coverage.yml`
+already uploads unit coverage on pull requests and on push to `develop`,
+so the baseline is current; only the status configuration needs to
+change — **no new coverage-upload path is introduced**.
+
 Adopt the recommendation from
 [discussion #69](https://github.com/orgs/easyscience/discussions/69):
 
 - **Upload unit-test coverage only** (keep the single, fast, reliable
-  source; functional/integration coverage stays out of codecov).
+  source already produced by `coverage.yml`; functional/integration
+  coverage stays out of codecov).
 - **`project` status: target 80%, blocking** (`informational: false`) —
   this becomes the real coverage gate.
 - **`patch` status: `informational: true`** (non-blocking) — stops the
-  always-red patch failures, which were an artefact of grading
-  diff lines against a unit-only baseline.
-- **Upload unit coverage from `test.yml` on every pull request** (not
-  only from `coverage.yml` on develop) so patch/project grade against a
-  current baseline instead of a stale one.
+  always-red patch failures, which were an artefact of grading diff
+  lines against a unit-only baseline.
 
 ### 6. Verification documentation (cross-engine pattern comparison)
 
