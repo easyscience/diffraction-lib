@@ -302,9 +302,8 @@ proposed for un-ignoring.
 ## Open questions (for the reviewer)
 
 1. **Scope of this PR:** _resolved_ — this branch lands the Priority 0
-   cleanup (R1), the source-docstring enablement (R3 / P1a), and the P1b
-   misc-src wins; only P1c (and later tiers) proceed after explicit,
-   per-tier approval.
+   cleanup (R1) and all of Priority 1 (P1a, P1b, P1c); only the Tier-B/C
+   follow-ups (R5–R7) remain, each pending explicit, per-tier approval.
 2. **`T201` in `display/plotters/ascii.py`:** confirm those prints are
    the intended terminal-output path so we can per-file-ignore them
    rather than rewrite them.
@@ -445,13 +444,14 @@ each would surface today, and recommends — rule by rule — which to
 switch on (with fixes) and which to keep off because they reflect
 deliberate, well-reasoned conventions, plus a small helper
 (`tools/lint_rule_audit.py`) that regenerates that inventory on demand.
-As concrete first steps it also enforces three small rule batches: the
-"Priority 0" cleanup (removing five ignores that currently flag nothing
-— `B011`, `B017`, `N805`, `PLE`, docs `ANN`), the source-docstring rules
-`D100`/`D104` (adding the 79 missing module and package docstrings), and
-a few more source wins (`DTZ005` plus the `TD004`/`TD005`
-TODO-formatting rules). It sets up a clear, low-risk path to gradually
-raise code quality, with the remaining tiers to follow in separate,
+As concrete first steps it also enforces the "Priority 0" cleanup
+(removing five ignores that currently flag nothing — `B011`, `B017`,
+`N805`, `PLE`, docs `ANN`) and all of "Priority 1": the source-docstring
+rules `D100`/`D104` (adding the 79 missing module and package
+docstrings), a couple of source fixes (`DTZ005` and the `TD004`/`TD005`
+TODO-formatting rules), and test hygiene (`I001` import sorting plus
+`E501`/`F841`). It sets up a clear, low-risk path to gradually raise
+code quality, with the remaining Tier-B/C tiers to follow in separate,
 reviewed steps.
 
 ## Appendix: all rules by priority (quick reference)
