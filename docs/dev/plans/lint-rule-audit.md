@@ -25,11 +25,12 @@ for `tests/**` and `docs/**`. This document:
 4. Recommends, per rule, whether to **adopt** (enable + fix) or **keep
    disabled** (with rationale).
 
-It is the **first draft** of a roadmap for tightening code quality. This
-PR enables **no rules** and changes **no** lint configuration; it lands
-only the tutorial-baseline fix, this document, and a regeneration helper
-(`tools/lint_rule_audit.py`). Enabling rules and fixing the violations
-happens in focused follow-up PRs once the roadmap is agreed.
+It is the **first draft** of a roadmap for tightening code quality. It
+lands the tutorial-baseline fix, this document, the regeneration helper
+(`tools/lint_rule_audit.py`), and the **Priority 0** cleanup (R1) — the
+removal of five zero-violation ignores. Larger enablement (Priority 1
+and up) follows in separate, reviewed steps, each agreed before it
+starts.
 
 ## ADR
 
@@ -269,9 +270,10 @@ These are the only firm decisions; everything in
 and the policy notes in the [ADR](#adr) section are **recommendations**,
 not decisions.
 
-- **This PR enables no rules.** No `pyproject.toml` lint changes land
-  here; it adds only the baseline fix, this document, and the
-  regeneration helper. The roadmap below drives separate follow-up PRs.
+- **Rule enablement is incremental and reviewed.** This PR lands the
+  Priority 0 cleanup (R1) — removing five zero-violation ignores from
+  `pyproject.toml`. Each further tier (Priority 1+) is implemented only
+  after explicit approval, per the roadmap below.
 - **Measurement method** is a non-destructive command-line overlay on
   the _unmodified_ `pyproject.toml` (see [Methodology](#methodology)),
   not literal one-at-a-time toggling — equivalent results because
@@ -288,9 +290,9 @@ proposed for un-ignoring.
 
 ## Open questions (for the reviewer)
 
-1. **Scope of this PR:** keep it free of rule enablement (recommended) —
-   baseline fix + this document + the regeneration helper only — or also
-   land the Tier-A "clean wins" in the same PR?
+1. **Scope of this PR:** _resolved_ — the Priority 0 cleanup (R1) lands
+   in this branch; Priority 1 ("clean wins") proceeds only after
+   explicit, per-tier approval.
 2. **`T201` in `display/plotters/ascii.py`:** confirm those prints are
    the intended terminal-output path so we can per-file-ignore them
    rather than rewrite them.
@@ -336,10 +338,11 @@ proposed for un-ignoring.
       Ruff run). Commit: `Add lint-rule audit regeneration helper`.
 - [x] **P1.4 — Phase 1 review gate.** No code; await review.
 
-## Proposed adoption roadmap (future PRs, not this one)
+## Proposed adoption roadmap (R1 lands here; R2+ are follow-ups)
 
-- [ ] **R1 — Config cleanup:** remove dead ignores (`B011`, `B017`,
-      `N805`, `PLE`, docs `ANN`).
+- [x] **R1 — Config cleanup:** remove dead ignores (`B011`, `B017`,
+      `N805`, `PLE`, docs `ANN`). Done on this branch; `py-lint-check`
+      stays clean (all five had 0 violations today).
 - [ ] **R2 — Tests fix batch:** enable, then `ruff --fix` (safe) `I001`,
       `PLR0402`, `PLR1711`; `ruff --fix --unsafe-fixes` (with review)
       `PLW0108`, `PLW1514`, `PLR6104`, `F841`; and wrap the one `E501`

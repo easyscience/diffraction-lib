@@ -330,18 +330,14 @@ ignore = [
   'ARG002',
   'ARG004',
   'ARG005',
-  'B011',
-  'B017',
   'B018',
   'E501',
   'E741',
   'F841',
   'I001',
   'N801',
-  'N805',
   'N812',
   'PLC',
-  'PLE',
   'PLR',
   'PLW',
   'SIM117',
@@ -356,7 +352,6 @@ ignore = [
   'RUF003', # https://docs.astral.sh/ruff/rules/ambiguous-unicode-character-comment/ (en-dashes in headings)
   'T201',   # https://docs.astral.sh/ruff/rules/print/
   # Temporary:
-  'ANN',
   'D',
   'W',
 ]
