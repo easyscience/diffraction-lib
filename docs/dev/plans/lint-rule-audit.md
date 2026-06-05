@@ -297,9 +297,10 @@ proposed for un-ignoring.
 
 ## Open questions (for the reviewer)
 
-1. **Scope of this PR:** _resolved_ — the Priority 0 cleanup (R1) lands
-   in this branch; Priority 1 ("clean wins") proceeds only after
-   explicit, per-tier approval.
+1. **Scope of this PR:** _resolved_ — this branch lands the Priority 0
+   cleanup (R1) and the source-docstring enablement (R3 / P1a); the
+   remaining "clean wins" (P1b, P1c) proceed only after explicit,
+   per-tier approval.
 2. **`T201` in `display/plotters/ascii.py`:** confirm those prints are
    the intended terminal-output path so we can per-file-ignore them
    rather than rewrite them.
@@ -313,16 +314,16 @@ proposed for un-ignoring.
 
 ## Concrete files likely to change
 
-- This PR: `tests/tutorials/baseline.json` (done), this plan file,
-  `tools/lint_rule_audit.py` (regeneration helper, P1.3), and its unit
-  test `tests/unit/tools/test_lint_rule_audit.py` (added in Phase 2;
-  mirrors the existing `tests/unit/tools/test_bump_vendored_js.py`
-  precedent).
-- Future Tier-A PRs: `pyproject.toml` (`[tool.ruff.lint]`), 34 `src`
-  modules + 45 `__init__.py` (docstrings),
-  `src/easydiffraction/project/categories/info/default.py` (`DTZ005`), 6
-  TODO comments under `src/easydiffraction/analysis/categories/**`, and
-  `ruff --fix`-driven edits across `tests/`.
+- Landed in this branch: `tests/tutorials/baseline.json`, this plan
+  file, `tools/lint_rule_audit.py` (helper) + its unit test
+  `tests/unit/tools/test_lint_rule_audit.py`, `pyproject.toml`
+  (`[tool.ruff.lint]` — Priority 0 ignores removed and `D100`/`D104`
+  enabled), and the 34 module + 45 `__init__.py` docstrings (P1a).
+- Planned next: `pyproject.toml` again (per tier),
+  `src/easydiffraction/project/categories/info/default.py` (`DTZ005`),
+  ~6 TODO comments under `src/easydiffraction/analysis/categories/**`
+  (`TD004`/`TD005`), and `ruff --fix`/manual edits across `tests/`
+  (`I001`, `E501`, `F841`) for P1b/P1c.
 
 ## Implementation steps (Phase 1)
 
