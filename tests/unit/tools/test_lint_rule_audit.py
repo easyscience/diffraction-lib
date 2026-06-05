@@ -22,12 +22,42 @@ def _load_audit():
 def _records():
     """Synthetic Ruff JSON records covering every scope and fix kind."""
     return [
-        {'code': 'D100', 'message': 'Missing module docstring', 'filename': 'src/easydiffraction/a.py', 'fix': None},
-        {'code': 'D100', 'message': 'Missing module docstring', 'filename': 'src/easydiffraction/b.py', 'fix': None},
-        {'code': 'I001', 'message': 'Import block un-sorted', 'filename': 'tests/unit/x.py', 'fix': {'applicability': 'safe'}},
-        {'code': 'T201', 'message': '`print` found', 'filename': 'src/easydiffraction/c.py', 'fix': {'applicability': 'unsafe'}},
-        {'code': 'W505', 'message': 'Doc line too long', 'filename': 'docs/docs/tutorials/ed-1.py', 'fix': None},
-        {'code': 'RUF100', 'message': 'Unused noqa', 'filename': 'docs/dev/plans/p.py', 'fix': {'applicability': 'display'}},
+        {
+            'code': 'D100',
+            'message': 'Missing module docstring',
+            'filename': 'src/easydiffraction/a.py',
+            'fix': None,
+        },
+        {
+            'code': 'D100',
+            'message': 'Missing module docstring',
+            'filename': 'src/easydiffraction/b.py',
+            'fix': None,
+        },
+        {
+            'code': 'I001',
+            'message': 'Import block un-sorted',
+            'filename': 'tests/unit/x.py',
+            'fix': {'applicability': 'safe'},
+        },
+        {
+            'code': 'T201',
+            'message': '`print` found',
+            'filename': 'src/easydiffraction/c.py',
+            'fix': {'applicability': 'unsafe'},
+        },
+        {
+            'code': 'W505',
+            'message': 'Doc line too long',
+            'filename': 'docs/docs/tutorials/ed-1.py',
+            'fix': None,
+        },
+        {
+            'code': 'RUF100',
+            'message': 'Unused noqa',
+            'filename': 'docs/dev/plans/p.py',
+            'fix': {'applicability': 'display'},
+        },
     ]
 
 
