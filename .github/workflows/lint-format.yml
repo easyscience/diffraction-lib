@@ -91,6 +91,12 @@ jobs:
         shell: bash
         run: pixi run notebook-lint-check
 
+      - name: Check unit-test directory mirrors src/ structure
+        id: test_structure
+        continue-on-error: true
+        shell: bash
+        run: pixi run test-structure-check
+
       # Add summary
       - name: Add quality checks summary
         if: always()
@@ -108,6 +114,7 @@ jobs:
             echo "| docstring lint   | ${{ steps.docstring_lint.outcome == 'success' && '✅' || '❌' }} |"
             echo "| nonpy format     | ${{ steps.nonpy_format.outcome == 'success' && '✅' || '❌' }} |"
             echo "| notebooks lint   | ${{ steps.notebook_lint.outcome == 'success' && '✅' || '❌' }} |"
+            echo "| test structure   | ${{ steps.test_structure.outcome == 'success' && '✅' || '❌' }} |"
           } >> "$GITHUB_STEP_SUMMARY"
 
       # Fail job if any check failed
@@ -120,5 +127,6 @@ jobs:
           || steps.docstring_lint.outcome == 'failure'
           || steps.nonpy_format.outcome == 'failure'
           || steps.notebook_lint.outcome == 'failure'
+          || steps.test_structure.outcome == 'failure'
         shell: bash
         run: exit 1

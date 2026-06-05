@@ -19,8 +19,9 @@ from dataclasses import field
 from pathlib import Path
 from typing import List
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
-SRC_ROOT = REPO_ROOT / 'src' / 'easydiffraction'
+from _src_tree import REPO_ROOT
+from _src_tree import SRC_ROOT
+
 DOCS_OUT_DIR = REPO_ROOT / 'docs' / 'dev' / 'package-structure'
 
 

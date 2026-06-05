@@ -207,7 +207,7 @@ files or generated artifacts. Do not run Phase 2 commands during Phase 1.
   Files: `.github/workflows/test.yml`, `pixi.toml`.
   Commit: `Select test tiers per trigger across all test layers`
 
-- [ ] **P1.4 — Unify src-tree walk and gate structure check (§3)**
+- [x] **P1.4 — Unify src-tree walk and gate structure check (§3)**
   Extract the `src/` enumeration so `tools/test_structure_check.py` and
   `tools/generate_package_docs.py` share one walker; add the check to CI
   (lint/format or test workflow) as a blocking gate.
