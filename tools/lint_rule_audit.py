@@ -73,13 +73,11 @@ def scope(filename: str, root: Path = REPO_ROOT) -> str:
         except ValueError:
             return 'other'
     parts = path.parts
-    if not parts:
-        return 'other'
-    if parts[0] == 'docs':
+    if parts[:3] == ('docs', 'docs', 'tutorials'):
         return 'tutorials'
-    if parts[0] == 'tests':
+    if parts[:1] == ('tests',):
         return 'tests'
-    if parts[0] == 'src':
+    if parts[:1] == ('src',):
         return 'src'
     return 'other'
 
