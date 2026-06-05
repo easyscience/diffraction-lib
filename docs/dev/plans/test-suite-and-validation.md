@@ -216,7 +216,7 @@ files or generated artifacts. Do not run Phase 2 commands during Phase 1.
   `pixi.toml`.
   Commit: `Gate unit-test structure check on shared src tree walk`
 
-- [ ] **P1.5 — Strict layer-criteria testing guide (§1)**
+- [x] **P1.5 — Strict layer-criteria testing guide (§1)**
   Write the may/must-not criteria and the "where does this test go?"
   decision list (location per Open question 5), and tighten the layer
   wording referenced by the amended `test-strategy.md`.

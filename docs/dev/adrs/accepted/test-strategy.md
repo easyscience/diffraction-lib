@@ -39,3 +39,12 @@ aliases.
 New features should add focused tests at the lowest useful layer and
 broader tests when behavior crosses module boundaries. The mirrored
 structure makes missing coverage easier to spot.
+
+## Amendments
+
+[Test Suite and Validation Strategy](../suggestions/test-suite-and-validation.md)
+sharpens these layer definitions into strict, testable placement
+criteria and adds test cost tiers, coverage policy, codecov
+configuration, cross-engine verification documentation, and a nightly
+validation harness. The practical placement rules live in the
+[Testing Guide](../../testing-guide.md).
