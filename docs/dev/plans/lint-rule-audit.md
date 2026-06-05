@@ -33,8 +33,9 @@ docstrings, P1b `DTZ005` + `TD004`/`TD005`, P1c `I001`/`E501`/`F841`),
 and two **Tier-B** adoptions: **D1** (`PLR0402`/`PLR1711`/`PLR6104` +
 the `PLW` family in tests, via splitting the `tests/**` PLR ignore) and
 **D2** (`T20` — the library's stray `print()` diagnostics routed through
-the `Logger`). The remaining Tier-B/C items follow in separate, reviewed
-steps, each agreed before it starts.
+the `Logger`). The remaining Tier-B/C items (R6 `PLC1901`, the
+test-complexity rules, R7 `SLF001`) are **recommended to stay disabled**
+— see the Adoption roadmap — rather than planned for adoption.
 
 ## ADR
 
@@ -313,9 +314,10 @@ proposed for un-ignoring.
    items (R6 `PLC1901`, R7 src `SLF001`, and the test-complexity rules)
    are **recommended to stay disabled** — see the Adoption roadmap and
    Tier B/C rationale — pending any final user/ADR sign-off.
-2. **`T201` in `display/plotters/ascii.py`:** confirm those prints are
-   the intended terminal-output path so we can per-file-ignore them
-   rather than rewrite them.
+2. **`T201` in `display/plotters/ascii.py`:** _resolved_ in D2 — those
+   prints are the intended terminal-output path and are now
+   per-file-ignored (`display/plotters/ascii.py`, `project/display.py`);
+   the other src `print()` diagnostics were routed through the `Logger`.
 3. **`N812` `MUT` convention:** keep ignored and document it (in
    `AGENTS.md` §Testing), or adopt `flake8-import-conventions` aliases
    instead?
@@ -339,8 +341,8 @@ proposed for un-ignoring.
   test files (D1); and `T20` enabled, with src `print()` diagnostics
   converted to `log` calls (calculators/fitting/singleton/datablocks)
   and the two display sinks per-file-ignored (D2).
-- Planned next: only the Tier-B/C tiers (R5–R7), each in its own
-  reviewed step.
+- Not planned (recommended keep-disabled, see Adoption roadmap): R6
+  `PLC1901`, the test-complexity rules, and R7 src `SLF001`.
 
 ## Implementation steps (Phase 1)
 
@@ -482,8 +484,9 @@ TODO-formatting rules), and test hygiene (`I001` import sorting plus
 `E501`/`F841`); plus two Tier-B wins — enforcing more pytest-lint rules
 (the `PLR`/`PLW` sub-codes in tests) and routing the library's stray
 diagnostic `print()`s through its logging system (`T20`). It sets up a
-clear, low-risk path to gradually raise code quality, with the remaining
-Tier-B/C items to follow in separate, reviewed steps.
+clear, low-risk path to gradually raise code quality; the remaining
+Tier-B/C rules are documented as deliberate keep-disabled
+recommendations rather than planned work.
 
 ## Appendix: all rules by priority (quick reference)
 
