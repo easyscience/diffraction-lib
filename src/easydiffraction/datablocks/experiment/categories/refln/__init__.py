@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Reflection categories for powder and single-crystal experiments."""
 
 from easydiffraction.datablocks.experiment.categories.refln.bragg_pd import PowderCwlRefln
 from easydiffraction.datablocks.experiment.categories.refln.bragg_pd import PowderCwlReflnData

@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-
+"""Least-squares fit-result container and summary rendering."""
 
 from easydiffraction.analysis.fit_helpers.metrics import calculate_r_factor
 from easydiffraction.analysis.fit_helpers.metrics import calculate_r_factor_squared

@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Data/tutorial downloads, table rendering, and unit helpers."""
 
 from __future__ import annotations
 

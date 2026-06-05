@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Minimizer adapters for lmfit, bumps, dfo-ls and emcee."""
 
 from easydiffraction.analysis.minimizers.bumps import BumpsMinimizer
 from easydiffraction.analysis.minimizers.bumps_amoeba import BumpsAmoebaMinimizer

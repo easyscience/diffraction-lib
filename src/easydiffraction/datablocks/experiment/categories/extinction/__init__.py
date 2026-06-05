@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Becker-Coppens extinction correction category."""
 
 from easydiffraction.datablocks.experiment.categories.extinction.becker_coppens import (
     BeckerCoppensExtinction,

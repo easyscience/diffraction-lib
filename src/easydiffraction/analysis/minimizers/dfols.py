@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-
+"""Derivative-free least-squares minimizer built on DFO-LS."""
 
 import numpy as np
 from dfols import solve

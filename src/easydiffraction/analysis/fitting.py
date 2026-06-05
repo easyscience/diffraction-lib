@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Fitter orchestrating model refinement via a pluggable minimizer."""
 
 from __future__ import annotations
 

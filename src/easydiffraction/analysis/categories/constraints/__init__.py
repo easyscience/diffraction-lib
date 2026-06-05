@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Parameter constraint categories for fitting."""
 
 from easydiffraction.analysis.categories.constraints.default import Constraint
 from easydiffraction.analysis.categories.constraints.default import Constraints
