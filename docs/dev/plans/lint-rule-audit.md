@@ -322,7 +322,7 @@ proposed for un-ignoring.
   `Update tutorial baselines for auto_estimate background`.
 - [x] **P1.2 — Add this audit + roadmap document.** Commit:
   `Add lint-rule audit and adoption roadmap`.
-- [ ] **P1.3 — Add `tools/lint_rule_audit.py` regeneration helper.**
+- [x] **P1.3 — Add `tools/lint_rule_audit.py` regeneration helper.**
   Builds the non-destructive `ruff check` overlay from
   [Methodology](#methodology) and prints the per-rule/scope/fixability
   table; never modifies the tracked `pyproject.toml`. **Structure it for
