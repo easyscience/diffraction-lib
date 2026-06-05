@@ -38,7 +38,7 @@ def cif_content(
     cif_path: str,
 ) -> str:
     """Read the CIF file content as text."""
-    return Path(cif_path).read_text()
+    return Path(cif_path).read_text(encoding='utf-8')
 
 
 @pytest.fixture(scope='module')

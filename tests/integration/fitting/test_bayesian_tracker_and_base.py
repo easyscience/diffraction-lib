@@ -419,7 +419,7 @@ def test_minimizer_base_applies_physical_limits_and_warns(monkeypatch):
     warnings: list[str] = []
     monkeypatch.setattr(
         'easydiffraction.analysis.minimizers.base.log.warning',
-        lambda message: warnings.append(message),
+        warnings.append,
     )
 
     class BoundaryParam(DummyParam):

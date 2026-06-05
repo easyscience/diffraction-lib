@@ -15,10 +15,10 @@ def _pattern(n=400, slope=0.3, intercept=5.0, peaks=((5.0, 6.0, 0.15),), noise=0
     x = np.linspace(0.0, 10.0, n)
     y = intercept + slope * x
     for center, amp, width in peaks:
-        y = y + amp * np.exp(-((x - center) ** 2) / (2.0 * width**2))
+        y += amp * np.exp(-((x - center) ** 2) / (2.0 * width**2))
     if noise > 0:
         rng = np.random.default_rng(seed)
-        y = y + rng.normal(0.0, noise, size=n)
+        y += rng.normal(0.0, noise, size=n)
     return x, y.astype(float)
 
 
@@ -155,9 +155,9 @@ def test_cwl_broadening_keeps_background_off_broad_peaks():
     y = 4.0 + 0.0 * x
     for center in (2.0, 8.0):
         width = 0.1 + 0.06 * center  # broadening with angle
-        y = y + 7.0 * np.exp(-((x - center) ** 2) / (2.0 * width**2))
+        y += 7.0 * np.exp(-((x - center) ** 2) / (2.0 * width**2))
     rng = np.random.default_rng(12)
-    y = y + rng.normal(0.0, 0.05, size=x.size)
+    y += rng.normal(0.0, 0.05, size=x.size)
     result = estimate_background_curve(x, y)
     # Background near the broad peak stays well below the peak top.
     near_peak = result.curve[np.argmin(np.abs(x - 8.0))]

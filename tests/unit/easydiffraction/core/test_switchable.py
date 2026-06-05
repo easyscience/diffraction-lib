@@ -113,7 +113,7 @@ def test_show_supported_renders_active_type_for_supported_shapes(
     monkeypatch.setattr(
         switchable_mod.console,
         'paragraph',
-        lambda text: paragraphs.append(text),
+        paragraphs.append,
     )
     monkeypatch.setattr(
         switchable_mod,

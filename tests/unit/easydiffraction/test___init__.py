@@ -32,7 +32,7 @@ def test___getattr__unknown_raises_attribute_error():
 
 def test_lazy_functions_execute_with_monkeypatch(monkeypatch, capsys, tmp_path):
     import easydiffraction as ed
-    import easydiffraction.utils.utils as utils
+    from easydiffraction.utils import utils
 
     # 1) list_tutorials uses _fetch_tutorials_index → monkeypatch there
     fake_tutorial_index = {
@@ -49,7 +49,7 @@ def test_lazy_functions_execute_with_monkeypatch(monkeypatch, capsys, tmp_path):
     assert 'Tutorials available for easydiffraction' in out
 
     # 2) download_data should consult index and call pooch.retrieve without network
-    import easydiffraction.utils.utils as utils
+    from easydiffraction.utils import utils
 
     fake_index = {
         '12': {

@@ -37,7 +37,7 @@ def prepared_cif_path(
     """Prepare CIF file with experiment type tags for
     easydiffraction.
     """
-    content = Path(cif_path).read_text()
+    content = Path(cif_path).read_text(encoding='utf-8')
 
     # Add experiment type tags if missing
     for tag, value in EXPT_TYPE_TAGS.items():

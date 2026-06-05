@@ -98,7 +98,7 @@ def test_pdffit_cif_v2_to_v1_regex_behavior(monkeypatch):
     from easydiffraction.analysis.calculators.pdffit import PdffitCalculator
 
     monkeypatch.setattr(mod, 'PdfFit', _FakePdf)
-    monkeypatch.setattr(mod, 'pdffit_cif_parser', lambda: _FakeParser())
+    monkeypatch.setattr(mod, 'pdffit_cif_parser', _FakeParser)
     monkeypatch.setattr(mod, 'redirect_stdout', lambda *a, **k: None)
     monkeypatch.setattr(mod, '_pdffit_devnull', None, raising=False)
 

@@ -333,8 +333,15 @@ ignore = [
   'N801',
   'N812',
   'PLC',
-  'PLR',
-  'PLW',
+  # Keep the test idioms (PLR2004 magic values, PLR6301 no-self-use) and
+  # the ADR-governed complexity rules ignored; the rest of PLR (e.g.
+  # PLR0402/PLR1711/PLR6104) is enforced. PLW is fully enforced.
+  'PLR0913',
+  'PLR0914',
+  'PLR0915',
+  'PLR0917',
+  'PLR2004',
+  'PLR6301',
   'SIM117',
   'SLF',
   'TRY',

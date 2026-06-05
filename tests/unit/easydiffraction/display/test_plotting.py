@@ -1346,7 +1346,7 @@ def test_resolve_posterior_parameter_names_warns_on_ambiguous_label(monkeypatch)
 
     monkeypatch.setattr(
         'easydiffraction.display.plotting.log.warning',
-        lambda message: warning_messages.append(message),
+        warning_messages.append,
     )
 
     result = Plotter._resolve_posterior_parameter_names(
@@ -2046,7 +2046,7 @@ def test_plot_param_correlations_renders_ascii_table(monkeypatch):
         def render(self, df):
             captured['df'] = df
 
-    monkeypatch.setattr(TableRenderer, 'get', staticmethod(lambda: FakeTabler()))
+    monkeypatch.setattr(TableRenderer, 'get', staticmethod(FakeTabler))
 
     class Param:
         def __init__(self, uid, unique_name):
@@ -2283,7 +2283,7 @@ def test_plot_param_correlations_limits_default_table_to_six_parameters(monkeypa
         def render(self, df):
             captured['df'] = df
 
-    monkeypatch.setattr(TableRenderer, 'get', staticmethod(lambda: FakeTabler()))
+    monkeypatch.setattr(TableRenderer, 'get', staticmethod(FakeTabler))
 
     class Param:
         def __init__(self, uid, unique_name):
@@ -2416,7 +2416,7 @@ def test_plot_param_correlations_shows_full_table_when_threshold_is_zero(monkeyp
         def render(self, df):
             captured['df'] = df
 
-    monkeypatch.setattr(TableRenderer, 'get', staticmethod(lambda: FakeTabler()))
+    monkeypatch.setattr(TableRenderer, 'get', staticmethod(FakeTabler))
 
     class Param:
         def __init__(self, uid, unique_name):
@@ -2488,7 +2488,7 @@ def test_plot_param_correlations_hides_subthreshold_table_values(monkeypatch):
         def render(self, df):
             captured['df'] = df
 
-    monkeypatch.setattr(TableRenderer, 'get', staticmethod(lambda: FakeTabler()))
+    monkeypatch.setattr(TableRenderer, 'get', staticmethod(FakeTabler))
 
     class Param:
         def __init__(self, uid, unique_name):
