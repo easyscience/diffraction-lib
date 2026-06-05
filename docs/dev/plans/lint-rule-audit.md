@@ -97,7 +97,8 @@ overlap existing lint policy, so two points of coordination apply:
     `--select` cannot lift a per-file-ignore, so the table is overridden
     via `--config` instead of edited in place.
 - **Exact commands** (run from the repo root; these reproduce the
-  7144-row inventory and the 121-auto-fixable count exactly):
+  7144-row inventory and the fix counts exactly — 168 fixes total, of
+  which 121 are safe (`ruff --fix`) and 47 need `--unsafe-fixes`):
 
   ```
   # per-rule counts
@@ -124,7 +125,11 @@ overlap existing lint policy, so two points of coordination apply:
 
 7144 violations total across all disabled rules. Scope columns:
 `src` = `src/`, `tst` = `tests/`, `tut` = `docs/docs/tutorials/`.
-`fix` = count auto-fixable by `ruff --fix`.
+`fix` = fixes Ruff offers for the rule; the column counts **both**
+safe and unsafe fixes. Of the 168 total fixes, **121 are safe**
+(applied by `ruff --fix`: `I001` 114, `PLR0402` 5, `PLR1711` 2) and
+**47 need `--unsafe-fixes`** (`PLW0108` 18, `T201` 17, `PLW1514` 5,
+`PLR6104` 4, `W291` 2, `F841` 1).
 
 | Rule | Total | src | tst | tut | fix | Disabled via | Meaning |
 |------|------:|----:|----:|----:|----:|--------------|---------|
@@ -220,7 +225,7 @@ one or two follow-up PRs.
 | `I001` | tests | 114 | Import sorting is already enforced in `src/`; tests should match. **Auto-fixable.** | `ruff check --fix`; drop `I001` from tests-ignore. |
 | `TD004`, `TD005` | src | 6 | Well-formed TODOs (colon + description) without demanding author/link. | Edit 6 TODO comments; enable only the `TD004`/`TD005` subset (not `TD002`/`TD003`). |
 | `E501` | tests | 1 | One over-length line in `tests/.../io/test_ascii.py:3`. | Wrap it; drop `E501` from tests-ignore. |
-| Auto-fixable tests cluster: `PLW0108`(18), `PLW1514`(5), `PLR0402`(5), `PLR6104`(4), `PLR1711`(2), `F841`(1) | tests | 35 | All `ruff --fix`-able; small, low-risk hygiene. | `ruff check --fix`; drop these from tests-ignore. (`PLW1514` encoding fixes are a genuine portability win.) |
+| Fixable tests cluster — **safe:** `PLR0402`(5), `PLR1711`(2); **unsafe:** `PLW0108`(18), `PLW1514`(5), `PLR6104`(4), `F841`(1) | tests | 35 | Small, low-risk hygiene. | `ruff check --fix` clears the 7 safe ones; the 28 unsafe ones need `ruff check --fix --unsafe-fixes` (quick review). (`PLW1514` encoding fixes are a genuine portability win.) Drop all from tests-ignore. |
 | Dead ignores: `B011`, `B017`, `N805`, `PLE`, `ANN`(docs) | — | 0 | Listed as *Temporary* but flag nothing. | Remove from ignore lists — config cleanup, no code change. |
 
 ### Tier B — Adopt with moderate effort / a judgment call
@@ -334,8 +339,10 @@ proposed for un-ignoring.
 
 - [ ] **R1 — Config cleanup:** remove dead ignores (`B011`, `B017`,
   `N805`, `PLE`, docs `ANN`).
-- [ ] **R2 — Tests auto-fix batch:** enable + `--fix` `I001`,
-  `PLW0108`, `PLW1514`, `PLR0402`, `PLR6104`, `PLR1711`, `F841`, `E501`.
+- [ ] **R2 — Tests fix batch:** enable, then `ruff --fix` (safe)
+  `I001`, `PLR0402`, `PLR1711`; `ruff --fix --unsafe-fixes` (with
+  review) `PLW0108`, `PLW1514`, `PLR6104`, `F841`; and wrap the one
+  `E501` line by hand (not auto-fixable).
 - [ ] **R3 — Source docstrings:** enable `D100`/`D104`, add the 79
   missing module/package docstrings.
 - [ ] **R4 — Misc src wins:** `DTZ005` (1), `TD004`/`TD005` (6).
@@ -417,8 +424,9 @@ up a clear, low-risk path to gradually raise code quality.
 ## Appendix: all rules by priority (quick reference)
 
 Every rule code that fired in the audit (plus the dead ignores), grouped
-by priority. Scope counts are `src` / `tests` / `tut`; **[fix]** =
-auto-fixable by `ruff --fix`. This condenses the
+by priority. Scope counts are `src` / `tests` / `tut`; **[fix]** = safe
+auto-fix (`ruff --fix`), **[fix!]** = needs `--unsafe-fixes`. This
+condenses the
 [Analysis and recommendations](#analysis-and-recommendations) tiers into
 a single lookup.
 
@@ -436,27 +444,27 @@ a single lookup.
 
 | Rule | Description | Scope (count) | Recommendation |
 |------|-------------|---------------|----------------|
-| `I001` | unsorted import block | tests (114) **[fix]** | Adopt — `ruff --fix` sorts them |
+| `I001` | unsorted import block | tests (114) **[fix]** | Adopt — `ruff --fix` sorts them (safe) |
 | `D104` | missing package docstring | src (45) | Adopt — add `__init__.py` docstrings |
 | `D100` | missing module docstring | src (34) | Adopt **for src** — add one-liners |
-| `PLW0108` | unnecessary lambda | tests (18) **[fix]** | Adopt — auto-fix |
+| `PLW0108` | unnecessary lambda | tests (18) **[fix!]** | Adopt — `--unsafe-fixes` (quick review) |
 | `TD004` | missing colon in TODO | src (4) | Adopt — TODO formatting subset |
-| `PLW1514` | `read_text` without encoding | tests (5) **[fix]** | Adopt — genuine portability win |
-| `PLR0402` | manual `from` import | tests (5) **[fix]** | Adopt — auto-fix |
-| `PLR6104` | non-augmented assignment | tests (4) **[fix]** | Adopt — auto-fix |
+| `PLW1514` | `read_text` without encoding | tests (5) **[fix!]** | Adopt — `--unsafe-fixes`; portability win |
+| `PLR0402` | manual `from` import | tests (5) **[fix]** | Adopt — `ruff --fix` (safe) |
+| `PLR6104` | non-augmented assignment | tests (4) **[fix!]** | Adopt — `--unsafe-fixes` (quick review) |
 | `TD005` | missing TODO description | src (2) | Adopt — TODO formatting subset |
-| `PLR1711` | useless `return` | tests (2) **[fix]** | Adopt — auto-fix |
-| `W291` | trailing whitespace | tut (2) **[fix]** | Adopt — auto-fix; keep `W505` ignored in tutorials |
+| `PLR1711` | useless `return` | tests (2) **[fix]** | Adopt — `ruff --fix` (safe) |
+| `W291` | trailing whitespace | tut (2) **[fix!]** | Adopt — `--unsafe-fixes`; keep `W505` ignored in tutorials |
 | `DTZ005` | `datetime.now()` without tz | src (1) | Adopt — fix the one case (or justified `# noqa`) |
 | `E501` | line too long (>99) | tests (1) | Adopt — wrap the single line |
-| `F841` | unused local variable | tests (1) **[fix]** | Adopt — auto-fix |
+| `F841` | unused local variable | tests (1) **[fix!]** | Adopt — `--unsafe-fixes` (quick review) |
 
 ### Priority 2 — Adopt with judgment (review each, not a blind fix)
 
 | Rule | Description | Scope (count) | Recommendation |
 |------|-------------|---------------|----------------|
 | `PLC1901` | `x == ''` simplifiable | tests (50) | Adopt after rewriting to `not x` |
-| `T201` | `print` found | src (14), tests (3) **[fix]** | Adopt **after** per-file-ignoring `display/plotters/ascii.py` (legit terminal output) |
+| `T201` | `print` found | src (14), tests (3) **[fix!]** | Adopt **after** per-file-ignoring `display/plotters/ascii.py` (legit terminal output); fix is unsafe |
 | `PLR0915` | too many statements | tests (7) | Refactor or keep — governed by complexity ADR |
 | `PLR0913` | too many arguments | tests (7) | Refactor or keep — complexity ADR |
 | `PLC2801` | unnecessary dunder call | tests (5) | Review each — some are intentional behavioural asserts |
