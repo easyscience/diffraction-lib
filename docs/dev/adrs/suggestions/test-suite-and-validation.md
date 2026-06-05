@@ -123,6 +123,16 @@ tests opt *into* a heavier tier, so only the minority are tagged.
   generative fuzzing, full cross-engine sweeps, full benchmarks). Runs
   on the scheduled nightly job and on demand; never on ordinary pushes.
 
+Orthogonality holds at the **unit and functional** layers: those default
+to fast, and an individual test opts into `pr`/`nightly`. The
+**integration** layer is the one principled exception — *every*
+integration test uses a real engine and/or downloaded data, so the layer
+**defaults to the `pr` tier**, applied once in
+`tests/integration/conftest.py` rather than by tagging each of ~150
+tests. An integration test may still escalate to `nightly`. This keeps
+feature-branch pushes fast (unit + functional only) without scattering
+`@pytest.mark.pr` across the whole integration suite.
+
 CI marker selection:
 
 ```text

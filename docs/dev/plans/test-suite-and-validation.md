@@ -79,7 +79,10 @@ These are captured in step P1.14 (a future-work record in
   all (nightly schedule). Because markers are **orthogonal to layers**,
   the selected expression is applied to **every** pytest invocation under
   the policy — unit, functional, and integration, in both the source and
-  package CI jobs — not to integration alone as today.
+  package CI jobs — not to integration alone as today. The **integration
+  layer defaults to the `pr` tier** (auto-marked once in
+  `tests/integration/conftest.py`) because every integration test uses a
+  real engine; unit/functional default to fast and escalate individually.
 - **Structure gate (§3):** unify on a single `src/` tree walk shared by
   `tools/generate_package_docs.py` and `tools/test_structure_check.py`;
   run the check in CI as a gate.
