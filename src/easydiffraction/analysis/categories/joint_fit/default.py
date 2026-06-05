@@ -32,7 +32,7 @@ class JointFitItem(CategoryItem):
 
         self._experiment_id: StringDescriptor = StringDescriptor(
             name='experiment_id',
-            description='Experiment identifier',  # TODO
+            description='Experiment identifier',  # TODO: revisit description
             value_spec=AttributeSpec(
                 default='_',
                 validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
@@ -44,7 +44,7 @@ class JointFitItem(CategoryItem):
         )
         self._weight: NumericDescriptor = NumericDescriptor(
             name='weight',
-            description='Weight factor',  # TODO
+            description='Weight factor',  # TODO: revisit description
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),

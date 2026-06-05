@@ -221,9 +221,7 @@ def test_all_params_skips_large_loop_categories(monkeypatch):
         def render(self, df):
             rendered.append(df)
 
-    monkeypatch.setattr(
-        analysis_mod.TableRenderer, 'get', staticmethod(lambda: FakeTableRenderer())
-    )
+    monkeypatch.setattr(analysis_mod.TableRenderer, 'get', staticmethod(FakeTableRenderer))
     Analysis(Project()).display.all_params()
 
     assert len(rendered) == 2
@@ -270,9 +268,7 @@ def test_all_params_marks_constrained_parameters_not_fittable(monkeypatch):
         def render(self, df):
             rendered.append(df)
 
-    monkeypatch.setattr(
-        analysis_mod.TableRenderer, 'get', staticmethod(lambda: FakeTableRenderer())
-    )
+    monkeypatch.setattr(analysis_mod.TableRenderer, 'get', staticmethod(FakeTableRenderer))
     Analysis(Project()).display.all_params()
 
     structure_df = rendered[0]
@@ -316,9 +312,7 @@ def test_fittable_params_excludes_symmetry_constrained_parameters(monkeypatch):
         def render(self, df):
             rendered.append(df)
 
-    monkeypatch.setattr(
-        analysis_mod.TableRenderer, 'get', staticmethod(lambda: FakeTableRenderer())
-    )
+    monkeypatch.setattr(analysis_mod.TableRenderer, 'get', staticmethod(FakeTableRenderer))
     Analysis(Project()).display.fittable_params()
 
     structure_df = rendered[0]
@@ -367,9 +361,7 @@ def test_free_params_uses_display_units_for_structures_and_experiments(monkeypat
         def render(self, df):
             rendered.append(df)
 
-    monkeypatch.setattr(
-        analysis_mod.TableRenderer, 'get', staticmethod(lambda: FakeTableRenderer())
-    )
+    monkeypatch.setattr(analysis_mod.TableRenderer, 'get', staticmethod(FakeTableRenderer))
     Analysis(Project()).display.free_params()
 
     free_df = rendered[0]
@@ -418,9 +410,7 @@ def test_all_params_renders_integer_descriptors_without_nan(monkeypatch):
         def render(self, df):
             rendered.append(df)
 
-    monkeypatch.setattr(
-        analysis_mod.TableRenderer, 'get', staticmethod(lambda: FakeTableRenderer())
-    )
+    monkeypatch.setattr(analysis_mod.TableRenderer, 'get', staticmethod(FakeTableRenderer))
     Analysis(Project()).display.all_params()
 
     structure_df = rendered[0]

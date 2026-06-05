@@ -174,7 +174,7 @@ class ProjectInfo(CategoryItem):
 
     def update_last_modified(self) -> None:
         """Update the last modified timestamp."""
-        self._set_last_modified(datetime.datetime.now())
+        self._set_last_modified(datetime.datetime.now(tz=datetime.UTC))
 
     @property
     def as_cif(self) -> str:

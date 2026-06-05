@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Fitter orchestrating model refinement via a pluggable minimizer."""
 
 from __future__ import annotations
 
@@ -16,6 +17,7 @@ from easydiffraction.analysis.minimizers.factory import MinimizerFactory
 from easydiffraction.core.variable import Parameter
 from easydiffraction.datablocks.experiment.item.base import intensity_category_for
 from easydiffraction.utils.enums import VerbosityEnum
+from easydiffraction.utils.logging import log
 
 if TYPE_CHECKING:
     from easydiffraction.analysis.fit_helpers.reporting import FitResults
@@ -218,7 +220,7 @@ class Fitter:
                 analysis._clear_persisted_fit_state()
                 analysis.fit_results = None
             self.results = None
-            print('⚠️ No parameters selected for fitting.')
+            log.warning('No parameters selected for fitting.')
             return
 
         if analysis is not None and not fit_options.resume:

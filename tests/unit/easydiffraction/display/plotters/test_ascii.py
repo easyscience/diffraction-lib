@@ -99,8 +99,8 @@ def test_ascii_plotter_plot_single_crystal(capsys):
 
 
 def test_ascii_plotter_single_crystal_marker_uses_paragraph_style():
-    from easydiffraction.display.plotters.ascii import AsciiPlotter
     from easydiffraction.display.plotters.ascii import SINGLE_CRYSTAL_SCATTER_SYMBOL
+    from easydiffraction.display.plotters.ascii import AsciiPlotter
     from easydiffraction.utils.logging import CONSOLE_PARAGRAPH_STYLE
 
     line = AsciiPlotter._single_crystal_grid_line([
@@ -241,11 +241,10 @@ def test_ascii_plotter_plot_uses_fallback_width_when_terminal_size_unavailable(m
         captured['call'] = (series, config)
         return 'chart'
 
-    monkeypatch.setattr(
-        ascii_mod.shutil,
-        'get_terminal_size',
-        lambda fallback: os.terminal_size(fallback),
-    )
+    def fake_get_terminal_size(fallback):
+        return os.terminal_size(fallback)
+
+    monkeypatch.setattr(ascii_mod.shutil, 'get_terminal_size', fake_get_terminal_size)
     monkeypatch.setattr(ascii_mod.asciichartpy, 'plot', fake_plot)
 
     AsciiPlotter().plot_powder(

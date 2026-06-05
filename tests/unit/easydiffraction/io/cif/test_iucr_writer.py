@@ -86,9 +86,7 @@ def _experiment_type(*, sample_form, beam_mode='constant wavelength'):
 
 
 def _fit_result():
-    from easydiffraction.analysis.categories.fit_result.lsq import (
-        LeastSquaresFitResult,
-    )
+    from easydiffraction.analysis.categories.fit_result.lsq import LeastSquaresFitResult
 
     fit_result = LeastSquaresFitResult()
     fit_result._set_n_parameters(4)
@@ -438,9 +436,7 @@ def test_iucr_loop_rows_are_not_padded_to_tag_width():
 
 
 def test_iucr_atom_site_rows_preserve_parameter_uncertainties():
-    from easydiffraction.datablocks.structure.categories.atom_sites.default import (
-        AtomSite,
-    )
+    from easydiffraction.datablocks.structure.categories.atom_sites.default import AtomSite
     from easydiffraction.io.cif.iucr_writer import _atom_site_row
     from easydiffraction.io.cif.iucr_writer import _atom_site_tags
     from easydiffraction.io.cif.iucr_writer import _write_loop

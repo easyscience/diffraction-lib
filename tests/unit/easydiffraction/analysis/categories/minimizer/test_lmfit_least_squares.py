@@ -9,9 +9,7 @@ def test_lmfit_least_squares_minimizer_registers_expected_tag():
     from easydiffraction.analysis.categories.minimizer.lmfit_least_squares import (
         LmfitLeastSquaresMinimizer,
     )
-    from easydiffraction.analysis.categories.minimizer.lsq_base import (
-        LeastSquaresMinimizerBase,
-    )
+    from easydiffraction.analysis.categories.minimizer.lsq_base import LeastSquaresMinimizerBase
     from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 
     assert issubclass(LmfitLeastSquaresMinimizer, LeastSquaresMinimizerBase)

@@ -10,7 +10,6 @@ from easydiffraction.core.metadata import CalculatorSupport
 from easydiffraction.core.metadata import Compatibility
 from easydiffraction.core.metadata import TypeInfo
 
-
 # ------------------------------------------------------------------
 #  TypeInfo
 # ------------------------------------------------------------------

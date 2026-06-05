@@ -8,9 +8,7 @@ import gemmi
 
 
 def test_bayesian_fit_result_defaults_unknown_outputs_to_none():
-    from easydiffraction.analysis.categories.fit_result.bayesian import (
-        BayesianFitResult,
-    )
+    from easydiffraction.analysis.categories.fit_result.bayesian import BayesianFitResult
 
     fit_result = BayesianFitResult()
 
@@ -26,9 +24,7 @@ def test_bayesian_fit_result_defaults_unknown_outputs_to_none():
 
 
 def test_bayesian_fit_result_round_trips_cif_outputs():
-    from easydiffraction.analysis.categories.fit_result.bayesian import (
-        BayesianFitResult,
-    )
+    from easydiffraction.analysis.categories.fit_result.bayesian import BayesianFitResult
 
     fit_result = BayesianFitResult()
     fit_result._set_point_estimate_name('posterior_median')
@@ -56,9 +52,7 @@ def test_bayesian_fit_result_round_trips_cif_outputs():
 
 
 def test_bayesian_fit_result_omits_optional_unknown_outputs():
-    from easydiffraction.analysis.categories.fit_result.bayesian import (
-        BayesianFitResult,
-    )
+    from easydiffraction.analysis.categories.fit_result.bayesian import BayesianFitResult
 
     cif_text = BayesianFitResult().as_cif
 
@@ -67,9 +61,7 @@ def test_bayesian_fit_result_omits_optional_unknown_outputs():
 
 
 def test_bayesian_fit_result_omits_redundant_iterations():
-    from easydiffraction.analysis.categories.fit_result.bayesian import (
-        BayesianFitResult,
-    )
+    from easydiffraction.analysis.categories.fit_result.bayesian import BayesianFitResult
 
     fit_result = BayesianFitResult()
     fit_result._set_iterations(100)
@@ -80,9 +72,7 @@ def test_bayesian_fit_result_omits_redundant_iterations():
 
 
 def test_bayesian_fit_result_keeps_optional_outputs_when_populated():
-    from easydiffraction.analysis.categories.fit_result.bayesian import (
-        BayesianFitResult,
-    )
+    from easydiffraction.analysis.categories.fit_result.bayesian import BayesianFitResult
 
     fit_result = BayesianFitResult()
     fit_result._set_resolved_random_seed(12345)

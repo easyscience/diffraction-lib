@@ -3,8 +3,8 @@
 """Tests for analysis/enums.py."""
 
 from easydiffraction.analysis.enums import FitCorrelationSourceEnum
-from easydiffraction.analysis.enums import FitResultKindEnum
 from easydiffraction.analysis.enums import FitModeEnum
+from easydiffraction.analysis.enums import FitResultKindEnum
 
 
 def test_fit_mode_enum_members():

@@ -8,7 +8,6 @@ import urllib.request
 import numpy as np
 import pytest
 
-
 # --- _validate_url -----------------------------------------------------------
 
 
@@ -378,7 +377,7 @@ def test_download_data_success(monkeypatch, tmp_path, capsys):
     def fake_retrieve(url, known_hash, fname, path):
         import pathlib
 
-        pathlib.Path(path, fname).write_text('x y e')
+        pathlib.Path(path, fname).write_text('x y e', encoding='utf-8')
         return str(pathlib.Path(path, fname))
 
     monkeypatch.setattr(MUT.pooch, 'retrieve', fake_retrieve)
@@ -408,7 +407,7 @@ def test_download_data_overwrite_existing(monkeypatch, tmp_path, capsys):
     def fake_retrieve(url, known_hash, fname, path):
         import pathlib
 
-        pathlib.Path(path, fname).write_text('new data')
+        pathlib.Path(path, fname).write_text('new data', encoding='utf-8')
         return str(pathlib.Path(path, fname))
 
     monkeypatch.setattr(MUT.pooch, 'retrieve', fake_retrieve)
@@ -462,7 +461,7 @@ def test_download_data_uses_tutorial_artifact_root_fallback(monkeypatch, tmp_pat
     def fake_retrieve(url, known_hash, fname, path):
         import pathlib
 
-        pathlib.Path(path, fname).write_text('x y e')
+        pathlib.Path(path, fname).write_text('x y e', encoding='utf-8')
         return str(pathlib.Path(path, fname))
 
     monkeypatch.setattr(MUT.pooch, 'retrieve', fake_retrieve)

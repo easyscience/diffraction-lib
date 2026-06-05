@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Tests for load_numeric_block, extract_project_from_zip, extract_data_paths_from_zip and extract_data_paths_from_dir."""
+"""Tests for load_numeric_block, extract_project_from_zip,
+extract_data_paths_from_zip, and extract_data_paths_from_dir."""
 
 from __future__ import annotations
 

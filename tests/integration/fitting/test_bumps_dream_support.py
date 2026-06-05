@@ -366,7 +366,7 @@ def test_build_mapper_falls_back_for_spawn_bootstrap_runtime_error(monkeypatch):
     )
     monkeypatch.setattr(
         'easydiffraction.analysis.minimizers.bumps_dream.log.warning',
-        lambda message: warnings.append(message),
+        warnings.append,
     )
 
     assert minimizer._build_mapper('problem') is None
@@ -408,7 +408,7 @@ def test_build_mapper_falls_back_before_starting_spawn_for_direct_script(monkeyp
     )
     monkeypatch.setattr(
         'easydiffraction.analysis.minimizers.bumps_dream.log.warning',
-        lambda message: warnings.append(message),
+        warnings.append,
     )
 
     assert minimizer._build_mapper('problem') is None
@@ -697,7 +697,7 @@ def test_build_success_result_handles_invalid_samples_and_warns_when_not_converg
     )
     monkeypatch.setattr(
         'easydiffraction.analysis.minimizers.bumps_dream.log.warning',
-        lambda message: warnings.append(message),
+        warnings.append,
     )
 
     successful = minimizer._build_success_result(

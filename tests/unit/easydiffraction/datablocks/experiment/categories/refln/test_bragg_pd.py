@@ -5,8 +5,8 @@ import numpy as np
 import pytest
 
 from easydiffraction.analysis.calculators.base import PowderReflnRecord
-from easydiffraction.datablocks.experiment.item.factory import ExperimentFactory
 from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
+from easydiffraction.datablocks.experiment.item.factory import ExperimentFactory
 
 
 def test_powder_cwl_refln_defaults():
@@ -24,9 +24,7 @@ def test_powder_cwl_refln_defaults():
 
 
 def test_powder_cwl_refln_data_replace_from_records_sets_arrays():
-    from easydiffraction.datablocks.experiment.categories.refln.bragg_pd import (
-        PowderCwlReflnData,
-    )
+    from easydiffraction.datablocks.experiment.categories.refln.bragg_pd import PowderCwlReflnData
 
     refln = PowderCwlReflnData()
     refln._replace_from_records([
@@ -63,9 +61,7 @@ def test_powder_cwl_refln_data_replace_from_records_sets_arrays():
 
 
 def test_powder_tof_refln_data_replace_from_records_sets_arrays():
-    from easydiffraction.datablocks.experiment.categories.refln.bragg_pd import (
-        PowderTofReflnData,
-    )
+    from easydiffraction.datablocks.experiment.categories.refln.bragg_pd import PowderTofReflnData
 
     refln = PowderTofReflnData()
     refln._replace_from_records([
@@ -89,21 +85,15 @@ def test_powder_tof_refln_data_replace_from_records_sets_arrays():
 
 
 def test_powder_refln_is_cryspy_only():
-    from easydiffraction.datablocks.experiment.categories.refln.bragg_pd import (
-        PowderCwlReflnData,
-    )
-    from easydiffraction.datablocks.experiment.categories.refln.bragg_pd import (
-        PowderTofReflnData,
-    )
+    from easydiffraction.datablocks.experiment.categories.refln.bragg_pd import PowderCwlReflnData
+    from easydiffraction.datablocks.experiment.categories.refln.bragg_pd import PowderTofReflnData
 
     assert PowderCwlReflnData.calculator_support.calculators == frozenset({CalculatorEnum.CRYSPY})
     assert PowderTofReflnData.calculator_support.calculators == frozenset({CalculatorEnum.CRYSPY})
 
 
 def test_powder_refln_replace_from_records_rebuilds_index_and_parents():
-    from easydiffraction.datablocks.experiment.categories.refln.bragg_pd import (
-        PowderCwlReflnData,
-    )
+    from easydiffraction.datablocks.experiment.categories.refln.bragg_pd import PowderCwlReflnData
 
     refln = PowderCwlReflnData()
     refln._replace_from_records([

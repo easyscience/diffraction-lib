@@ -575,23 +575,21 @@ class PdExperimentBase(ExperimentBase):
             A list of valid linked phases.
         """
         if not self.linked_phases:
-            print('Warning: No linked phases defined. Returning empty pattern.')
+            log.warning('No linked phases defined. Returning empty pattern.')
             return []
 
         valid_linked_phases = []
         for linked_phase in self.linked_phases:
             if linked_phase._identity.category_entry_name not in structures.names:
-                print(
-                    f"Warning: Linked phase '{linked_phase.id.value}' not "
+                log.warning(
+                    f"Linked phase '{linked_phase.id.value}' not "
                     f'found in Structures {structures.names}. Skipping it.'
                 )
                 continue
             valid_linked_phases.append(linked_phase)
 
         if not valid_linked_phases:
-            print(
-                'Warning: None of the linked phases found in Structures. Returning empty pattern.'
-            )
+            log.warning('None of the linked phases found in Structures. Returning empty pattern.')
 
         return valid_linked_phases
 

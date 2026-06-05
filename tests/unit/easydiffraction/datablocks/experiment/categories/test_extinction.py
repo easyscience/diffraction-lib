@@ -98,11 +98,11 @@ def test_extinction_factory_registration():
 
 
 def test_extinction_factory_create():
-    from easydiffraction.datablocks.experiment.categories.extinction.factory import (
-        ExtinctionFactory,
-    )
     from easydiffraction.datablocks.experiment.categories.extinction.becker_coppens import (
         BeckerCoppensExtinction,
+    )
+    from easydiffraction.datablocks.experiment.categories.extinction.factory import (
+        ExtinctionFactory,
     )
 
     ext = ExtinctionFactory.create('becker-coppens')

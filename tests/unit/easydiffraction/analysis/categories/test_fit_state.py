@@ -139,12 +139,8 @@ def test_fit_parameter_posterior_summary_serializes_expected_tags():
 
 
 def test_dream_sampler_settings_and_diagnostics_use_split_cif_fields():
-    from easydiffraction.analysis.categories.fit_result.bayesian import (
-        BayesianFitResult,
-    )
-    from easydiffraction.analysis.categories.minimizer.bumps_dream import (
-        BumpsDreamMinimizer,
-    )
+    from easydiffraction.analysis.categories.fit_result.bayesian import BayesianFitResult
+    from easydiffraction.analysis.categories.minimizer.bumps_dream import BumpsDreamMinimizer
 
     minimizer = BumpsDreamMinimizer()
     minimizer.sampling_steps = 100

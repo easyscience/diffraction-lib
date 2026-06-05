@@ -136,7 +136,6 @@ def test_max_iterations_property_updates_internal_value():
 
         def _run_solver(self, objective_function, **kwargs):
             del objective_function, kwargs
-            return
 
         def _sync_result_to_parameters(self, parameters, raw_result):
             del parameters, raw_result

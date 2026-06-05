@@ -12,7 +12,6 @@ from easydiffraction.display.structure.renderers.base import StructureRendererBa
 from easydiffraction.display.structure.scene import AtomSphere
 from easydiffraction.display.structure.scene import StructureScene
 
-
 # ------------------------------------------------------------------
 #  Test doubles
 # ------------------------------------------------------------------

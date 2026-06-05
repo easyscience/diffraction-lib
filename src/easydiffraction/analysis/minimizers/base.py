@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Abstract base class for pluggable least-squares minimizers."""
 
 from abc import ABC
 from abc import abstractmethod

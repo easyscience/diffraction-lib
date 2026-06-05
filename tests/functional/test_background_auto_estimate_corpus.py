@@ -19,8 +19,9 @@ by the unit tests in
 ``tests/unit/.../categories/background/test_estimate.py``.
 """
 
-import easydiffraction as ed
 import numpy as np
+
+import easydiffraction as ed
 
 # The estimated background may differ from the coarse hand-placed
 # reference by at most these fractions of the measured signal scale

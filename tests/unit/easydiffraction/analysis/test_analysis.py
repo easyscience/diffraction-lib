@@ -461,6 +461,9 @@ def test_fit_interrupt_cleans_state_and_prints_message(monkeypatch, capsys):
     events: list[object] = []
 
     class FakeStopControl:
+        def __init__(self, *, verbosity: object) -> None:
+            del verbosity
+
         def __enter__(self) -> object:
             events.append('enter')
             return self
@@ -478,7 +481,7 @@ def test_fit_interrupt_cleans_state_and_prints_message(monkeypatch, capsys):
     monkeypatch.setattr(
         analysis_mod,
         'notebook_fit_stop_control',
-        lambda *, verbosity: FakeStopControl(),
+        FakeStopControl,
     )
     monkeypatch.setattr(
         analysis,

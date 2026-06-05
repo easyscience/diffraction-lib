@@ -8,9 +8,7 @@ import gemmi
 
 
 def test_lsq_minimizer_defaults_to_settings_only():
-    from easydiffraction.analysis.categories.minimizer.lmfit_leastsq import (
-        LmfitLeastsqMinimizer,
-    )
+    from easydiffraction.analysis.categories.minimizer.lmfit_leastsq import LmfitLeastsqMinimizer
 
     minimizer = LmfitLeastsqMinimizer()
 
@@ -20,9 +18,7 @@ def test_lsq_minimizer_defaults_to_settings_only():
 
 
 def test_lsq_minimizer_reads_cif_settings():
-    from easydiffraction.analysis.categories.minimizer.lmfit_leastsq import (
-        LmfitLeastsqMinimizer,
-    )
+    from easydiffraction.analysis.categories.minimizer.lmfit_leastsq import LmfitLeastsqMinimizer
 
     document = gemmi.cif.read_string(
         """data_minimizer

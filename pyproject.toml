@@ -291,10 +291,12 @@ select = [
   'SIM', # https://docs.astral.sh/ruff/rules/#flake8-simplify-sim
   #'SLF',   # https://docs.astral.sh/ruff/rules/#flake8-self-slf
   'SLOT', # https://docs.astral.sh/ruff/rules/#flake8-slots-slot
-  #'T20',   # https://docs.astral.sh/ruff/rules/#flake8-print-t20
-  'TC', # https://docs.astral.sh/ruff/rules/#flake8-type-checking-tc
+  'T20',  # https://docs.astral.sh/ruff/rules/#flake8-print-t20
+  'TC',   # https://docs.astral.sh/ruff/rules/#flake8-type-checking-tc
   #'TD',    # https://docs.astral.sh/ruff/rules/#flake8-todos-td
-  'TID', # https://docs.astral.sh/ruff/rules/#flake8-tidy-imports-tid
+  'TD004', # https://docs.astral.sh/ruff/rules/missing-todo-colon/ (TODO-format subset)
+  'TD005', # https://docs.astral.sh/ruff/rules/missing-todo-description/ (TODO-format subset)
+  'TID',   # https://docs.astral.sh/ruff/rules/#flake8-tidy-imports-tid
 ]
 
 # Exceptions to the linting rules
@@ -306,10 +308,6 @@ ignore = [
   'DOC', # https://docs.astral.sh/ruff/rules/#pydoclint-doc
   # Disable, as [tool.format_docstring] split one-line docstrings into the canonical multi-line layout
   'D200', # https://docs.astral.sh/ruff/rules/unnecessary-multiline-docstring/
-  # Temporary:
-  'D100',   # https://docs.astral.sh/ruff/rules/undocumented-public-module/#undocumented-publi-module-d100
-  'D104',   # https://docs.astral.sh/ruff/rules/undocumented-public-package/#undocumented-public-package-d104
-  'DTZ005', # https://docs.astral.sh/ruff/rules/call-datetime-now-without-tzinfo/#call-datetime-now-without-tzinfo-dtz005
 ]
 
 # Ignore specific rules in certain files or directories
@@ -325,25 +323,26 @@ ignore = [
   'RUF012', # https://docs.astral.sh/ruff/rules/mutable-class-default/ (test stubs use mutable defaults)
   'RUF069', # https://docs.astral.sh/ruff/rules/unreliable-float-equality/ (exact comparisons in assertions)
   'S101',   # https://docs.astral.sh/ruff/rules/assert/
+  'T20',    # tests may print debug/scaffolding output
   # Temporary:
   'ARG001',
   'ARG002',
   'ARG004',
   'ARG005',
-  'B011',
-  'B017',
   'B018',
-  'E501',
   'E741',
-  'F841',
-  'I001',
   'N801',
-  'N805',
   'N812',
   'PLC',
-  'PLE',
-  'PLR',
-  'PLW',
+  # Keep the test idioms (PLR2004 magic values, PLR6301 no-self-use) and
+  # the ADR-governed complexity rules ignored; the rest of PLR (e.g.
+  # PLR0402/PLR1711/PLR6104) is enforced. PLW is fully enforced.
+  'PLR0913',
+  'PLR0914',
+  'PLR0915',
+  'PLR0917',
+  'PLR2004',
+  'PLR6301',
   'SIM117',
   'SLF',
   'TRY',
@@ -356,12 +355,19 @@ ignore = [
   'RUF003', # https://docs.astral.sh/ruff/rules/ambiguous-unicode-character-comment/ (en-dashes in headings)
   'T201',   # https://docs.astral.sh/ruff/rules/print/
   # Temporary:
-  'ANN',
   'D',
   'W',
 ]
 'docs/docs/tutorials/**' = [
   'E402', # https://docs.astral.sh/ruff/rules/module-import-not-at-top-of-file/
+]
+# Intentional terminal rendering: these write raw/ASCII output that
+# `Console.print` would garble, so `print` is deliberate here.
+'src/easydiffraction/display/plotters/ascii.py' = [
+  'T201', # https://docs.astral.sh/ruff/rules/print/
+]
+'src/easydiffraction/project/display.py' = [
+  'T201', # https://docs.astral.sh/ruff/rules/print/
 ]
 
 # Specific options for certain rules

@@ -259,7 +259,6 @@ def test_residual_function_skips_tracker_for_solver_monitored_minimizer(monkeypa
     class DummyExperiment:
         def _update_categories(self, *, called_by_minimizer=False):
             del called_by_minimizer
-            return
 
     class DummyMin:
         def __init__(self):

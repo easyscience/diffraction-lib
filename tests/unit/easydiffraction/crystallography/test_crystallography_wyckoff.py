@@ -179,10 +179,8 @@ class TestWyckoffPositionInfo:
         assert position.coord_template is None
 
     def test_selects_nearest_representative_not_first(self):
-        from easydiffraction.crystallography.crystallography import (
-            snap_to_wyckoff_template,
-            wyckoff_position_info,
-        )
+        from easydiffraction.crystallography.crystallography import snap_to_wyckoff_template
+        from easydiffraction.crystallography.crystallography import wyckoff_position_info
 
         # 'e' first rep is (x,0,0); for a point near the (0,x,0) member the
         # nearest representative must be chosen so the snap keeps fract_y

@@ -8,7 +8,6 @@ from easydiffraction.datablocks.experiment.item.enums import RadiationProbeEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 
-
 # ------------------------------------------------------------------
 # SampleFormEnum
 # ------------------------------------------------------------------

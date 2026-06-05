@@ -413,14 +413,13 @@ def test_minimizer_base_fit_stops_tracking_when_solver_prep_fails():
 
 
 def test_minimizer_base_applies_physical_limits_and_warns(monkeypatch):
-    from easydiffraction.analysis.minimizers.base import MinimizerFitOptions
-
     from easydiffraction.analysis.minimizers.base import MinimizerBase
+    from easydiffraction.analysis.minimizers.base import MinimizerFitOptions
 
     warnings: list[str] = []
     monkeypatch.setattr(
         'easydiffraction.analysis.minimizers.base.log.warning',
-        lambda message: warnings.append(message),
+        warnings.append,
     )
 
     class BoundaryParam(DummyParam):

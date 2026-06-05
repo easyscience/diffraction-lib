@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
+"""CrysFML calculation backend for powder diffraction patterns."""
 
 from __future__ import annotations
 
@@ -12,6 +13,7 @@ from easydiffraction.analysis.calculators.base import CalculatorBase
 from easydiffraction.analysis.calculators.factory import CalculatorFactory
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+from easydiffraction.utils.logging import log
 
 if TYPE_CHECKING:
     from easydiffraction.datablocks.experiment.collection import Experiments
@@ -137,7 +139,7 @@ class CrysfmlCalculator(CalculatorBase):
         try:
             y = self._calculate_adjusted_pattern(crysfml_dict, experiment)
         except KeyError:
-            print('[CrysfmlCalculator] Error: No calculated data')
+            log.warning('[CrysfmlCalculator] No calculated data')
             y = []
         return np.asarray(y)
 
@@ -164,9 +166,7 @@ class CrysfmlCalculator(CalculatorBase):
         if experiment.type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
             _, y = cfml_py_utilities.tof_powder_pattern_from_dict(crysfml_dict)
             return y
-        print(
-            f'[CrysfmlCalculator] Error: Unsupported beam mode {experiment.type.beam_mode.value}'
-        )
+        log.warning(f'[CrysfmlCalculator] Unsupported beam mode {experiment.type.beam_mode.value}')
         return None
 
     def _adjust_pattern_length(  # noqa: PLR6301

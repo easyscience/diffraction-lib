@@ -19,6 +19,7 @@ import numpy as np
 from easydiffraction.analysis.calculators.base import CalculatorBase
 from easydiffraction.analysis.calculators.factory import CalculatorFactory
 from easydiffraction.core.metadata import TypeInfo
+from easydiffraction.utils.logging import log
 
 if TYPE_CHECKING:
     from easydiffraction.datablocks.experiment.item.base import ExperimentBase
@@ -89,7 +90,7 @@ class PdffitCalculator(CalculatorBase):
         # PDF doesn't compute HKL but we keep interface consistent
         # Intentionally unused, required by public API/signature
         del structures, experiments
-        print('[pdffit] Calculating HKLs (not applicable)...')
+        log.debug('[pdffit] Calculating HKLs (not applicable)')
         return []
 
     def calculate_pattern(  # noqa: PLR6301
