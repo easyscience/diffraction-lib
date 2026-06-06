@@ -11,8 +11,8 @@
 # > profile with a non-zero Lorentzian (`broad_lorentz_gamma`) term,
 # > the `cryspy` engine currently diverges from FullProf and `crysfml`.
 # > It is shown below for visibility and tracked in the open-issues list;
-# > a dedicated strict test gates it, so this page stays a clean docs
-# > build while the regression remains visible.
+# > the agreement check reports it without failing CI, so this page stays
+# > a clean docs build while the regression remains visible.
 
 # %%
 import easydiffraction as ed
@@ -134,9 +134,9 @@ project.display.pattern_comparison(
 # %% [markdown]
 # ## Agreement check
 #
-# `raise_on_failure=False` keeps the docs build green while still showing
-# the `cryspy` discrepancy in red; the strict regression gate lives in
-# `tests/integration`.
+# `raise_on_failure=False` keeps CI green while still showing the
+# `cryspy` discrepancy in red — it is reported, not enforced, and tracked
+# in the open-issues list.
 
 # %%
 verify.assert_patterns_agree(
