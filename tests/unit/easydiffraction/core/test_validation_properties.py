@@ -29,6 +29,14 @@ from easydiffraction.core.validation import RegexValidator
 from easydiffraction.utils.logging import log
 
 
+@pytest.fixture(autouse=True)
+def _restore_logger_reaction():
+    """Restore the global logger reaction so WARN does not leak out."""
+    saved = log._reaction
+    yield
+    log._reaction = saved
+
+
 def _warn() -> None:
     """Keep the logger non-raising so validators take the fallback path."""
     log.configure(reaction=log.Reaction.WARN)
