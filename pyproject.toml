@@ -220,7 +220,10 @@ filterwarnings = [
 # 'codespell' -- Spell checker for docs and source comments/docstrings.
 # https://github.com/codespell-project/codespell
 [tool.codespell]
-skip = '*.ipynb,*.lock,*.svg,*.min.js,*.json.gz,*/vendor/*,*/_vendored/*,docs/dev/package-structure/*,node_modules,.pixi'
+skip = '*.ipynb,*.lock,*.svg,*.min.js,*.json.gz,*/vendor/*,*/_vendored/*,docs/dev/package-structure/*,docs/site/*,docs/overrides/*,*/structure/assets/*,node_modules,.pixi'
+# British spelling and a crystallographic abbreviation (B/U) flagged as
+# typos; element symbols live in skipped vendored files.
+ignore-words-list = 'pre-emptively,bu'
 
 ########################
 # Configuration for ruff
