@@ -63,6 +63,7 @@ dev = [
   'pytest',                          # Testing
   'pytest-cov',                      # Test coverage
   'pytest-xdist',                    # Enable parallel testing
+  'pytest-randomly',                 # Randomise test order to catch ordering bugs
   'pytest-benchmark',                # Performance benchmarking (nightly)
   'hypothesis',                      # Property-based / input-domain testing
   'ruff',                            # Linting and formatting code
@@ -186,7 +187,7 @@ omit = [
 [tool.coverage.report]
 show_missing = true  # Show missing lines
 skip_covered = false # Skip files with 100% coverage in the report
-fail_under = 80      # Minimum coverage percentage to pass (ramp toward 90-95)
+fail_under = 88      # Minimum coverage percentage to pass (ramp toward 90-95)
 
 ##########################
 # Configuration for pytest
