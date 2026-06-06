@@ -1,4 +1,8 @@
-# Verification
+---
+icon: material/check-decagram
+---
+
+# :material-check-decagram: Verification
 
 This section compares EasyDiffraction's calculation engines against each
 other (and, in future, against external software such as FullProf) on
