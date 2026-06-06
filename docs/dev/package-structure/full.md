@@ -14,8 +14,10 @@
 │   │   │   └── 🏷️ class CryspyCalculator
 │   │   ├── 📄 factory.py
 │   │   │   └── 🏷️ class CalculatorFactory
-│   │   └── 📄 pdffit.py
-│   │       └── 🏷️ class PdffitCalculator
+│   │   ├── 📄 pdffit.py
+│   │   │   └── 🏷️ class PdffitCalculator
+│   │   └── 📄 support.py
+│   │       └── 🏷️ class SupportEntry
 │   ├── 📁 categories
 │   │   ├── 📁 aliases
 │   │   │   ├── 📄 __init__.py
@@ -507,8 +509,6 @@
 │   │   │   ├── 📄 elements.py
 │   │   │   └── 📄 radii.py
 │   │   ├── 📁 renderers
-│   │   │   ├── 📁 vendor
-│   │   │   │   └── 📁 threejs
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 ascii.py
 │   │   │   │   ├── 🏷️ class _Orientation
@@ -672,7 +672,6 @@
 ├── 📁 report
 │   ├── 📁 templates
 │   │   ├── 📁 html
-│   │   │   └── 📁 vendor
 │   │   └── 📁 tex
 │   ├── 📄 __init__.py
 │   ├── 📄 data_context.py
@@ -685,12 +684,6 @@
 │   ├── 📄 style.py
 │   └── 📄 tex_renderer.py
 ├── 📁 utils
-│   ├── 📁 _vendored
-│   │   ├── 📁 jupyter_dark_detect
-│   │   │   ├── 📄 __init__.py
-│   │   │   └── 📄 detector.py
-│   │   ├── 📄 __init__.py
-│   │   └── 📄 theme_detect.py
 │   ├── 📄 __init__.py
 │   ├── 📄 enums.py
 │   │   └── 🏷️ class VerbosityEnum

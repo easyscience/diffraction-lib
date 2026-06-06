@@ -4,8 +4,8 @@
 
 Shared by ``tools/test_structure_check.py`` (the unit-test mirror check)
 and ``tools/generate_package_docs.py`` (the package-structure docs), so
-the two tools cannot drift on where the source tree lives or which
-modules count as source.
+the two tools cannot drift on where the source tree lives, which
+directories are excluded, or which modules count as source.
 """
 
 from __future__ import annotations
@@ -20,8 +20,12 @@ TEST_ROOT = REPO_ROOT / 'tests' / 'unit' / 'easydiffraction'
 # and tooling caches).
 EXCLUDED_DIRS: set[str] = {
     '_vendored',
-    '__pycache__',
     'vendor',
+    '__pycache__',
+    '.pytest_cache',
+    '.mypy_cache',
+    '.ruff_cache',
+    '.ipynb_checkpoints',
 }
 
 # Source module stems that do not need a dedicated unit-test file.
