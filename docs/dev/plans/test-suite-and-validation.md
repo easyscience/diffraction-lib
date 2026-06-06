@@ -285,9 +285,11 @@ files or generated artifacts. Do not run Phase 2 commands during Phase 1.
 
 - [x] **P1.12 — Cross-engine verification pages + script wiring (§6)**
   Add the `Verification` nav node (between Tutorials and Command-Line)
-  and calculation-only `.py` comparison pages (cryspy ↔ crysfml) across
-  the supported experiment combinations, with closeness metrics, overlay
-  plots, and metric-tolerance assertions. **Wire the new
+  and a calculation-only `.py` comparison page (cryspy ↔ crysfml) for the
+  **first** supported combination (constant-wavelength powder), with
+  closeness metrics, overlay plots, and metric-tolerance assertions. The
+  remaining supported combinations (time-of-flight powder, single
+  crystal) are added incrementally (issue 115). **Wire the new
   `docs/docs/verification/` directory into the script-test runner** —
   `tools/test_scripts.py` discovers only `docs/docs/tutorials/*.py`
   today (lines 24-27) — and into the notebook pipeline (`notebook-prepare`

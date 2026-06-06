@@ -1939,6 +1939,23 @@ notebook output cells (a feature that does not exist yet).
 
 ---
 
+## 115. 🟢 Expand Cross-Engine Verification Coverage
+
+**Type:** Test coverage / Documentation
+
+The Verification docs section ships with the framework and the first
+cross-engine comparison page (constant-wavelength powder, cryspy ↔
+crysfml). Extend it to the remaining supported combinations declared by
+the calculator support matrix — time-of-flight powder (cryspy ↔ crysfml)
+and single crystal — so every valid experiment/instrument combination is
+documented and regression-checked at least once. Each new page is a
+calculation-only `.py` under `docs/docs/verification/` wired into
+`script-tests` and `notebook-tests`, with explicit metric tolerances.
+
+**Depends on:** nothing.
+
+---
+
 ## Summary
 
 | #   | Issue                                             | Severity | Type                         |
@@ -2035,3 +2052,4 @@ notebook output cells (a feature that does not exist yet).
 | 112 | Suppress redundant row-index column in tables     | 🟢 Low   | Display / UX                 |
 | 113 | Cross-repository validation harness (nightly)     | 🟡 Med   | Test infrastructure          |
 | 114 | External link checking in the docs gate           | 🟢 Low   | CI / Documentation           |
+| 115 | Expand cross-engine verification coverage         | 🟢 Low   | Test coverage                |

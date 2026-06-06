@@ -244,10 +244,14 @@ Add a new top-level **Verification** section to the documentation nav
   and an integrated-intensity ratio — with explicit tolerances.
 - **Overlay plots.** Plot all engines on one chart with distinct colours
   and line styles (solid/dotted/…) for visual comparison.
-- **Coverage of conditions.** Include **every valid experiment ×
+- **Coverage of conditions.** Grow to cover **every valid experiment ×
   instrument-parameter combination at least once** (powder/single
   crystal × constant-wavelength/time-of-flight × neutron/x-ray ×
-  bragg/total, per the support matrix below).
+  bragg/total, per the support matrix below). The section ships with the
+  framework and the first cross-engine comparison (constant-wavelength
+  powder, cryspy ↔ crysfml); the remaining supported combinations
+  (time-of-flight powder, single crystal) are added **incrementally** and
+  tracked in the open-issues list.
 - **External software, incrementally.** External tools (FullProf first,
   then GSAS-II/TOPAS) are compared by loading a **pre-calculated profile
   from a zipped project** stored in the `diffraction` data repository
