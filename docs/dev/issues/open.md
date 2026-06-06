@@ -1927,9 +1927,9 @@ coordination.
 
 **Type:** CI / Documentation
 
-The fast docs gate (`docs-build-strict` + `spell-check`) catches broken
-nav/internal links and typos on every push, but does not yet check
-external URLs. Add a `lychee` link checker (with an allowlist for
+The fast docs gate (`docs-build` + `link-check` + `spell-check`) catches
+broken nav/internal links and typos on every push, but does not yet
+check external URLs. Add a `lychee` link checker (with an allowlist for
 rate-limited/unstable domains), coordinated with the
 [Documentation CI and Build Verification](../adrs/suggestions/documentation-ci-build.md)
 ADR. Run it nightly or on pull requests to avoid flakiness from external

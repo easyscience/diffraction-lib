@@ -113,7 +113,7 @@ jobs:
         id: docs_build
         continue-on-error: true
         shell: bash
-        run: pixi run docs-build-strict
+        run: pixi run docs-build
 
       # Add summary
       - name: Add quality checks summary

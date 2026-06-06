@@ -152,7 +152,7 @@ test-all = { depends-on = [
 # site's nav/links). Steps run sequentially because the tutorial tasks
 # share tmp/tutorials/projects/. Slow but comprehensive — run `pixi run
 # fix` first to auto-format.
-all = 'pixi run check && pixi run unit-tests-coverage && pixi run functional-tests && pixi run integration-tests && pixi run script-tests-checked && pixi run notebook-tests-checked && pixi run docs-build-strict'
+all = 'pixi run check && pixi run unit-tests-coverage && pixi run functional-tests && pixi run integration-tests && pixi run script-tests-checked && pixi run notebook-tests-checked && pixi run docs-build-local'
 
 ###########
 # ✔️ Checks
@@ -171,12 +171,6 @@ spell-check = 'codespell docs src tools README.md CONTRIBUTING.md'
 # Local/relative documentation link integrity (offline; external URL
 # checking is deferred, see issue 114). Config in lychee.toml.
 link-check = 'lychee --config lychee.toml docs/docs README.md CONTRIBUTING.md'
-# Strict documentation build: fails on broken nav / internal references.
-# Tutorials are not executed (mkdocs-jupyter execute: false).
-docs-build-strict = { cmd = 'pixi run docs-pre build --strict -f docs/mkdocs.yml', depends-on = [
-  'docs-sync-vendored-js',
-] }
-
 check = 'pre-commit run --hook-stage manual --all-files'
 
 ##########
@@ -225,11 +219,7 @@ functional-tests-coverage = 'pixi run functional-tests --cov=src/easydiffraction
 integration-tests-coverage = 'pixi run integration-tests --cov=src/easydiffraction --cov-report=term-missing'
 docstring-coverage = 'interrogate -c pyproject.toml src/easydiffraction'
 
-cov = { depends-on = [
-  'docstring-coverage',
-  'unit-tests-coverage',
-  'integration-tests-coverage',
-] }
+cov = { depends-on = ['docstring-coverage', 'unit-tests-coverage'] }
 
 ########################
 # 📓 Notebook Management
@@ -265,9 +255,14 @@ docs-serve = { cmd = 'pixi run docs-pre serve -f docs/mkdocs.yml', depends-on = 
   'docs-sync-vendored-js',
 ] }
 docs-serve-dirty = 'pixi run docs-serve --dirty'
-docs-build = { cmd = 'pixi run docs-pre build -f docs/mkdocs.yml', depends-on = [
+# Strict build (fails on broken nav / internal references); used for the
+# deploy and the CI docs check. Tutorials are not executed (mkdocs-jupyter
+# execute: false). docs-serve is intentionally left non-strict.
+docs-build = { cmd = 'pixi run docs-pre build --strict -f docs/mkdocs.yml', depends-on = [
   'docs-sync-vendored-js',
 ] }
+# Inherits --strict; --no-directory-urls makes the built site browsable
+# from disk (used by `all` so you can inspect it after verifying).
 docs-build-local = 'pixi run docs-build --no-directory-urls'
 
 docs-deploy-pre = 'mike deploy -F docs/mkdocs.yml --push --branch gh-pages --update-aliases --alias-type redirect'
