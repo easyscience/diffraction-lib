@@ -79,6 +79,12 @@ jobs:
         shell: bash
         run: pixi run docstring-lint-check
 
+      - name: Check docstring coverage (interrogate)
+        id: docstring_coverage
+        continue-on-error: true
+        shell: bash
+        run: pixi run docstring-coverage
+
       - name: Check formatting of non-Python files (md, toml, etc.)
         id: nonpy_format
         continue-on-error: true
@@ -130,6 +136,7 @@ jobs:
             echo "| py lint          | ${{ steps.py_lint.outcome == 'success' && '✅' || '❌' }} |"
             echo "| py format        | ${{ steps.py_format.outcome == 'success' && '✅' || '❌' }} |"
             echo "| docstring lint   | ${{ steps.docstring_lint.outcome == 'success' && '✅' || '❌' }} |"
+            echo "| docstring cover  | ${{ steps.docstring_coverage.outcome == 'success' && '✅' || '❌' }} |"
             echo "| nonpy format     | ${{ steps.nonpy_format.outcome == 'success' && '✅' || '❌' }} |"
             echo "| notebooks lint   | ${{ steps.notebook_lint.outcome == 'success' && '✅' || '❌' }} |"
             echo "| test structure   | ${{ steps.test_structure.outcome == 'success' && '✅' || '❌' }} |"
@@ -146,6 +153,7 @@ jobs:
           || steps.py_lint.outcome == 'failure'
           || steps.py_format.outcome == 'failure'
           || steps.docstring_lint.outcome == 'failure'
+          || steps.docstring_coverage.outcome == 'failure'
           || steps.nonpy_format.outcome == 'failure'
           || steps.notebook_lint.outcome == 'failure'
           || steps.test_structure.outcome == 'failure'
