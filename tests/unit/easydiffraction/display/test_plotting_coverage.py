@@ -3497,6 +3497,35 @@ class TestSingleCrystalPosteriorPredictiveSummary:
         )
         assert 'interval arrays have invalid shapes' in capsys.readouterr().out
 
+    def test_valid_summary_builds_figure_with_diagonal(self, monkeypatch):
+        from types import SimpleNamespace
+
+        from easydiffraction.display.plotting import Plotter
+
+        summary = SimpleNamespace(
+            best_sample_prediction=np.array([1.0, 2.0, 3.0]),
+            lower_95=np.array([0.8, 1.8, 2.8]),
+            upper_95=np.array([1.2, 2.2, 3.2]),
+        )
+        captured = {}
+        p = Plotter()
+        monkeypatch.setattr(p, '_show_plot_figure', lambda fig: captured.update(fig=fig))
+        p._plot_single_crystal_posterior_predictive_summary(
+            expt_name='E1',
+            summary=summary,
+            y_meas=np.array([1.1, 2.1, 2.9]),
+            y_meas_su=np.array([0.1, 0.1, 0.1]),
+            axes_labels=['calc', 'meas'],
+        )
+        # A single y=x diagonal reference line spanning the padded range.
+        shapes = captured['fig'].layout.shapes
+        assert len(shapes) == 1
+        diagonal = shapes[0]
+        assert diagonal.type == 'line'
+        assert diagonal.x0 == diagonal.y0
+        assert diagonal.x1 == diagonal.y1
+        assert diagonal.x1 > diagonal.x0
+
 
 # ------------------------------------------------------------------
 # Plotter._bragg_tick_x_values routing (d_spacing branch)

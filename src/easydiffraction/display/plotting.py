@@ -40,6 +40,7 @@ from easydiffraction.display.plotters.plotly import (
 )
 from easydiffraction.display.plotters.plotly import TITLE_FONT_SIZE as PLOTLY_TITLE_FONT_SIZE
 from easydiffraction.display.plotters.plotly import PlotlyPlotter
+from easydiffraction.display.plotters.plotly import single_crystal_axis_range
 from easydiffraction.display.tables import TableRenderer
 from easydiffraction.utils.environment import in_jupyter
 from easydiffraction.utils.logging import console
@@ -4088,12 +4089,17 @@ class Plotter(RendererBase):
             'su(I²meas): %{customdata[2]:,.2f}<extra></extra>'
         )
 
+        axis_min, axis_max = single_crystal_axis_range(
+            best_sample_prediction,
+            y_meas,
+            y_meas_su,
+        )
         fig = go.Figure(
             data=[trace],
             layout=PlotlyPlotter._get_layout(
                 f"Posterior predictive reflection check for experiment 🔬 '{expt_name}'",
                 axes_labels,
-                shapes=[PlotlyPlotter._get_diagonal_shape()],
+                shapes=[PlotlyPlotter._get_diagonal_shape(axis_min, axis_max)],
             ),
         )
         self._show_plot_figure(fig)
