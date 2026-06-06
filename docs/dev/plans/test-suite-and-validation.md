@@ -21,7 +21,7 @@ branch, per the author's instruction.
 ## ADR
 
 Implements the suggestion ADR
-[`test-suite-and-validation.md`](../adrs/suggestions/test-suite-and-validation.md)
+[`test-suite-and-validation.md`](../adrs/accepted/test-suite-and-validation.md)
 (drafted via `/draft-adr`; review cycle closed). The plan owns this ADR.
 Per [`AGENTS.md`](../../../AGENTS.md) §Change Discipline, the ADR is
 promoted from `suggestions/` to `accepted/` as part of this change,
@@ -313,7 +313,7 @@ files or generated artifacts. Do not run Phase 2 commands during Phase 1.
   Files: `docs/dev/issues/open.md`.
   Commit: `Record cross-repo nightly harness and benchmarks as future work`
 
-- [ ] **P1.15 — Promote ADR to accepted (§Change Discipline)**
+- [x] **P1.15 — Promote ADR to accepted (§Change Discipline)**
   `git mv docs/dev/adrs/suggestions/test-suite-and-validation.md
   docs/dev/adrs/accepted/`; set its `## Status` to `Accepted.`; flip the
   `docs/dev/adrs/index.md` row to `Accepted` with the `accepted/...`

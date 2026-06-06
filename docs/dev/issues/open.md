@@ -1891,7 +1891,7 @@ only render the index column when no explicit id column is present.
 **Type:** Test infrastructure
 
 Deferred cross-repository work for the
-[Test Suite and Validation Strategy](../adrs/suggestions/test-suite-and-validation.md)
+[Test Suite and Validation Strategy](../adrs/accepted/test-suite-and-validation.md)
 ADR (§7, §8). The harness code lives in `diffraction-lib`; the corpus,
 results database, and benchmark/reference history live in the
 `diffraction` data repository, fetched at runtime and written back by a

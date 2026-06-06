@@ -42,7 +42,7 @@ structure makes missing coverage easier to spot.
 
 ## Amendments
 
-[Test Suite and Validation Strategy](../suggestions/test-suite-and-validation.md)
+[Test Suite and Validation Strategy](test-suite-and-validation.md)
 sharpens these layer definitions into strict, testable placement
 criteria and adds test cost tiers, coverage policy, codecov
 configuration, cross-engine verification documentation, and a nightly

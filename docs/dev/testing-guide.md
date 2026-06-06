@@ -3,7 +3,7 @@
 Practical placement rules for the easydiffraction test suite. The
 rationale is recorded in the ADRs
 [Test Strategy](adrs/accepted/test-strategy.md) and
-[Test Suite and Validation Strategy](adrs/suggestions/test-suite-and-validation.md).
+[Test Suite and Validation Strategy](adrs/accepted/test-suite-and-validation.md).
 
 ## Layers — what goes where
 
