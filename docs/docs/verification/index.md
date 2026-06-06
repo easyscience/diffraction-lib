@@ -29,6 +29,10 @@ and so on. The list below notes only what is specific to each page.
   pseudo-Voigt, no asymmetry.
 - [Al2O3 `pd-neut-cwl`](al2o3-bragg-cwl.ipynb) – Corundum (α-Al2O3);
   pseudo-Voigt, no asymmetry.
+- [LaB6 `pd-neut-cwl`](lab6-bragg-cwl.ipynb) – Lanthanum hexaboride;
+  Thompson–Cox–Hastings with Finger–Cox–Jephcoat asymmetry plus
+  SyCos/SySin peak-position corrections. Prepared skeleton, skipped —
+  pending EasyDiffraction support for these features.
 
 ## Powder, neutron, time-of-flight
 

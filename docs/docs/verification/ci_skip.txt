@@ -14,3 +14,4 @@
 #
 # Example (do not leave commented examples as active entries):
 #   si-bragg-tof  # cryspy TOF Lorentzian discrepancy; see issues/open.md
+lab6-bragg-cwl  # SyCos/SySin, 11B scattering, TCH/FCJ + polynomial background not yet in EasyDiffraction (cryspy PR #46)
