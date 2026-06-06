@@ -106,8 +106,12 @@ user = { features = ['py-max', 'user'] }
 unit-tests = 'python -m pytest tests/unit/ --color=yes -v'
 functional-tests = 'python -m pytest tests/functional/ --color=yes -v'
 integration-tests = 'python -m pytest tests/integration/ --color=yes -n auto -v'
-# Run only nightly-tier tests (e.g. performance benchmarks) across the suite.
-nightly-tests = 'python -m pytest tests/ -m nightly --color=yes -n auto -v'
+# Run nightly-tier tests across the suite (benchmarks have their own task
+# because pytest-benchmark does not run under xdist).
+nightly-tests = 'python -m pytest tests/ -m nightly --ignore=tests/benchmarks --color=yes -n auto -v'
+# Performance benchmarks, per experiment type; writes benchmark.json for
+# the nightly CI artifact. Informational (no regression gate yet).
+benchmarks = 'python -m pytest tests/benchmarks/ --benchmark-only --benchmark-json=benchmark.json --color=yes -v'
 
 # Remove previously saved tutorial output projects (projects/ed_*) so the
 # tutorial-output checks cannot pass against a stale artifact from an earlier

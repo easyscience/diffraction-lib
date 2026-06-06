@@ -63,6 +63,7 @@ dev = [
   'pytest',                          # Testing
   'pytest-cov',                      # Test coverage
   'pytest-xdist',                    # Enable parallel testing
+  'pytest-benchmark',                # Performance benchmarking (nightly)
   'hypothesis',                      # Property-based / input-domain testing
   'ruff',                            # Linting and formatting code
   'radon',                           # Code complexity and maintainability

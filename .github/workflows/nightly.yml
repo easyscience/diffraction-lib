@@ -32,3 +32,13 @@ jobs:
 
       - name: Run nightly-tier tests
         run: pixi run nightly-tests
+
+      - name: Run performance benchmarks
+        run: pixi run benchmarks
+
+      - name: Upload benchmark results
+        if: ${{ !cancelled() }}
+        uses: ./.github/actions/upload-artifact
+        with:
+          name: benchmark-results
+          path: benchmark.json

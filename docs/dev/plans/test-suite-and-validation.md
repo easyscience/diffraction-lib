@@ -298,7 +298,7 @@ files or generated artifacts. Do not run Phase 2 commands during Phase 1.
   `*.ipynb`), `tools/test_scripts.py`, `pixi.toml`.
   Commit: `Add cross-engine verification comparison pages and script wiring`
 
-- [ ] **P1.13 — Per-experiment performance benchmarks (§7)**
+- [x] **P1.13 — Per-experiment performance benchmarks (§7)**
   Add `pytest-benchmark` (dev dep), `nightly`-marked benchmarks keyed by
   `beam_mode × radiation_probe × engine`, and a `benchmarks` pixi task
   emitting JSON as a CI artifact (data-repo history deferred).
