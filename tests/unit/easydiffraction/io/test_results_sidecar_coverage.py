@@ -11,12 +11,33 @@ low-level HDF5 read/write helpers.
 
 from __future__ import annotations
 
+import contextlib
 from pathlib import Path
 from types import SimpleNamespace
 
 import numpy as np
 
 from easydiffraction.utils.logging import Logger
+
+
+@contextlib.contextmanager
+def _in_memory_h5():
+    """Yield an open, writable in-memory HDF5 file (no disk I/O).
+
+    The low-level sidecar helpers operate on an open ``h5py.File`` /
+    group handle and do not care whether it is disk-backed, so these
+    unit tests use h5py's in-memory ``core`` driver. This keeps them
+    hermetic (no real filesystem) and immune to platform-specific
+    filesystem flakiness; real on-disk paths are reserved for the
+    public-API tests that read a sidecar from a directory.
+    """
+    import h5py
+
+    handle = h5py.File('in-memory.h5', 'w', driver='core', backing_store=False)
+    try:
+        yield handle
+    finally:
+        handle.close()
 
 
 def _bayesian_fit_result() -> object:
@@ -148,14 +169,11 @@ def test_should_use_sidecar_false_when_callable_missing():
 # --- Low-level HDF5 dataset helpers -------------------------------------------
 
 
-def test_create_dataset_replaces_existing_dataset(tmp_path):
-    import h5py
-
+def test_create_dataset_replaces_existing_dataset():
     from easydiffraction.io.results_sidecar import _create_dataset
     from easydiffraction.io.results_sidecar import _read_dataset
 
-    path = Path(tmp_path) / 'data.h5'
-    with h5py.File(path, 'w') as handle:
+    with _in_memory_h5() as handle:
         _create_dataset(handle, '/group/values', np.asarray([1.0, 2.0]))
         # Re-create the same dataset to hit the delete-then-create branch.
         _create_dataset(handle, '/group/values', np.asarray([9.0, 8.0, 7.0]))
@@ -164,27 +182,21 @@ def test_create_dataset_replaces_existing_dataset(tmp_path):
     assert np.allclose(restored, np.asarray([9.0, 8.0, 7.0]))
 
 
-def test_create_dataset_at_root_without_group(tmp_path):
-    import h5py
-
+def test_create_dataset_at_root_without_group():
     from easydiffraction.io.results_sidecar import _create_dataset
     from easydiffraction.io.results_sidecar import _read_dataset
 
-    path = Path(tmp_path) / 'root.h5'
-    with h5py.File(path, 'w') as handle:
+    with _in_memory_h5() as handle:
         _create_dataset(handle, 'rootset', np.asarray([3.0]))
         restored = _read_dataset(handle, 'rootset')
 
     assert np.allclose(restored, np.asarray([3.0]))
 
 
-def test_read_dataset_returns_none_when_absent(tmp_path):
-    import h5py
-
+def test_read_dataset_returns_none_when_absent():
     from easydiffraction.io.results_sidecar import _read_dataset
 
-    path = Path(tmp_path) / 'empty.h5'
-    with h5py.File(path, 'w') as handle:
+    with _in_memory_h5() as handle:
         assert _read_dataset(handle, '/does/not/exist') is None
 
 
@@ -196,13 +208,10 @@ def test_read_hdf5_attr_decodes_bytes_and_passes_through_str():
     assert _read_hdf5_attr(42) == 42
 
 
-def test_read_payload_group_returns_empty_when_group_absent(tmp_path):
-    import h5py
-
+def test_read_payload_group_returns_empty_when_group_absent():
     from easydiffraction.io.results_sidecar import _read_payload_group
 
-    path = Path(tmp_path) / 'noop.h5'
-    with h5py.File(path, 'w') as handle:
+    with _in_memory_h5() as handle:
         assert _read_payload_group(handle, '/distribution_cache') == {}
 
 
@@ -351,9 +360,7 @@ def test_predictive_payload_collects_all_optional_arrays_and_fallback_name():
 # --- Duplicate group ids and None-value skipping in _write_payload_group ------
 
 
-def test_write_payload_group_disambiguates_colliding_ids(tmp_path):
-    import h5py
-
+def test_write_payload_group_disambiguates_colliding_ids():
     from easydiffraction.io.results_sidecar import _read_payload_group
     from easydiffraction.io.results_sidecar import _write_payload_group
 
@@ -362,8 +369,7 @@ def test_write_payload_group_disambiguates_colliding_ids(tmp_path):
         'a/b': {'x': np.asarray([1.0])},
         'a_b': {'x': np.asarray([2.0])},
     }
-    path = Path(tmp_path) / 'collide.h5'
-    with h5py.File(path, 'w') as handle:
+    with _in_memory_h5() as handle:
         wrote_any = _write_payload_group(handle, '/distribution_cache', payload)
         assert wrote_any is True
         restored = _read_payload_group(handle, '/distribution_cache')
@@ -372,15 +378,12 @@ def test_write_payload_group_disambiguates_colliding_ids(tmp_path):
     assert set(restored) == {'a/b', 'a_b'}
 
 
-def test_write_payload_group_skips_none_values(tmp_path):
-    import h5py
-
+def test_write_payload_group_skips_none_values():
     from easydiffraction.io.results_sidecar import _read_payload_group
     from easydiffraction.io.results_sidecar import _write_payload_group
 
     payload = {'item': {'present': np.asarray([1.0]), 'absent': None}}
-    path = Path(tmp_path) / 'skip.h5'
-    with h5py.File(path, 'w') as handle:
+    with _in_memory_h5() as handle:
         _write_payload_group(handle, '/pair_cache', payload)
         restored = _read_payload_group(handle, '/pair_cache')
 
@@ -388,15 +391,12 @@ def test_write_payload_group_skips_none_values(tmp_path):
     assert 'absent' not in restored['item']
 
 
-def test_write_payload_group_empty_id_becomes_item(tmp_path):
-    import h5py
-
+def test_write_payload_group_empty_id_becomes_item():
     from easydiffraction.io.results_sidecar import _read_payload_group
     from easydiffraction.io.results_sidecar import _write_payload_group
 
     payload = {'/': {'x': np.asarray([1.0])}}
-    path = Path(tmp_path) / 'emptyid.h5'
-    with h5py.File(path, 'w') as handle:
+    with _in_memory_h5() as handle:
         _write_payload_group(handle, '/distribution_cache', payload)
         assert 'item' in handle['distribution_cache']
         restored = _read_payload_group(handle, '/distribution_cache')
@@ -444,25 +444,19 @@ def test_write_analysis_results_sidecar_deletes_stale_when_not_bayesian(tmp_path
 # --- read side: posterior reader edge cases -----------------------------------
 
 
-def test_read_posterior_payload_returns_empty_without_parameter_samples(tmp_path):
-    import h5py
-
+def test_read_posterior_payload_returns_empty_without_parameter_samples():
     from easydiffraction.io.results_sidecar import _read_posterior_payload
 
-    path = Path(tmp_path) / 'noposterior.h5'
-    with h5py.File(path, 'w') as handle:
+    with _in_memory_h5() as handle:
         assert _read_posterior_payload(handle) == {}
 
 
-def test_read_posterior_payload_returns_empty_on_invalid_payload(tmp_path, monkeypatch):
-    import h5py
-
+def test_read_posterior_payload_returns_empty_on_invalid_payload(monkeypatch):
     from easydiffraction.io import results_sidecar as mod
 
     monkeypatch.setattr(mod.log, 'warning', lambda *args, **kwargs: None)
 
-    path = Path(tmp_path) / 'invalid.h5'
-    with h5py.File(path, 'w') as handle:
+    with _in_memory_h5() as handle:
         # 2D parameter_samples fails the ndim check inside _validate.
         mod._create_dataset(
             handle,
@@ -472,16 +466,10 @@ def test_read_posterior_payload_returns_empty_on_invalid_payload(tmp_path, monke
         assert mod._read_posterior_payload(handle) == {}
 
 
-def test_read_posterior_payload_reads_aux_arrays(tmp_path):
-    import h5py
-
+def test_read_posterior_payload_reads_aux_arrays():
     from easydiffraction.io import results_sidecar as mod
 
-    path = Path(tmp_path) / 'aux.h5'
-    # On Windows CI, h5py can intermittently fail to create a file in a
-    # freshly-made tmp dir; force the parent to exist and pass a str path.
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with h5py.File(str(path), 'w') as handle:
+    with _in_memory_h5() as handle:
         mod._create_dataset(handle, mod._POSTERIOR_PARAMETER_SAMPLES_PATH, np.zeros((2, 1, 3)))
         mod._create_dataset(handle, mod._POSTERIOR_LOG_POSTERIOR_PATH, np.zeros((2, 1)))
         mod._create_dataset(handle, mod._POSTERIOR_DRAW_INDEX_PATH, np.asarray([0, 1]))
