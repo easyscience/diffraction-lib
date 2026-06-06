@@ -69,6 +69,25 @@ jobs:
             echo 'pytest_marks=-m "not pr and not nightly"' >> "$GITHUB_OUTPUT"
           fi
 
+  # Job: Fast documentation checks on every push (tutorials NOT executed,
+  # unlike the slow docs.yml). Strict build catches broken nav/internal
+  # links; codespell catches typos. See ADR test-suite-and-validation §9.
+  docs-checks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up pixi
+        uses: ./.github/actions/setup-pixi
+
+      - name: Strict documentation build (tutorials not executed)
+        run: pixi run docs-build-strict
+
+      - name: Spell check
+        run: pixi run spell-check
+
   # Job 2: Test code
   source-test:
     needs: env-prepare # depend on previous job

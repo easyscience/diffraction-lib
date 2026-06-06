@@ -66,6 +66,7 @@ dev = [
   'hypothesis',                      # Property-based / input-domain testing
   'ruff',                            # Linting and formatting code
   'radon',                           # Code complexity and maintainability
+  'codespell',                       # Spell checking docs and source
   'validate-pyproject[all]',         # Validate pyproject.toml
   'versioningit',                    # Automatic versioning from git tags
   'jupytext',                        # Jupyter notebook text format support
@@ -210,6 +211,15 @@ filterwarnings = [
   "ignore:'diffpy\\.structure\\.expandPosition':DeprecationWarning",
   "ignore:'diffpy\\.structure\\.Structure\\.writeStr':DeprecationWarning",
 ]
+
+##############################
+# Configuration for codespell
+##############################
+
+# 'codespell' -- Spell checker for docs and source comments/docstrings.
+# https://github.com/codespell-project/codespell
+[tool.codespell]
+skip = '*.ipynb,*.lock,*.svg,*.min.js,*.json.gz,*/vendor/*,*/_vendored/*,docs/dev/package-structure/*,node_modules,.pixi'
 
 ########################
 # Configuration for ruff

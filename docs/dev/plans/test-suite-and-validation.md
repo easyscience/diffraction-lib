@@ -260,7 +260,7 @@ files or generated artifacts. Do not run Phase 2 commands during Phase 1.
   Files: `pyproject.toml`.
   Commit: `Raise coverage fail_under to 80 percent`
 
-- [ ] **P1.10 — Fast docs build gate (§9)**
+- [x] **P1.10 — Fast docs build gate (§9)**
   Add `docs-build-strict` (`mkdocs build --strict`, tutorials not
   executed), `link-check` (`lychee`), and `spell-check` (`codespell`)
   pixi tasks with config and ignore lists; add a fast every-push job to
