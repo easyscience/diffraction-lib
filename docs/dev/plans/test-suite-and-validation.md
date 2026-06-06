@@ -305,7 +305,7 @@ files or generated artifacts. Do not run Phase 2 commands during Phase 1.
   Files: `pyproject.toml`, `pixi.toml`, `tests/benchmarks/**`.
   Commit: `Add per-experiment performance benchmarks (nightly)`
 
-- [ ] **P1.14 — Record cross-repository future work (§8 + deferred)**
+- [x] **P1.14 — Record cross-repository future work (§8 + deferred)**
   Add prioritised entries to `docs/dev/issues/open.md` for the nightly
   COD harness + results DB + pip-install acceptance job, generative
   fuzzing, data-repo benchmark history, and external-software
