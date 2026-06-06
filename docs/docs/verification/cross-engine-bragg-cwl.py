@@ -97,10 +97,32 @@ fig
 # %% [markdown]
 # ## Regression assertions
 #
-# Both engines compute the same physics for the same structure, so their
-# calculated patterns share peak positions and are highly correlated. The
-# tolerance is intentionally loose for now and tightened as the
-# verification suite matures.
+# Explicit, named tolerances for each metric. These are intentionally
+# loose initial bounds — they catch a gross cross-engine divergence now
+# and are tightened once nightly runs establish the real spread for each
+# engine pair. Correlation is kept as an additional shape signal.
 
 # %%
-assert correlation > 0.8, f'cross-engine correlation unexpectedly low: {correlation:.4f}'
+# Loose initial tolerances (tightened once real spreads are measured).
+MAX_PROFILE_DIFFERENCE_PCT = 100.0
+MAX_RELATIVE_DEVIATION = 2.0
+MIN_INTENSITY_RATIO = 0.1
+MAX_INTENSITY_RATIO = 10.0
+MIN_CORRELATION = 0.8
+
+peak = float(np.max(np.abs(a)))
+relative_deviation = max_deviation / peak if peak else float('nan')
+
+assert profile_diff_pct < MAX_PROFILE_DIFFERENCE_PCT, (
+    f'profile difference {profile_diff_pct:.2f}% exceeds {MAX_PROFILE_DIFFERENCE_PCT}%'
+)
+assert relative_deviation < MAX_RELATIVE_DEVIATION, (
+    f'relative max deviation {relative_deviation:.3f} exceeds {MAX_RELATIVE_DEVIATION}'
+)
+assert MIN_INTENSITY_RATIO < intensity_ratio < MAX_INTENSITY_RATIO, (
+    f'integrated-intensity ratio {intensity_ratio:.3f} outside '
+    f'[{MIN_INTENSITY_RATIO}, {MAX_INTENSITY_RATIO}]'
+)
+assert correlation > MIN_CORRELATION, (
+    f'cross-engine correlation {correlation:.4f} below {MIN_CORRELATION}'
+)
