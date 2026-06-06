@@ -478,7 +478,10 @@ def test_read_posterior_payload_reads_aux_arrays(tmp_path):
     from easydiffraction.io import results_sidecar as mod
 
     path = Path(tmp_path) / 'aux.h5'
-    with h5py.File(path, 'w') as handle:
+    # On Windows CI, h5py can intermittently fail to create a file in a
+    # freshly-made tmp dir; force the parent to exist and pass a str path.
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with h5py.File(str(path), 'w') as handle:
         mod._create_dataset(handle, mod._POSTERIOR_PARAMETER_SAMPLES_PATH, np.zeros((2, 1, 3)))
         mod._create_dataset(handle, mod._POSTERIOR_LOG_POSTERIOR_PATH, np.zeros((2, 1)))
         mod._create_dataset(handle, mod._POSTERIOR_DRAW_INDEX_PATH, np.asarray([0, 1]))

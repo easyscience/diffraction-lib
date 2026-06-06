@@ -607,7 +607,9 @@ class TestConsolePrinterPrint:
             lambda renderable, **kwargs: captured.append(renderable),
         )
         ConsolePrinter.print(Path('/some/dir/x'))
-        assert captured == ['/some/dir/x']
+        # str(Path) is platform-specific (backslashes on Windows), so
+        # compare against the stringified Path rather than a literal.
+        assert captured == [str(Path('/some/dir/x'))]
 
     def test_print_mixed_uses_group(self, monkeypatch):
         """Mixed renderable and string objects render as a Group."""
