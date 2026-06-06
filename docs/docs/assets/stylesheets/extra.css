@@ -182,13 +182,13 @@ label.md-nav__title[for="__drawer"] {
     padding-left: 0.5em; /* Default */
 }
 
-/* Change line height of the tabel cells */
+/* Change line height of the table cells */
 .md-typeset td,
 .md-typeset th {
   line-height: 1.25 !important;
 }
 
-/* Change vertical alignment of the icon inside the tabel cells */
+/* Change vertical alignment of the icon inside the table cells */
 .md-typeset td .twemoji {
   vertical-align: sub !important;
 }
