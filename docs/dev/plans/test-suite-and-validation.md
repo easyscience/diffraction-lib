@@ -322,7 +322,7 @@ files or generated artifacts. Do not run Phase 2 commands during Phase 1.
   Files: ADR file (moved), `docs/dev/adrs/index.md`.
   Commit: `Promote test-suite-and-validation ADR to accepted`
 
-- [ ] **P1.16 — Phase 1 review gate (no code)**
+- [x] **P1.16 — Phase 1 review gate (no code)**
   Confirm every box above is `[x]`. Mark this step and commit the
   checklist update alone.
   Commit: `Reach Phase 1 review gate`
