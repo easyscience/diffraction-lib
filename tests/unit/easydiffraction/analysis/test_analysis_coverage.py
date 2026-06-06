@@ -1749,3 +1749,982 @@ class TestLeastSquaresResultProjection:
         assert a.fit_result.covariance_available.value is True
         assert a.fit_result.correlation_available.value is True
         assert len(a.fit_parameter_correlations) == 1
+
+
+# ------------------------------------------------------------------
+# Display: how-to-access and CIF UID tables
+# ------------------------------------------------------------------
+
+
+def _identity_param(*, datablock, category, entry, name):
+    return SimpleNamespace(
+        name=name,
+        value=1.0,
+        _identity=SimpleNamespace(
+            datablock_entry_name=datablock,
+            category_code=category,
+            category_entry_name=entry,
+        ),
+        _cif_handler=SimpleNamespace(uid=f'{category}_{name}_uid'),
+    )
+
+
+class TestDisplayAccessTables:
+    def test_how_to_access_parameters_warns_when_empty(self, capsys):
+        from easydiffraction.analysis.analysis import Analysis
+
+        a = Analysis(project=_make_project())
+        a.display.how_to_access_parameters()
+        out = capsys.readouterr().out
+        assert 'No parameters found' in out
+
+    def test_how_to_access_parameters_builds_code_paths(self, capsys, monkeypatch):
+        import easydiffraction.analysis.analysis as mod
+        from easydiffraction.analysis.analysis import Analysis
+
+        structure_param = _identity_param(
+            datablock='lbco', category='cell', entry='', name='length_a'
+        )
+        experiment_param = _identity_param(
+            datablock='hrpt', category='atom_site', entry='Ba', name='fract_x'
+        )
+        project = _make_project_with_parameters([structure_param], [experiment_param])
+        a = Analysis(project=project)
+
+        captured = {}
+        monkeypatch.setattr(mod, 'render_table', lambda **kwargs: captured.update(kwargs))
+        a.display.how_to_access_parameters()
+
+        out = capsys.readouterr().out
+        assert 'How to access parameters' in out
+        access_codes = [row[-1] for row in captured['columns_data']]
+        assert "proj.structures['lbco'].cell.length_a" in access_codes
+        # Category-entry name is rendered for looped (collection) categories.
+        assert "proj.experiments['hrpt'].atom_site['Ba'].fract_x" in access_codes
+
+    def test_parameter_cif_uids_warns_when_empty(self, capsys):
+        from easydiffraction.analysis.analysis import Analysis
+
+        a = Analysis(project=_make_project())
+        a.display.parameter_cif_uids()
+        out = capsys.readouterr().out
+        assert 'No parameters found' in out
+
+    def test_parameter_cif_uids_lists_handler_uids(self, capsys, monkeypatch):
+        import easydiffraction.analysis.analysis as mod
+        from easydiffraction.analysis.analysis import Analysis
+
+        structure_param = _identity_param(
+            datablock='lbco', category='cell', entry='', name='length_a'
+        )
+        project = _make_project_with_parameters([structure_param])
+        a = Analysis(project=project)
+
+        captured = {}
+        monkeypatch.setattr(mod, 'render_table', lambda **kwargs: captured.update(kwargs))
+        a.display.parameter_cif_uids()
+
+        out = capsys.readouterr().out
+        assert 'CIF unique identifiers' in out
+        uids = [row[-1] for row in captured['columns_data']]
+        assert 'cell_length_a_uid' in uids
+
+
+# ------------------------------------------------------------------
+# Restoring live parameter state from persisted fit rows
+# ------------------------------------------------------------------
+
+
+class TestRestoreLiveParameterState:
+    def _analysis_with_persisted_param(self, parameter):
+        from easydiffraction.analysis.analysis import Analysis
+        from easydiffraction.core.posterior import PosteriorParameterSummary
+
+        project = _make_project_with_parameters([parameter])
+        a = Analysis(project=project)
+        a.fit_parameters.create(
+            param_unique_name=parameter.unique_name,
+            fit_min=3.5,
+            fit_max=4.5,
+            fit_bounds_uncertainty_multiplier=4.0,
+            start_value=3.90,
+            start_uncertainty=0.02,
+        )
+        summary = PosteriorParameterSummary(
+            unique_name=parameter.unique_name,
+            display_name=parameter.name,
+            best_sample_value=4.0,
+            median=4.0,
+            standard_deviation=0.03,
+            interval_68=(3.97, 4.03),
+            interval_95=(3.94, 4.06),
+            ess_bulk=100.0,
+            r_hat=1.01,
+        )
+        a.fit_parameters[parameter.unique_name]._set_posterior_summary(summary)
+        return a
+
+    def test_restore_live_parameter_state_applies_bounds_and_posterior(self):
+        parameter = _make_parameter('length_a', 3.90)
+        a = self._analysis_with_persisted_param(parameter)
+        param_map = a._live_parameter_map()
+
+        a._restore_live_parameter_state(param_map)
+
+        assert parameter.fit_min == 3.5
+        assert parameter.fit_max == 4.5
+        assert parameter._fit_start_value == 3.90
+        assert parameter._fit_start_uncertainty == 0.02
+        # The posterior standard deviation is restored onto the uncertainty.
+        assert np.isclose(parameter.uncertainty, 0.03)
+        assert parameter.posterior is not None
+
+    def test_restore_bounds_warns_for_unknown_parameter(self, monkeypatch):
+        import easydiffraction.analysis.analysis as mod
+        from easydiffraction.analysis.analysis import Analysis
+
+        a = Analysis(project=_make_project_with_parameters([]))
+        a.fit_parameters.create(
+            param_unique_name='ghost',
+            fit_min=0.0,
+            fit_max=1.0,
+            start_value=0.5,
+        )
+        warnings = []
+        monkeypatch.setattr(mod.log, 'warning', warnings.append)
+
+        a._restore_live_parameter_bounds_and_anchors({})
+        assert any('unknown parameter' in message for message in warnings)
+
+    def test_restore_posterior_skips_unknown_parameter(self):
+        parameter = _make_parameter('length_a', 3.90)
+        a = self._analysis_with_persisted_param(parameter)
+        # An empty param_map exercises the parameter-is-None branch.
+        a._restore_live_parameter_posterior({})
+        # No exception and live parameter is untouched.
+        assert parameter.posterior is None
+
+    def test_ordered_restored_parameter_names_follows_row_order(self):
+        from easydiffraction.analysis.analysis import Analysis
+
+        a = Analysis(project=_make_project_with_parameters([]))
+        for name in ('beta', 'alpha'):
+            a.fit_parameters.create(
+                param_unique_name=name,
+                fit_min=0.0,
+                fit_max=1.0,
+                start_value=0.5,
+            )
+        assert a._ordered_restored_parameter_names() == ['beta', 'alpha']
+
+    def test_restored_fit_parameters_filters_to_live_parameters(self):
+        parameter = _make_parameter('length_a', 3.90)
+        a = self._analysis_with_persisted_param(parameter)
+        # Add a persisted row with no matching live parameter.
+        a.fit_parameters.create(
+            param_unique_name='ghost',
+            fit_min=0.0,
+            fit_max=1.0,
+            start_value=0.5,
+        )
+        param_map = a._live_parameter_map()
+        restored = a._restored_fit_parameters(param_map)
+        assert [p.unique_name for p in restored] == [parameter.unique_name]
+
+
+# ------------------------------------------------------------------
+# Deterministic fit-result restore from projection
+# ------------------------------------------------------------------
+
+
+class TestDeterministicRestoreFromProjection:
+    def test_restore_returns_none_without_persisted_state(self):
+        from easydiffraction.analysis.analysis import Analysis
+
+        a = Analysis(project=_make_project_with_parameters([]))
+        assert a._restore_fit_results_from_projection() is None
+
+    def test_restore_rebuilds_deterministic_results(self):
+        from easydiffraction.analysis.analysis import Analysis
+        from easydiffraction.analysis.enums import FitResultKindEnum
+
+        parameter = _make_parameter('length_a', 3.90)
+        a = Analysis(project=_make_project_with_parameters([parameter]))
+        a.fit_parameters.create(
+            param_unique_name=parameter.unique_name,
+            fit_min=3.5,
+            fit_max=4.5,
+            start_value=3.90,
+            start_uncertainty=0.02,
+        )
+
+        fit_result = a.fit_result
+        fit_result._set_result_kind(FitResultKindEnum.DETERMINISTIC.value)
+        fit_result._set_success(value=True)
+        fit_result._set_message('converged')
+        fit_result._set_iterations(17)
+        fit_result._set_fitting_time(2.5)
+        fit_result._set_reduced_chi_square(1.4)
+        fit_result._set_objective_name('chi_square')
+        fit_result._set_objective_value(42.0)
+        fit_result._set_n_data_points(100)
+        fit_result._set_n_parameters(3)
+        fit_result._set_n_free_parameters(1)
+        fit_result._set_degrees_of_freedom(99)
+        fit_result._set_covariance_available(value=True)
+        fit_result._set_correlation_available(value=False)
+        fit_result._set_exit_reason('done')
+        a._set_has_persisted_fit_state(value=True)
+
+        restored = a._restore_fit_results_from_projection()
+
+        assert restored is not None
+        assert restored.success is True
+        assert restored.message == 'converged'
+        assert restored.iterations == 17
+        assert restored.reduced_chi_square == 1.4
+        assert restored.optimizer_name == 'lmfit (leastsq)'
+        assert restored.method_name == 'leastsq'
+        assert restored.n_data_points == 100
+        assert restored.degrees_of_freedom == 99
+        assert restored.chi_square == 42.0
+        # The restored result is also cached on the analysis object.
+        assert a.fit_results is restored
+
+    def test_fit_results_property_restores_on_first_access(self):
+        from easydiffraction.analysis.analysis import Analysis
+        from easydiffraction.analysis.enums import FitResultKindEnum
+
+        parameter = _make_parameter('length_a', 3.90)
+        a = Analysis(project=_make_project_with_parameters([parameter]))
+        a.fit_parameters.create(
+            param_unique_name=parameter.unique_name,
+            fit_min=3.5,
+            fit_max=4.5,
+            start_value=3.90,
+        )
+        a.fit_result._set_result_kind(FitResultKindEnum.DETERMINISTIC.value)
+        a.fit_result._set_success(value=True)
+        a._set_has_persisted_fit_state(value=True)
+        a._fit_results = None
+
+        # Accessing the property lazily restores the projection.
+        assert a.fit_results is not None
+
+
+# ------------------------------------------------------------------
+# Bayesian fit-result restore from projection
+# ------------------------------------------------------------------
+
+
+class TestBayesianRestoreFromProjection:
+    def test_restore_rebuilds_bayesian_results(self):
+        from easydiffraction.analysis.analysis import Analysis
+        from easydiffraction.analysis.enums import FitResultKindEnum
+
+        parameter = _make_parameter('alpha', 1.0)
+        a = Analysis(project=_make_project_with_parameters([parameter]))
+        a.minimizer.type = 'bumps (dream)'
+
+        a.fit_parameters.create(
+            param_unique_name=parameter.unique_name,
+            fit_min=0.0,
+            fit_max=2.0,
+            start_value=1.0,
+            start_uncertainty=0.1,
+        )
+        row = a.fit_parameters[parameter.unique_name]
+        row._set_posterior_best_sample_value(1.2)
+        row._set_posterior_median(1.1)
+        row._set_posterior_uncertainty(0.1)
+        row._set_posterior_interval_68_low(1.0)
+        row._set_posterior_interval_68_high(1.2)
+        row._set_posterior_interval_95_low(0.9)
+        row._set_posterior_interval_95_high(1.3)
+
+        fit_result = a.fit_result
+        fit_result._set_result_kind(FitResultKindEnum.BAYESIAN.value)
+        fit_result._set_success(value=True)
+        fit_result._set_message('sampled')
+        fit_result._set_iterations(3000)
+        fit_result._set_fitting_time(12.0)
+        fit_result._set_reduced_chi_square(1.1)
+        fit_result._set_point_estimate_name('median')
+        fit_result._set_sampler_completed(value=True)
+        fit_result._set_best_log_posterior(-50.0)
+        fit_result._set_credible_interval_inner(0.68)
+        fit_result._set_credible_interval_outer(0.95)
+        fit_result._set_gelman_rubin_max(1.001)
+        fit_result._set_effective_sample_size_min(8000.0)
+        a._set_has_persisted_fit_state(value=True)
+
+        a._persisted_fit_state_sidecar = {
+            'posterior': {
+                'parameter_samples': np.zeros((4, 2, 1)).tolist(),
+                'log_posterior': None,
+                'draw_index': None,
+            }
+        }
+
+        restored = a._restore_fit_results_from_projection()
+
+        assert restored is not None
+        assert restored.success is True
+        assert restored.message == 'sampled'
+        assert restored.sampler_name == 'dream'
+        assert restored.point_estimate_name == 'median'
+        assert restored.reduced_chi_square == 1.1
+        assert restored.convergence_diagnostics['converged'] is True
+        assert a.fit_results is restored
+
+
+# ------------------------------------------------------------------
+# Restored Bayesian sampler settings (dream / non-emcee branch)
+# ------------------------------------------------------------------
+
+
+class TestRestoredDreamSamplerSettings:
+    def test_dream_branch_builds_settings(self):
+        from easydiffraction.analysis.analysis import Analysis
+
+        a = Analysis(project=_make_project())
+        a.minimizer.type = 'bumps (dream)'
+
+        settings = a._restored_bayesian_sampler_settings(
+            {
+                'steps': 5000,
+                'burn': 1000,
+                'thin': 2,
+                'pop': 8,
+                'parallel': 0,
+                'init': 'lhs',
+            },
+            random_seed=7,
+            n_parameters=3,
+        )
+
+        assert settings['steps'] == 5000
+        assert settings['burn'] == 1000
+        assert settings['thin'] == 2
+        assert settings['pop'] == 8
+        assert settings['parallel'] == 0
+        assert settings['init'] == 'lhs'
+        assert settings['random_seed'] == 7
+        # samples = steps * pop * n_parameters
+        assert settings['samples'] == 5000 * 8 * 3
+
+
+# ------------------------------------------------------------------
+# Posterior plot-cache projection: empty / invalid sample paths
+# ------------------------------------------------------------------
+
+
+class TestPosteriorPlotCacheGuards:
+    def test_no_samples_resets_caches(self):
+        from easydiffraction.analysis.analysis import Analysis
+        from easydiffraction.analysis.fit_helpers.bayesian import BayesianFitResults
+
+        a = Analysis(project=_make_project())
+        results = BayesianFitResults(success=True, posterior_samples=None)
+
+        a._store_posterior_plot_cache_projection(results)
+
+        assert results.posterior_distribution_caches == {}
+        assert results.posterior_pair_caches == {}
+        assert a._persisted_fit_state_sidecar['distribution_caches'] == {}
+        assert a._persisted_fit_state_sidecar['pair_caches'] == {}
+        assert a._persisted_fit_state_sidecar['predictive_datasets'] == {}
+
+    def test_invalid_flattened_shape_resets_caches(self):
+        from easydiffraction.analysis.analysis import Analysis
+        from easydiffraction.analysis.fit_helpers.bayesian import BayesianFitResults
+
+        a = Analysis(project=_make_project())
+        # A non-2-D flattened array trips the shape guard, resetting caches
+        # before any plotter access (the project here has no plotter).
+        fake_samples = SimpleNamespace(
+            parameter_names=['alpha'],
+            flattened=lambda: np.asarray([1.0, 2.0, 3.0], dtype=float),
+        )
+        results = BayesianFitResults(success=True, posterior_samples=fake_samples)
+
+        a._store_posterior_plot_cache_projection(results)
+
+        assert a._persisted_fit_state_sidecar['distribution_caches'] == {}
+        assert a._persisted_fit_state_sidecar['pair_caches'] == {}
+        assert a._persisted_fit_state_sidecar['predictive_datasets'] == {}
+
+
+# ------------------------------------------------------------------
+# Posterior pair-cache projection (multi-parameter)
+# ------------------------------------------------------------------
+
+
+class _PairPlotter:
+    @staticmethod
+    def _posterior_parameter_bounds(*, fit_results, parameter_name):
+        del fit_results, parameter_name
+        return 0.0, 1.0
+
+    @staticmethod
+    def _posterior_density_curve(values, *, lower_bound, upper_bound):
+        del values
+        return (
+            np.asarray([lower_bound, upper_bound], dtype=float),
+            np.asarray([0.25, 0.75], dtype=float),
+        )
+
+    @staticmethod
+    def _thin_posterior_samples(samples, *, max_points):
+        del max_points
+        return np.asarray(samples, dtype=float)
+
+    @staticmethod
+    def _posterior_pair_density_max_points(n_parameters):
+        del n_parameters
+        return 1000
+
+    @staticmethod
+    def _posterior_pair_contour_grid_size(n_parameters):
+        del n_parameters
+        return 4
+
+    @staticmethod
+    def _posterior_pair_bounds(
+        *, fit_results, x_parameter_name, y_parameter_name, x_values, y_values
+    ):
+        del fit_results, x_parameter_name, y_parameter_name, x_values, y_values
+        return (0.0, 1.0), (0.0, 1.0)
+
+    @staticmethod
+    def _posterior_pair_density_surface(*, x_values, y_values, x_bounds, y_bounds, grid_size):
+        del x_values, y_values, x_bounds, y_bounds
+        x_grid = np.linspace(0.0, 1.0, grid_size)
+        y_grid = np.linspace(0.0, 1.0, grid_size)
+        density = np.ones((grid_size, grid_size), dtype=float)
+        return x_grid, y_grid, density
+
+    @staticmethod
+    def _resolve_x_axis(experiment_type, _axis_name):
+        del experiment_type
+        return np.asarray([1.0, 2.0], dtype=float), 'two_theta', None, None, None
+
+    @staticmethod
+    def _build_posterior_predictive_summary(
+        *, fit_results, experiment, expt_name, x_axis, include_draws
+    ):
+        del fit_results, experiment, x_axis, include_draws
+        from easydiffraction.analysis.fit_helpers.bayesian import PosteriorPredictiveSummary
+
+        return PosteriorPredictiveSummary(
+            experiment_name=expt_name,
+            x_axis_name='two_theta',
+            x=np.asarray([1.0, 2.0], dtype=float),
+            best_sample_prediction=np.asarray([3.0, 4.0], dtype=float),
+        )
+
+
+class TestPosteriorPairCacheProjection:
+    def _bayesian_results(self):
+        from easydiffraction.analysis.fit_helpers.bayesian import BayesianFitResults
+        from easydiffraction.analysis.fit_helpers.bayesian import PosteriorSamples
+
+        return BayesianFitResults(
+            success=True,
+            posterior_samples=PosteriorSamples(
+                parameter_names=['beta', 'alpha'],
+                parameter_samples=np.asarray(
+                    [[[1.0, 2.0]], [[1.2, 2.2]], [[1.1, 2.1]]],
+                    dtype=float,
+                ),
+            ),
+            posterior_parameter_summaries=[],
+            posterior_predictive={},
+            sampler_settings={},
+            convergence_diagnostics={},
+        )
+
+    def test_pair_cache_orders_names_and_stores_contours(self):
+        from easydiffraction.analysis.analysis import Analysis
+
+        a = Analysis(project=_make_project())
+        results = self._bayesian_results()
+        flattened = np.asarray(results.posterior_samples.flattened(), dtype=float)
+
+        payload = a._store_posterior_pair_cache_projection(
+            plotter=_PairPlotter(),
+            results=results,
+            flattened_samples=flattened,
+            parameter_names=['beta', 'alpha'],
+        )
+
+        assert payload
+        pair = payload['1']
+        # Names are ordered alphabetically for the pair (alpha before beta).
+        assert pair['param_unique_name_x'] == 'alpha'
+        assert pair['param_unique_name_y'] == 'beta'
+        assert pair['contour_levels'].size > 0
+
+    def test_pair_cache_single_parameter_is_empty(self):
+        from easydiffraction.analysis.analysis import Analysis
+
+        a = Analysis(project=_make_project())
+        results = self._bayesian_results()
+        flattened = np.asarray([[1.0], [1.2]], dtype=float)
+
+        payload = a._store_posterior_pair_cache_projection(
+            plotter=_PairPlotter(),
+            results=results,
+            flattened_samples=flattened,
+            parameter_names=['alpha'],
+        )
+        assert payload == {}
+
+    def test_one_pair_returns_none_when_surface_missing(self):
+        from easydiffraction.analysis.analysis import Analysis
+
+        class NoSurfacePlotter(_PairPlotter):
+            @staticmethod
+            def _posterior_pair_density_surface(
+                *, x_values, y_values, x_bounds, y_bounds, grid_size
+            ) -> None:
+                del x_values, y_values, x_bounds, y_bounds, grid_size
+
+        a = Analysis(project=_make_project())
+        results = self._bayesian_results()
+        density_samples = np.asarray([[1.0, 2.0], [1.2, 2.2]], dtype=float)
+
+        outcome = a._store_one_posterior_pair_cache_projection(
+            plotter=NoSurfacePlotter(),
+            results=results,
+            density_samples=density_samples,
+            pair_metadata=(0, 1, 'alpha', 'beta'),
+            contour_grid_size=4,
+            pair_id='1',
+        )
+        assert outcome is None
+
+
+# ------------------------------------------------------------------
+# Posterior samples sidecar projection
+# ------------------------------------------------------------------
+
+
+class TestPosteriorSamplesSidecar:
+    def test_no_samples_stores_empty_posterior(self):
+        from easydiffraction.analysis.analysis import Analysis
+        from easydiffraction.analysis.fit_helpers.bayesian import BayesianFitResults
+
+        a = Analysis(project=_make_project())
+        results = BayesianFitResults(success=True, posterior_samples=None)
+        a._store_posterior_samples_sidecar_projection(results)
+        assert a._persisted_fit_state_sidecar['posterior'] == {}
+
+    def test_samples_stored_with_optional_arrays(self):
+        from easydiffraction.analysis.analysis import Analysis
+        from easydiffraction.analysis.fit_helpers.bayesian import BayesianFitResults
+        from easydiffraction.analysis.fit_helpers.bayesian import PosteriorSamples
+
+        a = Analysis(project=_make_project())
+        samples = PosteriorSamples(
+            parameter_names=['alpha'],
+            parameter_samples=np.asarray([[[1.0]], [[1.2]]], dtype=float),
+            log_posterior=np.asarray([[-1.0], [-1.1]], dtype=float),
+            draw_index=np.asarray([0, 1]),
+        )
+        results = BayesianFitResults(success=True, posterior_samples=samples)
+        a._store_posterior_samples_sidecar_projection(results)
+
+        stored = a._persisted_fit_state_sidecar['posterior']
+        assert stored['parameter_samples'].shape == (2, 1, 1)
+        assert stored['log_posterior'] is not None
+        assert stored['draw_index'] is not None
+
+
+# ------------------------------------------------------------------
+# Fit-result projection dispatch (Bayesian vs deterministic)
+# ------------------------------------------------------------------
+
+
+class TestStoreFitResultProjectionDispatch:
+    def test_bayesian_results_route_to_posterior_projection(self, monkeypatch):
+        from easydiffraction.analysis.analysis import Analysis
+        from easydiffraction.analysis.enums import FitResultKindEnum
+        from easydiffraction.analysis.fit_helpers.bayesian import BayesianFitResults
+
+        a = Analysis(project=_make_project())
+        a.minimizer.type = 'bumps (dream)'
+        calls = []
+        monkeypatch.setattr(a, '_store_posterior_fit_projection', calls.append)
+
+        results = BayesianFitResults(
+            success=True,
+            convergence_diagnostics={},
+            sampler_settings={},
+            posterior_samples=None,
+            posterior_parameter_summaries=[],
+        )
+        a._store_fit_result_projection(results, experiments=[], fitted_parameters=[])
+
+        assert a.fit_result.result_kind.value == FitResultKindEnum.BAYESIAN.value
+        assert calls == [results]
+
+    def test_deterministic_results_route_to_least_squares_projection(self, monkeypatch):
+        from easydiffraction.analysis.analysis import Analysis
+        from easydiffraction.analysis.enums import FitResultKindEnum
+        from easydiffraction.analysis.fit_helpers.reporting import FitResults
+
+        a = Analysis(project=_make_project())
+        calls = []
+        monkeypatch.setattr(
+            a,
+            '_store_least_squares_result_projection',
+            lambda results, *, experiments, fitted_parameters: calls.append((
+                results,
+                experiments,
+                fitted_parameters,
+            )),
+        )
+
+        results = FitResults(success=True, reduced_chi_square=1.0)
+        results.message = 'ok'
+        a._store_fit_result_projection(results, experiments=['e'], fitted_parameters=['p'])
+
+        assert a.fit_result.result_kind.value == FitResultKindEnum.DETERMINISTIC.value
+        assert calls == [(results, ['e'], ['p'])]
+
+
+# ------------------------------------------------------------------
+# Posterior fit projection: live-parameter + correlation wiring
+# ------------------------------------------------------------------
+
+
+class TestPosteriorFitProjectionWiring:
+    def test_updates_live_parameter_and_stores_correlations(self):
+        from easydiffraction.analysis.analysis import Analysis
+        from easydiffraction.analysis.categories.fit_result.bayesian import BayesianFitResult
+        from easydiffraction.analysis.fit_helpers.bayesian import BayesianFitResults
+        from easydiffraction.analysis.fit_helpers.bayesian import PosteriorSamples
+        from easydiffraction.core.posterior import PosteriorParameterSummary
+
+        alpha = _make_parameter('alpha', 1.0)
+        beta = _make_parameter('beta', 2.0)
+        project = SimpleNamespace(
+            experiments=SimpleNamespace(names=[]),
+            structures=object(),
+            rendering_plot=SimpleNamespace(plotter=_PairPlotter()),
+            _varname='proj',
+        )
+        a = Analysis(project=project)
+        a._fit_result._parent = None
+        a._fit_result = BayesianFitResult()
+        a._fit_result._parent = a
+
+        for name in (alpha.unique_name, beta.unique_name):
+            a.fit_parameters.create(
+                param_unique_name=name,
+                fit_min=0.0,
+                fit_max=3.0,
+                start_value=1.0,
+            )
+
+        summaries = [
+            PosteriorParameterSummary(
+                unique_name=alpha.unique_name,
+                display_name='alpha',
+                best_sample_value=1.1,
+                median=1.1,
+                standard_deviation=0.1,
+                interval_68=(1.0, 1.2),
+                interval_95=(0.9, 1.3),
+            ),
+            PosteriorParameterSummary(
+                unique_name=beta.unique_name,
+                display_name='beta',
+                best_sample_value=2.1,
+                median=2.1,
+                standard_deviation=0.1,
+                interval_68=(2.0, 2.2),
+                interval_95=(1.9, 2.3),
+            ),
+        ]
+        results = BayesianFitResults(
+            success=True,
+            parameters=[alpha, beta],
+            convergence_diagnostics={},
+            sampler_settings={'random_seed': 3},
+            posterior_parameter_summaries=summaries,
+            posterior_samples=PosteriorSamples(
+                parameter_names=[alpha.unique_name, beta.unique_name],
+                parameter_samples=np.asarray(
+                    [[[1.0, 2.0]], [[1.2, 2.3]], [[1.1, 2.1]]],
+                    dtype=float,
+                ),
+            ),
+            posterior_predictive={},
+        )
+
+        a._store_posterior_fit_projection(results)
+
+        # The live parameters receive the posterior summaries.
+        assert alpha.posterior is not None
+        assert beta.posterior is not None
+        # Multi-parameter posterior samples produce a correlation row.
+        assert len(a.fit_parameter_correlations) >= 1
+
+
+# ------------------------------------------------------------------
+# Fit-run preparation guards and dispatch
+# ------------------------------------------------------------------
+
+
+def _fit_project(*, structures, experiments, path=None, verbosity_value='silent'):
+    return SimpleNamespace(
+        structures=structures,
+        experiments=experiments,
+        info=SimpleNamespace(path=path),
+        verbosity=SimpleNamespace(fit=SimpleNamespace(value=verbosity_value)),
+        _varname='proj',
+    )
+
+
+class TestPrepareFitRun:
+    def test_no_structures_warns_and_returns_none(self, monkeypatch):
+        import easydiffraction.analysis.analysis as mod
+        from easydiffraction.analysis.analysis import Analysis
+
+        project = _fit_project(structures=[], experiments=['e'])
+        a = Analysis(project=project)
+        warnings = []
+        monkeypatch.setattr(mod.log, 'warning', warnings.append)
+
+        assert a._prepare_fit_run() is None
+        assert any('No structures found' in message for message in warnings)
+
+    def test_no_experiments_warns_and_returns_none(self, monkeypatch):
+        import easydiffraction.analysis.analysis as mod
+        from easydiffraction.analysis.analysis import Analysis
+
+        project = _fit_project(structures=['s'], experiments=[])
+        a = Analysis(project=project)
+        warnings = []
+        monkeypatch.setattr(mod.log, 'warning', warnings.append)
+
+        assert a._prepare_fit_run() is None
+        assert any('No experiments found' in message for message in warnings)
+
+    def test_prepared_inputs_sync_engine_and_update_categories(self, monkeypatch):
+        from easydiffraction.analysis.analysis import Analysis
+        from easydiffraction.utils.enums import VerbosityEnum
+
+        project = _fit_project(structures=['s'], experiments=['e'])
+        a = Analysis(project=project)
+        events = []
+        monkeypatch.setattr(
+            a, '_prepare_results_sidecar_for_new_fit', lambda: events.append('sidecar')
+        )
+        monkeypatch.setattr(
+            a, '_sync_engine_from_minimizer_category', lambda: events.append('sync')
+        )
+        monkeypatch.setattr(a, '_update_categories', lambda: events.append('update'))
+
+        verb, structures, experiments = a._prepare_fit_run()
+        assert verb is VerbosityEnum.SILENT
+        assert structures == ['s']
+        assert experiments == ['e']
+        assert events == ['sidecar', 'sync', 'update']
+
+    def test_resume_skips_sidecar_preparation(self, monkeypatch):
+        from easydiffraction.analysis.analysis import Analysis
+
+        project = _fit_project(structures=['s'], experiments=['e'])
+        a = Analysis(project=project)
+        events = []
+        monkeypatch.setattr(
+            a, '_prepare_results_sidecar_for_new_fit', lambda: events.append('sidecar')
+        )
+        monkeypatch.setattr(a, '_sync_engine_from_minimizer_category', lambda: None)
+        monkeypatch.setattr(a, '_update_categories', lambda: None)
+
+        a._prepare_fit_run(resume=True)
+        assert 'sidecar' not in events
+
+
+class TestRunSingleAndJoint:
+    def test_run_single_aborts_when_preparation_fails(self, monkeypatch):
+        from easydiffraction.analysis.analysis import Analysis
+
+        a = Analysis(project=_make_project())
+        monkeypatch.setattr(a, '_prepare_fit_run', lambda *, resume=False: None)
+        called = []
+        monkeypatch.setattr(a, '_fit_single', lambda *a_, **k_: called.append(True))
+
+        a._run_single()
+        assert called == []
+
+    def test_run_single_invokes_fit_and_stamps_provenance(self, monkeypatch, tmp_path):
+        from easydiffraction.analysis.analysis import Analysis
+        from easydiffraction.utils.enums import VerbosityEnum
+
+        project = _fit_project(structures=['s'], experiments=['e'], path=tmp_path)
+        project.save_calls = 0
+        project.save = lambda: setattr(project, 'save_calls', project.save_calls + 1)
+        a = Analysis(project=project)
+
+        captured = {}
+        monkeypatch.setattr(
+            a,
+            '_prepare_fit_run',
+            lambda *, resume=False: (VerbosityEnum.SILENT, ['s'], ['e']),
+        )
+        monkeypatch.setattr(
+            a,
+            '_fit_single',
+            lambda verb, structures, experiments, *, fit_options: captured.update(
+                resume=fit_options.resume, extra_steps=fit_options.extra_steps
+            ),
+        )
+        monkeypatch.setattr(a, '_stamp_software_provenance', lambda: captured.update(stamped=True))
+
+        a._run_single(resume=True, extra_steps=5)
+
+        assert captured == {'resume': True, 'extra_steps': 5, 'stamped': True}
+        assert project.save_calls == 1
+
+    def test_run_joint_rejects_resume(self):
+        import pytest
+
+        from easydiffraction.analysis.analysis import Analysis
+
+        a = Analysis(project=_make_project())
+        with pytest.raises(ValueError, match='single fit mode only'):
+            a._run_joint(resume=True)
+
+    def test_run_joint_aborts_when_preparation_fails(self, monkeypatch):
+        from easydiffraction.analysis.analysis import Analysis
+
+        a = Analysis(project=_make_project())
+        monkeypatch.setattr(a, '_prepare_fit_run', lambda *, resume=False: None)
+        called = []
+        monkeypatch.setattr(a, '_fit_joint', lambda *a_, **k_: called.append(True))
+
+        a._run_joint()
+        assert called == []
+
+
+# ------------------------------------------------------------------
+# Joint fitting execution
+# ------------------------------------------------------------------
+
+
+class TestFitJoint:
+    def test_fit_joint_rejects_resume(self):
+        import pytest
+
+        from easydiffraction.analysis.analysis import Analysis
+        from easydiffraction.analysis.fitting import FitterFitOptions
+        from easydiffraction.utils.enums import VerbosityEnum
+
+        a = Analysis(project=_make_project())
+        with pytest.raises(ValueError, match='single fit mode only'):
+            a._fit_joint(
+                VerbosityEnum.SILENT,
+                object(),
+                SimpleNamespace(names=[], values=list),
+                fit_options=FitterFitOptions(resume=True),
+            )
+
+    def test_fit_joint_auto_populates_weights_and_calls_fitter(self, monkeypatch):
+        from easydiffraction.analysis.analysis import Analysis
+        from easydiffraction.analysis.fitting import FitterFitOptions
+        from easydiffraction.utils.enums import VerbosityEnum
+
+        class Experiments:
+            names = ['e1', 'e2']
+
+            def values(self):
+                return ['exp1', 'exp2']
+
+        a = Analysis(project=_make_project())
+        captured = {}
+
+        def fake_fit(structures, experiments_list, *, weights, analysis, verbosity, options):
+            del structures, analysis, verbosity, options
+            captured['experiments'] = experiments_list
+            captured['weights'] = weights
+
+        monkeypatch.setattr(a.fitter, 'fit', fake_fit)
+        a.fitter.results = SimpleNamespace(success=True)
+
+        a._fit_joint(
+            VerbosityEnum.SILENT,
+            object(),
+            Experiments(),
+            fit_options=FitterFitOptions(),
+        )
+
+        assert captured['experiments'] == ['exp1', 'exp2']
+        # Auto-populated default weight is 0.5 for each experiment.
+        assert np.allclose(captured['weights'], [0.5, 0.5])
+        assert a.fit_results is a.fitter.results
+        ids = sorted(item.experiment_id.value for item in a.joint_fit)
+        assert ids == ['e1', 'e2']
+
+
+# ------------------------------------------------------------------
+# Short-mode summary table and constraint application
+# ------------------------------------------------------------------
+
+
+class TestShortTableAndUpdateCategories:
+    def test_short_table_formats_chi2_and_status(self, monkeypatch):
+        import easydiffraction.analysis.analysis as mod
+        from easydiffraction.analysis.analysis import Analysis
+
+        a = Analysis(project=_make_project())
+        a.fitter.minimizer = SimpleNamespace(tracker=SimpleNamespace(best_iteration=9))
+        captured = {}
+        monkeypatch.setattr(mod, 'render_table', lambda **kwargs: captured.update(kwargs))
+
+        short_rows = []
+        results = SimpleNamespace(reduced_chi_square=1.234, success=True)
+        a._fit_single_update_short_table(short_rows, 'e1', results, display_handle=None)
+
+        assert short_rows == [['e1', '1.23', '9', '✅']]
+        assert captured['columns_headers'] == ['experiment', 'χ²', 'iterations', 'status']
+
+    def test_short_table_handles_missing_chi2_and_failure(self, monkeypatch):
+        import easydiffraction.analysis.analysis as mod
+        from easydiffraction.analysis.analysis import Analysis
+
+        a = Analysis(project=_make_project())
+        a.fitter.minimizer = SimpleNamespace(tracker=SimpleNamespace(best_iteration=None))
+        monkeypatch.setattr(mod, 'render_table', lambda **kwargs: None)
+
+        short_rows = []
+        results = SimpleNamespace(reduced_chi_square=None, success=False)
+        a._fit_single_update_short_table(short_rows, 'e2', results, display_handle=None)
+
+        assert short_rows == [['e2', '—', '0', '❌']]
+
+    def test_update_categories_applies_enabled_constraints(self, monkeypatch):
+        from easydiffraction.analysis.analysis import Analysis
+        from easydiffraction.core.category_owner import CategoryOwner
+
+        a = Analysis(project=_make_project())
+        a.constraints._items = [SimpleNamespace(id=SimpleNamespace(value='c1'))]
+        a.constraints.enable()
+
+        applied = []
+        monkeypatch.setattr(a._constraints_handler, 'set_aliases', lambda aliases: None)
+        monkeypatch.setattr(a._constraints_handler, 'set_constraints', lambda constraints: None)
+        monkeypatch.setattr(a._constraints_handler, 'apply', lambda: applied.append(True))
+        # Avoid touching the real super()._update_categories machinery.
+        monkeypatch.setattr(
+            CategoryOwner,
+            '_update_categories',
+            lambda self, *, called_by_minimizer=False: None,
+        )
+
+        a._update_categories()
+        assert applied == [True]
