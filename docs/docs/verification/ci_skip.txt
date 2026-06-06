@@ -5,7 +5,7 @@
 # verification pages consult this file:
 #
 #   * pixi run script-tests   (tools/test_scripts.py)
-#   * pixi run notebook-tests (nbmake, via conftest.py in this directory)
+#   * pixi run notebook-tests (nbmake, via docs/docs/conftest.py)
 #
 # A skipped page is still committed and still shown in the documentation;
 # it is only excluded from those two runners so a known-failing page does

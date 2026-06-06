@@ -81,5 +81,5 @@ fix) can be excluded from the two runners that execute it —
 it from the documentation. Add its notebook stem to
 `docs/docs/verification/ci_skip.txt`, one per line with a `# reason`.
 Both runners read that single file (`tools/test_scripts.py` and the
-nbmake `conftest.py` beside the notebooks). The page is still committed
-and rendered in the docs; remove the entry once the issue is fixed.
+nbmake `conftest.py` at `docs/docs/`). The page is still committed and
+rendered in the docs; remove the entry once the issue is fixed.
