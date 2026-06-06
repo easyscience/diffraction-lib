@@ -776,6 +776,7 @@ class Plotter(RendererBase):
             bragg_peaks_height_fraction=DEFAULT_BRAGG_ROW,
             height=self._composite_plot_height(),
             y_calc_name=candidate_label,
+            y_meas_name=reference_label,
         )
         if self.engine == PlotterEngineEnum.PLOTLY.value:
             self._backend.build_and_show_calc_comparison(

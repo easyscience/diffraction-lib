@@ -811,11 +811,12 @@ class PlotlyPlotter(PlotterBase):
         tooltip frame through the shared hover formatter.
         """
         calc_label = plot_spec.y_calc_name or 'Icalc'
+        meas_label = plot_spec.y_meas_name or 'Imeas'
         if plot_spec.y_bkg is None:
             return cls._format_hover_lines([
                 'x: %{x:,.2f}',
                 cls._hover_color_span(
-                    'Imeas: %{customdata[0]:,.2f}',
+                    f'{meas_label}: %{{customdata[0]:,.2f}}',
                     DEFAULT_COLORS['meas'],
                 ),
                 cls._hover_color_span(
@@ -823,7 +824,7 @@ class PlotlyPlotter(PlotterBase):
                     DEFAULT_COLORS['calc'],
                 ),
                 cls._hover_color_span(
-                    f'Imeas - {calc_label}: %{{customdata[2]:,.2f}}',
+                    f'{meas_label} - {calc_label}: %{{customdata[2]:,.2f}}',
                     DEFAULT_COLORS['resid'],
                 ),
             ])
@@ -831,7 +832,7 @@ class PlotlyPlotter(PlotterBase):
         return cls._format_hover_lines([
             'x: %{x:,.2f}',
             cls._hover_color_span(
-                'Imeas: %{customdata[0]:,.2f}',
+                f'{meas_label}: %{{customdata[0]:,.2f}}',
                 DEFAULT_COLORS['meas'],
             ),
             cls._hover_color_span(
@@ -843,7 +844,7 @@ class PlotlyPlotter(PlotterBase):
                 DEFAULT_COLORS['calc'],
             ),
             cls._hover_color_span(
-                f'Imeas - {calc_label}: %{{customdata[3]:,.2f}}',
+                f'{meas_label} - {calc_label}: %{{customdata[3]:,.2f}}',
                 DEFAULT_COLORS['resid'],
             ),
         ])
@@ -2773,17 +2774,16 @@ scheduleResize();
             return None
 
         residual_limit = self._get_residual_limit(plot_spec)
-        fig.add_trace(
-            self._get_powder_trace(
-                plot_spec.x,
-                plot_spec.y_resid,
-                'resid',
-                customdata=hover_data,
-                hovertemplate=hover_template,
-            ),
-            row=layout.residual_row,
-            col=1,
+        resid_trace = self._get_powder_trace(
+            plot_spec.x,
+            plot_spec.y_resid,
+            'resid',
+            customdata=hover_data,
+            hovertemplate=hover_template,
         )
+        if plot_spec.y_meas_name is not None and plot_spec.y_calc_name is not None:
+            resid_trace.name = f'Residual ({plot_spec.y_meas_name} - {plot_spec.y_calc_name})'
+        fig.add_trace(resid_trace, row=layout.residual_row, col=1)
         return residual_limit
 
     def _configure_powder_composite_layout(
