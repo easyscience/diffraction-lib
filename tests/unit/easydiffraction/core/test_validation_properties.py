@@ -14,6 +14,8 @@ have left it in ``RAISE`` mode).
 
 from __future__ import annotations
 
+import math
+
 import numpy as np
 import pytest
 from hypothesis import given
@@ -65,7 +67,7 @@ def test_numeric_rejects_text_with_fallback(value):
 
 @pytest.mark.parametrize(
     'value',
-    [0, -1, 1, 0.0, -2.5, 3.14, np.int64(5), np.float64(2.0)],
+    [0, -1, 1, 0.0, -2.5, math.pi, np.int64(5), np.float64(2.0)],
 )
 def test_numeric_accepts_boundary_table(value):
     _warn()
@@ -99,11 +101,7 @@ def test_occupancy_accepts_unit_interval(value):
     assert _occupancy_spec().validated(value, name='occ') == value
 
 
-@given(
-    value=st.floats(allow_nan=False, allow_infinity=False).filter(
-        lambda v: v < 0.0 or v > 1.0
-    )
-)
+@given(value=st.floats(allow_nan=False, allow_infinity=False).filter(lambda v: v < 0.0 or v > 1.0))
 def test_occupancy_rejects_outside_unit_interval(value):
     _warn()
     assert _occupancy_spec().validated(value, name='occ') == OCC_DEFAULT

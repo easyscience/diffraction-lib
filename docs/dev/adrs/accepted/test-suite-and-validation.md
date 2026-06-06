@@ -18,8 +18,8 @@ EasyDiffraction now has five test layers — unit, functional,
 integration, script, and notebook — plus a tutorial-output regression
 check. The layers were established by
 [Test Strategy](../accepted/test-strategy.md), which defines each in a
-single line and states that the unit tree mirrors the source tree
-"where practical."
+single line and states that the unit tree mirrors the source tree "where
+practical."
 
 That high-level statement is no longer enough. Concrete problems have
 accumulated:
@@ -31,8 +31,8 @@ accumulated:
   tests are slow (parametrised sampler/plotting/display cases) and some
   call `download_data()` (mocked, but undocumented). There is no written
   rule an author can apply to a borderline test.
-- **Codecov patch status is always red.** `.codecov.yml` runs a
-  blocking `patch: target: auto` against a **unit-only** coverage upload
+- **Codecov patch status is always red.** `.codecov.yml` runs a blocking
+  `patch: target: auto` against a **unit-only** coverage upload
   (`coverage.yml` uploads only `coverage-unit.xml`). Any pull request
   that touches code exercised mainly by functional, integration, or
   script tests scores near-zero patch coverage and fails the blocking
@@ -62,8 +62,8 @@ accumulated:
   exercises EasyDiffraction against a large, varied corpus of CIF files
   to catch parsing/recognition failures before users hit them.
 - **Documentation drift is not caught on every push.** `docs.yml`
-  executes all tutorials and then builds and deploys the site; it is slow
-  and therefore runs on pull requests only. There is no fast,
+  executes all tutorials and then builds and deploys the site; it is
+  slow and therefore runs on pull requests only. There is no fast,
   every-push check that the site builds strictly, links resolve, and
   prose is clean. This overlaps the unimplemented
   [Documentation CI and Build Verification](documentation-ci-build.md)
@@ -87,13 +87,13 @@ implemented in follow-up pull requests.
 Replace the one-line definitions with observable, testable rules. A test
 belongs to the **lowest** layer whose constraints it can satisfy.
 
-| Layer | May use | Must NOT use | Speed |
-| --- | --- | --- | --- |
-| **unit** | one module under test; in-process logic; `tmp_path` | real calculation engine; network / `download_data()`; filesystem outside `tmp_path`; `sleep`; subprocess | sub-second |
-| **functional** | several modules / a workflow; small bundled fixtures | real calculation engine; **network / `download_data()`** | seconds |
-| **integration** | real engines, real fits, real downloaded data; the only layer allowed network and real backends | — | slow; xdist |
-| **script** | full tutorial `.py` executed subprocess-isolated | (already correct) | slow; xdist |
-| **notebook** | generated `.ipynb` executed via `nbmake` | — | slow |
+| Layer           | May use                                                                                         | Must NOT use                                                                                             | Speed       |
+| --------------- | ----------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | ----------- |
+| **unit**        | one module under test; in-process logic; `tmp_path`                                             | real calculation engine; network / `download_data()`; filesystem outside `tmp_path`; `sleep`; subprocess | sub-second  |
+| **functional**  | several modules / a workflow; small bundled fixtures                                            | real calculation engine; **network / `download_data()`**                                                 | seconds     |
+| **integration** | real engines, real fits, real downloaded data; the only layer allowed network and real backends | —                                                                                                        | slow; xdist |
+| **script**      | full tutorial `.py` executed subprocess-isolated                                                | (already correct)                                                                                        | slow; xdist |
+| **notebook**    | generated `.ipynb` executed via `nbmake`                                                        | —                                                                                                        | slow        |
 
 Mocking a forbidden dependency (for example a mocked `download_data()`)
 keeps a test in a lower layer **only when the mock is explicit**; an
@@ -113,7 +113,7 @@ Consequences for the current suite:
 ### 2. Test cost tiers via opt-in escalation markers
 
 Cost tiers are **orthogonal** to layers. The default is fast; expensive
-tests opt *into* a heavier tier, so only the minority are tagged.
+tests opt _into_ a heavier tier, so only the minority are tagged.
 
 - **default (unmarked):** fast. Runs on every push, every pull request,
   and nightly.
@@ -125,7 +125,7 @@ tests opt *into* a heavier tier, so only the minority are tagged.
 
 Orthogonality holds at the **unit and functional** layers: those default
 to fast, and an individual test opts into `pr`/`nightly`. The
-**integration** layer is the one principled exception — *every*
+**integration** layer is the one principled exception — _every_
 integration test uses a real engine and/or downloaded data, so the layer
 **defaults to the `pr` tier**, applied once in
 `tests/integration/conftest.py` rather than by tagging each of ~150
@@ -141,7 +141,7 @@ pull request + main:   -m "not nightly"
 nightly schedule:      (all markers, including -m nightly)
 ```
 
-The current `fast` marker (which today selects a *cheap subset* and is
+The current `fast` marker (which today selects a _cheap subset_ and is
 applied to six integration files) is **retired**; its intent is inverted
 into the scheme above. Markers are registered in
 `[tool.pytest.ini_options].markers`.
@@ -149,12 +149,13 @@ into the scheme above. Markers are registered in
 ### 3. Mirrored unit structure as a CI gate
 
 `tools/test_structure_check.py` remains the canonical enforcer of the
-`src/easydiffraction/<pkg>/<mod>.py` → `tests/unit/easydiffraction/<pkg>/test_<mod>.py`
-mirror, including its three match strategies (direct mirror, known
-aliases such as `singleton → singletons` and `variable → parameters`,
-and parent-level roll-up for `default.py`/`factory.py` category
-packages). It is added to CI (the lint/format or test workflow) as a
-fast, static gate so structural drift fails before merge.
+`src/easydiffraction/<pkg>/<mod>.py` →
+`tests/unit/easydiffraction/<pkg>/test_<mod>.py` mirror, including its
+three match strategies (direct mirror, known aliases such as
+`singleton → singletons` and `variable → parameters`, and parent-level
+roll-up for `default.py`/`factory.py` category packages). It is added to
+CI (the lint/format or test workflow) as a fast, static gate so
+structural drift fails before merge.
 
 The check should be driven by a **single source-of-truth enumeration of
 the `src/` tree**. `tools/generate_package_docs.py` already walks that
@@ -173,8 +174,9 @@ Two distinct bars, because line coverage and case coverage are different
 guarantees.
 
 - **Line/branch coverage.** Raise `fail_under` from 65 to **80 now**,
-  with a documented ramp toward **90–95** as the suite fills, and gate it
-  in CI through the codecov project status (§5) rather than only locally.
+  with a documented ramp toward **90–95** as the suite fills, and gate
+  it in CI through the codecov project status (§5) rather than only
+  locally.
 - **Validators are the input boundary.** All user input is verified at
   runtime through the project's custom validator framework in
   `src/easydiffraction/core/validation.py`: an `AttributeSpec` pairs a
@@ -185,8 +187,8 @@ guarantees.
   that they accept the full valid domain and that they reject (or fall
   back, per their contract) on invalid values — rather than re-checking
   the same boundaries at every call site. This matches the project
-  principle of explicit handling at the boundary and no defensive padding
-  past it.
+  principle of explicit handling at the boundary and no defensive
+  padding past it.
 - **Input-domain coverage.** Adopt **property-based testing with
   `hypothesis`** for the validator-guarded numeric and crystallographic
   inputs: cell lengths (> 0), cell angles (valid ranges and lattice
@@ -230,8 +232,8 @@ Adopt the recommendation from
 ### 6. Verification documentation (cross-engine pattern comparison)
 
 Add a new top-level **Verification** section to the documentation nav
-(between Tutorials and Command-Line), generated like tutorials
-(`.py` source → notebook via `pixi run notebook-prepare`, built with
+(between Tutorials and Command-Line), generated like tutorials (`.py`
+source → notebook via `pixi run notebook-prepare`, built with
 `execute: false`).
 
 - **Calculation-only comparisons (no minimisation).** Feed identical
@@ -250,8 +252,8 @@ Add a new top-level **Verification** section to the documentation nav
   bragg/total, per the support matrix below). The section ships with the
   framework and the first cross-engine comparison (constant-wavelength
   powder, cryspy ↔ crysfml); the remaining supported combinations
-  (time-of-flight powder, single crystal) are added **incrementally** and
-  tracked in the open-issues list.
+  (time-of-flight powder, single crystal) are added **incrementally**
+  and tracked in the open-issues list.
 - **External software, incrementally.** External tools (FullProf first,
   then GSAS-II/TOPAS) are compared by loading a **pre-calculated profile
   from a zipped project** stored in the `diffraction` data repository
@@ -267,8 +269,7 @@ Add a new top-level **Verification** section to the documentation nav
 ### 7. Performance-regression benchmarks
 
 Replace the ad-hoc `tools/benchmark_tutorials.py` CSV tool with
-**`pytest-benchmark`**, matching the prior art in
-`deps-pycrysfml`:
+**`pytest-benchmark`**, matching the prior art in `deps-pycrysfml`:
 
 - Benchmark **per experiment type** (one benchmark per
   `beam_mode × radiation_probe × engine`) rather than whole-tutorial
@@ -285,9 +286,9 @@ Replace the ad-hoc `tools/benchmark_tutorials.py` CSV tool with
 A robustness harness exercising EasyDiffraction against many real and
 synthetic structures.
 
-- **Code vs data split.** Harness *code* lives in `diffraction-lib`
+- **Code vs data split.** Harness _code_ lives in `diffraction-lib`
   (`tests/nightly/`, `@pytest.mark.nightly`) so it versions with the
-  code it checks. The *corpus*, *results database*, FullProf profiles,
+  code it checks. The _corpus_, _results database_, FullProf profiles,
   and benchmark baselines live in the **`diffraction` data repository**
   (consistent with `download_data()`), fetched at runtime.
 - **Acceptance-style run.** A scheduled nightly CI job installs
@@ -300,10 +301,10 @@ synthetic structures.
   - `ok` — parsed, all recognised;
   - `partial` — parsed, some information missing (EasyDiffraction
     applied defaults), with a comment naming what was not recognised;
-  - `fail` — could not be parsed, with the error.
-  The status lets the harness (a) skip re-downloading already-`ok`
-  files on later nights and (b) flag genuine EasyDiffraction recognition
-  bugs vs malformed files; problematic files convert to issues.
+  - `fail` — could not be parsed, with the error. The status lets the
+    harness (a) skip re-downloading already-`ok` files on later nights
+    and (b) flag genuine EasyDiffraction recognition bugs vs malformed
+    files; problematic files convert to issues.
 - **Results database — CSV.** A git-diffable manifest, **one row per CIF
   keyed by COD id and ordered by id** (so new files insert in order):
   `id, parse_status, missing_fields, calc_status_per_engine, comment, last_checked`.
@@ -338,7 +339,7 @@ which executes all tutorials and then builds and deploys — slow, and
 therefore pull-request-only. The detailed catalogue of documentation
 checks is owned by
 [Documentation CI and Build Verification](documentation-ci-build.md),
-which this ADR coordinates with: that ADR defines *what* the checks are;
+which this ADR coordinates with: that ADR defines _what_ the checks are;
 this ADR's decision is that the cheap, deterministic subset runs as part
 of the every-push test workflow. Promoting that ADR is part of this
 work.
@@ -381,7 +382,8 @@ for the future rather than solved now.
 - Relocating functional/unit tests and retiring `fast` touches many
   existing test files in one pass.
 - New dependencies (`hypothesis`, `pytest-benchmark`, plus `codespell`
-  and a link checker for the docs job) add configuration and maintenance.
+  and a link checker for the docs job) add configuration and
+  maintenance.
 - The nightly harness and data-repository round-trip add CI and
   cross-repository coordination.
 - Raising `fail_under` to 80 and gating it can block merges until
@@ -392,8 +394,8 @@ for the future rather than solved now.
 - **One combined ADR vs several focused ADRs.** A split (taxonomy /
   codecov / benchmarks / verification) was considered. Chosen: one
   combined ADR, because the goals share infrastructure (markers, the
-  data repository, CI triggers) and read as one quality story;
-  large sub-areas are phased instead.
+  data repository, CI triggers) and read as one quality story; large
+  sub-areas are phased instead.
 - **Upload combined coverage to codecov.** Rejected for now: slower,
   flakier (engine-dependent), and needs per-flag setup. Unit-only upload
   with a non-blocking patch status is simpler and fixes the reported
@@ -440,9 +442,10 @@ drafting conversation, per the dependency-approval rule):
 - `hypothesis` — property-based / input-domain testing (§4).
 - `pytest-benchmark` — performance-regression benchmarks (§7).
 
-Coordinated with [Documentation CI and Build Verification](documentation-ci-build.md),
-which carries the documentation-check tools (`codespell`, a link
-checker such as `lychee`, and later `Vale`) used by §9.
+Coordinated with
+[Documentation CI and Build Verification](documentation-ci-build.md),
+which carries the documentation-check tools (`codespell`, a link checker
+such as `lychee`, and later `Vale`) used by §9.
 
 ## Related ADRs
 
@@ -456,4 +459,5 @@ checker such as `lychee`, and later `Vale`) used by §9.
 - [Factory Contracts and Metadata](../accepted/factory-contracts.md) —
   the `CalculatorSupport`/`Compatibility` metadata used by §6.
 - [Enum-Backed Closed Value Sets](../accepted/enum-backed-closed-values.md)
-  — any new closed set (engine tags, experiment axes) stays `(str, Enum)`.
+  — any new closed set (engine tags, experiment axes) stays
+  `(str, Enum)`.

@@ -57,7 +57,8 @@ a = y_calc_by_engine['cryspy']
 b = y_calc_by_engine['crysfml']
 
 assert a.shape == b.shape, 'engines returned patterns of different length'
-assert np.all(np.isfinite(a)) and np.all(np.isfinite(b))
+assert np.all(np.isfinite(a)), 'cryspy pattern has non-finite values'
+assert np.all(np.isfinite(b)), 'crysfml pattern has non-finite values'
 
 rms = float(np.sqrt(np.mean((a - b) ** 2)))
 norm = float(np.sqrt(np.mean(a**2)))
@@ -82,9 +83,7 @@ import plotly.graph_objects as go
 x = np.arange(a.size)
 fig = go.Figure()
 fig.add_scatter(x=x, y=a, mode='lines', name='cryspy', line={'color': 'royalblue'})
-fig.add_scatter(
-    x=x, y=b, mode='lines', name='crysfml', line={'color': 'crimson', 'dash': 'dot'}
-)
+fig.add_scatter(x=x, y=b, mode='lines', name='crysfml', line={'color': 'crimson', 'dash': 'dot'})
 fig.update_layout(
     title='Calculated patterns: cryspy vs crysfml',
     xaxis_title='point index',

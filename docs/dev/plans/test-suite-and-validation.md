@@ -4,15 +4,14 @@ This plan follows [`AGENTS.md`](../../../AGENTS.md) with one **declared
 exception** to the two-phase workflow. [`AGENTS.md`](../../../AGENTS.md)
 §Workflow keeps test creation in Phase 2 ("Phase 1 — Code and docs
 updates only ... Do not create or run tests unless the user explicitly
-asks"). Because this ADR's subject *is* the test suite, Phase 1 here
+asks"). Because this ADR's subject _is_ the test suite, Phase 1 here
 necessarily includes test relocation, shared fixtures, new unit/property
 tests, and benchmark tests as implementation work — deferring them to
 verification would leave Phase 1 empty of its actual deliverable. The
 implementer running `/draft-impl-1` will therefore edit and add files
 under `tests/**` during Phase 1. Phase 2 remains the standard
 verification gate (`pixi run fix`/`check`/`unit-tests`/
-`integration-tests`/`script-tests`) and does not author new test
-suites.
+`integration-tests`/`script-tests`) and does not author new test suites.
 
 A scope decision is also recorded below (§Scope): the cross-repository
 work is documented for the future rather than implemented in this
@@ -53,6 +52,7 @@ matrix + cross-engine (cryspy ↔ crysfml) calculation-only comparison
 pages, §7 `pytest-benchmark` suite, §9 fast docs build gate.
 
 **Documented for the future (cross-repository, NOT implemented here):**
+
 - §8 nightly COD corpus harness, its results database, and the
   pip-install acceptance CI job that writes results back to the
   `diffraction` data repository.
@@ -71,18 +71,18 @@ These are captured in step P1.14 (a future-work record in
   **no real calculation engine and no network/`download_data()`**; those
   move to integration. A test goes to the lowest layer whose constraints
   it can satisfy.
-- **Markers (§2):** opt-in escalation. Default (unmarked) = fast.
-  Add `@pytest.mark.pr` (PR + `develop`/`master`) and
-  `@pytest.mark.nightly` (scheduled only). **Retire the current `fast`
-  marker** (6 integration files). CI selection:
-  `not pr and not nightly` (feature push) / `not nightly` (PR + main) /
-  all (nightly schedule). Because markers are **orthogonal to layers**,
-  the selected expression is applied to **every** pytest invocation under
-  the policy — unit, functional, and integration, in both the source and
-  package CI jobs — not to integration alone as today. The **integration
-  layer defaults to the `pr` tier** (auto-marked once in
-  `tests/integration/conftest.py`) because every integration test uses a
-  real engine; unit/functional default to fast and escalate individually.
+- **Markers (§2):** opt-in escalation. Default (unmarked) = fast. Add
+  `@pytest.mark.pr` (PR + `develop`/`master`) and `@pytest.mark.nightly`
+  (scheduled only). **Retire the current `fast` marker** (6 integration
+  files). CI selection: `not pr and not nightly` (feature push) /
+  `not nightly` (PR + main) / all (nightly schedule). Because markers
+  are **orthogonal to layers**, the selected expression is applied to
+  **every** pytest invocation under the policy — unit, functional, and
+  integration, in both the source and package CI jobs — not to
+  integration alone as today. The **integration layer defaults to the
+  `pr` tier** (auto-marked once in `tests/integration/conftest.py`)
+  because every integration test uses a real engine; unit/functional
+  default to fast and escalate individually.
 - **Structure gate (§3):** unify on a single `src/` tree walk shared by
   `tools/generate_package_docs.py` and `tools/test_structure_check.py`;
   run the check in CI as a gate.
@@ -116,8 +116,8 @@ These are captured in step P1.14 (a future-work record in
    exist in `src/easydiffraction/core/metadata.py` (lines 19, 40, 88)
    and are populated per instrument category (e.g.
    `datablocks/experiment/categories/instrument/cwl.py` declares
-   `compatibility` and `calculator_support`). P1.11 therefore *applies
-   and extends* this model — notably adding `radiation_probe` to
+   `compatibility` and `calculator_support`). P1.11 therefore _applies
+   and extends_ this model — notably adding `radiation_probe` to
    `Compatibility` if missing, and exposing a query to enumerate
    comparable engine × condition combinations — rather than introducing
    new classes. **Stop and ask** about a dedicated ADR only if extending
@@ -176,158 +176,157 @@ be staged with explicit paths and committed locally before moving to the
 next step or the Phase 1 review gate**, per
 [`AGENTS.md`](../../../AGENTS.md) §Commits. Keep commits atomic,
 single-purpose, and aligned to the step. Do not stage unrelated dirty
-files or generated artifacts. Do not run Phase 2 commands during Phase 1.
+files or generated artifacts. Do not run Phase 2 commands during
+Phase 1.
 
 ## Implementation steps (Phase 1)
 
-- [x] **P1.1 — Codecov status policy (§5)**
-  Edit `.codecov.yml`: add `informational: true` to `patch.default`; set
-  `project.default` to `target: 80%`, `informational: false`. Leave the
-  unit-only upload untouched.
-  Files: `.codecov.yml`.
-  Commit: `Make codecov patch informational and gate project at 80%`
+- [x] **P1.1 — Codecov status policy (§5)** Edit `.codecov.yml`: add
+      `informational: true` to `patch.default`; set `project.default` to
+      `target: 80%`, `informational: false`. Leave the unit-only upload
+      untouched. Files: `.codecov.yml`. Commit:
+      `Make codecov patch informational and gate project at 80%`
 
-- [x] **P1.2 — Cost-tier markers and test retagging (§2)**
-  Register `pr` and `nightly` markers in
-  `[tool.pytest.ini_options].markers`; remove the `fast` marker
-  definition. Remove `@pytest.mark.fast` from the 6
-  `tests/integration/fitting/*.py` files (retag the genuinely heavy ones
-  with `pr` where appropriate).
-  Files: `pyproject.toml`, `tests/integration/fitting/*.py`.
-  Commit: `Replace fast marker with pr and nightly test tiers`
+- [x] **P1.2 — Cost-tier markers and test retagging (§2)** Register `pr`
+      and `nightly` markers in `[tool.pytest.ini_options].markers`;
+      remove the `fast` marker definition. Remove `@pytest.mark.fast`
+      from the 6 `tests/integration/fitting/*.py` files (retag the
+      genuinely heavy ones with `pr` where appropriate). Files:
+      `pyproject.toml`, `tests/integration/fitting/*.py`. Commit:
+      `Replace fast marker with pr and nightly test tiers`
 
-- [x] **P1.3 — CI marker selection across all layers and nightly job (§2)**
-  Update `.github/workflows/test.yml` mark logic to
-  `-m "not pr and not nightly"` (feature push) and `-m "not nightly"`
-  (PR + `develop`/`master`), and apply the selected expression to
-  **every** pytest invocation in both the source-test and package-test
-  jobs — unit, functional, and integration (today `-m` reaches only the
-  integration runs at lines 132 and 311; unit/functional run unfiltered).
-  Thread a marker passthrough into the `unit-tests` and `functional-tests`
-  pixi tasks (the `integration-tests` task already accepts an appended
-  expression). Add a `schedule:` trigger and a nightly job running
-  `-m nightly`.
-  Files: `.github/workflows/test.yml`, `pixi.toml`.
-  Commit: `Select test tiers per trigger across all test layers`
+- [x] **P1.3 — CI marker selection across all layers and nightly job
+      (§2)** Update `.github/workflows/test.yml` mark logic to
+      `-m "not pr and not nightly"` (feature push) and
+      `-m "not nightly"` (PR + `develop`/`master`), and apply the
+      selected expression to **every** pytest invocation in both the
+      source-test and package-test jobs — unit, functional, and
+      integration (today `-m` reaches only the integration runs at lines
+      132 and 311; unit/functional run unfiltered). Thread a marker
+      passthrough into the `unit-tests` and `functional-tests` pixi
+      tasks (the `integration-tests` task already accepts an appended
+      expression). Add a `schedule:` trigger and a nightly job running
+      `-m nightly`. Files: `.github/workflows/test.yml`, `pixi.toml`.
+      Commit: `Select test tiers per trigger across all test layers`
 
 - [x] **P1.4 — Unify src-tree walk and gate structure check (§3)**
-  Extract the `src/` enumeration so `tools/test_structure_check.py` and
-  `tools/generate_package_docs.py` share one walker; add the check to CI
-  (lint/format or test workflow) as a blocking gate.
-  Files: `tools/test_structure_check.py`,
-  `tools/generate_package_docs.py`, `.github/workflows/*.yml`,
-  `pixi.toml`.
-  Commit: `Gate unit-test structure check on shared src tree walk`
+      Extract the `src/` enumeration so `tools/test_structure_check.py`
+      and `tools/generate_package_docs.py` share one walker; add the
+      check to CI (lint/format or test workflow) as a blocking gate.
+      Files: `tools/test_structure_check.py`,
+      `tools/generate_package_docs.py`, `.github/workflows/*.yml`,
+      `pixi.toml`. Commit:
+      `Gate unit-test structure check on shared src tree walk`
 
-- [x] **P1.5 — Strict layer-criteria testing guide (§1)**
-  Write the may/must-not criteria and the "where does this test go?"
-  decision list (location per Open question 5), and tighten the layer
-  wording referenced by the amended `test-strategy.md`.
-  Files: new `docs/dev/` testing guide (or `test-strategy.md` update).
-  Commit: `Document strict test layer placement criteria`
+- [x] **P1.5 — Strict layer-criteria testing guide (§1)** Write the
+      may/must-not criteria and the "where does this test go?" decision
+      list (location per Open question 5), and tighten the layer wording
+      referenced by the amended `test-strategy.md`. Files: new
+      `docs/dev/` testing guide (or `test-strategy.md` update). Commit:
+      `Document strict test layer placement criteria`
 
-- [x] **P1.6 — Test relocation pass (§1)**
-  Move functional tests that call real `download_data()` into
-  integration; relocate or correctly mark slow/engine/network-touching
-  unit tests (the 16 `download_data()` unit call sites must be explicit
-  mocks or move out). Keep `test-structure-check` green.
-  Files: `tests/functional/**`, `tests/integration/**`,
-  `tests/unit/**`.
-  Commit: `Relocate network and engine tests to correct layers`
+- [x] **P1.6 — Test relocation pass (§1)** Move functional tests that
+      call real `download_data()` into integration; relocate or
+      correctly mark slow/engine/network-touching unit tests (the 16
+      `download_data()` unit call sites must be explicit mocks or move
+      out). Keep `test-structure-check` green. Files:
+      `tests/functional/**`, `tests/integration/**`, `tests/unit/**`.
+      Commit: `Relocate network and engine tests to correct layers`
 
-- [x] **P1.7 — Shared fixtures, hypothesis profile, tolerance convention (§4)**
-  Add `hypothesis` (dev dep) and a deterministic profile
-  (`derandomize`, fixed seed, no committed `.hypothesis` DB). Add a root
-  `tests/conftest.py` with seeded-RNG and one documented
-  `rtol`/`atol` pair (intra-engine) and one cross-engine pair.
-  Files: `pyproject.toml`, `pixi.toml`, `tests/conftest.py`, testing
-  guide.
-  Commit: `Add hypothesis deterministic profile and shared test fixtures`
+- [x] **P1.7 — Shared fixtures, hypothesis profile, tolerance convention
+      (§4)** Add `hypothesis` (dev dep) and a deterministic profile
+      (`derandomize`, fixed seed, no committed `.hypothesis` DB). Add a
+      root `tests/conftest.py` with seeded-RNG and one documented
+      `rtol`/`atol` pair (intra-engine) and one cross-engine pair.
+      Files: `pyproject.toml`, `pixi.toml`, `tests/conftest.py`, testing
+      guide. Commit:
+      `Add hypothesis deterministic profile and shared test fixtures`
 
 - [x] **P1.8 — Input-domain property tests on validators (§4)**
-  Property-based + explicit boundary-table tests against
-  `core/validation.py` (`TypeValidator`, content `ValidatorBase`
-  subclasses) through parameter (`core/variable.py`) and category
-  (`core/category.py`): valid-domain acceptance and invalid/ wrong-type
-  rejection or fallback per contract.
-  Files: `tests/unit/easydiffraction/core/**` (validator/variable/
-  category tests).
-  Commit: `Add property-based input-domain tests for validators`
+      Property-based + explicit boundary-table tests against
+      `core/validation.py` (`TypeValidator`, content `ValidatorBase`
+      subclasses) through parameter (`core/variable.py`) and category
+      (`core/category.py`): valid-domain acceptance and invalid/
+      wrong-type rejection or fallback per contract. Files:
+      `tests/unit/easydiffraction/core/**` (validator/variable/ category
+      tests). Commit:
+      `Add property-based input-domain tests for validators`
 
-- [x] **P1.9 — Raise coverage gate to 80% (§4)**
-  Set `[tool.coverage.report] fail_under = 80`. (Resolve Open question 2
-  in Phase 2 if unit coverage is below 80 after P1.8.)
-  Files: `pyproject.toml`.
-  Commit: `Raise coverage fail_under to 80 percent`
+- [x] **P1.9 — Raise coverage gate to 80% (§4)** Set
+      `[tool.coverage.report] fail_under = 80`. (Resolve Open question 2
+      in Phase 2 if unit coverage is below 80 after P1.8.) Files:
+      `pyproject.toml`. Commit:
+      `Raise coverage fail_under to 80 percent`
 
-- [x] **P1.10 — Fast docs build gate (§9)**
-  Add `docs-build-strict` (`mkdocs build --strict`, tutorials not
-  executed), `link-check` (`lychee`), and `spell-check` (`codespell`)
-  pixi tasks with config and ignore lists; add a fast every-push job to
-  `test.yml`. Add `codespell` dev dep; wire `lychee` (Open question 4).
-  Files: `pixi.toml`, `pyproject.toml`, `.github/workflows/test.yml`,
-  `.codespellrc`, `lychee` config.
-  Commit: `Add strict docs build, link, and spell checks on every push`
+- [x] **P1.10 — Fast docs build gate (§9)** Add `docs-build-strict`
+      (`mkdocs build --strict`, tutorials not executed), `link-check`
+      (`lychee`), and `spell-check` (`codespell`) pixi tasks with config
+      and ignore lists; add a fast every-push job to `test.yml`. Add
+      `codespell` dev dep; wire `lychee` (Open question 4). Files:
+      `pixi.toml`, `pyproject.toml`, `.github/workflows/test.yml`,
+      `.codespellrc`, `lychee` config. Commit:
+      `Add strict docs build, link, and spell checks on every push`
 
-- [x] **P1.11 — Apply/extend calculator support metadata (§6 prerequisite)**
-  Build on the existing `Compatibility`/`CalculatorSupport` model in
-  `core/metadata.py` (already declared per instrument category): add
-  `radiation_probe` to `Compatibility` if missing, and add a small query
-  helper to enumerate comparable engine × experiment-condition
-  combinations for the verification pages. Prefer this declared metadata
-  over the ad-hoc per-calculator `if beam_mode == …` checks. **Stop and
-  ask** only if extending the metadata shape proves structural (Open
-  question 1).
-  Files: `src/easydiffraction/core/metadata.py`,
-  `src/easydiffraction/datablocks/experiment/categories/instrument/**`,
-  `src/easydiffraction/analysis/calculators/**`.
-  Commit: `Extend calculator support metadata with radiation probe`
+- [x] **P1.11 — Apply/extend calculator support metadata (§6
+      prerequisite)** Build on the existing
+      `Compatibility`/`CalculatorSupport` model in `core/metadata.py`
+      (already declared per instrument category): add `radiation_probe`
+      to `Compatibility` if missing, and add a small query helper to
+      enumerate comparable engine × experiment-condition combinations
+      for the verification pages. Prefer this declared metadata over the
+      ad-hoc per-calculator `if beam_mode == …` checks. **Stop and ask**
+      only if extending the metadata shape proves structural (Open
+      question 1). Files: `src/easydiffraction/core/metadata.py`,
+      `src/easydiffraction/datablocks/experiment/categories/instrument/**`,
+      `src/easydiffraction/analysis/calculators/**`. Commit:
+      `Extend calculator support metadata with radiation probe`
 
 - [x] **P1.12 — Cross-engine verification pages + script wiring (§6)**
-  Add the `Verification` nav node (between Tutorials and Command-Line)
-  and a calculation-only `.py` comparison page (cryspy ↔ crysfml) for the
-  **first** supported combination (constant-wavelength powder), with
-  closeness metrics, overlay plots, and metric-tolerance assertions. The
-  remaining supported combinations (time-of-flight powder, single
-  crystal) are added incrementally (issue 115). **Wire the new
-  `docs/docs/verification/` directory into the script-test runner** —
-  `tools/test_scripts.py` discovers only `docs/docs/tutorials/*.py`
-  today (lines 24-27) — and into the notebook pipeline (`notebook-prepare`
-  / `notebook-convert` / `notebook-tests`, which target the tutorials
-  dir), so the pages are generated and exercised as regressions. Run
-  `pixi run notebook-prepare`.
-  Files: `docs/mkdocs.yml`, `docs/docs/verification/*.py` (+ generated
-  `*.ipynb`), `tools/test_scripts.py`, `pixi.toml`.
-  Commit: `Add cross-engine verification comparison pages and script wiring`
+      Add the `Verification` nav node (between Tutorials and
+      Command-Line) and a calculation-only `.py` comparison page (cryspy
+      ↔ crysfml) for the **first** supported combination
+      (constant-wavelength powder), with closeness metrics, overlay
+      plots, and metric-tolerance assertions. The remaining supported
+      combinations (time-of-flight powder, single crystal) are added
+      incrementally (issue 115). **Wire the new
+      `docs/docs/verification/` directory into the script-test runner**
+      — `tools/test_scripts.py` discovers only
+      `docs/docs/tutorials/*.py` today (lines 24-27) — and into the
+      notebook pipeline (`notebook-prepare` / `notebook-convert` /
+      `notebook-tests`, which target the tutorials dir), so the pages
+      are generated and exercised as regressions. Run
+      `pixi run notebook-prepare`. Files: `docs/mkdocs.yml`,
+      `docs/docs/verification/*.py` (+ generated `*.ipynb`),
+      `tools/test_scripts.py`, `pixi.toml`. Commit:
+      `Add cross-engine verification comparison pages and script wiring`
 
-- [x] **P1.13 — Per-experiment performance benchmarks (§7)**
-  Add `pytest-benchmark` (dev dep), `nightly`-marked benchmarks keyed by
-  `beam_mode × radiation_probe × engine`, and a `benchmarks` pixi task
-  emitting JSON as a CI artifact (data-repo history deferred).
-  Files: `pyproject.toml`, `pixi.toml`, `tests/benchmarks/**`.
-  Commit: `Add per-experiment performance benchmarks (nightly)`
+- [x] **P1.13 — Per-experiment performance benchmarks (§7)** Add
+      `pytest-benchmark` (dev dep), `nightly`-marked benchmarks keyed by
+      `beam_mode × radiation_probe × engine`, and a `benchmarks` pixi
+      task emitting JSON as a CI artifact (data-repo history deferred).
+      Files: `pyproject.toml`, `pixi.toml`, `tests/benchmarks/**`.
+      Commit: `Add per-experiment performance benchmarks (nightly)`
 
 - [x] **P1.14 — Record cross-repository future work (§8 + deferred)**
-  Add prioritised entries to `docs/dev/issues/open.md` for the nightly
-  COD harness + results DB + pip-install acceptance job, generative
-  fuzzing, data-repo benchmark history, and external-software
-  comparison data. Confirm the ADR Deferred Work covers them.
-  Files: `docs/dev/issues/open.md`.
-  Commit: `Record cross-repo nightly harness and benchmarks as future work`
+      Add prioritised entries to `docs/dev/issues/open.md` for the
+      nightly COD harness + results DB + pip-install acceptance job,
+      generative fuzzing, data-repo benchmark history, and
+      external-software comparison data. Confirm the ADR Deferred Work
+      covers them. Files: `docs/dev/issues/open.md`. Commit:
+      `Record cross-repo nightly harness and benchmarks as future work`
 
 - [x] **P1.15 — Promote ADR to accepted (§Change Discipline)**
-  `git mv docs/dev/adrs/suggestions/test-suite-and-validation.md
-  docs/dev/adrs/accepted/`; set its `## Status` to `Accepted.`; flip the
-  `docs/dev/adrs/index.md` row to `Accepted` with the `accepted/...`
-  link; fix any links that pointed at the `suggestions/` path
-  (`git grep -n`).
-  Files: ADR file (moved), `docs/dev/adrs/index.md`.
-  Commit: `Promote test-suite-and-validation ADR to accepted`
+      `git mv docs/dev/adrs/suggestions/test-suite-and-validation.md docs/dev/adrs/accepted/`;
+      set its `## Status` to `Accepted.`; flip the
+      `docs/dev/adrs/index.md` row to `Accepted` with the `accepted/...`
+      link; fix any links that pointed at the `suggestions/` path
+      (`git grep -n`). Files: ADR file (moved),
+      `docs/dev/adrs/index.md`. Commit:
+      `Promote test-suite-and-validation ADR to accepted`
 
-- [x] **P1.16 — Phase 1 review gate (no code)**
-  Confirm every box above is `[x]`. Mark this step and commit the
-  checklist update alone.
-  Commit: `Reach Phase 1 review gate`
+- [x] **P1.16 — Phase 1 review gate (no code)** Confirm every box above
+      is `[x]`. Mark this step and commit the checklist update alone.
+      Commit: `Reach Phase 1 review gate`
 
 ## Phase 2 verification
 

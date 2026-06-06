@@ -382,6 +382,7 @@ ignore = [
   'E402', # module-import-not-at-top-of-file
   'T201', # print (metric values shown in the rendered notebook)
   'B018', # useless-expression (trailing `fig` renders in the notebook)
+  'S101', # assert (the regression checks in the verification script)
 ]
 # Intentional terminal rendering: these write raw/ASCII output that
 # `Console.print` would garble, so `print` is deliberate here.

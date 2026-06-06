@@ -9,13 +9,13 @@ rationale is recorded in the ADRs
 
 A test belongs to the **lowest** layer whose constraints it can satisfy.
 
-| Layer           | May use                                                                   | Must NOT use                                                                                  | Speed       |
-| --------------- | ------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | ----------- |
-| **unit**        | one module under test; in-process logic; `tmp_path`                       | real calculation engine; network / `download_data()`; filesystem outside `tmp_path`; `sleep`; subprocess | sub-second  |
-| **functional**  | several modules / a workflow; small bundled fixtures                      | real calculation engine; network / `download_data()`                                          | seconds     |
-| **integration** | real engines, real fits, real downloaded data (the only layer allowed network and real backends) | —                                                                            | slow        |
-| **script**      | a full tutorial `.py` executed subprocess-isolated                        | —                                                                                             | slow        |
-| **notebook**    | a generated `.ipynb` executed via `nbmake`                                | —                                                                                             | slow        |
+| Layer           | May use                                                                                          | Must NOT use                                                                                             | Speed      |
+| --------------- | ------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------- | ---------- |
+| **unit**        | one module under test; in-process logic; `tmp_path`                                              | real calculation engine; network / `download_data()`; filesystem outside `tmp_path`; `sleep`; subprocess | sub-second |
+| **functional**  | several modules / a workflow; small bundled fixtures                                             | real calculation engine; network / `download_data()`                                                     | seconds    |
+| **integration** | real engines, real fits, real downloaded data (the only layer allowed network and real backends) | —                                                                                                        | slow       |
+| **script**      | a full tutorial `.py` executed subprocess-isolated                                               | —                                                                                                        | slow       |
+| **notebook**    | a generated `.ipynb` executed via `nbmake`                                                       | —                                                                                                        | slow       |
 
 Mocking a forbidden dependency (for example a mocked `download_data()`)
 keeps a test in a lower layer **only when the mock is explicit**; an
@@ -38,13 +38,14 @@ test file for a new module with `tools/gen_tests_scaffold.py`.
 
 ## Cost tiers (orthogonal to layers)
 
-Tiers select *when* a test runs in CI; they are independent of the layer.
+Tiers select _when_ a test runs in CI; they are independent of the
+layer.
 
-| Tier        | Marker                  | Runs on                                          |
-| ----------- | ----------------------- | ------------------------------------------------ |
-| **fast**    | (none — the default)    | every push, every pull request, and nightly      |
-| **pr**      | `@pytest.mark.pr`       | pull requests and `develop`/`master`             |
-| **nightly** | `@pytest.mark.nightly`  | the scheduled nightly job only (`nightly.yml`)   |
+| Tier        | Marker                 | Runs on                                        |
+| ----------- | ---------------------- | ---------------------------------------------- |
+| **fast**    | (none — the default)   | every push, every pull request, and nightly    |
+| **pr**      | `@pytest.mark.pr`      | pull requests and `develop`/`master`           |
+| **nightly** | `@pytest.mark.nightly` | the scheduled nightly job only (`nightly.yml`) |
 
 Integration tests are `pr`-tier by default — they are auto-marked in
 `tests/integration/conftest.py` because they use real engines. Escalate
@@ -65,8 +66,9 @@ numerics, and one (looser) pair for cross-engine comparison.
 ## Input-domain coverage
 
 User input is validated at runtime through `core/validation.py`
-(`AttributeSpec` pairs a `TypeValidator` with a content `ValidatorBase`).
-Aim input-domain tests at the validators directly — both that they accept
-the full valid domain and that they reject (or fall back on) invalid
-values. Use `hypothesis` (deterministic profile) for generative coverage
-and explicit parametrised tables for the known-critical boundaries.
+(`AttributeSpec` pairs a `TypeValidator` with a content
+`ValidatorBase`). Aim input-domain tests at the validators directly —
+both that they accept the full valid domain and that they reject (or
+fall back on) invalid values. Use `hypothesis` (deterministic profile)
+for generative coverage and explicit parametrised tables for the
+known-critical boundaries.

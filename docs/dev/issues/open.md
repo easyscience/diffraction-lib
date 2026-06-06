@@ -1918,7 +1918,8 @@ nightly job that installs easydiffraction from PyPI (acceptance-style).
   pre-calculated profiles as zipped projects in the data repository so
   the Verification pages can overlay them against easydiffraction.
 
-**Depends on:** the `diffraction` data repository; cross-repo coordination.
+**Depends on:** the `diffraction` data repository; cross-repo
+coordination.
 
 ---
 
@@ -1932,8 +1933,8 @@ external URLs. Add a `lychee` link checker (with an allowlist for
 rate-limited/unstable domains), coordinated with the
 [Documentation CI and Build Verification](../adrs/suggestions/documentation-ci-build.md)
 ADR. Run it nightly or on pull requests to avoid flakiness from external
-sites. Also covers link-checking of URLs that appear only inside executed
-notebook output cells (a feature that does not exist yet).
+sites. Also covers link-checking of URLs that appear only inside
+executed notebook output cells (a feature that does not exist yet).
 
 **Depends on:** nothing.
 
