@@ -254,7 +254,7 @@ files or generated artifacts. Do not run Phase 2 commands during Phase 1.
   category tests).
   Commit: `Add property-based input-domain tests for validators`
 
-- [ ] **P1.9 — Raise coverage gate to 80% (§4)**
+- [x] **P1.9 — Raise coverage gate to 80% (§4)**
   Set `[tool.coverage.report] fail_under = 80`. (Resolve Open question 2
   in Phase 2 if unit coverage is below 80 after P1.8.)
   Files: `pyproject.toml`.
