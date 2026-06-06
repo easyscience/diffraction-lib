@@ -92,6 +92,9 @@ jobs:
       - name: Spell check
         run: pixi run spell-check
 
+      - name: Link check
+        run: pixi run link-check
+
   # Job 2: Test code
   source-test:
     needs: env-prepare # depend on previous job
