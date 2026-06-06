@@ -65,6 +65,7 @@ class CryspyCalculator(CalculatorBase):
         return 'cryspy'
 
     def __init__(self) -> None:
+        """Initialize the calculator with empty cryspy caches."""
         super().__init__()
         self._cryspy_dicts: dict[str, dict[str, Any]] = {}
         self._cached_peak_types: dict[str, str] = {}
@@ -325,6 +326,12 @@ class CryspyCalculator(CalculatorBase):
     def _powder_refln_core_arrays(
         phase_block: dict[str, Any],
     ) -> tuple[np.ndarray, np.ndarray, np.ndarray] | None:
+        """
+        Extract HKL indices, sin(theta)/lambda and structure factors.
+
+        Returns ``None`` when the phase block lacks the required arrays
+        or the HKL indices do not have the expected number of rows.
+        """
         try:
             indices = np.asarray(phase_block['index_hkl'], dtype=int)
             sin_theta_over_lambda = np.asarray(phase_block['sthovl'], dtype=float)
@@ -347,6 +354,12 @@ class CryspyCalculator(CalculatorBase):
         phase_block: dict[str, Any],
         sin_theta_over_lambda: np.ndarray,
     ) -> np.ndarray:
+        """
+        Return d-spacings, deriving them from sin(theta)/lambda.
+
+        Uses the ``d_hkl`` array from the phase block when present and
+        otherwise converts the supplied sin(theta)/lambda values.
+        """
         d_spacing_raw = phase_block.get('d_hkl')
         if d_spacing_raw is None:
             return np.asarray(
@@ -360,6 +373,13 @@ class CryspyCalculator(CalculatorBase):
         phase_block: dict[str, Any],
         beam_mode: BeamModeEnum,
     ) -> np.ndarray | None:
+        """
+        Return reflection x positions for the given beam mode.
+
+        Reads two-theta (converted to degrees) for constant wavelength
+        and time-of-flight values otherwise, returning ``None`` when no
+        values are available.
+        """
         x_values = None
         if beam_mode == BeamModeEnum.CONSTANT_WAVELENGTH:
             x_raw = phase_block.get('ttheta_hkl')
@@ -382,6 +402,12 @@ class CryspyCalculator(CalculatorBase):
         hkl: tuple[int, int, int],
         values: tuple[float, float, float, float, float],
     ) -> PowderReflnRecord:
+        """
+        Build a single powder reflection record.
+
+        Stores the x position as two-theta for constant wavelength and
+        as time-of-flight for the time-of-flight beam mode.
+        """
         index_h, index_k, index_l = hkl
         sin_theta_over_lambda, d_spacing, x_value, f_calc, f_squared_calc = values
         x_kwargs = {'two_theta': float(x_value)}
@@ -562,6 +588,8 @@ class CryspyCalculator(CalculatorBase):
         recip_params, _ = calc_reciprocal_by_unit_cell_parameters(cell_params)
 
         class _CellLike:
+            """Adapter exposing reciprocal cell lengths to cryspy."""
+
             reciprocal_length_a = recip_params[0]
             reciprocal_length_b = recip_params[1]
             reciprocal_length_c = recip_params[2]

@@ -92,6 +92,7 @@ class _TerminalLiveHandle:
     """
 
     def __init__(self, *, console: object, auto_refresh: bool = True) -> None:
+        """Start a Rich live display on the given console."""
         self._renderable: object = Text('')
         self._live = Live(
             console=console,
@@ -103,6 +104,7 @@ class _TerminalLiveHandle:
         self._live.start()
 
     def _get_renderable(self) -> object:
+        """Return the current renderable, resolving callables."""
         renderable = self._renderable
         if callable(renderable):
             return renderable()
@@ -151,24 +153,7 @@ def make_display_handle(*, auto_refresh: bool = True) -> object | None:
 
 
 class ActivityIndicator:
-    """
-    Render a live activity indicator for long-running work.
-
-    Parameters
-    ----------
-    label : str, default=ACTIVITY_LABEL_PROCESSING
-        User-facing activity label.
-    verbosity : VerbosityEnum
-        Output verbosity controlling whether live display is shown.
-    display_handle : object | None, default=None
-        Optional existing live display handle to reuse.
-    animated : bool, default=True
-        Whether to animate the spinner label continuously.
-    refresh_per_second : float | None, default=None
-        Optional override for the Rich Live refresh rate. When ``None``,
-        defaults to one refresh per spinner frame. Lower values reduce
-        terminal flicker for multi-line live regions.
-    """
+    """Render a live activity indicator for long-running work."""
 
     def __init__(
         self,
@@ -179,6 +164,24 @@ class ActivityIndicator:
         animated: bool = True,
         refresh_per_second: float | None = None,
     ) -> None:
+        """
+        Initialise indicator state without starting rendering.
+
+        Parameters
+        ----------
+        label : str, default=ACTIVITY_LABEL_PROCESSING
+            User-facing activity label.
+        verbosity : VerbosityEnum
+            Output verbosity controlling whether live display is shown.
+        display_handle : object | None, default=None
+            Optional existing live display handle to reuse.
+        animated : bool, default=True
+            Whether to animate the spinner label continuously.
+        refresh_per_second : float | None, default=None
+            Optional override for the Rich Live refresh rate. When
+            ``None``, defaults to one refresh per spinner frame. Lower
+            values reduce terminal flicker for multi-line live regions.
+        """
         self._label = label
         self._verbosity = verbosity
         self._content: object | None = None
@@ -298,6 +301,7 @@ class ActivityIndicator:
         return Group(*renderables)
 
     def _refresh(self) -> None:
+        """Refresh the active display handle or live region."""
         if self._verbosity is VerbosityEnum.SILENT:
             return
 
@@ -310,6 +314,7 @@ class ActivityIndicator:
                 self._live.refresh()
 
     def _refresh_display_handle(self) -> None:
+        """Update the display handle with HTML or terminal output."""
         if self._display_handle is None:
             return
 
@@ -329,6 +334,7 @@ class ActivityIndicator:
             self._display_handle.update(renderable)
 
     def _terminal_content(self) -> object | None:
+        """Return current content as a terminal renderable."""
         if self._content is None:
             return None
         if is_renderable(self._content):
@@ -336,6 +342,7 @@ class ActivityIndicator:
         return Text(str(self._content))
 
     def _terminal_indicator_line(self) -> Text | None:
+        """Return the styled spinner/label line, or None if hidden."""
         style = resolve_activity_terminal_style(ConsoleManager.get())
         if self._running:
             if self._animated:
@@ -347,11 +354,13 @@ class ActivityIndicator:
         return None
 
     def _current_frame(self) -> str:
+        """Return the spinner frame for the elapsed run time."""
         elapsed = monotonic() - self._started_at
         frame_index = int(elapsed / _SPINNER_FRAME_SECONDS) % len(SPINNER_FRAMES)
         return SPINNER_FRAMES[frame_index]
 
     def _render_html(self) -> str:
+        """Return the full HTML for the notebook indicator."""
         content_html = self._html_content()
         indicator_html = self._html_indicator()
 
@@ -363,6 +372,7 @@ class ActivityIndicator:
         return f'{self._html_style()}<div class="ed-activity-stack">{body}</div>'
 
     def _html_content(self) -> str:
+        """Return the current content as an HTML fragment."""
         if self._content is None:
             return ''
         if isinstance(self._content, str):
@@ -376,6 +386,7 @@ class ActivityIndicator:
         return f'<pre class="ed-activity-pre">{text}</pre>'
 
     def _html_indicator(self) -> str:
+        """Return the spinner/label indicator as an HTML fragment."""
         safe_label = html.escape(self._label)
 
         if self._running:
@@ -403,6 +414,7 @@ class ActivityIndicator:
 
     @staticmethod
     def _html_style() -> str:
+        """Return the CSS style block for the notebook indicator."""
         keyframes = []
         total_frames = len(SPINNER_FRAMES)
         for index, frame in enumerate(SPINNER_FRAMES):
@@ -456,9 +468,11 @@ class _ActivityIndicatorContext(AbstractContextManager[ActivityIndicator]):
     """Context manager wrapper for ``ActivityIndicator``."""
 
     def __init__(self, *, label: str, verbosity: VerbosityEnum) -> None:
+        """Create the wrapped activity indicator."""
         self._indicator = ActivityIndicator(label, verbosity=verbosity)
 
     def __enter__(self) -> ActivityIndicator:
+        """Start and return the activity indicator."""
         self._indicator.start()
         return self._indicator
 
@@ -468,6 +482,7 @@ class _ActivityIndicatorContext(AbstractContextManager[ActivityIndicator]):
         exc_value: BaseException | None,
         traceback: TracebackType | None,
     ) -> None:
+        """Stop the activity indicator on context exit."""
         del exc_type
         del exc_value
         del traceback
@@ -502,6 +517,7 @@ class NotebookFitStopControl(AbstractContextManager):
     """Display a Jupyter stop button for fitting runs."""
 
     def __init__(self, *, verbosity: VerbosityEnum) -> None:
+        """Initialise stop-control state and resolve the kernel id."""
         self._verbosity = verbosity
         self._display_handle: object | None = None
         self._element_id = f'ed-fit-stop-{uuid.uuid4().hex}'
@@ -545,6 +561,7 @@ class NotebookFitStopControl(AbstractContextManager):
         self._display_handle = None
 
     def _can_display(self) -> bool:
+        """Return whether the stop button can be displayed."""
         return (
             self._verbosity is not VerbosityEnum.SILENT
             and in_jupyter()
@@ -555,6 +572,7 @@ class NotebookFitStopControl(AbstractContextManager):
         )
 
     def _active_html(self) -> str:
+        """Return the HTML markup for the active stop button."""
         return (
             '<style>'
             '.ed-fit-stop-control {'
@@ -592,6 +610,7 @@ class NotebookFitStopControl(AbstractContextManager):
         )
 
     def _interrupt_javascript(self) -> str:
+        """Return the JavaScript that wires the stop button."""
         button_id = f'{self._element_id}-button'
         status_id = f'{self._element_id}-status'
         kernel_id = self._kernel_id

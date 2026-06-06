@@ -167,6 +167,7 @@ class BayesianMinimizerBase(MinimizerCategoryBase):
 
     @sampling_steps.setter
     def sampling_steps(self, value: int) -> None:
+        """Set the total sampler iterations per chain."""
         self._sampling_steps.value = value
 
     @property
@@ -176,6 +177,7 @@ class BayesianMinimizerBase(MinimizerCategoryBase):
 
     @burn_in_steps.setter
     def burn_in_steps(self, value: int) -> None:
+        """Set the sampler iterations discarded as warm-up."""
         self._burn_in_steps.value = value
 
     @property
@@ -185,6 +187,7 @@ class BayesianMinimizerBase(MinimizerCategoryBase):
 
     @thinning_interval.setter
     def thinning_interval(self, value: int) -> None:
+        """Set the sampler thinning interval."""
         self._thinning_interval.value = value
 
     @property
@@ -194,6 +197,7 @@ class BayesianMinimizerBase(MinimizerCategoryBase):
 
     @population_size.setter
     def population_size(self, value: int) -> None:
+        """Set the number of chains or walkers."""
         self._population_size.value = value
 
     @property
@@ -203,6 +207,7 @@ class BayesianMinimizerBase(MinimizerCategoryBase):
 
     @parallel_workers.setter
     def parallel_workers(self, value: int) -> None:
+        """Set the worker count; 0 uses all available CPUs."""
         self._parallel_workers.value = value
 
     @property
@@ -212,6 +217,7 @@ class BayesianMinimizerBase(MinimizerCategoryBase):
 
     @initialization_method.setter
     def initialization_method(self, value: InitializationMethodEnum | str) -> None:
+        """Set the sampler initialization method if supported."""
         method = InitializationMethodEnum(value)
         if method not in self._supported_initialization_methods:
             supported = ', '.join(item.value for item in self._supported_initialization_methods)
@@ -226,4 +232,5 @@ class BayesianMinimizerBase(MinimizerCategoryBase):
 
     @random_seed.setter
     def random_seed(self, value: int | None) -> None:
+        """Set the random seed; None uses a system-derived seed."""
         self._random_seed.value = value

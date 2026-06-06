@@ -30,6 +30,7 @@ class FittingMode(CategoryItem, SwitchableCategoryBase):
     )
 
     def __init__(self) -> None:
+        """Initialize the fitting-mode type descriptor."""
         super().__init__()
 
         self._type = StringDescriptor(

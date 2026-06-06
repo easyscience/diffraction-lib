@@ -24,6 +24,7 @@ class RendererBase(SingletonBase, ABC):
     """
 
     def __init__(self) -> None:
+        """Initialise with the default engine and its backend."""
         self._engine = self._default_engine()
         self._backend = self._factory().create(self._engine)
 

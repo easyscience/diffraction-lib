@@ -93,6 +93,7 @@ class Fitter:
     """Handles the fitting workflow using a pluggable minimizer."""
 
     def __init__(self, selection: str = MinimizerTypeEnum.default()) -> None:
+        """Initialize the fitter with the selected minimizer."""
         self.selection: str = selection
         self.engine: str = selection
         self.minimizer = MinimizerFactory.create(selection)

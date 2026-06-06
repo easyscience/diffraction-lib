@@ -561,6 +561,7 @@ def standard_deviations_from_summaries(
 
 
 def _maybe_scalar(value: object) -> float | None:
+    """Return ``value`` as a finite float, or ``None`` otherwise."""
     if value is None:
         return None
     scalar = float(value)
@@ -632,6 +633,7 @@ _POSTERIOR_DISTRIBUTION_FOOTNOTE: list[tuple[str, str]] = [
 
 
 def _render_committed_parameter_table(parameters: list[object]) -> None:
+    """Render the table of committed (best-sample) parameter values."""
     headers = [
         'datablock',
         'category',
@@ -667,6 +669,7 @@ def _render_posterior_summary_table(
     parameters: list[object],
     posterior_parameter_summaries: list[PosteriorParameterSummary],
 ) -> None:
+    """Render the posterior distribution summary table."""
     if not posterior_parameter_summaries:
         console.print('No posterior parameter summaries available.')
         return
@@ -709,6 +712,7 @@ def _build_posterior_summary_row(
     summary: PosteriorParameterSummary,
     parameters_by_name: dict[str, object],
 ) -> list[str]:
+    """Build one row of the posterior distribution summary table."""
     parameter = parameters_by_name.get(summary.unique_name)
     identity = getattr(parameter, '_identity', None)
     datablock = getattr(identity, 'datablock_entry_name', 'N/A')
@@ -731,10 +735,12 @@ def _build_posterior_summary_row(
 
 
 def _format_interval(interval: tuple[float, float]) -> str:
+    """Format a credible interval as a bracketed pair of values."""
     return f'[{interval[0]:.4f}, {interval[1]:.4f}]'
 
 
 def _format_r_hat(value: float | None) -> str:
+    """Format an r-hat value, flagging poor convergence in red."""
     if value is None or not np.isfinite(value):
         return 'N/A'
     formatted = f'{value:.3f}'
@@ -744,6 +750,7 @@ def _format_r_hat(value: float | None) -> str:
 
 
 def _format_ess_bulk(value: float | None) -> str:
+    """Format a bulk ESS value, flagging low values in red."""
     if value is None or not np.isfinite(value):
         return 'N/A'
     formatted = f'{value:.1f}'

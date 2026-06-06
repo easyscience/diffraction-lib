@@ -167,6 +167,7 @@ class AnalysisDisplay:
     """
 
     def __init__(self, analysis: Analysis) -> None:
+        """Bind the display helper to its analysis section."""
         self._analysis = analysis
 
     def help(self) -> None:
@@ -452,6 +453,8 @@ class AnalysisDisplay:
 
 
 class _AnalysisOwnerAccessorsMixin:
+    """Accessors for the analysis section's owned collaborators."""
+
     @property
     def project(self) -> object:
         """Project that owns this analysis section."""
@@ -479,6 +482,7 @@ class _AnalysisOwnerAccessorsMixin:
 
     @fitter.setter
     def fitter(self, value: Fitter) -> None:
+        """Set the fitting engine used by this analysis object."""
         self._fitter = value
 
     @property
@@ -490,11 +494,14 @@ class _AnalysisOwnerAccessorsMixin:
 
     @fit_results.setter
     def fit_results(self, value: object | None) -> None:
+        """Store the latest fit results on the analysis and fitter."""
         self._fit_results = value
         self._fitter.results = value
 
 
 class _AnalysisPersistedCategoryAccessorsMixin:
+    """Accessors for the analysis section's persisted categories."""
+
     @property
     def fit_parameters(self) -> FitParameters:
         """Persisted fit-parameter control snapshots."""

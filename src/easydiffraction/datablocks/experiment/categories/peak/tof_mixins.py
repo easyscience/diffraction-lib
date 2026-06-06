@@ -31,6 +31,7 @@ class TofGaussianBroadeningMixin:
     """
 
     def __init__(self) -> None:
+        """Initialize the TOF Gaussian broadening parameters."""
         super().__init__()
 
         self._broad_gauss_sigma_0 = Parameter(
@@ -97,6 +98,7 @@ class TofGaussianBroadeningMixin:
 
     @broad_gauss_sigma_0.setter
     def broad_gauss_sigma_0(self, value: float) -> None:
+        """Set Gaussian broadening (instrumental resolution) (μs²)."""
         self._broad_gauss_sigma_0.value = value
 
     @property
@@ -111,6 +113,7 @@ class TofGaussianBroadeningMixin:
 
     @broad_gauss_sigma_1.setter
     def broad_gauss_sigma_1(self, value: float) -> None:
+        """Set Gaussian broadening (dependent on d-spacing) (μs/Å)."""
         self._broad_gauss_sigma_1.value = value
 
     @property
@@ -125,6 +128,7 @@ class TofGaussianBroadeningMixin:
 
     @broad_gauss_sigma_2.setter
     def broad_gauss_sigma_2(self, value: float) -> None:
+        """Set Gaussian broadening (instrument term) (μs²/Å²)."""
         self._broad_gauss_sigma_2.value = value
 
 
@@ -132,6 +136,7 @@ class TofLorentzianBroadeningMixin:
     """TOF Lorentzian broadening parameters γ₀, γ₁, γ₂."""
 
     def __init__(self) -> None:
+        """Initialize the TOF Lorentzian broadening parameters."""
         super().__init__()
 
         self._broad_lorentz_gamma_0 = Parameter(
@@ -198,6 +203,7 @@ class TofLorentzianBroadeningMixin:
 
     @broad_lorentz_gamma_0.setter
     def broad_lorentz_gamma_0(self, value: float) -> None:
+        """Set Lorentzian broadening (microstrain effects) (μs)."""
         self._broad_lorentz_gamma_0.value = value
 
     @property
@@ -212,6 +218,9 @@ class TofLorentzianBroadeningMixin:
 
     @broad_lorentz_gamma_1.setter
     def broad_lorentz_gamma_1(self, value: float) -> None:
+        """
+        Set Lorentzian broadening (dependent on d-spacing) (μs/Å).
+        """
         self._broad_lorentz_gamma_1.value = value
 
     @property
@@ -226,6 +235,9 @@ class TofLorentzianBroadeningMixin:
 
     @broad_lorentz_gamma_2.setter
     def broad_lorentz_gamma_2(self, value: float) -> None:
+        """
+        Set Lorentzian broadening (instrument-dependent) (μs²/Å²).
+        """
         self._broad_lorentz_gamma_2.value = value
 
 
@@ -241,6 +253,7 @@ class TofBackToBackExponentialMixin:
     """
 
     def __init__(self) -> None:
+        """Initialize the back-to-back exponential parameters."""
         super().__init__()
 
         self._exp_rise_alpha_0 = Parameter(
@@ -324,6 +337,7 @@ class TofBackToBackExponentialMixin:
 
     @exp_rise_alpha_0.setter
     def exp_rise_alpha_0(self, value: float) -> None:
+        """Set the back-to-back exponential rise α₀ (μs)."""
         self._exp_rise_alpha_0.value = value
 
     @property
@@ -338,6 +352,7 @@ class TofBackToBackExponentialMixin:
 
     @exp_rise_alpha_1.setter
     def exp_rise_alpha_1(self, value: float) -> None:
+        """Set the back-to-back exponential rise α₁ (μs/Å)."""
         self._exp_rise_alpha_1.value = value
 
     @property
@@ -352,6 +367,7 @@ class TofBackToBackExponentialMixin:
 
     @exp_decay_beta_0.setter
     def exp_decay_beta_0(self, value: float) -> None:
+        """Set the back-to-back exponential decay β₀ (μs)."""
         self._exp_decay_beta_0.value = value
 
     @property
@@ -366,6 +382,7 @@ class TofBackToBackExponentialMixin:
 
     @exp_decay_beta_1.setter
     def exp_decay_beta_1(self, value: float) -> None:
+        """Set the back-to-back exponential decay β₁ (μs/Å)."""
         self._exp_decay_beta_1.value = value
 
 
@@ -382,6 +399,7 @@ class TofDoubleExponentialMixin:
     """
 
     def __init__(self) -> None:
+        """Initialize the double back-to-back exponential parameters."""
         super().__init__()
 
         self._dexp_rise_alpha_1 = Parameter(
@@ -521,6 +539,7 @@ class TofDoubleExponentialMixin:
 
     @dexp_rise_alpha_1.setter
     def dexp_rise_alpha_1(self, value: float) -> None:
+        """Set the double-exp rise parameter α₁ (μs)."""
         self._dexp_rise_alpha_1.value = value
 
     @property
@@ -535,6 +554,7 @@ class TofDoubleExponentialMixin:
 
     @dexp_rise_alpha_2.setter
     def dexp_rise_alpha_2(self, value: float) -> None:
+        """Set the double-exp rise parameter α₂ (μs/Å)."""
         self._dexp_rise_alpha_2.value = value
 
     @property
@@ -549,6 +569,7 @@ class TofDoubleExponentialMixin:
 
     @dexp_decay_beta_00.setter
     def dexp_decay_beta_00(self, value: float) -> None:
+        """Set the double-exp first-regime decay β₀₀ (μs)."""
         self._dexp_decay_beta_00.value = value
 
     @property
@@ -563,6 +584,7 @@ class TofDoubleExponentialMixin:
 
     @dexp_decay_beta_01.setter
     def dexp_decay_beta_01(self, value: float) -> None:
+        """Set the double-exp first-regime decay β₀₁ (μs/Å)."""
         self._dexp_decay_beta_01.value = value
 
     @property
@@ -577,6 +599,7 @@ class TofDoubleExponentialMixin:
 
     @dexp_decay_beta_10.setter
     def dexp_decay_beta_10(self, value: float) -> None:
+        """Set the double-exp second-regime decay β₁₀ (μs)."""
         self._dexp_decay_beta_10.value = value
 
     @property
@@ -591,6 +614,7 @@ class TofDoubleExponentialMixin:
 
     @dexp_switch_r_01.setter
     def dexp_switch_r_01(self, value: float) -> None:
+        """Set the double-exp switching function r₀₁."""
         self._dexp_switch_r_01.value = value
 
     @property
@@ -605,6 +629,7 @@ class TofDoubleExponentialMixin:
 
     @dexp_switch_r_02.setter
     def dexp_switch_r_02(self, value: float) -> None:
+        """Set the double-exp switching function r₀₂."""
         self._dexp_switch_r_02.value = value
 
     @property
@@ -619,4 +644,5 @@ class TofDoubleExponentialMixin:
 
     @dexp_switch_r_03.setter
     def dexp_switch_r_03(self, value: float) -> None:
+        """Set the double-exp switching function r₀₃."""
         self._dexp_switch_r_03.value = value

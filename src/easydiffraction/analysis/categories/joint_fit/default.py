@@ -28,6 +28,7 @@ class JointFitItem(CategoryItem):
     _category_entry_name = 'experiment_id'
 
     def __init__(self) -> None:
+        """Initialize the experiment id and weight descriptors."""
         super().__init__()
 
         self._experiment_id: StringDescriptor = StringDescriptor(
@@ -68,6 +69,7 @@ class JointFitItem(CategoryItem):
 
     @experiment_id.setter
     def experiment_id(self, value: str) -> None:
+        """Set the experiment identifier value."""
         self._experiment_id.value = value
 
     @property
@@ -83,6 +85,7 @@ class JointFitItem(CategoryItem):
 
     @weight.setter
     def weight(self, value: float) -> None:
+        """Set the joint-fit weight factor value."""
         self._weight.value = value
 
 
