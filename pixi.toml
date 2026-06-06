@@ -146,6 +146,14 @@ test-all = { depends-on = [
   'script-tests',
 ] }
 
+# Full local gate before opening a PR: every static check, unit coverage,
+# all tests, tutorial execution + output verification (as scripts AND
+# notebooks), and a strict documentation build (which validates the built
+# site's nav/links). Steps run sequentially because the tutorial tasks
+# share tmp/tutorials/projects/. Slow but comprehensive — run `pixi run
+# fix` first to auto-format.
+all = 'pixi run check && pixi run unit-tests-coverage && pixi run functional-tests && pixi run integration-tests && pixi run script-tests-checked && pixi run notebook-tests-checked && pixi run docs-build-strict'
+
 ###########
 # ✔️ Checks
 ###########
