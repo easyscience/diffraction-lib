@@ -719,6 +719,85 @@ class Plotter(RendererBase):
         )
         self._plot_meas_vs_calc_request(expt_name=expt_name, plot_options=plot_options)
 
+    def plot_calc_comparison(
+        self,
+        *,
+        expt_name: str,
+        reference: np.ndarray,
+        candidate: np.ndarray,
+        reference_label: str,
+        candidate_label: str,
+        annotation_lines: tuple[str, ...] = (),
+        title: str | None = None,
+    ) -> None:
+        """
+        Overlay two calculated patterns with a residual panel.
+
+        The reference is drawn as a solid line and the candidate as
+        markers, both peak-normalised so they overlay regardless of
+        engine scale. A residual panel and an optional metrics
+        annotation are included; Bragg ticks and background are
+        intentionally omitted.
+
+        Parameters
+        ----------
+        expt_name : str
+            Experiment supplying the x grid and axis labels.
+        reference : np.ndarray
+            Reference intensities, drawn as a solid line.
+        candidate : np.ndarray
+            Candidate intensities, drawn as markers.
+        reference_label : str
+            Legend name for the reference curve.
+        candidate_label : str
+            Legend name for the candidate curve.
+        annotation_lines : tuple[str, ...], default=()
+            Lines for the top-left metrics annotation.
+        title : str | None, default=None
+            Optional plot title.
+        """
+        self._update_project_categories(expt_name)
+        experiment = self._project.experiments[expt_name]
+        x_axis, _, sample_form, scattering_type, _ = self._resolve_x_axis(experiment.type, None)
+        axes_labels = self._get_axes_labels(sample_form, scattering_type, x_axis)
+        x = intensity_category_for(experiment).x
+
+        reference_norm = self._peak_normalized(np.asarray(reference, dtype=float))
+        candidate_norm = self._peak_normalized(np.asarray(candidate, dtype=float))
+        plot_spec = PowderMeasVsCalcSpec(
+            x=np.asarray(x, dtype=float),
+            y_meas=reference_norm,
+            y_calc=candidate_norm,
+            y_resid=reference_norm - candidate_norm,
+            bragg_tick_sets=(),
+            axes_labels=axes_labels,
+            title=title or f"Calculated pattern comparison for 🔬 '{expt_name}'",
+            residual_height_fraction=DEFAULT_RESID_HEIGHT,
+            bragg_peaks_height_fraction=DEFAULT_BRAGG_ROW,
+            height=self._composite_plot_height(),
+            y_calc_name=candidate_label,
+        )
+        if self.engine == PlotterEngineEnum.PLOTLY.value:
+            self._backend.build_and_show_calc_comparison(
+                plot_spec=plot_spec,
+                reference_label=reference_label,
+                annotation_lines=annotation_lines,
+            )
+            return
+        # Other engines (for example ASCII) render the base composite
+        # without the styled overlay or metrics annotation.
+        self._backend.plot_powder_meas_vs_calc(plot_spec=plot_spec)
+
+    @staticmethod
+    def _peak_normalized(values: np.ndarray) -> np.ndarray:
+        """
+        Scale a profile so its maximum equals 100 for overlay display.
+        """
+        peak = float(np.max(values))
+        if not peak:
+            return values
+        return values / peak * 100.0
+
     def _plot_meas_vs_calc_request(
         self,
         *,

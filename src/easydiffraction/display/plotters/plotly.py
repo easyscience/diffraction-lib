@@ -2551,6 +2551,89 @@ scheduleResize();
 
         return fig
 
+    def build_and_show_calc_comparison(
+        self,
+        *,
+        plot_spec: PowderMeasVsCalcSpec,
+        reference_label: str,
+        annotation_lines: tuple[str, ...] = (),
+    ) -> None:
+        """
+        Show a reference-vs-candidate calculated-pattern comparison.
+
+        Reuses the composite measured-vs-calculated figure, then
+        restyles the two main curves so the reference reads as a solid
+        line and the candidate as overlaid markers, and adds an optional
+        metrics box in the top-left corner.
+
+        Parameters
+        ----------
+        plot_spec : PowderMeasVsCalcSpec
+            Composite spec with the reference as ``y_meas`` and the
+            candidate as ``y_calc`` (no Bragg ticks or background).
+        reference_label : str
+            Legend name for the reference curve.
+        annotation_lines : tuple[str, ...], default=()
+            Lines for the top-left metrics annotation; omitted when
+            empty.
+        """
+        fig = self.build_powder_meas_vs_calc_figure(plot_spec=plot_spec)
+        self._restyle_calc_comparison(fig, reference_label=reference_label)
+        if annotation_lines:
+            self._add_metrics_annotation(fig, annotation_lines)
+        self._show_figure(fig)
+
+    @staticmethod
+    def _restyle_calc_comparison(fig: object, *, reference_label: str) -> None:
+        """
+        Restyle the curves: reference solid line, candidate dashed line.
+        """
+        # Trace order is deterministic for a comparison spec (no Bragg,
+        # background, or predictive traces): reference first, candidate
+        # second, residual last.
+        fig.data[0].update(
+            name=reference_label,
+            mode='lines',
+            marker=None,
+            error_y=None,
+            line={'color': DEFAULT_COLORS['meas'], 'width': MEASURED_LINE_WIDTH},
+        )
+        fig.data[1].update(
+            mode='lines',
+            marker=None,
+            line={
+                'color': DEFAULT_COLORS['calc'],
+                'width': CALCULATED_LINE_WIDTH,
+                'dash': 'dash',
+            },
+        )
+
+    @classmethod
+    def _add_metrics_annotation(cls, fig: object, lines: tuple[str, ...]) -> None:
+        """
+        Add a legend-style metrics box in the main panel's top-left.
+        """
+        # Anchor at the top-left corner with equal pixel margins so the
+        # left and top gaps match regardless of the panel aspect ratio.
+        fig.add_annotation(
+            text='<br>'.join(lines),
+            xref='x domain',
+            yref='y domain',
+            x=0.0,
+            y=1.0,
+            xshift=8,
+            yshift=-8,
+            xanchor='left',
+            yanchor='top',
+            align='left',
+            showarrow=False,
+            font={'size': 12},
+            bordercolor=cls._axis_frame_color(),
+            borderwidth=1,
+            borderpad=4,
+            bgcolor=cls._legend_background_color(),
+        )
+
     @staticmethod
     def _create_powder_composite_figure(layout: PowderCompositeRows) -> object:
         return make_subplots(
