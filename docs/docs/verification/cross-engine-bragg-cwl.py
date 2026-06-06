@@ -96,18 +96,19 @@ fig
 # %% [markdown]
 # ## Regression assertions
 #
-# Explicit, named tolerances for each metric. These are intentionally
-# loose initial bounds — they catch a gross cross-engine divergence now
-# and are tightened once nightly runs establish the real spread for each
-# engine pair. Correlation is kept as an additional shape signal.
+# Explicit, named tolerances for each metric. cryspy and crysfml agree
+# very closely here (a first measurement gives ≈0.5% profile difference,
+# intensity ratio ≈1.00, correlation ≈1.00), so these bounds keep a
+# generous cross-platform margin while still catching a real regression.
+# They are tightened further once multi-platform nightly runs establish
+# the spread for each engine pair.
 
 # %%
-# Loose initial tolerances (tightened once real spreads are measured).
-MAX_PROFILE_DIFFERENCE_PCT = 100.0
-MAX_RELATIVE_DEVIATION = 2.0
-MIN_INTENSITY_RATIO = 0.1
-MAX_INTENSITY_RATIO = 10.0
-MIN_CORRELATION = 0.8
+MAX_PROFILE_DIFFERENCE_PCT = 10.0  # measured ≈0.5%
+MAX_RELATIVE_DEVIATION = 1.0  # scale-sensitive; kept generous
+MIN_INTENSITY_RATIO = 0.8  # measured ≈1.00
+MAX_INTENSITY_RATIO = 1.25
+MIN_CORRELATION = 0.99  # measured ≈1.00
 
 peak = float(np.max(np.abs(a)))
 relative_deviation = max_deviation / peak if peak else float('nan')
