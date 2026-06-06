@@ -438,6 +438,33 @@ mapping and the hardcoded defaults need verification.
 
 ---
 
+## 116. 🟡 cryspy Diverges on TOF Jorgensen–Von Dreele Lorentzian
+
+**Type:** Correctness
+
+For time-of-flight powder data using the Jorgensen–Von Dreele peak
+profile, the `cryspy` backend diverges from FullProf and `crysfml`
+whenever the Lorentzian term (`broad_lorentz_gamma_*`) is non-zero. On
+the Verification reference cases the profile difference reaches ≈22%
+(Si) and ≈26% (Al₂O₃) with an integrated-intensity ratio ≈0.72–0.76,
+while `crysfml` matches FullProf to <1%. When the Lorentzian term is
+zero (NaCaAlF) `cryspy` agrees to <1%, which localises the problem to
+the cryspy translation of the pseudo-Voigt (Gaussian ⊗ Lorentzian)
+mixing for TOF.
+
+**Fix:** verify how `broad_lorentz_gamma_*` is passed to cryspy for the
+`jorgensen-von-dreele` profile and reconcile the convention with
+crysfml/FullProf.
+
+**Gated by:** `tests/integration/verification/test_cross_engine_tof.py`
+(the `cryspy` cases fail until this is fixed). The Al₂O₃ and Si TOF
+Verification pages show the same discrepancy without failing the docs
+build.
+
+**Depends on:** nothing.
+
+---
+
 ## 22. 🟢 Check CrysPy Single-Crystal Instrument Mapping
 
 **Type:** Correctness
