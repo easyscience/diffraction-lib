@@ -283,7 +283,7 @@ files or generated artifacts. Do not run Phase 2 commands during Phase 1.
   `src/easydiffraction/analysis/calculators/**`.
   Commit: `Extend calculator support metadata with radiation probe`
 
-- [ ] **P1.12 — Cross-engine verification pages + script wiring (§6)**
+- [x] **P1.12 — Cross-engine verification pages + script wiring (§6)**
   Add the `Verification` nav node (between Tutorials and Command-Line)
   and calculation-only `.py` comparison pages (cryspy ↔ crysfml) across
   the supported experiment combinations, with closeness metrics, overlay

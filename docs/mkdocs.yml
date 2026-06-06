@@ -243,6 +243,10 @@ nav:
           - Tb2TiO7 sg bumps-dream: tutorials/ed-22.ipynb
       - Workshops & Schools:
           - DMSC Summer School: tutorials/ed-13.ipynb
+  - Verification:
+      - Verification: verification/index.md
+      - Cross-engine:
+          - LBCO Bragg pd-neut-cwl: verification/cross-engine-bragg-cwl.ipynb
   - Command-Line:
       - Command-Line: cli/index.md
   - API Reference:
