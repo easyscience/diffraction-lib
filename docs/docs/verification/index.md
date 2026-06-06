@@ -23,13 +23,20 @@ and so on. The list below notes only what is specific to each page.
 ## Powder, neutron, constant wavelength
 
 - [LBCO `pd-neut-cwl`](lbco-bragg-cwl.ipynb) – La0.5Ba0.5CoO3 (HRPT,
-  PSI). No FullProf reference yet, so only the engines are compared.
-- [PbSO4 `pd-neut-cwl`](pbso4-bragg-cwl.ipynb) – Anglesite.
-- [Al2O3 `pd-neut-cwl`](al2o3-bragg-cwl.ipynb) – Corundum (α-Al2O3).
+  PSI); pseudo-Voigt, no asymmetry. No FullProf reference yet, so only
+  the engines are compared.
+- [PbSO4 `pd-neut-cwl`](pbso4-bragg-cwl.ipynb) – Anglesite;
+  pseudo-Voigt, no asymmetry.
+- [Al2O3 `pd-neut-cwl`](al2o3-bragg-cwl.ipynb) – Corundum (α-Al2O3);
+  pseudo-Voigt, no asymmetry.
 
 ## Powder, neutron, time-of-flight
 
-- [Al2O3 `pd-neut-tof`](al2o3-bragg-tof.ipynb) – Corundum (α-Al2O3),
-  Jorgensen–Von Dreele profile.
-- [Si `pd-neut-tof`](si-bragg-tof.ipynb) – Silicon.
-- [NaCaAlF `pd-neut-tof`](ncaf-bragg-tof.ipynb) – Na2Ca3Al2F14.
+- [Al2O3 `pd-neut-tof`](al2o3-bragg-tof.ipynb) – Corundum (α-Al2O3);
+  Jorgensen–Von Dreele (pseudo-Voigt with back-to-back exponential
+  asymmetry).
+- [Si `pd-neut-tof`](si-bragg-tof.ipynb) – Silicon; Jorgensen–Von Dreele
+  (pseudo-Voigt with back-to-back exponential asymmetry).
+- [NaCaAlF `pd-neut-tof`](ncaf-bragg-tof.ipynb) – Na2Ca3Al2F14;
+  Jorgensen–Von Dreele (pseudo-Voigt with back-to-back exponential
+  asymmetry).
