@@ -245,15 +245,14 @@ nav:
           - DMSC Summer School: tutorials/ed-13.ipynb
   - Verification:
       - Verification: verification/index.md
-      - Cross-engine:
-          - LBCO Bragg pd-neut-cwl: verification/lbco-bragg-cwl.ipynb
-      - FullProf, constant wavelength:
-          - PbSO4 Bragg pd-neut-cwl: verification/pbso4-bragg-cwl.ipynb
-          - Al2O3 Bragg pd-neut-cwl: verification/al2o3-bragg-cwl.ipynb
-      - FullProf, time-of-flight:
-          - Al2O3 Bragg pd-neut-tof: verification/al2o3-bragg-tof.ipynb
-          - Si Bragg pd-neut-tof: verification/si-bragg-tof.ipynb
-          - NaCaAlF Bragg pd-neut-tof: verification/ncaf-bragg-tof.ipynb
+      - Powder, neutron, constant wavelength:
+          - LBCO: verification/lbco-bragg-cwl.ipynb
+          - PbSO4: verification/pbso4-bragg-cwl.ipynb
+          - Al2O3: verification/al2o3-bragg-cwl.ipynb
+      - Powder, neutron, time-of-flight:
+          - Al2O3: verification/al2o3-bragg-tof.ipynb
+          - Si: verification/si-bragg-tof.ipynb
+          - NaCaAlF: verification/ncaf-bragg-tof.ipynb
   - Command-Line:
       - Command-Line: cli/index.md
   - API Reference:
