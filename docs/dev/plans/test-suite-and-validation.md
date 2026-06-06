@@ -108,6 +108,14 @@ These are captured in step P1.14 (a future-work record in
   [`AGENTS.md`](../../../AGENTS.md) §Architecture): `hypothesis`,
   `pytest-benchmark`, `codespell` (dev dependencies); `lychee` (CI
   link-checker, GitHub Action or binary — no Python dependency).
+- **Added during Phase 2 verification by direct user request**
+  (`AGENTS.md` §Architecture first approval path — a direct user request
+  in the conversation, 2026-06-06): `pytest-randomly` (dev dependency).
+  It randomises unit-test order to flush out latent test-ordering
+  dependence; it surfaced and fixed two such tests and is paired with a
+  `tests/unit/conftest.py` global-state reset fixture. This was not in
+  the original pre-approval list above; the approval is recorded here
+  for traceability.
 
 ## Open questions
 
