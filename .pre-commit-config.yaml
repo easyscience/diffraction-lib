@@ -60,6 +60,20 @@ repos:
         pass_filenames: false
         stages: [manual]
 
+      - id: pixi-spell-check
+        name: pixi run spell-check
+        entry: pixi run spell-check
+        language: system
+        pass_filenames: false
+        stages: [manual]
+
+      - id: pixi-link-check
+        name: pixi run link-check
+        entry: pixi run link-check
+        language: system
+        pass_filenames: false
+        stages: [manual]
+
       - id: pixi-unit-tests
         name: pixi run unit-tests
         entry: pixi run unit-tests

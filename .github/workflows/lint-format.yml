@@ -97,6 +97,24 @@ jobs:
         shell: bash
         run: pixi run test-structure-check
 
+      - name: Check spelling (codespell)
+        id: spell
+        continue-on-error: true
+        shell: bash
+        run: pixi run spell-check
+
+      - name: Check documentation links (lychee)
+        id: link
+        continue-on-error: true
+        shell: bash
+        run: pixi run link-check
+
+      - name: Build documentation strictly (no tutorial execution)
+        id: docs_build
+        continue-on-error: true
+        shell: bash
+        run: pixi run docs-build-strict
+
       # Add summary
       - name: Add quality checks summary
         if: always()
@@ -115,6 +133,9 @@ jobs:
             echo "| nonpy format     | ${{ steps.nonpy_format.outcome == 'success' && '✅' || '❌' }} |"
             echo "| notebooks lint   | ${{ steps.notebook_lint.outcome == 'success' && '✅' || '❌' }} |"
             echo "| test structure   | ${{ steps.test_structure.outcome == 'success' && '✅' || '❌' }} |"
+            echo "| spelling         | ${{ steps.spell.outcome == 'success' && '✅' || '❌' }} |"
+            echo "| doc links        | ${{ steps.link.outcome == 'success' && '✅' || '❌' }} |"
+            echo "| docs strict build| ${{ steps.docs_build.outcome == 'success' && '✅' || '❌' }} |"
           } >> "$GITHUB_STEP_SUMMARY"
 
       # Fail job if any check failed
@@ -128,5 +149,8 @@ jobs:
           || steps.nonpy_format.outcome == 'failure'
           || steps.notebook_lint.outcome == 'failure'
           || steps.test_structure.outcome == 'failure'
+          || steps.spell.outcome == 'failure'
+          || steps.link.outcome == 'failure'
+          || steps.docs_build.outcome == 'failure'
         shell: bash
         run: exit 1
