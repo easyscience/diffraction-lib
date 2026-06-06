@@ -542,16 +542,22 @@ def test_display_path_falls_back_to_absolute(monkeypatch, tmp_path):
     import easydiffraction.utils.utils as MUT
 
     target = tmp_path / 'elsewhere' / 'data.cif'
+    resolved_target = target.resolve()
+    original_relative_to = pathlib.Path.relative_to
 
-    def always_fail(self, *args, **kwargs):
-        # Simulate a path with no relative form (e.g. different Windows drive).
-        msg = 'on a different drive'
-        raise ValueError(msg)
+    def fake_relative_to(self, *args, **kwargs):
+        # Simulate a path with no relative form (e.g. a different Windows
+        # drive) only for the path under test; delegate every other call so
+        # pytest's own use of Path.relative_to (result reporting) still works.
+        if self == resolved_target:
+            msg = 'on a different drive'
+            raise ValueError(msg)
+        return original_relative_to(self, *args, **kwargs)
 
-    monkeypatch.setattr(pathlib.Path, 'relative_to', always_fail)
+    monkeypatch.setattr(pathlib.Path, 'relative_to', fake_relative_to)
     result = MUT.display_path(target)
     # With no relative form the absolute resolved path is returned.
-    assert result == str(target.resolve())
+    assert result == str(resolved_target)
 
 
 # --- print_metrics_table ------------------------------------------------------
