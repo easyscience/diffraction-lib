@@ -269,7 +269,7 @@ files or generated artifacts. Do not run Phase 2 commands during Phase 1.
   `.codespellrc`, `lychee` config.
   Commit: `Add strict docs build, link, and spell checks on every push`
 
-- [ ] **P1.11 — Apply/extend calculator support metadata (§6 prerequisite)**
+- [x] **P1.11 — Apply/extend calculator support metadata (§6 prerequisite)**
   Build on the existing `Compatibility`/`CalculatorSupport` model in
   `core/metadata.py` (already declared per instrument category): add
   `radiation_probe` to `Compatibility` if missing, and add a small query
