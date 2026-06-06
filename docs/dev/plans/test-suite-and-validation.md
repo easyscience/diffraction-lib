@@ -244,7 +244,7 @@ files or generated artifacts. Do not run Phase 2 commands during Phase 1.
   guide.
   Commit: `Add hypothesis deterministic profile and shared test fixtures`
 
-- [ ] **P1.8 — Input-domain property tests on validators (§4)**
+- [x] **P1.8 — Input-domain property tests on validators (§4)**
   Property-based + explicit boundary-table tests against
   `core/validation.py` (`TypeValidator`, content `ValidatorBase`
   subclasses) through parameter (`core/variable.py`) and category
