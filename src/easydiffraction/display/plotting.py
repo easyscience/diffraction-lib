@@ -755,17 +755,32 @@ class Plotter(RendererBase):
             Lines for the top-left metrics annotation.
         title : str | None, default=None
             Optional plot title.
+
+        Raises
+        ------
+        ValueError
+            If ``reference``, ``candidate``, and the experiment x grid
+            do not all have the same length.
         """
         self._update_project_categories(expt_name)
         experiment = self._project.experiments[expt_name]
         x_axis, _, sample_form, scattering_type, _ = self._resolve_x_axis(experiment.type, None)
         axes_labels = self._get_axes_labels(sample_form, scattering_type, x_axis)
-        x = intensity_category_for(experiment).x
+        x = np.asarray(intensity_category_for(experiment).x, dtype=float)
+        reference = np.asarray(reference, dtype=float)
+        candidate = np.asarray(candidate, dtype=float)
+        if not reference.shape == candidate.shape == x.shape:
+            msg = (
+                f"reference, candidate, and the '{expt_name}' x grid must have "
+                f'the same length (got {reference.shape}, {candidate.shape}, '
+                f'{x.shape}).'
+            )
+            raise ValueError(msg)
 
-        reference_norm = self._peak_normalized(np.asarray(reference, dtype=float))
-        candidate_norm = self._peak_normalized(np.asarray(candidate, dtype=float))
+        reference_norm = self._peak_normalized(reference)
+        candidate_norm = self._peak_normalized(candidate)
         plot_spec = PowderMeasVsCalcSpec(
-            x=np.asarray(x, dtype=float),
+            x=x,
             y_meas=reference_norm,
             y_calc=candidate_norm,
             y_resid=reference_norm - candidate_norm,
