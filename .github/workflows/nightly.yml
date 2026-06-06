@@ -1,6 +1,7 @@
-# Nightly run of the most expensive `nightly`-tier tests (for example the
-# performance benchmarks). These are excluded from the per-push and
-# per-PR runs in test.yml; see ADR test-suite-and-validation.
+# Nightly run of the FULL test suite across all cost tiers (default, pr,
+# and nightly), plus the performance benchmarks. The per-push and per-PR
+# runs in test.yml deselect the pr/nightly tiers; the nightly run does
+# not. See ADR test-suite-and-validation.
 
 name: Nightly tests
 
@@ -30,8 +31,8 @@ jobs:
       - name: Set up pixi
         uses: ./.github/actions/setup-pixi
 
-      - name: Run nightly-tier tests
-        run: pixi run nightly-tests
+      - name: Run the full test suite (all tiers)
+        run: pixi run test-all
 
       - name: Run performance benchmarks
         run: pixi run benchmarks
