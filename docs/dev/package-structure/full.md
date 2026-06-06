@@ -194,13 +194,17 @@
 │   ├── 📄 fitting.py
 │   │   ├── 🏷️ class FitterFitOptions
 │   │   └── 🏷️ class Fitter
-│   └── 📄 sequential.py
-│       ├── 🏷️ class SequentialFitExtractRule
-│       ├── 🏷️ class SequentialFitTemplate
-│       ├── 🏷️ class SequentialProgressState
-│       ├── 🏷️ class SequentialProgressContext
-│       ├── 🏷️ class _ChunkProgressMetrics
-│       └── 🏷️ class SequentialRunPlan
+│   ├── 📄 sequential.py
+│   │   ├── 🏷️ class SequentialFitExtractRule
+│   │   ├── 🏷️ class SequentialFitTemplate
+│   │   ├── 🏷️ class SequentialProgressState
+│   │   ├── 🏷️ class SequentialProgressContext
+│   │   ├── 🏷️ class _ChunkProgressMetrics
+│   │   └── 🏷️ class SequentialRunPlan
+│   └── 📄 verification.py
+│       ├── 🏷️ class ClosenessMetrics
+│       ├── 🏷️ class AgreementTolerances
+│       └── 🏷️ class _AgreementCheck
 ├── 📁 core
 │   ├── 📄 __init__.py
 │   ├── 📄 category.py
@@ -614,6 +618,8 @@
 │   │   │   │   └── 🏷️ class ProjectInfo
 │   │   │   └── 📄 factory.py
 │   │   │       └── 🏷️ class ProjectInfoFactory
+│   │   ├── 📁 publication
+│   │   ├── 📁 rendering
 │   │   ├── 📁 rendering_plot
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
@@ -673,6 +679,7 @@
 │   ├── 📁 templates
 │   │   ├── 📁 html
 │   │   └── 📁 tex
+│   │       └── 📁 styles
 │   ├── 📄 __init__.py
 │   ├── 📄 data_context.py
 │   │   └── 🏷️ class ReportDataContext
