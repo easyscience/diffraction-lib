@@ -2,9 +2,10 @@
 # SPDX-License-Identifier: BSD-3-Clause
 """Regenerate the disabled-rule inventory for the lint-rule audit.
 
-This helper reproduces the table in
-``docs/dev/plans/lint-rule-audit.md`` without modifying any tracked
-file. It layers the currently-disabled Ruff rules onto the *unmodified*
+This helper reproduces the disabled-rule inventory behind
+``docs/dev/adrs/accepted/lint-rule-exceptions.md`` without modifying any
+tracked file. It layers the currently-disabled Ruff rules onto the
+*unmodified*
 ``pyproject.toml`` at the command line, runs ``ruff check``, and prints
 a per-rule breakdown by source scope (``src``/``tests``/``tutorials``)
 and auto-fixability::
