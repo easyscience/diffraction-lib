@@ -31,9 +31,6 @@ macos = '14.0'
 #libc = { family = 'glibc', version = '2.35' }
 libc = '2.35'
 
-[pypi-dependencies]
-emcee = '>=3.1'
-
 # Non-default features:
 
 # Set specific Python versions to be used in CI testing.
@@ -52,6 +49,7 @@ nodejs = '*'      # Required for Prettier (non-Python formatting)
 jupyterlab = '*'  # Jupyter notebooks
 ipython = '*'     # Interactive Python shell
 pixi-kernel = '*' # Pixi Jupyter kernel
+ipykernel = '*'   # Jupyter kernel base; required for pixi-kernel
 gsl = '*'         # GNU Scientific Library; required for diffpy.pdffit2
 tectonic = '*'    # LaTeX engine for PDF report generation
 lychee = '*'      # Link checker for documentation
