@@ -1,5 +1,5 @@
 # %% [markdown]
-# # NaCaAlF — neutron powder, time-of-flight (Bragg)
+# # NaCaAlF — neutron powder, time-of-flight, Jorgensen–Von Dreele
 #
 # Cross-engine and external-reference verification for NaCaAlF
 # (Na₂Ca₃Al₂F₁₄) in time-of-flight geometry: the **same** pattern is
@@ -23,7 +23,7 @@ from easydiffraction.analysis import verification as verify
 # This reference is a two-column ``x y`` profile.
 
 # %%
-reference_dir = verify.bundled_reference_dir()
+reference_dir = verify.bundled_reference_dir() / 'pd-neut-tof_jvd_ncaf'
 x, calc_fullprof = verify.load_columned_profile(
     str(reference_dir / 'ncaf_tof.sub'),
     skip_rows=1,

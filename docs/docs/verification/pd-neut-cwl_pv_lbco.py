@@ -1,5 +1,5 @@
 # %% [markdown]
-# # LBCO — cross-engine, neutron powder, constant wavelength (Bragg)
+# # LBCO — neutron powder, constant wavelength, pseudo-Voigt
 #
 # This page calculates the **same** La₀.₅Ba₀.₅CoO₃ diffraction pattern
 # (HRPT) with each supported EasyDiffraction engine and compares them,
@@ -50,3 +50,5 @@ project.display.pattern_comparison(
 verify.assert_patterns_agree([
     ('cryspy vs crysfml', calc_ed_crysfml, calc_ed_cryspy),
 ])
+
+# %%

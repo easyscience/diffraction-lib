@@ -219,10 +219,10 @@ filterwarnings = [
 
 # 'codespell' -- Spell checker for docs and source comments/docstrings.
 # https://github.com/codespell-project/codespell
-# `powder_pattern_from_dict` holds upstream FullProf reference output
+# `verification/fullprof` holds upstream FullProf reference output
 # (third-party, not project-owned), so it is excluded like vendored files.
 [tool.codespell]
-skip = '*.ipynb,*.lock,*.svg,*.min.js,*.json.gz,*/vendor/*,*/_vendored/*,*/powder_pattern_from_dict/*,docs/dev/package-structure/*,docs/site/*,docs/overrides/*,*/structure/assets/*,node_modules,.pixi'
+skip = '*.ipynb,*.lock,*.svg,*.min.js,*.json.gz,*/vendor/*,*/_vendored/*,*/verification/fullprof/*,docs/dev/package-structure/*,docs/site/*,docs/overrides/*,*/structure/assets/*,node_modules,.pixi'
 # British spelling and a crystallographic abbreviation (B/U) flagged as
 # typos; element symbols live in skipped vendored files.
 ignore-words-list = 'pre-emptively,bu'

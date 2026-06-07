@@ -187,6 +187,12 @@ not_in_nav: |
   user-guide/parameters
   assets/javascripts/vendor/**/*.md
 
+# Exclude files and folders from the build entirely (gitignore-style).
+# The bundled FullProf reference projects are loaded by the Verification
+# notebooks at runtime but must not be copied into the built site.
+exclude_docs: |
+  verification/fullprof/
+
 # Format and layout of the global navigation for the site
 nav:
   - Introduction:
@@ -246,14 +252,15 @@ nav:
   - Verification:
       - Verification: verification/index.md
       - Powder, neutron, constant wavelength:
-          - LBCO: verification/lbco-bragg-cwl.ipynb
-          - PbSO4: verification/pbso4-bragg-cwl.ipynb
-          - Al2O3: verification/al2o3-bragg-cwl.ipynb
-          - LaB6: verification/lab6-bragg-cwl.ipynb
+          - LBCO: verification/pd-neut-cwl_pv_lbco.ipynb
+          - PbSO4 (pseudo-Voigt): verification/pd-neut-cwl_pv_pbso4.ipynb
+          - PbSO4 (empirical asymmetry): verification/pd-neut-cwl_pv-asym_empir_pbso4.ipynb
+          - LaB6: verification/pd-neut-cwl_tch-fcj_lab6.ipynb
       - Powder, neutron, time-of-flight:
-          - Al2O3: verification/al2o3-bragg-tof.ipynb
-          - Si: verification/si-bragg-tof.ipynb
-          - NaCaAlF: verification/ncaf-bragg-tof.ipynb
+          - Si: verification/pd-neut-tof_jvd_si.ipynb
+          - NaCaAlF: verification/pd-neut-tof_jvd_ncaf.ipynb
+      - Single crystal, neutron, constant wavelength:
+          - Pr2NiO4: verification/sg-neut-cwl_pr2nio4.ipynb
   - Command-Line:
       - Command-Line: cli/index.md
   - API Reference:

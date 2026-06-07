@@ -1,5 +1,5 @@
 # %% [markdown]
-# # LaB6 — neutron powder, constant wavelength (Bragg), SyCos/SySin
+# # LaB₆ — neutron powder, constant wavelength, Thompson–Cox–Hastings
 #
 # A **prepared** verification for the FullProf `SyCos`/`SySin` systematic
 # peak-position corrections (sample displacement and transparency), using
@@ -32,7 +32,7 @@ from easydiffraction.analysis import verification as verify
 # reference for now.
 
 # %%
-reference_dir = verify.bundled_reference_dir() / 'lab6'
+reference_dir = verify.bundled_reference_dir() / 'pd-neut-cwl_tch-fcj_lab6'
 x, calc_fullprof = verify.load_columned_profile(
     str(reference_dir / 'ECH0030684_LaB6_1p622A.dat'),
     skip_rows=0,
@@ -113,7 +113,7 @@ project.display.pattern_comparison(
     'lab6',
     reference=calc_fullprof,
     candidate=calc_ed_cryspy,
-    reference_label='FullProf (measured)',
+    reference_label='FullProf',
     candidate_label='EasyDiffraction (cryspy)',
 )
 
@@ -122,7 +122,7 @@ project.display.pattern_comparison(
     'lab6',
     reference=calc_fullprof,
     candidate=calc_ed_crysfml,
-    reference_label='FullProf (measured)',
+    reference_label='FullProf',
     candidate_label='EasyDiffraction (crysfml)',
 )
 

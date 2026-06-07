@@ -445,9 +445,9 @@ mapping and the hardcoded defaults need verification.
 For time-of-flight powder data using the Jorgensen–Von Dreele peak
 profile, the `cryspy` backend diverges from FullProf and `crysfml`
 whenever the Lorentzian term (`broad_lorentz_gamma_*`) is non-zero. On
-the Verification reference cases the profile difference reaches ≈22%
-(Si) and ≈26% (Al₂O₃) with an integrated-intensity ratio ≈0.72–0.76,
-while `crysfml` matches FullProf to <1%. When the Lorentzian term is
+the Si Verification reference case the profile difference reaches ≈22%
+with an integrated-intensity ratio ≈0.72–0.76, while `crysfml` matches
+FullProf to <1%. When the Lorentzian term is
 zero (NaCaAlF) `cryspy` agrees to <1%, which localises the problem to
 the cryspy translation of the pseudo-Voigt (Gaussian ⊗ Lorentzian)
 mixing for TOF.
@@ -456,11 +456,12 @@ mixing for TOF.
 `jorgensen-von-dreele` profile and reconcile the convention with
 crysfml/FullProf.
 
-**Visible on:** the Al₂O₃ and Si TOF Verification pages, whose closeness
-tables flag the `cryspy` rows in red — reported via a non-raising
-agreement check, not enforced, so CI stays green. Re-introduce a strict
-check, or skip the pages via `docs/docs/verification/ci_skip.txt`, once
-work on the cryspy backend begins.
+**Visible on:** the Si TOF Verification page
+(`pd-neut-tof_jvd_si`), whose closeness table flags the `cryspy` rows in
+red — reported via a non-raising agreement check, not enforced, so CI
+stays green. Re-introduce a strict check, or skip the page via
+`docs/docs/verification/ci_skip.txt`, once work on the cryspy backend
+begins.
 
 **Depends on:** nothing.
 
@@ -481,8 +482,8 @@ EasyDiffraction side — an instrument-category parameter pair plus the
 calculator wiring — is still to do.
 
 A prepared verification page,
-`docs/docs/verification/lab6-bragg-cwl.py`, uses the issue #38 LaB6
-dataset and is skipped via `ci_skip.txt`. Finishing it also needs a
+`docs/docs/verification/pd-neut-cwl_tch-fcj_lab6.py`, uses the issue #38
+LaB6 dataset and is skipped via `ci_skip.txt`. Finishing it also needs a
 custom ¹¹B scattering length, the Thompson–Cox–Hastings profile, and a
 FullProf-style polynomial background, which that dataset relies on.
 

@@ -1,5 +1,5 @@
 # %% [markdown]
-# # Si — neutron powder, time-of-flight (Bragg)
+# # Si — neutron powder, time-of-flight, Jorgensen–Von Dreele
 #
 # Cross-engine and external-reference verification for silicon in
 # time-of-flight geometry: the **same** pattern is calculated with each
@@ -24,8 +24,8 @@ from easydiffraction.analysis import verification as verify
 # ## Load the FullProf reference
 
 # %%
-reference_dir = verify.bundled_reference_dir()
-x, calc_fullprof = verify.load_fullprof_profile(str(reference_dir / 'si_tof.sub'))
+reference_dir = verify.bundled_reference_dir() / 'pd-neut-tof_jvd_si'
+x, calc_fullprof = verify.load_fullprof_profile(str(reference_dir / 'arg_si1.sub'))
 
 # %% [markdown]
 # ## Build the project and define the structure in code
