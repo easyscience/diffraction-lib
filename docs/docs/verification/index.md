@@ -35,8 +35,8 @@ and so on. The list below notes only what is specific to each page.
   axial-divergence asymmetry.
 - [LaB6 `pd-neut-cwl`](pd-neut-cwl_tch-fcj_lab6.ipynb) – Lanthanum
   hexaboride; Thompson–Cox–Hastings with Finger–Cox–Jephcoat asymmetry
-  plus SyCos/SySin peak-position corrections. Prepared skeleton,
-  skipped — pending EasyDiffraction support for these features.
+  plus SyCos/SySin peak-position corrections. Prepared skeleton, skipped
+  — pending EasyDiffraction support for these features.
 
 ## Powder, neutron, time-of-flight
 

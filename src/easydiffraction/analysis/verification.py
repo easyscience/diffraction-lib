@@ -336,8 +336,8 @@ def calculate_reflections(
     Calculate per-reflection intensities with a chosen engine.
 
     Selects the calculation engine, refreshes the structure and
-    experiment categories, and returns ``intensity_calc`` keyed by
-    ``(h, k, l)``.
+    experiment categories, and returns ``intensity_calc`` keyed by ``(h,
+    k, l)``.
 
     Parameters
     ----------

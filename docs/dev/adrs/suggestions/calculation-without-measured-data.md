@@ -18,17 +18,18 @@ An experiment built with `ExperimentFactory.from_scratch(...)` has no
 data points. The x-grid that every calculation runs on — the set of 2θ
 or time-of-flight values — lives inside `experiment.data` and is only
 ever populated by loading measured data
-(`_create_items_set_xcoord_and_id`). With no grid, a calculation
-cannot run:
+(`_create_items_set_xcoord_and_id`). With no grid, a calculation cannot
+run:
 
 - cryspy derives its scan range from `experiment.data.x.min()/max()`
-  (`_cif_range_section`), which raises `ValueError: zero-size array to
-  reduction operation minimum` on the empty array.
-- crysfml passes `experiment.data.x.tolist()` as the scan, i.e. an
-  empty scan.
+  (`_cif_range_section`), which raises
+  `ValueError: zero-size array to reduction operation minimum` on the
+  empty array.
+- crysfml passes `experiment.data.x.tolist()` as the scan, i.e. an empty
+  scan.
 
 So `project.display.pattern(expt_name=...)` fails for a structure that
-has never been measured, even though everything needed to *calculate* a
+has never been measured, even though everything needed to _calculate_ a
 pattern (structure, instrument, peak shape, background) is present.
 
 Scientists routinely want to **simulate** a pattern — or, for a single
@@ -39,15 +40,15 @@ how a saved project with no measured block should restore from the CLI.
 
 Two existing decisions frame the solution:
 
-- [Unified Pattern View](../accepted/pattern-display-unification.md) already
-  establishes that `pattern()` renders whatever the project state
-  supports. "Only calculated data is available" should simply be one
-  more supported state; today the display gates instead require
+- [Unified Pattern View](../accepted/pattern-display-unification.md)
+  already establishes that `pattern()` renders whatever the project
+  state supports. "Only calculated data is available" should simply be
+  one more supported state; today the display gates instead require
   measured data before background or Bragg can appear.
 - The IUCr powder and core dictionaries already model an evenly-spaced
   scan **by range**: `_pd_meas.2theta_range_{min,max,inc}` and
-  `_pd_proc.2theta_range_{min,max,inc}` are defined to be used "in
-  place of the `2theta_scan` values" for constant-step data, and
+  `_pd_proc.2theta_range_{min,max,inc}` are defined to be used "in place
+  of the `2theta_scan` values" for constant-step data, and
   `_refln.sin_theta_over_lambda` / `_refln.d_spacing` are
   instrument-independent reciprocal coordinates shared by powder and
   single-crystal data.
@@ -64,9 +65,9 @@ scan exists.
    (`CwlDataRange`, `TofDataRange`, `ScDataRange`) and exposed uniformly
    as `experiment.data_range`. It is fixed by the experiment type, so it
    has **no** `type` selector — the same treatment
-   [Switchable Category API](../accepted/switchable-category-api.md) prescribes for
-   fixed, single-type categories, and the same pattern `instrument`
-   already uses for its per-beam-mode classes
+   [Switchable Category API](../accepted/switchable-category-api.md)
+   prescribes for fixed, single-type categories, and the same pattern
+   `instrument` already uses for its per-beam-mode classes
    ([Immutable Experiment Type](../accepted/immutable-experiment-type.md)).
 
 2. **Stored truth is the natural input axis (writable).** The values a
@@ -77,11 +78,11 @@ scan exists.
 
 3. **sinθ/λ is the derived shared currency.** Every type also exposes
    `sin_theta_over_lambda` and `d_spacing` (related by
-   `sinθ/λ = 1/(2·d)`, instrument-free), plus `x_{min,max,step}`
-   aliases onto the active axis (mirroring the existing plotting
-   x-array alias). Generic code — plotting and reflection generation —
-   reads sinθ/λ. For CWL and TOF the sinθ/λ and d views derive from the
-   stored axis through the instrument (λ for 2θ, DIFC/DIFA for TOF), so
+   `sinθ/λ = 1/(2·d)`, instrument-free), plus `x_{min,max,step}` aliases
+   onto the active axis (mirroring the existing plotting x-array alias).
+   Generic code — plotting and reflection generation — reads sinθ/λ. For
+   CWL and TOF the sinθ/λ and d views derive from the stored axis
+   through the instrument (λ for 2θ, DIFC/DIFA for TOF), so
    **recalibration keeps the stored axis window fixed and re-derives
    sinθ/λ**. For single crystal there is no measurement axis, so sinθ/λ
    is itself the stored truth.
@@ -95,10 +96,10 @@ scan exists.
    crystal has bounds but no step.
 
 5. **Writable, guarded by measurement.** Following
-   [Guarded Public Properties](../accepted/guarded-public-properties.md), the
-   `data_range` axis attributes are writable public properties. The
+   [Guarded Public Properties](../accepted/guarded-public-properties.md),
+   the `data_range` axis attributes are writable public properties. The
    setter raises when a measured scan is present, because then the range
-   is an *observed* property of the data rather than an input; the
+   is an _observed_ property of the data rather than an input; the
    getter returns the measured-derived range in that case (subsuming
    today's `experiment.measured_range`) and the stored or default range
    otherwise. Loaders and project restore seed values through a private
@@ -117,10 +118,10 @@ scan exists.
    serialisable category rather than a method call.
 
 8. **Display extends the unified view.** Building on
-   [Unified Pattern View](../accepted/pattern-display-unification.md), `background`
-   and `bragg` become available with calculated-only data — the
-   measured-data requirement in their availability gates is dropped.
-   "No measurement" is represented as *absent* intensities (not a
+   [Unified Pattern View](../accepted/pattern-display-unification.md),
+   `background` and `bragg` become available with calculated-only data —
+   the measured-data requirement in their availability gates is dropped.
+   "No measurement" is represented as _absent_ intensities (not a
    zero-filled array), so no phantom measured curve or residual is
    drawn. A calc-only powder view is the calculated curve plus
    background on the main panel and a Bragg row; a calc-only
@@ -129,13 +130,14 @@ scan exists.
 9. **CIF mapping.** CWL bounds reuse the standard
    `_pd_meas.2theta_range_{min,max,inc}`. TOF, single-crystal, and the
    sinθ/λ–d bounds have no standard range tag, so custom tags are chosen
-   in line with [IUCr CIF Tag Alignment](../accepted/iucr-cif-tag-alignment.md) and
+   in line with
+   [IUCr CIF Tag Alignment](../accepted/iucr-cif-tag-alignment.md) and
    [Python and CIF Category Correspondence](../accepted/python-cif-category-correspondence.md).
 
 ## Consequences
 
-- A structure-only experiment can be calculated and plotted with no
-  data loaded: set `data_range` (or accept the defaults), then call
+- A structure-only experiment can be calculated and plotted with no data
+  loaded: set `data_range` (or accept the defaults), then call
   `project.display.pattern(...)`. The original failure is resolved.
 - One uniform `experiment.data_range` spans all experiment types;
   generic display and calculator code read the shared sinθ/λ view and
@@ -144,9 +146,9 @@ scan exists.
   `data_range`.
 - The project is in beta, so this adds the category with no
   compatibility shim; tutorials and tests adopt it directly.
-- New code spans a `data_range` category, factory, and per-type
-  classes; calc-on-access grid and reflection generation; single-crystal
-  hkl generation via `calc_hkl`; and the display-gate relaxation plus a
+- New code spans a `data_range` category, factory, and per-type classes;
+  calc-on-access grid and reflection generation; single-crystal hkl
+  generation via `calc_hkl`; and the display-gate relaxation plus a
   calc-only single-crystal view.
 
 ## Alternatives Considered
