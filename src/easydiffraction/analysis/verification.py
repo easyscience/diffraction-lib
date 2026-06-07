@@ -14,7 +14,6 @@ those pages stay short and readable.
 
 from __future__ import annotations
 
-import re
 from dataclasses import dataclass
 from io import StringIO
 from pathlib import Path
@@ -28,12 +27,23 @@ from easydiffraction.utils.utils import render_table
 # they do not depend on the arbitrary calculated scale of each engine.
 _PEAK_NORMALISATION = 100.0
 
-# Reference profiles for the docs Verification pages are bundled under
-# this directory for now. They will move to the downloadable
-# ``diffraction`` data repository, after which `download_data` replaces
-# `bundled_reference_dir`.
+# A FullProf single-crystal F2cal table row needs at least these many
+# columns: h, k, l, ivk, cod, F2obs, F2cal.
+_MIN_SC_F2CAL_COLUMNS = 7
+
+# FullProf writes a profile header (min, increment, max) in three fixed
+# columns of this width; adjacent values run together when one fills its
+# field, so the header is sliced by column when it cannot be split on
+# whitespace.
+_FULLPROF_HEADER_FIELD_COUNT = 3
+_FULLPROF_HEADER_FIELD_WIDTH = 10
+
+# The FullProf reference projects for the docs Verification pages are
+# bundled under this directory for now. They will move to the
+# downloadable ``diffraction`` data repository, after which
+# `download_data` replaces `bundled_reference_dir`.
 _VERIFICATION_DOCS_DIR = ('docs', 'docs', 'verification')
-_BUNDLED_REFERENCE_SUBPATH = ('powder_pattern_from_dict', 'desired')
+_BUNDLED_REFERENCE_SUBPATH = ('fullprof',)
 
 
 def bundled_reference_dir() -> Path:
@@ -60,13 +70,46 @@ def bundled_reference_dir() -> Path:
 # ----------------------------------------------------------------------
 
 
+def _parse_fullprof_header(line: str) -> tuple[float, float, float]:
+    """
+    Parse a FullProf profile header into ``(min, increment, max)``.
+
+    The three leading numbers are read on whitespace when they are
+    cleanly separated, and sliced from fixed-width columns when they run
+    together (for example ``5.00000030004.1875``).
+
+    Parameters
+    ----------
+    line : str
+        First line of a FullProf ``.sub``/``.sim`` file.
+
+    Returns
+    -------
+    tuple[float, float, float]
+        The grid minimum, increment, and maximum.
+    """
+    header = line.split('!', 1)[0]
+    count = _FULLPROF_HEADER_FIELD_COUNT
+    tokens = header.split()
+    if len(tokens) >= count and all(token.count('.') <= 1 for token in tokens[:count]):
+        minimum, increment, maximum = (float(token) for token in tokens[:count])
+    else:
+        width = _FULLPROF_HEADER_FIELD_WIDTH
+        minimum, increment, maximum = (
+            float(header[index * width : (index + 1) * width]) for index in range(count)
+        )
+    return minimum, increment, maximum
+
+
 def load_fullprof_profile(path: str) -> tuple[np.ndarray, np.ndarray]:
     """
     Load a FullProf ``.sub``/``.sim`` profile as ``(x, y)`` arrays.
 
     The first line holds ``min increment max`` followed by a comment;
     the x grid is reconstructed from that header and the remaining lines
-    are flattened into the intensity array.
+    are flattened into the intensity array. The header is parsed by
+    :func:`_parse_fullprof_header`, which also handles the fixed-width
+    case where the values run together.
 
     Parameters
     ----------
@@ -80,8 +123,7 @@ def load_fullprof_profile(path: str) -> tuple[np.ndarray, np.ndarray]:
     """
     with Path(path).open(encoding='utf-8') as handle:
         lines = handle.readlines()
-    header_numbers = re.findall(r'\d+\.\d+|\d+', lines[0])[:3]
-    x_min, x_increment, x_max = (float(value) for value in header_numbers)
+    x_min, x_increment, x_max = _parse_fullprof_header(lines[0])
     # The 1e-5 nudge avoids a spurious extra point from float rounding.
     x = np.arange(start=x_min, stop=x_max + x_increment - 1e-5, step=x_increment)
     body = ' '.join(line.strip() for line in lines[1:])
@@ -120,6 +162,71 @@ def load_columned_profile(
     cleaned = '\n'.join(line.replace('(', ' ').replace(')', ' ') for line in lines)
     x, y = np.genfromtxt(StringIO(cleaned), usecols=columns, unpack=True)
     return x, y
+
+
+def load_fullprof_sc_f2calc(path: str) -> dict[tuple[int, int, int], float]:
+    """
+    Extract calculated F² per reflection from a FullProf SC output.
+
+    Reads the integrated-intensity reflection table — the one whose
+    header carries the ``F2obs`` and ``F2cal`` columns — and returns a
+    mapping from each ``(h, k, l)`` to its ``F2cal``. FullProf reports
+    ``F2cal = scale * Corr * |F|²`` (scaled and extinction-corrected),
+    so compare it on a peak-normalised basis, where the scale cancels.
+
+    Parameters
+    ----------
+    path : str
+        Path to the FullProf single-crystal ``.out`` file.
+
+    Returns
+    -------
+    dict[tuple[int, int, int], float]
+        ``{(h, k, l): F2cal}`` for every tabulated reflection.
+    """
+    f2calc: dict[tuple[int, int, int], float] = {}
+    in_table = False
+    with Path(path).open(encoding='utf-8') as handle:
+        for line in handle:
+            if not in_table:
+                in_table = 'F2obs' in line and 'F2cal' in line
+                continue
+            fields = line.split()
+            if len(fields) < _MIN_SC_F2CAL_COLUMNS:
+                break
+            try:
+                hkl = (int(fields[0]), int(fields[1]), int(fields[2]))
+                value = float(fields[6])
+            except ValueError:
+                break
+            f2calc[hkl] = value
+    return f2calc
+
+
+def align_reflections(
+    reference: dict[tuple[int, int, int], float],
+    candidate: dict[tuple[int, int, int], float],
+) -> tuple[np.ndarray, np.ndarray]:
+    """
+    Match two per-reflection maps over their common ``(h, k, l)``.
+
+    Parameters
+    ----------
+    reference : dict[tuple[int, int, int], float]
+        Reference values keyed by reflection.
+    candidate : dict[tuple[int, int, int], float]
+        Candidate values keyed by reflection.
+
+    Returns
+    -------
+    tuple[np.ndarray, np.ndarray]
+        Reference and candidate arrays over the shared reflections, in a
+        common order. Ready for :func:`pattern_closeness`.
+    """
+    common = sorted(set(reference) & set(candidate))
+    ref = np.array([reference[hkl] for hkl in common], dtype=float)
+    cand = np.array([candidate[hkl] for hkl in common], dtype=float)
+    return ref, cand
 
 
 # ----------------------------------------------------------------------
@@ -188,6 +295,77 @@ def calculate_pattern(
         structure._update_categories()
     experiment._update_categories()
     return np.asarray(intensity_category_for(experiment).intensity_calc, dtype=float)
+
+
+def set_reference_reflections(
+    experiment: object,
+    reflections: dict[tuple[int, int, int], float],
+) -> None:
+    """
+    Seed a single-crystal experiment with reference reflections.
+
+    Creates one reflection per ``(h, k, l)`` in ``reflections`` and
+    stores the reference values as the measured intensities, so the
+    chosen engine calculates ``intensity_calc`` for exactly those
+    reflections. Standard uncertainties default to ones.
+
+    Parameters
+    ----------
+    experiment : object
+        Single-crystal experiment to populate.
+    reflections : dict[tuple[int, int, int], float]
+        Reference values keyed by reflection, for example FullProf
+        F2cal.
+    """
+    hkls = sorted(reflections)
+    indices_h = np.array([hkl[0] for hkl in hkls], dtype=int)
+    indices_k = np.array([hkl[1] for hkl in hkls], dtype=int)
+    indices_l = np.array([hkl[2] for hkl in hkls], dtype=int)
+    refln = experiment.refln
+    refln._create_items_set_hkl_and_id(indices_h, indices_k, indices_l)
+    refln._set_intensity_meas(np.array([reflections[hkl] for hkl in hkls], dtype=float))
+    refln._set_intensity_meas_su(np.ones(len(hkls), dtype=float))
+
+
+def calculate_reflections(
+    project: object,
+    experiment: object,
+    engine: str,
+) -> dict[tuple[int, int, int], float]:
+    """
+    Calculate per-reflection intensities with a chosen engine.
+
+    Selects the calculation engine, refreshes the structure and
+    experiment categories, and returns ``intensity_calc`` keyed by
+    ``(h, k, l)``.
+
+    Parameters
+    ----------
+    project : object
+        Project owning the structures linked to the experiment.
+    experiment : object
+        Single-crystal experiment to calculate.
+    engine : str
+        Calculation engine tag (for example ``'cryspy'``).
+
+    Returns
+    -------
+    dict[tuple[int, int, int], float]
+        ``{(h, k, l): intensity_calc}`` for every reflection.
+    """
+    experiment.calculator.type = engine
+    for structure in project.structures:
+        structure._update_categories()
+    experiment._update_categories()
+    refln = experiment.refln
+    indices_h = refln.index_h.astype(int)
+    indices_k = refln.index_k.astype(int)
+    indices_l = refln.index_l.astype(int)
+    values = np.asarray(refln.intensity_calc, dtype=float)
+    return {
+        (int(indices_h[i]), int(indices_k[i]), int(indices_l[i])): float(values[i])
+        for i in range(len(values))
+    }
 
 
 # ----------------------------------------------------------------------

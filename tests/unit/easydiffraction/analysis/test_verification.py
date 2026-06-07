@@ -30,6 +30,19 @@ def test_load_fullprof_profile_reconstructs_grid(tmp_path):
     np.testing.assert_allclose(y, [1.0, 2.0, 3.0, 4.0, 5.0])
 
 
+def test_load_fullprof_profile_parses_fixed_width_header(tmp_path):
+    sub = tmp_path / 'ref.sub'
+    # Step and max run together in the fixed 10-character columns, as in
+    # FullProf's '5.00000030004.1875'-style headers.
+    sub.write_text(
+        '   10.0000  0.50000012.000000   ! comment\n   1.0 2.0 3.0\n   4.0 5.0\n',
+        encoding='utf-8',
+    )
+    x, y = verify.load_fullprof_profile(str(sub))
+    np.testing.assert_allclose(x, [10.0, 10.5, 11.0, 11.5, 12.0])
+    np.testing.assert_allclose(y, [1.0, 2.0, 3.0, 4.0, 5.0])
+
+
 def test_load_columned_profile_reads_two_columns(tmp_path):
     dat = tmp_path / 'ref.dat'
     dat.write_text('! header line\n10.0 100.0\n10.5 200.0\n11.0 150.0\n', encoding='utf-8')
@@ -38,9 +51,9 @@ def test_load_columned_profile_reads_two_columns(tmp_path):
     np.testing.assert_allclose(y, [100.0, 200.0, 150.0])
 
 
-def test_bundled_reference_dir_points_at_desired():
+def test_bundled_reference_dir_points_at_fullprof():
     path = verify.bundled_reference_dir()
-    assert path.parts[-2:] == ('powder_pattern_from_dict', 'desired')
+    assert path.parts[-2:] == ('verification', 'fullprof')
 
 
 # ----------------------------------------------------------------------
