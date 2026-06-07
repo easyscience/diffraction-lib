@@ -1,0 +1,45 @@
+# Nightly run of the FULL test suite across all cost tiers (default, pr,
+# and nightly), plus the performance benchmarks. The per-push and per-PR
+# runs in test.yml deselect the pr/nightly tiers; the nightly run does
+# not. See ADR test-suite-and-validation.
+
+name: Nightly tests
+
+on:
+  # Run the nightly-tier tests on a daily schedule
+  schedule:
+    - cron: '0 3 * * *' # 03:00 UTC daily
+  # Allow manual runs from the Actions tab
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Allow only one concurrent nightly run per ref.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  nightly-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check-out repository
+        uses: actions/checkout@v6
+
+      - name: Set up pixi
+        uses: ./.github/actions/setup-pixi
+
+      - name: Run the full test suite (all tiers)
+        run: pixi run test-all
+
+      - name: Run performance benchmarks
+        run: pixi run benchmarks
+
+      - name: Upload benchmark results
+        if: ${{ !cancelled() }}
+        uses: ./.github/actions/upload-artifact
+        with:
+          name: benchmark-results
+          path: benchmark.json

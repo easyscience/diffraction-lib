@@ -57,6 +57,7 @@ class TableRenderer(RendererBase):
 
     @classmethod
     def _factory(cls) -> RendererFactoryBase:
+        """Return the factory class for table renderers."""
         return TableRendererFactory
 
     @classmethod

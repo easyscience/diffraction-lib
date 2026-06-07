@@ -26,21 +26,8 @@ env:
   CI_BRANCH: ${{ github.head_ref || github.ref_name }}
 
 jobs:
-  # Job 1: Run docstring coverage
-  docstring-coverage:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Check-out repository
-        uses: actions/checkout@v6
-
-      - name: Set up pixi
-        uses: ./.github/actions/setup-pixi
-
-      - name: Run docstring coverage
-        run: pixi run docstring-coverage
-
-  # Job 2: Run unit tests with coverage and upload to Codecov
+  # Job 1: Run unit tests with coverage and upload to Codecov.
+  # Docstring coverage is gated as a static check in lint-format.yml.
   unit-tests-coverage:
     runs-on: ubuntu-latest
 
@@ -65,6 +52,6 @@ jobs:
 
   # Job 4: Build and publish dashboard (reusable workflow)
   run-reusable-workflows:
-    needs: [docstring-coverage, unit-tests-coverage] # depend on the previous jobs
+    needs: [unit-tests-coverage] # depend on the previous job
     uses: ./.github/workflows/dashboard.yml
     secrets: inherit

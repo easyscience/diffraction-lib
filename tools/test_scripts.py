@@ -21,9 +21,13 @@ import pytest
 _repo_root = Path(__file__).resolve().parents[1]
 _src_root = _repo_root / 'src'
 
-# Discover tutorial scripts, excluding temporary checkpoint files
+# Discover tutorial and verification scripts, excluding checkpoint files.
+_SCRIPT_DIRS = ('docs/docs/tutorials', 'docs/docs/verification')
 TUTORIALS = [
-    p for p in Path('docs/docs/tutorials').rglob('*.py') if '.ipynb_checkpoints' not in p.parts
+    p
+    for directory in _SCRIPT_DIRS
+    for p in Path(directory).rglob('*.py')
+    if '.ipynb_checkpoints' not in p.parts
 ]
 
 

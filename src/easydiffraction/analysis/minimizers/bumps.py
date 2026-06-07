@@ -31,6 +31,7 @@ class _BumpsEvaluationLimitError(RuntimeError):
         parameter_values: np.ndarray,
         residuals: np.ndarray | None,
     ) -> None:
+        """Record the evaluation count and last residual state."""
         super().__init__('maximum number of residual evaluations reached')
         self.evaluation_count = evaluation_count
         self.parameter_values = parameter_values
@@ -46,6 +47,7 @@ class _EasyDiffractionFitness:
         objective_function: object,
         max_evaluations: int | None = None,
     ) -> None:
+        """Wrap the objective and BUMPS parameters for evaluation."""
         self._bumps_params = bumps_params
         self._objective_function = objective_function
         self._max_evaluations = max_evaluations
@@ -137,6 +139,7 @@ class _BumpsProgressMonitor(bumps_monitor.Monitor):
         n_points: int,
         n_parameters: int,
     ) -> None:
+        """Store the tracker and fit dimensions for reporting."""
         self._tracker = tracker
         self._fitness = fitness
         self._n_points = n_points
@@ -203,6 +206,7 @@ class BumpsMinimizer(MinimizerBase):
         method: str = DEFAULT_METHOD,
         max_iterations: int = DEFAULT_MAX_ITERATIONS,
     ) -> None:
+        """Initialize the BUMPS minimizer with default settings."""
         super().__init__(
             name=name,
             method=method,

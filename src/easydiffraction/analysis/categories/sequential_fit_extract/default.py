@@ -62,6 +62,7 @@ class SequentialFitExtractItem(CategoryItem):
     _category_entry_name = 'id'
 
     def __init__(self) -> None:
+        """Initialize the extract-rule descriptors."""
         super().__init__()
 
         self._id = StringDescriptor(
@@ -111,6 +112,7 @@ class SequentialFitExtractItem(CategoryItem):
 
     @id.setter
     def id(self, value: str) -> None:
+        """Set the extract-rule identifier."""
         self._id.value = value
 
     @property
@@ -120,6 +122,7 @@ class SequentialFitExtractItem(CategoryItem):
 
     @target.setter
     def target(self, value: str) -> None:
+        """Set the diffrn attribute updated by this rule."""
         self._target.value = value
 
     @property
@@ -129,6 +132,7 @@ class SequentialFitExtractItem(CategoryItem):
 
     @pattern.setter
     def pattern(self, value: str) -> None:
+        """Set the extract-rule capture-group regex."""
         self._pattern.value = value
 
     @property
@@ -138,6 +142,7 @@ class SequentialFitExtractItem(CategoryItem):
 
     @required.setter
     def required(self, value: bool) -> None:
+        """Set whether this extract rule must match every file."""
         self._required.value = value
 
 

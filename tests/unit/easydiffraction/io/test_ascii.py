@@ -195,6 +195,10 @@ class TestExtractDataPathsFromZip:
         workspace = tmp_path / 'workspace'
         workspace.mkdir()
         monkeypatch.chdir(workspace)
+        # With no artifact root configured, relative destinations resolve
+        # against the cwd. Clear the env var so the test does not depend on
+        # whether a sibling test happened to leave it set.
+        monkeypatch.delenv('EASYDIFFRACTION_ARTIFACT_ROOT', raising=False)
 
         original_current_project = Project._current_project
         try:

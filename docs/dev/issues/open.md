@@ -1886,6 +1886,106 @@ only render the index column when no explicit id column is present.
 
 ---
 
+## 113. 🟡 Cross-Repository Validation Harness (nightly)
+
+**Type:** Test infrastructure
+
+Deferred cross-repository work for the
+[Test Suite and Validation Strategy](../adrs/accepted/test-suite-and-validation.md)
+ADR (§7, §8). The harness code lives in `diffraction-lib`; the corpus,
+results database, and benchmark/reference history live in the
+`diffraction` data repository, fetched at runtime and written back by a
+nightly job that installs easydiffraction from PyPI (acceptance-style).
+
+**Items:**
+
+- **COD corpus check.** Download ~100–200 CIF files from the
+  Crystallography Open Database, load each, and record per-file status
+  (`ok` / `partial` + missing fields / `fail`) in a git-diffable CSV
+  keyed and ordered by COD id. Add a `--recheck-failed` flag to re-run
+  only the failed/partial entries after fixes (instead of new random
+  files). Extend with per-engine calculation results on the corpus.
+- **Generative fuzzing.** Randomly generate ~100–200 structures (random
+  space group, cell, 1–10 atoms with random coordinates/ADP/occupancy),
+  compute patterns across engines, and record disagreements in the same
+  database.
+- **Benchmark history + gate.** Commit `pytest-benchmark` baseline JSON
+  to the data repository and add a regression threshold once timing
+  variance is characterised on a controlled runner. (The serial
+  benchmark task itself now exists — see issue 16 — this is the
+  history/gating remainder.)
+- **External-software comparison.** Add FullProf (then GSAS-II/TOPAS)
+  pre-calculated profiles as zipped projects in the data repository so
+  the Verification pages can overlay them against easydiffraction.
+
+**Depends on:** the `diffraction` data repository; cross-repo
+coordination.
+
+---
+
+## 114. 🟢 External Link Checking in the Docs Gate
+
+**Type:** CI / Documentation
+
+The fast docs gate (`docs-build` + `link-check` + `spell-check`) catches
+broken nav/internal links and typos on every push, but does not yet
+check external URLs. Add a `lychee` link checker (with an allowlist for
+rate-limited/unstable domains), coordinated with the
+[Documentation CI and Build Verification](../adrs/suggestions/documentation-ci-build.md)
+ADR. Run it nightly or on pull requests to avoid flakiness from external
+sites. Also covers link-checking of URLs that appear only inside
+executed notebook output cells (a feature that does not exist yet).
+
+**Depends on:** nothing.
+
+---
+
+## 115. 🟢 Expand Cross-Engine Verification Coverage
+
+**Type:** Test coverage / Documentation
+
+The Verification docs section ships with the framework and the first
+cross-engine comparison page (constant-wavelength powder, cryspy ↔
+crysfml). Extend it to the remaining supported combinations declared by
+the calculator support matrix — time-of-flight powder (cryspy ↔ crysfml)
+and single crystal — so every valid experiment/instrument combination is
+documented and regression-checked at least once. Each new page is a
+calculation-only `.py` under `docs/docs/verification/` wired into
+`script-tests` and `notebook-tests`, with explicit metric tolerances.
+
+**Depends on:** nothing.
+
+---
+
+## 116. 🟡 Add a Static Type Checker to the Quality Gate
+
+**Type:** Tooling / Correctness
+
+The project type-annotates public signatures but runs no static type
+checker (only ruff's `TC` import-placement rules). A genuine bug slipped
+through as a result:
+`Plotter._plot_single_crystal_posterior_predictive_summary` called
+`PlotlyPlotter._get_diagonal_shape()` with no arguments while the method
+requires `(minimum, maximum)`, so the single-crystal posterior-
+predictive plot raised `TypeError` whenever reached. A type checker
+would have flagged the wrong-arity call at lint time, without needing a
+test to exercise the path — and would catch the whole class of such
+errors.
+
+**Fix:** add a checker (mypy, pyright, or `ty`) as a `pixi` task wired
+into `check` and the lint CI workflow, alongside the existing ruff /
+pydoclint / interrogate gates. Roll out incrementally to manage the
+initial error backlog: start lenient (e.g. `--follow-imports=silent` or
+a per-package allowlist) and gate only new/changed code first, then
+tighten. The codebase already annotates public signatures, so it is
+well-positioned.
+
+**Depends on:** nothing. Best landed as its own focused effort because
+enabling a checker on an existing codebase surfaces a backlog that needs
+a baseline-cleanup plan.
+
+---
+
 ## Summary
 
 | #   | Issue                                             | Severity | Type                         |
@@ -1980,3 +2080,7 @@ only render the index column when no explicit id column is present.
 | 110 | Styled multi-line table cells in HTML backend     | 🟢 Low   | Display / Notebook parity    |
 | 111 | Test coverage for `list_tutorials` rendering      | 🟢 Low   | Test coverage                |
 | 112 | Suppress redundant row-index column in tables     | 🟢 Low   | Display / UX                 |
+| 113 | Cross-repository validation harness (nightly)     | 🟡 Med   | Test infrastructure          |
+| 114 | External link checking in the docs gate           | 🟢 Low   | CI / Documentation           |
+| 115 | Expand cross-engine verification coverage         | 🟢 Low   | Test coverage                |
+| 116 | Add a static type checker to the quality gate     | 🟡 Med   | Tooling / Correctness        |

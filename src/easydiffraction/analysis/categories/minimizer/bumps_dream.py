@@ -34,6 +34,7 @@ class BumpsDreamMinimizer(BayesianMinimizerBase):
     )
 
     def __init__(self) -> None:
+        """Initialize the BUMPS DREAM minimizer setting descriptors."""
         super().__init__()
         self._sampling_steps = self._sampling_steps_descriptor(DEFAULT_SAMPLING_STEPS)
         self._burn_in_steps = self._burn_in_steps_descriptor(DEFAULT_BURN_IN_STEPS)

@@ -90,6 +90,7 @@ class _DreamProgressMonitor(bumps_monitor.Monitor):
         total_generations: int,
         burn_steps: int,
     ) -> None:
+        """Precompute per-phase progress targets for reporting."""
         self._tracker = tracker
         self._n_points = n_points
         self._n_parameters = n_parameters
@@ -295,6 +296,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         method: str = DEFAULT_METHOD,
         max_iterations: int = DEFAULT_MAX_ITERATIONS,
     ) -> None:
+        """Initialize the DREAM minimizer with sampler defaults."""
         super().__init__(
             name=name,
             method=method,
@@ -315,6 +317,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
 
     @max_iterations.setter
     def max_iterations(self, value: int) -> None:
+        """Reject ``max_iterations``; DREAM uses ``steps`` instead."""
         del value
         sampler_name = self.type_info.description.partition('with ')[2].split()[0]
         msg = f"{sampler_name} sampler uses 'steps' instead of 'max_iterations'."
@@ -327,6 +330,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
 
     @steps.setter
     def steps(self, value: int) -> None:
+        """Set the number of DREAM generations after burn-in."""
         self._max_iterations = self._validated_positive_integer('steps', value)
 
     @property
@@ -336,6 +340,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
 
     @burn.setter
     def burn(self, value: int | None) -> None:
+        """Set explicit DREAM burn-in generations, or ``None``."""
         if value is None:
             self._burn = None
             return
@@ -348,6 +353,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
 
     @thin.setter
     def thin(self, value: int) -> None:
+        """Set the DREAM thinning interval."""
         self._thin = self._validated_positive_integer('thin', value)
 
     @property
@@ -357,6 +363,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
 
     @pop.setter
     def pop(self, value: int) -> None:
+        """Set the DREAM population multiplier."""
         self._pop = self._validated_positive_integer('pop', value)
 
     @property
@@ -366,6 +373,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
 
     @parallel.setter
     def parallel(self, value: int) -> None:
+        """Set the DREAM parallel worker count."""
         self._parallel = self._validated_non_negative_integer('parallel', value)
 
     @property
@@ -375,6 +383,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
 
     @init.setter
     def init(self, value: DreamPopulationInitializationEnum | str) -> None:
+        """Set the DREAM population initializer."""
         self._init = self._validated_init(value)
 
     def _resolve_random_seed(self, random_seed: int | None) -> int:

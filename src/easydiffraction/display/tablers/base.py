@@ -36,6 +36,7 @@ class TableBackendBase(ABC):
     RICH_BORDER_LIGHT_THEME = 'grey85'
 
     def __init__(self) -> None:
+        """Initialise the fixed-precision float formatter."""
         super().__init__()
         self._float_fmt = f'{{:.{self.FLOAT_PRECISION}f}}'.format
 
@@ -97,12 +98,14 @@ class TableBackendBase(ABC):
 
     @property
     def _rich_border_color(self) -> str:
+        """Rich border colour for the detected theme."""
         return (
             self.RICH_BORDER_DARK_THEME if self._is_dark_theme() else self.RICH_BORDER_LIGHT_THEME
         )
 
     @property
     def _pandas_border_color(self) -> str:
+        """Pandas border colour for the detected theme."""
         if self._is_dark_theme():
             return DARK_AXIS_FRAME_COLOR
         return LIGHT_AXIS_FRAME_COLOR

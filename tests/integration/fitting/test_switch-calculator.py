@@ -3,13 +3,11 @@
 
 import tempfile
 
-import pytest
 from numpy.testing import assert_almost_equal
 
 TEMP_DIR = tempfile.gettempdir()
 
 
-@pytest.mark.fast
 def test_neutron_pd_cwl_lbco_crysfml(tmp_path) -> None:
     import easydiffraction as ed
     from easydiffraction.analysis.calculators.crysfml import CrysfmlCalculator

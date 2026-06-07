@@ -63,8 +63,12 @@ dev = [
   'pytest',                          # Testing
   'pytest-cov',                      # Test coverage
   'pytest-xdist',                    # Enable parallel testing
+  'pytest-randomly',                 # Randomise test order to catch ordering bugs
+  'pytest-benchmark',                # Performance benchmarking (nightly)
+  'hypothesis',                      # Property-based / input-domain testing
   'ruff',                            # Linting and formatting code
   'radon',                           # Code complexity and maintainability
+  'codespell',                       # Spell checking docs and source
   'validate-pyproject[all]',         # Validate pyproject.toml
   'versioningit',                    # Automatic versioning from git tags
   'jupytext',                        # Jupyter notebook text format support
@@ -183,7 +187,7 @@ omit = [
 [tool.coverage.report]
 show_missing = true  # Show missing lines
 skip_covered = false # Skip files with 100% coverage in the report
-fail_under = 65      # Minimum coverage percentage to pass
+fail_under = 88      # Minimum coverage percentage to pass (ramp toward 90-95)
 
 ##########################
 # Configuration for pytest
@@ -194,7 +198,10 @@ fail_under = 65      # Minimum coverage percentage to pass
 
 [tool.pytest.ini_options]
 addopts = '--import-mode=importlib'
-markers = ['fast: mark test as fast (should be run on every push)']
+markers = [
+  'pr: heavier test; runs on pull requests and develop/master, not feature-branch pushes',
+  'nightly: very expensive test; runs only on the scheduled nightly job',
+]
 testpaths = ['tests']
 filterwarnings = [
   # TEMPRORARY: Suppress some warnings
@@ -206,6 +213,18 @@ filterwarnings = [
   "ignore:'diffpy\\.structure\\.expandPosition':DeprecationWarning",
   "ignore:'diffpy\\.structure\\.Structure\\.writeStr':DeprecationWarning",
 ]
+
+##############################
+# Configuration for codespell
+##############################
+
+# 'codespell' -- Spell checker for docs and source comments/docstrings.
+# https://github.com/codespell-project/codespell
+[tool.codespell]
+skip = '*.ipynb,*.lock,*.svg,*.min.js,*.json.gz,*/vendor/*,*/_vendored/*,docs/dev/package-structure/*,docs/site/*,docs/overrides/*,*/structure/assets/*,node_modules,.pixi'
+# British spelling and a crystallographic abbreviation (B/U) flagged as
+# typos; element symbols live in skipped vendored files.
+ignore-words-list = 'pre-emptively,bu'
 
 ########################
 # Configuration for ruff
@@ -360,6 +379,14 @@ ignore = [
 ]
 'docs/docs/tutorials/**' = [
   'E402', # https://docs.astral.sh/ruff/rules/module-import-not-at-top-of-file/
+]
+# Verification pages are notebook sources too: allow mid-cell imports,
+# printed metric values, and a trailing bare expression (figure render).
+'docs/docs/verification/**' = [
+  'E402', # module-import-not-at-top-of-file
+  'T201', # print (metric values shown in the rendered notebook)
+  'B018', # useless-expression (trailing `fig` renders in the notebook)
+  'S101', # assert (the regression checks in the verification script)
 ]
 # Intentional terminal rendering: these write raw/ASCII output that
 # `Console.print` would garble, so `print` is deliberate here.

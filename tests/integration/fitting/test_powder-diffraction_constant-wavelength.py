@@ -3,7 +3,6 @@
 
 import tempfile
 
-import pytest
 from numpy.testing import assert_almost_equal
 
 from easydiffraction import ExperimentFactory
@@ -144,7 +143,6 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
     )
 
 
-@pytest.mark.fast
 def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
     # Set structure
     model = StructureFactory.from_scratch(name='lbco')

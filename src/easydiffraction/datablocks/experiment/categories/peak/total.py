@@ -37,4 +37,5 @@ class TotalGaussianDampedSinc(
     )
 
     def __init__(self) -> None:
+        """Initialize the Gaussian-damped sinc PDF peak profile."""
         super().__init__()

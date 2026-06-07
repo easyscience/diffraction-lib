@@ -48,11 +48,13 @@ def _environment() -> Environment:
 
 
 def _data_url(path: pathlib.Path) -> str:
+    """Return a base64 ``data:`` URL for a JavaScript file."""
     encoded = base64.b64encode(path.read_bytes()).decode('ascii')
     return f'data:text/javascript;base64,{encoded}'
 
 
 def _import_map(*, offline: bool) -> dict[str, str]:
+    """Return the Three.js import map (vendored or CDN URLs)."""
     if offline:
         return {
             'three': _data_url(_VENDOR / 'three.module.js'),
@@ -67,6 +69,7 @@ def _import_map(*, offline: bool) -> dict[str, str]:
 
 
 def _scene_payload(scene: StructureScene) -> dict:
+    """Return the scene as a JSON-serialisable payload dict."""
     axes = None
     if scene.axes is not None:
         axes = {
@@ -151,10 +154,12 @@ def _label_payload(scene: StructureScene) -> list[dict[str, object]]:
 
 
 def _rgb_css(rgb: tuple[int, int, int]) -> str:
+    """Return an RGB triple as a CSS ``rgb(...)`` string."""
     return f'rgb({rgb[0]}, {rgb[1]}, {rgb[2]})'
 
 
 def _rgba_css(rgb: tuple[int, int, int], alpha: float) -> str:
+    """Return an RGB triple and alpha as a CSS ``rgba(...)`` string."""
     return f'rgba({rgb[0]}, {rgb[1]}, {rgb[2]}, {alpha:g})'
 
 

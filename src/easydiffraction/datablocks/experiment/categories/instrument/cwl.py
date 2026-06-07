@@ -22,6 +22,7 @@ class CwlInstrumentBase(InstrumentBase):
     """Base class for constant-wavelength instruments."""
 
     def __init__(self) -> None:
+        """Initialize the constant-wavelength instrument base."""
         super().__init__()
 
         self._setup_wavelength: Parameter = Parameter(
@@ -57,6 +58,7 @@ class CwlInstrumentBase(InstrumentBase):
 
     @setup_wavelength.setter
     def setup_wavelength(self, value: float) -> None:
+        """Set the incident neutron or X-ray wavelength (Å)."""
         self._setup_wavelength.value = value
 
 
@@ -78,6 +80,7 @@ class CwlScInstrument(CwlInstrumentBase):
     )
 
     def __init__(self) -> None:
+        """Initialize the CW single-crystal diffractometer."""
         super().__init__()
 
 
@@ -103,6 +106,7 @@ class CwlPdInstrument(CwlInstrumentBase):
     )
 
     def __init__(self) -> None:
+        """Initialize the CW powder diffractometer."""
         super().__init__()
 
         self._calib_twotheta_offset: Parameter = Parameter(
@@ -138,4 +142,5 @@ class CwlPdInstrument(CwlInstrumentBase):
 
     @calib_twotheta_offset.setter
     def calib_twotheta_offset(self, value: float) -> None:
+        """Set the instrument misalignment offset (deg)."""
         self._calib_twotheta_offset.value = value

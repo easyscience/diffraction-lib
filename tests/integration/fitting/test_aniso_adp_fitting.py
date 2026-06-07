@@ -4,8 +4,6 @@
 
 import tempfile
 
-import pytest
-
 import easydiffraction as ed
 
 TEMP_DIR = tempfile.gettempdir()
@@ -36,7 +34,6 @@ def _setup_tbti_project():
     return project
 
 
-@pytest.mark.fast
 def test_iso_then_aniso_fit() -> None:
     """Fit Uiso first, then switch to Uani and fit again."""
     project = _setup_tbti_project()

@@ -38,6 +38,7 @@ class CwlPseudoVoigt(
     )
 
     def __init__(self) -> None:
+        """Initialize the constant-wavelength pseudo-Voigt peak."""
         super().__init__()
 
 
@@ -62,6 +63,7 @@ class CwlPseudoVoigtEmpiricalAsymmetry(
     )
 
     def __init__(self) -> None:
+        """Initialize the pseudo-Voigt with empirical asymmetry."""
         super().__init__()
 
 
@@ -86,4 +88,5 @@ class CwlThompsonCoxHastings(
     )
 
     def __init__(self) -> None:
+        """Initialize the Thompson-Cox-Hastings FCJ peak."""
         super().__init__()

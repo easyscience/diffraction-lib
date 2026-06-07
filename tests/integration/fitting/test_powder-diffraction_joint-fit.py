@@ -3,7 +3,6 @@
 
 import tempfile
 
-import pytest
 from numpy.testing import assert_almost_equal
 
 from easydiffraction import ExperimentFactory
@@ -14,7 +13,6 @@ from easydiffraction import download_data
 TEMP_DIR = tempfile.gettempdir()
 
 
-@pytest.mark.fast
 def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     # Set structure
     model = StructureFactory.from_scratch(name='pbso4')
@@ -141,7 +139,6 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     )
 
 
-@pytest.mark.fast
 def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     # Set structure
     model = StructureFactory.from_scratch(name='pbso4')

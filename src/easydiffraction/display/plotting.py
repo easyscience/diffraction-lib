@@ -40,6 +40,7 @@ from easydiffraction.display.plotters.plotly import (
 )
 from easydiffraction.display.plotters.plotly import TITLE_FONT_SIZE as PLOTLY_TITLE_FONT_SIZE
 from easydiffraction.display.plotters.plotly import PlotlyPlotter
+from easydiffraction.display.plotters.plotly import single_crystal_axis_range
 from easydiffraction.display.tables import TableRenderer
 from easydiffraction.utils.environment import in_jupyter
 from easydiffraction.utils.logging import console
@@ -275,6 +276,7 @@ class Plotter(RendererBase):
     # ------------------------------------------------------------------
 
     def __init__(self) -> None:
+        """Initialise default axis limits, height, and project ref."""
         super().__init__()
         # X-axis limits
         self._x_min = DEFAULT_MIN
@@ -303,10 +305,12 @@ class Plotter(RendererBase):
 
     @classmethod
     def _factory(cls) -> type[RendererFactoryBase]:  # type: ignore[override]
+        """Return the plotter engine factory."""
         return PlotterFactory
 
     @classmethod
     def _default_engine(cls) -> str:
+        """Return the default plotter engine name."""
         return PlotterEngineEnum.default().value
 
     # ------------------------------------------------------------------
@@ -4085,12 +4089,17 @@ class Plotter(RendererBase):
             'su(I²meas): %{customdata[2]:,.2f}<extra></extra>'
         )
 
+        axis_min, axis_max = single_crystal_axis_range(
+            best_sample_prediction,
+            y_meas,
+            y_meas_su,
+        )
         fig = go.Figure(
             data=[trace],
             layout=PlotlyPlotter._get_layout(
                 f"Posterior predictive reflection check for experiment 🔬 '{expt_name}'",
                 axes_labels,
-                shapes=[PlotlyPlotter._get_diagonal_shape()],
+                shapes=[PlotlyPlotter._get_diagonal_shape(axis_min, axis_max)],
             ),
         )
         self._show_plot_figure(fig)
@@ -5710,6 +5719,9 @@ class Plotter(RendererBase):
         expt_name: str,
         x_axis: object,
     ) -> object | None:
+        """
+        Return Bragg tick x values for the requested x axis.
+        """
         x_name = getattr(x_axis, 'value', x_axis)
         if x_name == XAxisType.D_SPACING:
             return Plotter._bragg_tick_d_spacing(refln=refln, experiment=experiment)
@@ -5730,6 +5742,9 @@ class Plotter(RendererBase):
         name: str,
         expt_name: str,
     ) -> object | None:
+        """
+        Return a named reflection attribute, warning if absent.
+        """
         value = getattr(refln, name, None)
         if value is not None:
             return value
@@ -5746,6 +5761,9 @@ class Plotter(RendererBase):
         refln: object,
         expt_name: str,
     ) -> dict[str, np.ndarray] | None:
+        """
+        Collect required reflection arrays, warning on any missing.
+        """
         arrays: dict[str, np.ndarray] = {}
         for name in (
             'phase_id',
@@ -5772,6 +5790,9 @@ class Plotter(RendererBase):
         x_min: float | None,
         x_max: float | None,
     ) -> np.ndarray:
+        """
+        Return a boolean mask of ticks within the x range.
+        """
         lower_bound = DEFAULT_MIN if x_min is None else min(x_min, x_max)
         upper_bound = DEFAULT_MAX if x_max is None else max(x_min, x_max)
         return (x_values >= lower_bound) & (x_values <= upper_bound)
@@ -5782,6 +5803,9 @@ class Plotter(RendererBase):
         arrays: dict[str, np.ndarray],
         mask: np.ndarray,
     ) -> tuple[BraggTickSet, ...]:
+        """
+        Group masked reflection arrays into per-phase tick sets.
+        """
         phase_ids = arrays['phase_id'][mask]
         unique_phase_ids = []
         for raw_phase_id in phase_ids:
@@ -6024,6 +6048,7 @@ class PlotterFactory(RendererFactoryBase):
 
     @classmethod
     def _registry(cls) -> dict:
+        """Return the ASCII and Plotly plotter engine registry."""
         return {
             PlotterEngineEnum.ASCII.value: {
                 'description': PlotterEngineEnum.ASCII.description(),

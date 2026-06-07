@@ -28,6 +28,7 @@ class LmfitMinimizer(MinimizerBase):
         method: str = DEFAULT_METHOD,
         max_iterations: int = DEFAULT_MAX_ITERATIONS,
     ) -> None:
+        """Initialize the lmfit minimizer with default settings."""
         super().__init__(
             name=name,
             method=method,

@@ -25,6 +25,7 @@ class PeakBase(CategoryItem, SwitchableCategoryBase):
     _swap_method_name = '_swap_peak'
 
     def __init__(self) -> None:
+        """Initialize the peak profile base with its type descriptor."""
         super().__init__()
 
         type_info = getattr(type(self), 'type_info', None)

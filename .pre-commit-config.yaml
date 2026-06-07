@@ -39,6 +39,13 @@ repos:
         pass_filenames: false
         stages: [manual]
 
+      - id: pixi-docstring-coverage
+        name: pixi run docstring-coverage
+        entry: pixi run docstring-coverage
+        language: system
+        pass_filenames: false
+        stages: [manual]
+
       - id: pixi-nonpy-format-check
         name: pixi run nonpy-format-check
         entry: pixi run nonpy-format-check
@@ -60,16 +67,16 @@ repos:
         pass_filenames: false
         stages: [manual]
 
-      - id: pixi-unit-tests
-        name: pixi run unit-tests
-        entry: pixi run unit-tests
+      - id: pixi-spell-check
+        name: pixi run spell-check
+        entry: pixi run spell-check
         language: system
         pass_filenames: false
         stages: [manual]
 
-      - id: pixi-functional-tests
-        name: pixi run functional-tests
-        entry: pixi run functional-tests
+      - id: pixi-link-check
+        name: pixi run link-check
+        entry: pixi run link-check
         language: system
         pass_filenames: false
         stages: [manual]

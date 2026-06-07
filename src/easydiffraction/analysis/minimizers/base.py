@@ -45,6 +45,7 @@ class MinimizerBase(ABC):
         method: str | None = None,
         max_iterations: int | None = None,
     ) -> None:
+        """Initialize the minimizer with optional configuration."""
         self.name: str | None = name
         self.method: str | None = method
         self._max_iterations: int | None = max_iterations
@@ -67,6 +68,7 @@ class MinimizerBase(ABC):
 
     @max_iterations.setter
     def max_iterations(self, value: int | None) -> None:
+        """Set the user-facing iteration limit."""
         self._max_iterations = value
 
     def _start_tracking(

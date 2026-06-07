@@ -45,6 +45,7 @@ class BayesianFitResult(FitResultBase):
     _expected_descriptor_names: ClassVar[tuple[str, ...]] = _result_descriptor_names
 
     def __init__(self) -> None:
+        """Initialize the Bayesian fit-result descriptors."""
         super().__init__()
         self._point_estimate_name = self._point_estimate_name_descriptor()
         self._sampler_completed = self._sampler_completed_descriptor()

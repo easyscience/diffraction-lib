@@ -19,18 +19,11 @@ from dataclasses import field
 from pathlib import Path
 from typing import List
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
-SRC_ROOT = REPO_ROOT / 'src' / 'easydiffraction'
+from _src_tree import EXCLUDED_DIRS
+from _src_tree import REPO_ROOT
+from _src_tree import SRC_ROOT
+
 DOCS_OUT_DIR = REPO_ROOT / 'docs' / 'dev' / 'package-structure'
-
-
-IGNORE_DIRS = {
-    '__pycache__',
-    '.pytest_cache',
-    '.mypy_cache',
-    '.ruff_cache',
-    '.ipynb_checkpoints',
-}
 
 
 @dataclass
@@ -67,7 +60,7 @@ def build_tree(root: Path) -> Node:
             except PermissionError:
                 entries = []
             for child in entries:
-                if child.name in IGNORE_DIRS:
+                if child.name in EXCLUDED_DIRS:
                     continue
                 if child.is_dir():
                     node.children.append(_walk(child))

@@ -41,10 +41,15 @@ class TestStructuresCollection:
         out = capsys.readouterr().out
         assert 'Defined structures' in out
 
-    def test_show_params(self, capsys):
+    def test_show_params(self, capsys, monkeypatch):
         # TODO: Structure.show_params() is not defined — collection
         # delegates to it, causing TypeError. Fix the source, then update
         # this test to verify the output instead.
+        from easydiffraction.utils.logging import Logger
+
+        # Under WARN mode the missing attribute resolves to None, so the
+        # delegated call raises TypeError (None is not callable).
+        monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.WARN, raising=True)
         structs = Structures()
         structs.create(name='p1')
         with pytest.raises(TypeError):

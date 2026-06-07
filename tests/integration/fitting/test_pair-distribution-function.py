@@ -3,7 +3,6 @@
 
 import tempfile
 
-import pytest
 from numpy.testing import assert_almost_equal
 
 import easydiffraction as ed
@@ -75,7 +74,6 @@ def test_single_fit_pdf_xray_pd_cw_nacl() -> None:
     assert_almost_equal(chi2, desired=1.48, decimal=2)
 
 
-@pytest.mark.fast
 def test_single_fit_pdf_neutron_pd_cw_ni():
     project = ed.Project()
 

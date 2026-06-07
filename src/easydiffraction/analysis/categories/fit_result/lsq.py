@@ -28,6 +28,7 @@ class _LeastSquaresCoreProperties:
         return self._objective_name
 
     def _set_objective_name(self, value: str | None) -> None:
+        """Set the persisted objective function name."""
         self._objective_name.value = value
 
     @property
@@ -36,6 +37,7 @@ class _LeastSquaresCoreProperties:
         return self._objective_value
 
     def _set_objective_value(self, value: float | None) -> None:
+        """Set the persisted objective value."""
         self._objective_value.value = value
 
     @property
@@ -46,6 +48,7 @@ class _LeastSquaresCoreProperties:
         return self._n_data_points
 
     def _set_n_data_points(self, value: float | None) -> None:
+        """Set the persisted number of data points."""
         self._n_data_points.value = value
 
     @property
@@ -54,6 +57,7 @@ class _LeastSquaresCoreProperties:
         return self._n_parameters
 
     def _set_n_parameters(self, value: float | None) -> None:
+        """Set the persisted number of parameters."""
         self._n_parameters.value = value
 
     @property
@@ -64,6 +68,7 @@ class _LeastSquaresCoreProperties:
         return self._n_free_parameters
 
     def _set_n_free_parameters(self, value: float | None) -> None:
+        """Set the persisted number of free parameters."""
         self._n_free_parameters.value = value
 
     @property
@@ -72,6 +77,7 @@ class _LeastSquaresCoreProperties:
         return self._degrees_of_freedom
 
     def _set_degrees_of_freedom(self, value: float | None) -> None:
+        """Set the persisted degrees of freedom."""
         self._degrees_of_freedom.value = value
 
     @property
@@ -80,6 +86,7 @@ class _LeastSquaresCoreProperties:
         return self._covariance_available
 
     def _set_covariance_available(self, *, value: bool | None) -> None:
+        """Set whether deterministic covariance was available."""
         self._covariance_available.value = value
 
     @property
@@ -88,6 +95,7 @@ class _LeastSquaresCoreProperties:
         return self._correlation_available
 
     def _set_correlation_available(self, *, value: bool | None) -> None:
+        """Set whether deterministic correlations were available."""
         self._correlation_available.value = value
 
     @property
@@ -96,6 +104,7 @@ class _LeastSquaresCoreProperties:
         return self._exit_reason
 
     def _set_exit_reason(self, value: str | None) -> None:
+        """Set the persisted backend exit reason."""
         self._exit_reason.value = value
 
 
@@ -108,6 +117,7 @@ class _LeastSquaresReflectionProperties:
         return self._r_factor_all
 
     def _set_r_factor_all(self, value: float | None) -> None:
+        """Set the R factor for all observed data."""
         self._r_factor_all.value = value
 
     @property
@@ -116,6 +126,7 @@ class _LeastSquaresReflectionProperties:
         return self._wr_factor_all
 
     def _set_wr_factor_all(self, value: float | None) -> None:
+        """Set the weighted R factor for all observed data."""
         self._wr_factor_all.value = value
 
     @property
@@ -124,6 +135,7 @@ class _LeastSquaresReflectionProperties:
         return self._r_factor_gt
 
     def _set_r_factor_gt(self, value: float | None) -> None:
+        """Set the R factor for observations above the threshold."""
         self._r_factor_gt.value = value
 
     @property
@@ -132,6 +144,7 @@ class _LeastSquaresReflectionProperties:
         return self._wr_factor_gt
 
     def _set_wr_factor_gt(self, value: float | None) -> None:
+        """Set the weighted R factor above the threshold."""
         self._wr_factor_gt.value = value
 
     @property
@@ -140,6 +153,7 @@ class _LeastSquaresReflectionProperties:
         return self._threshold_expression
 
     def _set_threshold_expression(self, value: str | None) -> None:
+        """Set the observed-reflection threshold expression."""
         self._threshold_expression.value = value
 
     @property
@@ -148,6 +162,7 @@ class _LeastSquaresReflectionProperties:
         return self._number_reflns_total
 
     def _set_number_reflns_total(self, value: float | None) -> None:
+        """Set the total number of reflections in the fit."""
         self._number_reflns_total.value = value
 
     @property
@@ -156,6 +171,7 @@ class _LeastSquaresReflectionProperties:
         return self._number_reflns_gt
 
     def _set_number_reflns_gt(self, value: float | None) -> None:
+        """Set the number of reflections above the threshold."""
         self._number_reflns_gt.value = value
 
 
@@ -168,6 +184,7 @@ class _LeastSquaresPowderProperties:
         return self._prof_r_factor
 
     def _set_prof_r_factor(self, value: float | None) -> None:
+        """Set the profile R factor for powder fits."""
         self._prof_r_factor.value = value
 
     @property
@@ -176,6 +193,7 @@ class _LeastSquaresPowderProperties:
         return self._prof_wr_factor
 
     def _set_prof_wr_factor(self, value: float | None) -> None:
+        """Set the weighted profile R factor for powder fits."""
         self._prof_wr_factor.value = value
 
     @property
@@ -184,6 +202,7 @@ class _LeastSquaresPowderProperties:
         return self._prof_wr_expected
 
     def _set_prof_wr_expected(self, value: float | None) -> None:
+        """Set the expected weighted profile R factor (powder)."""
         self._prof_wr_expected.value = value
 
     @property
@@ -192,6 +211,7 @@ class _LeastSquaresPowderProperties:
         return self._number_restraints
 
     def _set_number_restraints(self, value: float | None) -> None:
+        """Set the number of restraints used in the fit."""
         self._number_restraints.value = value
 
     @property
@@ -200,6 +220,7 @@ class _LeastSquaresPowderProperties:
         return self._number_constraints
 
     def _set_number_constraints(self, value: float | None) -> None:
+        """Set the number of constraints used in the fit."""
         self._number_constraints.value = value
 
     @property
@@ -208,6 +229,7 @@ class _LeastSquaresPowderProperties:
         return self._shift_over_su_max
 
     def _set_shift_over_su_max(self, value: float | None) -> None:
+        """Set the maximum absolute parameter shift divided by s.u."""
         self._shift_over_su_max.value = value
 
     @property
@@ -216,6 +238,7 @@ class _LeastSquaresPowderProperties:
         return self._shift_over_su_mean
 
     def _set_shift_over_su_mean(self, value: float | None) -> None:
+        """Set the mean absolute parameter shift divided by s.u."""
         self._shift_over_su_mean.value = value
 
     @property
@@ -224,6 +247,7 @@ class _LeastSquaresPowderProperties:
         return self._profile_function
 
     def _set_profile_function(self, value: str | None) -> None:
+        """Set the active profile function names."""
         self._profile_function.value = value
 
     @property
@@ -232,6 +256,7 @@ class _LeastSquaresPowderProperties:
         return self._background_function
 
     def _set_background_function(self, value: str | None) -> None:
+        """Set the active background function names."""
         self._background_function.value = value
 
 
@@ -310,6 +335,7 @@ class LeastSquaresFitResult(
     )
 
     def __init__(self) -> None:
+        """Initialize the least-squares fit-result descriptors."""
         super().__init__()
         self._objective_name = self._string_result_descriptor(
             'objective_name',

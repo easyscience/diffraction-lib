@@ -38,10 +38,14 @@ def test_extinction_model_setter():
     assert ext.model.value == 'gauss'
 
 
-def test_extinction_model_invalid():
+def test_extinction_model_invalid(monkeypatch):
     from easydiffraction.datablocks.experiment.categories.extinction.becker_coppens import (
         BeckerCoppensExtinction,
     )
+    from easydiffraction.utils.logging import Logger
+
+    # Invalid input is rejected by fallback (keep current) under WARN mode.
+    monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.WARN, raising=True)
 
     ext = BeckerCoppensExtinction()
 

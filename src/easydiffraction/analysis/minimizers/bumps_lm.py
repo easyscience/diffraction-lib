@@ -30,6 +30,7 @@ class BumpsLmMinimizer(BumpsMinimizer):
         method: str = DEFAULT_METHOD,
         max_iterations: int = DEFAULT_MAX_ITERATIONS,
     ) -> None:
+        """Initialize the BUMPS Levenberg-Marquardt minimizer."""
         super().__init__(
             name=name,
             method=method,

@@ -51,6 +51,7 @@ class SoftwareRole(GuardedBase):
 
     @name.setter
     def name(self, value: str | None) -> None:
+        """Set the software name."""
         self._name.value = value
 
     @property
@@ -60,6 +61,7 @@ class SoftwareRole(GuardedBase):
 
     @version.setter
     def version(self, value: str | None) -> None:
+        """Set the software version."""
         self._version.value = value
 
     @property
@@ -69,6 +71,7 @@ class SoftwareRole(GuardedBase):
 
     @url.setter
     def url(self, value: str | None) -> None:
+        """Set the software project URL."""
         self._url.value = value
 
     @property

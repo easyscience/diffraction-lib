@@ -30,6 +30,7 @@ class LmfitLeastSquaresMinimizer(LmfitMinimizer):
         method: str = DEFAULT_METHOD,
         max_iterations: int = DEFAULT_MAX_ITERATIONS,
     ) -> None:
+        """Initialize the lmfit least_squares minimizer."""
         super().__init__(
             name=name,
             method=method,

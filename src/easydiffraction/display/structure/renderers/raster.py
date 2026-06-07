@@ -368,6 +368,7 @@ class RasterStructureRenderer:
         )
 
         def project(point: object) -> tuple[float, float, float]:
+            """Project a point to (screen x, screen y, depth)."""
             rel = np.asarray(point, dtype=float) - target
             sx = (float(rel @ right) - centre2d[0]) * scale + size / 2.0
             sy = size / 2.0 - (float(rel @ up) - centre2d[1]) * scale + size * _VERTICAL_SHIFT_FRAC

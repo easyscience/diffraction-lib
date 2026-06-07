@@ -20,12 +20,16 @@ coverage:
   status:
     project:
       default:
-        target: auto
+        target: 80%
         threshold: 1%
-        # Make project coverage informational (won't block PR)
-        informational: true
+        # Project coverage is the real gate (see ADR
+        # test-suite-and-validation).
+        informational: false
     patch:
       default:
         target: auto
-        # Require patch coverage but with threshold
         threshold: 1%
+        # Non-blocking: patch grades diff lines against unit-only
+        # coverage, so engine/integration-tested code would otherwise
+        # always fail. See ADR test-suite-and-validation.
+        informational: true

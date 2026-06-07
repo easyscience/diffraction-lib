@@ -49,6 +49,7 @@ class FitParameterItem(CategoryItem):
     )
 
     def __init__(self) -> None:
+        """Initialize the persisted fit-parameter descriptors."""
         super().__init__()
         self._param_unique_name = StringDescriptor(
             name='param_unique_name',
@@ -354,6 +355,7 @@ class FitParameters(CategoryCollection):
     )
 
     def __init__(self) -> None:
+        """Create an empty fit-parameters collection."""
         super().__init__(item_type=FitParameterItem)
 
     def _include_posterior_cif_descriptors(self) -> bool:
