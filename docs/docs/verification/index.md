@@ -26,9 +26,8 @@ and so on. The list below notes only what is specific to each page.
 
 ## Powder, neutron, constant wavelength
 
-- [LBCO `pd-neut-cwl`](pd-neut-cwl_pv_lbco.ipynb) – La0.5Ba0.5CoO3 (HRPT,
-  PSI); pseudo-Voigt, no asymmetry. No FullProf reference yet, so only
-  the two engines are compared.
+- [LBCO `pd-neut-cwl`](pd-neut-cwl_pv_lbco.ipynb) – La0.5Ba0.5CoO3
+  (cubic perovskite); pseudo-Voigt, no asymmetry.
 - [PbSO4 `pd-neut-cwl`](pd-neut-cwl_pv_pbso4.ipynb) – Anglesite;
   pseudo-Voigt, no asymmetry.
 - [PbSO4 `pd-neut-cwl`](pd-neut-cwl_pv-asym_empir_pbso4.ipynb) –
