@@ -482,6 +482,57 @@ class ProjectDisplay:
             annotation_lines=annotation_lines,
         )
 
+    def reflection_comparison(
+        self,
+        expt_name: str,
+        *,
+        reference: object,
+        candidate: object,
+        reference_label: str,
+        candidate_label: str,
+        show_metrics: bool = True,
+    ) -> None:
+        """
+        Scatter a reference against a candidate per-reflection F².
+
+        Plots the reference on the x-axis and the candidate on the
+        y-axis against a y=x reference line, both peak-normalised so
+        they share one scale and points fall on the diagonal when the
+        two agree. By default a closeness-metrics box is drawn in the
+        top-left corner. The single-crystal counterpart of
+        :meth:`pattern_comparison`, intended for the external-reference
+        Verification pages.
+
+        Parameters
+        ----------
+        expt_name : str
+            Single-crystal experiment supplying the plot context.
+        reference : object
+            Reference F² per reflection (for example FullProf F2cal),
+            aligned with ``candidate``.
+        candidate : object
+            Candidate F² per reflection (for example an engine), aligned
+            with ``reference``.
+        reference_label : str
+            Axis and hover name for the reference.
+        candidate_label : str
+            Axis and hover name for the candidate.
+        show_metrics : bool, default=True
+            Whether to annotate the plot with closeness metrics.
+        """
+        annotation_lines: tuple[str, ...] = ()
+        if show_metrics:
+            metrics = pattern_closeness(reference, candidate)
+            annotation_lines = tuple(closeness_annotation(metrics))
+        self._project.rendering_plot.plotter.plot_reflection_comparison(
+            expt_name=expt_name,
+            reference=reference,
+            candidate=candidate,
+            reference_label=reference_label,
+            candidate_label=candidate_label,
+            annotation_lines=annotation_lines,
+        )
+
     def structure(
         self,
         struct_name: str,

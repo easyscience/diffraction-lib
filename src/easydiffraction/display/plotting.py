@@ -804,6 +804,87 @@ class Plotter(RendererBase):
         # without the styled overlay or metrics annotation.
         self._backend.plot_powder_meas_vs_calc(plot_spec=plot_spec)
 
+    def plot_reflection_comparison(
+        self,
+        *,
+        expt_name: str,
+        reference: np.ndarray,
+        candidate: np.ndarray,
+        reference_label: str,
+        candidate_label: str,
+        annotation_lines: tuple[str, ...] = (),
+        title: str | None = None,
+    ) -> None:
+        """
+        Scatter a reference against a candidate per-reflection F².
+
+        Peak-normalises both sets so they share one scale, then plots
+        the reference on the x-axis and the candidate on the y-axis
+        against a y=x reference line, with an optional metrics
+        annotation. Intended for the single-crystal external-reference
+        Verification pages.
+
+        Parameters
+        ----------
+        expt_name : str
+            Experiment supplying the plot context (single crystal).
+        reference : np.ndarray
+            Reference F² per reflection (for example FullProf F2cal).
+        candidate : np.ndarray
+            Candidate F² per reflection (for example an engine).
+        reference_label : str
+            Axis and hover name for the reference.
+        candidate_label : str
+            Axis and hover name for the candidate.
+        annotation_lines : tuple[str, ...], default=()
+            Lines for the top-left metrics annotation.
+        title : str | None, default=None
+            Optional plot title.
+
+        Raises
+        ------
+        ValueError
+            If ``reference`` and ``candidate`` differ in length.
+        """
+        self._update_project_categories(expt_name)
+        reference = np.asarray(reference, dtype=float)
+        candidate = np.asarray(candidate, dtype=float)
+        if reference.shape != candidate.shape:
+            msg = (
+                f'reference and candidate must have the same length '
+                f'(got {reference.shape}, {candidate.shape}).'
+            )
+            raise ValueError(msg)
+
+        reference_norm = self._peak_normalized(reference)
+        candidate_norm = self._peak_normalized(candidate)
+        axes_labels = (
+            f'{reference_label} F² (normalised)',
+            f'{candidate_label} F² (normalised)',
+        )
+        plot_title = title or f"Reflection F² comparison for 🔬 '{expt_name}'"
+        if self.engine == PlotterEngineEnum.PLOTLY.value:
+            self._backend.build_and_show_reflection_comparison(
+                x_reference=reference_norm,
+                y_candidate=candidate_norm,
+                axes_labels=axes_labels,
+                reference_label=reference_label,
+                candidate_label=candidate_label,
+                title=plot_title,
+                annotation_lines=annotation_lines,
+            )
+            return
+        # Other engines (for example ASCII) render the base scatter
+        # without the styled metrics annotation.
+        self._backend.plot_single_crystal(
+            x_calc=reference_norm,
+            y_meas=candidate_norm,
+            y_meas_su=np.zeros_like(candidate_norm),
+            axes_labels=axes_labels,
+            title=plot_title,
+            height=self.height,
+        )
+
     @staticmethod
     def _peak_normalized(values: np.ndarray) -> np.ndarray:
         """

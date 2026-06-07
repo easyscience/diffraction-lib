@@ -812,6 +812,11 @@ class PlotlyPlotter(PlotterBase):
         """
         calc_label = plot_spec.y_calc_name or 'Icalc'
         meas_label = plot_spec.y_meas_name or 'Imeas'
+        # Mirror the residual trace name: a plain "Residual" when custom
+        # curve labels are set (the calc-comparison view), otherwise the
+        # default "Imeas - Icalc" difference label.
+        custom_labels = plot_spec.y_meas_name is not None and plot_spec.y_calc_name is not None
+        resid_label = 'Residual' if custom_labels else f'{meas_label} - {calc_label}'
         if plot_spec.y_bkg is None:
             return cls._format_hover_lines([
                 'x: %{x:,.2f}',
@@ -824,7 +829,7 @@ class PlotlyPlotter(PlotterBase):
                     DEFAULT_COLORS['calc'],
                 ),
                 cls._hover_color_span(
-                    f'{meas_label} - {calc_label}: %{{customdata[2]:,.2f}}',
+                    f'{resid_label}: %{{customdata[2]:,.2f}}',
                     DEFAULT_COLORS['resid'],
                 ),
             ])
@@ -844,7 +849,7 @@ class PlotlyPlotter(PlotterBase):
                 DEFAULT_COLORS['calc'],
             ),
             cls._hover_color_span(
-                f'{meas_label} - {calc_label}: %{{customdata[3]:,.2f}}',
+                f'{resid_label}: %{{customdata[3]:,.2f}}',
                 DEFAULT_COLORS['resid'],
             ),
         ])
@@ -2782,7 +2787,7 @@ scheduleResize();
             hovertemplate=hover_template,
         )
         if plot_spec.y_meas_name is not None and plot_spec.y_calc_name is not None:
-            resid_trace.name = f'Residual ({plot_spec.y_meas_name} - {plot_spec.y_calc_name})'
+            resid_trace.name = 'Residual'
         fig.add_trace(resid_trace, row=layout.residual_row, col=1)
         return residual_limit
 
@@ -3066,6 +3071,62 @@ scheduleResize();
         )
 
         return self._get_figure(data, layout)
+
+    def build_and_show_reflection_comparison(
+        self,
+        *,
+        x_reference: object,
+        y_candidate: object,
+        axes_labels: object,
+        reference_label: str,
+        candidate_label: str,
+        title: str,
+        annotation_lines: tuple[str, ...] = (),
+    ) -> None:
+        """
+        Show a reference-vs-candidate single-crystal reflection scatter.
+
+        Reuses the single-crystal scatter — the reference on the x-axis,
+        the candidate on the y-axis, and a y=x reference line — then
+        corrects the hover labels and adds an optional metrics box in
+        the top-left corner. Both inputs are peak-normalised upstream so
+        they share one scale and points fall on the diagonal when the
+        engines agree.
+
+        Parameters
+        ----------
+        x_reference : object
+            Peak-normalised reference F² per reflection (x-axis).
+        y_candidate : object
+            Peak-normalised candidate F² per reflection (y-axis).
+        axes_labels : object
+            Pair of strings for the x and y titles.
+        reference_label : str
+            Short name of the reference, used in the hover text.
+        candidate_label : str
+            Short name of the candidate, used in the hover text.
+        title : str
+            Figure title.
+        annotation_lines : tuple[str, ...], default=()
+            Lines for the top-left metrics annotation; omitted when
+            empty.
+        """
+        fig = self.build_single_crystal_figure(
+            x_calc=x_reference,
+            y_meas=y_candidate,
+            y_meas_su=np.zeros_like(np.asarray(y_candidate, dtype=float)),
+            axes_labels=axes_labels,
+            title=title,
+        )
+        fig.data[0].update(
+            error_y=None,
+            hovertemplate=(
+                f'{reference_label}: %{{x:.2f}}<br>{candidate_label}: %{{y:.2f}}<extra></extra>'
+            ),
+        )
+        if annotation_lines:
+            self._add_metrics_annotation(fig, annotation_lines)
+        self._show_figure(fig)
 
     def plot_scatter(
         self,
