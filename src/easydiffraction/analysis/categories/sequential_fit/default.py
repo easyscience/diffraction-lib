@@ -30,6 +30,7 @@ class SequentialFit(CategoryItem):
     )
 
     def __init__(self) -> None:
+        """Initialize the sequential-fit setting descriptors."""
         super().__init__()
 
         self._data_dir = StringDescriptor(
@@ -91,6 +92,7 @@ class SequentialFit(CategoryItem):
 
     @data_dir.setter
     def data_dir(self, value: str) -> None:
+        """Set the sequential-fit data directory."""
         self._data_dir.value = value
 
     @property
@@ -100,6 +102,7 @@ class SequentialFit(CategoryItem):
 
     @file_pattern.setter
     def file_pattern(self, value: str) -> None:
+        """Set the sequential-fit file glob pattern."""
         self._file_pattern.value = value
 
     @property
@@ -109,6 +112,7 @@ class SequentialFit(CategoryItem):
 
     @max_workers.setter
     def max_workers(self, value: str) -> None:
+        """Set the sequential-fit worker-count token."""
         self._max_workers.value = value
 
     @property
@@ -118,6 +122,7 @@ class SequentialFit(CategoryItem):
 
     @chunk_size.setter
     def chunk_size(self, value: str) -> None:
+        """Set the sequential-fit chunk-size token."""
         self._chunk_size.value = value
 
     @property
@@ -127,6 +132,7 @@ class SequentialFit(CategoryItem):
 
     @reverse.setter
     def reverse(self, value: bool) -> None:
+        """Set whether to process sequential-fit files in reverse."""
         self._reverse.value = value
 
     @property

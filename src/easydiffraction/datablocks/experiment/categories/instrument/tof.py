@@ -36,6 +36,7 @@ class TofScInstrument(InstrumentBase):
     )
 
     def __init__(self) -> None:
+        """Initialize the TOF single-crystal diffractometer."""
         super().__init__()
 
 
@@ -57,6 +58,7 @@ class TofPdInstrument(InstrumentBase):
     )
 
     def __init__(self) -> None:
+        """Initialize the TOF powder diffractometer."""
         super().__init__()
 
         self._setup_twotheta_bank: Parameter = Parameter(
@@ -152,6 +154,7 @@ class TofPdInstrument(InstrumentBase):
 
     @setup_twotheta_bank.setter
     def setup_twotheta_bank(self, value: float) -> None:
+        """Set the detector bank position (deg)."""
         self._setup_twotheta_bank.value = value
 
     @property
@@ -166,6 +169,7 @@ class TofPdInstrument(InstrumentBase):
 
     @calib_d_to_tof_offset.setter
     def calib_d_to_tof_offset(self, value: float) -> None:
+        """Set the TOF offset (μs)."""
         self._calib_d_to_tof_offset.value = value
 
     @property
@@ -180,6 +184,7 @@ class TofPdInstrument(InstrumentBase):
 
     @calib_d_to_tof_linear.setter
     def calib_d_to_tof_linear(self, value: float) -> None:
+        """Set the TOF linear conversion (μs/Å)."""
         self._calib_d_to_tof_linear.value = value
 
     @property
@@ -194,6 +199,7 @@ class TofPdInstrument(InstrumentBase):
 
     @calib_d_to_tof_quad.setter
     def calib_d_to_tof_quad(self, value: float) -> None:
+        """Set the TOF quadratic correction (μs/Å²)."""
         self._calib_d_to_tof_quad.value = value
 
     @property
@@ -208,4 +214,5 @@ class TofPdInstrument(InstrumentBase):
 
     @calib_d_to_tof_recip.setter
     def calib_d_to_tof_recip(self, value: float) -> None:
+        """Set the TOF reciprocal velocity correction (μs·Å)."""
         self._calib_d_to_tof_recip.value = value

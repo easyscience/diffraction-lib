@@ -30,6 +30,7 @@ class Constraint(CategoryItem):
     _category_entry_name = 'id'
 
     def __init__(self) -> None:
+        """Initialize the constraint id and expression descriptors."""
         super().__init__()
 
         self._id = StringDescriptor(
@@ -68,6 +69,7 @@ class Constraint(CategoryItem):
 
     @id.setter
     def id(self, value: str) -> None:
+        """Set the constraint identifier value."""
         self._id.value = value
 
     @property
@@ -82,6 +84,7 @@ class Constraint(CategoryItem):
 
     @expression.setter
     def expression(self, value: str) -> None:
+        """Set the constraint equation value."""
         self._expression.value = value
 
     @property

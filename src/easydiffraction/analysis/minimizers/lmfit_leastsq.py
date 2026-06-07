@@ -32,6 +32,7 @@ class LmfitLeastsqMinimizer(LmfitMinimizer):
         method: str = DEFAULT_METHOD,
         max_iterations: int = DEFAULT_MAX_ITERATIONS,
     ) -> None:
+        """Initialize the lmfit leastsq minimizer."""
         super().__init__(
             name=name,
             method=method,

@@ -52,6 +52,7 @@ def _ansi256(rgb: Rgb) -> int:
 
 
 def _tint(rgb: Rgb, text: str) -> str:
+    """Wrap text in an xterm-256 foreground colour escape."""
     return f'\x1b[38;5;{_ansi256(rgb)}m{text}\x1b[0m'
 
 
@@ -114,6 +115,7 @@ class AsciiStructureRenderer(StructureRendererBase):
         v_hat = v_vec / (np.linalg.norm(v_vec) or 1.0)
 
         def project(point: Coords) -> Point2D:
+            """Project a Cartesian point onto the in-plane axes."""
             p = np.array(point, dtype=float)
             return float(p @ h_hat), float(p @ v_hat)
 
@@ -204,6 +206,7 @@ class AsciiStructureRenderer(StructureRendererBase):
 
 
 def _make_grid(points: list[Point2D]) -> tuple[Grid, Place]:
+    """Return an empty grid and a placement closure for points."""
     xs = [p[0] for p in points] or [0.0]
     ys = [p[1] for p in points] or [0.0]
     min_x, max_x, min_y, max_y = min(xs), max(xs), min(ys), max(ys)
@@ -214,6 +217,7 @@ def _make_grid(points: list[Point2D]) -> tuple[Grid, Place]:
     grid: Grid = {}
 
     def place(point: Coords) -> Cell:
+        """Map a projected point to a (row, column) grid cell."""
         col = PAD + int((point[0] - min_x) / span_x * (width - 1 - 2 * PAD))
         row = PAD + int((max_y - point[1]) / span_y * (height - 1 - 2 * PAD))
         return row, col
@@ -223,6 +227,7 @@ def _make_grid(points: list[Point2D]) -> tuple[Grid, Place]:
 
 
 def _draw_cell(grid: Grid, place: Place, corners: list[Point2D]) -> None:
+    """Draw the unit cell as an upright bounding-box rectangle."""
     # Draw the projected cell as a clean, closed rectangle (the
     # bounding box of the four projected corners). Integer-rounding
     # the corners independently otherwise leaves the borders one
@@ -250,6 +255,7 @@ def _draw_cell(grid: Grid, place: Place, corners: list[Point2D]) -> None:
 
 
 def _draw_atoms(grid: Grid, place: Place, atoms: list[Atom]) -> None:
+    """Place atom glyphs into the grid, skipping near-duplicates."""
     max_radius = max(a[1] for a in atoms) or 1.0
     placed: dict = {}
     for centre, radius, colour, _label in atoms:
@@ -266,6 +272,7 @@ def _draw_atoms(grid: Grid, place: Place, atoms: list[Atom]) -> None:
 
 
 def _grid_to_lines(grid: Grid) -> list[str]:
+    """Render the grid to ANSI-tinted text rows."""
     height, width = grid['_size']
     lines = []
     for row in range(height):
@@ -300,6 +307,7 @@ def _annotate_axes(
 
 
 def _legend(atoms: list[Atom]) -> str:
+    """Return a tinted one-line legend of element glyphs."""
     seen: dict = {}
     for _centre, radius, colour, label in atoms:
         # Keep '/' so a shared site reads 'La/Ba', not 'LaBa'; no digits

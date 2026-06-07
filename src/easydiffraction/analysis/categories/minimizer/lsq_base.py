@@ -28,6 +28,7 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
     _result_descriptor_names: ClassVar[tuple[str, ...]] = ()
 
     def __init__(self) -> None:
+        """Initialize the max-iterations setting descriptor."""
         super().__init__()
         self._max_iterations = self._max_iterations_descriptor(self._default_max_iterations)
 
@@ -55,4 +56,5 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
 
     @max_iterations.setter
     def max_iterations(self, value: int) -> None:
+        """Set the maximum solver iterations."""
         self._max_iterations.value = value

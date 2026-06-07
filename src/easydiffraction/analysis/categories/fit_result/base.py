@@ -48,6 +48,7 @@ class FitResultBase(CategoryItem):
     )
 
     def __init__(self) -> None:
+        """Initialize the common persisted fit-result descriptors."""
         super().__init__()
         self._result_kind = EnumDescriptor(
             name='result_kind',

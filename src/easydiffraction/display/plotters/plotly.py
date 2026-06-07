@@ -283,6 +283,7 @@ class PlotlyPlotter(PlotterBase):
     _supports_graphical_heatmap: bool = True
 
     def __init__(self) -> None:
+        """Set the default Plotly template and renderer."""
         if hasattr(pio, 'templates'):
             pio.templates.default = self._default_template_name()
         if in_pycharm():
@@ -433,21 +434,25 @@ class PlotlyPlotter(PlotterBase):
 
     @staticmethod
     def _background_color_for_template(template: str) -> str | None:
+        """Return the background colour for a Plotly template."""
         theme_colors = display_theme_colors_for_template(template)
         return theme_colors.background if theme_colors is not None else None
 
     @staticmethod
     def _axis_frame_color_for_template(template: str) -> str | None:
+        """Return the axis-frame colour for a Plotly template."""
         theme_colors = display_theme_colors_for_template(template)
         return theme_colors.axis_frame if theme_colors is not None else None
 
     @staticmethod
     def _inner_tick_grid_color_for_template(template: str) -> str | None:
+        """Return the inner tick/grid colour for a template."""
         theme_colors = display_theme_colors_for_template(template)
         return theme_colors.inner_tick_grid if theme_colors is not None else None
 
     @staticmethod
     def _legend_background_color_for_template(template: str) -> str | None:
+        """Return the legend background colour for a template."""
         theme_colors = display_theme_colors_for_template(template)
         return theme_colors.legend_background if theme_colors is not None else None
 
@@ -1718,6 +1723,7 @@ scheduleResize();
         """Return whether a figure exposes at least one legend entry."""
 
         def _trace_value(trace: object, field_name: str) -> object:
+            """Return a trace field from attribute or kwargs."""
             value = getattr(trace, field_name, None)
             if value is not None:
                 return value
@@ -2424,6 +2430,7 @@ scheduleResize();
         y_meas: np.ndarray,
         y_calc: np.ndarray,
     ) -> list[np.ndarray]:
+        """Collect all intensity series shown in the main row."""
         main_series = [y_meas, y_calc]
         for values in (
             plot_spec.y_bkg,
@@ -2442,6 +2449,7 @@ scheduleResize();
         main_series: list[np.ndarray],
         values: np.ndarray | None,
     ) -> None:
+        """Append values to the series list when non-empty."""
         if values is None:
             return
 
@@ -2451,6 +2459,7 @@ scheduleResize();
 
     @staticmethod
     def _predictive_draw_array(values: object | None) -> np.ndarray | None:
+        """Return predictive draws as a 2D array, or None if absent."""
         if values is None:
             return None
 
@@ -2642,6 +2651,7 @@ scheduleResize();
 
     @staticmethod
     def _create_powder_composite_figure(layout: PowderCompositeRows) -> object:
+        """Create the shared-x subplot figure for the composite plot."""
         return make_subplots(
             rows=layout.row_count,
             cols=1,
@@ -2656,6 +2666,7 @@ scheduleResize();
         fig: object,
         plot_spec: PowderMeasVsCalcSpec,
     ) -> None:
+        """Add the 95% predictive band traces to the main row."""
         if plot_spec.predictive_lower_95 is None or plot_spec.predictive_upper_95 is None:
             return
 
@@ -2675,6 +2686,7 @@ scheduleResize();
         hover_data: object,
         hover_template: str,
     ) -> None:
+        """Add measured, background, and calculated traces."""
         meas_trace = self._get_powder_trace(
             plot_spec.x,
             plot_spec.y_meas,
@@ -2722,6 +2734,7 @@ scheduleResize();
         fig: object,
         plot_spec: PowderMeasVsCalcSpec,
     ) -> None:
+        """Add capped posterior predictive draw traces."""
         predictive_draws = self._predictive_draw_array(plot_spec.predictive_draws)
         if predictive_draws is None:
             return
@@ -2751,6 +2764,7 @@ scheduleResize();
         plot_spec: PowderMeasVsCalcSpec,
         layout: PowderCompositeRows,
     ) -> None:
+        """Add one Bragg tick trace per phase to the Bragg row."""
         if layout.bragg_row is None:
             return
 
@@ -2775,6 +2789,7 @@ scheduleResize();
         hover_data: object,
         hover_template: str,
     ) -> float | None:
+        """Add the residual trace and return its symmetric limit."""
         if layout.residual_row is None or plot_spec.y_resid is None:
             return None
 
@@ -2798,6 +2813,7 @@ scheduleResize();
         plot_spec: PowderMeasVsCalcSpec,
         layout: PowderCompositeRows,
     ) -> None:
+        """Configure the composite figure height, title, and legend."""
         fig.update_layout(
             height=self._composite_figure_height(layout),
             margin={
@@ -2829,6 +2845,7 @@ scheduleResize();
         main_y_range: tuple[float, float],
         residual_limit: float | None,
     ) -> None:
+        """Configure the main, Bragg, and residual axes."""
         self._configure_shared_composite_axes(
             fig=fig,
             row_count=layout.row_count,
@@ -2871,6 +2888,7 @@ scheduleResize();
         x_min: float | None,
         x_max: float | None,
     ) -> None:
+        """Apply shared x/y axis styling to every composite row."""
         axis_frame_color = self._axis_frame_color()
         for row_idx in range(1, row_count + 1):
             x_axis_kwargs = {
@@ -2905,6 +2923,7 @@ scheduleResize();
         plot_spec: PowderMeasVsCalcSpec,
         layout: PowderCompositeRows,
     ) -> None:
+        """Configure the Bragg row's phase-labelled y axis."""
         fig.update_yaxes(
             tickmode='array',
             tickvals=[float(idx + 1) for idx in range(len(plot_spec.bragg_tick_sets))],
@@ -2928,6 +2947,7 @@ scheduleResize();
         layout: PowderCompositeRows,
         residual_limit: float,
     ) -> None:
+        """Configure the residual row's symmetric y axis and x title."""
         residual_tick_limit = self._get_display_tick_limit(residual_limit)
         fig.update_yaxes(
             range=[-residual_limit, residual_limit],

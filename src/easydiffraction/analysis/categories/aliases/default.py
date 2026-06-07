@@ -34,6 +34,7 @@ class Alias(CategoryItem):
     _category_entry_name = 'label'
 
     def __init__(self) -> None:
+        """Initialize the alias descriptors and parameter reference."""
         super().__init__()
 
         self._label = StringDescriptor(
@@ -82,6 +83,7 @@ class Alias(CategoryItem):
 
     @label.setter
     def label(self, value: str) -> None:
+        """Set the alias label value."""
         self._label.value = value
 
     @property

@@ -37,6 +37,7 @@ class FitParameterCorrelationItem(CategoryItem):
     _category_entry_name = 'id'
 
     def __init__(self) -> None:
+        """Initialize the persisted correlation-row descriptors."""
         super().__init__()
         self._id = StringDescriptor(
             name='id',
@@ -137,6 +138,7 @@ class FitParameterCorrelations(CategoryCollection):
     )
 
     def __init__(self) -> None:
+        """Create an empty fit-parameter correlations collection."""
         super().__init__(item_type=FitParameterCorrelationItem)
 
     def create(

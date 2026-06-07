@@ -68,6 +68,7 @@ class _EmceeLogProbability:
         parameter_names: list[str],
         objective_function: Callable[[dict[str, object]], object],
     ) -> None:
+        """Capture parameters, names and objective for sampling."""
         self._parameter_names = parameter_names
         self._objective_function = objective_function
         self._bounds = {
@@ -123,6 +124,7 @@ class _EmceeProgressReporter:
         total_steps: int,
         burn_steps: int,
     ) -> None:
+        """Store the tracker and step counts for progress rows."""
         self._tracker = tracker
         self._total_steps = max(1, total_steps)
         self._burn_steps = min(max(0, burn_steps), self._total_steps)
@@ -289,6 +291,7 @@ class EmceeMinimizer(MinimizerBase):
         method: str = DEFAULT_METHOD,
         max_iterations: int = DEFAULT_NSTEPS,
     ) -> None:
+        """Initialize the emcee minimizer with sampler defaults."""
         super().__init__(
             name=name,
             method=method,
@@ -310,6 +313,7 @@ class EmceeMinimizer(MinimizerBase):
 
     @nsteps.setter
     def nsteps(self, value: int) -> None:
+        """Set the number of emcee steps per walker."""
         self._max_iterations = self._validated_positive_integer('nsteps', value)
 
     @property
@@ -319,6 +323,7 @@ class EmceeMinimizer(MinimizerBase):
 
     @nburn.setter
     def nburn(self, value: int) -> None:
+        """Set the number of burn-in steps to discard."""
         self._nburn = self._validated_non_negative_integer('nburn', value)
 
     @property
@@ -328,6 +333,7 @@ class EmceeMinimizer(MinimizerBase):
 
     @thin.setter
     def thin(self, value: int) -> None:
+        """Set the emcee thinning interval."""
         self._thin = self._validated_positive_integer('thin', value)
 
     @property
@@ -337,6 +343,7 @@ class EmceeMinimizer(MinimizerBase):
 
     @nwalkers.setter
     def nwalkers(self, value: int) -> None:
+        """Set the number of emcee walkers."""
         self._nwalkers = self._validated_positive_integer('nwalkers', value)
 
     @property
@@ -348,6 +355,7 @@ class EmceeMinimizer(MinimizerBase):
 
     @parallel_workers.setter
     def parallel_workers(self, value: int) -> None:
+        """Set the number of parallel sampling workers."""
         self._parallel_workers = self._validated_non_negative_integer('parallel_workers', value)
 
     @property
@@ -357,6 +365,7 @@ class EmceeMinimizer(MinimizerBase):
 
     @initialization_method.setter
     def initialization_method(self, value: InitializationMethodEnum | str) -> None:
+        """Set the emcee walker initialization method."""
         self._initialization_method = self._validated_initialization_method(value)
 
     @property
@@ -366,6 +375,7 @@ class EmceeMinimizer(MinimizerBase):
 
     @proposal_moves.setter
     def proposal_moves(self, value: str) -> None:
+        """Set the emcee proposal move name."""
         self._proposal_moves = self._validated_proposal_moves(value)
 
     def fit(

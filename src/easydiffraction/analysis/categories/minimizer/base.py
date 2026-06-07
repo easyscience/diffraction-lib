@@ -31,6 +31,7 @@ class MinimizerCategoryBase(CategoryItem, SwitchableCategoryBase):
     _fit_result_class: ClassVar[type[FitResultBase]] = FitResultBase
 
     def __init__(self) -> None:
+        """Initialize the minimizer type descriptor."""
         super().__init__()
         self._type = StringDescriptor(
             name='type',

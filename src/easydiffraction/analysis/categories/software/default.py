@@ -25,6 +25,7 @@ class Software(CategoryItem):
     )
 
     def __init__(self) -> None:
+        """Initialize the software-role and timestamp descriptors."""
         super().__init__()
         self._framework = SoftwareRole(
             role_name='framework',
@@ -67,6 +68,7 @@ class Software(CategoryItem):
 
     @timestamp.setter
     def timestamp(self, value: str | None) -> None:
+        """Set the UTC timestamp of the provenance snapshot."""
         self._timestamp.value = value
 
     @property

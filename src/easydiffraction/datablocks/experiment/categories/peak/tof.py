@@ -54,6 +54,7 @@ class TofPseudoVoigt(
     )
 
     def __init__(self) -> None:
+        """Initialize the non-convoluted pseudo-Voigt TOF peak."""
         super().__init__()
 
 
@@ -78,6 +79,7 @@ class TofJorgensen(
     )
 
     def __init__(self) -> None:
+        """Initialize the Jorgensen TOF peak profile."""
         super().__init__()
 
 
@@ -103,6 +105,7 @@ class TofJorgensenVonDreele(
     )
 
     def __init__(self) -> None:
+        """Initialize the Jorgensen-Von Dreele TOF peak profile."""
         super().__init__()
 
 
@@ -128,4 +131,5 @@ class TofDoubleJorgensenVonDreele(
     )
 
     def __init__(self) -> None:
+        """Initialize the double Jorgensen-Von Dreele TOF peak."""
         super().__init__()
