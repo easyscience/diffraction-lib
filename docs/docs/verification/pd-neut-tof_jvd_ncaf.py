@@ -152,5 +152,3 @@ verify.assert_patterns_agree([
     ('crysfml vs FullProf', calc_fullprof, calc_ed_crysfml),
     ('cryspy vs crysfml', calc_ed_cryspy, calc_ed_crysfml),
 ])
-
-# %%
