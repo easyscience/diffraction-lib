@@ -141,6 +141,10 @@ COMPOSITE_VERTICAL_SPACING = 0.03
 COMPOSITE_MARGIN_RIGHT = 30
 COMPOSITE_MARGIN_TOP = 40
 COMPOSITE_MARGIN_BOTTOM = 45
+# Live notebooks place the plot right under the cell, so the figure's
+# top margin is trimmed to this minimum. Plotly's autoexpand still grows
+# it to fit a title, so nothing clips; docs keep their own spacing.
+LIVE_FIGURE_TOP_MARGIN = 10
 TITLE_FONT_SIZE = 14
 AXIS_TITLE_FONT_SIZE = 12
 X_AXIS_TICK_LABEL_STANDOFF = 5
@@ -1817,6 +1821,12 @@ scheduleResize();
         # loader (inline — no async CDN race), then renders this
         # figure's spec into the target. One output and one script
         # element keep the cell's visual footprint to just the plot.
+        # Trim the top margin so the plot sits right under the cell.
+        # title.automargin grows the margin back just enough to fit a
+        # title (so it is not clipped), without the default empty band.
+        update_layout = getattr(fig, 'update_layout', None)
+        if callable(update_layout):
+            update_layout(margin_t=LIVE_FIGURE_TOP_MARGIN, title_automargin=True)
         plot_id = f'ed-fig-{uuid.uuid4().hex}'
         height = self._figure_height(fig)
         target_html = (
