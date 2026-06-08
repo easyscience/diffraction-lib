@@ -230,8 +230,12 @@ def test_report_refinement_closeness_scores_before_and_after():
     reference = _gaussian(x, 5.0, 0.4) * 100.0
     before = _gaussian(x, 5.4, 0.4) * 100.0  # shifted peak — poor match
     after = _gaussian(x, 5.02, 0.4) * 100.0  # almost on the reference
-    before_metrics, after_metrics = verify.report_refinement_closeness(reference, before, after)
-    # Refinement moves the candidate closer to the reference.
+    # The display helper renders the table and returns nothing, so a
+    # notebook cell ending in it shows only the table.
+    assert verify.report_refinement_closeness(reference, before, after) is None
+    # The underlying metrics still move the candidate closer.
+    before_metrics = verify.pattern_closeness(reference, before)
+    after_metrics = verify.pattern_closeness(reference, after)
     assert after_metrics.profile_difference_percent < before_metrics.profile_difference_percent
     assert after_metrics.correlation > before_metrics.correlation
 

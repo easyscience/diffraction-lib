@@ -660,14 +660,17 @@ def report_refinement_closeness(
     reference: np.ndarray,
     before: np.ndarray,
     after: np.ndarray,
-) -> tuple[ClosenessMetrics, ClosenessMetrics]:
+) -> None:
     """
     Tabulate closeness to a reference before and after refinement.
 
     Scores ``before`` and ``after`` against the same ``reference`` with
     :func:`pattern_closeness` and renders a compact before/after table,
     so a page can show whether refining the disputed parameters moved
-    the candidate closer to the reference.
+    the candidate closer to the reference. This is a display helper: it
+    renders the table and returns nothing, so a notebook cell ending in
+    this call shows only the table and not an echoed return value. Call
+    :func:`pattern_closeness` directly for the metrics programmatically.
 
     Parameters
     ----------
@@ -677,11 +680,6 @@ def report_refinement_closeness(
         Candidate intensities before refinement.
     after : np.ndarray
         Candidate intensities after refinement.
-
-    Returns
-    -------
-    tuple[ClosenessMetrics, ClosenessMetrics]
-        The before and after closeness metrics.
     """
     before_metrics = pattern_closeness(reference, before)
     after_metrics = pattern_closeness(reference, after)
@@ -712,4 +710,3 @@ def report_refinement_closeness(
         columns_alignment=['left', 'right', 'right'],
         columns_data=rows,
     )
-    return before_metrics, after_metrics
