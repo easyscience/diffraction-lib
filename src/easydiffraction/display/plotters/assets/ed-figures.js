@@ -1,12 +1,17 @@
 /*
  * Shared lazy loader for EasyDiffraction interactive figures.
  *
- * Loaded once per docs page (mkdocs `extra_javascript`). Plotly figures
- * emitted in SHARED embedding mode are inert placeholders carrying their
- * spec as `application/json`; this loader renders each one lazily when it
- * scrolls near the viewport (IntersectionObserver), behind a "Loading…"
- * skeleton. It also centralizes the theme-sync, resize, and legend-toggle
- * behavior that used to be duplicated inline in every figure.
+ * Loaded once per docs page (mkdocs `extra_javascript`) and once per
+ * kernel session in live notebooks (injected by `_show_figure`). Plotly
+ * figures emitted as placeholders carry their spec as `application/json`;
+ * this loader renders each one lazily when it scrolls near the viewport
+ * (IntersectionObserver), behind a "Loading…" skeleton. It also
+ * centralizes the theme-sync, resize, and legend-toggle behavior that
+ * used to be duplicated inline in every figure.
+ *
+ * `window.edFigures.activate()` is exposed and idempotent, so live
+ * notebooks can re-scan for placeholders emitted by later cells after the
+ * loader first ran.
  *
  * Three.js structure scenes manage their own lazy boot (they are ES
  * modules resolved through the page-level import map); this file handles
@@ -392,6 +397,13 @@
       list.forEach(render);
     });
   }
+
+  // Expose a re-callable entry point so live notebooks can re-scan for
+  // placeholders emitted by later cells. render() is idempotent
+  // (data-ed-rendered), so repeated activate() calls are safe.
+  window.edFigures = window.edFigures || {};
+  window.edFigures.activate = activate;
+  window.edFigures.render = render;
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', activate);
