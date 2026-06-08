@@ -14,7 +14,7 @@
 # Please notify any error or suggestion to: 
 #           Juan Rodriguez-Carvajal (jrc@ill.eu)
 # Improvements will be progressively added as needed.
-#      Date: 08/06/2026  Time: 12:47:02.598
+#      Date: 08/06/2026  Time: 14:22:23.253
  
  
 #=============================================================================
@@ -365,28 +365,28 @@ _pd_proc_ls_pref_orient_corr
 #  The sum is extended to all non-excluded points.
 #  These are the current CIF standard
  
-_pd_proc_ls_prof_R_factor                7.8008
-_pd_proc_ls_prof_wR_factor              10.5376
-_pd_proc_ls_prof_wR_expected             2.7491
+_pd_proc_ls_prof_R_factor                7.8003
+_pd_proc_ls_prof_wR_factor              10.5375
+_pd_proc_ls_prof_wR_expected             2.7496
  
 #  The following profile R-factors are CORRECTED for background
 #  The sum is extended to all non-excluded points.
 #  These items are not in the current CIF standard, but are defined above
  
-_pd_proc_ls_prof_cR_factor               15.5401
-_pd_proc_ls_prof_cwR_factor              17.9353
-_pd_proc_ls_prof_cwR_expected             4.6791
+_pd_proc_ls_prof_cR_factor               15.5390
+_pd_proc_ls_prof_cwR_factor              17.9352
+_pd_proc_ls_prof_cwR_expected             4.6798
  
 #  The following items are not in the CIF standard, but are defined above
  
-_pd_proc_ls_prof_chi2                14.6924
-_pd_proc_ls_prof_echi2               14.9976
+_pd_proc_ls_prof_chi2                14.6875
+_pd_proc_ls_prof_echi2               14.9925
  
 #  Items related to LS refinement
  
-_refine_ls_R_I_factor                 4.2888
+_refine_ls_R_I_factor                 4.2880
 _refine_ls_number_reflns                    28
-_refine_ls_number_parameters                17
+_refine_ls_number_parameters                16
 _refine_ls_number_restraints                 0
  
 # The following four items apply to angular dispersive measurements.
@@ -394,7 +394,7 @@ _refine_ls_number_restraints                 0
 # intensities used in the refinement.
  
 _pd_proc_2theta_range_min                4.6192
-_pd_proc_2theta_range_max              164.2113
+_pd_proc_2theta_range_max              164.2114
 _pd_proc_2theta_range_inc              0.049998
 _pd_proc_wavelength                    1.623891
  
@@ -428,7 +428,7 @@ loop_
     _atom_site_adp_type
     _atom_site_type_symbol
  La  0.00000  0.00000  0.00000  0.0068(3)  1.00000 Uiso La    
- B  0.50000  0.50000  0.19972(16)  0.0050(2)  1.00016 Uiso B11   
+ B  0.19972(16)  0.50000  0.50000  0.00499  1.00016 Uiso B11   
  
 # Note: if the displacement parameters were refined anisotropically
 # the U matrices should be given as for single-crystal studies.

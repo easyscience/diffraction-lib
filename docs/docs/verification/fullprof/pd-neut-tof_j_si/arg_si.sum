@@ -8,7 +8,7 @@
                  Refinement of X-ray and/or Neutron Data
 
 
-    Date: 08/06/2026  Time: 13:52:20.071                              
+    Date: 08/06/2026  Time: 14:28:36.829                              
 
  => PCR file code: arg_si
  => DAT file code: arg_si.dat           -> Relative contribution: 1.0000                                                            
@@ -29,13 +29,13 @@
     No. of points:   5600
  =>-------> Pattern#  1
  => Crystal Structure Refinement for phase: 1
- => The density (volumic mass) of phase 1 is:    2.329 g/cm3
- => Scor: 2.7958
+ => The density (volumic mass) of phase 1 is:    2.327 g/cm3
+ => Scor: 2.6190
 
  ==> RESULTS OF REFINEMENT:
 
 
- => No. of fitted parameters:   11
+ => No. of fitted parameters:   16
 
 
 ------------------------------------------------------------------------------
@@ -48,26 +48,26 @@
  ==> ATOM PARAMETERS:
 
   Name      x     sx       y     sy       z      sz      B   sB   occ. socc.  Mult
- Si      0.12500(   0)  0.12500(   0)  0.12500(   0)  0.535(  4)  1.000(  0)    8
+ Si      0.12500(   0)  0.12500(   0)  0.12500(   0)  0.541(  4)  1.000(  0)    8
 
  ==> PROFILE PARAMETERS FOR PATTERN#  1
 
  => Cell parameters      :
-                              5.43133   0.00005
-                              5.43133   0.00005
-                              5.43133   0.00005
+                              5.43238   0.00008
+                              5.43238   0.00008
+                              5.43238   0.00008
                              90.00000   0.00000
                              90.00000   0.00000
                              90.00000   0.00000
  
 
- => Overall scale factor       :      0.656211078     0.001978015
+ => Overall scale factor       :      0.662020028     0.002023762
  => T.O.F. Extinction parameter:     0.000000    0.000000
  => Overall temperature  factor:     0.000000    0.000000
  => T.O.F. Gaussian variances Sig-2, Sig-1, Sig-0: 
-         0.517100    0.000000
-        50.307598    0.000000
-         2.649300    0.000000
+         0.000000    0.000000
+        29.639063    0.996316
+         5.079278    0.487290
 
  => T.O.F. Gaussian variance Sig-Q:     0.000000    0.000000
  => T.O.F. Isotropic Gaussian Strain parameter (G-strain):      0.00000     0.00000
@@ -83,9 +83,9 @@
          0.000000    0.000000
 
  => Direct cell parameters: 
-        5.431334    0.000045
-        5.431334    0.000045
-        5.431334    0.000045
+        5.432381    0.000083
+        5.432381    0.000083
+        5.432381    0.000083
        90.000000    0.000000
        90.000000    0.000000
        90.000000    0.000000
@@ -95,9 +95,9 @@
          0.000000    0.000000
 
  => T.O.F. Peak shape parameter alpha0,beta0,beta1,alphaQ,betaQ: 
-        0.031177    0.000000    0.042210
-        0.000000    0.597100    0.000000
-        0.009460    0.000000    0.000000
+        0.000000    0.000000    0.038017
+        0.000211    0.235368    0.005179
+        0.010903    0.000206    0.000000
         0.000000    0.000000    0.000000
 
 
@@ -110,15 +110,15 @@
  ==> GLOBAL PARAMETERS FOR PATTERN#  1
 
 
- => Zero-point:    -9.1833    0.0644
+ => Zero-point:    -8.5721    0.0888
  => Cosine Fourier Background Parameters ==>
-                               154.67     0.68365    
-                               1.3240      1.2006    
-                               36.643      1.0524    
-                               11.915     0.96805    
-                               17.636     0.94265    
-                               4.8670     0.78373    
-                               6.8330     0.54239    
+                               154.32     0.66899    
+                               1.3401      1.1746    
+                               37.000      1.0290    
+                               12.332     0.94643    
+                               17.706     0.92149    
+                               4.7849     0.76595    
+                               6.8079     0.53147    
                                0.0000      0.0000    
                                0.0000      0.0000    
                                0.0000      0.0000    
@@ -138,39 +138,39 @@
 
  ==> RELIABILITY FACTORS WITH ALL NON-EXCLUDED POINTS FOR PATTERN:  1
 
-  => Cycle:  1 => MaxCycle: 50
- => N-P+C:  5589
+  => Cycle: 13 => MaxCycle: 50
+ => N-P+C:  5584
  =>  R-factors (not corrected for background) for Pattern:  1
- => Rp:  8.99     Rwp:  6.68     Rexp:    3.66 Chi2:  3.33      L.S. refinement
+ => Rp:  8.73     Rwp:  6.36     Rexp:    3.66 Chi2:  3.03      L.S. refinement
  => Conventional Rietveld R-factors for Pattern:  1
- => Rp:  20.7     Rwp:  13.1     Rexp:    7.16 Chi2:  3.33    
- => Deviance:  0.346E+05     Dev*  :   6.186    
- => DW-Stat.:    0.9345     DW-exp:     1.9210
- => N-sigma of the GoF:      123.394
+ => Rp:  20.1     Rwp:  12.4     Rexp:    7.15 Chi2:  3.03    
+ => Deviance:  0.322E+05     Dev*  :   5.757    
+ => DW-Stat.:    0.9736     DW-exp:     1.9228
+ => N-sigma of the GoF:      107.162
 
  ==> RELIABILITY FACTORS FOR POINTS WITH BRAGG CONTRIBUTIONS FOR PATTERN:  1
 
- => N-P+C:  3420
+ => N-P+C:  3108
  =>  R-factors (not corrected for background) for Pattern:  1
- => Rp:  6.52     Rwp:  6.23     Rexp:    2.90 Chi2:  4.62      L.S. refinement
+ => Rp:  5.93     Rwp:  5.83     Rexp:    2.77 Chi2:  4.41      L.S. refinement
  => Conventional Rietveld R-factors for Pattern:  1
- => Rp:  11.6     Rwp:  12.1     Rexp:    5.61 Chi2:  4.62    
- => Deviance:  0.166E+05     Dev*  :   4.840    
- => DW-Stat.:    1.1015     DW-exp:     1.9004
- => N-sigma of the GoF:      149.806
+ => Rp:  10.1     Rwp:  11.2     Rexp:    5.34 Chi2:  4.41    
+ => Deviance:  0.130E+05     Dev*  :   4.173    
+ => DW-Stat.:    1.2001     DW-exp:     1.8991
+ => N-sigma of the GoF:      134.554
 
- => Global user-weigthed Chi2 (Bragg contrib.):   5.45    
+ => Global user-weigthed Chi2 (Bragg contrib.):   5.44    
 
      -----------------------------------------------------
      BRAGG R-Factors and weight fractions for Pattern #  1
      -----------------------------------------------------
 
  => Phase:  1     Standard-Si
- => Bragg R-factor:   2.10       Vol:  160.221( 0.002)  Fract(%):  100.00( 0.43)
- => Rf-factor=  13.7             ATZ:      129420.289   Brindley:  1.0000
+ => Bragg R-factor:   2.04       Vol:  160.314( 0.004)  Fract(%):  100.00( 0.43)
+ => Rf-factor=  13.9             ATZ:      129420.289   Brindley:  1.0000
 
  
-              CPU Time:     0.157 seconds
-                            0.003 minutes
+              CPU Time:     2.072 seconds
+                            0.035 minutes
 
- => Run finished at:     Date: 08/06/2026  Time: 13:52:20.226                              
+ => Run finished at:     Date: 08/06/2026  Time: 14:28:38.919                              
