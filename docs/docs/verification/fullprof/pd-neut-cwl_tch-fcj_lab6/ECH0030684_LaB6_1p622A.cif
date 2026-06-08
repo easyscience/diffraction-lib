@@ -14,14 +14,14 @@
 # Please notify any error or suggestion to: 
 #           Juan Rodriguez-Carvajal (jrc@ill.eu)
 # Improvements will be progressively added as needed.
-#      Date: 06/06/2026  Time: 18:03:47.851
+#      Date: 08/06/2026  Time: 12:47:02.598
  
  
 #=============================================================================
  data_global
 #=============================================================================
  
-_audit_creation_date  06/06/2026  
+_audit_creation_date  08/06/2026  
 _audit_creation_method  "FullProf Suite"
 # PROCESSING SUMMARY (IUCr Office Use Only)
  
@@ -314,7 +314,7 @@ _pd_calibration_special_details           # description of the method used
 _diffrn_ambient_temperature          ?
 _diffrn_source           'nuclear reactor' 
 _diffrn_radiation_type   'Constant Wavelength Neutron Diffraction' 
-_diffrn_radiation_wavelength           1.62291
+_diffrn_radiation_wavelength           1.62389
 _diffrn_source_type      ?  # Put here the diffractometer and site
  
 _diffrn_radiation_monochromator      ?
@@ -365,38 +365,38 @@ _pd_proc_ls_pref_orient_corr
 #  The sum is extended to all non-excluded points.
 #  These are the current CIF standard
  
-_pd_proc_ls_prof_R_factor                   NaN
-_pd_proc_ls_prof_wR_factor                  NaN
-_pd_proc_ls_prof_wR_expected             2.7473
+_pd_proc_ls_prof_R_factor                7.8008
+_pd_proc_ls_prof_wR_factor              10.5376
+_pd_proc_ls_prof_wR_expected             2.7491
  
 #  The following profile R-factors are CORRECTED for background
 #  The sum is extended to all non-excluded points.
 #  These items are not in the current CIF standard, but are defined above
  
-_pd_proc_ls_prof_cR_factor                   NaN
-_pd_proc_ls_prof_cwR_factor                  NaN
-_pd_proc_ls_prof_cwR_expected             4.6680
+_pd_proc_ls_prof_cR_factor               15.5401
+_pd_proc_ls_prof_cwR_factor              17.9353
+_pd_proc_ls_prof_cwR_expected             4.6791
  
 #  The following items are not in the CIF standard, but are defined above
  
-_pd_proc_ls_prof_chi2                    NaN
-_pd_proc_ls_prof_echi2                   NaN
+_pd_proc_ls_prof_chi2                14.6924
+_pd_proc_ls_prof_echi2               14.9976
  
 #  Items related to LS refinement
  
-_refine_ls_R_I_factor                    NaN
+_refine_ls_R_I_factor                 4.2888
 _refine_ls_number_reflns                    28
-_refine_ls_number_parameters                21
+_refine_ls_number_parameters                17
 _refine_ls_number_restraints                 0
  
 # The following four items apply to angular dispersive measurements.
 # 2theta minimum, maximum and increment (in degrees) are for the 
 # intensities used in the refinement.
  
-_pd_proc_2theta_range_min                   NaN
-_pd_proc_2theta_range_max                   NaN
+_pd_proc_2theta_range_min                4.6192
+_pd_proc_2theta_range_max              164.2113
 _pd_proc_2theta_range_inc              0.049998
-_pd_proc_wavelength                    1.622912
+_pd_proc_wavelength                    1.623891
  
 _pd_block_diffractogram_id        ?  # The id used for the block containing
                                      # the powder pattern profile (section 11)
@@ -427,3 +427,82 @@ loop_
     _atom_site_occupancy
     _atom_site_adp_type
     _atom_site_type_symbol
+ La  0.00000  0.00000  0.00000  0.0068(3)  1.00000 Uiso La    
+ B  0.50000  0.50000  0.19972(16)  0.0050(2)  1.00016 Uiso B11   
+ 
+# Note: if the displacement parameters were refined anisotropically
+# the U matrices should be given as for single-crystal studies.
+ 
+#=============================================================================
+ 
+# 10. DISTANCES AND ANGLES / MOLECULAR GEOMETRY 
+ 
+_geom_special_details                ?
+ 
+loop_
+    _geom_bond_atom_site_label_1  
+    _geom_bond_atom_site_label_2  
+    _geom_bond_site_symmetry_1    
+    _geom_bond_site_symmetry_2    
+    _geom_bond_distance           
+    _geom_bond_publ_flag          
+    ?   ?   ?   ?   ?   ?
+ 
+loop_
+    _geom_contact_atom_site_label_1 
+    _geom_contact_atom_site_label_2 
+    _geom_contact_distance          
+    _geom_contact_site_symmetry_1   
+    _geom_contact_site_symmetry_2   
+    _geom_contact_publ_flag         
+    ?   ?   ?   ?   ?   ?
+ 
+loop_
+_geom_angle_atom_site_label_1 
+_geom_angle_atom_site_label_2 
+_geom_angle_atom_site_label_3 
+_geom_angle_site_symmetry_1   
+_geom_angle_site_symmetry_2   
+_geom_angle_site_symmetry_3   
+_geom_angle                   
+_geom_angle_publ_flag         
+?   ?   ?   ?   ?   ?   ?   ?
+ 
+loop_
+_geom_torsion_atom_site_label_1 
+_geom_torsion_atom_site_label_2 
+_geom_torsion_atom_site_label_3 
+_geom_torsion_atom_site_label_4 
+_geom_torsion_site_symmetry_1   
+_geom_torsion_site_symmetry_2   
+_geom_torsion_site_symmetry_3   
+_geom_torsion_site_symmetry_4   
+_geom_torsion                   
+_geom_torsion_publ_flag         
+?   ?   ?   ?   ?   ?   ?   ?   ?   ?
+ 
+loop_
+_geom_hbond_atom_site_label_D 
+_geom_hbond_atom_site_label_H 
+_geom_hbond_atom_site_label_A 
+_geom_hbond_site_symmetry_D   
+_geom_hbond_site_symmetry_H   
+_geom_hbond_site_symmetry_A   
+_geom_hbond_distance_DH       
+_geom_hbond_distance_HA       
+_geom_hbond_distance_DA       
+_geom_hbond_angle_DHA         
+_geom_hbond_publ_flag         
+?   ?   ?   ?   ?   ?   ?   ?   ?   ?   ?
+ 
+#=============================================================================
+ 
+#=============================================================================
+# Additional structures (last six sections and associated data_? identifiers) 
+# may be added at this point.                                                 
+#=============================================================================
+ 
+# The following lines are used to test the character set of files sent by     
+# network email or other means. They are not part of the CIF data set.        
+# abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789              
+# !@#$%^&*()_+{}:"~<>?|\-=[];'`,./ 
