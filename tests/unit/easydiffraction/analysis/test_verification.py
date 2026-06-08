@@ -112,19 +112,20 @@ def test_pattern_closeness_identical_patterns():
     pattern = _gaussian(x, 5.0, 0.4) * 1000.0 + 1.0
     metrics = verify.pattern_closeness(pattern, pattern)
     assert metrics.profile_difference_percent == pytest.approx(0.0, abs=1e-9)
-    assert metrics.max_deviation == pytest.approx(0.0, abs=1e-9)
+    assert metrics.max_deviation_percent == pytest.approx(0.0, abs=1e-9)
     assert metrics.intensity_ratio == pytest.approx(1.0)
     assert metrics.correlation == pytest.approx(1.0)
 
 
-def test_pattern_closeness_is_scale_independent():
+def test_pattern_closeness_reflects_absolute_scale():
     x = np.linspace(0.0, 10.0, 200)
     reference = _gaussian(x, 5.0, 0.4) * 1000.0 + 1.0
-    # A pure rescaling must not change any shape metric.
+    # Metrics are absolute: a pure rescaling changes the integrated ratio
+    # and the profile difference, while the shape correlation stays one.
     candidate = reference * 0.25
     metrics = verify.pattern_closeness(reference, candidate)
-    assert metrics.profile_difference_percent == pytest.approx(0.0, abs=1e-9)
-    assert metrics.intensity_ratio == pytest.approx(1.0)
+    assert metrics.intensity_ratio == pytest.approx(0.25)
+    assert metrics.profile_difference_percent > 1.0
     assert metrics.correlation == pytest.approx(1.0)
 
 
@@ -145,7 +146,7 @@ def test_pattern_closeness_length_mismatch_raises():
 def test_closeness_annotation_marks_pass_and_fail():
     passing = verify.ClosenessMetrics(
         profile_difference_percent=1.23,
-        max_deviation=0.45,
+        max_deviation_percent=0.45,
         intensity_ratio=1.01,
         correlation=0.999,
     )
@@ -156,7 +157,7 @@ def test_closeness_annotation_marks_pass_and_fail():
 
     failing = verify.ClosenessMetrics(
         profile_difference_percent=25.0,
-        max_deviation=20.0,
+        max_deviation_percent=20.0,
         intensity_ratio=0.7,
         correlation=0.9,
     )
@@ -198,8 +199,10 @@ def test_assert_patterns_agree_can_report_without_raising():
 
 def test_agreement_tolerances_defaults():
     tolerances = verify.AgreementTolerances()
-    assert tolerances.max_profile_difference_percent == 10.0
-    assert tolerances.min_intensity_ratio < 1.0 < tolerances.max_intensity_ratio
+    assert tolerances.max_profile_difference_percent == 3.0
+    assert tolerances.max_deviation_percent == 5.0
+    assert tolerances.min_intensity_ratio == pytest.approx(0.98)
+    assert tolerances.max_intensity_ratio == pytest.approx(1.02)
     assert tolerances.min_correlation == 0.99
 
 
