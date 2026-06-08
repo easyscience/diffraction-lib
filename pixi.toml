@@ -233,6 +233,9 @@ notebook-strip = 'nbstripout docs/docs/tutorials/*.ipynb docs/docs/verification/
 notebook-tweak = 'python tools/tweak_notebooks.py docs/docs/tutorials/ docs/docs/verification/'
 notebook-exec = { cmd = 'python -m pytest --nbmake docs/docs/tutorials/ docs/docs/verification/ --overwrite --color=yes -n auto -v', env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials', EASYDIFFRACTION_FIGURE_EMBED_MODE = 'shared' } }
 notebook-exec-ci = { cmd = 'python -m pytest --nbmake docs/docs/tutorials/ docs/docs/verification/ --nbmake-timeout=1200 --overwrite --color=yes -n auto -v', env = { EASYDIFFRACTION_ARTIFACT_ROOT = '.', EASYDIFFRACTION_FIGURE_EMBED_MODE = 'shared' } }
+# Execute and overwrite outputs for the verification notebooks only (the
+# verification-page subset of notebook-exec); honours ci_skip.txt.
+verification-exec = { cmd = 'python -m pytest --nbmake docs/docs/verification/ --overwrite --color=yes -n auto -v', env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials', EASYDIFFRACTION_FIGURE_EMBED_MODE = 'shared' } }
 
 notebook-prepare = { depends-on = [
   'notebook-convert',
