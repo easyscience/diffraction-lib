@@ -53,9 +53,9 @@ structure.atom_sites.create(
 )
 structure.atom_sites.create(
     label='B',  # FullProf Atom
-    # ❌ <built-in function f_cw_powder_pattern_from_dict> returned a 
-    # result with an exception set 
-    #type_symbol='11B',  # FullProf "B11     0.66500    0.00000   0"
+    # ❌ <built-in function f_cw_powder_pattern_from_dict> returned a
+    # result with an exception set
+    # type_symbol='11B',  # FullProf "B11     0.66500    0.00000   0"
     type_symbol='B',  # FullProf "B11     0.66500    0.00000   0"
     fract_x=0.19972,  # FullProf X
     fract_y=0.5,  # FullProf Y
