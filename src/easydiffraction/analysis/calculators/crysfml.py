@@ -71,6 +71,27 @@ _PEAK_ATTRIBUTE_MAP: tuple[tuple[str, str], ...] = (
 )
 
 
+def _element_symbol(type_symbol: str) -> str:
+    """
+    Strip a leading isotope number from an atom type symbol.
+
+    CrysFML resolves scattering by element and does not understand
+    isotope prefixes such as ``11B`` or ``2H`` (cryspy does). Returning
+    the bare element symbol lets one model drive both engines.
+
+    Parameters
+    ----------
+    type_symbol : str
+        Atom type symbol, optionally isotope-prefixed (e.g. ``11B``).
+
+    Returns
+    -------
+    str
+        The symbol with any leading digits removed (e.g. ``B``).
+    """
+    return type_symbol.lstrip('0123456789')
+
+
 @CalculatorFactory.register
 class CrysfmlCalculator(CalculatorBase):
     """Wrapper for Crysfml library."""
@@ -265,7 +286,7 @@ class CrysfmlCalculator(CalculatorBase):
         for atom in structure.atom_sites:
             atom_site = {
                 '_label': atom.label.value,
-                '_type_symbol': atom.type_symbol.value,
+                '_type_symbol': _element_symbol(atom.type_symbol.value),
                 '_fract_x': atom.fract_x.value,
                 '_fract_y': atom.fract_y.value,
                 '_fract_z': atom.fract_z.value,
