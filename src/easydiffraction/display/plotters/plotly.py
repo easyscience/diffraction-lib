@@ -1829,10 +1829,13 @@ scheduleResize();
             update_layout(margin_t=LIVE_FIGURE_TOP_MARGIN, title_automargin=True)
         plot_id = f'ed-fig-{uuid.uuid4().hex}'
         height = self._figure_height(fig)
+        # Reserve the figure height explicitly on the container. Under
+        # JupyterLab's windowed-notebook mode (content-visibility), the
+        # cell is measured before Plotly finishes drawing; without a
+        # reserved height the plot is recorded as 0 px and collapses.
         target_html = (
-            '<div class="ed-figure" data-ed-figure="plotly">'
-            f'<div class="ed-figure-target" id="{plot_id}" '
-            f'style="min-height: {height}px"></div>'
+            f'<div class="ed-figure" data-ed-figure="plotly" style="height: {height}px">'
+            f'<div class="ed-figure-target" id="{plot_id}" style="height: 100%"></div>'
             '</div>'
         )
         render_js = (
