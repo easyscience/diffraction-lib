@@ -342,7 +342,7 @@
 
   // ---- Activation -----------------------------------------------------
 
-  function renderInto(figureEl, spec, live) {
+  function renderInto(figureEl, spec) {
     if (figureEl.getAttribute('data-ed-rendered') === 'true') {
       return;
     }
@@ -363,14 +363,7 @@
           skeleton.style.display = 'none';
         }
         watchTheme(target, spec.edTheme, spec.edThemeSync);
-        // Live notebooks skip the ResizeObserver: in an embedded
-        // (iframe) JupyterLab whose layout settles over ~1-2 s, observing
-        // the plot's parent re-fires Plotly.resize repeatedly, redrawing
-        // the figure in visible stages. Plotly's own responsive config
-        // still handles window resizes.
-        if (!live) {
-          watchResize(target);
-        }
+        watchResize(target);
         if (spec.edHasLegend) {
           installLegendToggle(target);
         }
@@ -380,33 +373,19 @@
 
   // Docs path: read the spec embedded in the placeholder's JSON script.
   function render(figureEl) {
-    renderInto(figureEl, readSpec(figureEl), false);
+    renderInto(figureEl, readSpec(figureEl));
   }
 
-  // Live-notebook path: render a spec passed directly into a target by
-  // id. Defer the render until the container actually has a size: at
-  // output-insertion time the container is often 0x0 (JupyterLab has
-  // not laid the output out yet, or windowing/content-visibility is
-  // skipping it), and a responsive Plotly figure drawn then renders at
-  // zero size and never recovers. Poll on animation frames until it has
-  // a size, then render once (with a cap so an off-screen cell still
-  // renders eventually).
+  // Live-notebook path: render a spec passed directly (via Javascript
+  // output) into a target by id, so no <script> tags sit in the cell's
+  // HTML output (some hosts render them as empty rows).
   function renderSpec(targetId, spec) {
-    var frames = 0;
-    function attempt() {
-      var target = document.getElementById(targetId);
-      if (!target) {
-        return;
-      }
-      var sized = target.offsetWidth > 0 && target.offsetHeight > 0;
-      if (sized || frames > 180) {
-        renderInto(target.closest('.ed-figure') || target, spec, true);
-        return;
-      }
-      frames += 1;
-      window.requestAnimationFrame(attempt);
+    var target = document.getElementById(targetId);
+    if (!target) {
+      return;
     }
-    attempt();
+    var figureEl = target.closest('.ed-figure') || target;
+    renderInto(figureEl, spec);
   }
 
   function activate() {
