@@ -260,7 +260,7 @@ Docs / structure (auto-generated, do not hand-edit):
   Files: `src/easydiffraction/analysis/calculators/crysfml.py`.
   Commit: `Note crysfml lacks SyCos/SySin instrument corrections`
 
-- [ ] **P1.5 — Wire the corrections into the verification page.**
+- [x] **P1.5 — Wire the corrections into the verification page.**
   In `pd-neut-cwl_tch-fcj_lab6.py`, uncomment the two correction lines
   using the new names and the empirically confirmed values
   (start from `calib_sample_displacement = 0.05395`,
@@ -353,7 +353,7 @@ Docs / structure (auto-generated, do not hand-edit):
 - [x] P1.2 Emit offsets in cryspy CIF
 - [x] P1.3 Update cryspy cached dict
 - [x] P1.4 Comment crysfml non-support
-- [ ] P1.5 Wire corrections into verification page
+- [x] P1.5 Wire corrections into verification page
 - [ ] P1.6 Phase 1 review gate
 - [ ] P2.1 Add/extend engine-free unit tests
 - [ ] P2.2 `pixi run fix`

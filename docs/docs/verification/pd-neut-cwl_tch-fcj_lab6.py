@@ -93,19 +93,23 @@ experiment.peak.broad_lorentz_y = 0.054268  # FullProf Y
 project.experiments.add(experiment)
 
 # %% [markdown]
-# ## SyCos / SySin (pending EasyDiffraction support)
+# ## Sample displacement / transparency (SyCos / SySin)
 #
 # FullProf applies sample-displacement (`SyCos`) and transparency
-# (`SySin`) peak-position shifts on top of `Zero` (see issue #117). The
-# CWL instrument category does not expose them yet, so the two lines
-# below are kept commented out with the FullProf `.pcr` values —
-# uncomment them once the parameters land to finish this page. As with
-# `Zero` (`calib_twotheta_offset` above), the cross-code convention may
-# differ, so the values may need the same adjustment when wired in.
+# (`SySin`) peak-position shifts on top of `Zero` (see issue #117).
+# These map to `calib_sample_displacement` and
+# `calib_sample_transparency` on the CWL powder instrument. The cryspy
+# engine applies them only with the new functionality from
+# [cryspy PR #46](https://github.com/ikibalin/cryspy/pull/46); on the
+# currently released cryspy the corrections are ignored, and crysfml has
+# no equivalent, so this page stays in `ci_skip.txt` until a cryspy
+# release ships the support. As with `Zero` (`calib_twotheta_offset`
+# above), the cross-code convention may differ, so these `.pcr` values
+# may still need adjustment once validated against a PR #46 cryspy.
 
 # %%
-# experiment.instrument.calib_sycos = 0.05395  # FullProf SyCos
-# experiment.instrument.calib_sysin = 0.09127  # FullProf SySin
+experiment.instrument.calib_sample_displacement = 0.05395  # FullProf SyCos
+experiment.instrument.calib_sample_transparency = 0.09127  # FullProf SySin
 
 # %% [markdown]
 # ## Calculate the pattern with each engine
