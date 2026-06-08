@@ -125,15 +125,22 @@ def load_fullprof_profile(path: str) -> tuple[np.ndarray, np.ndarray]:
     Raises
     ------
     ValueError
-        If the header maximum is more than one full step away from the
-        grid implied by the intensities read from the body (a genuine
-        inconsistency rather than header rounding).
+        If the file is empty or holds no intensity values after the
+        header, or if the header maximum is more than one full step
+        away from the grid implied by the intensities read from the
+        body (a genuine inconsistency rather than header rounding).
     """
     with Path(path).open(encoding='utf-8') as handle:
         lines = handle.readlines()
+    if not lines:
+        msg = f'FullProf profile {path}: file is empty; expected a header line followed by intensities.'
+        raise ValueError(msg)
     x_min, x_increment, x_max = _parse_fullprof_header(lines[0])
     body = ' '.join(line.strip() for line in lines[1:])
-    y = np.genfromtxt(StringIO(body))
+    y = np.atleast_1d(np.genfromtxt(StringIO(body)))
+    if y.size == 0:
+        msg = f'FullProf profile {path}: no intensity values found after the header line.'
+        raise ValueError(msg)
     # Build the grid from the intensity count, not the header maximum,
     # so a maximum rounded a fraction of a step off (a common FullProf
     # quirk) neither adds nor drops a point. The header maximum is kept

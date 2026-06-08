@@ -56,6 +56,22 @@ def test_load_fullprof_profile_length_mismatch_raises(tmp_path):
         verify.load_fullprof_profile(str(sub))
 
 
+def test_load_fullprof_profile_empty_file_raises(tmp_path):
+    sub = tmp_path / 'ref.sub'
+    sub.write_text('', encoding='utf-8')
+    with pytest.raises(ValueError, match='file is empty'):
+        verify.load_fullprof_profile(str(sub))
+
+
+def test_load_fullprof_profile_header_only_raises(tmp_path):
+    sub = tmp_path / 'ref.sub'
+    # A header with no intensity lines following must surface a clear
+    # error rather than a confusing grid-mismatch message.
+    sub.write_text('   10.0   0.5   12.0   ! a comment\n', encoding='utf-8')
+    with pytest.raises(ValueError, match='no intensity values'):
+        verify.load_fullprof_profile(str(sub))
+
+
 def test_load_fullprof_profile_tolerates_rounded_header_maximum(tmp_path):
     sub = tmp_path / 'ref.sub'
     # The header maximum is rounded a fraction of a step high (12.0004 vs
