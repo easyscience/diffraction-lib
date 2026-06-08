@@ -137,10 +137,10 @@ def load_fullprof_profile(path: str) -> tuple[np.ndarray, np.ndarray]:
         raise ValueError(msg)
     x_min, x_increment, x_max = _parse_fullprof_header(lines[0])
     body = ' '.join(line.strip() for line in lines[1:])
-    y = np.atleast_1d(np.genfromtxt(StringIO(body)))
-    if y.size == 0:
+    if not body.strip():
         msg = f'FullProf profile {path}: no intensity values found after the header line.'
         raise ValueError(msg)
+    y = np.atleast_1d(np.genfromtxt(StringIO(body)))
     # Build the grid from the intensity count, not the header maximum,
     # so a maximum rounded a fraction of a step off (a common FullProf
     # quirk) neither adds nor drops a point. The header maximum is kept
