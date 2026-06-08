@@ -81,7 +81,7 @@ PLOTLY = VendoredRuntime(
     name='Plotly.js (cartesian bundle)',
     package='plotly.js',
     version='3.5.0',
-    dest_dir=Path('docs/docs/assets/javascripts/vendor/plotly'),
+    dest_dir=Path('src/easydiffraction/display/plotters/vendor/plotly'),
     licence=(
         'MIT — Copyright 2012-2026 Plotly, Inc. '
         'See `https://github.com/plotly/plotly.js/blob/master/LICENSE`.'
