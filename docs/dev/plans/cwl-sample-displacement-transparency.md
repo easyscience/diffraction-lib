@@ -238,7 +238,7 @@ Docs / structure (auto-generated, do not hand-edit):
   Files: `src/easydiffraction/analysis/calculators/cryspy.py`.
   Commit: `Emit SyCos/SySin offsets in cryspy CWL instrument CIF`
 
-- [ ] **P1.3 — Update the cached cryspy dict (fast path).**
+- [x] **P1.3 — Update the cached cryspy dict (fast path).**
   In `cryspy.py` `_update_experiment_in_cryspy_dict`, CWL+powder
   branch, set `cryspy_expt_dict['offset_sycos'][0]` and
   `cryspy_expt_dict['offset_sysin'][0]` from the two new parameters,
@@ -351,7 +351,7 @@ Docs / structure (auto-generated, do not hand-edit):
 
 - [x] P1.1 Add parameters to `CwlPdInstrument`
 - [x] P1.2 Emit offsets in cryspy CIF
-- [ ] P1.3 Update cryspy cached dict
+- [x] P1.3 Update cryspy cached dict
 - [ ] P1.4 Comment crysfml non-support
 - [ ] P1.5 Wire corrections into verification page
 - [ ] P1.6 Phase 1 review gate
