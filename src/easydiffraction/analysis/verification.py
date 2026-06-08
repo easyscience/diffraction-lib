@@ -639,3 +639,67 @@ def assert_patterns_agree(
         msg = f'Pattern agreement check failed: {joined}.'
         raise AssertionError(msg)
     return not failures
+
+
+# ----------------------------------------------------------------------
+#  Refinement comparison
+# ----------------------------------------------------------------------
+
+
+def report_refinement_closeness(
+    reference: np.ndarray,
+    before: np.ndarray,
+    after: np.ndarray,
+) -> tuple[ClosenessMetrics, ClosenessMetrics]:
+    """
+    Tabulate closeness to a reference before and after refinement.
+
+    Scores ``before`` and ``after`` against the same ``reference`` with
+    :func:`pattern_closeness` and renders a compact before/after table,
+    so a page can show whether refining the disputed parameters moved
+    the candidate closer to the reference.
+
+    Parameters
+    ----------
+    reference : np.ndarray
+        Reference intensities (for example FullProf).
+    before : np.ndarray
+        Candidate intensities before refinement.
+    after : np.ndarray
+        Candidate intensities after refinement.
+
+    Returns
+    -------
+    tuple[ClosenessMetrics, ClosenessMetrics]
+        The before and after closeness metrics.
+    """
+    before_metrics = pattern_closeness(reference, before)
+    after_metrics = pattern_closeness(reference, after)
+    rows = [
+        [
+            'Profile diff (%)',
+            f'{before_metrics.profile_difference_percent:.2f}',
+            f'{after_metrics.profile_difference_percent:.2f}',
+        ],
+        [
+            'Max deviation',
+            f'{before_metrics.max_deviation:.3g}',
+            f'{after_metrics.max_deviation:.3g}',
+        ],
+        [
+            'Intensity ratio',
+            f'{before_metrics.intensity_ratio:.4f}',
+            f'{after_metrics.intensity_ratio:.4f}',
+        ],
+        [
+            'Correlation',
+            f'{before_metrics.correlation:.4f}',
+            f'{after_metrics.correlation:.4f}',
+        ],
+    ]
+    render_table(
+        columns_headers=['Metric', 'Before', 'After'],
+        columns_alignment=['left', 'right', 'right'],
+        columns_data=rows,
+    )
+    return before_metrics, after_metrics

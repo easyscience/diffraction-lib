@@ -204,6 +204,22 @@ def test_agreement_tolerances_defaults():
 
 
 # ----------------------------------------------------------------------
+#  Refinement comparison
+# ----------------------------------------------------------------------
+
+
+def test_report_refinement_closeness_scores_before_and_after():
+    x = np.linspace(0.0, 10.0, 200)
+    reference = _gaussian(x, 5.0, 0.4) * 100.0
+    before = _gaussian(x, 5.4, 0.4) * 100.0  # shifted peak — poor match
+    after = _gaussian(x, 5.02, 0.4) * 100.0  # almost on the reference
+    before_metrics, after_metrics = verify.report_refinement_closeness(reference, before, after)
+    # Refinement moves the candidate closer to the reference.
+    assert after_metrics.profile_difference_percent < before_metrics.profile_difference_percent
+    assert after_metrics.correlation > before_metrics.correlation
+
+
+# ----------------------------------------------------------------------
 #  Experiment-grid population
 # ----------------------------------------------------------------------
 
