@@ -150,7 +150,10 @@ def test_get_trace_and_plot(monkeypatch):
     assert trace.kwargs['y'] == y
     assert trace.kwargs['line']['width'] == pp.CALCULATED_LINE_WIDTH
 
-    # Exercise plot_powder (non-PyCharm, display path)
+    # Exercise plot_powder; rendering itself is covered separately, so
+    # stub it and assert the built figure reaches the display step.
+    shown_figs = []
+    monkeypatch.setattr(pp.PlotlyPlotter, '_show_figure', lambda self, fig: shown_figs.append(fig))
     plotter.plot_powder(
         x,
         y_series=[y],
@@ -159,9 +162,7 @@ def test_get_trace_and_plot(monkeypatch):
         title='t',
         height=None,
     )
-
-    # One HTML display call expected
-    assert dummy_display_calls['count'] == 1 or shown['count'] == 1
+    assert len(shown_figs) == 1
 
 
 def test_single_panel_height_matches_composite_main_row():
@@ -214,221 +215,95 @@ def test_composite_x_range_is_tight():
     assert pp.PlotlyPlotter._composite_x_range(np.array([])) == (None, None)
 
 
-def test_show_figure_adds_legend_toggle_script_to_html_output(monkeypatch):
+def test_html_post_script_carries_theme_resize_and_legend_toggle():
+    import plotly.graph_objects as go
+
     import easydiffraction.display.plotters.plotly as pp
 
-    monkeypatch.setattr(pp, 'in_pycharm', lambda: False)
+    # A named trace gives the figure a visible legend, so the legend
+    # toggle is included. This post-script is embedded by the report
+    # (STANDALONE) serializer; the live loader provides the same
+    # behaviour via ed-figures.js instead.
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=[0, 1, 2], y=[1, 2, 3], name='calc'))
+    post_script = pp.PlotlyPlotter._html_post_script(fig)
 
-    captured = {}
-
-    class DummyFig:
-        def update_xaxes(self, **kwargs):
-            pass
-
-        def update_yaxes(self, **kwargs):
-            pass
-
-        def show(self, **kwargs):
-            captured['show_called'] = True
-
-    class DummyScatter:
-        def __init__(self, **kwargs):
-            self.kwargs = kwargs
-
-    class DummyGO:
-        class Scatter(DummyScatter):
-            pass
-
-        class Figure(DummyFig):
-            def __init__(self, data=None, layout=None):
-                self.data = data
-                self.layout = layout
-
-        class Layout:
-            def __init__(self, **kwargs):
-                self.kwargs = kwargs
-
-    class DummyPIO:
-        @staticmethod
-        def to_html(fig, include_plotlyjs=None, full_html=None, config=None, post_script=None):
-            captured['config'] = config
-            captured['post_script'] = post_script
-            return '<div>plot</div>'
-
-    def dummy_display(obj):
-        captured['displayed_html'] = obj.html
-
-    class DummyHTML:
-        def __init__(self, html):
-            self.html = html
-
-    monkeypatch.setattr(pp, 'go', DummyGO)
-    monkeypatch.setattr(pp, 'pio', DummyPIO)
-    monkeypatch.setattr(pp, 'display', dummy_display)
-    monkeypatch.setattr(pp, 'HTML', DummyHTML)
-
-    plotter = pp.PlotlyPlotter()
-    plotter.plot_powder(
-        [0, 1, 2],
-        y_series=[[1, 2, 3]],
-        labels=['calc'],
-        axes_labels=['x', 'y'],
-        title='t',
-        height=None,
-    )
-
-    assert captured.get('show_called') is not True
-    assert captured['config']['displayModeBar'] is True
-    assert captured['config']['displaylogo'] is False
-    assert captured['config']['responsive'] is True
-    assert 'data-jp-theme-light' in captured['post_script']
-    assert 'data-md-color-scheme' in captured['post_script']
-    assert 'graphDiv.dataset.edPlotlyTheme' in captured['post_script']
-    assert f"background: '{pp.DARK_BACKGROUND_COLOR}'" in captured['post_script']
-    assert f"background: '{pp.LIGHT_BACKGROUND_COLOR}'" in captured['post_script']
-    assert f"axisFrame: '{pp.DARK_AXIS_FRAME_COLOR}'" in captured['post_script']
-    assert f"axisFrame: '{pp.LIGHT_AXIS_FRAME_COLOR}'" in captured['post_script']
-    assert f"innerTickGrid: '{pp.DARK_INNER_TICK_GRID_COLOR}'" in captured['post_script']
-    assert f"innerTickGrid: '{pp.LIGHT_INNER_TICK_GRID_COLOR}'" in captured['post_script']
-    assert f"hoverBackground: '{pp.DARK_HOVER_BACKGROUND_COLOR}'" in captured['post_script']
-    assert f"legend: '{pp.DARK_LEGEND_BACKGROUND_COLOR}'" in captured['post_script']
-    assert "'modebar.color'" in captured['post_script']
-    assert "'modebar.activecolor'" in captured['post_script']
-    assert 'rgbaFromColor' in captured['post_script']
+    assert 'data-jp-theme-light' in post_script
+    assert 'data-md-color-scheme' in post_script
+    assert 'graphDiv.dataset.edPlotlyTheme' in post_script
+    assert f"background: '{pp.DARK_BACKGROUND_COLOR}'" in post_script
+    assert f"background: '{pp.LIGHT_BACKGROUND_COLOR}'" in post_script
+    assert f"axisFrame: '{pp.DARK_AXIS_FRAME_COLOR}'" in post_script
+    assert f"axisFrame: '{pp.LIGHT_AXIS_FRAME_COLOR}'" in post_script
+    assert f"innerTickGrid: '{pp.DARK_INNER_TICK_GRID_COLOR}'" in post_script
+    assert f"innerTickGrid: '{pp.LIGHT_INNER_TICK_GRID_COLOR}'" in post_script
+    assert f"hoverBackground: '{pp.DARK_HOVER_BACKGROUND_COLOR}'" in post_script
+    assert f"legend: '{pp.DARK_LEGEND_BACKGROUND_COLOR}'" in post_script
+    assert "'modebar.color'" in post_script
+    assert "'modebar.activecolor'" in post_script
+    assert 'rgbaFromColor' in post_script
     # Modebar icons are also themed via a class-based !important rule so
     # they stay visible regardless of Plotly's inline fills.
-    assert 'ed-plotly-themed-modebar' in captured['post_script']
-    assert 'const correlationColorscale = function (colors) {' in captured['post_script']
-    assert 'const themeSync = meta.ed_plotly_theme_sync;' in captured['post_script']
-    assert 'const applyAnnotationTheme = function (update, colors) {' in captured['post_script']
-    assert 'const shapeIndexes = themeSync.axis_frame_shape_indexes;' in captured['post_script']
-    assert 'if (themeSync.correlation_heatmap !== true) {' in captured['post_script']
-    assert 'window.Plotly.restyle(' in captured['post_script']
-    assert 'window.Plotly.relayout(graphDiv, update)' in captured['post_script']
-    assert 'Promise.all(pending).then(function () {' in captured['post_script']
-    assert 'window.Plotly.Plots.resize(graphDiv)' in captured['post_script']
-    assert "document.addEventListener('visibilitychange'" in captured['post_script']
-    assert "window.addEventListener('focus', scheduleResize);" in captured['post_script']
-    assert 'new ResizeObserver(scheduleResize)' in captured['post_script']
-    assert 'data-legend-toggle="true"' in captured['post_script']
-    assert 'Toggle legend' in captured['post_script']
-    assert 'graphDiv.dataset.legendVisible' in captured['post_script']
-    assert 'const applyLegendVisibility = function (legendVisible) {' in captured['post_script']
-    assert "legend.style.display = legendVisible ? 'inline' : 'none';" in captured['post_script']
-    assert 'const readLegendVisibility = function () {' in captured['post_script']
-    assert (
-        "if (graphDiv.layout && typeof graphDiv.layout.showlegend === 'boolean')"
-        in captured['post_script']
-    )
-    assert "legendButton.classList.toggle('active', legendVisible);" in captured['post_script']
-    assert "graphDiv.on('plotly_relayout', function (eventData) {" in captured['post_script']
-    assert 'legendButton.onclick = toggleLegend;' in captured['post_script']
-    assert 'resolveLegendButtonFill(legendVisible ? 0.7 : 0.3)' in captured['post_script']
-    assert "legendButtonGroup.className = 'modebar-group';" in captured['post_script']
-    assert 'modebar.appendChild(legendButtonGroup);' in captured['post_script']
-    assert 'legendButton.innerHTML' in captured['post_script']
-    assert 'height="1em" width="1em"' in captured['post_script']
-    assert captured['displayed_html'] == '<div>plot</div>'
+    assert 'ed-plotly-themed-modebar' in post_script
+    assert 'const correlationColorscale = function (colors) {' in post_script
+    assert 'const themeSync = meta.ed_plotly_theme_sync;' in post_script
+    assert 'const applyAnnotationTheme = function (update, colors) {' in post_script
+    assert 'const shapeIndexes = themeSync.axis_frame_shape_indexes;' in post_script
+    assert 'if (themeSync.correlation_heatmap !== true) {' in post_script
+    assert 'window.Plotly.restyle(' in post_script
+    assert 'window.Plotly.relayout(graphDiv, update)' in post_script
+    assert 'Promise.all(pending).then(function () {' in post_script
+    assert 'window.Plotly.Plots.resize(graphDiv)' in post_script
+    assert "document.addEventListener('visibilitychange'" in post_script
+    assert "window.addEventListener('focus', scheduleResize);" in post_script
+    assert 'new ResizeObserver(scheduleResize)' in post_script
+    assert 'data-legend-toggle="true"' in post_script
+    assert 'Toggle legend' in post_script
+    assert 'graphDiv.dataset.legendVisible' in post_script
+    assert 'const applyLegendVisibility = function (legendVisible) {' in post_script
+    assert "legend.style.display = legendVisible ? 'inline' : 'none';" in post_script
+    assert 'const readLegendVisibility = function () {' in post_script
+    assert "if (graphDiv.layout && typeof graphDiv.layout.showlegend === 'boolean')" in post_script
+    assert "legendButton.classList.toggle('active', legendVisible);" in post_script
+    assert "graphDiv.on('plotly_relayout', function (eventData) {" in post_script
+    assert 'legendButton.onclick = toggleLegend;' in post_script
+    assert 'resolveLegendButtonFill(legendVisible ? 0.7 : 0.3)' in post_script
+    assert "legendButtonGroup.className = 'modebar-group';" in post_script
+    assert 'modebar.appendChild(legendButtonGroup);' in post_script
+    assert 'legendButton.innerHTML' in post_script
+    assert 'height="1em" width="1em"' in post_script
 
 
-def test_show_figure_skips_legend_toggle_script_without_legend(monkeypatch):
+def test_html_post_script_skips_legend_toggle_without_legend():
+    import plotly.graph_objects as go
+
     import easydiffraction.display.plotters.plotly as pp
 
-    monkeypatch.setattr(pp, 'in_pycharm', lambda: False)
+    # No visible legend (unnamed, non-legend trace) → no legend toggle,
+    # but the theme-sync block is always present.
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=[0, 1], y=[1, 2], showlegend=False))
+    post_script = pp.PlotlyPlotter._html_post_script(fig)
 
-    captured = {}
-
-    class DummyTrace:
-        def __init__(self, name=None, showlegend=None, visible=None):
-            self.name = name
-            self.showlegend = showlegend
-            self.visible = visible
-
-    class DummyFig:
-        def __init__(self):
-            self.data = [DummyTrace(name=None, showlegend=False)]
-            self.layout = type('DummyLayout', (), {'showlegend': None})()
-
-        def show(self, **kwargs):
-            captured['show_called'] = True
-
-    class DummyPIO:
-        @staticmethod
-        def to_html(fig, include_plotlyjs=None, full_html=None, config=None, post_script=None):
-            captured['post_script'] = post_script
-            return '<div>plot</div>'
-
-    def dummy_display(obj):
-        captured['displayed_html'] = obj.html
-
-    class DummyHTML:
-        def __init__(self, html):
-            self.html = html
-
-    monkeypatch.setattr(pp, 'pio', DummyPIO)
-    monkeypatch.setattr(pp, 'display', dummy_display)
-    monkeypatch.setattr(pp, 'HTML', DummyHTML)
-
-    plotter = pp.PlotlyPlotter()
-    plotter._show_figure(DummyFig())
-
-    assert captured.get('show_called') is not True
-    assert captured['post_script'] is not None
-    assert 'data-jp-theme-light' in captured['post_script']
-    assert 'data-legend-toggle="true"' not in captured['post_script']
-    assert captured['displayed_html'] == '<div>plot</div>'
+    assert 'data-jp-theme-light' in post_script
+    assert 'data-legend-toggle="true"' not in post_script
 
 
-def test_show_figure_wraps_fixed_aspect_html(monkeypatch):
+def test_wrap_html_figure_wraps_fixed_aspect():
     import easydiffraction.display.plotters.plotly as pp
-
-    monkeypatch.setattr(pp, 'in_pycharm', lambda: False)
-
-    captured = {}
 
     class DummyLayout:
-        def __init__(self):
-            self.meta = {
-                'fixed_aspect_wrapper': {
-                    'aspect_ratio': '1 / 1',
-                }
-            }
-            self.showlegend = False
+        meta = {'fixed_aspect_wrapper': {'aspect_ratio': '1 / 1'}}
 
     class DummyFig:
-        def __init__(self):
-            self.data = []
-            self.layout = DummyLayout()
+        layout = DummyLayout()
 
-        def show(self, **kwargs):
-            captured['show_called'] = True
-
-    class DummyPIO:
-        @staticmethod
-        def to_html(fig, include_plotlyjs=None, full_html=None, config=None, post_script=None):
-            captured['post_script'] = post_script
-            return '<div>plot</div>'
-
-    def dummy_display(obj):
-        captured['displayed_html'] = obj.html
-
-    class DummyHTML:
-        def __init__(self, html):
-            self.html = html
-
-    monkeypatch.setattr(pp, 'pio', DummyPIO)
-    monkeypatch.setattr(pp, 'display', dummy_display)
-    monkeypatch.setattr(pp, 'HTML', DummyHTML)
-
-    plotter = pp.PlotlyPlotter()
-    plotter._show_figure(DummyFig())
-
-    assert captured.get('show_called') is not True
-    assert captured['post_script'] is not None
-    assert 'data-jp-theme-light' in captured['post_script']
-    assert 'aspect-ratio: 1 / 1;' in captured['displayed_html']
-    assert 'ed-fixed-aspect-plotly-wrapper' in captured['displayed_html']
-    assert '<div>plot</div>' in captured['displayed_html']
+    # The fixed-aspect wrapper is applied by _wrap_html_figure, used by
+    # both the live (single-output) and report serialization paths.
+    wrapped = pp.PlotlyPlotter._wrap_html_figure(DummyFig(), '<div>plot</div>')
+    assert 'aspect-ratio: 1 / 1;' in wrapped
+    assert 'ed-fixed-aspect-plotly-wrapper' in wrapped
+    assert '<div>plot</div>' in wrapped
 
 
 def test_plotly_single_crystal_trace_and_plot(monkeypatch):
@@ -512,7 +387,10 @@ def test_plotly_single_crystal_trace_and_plot(monkeypatch):
     assert shape['line']['color'] == pp.DIAGONAL_LINE_COLOR
     assert shape['line']['width'] == pp.DIAGONAL_LINE_WIDTH
 
-    # Exercise plot_single_crystal
+    # Exercise plot_single_crystal; rendering is covered separately, so
+    # stub it and assert the built figure reaches the display step.
+    shown_figs = []
+    monkeypatch.setattr(pp.PlotlyPlotter, '_show_figure', lambda self, fig: shown_figs.append(fig))
     plotter.plot_single_crystal(
         x_calc=x_calc,
         y_meas=y_meas,
@@ -521,8 +399,7 @@ def test_plotly_single_crystal_trace_and_plot(monkeypatch):
         title='SC Test',
         height=None,
     )
-    # One display call expected
-    assert dummy_display_calls['count'] == 1 or shown['count'] == 1
+    assert len(shown_figs) == 1
 
 
 def test_single_crystal_axis_range_unions_calc_and_meas_with_uncertainty():
