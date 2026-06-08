@@ -274,7 +274,7 @@ Docs / structure (auto-generated, do not hand-edit):
   `docs/docs/verification/pd-neut-cwl_tch-fcj_lab6.ipynb`.
   Commit: `Enable SyCos/SySin corrections in LaB6 verification page`
 
-- [ ] **P1.6 — Phase 1 review gate** (no-code). Mark `[x]`, commit the
+- [x] **P1.6 — Phase 1 review gate** (no-code). Mark `[x]`, commit the
   checklist update alone.
   Commit: `Reach Phase 1 review gate`
 
@@ -354,7 +354,7 @@ Docs / structure (auto-generated, do not hand-edit):
 - [x] P1.3 Update cryspy cached dict
 - [x] P1.4 Comment crysfml non-support
 - [x] P1.5 Wire corrections into verification page
-- [ ] P1.6 Phase 1 review gate
+- [x] P1.6 Phase 1 review gate
 - [ ] P2.1 Add/extend engine-free unit tests
 - [ ] P2.2 `pixi run fix`
 - [ ] P2.3 `pixi run check` clean
