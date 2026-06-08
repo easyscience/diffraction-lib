@@ -342,12 +342,11 @@
 
   // ---- Activation -----------------------------------------------------
 
-  function render(figureEl) {
+  function renderInto(figureEl, spec) {
     if (figureEl.getAttribute('data-ed-rendered') === 'true') {
       return;
     }
-    var spec = readSpec(figureEl);
-    var target = figureEl.querySelector('.ed-figure-target');
+    var target = figureEl.querySelector('.ed-figure-target') || figureEl;
     if (!spec || !target || !window.Plotly) {
       return;
     }
@@ -356,6 +355,13 @@
     window.Plotly.newPlot(target, spec.data || [], spec.layout || {}, config).then(
       function () {
         figureEl.classList.add('ed-figure--ready');
+        // Hide the loading skeleton directly, so the figure does not
+        // depend on the docs stylesheet (live notebooks have no such
+        // CSS and would otherwise keep the skeleton above the plot).
+        var skeleton = figureEl.querySelector('.ed-figure-skeleton');
+        if (skeleton) {
+          skeleton.style.display = 'none';
+        }
         watchTheme(target, spec.edTheme, spec.edThemeSync);
         watchResize(target);
         if (spec.edHasLegend) {
@@ -363,6 +369,23 @@
         }
       },
     );
+  }
+
+  // Docs path: read the spec embedded in the placeholder's JSON script.
+  function render(figureEl) {
+    renderInto(figureEl, readSpec(figureEl));
+  }
+
+  // Live-notebook path: render a spec passed directly (via Javascript
+  // output) into a target by id, so no <script> tags sit in the cell's
+  // HTML output (some hosts render them as empty rows).
+  function renderSpec(targetId, spec) {
+    var target = document.getElementById(targetId);
+    if (!target) {
+      return;
+    }
+    var figureEl = target.closest('.ed-figure') || target;
+    renderInto(figureEl, spec);
   }
 
   function activate() {
@@ -398,12 +421,13 @@
     });
   }
 
-  // Expose a re-callable entry point so live notebooks can re-scan for
-  // placeholders emitted by later cells. render() is idempotent
-  // (data-ed-rendered), so repeated activate() calls are safe.
+  // Expose entry points for live notebooks: activate() re-scans for
+  // placeholders, renderSpec() renders a directly-passed spec. Both are
+  // idempotent (data-ed-rendered guards repeats).
   window.edFigures = window.edFigures || {};
   window.edFigures.activate = activate;
   window.edFigures.render = render;
+  window.edFigures.renderSpec = renderSpec;
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', activate);
