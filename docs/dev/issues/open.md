@@ -2047,9 +2047,7 @@ a baseline-cleanup plan.
 
 Records the two viable strategies for rendering interactive Plotly
 figures in live notebooks, so the trade-off is not re-litigated. See
-[`plotting-docs-performance.md`](../adrs/accepted/plotting-docs-performance.md)
-and the plan
-[`live-notebook-plotly-loader.md`](../plans/live-notebook-plotly-loader.md).
+[`plotting-docs-performance.md`](../adrs/accepted/plotting-docs-performance.md).
 
 **Background.** Live notebooks historically rendered via
 `display(HTML(pio.to_html(..., include_plotlyjs='cdn')))`, which caused
