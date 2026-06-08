@@ -42,47 +42,47 @@ project = ed.Project()
 
 structure = StructureFactory.from_scratch(name='lbco')
 
-structure.space_group.name_h_m = 'P m -3 m'
+structure.space_group.name_h_m = 'P m -3 m'  # FullProf Space group symbol
 
-structure.cell.length_a = 3.890790
-structure.cell.length_b = 3.890790
-structure.cell.length_c = 3.890790
+structure.cell.length_a = 3.890790  # FullProf a
+structure.cell.length_b = 3.890790  # FullProf b
+structure.cell.length_c = 3.890790  # FullProf c
 
 structure.atom_sites.create(
-    label='La',
-    type_symbol='La',
-    fract_x=0.0,
-    fract_y=0.0,
-    fract_z=0.0,
-    occupancy=0.5,
-    adp_iso=0.57499,
+    label='La',  # FullProf Atom
+    type_symbol='La',  # FullProf Typ
+    fract_x=0.0,  # FullProf X
+    fract_y=0.0,  # FullProf Y
+    fract_z=0.0,  # FullProf Z
+    occupancy=0.5,  # FullProf Occ
+    adp_iso=0.57499,  # FullProf Biso
 )
 structure.atom_sites.create(
-    label='Ba',
-    type_symbol='Ba',
-    fract_x=0.0,
-    fract_y=0.0,
-    fract_z=0.0,
-    occupancy=0.5,
-    adp_iso=0.57499,
+    label='Ba',  # FullProf Atom
+    type_symbol='Ba',  # FullProf Typ
+    fract_x=0.0,  # FullProf X
+    fract_y=0.0,  # FullProf Y
+    fract_z=0.0,  # FullProf Z
+    occupancy=0.5,  # FullProf Occ
+    adp_iso=0.57499,  # FullProf Biso
 )
 structure.atom_sites.create(
-    label='Co',
-    type_symbol='Co',
-    fract_x=0.5,
-    fract_y=0.5,
-    fract_z=0.5,
-    occupancy=1.0,
-    adp_iso=0.26014,
+    label='Co',  # FullProf Atom
+    type_symbol='Co',  # FullProf Typ
+    fract_x=0.5,  # FullProf X
+    fract_y=0.5,  # FullProf Y
+    fract_z=0.5,  # FullProf Z
+    occupancy=1.0,  # FullProf Occ
+    adp_iso=0.26014,  # FullProf Biso
 )
 structure.atom_sites.create(
-    label='O',
-    type_symbol='O',
-    fract_x=0.0,
-    fract_y=0.5,
-    fract_z=0.5,
-    occupancy=0.97856,
-    adp_iso=1.36658,
+    label='O',  # FullProf Atom
+    type_symbol='O',  # FullProf Typ
+    fract_x=0.0,  # FullProf X
+    fract_y=0.5,  # FullProf Y
+    fract_z=0.5,  # FullProf Z
+    occupancy=0.97856,  # FullProf Occ
+    adp_iso=1.36658,  # FullProf Biso
 )
 
 project.structures.add(structure)
@@ -100,16 +100,16 @@ experiment = ExperimentFactory.from_scratch(
 )
 verify.set_reference_as_measured(experiment, x, calc_fullprof)
 
-experiment.linked_phases.create(id='lbco', scale=1.0)
+experiment.linked_phases.create(id='lbco', scale=9.405646)  # FullProf Scale
 
-experiment.instrument.setup_wavelength = 1.494000
+experiment.instrument.setup_wavelength = 1.494000  # FullProf Lambda
 
 experiment.peak.type = 'pseudo-voigt'
-experiment.peak.broad_gauss_u = 0.081547
-experiment.peak.broad_gauss_v = -0.115345
-experiment.peak.broad_gauss_w = 0.121119
-experiment.peak.broad_lorentz_x = 0.0
-experiment.peak.broad_lorentz_y = 0.083044
+experiment.peak.broad_gauss_u = 0.081547  # FullProf U
+experiment.peak.broad_gauss_v = -0.115345  # FullProf V
+experiment.peak.broad_gauss_w = 0.121119  # FullProf W
+experiment.peak.broad_lorentz_x = 0.0  # FullProf X
+experiment.peak.broad_lorentz_y = 0.083044  # FullProf Y
 
 project.experiments.add(experiment)
 

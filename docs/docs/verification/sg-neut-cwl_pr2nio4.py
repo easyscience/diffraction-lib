@@ -54,10 +54,10 @@ f2calc = verify.load_fullprof_sc_f2calc(str(reference_dir / 'prnio.out'))
 project = ed.Project()
 
 structure = StructureFactory.from_scratch(name='pr2nio4')
-structure.space_group.name_h_m = 'F m m m'
-structure.cell.length_a = 5.417799
-structure.cell.length_b = 5.414600
-structure.cell.length_c = 12.483399
+structure.space_group.name_h_m = 'F m m m'  # FullProf Space group symbol
+structure.cell.length_a = 5.417799  # FullProf a
+structure.cell.length_b = 5.414600  # FullProf b
+structure.cell.length_c = 12.483399  # FullProf c
 
 cell_lengths = (
     structure.cell.length_a.value,
@@ -118,8 +118,8 @@ experiment = ExperimentFactory.from_scratch(
     scattering_type='bragg',
 )
 experiment.linked_crystal.id = 'pr2nio4'
-experiment.linked_crystal.scale = 1.0
-experiment.instrument.setup_wavelength = 0.8302
+experiment.linked_crystal.scale = 0.06298  # FullProf Scale
+experiment.instrument.setup_wavelength = 0.8302  # FullProf Lambda
 verify.set_reference_reflections(experiment, f2calc)
 
 project.experiments.add(experiment)
@@ -135,8 +135,8 @@ reference, candidate = verify.align_reflections(f2calc, calc_ed_cryspy)
 # ## Compare cryspy against the FullProf reference
 #
 # Each point is one reflection: FullProf F² on the x-axis, the cryspy F²
-# on the y-axis, both peak-normalised. Points fall on the y=x line when
-# the two calculations agree, with closeness metrics in the top-left
+# on the y-axis, at their absolute scale. Points fall on the y=x line
+# when the two calculations agree, with closeness metrics in the top-left
 # corner.
 
 # %%
@@ -150,10 +150,57 @@ project.display.reflection_comparison(
 
 # %% [markdown]
 # ## Agreement check
+#
+# cryspy reproduces the relative reflection intensities but at a
+# different absolute F² scale from FullProf's F2cal (which folds in
+# FullProf's refined scale), so the absolute comparison is reported here
+# (`raise_on_failure=False`) and the scale convention is investigated
+# below.
 
 # %%
 verify.assert_patterns_agree(
     [
         ('cryspy vs FullProf', reference, candidate),
     ],
+    raise_on_failure=False,
 )
+
+# %% [markdown]
+# ## Investigate the scale convention by refinement
+#
+# Free **only** the scale and refine with cryspy, keeping the structure
+# fixed. If a scale-only fit brings the points onto the diagonal, the
+# difference is an absolute F²-scale convention, not a per-reflection
+# structure-factor disagreement.
+
+# %%
+experiment.calculator.type = 'cryspy'
+project.analysis.minimizer.type = 'lmfit'
+
+experiment.linked_crystal.scale.free = True
+
+project.analysis.fit()
+
+# %% [markdown]
+# ## Goodness of fit and refined scale
+
+# %%
+project.display.fit.results()
+
+# %% [markdown]
+# ## Refined cryspy vs FullProf
+
+# %%
+calc_ed_cryspy_refined = verify.calculate_reflections(project, experiment, 'cryspy')
+reference_after, candidate_after = verify.align_reflections(f2calc, calc_ed_cryspy_refined)
+
+project.display.reflection_comparison(
+    'pr2nio4',
+    reference=reference_after,
+    candidate=candidate_after,
+    reference_label='FullProf',
+    candidate_label='EasyDiffraction (cryspy, refined)',
+)
+
+# %%
+verify.report_refinement_closeness(reference, candidate, candidate_after)

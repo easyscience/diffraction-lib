@@ -41,26 +41,51 @@ project = ed.Project()
 # %%
 structure = StructureFactory.from_scratch(name='pbso4')
 
-structure.space_group.name_h_m = 'P n m a'
+structure.space_group.name_h_m = 'P n m a'  # FullProf Space group symbol
 
-structure.cell.length_a = 8.477994
-structure.cell.length_b = 5.396484
-structure.cell.length_c = 6.957715
+structure.cell.length_a = 8.477994  # FullProf a
+structure.cell.length_b = 5.396484  # FullProf b
+structure.cell.length_c = 6.957715  # FullProf c
 
 structure.atom_sites.create(
-    label='Pb', type_symbol='Pb', fract_x=0.18754, fract_y=0.25, fract_z=0.16709, adp_iso=1.38041
+    label='Pb',  # FullProf Atom
+    type_symbol='Pb',  # FullProf Typ
+    fract_x=0.18754,  # FullProf X
+    fract_y=0.25,  # FullProf Y
+    fract_z=0.16709,  # FullProf Z
+    adp_iso=1.38041,  # FullProf Biso
 )
 structure.atom_sites.create(
-    label='S', type_symbol='S', fract_x=0.06532, fract_y=0.25, fract_z=0.68401, adp_iso=0.36153
+    label='S',  # FullProf Atom
+    type_symbol='S',  # FullProf Typ
+    fract_x=0.06532,  # FullProf X
+    fract_y=0.25,  # FullProf Y
+    fract_z=0.68401,  # FullProf Z
+    adp_iso=0.36153,  # FullProf Biso
 )
 structure.atom_sites.create(
-    label='O1', type_symbol='O', fract_x=0.90822, fract_y=0.25, fract_z=0.59542, adp_iso=2.03647
+    label='O1',  # FullProf Atom
+    type_symbol='O',  # FullProf Typ
+    fract_x=0.90822,  # FullProf X
+    fract_y=0.25,  # FullProf Y
+    fract_z=0.59542,  # FullProf Z
+    adp_iso=2.03647,  # FullProf Biso
 )
 structure.atom_sites.create(
-    label='O2', type_symbol='O', fract_x=0.19390, fract_y=0.25, fract_z=0.54359, adp_iso=1.50403
+    label='O2',  # FullProf Atom
+    type_symbol='O',  # FullProf Typ
+    fract_x=0.19390,  # FullProf X
+    fract_y=0.25,  # FullProf Y
+    fract_z=0.54359,  # FullProf Z
+    adp_iso=1.50403,  # FullProf Biso
 )
 structure.atom_sites.create(
-    label='O3', type_symbol='O', fract_x=0.08114, fract_y=0.02713, fract_z=0.80863, adp_iso=1.34335
+    label='O3',  # FullProf Atom
+    type_symbol='O',  # FullProf Typ
+    fract_x=0.08114,  # FullProf X
+    fract_y=0.02713,  # FullProf Y
+    fract_z=0.80863,  # FullProf Z
+    adp_iso=1.34335,  # FullProf Biso
 )
 
 project.structures.add(structure)
@@ -78,16 +103,16 @@ experiment = ExperimentFactory.from_scratch(
 )
 verify.set_reference_as_measured(experiment, x, calc_fullprof)
 
-experiment.linked_phases.create(id='pbso4', scale=1.0)
+experiment.linked_phases.create(id='pbso4', scale=1.467791)  # FullProf Scale
 
-experiment.instrument.setup_wavelength = 1.912
+experiment.instrument.setup_wavelength = 1.912  # FullProf Lambda
 
 experiment.peak.type = 'pseudo-voigt'
-experiment.peak.broad_gauss_u = 0.139504
-experiment.peak.broad_gauss_v = -0.414070
-experiment.peak.broad_gauss_w = 0.388228
-experiment.peak.broad_lorentz_x = 0.0
-experiment.peak.broad_lorentz_y = 0.086387
+experiment.peak.broad_gauss_u = 0.139504  # FullProf U
+experiment.peak.broad_gauss_v = -0.414070  # FullProf V
+experiment.peak.broad_gauss_w = 0.388228  # FullProf W
+experiment.peak.broad_lorentz_x = 0.0  # FullProf X
+experiment.peak.broad_lorentz_y = 0.086387  # FullProf Y
 
 project.experiments.add(experiment)
 

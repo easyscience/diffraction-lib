@@ -27,15 +27,16 @@ from easydiffraction.analysis import verification as verify
 # %% [markdown]
 # ## Load the FullProf reference
 #
-# The issue #38 project ships the measured data and the `.pcr` model but
-# no pre-calculated profile, so the measured pattern is used as the
-# reference for now.
+# The FullProf **calculated** profile is exported as a two-column
+# (2θ, intensity) `.sub` holding the Bragg contribution only (no
+# background), so the engines are compared against FullProf's own
+# calculation, consistent with the other Verification pages.
 
 # %%
 reference_dir = verify.bundled_reference_dir() / 'pd-neut-cwl_tch-fcj_lab6'
 x, calc_fullprof = verify.load_columned_profile(
-    str(reference_dir / 'ECH0030684_LaB6_1p622A.dat'),
-    skip_rows=0,
+    str(reference_dir / 'ECH0030684_LaB6_1p622A1.sub'),
+    skip_rows=1,
     columns=(0, 1),
 )
 
@@ -46,15 +47,25 @@ x, calc_fullprof = verify.load_columned_profile(
 project = ed.Project()
 
 structure = StructureFactory.from_scratch(name='lab6')
-structure.space_group.name_h_m = 'P m -3 m'
-structure.cell.length_a = 4.156885
-structure.cell.length_b = 4.156885
-structure.cell.length_c = 4.156885
+structure.space_group.name_h_m = 'P m -3 m'  # FullProf Space group symbol
+structure.cell.length_a = 4.156885  # FullProf a
 structure.atom_sites.create(
-    label='La', type_symbol='La', fract_x=0.0, fract_y=0.0, fract_z=0.0, adp_iso=0.59716
+    label='La',  # FullProf Atom
+    type_symbol='La',  # FullProf Typ
+    fract_x=0.0,  # FullProf X
+    fract_y=0.0,  # FullProf Y
+    fract_z=0.0,  # FullProf Z
+    adp_type='Biso',  # FullProf Biso
+    adp_iso=0.59716,  # FullProf Biso
 )
 structure.atom_sites.create(
-    label='B', type_symbol='B', fract_x=0.5, fract_y=0.5, fract_z=0.19978, adp_iso=0.44250
+    label='B',  # FullProf Atom
+    type_symbol='B',  # FullProf Typ
+    fract_x=0.5,  # FullProf X
+    fract_y=0.5,  # FullProf Y
+    fract_z=0.19978,  # FullProf Z
+    adp_type='Biso',  # FullProf Biso
+    adp_iso=0.44250,  # FullProf Biso
 )
 
 project.structures.add(structure)
@@ -72,27 +83,31 @@ experiment = ExperimentFactory.from_scratch(
 )
 verify.set_reference_as_measured(experiment, x, calc_fullprof)
 
-experiment.instrument.setup_wavelength = 1.622536
-experiment.instrument.calib_twotheta_offset = -0.21356  # FullProf Zero
-experiment.peak.broad_gauss_u = 0.089876
-experiment.peak.broad_gauss_v = -0.377516
-experiment.peak.broad_gauss_w = 0.476188
-experiment.peak.broad_lorentz_x = 0.0
-experiment.peak.broad_lorentz_y = 0.052654
-experiment.linked_phases.create(id='lab6', scale=1.0)
+experiment.instrument.setup_wavelength = 1.623891  # FullProf Lambda
+experiment.instrument.calib_twotheta_offset = -0.45495  # FullProf Zero
+experiment.peak.broad_gauss_u = 0.143360  # FullProf U
+experiment.peak.broad_gauss_v = -0.522136  # FullProf V
+experiment.peak.broad_gauss_w = 0.590412  # FullProf W
+experiment.peak.broad_lorentz_x = 0.0  # FullProf X
+experiment.peak.broad_lorentz_y = 0.054265  # FullProf Y
+experiment.linked_phases.create(id='lab6', scale=136.0485)  # FullProf Scale
 
 project.experiments.add(experiment)
 
 # %% [markdown]
 # ## SyCos / SySin (pending EasyDiffraction support)
 #
-# The systematic peak-position corrections cannot be set yet; once a
-# category exists they would be applied here, e.g.:
-#
-# ```python
-# experiment.instrument.calib_sycos = 0.05395
-# experiment.instrument.calib_sysin = 0.09127
-# ```
+# FullProf applies sample-displacement (`SyCos`) and transparency
+# (`SySin`) peak-position shifts on top of `Zero` (see issue #117). The
+# CWL instrument category does not expose them yet, so the two lines
+# below are kept commented out with the FullProf `.pcr` values —
+# uncomment them once the parameters land to finish this page. As with
+# `Zero` (`calib_twotheta_offset` above), the cross-code convention may
+# differ, so the values may need the same adjustment when wired in.
+
+# %%
+# experiment.instrument.calib_sycos = 0.05395  # FullProf SyCos
+# experiment.instrument.calib_sysin = 0.09127  # FullProf SySin
 
 # %% [markdown]
 # ## Calculate the pattern with each engine
@@ -105,8 +120,9 @@ calc_ed_crysfml = verify.calculate_pattern(project, experiment, 'crysfml')
 # ## Compare each engine against the reference
 #
 # Until the corrections above are supported the engines will show
-# systematic peak-position offsets against the measured data, which is
-# the discrepancy this page is being prepared to verify.
+# systematic peak-position offsets against the FullProf calculated
+# profile, which is the discrepancy this page is being prepared to
+# verify.
 
 # %%
 project.display.pattern_comparison(
