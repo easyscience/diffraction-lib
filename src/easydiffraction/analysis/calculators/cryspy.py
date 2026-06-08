@@ -941,6 +941,8 @@ def _cif_instrument_section(
             instrument_mapping = {
                 'setup_wavelength': '_setup_wavelength',
                 'calib_twotheta_offset': '_setup_offset_2theta',
+                'calib_sample_displacement': '_setup_offset_SyCos',
+                'calib_sample_transparency': '_setup_offset_SySin',
             }
         elif expt_type.sample_form.value == SampleFormEnum.SINGLE_CRYSTAL:
             instrument_mapping = {'setup_wavelength': '_setup_wavelength'}

@@ -230,7 +230,7 @@ Docs / structure (auto-generated, do not hand-edit):
   Files: `src/.../instrument/cwl.py`.
   Commit: `Add CWL sample displacement and transparency parameters`
 
-- [ ] **P1.2 — Emit the corrections in the cryspy CIF.**
+- [x] **P1.2 — Emit the corrections in the cryspy CIF.**
   In `cryspy.py` `_cif_instrument_section`, CWL+powder branch, extend
   `instrument_mapping` with
   `'calib_sample_displacement': '_setup_offset_SyCos'` and
@@ -350,7 +350,7 @@ Docs / structure (auto-generated, do not hand-edit):
 ## Status checklist
 
 - [x] P1.1 Add parameters to `CwlPdInstrument`
-- [ ] P1.2 Emit offsets in cryspy CIF
+- [x] P1.2 Emit offsets in cryspy CIF
 - [ ] P1.3 Update cryspy cached dict
 - [ ] P1.4 Comment crysfml non-support
 - [ ] P1.5 Wire corrections into verification page
