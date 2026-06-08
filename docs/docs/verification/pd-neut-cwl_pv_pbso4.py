@@ -53,6 +53,7 @@ structure.atom_sites.create(
     fract_x=0.18754,  # FullProf X
     fract_y=0.25,  # FullProf Y
     fract_z=0.16709,  # FullProf Z
+    adp_type='Biso',  # FullProf Biso
     adp_iso=1.38041,  # FullProf Biso
 )
 structure.atom_sites.create(
@@ -61,6 +62,7 @@ structure.atom_sites.create(
     fract_x=0.06532,  # FullProf X
     fract_y=0.25,  # FullProf Y
     fract_z=0.68401,  # FullProf Z
+    adp_type='Biso',  # FullProf Biso
     adp_iso=0.36153,  # FullProf Biso
 )
 structure.atom_sites.create(
@@ -69,6 +71,7 @@ structure.atom_sites.create(
     fract_x=0.90822,  # FullProf X
     fract_y=0.25,  # FullProf Y
     fract_z=0.59542,  # FullProf Z
+    adp_type='Biso',  # FullProf Biso
     adp_iso=2.03647,  # FullProf Biso
 )
 structure.atom_sites.create(
@@ -77,6 +80,7 @@ structure.atom_sites.create(
     fract_x=0.19390,  # FullProf X
     fract_y=0.25,  # FullProf Y
     fract_z=0.54359,  # FullProf Z
+    adp_type='Biso',  # FullProf Biso
     adp_iso=1.50403,  # FullProf Biso
 )
 structure.atom_sites.create(
@@ -85,6 +89,7 @@ structure.atom_sites.create(
     fract_x=0.08114,  # FullProf X
     fract_y=0.02713,  # FullProf Y
     fract_z=0.80863,  # FullProf Z
+    adp_type='Biso',  # FullProf Biso
     adp_iso=1.34335,  # FullProf Biso
 )
 

@@ -34,17 +34,19 @@ x, calc_fullprof = verify.load_fullprof_profile(str(reference_dir / 'arg_si1.sub
 project = ed.Project()
 
 structure = StructureFactory.from_scratch(name='si')
+
 structure.space_group.name_h_m = 'F d -3 m'  # FullProf Space group symbol
 structure.space_group.it_coordinate_system_code = '2'
+
 structure.cell.length_a = 5.431342  # FullProf a
-structure.cell.length_b = 5.431342  # FullProf b
-structure.cell.length_c = 5.431342  # FullProf c
+
 structure.atom_sites.create(
     label='Si',  # FullProf Atom
     type_symbol='Si',  # FullProf Typ
     fract_x=0.125,  # FullProf X
     fract_y=0.125,  # FullProf Y
     fract_z=0.125,  # FullProf Z
+    adp_type='Biso',  # FullProf Biso
     adp_iso=0.52451,  # FullProf Biso
 )
 
@@ -63,10 +65,11 @@ experiment = ExperimentFactory.from_scratch(
 )
 verify.set_reference_as_measured(experiment, x, calc_fullprof)
 
+experiment.linked_phases.create(id='si', scale=0.6750988)  # FullProf Scale
+
 experiment.instrument.setup_twotheta_bank = 144.845  # FullProf 2ThetaBank
 experiment.instrument.calib_d_to_tof_linear = 7476.91016  # FullProf Dtt1
 experiment.instrument.calib_d_to_tof_quad = -1.54  # FullProf Dtt2
-experiment.instrument.calib_d_to_tof_offset = 0.0  # FullProf Zero
 
 experiment.peak.type = 'jorgensen-von-dreele'
 experiment.peak.broad_gauss_sigma_0 = 3.5541  # FullProf Sigma-0
@@ -79,8 +82,6 @@ experiment.peak.exp_rise_alpha_0 = 0.0  # FullProf alph0
 experiment.peak.exp_rise_alpha_1 = 0.5971  # FullProf alph1
 experiment.peak.exp_decay_beta_0 = 0.04221  # FullProf beta0
 experiment.peak.exp_decay_beta_1 = 0.00946  # FullProf beta1
-
-experiment.linked_phases.create(id='si', scale=0.6750988)  # FullProf Scale
 
 project.experiments.add(experiment)
 
@@ -162,13 +163,18 @@ verify.assert_patterns_agree(
 # scale has to be refined alongside the profile terms.
 
 # %%
+# Adjust the initial guess to be closer to the reference, to speed up the fit
+experiment.linked_phases['si'].scale = 16.5579
+experiment.peak.broad_lorentz_gamma_1 = 9.9974
+
+# %%
 experiment.calculator.type = 'cryspy'
 project.analysis.minimizer.type = 'lmfit'
 
+experiment.linked_phases['si'].scale.free = True
 experiment.peak.broad_lorentz_gamma_1.free = True
 
-experiment.linked_phases['si'].scale.free = True
-
+# %%
 project.analysis.fit()
 
 # %% [markdown]

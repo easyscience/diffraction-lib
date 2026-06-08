@@ -34,18 +34,20 @@ x, calc_fullprof = verify.load_fullprof_profile(str(reference_dir / 'arg_si1.sub
 project = ed.Project()
 
 structure = StructureFactory.from_scratch(name='si')
+
 structure.space_group.name_h_m = 'F d -3 m'  # FullProf Space group symbol
 structure.space_group.it_coordinate_system_code = '2'
-structure.cell.length_a = 5.431334  # FullProf a
-structure.cell.length_b = 5.431334  # FullProf b
-structure.cell.length_c = 5.431334  # FullProf c
+
+structure.cell.length_a = 5.432381  # FullProf a
+
 structure.atom_sites.create(
     label='Si',  # FullProf Atom
     type_symbol='Si',  # FullProf Typ
     fract_x=0.125,  # FullProf X
     fract_y=0.125,  # FullProf Y
     fract_z=0.125,  # FullProf Z
-    adp_iso=0.53512,  # FullProf Biso
+    adp_type='Biso',  # FullProf Biso
+    adp_iso=0.54095,  # FullProf Biso
 )
 
 project.structures.add(structure)
@@ -63,21 +65,20 @@ experiment = ExperimentFactory.from_scratch(
 )
 verify.set_reference_as_measured(experiment, x, calc_fullprof)
 
+experiment.linked_phases.create(id='si', scale=0.6562111)  # FullProf Scale
+
 experiment.instrument.setup_twotheta_bank = 144.845  # FullProf 2ThetaBank
 experiment.instrument.calib_d_to_tof_linear = 7476.91016  # FullProf Dtt1
 experiment.instrument.calib_d_to_tof_quad = -1.54  # FullProf Dtt2
-experiment.instrument.calib_d_to_tof_offset = -9.18326  # FullProf Zero
 
 experiment.peak.type = 'jorgensen'
-experiment.peak.broad_gauss_sigma_0 = 2.6493  # FullProf Sigma-0
-experiment.peak.broad_gauss_sigma_1 = 50.3076  # FullProf Sigma-1
-experiment.peak.broad_gauss_sigma_2 = 0.5171  # FullProf Sigma-2
-experiment.peak.exp_rise_alpha_0 = 0.031177  # FullProf alph0
-experiment.peak.exp_rise_alpha_1 = 0.597100  # FullProf alph1
-experiment.peak.exp_decay_beta_0 = 0.042210  # FullProf beta0
-experiment.peak.exp_decay_beta_1 = 0.009460  # FullProf beta1
-
-experiment.linked_phases.create(id='si', scale=0.6562111)  # FullProf Scale
+experiment.peak.broad_gauss_sigma_0 = 5.0790  # FullProf Sigma-0
+experiment.peak.broad_gauss_sigma_1 = 29.6492  # FullProf Sigma-1
+experiment.peak.broad_gauss_sigma_2 = 0.0 # FullProf Sigma-2
+experiment.peak.exp_rise_alpha_0 = 0.0  # FullProf alph0
+experiment.peak.exp_rise_alpha_1 = 0.235422  # FullProf alph1
+experiment.peak.exp_decay_beta_0 = 0.038020  # FullProf beta0
+experiment.peak.exp_decay_beta_1 = 0.010902  # FullProf beta1
 
 project.experiments.add(experiment)
 
@@ -144,27 +145,19 @@ verify.assert_patterns_agree(
 # %% [markdown]
 # ## Investigate the discrepancy by refinement
 #
-# The divergence is in the time-of-flight **profile**, not the structure.
-# Mirroring the Jorgensen–Von Dreele page, free the Jorgensen broadening
-# terms (the Gaussian `sigma` and the back-to-back exponential `alpha`/
-# `beta`) together with the scale and refine with the `cryspy` engine,
-# everything else fixed, to see how closely it can then reproduce the
-# FullProf curve and how far the profile terms move. The scale is freed
-# too because the time-of-flight intensity-scale convention differs from
-# FullProf's `.pcr` scale.
+# The divergence is in the scale, not the structure. So, it is freed ...
+
+# %%
+# Adjust the initial guess to be closer to the reference, to speed up the fit
+experiment.linked_phases['ncaf'].scale = 15.0
 
 # %%
 experiment.calculator.type = 'cryspy'
 project.analysis.minimizer.type = 'lmfit'
 
-experiment.peak.broad_gauss_sigma_0.free = True
-experiment.peak.broad_gauss_sigma_1.free = True
-experiment.peak.exp_rise_alpha_1.free = True
-experiment.peak.exp_decay_beta_0.free = True
-experiment.peak.exp_decay_beta_1.free = True
-
 experiment.linked_phases['si'].scale.free = True
 
+# %%
 project.analysis.fit()
 
 # %% [markdown]

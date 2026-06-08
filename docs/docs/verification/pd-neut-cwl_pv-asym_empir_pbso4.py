@@ -53,6 +53,7 @@ structure.atom_sites.create(
     fract_x=0.18752,  # FullProf X
     fract_y=0.25,  # FullProf Y
     fract_z=0.16705,  # FullProf Z
+    adp_type='Biso',  # FullProf Biso
     adp_iso=1.38991,  # FullProf Biso
 )
 structure.atom_sites.create(
@@ -61,6 +62,7 @@ structure.atom_sites.create(
     fract_x=0.06549,  # FullProf X
     fract_y=0.25,  # FullProf Y
     fract_z=0.68374,  # FullProf Z
+    adp_type='Biso',  # FullProf Biso
     adp_iso=0.39275,  # FullProf Biso
 )
 structure.atom_sites.create(
@@ -69,6 +71,7 @@ structure.atom_sites.create(
     fract_x=0.90816,  # FullProf X
     fract_y=0.25,  # FullProf Y
     fract_z=0.59544,  # FullProf Z
+    adp_type='Biso',  # FullProf Biso
     adp_iso=1.99239,  # FullProf Biso
 )
 structure.atom_sites.create(
@@ -77,6 +80,7 @@ structure.atom_sites.create(
     fract_x=0.19355,  # FullProf X
     fract_y=0.25,  # FullProf Y
     fract_z=0.54330,  # FullProf Z
+    adp_type='Biso',  # FullProf Biso
     adp_iso=1.47741,  # FullProf Biso
 )
 structure.atom_sites.create(
@@ -85,6 +89,7 @@ structure.atom_sites.create(
     fract_x=0.08109,  # FullProf X
     fract_y=0.02727,  # FullProf Y
     fract_z=0.80869,  # FullProf Z
+    adp_type='Biso',  # FullProf Biso
     adp_iso=1.30069,  # FullProf Biso
 )
 
@@ -207,6 +212,7 @@ experiment.peak.asym_empir_2.free = True
 experiment.peak.asym_empir_3.free = True
 experiment.peak.asym_empir_4.free = True
 
+# %%
 project.analysis.fit()
 
 # %% [markdown]

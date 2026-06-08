@@ -4,19 +4,8 @@
 # A **prepared** verification for the FullProf `SyCos`/`SySin` systematic
 # peak-position corrections (sample displacement and transparency), using
 # the real LaB6 dataset from
-# [cryspy issue #38](https://github.com/ikibalin/cryspy/issues/38). The
-# FullProf model applies `Zero = -0.21356`, `SyCos = 0.05395`, and
-# `SySin = 0.09127`, a Thompson–Cox–Hastings profile with Finger–Cox–
-# Jephcoat axial-divergence asymmetry, a polynomial background, and a
-# custom ¹¹B scattering length.
+# [cryspy issue #38](https://github.com/ikibalin/cryspy/issues/38).
 #
-# > **Pending — this page is skipped in CI.** EasyDiffraction does not
-# > yet expose `SyCos`/`SySin`, the ¹¹B scattering length, the
-# > Thompson–Cox–Hastings profile, or the FullProf polynomial background.
-# > Until those land, the engines cannot reproduce this model, so the
-# > page is listed in `ci_skip.txt` and is committed only as a
-# > ready-to-finish skeleton. The cryspy side of `SyCos`/`SySin` is added
-# > in [cryspy PR #46](https://github.com/ikibalin/cryspy/pull/46).
 
 # %%
 import easydiffraction as ed
@@ -56,16 +45,19 @@ structure.atom_sites.create(
     fract_y=0.0,  # FullProf Y
     fract_z=0.0,  # FullProf Z
     adp_type='Biso',  # FullProf Biso
-    adp_iso=0.59716,  # FullProf Biso
+    adp_iso=0.53405,  # FullProf Biso
 )
 structure.atom_sites.create(
     label='B',  # FullProf Atom
-    type_symbol='B',  # FullProf Typ
-    fract_x=0.5,  # FullProf X
+    # ❌ <built-in function f_cw_powder_pattern_from_dict> returned a 
+    # result with an exception set 
+    #type_symbol='11B',  # FullProf "B11     0.66500    0.00000   0"
+    type_symbol='B',  # FullProf "B11     0.66500    0.00000   0"
+    fract_x=0.19972,  # FullProf X
     fract_y=0.5,  # FullProf Y
-    fract_z=0.19978,  # FullProf Z
+    fract_z=0.5,  # FullProf Z
     adp_type='Biso',  # FullProf Biso
-    adp_iso=0.44250,  # FullProf Biso
+    adp_iso=0.39406,  # FullProf Biso
 )
 
 project.structures.add(structure)
@@ -83,14 +75,16 @@ experiment = ExperimentFactory.from_scratch(
 )
 verify.set_reference_as_measured(experiment, x, calc_fullprof)
 
+experiment.linked_phases.create(id='lab6', scale=136.0509)  # FullProf Scale
+
 experiment.instrument.setup_wavelength = 1.623891  # FullProf Lambda
-experiment.instrument.calib_twotheta_offset = -0.45495  # FullProf Zero
-experiment.peak.broad_gauss_u = 0.143360  # FullProf U
-experiment.peak.broad_gauss_v = -0.522136  # FullProf V
-experiment.peak.broad_gauss_w = 0.590412  # FullProf W
+experiment.instrument.calib_twotheta_offset = -0.45497  # FullProf Zero
+
+experiment.peak.broad_gauss_u = 0.143361  # FullProf U
+experiment.peak.broad_gauss_v = -0.522147  # FullProf V
+experiment.peak.broad_gauss_w = 0.590413  # FullProf W
 experiment.peak.broad_lorentz_x = 0.0  # FullProf X
-experiment.peak.broad_lorentz_y = 0.054265  # FullProf Y
-experiment.linked_phases.create(id='lab6', scale=136.0485)  # FullProf Scale
+experiment.peak.broad_lorentz_y = 0.054268  # FullProf Y
 
 project.experiments.add(experiment)
 

@@ -45,8 +45,6 @@ structure = StructureFactory.from_scratch(name='lbco')
 structure.space_group.name_h_m = 'P m -3 m'  # FullProf Space group symbol
 
 structure.cell.length_a = 3.890790  # FullProf a
-structure.cell.length_b = 3.890790  # FullProf b
-structure.cell.length_c = 3.890790  # FullProf c
 
 structure.atom_sites.create(
     label='La',  # FullProf Atom
@@ -55,6 +53,7 @@ structure.atom_sites.create(
     fract_y=0.0,  # FullProf Y
     fract_z=0.0,  # FullProf Z
     occupancy=0.5,  # FullProf Occ
+    adp_type='Biso',  # FullProf Biso
     adp_iso=0.57499,  # FullProf Biso
 )
 structure.atom_sites.create(
@@ -64,6 +63,7 @@ structure.atom_sites.create(
     fract_y=0.0,  # FullProf Y
     fract_z=0.0,  # FullProf Z
     occupancy=0.5,  # FullProf Occ
+    adp_type='Biso',  # FullProf Biso
     adp_iso=0.57499,  # FullProf Biso
 )
 structure.atom_sites.create(
@@ -73,6 +73,7 @@ structure.atom_sites.create(
     fract_y=0.5,  # FullProf Y
     fract_z=0.5,  # FullProf Z
     occupancy=1.0,  # FullProf Occ
+    adp_type='Biso',  # FullProf Biso
     adp_iso=0.26014,  # FullProf Biso
 )
 structure.atom_sites.create(
@@ -82,6 +83,7 @@ structure.atom_sites.create(
     fract_y=0.5,  # FullProf Y
     fract_z=0.5,  # FullProf Z
     occupancy=0.97856,  # FullProf Occ
+    adp_type='Biso',  # FullProf Biso
     adp_iso=1.36658,  # FullProf Biso
 )
 

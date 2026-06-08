@@ -108,12 +108,11 @@ verify.set_reference_as_measured(experiment, x, calc_fullprof)
 experiment.instrument.setup_twotheta_bank = 152.827  # FullProf 2ThetaBank
 experiment.instrument.calib_d_to_tof_linear = 20773.12305  # FullProf Dtt1
 experiment.instrument.calib_d_to_tof_quad = -1.08308  # FullProf Dtt2
-experiment.instrument.calib_d_to_tof_offset = 0.0  # FullProf Zero
 
 experiment.peak.type = 'jorgensen-von-dreele'
 experiment.peak.broad_gauss_sigma_0 = 0.0  # FullProf Sigma-0
 experiment.peak.broad_gauss_sigma_1 = 0.0  # FullProf Sigma-1
-experiment.peak.broad_gauss_sigma_2 = 15.6960  # FullProf Sigma-2
+experiment.peak.broad_gauss_sigma_2 = 15.6959  # FullProf Sigma-2
 experiment.peak.exp_rise_alpha_0 = -0.009276  # FullProf alph0
 experiment.peak.exp_rise_alpha_1 = 0.109623  # FullProf alph1
 experiment.peak.exp_decay_beta_0 = 0.006705  # FullProf beta0
@@ -186,12 +185,11 @@ verify.assert_patterns_agree(
 # %% [markdown]
 # ## Investigate the scale convention by refinement
 #
-# The shapes already agree, so free **only** the scale with the `cryspy`
-# engine and refine, keeping the structure, calibration, and profile
-# fixed. If a scale-only fit closes the gap, the discrepancy is purely a
-# time-of-flight intensity-scale convention, not a structural or profile
-# one. (`crysfml` follows a different convention again and is not refined
-# here.)
+# The divergence is in the scale, not the structure. So, it is freed ...
+
+# %%
+# Adjust the initial guess to be closer to the reference, to speed up the fit
+experiment.linked_phases['ncaf'].scale = 1.0932
 
 # %%
 experiment.calculator.type = 'cryspy'
@@ -199,6 +197,7 @@ project.analysis.minimizer.type = 'lmfit'
 
 experiment.linked_phases['ncaf'].scale.free = True
 
+# %%
 project.analysis.fit()
 
 # %% [markdown]
