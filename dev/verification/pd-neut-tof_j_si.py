@@ -9,10 +9,11 @@
 # identical input parameters and **without any fitting**.
 #
 # This is the companion of the Jorgensen–Von Dreele Si page. Both engines
-# diverge from the FullProf plain-Jorgensen profile (they agree more
-# closely with each other than with FullProf) and also sit at a different
-# absolute time-of-flight intensity scale, so the profile terms and the
-# scale are investigated together by refinement below.
+# reproduce the FullProf plain-Jorgensen peak *shapes* (the shape
+# correlation is essentially 1) but sit at a different absolute
+# time-of-flight intensity scale, so the scale convention is investigated
+# by refinement below, after which the refined cryspy pattern is asserted
+# to agree with FullProf within tolerance.
 
 # %%
 import easydiffraction as ed
@@ -186,3 +187,16 @@ project.display.pattern_comparison(
 
 # %%
 verify.report_refinement_closeness(calc_fullprof, calc_ed_cryspy, calc_ed_cryspy_refined)
+
+# %% [markdown]
+# ## Agreement after refinement
+#
+# With the scale convention absorbed by refining the single,
+# non-structural scale (the structure stays fixed), cryspy reproduces the
+# FullProf profile within tolerance. This is asserted as a strict pass, so
+# the page is a regression check rather than a skipped illustration.
+
+# %%
+verify.assert_patterns_agree(
+    [('cryspy vs FullProf (refined)', calc_fullprof, calc_ed_cryspy_refined)],
+)
