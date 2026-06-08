@@ -723,6 +723,168 @@ class Plotter(RendererBase):
         )
         self._plot_meas_vs_calc_request(expt_name=expt_name, plot_options=plot_options)
 
+    def plot_calc_comparison(
+        self,
+        *,
+        expt_name: str,
+        reference: np.ndarray,
+        candidate: np.ndarray,
+        reference_label: str,
+        candidate_label: str,
+        annotation_lines: tuple[str, ...] = (),
+        title: str | None = None,
+    ) -> None:
+        """
+        Overlay two calculated patterns with a residual panel.
+
+        The reference is drawn as a solid line and the candidate as
+        markers, both at their absolute scale (each page seeds the
+        FullProf scale), so the overlay shows real scale agreement. A
+        residual panel and an optional metrics annotation are included;
+        Bragg ticks and background are intentionally omitted.
+
+        Parameters
+        ----------
+        expt_name : str
+            Experiment supplying the x grid and axis labels.
+        reference : np.ndarray
+            Reference intensities, drawn as a solid line.
+        candidate : np.ndarray
+            Candidate intensities, drawn as markers.
+        reference_label : str
+            Legend name for the reference curve.
+        candidate_label : str
+            Legend name for the candidate curve.
+        annotation_lines : tuple[str, ...], default=()
+            Lines for the top-left metrics annotation.
+        title : str | None, default=None
+            Optional plot title.
+
+        Raises
+        ------
+        ValueError
+            If ``reference``, ``candidate``, and the experiment x grid
+            do not all have the same length.
+        """
+        self._update_project_categories(expt_name)
+        experiment = self._project.experiments[expt_name]
+        x_axis, _, sample_form, scattering_type, _ = self._resolve_x_axis(experiment.type, None)
+        axes_labels = self._get_axes_labels(sample_form, scattering_type, x_axis)
+        x = np.asarray(intensity_category_for(experiment).x, dtype=float)
+        reference = np.asarray(reference, dtype=float)
+        candidate = np.asarray(candidate, dtype=float)
+        if not reference.shape == candidate.shape == x.shape:
+            msg = (
+                f"reference, candidate, and the '{expt_name}' x grid must have "
+                f'the same length (got {reference.shape}, {candidate.shape}, '
+                f'{x.shape}).'
+            )
+            raise ValueError(msg)
+
+        plot_spec = PowderMeasVsCalcSpec(
+            x=x,
+            y_meas=reference,
+            y_calc=candidate,
+            y_resid=reference - candidate,
+            bragg_tick_sets=(),
+            axes_labels=axes_labels,
+            title=title or f"Calculated pattern comparison for 🔬 '{expt_name}'",
+            residual_height_fraction=DEFAULT_RESID_HEIGHT,
+            bragg_peaks_height_fraction=DEFAULT_BRAGG_ROW,
+            height=self._composite_plot_height(),
+            y_calc_name=candidate_label,
+            y_meas_name=reference_label,
+        )
+        if self.engine == PlotterEngineEnum.PLOTLY.value:
+            self._backend.build_and_show_calc_comparison(
+                plot_spec=plot_spec,
+                reference_label=reference_label,
+                annotation_lines=annotation_lines,
+            )
+            return
+        # Other engines (for example ASCII) render the base composite
+        # without the styled overlay or metrics annotation.
+        self._backend.plot_powder_meas_vs_calc(plot_spec=plot_spec)
+
+    def plot_reflection_comparison(
+        self,
+        *,
+        expt_name: str,
+        reference: np.ndarray,
+        candidate: np.ndarray,
+        reference_label: str,
+        candidate_label: str,
+        annotation_lines: tuple[str, ...] = (),
+        title: str | None = None,
+    ) -> None:
+        """
+        Scatter a reference against a candidate per-reflection F².
+
+        Plots the reference on the x-axis and the candidate on the
+        y-axis at their absolute scale against a y=x reference line,
+        with an optional metrics annotation. Points fall on the diagonal
+        when the two agree in absolute F². Intended for the
+        single-crystal external-reference Verification pages.
+
+        Parameters
+        ----------
+        expt_name : str
+            Experiment supplying the plot context (single crystal).
+        reference : np.ndarray
+            Reference F² per reflection (for example FullProf F2cal).
+        candidate : np.ndarray
+            Candidate F² per reflection (for example an engine).
+        reference_label : str
+            Axis and hover name for the reference.
+        candidate_label : str
+            Axis and hover name for the candidate.
+        annotation_lines : tuple[str, ...], default=()
+            Lines for the top-left metrics annotation.
+        title : str | None, default=None
+            Optional plot title.
+
+        Raises
+        ------
+        ValueError
+            If ``reference`` and ``candidate`` differ in length.
+        """
+        self._update_project_categories(expt_name)
+        reference = np.asarray(reference, dtype=float)
+        candidate = np.asarray(candidate, dtype=float)
+        if reference.shape != candidate.shape:
+            msg = (
+                f'reference and candidate must have the same length '
+                f'(got {reference.shape}, {candidate.shape}).'
+            )
+            raise ValueError(msg)
+
+        axes_labels = (
+            f'{reference_label} F²',
+            f'{candidate_label} F²',
+        )
+        plot_title = title or f"Reflection F² comparison for 🔬 '{expt_name}'"
+        if self.engine == PlotterEngineEnum.PLOTLY.value:
+            self._backend.build_and_show_reflection_comparison(
+                x_reference=reference,
+                y_candidate=candidate,
+                axes_labels=axes_labels,
+                reference_label=reference_label,
+                candidate_label=candidate_label,
+                title=plot_title,
+                annotation_lines=annotation_lines,
+            )
+            return
+        # Other engines (for example ASCII) render the base scatter
+        # without the styled metrics annotation.
+        self._backend.plot_single_crystal(
+            x_calc=reference,
+            y_meas=candidate,
+            y_meas_su=np.zeros_like(candidate),
+            axes_labels=axes_labels,
+            title=plot_title,
+            height=self.height,
+        )
+
     def _plot_meas_vs_calc_request(
         self,
         *,

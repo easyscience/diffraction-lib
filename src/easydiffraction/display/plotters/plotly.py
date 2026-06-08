@@ -14,6 +14,8 @@ import base64
 import json
 import uuid
 from dataclasses import dataclass
+from functools import cache
+from importlib import resources
 
 import darkdetect
 import numpy as np
@@ -56,6 +58,34 @@ from easydiffraction.utils.environment import FigureEmbedMode
 from easydiffraction.utils.environment import in_jupyter
 from easydiffraction.utils.environment import in_pycharm
 from easydiffraction.utils.environment import resolve_figure_embed_mode
+
+# Live notebooks self-host the Plotly runtime and the shared figure
+# loader (both ship in the wheel) instead of fetching Plotly from a CDN.
+# They are injected once per kernel session by the first inline figure
+# (tracked by ``PlotlyPlotter._live_runtime_injected``, a class
+# attribute that resets with each new kernel process).
+_PLOTLY_RUNTIME_ASSET = 'vendor/plotly/plotly-cartesian.min.js'
+_FIGURE_LOADER_ASSET = 'assets/ed-figures.js'
+
+
+@cache
+def _packaged_asset(relative_path: str) -> str:
+    """
+    Read a packaged display asset bundled in the wheel.
+
+    Parameters
+    ----------
+    relative_path : str
+        Path under ``easydiffraction.display.plotters`` (POSIX-style).
+
+    Returns
+    -------
+    str
+        The asset's text contents.
+    """
+    package = resources.files('easydiffraction.display.plotters')
+    return package.joinpath(*relative_path.split('/')).read_text(encoding='utf-8')
+
 
 DEFAULT_COLORS = {
     'meas': 'rgb(31, 119, 180)',
@@ -281,6 +311,9 @@ class PlotlyPlotter(PlotterBase):
     """Interactive plotter using Plotly for notebooks and browsers."""
 
     _supports_graphical_heatmap: bool = True
+    # Whether the self-hosted runtime + loader were already injected
+    # this kernel session (live-notebook path). Resets each new process.
+    _live_runtime_injected: bool = False
 
     def __init__(self) -> None:
         """Set the default Plotly template and renderer."""
@@ -816,11 +849,17 @@ class PlotlyPlotter(PlotterBase):
         tooltip frame through the shared hover formatter.
         """
         calc_label = plot_spec.y_calc_name or 'Icalc'
+        meas_label = plot_spec.y_meas_name or 'Imeas'
+        # Mirror the residual trace name: a plain "Residual" when custom
+        # curve labels are set (the calc-comparison view), otherwise the
+        # default "Imeas - Icalc" difference label.
+        custom_labels = plot_spec.y_meas_name is not None and plot_spec.y_calc_name is not None
+        resid_label = 'Residual' if custom_labels else f'{meas_label} - {calc_label}'
         if plot_spec.y_bkg is None:
             return cls._format_hover_lines([
                 'x: %{x:,.2f}',
                 cls._hover_color_span(
-                    'Imeas: %{customdata[0]:,.2f}',
+                    f'{meas_label}: %{{customdata[0]:,.2f}}',
                     DEFAULT_COLORS['meas'],
                 ),
                 cls._hover_color_span(
@@ -828,7 +867,7 @@ class PlotlyPlotter(PlotterBase):
                     DEFAULT_COLORS['calc'],
                 ),
                 cls._hover_color_span(
-                    f'Imeas - {calc_label}: %{{customdata[2]:,.2f}}',
+                    f'{resid_label}: %{{customdata[2]:,.2f}}',
                     DEFAULT_COLORS['resid'],
                 ),
             ])
@@ -836,7 +875,7 @@ class PlotlyPlotter(PlotterBase):
         return cls._format_hover_lines([
             'x: %{x:,.2f}',
             cls._hover_color_span(
-                'Imeas: %{customdata[0]:,.2f}',
+                f'{meas_label}: %{{customdata[0]:,.2f}}',
                 DEFAULT_COLORS['meas'],
             ),
             cls._hover_color_span(
@@ -848,7 +887,7 @@ class PlotlyPlotter(PlotterBase):
                 DEFAULT_COLORS['calc'],
             ),
             cls._hover_color_span(
-                f'Imeas - {calc_label}: %{{customdata[3]:,.2f}}',
+                f'{resid_label}: %{{customdata[3]:,.2f}}',
                 DEFAULT_COLORS['resid'],
             ),
         ])
@@ -1766,21 +1805,62 @@ scheduleResize();
             fig.show(config=config)
             return
 
-        # Docs execution sets SHARED, baking a lazy placeholder into
-        # the cell HTML. Live Jupyter stays INLINE (eager, CDN).
+        # The docs site (SHARED) bakes a lazy placeholder into the page,
+        # which loads the runtime once and the loader scans for it.
         if resolve_figure_embed_mode() is FigureEmbedMode.SHARED:
-            html_fig = self.serialize_html(
-                fig,
-                include_plotlyjs=False,
-                mode=FigureEmbedMode.SHARED,
-            )
-        else:
-            html_fig = self.serialize_html(
-                fig,
-                include_plotlyjs='cdn',
-                mode=FigureEmbedMode.INLINE,
-            )
-        display(HTML(html_fig))
+            display(HTML(self._serialize_html_shared(fig)))
+            return
+
+        # Live notebooks render through one HTML output: a target div
+        # plus a single <script> that, the first time per kernel
+        # session, carries the self-hosted Plotly bundle and the shared
+        # loader (inline — no async CDN race), then renders this
+        # figure's spec into the target. One output and one script
+        # element keep the cell's visual footprint to just the plot.
+        plot_id = f'ed-fig-{uuid.uuid4().hex}'
+        height = self._figure_height(fig)
+        target_html = (
+            '<div class="ed-figure" data-ed-figure="plotly">'
+            f'<div class="ed-figure-target" id="{plot_id}" '
+            f'style="min-height: {height}px"></div>'
+            '</div>'
+        )
+        render_js = (
+            f'if (window.edFigures) {{ '
+            f'window.edFigures.renderSpec("{plot_id}", {self._figure_spec_json(fig)}); }}'
+        )
+        script = (
+            '<script type="text/javascript">'
+            f'{self._live_runtime_bootstrap_js()}{render_js}'
+            '</script>'
+        )
+        display(HTML(self._wrap_html_figure(fig, target_html) + script))
+
+    @classmethod
+    def _live_runtime_bootstrap_js(cls) -> str:
+        """
+        Return one-time runtime + loader JavaScript for live notebooks.
+
+        On the first call in a kernel session this returns the
+        self-hosted Plotly bundle and the shared ``ed-figures.js``
+        loader as raw JavaScript (for a Javascript output); later calls
+        return an empty string. Running inline means the loader never
+        races an async runtime download.
+
+        Returns
+        -------
+        str
+            The bootstrap JavaScript, or ``''`` once already injected
+            this session.
+        """
+        if cls._live_runtime_injected:
+            return ''
+        cls._live_runtime_injected = True
+        runtime = _packaged_asset(_PLOTLY_RUNTIME_ASSET)
+        loader = _packaged_asset(_FIGURE_LOADER_ASSET)
+        # The leading ';' guards against the runtime's last statement
+        # swallowing the loader IIFE through automatic semicolon rules.
+        return f'{runtime}\n;\n{loader}\n;\n'
 
     @staticmethod
     def _ed_theme_payload() -> dict:
@@ -1836,17 +1916,14 @@ scheduleResize();
         return DEFAULT_HEIGHT * PLOTLY_HEIGHT_PER_UNIT
 
     @classmethod
-    def _serialize_html_shared(cls, fig: object) -> str:
+    def _figure_spec_json(cls, fig: object) -> str:
         """
-        Serialize a figure as a lazy SHARED-mode placeholder.
+        Serialize a figure to the JSON spec the loader renders.
 
-        Emits a skeleton plus the figure spec as ``application/json``
-        for the shared ``ed-figures.js`` loader to render on demand. No
-        Plotly bundle or per-figure post-script is embedded; the runtime
-        loads once per page and the loader owns theme-sync, resize, and
-        legend. Bulk float64 arrays are downcast to float32 (visually
-        lossless, ~7 significant figures) to roughly halve the embedded
-        data.
+        Carries the trace data, layout, config, and the theme/legend
+        metadata the loader needs. Bulk float64 arrays are downcast to
+        float32 (visually lossless, ~7 significant figures) to roughly
+        halve the embedded data.
 
         Parameters
         ----------
@@ -1856,7 +1933,8 @@ scheduleResize();
         Returns
         -------
         str
-            Placeholder HTML carrying the figure spec.
+            The figure spec as a JSON string, with ``<`` escaped so it
+            is safe inside a ``<script>`` element.
         """
         figure_dict = _typed_arrays_to_float32(fig.to_plotly_json())
         spec = {
@@ -1868,7 +1946,30 @@ scheduleResize();
             'edHasLegend': cls._has_visible_legend(fig),
         }
         # Escape '<' so the JSON cannot terminate the <script> element.
-        spec_json = json.dumps(spec, cls=PlotlyJSONEncoder).replace('<', '\\u003c')
+        return json.dumps(spec, cls=PlotlyJSONEncoder).replace('<', '\\u003c')
+
+    @classmethod
+    def _serialize_html_shared(cls, fig: object) -> str:
+        """
+        Serialize a figure as a placeholder for the shared loader.
+
+        Emits the figure spec as ``application/json`` for the shared
+        ``ed-figures.js`` loader to render on demand (used by the docs
+        site). No Plotly bundle or per-figure post-script is embedded;
+        the runtime loads once per page and the loader owns theme-sync,
+        resize, and legend.
+
+        Parameters
+        ----------
+        fig : object
+            Plotly figure to serialize.
+
+        Returns
+        -------
+        str
+            Placeholder HTML carrying the figure spec.
+        """
+        spec_json = cls._figure_spec_json(fig)
         plot_id = f'ed-fig-{uuid.uuid4().hex}'
         height = cls._figure_height(fig)
         html_fig = (
@@ -2560,6 +2661,89 @@ scheduleResize();
 
         return fig
 
+    def build_and_show_calc_comparison(
+        self,
+        *,
+        plot_spec: PowderMeasVsCalcSpec,
+        reference_label: str,
+        annotation_lines: tuple[str, ...] = (),
+    ) -> None:
+        """
+        Show a reference-vs-candidate calculated-pattern comparison.
+
+        Reuses the composite measured-vs-calculated figure, then
+        restyles the two main curves so the reference reads as a solid
+        line and the candidate as overlaid markers, and adds an optional
+        metrics box in the top-left corner.
+
+        Parameters
+        ----------
+        plot_spec : PowderMeasVsCalcSpec
+            Composite spec with the reference as ``y_meas`` and the
+            candidate as ``y_calc`` (no Bragg ticks or background).
+        reference_label : str
+            Legend name for the reference curve.
+        annotation_lines : tuple[str, ...], default=()
+            Lines for the top-left metrics annotation; omitted when
+            empty.
+        """
+        fig = self.build_powder_meas_vs_calc_figure(plot_spec=plot_spec)
+        self._restyle_calc_comparison(fig, reference_label=reference_label)
+        if annotation_lines:
+            self._add_metrics_annotation(fig, annotation_lines)
+        self._show_figure(fig)
+
+    @staticmethod
+    def _restyle_calc_comparison(fig: object, *, reference_label: str) -> None:
+        """
+        Restyle the curves: reference solid line, candidate dashed line.
+        """
+        # Trace order is deterministic for a comparison spec (no Bragg,
+        # background, or predictive traces): reference first, candidate
+        # second, residual last.
+        fig.data[0].update(
+            name=reference_label,
+            mode='lines',
+            marker=None,
+            error_y=None,
+            line={'color': DEFAULT_COLORS['meas'], 'width': MEASURED_LINE_WIDTH},
+        )
+        fig.data[1].update(
+            mode='lines',
+            marker=None,
+            line={
+                'color': DEFAULT_COLORS['calc'],
+                'width': CALCULATED_LINE_WIDTH,
+                'dash': 'dash',
+            },
+        )
+
+    @classmethod
+    def _add_metrics_annotation(cls, fig: object, lines: tuple[str, ...]) -> None:
+        """
+        Add a legend-style metrics box in the main panel's top-left.
+        """
+        # Anchor at the top-left corner with equal pixel margins so the
+        # left and top gaps match regardless of the panel aspect ratio.
+        fig.add_annotation(
+            text='<br>'.join(lines),
+            xref='x domain',
+            yref='y domain',
+            x=0.0,
+            y=1.0,
+            xshift=8,
+            yshift=-8,
+            xanchor='left',
+            yanchor='top',
+            align='left',
+            showarrow=False,
+            font={'size': 12},
+            bordercolor=cls._axis_frame_color(),
+            borderwidth=1,
+            borderpad=4,
+            bgcolor=cls._legend_background_color(),
+        )
+
     @staticmethod
     def _create_powder_composite_figure(layout: PowderCompositeRows) -> object:
         """Create the shared-x subplot figure for the composite plot."""
@@ -2705,17 +2889,16 @@ scheduleResize();
             return None
 
         residual_limit = self._get_residual_limit(plot_spec)
-        fig.add_trace(
-            self._get_powder_trace(
-                plot_spec.x,
-                plot_spec.y_resid,
-                'resid',
-                customdata=hover_data,
-                hovertemplate=hover_template,
-            ),
-            row=layout.residual_row,
-            col=1,
+        resid_trace = self._get_powder_trace(
+            plot_spec.x,
+            plot_spec.y_resid,
+            'resid',
+            customdata=hover_data,
+            hovertemplate=hover_template,
         )
+        if plot_spec.y_meas_name is not None and plot_spec.y_calc_name is not None:
+            resid_trace.name = 'Residual'
+        fig.add_trace(resid_trace, row=layout.residual_row, col=1)
         return residual_limit
 
     def _configure_powder_composite_layout(
@@ -3003,6 +3186,62 @@ scheduleResize();
         )
 
         return self._get_figure(data, layout)
+
+    def build_and_show_reflection_comparison(
+        self,
+        *,
+        x_reference: object,
+        y_candidate: object,
+        axes_labels: object,
+        reference_label: str,
+        candidate_label: str,
+        title: str,
+        annotation_lines: tuple[str, ...] = (),
+    ) -> None:
+        """
+        Show a reference-vs-candidate single-crystal reflection scatter.
+
+        Reuses the single-crystal scatter — the reference on the x-axis,
+        the candidate on the y-axis, and a y=x reference line — then
+        corrects the hover labels and adds an optional metrics box in
+        the top-left corner. Both inputs are peak-normalised upstream so
+        they share one scale and points fall on the diagonal when the
+        engines agree.
+
+        Parameters
+        ----------
+        x_reference : object
+            Peak-normalised reference F² per reflection (x-axis).
+        y_candidate : object
+            Peak-normalised candidate F² per reflection (y-axis).
+        axes_labels : object
+            Pair of strings for the x and y titles.
+        reference_label : str
+            Short name of the reference, used in the hover text.
+        candidate_label : str
+            Short name of the candidate, used in the hover text.
+        title : str
+            Figure title.
+        annotation_lines : tuple[str, ...], default=()
+            Lines for the top-left metrics annotation; omitted when
+            empty.
+        """
+        fig = self.build_single_crystal_figure(
+            x_calc=x_reference,
+            y_meas=y_candidate,
+            y_meas_su=np.zeros_like(np.asarray(y_candidate, dtype=float)),
+            axes_labels=axes_labels,
+            title=title,
+        )
+        fig.data[0].update(
+            error_y=None,
+            hovertemplate=(
+                f'{reference_label}: %{{x:.2f}}<br>{candidate_label}: %{{y:.2f}}<extra></extra>'
+            ),
+        )
+        if annotation_lines:
+            self._add_metrics_annotation(fig, annotation_lines)
+        self._show_figure(fig)
 
     def plot_scatter(
         self,

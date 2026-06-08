@@ -9,6 +9,8 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from easydiffraction.analysis.fit_helpers.bayesian import posterior_predictive_cache_key
+from easydiffraction.analysis.verification import closeness_annotation
+from easydiffraction.analysis.verification import pattern_closeness
 from easydiffraction.datablocks.experiment.item.base import intensity_category_for
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
@@ -429,6 +431,106 @@ class ProjectDisplay:
             x_max=x_max,
             include=content,
             x=x,
+        )
+
+    def pattern_comparison(
+        self,
+        expt_name: str,
+        *,
+        reference: object,
+        candidate: object,
+        reference_label: str,
+        candidate_label: str,
+        show_metrics: bool = True,
+    ) -> None:
+        """
+        Overlay a reference and a candidate calculated pattern.
+
+        Draws the reference as a solid line and the candidate as markers
+        on the experiment's x grid, with a residual panel below and, by
+        default, a closeness-metrics box in the top-left corner. Bragg
+        ticks and background are omitted. Intended for the cross-engine
+        and external-reference Verification pages.
+
+        Parameters
+        ----------
+        expt_name : str
+            Experiment supplying the x grid and axis labels.
+        reference : object
+            Reference intensities (for example FullProf), drawn as a
+            line.
+        candidate : object
+            Candidate intensities (for example an engine), drawn as
+            markers.
+        reference_label : str
+            Legend name for the reference curve.
+        candidate_label : str
+            Legend name for the candidate curve.
+        show_metrics : bool, default=True
+            Whether to annotate the plot with closeness metrics.
+        """
+        annotation_lines: tuple[str, ...] = ()
+        if show_metrics:
+            metrics = pattern_closeness(reference, candidate)
+            annotation_lines = tuple(closeness_annotation(metrics))
+        self._project.rendering_plot.plotter.plot_calc_comparison(
+            expt_name=expt_name,
+            reference=reference,
+            candidate=candidate,
+            reference_label=reference_label,
+            candidate_label=candidate_label,
+            annotation_lines=annotation_lines,
+        )
+
+    def reflection_comparison(
+        self,
+        expt_name: str,
+        *,
+        reference: object,
+        candidate: object,
+        reference_label: str,
+        candidate_label: str,
+        show_metrics: bool = True,
+    ) -> None:
+        """
+        Scatter a reference against a candidate per-reflection F².
+
+        Plots the reference on the x-axis and the candidate on the
+        y-axis against a y=x reference line, both peak-normalised so
+        they share one scale and points fall on the diagonal when the
+        two agree. By default a closeness-metrics box is drawn in the
+        top-left corner. The single-crystal counterpart of
+        :meth:`pattern_comparison`, intended for the external-reference
+        Verification pages.
+
+        Parameters
+        ----------
+        expt_name : str
+            Single-crystal experiment supplying the plot context.
+        reference : object
+            Reference F² per reflection (for example FullProf F2cal),
+            aligned with ``candidate``.
+        candidate : object
+            Candidate F² per reflection (for example an engine), aligned
+            with ``reference``.
+        reference_label : str
+            Axis and hover name for the reference.
+        candidate_label : str
+            Axis and hover name for the candidate.
+        show_metrics : bool, default=True
+            Whether to annotate the plot with closeness metrics.
+        """
+        annotation_lines: tuple[str, ...] = ()
+        if show_metrics:
+            metrics = pattern_closeness(reference, candidate)
+            annotation_lines = tuple(closeness_annotation(metrics))
+        self._project.rendering_plot.plotter.plot_reflection_comparison(
+            expt_name=expt_name,
+            reference=reference,
+            candidate=candidate,
+            reference_label=reference_label,
+            candidate_label=candidate_label,
+            annotation_lines=annotation_lines,
         )
 
     def structure(

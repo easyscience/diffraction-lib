@@ -20,14 +20,31 @@ import pytest
 
 _repo_root = Path(__file__).resolve().parents[1]
 _src_root = _repo_root / 'src'
+_CI_SKIP_FILE = _repo_root / 'docs' / 'docs' / 'verification' / 'ci_skip.txt'
 
-# Discover tutorial and verification scripts, excluding checkpoint files.
+
+def _ci_skipped_stems():
+    """Verification notebook stems to skip (shared with the nbmake conftest)."""
+    if not _CI_SKIP_FILE.is_file():
+        return set()
+    stems = set()
+    for line in _CI_SKIP_FILE.read_text(encoding='utf-8').splitlines():
+        entry = line.split('#', 1)[0].strip()
+        if entry:
+            stems.add(entry)
+    return stems
+
+
+_CI_SKIP = _ci_skipped_stems()
+
+# Discover tutorial and verification scripts, excluding checkpoint files
+# and pytest conftest modules.
 _SCRIPT_DIRS = ('docs/docs/tutorials', 'docs/docs/verification')
 TUTORIALS = [
     p
     for directory in _SCRIPT_DIRS
     for p in Path(directory).rglob('*.py')
-    if '.ipynb_checkpoints' not in p.parts
+    if '.ipynb_checkpoints' not in p.parts and p.name != 'conftest.py'
 ]
 
 
@@ -38,6 +55,9 @@ def test_script_runs(script_path: Path):
     Each script is run in the context of __main__ to mimic standalone
     execution.
     """
+    if script_path.stem in _CI_SKIP:
+        pytest.skip(f'{script_path.stem} is skipped in CI (ci_skip.txt)')
+
     env = os.environ.copy()
     if _src_root.exists():
         existing = env.get('PYTHONPATH', '')

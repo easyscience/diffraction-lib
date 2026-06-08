@@ -438,6 +438,61 @@ mapping and the hardcoded defaults need verification.
 
 ---
 
+## 116. 🟡 cryspy Diverges on TOF Jorgensen–Von Dreele Lorentzian
+
+**Type:** Correctness
+
+For time-of-flight powder data using the Jorgensen–Von Dreele peak
+profile, the `cryspy` backend diverges from FullProf and `crysfml`
+whenever the Lorentzian term (`broad_lorentz_gamma_*`) is non-zero. On
+the Si Verification reference case the profile difference reaches ≈22%
+with an integrated-intensity ratio ≈0.72–0.76, while `crysfml` matches
+FullProf to <1%. When the Lorentzian term is zero (NaCaAlF) `cryspy`
+agrees to <1%, which localises the problem to the cryspy translation of
+the pseudo-Voigt (Gaussian ⊗ Lorentzian) mixing for TOF.
+
+**Fix:** verify how `broad_lorentz_gamma_*` is passed to cryspy for the
+`jorgensen-von-dreele` profile and reconcile the convention with
+crysfml/FullProf.
+
+**Visible on:** the Si TOF Verification page (`pd-neut-tof_jvd_si`),
+whose closeness table flags the `cryspy` rows in red — reported via a
+non-raising agreement check, not enforced, so CI stays green.
+Re-introduce a strict check, or skip the page via
+`docs/docs/verification/ci_skip.txt`, once work on the cryspy backend
+begins.
+
+**Depends on:** nothing.
+
+---
+
+## 117. 🟡 Add SyCos/SySin Systematic Peak-Position Corrections
+
+**Type:** Feature / Experiment model
+
+FullProf models systematic peak-position aberrations with `SyCos`
+(sample displacement) and `SySin` (transparency), shifting peaks as a
+function of angle on top of the `Zero` offset. EasyDiffraction has no
+category for these, so it cannot reproduce datasets that use them. The
+cryspy side is implemented in
+[cryspy PR #46](https://github.com/ikibalin/cryspy/pull/46) (see
+[issue #38](https://github.com/ikibalin/cryspy/issues/38)); the
+EasyDiffraction side — an instrument-category parameter pair plus the
+calculator wiring — is still to do.
+
+A prepared verification page,
+`docs/docs/verification/pd-neut-cwl_tch-fcj_lab6.py`, uses the issue #38
+LaB6 dataset and is skipped via `ci_skip.txt`. Finishing it also needs a
+custom ¹¹B scattering length, the Thompson–Cox–Hastings profile, and a
+FullProf-style polynomial background, which that dataset relies on.
+
+**Fix:** add `SyCos`/`SySin` to the CWL instrument category, pass them
+to the calculators, then un-skip the LaB6 page.
+
+**Depends on:** nothing.
+
+---
+
 ## 22. 🟢 Check CrysPy Single-Crystal Instrument Mapping
 
 **Type:** Correctness
@@ -1986,6 +2041,151 @@ a baseline-cleanup plan.
 
 ---
 
+## 117. 🟢 Live-Notebook Plotly Delivery: Loader vs Native Mimetype
+
+**Type:** Display / Architecture
+
+Records the two viable strategies for rendering interactive Plotly
+figures in live notebooks, so the trade-off is not re-litigated. See
+[`plotting-docs-performance.md`](../adrs/accepted/plotting-docs-performance.md).
+
+**Background.** Live notebooks historically rendered via
+`display(HTML(pio.to_html(..., include_plotlyjs='cdn')))`, which caused
+an empty first plot after kernel restart (the CDN `<script src>` loaded
+asynchronously while `Plotly.newPlot` ran immediately) and a loading
+gap. Two ways to fix it:
+
+- **Option 1 — Native mimetype renderer (`fig.show()`).** Emit the
+  `application/vnd.plotly.v1+json` mime bundle and let the JupyterLab
+  Plotly extension render it. Pros: simplest, lowest maintenance,
+  officially supported, no CDN, no script-in-output artifacts. Cons:
+  live notebooks lose the three custom post-script behaviours (dynamic
+  theme-sync on JupyterLab light/dark toggle, hidden-tab resize, the
+  modebar legend-toggle button); a saved `.ipynb`'s plot output is the
+  spec JSON, not self-contained HTML.
+
+- **Option 2 — Self-hosted loader (current).** Ship the vendored Plotly
+  bundle + the shared `ed-figures.js` loader in the wheel; the first
+  figure injects them once per kernel session and each figure renders
+  via `window.edFigures.renderSpec(id, spec)` delivered as a
+  `display(Javascript(...))` output, so the HTML output is just the plot
+  div (no `<script>` tags some hosts render as empty rows). Pros: keeps
+  all three custom behaviours; CDN-free/archival; unified with the docs
+  delivery. Cons: more moving parts; depends on the notebook being
+  **trusted** for a reopened (not re-run) notebook to re-render.
+
+**Current choice:** Option 2 (keeps the live-notebook extras). Revisit
+Option 1 if the loader proves fragile across notebook frontends or the
+maintenance cost outweighs the three behaviours.
+
+**Depends on:** nothing.
+
+---
+
+## 118. 🟢 Plotly Figures Show Empty Rows in the VISA JupyterLab
+
+**Type:** Display / Environment
+
+**Symptom.** In the **VISA-hosted, iframe-embedded** JupyterLab
+(`visa.ess.eu/.../jupyter/.../lab`), every interactive Plotly figure is
+preceded by several empty rows that fill in over ~1–2 s, and the plot
+often renders collapsed. On a **standard local JupyterLab the branch is
+fine** — the only issue there is the CDN race (issue addressed by the
+self-hosted runtime; see below). So this is **specific to the VISA
+environment**, not the library.
+
+**Root cause (from a DOM inspection in VISA).** The plot element renders
+at **height 0**, nested under
+`div.jp-WindowedPanel-viewport.jp-content-visibility-mode`. VISA's
+JupyterLab runs notebooks in **windowed mode** (`content-visibility`
+virtualization). The output container is **0×0 at the moment Plotly
+draws**, and because the figure config is `responsive: true`, Plotly
+sizes to that 0×0 container and renders a zero-size plot that does not
+recover. The "empty rows" are that collapsed zero-height output as the
+viewport re-measures. This is a known Plotly ✕ JupyterLab-windowing
+interaction.
+
+**Workaround (user side).** JupyterLab → Settings → Notebook →
+**Windowing mode = `defer`/`none`** disables the virtualization. (The
+user reported this alone did **not** resolve it in VISA, so VISA may
+force or wrap the setting — needs confirmation.)
+
+**Attempts that did NOT resolve it in VISA** (all reverted to keep the
+code minimal; recorded so they are not retried blindly):
+
+- Self-hosted runtime instead of CDN, delivered as a single HTML output,
+  as a `display(Javascript(...))` output, and as multiple/one inline
+  `<script>` tags. (The self-hosting itself **is** kept — it fixes the
+  real CDN race — but none of the delivery variants changed the VISA
+  empty rows.)
+- Removing the loading skeleton; removing then restoring the
+  `min-height` reservation.
+- Trimming the figure top margin + `title.automargin` (chasing a misread
+  "default margin" theory).
+- Preloading the runtime on `import easydiffraction` (regressed: added a
+  visible empty output line on the import cell).
+- Skipping the resize `ResizeObserver` for live figures.
+- Reserving an explicit container height for windowing.
+- Deferring the render until the container reports a non-zero size
+  (`requestAnimationFrame` poll). This **did** get the plot to render at
+  full height in VISA (DOM showed `h=565` instead of `0`), but the user
+  still reported empty rows visually — so it is necessary-but-not-
+  sufficient there.
+
+**Promising future directions.** Set `responsive: false` with an
+explicit width/height for live figures so Plotly never depends on the
+0×0 container; or render the figure off-screen and swap it in once
+sized; or detect the VISA/windowed environment and special-case it.
+Needs to be developed and tested **inside VISA**, since it does not
+reproduce on a standard JupyterLab.
+
+**Depends on:** nothing. Lower priority — affects only the VISA
+deployment, and a user-side windowing-mode change may suffice.
+
+---
+
+## 119. 🟢 Rename `asym_empir_*` and Add the Physical FCJ Asymmetry Model
+
+**Type:** Experiment model / Peak profile / API naming
+
+The four empirical peak-asymmetry parameters (`asym_empir_1`…`4`, the
+`pd-neut-cwl_pv-asym_empir_pbso4` Verification page) are the
+**Bérar–Baldinozzi** correction — FullProf's `P1`–`P4` — a
+phenomenological sum of functions in `1/tan θ` and `1/tan 2θ`. It can
+fit an asymmetric peak, but the parameters carry **no physical
+meaning**, are strongly correlated, do **not** transfer between
+datasets, and can misbehave (over-correction, unphysical profile
+shapes).
+
+The **Finger–Cox–Jephcoat (FCJ)** `S_L`/`D_L` model is physically based:
+just **two** parameters tied to real instrument geometry (sample and
+slit/detector heights over the goniometer radius), with the correct
+built-in angular dependence — asymmetry that vanishes at `2θ = 90°` and
+reverses past it. Fewer parameters, better-conditioned, and
+instrument-meaningful.
+
+**Two future considerations:**
+
+1. **Rename** the empirical parameters so the name states what they are
+   — e.g. `asym_berar_baldinozzi_1`…`4` (or a `berar_baldinozzi_p*`
+   form) — rather than the generic `asym_empir_*`, which hides their
+   origin and conflates "empirical asymmetry" with the specific
+   Bérar–Baldinozzi formula.
+2. **Add the FCJ model alongside** the empirical one (not as a
+   replacement), as a switchable asymmetry choice, so users can pick the
+   physically-based two-parameter model when the instrument geometry is
+   known and fall back to the empirical correction otherwise.
+
+**Relates to:** the asymmetry discrepancy tracked on the
+`pd-neut-cwl_pv-asym_empir_pbso4` Verification page (currently in
+`docs/docs/verification/ci_skip.txt`), and the TCH/FCJ work noted on the
+`pd-neut-cwl_tch-fcj_lab6` page.
+
+**Depends on:** calculator-backend support for the FCJ asymmetry
+parameters (cryspy/crysfml) before the second item can be wired through.
+
+---
+
 ## Summary
 
 | #   | Issue                                             | Severity | Type                         |
@@ -2084,3 +2284,5 @@ a baseline-cleanup plan.
 | 114 | External link checking in the docs gate           | 🟢 Low   | CI / Documentation           |
 | 115 | Expand cross-engine verification coverage         | 🟢 Low   | Test coverage                |
 | 116 | Add a static type checker to the quality gate     | 🟡 Med   | Tooling / Correctness        |
+| 117 | Live-notebook Plotly: loader vs native mimetype   | 🟢 Low   | Display / Architecture       |
+| 118 | Plotly empty rows in the VISA JupyterLab          | 🟢 Low   | Display / Environment        |

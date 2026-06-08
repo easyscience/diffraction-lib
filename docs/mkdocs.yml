@@ -187,6 +187,12 @@ not_in_nav: |
   user-guide/parameters
   assets/javascripts/vendor/**/*.md
 
+# Exclude files and folders from the build entirely (gitignore-style).
+# The bundled FullProf reference projects are loaded by the Verification
+# notebooks at runtime but must not be copied into the built site.
+exclude_docs: |
+  verification/fullprof/
+
 # Format and layout of the global navigation for the site
 nav:
   - Introduction:
@@ -245,8 +251,16 @@ nav:
           - DMSC Summer School: tutorials/ed-13.ipynb
   - Verification:
       - Verification: verification/index.md
-      - Cross-engine:
-          - LBCO Bragg pd-neut-cwl: verification/cross-engine-bragg-cwl.ipynb
+      - Powder, neutron, constant wavelength:
+          - LBCO: verification/pd-neut-cwl_pv_lbco.ipynb
+          - PbSO4 (pseudo-Voigt): verification/pd-neut-cwl_pv_pbso4.ipynb
+          - PbSO4 (empirical asymmetry): verification/pd-neut-cwl_pv-asym_empir_pbso4.ipynb
+          - LaB6: verification/pd-neut-cwl_tch-fcj_lab6.ipynb
+      - Powder, neutron, time-of-flight:
+          - Si: verification/pd-neut-tof_jvd_si.ipynb
+          - NaCaAlF: verification/pd-neut-tof_jvd_ncaf.ipynb
+      - Single crystal, neutron, constant wavelength:
+          - Pr2NiO4: verification/sg-neut-cwl_pr2nio4.ipynb
   - Command-Line:
       - Command-Line: cli/index.md
   - API Reference:

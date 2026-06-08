@@ -817,3 +817,57 @@ def test_has_visible_legend_reads_named_traces_and_layout_flag():
     hidden = go.Figure()
     hidden.add_trace(go.Scatter(x=[0], y=[0], name='hidden', visible=False))
     assert pp.PlotlyPlotter._has_visible_legend(hidden) is False
+
+
+def test_packaged_asset_reads_runtime_and_loader():
+    import easydiffraction.display.plotters.plotly as pp
+
+    runtime = pp._packaged_asset(pp._PLOTLY_RUNTIME_ASSET)
+    loader = pp._packaged_asset(pp._FIGURE_LOADER_ASSET)
+    assert 'Plotly' in runtime  # the self-hosted runtime bundle
+    assert 'edFigures' in loader  # the shared figure loader
+
+
+def test_live_runtime_bootstrap_injects_once_per_session(monkeypatch):
+    import easydiffraction.display.plotters.plotly as pp
+
+    monkeypatch.setattr(pp.PlotlyPlotter, '_live_runtime_injected', False)
+    first = pp.PlotlyPlotter._live_runtime_bootstrap_js()
+    second = pp.PlotlyPlotter._live_runtime_bootstrap_js()
+    # First call carries the runtime + loader JS; later calls are empty.
+    assert 'Plotly' in first
+    assert 'edFigures' in first
+    assert second == ''
+
+
+def test_show_figure_live_emits_single_output_with_render(monkeypatch):
+    import easydiffraction.display.plotters.plotly as pp
+
+    monkeypatch.setattr(pp, 'in_pycharm', lambda: False)
+    monkeypatch.setattr(pp, 'resolve_figure_embed_mode', lambda: pp.FigureEmbedMode.INLINE)
+    monkeypatch.setattr(pp.PlotlyPlotter, '_live_runtime_injected', False)
+    captured = []
+    monkeypatch.setattr(pp, 'display', captured.append)
+    monkeypatch.setattr(pp, 'HTML', lambda value: value)
+
+    fig = go.Figure(data=[go.Scatter(x=[1, 2, 3], y=[4, 5, 6], name='t')])
+    fig.update_layout(height=400)
+    plotter = pp.PlotlyPlotter()
+
+    plotter._show_figure(fig)
+    # A single HTML output: target div + one render script, carrying the
+    # one-time inlined runtime on the first figure.
+    assert len(captured) == 1
+    first = captured[0]
+    assert 'ed-figure-target' in first
+    assert first.count('</script>') == 1  # exactly one render script element
+    assert 'renderSpec' in first
+    assert 'Plotly' in first
+
+    captured.clear()
+    plotter._show_figure(go.Figure())
+    second = captured[0]
+    # Later figures reference the already-injected runtime, not re-embed.
+    assert 'renderSpec' in second
+    assert 'Plotly' not in second
+    assert len(second) < len(first)

@@ -1,0 +1,18 @@
+# Verification notebooks to skip in CI.
+#
+# List one notebook stem per line (the file name without extension),
+# followed by an optional "# reason". Both CI runners that execute the
+# verification pages consult this file:
+#
+#   * pixi run script-tests   (tools/test_scripts.py)
+#   * pixi run notebook-tests (nbmake, via docs/docs/conftest.py)
+#
+# A skipped page is still committed and still shown in the documentation;
+# it is only excluded from those two runners so a known-failing page does
+# not block CI while it is being fixed. Remove the entry once the
+# underlying issue is resolved.
+#
+# Example (do not leave commented examples as active entries):
+pd-neut-cwl_pv-asym_empir_pbso4  # Asymmetry params are different
+pd-neut-cwl_tch-fcj_lab6  # SyCos/SySin, 11B scattering, TCH/FCJ (cryspy PR #46)
+pd-neut-tof_jvd_si  # cryspy TOF Lorentzian discrepancy; see issues/open.md

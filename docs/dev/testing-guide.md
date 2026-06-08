@@ -72,3 +72,14 @@ both that they accept the full valid domain and that they reject (or
 fall back on) invalid values. Use `hypothesis` (deterministic profile)
 for generative coverage and explicit parametrised tables for the
 known-critical boundaries.
+
+## Skipping a verification page in CI
+
+A known-failing verification page (for example one waiting on an engine
+fix) can be excluded from the two runners that execute it —
+`pixi run script-tests` and `pixi run notebook-tests` — without removing
+it from the documentation. Add its notebook stem to
+`docs/docs/verification/ci_skip.txt`, one per line with a `# reason`.
+Both runners read that single file (`tools/test_scripts.py` and the
+nbmake `conftest.py` at `docs/docs/`). The page is still committed and
+rendered in the docs; remove the entry once the issue is fixed.

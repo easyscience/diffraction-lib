@@ -100,7 +100,8 @@
 │   ├── 📄 analysis.py
 │   ├── 📄 enums.py
 │   ├── 📄 fitting.py
-│   └── 📄 sequential.py
+│   ├── 📄 sequential.py
+│   └── 📄 verification.py
 ├── 📁 core
 │   ├── 📄 __init__.py
 │   ├── 📄 category.py
@@ -238,6 +239,7 @@
 │   └── 📄 __init__.py
 ├── 📁 display
 │   ├── 📁 plotters
+│   │   ├── 📁 assets
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 ascii.py
 │   │   ├── 📄 base.py
