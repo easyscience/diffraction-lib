@@ -59,7 +59,7 @@ def test_load_fullprof_profile_length_mismatch_raises(tmp_path):
 def test_load_fullprof_profile_empty_file_raises(tmp_path):
     sub = tmp_path / 'ref.sub'
     sub.write_text('', encoding='utf-8')
-    with pytest.raises(ValueError, match='file is empty'):
+    with pytest.raises(ValueError, match='expected a header line'):
         verify.load_fullprof_profile(str(sub))
 
 

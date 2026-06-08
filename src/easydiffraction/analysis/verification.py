@@ -126,14 +126,14 @@ def load_fullprof_profile(path: str) -> tuple[np.ndarray, np.ndarray]:
     ------
     ValueError
         If the file is empty or holds no intensity values after the
-        header, or if the header maximum is more than one full step
-        away from the grid implied by the intensities read from the
-        body (a genuine inconsistency rather than header rounding).
+        header, or if the header maximum is more than one full step away
+        from the grid implied by the intensities read from the body (a
+        genuine inconsistency rather than header rounding).
     """
     with Path(path).open(encoding='utf-8') as handle:
         lines = handle.readlines()
     if not lines:
-        msg = f'FullProf profile {path}: file is empty; expected a header line followed by intensities.'
+        msg = f'FullProf profile {path}: expected a header line followed by intensities.'
         raise ValueError(msg)
     x_min, x_increment, x_max = _parse_fullprof_header(lines[0])
     body = ' '.join(line.strip() for line in lines[1:])
