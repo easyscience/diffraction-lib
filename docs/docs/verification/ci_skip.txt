@@ -13,6 +13,6 @@
 # underlying issue is resolved.
 #
 # Example (do not leave commented examples as active entries):
-pd-neut-cwl_pv-asym_empir_pbso4.py  # Asymmetry params are different
+pd-neut-cwl_pv-asym_empir_pbso4  # Asymmetry params are different
 pd-neut-cwl_tch-fcj_lab6  # SyCos/SySin, 11B scattering, TCH/FCJ (cryspy PR #46)
 pd-neut-tof_jvd_si  # cryspy TOF Lorentzian discrepancy; see issues/open.md
