@@ -34,9 +34,10 @@ and so on. The list below notes only what is specific to each page.
   Anglesite; pseudo-Voigt with empirical (FullProf-style)
   axial-divergence asymmetry.
 - [LaB6 `pd-neut-cwl`](pd-neut-cwl_tch-fcj_lab6.ipynb) – Lanthanum
-  hexaboride; Thompson–Cox–Hastings with Finger–Cox–Jephcoat asymmetry
-  plus SyCos/SySin peak-position corrections. Prepared skeleton, skipped
-  — pending EasyDiffraction support for these features.
+  hexaboride; intended to use Thompson–Cox–Hastings with
+  Finger–Cox–Jephcoat asymmetry plus SyCos/SySin peak-position
+  corrections. Prepared skeleton, skipped — these features are not yet
+  applied, pending EasyDiffraction support.
 
 ## Powder, neutron, time-of-flight
 
