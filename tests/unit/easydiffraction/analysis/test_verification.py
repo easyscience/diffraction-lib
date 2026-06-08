@@ -95,7 +95,11 @@ def test_load_columned_profile_reads_two_columns(tmp_path):
 
 def test_bundled_reference_dir_points_at_fullprof():
     path = verify.bundled_reference_dir()
-    assert path.parts[-2:] == ('verification', 'fullprof')
+    # The leaf is always 'fullprof'. From the repository root the path is
+    # nested under docs/docs/verification; from the notebook working
+    # directory it is returned bare, so only the leaf is asserted to keep
+    # the test independent of the current working directory.
+    assert path.name == 'fullprof'
 
 
 # ----------------------------------------------------------------------
