@@ -37,6 +37,9 @@ except ImportError:
 _INSTRUMENT_ATTRIBUTE_MAP: tuple[tuple[str, str], ...] = (
     ('setup_wavelength', '_diffrn_radiation_wavelength'),
     ('calib_twotheta_offset', '_pd_meas_2theta_offset'),
+    # crysfml has no SyCos/SySin equivalent, so the CWL
+    # calib_sample_displacement and calib_sample_transparency
+    # corrections are intentionally left unmapped here.
     ('calib_d_to_tof_offset', '_pd_meas_tof_offset'),
     ('calib_d_to_tof_linear', '_pd_meas_tof_dtt1'),
     ('calib_d_to_tof_quad', '_pd_meas_tof_dtt2'),

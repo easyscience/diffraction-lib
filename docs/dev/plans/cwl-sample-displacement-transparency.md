@@ -251,7 +251,7 @@ Docs / structure (auto-generated, do not hand-edit):
   Files: `src/easydiffraction/analysis/calculators/cryspy.py`.
   Commit: `Update cryspy dict with SyCos/SySin offsets`
 
-- [ ] **P1.4 — Document crysfml non-support.**
+- [x] **P1.4 — Document crysfml non-support.**
   In `crysfml.py` `_update_experiment_dict_from_instrument`, add a
   one-line comment near the instrument map noting SyCos/SySin
   (`calib_sample_displacement` / `calib_sample_transparency`) are
@@ -352,7 +352,7 @@ Docs / structure (auto-generated, do not hand-edit):
 - [x] P1.1 Add parameters to `CwlPdInstrument`
 - [x] P1.2 Emit offsets in cryspy CIF
 - [x] P1.3 Update cryspy cached dict
-- [ ] P1.4 Comment crysfml non-support
+- [x] P1.4 Comment crysfml non-support
 - [ ] P1.5 Wire corrections into verification page
 - [ ] P1.6 Phase 1 review gate
 - [ ] P2.1 Add/extend engine-free unit tests
