@@ -1,25 +1,26 @@
 # %% [markdown]
 # # LaB₆ — neutron powder, constant wavelength, Thompson–Cox–Hastings
 #
-# This page verifies the FullProf `SyCos`/`SySin` systematic
-# peak-position corrections (sample displacement and transparency) for a
-# constant-wavelength powder experiment, using the real LaB₆ dataset from
+# This page calculates the **same** LaB₆ diffraction pattern with each
+# EasyDiffraction engine (`cryspy`, `crysfml`) and compares both against a
+# **FullProf** reference profile on identical input parameters, then
+# investigates the discrepancy by refinement. It uses the real LaB₆
+# dataset from
 # [cryspy issue #38](https://github.com/ikibalin/cryspy/issues/38).
 #
-# `SyCos`/`SySin` map to `calib_sample_displacement` and
-# `calib_sample_transparency` on the CWL powder instrument. Only the
-# `cryspy` engine applies them, and only with the functionality added in
+# The page targets the FullProf `SyCos`/`SySin` systematic peak-position
+# corrections (sample displacement and transparency), which map to
+# `calib_sample_displacement` and `calib_sample_transparency` on the CWL
+# powder instrument. Only the `cryspy` engine applies them, and only with
+# the functionality added in
 # [cryspy PR #46](https://github.com/ikibalin/cryspy/pull/46); the
 # `crysfml` engine has no equivalent. Because FullProf and cryspy use
-# **different coefficient conventions** for these corrections (and a
-# different absolute-intensity scale), the `.pcr` values are used only as
-# starting points: the page **refines** `scale`, `calib_sample_displacement`
-# and `calib_sample_transparency` against the FullProf profile with cryspy,
-# then reuses the refined `scale` for crysfml (which keeps a peak-position
-# offset, since it cannot apply the corrections).
-#
-# The page stays listed in `ci_skip.txt` until a released cryspy ships the
-# PR #46 corrections.
+# different coefficient conventions for these corrections (and a
+# different absolute-intensity scale), the FullProf values are used as
+# starting points and the discrepancy is investigated by refining
+# `scale`, `calib_sample_displacement` and `calib_sample_transparency`
+# with `cryspy`. The page stays listed in `ci_skip.txt` until a released
+# cryspy ships the PR #46 corrections.
 
 # %%
 import easydiffraction as ed
@@ -84,9 +85,7 @@ project.structures.add(structure)
 # %% [markdown]
 # ## Create the experiment
 #
-# Starting values are taken from `ECH0030684_LaB6_1p622A.pcr`. The
-# `SyCos`/`SySin` values are FullProf-convention starting points and are
-# refined below into cryspy's equivalents.
+# Starting values are taken from `ECH0030684_LaB6_1p622A.pcr`.
 
 # %%
 experiment = ExperimentFactory.from_scratch(
@@ -114,26 +113,7 @@ experiment.peak.broad_lorentz_y = 0.054276  # FullProf Y
 project.experiments.add(experiment)
 
 # %% [markdown]
-# ## Refine scale, sample displacement and transparency
-#
-# FullProf's `SyCos`/`SySin` coefficients do not transfer numerically to
-# cryspy, and the two codes use a different absolute-intensity scale, so
-# `scale`, `calib_sample_displacement` and `calib_sample_transparency`
-# are refined against the FullProf profile using cryspy.
-
-# %%
-experiment.calculator.type = 'cryspy'
-experiment.linked_phases['lab6'].scale.free = True
-experiment.instrument.calib_sample_displacement.free = True
-experiment.instrument.calib_sample_transparency.free = True
-project.analysis.fit()
-
-# %% [markdown]
 # ## Calculate the pattern with each engine
-#
-# `cryspy` uses the refined `scale` and the refined sample-displacement
-# and transparency corrections. `crysfml` reuses the same refined `scale`
-# but cannot apply the corrections, so it keeps a peak-position offset.
 
 # %%
 calc_ed_cryspy = verify.calculate_pattern(project, experiment, 'cryspy')
@@ -142,9 +122,10 @@ calc_ed_crysfml = verify.calculate_pattern(project, experiment, 'crysfml')
 # %% [markdown]
 # ## Compare each engine against FullProf
 #
-# After refinement `cryspy` reproduces the FullProf peak positions; the
-# residual is the remaining profile-shape difference. `crysfml` shows the
-# systematic peak-position offset expected without `SyCos`/`SySin`.
+# At the FullProf input values the engines differ from the FullProf
+# reference: the absolute-intensity scale and the `SyCos`/`SySin`
+# coefficient conventions are not shared between codes, and `crysfml`
+# cannot apply the corrections at all.
 
 # %%
 project.display.pattern_comparison(
@@ -179,11 +160,9 @@ project.display.pattern_comparison(
 # %% [markdown]
 # ## Agreement check
 #
-# Reported without failing CI (`raise_on_failure=False`): `cryspy`
-# reproduces the FullProf peak positions after refinement but a
-# profile-shape difference remains, and `crysfml` cannot apply the
-# corrections. The page is also skipped via `ci_skip.txt` until a
-# released cryspy ships the PR #46 support.
+# Reported without failing CI (`raise_on_failure=False`); the page is also
+# skipped via `ci_skip.txt` while the corrections require an unreleased
+# cryspy.
 
 # %%
 verify.assert_patterns_agree(
@@ -194,3 +173,61 @@ verify.assert_patterns_agree(
     ],
     raise_on_failure=False,
 )
+
+# %% [markdown]
+# ## Investigate the discrepancy by refinement
+#
+# Because the FullProf profile is already loaded as the measured data, we
+# can test directly whether `cryspy` can reproduce it: refine the
+# absolute `scale` together with `calib_sample_displacement` and
+# `calib_sample_transparency`, keeping the structure and every other
+# parameter fixed, and check how far the corrections have to move to
+# match FullProf. `crysfml` is not refined — it has no `SyCos`/`SySin`
+# equivalent.
+
+# %%
+experiment.calculator.type = 'cryspy'
+project.analysis.minimizer.type = 'lmfit'
+
+# Free only the absolute scale and the two peak-position corrections; the
+# structure stays fixed, so a good fit confirms the difference is a
+# scale/correction-convention difference, not a structural disagreement.
+experiment.linked_phases['lab6'].scale.free = True
+experiment.instrument.calib_sample_displacement.free = True
+experiment.instrument.calib_sample_transparency.free = True
+
+# %%
+project.analysis.fit()
+
+# %% [markdown]
+# ## Goodness of fit and refined parameters
+#
+# The reference is a calculation-only profile with unit uncertainties, so
+# the absolute reduced χ² and R-factors are not normalised goodness-of-fit
+# values; the **scale-independent before/after closeness table** below is
+# the meaningful measure of the improvement.
+
+# %%
+project.display.fit.results()
+
+# %% [markdown]
+# ## Refined cryspy vs FullProf
+#
+# The refined `cryspy` pattern overlaid on the FullProf reference, then a
+# before/after table of the closeness metrics. A residual profile-shape
+# difference remains, which is why the page is not yet a passing
+# regression check.
+
+# %%
+calc_ed_cryspy_refined = verify.calculate_pattern(project, experiment, 'cryspy')
+
+project.display.pattern_comparison(
+    'lab6',
+    reference=calc_fullprof,
+    candidate=calc_ed_cryspy_refined,
+    reference_label='FullProf',
+    candidate_label='EasyDiffraction (cryspy, refined)',
+)
+
+# %%
+verify.report_refinement_closeness(calc_fullprof, calc_ed_cryspy, calc_ed_cryspy_refined)
