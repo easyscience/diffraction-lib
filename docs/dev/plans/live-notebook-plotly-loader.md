@@ -10,9 +10,9 @@ loader-driven rendering to live notebooks.
 
 ## Problem
 
-In JupyterLab the live path is
-`PlotlyPlotter._show_figure` → `display(HTML(serialize_html(fig,
-include_plotlyjs='cdn', mode=INLINE)))`. Two user-visible bugs:
+In JupyterLab the live path is `PlotlyPlotter._show_figure` →
+`display(HTML(serialize_html(fig, include_plotlyjs='cdn', mode=INLINE)))`.
+Two user-visible bugs:
 
 1. **Empty first plot after kernel restart.** The CDN `<script src>`
    loads `plotly.js` asynchronously while the inline `Plotly.newPlot`
@@ -23,9 +23,9 @@ include_plotlyjs='cdn', mode=INLINE)))`. Two user-visible bugs:
    reserves its layout height while empty during the async load, so a
    tall blank block sits above the plot until plotly.js arrives.
 
-Both stem from the INLINE/CDN delivery. The docs site does not have
-this because SHARED mode loads one self-hosted runtime + the
-`ed-figures.js` loader once per page.
+Both stem from the INLINE/CDN delivery. The docs site does not have this
+because SHARED mode loads one self-hosted runtime + the `ed-figures.js`
+loader once per page.
 
 ## Approach (Option 2 — chosen)
 
@@ -51,8 +51,8 @@ the loader, which only runs once `window.Plotly` exists).
 
 ## Decisions
 
-- **D1 — Reuse `ed-figures.js`; do not duplicate post-scripts.** Refactor
-  it to expose a re-callable global (e.g.
+- **D1 — Reuse `ed-figures.js`; do not duplicate post-scripts.**
+  Refactor it to expose a re-callable global (e.g.
   `window.edFigures.activate()`), idempotent and safe to call after
   every cell. Keep the IIFE auto-activate on `DOMContentLoaded` for
   docs.
@@ -98,15 +98,15 @@ the loader, which only runs once `window.Plotly` exists).
 - `ed-figures.js` — refactor to expose `window.edFigures.activate()`
   (idempotent, re-callable); move canonical copy to
   `src/easydiffraction/display/.../vendor/` and sync to docs.
-- `tools/bump_vendored_js.py` / `tools/sync_docs_vendored_js.py` —
-  treat Plotly bundle (and `ed-figures.js`) as wheel-shipped, synced to
-  docs like Three.js.
+- `tools/bump_vendored_js.py` / `tools/sync_docs_vendored_js.py` — treat
+  Plotly bundle (and `ed-figures.js`) as wheel-shipped, synced to docs
+  like Three.js.
 - `pyproject.toml` — package-data / force-include for the vendored
   `*.js` (loader + plotly bundle) so they ship in the wheel; exclude
   from lint/format/coverage like other vendored JS (already covered by
   `*/vendor/*`).
-- `docs/mkdocs.yml` — point `extra_javascript` at the synced asset
-  paths if they move; otherwise unchanged.
+- `docs/mkdocs.yml` — point `extra_javascript` at the synced asset paths
+  if they move; otherwise unchanged.
 - `tests/unit/easydiffraction/display/plotters/test_plotly_coverage.py`
   — assert INLINE output is placeholder-shaped, runtime injected exactly
   once per session, subsequent figures reference-only.
@@ -114,26 +114,27 @@ the loader, which only runs once `window.Plotly` exists).
 ## Implementation steps (Phase 1)
 
 - [ ] **P1.1 — Vendor the loader into `src/` and sync to docs.** Move
-  `ed-figures.js` to a `src/easydiffraction/display/` vendor folder;
-  update `sync_docs_vendored_js.py` to copy it (and Plotly) to docs;
-  regenerate the docs copy. Commit: `Vendor ed-figures loader into the
-  package`.
+      `ed-figures.js` to a `src/easydiffraction/display/` vendor folder;
+      update `sync_docs_vendored_js.py` to copy it (and Plotly) to docs;
+      regenerate the docs copy. Commit:
+      `Vendor ed-figures loader into the package`.
 - [ ] **P1.2 — Expose a re-callable loader global.** Refactor
-  `ed-figures.js` so `activate()` is reachable as
-  `window.edFigures.activate()` and safe to call repeatedly; keep
-  auto-activate for docs. Commit: `Expose re-callable edFigures.activate`.
+      `ed-figures.js` so `activate()` is reachable as
+      `window.edFigures.activate()` and safe to call repeatedly; keep
+      auto-activate for docs. Commit:
+      `Expose re-callable edFigures.activate`.
 - [ ] **P1.3 — Package the Plotly runtime in the wheel.** Add the
-  vendored `plotly-cartesian.min.js` as wheel data; wire
-  `bump_vendored_js.py`. Commit: `Ship vendored Plotly bundle in the
-  wheel`.
+      vendored `plotly-cartesian.min.js` as wheel data; wire
+      `bump_vendored_js.py`. Commit:
+      `Ship vendored Plotly bundle in the wheel`.
 - [ ] **P1.4 — Session-scoped runtime/loader injection.** Add the
-  per-kernel flag + a helper that returns the one-time
-  runtime+loader `<script>` block. Commit: `Inject Plotly runtime once
-  per kernel session`.
+      per-kernel flag + a helper that returns the one-time
+      runtime+loader `<script>` block. Commit:
+      `Inject Plotly runtime once per kernel session`.
 - [ ] **P1.5 — Switch the INLINE path to the shared placeholder.**
-  `_show_figure` INLINE emits the SHARED-style placeholder + an
-  idempotent activate script; drop `include_plotlyjs='cdn'` for live.
-  Commit: `Render live figures through the shared loader`.
+      `_show_figure` INLINE emits the SHARED-style placeholder + an
+      idempotent activate script; drop `include_plotlyjs='cdn'` for
+      live. Commit: `Render live figures through the shared loader`.
 - [ ] **P1.6 — Phase 1 review gate.** No-code checklist close-out.
 
 ## Phase 2 — Verification
@@ -145,9 +146,9 @@ pixi run unit-tests
 pixi run notebook-tests   # executes notebooks; confirms figures still serialize
 ```
 
-Manual JupyterLab smoke test (cannot be automated here): kernel
-restart → first plot renders (no empty/no race); no loading gap;
-multiple plots; reopen trusted notebook → all figures render.
+Manual JupyterLab smoke test (cannot be automated here): kernel restart
+→ first plot renders (no empty/no race); no loading gap; multiple plots;
+reopen trusted notebook → all figures render.
 
 ## Suggested Pull Request
 
