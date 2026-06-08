@@ -738,10 +738,10 @@ class Plotter(RendererBase):
         Overlay two calculated patterns with a residual panel.
 
         The reference is drawn as a solid line and the candidate as
-        markers, both peak-normalised so they overlay regardless of
-        engine scale. A residual panel and an optional metrics
-        annotation are included; Bragg ticks and background are
-        intentionally omitted.
+        markers, both at their absolute scale (each page seeds the
+        FullProf scale), so the overlay shows real scale agreement. A
+        residual panel and an optional metrics annotation are included;
+        Bragg ticks and background are intentionally omitted.
 
         Parameters
         ----------
@@ -781,13 +781,11 @@ class Plotter(RendererBase):
             )
             raise ValueError(msg)
 
-        reference_norm = self._peak_normalized(reference)
-        candidate_norm = self._peak_normalized(candidate)
         plot_spec = PowderMeasVsCalcSpec(
             x=x,
-            y_meas=reference_norm,
-            y_calc=candidate_norm,
-            y_resid=reference_norm - candidate_norm,
+            y_meas=reference,
+            y_calc=candidate,
+            y_resid=reference - candidate,
             bragg_tick_sets=(),
             axes_labels=axes_labels,
             title=title or f"Calculated pattern comparison for 🔬 '{expt_name}'",
@@ -822,11 +820,11 @@ class Plotter(RendererBase):
         """
         Scatter a reference against a candidate per-reflection F².
 
-        Peak-normalises both sets so they share one scale, then plots
-        the reference on the x-axis and the candidate on the y-axis
-        against a y=x reference line, with an optional metrics
-        annotation. Intended for the single-crystal external-reference
-        Verification pages.
+        Plots the reference on the x-axis and the candidate on the y-axis
+        at their absolute scale against a y=x reference line, with an
+        optional metrics annotation. Points fall on the diagonal when the
+        two agree in absolute F². Intended for the single-crystal
+        external-reference Verification pages.
 
         Parameters
         ----------
@@ -860,17 +858,15 @@ class Plotter(RendererBase):
             )
             raise ValueError(msg)
 
-        reference_norm = self._peak_normalized(reference)
-        candidate_norm = self._peak_normalized(candidate)
         axes_labels = (
-            f'{reference_label} F² (normalised)',
-            f'{candidate_label} F² (normalised)',
+            f'{reference_label} F²',
+            f'{candidate_label} F²',
         )
         plot_title = title or f"Reflection F² comparison for 🔬 '{expt_name}'"
         if self.engine == PlotterEngineEnum.PLOTLY.value:
             self._backend.build_and_show_reflection_comparison(
-                x_reference=reference_norm,
-                y_candidate=candidate_norm,
+                x_reference=reference,
+                y_candidate=candidate,
                 axes_labels=axes_labels,
                 reference_label=reference_label,
                 candidate_label=candidate_label,
@@ -881,23 +877,13 @@ class Plotter(RendererBase):
         # Other engines (for example ASCII) render the base scatter
         # without the styled metrics annotation.
         self._backend.plot_single_crystal(
-            x_calc=reference_norm,
-            y_meas=candidate_norm,
-            y_meas_su=np.zeros_like(candidate_norm),
+            x_calc=reference,
+            y_meas=candidate,
+            y_meas_su=np.zeros_like(candidate),
             axes_labels=axes_labels,
             title=plot_title,
             height=self.height,
         )
-
-    @staticmethod
-    def _peak_normalized(values: np.ndarray) -> np.ndarray:
-        """
-        Scale a profile so its maximum equals 100 for overlay display.
-        """
-        peak = float(np.max(values))
-        if not peak:
-            return values
-        return values / peak * 100.0
 
     def _plot_meas_vs_calc_request(
         self,
