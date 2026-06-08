@@ -45,14 +45,28 @@ def test_load_fullprof_profile_parses_fixed_width_header(tmp_path):
 
 def test_load_fullprof_profile_length_mismatch_raises(tmp_path):
     sub = tmp_path / 'ref.sub'
-    # Header implies five points (10.0..12.0 step 0.5) but only three
-    # intensities follow — a corrupt/misformatted reference file.
+    # Header maximum 12.0 implies five points (10.0..12.0 step 0.5) but
+    # only three intensities follow, so the grid built from the body ends
+    # at 11.0 — more than one step short of 12.0: a corrupt reference.
     sub.write_text(
         '   10.0   0.5   12.0   ! a comment\n   1.0  2.0  3.0\n',
         encoding='utf-8',
     )
-    with pytest.raises(ValueError, match='header implies'):
+    with pytest.raises(ValueError, match='header maximum'):
         verify.load_fullprof_profile(str(sub))
+
+
+def test_load_fullprof_profile_tolerates_rounded_header_maximum(tmp_path):
+    sub = tmp_path / 'ref.sub'
+    # The header maximum is rounded a fraction of a step high (12.0004 vs
+    # the true last point 12.0), which must not add a spurious point.
+    sub.write_text(
+        '   10.0   0.5   12.0004   ! a comment\n   1.0  2.0  3.0  4.0  5.0\n',
+        encoding='utf-8',
+    )
+    x, y = verify.load_fullprof_profile(str(sub))
+    np.testing.assert_allclose(x, [10.0, 10.5, 11.0, 11.5, 12.0])
+    np.testing.assert_allclose(y, [1.0, 2.0, 3.0, 4.0, 5.0])
 
 
 def test_load_columned_profile_reads_two_columns(tmp_path):

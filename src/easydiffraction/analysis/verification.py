@@ -125,20 +125,26 @@ def load_fullprof_profile(path: str) -> tuple[np.ndarray, np.ndarray]:
     Raises
     ------
     ValueError
-        If the grid reconstructed from the header and the intensities
-        read from the body have different lengths.
+        If the header maximum is more than one full step away from the
+        grid implied by the intensities read from the body (a genuine
+        inconsistency rather than header rounding).
     """
     with Path(path).open(encoding='utf-8') as handle:
         lines = handle.readlines()
     x_min, x_increment, x_max = _parse_fullprof_header(lines[0])
-    # The 1e-5 nudge avoids a spurious extra point from float rounding.
-    x = np.arange(start=x_min, stop=x_max + x_increment - 1e-5, step=x_increment)
     body = ' '.join(line.strip() for line in lines[1:])
     y = np.genfromtxt(StringIO(body))
-    if x.size != y.size:
+    # Build the grid from the intensity count, not the header maximum, so
+    # a maximum rounded a fraction of a step off (a common FullProf quirk)
+    # neither adds nor drops a spurious point. The header maximum is kept
+    # only as a sanity check: a gap larger than one step is a real error.
+    x = x_min + x_increment * np.arange(y.size)
+    reconstructed_max = x_min + x_increment * (y.size - 1)
+    if abs(reconstructed_max - x_max) > abs(x_increment):
         msg = (
-            f'FullProf profile {path}: header implies {x.size} points '
-            f'but {y.size} intensities were read.'
+            f'FullProf profile {path}: header maximum {x_max} is more than '
+            f'one step from the {y.size}-point grid implied by the '
+            f'intensities (last point {reconstructed_max}).'
         )
         raise ValueError(msg)
     return x, y
