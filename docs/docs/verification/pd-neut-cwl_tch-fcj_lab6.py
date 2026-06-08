@@ -1,11 +1,25 @@
 # %% [markdown]
 # # LaB₆ — neutron powder, constant wavelength, Thompson–Cox–Hastings
 #
-# A **prepared** verification for the FullProf `SyCos`/`SySin` systematic
-# peak-position corrections (sample displacement and transparency), using
-# the real LaB6 dataset from
+# This page verifies the FullProf `SyCos`/`SySin` systematic
+# peak-position corrections (sample displacement and transparency) for a
+# constant-wavelength powder experiment, using the real LaB₆ dataset from
 # [cryspy issue #38](https://github.com/ikibalin/cryspy/issues/38).
 #
+# `SyCos`/`SySin` map to `calib_sample_displacement` and
+# `calib_sample_transparency` on the CWL powder instrument. Only the
+# `cryspy` engine applies them, and only with the functionality added in
+# [cryspy PR #46](https://github.com/ikibalin/cryspy/pull/46); the
+# `crysfml` engine has no equivalent. Because FullProf and cryspy use
+# **different coefficient conventions** for these corrections (and a
+# different absolute-intensity scale), the `.pcr` values are used only as
+# starting points: the page **refines** `scale`, `calib_sample_displacement`
+# and `calib_sample_transparency` against the FullProf profile with cryspy,
+# then reuses the refined `scale` for crysfml (which keeps a peak-position
+# offset, since it cannot apply the corrections).
+#
+# The page stays listed in `ci_skip.txt` until a released cryspy ships the
+# PR #46 corrections.
 
 # %%
 import easydiffraction as ed
@@ -37,6 +51,10 @@ project = ed.Project()
 
 # %% [markdown]
 # ## Define the structure
+#
+# Boron is the ¹¹B isotope (FullProf `B11`). The `cryspy` engine resolves
+# the isotope directly; the `crysfml` engine resolves scattering by
+# element and silently drops the isotope number (`11B` → `B`).
 
 # %%
 structure = StructureFactory.from_scratch(name='lab6')
@@ -49,14 +67,11 @@ structure.atom_sites.create(
     fract_y=0.0,  # FullProf Y
     fract_z=0.0,  # FullProf Z
     adp_type='Biso',  # FullProf Biso
-    adp_iso=0.53405,  # FullProf Biso
+    adp_iso=0.53399,  # FullProf Biso
 )
 structure.atom_sites.create(
     label='B',  # FullProf Atom
-    # ❌ <built-in function f_cw_powder_pattern_from_dict> returned a
-    # result with an exception set
-    # type_symbol='11B',  # FullProf "B11     0.66500    0.00000   0"
-    type_symbol='B',  # FullProf "B11     0.66500    0.00000   0"
+    type_symbol='11B',  # FullProf "B11     0.66500    0.00000   0"
     fract_x=0.19972,  # FullProf X
     fract_y=0.5,  # FullProf Y
     fract_z=0.5,  # FullProf Z
@@ -68,6 +83,10 @@ project.structures.add(structure)
 
 # %% [markdown]
 # ## Create the experiment
+#
+# Starting values are taken from `ECH0030684_LaB6_1p622A.pcr`. The
+# `SyCos`/`SySin` values are FullProf-convention starting points and are
+# refined below into cryspy's equivalents.
 
 # %%
 experiment = ExperimentFactory.from_scratch(
@@ -79,40 +98,42 @@ experiment = ExperimentFactory.from_scratch(
 )
 verify.set_reference_as_measured(experiment, x, calc_fullprof)
 
-experiment.linked_phases.create(id='lab6', scale=136.0509)  # FullProf Scale
+experiment.linked_phases.create(id='lab6', scale=136.0507)  # FullProf Scale
 
 experiment.instrument.setup_wavelength = 1.623891  # FullProf Lambda
-experiment.instrument.calib_twotheta_offset = -0.45497  # FullProf Zero
+experiment.instrument.calib_twotheta_offset = -0.45501  # FullProf Zero
+experiment.instrument.calib_sample_displacement = 0.01052  # FullProf SyCos
+experiment.instrument.calib_sample_transparency = 0.24192  # FullProf SySin
 
-experiment.peak.broad_gauss_u = 0.143361  # FullProf U
-experiment.peak.broad_gauss_v = -0.522147  # FullProf V
-experiment.peak.broad_gauss_w = 0.590413  # FullProf W
+experiment.peak.broad_gauss_u = 0.143363  # FullProf U
+experiment.peak.broad_gauss_v = -0.522167  # FullProf V
+experiment.peak.broad_gauss_w = 0.590411  # FullProf W
 experiment.peak.broad_lorentz_x = 0.0  # FullProf X
-experiment.peak.broad_lorentz_y = 0.054268  # FullProf Y
+experiment.peak.broad_lorentz_y = 0.054276  # FullProf Y
 
 project.experiments.add(experiment)
 
 # %% [markdown]
-# ## Sample displacement / transparency (SyCos / SySin)
+# ## Refine scale, sample displacement and transparency
 #
-# FullProf applies sample-displacement (`SyCos`) and transparency
-# (`SySin`) peak-position shifts on top of `Zero` (see issue #117).
-# These map to `calib_sample_displacement` and
-# `calib_sample_transparency` on the CWL powder instrument. The cryspy
-# engine applies them only with the new functionality from
-# [cryspy PR #46](https://github.com/ikibalin/cryspy/pull/46); on the
-# currently released cryspy the corrections are ignored, and crysfml has
-# no equivalent, so this page stays in `ci_skip.txt` until a cryspy
-# release ships the support. As with `Zero` (`calib_twotheta_offset`
-# above), the cross-code convention may differ, so these `.pcr` values
-# may still need adjustment once validated against a PR #46 cryspy.
+# FullProf's `SyCos`/`SySin` coefficients do not transfer numerically to
+# cryspy, and the two codes use a different absolute-intensity scale, so
+# `scale`, `calib_sample_displacement` and `calib_sample_transparency`
+# are refined against the FullProf profile using cryspy.
 
 # %%
-experiment.instrument.calib_sample_displacement = 0.05395  # FullProf SyCos
-experiment.instrument.calib_sample_transparency = 0.09127  # FullProf SySin
+experiment.calculator.type = 'cryspy'
+experiment.linked_phases['lab6'].scale.free = True
+experiment.instrument.calib_sample_displacement.free = True
+experiment.instrument.calib_sample_transparency.free = True
+project.analysis.fit()
 
 # %% [markdown]
 # ## Calculate the pattern with each engine
+#
+# `cryspy` uses the refined `scale` and the refined sample-displacement
+# and transparency corrections. `crysfml` reuses the same refined `scale`
+# but cannot apply the corrections, so it keeps a peak-position offset.
 
 # %%
 calc_ed_cryspy = verify.calculate_pattern(project, experiment, 'cryspy')
@@ -121,10 +142,9 @@ calc_ed_crysfml = verify.calculate_pattern(project, experiment, 'crysfml')
 # %% [markdown]
 # ## Compare each engine against FullProf
 #
-# Until the corrections above are supported the engines will show
-# systematic peak-position offsets against the FullProf calculated
-# profile, which is the discrepancy this page is being prepared to
-# verify.
+# After refinement `cryspy` reproduces the FullProf peak positions; the
+# residual is the remaining profile-shape difference. `crysfml` shows the
+# systematic peak-position offset expected without `SyCos`/`SySin`.
 
 # %%
 project.display.pattern_comparison(
@@ -159,8 +179,11 @@ project.display.pattern_comparison(
 # %% [markdown]
 # ## Agreement check
 #
-# Reported without failing CI (`raise_on_failure=False`) while the
-# corrections are unsupported; the page is also skipped via `ci_skip.txt`.
+# Reported without failing CI (`raise_on_failure=False`): `cryspy`
+# reproduces the FullProf peak positions after refinement but a
+# profile-shape difference remains, and `crysfml` cannot apply the
+# corrections. The page is also skipped via `ci_skip.txt` until a
+# released cryspy ships the PR #46 support.
 
 # %%
 verify.assert_patterns_agree(
