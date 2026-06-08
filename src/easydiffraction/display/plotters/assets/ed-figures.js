@@ -342,7 +342,7 @@
 
   // ---- Activation -----------------------------------------------------
 
-  function renderInto(figureEl, spec) {
+  function renderInto(figureEl, spec, live) {
     if (figureEl.getAttribute('data-ed-rendered') === 'true') {
       return;
     }
@@ -363,7 +363,14 @@
           skeleton.style.display = 'none';
         }
         watchTheme(target, spec.edTheme, spec.edThemeSync);
-        watchResize(target);
+        // Live notebooks skip the ResizeObserver: in an embedded
+        // (iframe) JupyterLab whose layout settles over ~1-2 s, observing
+        // the plot's parent re-fires Plotly.resize repeatedly, redrawing
+        // the figure in visible stages. Plotly's own responsive config
+        // still handles window resizes.
+        if (!live) {
+          watchResize(target);
+        }
         if (spec.edHasLegend) {
           installLegendToggle(target);
         }
@@ -373,19 +380,18 @@
 
   // Docs path: read the spec embedded in the placeholder's JSON script.
   function render(figureEl) {
-    renderInto(figureEl, readSpec(figureEl));
+    renderInto(figureEl, readSpec(figureEl), false);
   }
 
-  // Live-notebook path: render a spec passed directly (via Javascript
-  // output) into a target by id, so no <script> tags sit in the cell's
-  // HTML output (some hosts render them as empty rows).
+  // Live-notebook path: render a spec passed directly into a target by
+  // id (no embedded spec script, no resize observer).
   function renderSpec(targetId, spec) {
     var target = document.getElementById(targetId);
     if (!target) {
       return;
     }
     var figureEl = target.closest('.ed-figure') || target;
-    renderInto(figureEl, spec);
+    renderInto(figureEl, spec, true);
   }
 
   function activate() {
