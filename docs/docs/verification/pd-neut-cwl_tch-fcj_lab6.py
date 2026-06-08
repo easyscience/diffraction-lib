@@ -100,7 +100,6 @@ verify.set_reference_as_measured(experiment, x, calc_fullprof)
 experiment.linked_phases.create(id='lab6', scale=136.0507)  # FullProf Scale
 
 experiment.instrument.setup_wavelength = 1.623891  # FullProf Lambda
-experiment.instrument.calib_twotheta_offset = -0.45501  # FullProf Zero
 experiment.instrument.calib_sample_displacement = 0.01052  # FullProf SyCos
 experiment.instrument.calib_sample_transparency = 0.24192  # FullProf SySin
 
