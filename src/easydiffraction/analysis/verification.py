@@ -23,9 +23,10 @@ import numpy as np
 from easydiffraction.datablocks.experiment.item.base import intensity_category_for
 from easydiffraction.utils.utils import render_table
 
-# Reference shape metrics are computed on peak-normalised profiles so
-# they do not depend on the arbitrary calculated scale of each engine.
-_PEAK_NORMALISATION = 100.0
+# Closeness metrics are computed on absolute intensities: each page seeds
+# the FullProf scale (from its .pcr) so the calculated patterns are
+# compared on their true scale, and the integrated-intensity ratio is
+# meaningful rather than forced to one by normalisation.
 
 # A FullProf single-crystal F2cal table row needs at least these many
 # columns: h, k, l, ivk, cod, F2obs, F2cal.
@@ -184,7 +185,8 @@ def load_fullprof_sc_f2calc(path: str) -> dict[tuple[int, int, int], float]:
     header carries the ``F2obs`` and ``F2cal`` columns — and returns a
     mapping from each ``(h, k, l)`` to its ``F2cal``. FullProf reports
     ``F2cal = scale * Corr * |F|²`` (scaled and extinction-corrected),
-    so compare it on a peak-normalised basis, where the scale cancels.
+    a different absolute scale from the engines, so the verification page
+    refines a single scale to bring the two onto a common basis.
 
     Parameters
     ----------
@@ -390,17 +392,9 @@ class ClosenessMetrics:
     """Closeness scores between a reference and a candidate pattern."""
 
     profile_difference_percent: float
-    max_deviation: float
+    max_deviation_percent: float
     intensity_ratio: float
     correlation: float
-
-
-def _peak_normalised(values: np.ndarray) -> np.ndarray:
-    """Scale a profile so its maximum equals the normalisation peak."""
-    peak = float(np.max(values))
-    if not peak:
-        return values
-    return values / peak * _PEAK_NORMALISATION
 
 
 def pattern_closeness(
@@ -410,10 +404,13 @@ def pattern_closeness(
     """
     Score how closely a candidate pattern matches a reference.
 
-    All metrics use peak-normalised profiles so they are independent of
-    each engine's arbitrary calculated scale; this keeps the integrated-
-    intensity ratio meaningful when comparing against external software
-    (for example FullProf) that uses a different scale convention.
+    Metrics are computed on the **absolute** intensities, so a page that
+    seeds the FullProf scale sees a real scale comparison: the
+    integrated-intensity ratio is one only when the calculated areas
+    agree, and a scale mismatch widens the profile difference rather than
+    being normalised away. The RMS and maximum differences are expressed
+    as a percentage of the reference (its RMS and its peak), so the
+    tolerances are dataset-independent.
 
     Parameters
     ----------
@@ -425,8 +422,9 @@ def pattern_closeness(
     Returns
     -------
     ClosenessMetrics
-        Profile difference (%), maximum point-wise deviation,
-        integrated- intensity ratio, and Pearson correlation.
+        Profile difference (%), maximum point-wise deviation (% of the
+        reference peak), integrated-intensity ratio, and Pearson
+        correlation.
 
     Raises
     ------
@@ -442,25 +440,29 @@ def pattern_closeness(
         )
         raise ValueError(msg)
 
-    reference_norm = _peak_normalised(reference)
-    candidate_norm = _peak_normalised(candidate)
-
-    reference_area = float(np.sum(reference_norm))
+    reference_area = float(np.sum(reference))
     intensity_ratio = (
-        float(np.sum(candidate_norm) / reference_area) if reference_area else float('nan')
+        float(np.sum(candidate) / reference_area) if reference_area else float('nan')
     )
 
-    difference = reference_norm - candidate_norm
-    scale = float(np.sqrt(np.mean(reference_norm**2)))
+    difference = reference - candidate
+    rms_reference = float(np.sqrt(np.mean(reference**2)))
     profile_difference_percent = (
-        100.0 * float(np.sqrt(np.mean(difference**2))) / scale if scale else float('nan')
+        100.0 * float(np.sqrt(np.mean(difference**2))) / rms_reference
+        if rms_reference
+        else float('nan')
     )
-    max_deviation = float(np.max(np.abs(difference)))
-    correlation = float(np.corrcoef(reference_norm, candidate_norm)[0, 1])
+    peak_reference = float(np.max(np.abs(reference)))
+    max_deviation_percent = (
+        100.0 * float(np.max(np.abs(difference))) / peak_reference
+        if peak_reference
+        else float('nan')
+    )
+    correlation = float(np.corrcoef(reference, candidate)[0, 1])
 
     return ClosenessMetrics(
         profile_difference_percent=profile_difference_percent,
-        max_deviation=max_deviation,
+        max_deviation_percent=max_deviation_percent,
         intensity_ratio=intensity_ratio,
         correlation=correlation,
     )
@@ -476,15 +478,17 @@ class AgreementTolerances:
     """
     Tolerance bounds for cross-pattern agreement checks.
 
-    Defaults keep a generous cross-platform margin for calculation-only
-    comparisons while still catching a real regression; tighten them as
-    multi-platform spreads are characterised.
+    Defaults expect the calculated areas to agree to a few percent once
+    the FullProf scale is seeded: the integrated-intensity ratio must sit
+    within 2 % of one, with the profile and peak differences held to the
+    same order. Tighten further as multi-platform spreads are
+    characterised.
     """
 
-    max_profile_difference_percent: float = 10.0
-    max_deviation: float = 10.0
-    min_intensity_ratio: float = 0.8
-    max_intensity_ratio: float = 1.25
+    max_profile_difference_percent: float = 3.0
+    max_deviation_percent: float = 5.0
+    min_intensity_ratio: float = 0.98
+    max_intensity_ratio: float = 1.02
     min_correlation: float = 0.99
 
 
@@ -504,7 +508,7 @@ def _agreement_checks(
 ) -> list[_AgreementCheck]:
     """Score one comparison's metrics against the tolerances."""
     profile_ok = metrics.profile_difference_percent < tolerances.max_profile_difference_percent
-    deviation_ok = metrics.max_deviation < tolerances.max_deviation
+    deviation_ok = metrics.max_deviation_percent < tolerances.max_deviation_percent
     ratio_ok = (
         tolerances.min_intensity_ratio < metrics.intensity_ratio < tolerances.max_intensity_ratio
     )
@@ -517,19 +521,19 @@ def _agreement_checks(
             passed=profile_ok,
         ),
         _AgreementCheck(
-            metric='Max deviation',
-            expected=f'< {tolerances.max_deviation:g}',
-            actual=f'{metrics.max_deviation:.3g}',
+            metric='Max deviation (%)',
+            expected=f'< {tolerances.max_deviation_percent:g}',
+            actual=f'{metrics.max_deviation_percent:.2f}',
             passed=deviation_ok,
         ),
         _AgreementCheck(
-            metric='Intensity ratio',
+            metric='Area ratio',
             expected=f'{tolerances.min_intensity_ratio:g} to {tolerances.max_intensity_ratio:g}',
             actual=f'{metrics.intensity_ratio:.4f}',
             passed=ratio_ok,
         ),
         _AgreementCheck(
-            metric='Correlation',
+            metric='Shape correlation',
             expected=f'> {tolerances.min_correlation:g}',
             actual=f'{metrics.correlation:.4f}',
             passed=correlation_ok,
@@ -682,17 +686,17 @@ def report_refinement_closeness(
             f'{after_metrics.profile_difference_percent:.2f}',
         ],
         [
-            'Max deviation',
-            f'{before_metrics.max_deviation:.3g}',
-            f'{after_metrics.max_deviation:.3g}',
+            'Max deviation (%)',
+            f'{before_metrics.max_deviation_percent:.2f}',
+            f'{after_metrics.max_deviation_percent:.2f}',
         ],
         [
-            'Intensity ratio',
+            'Area ratio',
             f'{before_metrics.intensity_ratio:.4f}',
             f'{after_metrics.intensity_ratio:.4f}',
         ],
         [
-            'Correlation',
+            'Shape correlation',
             f'{before_metrics.correlation:.4f}',
             f'{after_metrics.correlation:.4f}',
         ],
