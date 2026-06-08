@@ -43,6 +43,18 @@ def test_load_fullprof_profile_parses_fixed_width_header(tmp_path):
     np.testing.assert_allclose(y, [1.0, 2.0, 3.0, 4.0, 5.0])
 
 
+def test_load_fullprof_profile_length_mismatch_raises(tmp_path):
+    sub = tmp_path / 'ref.sub'
+    # Header implies five points (10.0..12.0 step 0.5) but only three
+    # intensities follow — a corrupt/misformatted reference file.
+    sub.write_text(
+        '   10.0   0.5   12.0   ! a comment\n   1.0  2.0  3.0\n',
+        encoding='utf-8',
+    )
+    with pytest.raises(ValueError, match='header implies'):
+        verify.load_fullprof_profile(str(sub))
+
+
 def test_load_columned_profile_reads_two_columns(tmp_path):
     dat = tmp_path / 'ref.dat'
     dat.write_text('! header line\n10.0 100.0\n10.5 200.0\n11.0 150.0\n', encoding='utf-8')
@@ -54,6 +66,40 @@ def test_load_columned_profile_reads_two_columns(tmp_path):
 def test_bundled_reference_dir_points_at_fullprof():
     path = verify.bundled_reference_dir()
     assert path.parts[-2:] == ('verification', 'fullprof')
+
+
+# ----------------------------------------------------------------------
+#  Single-crystal reference loaders
+# ----------------------------------------------------------------------
+
+
+def test_load_fullprof_sc_f2calc_reads_table(tmp_path):
+    out = tmp_path / 'sc.out'
+    # A header line carrying 'F2obs' and 'F2cal' starts the table; F2cal
+    # is the seventh column. A short row (or non-numeric row) ends it, so
+    # the trailing summary line must not be parsed as a reflection.
+    out.write_text(
+        'Some preamble line that should be ignored\n'
+        '   h   k   l ivk   cod      F2obs         F2cal     more...\n'
+        '   2   0   0   0     1     175.6782     173.6998     0.0\n'
+        '   4   0   0   0     1     787.9925     788.1127     0.0\n'
+        ' => end of table\n'
+        '   9   9   9   0     1     1.0          2.0          0.0\n',
+        encoding='utf-8',
+    )
+    f2calc = verify.load_fullprof_sc_f2calc(str(out))
+    assert f2calc == {(2, 0, 0): pytest.approx(173.6998), (4, 0, 0): pytest.approx(788.1127)}
+    # The reflection after the terminator row must not be picked up.
+    assert (9, 9, 9) not in f2calc
+
+
+def test_align_reflections_keeps_common_hkls_in_order():
+    reference = {(2, 0, 0): 10.0, (4, 0, 0): 20.0, (6, 0, 0): 30.0}
+    candidate = {(4, 0, 0): 21.0, (2, 0, 0): 11.0, (8, 0, 0): 99.0}
+    ref, cand = verify.align_reflections(reference, candidate)
+    # Only the shared (2,0,0) and (4,0,0), in a common sorted order.
+    np.testing.assert_allclose(ref, [10.0, 20.0])
+    np.testing.assert_allclose(cand, [11.0, 21.0])
 
 
 # ----------------------------------------------------------------------
@@ -180,3 +226,31 @@ def test_set_reference_as_measured_populates_grid():
     pattern = intensity_category_for(experiment)
     np.testing.assert_allclose(pattern.x, x)
     np.testing.assert_allclose(pattern.intensity_meas, y)
+
+
+def test_set_reference_reflections_populates_refln():
+    from easydiffraction import ExperimentFactory
+
+    experiment = ExperimentFactory.from_scratch(
+        name='ref',
+        sample_form='single crystal',
+        beam_mode='constant wavelength',
+        radiation_probe='neutron',
+        scattering_type='bragg',
+    )
+    reflections = {(2, 0, 0): 175.0, (4, 0, 0): 788.0, (0, 2, 0): 177.0}
+    verify.set_reference_reflections(experiment, reflections)
+
+    refln = experiment.refln
+    # Reflections are created in sorted (h, k, l) order.
+    hkls = list(
+        zip(
+            refln.index_h.astype(int),
+            refln.index_k.astype(int),
+            refln.index_l.astype(int),
+            strict=True,
+        )
+    )
+    assert hkls == sorted(reflections)
+    expected = np.array([reflections[hkl] for hkl in sorted(reflections)], dtype=float)
+    np.testing.assert_allclose(refln.intensity_meas, expected)

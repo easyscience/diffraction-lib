@@ -120,6 +120,12 @@ def load_fullprof_profile(path: str) -> tuple[np.ndarray, np.ndarray]:
     -------
     tuple[np.ndarray, np.ndarray]
         The reconstructed x grid and the profile intensities.
+
+    Raises
+    ------
+    ValueError
+        If the grid reconstructed from the header and the intensities
+        read from the body have different lengths.
     """
     with Path(path).open(encoding='utf-8') as handle:
         lines = handle.readlines()
@@ -128,6 +134,12 @@ def load_fullprof_profile(path: str) -> tuple[np.ndarray, np.ndarray]:
     x = np.arange(start=x_min, stop=x_max + x_increment - 1e-5, step=x_increment)
     body = ' '.join(line.strip() for line in lines[1:])
     y = np.genfromtxt(StringIO(body))
+    if x.size != y.size:
+        msg = (
+            f'FullProf profile {path}: header implies {x.size} points '
+            f'but {y.size} intensities were read.'
+        )
+        raise ValueError(msg)
     return x, y
 
 
