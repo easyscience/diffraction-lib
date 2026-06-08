@@ -23,10 +23,10 @@ import numpy as np
 from easydiffraction.datablocks.experiment.item.base import intensity_category_for
 from easydiffraction.utils.utils import render_table
 
-# Closeness metrics are computed on absolute intensities: each page seeds
-# the FullProf scale (from its .pcr) so the calculated patterns are
-# compared on their true scale, and the integrated-intensity ratio is
-# meaningful rather than forced to one by normalisation.
+# Closeness metrics are computed on absolute intensities: each page
+# seeds the FullProf scale (from its .pcr) so the calculated patterns
+# are compared on their true scale, and the integrated-intensity ratio
+# is meaningful rather than forced to one by normalisation.
 
 # A FullProf single-crystal F2cal table row needs at least these many
 # columns: h, k, l, ivk, cod, F2obs, F2cal.
@@ -134,10 +134,10 @@ def load_fullprof_profile(path: str) -> tuple[np.ndarray, np.ndarray]:
     x_min, x_increment, x_max = _parse_fullprof_header(lines[0])
     body = ' '.join(line.strip() for line in lines[1:])
     y = np.genfromtxt(StringIO(body))
-    # Build the grid from the intensity count, not the header maximum, so
-    # a maximum rounded a fraction of a step off (a common FullProf quirk)
-    # neither adds nor drops a spurious point. The header maximum is kept
-    # only as a sanity check: a gap larger than one step is a real error.
+    # Build the grid from the intensity count, not the header maximum,
+    # so a maximum rounded a fraction of a step off (a common FullProf
+    # quirk) neither adds nor drops a point. The header maximum is kept
+    # only as a sanity check: a gap over one step is a real error.
     x = x_min + x_increment * np.arange(y.size)
     reconstructed_max = x_min + x_increment * (y.size - 1)
     if abs(reconstructed_max - x_max) > abs(x_increment):
@@ -190,8 +190,8 @@ def load_fullprof_sc_f2calc(path: str) -> dict[tuple[int, int, int], float]:
     Reads the integrated-intensity reflection table — the one whose
     header carries the ``F2obs`` and ``F2cal`` columns — and returns a
     mapping from each ``(h, k, l)`` to its ``F2cal``. FullProf reports
-    ``F2cal = scale * Corr * |F|²`` (scaled and extinction-corrected),
-    a different absolute scale from the engines, so the verification page
+    ``F2cal = scale * Corr * |F|²`` (scaled and extinction-corrected), a
+    different absolute scale from the engines, so the verification page
     refines a single scale to bring the two onto a common basis.
 
     Parameters
@@ -413,10 +413,10 @@ def pattern_closeness(
     Metrics are computed on the **absolute** intensities, so a page that
     seeds the FullProf scale sees a real scale comparison: the
     integrated-intensity ratio is one only when the calculated areas
-    agree, and a scale mismatch widens the profile difference rather than
-    being normalised away. The RMS and maximum differences are expressed
-    as a percentage of the reference (its RMS and its peak), so the
-    tolerances are dataset-independent.
+    agree, and a scale mismatch widens the profile difference rather
+    than being normalised away. The RMS and maximum differences are
+    expressed as a percentage of the reference (its RMS and its peak),
+    so the tolerances are dataset-independent.
 
     Parameters
     ----------
@@ -447,9 +447,7 @@ def pattern_closeness(
         raise ValueError(msg)
 
     reference_area = float(np.sum(reference))
-    intensity_ratio = (
-        float(np.sum(candidate) / reference_area) if reference_area else float('nan')
-    )
+    intensity_ratio = float(np.sum(candidate) / reference_area) if reference_area else float('nan')
 
     difference = reference - candidate
     rms_reference = float(np.sqrt(np.mean(reference**2)))
@@ -485,9 +483,9 @@ class AgreementTolerances:
     Tolerance bounds for cross-pattern agreement checks.
 
     Defaults expect the calculated areas to agree to a few percent once
-    the FullProf scale is seeded: the integrated-intensity ratio must sit
-    within 2 % of one, with the profile and peak differences held to the
-    same order. Tighten further as multi-platform spreads are
+    the FullProf scale is seeded: the integrated-intensity ratio must
+    sit within 2 % of one, with the profile and peak differences held to
+    the same order. Tighten further as multi-platform spreads are
     characterised.
     """
 

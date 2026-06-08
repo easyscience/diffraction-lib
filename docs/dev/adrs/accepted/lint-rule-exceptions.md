@@ -38,13 +38,13 @@ this ADR records the durable decisions it surfaced.
 1. **Test-file complexity exception.** `PLR0913`, `PLR0914`, `PLR0915`,
    and `PLR0917` stay ignored under `tests/**` via
    `[tool.ruff.lint.per-file-ignores]`. This is a deliberate, scoped
-   exception to `lint-complexity-thresholds.md`: test bodies legitimately
-   accumulate many arguments, locals, and statements (fixtures,
-   parametrisation, arrange-act-assert) where the complexity is not a
-   maintainability signal. Production code under `src/**` remains fully
-   governed by `lint-complexity-thresholds.md` — the guardrail is not
-   relaxed there, and `# noqa` / threshold raises remain disallowed in
-   `src/**`.
+   exception to `lint-complexity-thresholds.md`: test bodies
+   legitimately accumulate many arguments, locals, and statements
+   (fixtures, parametrisation, arrange-act-assert) where the complexity
+   is not a maintainability signal. Production code under `src/**`
+   remains fully governed by `lint-complexity-thresholds.md` — the
+   guardrail is not relaxed there, and `# noqa` / threshold raises
+   remain disallowed in `src/**`.
 
 2. **Test-file import-alias exception.** `N812` stays ignored under
    `tests/**` so tests may import a module-under-test with a lowercase
@@ -67,13 +67,13 @@ before adoption.
 
 - The standing test-file and CIF-naming suppressions are documented
   decisions rather than unexplained `pyproject.toml` entries.
-- `lint-complexity-thresholds.md` keeps its full force over `src/**`; the
-  scope of the relaxation is explicit and bounded to `tests/**`.
+- `lint-complexity-thresholds.md` keeps its full force over `src/**`;
+  the scope of the relaxation is explicit and bounded to `tests/**`.
 
 ### Trade-offs
 
 - Test code can grow more complex without lint feedback; reviewers carry
   that judgement instead of the linter.
-- The `id` / `type` field names continue to shadow builtins by design, so
-  contributors must keep CIF-alignment context in mind when reading those
-  categories.
+- The `id` / `type` field names continue to shadow builtins by design,
+  so contributors must keep CIF-alignment context in mind when reading
+  those categories.

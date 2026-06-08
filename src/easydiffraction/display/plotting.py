@@ -820,11 +820,11 @@ class Plotter(RendererBase):
         """
         Scatter a reference against a candidate per-reflection F².
 
-        Plots the reference on the x-axis and the candidate on the y-axis
-        at their absolute scale against a y=x reference line, with an
-        optional metrics annotation. Points fall on the diagonal when the
-        two agree in absolute F². Intended for the single-crystal
-        external-reference Verification pages.
+        Plots the reference on the x-axis and the candidate on the
+        y-axis at their absolute scale against a y=x reference line,
+        with an optional metrics annotation. Points fall on the diagonal
+        when the two agree in absolute F². Intended for the
+        single-crystal external-reference Verification pages.
 
         Parameters
         ----------

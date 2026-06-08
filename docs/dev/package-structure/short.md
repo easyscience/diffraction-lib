@@ -239,6 +239,7 @@
 │   └── 📄 __init__.py
 ├── 📁 display
 │   ├── 📁 plotters
+│   │   ├── 📁 assets
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 ascii.py
 │   │   ├── 📄 base.py
