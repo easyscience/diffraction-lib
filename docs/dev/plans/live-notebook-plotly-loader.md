@@ -113,29 +113,30 @@ the loader, which only runs once `window.Plotly` exists).
 
 ## Implementation steps (Phase 1)
 
-- [ ] **P1.1 — Vendor the loader into `src/` and sync to docs.** Move
-      `ed-figures.js` to a `src/easydiffraction/display/` vendor folder;
-      update `sync_docs_vendored_js.py` to copy it (and Plotly) to docs;
-      regenerate the docs copy. Commit:
-      `Vendor ed-figures loader into the package`.
-- [ ] **P1.2 — Expose a re-callable loader global.** Refactor
-      `ed-figures.js` so `activate()` is reachable as
-      `window.edFigures.activate()` and safe to call repeatedly; keep
-      auto-activate for docs. Commit:
-      `Expose re-callable edFigures.activate`.
-- [ ] **P1.3 — Package the Plotly runtime in the wheel.** Add the
-      vendored `plotly-cartesian.min.js` as wheel data; wire
-      `bump_vendored_js.py`. Commit:
-      `Ship vendored Plotly bundle in the wheel`.
-- [ ] **P1.4 — Session-scoped runtime/loader injection.** Add the
-      per-kernel flag + a helper that returns the one-time
-      runtime+loader `<script>` block. Commit:
-      `Inject Plotly runtime once per kernel session`.
-- [ ] **P1.5 — Switch the INLINE path to the shared placeholder.**
-      `_show_figure` INLINE emits the SHARED-style placeholder + an
-      idempotent activate script; drop `include_plotlyjs='cdn'` for
-      live. Commit: `Render live figures through the shared loader`.
-- [ ] **P1.6 — Phase 1 review gate.** No-code checklist close-out.
+- [x] **P1.1 — Vendor the loader into `src/` and sync to docs.** Moved
+      `ed-figures.js` and `plotly-cartesian.min.js` under
+      `src/easydiffraction/display/plotters/`;
+      `sync_docs_vendored_js.py` copies them to docs (git-ignored).
+- [x] **P1.2 — Expose a re-callable loader global.** `ed-figures.js`
+      exposes `window.edFigures.activate()` (and, P1.5, `renderSpec()`).
+- [x] **P1.3 — Package the Plotly runtime in the wheel.** Verified the
+      wheel ships the bundle + loader (hatchling default file
+      selection).
+- [x] **P1.4 — Session-scoped runtime/loader injection.**
+      `PlotlyPlotter._live_runtime_injected` (class attribute) +
+      `_live_runtime_bootstrap_js()`.
+- [x] **P1.5 — Switch the live path off CDN.** `_show_figure` emits a
+      single HTML output: a target div + one `<script>` that injects the
+      self-hosted runtime/loader once per session and renders this
+      figure via `window.edFigures.renderSpec(id, spec)`. **Delivery
+      evolved during JupyterLab testing** (inline `<script>` →
+      `display(Javascript())` → back to a single HTML output) to suit a
+      host that renders extra output elements as empty rows; the final
+      shape is one HTML output, no skeleton. The residual space some
+      hosts show above a plot is Plotly's own figure top-margin
+      (unrelated to delivery; see issue 117).
+- [x] **P1.6 — Phase 1 review gate.** Implementation committed; unit and
+      display suites pass.
 
 ## Phase 2 — Verification
 
