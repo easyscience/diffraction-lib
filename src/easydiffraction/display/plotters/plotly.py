@@ -1815,62 +1815,65 @@ scheduleResize();
             display(HTML(self._serialize_html_shared(fig)))
             return
 
-        # Live notebooks render through one HTML output: a target div
-        # plus a single <script> that, the first time per kernel
-        # session, carries the self-hosted Plotly bundle and the shared
-        # loader (inline — no async CDN race), then renders this
-        # figure's spec into the target. One output and one script
-        # element keep the cell's visual footprint to just the plot.
-        # Trim the top margin so the plot sits right under the cell.
-        # title.automargin grows the margin back just enough to fit a
-        # title (so it is not clipped), without the default empty band.
+        # Live notebooks: the self-hosted runtime + shared loader load
+        # once per kernel session (on ``import easydiffraction``, or
+        # lazily here). So each figure is just a small target div and a
+        # one-line render call — it renders instantly, with no inline
+        # runtime and no reserved empty box.
+        self._inject_runtime_once()
+        # Trim the top margin so the plot sits right under the cell;
+        # title.automargin grows it back just enough to fit a title.
         update_layout = getattr(fig, 'update_layout', None)
         if callable(update_layout):
             update_layout(margin_t=LIVE_FIGURE_TOP_MARGIN, title_automargin=True)
         plot_id = f'ed-fig-{uuid.uuid4().hex}'
-        height = self._figure_height(fig)
         target_html = (
             '<div class="ed-figure" data-ed-figure="plotly">'
-            f'<div class="ed-figure-target" id="{plot_id}" '
-            f'style="min-height: {height}px"></div>'
+            f'<div class="ed-figure-target" id="{plot_id}"></div>'
             '</div>'
         )
         render_js = (
             f'if (window.edFigures) {{ '
             f'window.edFigures.renderSpec("{plot_id}", {self._figure_spec_json(fig)}); }}'
         )
-        script = (
-            '<script type="text/javascript">'
-            f'{self._live_runtime_bootstrap_js()}{render_js}'
-            '</script>'
-        )
+        script = f'<script type="text/javascript">{render_js}</script>'
         display(HTML(self._wrap_html_figure(fig, target_html) + script))
 
     @classmethod
-    def _live_runtime_bootstrap_js(cls) -> str:
+    def _runtime_loader_js(cls) -> str:
         """
-        Return one-time runtime + loader JavaScript for live notebooks.
-
-        On the first call in a kernel session this returns the
-        self-hosted Plotly bundle and the shared ``ed-figures.js``
-        loader as raw JavaScript (for a Javascript output); later calls
-        return an empty string. Running inline means the loader never
-        races an async runtime download.
+        Return the self-hosted Plotly runtime and shared loader as JS.
 
         Returns
         -------
         str
-            The bootstrap JavaScript, or ``''`` once already injected
-            this session.
+            The Plotly bundle followed by the ``ed-figures.js`` loader.
         """
-        if cls._live_runtime_injected:
-            return ''
-        cls._live_runtime_injected = True
         runtime = _packaged_asset(_PLOTLY_RUNTIME_ASSET)
         loader = _packaged_asset(_FIGURE_LOADER_ASSET)
         # The leading ';' guards against the runtime's last statement
         # swallowing the loader IIFE through automatic semicolon rules.
         return f'{runtime}\n;\n{loader}\n;\n'
+
+    @classmethod
+    def _inject_runtime_once(cls) -> None:
+        """
+        Load the self-hosted runtime and loader once per kernel session.
+
+        Emits a single invisible ``<script>`` output the first time it
+        is needed — on ``import easydiffraction`` in a live notebook, or
+        lazily before the first figure. Later calls, non-notebook
+        contexts, and the docs (SHARED) build are no-ops, so each figure
+        output stays a small target div plus a one-line render call that
+        runs instantly.
+        """
+        if cls._live_runtime_injected or display is None or HTML is None:
+            return
+        if resolve_figure_embed_mode() is FigureEmbedMode.SHARED:
+            # The docs page loads the runtime itself, once per page.
+            return
+        cls._live_runtime_injected = True
+        display(HTML(f'<script type="text/javascript">{cls._runtime_loader_js()}</script>'))
 
     @staticmethod
     def _ed_theme_payload() -> dict:

@@ -828,46 +828,59 @@ def test_packaged_asset_reads_runtime_and_loader():
     assert 'edFigures' in loader  # the shared figure loader
 
 
-def test_live_runtime_bootstrap_injects_once_per_session(monkeypatch):
+def test_inject_runtime_once_loads_runtime_then_no_ops(monkeypatch):
     import easydiffraction.display.plotters.plotly as pp
 
-    monkeypatch.setattr(pp.PlotlyPlotter, '_live_runtime_injected', False)
-    first = pp.PlotlyPlotter._live_runtime_bootstrap_js()
-    second = pp.PlotlyPlotter._live_runtime_bootstrap_js()
-    # First call carries the runtime + loader JS; later calls are empty.
-    assert 'Plotly' in first
-    assert 'edFigures' in first
-    assert second == ''
-
-
-def test_show_figure_live_emits_single_output_with_render(monkeypatch):
-    import easydiffraction.display.plotters.plotly as pp
-
-    monkeypatch.setattr(pp, 'in_pycharm', lambda: False)
     monkeypatch.setattr(pp, 'resolve_figure_embed_mode', lambda: pp.FigureEmbedMode.INLINE)
     monkeypatch.setattr(pp.PlotlyPlotter, '_live_runtime_injected', False)
     captured = []
     monkeypatch.setattr(pp, 'display', captured.append)
     monkeypatch.setattr(pp, 'HTML', lambda value: value)
 
+    pp.PlotlyPlotter._inject_runtime_once()
+    pp.PlotlyPlotter._inject_runtime_once()
+    # One invisible <script> output carrying the runtime + loader; the
+    # second call is a no-op (already injected this session).
+    assert len(captured) == 1
+    assert 'Plotly' in captured[0]
+    assert 'edFigures' in captured[0]
+
+
+def test_inject_runtime_once_skips_docs_shared_mode(monkeypatch):
+    import easydiffraction.display.plotters.plotly as pp
+
+    # The docs (SHARED) build loads the runtime via the page, so the
+    # import-time/lazy injection must not emit it.
+    monkeypatch.setattr(pp, 'resolve_figure_embed_mode', lambda: pp.FigureEmbedMode.SHARED)
+    monkeypatch.setattr(pp.PlotlyPlotter, '_live_runtime_injected', False)
+    captured = []
+    monkeypatch.setattr(pp, 'display', captured.append)
+    monkeypatch.setattr(pp, 'HTML', lambda value: value)
+
+    pp.PlotlyPlotter._inject_runtime_once()
+    assert captured == []
+
+
+def test_show_figure_live_emits_minimal_figure(monkeypatch):
+    import easydiffraction.display.plotters.plotly as pp
+
+    monkeypatch.setattr(pp, 'in_pycharm', lambda: False)
+    monkeypatch.setattr(pp, 'resolve_figure_embed_mode', lambda: pp.FigureEmbedMode.INLINE)
+    # Runtime already loaded (as on import), so the figure output is tiny.
+    monkeypatch.setattr(pp.PlotlyPlotter, '_live_runtime_injected', True)
+    captured = []
+    monkeypatch.setattr(pp, 'display', captured.append)
+    monkeypatch.setattr(pp, 'HTML', lambda value: value)
+
     fig = go.Figure(data=[go.Scatter(x=[1, 2, 3], y=[4, 5, 6], name='t')])
     fig.update_layout(height=400)
-    plotter = pp.PlotlyPlotter()
+    pp.PlotlyPlotter()._show_figure(fig)
 
-    plotter._show_figure(fig)
-    # A single HTML output: target div + one render script, carrying the
-    # one-time inlined runtime on the first figure.
+    # One small HTML output: a target div + a one-line render call, with
+    # no inline runtime and no reserved-height box.
     assert len(captured) == 1
-    first = captured[0]
-    assert 'ed-figure-target' in first
-    assert first.count('</script>') == 1  # exactly one render script element
-    assert 'renderSpec' in first
-    assert 'Plotly' in first
-
-    captured.clear()
-    plotter._show_figure(go.Figure())
-    second = captured[0]
-    # Later figures reference the already-injected runtime, not re-embed.
-    assert 'renderSpec' in second
-    assert 'Plotly' not in second
-    assert len(second) < len(first)
+    out = captured[0]
+    assert 'ed-figure-target' in out
+    assert 'renderSpec' in out
+    assert 'Plotly' not in out
+    assert 'min-height' not in out

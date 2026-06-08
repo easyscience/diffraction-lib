@@ -6,6 +6,11 @@ from __future__ import annotations
 
 from easydiffraction.datablocks.experiment.item.factory import ExperimentFactory
 from easydiffraction.datablocks.structure.item.factory import StructureFactory
+
+# Imported for its side effect: in a live notebook this loads the
+# self-hosted interactive-plot runtime once at import time, so Plotly
+# figures render instantly (no per-plot runtime or reserved blank box).
+from easydiffraction.display.plotters import notebook_preload as _notebook_preload
 from easydiffraction.io.ascii import extract_data_paths_from_dir
 from easydiffraction.io.ascii import extract_data_paths_from_zip
 from easydiffraction.io.ascii import extract_metadata
