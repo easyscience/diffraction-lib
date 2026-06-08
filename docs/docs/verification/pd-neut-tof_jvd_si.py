@@ -28,11 +28,15 @@ reference_dir = verify.bundled_reference_dir() / 'pd-neut-tof_jvd_si'
 x, calc_fullprof = verify.load_fullprof_profile(str(reference_dir / 'arg_si1.sub'))
 
 # %% [markdown]
-# ## Build the project and define the structure in code
+# ## Build the project
 
 # %%
 project = ed.Project()
 
+# %% [markdown]
+# ## Define the structure
+
+# %%
 structure = StructureFactory.from_scratch(name='si')
 
 structure.space_group.name_h_m = 'F d -3 m'  # FullProf Space group symbol
@@ -53,7 +57,7 @@ structure.atom_sites.create(
 project.structures.add(structure)
 
 # %% [markdown]
-# ## Create the experiment on the reference grid
+# ## Create the experiment
 
 # %%
 experiment = ExperimentFactory.from_scratch(
@@ -148,7 +152,7 @@ verify.assert_patterns_agree(
 )
 
 # %% [markdown]
-# ## Investigate the cryspy discrepancy by refinement
+# ## Investigate the discrepancy by refinement
 #
 # The `cryspy` divergence is in the time-of-flight **profile**, not the
 # structure. Mirroring the empirical-asymmetry page, we free the disputed

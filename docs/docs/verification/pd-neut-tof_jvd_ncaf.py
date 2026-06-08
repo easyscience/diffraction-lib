@@ -5,11 +5,13 @@
 # (Na₂Ca₃Al₂F₁₄) in time-of-flight geometry: the **same** pattern is
 # calculated with each EasyDiffraction engine (`cryspy`, `crysfml`) and
 # compared against a **FullProf** reference, on identical input
-# parameters and **without any fitting**. It also runs as a regression
-# check under `pixi run script-tests`.
+# parameters and **without any fitting**.
 #
 # This Jorgensen–Von Dreele profile has no Lorentzian (`gamma`) term, so
-# both engines agree closely with FullProf.
+# both engines reproduce the FullProf peak *shapes* closely — but they
+# sit at a different absolute time-of-flight intensity scale (and differ
+# from each other in scale), so the scale convention is investigated by
+# refinement below.
 
 # %%
 import easydiffraction as ed
@@ -31,11 +33,15 @@ x, calc_fullprof = verify.load_columned_profile(
 )
 
 # %% [markdown]
-# ## Build the project and define the structure in code
+# ## Build the project
 
 # %%
 project = ed.Project()
 
+# %% [markdown]
+# ## Define the structure
+
+# %%
 structure = StructureFactory.from_scratch(name='ncaf')
 structure.space_group.name_h_m = 'I 21 3'  # FullProf Space group symbol
 structure.cell.length_a = 10.250256  # FullProf a
@@ -93,7 +99,7 @@ structure.atom_sites.create(
 project.structures.add(structure)
 
 # %% [markdown]
-# ## Create the experiment on the reference grid
+# ## Create the experiment
 
 # %%
 experiment = ExperimentFactory.from_scratch(
@@ -183,7 +189,7 @@ verify.assert_patterns_agree(
 )
 
 # %% [markdown]
-# ## Investigate the scale convention by refinement
+# ## Investigate the discrepancy by refinement
 #
 # The divergence is in the scale, not the structure. So, it is freed ...
 
@@ -201,7 +207,7 @@ experiment.linked_phases['ncaf'].scale.free = True
 project.analysis.fit()
 
 # %% [markdown]
-# ## Goodness of fit and refined scale
+# ## Goodness of fit and refined parameters
 
 # %%
 project.display.fit.results()

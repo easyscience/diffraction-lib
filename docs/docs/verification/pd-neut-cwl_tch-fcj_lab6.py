@@ -30,11 +30,15 @@ x, calc_fullprof = verify.load_columned_profile(
 )
 
 # %% [markdown]
-# ## Build the project and define the structure in code
+# ## Build the project
 
 # %%
 project = ed.Project()
 
+# %% [markdown]
+# ## Define the structure
+
+# %%
 structure = StructureFactory.from_scratch(name='lab6')
 structure.space_group.name_h_m = 'P m -3 m'  # FullProf Space group symbol
 structure.cell.length_a = 4.156885  # FullProf a
@@ -63,7 +67,7 @@ structure.atom_sites.create(
 project.structures.add(structure)
 
 # %% [markdown]
-# ## Create the experiment on the reference grid
+# ## Create the experiment
 
 # %%
 experiment = ExperimentFactory.from_scratch(
@@ -111,7 +115,7 @@ calc_ed_cryspy = verify.calculate_pattern(project, experiment, 'cryspy')
 calc_ed_crysfml = verify.calculate_pattern(project, experiment, 'crysfml')
 
 # %% [markdown]
-# ## Compare each engine against the reference
+# ## Compare each engine against FullProf
 #
 # Until the corrections above are supported the engines will show
 # systematic peak-position offsets against the FullProf calculated

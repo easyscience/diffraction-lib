@@ -4,14 +4,13 @@
 # This page calculates the **same** PbSO₄ diffraction pattern with each
 # EasyDiffraction engine (`cryspy`, `crysfml`) and compares both against a
 # **FullProf** reference profile — all on identical input parameters and
-# **without any fitting**. It doubles as a regression check run by
-# `pixi run script-tests`.
+# **without any fitting**.
 #
 # The peak shape here is a **pseudo-Voigt with empirical (FullProf-style)
 # axial-divergence asymmetry**; a companion page repeats the comparison
-# with a plain pseudo-Voigt. The structure is defined directly in code,
-# and the experiment grid and FullProf reference come from the project's
-# reference profile.
+# with a plain pseudo-Voigt. Both engines agree with each other but
+# differ from FullProf on the empirical asymmetry, so that difference is
+# investigated by refinement below.
 
 # %%
 import easydiffraction as ed
@@ -189,7 +188,7 @@ verify.assert_patterns_agree(
 )
 
 # %% [markdown]
-# ## Investigate the disagreement by refinement
+# ## Investigate the discrepancy by refinement
 #
 # The two engines agree with each other but differ from FullProf only on
 # the **empirical axial-divergence asymmetry** — a peak-*profile*
@@ -246,14 +245,3 @@ project.display.pattern_comparison(
 
 # %%
 verify.report_refinement_closeness(calc_fullprof, calc_ed_cryspy, calc_ed_cryspy_refined)
-
-# %% [markdown]
-# ## Conclusion
-#
-# If freeing only the four `asym_empir_*` terms brings `cryspy` into
-# agreement with FullProf while the structure stays fixed, the original
-# mismatch is a **parameterisation/convention difference** in the
-# empirical asymmetry, not a structural one — the core validation (the
-# structure reproduces the reference pattern) holds. If the fit cannot
-# close the gap, the difference points to a genuine profile-model
-# discrepancy worth reporting upstream.

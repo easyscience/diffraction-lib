@@ -27,16 +27,22 @@ from easydiffraction.analysis import verification as verify
 #
 # `load_fullprof_sc_f2calc` reads the integrated-intensity reflection
 # table from `prnio.out` and returns `F2cal` keyed by `(h, k, l)`.
-# FullProf reports `F2cal = scale · Corr · |F|²`, but the extinction
-# correction here is below 0.11 %, so after peak-normalisation this is
-# effectively a pure `|F|²` comparison.
+# FullProf reports `F2cal = scale · Corr · |F|²`; the extinction
+# correction here is below 0.11 %, so once the absolute scale convention
+# is refined out (below) this is effectively a pure `|F|²` comparison.
 
 # %%
 reference_dir = verify.bundled_reference_dir() / 'sg-neut-cwl_pr2nio4'
 f2calc = verify.load_fullprof_sc_f2calc(str(reference_dir / 'prnio.out'))
 
 # %% [markdown]
-# ## Build the project and define the structure in code
+# ## Build the project
+
+# %%
+project = ed.Project()
+
+# %% [markdown]
+# ## Define the structure
 #
 # Pr₂NiO₄:Sr is a K₂NiF₄-type oxide in space group `F m m m`. Two
 # FullProf conventions are converted to the EasyDiffraction (CIF)
@@ -51,8 +57,6 @@ f2calc = verify.load_fullprof_sc_f2calc(str(reference_dir / 'prnio.out'))
 #   by 4). The CIF occupancies below divide that factor back out.
 
 # %%
-project = ed.Project()
-
 structure = StructureFactory.from_scratch(name='pr2nio4')
 structure.space_group.name_h_m = 'F m m m'  # FullProf Space group symbol
 structure.cell.length_a = 5.417799  # FullProf a
@@ -102,7 +106,7 @@ structure.atom_sites['Od'].adp_iso = 2.31435
 project.structures.add(structure)
 
 # %% [markdown]
-# ## Create the experiment on the reference reflections
+# ## Create the experiment
 #
 # `set_reference_reflections` creates one reflection per `(h, k, l)` in
 # the FullProf table, so `cryspy` calculates F² for exactly the same
@@ -132,7 +136,7 @@ calc_ed_cryspy = verify.calculate_reflections(project, experiment, 'cryspy')
 reference, candidate = verify.align_reflections(f2calc, calc_ed_cryspy)
 
 # %% [markdown]
-# ## Compare cryspy against the FullProf reference
+# ## Compare cryspy against FullProf
 #
 # Each point is one reflection: FullProf F² on the x-axis, the cryspy F²
 # on the y-axis, at their absolute scale. Points fall on the y=x line
@@ -166,7 +170,7 @@ verify.assert_patterns_agree(
 )
 
 # %% [markdown]
-# ## Investigate the scale convention by refinement
+# ## Investigate the discrepancy by refinement
 #
 # Free **only** the scale and refine with cryspy, keeping the structure
 # fixed. If a scale-only fit brings the points onto the diagonal, the
@@ -182,7 +186,7 @@ experiment.linked_crystal.scale.free = True
 project.analysis.fit()
 
 # %% [markdown]
-# ## Goodness of fit and refined scale
+# ## Goodness of fit and refined parameters
 
 # %%
 project.display.fit.results()

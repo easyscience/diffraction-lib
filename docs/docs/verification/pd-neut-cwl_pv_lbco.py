@@ -32,14 +32,18 @@ x, calc_fullprof = verify.load_columned_profile(
 
 # %% [markdown]
 # ## Build the project
+
+# %%
+project = ed.Project()
+
+# %% [markdown]
+# ## Define the structure
 #
 # La₀.₅Ba₀.₅CoO₃ is a cubic perovskite (`P m -3 m`). La and Ba share the
 # A site at the origin (½ each); the oxygen site is refined slightly
 # oxygen-deficient. Atomic displacements are isotropic (B).
 
 # %%
-project = ed.Project()
-
 structure = StructureFactory.from_scratch(name='lbco')
 
 structure.space_group.name_h_m = 'P m -3 m'  # FullProf Space group symbol

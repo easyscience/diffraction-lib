@@ -28,11 +28,15 @@ reference_dir = verify.bundled_reference_dir() / 'pd-neut-tof_j_si'
 x, calc_fullprof = verify.load_fullprof_profile(str(reference_dir / 'arg_si1.sub'))
 
 # %% [markdown]
-# ## Build the project and define the structure in code
+# ## Build the project
 
 # %%
 project = ed.Project()
 
+# %% [markdown]
+# ## Define the structure
+
+# %%
 structure = StructureFactory.from_scratch(name='si')
 
 structure.space_group.name_h_m = 'F d -3 m'  # FullProf Space group symbol
@@ -53,7 +57,7 @@ structure.atom_sites.create(
 project.structures.add(structure)
 
 # %% [markdown]
-# ## Create the experiment on the reference grid
+# ## Create the experiment
 
 # %%
 experiment = ExperimentFactory.from_scratch(
@@ -74,7 +78,7 @@ experiment.instrument.calib_d_to_tof_quad = -1.54  # FullProf Dtt2
 experiment.peak.type = 'jorgensen'
 experiment.peak.broad_gauss_sigma_0 = 5.0790  # FullProf Sigma-0
 experiment.peak.broad_gauss_sigma_1 = 29.6492  # FullProf Sigma-1
-experiment.peak.broad_gauss_sigma_2 = 0.0 # FullProf Sigma-2
+experiment.peak.broad_gauss_sigma_2 = 0.0  # FullProf Sigma-2
 experiment.peak.exp_rise_alpha_0 = 0.0  # FullProf alph0
 experiment.peak.exp_rise_alpha_1 = 0.235422  # FullProf alph1
 experiment.peak.exp_decay_beta_0 = 0.038020  # FullProf beta0
@@ -149,7 +153,7 @@ verify.assert_patterns_agree(
 
 # %%
 # Adjust the initial guess to be closer to the reference, to speed up the fit
-experiment.linked_phases['ncaf'].scale = 15.0
+experiment.linked_phases['si'].scale = 15.1026
 
 # %%
 experiment.calculator.type = 'cryspy'
