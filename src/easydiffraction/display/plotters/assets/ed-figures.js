@@ -384,14 +384,29 @@
   }
 
   // Live-notebook path: render a spec passed directly into a target by
-  // id (no embedded spec script, no resize observer).
+  // id. Defer the render until the container actually has a size: at
+  // output-insertion time the container is often 0x0 (JupyterLab has
+  // not laid the output out yet, or windowing/content-visibility is
+  // skipping it), and a responsive Plotly figure drawn then renders at
+  // zero size and never recovers. Poll on animation frames until it has
+  // a size, then render once (with a cap so an off-screen cell still
+  // renders eventually).
   function renderSpec(targetId, spec) {
-    var target = document.getElementById(targetId);
-    if (!target) {
-      return;
+    var frames = 0;
+    function attempt() {
+      var target = document.getElementById(targetId);
+      if (!target) {
+        return;
+      }
+      var sized = target.offsetWidth > 0 && target.offsetHeight > 0;
+      if (sized || frames > 180) {
+        renderInto(target.closest('.ed-figure') || target, spec, true);
+        return;
+      }
+      frames += 1;
+      window.requestAnimationFrame(attempt);
     }
-    var figureEl = target.closest('.ed-figure') || target;
-    renderInto(figureEl, spec, true);
+    attempt();
   }
 
   function activate() {
