@@ -130,6 +130,48 @@ class CwlPdInstrument(CwlInstrumentBase):
             ),
         )
 
+        self._calib_sample_displacement: Parameter = Parameter(
+            name='sample_displacement',
+            description='Specimen displacement from the diffractometer axis',
+            units='degrees',
+            display_handler=DisplayHandler(
+                display_name='Sample displacement',
+                display_units='deg',
+                latex_name='Sample displacement',
+                latex_units=r'\mathrm{deg}',
+            ),
+            value_spec=AttributeSpec(
+                default=0.0,
+                validator=RangeValidator(),
+            ),
+            cif_handler=CifHandler(
+                names=[
+                    '_instr.sample_displacement',
+                ]
+            ),
+        )
+
+        self._calib_sample_transparency: Parameter = Parameter(
+            name='sample_transparency',
+            description='Sample transparency (beam penetration) shift',
+            units='degrees',
+            display_handler=DisplayHandler(
+                display_name='Sample transparency',
+                display_units='deg',
+                latex_name='Sample transparency',
+                latex_units=r'\mathrm{deg}',
+            ),
+            value_spec=AttributeSpec(
+                default=0.0,
+                validator=RangeValidator(),
+            ),
+            cif_handler=CifHandler(
+                names=[
+                    '_instr.sample_transparency',
+                ]
+            ),
+        )
+
     @property
     def calib_twotheta_offset(self) -> Parameter:
         """
@@ -144,3 +186,33 @@ class CwlPdInstrument(CwlInstrumentBase):
     def calib_twotheta_offset(self, value: float) -> None:
         """Set the instrument misalignment offset (deg)."""
         self._calib_twotheta_offset.value = value
+
+    @property
+    def calib_sample_displacement(self) -> Parameter:
+        """
+        Specimen-displacement peak-position correction (deg).
+
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
+        """
+        return self._calib_sample_displacement
+
+    @calib_sample_displacement.setter
+    def calib_sample_displacement(self, value: float) -> None:
+        """Set the specimen-displacement correction (deg)."""
+        self._calib_sample_displacement.value = value
+
+    @property
+    def calib_sample_transparency(self) -> Parameter:
+        """
+        Sample-transparency peak-position correction (deg).
+
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
+        """
+        return self._calib_sample_transparency
+
+    @calib_sample_transparency.setter
+    def calib_sample_transparency(self, value: float) -> None:
+        """Set the sample-transparency correction (deg)."""
+        self._calib_sample_transparency.value = value

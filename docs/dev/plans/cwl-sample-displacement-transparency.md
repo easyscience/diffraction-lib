@@ -216,7 +216,7 @@ Docs / structure (auto-generated, do not hand-edit):
 > message. Commit locally before moving to the next step. Do not run
 > tests or `pixi run check` in Phase 1.
 
-- [ ] **P1.1 — Add the two parameters to `CwlPdInstrument`.**
+- [x] **P1.1 — Add the two parameters to `CwlPdInstrument`.**
   In `cwl.py`, inside `CwlPdInstrument.__init__`, add
   `self._calib_sample_displacement` and
   `self._calib_sample_transparency` `Parameter`s modeled on
@@ -349,7 +349,7 @@ Docs / structure (auto-generated, do not hand-edit):
 
 ## Status checklist
 
-- [ ] P1.1 Add parameters to `CwlPdInstrument`
+- [x] P1.1 Add parameters to `CwlPdInstrument`
 - [ ] P1.2 Emit offsets in cryspy CIF
 - [ ] P1.3 Update cryspy cached dict
 - [ ] P1.4 Comment crysfml non-support
