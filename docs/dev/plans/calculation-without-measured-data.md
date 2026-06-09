@@ -241,7 +241,7 @@ Existing files:
   `closed.md` if an existing issue tracks this.
   Commit: `Document data_range and calculated-only workflow`
 
-- [ ] **P1.10 — Phase 1 review gate (no code).** Mark this step `[x]`
+- [x] **P1.10 — Phase 1 review gate (no code).** Mark this step `[x]`
   and stop for the Phase 1 review.
   Commit: `Reach Phase 1 review gate`
 
@@ -299,7 +299,7 @@ by hand.
 - [x] P1.7 Calculator guards (SC/total)
 - [x] P1.8 Relax display gates for calculated-only
 - [x] P1.9 Docs touch-ups
-- [ ] P1.10 Phase 1 review gate
+- [x] P1.10 Phase 1 review gate
 - [ ] Phase 2 verification (tests + `pixi run fix/check/*-tests`)
 
 ## Suggested Pull Request
