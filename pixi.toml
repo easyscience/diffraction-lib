@@ -138,12 +138,6 @@ notebook-tests-checked = { cmd = 'python -m pytest tests/tutorials/ --color=yes 
 ], env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials' } }
 
 test = { depends-on = ['unit-tests', 'functional-tests'] }
-test-all = { depends-on = [
-  'unit-tests',
-  'functional-tests',
-  'integration-tests',
-  'script-tests',
-] }
 
 # Full local gate before opening a PR: every static check, unit coverage,
 # all tests, tutorial execution + output verification (as scripts AND
