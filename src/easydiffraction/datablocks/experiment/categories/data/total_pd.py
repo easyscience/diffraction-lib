@@ -286,6 +286,21 @@ class TotalDataBase(CategoryCollection):
 
         self._set_g_r_calc(calc)
 
+    def _has_measured_intensities(self) -> bool:
+        """
+        Return whether any point carries a finite measured G(r) value.
+
+        Iterates **all** points (unfiltered) so a fully-excluded measured
+        scan is still recognised as measured data, matching the powder
+        Bragg predicate.
+        """
+        measured = np.fromiter(
+            (point.g_r_meas.value for point in self._items),
+            dtype=float,
+            count=len(self._items),
+        )
+        return bool(measured.size) and bool(np.any(np.isfinite(measured)))
+
     # ------------------------------------------------------------------
     #  Public properties
     # ------------------------------------------------------------------
