@@ -161,7 +161,7 @@ Existing files:
   calculation-without-measured-data`).
   Commit: `Promote calculation-without-measured-data ADR to accepted`
 
-- [ ] **P1.2 — Add the `data_range` category package (no wiring).**
+- [x] **P1.2 — Add the `data_range` category package (no wiring).**
   Create `base.py`, `cwl.py`, `tof.py`, `sc.py`, `factory.py`, and
   `__init__.py` mirroring the `instrument` category: `DataRangeBase`
   with `_category_code='data_range'`; per-type classes with `TypeInfo`,
@@ -291,7 +291,7 @@ by hand.
 ## Status checklist
 
 - [x] P1.1 Promote ADR to accepted
-- [ ] P1.2 Add data_range category package
+- [x] P1.2 Add data_range category package
 - [ ] P1.3 Attach data_range to experiment items
 - [ ] P1.4 Derived sinθ/λ + d-spacing views and defaults
 - [ ] P1.5 Guard data_range; subsume measured_range
