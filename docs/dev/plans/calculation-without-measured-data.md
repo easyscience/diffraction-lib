@@ -9,8 +9,8 @@ public API (`experiment.data_range`) and many files, it is the
 ## ADR
 
 Implements [Calculation Without Measured
-Data](../adrs/suggestions/calculation-without-measured-data.md)
-(currently under `suggestions/`; **P1.1 promotes it to `accepted/`** per
+Data](../adrs/accepted/calculation-without-measured-data.md)
+(promoted to `accepted/` in **P1.1** per
 [`AGENTS.md`](../../../AGENTS.md) §Change Discipline, before the PR is
 opened).
 
@@ -152,7 +152,7 @@ Existing files:
 > create or run tests in Phase 1 (tests are Phase 2). Do not stage
 > unrelated dirty files.
 
-- [ ] **P1.1 — Promote the ADR to `accepted/`.**
+- [x] **P1.1 — Promote the ADR to `accepted/`.**
   `git mv` the ADR from `suggestions/` to `accepted/`, set its
   `## Status` to `Accepted`, rewrite its internal `../accepted/…` links
   to same-directory links, add an "Experiment model / Accepted" row to
@@ -290,7 +290,7 @@ by hand.
 
 ## Status checklist
 
-- [ ] P1.1 Promote ADR to accepted
+- [x] P1.1 Promote ADR to accepted
 - [ ] P1.2 Add data_range category package
 - [ ] P1.3 Attach data_range to experiment items
 - [ ] P1.4 Derived sinθ/λ + d-spacing views and defaults
