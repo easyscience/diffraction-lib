@@ -141,14 +141,25 @@ class TofPdDataRange(DataRangeBase):
     #  Stored axis (time-of-flight)
     # ------------------------------------------------------------------
 
+    def _stored_axis(self) -> tuple[float, float, float]:
+        """Return stored ``(min, max, inc)`` after projecting defaults."""
+        return (
+            self._time_of_flight_min.value,
+            self._time_of_flight_max.value,
+            self._time_of_flight_inc.value,
+        )
+
     @property
-    def time_of_flight_min(self) -> float:
-        """Lower time-of-flight bound of the calculation range (μs)."""
-        measured = self._measured_axis_range()
-        if measured is not None:
-            return measured[0]
-        self._ensure_default_range()
-        return self._time_of_flight_min.value
+    def time_of_flight_min(self) -> NumericDescriptor:
+        """
+        Lower time-of-flight bound of the calculation range (μs).
+
+        Reading this property returns the underlying
+        ``NumericDescriptor`` object, synced to the effective
+        (measured-derived or stored/default) value.
+        """
+        self._time_of_flight_min._value = self._effective_axis()[0]
+        return self._time_of_flight_min
 
     @time_of_flight_min.setter
     def time_of_flight_min(self, value: float) -> None:
@@ -157,13 +168,15 @@ class TofPdDataRange(DataRangeBase):
         self._time_of_flight_min.value = value
 
     @property
-    def time_of_flight_max(self) -> float:
-        """Upper time-of-flight bound of the calculation range (μs)."""
-        measured = self._measured_axis_range()
-        if measured is not None:
-            return measured[1]
-        self._ensure_default_range()
-        return self._time_of_flight_max.value
+    def time_of_flight_max(self) -> NumericDescriptor:
+        """
+        Upper time-of-flight bound of the calculation range (μs).
+
+        Reading this property returns the underlying
+        ``NumericDescriptor`` object, synced to the effective value.
+        """
+        self._time_of_flight_max._value = self._effective_axis()[1]
+        return self._time_of_flight_max
 
     @time_of_flight_max.setter
     def time_of_flight_max(self, value: float) -> None:
@@ -172,13 +185,17 @@ class TofPdDataRange(DataRangeBase):
         self._time_of_flight_max.value = value
 
     @property
-    def time_of_flight_inc(self) -> float:
-        """Time-of-flight step between calculation points (μs)."""
-        measured = self._measured_axis_range()
-        if measured is not None and measured[2] is not None:
-            return measured[2]
-        self._ensure_default_range()
-        return self._time_of_flight_inc.value
+    def time_of_flight_inc(self) -> NumericDescriptor:
+        """
+        Time-of-flight step between calculation points (μs).
+
+        Reading this property returns the underlying
+        ``NumericDescriptor`` object. Its value is ``NaN`` when a
+        measured but non-uniform scan is present.
+        """
+        step = self._effective_axis()[2]
+        self._time_of_flight_inc._value = float('nan') if step is None else step
+        return self._time_of_flight_inc
 
     @time_of_flight_inc.setter
     def time_of_flight_inc(self, value: float) -> None:
@@ -187,23 +204,23 @@ class TofPdDataRange(DataRangeBase):
         self._time_of_flight_inc.value = value
 
     # ------------------------------------------------------------------
-    #  Active-axis aliases
+    #  Active-axis aliases (float convenience views)
     # ------------------------------------------------------------------
 
     @property
     def x_min(self) -> float:
         """Lower bound on the active (time-of-flight) axis (μs)."""
-        return self.time_of_flight_min
+        return self._effective_axis()[0]
 
     @property
     def x_max(self) -> float:
         """Upper bound on the active (time-of-flight) axis (μs)."""
-        return self.time_of_flight_max
+        return self._effective_axis()[1]
 
     @property
-    def x_step(self) -> float:
-        """Step on the active (time-of-flight) axis (μs)."""
-        return self.time_of_flight_inc
+    def x_step(self) -> float | None:
+        """Step on the active (TOF) axis (μs), or None if non-uniform."""
+        return self._effective_axis()[2]
 
     # ------------------------------------------------------------------
     #  Derived reciprocal views (d-spacing, sinθ/λ)
@@ -220,12 +237,12 @@ class TofPdDataRange(DataRangeBase):
     @property
     def d_spacing_min(self) -> float:
         """Smallest d-spacing in the range (at TOF_min) (Å)."""
-        return self._d_spacing_at(self.time_of_flight_min)
+        return self._d_spacing_at(self.x_min)
 
     @property
     def d_spacing_max(self) -> float:
         """Largest d-spacing in the range (at TOF_max) (Å)."""
-        return self._d_spacing_at(self.time_of_flight_max)
+        return self._d_spacing_at(self.x_max)
 
     @property
     def sin_theta_over_lambda_min(self) -> float:

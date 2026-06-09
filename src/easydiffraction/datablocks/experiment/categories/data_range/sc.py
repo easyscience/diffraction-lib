@@ -110,14 +110,25 @@ class ScDataRange(DataRangeBase):
     #  Stored axis (sinθ/λ)
     # ------------------------------------------------------------------
 
+    def _stored_axis(self) -> tuple[float, float, None]:
+        """Return stored ``(min, max, None)`` after projecting defaults."""
+        return (
+            self._sin_theta_over_lambda_min.value,
+            self._sin_theta_over_lambda_max.value,
+            None,
+        )
+
     @property
-    def sin_theta_over_lambda_min(self) -> float:
-        """Lower sinθ/λ bound of the calculation range (Å⁻¹)."""
-        measured = self._measured_axis_range()
-        if measured is not None:
-            return measured[0]
-        self._ensure_default_range()
-        return self._sin_theta_over_lambda_min.value
+    def sin_theta_over_lambda_min(self) -> NumericDescriptor:
+        """
+        Lower sinθ/λ bound of the calculation range (Å⁻¹).
+
+        Reading this property returns the underlying
+        ``NumericDescriptor`` object, synced to the effective
+        (measured-derived or stored/default) value.
+        """
+        self._sin_theta_over_lambda_min._value = self._effective_axis()[0]
+        return self._sin_theta_over_lambda_min
 
     @sin_theta_over_lambda_min.setter
     def sin_theta_over_lambda_min(self, value: float) -> None:
@@ -126,13 +137,15 @@ class ScDataRange(DataRangeBase):
         self._sin_theta_over_lambda_min.value = value
 
     @property
-    def sin_theta_over_lambda_max(self) -> float:
-        """Upper sinθ/λ bound of the calculation range (Å⁻¹)."""
-        measured = self._measured_axis_range()
-        if measured is not None:
-            return measured[1]
-        self._ensure_default_range()
-        return self._sin_theta_over_lambda_max.value
+    def sin_theta_over_lambda_max(self) -> NumericDescriptor:
+        """
+        Upper sinθ/λ bound of the calculation range (Å⁻¹).
+
+        Reading this property returns the underlying
+        ``NumericDescriptor`` object, synced to the effective value.
+        """
+        self._sin_theta_over_lambda_max._value = self._effective_axis()[1]
+        return self._sin_theta_over_lambda_max
 
     @sin_theta_over_lambda_max.setter
     def sin_theta_over_lambda_max(self, value: float) -> None:
@@ -147,12 +160,12 @@ class ScDataRange(DataRangeBase):
     @property
     def x_min(self) -> float:
         """Lower bound on the active (sinθ/λ) axis (Å⁻¹)."""
-        return self.sin_theta_over_lambda_min
+        return self._effective_axis()[0]
 
     @property
     def x_max(self) -> float:
         """Upper bound on the active (sinθ/λ) axis (Å⁻¹)."""
-        return self.sin_theta_over_lambda_max
+        return self._effective_axis()[1]
 
     @property
     def x_step(self) -> None:
@@ -166,9 +179,9 @@ class ScDataRange(DataRangeBase):
     @property
     def d_spacing_min(self) -> float:
         """Smallest d-spacing in the range (at sinθ/λ_max) (Å)."""
-        return float(1.0 / (2.0 * self.sin_theta_over_lambda_max))
+        return float(1.0 / (2.0 * self.x_max))
 
     @property
     def d_spacing_max(self) -> float:
         """Largest d-spacing in the range (at sinθ/λ_min) (Å)."""
-        return float(1.0 / (2.0 * self.sin_theta_over_lambda_min))
+        return float(1.0 / (2.0 * self.x_min))

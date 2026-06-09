@@ -137,6 +137,24 @@ class DataRangeBase(CategoryItem):
             return (range_min, range_max, None)
         return (range_min, range_max, self._measured_step(values))
 
+    def _stored_axis(self) -> tuple[float, float, float | None]:
+        """Return stored ``(min, max, inc)`` after projecting defaults."""
+        raise NotImplementedError
+
+    def _effective_axis(self) -> tuple[float, float, float | None]:
+        """
+        Return effective ``(min, max, inc)`` on the active axis.
+
+        Measured-derived while a measured scan is present (``inc`` is
+        ``None`` for a non-uniform measured grid), and the stored or
+        default range otherwise.
+        """
+        measured = self._measured_axis_range()
+        if measured is not None:
+            return measured
+        self._ensure_default_range()
+        return self._stored_axis()
+
     def _raise_if_measured(self) -> None:
         """Reject writes to the range while a measured scan is present."""
         if not self._has_measured_data():

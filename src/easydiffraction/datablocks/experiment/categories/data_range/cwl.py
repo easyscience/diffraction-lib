@@ -142,14 +142,26 @@ class CwlPdDataRange(DataRangeBase):
     #  Stored axis (2θ)
     # ------------------------------------------------------------------
 
+    def _stored_axis(self) -> tuple[float, float, float]:
+        """Return stored ``(min, max, inc)`` after projecting defaults."""
+        return (
+            self._two_theta_min.value,
+            self._two_theta_max.value,
+            self._two_theta_inc.value,
+        )
+
     @property
-    def two_theta_min(self) -> float:
-        """Lower 2θ bound of the calculation range (deg)."""
-        measured = self._measured_axis_range()
-        if measured is not None:
-            return measured[0]
-        self._ensure_default_range()
-        return self._two_theta_min.value
+    def two_theta_min(self) -> NumericDescriptor:
+        """
+        Lower 2θ bound of the calculation range (deg).
+
+        Reading this property returns the underlying
+        ``NumericDescriptor`` object, synced to the effective
+        (measured-derived or stored/default) value. Assigning a number
+        updates it; assignment is rejected while a measured scan exists.
+        """
+        self._two_theta_min._value = self._effective_axis()[0]
+        return self._two_theta_min
 
     @two_theta_min.setter
     def two_theta_min(self, value: float) -> None:
@@ -158,13 +170,15 @@ class CwlPdDataRange(DataRangeBase):
         self._two_theta_min.value = value
 
     @property
-    def two_theta_max(self) -> float:
-        """Upper 2θ bound of the calculation range (deg)."""
-        measured = self._measured_axis_range()
-        if measured is not None:
-            return measured[1]
-        self._ensure_default_range()
-        return self._two_theta_max.value
+    def two_theta_max(self) -> NumericDescriptor:
+        """
+        Upper 2θ bound of the calculation range (deg).
+
+        Reading this property returns the underlying
+        ``NumericDescriptor`` object, synced to the effective value.
+        """
+        self._two_theta_max._value = self._effective_axis()[1]
+        return self._two_theta_max
 
     @two_theta_max.setter
     def two_theta_max(self, value: float) -> None:
@@ -173,13 +187,18 @@ class CwlPdDataRange(DataRangeBase):
         self._two_theta_max.value = value
 
     @property
-    def two_theta_inc(self) -> float:
-        """2θ step between calculation points (deg)."""
-        measured = self._measured_axis_range()
-        if measured is not None and measured[2] is not None:
-            return measured[2]
-        self._ensure_default_range()
-        return self._two_theta_inc.value
+    def two_theta_inc(self) -> NumericDescriptor:
+        """
+        2θ step between calculation points (deg).
+
+        Reading this property returns the underlying
+        ``NumericDescriptor`` object. Its value is ``NaN`` when a
+        measured but non-uniform scan is present (no representative
+        step).
+        """
+        step = self._effective_axis()[2]
+        self._two_theta_inc._value = float('nan') if step is None else step
+        return self._two_theta_inc
 
     @two_theta_inc.setter
     def two_theta_inc(self, value: float) -> None:
@@ -188,23 +207,23 @@ class CwlPdDataRange(DataRangeBase):
         self._two_theta_inc.value = value
 
     # ------------------------------------------------------------------
-    #  Active-axis aliases
+    #  Active-axis aliases (float convenience views)
     # ------------------------------------------------------------------
 
     @property
     def x_min(self) -> float:
         """Lower bound on the active (2θ) axis (deg)."""
-        return self.two_theta_min
+        return self._effective_axis()[0]
 
     @property
     def x_max(self) -> float:
         """Upper bound on the active (2θ) axis (deg)."""
-        return self.two_theta_max
+        return self._effective_axis()[1]
 
     @property
-    def x_step(self) -> float:
-        """Step on the active (2θ) axis (deg)."""
-        return self.two_theta_inc
+    def x_step(self) -> float | None:
+        """Step on the active (2θ) axis (deg), or None if non-uniform."""
+        return self._effective_axis()[2]
 
     # ------------------------------------------------------------------
     #  Derived reciprocal views (sinθ/λ, d-spacing)
@@ -220,12 +239,12 @@ class CwlPdDataRange(DataRangeBase):
     @property
     def sin_theta_over_lambda_min(self) -> float:
         """Lower sinθ/λ bound derived from 2θ_min (Å⁻¹)."""
-        return self._sin_theta_over_lambda_at(self.two_theta_min)
+        return self._sin_theta_over_lambda_at(self.x_min)
 
     @property
     def sin_theta_over_lambda_max(self) -> float:
         """Upper sinθ/λ bound derived from 2θ_max (Å⁻¹)."""
-        return self._sin_theta_over_lambda_at(self.two_theta_max)
+        return self._sin_theta_over_lambda_at(self.x_max)
 
     @property
     def d_spacing_min(self) -> float:
@@ -233,7 +252,7 @@ class CwlPdDataRange(DataRangeBase):
         wavelength = self._wavelength()
         if wavelength is None:
             return float('nan')
-        return float(twotheta_to_d(self.two_theta_max, wavelength))
+        return float(twotheta_to_d(self.x_max, wavelength))
 
     @property
     def d_spacing_max(self) -> float:
@@ -241,4 +260,4 @@ class CwlPdDataRange(DataRangeBase):
         wavelength = self._wavelength()
         if wavelength is None:
             return float('nan')
-        return float(twotheta_to_d(self.two_theta_min, wavelength))
+        return float(twotheta_to_d(self.x_min, wavelength))
