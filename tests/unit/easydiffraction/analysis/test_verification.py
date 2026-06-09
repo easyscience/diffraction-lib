@@ -13,38 +13,50 @@ def _gaussian(x: np.ndarray, center: float, width: float) -> np.ndarray:
     return np.exp(-((x - center) ** 2) / (2.0 * width**2))
 
 
+@pytest.fixture
+def ref_dir(tmp_path, monkeypatch):
+    """Point the bundled-reference loader at a temporary directory.
+
+    The loaders resolve files inside ``bundled_reference_dir()``; tests
+    write fixtures into ``tmp_path`` and pass an empty project sub-folder
+    so the resolved path is ``tmp_path / <file>``.
+    """
+    monkeypatch.setattr(verify, 'bundled_reference_dir', lambda: tmp_path)
+    return tmp_path
+
+
 # ----------------------------------------------------------------------
 #  Reference-profile loaders
 # ----------------------------------------------------------------------
 
 
-def test_load_fullprof_profile_reconstructs_grid(tmp_path):
-    sub = tmp_path / 'ref.sub'
+def test_load_fullprof_profile_reconstructs_grid(ref_dir):
+    sub = ref_dir / 'ref.sub'
     # Header: min increment max + comment, then flattened intensities.
     sub.write_text(
         '   10.0   0.5   12.0   ! a comment\n   1.0  2.0  3.0\n   4.0  5.0\n',
         encoding='utf-8',
     )
-    x, y = verify.load_fullprof_profile(str(sub))
+    x, y = verify.load_fullprof_profile('', 'ref.sub')
     np.testing.assert_allclose(x, [10.0, 10.5, 11.0, 11.5, 12.0])
     np.testing.assert_allclose(y, [1.0, 2.0, 3.0, 4.0, 5.0])
 
 
-def test_load_fullprof_profile_parses_fixed_width_header(tmp_path):
-    sub = tmp_path / 'ref.sub'
+def test_load_fullprof_profile_parses_fixed_width_header(ref_dir):
+    sub = ref_dir / 'ref.sub'
     # Step and max run together in the fixed 10-character columns, as in
     # FullProf's '5.00000030004.1875'-style headers.
     sub.write_text(
         '   10.0000  0.50000012.000000   ! comment\n   1.0 2.0 3.0\n   4.0 5.0\n',
         encoding='utf-8',
     )
-    x, y = verify.load_fullprof_profile(str(sub))
+    x, y = verify.load_fullprof_profile('', 'ref.sub')
     np.testing.assert_allclose(x, [10.0, 10.5, 11.0, 11.5, 12.0])
     np.testing.assert_allclose(y, [1.0, 2.0, 3.0, 4.0, 5.0])
 
 
-def test_load_fullprof_profile_length_mismatch_raises(tmp_path):
-    sub = tmp_path / 'ref.sub'
+def test_load_fullprof_profile_length_mismatch_raises(ref_dir):
+    sub = ref_dir / 'ref.sub'
     # Header maximum 12.0 implies five points (10.0..12.0 step 0.5) but
     # only three intensities follow, so the grid built from the body ends
     # at 11.0 — more than one step short of 12.0: a corrupt reference.
@@ -53,42 +65,42 @@ def test_load_fullprof_profile_length_mismatch_raises(tmp_path):
         encoding='utf-8',
     )
     with pytest.raises(ValueError, match='header maximum'):
-        verify.load_fullprof_profile(str(sub))
+        verify.load_fullprof_profile('', 'ref.sub')
 
 
-def test_load_fullprof_profile_empty_file_raises(tmp_path):
-    sub = tmp_path / 'ref.sub'
+def test_load_fullprof_profile_empty_file_raises(ref_dir):
+    sub = ref_dir / 'ref.sub'
     sub.write_text('', encoding='utf-8')
     with pytest.raises(ValueError, match='expected a header line'):
-        verify.load_fullprof_profile(str(sub))
+        verify.load_fullprof_profile('', 'ref.sub')
 
 
-def test_load_fullprof_profile_header_only_raises(tmp_path):
-    sub = tmp_path / 'ref.sub'
+def test_load_fullprof_profile_header_only_raises(ref_dir):
+    sub = ref_dir / 'ref.sub'
     # A header with no intensity lines following must surface a clear
     # error rather than a confusing grid-mismatch message.
     sub.write_text('   10.0   0.5   12.0   ! a comment\n', encoding='utf-8')
     with pytest.raises(ValueError, match='no intensity values'):
-        verify.load_fullprof_profile(str(sub))
+        verify.load_fullprof_profile('', 'ref.sub')
 
 
-def test_load_fullprof_profile_tolerates_rounded_header_maximum(tmp_path):
-    sub = tmp_path / 'ref.sub'
+def test_load_fullprof_profile_tolerates_rounded_header_maximum(ref_dir):
+    sub = ref_dir / 'ref.sub'
     # The header maximum is rounded a fraction of a step high (12.0004 vs
     # the true last point 12.0), which must not add a spurious point.
     sub.write_text(
         '   10.0   0.5   12.0004   ! a comment\n   1.0  2.0  3.0  4.0  5.0\n',
         encoding='utf-8',
     )
-    x, y = verify.load_fullprof_profile(str(sub))
+    x, y = verify.load_fullprof_profile('', 'ref.sub')
     np.testing.assert_allclose(x, [10.0, 10.5, 11.0, 11.5, 12.0])
     np.testing.assert_allclose(y, [1.0, 2.0, 3.0, 4.0, 5.0])
 
 
-def test_load_columned_profile_reads_two_columns(tmp_path):
-    dat = tmp_path / 'ref.dat'
+def test_load_columned_profile_reads_two_columns(ref_dir):
+    dat = ref_dir / 'ref.dat'
     dat.write_text('! header line\n10.0 100.0\n10.5 200.0\n11.0 150.0\n', encoding='utf-8')
-    x, y = verify.load_columned_profile(str(dat), skip_rows=1, columns=(0, 1))
+    x, y = verify.load_columned_profile('', 'ref.dat', skip_rows=1, columns=(0, 1))
     np.testing.assert_allclose(x, [10.0, 10.5, 11.0])
     np.testing.assert_allclose(y, [100.0, 200.0, 150.0])
 
@@ -107,8 +119,8 @@ def test_bundled_reference_dir_points_at_fullprof():
 # ----------------------------------------------------------------------
 
 
-def test_load_fullprof_sc_f2calc_reads_table(tmp_path):
-    out = tmp_path / 'sc.out'
+def test_load_fullprof_sc_f2calc_reads_table(ref_dir):
+    out = ref_dir / 'sc.out'
     # A header line carrying 'F2obs' and 'F2cal' starts the table; F2cal
     # is the seventh column. A short row (or non-numeric row) ends it, so
     # the trailing summary line must not be parsed as a reflection.
@@ -121,7 +133,7 @@ def test_load_fullprof_sc_f2calc_reads_table(tmp_path):
         '   9   9   9   0     1     1.0          2.0          0.0\n',
         encoding='utf-8',
     )
-    f2calc = verify.load_fullprof_sc_f2calc(str(out))
+    f2calc = verify.load_fullprof_sc_f2calc('', 'sc.out')
     assert f2calc == {(2, 0, 0): pytest.approx(173.6998), (4, 0, 0): pytest.approx(788.1127)}
     # The reflection after the terminator row must not be picked up.
     assert (9, 9, 9) not in f2calc
