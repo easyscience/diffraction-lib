@@ -32,12 +32,14 @@ from easydiffraction.utils.utils import render_table
 # columns: h, k, l, ivk, cod, F2obs, F2cal.
 _MIN_SC_F2CAL_COLUMNS = 7
 
-# A FullProf ``.prf`` profile data row (Prf=-3 format) has exactly these
-# columns: 2Theta, Yobs, Ycal, Yobs-Ycal, Backg. Reflection-marker rows
-# carry a trailing ``(h k l)`` and more columns, so they are skipped. The
-# calculated intensity is column 2 (Ycal).
+# A FullProf ``.prf`` profile data row (Prf=-3 format) has exactly
+# these columns: 2Theta, Yobs, Ycal, Yobs-Ycal, Backg. Reflection-
+# marker rows carry a trailing ``(h k l)`` and more columns, so they
+# are skipped. The calculated intensity is column 2 (Ycal).
 _PRF_PROFILE_COLUMNS = 5
 _PRF_YCALC_COLUMN = 2
+# A two-column ``.bac`` background row holds ``2Theta background``.
+_BAC_MIN_COLUMNS = 2
 
 # A FullProf ``Prf=2`` IGOR profile row has columns TwoTheta, Iobs,
 # Icalc, Diff under a ``BEGIN``/``END`` block; the calculated intensity
@@ -130,8 +132,11 @@ def load_fullprof_profile(project_dir: str, profile_file: str) -> tuple[np.ndarr
 
     Parameters
     ----------
-    path : str
-        Path to the FullProf ``.sub`` or ``.sim`` file.
+    project_dir : str
+        Reference sub-folder name (under the bundled reference
+        directory) holding the FullProf project files.
+    profile_file : str
+        File name of the FullProf ``.sub`` or ``.sim`` profile file.
 
     Returns
     -------
@@ -189,8 +194,11 @@ def load_columned_profile(
 
     Parameters
     ----------
-    path : str
-        Path to the column-formatted file.
+    project_dir : str
+        Reference sub-folder name (under the bundled reference
+        directory) holding the FullProf project files.
+    profile_file : str
+        File name of the column-formatted reference file.
     skip_rows : int, default=1
         Number of header rows to skip.
     columns : tuple[int, int], default=(0, 1)
@@ -207,6 +215,52 @@ def load_columned_profile(
     cleaned = '\n'.join(line.replace('(', ' ').replace(')', ' ') for line in lines)
     x, y = np.genfromtxt(StringIO(cleaned), usecols=columns, unpack=True)
     return x, y
+
+
+def _parse_igor_profile(lines: list[str]) -> tuple[list[float], list[float]]:
+    """Parse the ``Prf=2`` IGOR ``BEGIN``/``END`` profile block."""
+    two_theta: list[float] = []
+    icalc: list[float] = []
+    started = False
+    for line in lines:
+        text = line.strip()
+        if text == 'BEGIN':
+            started = True
+            continue
+        if text == 'END':
+            break
+        fields = text.split()
+        if not started or len(fields) < _IGOR_MIN_COLUMNS:
+            continue
+        try:
+            row = (float(fields[0]), float(fields[_IGOR_ICALC_COLUMN]))
+        except ValueError:
+            continue
+        two_theta.append(row[0])
+        icalc.append(row[1])
+    return two_theta, icalc
+
+
+def _parse_tabbed_profile(lines: list[str], path: str) -> tuple[list[float], list[float]]:
+    """Parse the tab-separated ``Prf=-3`` profile table."""
+    header_index = next(
+        (index for index, line in enumerate(lines) if line.lstrip().startswith('2Theta')),
+        None,
+    )
+    if header_index is None:
+        msg = f'FullProf profile {path}: no "2Theta" header or IGOR block found.'
+        raise ValueError(msg)
+    two_theta: list[float] = []
+    icalc: list[float] = []
+    for line in lines[header_index + 1 :]:
+        if '(' in line:  # reflection-marker row
+            continue
+        fields = line.split()
+        if len(fields) != _PRF_PROFILE_COLUMNS:
+            continue
+        two_theta.append(float(fields[0]))
+        icalc.append(float(fields[_PRF_YCALC_COLUMN]))
+    return two_theta, icalc
 
 
 def _parse_fullprof_calc_profile(path: str) -> tuple[np.ndarray, np.ndarray]:
@@ -235,47 +289,56 @@ def _parse_fullprof_calc_profile(path: str) -> tuple[np.ndarray, np.ndarray]:
         If no profile data rows are found.
     """
     lines = Path(path).read_text(encoding='utf-8').splitlines()
-    two_theta: list[float] = []
-    icalc: list[float] = []
     is_igor = any('IGOR' in line.upper() for line in lines[:3])
     if is_igor:
-        started = False
-        for line in lines:
-            token = line.strip()
-            if token == 'BEGIN':
-                started = True
-                continue
-            if token == 'END':
-                break
-            fields = token.split()
-            if not started or len(fields) < _IGOR_MIN_COLUMNS:
-                continue
-            try:
-                values = (float(fields[0]), float(fields[_IGOR_ICALC_COLUMN]))
-            except ValueError:
-                continue
-            two_theta.append(values[0])
-            icalc.append(values[1])
+        two_theta, icalc = _parse_igor_profile(lines)
     else:
-        header_index = next(
-            (index for index, line in enumerate(lines) if line.lstrip().startswith('2Theta')),
-            None,
-        )
-        if header_index is None:
-            msg = f'FullProf profile {path}: no "2Theta" header or IGOR block found.'
-            raise ValueError(msg)
-        for line in lines[header_index + 1 :]:
-            if '(' in line:  # reflection-marker row
-                continue
-            fields = line.split()
-            if len(fields) != _PRF_PROFILE_COLUMNS:
-                continue
-            two_theta.append(float(fields[0]))
-            icalc.append(float(fields[_PRF_YCALC_COLUMN]))
+        two_theta, icalc = _parse_tabbed_profile(lines, path)
     if not two_theta:
         msg = f'FullProf profile {path}: no calculated-profile data rows found.'
         raise ValueError(msg)
     return np.asarray(two_theta), np.asarray(icalc)
+
+
+def _parse_array_background(lines: list[str], path: str) -> tuple[np.ndarray, np.ndarray]:
+    """Parse the ``.sub``-style header + flat-array ``.bac`` layout."""
+    x_min, x_step, _x_max = _parse_fullprof_header(lines[0])
+    background: list[float] = []
+    for line in lines[1:]:
+        for text in line.split():
+            try:
+                background.append(float(text))
+            except ValueError:
+                break  # trailing non-numeric text ends the row
+    if not background:
+        msg = f'FullProf .bac {path}: no background values after the header.'
+        raise ValueError(msg)
+    y = np.asarray(background)
+    x = x_min + x_step * np.arange(y.size)
+    return x, y
+
+
+def _parse_columned_background(lines: list[str], path: str) -> tuple[np.ndarray, np.ndarray]:
+    """Parse the two-column ``2Theta background`` ``.bac`` layout."""
+    two_theta: list[float] = []
+    column_background: list[float] = []
+    for line in lines:
+        text = line.strip()
+        if text.startswith('!'):
+            continue
+        fields = text.split()
+        if len(fields) < _BAC_MIN_COLUMNS:
+            continue
+        try:
+            row = (float(fields[0]), float(fields[1]))
+        except ValueError:
+            continue
+        two_theta.append(row[0])
+        column_background.append(row[1])
+    if not two_theta:
+        msg = f'FullProf .bac {path}: no background data rows found.'
+        raise ValueError(msg)
+    return np.asarray(two_theta), np.asarray(column_background)
 
 
 def _parse_fullprof_background(path: str) -> tuple[np.ndarray, np.ndarray]:
@@ -287,10 +350,10 @@ def _parse_fullprof_background(path: str) -> tuple[np.ndarray, np.ndarray]:
 
     * **Two-column** — a ``!``-prefixed comment line followed by
       ``2Theta background`` rows.
-    * **Header + array** — a ``min step max`` header line (``.sub``-style,
-      with a trailing ``Background of: …`` label) followed by the
-      background values as a flat array (several per row); the 2θ grid is
-      reconstructed from the header.
+    * **Header + array** — a ``min step max`` header line
+      (``.sub``-style, with a trailing ``Background of: …`` label)
+      followed by the background values as a flat array (several per
+      row); the 2θ grid is reconstructed from the header.
 
     In both layouts the 2θ axis omits the zero shift, so the caller
     realigns it onto the profile axis.
@@ -314,44 +377,11 @@ def _parse_fullprof_background(path: str) -> tuple[np.ndarray, np.ndarray]:
     if not lines:
         msg = f'FullProf .bac {path}: file is empty.'
         raise ValueError(msg)
-
     if not lines[0].lstrip().startswith('!'):
-        # Header + flat-array layout: first line is ``min step max <label>``.
-        x_min, x_step, _x_max = _parse_fullprof_header(lines[0])
-        background: list[float] = []
-        for line in lines[1:]:
-            for token in line.split():
-                try:
-                    background.append(float(token))
-                except ValueError:
-                    break  # trailing non-numeric text ends the row
-        if not background:
-            msg = f'FullProf .bac {path}: no background values after the header.'
-            raise ValueError(msg)
-        y = np.asarray(background)
-        x = x_min + x_step * np.arange(y.size)
-        return x, y
-
-    # Two-column ``2Theta background`` layout under ``!`` comment lines.
-    two_theta: list[float] = []
-    column_background: list[float] = []
-    for line in lines:
-        token = line.strip()
-        if token.startswith('!'):
-            continue
-        fields = token.split()
-        if len(fields) < 2:
-            continue
-        try:
-            values = (float(fields[0]), float(fields[1]))
-        except ValueError:
-            continue
-        two_theta.append(values[0])
-        column_background.append(values[1])
-    if not two_theta:
-        msg = f'FullProf .bac {path}: no background data rows found.'
-        raise ValueError(msg)
-    return np.asarray(two_theta), np.asarray(column_background)
+        # Header + flat-array layout (``.sub``-style ``min step max``).
+        return _parse_array_background(lines, path)
+    # Two-column ``2Theta background`` layout under ``!`` comments.
+    return _parse_columned_background(lines, path)
 
 
 def load_fullprof_calc_profile(
@@ -421,8 +451,11 @@ def load_fullprof_sc_f2calc(project_dir: str, out_file: str) -> dict[tuple[int, 
 
     Parameters
     ----------
-    path : str
-        Path to the FullProf single-crystal ``.out`` file.
+    project_dir : str
+        Reference sub-folder name (under the bundled reference
+        directory) holding the FullProf project files.
+    out_file : str
+        File name of the FullProf single-crystal ``.out`` file.
 
     Returns
     -------
