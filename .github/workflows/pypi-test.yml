@@ -10,7 +10,7 @@ on:
 # Allow only one concurrent workflow, skipping runs queued between the run
 # in-progress and latest queued. And cancel in-progress runs.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
