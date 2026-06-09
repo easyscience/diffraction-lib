@@ -10,6 +10,54 @@ implemented, remove it from this file and update
 
 ---
 
+## 119. 🟡 Model Sample Absorption (Debye–Scherrer, μR)
+
+**Type:** Physics / Engine feature
+
+The calculators (`cryspy`, `crysfml`) apply no sample-absorption
+correction. For a cylindrical sample in Debye–Scherrer geometry this is
+an angle-dependent intensity factor that boosts high-angle peaks. The
+LaB₆ verification reference (`pd-neut-cwl_tch-fcj_lab6`) was refined in
+FullProf with `μR = 0.7`; the unmodelled correction is the *entire*
+intensity residual on the companion `pd-neut-cwl_tch-fcj_abs_lab6` page
+(≈5% profile difference), while the `μR = 0` page passes to corr 0.9999.
+
+**Correction (Hewat, Debye–Scherrer), validated to 4 decimals against
+FullProf output:**
+
+```
+A(θ) = exp( -(1.7133 − 0.0368·sin²θ)·μR + (0.0927 + 0.375·sin²θ)·μR² )
+```
+
+A Lobanov–Alte-da-Veiga form covers `μR > 3`.
+
+**Implementation sketch:**
+
+- Add a `μR` instrument parameter for CWL powder (Debye–Scherrer).
+- `crysfml`: CrysFML08 already implements this — reachable via
+  `Lorentz_abs_CW(..., ilor='DBS', cabs='HEWAT', tmv=μR)` through
+  pycrysfml.
+- `cryspy`: multiply each reflection's intensity by `A(θ_hkl)`,
+  analogous to the existing Lorentz factor (one extra term).
+
+**Note:** absorption is nearly degenerate with Biso + scale (its angle
+term is linear in `sin²θ`, like the Debye–Waller), so refining Biso can
+partly absorb it — but that biases Biso, so an explicit correction is
+preferable.
+
+**References:**
+
+- A. W. Hewat, *Acta Cryst.* A35 (1979) 248 — cylindrical absorption.
+- N. N. Lobanov & L. Alte da Veiga, 6th EPDIC, Abstract P12-16 (1998).
+- CrysFML08:
+  [`Src/CFML_Powder/Pow_Lorentz_Absorption.f90`](https://code.ill.fr/scientific-software/CrysFML2008/-/blob/master/Src/CFML_Powder/Pow_Lorentz_Absorption.f90),
+  `Lorentz_abs_CW`.
+- FullProf `μR`: `.pcr` Lambda line field 7; `iabscor = 2` selects HEWAT.
+
+**Depends on:** adding a `μR` instrument parameter.
+
+---
+
 ## 3. 🟡 Rebuild Joint-Fit Weights on Every Fit
 
 **Type:** Fragility
@@ -2286,3 +2334,4 @@ parameters (cryspy/crysfml) before the second item can be wired through.
 | 116 | Add a static type checker to the quality gate     | 🟡 Med   | Tooling / Correctness        |
 | 117 | Live-notebook Plotly: loader vs native mimetype   | 🟢 Low   | Display / Architecture       |
 | 118 | Plotly empty rows in the VISA JupyterLab          | 🟢 Low   | Display / Environment        |
+| 119 | Model sample absorption (Debye–Scherrer μR)       | 🟡 Med   | Physics / Engine feature     |
