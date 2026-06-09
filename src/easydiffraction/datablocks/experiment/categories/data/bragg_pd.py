@@ -36,6 +36,10 @@ if TYPE_CHECKING:
 # Uncertainty values below this threshold are replaced with 1.0
 _MIN_UNCERTAINTY = 0.0001
 
+# Float tolerance so an x-grid whose span is an exact multiple of the
+# step keeps its final point instead of dropping it to rounding noise.
+_GRID_STEP_TOLERANCE = 1e-9
+
 
 class PdDataPointBaseMixin:
     """Single base data point mixin for powder diffraction data."""
@@ -445,7 +449,9 @@ class PdDataBase(CategoryCollection):
                 f'step={x_step}). Set data_range bounds with min < max and step > 0.'
             )
             raise ValueError(msg)
-        num = int(round((x_max - x_min) / x_step)) + 1
+        # Floor (with a small tolerance) so the last point never exceeds
+        # x_max — an overshoot could push 2θ past the 180° validator limit.
+        num = int(np.floor((x_max - x_min) / x_step + _GRID_STEP_TOLERANCE)) + 1
         return x_min + np.arange(num) * x_step
 
     def _clear_generated_grid(self) -> None:
