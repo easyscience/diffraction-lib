@@ -25,6 +25,12 @@ from easydiffraction.utils.utils import twotheta_to_d
 # fine d-spacing stays a valid angle below 180°.
 _MAX_SIN_THETA = 0.999999
 
+# Cap the default-projected upper 2θ bound. The default d-spacing window
+# can project (via the sin cap) to nearly 180° for typical wavelengths;
+# clamp it to a conventional powder maximum so the default range avoids
+# the backscattering limit. Users can still set a larger range explicitly.
+_DEFAULT_MAX_TWO_THETA = 170.0
+
 
 @DataRangeFactory.register
 class CwlPdDataRange(DataRangeBase):
@@ -131,9 +137,8 @@ class CwlPdDataRange(DataRangeBase):
                 sthovl_min, wavelength
             )
         if np.isnan(self._two_theta_max.value):
-            self._two_theta_max._value = self._two_theta_from_sin_theta_over_lambda(
-                sthovl_max, wavelength
-            )
+            projected_max = self._two_theta_from_sin_theta_over_lambda(sthovl_max, wavelength)
+            self._two_theta_max._value = min(projected_max, _DEFAULT_MAX_TWO_THETA)
         if np.isnan(self._two_theta_inc.value):
             span = self._two_theta_max.value - self._two_theta_min.value
             self._two_theta_inc._value = span / (DEFAULT_NUM_POINTS - 1)
