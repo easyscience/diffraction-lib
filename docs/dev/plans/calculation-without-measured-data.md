@@ -288,6 +288,18 @@ and extend the existing calculator/data/display tests. `pixi run fix`
 regenerates `docs/dev/package-structure/{full,short}.md` — do not edit
 by hand.
 
+Phase 2 integration tests **must** cover an end-to-end calculate-without-
+measured-data run for **both** the `cryspy` and `crysfml` engines, in
+**both** CWL and TOF beam modes (generated grid → calculate → plot with
+calculated curve + background + Bragg). The verification command list
+alone does not guarantee a calc-only case exists in those suites, and
+the cryspy engine input now embeds a finite-placeholder measured loop
+for generated grids (see the `_cif_measured_data_pd` change) that static
+review cannot validate. Phase 2 must also exercise the calc-only display
+render path (auto-include + dispatch) wired in Phase 1, and confirm
+`test_base_coverage.py` (which referenced the removed `_measured_x_values`
+helper) is updated to the `data_range`-backed `measured_range`.
+
 ## Status checklist
 
 - [x] P1.1 Promote ADR to accepted
