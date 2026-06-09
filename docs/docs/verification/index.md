@@ -15,7 +15,8 @@ The structure is defined in code, with every experimental parameter
 taken verbatim from the frozen FullProf `.pcr` files. Each engine first
 calculates with those parameters **without fitting**; where a difference
 remains, a short refinement frees only the disputed parameters to show
-it is a profile-convention difference and not a structural one.
+it comes from how an experiment parameter is defined between the codes,
+not from a disagreement about the structure.
 
 Single-crystal pages compare the calculated F² of each reflection on a
 y=x scatter instead of a profile overlay, and use `cryspy` only — the
