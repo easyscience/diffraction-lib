@@ -1287,6 +1287,22 @@ class Analysis(
         except KeyboardInterrupt:
             self._handle_fit_interrupted(verbosity=verb)
 
+    def calculate(self) -> None:
+        """
+        Calculate the diffraction pattern for every experiment.
+
+        Refreshes the linked structures and each experiment so the
+        calculated intensities (``experiment.data.intensity_calc``)
+        reflect the current parameters and the selected calculation
+        engines. This is the non-fitting counterpart of :meth:`fit`:
+        call it after changing parameters or a calculator to update the
+        calculated pattern without running a minimization.
+        """
+        for structure in self.project.structures:
+            structure._update_categories()
+        for experiment in self.project.experiments:
+            experiment._update_categories()
+
     def undo_fit(self) -> UndoFitOutcome:
         """
         Roll back the latest fit output and scalar state.

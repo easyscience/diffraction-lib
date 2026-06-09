@@ -1,33 +1,11 @@
 # %% [markdown]
-# # LaB₆ — neutron powder, constant wavelength, Thompson–Cox–Hastings
-#
-# A **prepared** verification for the FullProf `SyCos`/`SySin` systematic
-# peak-position corrections (sample displacement and transparency), using
-# the real LaB6 dataset from
-# [cryspy issue #38](https://github.com/ikibalin/cryspy/issues/38).
-#
+# # LaB₆ — neutron powder, constant wavelength, sample absorption
 
 # %%
 import easydiffraction as ed
 from easydiffraction import ExperimentFactory
 from easydiffraction import StructureFactory
 from easydiffraction.analysis import verification as verify
-
-# %% [markdown]
-# ## Load the FullProf reference
-#
-# The FullProf **calculated** profile is exported as a two-column
-# (2θ, intensity) `.sub` holding the Bragg contribution only (no
-# background), so the engines are compared against FullProf's own
-# calculation, consistent with the other Verification pages.
-
-# %%
-reference_dir = verify.bundled_reference_dir() / 'pd-neut-cwl_tch-fcj_lab6'
-x, calc_fullprof = verify.load_columned_profile(
-    str(reference_dir / 'ECH0030684_LaB6_1p622A1.sub'),
-    skip_rows=1,
-    columns=(0, 1),
-)
 
 # %% [markdown]
 # ## Build the project
@@ -49,22 +27,46 @@ structure.atom_sites.create(
     fract_y=0.0,  # FullProf Y
     fract_z=0.0,  # FullProf Z
     adp_type='Biso',  # FullProf Biso
-    adp_iso=0.53405,  # FullProf Biso
+    adp_iso=0.59951,  # FullProf Biso
 )
 structure.atom_sites.create(
     label='B',  # FullProf Atom
-    # ❌ <built-in function f_cw_powder_pattern_from_dict> returned a
-    # result with an exception set
-    # type_symbol='11B',  # FullProf "B11     0.66500    0.00000   0"
-    type_symbol='B',  # FullProf "B11     0.66500    0.00000   0"
-    fract_x=0.19972,  # FullProf X
+    type_symbol='11B',  # FullProf "B11"
+    fract_x=0.19978,  # FullProf X
     fract_y=0.5,  # FullProf Y
     fract_z=0.5,  # FullProf Z
     adp_type='Biso',  # FullProf Biso
-    adp_iso=0.39406,  # FullProf Biso
+    adp_iso=0.44499,  # FullProf Biso
 )
 
 project.structures.add(structure)
+
+# %% [markdown]
+# ## Load the FullProf reference
+
+# %%
+FULLPROF_PROJECT_DIR = 'pd-neut-cwl_tch-fcj_lab6'
+FULLPROF_PRF_FILE = 'ECH0030684_LaB6_1p622A.prf'
+FULLPROF_BAC_FILE = 'ECH0030684_LaB6_1p622A.bac'
+FULLPROF_ZERO = -0.21110  # FullProf Zero
+FULLPROF_SCALE = 141.1285  # FullProf Scale
+FULLPROF_WAVELENGTH = 1.622527  # FullProf Lambda
+FULLPROF_U = 0.089664  # FullProf U
+FULLPROF_V = -0.375792  # FullProf V
+FULLPROF_W = 0.476524  # FullProf W
+FULLPROF_X = 0.0  # FullProf X
+FULLPROF_Y = 0.052425  # FullProf Y
+FULLPROF_SYCOS = 0.05281  # FullProf SyCos
+FULLPROF_SYSIN = 0.09068  # FullProf SySin
+FULLPROF_S_L = 0.08000  # FullProf S_L
+FULLPROF_D_L = 0.08000  # FullProf D_L
+
+x, calc_fullprof = verify.load_fullprof_calc_profile(
+    FULLPROF_PROJECT_DIR,
+    FULLPROF_PRF_FILE,
+    FULLPROF_BAC_FILE,
+    FULLPROF_ZERO,
+)
 
 # %% [markdown]
 # ## Create the experiment
@@ -79,91 +81,124 @@ experiment = ExperimentFactory.from_scratch(
 )
 verify.set_reference_as_measured(experiment, x, calc_fullprof)
 
-experiment.linked_phases.create(id='lab6', scale=136.0509)  # FullProf Scale
+experiment.linked_phases.create(id='lab6', scale=FULLPROF_SCALE)
 
-experiment.instrument.setup_wavelength = 1.623891  # FullProf Lambda
-experiment.instrument.calib_twotheta_offset = -0.45497  # FullProf Zero
+experiment.instrument.setup_wavelength = FULLPROF_WAVELENGTH
+experiment.instrument.calib_twotheta_offset = FULLPROF_ZERO
 
-experiment.peak.broad_gauss_u = 0.143361  # FullProf U
-experiment.peak.broad_gauss_v = -0.522147  # FullProf V
-experiment.peak.broad_gauss_w = 0.590413  # FullProf W
-experiment.peak.broad_lorentz_x = 0.0  # FullProf X
-experiment.peak.broad_lorentz_y = 0.054268  # FullProf Y
+experiment.peak.broad_gauss_u = FULLPROF_U
+experiment.peak.broad_gauss_v = FULLPROF_V
+experiment.peak.broad_gauss_w = FULLPROF_W
+experiment.peak.broad_lorentz_x = FULLPROF_X
+experiment.peak.broad_lorentz_y = FULLPROF_Y
+# Engine-specific corrections are applied in each engine's section below:
+# SyCos/SySin (cryspy only) and the FCJ S_L/D_L asymmetry (crysfml only).
+# Sample absorption (muR = 0.7) is modelled by neither engine.
 
 project.experiments.add(experiment)
 
 # %% [markdown]
-# ## SyCos / SySin (pending EasyDiffraction support)
-#
-# FullProf applies sample-displacement (`SyCos`) and transparency
-# (`SySin`) peak-position shifts on top of `Zero` (see issue #117). The
-# CWL instrument category does not expose them yet, so the two lines
-# below are kept commented out with the FullProf `.pcr` values —
-# uncomment them once the parameters land to finish this page. As with
-# `Zero` (`calib_twotheta_offset` above), the cross-code convention may
-# differ, so the values may need the same adjustment when wired in.
+# ## ed-cryspy VS FullProf
 
 # %%
-# experiment.instrument.calib_sycos = 0.05395  # FullProf SyCos
-# experiment.instrument.calib_sysin = 0.09127  # FullProf SySin
+experiment.instrument.calib_sample_displacement = FULLPROF_SYCOS
+experiment.instrument.calib_sample_transparency = FULLPROF_SYSIN
 
-# %% [markdown]
-# ## Calculate the pattern with each engine
+experiment.calculator.type = 'cryspy'
+project.analysis.calculate()
+calc_ed_cryspy = experiment.data.intensity_calc
 
-# %%
-calc_ed_cryspy = verify.calculate_pattern(project, experiment, 'cryspy')
-calc_ed_crysfml = verify.calculate_pattern(project, experiment, 'crysfml')
-
-# %% [markdown]
-# ## Compare each engine against FullProf
-#
-# Until the corrections above are supported the engines will show
-# systematic peak-position offsets against the FullProf calculated
-# profile, which is the discrepancy this page is being prepared to
-# verify.
-
-# %%
 project.display.pattern_comparison(
     'lab6',
     reference=calc_fullprof,
     candidate=calc_ed_cryspy,
     reference_label='FullProf',
-    candidate_label='EasyDiffraction (cryspy)',
+    candidate_label='ed-cryspy',
 )
 
+# %% [markdown]
+# ## Fit ed-cryspy to FullProf
+
 # %%
+experiment.linked_phases['lab6'].scale.free = True
+experiment.instrument.calib_twotheta_offset.free = True
+experiment.instrument.calib_sample_displacement.free = True
+experiment.instrument.calib_sample_transparency.free = True
+
+project.analysis.fit()
+project.display.fit.results()
+
+project.analysis.calculate()
+calc_ed_cryspy_refined = experiment.data.intensity_calc
+
+project.display.pattern_comparison(
+    'lab6',
+    reference=calc_fullprof,
+    candidate=calc_ed_cryspy_refined,
+    reference_label='FullProf',
+    candidate_label='ed-cryspy (refined)',
+)
+
+# %% [markdown]
+# ## ed-crysfml VS FullProf
+
+# %%
+experiment.calculator.type = 'crysfml'
+experiment.peak.type = 'thompson-cox-hastings'
+experiment.linked_phases['lab6'].scale = FULLPROF_SCALE
+experiment.linked_phases['lab6'].scale.free = False
+experiment.instrument.calib_twotheta_offset = FULLPROF_ZERO
+experiment.instrument.calib_twotheta_offset.free = False
+experiment.instrument.calib_sample_displacement.free = False
+experiment.instrument.calib_sample_transparency.free = False
+experiment.peak.broad_gauss_u = FULLPROF_U
+experiment.peak.broad_gauss_v = FULLPROF_V
+experiment.peak.broad_gauss_w = FULLPROF_W
+experiment.peak.broad_lorentz_x = FULLPROF_X
+experiment.peak.broad_lorentz_y = FULLPROF_Y
+experiment.peak.asym_fcj_1 = FULLPROF_S_L
+experiment.peak.asym_fcj_2 = FULLPROF_D_L
+
+project.analysis.calculate()
+calc_ed_crysfml = experiment.data.intensity_calc
+
 project.display.pattern_comparison(
     'lab6',
     reference=calc_fullprof,
     candidate=calc_ed_crysfml,
     reference_label='FullProf',
-    candidate_label='EasyDiffraction (crysfml)',
+    candidate_label='ed-crysfml',
 )
 
 # %% [markdown]
-# ## Compare the two engines with each other
+# ## Fit ed-crysfml to FullProf
 
 # %%
+experiment.linked_phases['lab6'].scale.free = True
+experiment.instrument.calib_twotheta_offset.free = True
+
+project.analysis.fit()
+project.display.fit.results()
+
+project.analysis.calculate()
+calc_ed_crysfml_refined = experiment.data.intensity_calc
+
 project.display.pattern_comparison(
     'lab6',
-    reference=calc_ed_crysfml,
-    candidate=calc_ed_cryspy,
-    reference_label='EasyDiffraction (crysfml)',
-    candidate_label='EasyDiffraction (cryspy)',
+    reference=calc_fullprof,
+    candidate=calc_ed_crysfml_refined,
+    reference_label='FullProf',
+    candidate_label='ed-crysfml (refined)',
 )
 
 # %% [markdown]
 # ## Agreement check
-#
-# Reported without failing CI (`raise_on_failure=False`) while the
-# corrections are unsupported; the page is also skipped via `ci_skip.txt`.
 
 # %%
 verify.assert_patterns_agree(
     [
         ('cryspy vs FullProf', calc_fullprof, calc_ed_cryspy),
         ('crysfml vs FullProf', calc_fullprof, calc_ed_crysfml),
-        ('cryspy vs crysfml', calc_ed_cryspy, calc_ed_crysfml),
     ],
     raise_on_failure=False,
 )

@@ -7,6 +7,33 @@ import numpy as np
 import pytest
 
 
+def _cwl_experiment_stub():
+    """Build a minimal CWL-powder experiment stub for dict-update tests."""
+    from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+    from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
+
+    return SimpleNamespace(
+        name='exp',
+        type=SimpleNamespace(
+            sample_form=SimpleNamespace(value=SampleFormEnum.POWDER),
+            beam_mode=SimpleNamespace(value=BeamModeEnum.CONSTANT_WAVELENGTH),
+        ),
+        instrument=SimpleNamespace(
+            calib_twotheta_offset=SimpleNamespace(value=0.1),
+            setup_wavelength=SimpleNamespace(value=1.5),
+            calib_sample_displacement=SimpleNamespace(value=0.05),
+            calib_sample_transparency=SimpleNamespace(value=0.09),
+        ),
+        peak=SimpleNamespace(
+            broad_gauss_u=SimpleNamespace(value=0.0),
+            broad_gauss_v=SimpleNamespace(value=0.0),
+            broad_gauss_w=SimpleNamespace(value=0.0),
+            broad_lorentz_x=SimpleNamespace(value=0.0),
+            broad_lorentz_y=SimpleNamespace(value=0.0),
+        ),
+    )
+
+
 def test_module_import():
     import easydiffraction.analysis.calculators.cryspy as MUT
 
@@ -61,6 +88,68 @@ def test_tof_pseudo_voigt_cif_section_uses_non_convoluted_peak_shape():
     assert '_tof_profile_gamma2 6.0' in cif_text
     assert '_tof_profile_alpha0' not in cif_text
     assert '_tof_profile_beta0' not in cif_text
+
+
+def test_cwl_cif_instrument_section_emits_sycos_sysin():
+    import easydiffraction.analysis.calculators.cryspy as MUT
+    from easydiffraction.datablocks.experiment.categories.instrument.cwl import CwlPdInstrument
+    from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+    from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
+
+    expt_type = SimpleNamespace(
+        beam_mode=SimpleNamespace(value=BeamModeEnum.CONSTANT_WAVELENGTH),
+        sample_form=SimpleNamespace(value=SampleFormEnum.POWDER),
+    )
+    instrument = CwlPdInstrument()
+    instrument.calib_sample_displacement = 0.05
+    instrument.calib_sample_transparency = 0.09
+
+    cif_lines: list[str] = []
+    MUT._cif_instrument_section(cif_lines, expt_type, instrument)
+    cif_text = '\n'.join(cif_lines)
+
+    assert '_setup_offset_SyCos 0.05' in cif_text
+    assert '_setup_offset_SySin 0.09' in cif_text
+
+
+def test_update_experiment_in_cryspy_dict_sets_sycos_sysin():
+    from easydiffraction.analysis.calculators.cryspy import CryspyCalculator
+
+    experiment = _cwl_experiment_stub()
+    cryspy_dict = {
+        'pd_exp': {
+            'offset_ttheta': [0.0],
+            'wavelength': [0.0],
+            'offset_sycos': [0.0],
+            'offset_sysin': [0.0],
+            'resolution_parameters': [0.0] * 5,
+        }
+    }
+
+    CryspyCalculator._update_experiment_in_cryspy_dict(cryspy_dict, experiment)
+
+    # SyCos/SySin are stored in plain degrees (cryspy converts internally).
+    assert cryspy_dict['pd_exp']['offset_sycos'][0] == 0.05
+    assert cryspy_dict['pd_exp']['offset_sysin'][0] == 0.09
+
+
+def test_update_experiment_in_cryspy_dict_tolerates_missing_sycos_keys():
+    # cryspy releases without PR #46 lack the offset keys; the update must
+    # guard and not raise when they are absent.
+    from easydiffraction.analysis.calculators.cryspy import CryspyCalculator
+
+    experiment = _cwl_experiment_stub()
+    cryspy_dict = {
+        'pd_exp': {
+            'offset_ttheta': [0.0],
+            'wavelength': [0.0],
+            'resolution_parameters': [0.0] * 5,
+        }
+    }
+
+    CryspyCalculator._update_experiment_in_cryspy_dict(cryspy_dict, experiment)
+
+    assert 'offset_sycos' not in cryspy_dict['pd_exp']
 
 
 def test_update_structure_zeroes_biso_for_anisotropic_atoms():

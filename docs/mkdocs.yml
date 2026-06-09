@@ -255,9 +255,12 @@ nav:
           - LBCO: verification/pd-neut-cwl_pv_lbco.ipynb
           - PbSO4 (pseudo-Voigt): verification/pd-neut-cwl_pv_pbso4.ipynb
           - PbSO4 (empirical asymmetry): verification/pd-neut-cwl_pv-asym_empir_pbso4.ipynb
-          - LaB6: verification/pd-neut-cwl_tch-fcj_lab6.ipynb
+          - LaB6 (SyCos/SySin): verification/pd-neut-cwl_tch-fcj-noabs-nosldl_lab6.ipynb
+          - LaB6 (FCJ asymmetry): verification/pd-neut-cwl_tch-fcj-noabs_lab6.ipynb
+          - LaB6 (absorption): verification/pd-neut-cwl_tch-fcj_lab6.ipynb
       - Powder, neutron, time-of-flight:
-          - Si: verification/pd-neut-tof_jvd_si.ipynb
+          - Si (Jorgensen): verification/pd-neut-tof_j_si.ipynb
+          - Si (Jorgensen–Von Dreele): verification/pd-neut-tof_jvd_si.ipynb
           - NaCaAlF: verification/pd-neut-tof_jvd_ncaf.ipynb
       - Single crystal, neutron, constant wavelength:
           - Pr2NiO4: verification/sg-neut-cwl_pr2nio4.ipynb

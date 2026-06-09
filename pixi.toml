@@ -57,6 +57,7 @@ lychee = '*'      # Link checker for documentation
 [feature.dev.pypi-dependencies]
 pip = '*'
 #pycrysfml = { version = ">=0.4.0", index = "https://easyscience.github.io/pypi/" }
+#cryspy = { git = "https://github.com/ikibalin/cryspy.git", branch = "develop" }
 easydiffraction = { path = '.', editable = true, extras = ['dev'] }
 
 # User-like behavior for testing with pip-installed dependencies instead
@@ -137,12 +138,6 @@ notebook-tests-checked = { cmd = 'python -m pytest tests/tutorials/ --color=yes 
 ], env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials' } }
 
 test = { depends-on = ['unit-tests', 'functional-tests'] }
-test-all = { depends-on = [
-  'unit-tests',
-  'functional-tests',
-  'integration-tests',
-  'script-tests',
-] }
 
 # Full local gate before opening a PR: every static check, unit coverage,
 # all tests, tutorial execution + output verification (as scripts AND

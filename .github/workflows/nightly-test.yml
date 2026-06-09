@@ -31,10 +31,32 @@ jobs:
       - name: Set up pixi
         uses: ./.github/actions/setup-pixi
 
-      - name: Run the full test suite (all tiers)
-        run: pixi run test-all
+      # Run each tier as its own step for per-suite visibility. The two
+      # tutorial steps must stay sequential — they share
+      # tmp/tutorials/projects/ — so they run as ordered steps rather than
+      # a single depends-on aggregate. `if: ${{ !cancelled() }}` lets a
+      # failure in one tier still report the others.
+      - name: Unit tests
+        run: pixi run unit-tests
+
+      - name: Functional tests
+        if: ${{ !cancelled() }}
+        run: pixi run functional-tests
+
+      - name: Integration tests
+        if: ${{ !cancelled() }}
+        run: pixi run integration-tests
+
+      - name: Tutorials as scripts + output check
+        if: ${{ !cancelled() }}
+        run: pixi run script-tests-checked
+
+      - name: Tutorials + verification notebooks + output check
+        if: ${{ !cancelled() }}
+        run: pixi run notebook-tests-checked
 
       - name: Run performance benchmarks
+        if: ${{ !cancelled() }}
         run: pixi run benchmarks
 
       - name: Upload benchmark results

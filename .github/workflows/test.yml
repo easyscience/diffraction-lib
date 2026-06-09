@@ -60,7 +60,7 @@ jobs:
       # Select the test cost tier by branch (see ADR test-suite-and-validation):
       # the pr tier runs on develop/master and pull requests; feature-branch
       # pushes run only the default (fast) tier. The nightly tier runs
-      # separately in nightly.yml.
+      # separately in nightly-test.yml.
       - name: Set test tier marker expression
         id: set-mark
         run: |

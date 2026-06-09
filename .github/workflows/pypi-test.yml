@@ -10,16 +10,11 @@ on:
 # Allow only one concurrent workflow, skipping runs queued between the run
 # in-progress and latest queued. And cancel in-progress runs.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
   contents: read
-
-# Set the environment variables to be used in all jobs defined in this workflow
-env:
-  CI_BRANCH: ${{ github.head_ref || github.ref_name }}
-  DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
 
 jobs:
   # Job 1: Test installation from PyPI on multiple OS
@@ -77,10 +72,12 @@ jobs:
         run: pixi run python -m pytest ../tests/unit/ --color=yes -v
 
       - name: Run functional tests to verify the installation
+        if: ${{ !cancelled() }}
         working-directory: easydiffraction
         run: pixi run python -m pytest ../tests/functional/ --color=yes -v
 
       - name: Run integration tests to verify the installation
+        if: ${{ !cancelled() }}
         working-directory: easydiffraction
         run: pixi run python -m pytest ../tests/integration/ --color=yes -n auto
 

@@ -164,6 +164,9 @@ FIXED_ASPECT_WRAPPER_CLASS_NAME = 'ed-fixed-aspect-plotly-wrapper'
 THEME_SYNC_META_KEY = 'ed_plotly_theme_sync'
 THEME_SYNC_AXIS_FRAME_SHAPE_INDEXES_KEY = 'axis_frame_shape_indexes'
 THEME_SYNC_CORRELATION_HEATMAP_KEY = 'correlation_heatmap'
+# Name tag on the top-left metrics box so the theme-switch script can
+# re-theme its background and border (not just its font colour).
+_METRICS_ANNOTATION_NAME = 'ed-metrics-box'
 
 
 def _typed_arrays_to_float32(value: object) -> object:
@@ -1329,6 +1332,11 @@ const applyAnnotationTheme = function (update, colors) {
     );
     for (let index = 0; index < annotations.length; index += 1) {
         update['annotations[' + index + '].font.color'] = colors.foreground;
+        const annotation = annotations[index];
+        if (annotation && annotation.name === '__METRICS_ANNOTATION_NAME__') {
+            update['annotations[' + index + '].bgcolor'] = colors.legend;
+            update['annotations[' + index + '].bordercolor'] = colors.axisFrame;
+        }
     }
 };
 
@@ -1508,6 +1516,7 @@ applyTheme();
 """
         return (
             script
+            .replace('__METRICS_ANNOTATION_NAME__', _METRICS_ANNOTATION_NAME)
             .replace('__THEME_SYNC_META_KEY__', THEME_SYNC_META_KEY)
             .replace(
                 '__THEME_SYNC_AXIS_FRAME_SHAPE_INDEXES_KEY__',
@@ -2726,6 +2735,9 @@ scheduleResize();
         # Anchor at the top-left corner with equal pixel margins so the
         # left and top gaps match regardless of the panel aspect ratio.
         fig.add_annotation(
+            # Tagged so the theme-switch script re-themes this box's
+            # background and border, not just its font colour.
+            name=_METRICS_ANNOTATION_NAME,
             text='<br>'.join(lines),
             xref='x domain',
             yref='y domain',

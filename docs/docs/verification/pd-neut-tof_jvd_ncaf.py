@@ -1,36 +1,11 @@
 # %% [markdown]
-# # NaCaAlF — neutron powder, time-of-flight, Jorgensen–Von Dreele
-#
-# Cross-engine and external-reference verification for NaCaAlF
-# (Na₂Ca₃Al₂F₁₄) in time-of-flight geometry: the **same** pattern is
-# calculated with each EasyDiffraction engine (`cryspy`, `crysfml`) and
-# compared against a **FullProf** reference, on identical input
-# parameters and **without any fitting**.
-#
-# This Jorgensen–Von Dreele profile has no Lorentzian (`gamma`) term, so
-# both engines reproduce the FullProf peak *shapes* closely — but they
-# sit at a different absolute time-of-flight intensity scale (and differ
-# from each other in scale), so the scale convention is investigated by
-# refinement below.
+# # Na₂Ca₃Al₂F₁₄ — neutron powder, time-of-flight, Jorgensen–Von Dreele
 
 # %%
 import easydiffraction as ed
 from easydiffraction import ExperimentFactory
 from easydiffraction import StructureFactory
 from easydiffraction.analysis import verification as verify
-
-# %% [markdown]
-# ## Load the FullProf reference
-#
-# This reference is a two-column ``x y`` profile.
-
-# %%
-reference_dir = verify.bundled_reference_dir() / 'pd-neut-tof_jvd_ncaf'
-x, calc_fullprof = verify.load_columned_profile(
-    str(reference_dir / 'ncaf_tof.sub'),
-    skip_rows=1,
-    columns=(0, 1),
-)
 
 # %% [markdown]
 # ## Build the project
@@ -45,15 +20,14 @@ project = ed.Project()
 structure = StructureFactory.from_scratch(name='ncaf')
 structure.space_group.name_h_m = 'I 21 3'  # FullProf Space group symbol
 structure.cell.length_a = 10.250256  # FullProf a
-structure.cell.length_b = 10.250256  # FullProf b
-structure.cell.length_c = 10.250256  # FullProf c
 structure.atom_sites.create(
     label='Ca',  # FullProf Atom
     type_symbol='Ca',  # FullProf Typ
     fract_x=0.46610,  # FullProf X
     fract_y=0.0,  # FullProf Y
     fract_z=0.25,  # FullProf Z
-    adp_iso=0.88770,  # FullProf Biso
+    adp_type='Biso',  # FullProf Biso
+    adp_iso=0.88721,  # FullProf Biso
 )
 structure.atom_sites.create(
     label='Al',  # FullProf Atom
@@ -61,7 +35,8 @@ structure.atom_sites.create(
     fract_x=0.25163,  # FullProf X
     fract_y=0.25163,  # FullProf Y
     fract_z=0.25163,  # FullProf Z
-    adp_iso=0.65283,  # FullProf Biso
+    adp_type='Biso',  # FullProf Biso
+    adp_iso=0.65230,  # FullProf Biso
 )
 structure.atom_sites.create(
     label='Na',  # FullProf Atom
@@ -69,7 +44,8 @@ structure.atom_sites.create(
     fract_x=0.08472,  # FullProf X
     fract_y=0.08472,  # FullProf Y
     fract_z=0.08472,  # FullProf Z
-    adp_iso=1.89281,  # FullProf Biso
+    adp_type='Biso',  # FullProf Biso
+    adp_iso=1.89168,  # FullProf Biso
 )
 structure.atom_sites.create(
     label='F1',  # FullProf Atom
@@ -77,7 +53,8 @@ structure.atom_sites.create(
     fract_x=0.13748,  # FullProf X
     fract_y=0.30533,  # FullProf Y
     fract_z=0.11947,  # FullProf Z
-    adp_iso=0.89562,  # FullProf Biso
+    adp_type='Biso',  # FullProf Biso
+    adp_iso=0.89535,  # FullProf Biso
 )
 structure.atom_sites.create(
     label='F2',  # FullProf Atom
@@ -85,7 +62,8 @@ structure.atom_sites.create(
     fract_x=0.36263,  # FullProf X
     fract_y=0.36333,  # FullProf Y
     fract_z=0.18669,  # FullProf Z
-    adp_iso=1.27227,  # FullProf Biso
+    adp_type='Biso',  # FullProf Biso
+    adp_iso=1.27175,  # FullProf Biso
 )
 structure.atom_sites.create(
     label='F3',  # FullProf Atom
@@ -93,10 +71,41 @@ structure.atom_sites.create(
     fract_x=0.46120,  # FullProf X
     fract_y=0.46120,  # FullProf Y
     fract_z=0.46120,  # FullProf Z
-    adp_iso=0.78071,  # FullProf Biso
+    adp_type='Biso',  # FullProf Biso
+    adp_iso=0.78029,  # FullProf Biso
 )
 
 project.structures.add(structure)
+
+# %% [markdown]
+# ## Load the FullProf reference
+
+# %%
+FULLPROF_PROJECT_DIR = 'pd-neut-tof_jvd_ncaf'
+FULLPROF_PRF_FILE = 'tmpl_one_bank.prf'
+FULLPROF_BAC_FILE = 'tmpl_one_bank.bac'
+FULLPROF_ZERO = -13.88128  # FullProf Zero
+FULLPROF_SCALE = 4.019304  # FullProf Scale
+FULLPROF_TWOTHETA_BANK = 152.827  # FullProf 2ThetaBank
+FULLPROF_DTT1 = 20773.12305  # FullProf Dtt1
+FULLPROF_DTT2 = -1.08308  # FullProf Dtt2
+FULLPROF_SIGMA_0 = 0.0  # FullProf Sigma-0
+FULLPROF_SIGMA_1 = 0.0  # FullProf Sigma-1
+FULLPROF_SIGMA_2 = 15.6959  # FullProf Sigma-2
+FULLPROF_GAMMA_0 = 0.0  # FullProf Gamma-0
+FULLPROF_GAMMA_1 = 0.0  # FullProf Gamma-1
+FULLPROF_GAMMA_2 = 0.0  # FullProf Gamma-2
+FULLPROF_ALPHA_0 = -0.009276  # FullProf alph0
+FULLPROF_ALPHA_1 = 0.109622  # FullProf alph1
+FULLPROF_BETA_0 = 0.006705  # FullProf beta0
+FULLPROF_BETA_1 = 0.009708  # FullProf beta1
+
+x, calc_fullprof = verify.load_fullprof_calc_profile(
+    FULLPROF_PROJECT_DIR,
+    FULLPROF_PRF_FILE,
+    FULLPROF_BAC_FILE,
+    FULLPROF_ZERO,
+)
 
 # %% [markdown]
 # ## Create the experiment
@@ -111,133 +120,110 @@ experiment = ExperimentFactory.from_scratch(
 )
 verify.set_reference_as_measured(experiment, x, calc_fullprof)
 
-experiment.instrument.setup_twotheta_bank = 152.827  # FullProf 2ThetaBank
-experiment.instrument.calib_d_to_tof_linear = 20773.12305  # FullProf Dtt1
-experiment.instrument.calib_d_to_tof_quad = -1.08308  # FullProf Dtt2
+experiment.linked_phases.create(id='ncaf', scale=FULLPROF_SCALE)
+
+experiment.instrument.setup_twotheta_bank = FULLPROF_TWOTHETA_BANK
+experiment.instrument.calib_d_to_tof_linear = FULLPROF_DTT1
+experiment.instrument.calib_d_to_tof_quad = FULLPROF_DTT2
 
 experiment.peak.type = 'jorgensen-von-dreele'
-experiment.peak.broad_gauss_sigma_0 = 0.0  # FullProf Sigma-0
-experiment.peak.broad_gauss_sigma_1 = 0.0  # FullProf Sigma-1
-experiment.peak.broad_gauss_sigma_2 = 15.6959  # FullProf Sigma-2
-experiment.peak.exp_rise_alpha_0 = -0.009276  # FullProf alph0
-experiment.peak.exp_rise_alpha_1 = 0.109623  # FullProf alph1
-experiment.peak.exp_decay_beta_0 = 0.006705  # FullProf beta0
-experiment.peak.exp_decay_beta_1 = 0.009708  # FullProf beta1
-
-experiment.linked_phases.create(id='ncaf', scale=4.019921)  # FullProf Scale
+experiment.peak.broad_gauss_sigma_0 = FULLPROF_SIGMA_0
+experiment.peak.broad_gauss_sigma_1 = FULLPROF_SIGMA_1
+experiment.peak.broad_gauss_sigma_2 = FULLPROF_SIGMA_2
+experiment.peak.broad_lorentz_gamma_0 = FULLPROF_GAMMA_0
+experiment.peak.broad_lorentz_gamma_1 = FULLPROF_GAMMA_1
+experiment.peak.broad_lorentz_gamma_2 = FULLPROF_GAMMA_2
+experiment.peak.exp_rise_alpha_0 = FULLPROF_ALPHA_0
+experiment.peak.exp_rise_alpha_1 = FULLPROF_ALPHA_1
+experiment.peak.exp_decay_beta_0 = FULLPROF_BETA_0
+experiment.peak.exp_decay_beta_1 = FULLPROF_BETA_1
 
 project.experiments.add(experiment)
 
 # %% [markdown]
-# ## Calculate the pattern with each engine
-
-# %%
-calc_ed_cryspy = verify.calculate_pattern(project, experiment, 'cryspy')
-calc_ed_crysfml = verify.calculate_pattern(project, experiment, 'crysfml')
-
-# %% [markdown]
-# ## Compare each engine against FullProf
-
-# %%
-project.display.pattern_comparison(
-    'ncaf',
-    reference=calc_fullprof,
-    candidate=calc_ed_cryspy,
-    reference_label='FullProf',
-    candidate_label='EasyDiffraction (cryspy)',
-)
-
-# %%
-project.display.pattern_comparison(
-    'ncaf',
-    reference=calc_fullprof,
-    candidate=calc_ed_crysfml,
-    reference_label='FullProf',
-    candidate_label='EasyDiffraction (crysfml)',
-)
-
-# %% [markdown]
-# ## Compare the two engines with each other
-
-# %%
-project.display.pattern_comparison(
-    'ncaf',
-    reference=calc_ed_crysfml,
-    candidate=calc_ed_cryspy,
-    reference_label='EasyDiffraction (crysfml)',
-    candidate_label='EasyDiffraction (cryspy)',
-)
-
-# %% [markdown]
-# ## Agreement check
-#
-# The engines reproduce the FullProf peak *shapes* but sit at different
-# absolute time-of-flight intensity scales: neither matches the FullProf
-# `.pcr` scale and the two engines differ from each other by a large
-# factor, so the absolute comparison is reported here
-# (`raise_on_failure=False`) and the scale convention is investigated
-# below.
-
-# %%
-verify.assert_patterns_agree(
-    [
-        ('cryspy vs FullProf', calc_fullprof, calc_ed_cryspy),
-        ('crysfml vs FullProf', calc_fullprof, calc_ed_crysfml),
-        ('cryspy vs crysfml', calc_ed_cryspy, calc_ed_crysfml),
-    ],
-    raise_on_failure=False,
-)
-
-# %% [markdown]
-# ## Investigate the discrepancy by refinement
-#
-# The divergence is in the scale, not the structure. So, it is freed ...
-
-# %%
-# Adjust the initial guess to be closer to the reference, to speed up the fit
-experiment.linked_phases['ncaf'].scale = 1.0932
+# ## ed-cryspy VS FullProf
 
 # %%
 experiment.calculator.type = 'cryspy'
-project.analysis.minimizer.type = 'lmfit'
+project.analysis.calculate()
+calc_ed_cryspy = experiment.data.intensity_calc
 
+project.display.pattern_comparison(
+    'ncaf',
+    reference=calc_fullprof,
+    candidate=calc_ed_cryspy,
+    reference_label='FullProf',
+    candidate_label='ed-cryspy',
+)
+
+# %% [markdown]
+# ## Fit ed-cryspy to FullProf
+
+# %%
+experiment.calculator.type = 'cryspy'
 experiment.linked_phases['ncaf'].scale.free = True
 
-# %%
 project.analysis.fit()
-
-# %% [markdown]
-# ## Goodness of fit and refined parameters
-
-# %%
 project.display.fit.results()
 
-# %% [markdown]
-# ## Refined cryspy vs FullProf
-
-# %%
-calc_ed_cryspy_refined = verify.calculate_pattern(project, experiment, 'cryspy')
+project.analysis.calculate()
+calc_ed_cryspy_refined = experiment.data.intensity_calc
 
 project.display.pattern_comparison(
     'ncaf',
     reference=calc_fullprof,
     candidate=calc_ed_cryspy_refined,
     reference_label='FullProf',
-    candidate_label='EasyDiffraction (cryspy, refined)',
+    candidate_label='ed-cryspy (refined)',
 )
 
+# %% [markdown]
+# ## ed-crysfml VS FullProf
+
 # %%
-verify.report_refinement_closeness(calc_fullprof, calc_ed_cryspy, calc_ed_cryspy_refined)
+experiment.calculator.type = 'crysfml'
+experiment.linked_phases['ncaf'].scale = FULLPROF_SCALE
+experiment.linked_phases['ncaf'].scale.free = False
+
+project.analysis.calculate()
+calc_ed_crysfml = experiment.data.intensity_calc
+
+project.display.pattern_comparison(
+    'ncaf',
+    reference=calc_fullprof,
+    candidate=calc_ed_crysfml,
+    reference_label='FullProf',
+    candidate_label='ed-crysfml',
+)
 
 # %% [markdown]
-# ## Agreement after refinement
-#
-# With the scale convention absorbed by refining the single,
-# non-structural scale (the structure stays fixed), cryspy reproduces the
-# FullProf profile within tolerance. This is asserted as a strict pass, so
-# the page is a regression check rather than a skipped illustration.
+# ## Fit ed-crysfml to FullProf
+
+# %%
+experiment.linked_phases['ncaf'].scale.free = True
+
+project.analysis.fit()
+project.display.fit.results()
+
+project.analysis.calculate()
+calc_ed_crysfml_refined = experiment.data.intensity_calc
+
+project.display.pattern_comparison(
+    'ncaf',
+    reference=calc_fullprof,
+    candidate=calc_ed_crysfml_refined,
+    reference_label='FullProf',
+    candidate_label='ed-crysfml (refined)',
+)
+
+# %% [markdown]
+# ## Agreement check
 
 # %%
 verify.assert_patterns_agree(
-    [('cryspy vs FullProf (refined)', calc_fullprof, calc_ed_cryspy_refined)],
+    [
+        ('cryspy vs FullProf', calc_fullprof, calc_ed_cryspy_refined),
+        ('crysfml vs FullProf', calc_fullprof, calc_ed_crysfml_refined),
+    ],
+    raise_on_failure=False,
 )

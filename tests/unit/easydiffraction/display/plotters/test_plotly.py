@@ -248,6 +248,12 @@ def test_html_post_script_carries_theme_resize_and_legend_toggle():
     assert 'const correlationColorscale = function (colors) {' in post_script
     assert 'const themeSync = meta.ed_plotly_theme_sync;' in post_script
     assert 'const applyAnnotationTheme = function (update, colors) {' in post_script
+    # The top-left metrics box must re-theme its background and border on a
+    # theme switch, not just its font colour (its baked light bgcolor would
+    # otherwise survive the dark switch).
+    assert "annotation.name === 'ed-metrics-box'" in post_script
+    assert "].bgcolor'] = colors.legend;" in post_script
+    assert "].bordercolor'] = colors.axisFrame;" in post_script
     assert 'const shapeIndexes = themeSync.axis_frame_shape_indexes;' in post_script
     assert 'if (themeSync.correlation_heatmap !== true) {' in post_script
     assert 'window.Plotly.restyle(' in post_script

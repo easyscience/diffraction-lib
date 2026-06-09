@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+import string
 from typing import TYPE_CHECKING
 from typing import Any
 
@@ -37,6 +38,9 @@ except ImportError:
 _INSTRUMENT_ATTRIBUTE_MAP: tuple[tuple[str, str], ...] = (
     ('setup_wavelength', '_diffrn_radiation_wavelength'),
     ('calib_twotheta_offset', '_pd_meas_2theta_offset'),
+    # crysfml has no SyCos/SySin equivalent, so the CWL
+    # calib_sample_displacement and calib_sample_transparency
+    # corrections are intentionally left unmapped here.
     ('calib_d_to_tof_offset', '_pd_meas_tof_offset'),
     ('calib_d_to_tof_linear', '_pd_meas_tof_dtt1'),
     ('calib_d_to_tof_quad', '_pd_meas_tof_dtt2'),
@@ -66,6 +70,27 @@ _PEAK_ATTRIBUTE_MAP: tuple[tuple[str, str], ...] = (
     ('exp_rise_alpha_0', '_pd_jorg_vondreele_alpha0'),
     ('exp_rise_alpha_1', '_pd_jorg_vondreele_alpha1'),
 )
+
+
+def _element_symbol(type_symbol: str) -> str:
+    """
+    Strip a leading isotope number from an atom type symbol.
+
+    CrysFML resolves scattering by element and does not understand
+    isotope prefixes such as ``11B`` or ``2H`` (cryspy does). Returning
+    the bare element symbol lets one model drive both engines.
+
+    Parameters
+    ----------
+    type_symbol : str
+        Atom type symbol, optionally isotope-prefixed (e.g. ``11B``).
+
+    Returns
+    -------
+    str
+        The symbol with any leading digits removed (e.g. ``B``).
+    """
+    return type_symbol.lstrip(string.digits)
 
 
 @CalculatorFactory.register
@@ -262,7 +287,7 @@ class CrysfmlCalculator(CalculatorBase):
         for atom in structure.atom_sites:
             atom_site = {
                 '_label': atom.label.value,
-                '_type_symbol': atom.type_symbol.value,
+                '_type_symbol': _element_symbol(atom.type_symbol.value),
                 '_fract_x': atom.fract_x.value,
                 '_fract_y': atom.fract_y.value,
                 '_fract_z': atom.fract_z.value,
