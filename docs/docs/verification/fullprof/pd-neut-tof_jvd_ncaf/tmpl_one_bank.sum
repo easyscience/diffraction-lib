@@ -1,21 +1,17 @@
 
 
         **********************************************************
-        ** PROGRAM FullProf.2k (Version 8.40 - Feb2026-ILL JRC) **
+        ** PROGRAM FullProf.2k (Version 7.95 - Jan2023-ILL JRC) **
         **********************************************************
                        M U L T I -- P A T T E R N                 
             Rietveld, Profile Matching & Integrated Intensity     
                  Refinement of X-ray and/or Neutron Data
 
 
-    Date: 09/06/2026  Time: 12:42:04.250                              
+    Date: 09/06/2026  Time: 15:11:13.659                              
 
  => PCR file code: tmpl_one_bank
  => DAT file code: 55025-5_6raw.gss     -> Relative contribution: 1.0000                                                            
- => DAT file code: 55025-4_7raw.gss     -> Relative contribution: 1.0000                                                            
- => DAT file code: 55025-3_8raw.gss     -> Relative contribution: 1.0000                                                            
- => DAT file code: 55025-2_9raw.gss     -> Relative contribution: 1.0000                                                            
- => DAT file code: 55025-1_10raw.gss    -> Relative contribution: 1.0000                                                            
  => Title:YAG highres
 
  ==> CONDITIONS OF THIS RUN FOR PATTERN No.:  1
@@ -24,77 +20,13 @@
  => Neutron Time-Of-Flight data                                                                                                     
  => Abcisa variable is T.O.F. in microsecs
  => The   13th default profile function was selected
-
- ==> CONDITIONS OF THIS RUN FOR PATTERN No.:  2
-
- => Global Refinement of neutron powder data                                                                                        
- => Neutron Time-Of-Flight data                                                                                                     
- => Abcisa variable is T.O.F. in microsecs
- => The   13th default profile function was selected
-
- ==> CONDITIONS OF THIS RUN FOR PATTERN No.:  3
-
- => Global Refinement of neutron powder data                                                                                        
- => Neutron Time-Of-Flight data                                                                                                     
- => Abcisa variable is T.O.F. in microsecs
- => The   13th default profile function was selected
-
- ==> CONDITIONS OF THIS RUN FOR PATTERN No.:  4
-
- => Global Refinement of neutron powder data                                                                                        
- => Neutron Time-Of-Flight data                                                                                                     
- => Abcisa variable is T.O.F. in microsecs
- => The   13th default profile function was selected
-
- ==> CONDITIONS OF THIS RUN FOR PATTERN No.:  5
-
- => Global Refinement of neutron powder data                                                                                        
- => Neutron Time-Of-Flight data                                                                                                     
- => Abcisa variable is T.O.F. in microsecs
- => The   13th default profile function was selected
  => Invalid instr parameter for pattern:  1
- => Absorption correction type: 2
- => Base of peaks: 2.0*HW*   40.00
- => Invalid instr parameter for pattern:  2
- => Absorption correction type: 2
- => Base of peaks: 2.0*HW*   40.00
- => Invalid instr parameter for pattern:  3
- => Absorption correction type: 2
- => Base of peaks: 2.0*HW*   40.00
- => Invalid instr parameter for pattern:  4
- => Absorption correction type: 2
- => Base of peaks: 2.0*HW*   40.00
- => Invalid instr parameter for pattern:  5
  => Absorption correction type: 2
  => Base of peaks: 2.0*HW*   40.00
  ==> T.O.F. range, and number of points:
     TOFmin:    7267.568359  TOFmax:  103417.671875
     No. of points:   4122
- ==> T.O.F. range, and number of points:
-    TOFmin:    7463.463379  TOFmax:  109083.484375
-    No. of points:   4044
- ==> T.O.F. range, and number of points:
-    TOFmin:    7549.536621  TOFmax:  117086.195312
-    No. of points:   3972
- ==> T.O.F. range, and number of points:
-    TOFmin:    5202.200195  TOFmax:  136018.015625
-    No. of points:   4398
- ==> T.O.F. range, and number of points:
-    TOFmin:    4002.317139  TOFmax:  265781.843750
-    No. of points:   4462
  =>-------> Pattern#  1
- => Crystal Structure Refinement for phase: 1
- => The    9th profile function was selected for phase no.  1
- =>-------> Pattern#  2
- => Crystal Structure Refinement for phase: 1
- => The    9th profile function was selected for phase no.  1
- =>-------> Pattern#  3
- => Crystal Structure Refinement for phase: 1
- => The    9th profile function was selected for phase no.  1
- =>-------> Pattern#  4
- => Crystal Structure Refinement for phase: 1
- => The    9th profile function was selected for phase no.  1
- =>-------> Pattern#  5
  => Crystal Structure Refinement for phase: 1
  => The    9th profile function was selected for phase no.  1
  => The density (volumic mass) of phase 1 is:    2.998 g/cm3
@@ -175,8 +107,8 @@
 
 
  => Absorption parameters: 
-                              0.00000       0.00000    
-                              0.00000       0.00000    
+                              0.00000   0.00000
+                              0.00000   0.00000
 
 
 
@@ -199,7 +131,7 @@
  => Rp:  17.7     Rwp:  12.5     Rexp:    3.21 Chi2:  15.2    
  => Deviance:  0.338E+05     Dev*  :   8.929    
  => DW-Stat.:    0.3495     DW-exp:     1.8991
- => N-sigma of the GoF:      620.211
+ => N-sigma of the GoF:      620.204
 
  ==> RELIABILITY FACTORS FOR POINTS WITH BRAGG CONTRIBUTIONS FOR PATTERN:  1
 
@@ -210,7 +142,7 @@
  => Rp:  17.5     Rwp:  12.5     Rexp:    3.14 Chi2:  15.9    
  => Deviance:  0.336E+05     Dev*  :   9.232    
  => DW-Stat.:    0.3501     DW-exp:     1.8970
- => N-sigma of the GoF:      633.890
+ => N-sigma of the GoF:      633.883
 
  => Global user-weigthed Chi2 (Bragg contrib.):   15.9    
 
@@ -223,7 +155,7 @@
  => Rf-factor=  19.6             ATZ:       17501.770   Brindley:  1.0000
 
  
-              CPU Time:     0.734 seconds
-                            0.012 minutes
+              CPU Time:     0.320 seconds
+                            0.005 minutes
 
- => Run finished at:     Date: 09/06/2026  Time: 12:42:04.985                              
+ => Run finished at:     Date: 09/06/2026  Time: 15:11:13.975                              
