@@ -24,6 +24,7 @@ from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.utils.logging import log
 
 
 class TotalDataPoint(CategoryItem):
@@ -248,6 +249,15 @@ class TotalDataBase(CategoryCollection):
         called_by_minimizer: bool = False,
     ) -> None:
         experiment = self._parent
+        if not self._items:
+            msg = (
+                f"Cannot calculate experiment '{experiment.name}' without measured "
+                'data: total scattering (PDF) requires a measured r-grid. '
+                'Generating it from data_range is not yet supported. Load '
+                'measured data first.'
+            )
+            log.error(msg, exc_type=NotImplementedError)
+            return
         experiments = experiment._parent
         project = experiments._parent
         structures = project.structures

@@ -370,6 +370,14 @@ class ReflnDataBase(CategoryCollection):
         called_by_minimizer: bool = False,
     ) -> None:
         experiment = self._parent
+        if not self._items:
+            msg = (
+                f"Cannot calculate experiment '{experiment.name}' without measured "
+                'data: single-crystal reflection generation from data_range is not '
+                'yet supported. Load measured reflections first.'
+            )
+            log.error(msg, exc_type=NotImplementedError)
+            return
         experiments = experiment._parent
         project = experiments._parent
         structures = project.structures

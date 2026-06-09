@@ -214,7 +214,7 @@ Existing files:
   `intensity_calc` filled.
   Commit: `Generate powder calculation grid from data_range`
 
-- [ ] **P1.7 — Confirm calculators need no grid change; add guards.**
+- [x] **P1.7 — Confirm calculators need no grid change; add guards.**
   Verify `cryspy._cif_range_section` and
   `crysfml._update_experiment_dict_from_data` work unchanged now that
   `experiment.data.x` is populated from the generated grid (the
@@ -296,7 +296,7 @@ by hand.
 - [x] P1.4 Derived sinθ/λ + d-spacing views and defaults
 - [x] P1.5 Guard data_range; subsume measured_range
 - [x] P1.6 Generate powder grid from data_range
-- [ ] P1.7 Calculator guards (SC/total)
+- [x] P1.7 Calculator guards (SC/total)
 - [ ] P1.8 Relax display gates for calculated-only
 - [ ] P1.9 Docs touch-ups
 - [ ] P1.10 Phase 1 review gate
