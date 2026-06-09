@@ -454,6 +454,11 @@ class PdDataBase(CategoryCollection):
         num = int(np.floor((x_max - x_min) / x_step + _GRID_STEP_TOLERANCE)) + 1
         return x_min + np.arange(num) * x_step
 
+    def _has_measured_intensities(self) -> bool:
+        """Return whether any point carries a finite measured intensity."""
+        measured = np.asarray(self.intensity_meas, dtype=float)
+        return bool(measured.size) and bool(np.any(np.isfinite(measured)))
+
     def _clear_generated_grid(self) -> None:
         """
         Drop an auto-generated grid so a changed range can rebuild it.
@@ -464,10 +469,21 @@ class PdDataBase(CategoryCollection):
         """
         if not self._items:
             return
-        measured = np.asarray(self.intensity_meas, dtype=float)
-        if measured.size and np.any(np.isfinite(measured)):
+        if self._has_measured_intensities():
             return
         self.clear()
+
+    def _skip_cif_serialization(self) -> bool:
+        """
+        Suppress the data loop for a generated (unmeasured) grid.
+
+        A calculated-only experiment holds generated points whose
+        measured intensities are absent (all ``NaN``); serialising them
+        would emit ``nan`` tokens and duplicate the ``data_range`` model
+        state. The grid is recomputable, so only ``data_range`` is
+        persisted. A measured scan serialises unchanged.
+        """
+        return bool(self._items) and not self._has_measured_intensities()
 
     def _ensure_grid_from_data_range(self) -> None:
         """
