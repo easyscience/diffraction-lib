@@ -119,13 +119,16 @@ scan exists.
 
 8. **Display extends the unified view.** Building on
    [Unified Pattern View](pattern-display-unification.md),
-   `background` and `bragg` become available with calculated-only data —
-   the measured-data requirement in their availability gates is dropped.
-   "No measurement" is represented as _absent_ intensities (not a
+   `background` becomes available with calculated-only data — the
+   measured-data requirement in its availability gate is dropped. "No
+   measurement" is represented as _absent_ intensities (not a
    zero-filled array), so no phantom measured curve or residual is
    drawn. A calc-only powder view is the calculated curve plus
-   background on the main panel and a Bragg row; a calc-only
-   single-crystal view shows per-reflection calculated intensities.
+   background on the main panel. The `bragg` row remains measured-gated
+   for now: rendering it without a measured scan needs the composite
+   renderer to support an absent measured series, so it is deferred (see
+   Deferred Work). A calc-only single-crystal view shows per-reflection
+   calculated intensities.
 
 9. **CIF mapping.** CWL bounds reuse the standard
    `_pd_meas.2theta_range_{min,max,inc}`. TOF, single-crystal, and the
