@@ -746,10 +746,12 @@ class ProjectDisplay:
                 ('excluded',),
             )
         if status_by_name['calculated'].available:
+            # Calculated-only: offer background and Bragg too (residual is
+            # measured-gated and filtered out automatically).
             return cls._with_available_options(
                 status_by_name,
                 ('calculated',),
-                ('excluded',),
+                optional_point_estimate,
             )
         return ()
 
@@ -802,6 +804,20 @@ class ProjectDisplay:
                 show_excluded=True,
             )
             return
+        if 'calculated' in include_set and 'measured' not in include_set:
+            # Calculated-only (optionally with background and/or excluded
+            # regions): the single-panel calc renderer overlays the
+            # background. The Bragg row is measured-gated for now (see
+            # _pattern_option_statuses), so it never reaches here.
+            self._project.rendering_plot.plotter.plot_calc(
+                expt_name=expt_name,
+                x_min=x_min,
+                x_max=x_max,
+                x=x,
+                show_background='background' in include_set,
+                show_excluded='excluded' in include_set,
+            )
+            return
         if {'measured', 'calculated'}.issubset(include_set):
             self._project.rendering_plot.plotter._plot_meas_vs_calc_request(
                 expt_name=expt_name,
@@ -846,7 +862,11 @@ class ProjectDisplay:
             and self._has_nonempty_value(getattr(pattern, 'intensity_bkg', None))
         )
         bragg_available = (
-            calculated_available
+            # The calc-only Bragg-tick row is deferred (it needs the
+            # composite renderer to support an absent measured series);
+            # keep it measured-gated until that Phase 2 work lands.
+            measured_available
+            and calculated_available
             and sample_form == SampleFormEnum.POWDER.value
             and scattering_type == ScatteringTypeEnum.BRAGG.value
             and self._has_nonempty_value(getattr(experiment, 'refln', None))

@@ -651,6 +651,7 @@ class Plotter(RendererBase):
         x: object | None = None,
         *,
         show_excluded: bool = False,
+        show_background: bool = False,
     ) -> None:
         """
         Plot calculated diffraction pattern for an experiment.
@@ -667,6 +668,9 @@ class Plotter(RendererBase):
             Optional explicit x-axis data to override stored values.
         show_excluded : bool, default=False
             Whether to show excluded fitting regions on supported plots.
+        show_background : bool, default=False
+            Whether to overlay the calculated background on the curve
+            (used by calculated-only powder views).
         """
         self._update_project_categories(expt_name)
         experiment = self._project.experiments[expt_name]
@@ -674,6 +678,7 @@ class Plotter(RendererBase):
             x_min=x_min,
             x_max=x_max,
             show_excluded=show_excluded,
+            show_background=show_background,
             x=x,
         )
         self._plot_calc_data(
@@ -5528,10 +5533,20 @@ class Plotter(RendererBase):
             else ()
         )
 
+        y_series = [y_calc]
+        labels = ['calc']
+        y_bkg = self._optional_filtered_y_array(
+            getattr(pattern, 'intensity_bkg', None),
+            ctx,
+        )
+        if self._show_background_enabled(plot_options, background_available=y_bkg is not None):
+            y_series.append(y_bkg)
+            labels.append('bkg')
+
         self._backend.plot_powder(
             x=ctx['x_filtered'],
-            y_series=[y_calc],
-            labels=['calc'],
+            y_series=y_series,
+            labels=labels,
             axes_labels=ctx['axes_labels'],
             title=f"Diffraction pattern for experiment 🔬 '{expt_name}'",
             height=self.height,

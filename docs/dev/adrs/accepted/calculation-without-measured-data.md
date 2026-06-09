@@ -181,3 +181,11 @@ scan exists.
 - Final custom CIF tag names for the TOF, sinθ/λ, and d-spacing bounds.
 - Concrete default numeric ranges and steps per experiment type.
 - The calc-only single-crystal plot specifics.
+- The calc-only powder **Bragg-tick row**. A calculated-only powder
+  view currently shows the calculated curve plus background on the main
+  panel; the Bragg row is still measured-gated. Rendering it without a
+  measured scan requires the composite powder renderer (and both the
+  Plotly and ASCII backends) to support an absent/optional measured
+  series, which needs run-verified plotting changes best done in the
+  verification phase. Until then `bragg_available` stays measured-gated
+  so the option is never offered for a calc-only pattern.
