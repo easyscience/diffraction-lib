@@ -137,13 +137,10 @@ project.display.pattern_comparison(
 experiment.linked_phases['lab6'].scale.free = True
 experiment.instrument.calib_twotheta_offset.free = True
 
-project.analysis.minimizer.type = 'lmfit'
 project.analysis.fit()
-
-experiment.calculator.type = 'crysfml'
+project.display.fit.results()
 
 project.analysis.calculate()
-
 calc_ed_crysfml_refined = experiment.data.intensity_calc
 
 project.display.pattern_comparison(

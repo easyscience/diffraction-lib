@@ -124,10 +124,9 @@ experiment.instrument.calib_twotheta_offset.free = True
 experiment.instrument.calib_sample_displacement.free = True
 experiment.instrument.calib_sample_transparency.free = True
 
-project.analysis.minimizer.type = 'lmfit'
 project.analysis.fit()
+project.display.fit.results()
 
-experiment.calculator.type = 'cryspy'
 project.analysis.calculate()
 calc_ed_cryspy_refined = experiment.data.intensity_calc
 
@@ -178,8 +177,8 @@ experiment.linked_phases['lab6'].scale.free = True
 experiment.instrument.calib_twotheta_offset.free = True
 
 project.analysis.fit()
+project.display.fit.results()
 
-experiment.calculator.type = 'crysfml'
 project.analysis.calculate()
 calc_ed_crysfml_refined = experiment.data.intensity_calc
 

@@ -140,6 +140,8 @@ experiment.calculator.type = 'crysfml'
 project.analysis.calculate()
 calc_ed_crysfml = experiment.data.intensity_calc
 
+project.display.fit.results()
+
 project.display.pattern_comparison(
     'lbco',
     reference=calc_fullprof,

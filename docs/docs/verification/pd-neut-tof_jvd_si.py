@@ -118,8 +118,8 @@ experiment.peak.broad_lorentz_gamma_1 = 9.9974
 experiment.linked_phases['si'].scale.free = True
 experiment.peak.broad_lorentz_gamma_1.free = True
 
-project.analysis.minimizer.type = 'lmfit'
 project.analysis.fit()
+project.display.fit.results()
 
 project.analysis.calculate()
 calc_ed_cryspy_refined = experiment.data.intensity_calc
@@ -161,6 +161,7 @@ experiment.linked_phases['si'].scale = 16.5579
 experiment.linked_phases['si'].scale.free = True
 
 project.analysis.fit()
+project.display.fit.results()
 
 project.analysis.calculate()
 calc_ed_crysfml_refined = experiment.data.intensity_calc

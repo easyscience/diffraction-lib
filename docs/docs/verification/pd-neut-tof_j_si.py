@@ -110,8 +110,8 @@ experiment.calculator.type = 'cryspy'
 experiment.linked_phases['si'].scale = 15.1026
 experiment.linked_phases['si'].scale.free = True
 
-project.analysis.minimizer.type = 'lmfit'
 project.analysis.fit()
+project.display.fit.results()
 
 project.analysis.calculate()
 calc_ed_cryspy_refined = experiment.data.intensity_calc
@@ -151,6 +151,7 @@ experiment.linked_phases['si'].scale = 15.1026
 experiment.linked_phases['si'].scale.free = True
 
 project.analysis.fit()
+project.display.fit.results()
 
 project.analysis.calculate()
 calc_ed_crysfml_refined = experiment.data.intensity_calc
