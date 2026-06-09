@@ -423,15 +423,28 @@ class PdDataBase(CategoryCollection):
     # Grid generation when no measured scan exists
 
     @staticmethod
-    def _grid_from_data_range(data_range: object) -> np.ndarray | None:
-        """Return an evenly spaced x-grid from the data range, or None."""
+    def _grid_from_data_range(data_range: object, experiment_name: str) -> np.ndarray | None:
+        """
+        Return an evenly spaced x-grid from the data range.
+
+        Returns ``None`` when the range cannot be resolved at all (for
+        example no instrument to project defaults), leaving the calc path
+        to report its own "without measured data" error. Raises a clear,
+        named error for an inverted or degenerate range, which is user
+        input rather than a missing source.
+        """
         x_min = data_range.x_min
         x_max = data_range.x_max
         x_step = data_range.x_step
-        if x_step is None or not np.isfinite(x_step) or x_step <= 0:
+        if x_step is None or not (np.isfinite(x_min) and np.isfinite(x_max) and np.isfinite(x_step)):
             return None
-        if not (np.isfinite(x_min) and np.isfinite(x_max)) or x_max <= x_min:
-            return None
+        if x_max <= x_min or x_step <= 0:
+            msg = (
+                f"Cannot build a calculation grid for experiment '{experiment_name}': "
+                f'the data range is empty or inverted (min={x_min}, max={x_max}, '
+                f'step={x_step}). Set data_range bounds with min < max and step > 0.'
+            )
+            raise ValueError(msg)
         num = int(round((x_max - x_min) / x_step)) + 1
         return x_min + np.arange(num) * x_step
 
@@ -464,7 +477,8 @@ class PdDataBase(CategoryCollection):
         data_range = getattr(self._parent, 'data_range', None)
         if data_range is None:
             return
-        grid = self._grid_from_data_range(data_range)
+        experiment_name = getattr(self._parent, 'name', '?')
+        grid = self._grid_from_data_range(data_range, experiment_name)
         if grid is None or grid.size == 0:
             return
         self._create_items_set_xcoord_and_id(grid)
