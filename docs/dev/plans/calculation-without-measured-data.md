@@ -183,7 +183,7 @@ Existing files:
   (`datablocks/experiment/categories/__init__.py` if it aggregates).
   Commit: `Expose data_range on experiment items`
 
-- [ ] **P1.4 — Derived sinθ/λ and d-spacing views, axis aliases,
+- [x] **P1.4 — Derived sinθ/λ and d-spacing views, axis aliases,
   defaults.** Add `sin_theta_over_lambda`, `d_spacing`, and
   `x_{min,max,step}` derived views on each `data_range` class
   (`sinθ/λ = 1/(2·d)`; CWL via `setup_wavelength`, TOF via
@@ -293,7 +293,7 @@ by hand.
 - [x] P1.1 Promote ADR to accepted
 - [x] P1.2 Add data_range category package
 - [x] P1.3 Attach data_range to experiment items
-- [ ] P1.4 Derived sinθ/λ + d-spacing views and defaults
+- [x] P1.4 Derived sinθ/λ + d-spacing views and defaults
 - [ ] P1.5 Guard data_range; subsume measured_range
 - [ ] P1.6 Generate powder grid from data_range
 - [ ] P1.7 Calculator guards (SC/total)

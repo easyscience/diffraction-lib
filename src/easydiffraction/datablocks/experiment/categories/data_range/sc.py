@@ -83,12 +83,25 @@ class ScDataRange(DataRangeBase):
         )
 
     # ------------------------------------------------------------------
-    #  Public properties
+    #  Defaults projection
+    # ------------------------------------------------------------------
+
+    def _ensure_default_range(self) -> None:
+        """Fill unset sinθ/λ bounds from the default d window."""
+        sthovl_min, sthovl_max = self._default_sin_theta_over_lambda_bounds()
+        if np.isnan(self._sin_theta_over_lambda_min.value):
+            self._sin_theta_over_lambda_min._value = sthovl_min
+        if np.isnan(self._sin_theta_over_lambda_max.value):
+            self._sin_theta_over_lambda_max._value = sthovl_max
+
+    # ------------------------------------------------------------------
+    #  Stored axis (sinθ/λ)
     # ------------------------------------------------------------------
 
     @property
     def sin_theta_over_lambda_min(self) -> float:
         """Lower sinθ/λ bound of the calculation range (Å⁻¹)."""
+        self._ensure_default_range()
         return self._sin_theta_over_lambda_min.value
 
     @sin_theta_over_lambda_min.setter
@@ -99,9 +112,43 @@ class ScDataRange(DataRangeBase):
     @property
     def sin_theta_over_lambda_max(self) -> float:
         """Upper sinθ/λ bound of the calculation range (Å⁻¹)."""
+        self._ensure_default_range()
         return self._sin_theta_over_lambda_max.value
 
     @sin_theta_over_lambda_max.setter
     def sin_theta_over_lambda_max(self, value: float) -> None:
         """Set the upper sinθ/λ bound of the calculation range (Å⁻¹)."""
         self._sin_theta_over_lambda_max.value = value
+
+    # ------------------------------------------------------------------
+    #  Active-axis aliases (single crystal has no profile step)
+    # ------------------------------------------------------------------
+
+    @property
+    def x_min(self) -> float:
+        """Lower bound on the active (sinθ/λ) axis (Å⁻¹)."""
+        return self.sin_theta_over_lambda_min
+
+    @property
+    def x_max(self) -> float:
+        """Upper bound on the active (sinθ/λ) axis (Å⁻¹)."""
+        return self.sin_theta_over_lambda_max
+
+    @property
+    def x_step(self) -> None:
+        """Single-crystal data has no profile step."""
+        return None
+
+    # ------------------------------------------------------------------
+    #  Derived d-spacing view
+    # ------------------------------------------------------------------
+
+    @property
+    def d_spacing_min(self) -> float:
+        """Smallest d-spacing in the range (at sinθ/λ_max) (Å)."""
+        return float(1.0 / (2.0 * self.sin_theta_over_lambda_max))
+
+    @property
+    def d_spacing_max(self) -> float:
+        """Largest d-spacing in the range (at sinθ/λ_min) (Å)."""
+        return float(1.0 / (2.0 * self.sin_theta_over_lambda_min))

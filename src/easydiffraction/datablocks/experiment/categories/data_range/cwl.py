@@ -12,12 +12,18 @@ from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.variable import NumericDescriptor
+from easydiffraction.datablocks.experiment.categories.data_range.base import DEFAULT_NUM_POINTS
 from easydiffraction.datablocks.experiment.categories.data_range.base import DataRangeBase
 from easydiffraction.datablocks.experiment.categories.data_range.factory import DataRangeFactory
 from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.utils.utils import twotheta_to_d
+
+# Bragg geometry caps sin(θ) at just under 1 so the 2θ projection of a
+# fine d-spacing stays a valid angle below 180°.
+_MAX_SIN_THETA = 0.999999
 
 
 @DataRangeFactory.register
@@ -95,12 +101,51 @@ class CwlPdDataRange(DataRangeBase):
         )
 
     # ------------------------------------------------------------------
-    #  Public properties
+    #  Defaults projection
+    # ------------------------------------------------------------------
+
+    def _wavelength(self) -> float | None:
+        """Return the instrument wavelength (Å), or None if absent."""
+        instrument = self._instrument()
+        if instrument is None:
+            return None
+        return instrument.setup_wavelength.value
+
+    @staticmethod
+    def _two_theta_from_sin_theta_over_lambda(
+        sin_theta_over_lambda: float,
+        wavelength: float,
+    ) -> float:
+        """Return 2θ (deg) for a sinθ/λ value at the given wavelength."""
+        sin_theta = min(wavelength * sin_theta_over_lambda, _MAX_SIN_THETA)
+        return float(2.0 * np.degrees(np.arcsin(sin_theta)))
+
+    def _ensure_default_range(self) -> None:
+        """Project the default d window onto unset 2θ bounds and step."""
+        wavelength = self._wavelength()
+        if wavelength is None:
+            return
+        sthovl_min, sthovl_max = self._default_sin_theta_over_lambda_bounds()
+        if np.isnan(self._two_theta_min.value):
+            self._two_theta_min._value = self._two_theta_from_sin_theta_over_lambda(
+                sthovl_min, wavelength
+            )
+        if np.isnan(self._two_theta_max.value):
+            self._two_theta_max._value = self._two_theta_from_sin_theta_over_lambda(
+                sthovl_max, wavelength
+            )
+        if np.isnan(self._two_theta_inc.value):
+            span = self._two_theta_max.value - self._two_theta_min.value
+            self._two_theta_inc._value = span / (DEFAULT_NUM_POINTS - 1)
+
+    # ------------------------------------------------------------------
+    #  Stored axis (2θ)
     # ------------------------------------------------------------------
 
     @property
     def two_theta_min(self) -> float:
         """Lower 2θ bound of the calculation range (deg)."""
+        self._ensure_default_range()
         return self._two_theta_min.value
 
     @two_theta_min.setter
@@ -111,6 +156,7 @@ class CwlPdDataRange(DataRangeBase):
     @property
     def two_theta_max(self) -> float:
         """Upper 2θ bound of the calculation range (deg)."""
+        self._ensure_default_range()
         return self._two_theta_max.value
 
     @two_theta_max.setter
@@ -121,9 +167,66 @@ class CwlPdDataRange(DataRangeBase):
     @property
     def two_theta_inc(self) -> float:
         """2θ step between calculation points (deg)."""
+        self._ensure_default_range()
         return self._two_theta_inc.value
 
     @two_theta_inc.setter
     def two_theta_inc(self, value: float) -> None:
         """Set the 2θ step between calculation points (deg)."""
         self._two_theta_inc.value = value
+
+    # ------------------------------------------------------------------
+    #  Active-axis aliases
+    # ------------------------------------------------------------------
+
+    @property
+    def x_min(self) -> float:
+        """Lower bound on the active (2θ) axis (deg)."""
+        return self.two_theta_min
+
+    @property
+    def x_max(self) -> float:
+        """Upper bound on the active (2θ) axis (deg)."""
+        return self.two_theta_max
+
+    @property
+    def x_step(self) -> float:
+        """Step on the active (2θ) axis (deg)."""
+        return self.two_theta_inc
+
+    # ------------------------------------------------------------------
+    #  Derived reciprocal views (sinθ/λ, d-spacing)
+    # ------------------------------------------------------------------
+
+    def _sin_theta_over_lambda_at(self, two_theta: float) -> float:
+        """Return sinθ/λ (Å⁻¹) for a 2θ value, NaN without wavelength."""
+        wavelength = self._wavelength()
+        if wavelength is None:
+            return float('nan')
+        return float(np.sin(np.radians(two_theta / 2.0)) / wavelength)
+
+    @property
+    def sin_theta_over_lambda_min(self) -> float:
+        """Lower sinθ/λ bound derived from 2θ_min (Å⁻¹)."""
+        return self._sin_theta_over_lambda_at(self.two_theta_min)
+
+    @property
+    def sin_theta_over_lambda_max(self) -> float:
+        """Upper sinθ/λ bound derived from 2θ_max (Å⁻¹)."""
+        return self._sin_theta_over_lambda_at(self.two_theta_max)
+
+    @property
+    def d_spacing_min(self) -> float:
+        """Smallest d-spacing in the range (at 2θ_max) (Å)."""
+        wavelength = self._wavelength()
+        if wavelength is None:
+            return float('nan')
+        return float(twotheta_to_d(self.two_theta_max, wavelength))
+
+    @property
+    def d_spacing_max(self) -> float:
+        """Largest d-spacing in the range (at 2θ_min) (Å)."""
+        wavelength = self._wavelength()
+        if wavelength is None:
+            return float('nan')
+        return float(twotheta_to_d(self.two_theta_min, wavelength))
