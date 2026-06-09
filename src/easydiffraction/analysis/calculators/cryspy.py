@@ -647,12 +647,13 @@ class CryspyCalculator(CalculatorBase):
                 )
                 cryspy_expt_dict['wavelength'][0] = experiment.instrument.setup_wavelength.value
 
-                # Sample-displacement (SyCos) and transparency (SySin)
-                # peak-position corrections (cryspy PR #46). cryspy
-                # applies numpy.radians() to these internally, so the
-                # dict stores plain degrees here (unlike offset_ttheta,
-                # which is pre-converted to radians). The keys are absent
-                # on cryspy releases without PR #46, so guard before set.
+                # Sample-displacement (SyCos) and transparency
+                # (SySin) peak-position corrections (cryspy PR #46).
+                # cryspy applies numpy.radians() to these internally,
+                # so the dict stores plain degrees here (unlike
+                # offset_ttheta, which is pre-converted to radians).
+                # The keys are absent on cryspy releases without PR
+                # #46, so guard before each set.
                 if 'offset_sycos' in cryspy_expt_dict:
                     cryspy_expt_dict['offset_sycos'][0] = (
                         experiment.instrument.calib_sample_displacement.value
