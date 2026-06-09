@@ -1,18 +1,5 @@
 # %% [markdown]
 # # Pr₂NiO₄ — neutron single crystal, constant wavelength
-#
-# This page verifies the EasyDiffraction `cryspy` single-crystal
-# structure-factor calculation against **FullProf**, using the real
-# Pr₂NiO₄:Sr crystal-option refinement from
-# [cryspy issue #38](https://github.com/ikibalin/cryspy/issues/38). The
-# structure is built **in code**, the calculated F² of every reflection
-# is taken straight from the FullProf `.out` file, and the two are
-# overlaid on a y=x scatter — **without any fitting**. Single-crystal
-# Bragg calculations are supported by `cryspy` only, so `crysfml` and
-# FullProf-vs-`crysfml` panels are omitted here.
-#
-# The FullProf job is a **neutron** single-crystal refinement (Job = 1,
-# λ = 0.8302 Å with neutron scattering lengths).
 
 # %%
 import numpy as np
@@ -23,19 +10,6 @@ from easydiffraction import StructureFactory
 from easydiffraction.analysis import verification as verify
 
 # %% [markdown]
-# ## Load the FullProf reference
-#
-# `load_fullprof_sc_f2calc` reads the integrated-intensity reflection
-# table from `prnio.out` and returns `F2cal` keyed by `(h, k, l)`.
-# FullProf reports `F2cal = scale · Corr · |F|²`; the extinction
-# correction here is below 0.11 %, so once the absolute scale convention
-# is refined out (below) this is effectively a pure `|F|²` comparison.
-
-# %%
-reference_dir = verify.bundled_reference_dir() / 'sg-neut-cwl_pr2nio4'
-f2calc = verify.load_fullprof_sc_f2calc(str(reference_dir / 'prnio.out'))
-
-# %% [markdown]
 # ## Build the project
 
 # %%
@@ -43,18 +17,6 @@ project = ed.Project()
 
 # %% [markdown]
 # ## Define the structure
-#
-# Pr₂NiO₄:Sr is a K₂NiF₄-type oxide in space group `F m m m`. Two
-# FullProf conventions are converted to the EasyDiffraction (CIF)
-# convention as the structure is built:
-#
-# - **Anisotropic ADPs.** FullProf stores the dimensionless β tensor;
-#   EasyDiffraction uses U (Å²). For the orthorhombic cell
-#   `U_ij = β_ij · aᵢ · aⱼ / (2π²)`, since `a*ᵢ = 1/aᵢ`.
-# - **Occupancies.** FullProf folds the F-centring into its occupancy,
-#   so its `Occ` equals the CIF site occupancy times the number of
-#   equivalent atoms per primitive cell (the site multiplicity divided
-#   by 4). The CIF occupancies below divide that factor back out.
 
 # %%
 structure = StructureFactory.from_scratch(name='pr2nio4')
@@ -106,12 +68,18 @@ structure.atom_sites['Od'].adp_iso = 2.31435
 project.structures.add(structure)
 
 # %% [markdown]
+# ## Load the FullProf reference
+
+# %%
+FULLPROF_PROJECT_DIR = 'sg-neut-cwl_pr2nio4'
+FULLPROF_OUT_FILE = 'prnio.out'
+FULLPROF_SCALE = 0.06298  # FullProf Scale
+FULLPROF_WAVELENGTH = 0.8302  # FullProf Lambda
+
+f2calc = verify.load_fullprof_sc_f2calc(FULLPROF_PROJECT_DIR, FULLPROF_OUT_FILE)
+
+# %% [markdown]
 # ## Create the experiment
-#
-# `set_reference_reflections` creates one reflection per `(h, k, l)` in
-# the FullProf table, so `cryspy` calculates F² for exactly the same
-# set. The Becker–Coppens extinction left at its default is negligible
-# here, matching FullProf's sub-percent correction.
 
 # %%
 experiment = ExperimentFactory.from_scratch(
@@ -122,89 +90,55 @@ experiment = ExperimentFactory.from_scratch(
     scattering_type='bragg',
 )
 experiment.linked_crystal.id = 'pr2nio4'
-experiment.linked_crystal.scale = 0.06298  # FullProf Scale
-experiment.instrument.setup_wavelength = 0.8302  # FullProf Lambda
+experiment.linked_crystal.scale = FULLPROF_SCALE
+experiment.instrument.setup_wavelength = FULLPROF_WAVELENGTH
 verify.set_reference_reflections(experiment, f2calc)
 
 project.experiments.add(experiment)
 
 # %% [markdown]
-# ## Calculate the structure factors with cryspy
+# ## ed-cryspy VS FullProf
 
 # %%
 calc_ed_cryspy = verify.calculate_reflections(project, experiment, 'cryspy')
 reference, candidate = verify.align_reflections(f2calc, calc_ed_cryspy)
 
-# %% [markdown]
-# ## Compare cryspy against FullProf
-#
-# Each point is one reflection: FullProf F² on the x-axis, the cryspy F²
-# on the y-axis, at their absolute scale. Points fall on the y=x line
-# when the two calculations agree, with closeness metrics in the top-left
-# corner.
-
-# %%
 project.display.reflection_comparison(
     'pr2nio4',
     reference=reference,
     candidate=candidate,
     reference_label='FullProf',
-    candidate_label='EasyDiffraction (cryspy)',
+    candidate_label='ed-cryspy',
+)
+
+# %% [markdown]
+# ## Fit ed-cryspy to FullProf
+
+# %%
+experiment.calculator.type = 'cryspy'
+experiment.linked_crystal.scale.free = True
+
+project.analysis.fit()
+project.display.fit.results()
+
+calc_ed_cryspy_refined = verify.calculate_reflections(project, experiment, 'cryspy')
+reference_refined, candidate_refined = verify.align_reflections(f2calc, calc_ed_cryspy_refined)
+
+project.display.reflection_comparison(
+    'pr2nio4',
+    reference=reference_refined,
+    candidate=candidate_refined,
+    reference_label='FullProf',
+    candidate_label='ed-cryspy (refined)',
 )
 
 # %% [markdown]
 # ## Agreement check
-#
-# cryspy reproduces the relative reflection intensities but at a
-# different absolute F² scale from FullProf's F2cal (which folds in
-# FullProf's refined scale), so the absolute comparison is reported here
-# (`raise_on_failure=False`) and the scale convention is investigated
-# below.
 
 # %%
 verify.assert_patterns_agree(
     [
-        ('cryspy vs FullProf', reference, candidate),
+        ('cryspy vs FullProf', reference_refined, candidate_refined),
     ],
     raise_on_failure=False,
 )
-
-# %% [markdown]
-# ## Investigate the discrepancy by refinement
-#
-# Free **only** the scale and refine with cryspy, keeping the structure
-# fixed. If a scale-only fit brings the points onto the diagonal, the
-# difference is an absolute F²-scale convention, not a per-reflection
-# structure-factor disagreement.
-
-# %%
-experiment.calculator.type = 'cryspy'
-project.analysis.minimizer.type = 'lmfit'
-
-experiment.linked_crystal.scale.free = True
-
-project.analysis.fit()
-
-# %% [markdown]
-# ## Goodness of fit and refined parameters
-
-# %%
-project.display.fit.results()
-
-# %% [markdown]
-# ## Refined cryspy vs FullProf
-
-# %%
-calc_ed_cryspy_refined = verify.calculate_reflections(project, experiment, 'cryspy')
-reference_after, candidate_after = verify.align_reflections(f2calc, calc_ed_cryspy_refined)
-
-project.display.reflection_comparison(
-    'pr2nio4',
-    reference=reference_after,
-    candidate=candidate_after,
-    reference_label='FullProf',
-    candidate_label='EasyDiffraction (cryspy, refined)',
-)
-
-# %%
-verify.report_refinement_closeness(reference, candidate, candidate_after)
