@@ -18,7 +18,7 @@ The calculators (`cryspy`, `crysfml`) apply no sample-absorption
 correction. For a cylindrical sample in Debye–Scherrer geometry this is
 an angle-dependent intensity factor that boosts high-angle peaks. The
 LaB₆ verification reference (`pd-neut-cwl_tch-fcj_lab6`) was refined in
-FullProf with `μR = 0.7`; the unmodelled correction is the *entire*
+FullProf with `μR = 0.7`; the unmodelled correction is the _entire_
 intensity residual on the companion `pd-neut-cwl_tch-fcj_abs_lab6` page
 (≈5% profile difference), while the `μR = 0` page passes to corr 0.9999.
 
@@ -47,12 +47,13 @@ preferable.
 
 **References:**
 
-- A. W. Hewat, *Acta Cryst.* A35 (1979) 248 — cylindrical absorption.
+- A. W. Hewat, _Acta Cryst._ A35 (1979) 248 — cylindrical absorption.
 - N. N. Lobanov & L. Alte da Veiga, 6th EPDIC, Abstract P12-16 (1998).
 - CrysFML08:
   [`Src/CFML_Powder/Pow_Lorentz_Absorption.f90`](https://code.ill.fr/scientific-software/CrysFML2008/-/blob/master/Src/CFML_Powder/Pow_Lorentz_Absorption.f90),
   `Lorentz_abs_CW`.
-- FullProf `μR`: `.pcr` Lambda line field 7; `iabscor = 2` selects HEWAT.
+- FullProf `μR`: `.pcr` Lambda line field 7; `iabscor = 2` selects
+  HEWAT.
 
 **Depends on:** adding a `μR` instrument parameter.
 

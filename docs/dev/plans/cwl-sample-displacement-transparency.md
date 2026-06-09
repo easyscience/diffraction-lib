@@ -14,24 +14,24 @@ Governing conventions: [`AGENTS.md`](../../../AGENTS.md).
 - **Dependency timing.** The feature depends on unreleased cryspy
   functionality (PR #46). Phase 2 verification of the cryspy path can
   only pass against a locally patched cryspy until that PR ships in a
-  released version. See *Decisions → cryspy dependency* and the
-  *Testing against unreleased cryspy* section.
+  released version. See _Decisions → cryspy dependency_ and the _Testing
+  against unreleased cryspy_ section.
 
 ---
 
 ## Goal
 
 Add two FullProf-style systematic peak-position corrections to the
-constant-wavelength powder instrument so the
-`pd-neut-cwl_tch-fcj_lab6` verification page can be completed:
+constant-wavelength powder instrument so the `pd-neut-cwl_tch-fcj_lab6`
+verification page can be completed:
 
-| User-facing API                                   | FullProf | cryspy CIF / dict key            | Physical effect              | 2θ shift term      |
-| ------------------------------------------------- | -------- | -------------------------------- | ---------------------------- | ------------------ |
-| `experiment.instrument.calib_sample_displacement` | `SyCos`  | `_setup_offset_SyCos` / `offset_sycos` | Specimen displacement | ∝ cos(θ) = cos(½·2θ) |
-| `experiment.instrument.calib_sample_transparency` | `SySin`  | `_setup_offset_SySin` / `offset_sysin` | Sample transparency/absorption | ∝ sin(2θ)     |
+| User-facing API                                   | FullProf | cryspy CIF / dict key                  | Physical effect                | 2θ shift term        |
+| ------------------------------------------------- | -------- | -------------------------------------- | ------------------------------ | -------------------- |
+| `experiment.instrument.calib_sample_displacement` | `SyCos`  | `_setup_offset_SyCos` / `offset_sycos` | Specimen displacement          | ∝ cos(θ) = cos(½·2θ) |
+| `experiment.instrument.calib_sample_transparency` | `SySin`  | `_setup_offset_SySin` / `offset_sysin` | Sample transparency/absorption | ∝ sin(2θ)            |
 
-These join the existing `calib_twotheta_offset` (FullProf `Zero`,
-cryspy `offset_ttheta`) as the third and fourth `calib_*` corrections on
+These join the existing `calib_twotheta_offset` (FullProf `Zero`, cryspy
+`offset_ttheta`) as the third and fourth `calib_*` corrections on
 `CwlPdInstrument`.
 
 cryspy applies all three together
@@ -69,18 +69,18 @@ getter/setter + `CifHandler` pattern used by `calib_twotheta_offset`
 switchable-category wiring, or datablock. It does extend CIF
 serialisation toward the cryspy backend, but only by adding rows to the
 existing CWL-powder instrument mapping, which the
-[`factory-contracts.md`](../adrs/accepted/factory-contracts.md)
-and existing instrument design already cover. Per AGENTS.md
-§Change Discipline, the relevant accepted ADRs were reviewed; none
-constrains this change beyond the existing pattern.
+[`factory-contracts.md`](../adrs/accepted/factory-contracts.md) and
+existing instrument design already cover. Per AGENTS.md §Change
+Discipline, the relevant accepted ADRs were reviewed; none constrains
+this change beyond the existing pattern.
 
 ## Decisions
 
 - **Scope: CWL powder only.** The corrections are defined only for
   constant-wavelength powder diffraction (cryspy restricts them to that
-  geometry). Add the two parameters to `CwlPdInstrument` (the
-  `cwl-pd` instrument), **not** to `CwlInstrumentBase` (which is shared
-  with the single-crystal `cwl-sc` instrument) and **not** to TOF.
+  geometry). Add the two parameters to `CwlPdInstrument` (the `cwl-pd`
+  instrument), **not** to `CwlInstrumentBase` (which is shared with the
+  single-crystal `cwl-sc` instrument) and **not** to TOF.
 - **CIF handler names.** Follow the existing `_instr.*` local
   convention: `_instr.sample_displacement` and
   `_instr.sample_transparency` (mirroring `_instr.2theta_offset`).
@@ -99,42 +99,42 @@ constrains this change beyond the existing pattern.
   `[0]`-indexed access, so the new keys are expected to as well — verify
   before committing.
 - **crysfml: no support.** crysfml has no SyCos/SySin equivalent. Do
-  **not** add rows to `_INSTRUMENT_ATTRIBUTE_MAP` in
-  `crysfml.py`; `_copy_present_values` silently skips unmapped
-  attributes, so crysfml keeps ignoring the corrections. The notebook
-  already documents that crysfml will retain a systematic offset; this
-  is expected and acceptable. (Optionally add a one-line code comment
-  noting SyCos/SySin are intentionally unmapped for crysfml.)
+  **not** add rows to `_INSTRUMENT_ATTRIBUTE_MAP` in `crysfml.py`;
+  `_copy_present_values` silently skips unmapped attributes, so crysfml
+  keeps ignoring the corrections. The notebook already documents that
+  crysfml will retain a systematic offset; this is expected and
+  acceptable. (Optionally add a one-line code comment noting SyCos/SySin
+  are intentionally unmapped for crysfml.)
 - **cryspy dependency.** Do **not** bump the `cryspy` pin in
   `pyproject.toml` in this plan: PR #46 is unreleased. The library code
-  is written so that, with current released cryspy (0.11.0), the new
-  CIF rows are simply ignored / the dict keys fall back to `0.0`
+  is written so that, with current released cryspy (0.11.0), the new CIF
+  rows are simply ignored / the dict keys fall back to `0.0`
   (`dict_pd.get("offset_sycos", 0.0)`), so nothing breaks. The cryspy
   path of the notebook only matches FullProf once cryspy ships PR #46.
   When that release exists, a **follow-up change** bumps the pin and
-  un-skips the page. This plan does not add a dependency under
-  AGENTS.md §Architecture (no pin change), so no dependency approval is
-  needed here.
+  un-skips the page. This plan does not add a dependency under AGENTS.md
+  §Architecture (no pin change), so no dependency approval is needed
+  here.
 - **Verification page un-skip is deferred.** Keep
   `pd-neut-cwl_tch-fcj_lab6` in `docs/docs/verification/ci_skip.txt`
   until a released cryspy supports the corrections. The notebook's two
-  commented `calib_*` lines get uncommented (P1.5) so the page is
-  ready, but it stays CI-skipped because the released engine still
-  differs. Note: the page is also skipped for `11B` scattering and
-  TCH/FCJ reasons per the current `ci_skip.txt` comment, which are
-  independent of this change.
+  commented `calib_*` lines get uncommented (P1.5) so the page is ready,
+  but it stays CI-skipped because the released engine still differs.
+  Note: the page is also skipped for `11B` scattering and TCH/FCJ
+  reasons per the current `ci_skip.txt` comment, which are independent
+  of this change.
 
 ## Open questions
 
 1. **Sign/convention of the FullProf values.** Does
-   `calib_sample_displacement = 0.05395` / `calib_sample_transparency =
-   0.09127` reproduce FullProf directly, or is a sign flip / scale
-   needed (as happened conceptually with `Zero`)? Resolve empirically in
-   P1.5 against a PR-#46 cryspy; record the final notebook values and
-   any adjustment in a code/notebook comment.
-2. **cryspy dict key array shape.** Confirm `offset_sycos`/`offset_sysin`
-   are `[0]`-indexed arrays in the built dict (expected, matching
-   `offset_ttheta`). Resolved during P1.3.
+   `calib_sample_displacement = 0.05395` /
+   `calib_sample_transparency = 0.09127` reproduce FullProf directly, or
+   is a sign flip / scale needed (as happened conceptually with `Zero`)?
+   Resolve empirically in P1.5 against a PR-#46 cryspy; record the final
+   notebook values and any adjustment in a code/notebook comment.
+2. **cryspy dict key array shape.** Confirm
+   `offset_sycos`/`offset_sysin` are `[0]`-indexed arrays in the built
+   dict (expected, matching `offset_ttheta`). Resolved during P1.3.
 3. **Released cryspy version string.** The exact released version that
    first contains PR #46 is unknown today; the pin bump + un-skip is a
    deferred follow-up, not part of this plan.
@@ -164,6 +164,7 @@ pixi install            # or: .pixi/envs/default/bin/python -m pip install --no-
 ```
 
 Notes:
+
 - `<pr-46-branch>` is the head branch of
   https://github.com/ikibalin/cryspy/pull/46 — confirm the exact branch
   name on the PR page before cloning.
@@ -181,26 +182,26 @@ Notes:
 Source (Phase 1):
 
 - `src/easydiffraction/datablocks/experiment/categories/instrument/cwl.py`
-  — add two `Parameter`s + getter/setter properties to `CwlPdInstrument`.
-- `src/easydiffraction/analysis/calculators/cryspy.py`
-  — `_cif_instrument_section` (CWL-powder mapping) and
+  — add two `Parameter`s + getter/setter properties to
+  `CwlPdInstrument`.
+- `src/easydiffraction/analysis/calculators/cryspy.py` —
+  `_cif_instrument_section` (CWL-powder mapping) and
   `_update_experiment_in_cryspy_dict` (CWL-powder branch).
-- `src/easydiffraction/analysis/calculators/crysfml.py`
-  — comment only (intentionally unmapped); no functional change.
-- `docs/docs/verification/pd-neut-cwl_tch-fcj_lab6.py`
-  — uncomment the two `calib_*` lines using the new names; regenerate
-  the notebook with `pixi run notebook-prepare`.
+- `src/easydiffraction/analysis/calculators/crysfml.py` — comment only
+  (intentionally unmapped); no functional change.
+- `docs/docs/verification/pd-neut-cwl_tch-fcj_lab6.py` — uncomment the
+  two `calib_*` lines using the new names; regenerate the notebook with
+  `pixi run notebook-prepare`.
 
 Tests (Phase 2):
 
 - `tests/unit/easydiffraction/datablocks/experiment/categories/instrument/test_cwl.py`
   — assert the two new parameters are settable and carry correct
   defaults/units/CIF names.
-- A cryspy-calculator unit test (new
-  `test_cryspy_coverage.py` or extend an existing calculator test)
-  asserting the emitted CIF contains `_setup_offset_SyCos` /
-  `_setup_offset_SySin` with the set values, and that
-  `_update_experiment_in_cryspy_dict` writes `offset_sycos`/
+- A cryspy-calculator unit test (new `test_cryspy_coverage.py` or extend
+  an existing calculator test) asserting the emitted CIF contains
+  `_setup_offset_SyCos` / `_setup_offset_SySin` with the set values, and
+  that `_update_experiment_in_cryspy_dict` writes `offset_sycos`/
   `offset_sysin` into a stub dict. No real engine.
 
 Docs / structure (auto-generated, do not hand-edit):
@@ -216,67 +217,67 @@ Docs / structure (auto-generated, do not hand-edit):
 > message. Commit locally before moving to the next step. Do not run
 > tests or `pixi run check` in Phase 1.
 
-- [x] **P1.1 — Add the two parameters to `CwlPdInstrument`.**
-  In `cwl.py`, inside `CwlPdInstrument.__init__`, add
-  `self._calib_sample_displacement` and
-  `self._calib_sample_transparency` `Parameter`s modeled on
-  `_calib_twotheta_offset`: `name='sample_displacement'` /
-  `'sample_transparency'`, descriptive `description`, `units='degrees'`,
-  `DisplayHandler` (display names "Sample displacement" / "Sample
-  transparency", `display_units='deg'`, sensible LaTeX), default `0.0`,
-  `RangeValidator()`, and `CifHandler(names=['_instr.sample_displacement'])`
-  / `['_instr.sample_transparency']`. Add the matching getter +
-  setter properties (numpy-style one-line ≤72-char docstrings).
-  Files: `src/.../instrument/cwl.py`.
-  Commit: `Add CWL sample displacement and transparency parameters`
+- [x] **P1.1 — Add the two parameters to `CwlPdInstrument`.** In
+      `cwl.py`, inside `CwlPdInstrument.__init__`, add
+      `self._calib_sample_displacement` and
+      `self._calib_sample_transparency` `Parameter`s modeled on
+      `_calib_twotheta_offset`: `name='sample_displacement'` /
+      `'sample_transparency'`, descriptive `description`,
+      `units='degrees'`, `DisplayHandler` (display names "Sample
+      displacement" / "Sample transparency", `display_units='deg'`,
+      sensible LaTeX), default `0.0`, `RangeValidator()`, and
+      `CifHandler(names=['_instr.sample_displacement'])` /
+      `['_instr.sample_transparency']`. Add the matching getter + setter
+      properties (numpy-style one-line ≤72-char docstrings). Files:
+      `src/.../instrument/cwl.py`. Commit:
+      `Add CWL sample displacement and transparency parameters`
 
-- [x] **P1.2 — Emit the corrections in the cryspy CIF.**
-  In `cryspy.py` `_cif_instrument_section`, CWL+powder branch, extend
-  `instrument_mapping` with
-  `'calib_sample_displacement': '_setup_offset_SyCos'` and
-  `'calib_sample_transparency': '_setup_offset_SySin'`.
-  Files: `src/easydiffraction/analysis/calculators/cryspy.py`.
-  Commit: `Emit SyCos/SySin offsets in cryspy CWL instrument CIF`
+- [x] **P1.2 — Emit the corrections in the cryspy CIF.** In `cryspy.py`
+      `_cif_instrument_section`, CWL+powder branch, extend
+      `instrument_mapping` with
+      `'calib_sample_displacement': '_setup_offset_SyCos'` and
+      `'calib_sample_transparency': '_setup_offset_SySin'`. Files:
+      `src/easydiffraction/analysis/calculators/cryspy.py`. Commit:
+      `Emit SyCos/SySin offsets in cryspy CWL instrument CIF`
 
-- [x] **P1.3 — Update the cached cryspy dict (fast path).**
-  In `cryspy.py` `_update_experiment_in_cryspy_dict`, CWL+powder
-  branch, set `cryspy_expt_dict['offset_sycos'][0]` and
-  `cryspy_expt_dict['offset_sysin'][0]` from the two new parameters,
-  next to the existing `offset_ttheta` assignment. First confirm the
-  built dict exposes these keys with `[0]`-indexed shape (see Open
-  question 2); guard with `if 'offset_sycos' in cryspy_expt_dict:` only
-  if released cryspy lacks the keys and would otherwise KeyError on the
-  minimizer fast path — prefer the unconditional form if released
-  cryspy already provides zero-initialized keys.
-  Files: `src/easydiffraction/analysis/calculators/cryspy.py`.
-  Commit: `Update cryspy dict with SyCos/SySin offsets`
+- [x] **P1.3 — Update the cached cryspy dict (fast path).** In
+      `cryspy.py` `_update_experiment_in_cryspy_dict`, CWL+powder
+      branch, set `cryspy_expt_dict['offset_sycos'][0]` and
+      `cryspy_expt_dict['offset_sysin'][0]` from the two new parameters,
+      next to the existing `offset_ttheta` assignment. First confirm the
+      built dict exposes these keys with `[0]`-indexed shape (see Open
+      question 2); guard with `if 'offset_sycos' in cryspy_expt_dict:`
+      only if released cryspy lacks the keys and would otherwise
+      KeyError on the minimizer fast path — prefer the unconditional
+      form if released cryspy already provides zero-initialized keys.
+      Files: `src/easydiffraction/analysis/calculators/cryspy.py`.
+      Commit: `Update cryspy dict with SyCos/SySin offsets`
 
-- [x] **P1.4 — Document crysfml non-support.**
-  In `crysfml.py` `_update_experiment_dict_from_instrument`, add a
-  one-line comment near the instrument map noting SyCos/SySin
-  (`calib_sample_displacement` / `calib_sample_transparency`) are
-  intentionally unmapped because crysfml has no equivalent correction.
-  No functional change.
-  Files: `src/easydiffraction/analysis/calculators/crysfml.py`.
-  Commit: `Note crysfml lacks SyCos/SySin instrument corrections`
+- [x] **P1.4 — Document crysfml non-support.** In `crysfml.py`
+      `_update_experiment_dict_from_instrument`, add a one-line comment
+      near the instrument map noting SyCos/SySin
+      (`calib_sample_displacement` / `calib_sample_transparency`) are
+      intentionally unmapped because crysfml has no equivalent
+      correction. No functional change. Files:
+      `src/easydiffraction/analysis/calculators/crysfml.py`. Commit:
+      `Note crysfml lacks SyCos/SySin instrument corrections`
 
-- [x] **P1.5 — Wire the corrections into the verification page.**
-  In `pd-neut-cwl_tch-fcj_lab6.py`, uncomment the two correction lines
-  using the new names and the empirically confirmed values
-  (start from `calib_sample_displacement = 0.05395`,
-  `calib_sample_transparency = 0.09127`; adjust per Open question 1 if
-  the cryspy convention differs). Update the surrounding markdown so it
-  no longer says "pending EasyDiffraction support". Keep the page in
-  `ci_skip.txt` (still skipped until released cryspy supports PR #46);
-  update only the cryspy-path narrative if needed. Regenerate the
-  notebook with `pixi run notebook-prepare`.
-  Files: `docs/docs/verification/pd-neut-cwl_tch-fcj_lab6.py`,
-  `docs/docs/verification/pd-neut-cwl_tch-fcj_lab6.ipynb`.
-  Commit: `Enable SyCos/SySin corrections in LaB6 verification page`
+- [x] **P1.5 — Wire the corrections into the verification page.** In
+      `pd-neut-cwl_tch-fcj_lab6.py`, uncomment the two correction lines
+      using the new names and the empirically confirmed values (start
+      from `calib_sample_displacement = 0.05395`,
+      `calib_sample_transparency = 0.09127`; adjust per Open question 1
+      if the cryspy convention differs). Update the surrounding markdown
+      so it no longer says "pending EasyDiffraction support". Keep the
+      page in `ci_skip.txt` (still skipped until released cryspy
+      supports PR #46); update only the cryspy-path narrative if needed.
+      Regenerate the notebook with `pixi run notebook-prepare`. Files:
+      `docs/docs/verification/pd-neut-cwl_tch-fcj_lab6.py`,
+      `docs/docs/verification/pd-neut-cwl_tch-fcj_lab6.ipynb`. Commit:
+      `Enable SyCos/SySin corrections in LaB6 verification page`
 
 - [x] **P1.6 — Phase 1 review gate** (no-code). Mark `[x]`, commit the
-  checklist update alone.
-  Commit: `Reach Phase 1 review gate`
+      checklist update alone. Commit: `Reach Phase 1 review gate`
 
 ## Implementation steps (Phase 2)
 
@@ -289,8 +290,7 @@ Docs / structure (auto-generated, do not hand-edit):
 > AGENTS.md §Code Style.
 
 - [ ] **P2.1 — Add/extend unit tests (engine-free).**
-  - Extend
-    `tests/unit/.../instrument/test_cwl.py` to assert
+  - Extend `tests/unit/.../instrument/test_cwl.py` to assert
     `calib_sample_displacement` / `calib_sample_transparency` are
     settable, default to `0.0`, carry `units='degrees'`, and expose CIF
     names `_instr.sample_displacement` / `_instr.sample_transparency`.
@@ -302,39 +302,42 @@ Docs / structure (auto-generated, do not hand-edit):
     `_update_experiment_in_cryspy_dict` writes `offset_sycos` /
     `offset_sysin` into a stub experiment dict. **No real cryspy
     engine** (AGENTS.md §Testing); the unreleased PR-#46 cryspy is
-    exercised manually per *Testing against unreleased cryspy*,
-    outside `pixi run unit-tests`.
+    exercised manually per _Testing against unreleased cryspy_, outside
+    `pixi run unit-tests`.
   - Confirm test/source mirroring with `pixi run test-structure-check`
     (also run inside `pixi run check`).
   - Commit: `Add tests for CWL SyCos/SySin instrument corrections`
 
 - [ ] **P2.2 — `pixi run fix`.** Apply auto-fixes; include any
-  regenerated `docs/dev/package-structure/full.md` / `short.md`.
-  Commit: `Apply pixi run fix auto-fixes` (skip if nothing changed).
+      regenerated `docs/dev/package-structure/full.md` / `short.md`.
+      Commit: `Apply pixi run fix auto-fixes` (skip if nothing changed).
 
-- [ ] **P2.3 — `pixi run check`** until clean. Fix mechanical lint
-  nits directly; refactor (don't silence) any complexity/type breach.
+- [ ] **P2.3 — `pixi run check`** until clean. Fix mechanical lint nits
+      directly; refactor (don't silence) any complexity/type breach.
+
   ```bash
   pixi run check > /tmp/easydiffraction-check.log 2>&1; check_exit_code=$?; tail -n 200 /tmp/easydiffraction-check.log; exit $check_exit_code
   ```
 
 - [ ] **P2.4 — `pixi run unit-tests`** until green.
+
   ```bash
   pixi run unit-tests > /tmp/easydiffraction-unit.log 2>&1; unit_tests_exit_code=$?; tail -n 200 /tmp/easydiffraction-unit.log; exit $unit_tests_exit_code
   ```
 
 - [ ] **P2.5 — `pixi run integration-tests`** until green. For
-  sandbox-only multiprocessing/process-pool failures, rerun with the
-  approved escalated permission path before treating it as a defect.
+      sandbox-only multiprocessing/process-pool failures, rerun with the
+      approved escalated permission path before treating it as a defect.
+
   ```bash
   pixi run integration-tests
   ```
 
 - [ ] **P2.6 — `pixi run script-tests`** until green.
-  `pd-neut-cwl_tch-fcj_lab6` remains skipped via `ci_skip.txt`, so the
-  still-divergent cryspy path will not fail CI; confirm the page still
-  parses/builds where the runner loads it. Leave generated
-  `docs/dev/benchmarking/*.csv` untracked.
+      `pd-neut-cwl_tch-fcj_lab6` remains skipped via `ci_skip.txt`, so
+      the still-divergent cryspy path will not fail CI; confirm the page
+      still parses/builds where the runner loads it. Leave generated
+      `docs/dev/benchmarking/*.csv` untracked.
   ```bash
   pixi run script-tests > /tmp/easydiffraction-script.log 2>&1; script_tests_exit_code=$?; tail -n 200 /tmp/easydiffraction-script.log; exit $script_tests_exit_code
   ```
@@ -343,9 +346,9 @@ Docs / structure (auto-generated, do not hand-edit):
 
 - When a released cryspy includes PR #46: bump the `cryspy` pin in
   `pyproject.toml` / refresh `pixi.lock`, remove
-  `pd-neut-cwl_tch-fcj_lab6` from `ci_skip.txt` (if the remaining
-  `11B` / TCH-FCJ discrepancies are also resolved), and finalize the
-  notebook reference values. Track in `docs/dev/issues/open.md`.
+  `pd-neut-cwl_tch-fcj_lab6` from `ci_skip.txt` (if the remaining `11B`
+  / TCH-FCJ discrepancies are also resolved), and finalize the notebook
+  reference values. Track in `docs/dev/issues/open.md`.
 
 ## Status checklist
 
