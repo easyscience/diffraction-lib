@@ -233,7 +233,7 @@ Existing files:
   drawn).
   Commit: `Show background and bragg for calculated-only patterns`
 
-- [ ] **P1.9 — Docs touch-ups.** Update any developer docs that describe
+- [x] **P1.9 — Docs touch-ups.** Update any developer docs that describe
   the experiment categories or the "experiment without measured data"
   state to mention `data_range` (no tutorial regeneration in Phase 1;
   tutorial/notebook updates, if any, are handled in Phase 2 with
@@ -298,7 +298,7 @@ by hand.
 - [x] P1.6 Generate powder grid from data_range
 - [x] P1.7 Calculator guards (SC/total)
 - [x] P1.8 Relax display gates for calculated-only
-- [ ] P1.9 Docs touch-ups
+- [x] P1.9 Docs touch-ups
 - [ ] P1.10 Phase 1 review gate
 - [ ] Phase 2 verification (tests + `pixi run fix/check/*-tests`)
 
