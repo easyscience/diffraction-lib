@@ -304,29 +304,29 @@
 
   -> Information on Atom: Si     at position:    0.12500   0.12500   0.12500  Multiplicity:   8
      List of symmetry operators and symmetry elements of the site point group:
-     Operator  2:  x,-y+1/4,-z+1/4               2 x,1/8,1/8
-     Operator  3:  -x+1/4,y,-z+1/4               2 1/8,y,1/8
-     Operator  4:  -x+1/4,-y+1/4,z               2 1/8,1/8,z
-     Operator  5:  y,z,x                         3- x,x,x  
-     Operator  6:  -y+1/4,-z+1/4,x               3+ x,-x+1/4,x
-     Operator  7:  y,-z+1/4,-x+1/4               3+ x,x,-x+1/4
-     Operator  8:  -y+1/4,z,-x+1/4               3- x,-x+1/4,-x+1/4
-     Operator  9:  z,x,y                         3+ x,x,x  
-     Operator 10:  -z+1/4,x,-y+1/4               3- x,x,-x+1/4
-     Operator 11:  -z+1/4,-x+1/4,y               3+ x,-x+1/4,-x+1/4
-     Operator 12:  z,-x+1/4,-y+1/4               3- x,-x+1/4,x
-     Operator 13:  y,x,z                         m x,x,z   
-     Operator 14:  -y+1/4,x,-z+1/4               -4- 1/8,1/8,z; 1/8,1/8,1/8
-     Operator 15:  y,-x+1/4,-z+1/4               -4+ 1/8,1/8,z; 1/8,1/8,1/8
-     Operator 16:  -y+1/4,-x+1/4,z               m x,-x+1/4,z
-     Operator 17:  z,y,x                         m x,y,x   
-     Operator 18:  -z+1/4,-y+1/4,x               -4+ 1/8,y,1/8; 1/8,1/8,1/8
-     Operator 19:  -z+1/4,y,-x+1/4               m x,y,-x+1/4
-     Operator 20:  z,-y+1/4,-x+1/4               -4- 1/8,y,1/8; 1/8,1/8,1/8
-     Operator 21:  x,z,y                         m x,y,y   
-     Operator 22:  x,-z+1/4,-y+1/4               m x,y,-y+1/4
-     Operator 23:  -x+1/4,-z+1/4,y               -4- x,1/8,1/8; 1/8,1/8,1/8
-     Operator 24:  -x+1/4,z,-y+1/4               -4+ x,1/8,1/8; 1/8,1/8,1/8
+     Operator  2:  x,-y+1/4,-z+1/4               2 x,1/8,1/8                                       
+     Operator  3:  -x+1/4,y,-z+1/4               2 1/8,y,1/8                                       
+     Operator  4:  -x+1/4,-y+1/4,z               2 1/8,1/8,z                                       
+     Operator  5:  y,z,x                         3- x,x,x                                          
+     Operator  6:  -y+1/4,-z+1/4,x               3+ x,-x+1/4,x                                     
+     Operator  7:  y,-z+1/4,-x+1/4               3+ x,x,-x+1/4                                     
+     Operator  8:  -y+1/4,z,-x+1/4               3- x,-x+1/4,-x+1/4                                
+     Operator  9:  z,x,y                         3+ x,x,x                                          
+     Operator 10:  -z+1/4,x,-y+1/4               3- x,x,-x+1/4                                     
+     Operator 11:  -z+1/4,-x+1/4,y               3+ x,-x+1/4,-x+1/4                                
+     Operator 12:  z,-x+1/4,-y+1/4               3- x,-x+1/4,x                                     
+     Operator 13:  y,x,z                         m x,x,z                                           
+     Operator 14:  -y+1/4,x,-z+1/4               -4- 1/8,1/8,z; 1/8,1/8,1/8                        
+     Operator 15:  y,-x+1/4,-z+1/4               -4+ 1/8,1/8,z; 1/8,1/8,1/8                        
+     Operator 16:  -y+1/4,-x+1/4,z               m x,-x+1/4,z                                      
+     Operator 17:  z,y,x                         m x,y,x                                           
+     Operator 18:  -z+1/4,-y+1/4,x               -4+ 1/8,y,1/8; 1/8,1/8,1/8                        
+     Operator 19:  -z+1/4,y,-x+1/4               m x,y,-x+1/4                                      
+     Operator 20:  z,-y+1/4,-x+1/4               -4- 1/8,y,1/8; 1/8,1/8,1/8                        
+     Operator 21:  x,z,y                         m x,y,y                                           
+     Operator 22:  x,-z+1/4,-y+1/4               m x,y,-y+1/4                                      
+     Operator 23:  -x+1/4,-z+1/4,y               -4- x,1/8,1/8; 1/8,1/8,1/8                        
+     Operator 24:  -x+1/4,z,-y+1/4               -4+ x,1/8,1/8; 1/8,1/8,1/8                        
      Codes for atom coordinates  (Automatic Constraints):        0.00        0.00        0.00
      Codes for anisotropic betas (Automatic Constraints):        0.00        0.00        0.00        0.00        0.00        0.00
 

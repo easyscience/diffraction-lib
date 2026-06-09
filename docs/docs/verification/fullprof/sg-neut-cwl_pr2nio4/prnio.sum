@@ -1,17 +1,17 @@
 
 
         **********************************************************
-        ** PROGRAM FullProf.2k (Version 7.95 - Jan2023-ILL JRC) **
+        ** PROGRAM FullProf.2k (Version 8.40 - Feb2026-ILL JRC) **
         **********************************************************
                        M U L T I -- P A T T E R N                 
             Rietveld, Profile Matching & Integrated Intensity     
                  Refinement of X-ray and/or Neutron Data
 
 
-    Date: 06/06/2026  Time: 20:12:49.197                              
+    Date: 09/06/2026  Time: 12:42:05.090                              
 
  => PCR file code: prnio
- => DAT file code: prnio.dat            -> Relative contribution: 1.0000                                                            
+ => DAT file code: prnio                -> Relative contribution: 1.0000                                                            
  => Title: Pr2NiO4:Sr Test of Xtal option of FullProf
 
  ==> CONDITIONS OF THIS RUN FOR PATTERN No.:  1
@@ -20,16 +20,16 @@
  =>-------> Pattern#  1
  => Integrated intensities or Flipping Ratios as observations for phase: 1
  => Crystal Structure Refinement for phase: 1
- => The density (volumic mass) of phase 1 is:    7.381 g/cm3
+ => The density (volumic mass) of phase 1 is:    7.393 g/cm3
 
  ==> RESULTS OF REFINEMENT:
 
 
- => No. of fitted parameters:   20
+ => No. of fitted parameters:    0
 
 
 ------------------------------------------------------------------------------
- => Phase No.  1  Pr2NiO4:Sr                             F m m m             
+ => Phase No.  1 Pr2NiO4:Sr                              F m m m             
 ------------------------------------------------------------------------------
 
  =>  No. of reflections for pattern#:   1:   198  
@@ -38,12 +38,12 @@
  ==> ATOM PARAMETERS:
 
   Name      x     sx       y     sy       z      sz      B   sB   occ. socc.  Mult
- Pr      0.50000(   0)  0.50000(   0)  0.35973(   7)  0.000(  0)  2.000(  0)    8
+ Pr      0.50000(   0)  0.50000(   0)  0.35973(   0)  0.000(  0)  2.000(  0)    8
  Ni      0.00000(   0)  0.00000(   0)  0.00000(   0)  0.000(  0)  1.000(  0)    4
  O1      0.25000(   0)  0.25000(   0)  0.00000(   0)  0.000(  0)  2.000(  0)    8
- O2      0.00000(   0)  0.00000(   0)  0.17385(   9)  0.000(  0)  1.403( 41)    8
- Oi      0.25000(   0)  0.25000(   0)  0.25000(   0)  0.000(  0)  0.149( 10)    8
- Od      0.07347( 134)  0.07347( 134)  0.17349(  65)  2.314(149)  0.597( 41)   32
+ O2      0.00000(   0)  0.00000(   0)  0.17385(   0)  0.000(  0)  1.446(  0)    8
+ Oi      0.25000(   0)  0.25000(   0)  0.25000(   0)  0.000(  0)  0.149(  0)    8
+ Od      0.07347(   0)  0.07347(   0)  0.17349(   0)  2.314(  0)  0.597(  0)   32
 
  =>   Anisotropic Betas*1E04
 
@@ -51,15 +51,15 @@
             sB11    sB22    sB33    sB12    sB13    sB23  
 
  Pr         71.0    71.0     8.4     0.0     0.0     0.0
-             1.7     1.7     0.4     0.0     0.0     0.0
+             0.0     0.0     0.0     0.0     0.0     0.0
  Ni         28.0    28.0    15.1     0.0     0.0     0.0
-             1.3     1.3     0.3     0.0     0.0     0.0
+             0.0     0.0     0.0     0.0     0.0     0.0
  O1         50.0    50.0    41.3   -14.0     0.0     0.0
-             1.6     1.6     0.5     1.4     0.0     0.0
+             0.0     0.0     0.0     0.0     0.0     0.0
  O2        171.6   171.6     4.5     0.0     0.0     0.0
-             4.1     4.1     0.6     0.0     0.0     0.0
- Oi        104.4   117.7     9.8     0.0     0.0     0.0
-            37.0    36.2     4.6     0.0     0.0     0.0
+             0.0     0.0     0.0     0.0     0.0     0.0
+ Oi        103.3   117.6    10.0     0.0     0.0     0.0
+             0.0     0.0     0.0     0.0     0.0     0.0
  Od          0.0     0.0     0.0     0.0     0.0     0.0
              0.0     0.0     0.0     0.0     0.0     0.0
 
@@ -70,7 +70,7 @@
 
 
  => Scale factors ( 1: 6): 
-             0.062978        0.000566
+             0.062980        0.000000
              0.000000        0.000000
              0.000000        0.000000
              0.000000        0.000000
@@ -79,7 +79,7 @@
 
 
  => Extinction parameters: 
-             0.000105        0.002144
+             0.000105        0.000000
              0.000000        0.000000
              0.000000        0.000000
              0.000000        0.000000
@@ -88,20 +88,20 @@
              0.000000        0.000000
 
 
- => Global user-weigthed Chi2 (Bragg contrib.):   9.96    
+ => Global user-weigthed Chi2 (Bragg contrib.):   10.9    
 
      -----------------------------------------------------
      R-Factors and Chi2 for Integrated Intensity Pattern #  1
      -----------------------------------------------------
  => Phase:  1
- =>    RF2 -factor :   2.90    
- =>    RF2w-factor :   4.36    
- =>    RF  -factor :   2.08    
- =>    Chi2(Intens):   9.96    
+ =>    RF2 -factor :   3.21    
+ =>    RF2w-factor :   4.78    
+ =>    RF  -factor :   2.26    
+ =>    Chi2(Intens):   10.9    
  =>  N_eff Reflect.:    198 with I >  0.00 sigma
 
  
-              CPU Time:     0.211 seconds
-                            0.004 minutes
+              CPU Time:     0.156 seconds
+                            0.003 minutes
 
- => Run finished at:     Date: 06/06/2026  Time: 20:12:49.406                              
+ => Run finished at:     Date: 09/06/2026  Time: 12:42:05.243                              

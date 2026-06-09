@@ -1,5 +1,5 @@
 !   FILE for FullProf Studio: generated automatically by FullProf 
-!Title:  Pr2NiO4:Sr                                                                                                                                                         
+!Title: Pr2NiO4:Sr                                                                                                                                                          
 SPACEG F m m m             
 CELL     5.417799    5.414600   12.483399  90.0000  90.0000  90.0000  
 box -0.26 1.26 -0.26 1.26 -0.26 1.26                                           

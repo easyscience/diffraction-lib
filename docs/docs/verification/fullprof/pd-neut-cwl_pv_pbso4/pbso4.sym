@@ -71,8 +71,8 @@
 
   -> Information on Atom: Pb     at position:    0.18754   0.25000   0.16709  Multiplicity:   4
      List of symmetry operators and symmetry elements of the site point group:
-     Operator  2:  x,-y+1/2,z                    m x,1/4,z 
-     Codes for atom coordinates  (Automatic Constraints):      171.00        0.00      181.00
+     Operator  2:  x,-y+1/2,z                    m x,1/4,z                                         
+     Codes for atom coordinates  (Automatic Constraints):        0.00        0.00        0.00
      Codes for anisotropic betas (Automatic Constraints):        0.00        0.00        0.00        0.00        0.00        0.00
 
      --> Complete orbit of the atom: Pb    
@@ -84,8 +84,8 @@
 
   -> Information on Atom: S      at position:    0.06532   0.25000   0.68401  Multiplicity:   4
      List of symmetry operators and symmetry elements of the site point group:
-     Operator  2:  x,-y+1/2,z                    m x,1/4,z 
-     Codes for atom coordinates  (Automatic Constraints):      191.00        0.00      201.00
+     Operator  2:  x,-y+1/2,z                    m x,1/4,z                                         
+     Codes for atom coordinates  (Automatic Constraints):        0.00        0.00        0.00
      Codes for anisotropic betas (Automatic Constraints):        0.00        0.00        0.00        0.00        0.00        0.00
 
      --> Complete orbit of the atom: S     
@@ -97,8 +97,8 @@
 
   -> Information on Atom: O1     at position:    0.90822   0.25000   0.59542  Multiplicity:   4
      List of symmetry operators and symmetry elements of the site point group:
-     Operator  2:  x,-y+1/2,z                    m x,1/4,z 
-     Codes for atom coordinates  (Automatic Constraints):      211.00        0.00      221.00
+     Operator  2:  x,-y+1/2,z                    m x,1/4,z                                         
+     Codes for atom coordinates  (Automatic Constraints):        0.00        0.00        0.00
      Codes for anisotropic betas (Automatic Constraints):        0.00        0.00        0.00        0.00        0.00        0.00
 
      --> Complete orbit of the atom: O1    
@@ -110,8 +110,8 @@
 
   -> Information on Atom: O2     at position:    0.19390   0.25000   0.54359  Multiplicity:   4
      List of symmetry operators and symmetry elements of the site point group:
-     Operator  2:  x,-y+1/2,z                    m x,1/4,z 
-     Codes for atom coordinates  (Automatic Constraints):      231.00        0.00      241.00
+     Operator  2:  x,-y+1/2,z                    m x,1/4,z                                         
+     Codes for atom coordinates  (Automatic Constraints):        0.00        0.00        0.00
      Codes for anisotropic betas (Automatic Constraints):        0.00        0.00        0.00        0.00        0.00        0.00
 
      --> Complete orbit of the atom: O2    

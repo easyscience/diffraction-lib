@@ -1,0 +1,19 @@
+  Instrumental Resolution Parameters for TOF (Peak-Shape parameters) from: highres
+! To be used with functions NPROF=9 in FullProf (Res=5)
+! If shape parameters are null they have to be given manually
+! It is supposed that the instrumental profile parameters are those of Phase # 1
+! ----------------------------------------------------  Bank 1
+!  Type of profile function: back-to-back expon * pseudo-Voigt
+NPROF   9
+!       Tof-min(us)       step      Tof-max(us)
+TOFRG    7267.56836      23.35353  103417.67188
+!             Dtt1              Dtt2       Dtt_1overD         Zero
+D2TOF     20773.12305        -1.08308         0.00000       -13.88128
+!      TOF-2Theta of the bank
+TWOTH     152.827
+!         Sigma-2_i     Sigma-1_i     Sigma-0_i     Sigma-Q_i
+SIGMA       15.6959        0.0000        0.0000        0.0000
+!         Gamma-2_i     Gamma-1_i     Gamma-0_i
+GAMMA        0.0000        0.0000        0.0000
+!           alph0_i       beta0_i       alph1_i       beta1_i       alphQ_i       betaQ_i
+ALFBE     -0.009276      0.006705      0.109622      0.009708      0.000000      0.000000

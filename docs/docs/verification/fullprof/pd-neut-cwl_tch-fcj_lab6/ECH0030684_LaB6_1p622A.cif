@@ -14,14 +14,14 @@
 # Please notify any error or suggestion to: 
 #           Juan Rodriguez-Carvajal (jrc@ill.eu)
 # Improvements will be progressively added as needed.
-#      Date: 08/06/2026  Time: 14:22:23.253
+#      Date: 09/06/2026  Time: 12:42:02.120
  
  
 #=============================================================================
  data_global
 #=============================================================================
  
-_audit_creation_date  08/06/2026  
+_audit_creation_date  09/06/2026  
 _audit_creation_method  "FullProf Suite"
 # PROCESSING SUMMARY (IUCr Office Use Only)
  
@@ -314,7 +314,7 @@ _pd_calibration_special_details           # description of the method used
 _diffrn_ambient_temperature          ?
 _diffrn_source           'nuclear reactor' 
 _diffrn_radiation_type   'Constant Wavelength Neutron Diffraction' 
-_diffrn_radiation_wavelength           1.62389
+_diffrn_radiation_wavelength           1.62253
 _diffrn_source_type      ?  # Put here the diffractometer and site
  
 _diffrn_radiation_monochromator      ?
@@ -365,38 +365,38 @@ _pd_proc_ls_pref_orient_corr
 #  The sum is extended to all non-excluded points.
 #  These are the current CIF standard
  
-_pd_proc_ls_prof_R_factor                7.8003
-_pd_proc_ls_prof_wR_factor              10.5375
-_pd_proc_ls_prof_wR_expected             2.7496
+_pd_proc_ls_prof_R_factor                6.1322
+_pd_proc_ls_prof_wR_factor               8.1951
+_pd_proc_ls_prof_wR_expected             2.7567
  
 #  The following profile R-factors are CORRECTED for background
 #  The sum is extended to all non-excluded points.
 #  These items are not in the current CIF standard, but are defined above
  
-_pd_proc_ls_prof_cR_factor               15.5390
-_pd_proc_ls_prof_cwR_factor              17.9352
-_pd_proc_ls_prof_cwR_expected             4.6798
+_pd_proc_ls_prof_cR_factor               12.1762
+_pd_proc_ls_prof_cwR_factor              13.9407
+_pd_proc_ls_prof_cwR_expected             4.6895
  
 #  The following items are not in the CIF standard, but are defined above
  
-_pd_proc_ls_prof_chi2                14.6875
-_pd_proc_ls_prof_echi2               14.9925
+_pd_proc_ls_prof_chi2                 8.8371
+_pd_proc_ls_prof_echi2                9.0626
  
 #  Items related to LS refinement
  
-_refine_ls_R_I_factor                 4.2880
+_refine_ls_R_I_factor                 3.5100
 _refine_ls_number_reflns                    28
-_refine_ls_number_parameters                16
+_refine_ls_number_parameters                 0
 _refine_ls_number_restraints                 0
  
 # The following four items apply to angular dispersive measurements.
 # 2theta minimum, maximum and increment (in degrees) are for the 
 # intensities used in the refinement.
  
-_pd_proc_2theta_range_min                4.6192
-_pd_proc_2theta_range_max              164.2114
+_pd_proc_2theta_range_min                4.3753
+_pd_proc_2theta_range_max              163.9675
 _pd_proc_2theta_range_inc              0.049998
-_pd_proc_wavelength                    1.623891
+_pd_proc_wavelength                    1.622527
  
 _pd_block_diffractogram_id        ?  # The id used for the block containing
                                      # the powder pattern profile (section 11)
@@ -427,8 +427,8 @@ loop_
     _atom_site_occupancy
     _atom_site_adp_type
     _atom_site_type_symbol
- La  0.00000  0.00000  0.00000  0.0068(3)  1.00000 Uiso La    
- B  0.19972(16)  0.50000  0.50000  0.00499  1.00016 Uiso B11   
+ La  0.00000  0.00000  0.00000  0.00759  1.00000 Uiso La    
+ B  0.19978  0.50000  0.50000  0.00564  1.00016 Uiso B11   
  
 # Note: if the displacement parameters were refined anisotropically
 # the U matrices should be given as for single-crystal studies.
