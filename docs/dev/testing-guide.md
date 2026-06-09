@@ -41,11 +41,11 @@ test file for a new module with `tools/gen_tests_scaffold.py`.
 Tiers select _when_ a test runs in CI; they are independent of the
 layer.
 
-| Tier        | Marker                 | Runs on                                        |
-| ----------- | ---------------------- | ---------------------------------------------- |
-| **fast**    | (none — the default)   | every push, every pull request, and nightly    |
-| **pr**      | `@pytest.mark.pr`      | pull requests and `develop`/`master`           |
-| **nightly** | `@pytest.mark.nightly` | the scheduled nightly job only (`nightly.yml`) |
+| Tier        | Marker                 | Runs on                                             |
+| ----------- | ---------------------- | --------------------------------------------------- |
+| **fast**    | (none — the default)   | every push, every pull request, and nightly         |
+| **pr**      | `@pytest.mark.pr`      | pull requests and `develop`/`master`                |
+| **nightly** | `@pytest.mark.nightly` | the scheduled nightly job only (`nightly-test.yml`) |
 
 Integration tests are `pr`-tier by default — they are auto-marked in
 `tests/integration/conftest.py` because they use real engines. Escalate
