@@ -1,5 +1,5 @@
 # %% [markdown]
-# # LaB₆ — neutron powder, constant wavelength, sample absorption
+# # LaB₆ — neutron powder, constant wavelength, FCJ asymmetry
 
 # %%
 import easydiffraction as ed
@@ -27,7 +27,7 @@ structure.atom_sites.create(
     fract_y=0.0,  # FullProf Y
     fract_z=0.0,  # FullProf Z
     adp_type='Biso',  # FullProf Biso
-    adp_iso=0.59951,  # FullProf Biso
+    adp_iso=0.32249,  # FullProf Biso
 )
 structure.atom_sites.create(
     label='B',  # FullProf Atom
@@ -36,7 +36,7 @@ structure.atom_sites.create(
     fract_y=0.5,  # FullProf Y
     fract_z=0.5,  # FullProf Z
     adp_type='Biso',  # FullProf Biso
-    adp_iso=0.44499,  # FullProf Biso
+    adp_iso=0.16910,  # FullProf Biso
 )
 
 project.structures.add(structure)
@@ -46,18 +46,18 @@ project.structures.add(structure)
 
 # %%
 FULLPROF_PROJECT_DIR = 'pd-neut-cwl_tch-fcj_lab6'
-FULLPROF_PRF_FILE = 'ECH0030684_LaB6_1p622A.prf'
-FULLPROF_BAC_FILE = 'ECH0030684_LaB6_1p622A.bac'
-FULLPROF_ZERO = -0.21110  # FullProf Zero
-FULLPROF_SCALE = 141.1285  # FullProf Scale
-FULLPROF_WAVELENGTH = 1.622527  # FullProf Lambda
-FULLPROF_U = 0.089664  # FullProf U
-FULLPROF_V = -0.375792  # FullProf V
-FULLPROF_W = 0.476524  # FullProf W
+FULLPROF_PRF_FILE = 'ECH0030684_LaB6_1p622A_noAbs.prf'
+FULLPROF_BAC_FILE = 'ECH0030684_LaB6_1p622A_noAbs.bac'
+FULLPROF_ZERO = -0.21148  # FullProf Zero
+FULLPROF_SCALE = 44.51785  # FullProf Scale
+FULLPROF_WAVELENGTH = 1.622528  # FullProf Lambda
+FULLPROF_U = 0.089670  # FullProf U
+FULLPROF_V = -0.375862  # FullProf V
+FULLPROF_W = 0.476309  # FullProf W
 FULLPROF_X = 0.0  # FullProf X
-FULLPROF_Y = 0.052425  # FullProf Y
-FULLPROF_SYCOS = 0.05281  # FullProf SyCos
-FULLPROF_SYSIN = 0.09068  # FullProf SySin
+FULLPROF_Y = 0.052528  # FullProf Y
+FULLPROF_SYCOS = 0.05290  # FullProf SyCos
+FULLPROF_SYSIN = 0.09073  # FullProf SySin
 FULLPROF_S_L = 0.08000  # FullProf S_L
 FULLPROF_D_L = 0.08000  # FullProf D_L
 
@@ -93,7 +93,6 @@ experiment.peak.broad_lorentz_x = FULLPROF_X
 experiment.peak.broad_lorentz_y = FULLPROF_Y
 # Engine-specific corrections are applied in each engine's section below:
 # SyCos/SySin (cryspy only) and the FCJ S_L/D_L asymmetry (crysfml only).
-# Sample absorption (muR = 0.7) is modelled by neither engine.
 
 project.experiments.add(experiment)
 
