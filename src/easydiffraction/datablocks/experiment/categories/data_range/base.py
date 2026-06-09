@@ -162,6 +162,19 @@ class DataRangeBase(CategoryItem):
         self._ensure_default_range()
         return self._stored_axis()
 
+    def _invalidate_generated_grid(self) -> None:
+        """
+        Drop a previously generated grid so a new range rebuilds it.
+
+        A no-op for measured scans and for categories that do not
+        generate a grid (the clearer only removes an unmeasured,
+        auto-generated grid).
+        """
+        category = self._intensity_category()
+        clear = getattr(category, '_clear_generated_grid', None)
+        if callable(clear):
+            clear()
+
     def _raise_if_measured(self) -> None:
         """Reject writes to the range while a measured scan is present."""
         if not self._has_measured_data():

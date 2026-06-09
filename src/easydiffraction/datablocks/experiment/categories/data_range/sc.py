@@ -135,6 +135,7 @@ class ScDataRange(DataRangeBase):
         """Set the lower sinθ/λ bound of the calculation range (Å⁻¹)."""
         self._raise_if_measured()
         self._sin_theta_over_lambda_min.value = value
+        self._invalidate_generated_grid()
 
     @property
     def sin_theta_over_lambda_max(self) -> NumericDescriptor:
@@ -152,6 +153,7 @@ class ScDataRange(DataRangeBase):
         """Set the upper sinθ/λ bound of the calculation range (Å⁻¹)."""
         self._raise_if_measured()
         self._sin_theta_over_lambda_max.value = value
+        self._invalidate_generated_grid()
 
     # ------------------------------------------------------------------
     #  Active-axis aliases (single crystal has no profile step)

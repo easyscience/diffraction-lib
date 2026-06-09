@@ -168,6 +168,7 @@ class CwlPdDataRange(DataRangeBase):
         """Set the lower 2θ bound of the calculation range (deg)."""
         self._raise_if_measured()
         self._two_theta_min.value = value
+        self._invalidate_generated_grid()
 
     @property
     def two_theta_max(self) -> NumericDescriptor:
@@ -185,6 +186,7 @@ class CwlPdDataRange(DataRangeBase):
         """Set the upper 2θ bound of the calculation range (deg)."""
         self._raise_if_measured()
         self._two_theta_max.value = value
+        self._invalidate_generated_grid()
 
     @property
     def two_theta_inc(self) -> NumericDescriptor:
@@ -205,6 +207,7 @@ class CwlPdDataRange(DataRangeBase):
         """Set the 2θ step between calculation points (deg)."""
         self._raise_if_measured()
         self._two_theta_inc.value = value
+        self._invalidate_generated_grid()
 
     # ------------------------------------------------------------------
     #  Active-axis aliases (float convenience views)

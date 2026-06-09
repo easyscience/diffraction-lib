@@ -166,6 +166,7 @@ class TofPdDataRange(DataRangeBase):
         """Set the lower time-of-flight bound (μs)."""
         self._raise_if_measured()
         self._time_of_flight_min.value = value
+        self._invalidate_generated_grid()
 
     @property
     def time_of_flight_max(self) -> NumericDescriptor:
@@ -183,6 +184,7 @@ class TofPdDataRange(DataRangeBase):
         """Set the upper time-of-flight bound (μs)."""
         self._raise_if_measured()
         self._time_of_flight_max.value = value
+        self._invalidate_generated_grid()
 
     @property
     def time_of_flight_inc(self) -> NumericDescriptor:
@@ -202,6 +204,7 @@ class TofPdDataRange(DataRangeBase):
         """Set the time-of-flight step between calculation points (μs)."""
         self._raise_if_measured()
         self._time_of_flight_inc.value = value
+        self._invalidate_generated_grid()
 
     # ------------------------------------------------------------------
     #  Active-axis aliases (float convenience views)

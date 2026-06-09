@@ -435,6 +435,21 @@ class PdDataBase(CategoryCollection):
         num = int(round((x_max - x_min) / x_step)) + 1
         return x_min + np.arange(num) * x_step
 
+    def _clear_generated_grid(self) -> None:
+        """
+        Drop an auto-generated grid so a changed range can rebuild it.
+
+        Only removes points that were generated from ``data_range``
+        (measured intensities absent / all ``NaN``); a measured scan is
+        never cleared.
+        """
+        if not self._items:
+            return
+        measured = np.asarray(self.intensity_meas, dtype=float)
+        if measured.size and np.any(np.isfinite(measured)):
+            return
+        self.clear()
+
     def _ensure_grid_from_data_range(self) -> None:
         """
         Build the calculation grid from ``data_range`` when unmeasured.
