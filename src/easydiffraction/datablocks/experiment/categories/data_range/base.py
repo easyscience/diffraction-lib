@@ -63,6 +63,13 @@ class DataRangeBase(CategoryItem):
     ) -> None:
         """Fill any unset bound before categories that read the range."""
         del called_by_minimizer
+        # While a measured scan is present the range is observed from the
+        # data, not stored: leave the stored bounds unset (the getters
+        # return measured-derived values, and serialisation omits the
+        # category) so a default window never contradicts the measured
+        # loop in CIF.
+        if self._has_measured_data():
+            return
         self._ensure_default_range()
 
     def _ensure_default_range(self) -> None:

@@ -296,6 +296,26 @@ class ExperimentBase(DatablockItem):
         """Reciprocal-space range used to calculate without measured data."""
         return self._data_range
 
+    def _has_measured_data(self) -> bool:
+        """Return whether this experiment holds measured intensities."""
+        try:
+            category = intensity_category_for(self)
+        except AttributeError:
+            return False
+        values = getattr(category, 'intensity_meas', None)
+        if values is None:
+            return False
+        array = np.asarray(values, dtype=float)
+        return bool(array.size) and bool(np.any(np.isfinite(array)))
+
+    def _serializable_categories(self) -> list:
+        """Omit ``data_range`` from CIF while a measured scan is present."""
+        categories = super()._serializable_categories()
+        data_range = getattr(self, '_data_range', None)
+        if data_range is not None and self._has_measured_data():
+            return [category for category in categories if category is not data_range]
+        return categories
+
     def _restore_switchable_types(self, block: object) -> None:
         """
         Restore switchable category types from a parsed CIF block.
