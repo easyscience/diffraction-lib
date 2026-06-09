@@ -2553,6 +2553,8 @@
       
         
       
+        
+      
     
     
     
@@ -2600,6 +2602,34 @@
   
   
     <li class="md-nav__item">
+      <a href="pd-neut-tof_j_si/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Si (Jorgensen)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="pd-neut-tof_jvd_si/" class="md-nav__link">
         
   
@@ -2607,7 +2637,7 @@
   <span class="md-ellipsis">
     
   
-    Si
+    Si (Jorgensen–Von Dreele)
   
 
     
@@ -3397,51 +3427,73 @@
 
 
 <h1 id="verification"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m23 12-2.44-2.78.34-3.68-3.61-.82-1.89-3.18L12 3 8.6 1.54 6.71 4.72l-3.61.81.34 3.68L1 12l2.44 2.78-.34 3.69 3.61.82 1.89 3.18L12 21l3.4 1.46 1.89-3.18 3.61-.82-.34-3.68zm-13 5-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9z"/></svg></span> Verification</h1>
-<p>Every page calculates the <strong>same</strong> diffraction pattern with each
-supported EasyDiffraction engine — <code>cryspy</code> and <code>crysfml</code> — and compares
-them against each other and, where a reference profile is available,
-against external software (FullProf). All on identical input parameters
-and <strong>without any fitting</strong>. Each page defines the structure in code,
-overlays each engine on the reference with a residual panel and
-closeness metrics, and ends with a single agreement table.</p>
+<p>Every page recreates the <strong>same</strong> diffraction pattern in EasyDiffraction
+and compares it against a reference calculated by external software
+(FullProf) on identical input parameters. Each supported engine —
+<code>cryspy</code> and <code>crysfml</code> — is overlaid on the FullProf reference in turn,
+with a residual panel and closeness metrics, and the page ends with a
+single agreement table.</p>
+<p>The structure is defined in code, with every experimental parameter
+taken verbatim from the frozen FullProf <code>.pcr</code> files. Each engine first
+calculates with those parameters <strong>without fitting</strong>; where a difference
+remains, a short refinement frees only the disputed parameters to show
+it comes from how an experiment parameter is defined between the codes,
+not from a disagreement about the structure.</p>
 <p>Single-crystal pages compare the calculated F² of each reflection on a
 y=x scatter instead of a profile overlay, and use <code>cryspy</code> only — the
 sole engine with single-crystal Bragg support.</p>
-<p>Each page also runs as a fast regression check (<code>pixi run script-tests</code>
-and <code>pixi run notebook-tests</code>), so agreement is monitored over time.</p>
+<p>Most pages also run as a fast regression check (<code>pixi run script-tests</code>
+and <code>pixi run notebook-tests</code>), so agreement is monitored over time. A
+few are excluded from CI where an engine cannot yet reproduce a modelled
+effect; each such page states the reason below.</p>
 <p>Pages are grouped by <strong>experiment type</strong> (sample form, radiation probe,
 and beam mode). Coverage grows to span every supported combination —
 <code>pd-neut-cwl</code>, <code>pd-neut-tof</code>, <code>pd-xray</code>, <code>sg-neut-cwl</code>, <code>sg-neut-tof</code>,
 and so on. The list below notes only what is specific to each page.</p>
 <h2 id="powder-neutron-constant-wavelength">Powder, neutron, constant wavelength</h2>
 <ul>
-<li><a href="pd-neut-cwl_pv_lbco/">LBCO <code>pd-neut-cwl</code></a> – La0.5Ba0.5CoO3
-  (cubic perovskite); pseudo-Voigt, no asymmetry.</li>
-<li><a href="pd-neut-cwl_pv_pbso4/">PbSO4 <code>pd-neut-cwl</code></a> – Anglesite;
-  pseudo-Voigt, no asymmetry.</li>
-<li><a href="pd-neut-cwl_pv-asym_empir_pbso4/">PbSO4 <code>pd-neut-cwl</code></a> –
-  Anglesite; pseudo-Voigt with empirical (FullProf-style)
-  axial-divergence asymmetry.</li>
-<li><a href="pd-neut-cwl_tch-fcj_lab6/">LaB6 <code>pd-neut-cwl</code></a> – Lanthanum
-  hexaboride; intended to use Thompson–Cox–Hastings with
-  Finger–Cox–Jephcoat asymmetry plus SyCos/SySin peak-position
-  corrections. Prepared skeleton, skipped — these features are not yet
-  applied, pending EasyDiffraction support.</li>
+<li><a href="pd-neut-cwl_pv_lbco/">LBCO <code>pd-neut-cwl</code></a> – Lanthanum barium
+  cobaltate (La₀.₅Ba₀.₅CoO₃, <em>Pm-3m</em>); pseudo-Voigt, no asymmetry.</li>
+<li><a href="pd-neut-cwl_pv_pbso4/">PbSO₄ <code>pd-neut-cwl</code></a> – Anglesite (PbSO₄,
+  <em>Pnma</em>); pseudo-Voigt, no asymmetry.</li>
+<li><a href="pd-neut-cwl_pv-asym_empir_pbso4/">PbSO₄ <code>pd-neut-cwl</code></a> –
+  Anglesite (PbSO₄, <em>Pnma</em>); pseudo-Voigt with empirical
+  (FullProf-style) axial-divergence asymmetry. Skipped in CI: cryspy and
+  FullProf parameterise the empirical asymmetry differently, and crysfml
+  has no empirical-asymmetry model.</li>
+<li><a href="pd-neut-cwl_tch-fcj-noabs-nosldl_lab6/">LaB₆ <code>pd-neut-cwl</code></a> –
+  Lanthanum hexaboride (LaB₆, <em>Pm-3m</em>); pseudo-Voigt with SyCos/SySin
+  sample-displacement and transparency corrections. Skipped in CI:
+  pending the unreleased cryspy build that adds these corrections.</li>
+<li><a href="pd-neut-cwl_tch-fcj-noabs_lab6/">LaB₆ <code>pd-neut-cwl</code></a> – Lanthanum
+  hexaboride (LaB₆, <em>Pm-3m</em>); Thompson–Cox–Hastings with Finger–Cox–
+  Jephcoat axial-divergence asymmetry. Skipped in CI: FCJ asymmetry is
+  crysfml-only.</li>
+<li><a href="pd-neut-cwl_tch-fcj_lab6/">LaB₆ <code>pd-neut-cwl</code></a> – Lanthanum
+  hexaboride (LaB₆, <em>Pm-3m</em>); adds Debye–Scherrer sample absorption (μR)
+  on top of FCJ asymmetry. Skipped in CI: sample absorption is modelled
+  by neither engine.</li>
 </ul>
 <h2 id="powder-neutron-time-of-flight">Powder, neutron, time-of-flight</h2>
 <ul>
-<li><a href="pd-neut-tof_jvd_si/">Si <code>pd-neut-tof</code></a> – Silicon; Jorgensen–Von
-  Dreele (pseudo-Voigt with back-to-back exponential asymmetry).</li>
-<li><a href="pd-neut-tof_jvd_ncaf/">NaCaAlF <code>pd-neut-tof</code></a> – Na2Ca3Al2F14;
-  Jorgensen–Von Dreele (pseudo-Voigt with back-to-back exponential
-  asymmetry).</li>
+<li><a href="pd-neut-tof_j_si/">Si <code>pd-neut-tof</code></a> – Silicon (Si, <em>Fd-3m</em>);
+  Jorgensen (back-to-back exponentials with a Gaussian).</li>
+<li><a href="pd-neut-tof_jvd_si/">Si <code>pd-neut-tof</code></a> – Silicon (Si, <em>Fd-3m</em>);
+  Jorgensen–Von Dreele (back-to-back exponentials with a pseudo-Voigt).
+  Skipped in CI: residual cryspy TOF Lorentzian discrepancy.</li>
+<li><a href="pd-neut-tof_jvd_ncaf/">NaCaAlF <code>pd-neut-tof</code></a> – Sodium calcium
+  aluminium fluoride (Na₂Ca₃Al₂F₁₄, <em>I2₁3</em>); Jorgensen–Von Dreele.
+  Skipped in CI: the FullProf reference uses a tabulated
+  instrument-resolution file that the polynomial profile cannot
+  reproduce.</li>
 </ul>
 <h2 id="single-crystal-neutron-constant-wavelength">Single crystal, neutron, constant wavelength</h2>
 <ul>
-<li><a href="sg-neut-cwl_pr2nio4/">Pr2NiO4 <code>sg-neut-cwl</code></a> – Pr2NiO4:Sr
-  (K2NiF4-type, Fmmm); per-reflection F² against FullProf with
-  anisotropic ADPs, partial occupancies, and a split interstitial
-  oxygen. <code>cryspy</code> only; no peak profile (integrated intensities).</li>
+<li><a href="sg-neut-cwl_pr2nio4/">Pr₂NiO₄ <code>sg-neut-cwl</code></a> – Strontium-doped
+  praseodymium nickelate (Pr₂NiO₄:Sr, K₂NiF₄-type, <em>Fmmm</em>);
+  per-reflection F² against FullProf with anisotropic ADPs, partial
+  occupancies, and a split interstitial oxygen. <code>cryspy</code> only;
+  integrated intensities, no peak profile.</li>
 </ul>
 <!-- prettier-ignore-start -->
 
