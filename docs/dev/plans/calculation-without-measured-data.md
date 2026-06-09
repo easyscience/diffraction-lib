@@ -202,7 +202,7 @@ Existing files:
   values via a private `_set_`.
   Commit: `Guard data_range and subsume measured_range`
 
-- [ ] **P1.6 — Generate the powder grid from `data_range`.**
+- [x] **P1.6 — Generate the powder grid from `data_range`.**
   In the Bragg powder data collection
   (`categories/data/bragg_pd.py`), when `self._items` is empty and a
   `data_range` is available, build the data-point grid from the stored
@@ -295,7 +295,7 @@ by hand.
 - [x] P1.3 Attach data_range to experiment items
 - [x] P1.4 Derived sinθ/λ + d-spacing views and defaults
 - [x] P1.5 Guard data_range; subsume measured_range
-- [ ] P1.6 Generate powder grid from data_range
+- [x] P1.6 Generate powder grid from data_range
 - [ ] P1.7 Calculator guards (SC/total)
 - [ ] P1.8 Relax display gates for calculated-only
 - [ ] P1.9 Docs touch-ups
