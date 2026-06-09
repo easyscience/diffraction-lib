@@ -173,7 +173,7 @@ Existing files:
   registration.
   Commit: `Add data_range category package`
 
-- [ ] **P1.3 — Attach `data_range` to experiment items.**
+- [x] **P1.3 — Attach `data_range` to experiment items.**
   Construct `_data_range` from the experiment type in
   `PdExperimentBase`, `ScExperimentBase`, and the total/sc items
   (`DataRangeFactory.create(...)`); add `_data_range` to
@@ -292,7 +292,7 @@ by hand.
 
 - [x] P1.1 Promote ADR to accepted
 - [x] P1.2 Add data_range category package
-- [ ] P1.3 Attach data_range to experiment items
+- [x] P1.3 Attach data_range to experiment items
 - [ ] P1.4 Derived sinθ/λ + d-spacing views and defaults
 - [ ] P1.5 Guard data_range; subsume measured_range
 - [ ] P1.6 Generate powder grid from data_range

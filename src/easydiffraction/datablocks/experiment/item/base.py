@@ -14,6 +14,7 @@ from easydiffraction.core.datablock import DatablockItem
 from easydiffraction.datablocks.experiment.categories.background.factory import BackgroundFactory
 from easydiffraction.datablocks.experiment.categories.calculator import CalculatorCategoryFactory
 from easydiffraction.datablocks.experiment.categories.data.factory import DataFactory
+from easydiffraction.datablocks.experiment.categories.data_range.factory import DataRangeFactory
 from easydiffraction.datablocks.experiment.categories.diffrn.factory import DiffrnFactory
 from easydiffraction.datablocks.experiment.categories.excluded_regions.factory import (
     ExcludedRegionsFactory,
@@ -99,6 +100,7 @@ class ExperimentBase(DatablockItem):
             getattr(self, '_linked_phases', None),
             getattr(self, '_excluded_regions', None),
             getattr(self, '_data', None),
+            getattr(self, '_data_range', None),
             getattr(self, '_peak', None),
             getattr(self, '_background', None),
         ]:
@@ -301,6 +303,15 @@ class ExperimentBase(DatablockItem):
         """Ambient conditions recorded during measurement."""
         return self._diffrn
 
+    # ------------------------------------------------------------------
+    #  Data range (fixed by experiment type)
+    # ------------------------------------------------------------------
+
+    @property
+    def data_range(self) -> object:
+        """Reciprocal-space range used to calculate without measured data."""
+        return self._data_range
+
     def _restore_switchable_types(self, block: object) -> None:
         """
         Restore switchable category types from a parsed CIF block.
@@ -450,6 +461,11 @@ class ScExperimentBase(ExperimentBase):
             scattering_type=self.type.scattering_type.value,
         )
         self._refln = ReflnFactory.create(self._refln_type)
+        self._data_range_type: str = DataRangeFactory.default_tag(
+            beam_mode=self.type.beam_mode.value,
+            sample_form=self.type.sample_form.value,
+        )
+        self._data_range = DataRangeFactory.create(self._data_range_type)
         self._resolve_calculator()
         self._attach_category_parents()
 
@@ -548,6 +564,11 @@ class PdExperimentBase(ExperimentBase):
             scattering_type=self.type.scattering_type.value,
         )
         self._data = DataFactory.create(self._data_type)
+        self._data_range_type: str = DataRangeFactory.default_tag(
+            beam_mode=self.type.beam_mode.value,
+            sample_form=self.type.sample_form.value,
+        )
+        self._data_range = DataRangeFactory.create(self._data_range_type)
         self._peak = PeakFactory.create(
             PeakFactory.default_tag(
                 scattering_type=self.type.scattering_type.value,
