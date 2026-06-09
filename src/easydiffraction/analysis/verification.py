@@ -119,8 +119,8 @@ def load_fullprof_profile(project_dir: str, profile_file: str) -> tuple[np.ndarr
     """
     Load a FullProf ``.sub``/``.sim`` profile as ``(x, y)`` arrays.
 
-    Resolved inside the bundled reference directory, so the caller passes
-    the project sub-folder and the file name.
+    Resolved inside the bundled reference directory, so the caller
+    passes the project sub-folder and the file name.
 
     The first line holds ``min increment max`` followed by a comment;
     the x grid is reconstructed from that header and the remaining lines
@@ -282,7 +282,8 @@ def _parse_fullprof_background(path: str) -> tuple[np.ndarray, np.ndarray]:
     """
     Read ``(2θ, background)`` from a FullProf ``Ppl=2`` ``.bac`` file.
 
-    FullProf writes the ``.bac`` in one of two layouts, both handled here:
+    FullProf writes the ``.bac`` in one of two layouts, both handled
+    here:
 
     * **Two-column** — a ``!``-prefixed comment line followed by
       ``2Theta background`` rows.
@@ -364,25 +365,26 @@ def load_fullprof_calc_profile(
 
     The ``.prf`` (preferably the higher-precision ``Prf=2`` IGOR export)
     holds the calculated profile ``Icalc`` on the *corrected* 2θ grid —
-    the Zero/SyCos/SySin systematic peak-position shift is applied, so the
-    peaks sit at their observed positions. The ``Ppl=2`` ``.bac`` holds
-    the *real* background (the refined polynomial, not the display-shifted
-    ``Backg`` column the ``.prf`` carries) on the uncorrected 2θ grid.
-    Subtracting the background from ``Icalc`` gives the clean Bragg
-    profile, with no pedestal estimate.
+    the Zero/SyCos/SySin systematic peak-position shift is applied, so
+    the peaks sit at their observed positions. The ``Ppl=2`` ``.bac``
+    holds the *real* background (the refined polynomial, not the
+    display-shifted ``Backg`` column the ``.prf`` carries) on the
+    uncorrected 2θ grid. Subtracting the background from ``Icalc`` gives
+    the clean Bragg profile, with no pedestal estimate.
 
-    Both files are resolved inside the bundled reference directory, so the
-    caller passes only the project sub-folder and the two file names. The
-    ``.bac`` 2θ omits the zero shift, so it is realigned onto the profile
-    axis by adding ``zero_shift`` (the FullProf ``Zero``) and interpolated
-    onto the profile grid before subtraction (the background is smooth, so
-    interpolation is lossless and ``Icalc`` is left exact).
+    Both files are resolved inside the bundled reference directory, so
+    the caller passes only the project sub-folder and the two file
+    names. The ``.bac`` 2θ omits the zero shift, so it is realigned onto
+    the profile axis by adding ``zero_shift`` (the FullProf ``Zero``)
+    and interpolated onto the profile grid before subtraction (the
+    background is smooth, so interpolation is lossless and ``Icalc`` is
+    left exact).
 
     Parameters
     ----------
     project_dir : str
-        Reference sub-folder name (under the bundled reference directory)
-        holding the FullProf project files.
+        Reference sub-folder name (under the bundled reference
+        directory) holding the FullProf project files.
     profile_file : str
         File name of the FullProf calculated-profile ``.prf`` file.
     background_file : str
@@ -407,8 +409,8 @@ def load_fullprof_sc_f2calc(project_dir: str, out_file: str) -> dict[tuple[int, 
     """
     Extract calculated F² per reflection from a FullProf SC output.
 
-    Resolved inside the bundled reference directory, so the caller passes
-    the project sub-folder and the file name.
+    Resolved inside the bundled reference directory, so the caller
+    passes the project sub-folder and the file name.
 
     Reads the integrated-intensity reflection table — the one whose
     header carries the ``F2obs`` and ``F2cal`` columns — and returns a

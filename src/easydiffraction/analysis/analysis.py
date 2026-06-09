@@ -1294,8 +1294,8 @@ class Analysis(
         Refreshes the linked structures and each experiment so the
         calculated intensities (``experiment.data.intensity_calc``)
         reflect the current parameters and the selected calculation
-        engines. This is the non-fitting counterpart of :meth:`fit`: call
-        it after changing parameters or a calculator to update the
+        engines. This is the non-fitting counterpart of :meth:`fit`:
+        call it after changing parameters or a calculator to update the
         calculated pattern without running a minimization.
         """
         for structure in self.project.structures:

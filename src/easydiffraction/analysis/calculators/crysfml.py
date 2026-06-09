@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+import string
 from typing import TYPE_CHECKING
 from typing import Any
 
@@ -89,7 +90,7 @@ def _element_symbol(type_symbol: str) -> str:
     str
         The symbol with any leading digits removed (e.g. ``B``).
     """
-    return type_symbol.lstrip('0123456789')
+    return type_symbol.lstrip(string.digits)
 
 
 @CalculatorFactory.register
