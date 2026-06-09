@@ -110,13 +110,9 @@ class DataRangeBase(CategoryItem):
             return None
 
     def _has_measured_data(self) -> bool:
-        """Return whether the experiment holds measured intensities."""
-        category = self._intensity_category()
-        values = getattr(category, 'intensity_meas', None)
-        if values is None:
-            return False
-        array = np.asarray(values, dtype=float)
-        return bool(array.size) and bool(np.any(np.isfinite(array)))
+        """Return whether the owning experiment holds measured data."""
+        checker = getattr(self._parent, '_has_measured_data', None)
+        return bool(checker()) if callable(checker) else False
 
     def _measured_axis_values(self) -> np.ndarray | None:
         """Return measured active-axis values (powder x-grid by default)."""
