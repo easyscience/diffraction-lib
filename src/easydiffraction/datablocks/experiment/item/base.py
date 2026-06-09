@@ -297,11 +297,21 @@ class ExperimentBase(DatablockItem):
         return self._data_range
 
     def _has_measured_data(self) -> bool:
-        """Return whether this experiment holds measured intensities."""
+        """
+        Return whether this experiment holds measured intensities.
+
+        Existence is judged on the unfiltered points, independent of any
+        excluded regions: the powder data collection exposes an unfiltered
+        predicate, while the single-crystal ``refln`` collection's
+        ``intensity_meas`` already iterates all reflections.
+        """
         try:
             category = intensity_category_for(self)
         except AttributeError:
             return False
+        checker = getattr(category, '_has_measured_intensities', None)
+        if callable(checker):
+            return checker()
         values = getattr(category, 'intensity_meas', None)
         if values is None:
             return False

@@ -455,8 +455,19 @@ class PdDataBase(CategoryCollection):
         return x_min + np.arange(num) * x_step
 
     def _has_measured_intensities(self) -> bool:
-        """Return whether any point carries a finite measured intensity."""
-        measured = np.asarray(self.intensity_meas, dtype=float)
+        """
+        Return whether any point carries a finite measured intensity.
+
+        Iterates **all** points (unfiltered): whether a measured scan
+        exists is independent of which points are excluded from the
+        calculation. Using the exclusion-filtered ``intensity_meas`` here
+        would misread a fully-excluded scan as "no measured data".
+        """
+        measured = np.fromiter(
+            (point.intensity_meas.value for point in self._items),
+            dtype=float,
+            count=len(self._items),
+        )
         return bool(measured.size) and bool(np.any(np.isfinite(measured)))
 
     def _clear_generated_grid(self) -> None:

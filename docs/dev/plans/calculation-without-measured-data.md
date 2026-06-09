@@ -300,6 +300,13 @@ render path (auto-include + dispatch) wired in Phase 1, and confirm
 `test_base_coverage.py` (which referenced the removed `_measured_x_values`
 helper) is updated to the `data_range`-backed `measured_range`.
 
+Phase 2 must add a **fully-excluded measured scan** regression test:
+load measured data, add an excluded region spanning the whole scan, then
+(a) `save()` and confirm the measured loop still persists (the
+`data_range`/data-loop CIF skip must not fire — existence is judged on
+unfiltered points), and (b) set a `data_range` bound and confirm it
+**raises** the measured-data guard rather than clearing the scan.
+
 ## Status checklist
 
 - [x] P1.1 Promote ADR to accepted
