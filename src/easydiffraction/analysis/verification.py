@@ -32,6 +32,19 @@ from easydiffraction.utils.utils import render_table
 # columns: h, k, l, ivk, cod, F2obs, F2cal.
 _MIN_SC_F2CAL_COLUMNS = 7
 
+# A FullProf ``.prf`` profile data row (Prf=-3 format) has exactly these
+# columns: 2Theta, Yobs, Ycal, Yobs-Ycal, Backg. Reflection-marker rows
+# carry a trailing ``(h k l)`` and more columns, so they are skipped. The
+# calculated intensity is column 2 (Ycal).
+_PRF_PROFILE_COLUMNS = 5
+_PRF_YCALC_COLUMN = 2
+
+# A FullProf ``Prf=2`` IGOR profile row has columns TwoTheta, Iobs,
+# Icalc, Diff under a ``BEGIN``/``END`` block; the calculated intensity
+# is column 2 (Icalc).
+_IGOR_ICALC_COLUMN = 2
+_IGOR_MIN_COLUMNS = 3
+
 # FullProf writes a profile header (min, increment, max) in three fixed
 # columns of this width; adjacent values run together when one fills its
 # field, so the header is sliced by column when it cannot be split on
@@ -102,9 +115,12 @@ def _parse_fullprof_header(line: str) -> tuple[float, float, float]:
     return minimum, increment, maximum
 
 
-def load_fullprof_profile(path: str) -> tuple[np.ndarray, np.ndarray]:
+def load_fullprof_profile(project_dir: str, profile_file: str) -> tuple[np.ndarray, np.ndarray]:
     """
     Load a FullProf ``.sub``/``.sim`` profile as ``(x, y)`` arrays.
+
+    Resolved inside the bundled reference directory, so the caller passes
+    the project sub-folder and the file name.
 
     The first line holds ``min increment max`` followed by a comment;
     the x grid is reconstructed from that header and the remaining lines
@@ -130,6 +146,7 @@ def load_fullprof_profile(path: str) -> tuple[np.ndarray, np.ndarray]:
         from the grid implied by the intensities read from the body (a
         genuine inconsistency rather than header rounding).
     """
+    path = str(bundled_reference_dir() / project_dir / profile_file)
     with Path(path).open(encoding='utf-8') as handle:
         lines = handle.readlines()
     if not lines:
@@ -158,7 +175,8 @@ def load_fullprof_profile(path: str) -> tuple[np.ndarray, np.ndarray]:
 
 
 def load_columned_profile(
-    path: str,
+    project_dir: str,
+    profile_file: str,
     *,
     skip_rows: int = 1,
     columns: tuple[int, int] = (0, 1),
@@ -183,6 +201,7 @@ def load_columned_profile(
     tuple[np.ndarray, np.ndarray]
         The x and y arrays.
     """
+    path = str(bundled_reference_dir() / project_dir / profile_file)
     with Path(path).open(encoding='utf-8') as handle:
         lines = handle.readlines()[skip_rows:]
     cleaned = '\n'.join(line.replace('(', ' ').replace(')', ' ') for line in lines)
@@ -190,9 +209,206 @@ def load_columned_profile(
     return x, y
 
 
-def load_fullprof_sc_f2calc(path: str) -> dict[tuple[int, int, int], float]:
+def _parse_fullprof_calc_profile(path: str) -> tuple[np.ndarray, np.ndarray]:
+    """
+    Read ``(2θ, Icalc)`` from a FullProf calculated-profile export.
+
+    Handles both the ``Prf=2`` IGOR text format (``TwoTheta Iobs Icalc
+    Diff`` rows inside a ``BEGIN``/``END`` block) and the tab-separated
+    ``Prf=-3`` format (``2Theta Yobs Ycal …`` under a ``2Theta``-led
+    header, with interleaved reflection-marker rows skipped). Both place
+    the calculated intensity in column 2.
+
+    Parameters
+    ----------
+    path : str
+        Path to the FullProf ``.prf`` file.
+
+    Returns
+    -------
+    tuple[np.ndarray, np.ndarray]
+        The 2θ grid (corrected axis) and the calculated intensities.
+
+    Raises
+    ------
+    ValueError
+        If no profile data rows are found.
+    """
+    lines = Path(path).read_text(encoding='utf-8').splitlines()
+    two_theta: list[float] = []
+    icalc: list[float] = []
+    is_igor = any('IGOR' in line.upper() for line in lines[:3])
+    if is_igor:
+        started = False
+        for line in lines:
+            token = line.strip()
+            if token == 'BEGIN':
+                started = True
+                continue
+            if token == 'END':
+                break
+            fields = token.split()
+            if not started or len(fields) < _IGOR_MIN_COLUMNS:
+                continue
+            try:
+                values = (float(fields[0]), float(fields[_IGOR_ICALC_COLUMN]))
+            except ValueError:
+                continue
+            two_theta.append(values[0])
+            icalc.append(values[1])
+    else:
+        header_index = next(
+            (index for index, line in enumerate(lines) if line.lstrip().startswith('2Theta')),
+            None,
+        )
+        if header_index is None:
+            msg = f'FullProf profile {path}: no "2Theta" header or IGOR block found.'
+            raise ValueError(msg)
+        for line in lines[header_index + 1 :]:
+            if '(' in line:  # reflection-marker row
+                continue
+            fields = line.split()
+            if len(fields) != _PRF_PROFILE_COLUMNS:
+                continue
+            two_theta.append(float(fields[0]))
+            icalc.append(float(fields[_PRF_YCALC_COLUMN]))
+    if not two_theta:
+        msg = f'FullProf profile {path}: no calculated-profile data rows found.'
+        raise ValueError(msg)
+    return np.asarray(two_theta), np.asarray(icalc)
+
+
+def _parse_fullprof_background(path: str) -> tuple[np.ndarray, np.ndarray]:
+    """
+    Read ``(2θ, background)`` from a FullProf ``Ppl=2`` ``.bac`` file.
+
+    FullProf writes the ``.bac`` in one of two layouts, both handled here:
+
+    * **Two-column** — a ``!``-prefixed comment line followed by
+      ``2Theta background`` rows.
+    * **Header + array** — a ``min step max`` header line (``.sub``-style,
+      with a trailing ``Background of: …`` label) followed by the
+      background values as a flat array (several per row); the 2θ grid is
+      reconstructed from the header.
+
+    In both layouts the 2θ axis omits the zero shift, so the caller
+    realigns it onto the profile axis.
+
+    Parameters
+    ----------
+    path : str
+        Path to the FullProf ``.bac`` file.
+
+    Returns
+    -------
+    tuple[np.ndarray, np.ndarray]
+        The (uncorrected) 2θ grid and the real background intensities.
+
+    Raises
+    ------
+    ValueError
+        If no background data rows are found.
+    """
+    lines = [line for line in Path(path).read_text(encoding='utf-8').splitlines() if line.strip()]
+    if not lines:
+        msg = f'FullProf .bac {path}: file is empty.'
+        raise ValueError(msg)
+
+    if not lines[0].lstrip().startswith('!'):
+        # Header + flat-array layout: first line is ``min step max <label>``.
+        x_min, x_step, _x_max = _parse_fullprof_header(lines[0])
+        background: list[float] = []
+        for line in lines[1:]:
+            for token in line.split():
+                try:
+                    background.append(float(token))
+                except ValueError:
+                    break  # trailing non-numeric text ends the row
+        if not background:
+            msg = f'FullProf .bac {path}: no background values after the header.'
+            raise ValueError(msg)
+        y = np.asarray(background)
+        x = x_min + x_step * np.arange(y.size)
+        return x, y
+
+    # Two-column ``2Theta background`` layout under ``!`` comment lines.
+    two_theta: list[float] = []
+    column_background: list[float] = []
+    for line in lines:
+        token = line.strip()
+        if token.startswith('!'):
+            continue
+        fields = token.split()
+        if len(fields) < 2:
+            continue
+        try:
+            values = (float(fields[0]), float(fields[1]))
+        except ValueError:
+            continue
+        two_theta.append(values[0])
+        column_background.append(values[1])
+    if not two_theta:
+        msg = f'FullProf .bac {path}: no background data rows found.'
+        raise ValueError(msg)
+    return np.asarray(two_theta), np.asarray(column_background)
+
+
+def load_fullprof_calc_profile(
+    project_dir: str,
+    profile_file: str,
+    background_file: str,
+    zero_shift: float,
+) -> tuple[np.ndarray, np.ndarray]:
+    """
+    Load the Bragg-only profile from FullProf calculated + background.
+
+    The ``.prf`` (preferably the higher-precision ``Prf=2`` IGOR export)
+    holds the calculated profile ``Icalc`` on the *corrected* 2θ grid —
+    the Zero/SyCos/SySin systematic peak-position shift is applied, so the
+    peaks sit at their observed positions. The ``Ppl=2`` ``.bac`` holds
+    the *real* background (the refined polynomial, not the display-shifted
+    ``Backg`` column the ``.prf`` carries) on the uncorrected 2θ grid.
+    Subtracting the background from ``Icalc`` gives the clean Bragg
+    profile, with no pedestal estimate.
+
+    Both files are resolved inside the bundled reference directory, so the
+    caller passes only the project sub-folder and the two file names. The
+    ``.bac`` 2θ omits the zero shift, so it is realigned onto the profile
+    axis by adding ``zero_shift`` (the FullProf ``Zero``) and interpolated
+    onto the profile grid before subtraction (the background is smooth, so
+    interpolation is lossless and ``Icalc`` is left exact).
+
+    Parameters
+    ----------
+    project_dir : str
+        Reference sub-folder name (under the bundled reference directory)
+        holding the FullProf project files.
+    profile_file : str
+        File name of the FullProf calculated-profile ``.prf`` file.
+    background_file : str
+        File name of the FullProf ``.bac`` background file.
+    zero_shift : float
+        The FullProf ``Zero`` offset (degrees 2θ) that realigns the
+        ``.bac`` 2θ onto the profile axis.
+
+    Returns
+    -------
+    tuple[np.ndarray, np.ndarray]
+        The corrected 2θ grid and the clean Bragg intensities.
+    """
+    base = bundled_reference_dir() / project_dir
+    x, icalc = _parse_fullprof_calc_profile(str(base / profile_file))
+    background_x, background_y = _parse_fullprof_background(str(base / background_file))
+    background = np.interp(x, background_x + zero_shift, background_y)
+    return x, icalc - background
+
+
+def load_fullprof_sc_f2calc(project_dir: str, out_file: str) -> dict[tuple[int, int, int], float]:
     """
     Extract calculated F² per reflection from a FullProf SC output.
+
+    Resolved inside the bundled reference directory, so the caller passes
+    the project sub-folder and the file name.
 
     Reads the integrated-intensity reflection table — the one whose
     header carries the ``F2obs`` and ``F2cal`` columns — and returns a
@@ -211,6 +427,7 @@ def load_fullprof_sc_f2calc(path: str) -> dict[tuple[int, int, int], float]:
     dict[tuple[int, int, int], float]
         ``{(h, k, l): F2cal}`` for every tabulated reflection.
     """
+    path = str(bundled_reference_dir() / project_dir / out_file)
     f2calc: dict[tuple[int, int, int], float] = {}
     in_table = False
     with Path(path).open(encoding='utf-8') as handle:
