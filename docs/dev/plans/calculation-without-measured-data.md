@@ -224,7 +224,7 @@ Existing files:
   measured data" error instead of an empty-array/empty-scan crash.
   Commit: `Add calc-without-data guards for single crystal and total`
 
-- [ ] **P1.8 — Relax display gates for calculated-only.**
+- [x] **P1.8 — Relax display gates for calculated-only.**
   In `project/display.py`, drop the `measured_available` requirement
   from `background_available` and `bragg_available` so a calculated-only
   powder shows calculated curve + background + Bragg. Keep
@@ -297,7 +297,7 @@ by hand.
 - [x] P1.5 Guard data_range; subsume measured_range
 - [x] P1.6 Generate powder grid from data_range
 - [x] P1.7 Calculator guards (SC/total)
-- [ ] P1.8 Relax display gates for calculated-only
+- [x] P1.8 Relax display gates for calculated-only
 - [ ] P1.9 Docs touch-ups
 - [ ] P1.10 Phase 1 review gate
 - [ ] Phase 2 verification (tests + `pixi run fix/check/*-tests`)

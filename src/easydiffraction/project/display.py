@@ -8,6 +8,8 @@ from contextlib import nullcontext
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+import numpy as np
+
 from easydiffraction.analysis.fit_helpers.bayesian import posterior_predictive_cache_key
 from easydiffraction.analysis.verification import closeness_annotation
 from easydiffraction.analysis.verification import pattern_closeness
@@ -830,21 +832,21 @@ class ProjectDisplay:
         scattering_type = experiment.type.scattering_type.value
         has_linked_structure = self._has_linked_structure_for_calculation(experiment)
 
-        measured_available = self._has_nonempty_value(getattr(pattern, 'intensity_meas', None))
+        measured_available = self._has_measured_intensity(
+            getattr(pattern, 'intensity_meas', None)
+        )
         calculated_available = has_linked_structure and self._has_nonempty_value(
             getattr(pattern, 'intensity_calc', None)
         )
         background_available = (
             sample_form == SampleFormEnum.POWDER.value
             and scattering_type == ScatteringTypeEnum.BRAGG.value
-            and measured_available
             and calculated_available
             and self._has_nonempty_value(getattr(experiment, 'background', None))
             and self._has_nonempty_value(getattr(pattern, 'intensity_bkg', None))
         )
         bragg_available = (
-            measured_available
-            and calculated_available
+            calculated_available
             and sample_form == SampleFormEnum.POWDER.value
             and scattering_type == ScatteringTypeEnum.BRAGG.value
             and self._has_nonempty_value(getattr(experiment, 'refln', None))
@@ -999,6 +1001,21 @@ class ProjectDisplay:
             return len(value) > 0
         except TypeError:
             return True
+
+    @staticmethod
+    def _has_measured_intensity(value: object | None) -> bool:
+        """
+        Return whether measured intensities are actually present.
+
+        A calculated-only experiment carries a generated x-grid whose
+        measured intensities are absent (``NaN``); those must not count
+        as a measured scan, so an all-``NaN`` array reads as no
+        measurement.
+        """
+        if value is None:
+            return False
+        array = np.asarray(value, dtype=float)
+        return bool(array.size) and bool(np.any(np.isfinite(array)))
 
     def _has_linked_structure_for_calculation(self, experiment: object) -> bool:
         """Return whether the experiment links to a known structure."""
