@@ -2318,6 +2318,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -2449,6 +2453,62 @@
   
   
     <li class="md-nav__item">
+      <a href="../../verification/pd-neut-cwl_tch-fcj-noabs-nosldl_lab6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LaB6 (SyCos/SySin)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../verification/pd-neut-cwl_tch-fcj-noabs_lab6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LaB6 (FCJ asymmetry)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../verification/pd-neut-cwl_tch-fcj_lab6/" class="md-nav__link">
         
   
@@ -2456,7 +2516,7 @@
   <span class="md-ellipsis">
     
   
-    LaB6
+    LaB6 (absorption)
   
 
     
@@ -4310,6 +4370,17 @@ computations across the project's structures and experiments.</p>
               </td>
             </tr>
             <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;calculate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.analysis.analysis.Analysis.calculate&lt;/code&gt;)" href="#easydiffraction.analysis.analysis.Analysis.calculate">calculate</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Calculate the diffraction pattern for every experiment.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
               <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;undo_fit&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.analysis.analysis.Analysis.undo_fit&lt;/code&gt;)" href="#easydiffraction.analysis.analysis.Analysis.undo_fit">undo_fit</a></code></td>
               <td>
                 <div class="doc-md-description">
@@ -5288,6 +5359,33 @@ computations across the project's structures and experiments.</p>
     <div class="doc doc-contents ">
 
         <p>Execute fitting for the currently selected fitting mode.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h7 id="easydiffraction.analysis.analysis.Analysis.calculate" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">calculate</span><span class="p">()</span></code>
+
+</h7>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Calculate the diffraction pattern for every experiment.</p>
+<p>Refreshes the linked structures and each experiment so the
+calculated intensities (<code>experiment.data.intensity_calc</code>)
+reflect the current parameters and the selected calculation
+engines. This is the non-fitting counterpart of :meth:<code>fit</code>:
+call it after changing parameters or a calculator to update the
+calculated pattern without running a minimization.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -58548,7 +58646,7 @@ those pages stay short and readable.</p>
               </td>
             </tr>
             <tr class="doc-section-item">
-              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;load_fullprof_profile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;path&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.analysis.verification.load_fullprof_profile&lt;/code&gt;)" href="#easydiffraction.analysis.verification.load_fullprof_profile">load_fullprof_profile</a></code></td>
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;load_fullprof_profile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;project_dir&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;profile_file&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.analysis.verification.load_fullprof_profile&lt;/code&gt;)" href="#easydiffraction.analysis.verification.load_fullprof_profile">load_fullprof_profile</a></code></td>
               <td>
                 <div class="doc-md-description">
                   <p>Load a FullProf <code>.sub</code>/<code>.sim</code> profile as <code>(x, y)</code> arrays.</p>
@@ -58559,7 +58657,7 @@ those pages stay short and readable.</p>
               </td>
             </tr>
             <tr class="doc-section-item">
-              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;load_columned_profile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;path&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;skip_rows&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;columns&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.analysis.verification.load_columned_profile&lt;/code&gt;)" href="#easydiffraction.analysis.verification.load_columned_profile">load_columned_profile</a></code></td>
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;load_columned_profile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;project_dir&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;profile_file&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;skip_rows&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;columns&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.analysis.verification.load_columned_profile&lt;/code&gt;)" href="#easydiffraction.analysis.verification.load_columned_profile">load_columned_profile</a></code></td>
               <td>
                 <div class="doc-md-description">
                   <p>Load a two-column <code>x y</code> reference profile.</p>
@@ -58570,7 +58668,18 @@ those pages stay short and readable.</p>
               </td>
             </tr>
             <tr class="doc-section-item">
-              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;load_fullprof_sc_f2calc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;path&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.analysis.verification.load_fullprof_sc_f2calc&lt;/code&gt;)" href="#easydiffraction.analysis.verification.load_fullprof_sc_f2calc">load_fullprof_sc_f2calc</a></code></td>
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;load_fullprof_calc_profile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;project_dir&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;profile_file&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;background_file&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;zero_shift&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.analysis.verification.load_fullprof_calc_profile&lt;/code&gt;)" href="#easydiffraction.analysis.verification.load_fullprof_calc_profile">load_fullprof_calc_profile</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Load the Bragg-only profile from FullProf calculated + background.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;load_fullprof_sc_f2calc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;project_dir&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;out_file&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.analysis.verification.load_fullprof_sc_f2calc&lt;/code&gt;)" href="#easydiffraction.analysis.verification.load_fullprof_sc_f2calc">load_fullprof_sc_f2calc</a></code></td>
               <td>
                 <div class="doc-md-description">
                   <p>Extract calculated F² per reflection from a FullProf SC output.</p>
@@ -58871,7 +58980,7 @@ bundled files move to the <code>diffraction</code> data repository later.</p>
 
 
 <h5 id="easydiffraction.analysis.verification.load_fullprof_profile" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">load_fullprof_profile</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">load_fullprof_profile</span><span class="p">(</span><span class="n">project_dir</span><span class="p">,</span> <span class="n">profile_file</span><span class="p">)</span></code>
 
 </h5>
 
@@ -58879,6 +58988,8 @@ bundled files move to the <code>diffraction</code> data repository later.</p>
     <div class="doc doc-contents ">
 
         <p>Load a FullProf <code>.sub</code>/<code>.sim</code> profile as <code>(x, y)</code> arrays.</p>
+<p>Resolved inside the bundled reference directory, so the caller
+passes the project sub-folder and the file name.</p>
 <p>The first line holds <code>min increment max</code> followed by a comment;
 the x grid is reconstructed from that header and the remaining lines
 are flattened into the intensity array. The header is parsed by
@@ -58902,14 +59013,34 @@ case where the values run together.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                <code>path</code>
+                <code>project_dir</code>
             </td>
             <td>
                   <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Path to the FullProf <code>.sub</code> or <code>.sim</code> file.</p>
+                <p>Reference sub-folder name (under the bundled reference
+directory) holding the FullProf project files.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>profile_file</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>File name of the FullProf <code>.sub</code> or <code>.sim</code> profile file.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -58986,7 +59117,7 @@ genuine inconsistency rather than header rounding).</p>
 
 
 <h5 id="easydiffraction.analysis.verification.load_columned_profile" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">load_columned_profile</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">skip_rows</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span></code>
+            <code class="highlight language-python"><span class="n">load_columned_profile</span><span class="p">(</span><span class="n">project_dir</span><span class="p">,</span> <span class="n">profile_file</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">skip_rows</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span></code>
 
 </h5>
 
@@ -59014,14 +59145,34 @@ parse cleanly.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                <code>path</code>
+                <code>project_dir</code>
             </td>
             <td>
                   <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Path to the column-formatted file.</p>
+                <p>Reference sub-folder name (under the bundled reference
+directory) holding the FullProf project files.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>profile_file</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>File name of the column-formatted reference file.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -59106,8 +59257,163 @@ parse cleanly.</p>
 <div class="doc doc-object doc-function">
 
 
+<h5 id="easydiffraction.analysis.verification.load_fullprof_calc_profile" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">load_fullprof_calc_profile</span><span class="p">(</span><span class="n">project_dir</span><span class="p">,</span> <span class="n">profile_file</span><span class="p">,</span> <span class="n">background_file</span><span class="p">,</span> <span class="n">zero_shift</span><span class="p">)</span></code>
+
+</h5>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Load the Bragg-only profile from FullProf calculated + background.</p>
+<p>The <code>.prf</code> (preferably the higher-precision <code>Prf=2</code> IGOR export)
+holds the calculated profile <code>Icalc</code> on the <em>corrected</em> 2θ grid —
+the Zero/SyCos/SySin systematic peak-position shift is applied, so
+the peaks sit at their observed positions. The <code>Ppl=2</code> <code>.bac</code>
+holds the <em>real</em> background (the refined polynomial, not the
+display-shifted <code>Backg</code> column the <code>.prf</code> carries) on the
+uncorrected 2θ grid. Subtracting the background from <code>Icalc</code> gives
+the clean Bragg profile, with no pedestal estimate.</p>
+<p>Both files are resolved inside the bundled reference directory, so
+the caller passes only the project sub-folder and the two file
+names. The <code>.bac</code> 2θ omits the zero shift, so it is realigned onto
+the profile axis by adding <code>zero_shift</code> (the FullProf <code>Zero</code>)
+and interpolated onto the profile grid before subtraction (the
+background is smooth, so interpolation is lossless and <code>Icalc</code> is
+left exact).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>project_dir</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Reference sub-folder name (under the bundled reference
+directory) holding the FullProf project files.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>profile_file</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>File name of the FullProf calculated-profile <code>.prf</code> file.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>background_file</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>File name of the FullProf <code>.bac</code> background file.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>zero_shift</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The FullProf <code>Zero</code> offset (degrees 2θ) that realigns the
+<code>.bac</code> 2θ onto the profile axis.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="tuple">tuple</span>[<span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span>, <span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The corrected 2θ grid and the clean Bragg intensities.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
 <h5 id="easydiffraction.analysis.verification.load_fullprof_sc_f2calc" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">load_fullprof_sc_f2calc</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">load_fullprof_sc_f2calc</span><span class="p">(</span><span class="n">project_dir</span><span class="p">,</span> <span class="n">out_file</span><span class="p">)</span></code>
 
 </h5>
 
@@ -59115,6 +59421,8 @@ parse cleanly.</p>
     <div class="doc doc-contents ">
 
         <p>Extract calculated F² per reflection from a FullProf SC output.</p>
+<p>Resolved inside the bundled reference directory, so the caller
+passes the project sub-folder and the file name.</p>
 <p>Reads the integrated-intensity reflection table — the one whose
 header carries the <code>F2obs</code> and <code>F2cal</code> columns — and returns a
 mapping from each <code>(h, k, l)</code> to its <code>F2cal</code>. FullProf reports
@@ -59139,14 +59447,34 @@ refines a single scale to bring the two onto a common basis.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                <code>path</code>
+                <code>project_dir</code>
             </td>
             <td>
                   <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Path to the FullProf single-crystal <code>.out</code> file.</p>
+                <p>Reference sub-folder name (under the bundled reference
+directory) holding the FullProf project files.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>out_file</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>File name of the FullProf single-crystal <code>.out</code> file.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
