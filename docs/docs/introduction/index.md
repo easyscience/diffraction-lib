@@ -10,6 +10,11 @@ icon: material/information-slab-circle
 based on a structural model and refining its parameters against
 experimental data.
 
+A pattern can be calculated from a structural model and instrument
+settings alone — without any measured data — to preview a candidate
+structure or generate a synthetic pattern, and then refined against
+experimental data once it is available.
+
 **EasyDiffraction** is developed both as a Python library and as a
 cross-platform desktop application.
 

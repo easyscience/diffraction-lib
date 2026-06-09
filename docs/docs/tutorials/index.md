@@ -68,6 +68,21 @@ containing Bayesian fit state.
   powder diffraction datasets (from two detector banks) of the WISH
   instrument at ISIS.
 
+## Without Measured Data
+
+Calculate and plot a pattern straight from a crystal structure and
+instrument settings — no measured data file required. The calculation
+range comes from the `data_range` category (or its sensible default).
+
+- [LBCO `pd-neut-cwl`](ed-27.ipynb) – Calculates a constant-wavelength
+  neutron powder pattern for La0.5Ba0.5CoO3 over a chosen 2θ range, with
+  background, and no measured data.
+- [Si `pd-neut-tof`](ed-28.ipynb) – Calculates a time-of-flight neutron
+  powder pattern for Si over a time-of-flight range projected from the
+  instrument calibration.
+- [NaCl `pd-xray`](ed-29.ipynb) – The most minimal example: an X-ray
+  powder pattern for NaCl using the default calculation range.
+
 ## Single Crystal Diffraction
 
 - [Tb2TiO7 `sg-neut-cwl`](ed-14.ipynb) – Demonstrates structure
