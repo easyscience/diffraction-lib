@@ -192,7 +192,7 @@ Existing files:
   experiment has a usable default grid.
   Commit: `Add derived sinθ/λ and d-spacing views to data_range`
 
-- [ ] **P1.5 — Measurement-guarded getter/setter; subsume
+- [x] **P1.5 — Measurement-guarded getter/setter; subsume
   `measured_range`.** Make the axis attributes guarded writable
   properties: the setter raises (clear, named error) when a measured
   scan is present; the getter returns the measured-derived range when
@@ -294,7 +294,7 @@ by hand.
 - [x] P1.2 Add data_range category package
 - [x] P1.3 Attach data_range to experiment items
 - [x] P1.4 Derived sinθ/λ + d-spacing views and defaults
-- [ ] P1.5 Guard data_range; subsume measured_range
+- [x] P1.5 Guard data_range; subsume measured_range
 - [ ] P1.6 Generate powder grid from data_range
 - [ ] P1.7 Calculator guards (SC/total)
 - [ ] P1.8 Relax display gates for calculated-only

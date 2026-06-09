@@ -145,34 +145,46 @@ class CwlPdDataRange(DataRangeBase):
     @property
     def two_theta_min(self) -> float:
         """Lower 2θ bound of the calculation range (deg)."""
+        measured = self._measured_axis_range()
+        if measured is not None:
+            return measured[0]
         self._ensure_default_range()
         return self._two_theta_min.value
 
     @two_theta_min.setter
     def two_theta_min(self, value: float) -> None:
         """Set the lower 2θ bound of the calculation range (deg)."""
+        self._raise_if_measured()
         self._two_theta_min.value = value
 
     @property
     def two_theta_max(self) -> float:
         """Upper 2θ bound of the calculation range (deg)."""
+        measured = self._measured_axis_range()
+        if measured is not None:
+            return measured[1]
         self._ensure_default_range()
         return self._two_theta_max.value
 
     @two_theta_max.setter
     def two_theta_max(self, value: float) -> None:
         """Set the upper 2θ bound of the calculation range (deg)."""
+        self._raise_if_measured()
         self._two_theta_max.value = value
 
     @property
     def two_theta_inc(self) -> float:
         """2θ step between calculation points (deg)."""
+        measured = self._measured_axis_range()
+        if measured is not None and measured[2] is not None:
+            return measured[2]
         self._ensure_default_range()
         return self._two_theta_inc.value
 
     @two_theta_inc.setter
     def two_theta_inc(self, value: float) -> None:
         """Set the 2θ step between calculation points (deg)."""
+        self._raise_if_measured()
         self._two_theta_inc.value = value
 
     # ------------------------------------------------------------------

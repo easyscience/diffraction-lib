@@ -94,6 +94,18 @@ class ScDataRange(DataRangeBase):
         if np.isnan(self._sin_theta_over_lambda_max.value):
             self._sin_theta_over_lambda_max._value = sthovl_max
 
+    def _measured_axis_values(self) -> np.ndarray | None:
+        """Return measured sinθ/λ values from the reflection collection."""
+        category = self._intensity_category()
+        values = getattr(category, 'sin_theta_over_lambda', None)
+        if values is None:
+            return None
+        return np.asarray(values, dtype=float)
+
+    def _measured_step(self, values: np.ndarray) -> None:  # noqa: ARG002, PLR6301
+        """Single-crystal data has no profile step."""
+        return None
+
     # ------------------------------------------------------------------
     #  Stored axis (sinθ/λ)
     # ------------------------------------------------------------------
@@ -101,23 +113,31 @@ class ScDataRange(DataRangeBase):
     @property
     def sin_theta_over_lambda_min(self) -> float:
         """Lower sinθ/λ bound of the calculation range (Å⁻¹)."""
+        measured = self._measured_axis_range()
+        if measured is not None:
+            return measured[0]
         self._ensure_default_range()
         return self._sin_theta_over_lambda_min.value
 
     @sin_theta_over_lambda_min.setter
     def sin_theta_over_lambda_min(self, value: float) -> None:
         """Set the lower sinθ/λ bound of the calculation range (Å⁻¹)."""
+        self._raise_if_measured()
         self._sin_theta_over_lambda_min.value = value
 
     @property
     def sin_theta_over_lambda_max(self) -> float:
         """Upper sinθ/λ bound of the calculation range (Å⁻¹)."""
+        measured = self._measured_axis_range()
+        if measured is not None:
+            return measured[1]
         self._ensure_default_range()
         return self._sin_theta_over_lambda_max.value
 
     @sin_theta_over_lambda_max.setter
     def sin_theta_over_lambda_max(self, value: float) -> None:
         """Set the upper sinθ/λ bound of the calculation range (Å⁻¹)."""
+        self._raise_if_measured()
         self._sin_theta_over_lambda_max.value = value
 
     # ------------------------------------------------------------------

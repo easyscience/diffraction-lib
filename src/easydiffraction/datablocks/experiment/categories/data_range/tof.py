@@ -144,34 +144,46 @@ class TofPdDataRange(DataRangeBase):
     @property
     def time_of_flight_min(self) -> float:
         """Lower time-of-flight bound of the calculation range (μs)."""
+        measured = self._measured_axis_range()
+        if measured is not None:
+            return measured[0]
         self._ensure_default_range()
         return self._time_of_flight_min.value
 
     @time_of_flight_min.setter
     def time_of_flight_min(self, value: float) -> None:
         """Set the lower time-of-flight bound (μs)."""
+        self._raise_if_measured()
         self._time_of_flight_min.value = value
 
     @property
     def time_of_flight_max(self) -> float:
         """Upper time-of-flight bound of the calculation range (μs)."""
+        measured = self._measured_axis_range()
+        if measured is not None:
+            return measured[1]
         self._ensure_default_range()
         return self._time_of_flight_max.value
 
     @time_of_flight_max.setter
     def time_of_flight_max(self, value: float) -> None:
         """Set the upper time-of-flight bound (μs)."""
+        self._raise_if_measured()
         self._time_of_flight_max.value = value
 
     @property
     def time_of_flight_inc(self) -> float:
         """Time-of-flight step between calculation points (μs)."""
+        measured = self._measured_axis_range()
+        if measured is not None and measured[2] is not None:
+            return measured[2]
         self._ensure_default_range()
         return self._time_of_flight_inc.value
 
     @time_of_flight_inc.setter
     def time_of_flight_inc(self, value: float) -> None:
         """Set the time-of-flight step between calculation points (μs)."""
+        self._raise_if_measured()
         self._time_of_flight_inc.value = value
 
     # ------------------------------------------------------------------

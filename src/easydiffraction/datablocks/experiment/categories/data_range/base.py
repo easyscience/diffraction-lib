@@ -17,7 +17,14 @@ calibration — stays well defined. The shared reciprocal currency is
 
 from __future__ import annotations
 
+import numpy as np
+
 from easydiffraction.core.category import CategoryItem
+
+# A measured x-grid is treated as uniform when every step is within this
+# fraction of the median step; otherwise no representative step is
+# reported for the measured range.
+_MEASURED_RANGE_UNIFORM_TOLERANCE = 0.01
 
 # Default d-spacing window (Å) authored once and projected onto each
 # stored axis. The bounds bracket a typical Bragg powder pattern; users
@@ -79,3 +86,77 @@ class DataRangeBase(CategoryItem):
             1.0 / (2.0 * DEFAULT_D_SPACING_MAX),
             1.0 / (2.0 * DEFAULT_D_SPACING_MIN),
         )
+
+    # ------------------------------------------------------------------
+    #  Measured-data subsumption
+    # ------------------------------------------------------------------
+
+    def _intensity_category(self) -> object | None:
+        """Return the owning experiment's intensity category, if any."""
+        parent = self._parent
+        resolver = getattr(parent, '_intensity_category', None)
+        if resolver is None:
+            return None
+        try:
+            return resolver()
+        except AttributeError:
+            return None
+
+    def _has_measured_data(self) -> bool:
+        """Return whether the experiment holds measured intensities."""
+        category = self._intensity_category()
+        values = getattr(category, 'intensity_meas', None)
+        if values is None:
+            return False
+        array = np.asarray(values, dtype=float)
+        return bool(array.size) and bool(np.any(np.isfinite(array)))
+
+    def _measured_axis_values(self) -> np.ndarray | None:
+        """Return measured active-axis values (powder x-grid by default)."""
+        category = self._intensity_category()
+        values = getattr(category, 'unfiltered_x', None)
+        if values is None:
+            return None
+        return np.asarray(values, dtype=float)
+
+    def _measured_step(self, values: np.ndarray) -> float | None:  # noqa: PLR6301
+        """Return the representative step of a measured grid, if uniform."""
+        return _representative_step(values)
+
+    def _measured_axis_range(self) -> tuple[float, float, float | None] | None:
+        """Return measured ``(min, max, step)`` on the active axis, or None."""
+        if not self._has_measured_data():
+            return None
+        values = self._measured_axis_values()
+        if values is None or values.size == 0:
+            return None
+        values = np.sort(values)
+        range_min = float(values[0])
+        range_max = float(values[-1])
+        if values.size == 1:
+            return (range_min, range_max, None)
+        return (range_min, range_max, self._measured_step(values))
+
+    def _raise_if_measured(self) -> None:
+        """Reject writes to the range while a measured scan is present."""
+        if not self._has_measured_data():
+            return
+        name = getattr(self._parent, 'name', None) or '?'
+        msg = (
+            f"Cannot set the calculation range for experiment '{name}': it is "
+            'determined by the measured data and is read-only while a measured '
+            'scan is present.'
+        )
+        raise ValueError(msg)
+
+
+def _representative_step(values: np.ndarray) -> float | None:
+    """Return a representative step for sorted x-axis values, or None."""
+    steps = np.diff(values)
+    median_step = float(np.median(steps))
+    if median_step == 0:
+        return None
+    tolerance = abs(median_step) * _MEASURED_RANGE_UNIFORM_TOLERANCE
+    if np.max(np.abs(steps - median_step)) > tolerance:
+        return None
+    return median_step
