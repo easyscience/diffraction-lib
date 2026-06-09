@@ -18,3 +18,4 @@ pd-neut-cwl_tch-fcj-noabs-nosldl_lab6  # needs unreleased cryspy PR #46 (SyCos/S
 pd-neut-cwl_tch-fcj-noabs_lab6  # FCJ asymmetry (S_L/D_L) not implemented in cryspy; see issues/open.md
 pd-neut-cwl_tch-fcj_lab6  # unmodelled sample absorption (muR=0.7, HEWAT) + FCJ asymmetry; see issues/open.md
 pd-neut-tof_jvd_si  # cryspy TOF Lorentzian discrepancy; see issues/open.md
+pd-neut-tof_jvd_ncaf  # FullProf reference uses a tabulated IRF (NPROF 9 look-up table); ed has only the polynomial Jorgensen-Von Dreele profile, so peaks are too narrow (~20%)
