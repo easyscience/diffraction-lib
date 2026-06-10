@@ -116,11 +116,16 @@ class TofPdDataRange(DataRangeBase):
 
     @staticmethod
     def _tof_from_d(d_spacing: float, offset: float, linear: float, quad: float) -> float:
-        """Return time-of-flight (μs) for a d-spacing, ``TOF = c0+c1·d+c2·d²``."""
+        """
+        Return time-of-flight (μs) for a d-spacing, ``TOF =
+        c0+c1·d+c2·d²``.
+        """
         return float(offset + linear * d_spacing + quad * d_spacing**2)
 
     def _ensure_default_range(self) -> None:
-        """Project the default d window onto unset TOF bounds and step."""
+        """
+        Project the default d window onto unset TOF bounds and step.
+        """
         calibration = self._tof_calibration()
         if calibration is None:
             return
@@ -142,7 +147,9 @@ class TofPdDataRange(DataRangeBase):
     # ------------------------------------------------------------------
 
     def _stored_axis(self) -> tuple[float, float, float]:
-        """Return stored ``(min, max, inc)`` after projecting defaults."""
+        """
+        Return stored ``(min, max, inc)`` after projecting defaults.
+        """
         return (
             self._time_of_flight_min.value,
             self._time_of_flight_max.value,
@@ -201,7 +208,9 @@ class TofPdDataRange(DataRangeBase):
 
     @time_of_flight_inc.setter
     def time_of_flight_inc(self, value: float) -> None:
-        """Set the time-of-flight step between calculation points (μs)."""
+        """
+        Set the time-of-flight step between calculation points (μs).
+        """
         self._raise_if_measured()
         self._time_of_flight_inc.value = value
         self._invalidate_generated_grid()
@@ -222,7 +231,9 @@ class TofPdDataRange(DataRangeBase):
 
     @property
     def x_step(self) -> float | None:
-        """Step on the active (TOF) axis (μs), or None if non-uniform."""
+        """
+        Step on the active (TOF) axis (μs), or None if non-uniform.
+        """
         return self._effective_axis()[2]
 
     # ------------------------------------------------------------------
@@ -230,7 +241,9 @@ class TofPdDataRange(DataRangeBase):
     # ------------------------------------------------------------------
 
     def _d_spacing_at(self, time_of_flight: float) -> float:
-        """Return d-spacing (Å) for a TOF value, NaN without calibration."""
+        """
+        Return d-spacing (Å) for a TOF value, NaN without calibration.
+        """
         calibration = self._tof_calibration()
         if calibration is None:
             return float('nan')
@@ -249,12 +262,16 @@ class TofPdDataRange(DataRangeBase):
 
     @property
     def sin_theta_over_lambda_min(self) -> float:
-        """Lower sinθ/λ bound derived from the largest d-spacing (Å⁻¹)."""
+        """
+        Lower sinθ/λ bound derived from the largest d-spacing (Å⁻¹).
+        """
         d_max = self.d_spacing_max
         return float(1.0 / (2.0 * d_max))
 
     @property
     def sin_theta_over_lambda_max(self) -> float:
-        """Upper sinθ/λ bound derived from the smallest d-spacing (Å⁻¹)."""
+        """
+        Upper sinθ/λ bound derived from the smallest d-spacing (Å⁻¹).
+        """
         d_min = self.d_spacing_min
         return float(1.0 / (2.0 * d_min))

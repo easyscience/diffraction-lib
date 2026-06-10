@@ -255,13 +255,9 @@ class TestIsDark:
         from easydiffraction.utils._vendored import theme_detect
 
         with (
-            mock.patch.object(
-                theme_detect, '_check_jupyterlab_settings', return_value=None
-            ),
+            mock.patch.object(theme_detect, '_check_jupyterlab_settings', return_value=None),
             mock.patch.object(theme_detect, '_check_vscode_settings', return_value=None),
-            mock.patch.object(
-                theme_detect, '_check_system_preferences', return_value=None
-            ),
+            mock.patch.object(theme_detect, '_check_system_preferences', return_value=None),
             mock.patch.object(
                 theme_detect, '_check_javascript_detection', return_value=True
             ) as js_probe,

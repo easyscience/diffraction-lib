@@ -432,15 +432,17 @@ class PdDataBase(CategoryCollection):
         Return an evenly spaced x-grid from the data range.
 
         Returns ``None`` when the range cannot be resolved at all (for
-        example no instrument to project defaults), leaving the calc path
-        to report its own "without measured data" error. Raises a clear,
-        named error for an inverted or degenerate range, which is user
-        input rather than a missing source.
+        example no instrument to project defaults), leaving the calc
+        path to report its own "without measured data" error. Raises a
+        clear, named error for an inverted or degenerate range, which is
+        user input rather than a missing source.
         """
         x_min = data_range.x_min
         x_max = data_range.x_max
         x_step = data_range.x_step
-        if x_step is None or not (np.isfinite(x_min) and np.isfinite(x_max) and np.isfinite(x_step)):
+        if x_step is None or not (
+            np.isfinite(x_min) and np.isfinite(x_max) and np.isfinite(x_step)
+        ):
             return None
         if x_max <= x_min or x_step <= 0:
             msg = (
@@ -460,8 +462,8 @@ class PdDataBase(CategoryCollection):
 
         Iterates **all** points (unfiltered): whether a measured scan
         exists is independent of which points are excluded from the
-        calculation. Using the exclusion-filtered ``intensity_meas`` here
-        would misread a fully-excluded scan as "no measured data".
+        calculation. Using the exclusion-filtered ``intensity_meas``
+        here would misread a fully-excluded scan as "no measured data".
         """
         measured = np.fromiter(
             (point.intensity_meas.value for point in self._items),
@@ -501,8 +503,8 @@ class PdDataBase(CategoryCollection):
         Build the calculation grid from ``data_range`` when unmeasured.
 
         Runs only when no data points exist yet. Generated points carry
-        an absent (``NaN``) measured intensity so they are never drawn or
-        treated as a measured scan; the calculator still fills
+        an absent (``NaN``) measured intensity so they are never drawn
+        or treated as a measured scan; the calculator still fills
         ``intensity_calc`` over the populated x-grid.
         """
         if self._items:

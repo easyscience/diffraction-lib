@@ -38,9 +38,9 @@ class CwlPdDataRange(DataRangeBase):
     Constant-wavelength powder calculation range.
 
     Stores the 2θ window (``two_theta_min``/``two_theta_max``) and the
-    profile step (``two_theta_inc``). Unset bounds default to ``NaN`` and
-    are filled by projecting the default d-spacing window through the
-    instrument wavelength.
+    profile step (``two_theta_inc``). Unset bounds default to ``NaN``
+    and are filled by projecting the default d-spacing window through
+    the instrument wavelength.
     """
 
     type_info = TypeInfo(
@@ -122,12 +122,16 @@ class CwlPdDataRange(DataRangeBase):
         sin_theta_over_lambda: float,
         wavelength: float,
     ) -> float:
-        """Return 2θ (deg) for a sinθ/λ value at the given wavelength."""
+        """
+        Return 2θ (deg) for a sinθ/λ value at the given wavelength.
+        """
         sin_theta = min(wavelength * sin_theta_over_lambda, _MAX_SIN_THETA)
         return float(2.0 * np.degrees(np.arcsin(sin_theta)))
 
     def _ensure_default_range(self) -> None:
-        """Project the default d window onto unset 2θ bounds and step."""
+        """
+        Project the default d window onto unset 2θ bounds and step.
+        """
         wavelength = self._wavelength()
         if wavelength is None:
             return
@@ -148,7 +152,9 @@ class CwlPdDataRange(DataRangeBase):
     # ------------------------------------------------------------------
 
     def _stored_axis(self) -> tuple[float, float, float]:
-        """Return stored ``(min, max, inc)`` after projecting defaults."""
+        """
+        Return stored ``(min, max, inc)`` after projecting defaults.
+        """
         return (
             self._two_theta_min.value,
             self._two_theta_max.value,
@@ -230,7 +236,9 @@ class CwlPdDataRange(DataRangeBase):
 
     @property
     def x_step(self) -> float | None:
-        """Step on the active (2θ) axis (deg), or None if non-uniform."""
+        """
+        Step on the active (2θ) axis (deg), or None if non-uniform.
+        """
         return self._effective_axis()[2]
 
     # ------------------------------------------------------------------
@@ -238,7 +246,9 @@ class CwlPdDataRange(DataRangeBase):
     # ------------------------------------------------------------------
 
     def _sin_theta_over_lambda_at(self, two_theta: float) -> float:
-        """Return sinθ/λ (Å⁻¹) for a 2θ value, NaN without wavelength."""
+        """
+        Return sinθ/λ (Å⁻¹) for a 2θ value, NaN without wavelength.
+        """
         wavelength = self._wavelength()
         if wavelength is None:
             return float('nan')

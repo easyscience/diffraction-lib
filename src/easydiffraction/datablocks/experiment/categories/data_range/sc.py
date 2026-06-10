@@ -27,8 +27,8 @@ class ScDataRange(DataRangeBase):
 
     Single-crystal data has no measurement axis, so sinθ/λ is the stored
     truth. Bounds (``sin_theta_over_lambda_min``/``_max``) limit
-    reflection generation; there is no profile step. Unset bounds default
-    to ``NaN`` and are filled from the default d-spacing window
+    reflection generation; there is no profile step. Unset bounds
+    default to ``NaN`` and are filled from the default d-spacing window
     (``sinθ/λ = 1/(2·d)``, instrument-independent).
     """
 
@@ -95,7 +95,9 @@ class ScDataRange(DataRangeBase):
             self._sin_theta_over_lambda_max._value = sthovl_max
 
     def _measured_axis_values(self) -> np.ndarray | None:
-        """Return measured sinθ/λ values from the reflection collection."""
+        """
+        Return measured sinθ/λ values from the reflection collection.
+        """
         category = self._intensity_category()
         values = getattr(category, 'sin_theta_over_lambda', None)
         if values is None:
@@ -104,14 +106,16 @@ class ScDataRange(DataRangeBase):
 
     def _measured_step(self, values: np.ndarray) -> None:  # noqa: ARG002, PLR6301
         """Single-crystal data has no profile step."""
-        return None
+        return
 
     # ------------------------------------------------------------------
     #  Stored axis (sinθ/λ)
     # ------------------------------------------------------------------
 
     def _stored_axis(self) -> tuple[float, float, None]:
-        """Return stored ``(min, max, None)`` after projecting defaults."""
+        """
+        Return stored ``(min, max, None)`` after projecting defaults.
+        """
         return (
             self._sin_theta_over_lambda_min.value,
             self._sin_theta_over_lambda_max.value,
@@ -132,7 +136,9 @@ class ScDataRange(DataRangeBase):
 
     @sin_theta_over_lambda_min.setter
     def sin_theta_over_lambda_min(self, value: float) -> None:
-        """Set the lower sinθ/λ bound of the calculation range (Å⁻¹)."""
+        """
+        Set the lower sinθ/λ bound of the calculation range (Å⁻¹).
+        """
         self._raise_if_measured()
         self._sin_theta_over_lambda_min.value = value
         self._invalidate_generated_grid()
@@ -150,7 +156,9 @@ class ScDataRange(DataRangeBase):
 
     @sin_theta_over_lambda_max.setter
     def sin_theta_over_lambda_max(self, value: float) -> None:
-        """Set the upper sinθ/λ bound of the calculation range (Å⁻¹)."""
+        """
+        Set the upper sinθ/λ bound of the calculation range (Å⁻¹).
+        """
         self._raise_if_measured()
         self._sin_theta_over_lambda_max.value = value
         self._invalidate_generated_grid()

@@ -270,9 +270,9 @@ class Fitter:
         """
         Reject fitting any experiment that has no measured intensities.
 
-        A calculated-only experiment carries an absent (``NaN``) measured
-        array; fitting it would feed all-``NaN`` residuals to the
-        minimizer. Fitting requires a measured scan.
+        A calculated-only experiment carries an absent (``NaN``)
+        measured array; fitting it would feed all-``NaN`` residuals to
+        the minimizer. Fitting requires a measured scan.
 
         Raises
         ------

@@ -827,8 +827,9 @@ class PlotlyPlotter(PlotterBase):
         Return ordered ``(values, label, color)`` for the hover tooltip.
 
         The measured and residual entries are omitted for a
-        calculated-only pattern (no measured scan), keeping the customdata
-        columns and the hover template aligned by construction.
+        calculated-only pattern (no measured scan), keeping the
+        customdata columns and the hover template aligned by
+        construction.
         """
         calc_label = plot_spec.y_calc_name or 'Icalc'
         meas_label = plot_spec.y_meas_name or 'Imeas'

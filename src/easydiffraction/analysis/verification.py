@@ -382,13 +382,13 @@ def fullprof_version(project_dir: str, summary_file: str) -> str:
     Return the FullProf version that produced a reference.
 
     Reads the version from the banner a FullProf run writes near the top
-    of its ``.sum`` (or ``.out``) output — the line
-    ``** PROGRAM FullProf.2k (Version 8.40 - Feb2026-ILL JRC) **`` — and
-    returns just the version number (for example ``'8.40'``), suited to a
-    plot legend such as ``f'FullProf v{version}'``.
+    of its ``.sum`` (or ``.out``) output — the line ``** PROGRAM
+    FullProf.2k (Version 8.40 - Feb2026-ILL JRC) **`` — and returns just
+    the version number (for example ``'8.40'``), suited to a plot legend
+    such as ``f'FullProf v{version}'``.
 
-    Resolved inside the bundled reference directory, so the caller passes
-    the project sub-folder and the summary file name.
+    Resolved inside the bundled reference directory, so the caller
+    passes the project sub-folder and the summary file name.
 
     Parameters
     ----------
@@ -419,7 +419,8 @@ def fullprof_version(project_dir: str, summary_file: str) -> str:
 
 def fullprof_label(project_dir: str, summary_file: str) -> str:
     """
-    Return a FullProf plot-legend label, for example ``'FullProf v8.40'``.
+    Return a FullProf plot-legend label, for example ``'FullProf
+    v8.40'``.
 
     Convenience wrapper over :func:`fullprof_version` so verification
     pages set ``reference_label`` in one line rather than repeating the
@@ -664,10 +665,10 @@ def restrict_to_included(experiment: object, values: np.ndarray) -> np.ndarray:
 
     Excluded regions drop points from the calculated/measured arrays the
     experiment exposes (``intensity_calc`` and friends iterate the
-    included points only), but an external reference loaded onto the full
-    grid still spans every point. This filters such a full-length
-    reference down to the same included points so it can be compared with
-    or plotted against the experiment's arrays.
+    included points only), but an external reference loaded onto the
+    full grid still spans every point. This filters such a full-length
+    reference down to the same included points so it can be compared
+    with or plotted against the experiment's arrays.
 
     Arrays that are not full-length (already restricted) and the
     no-exclusion case are returned unchanged, so the call is safe to
@@ -789,8 +790,9 @@ class AgreementTolerances:
     Defaults expect the calculated areas to agree to about one percent
     once the FullProf scale is seeded: the integrated-intensity ratio
     must sit within 1 % of one, the profile difference under 2.5 %, the
-    worst point-wise deviation under 6 %, and the shape correlation above
-    0.999. Tighten further as multi-platform spreads are characterised.
+    worst point-wise deviation under 6 %, and the shape correlation
+    above 0.999. Tighten further as multi-platform spreads are
+    characterised.
     """
 
     max_profile_difference_percent: float = 2.5

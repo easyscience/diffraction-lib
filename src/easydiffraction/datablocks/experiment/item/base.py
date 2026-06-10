@@ -269,8 +269,8 @@ class ExperimentBase(DatablockItem):
         """
         Active-axis range as ``(min, max, inc)``.
 
-        Backed by ``data_range``: the measured range when a measured scan
-        is present, and the stored or default calculation range
+        Backed by ``data_range``: the measured range when a measured
+        scan is present, and the stored or default calculation range
         otherwise. This subsumes the former measured-only behaviour.
         """
         data_range = getattr(self, '_data_range', None)
@@ -293,7 +293,9 @@ class ExperimentBase(DatablockItem):
 
     @property
     def data_range(self) -> object:
-        """Reciprocal-space range used to calculate without measured data."""
+        """
+        Reciprocal-space range used to calculate without measured data.
+        """
         return self._data_range
 
     def _has_measured_data(self) -> bool:
@@ -301,9 +303,10 @@ class ExperimentBase(DatablockItem):
         Return whether this experiment holds measured intensities.
 
         Existence is judged on the unfiltered points, independent of any
-        excluded regions: the powder data collection exposes an unfiltered
-        predicate, while the single-crystal ``refln`` collection's
-        ``intensity_meas`` already iterates all reflections.
+        excluded regions: the powder data collection exposes an
+        unfiltered predicate, while the single-crystal ``refln``
+        collection's ``intensity_meas`` already iterates all
+        reflections.
         """
         try:
             category = intensity_category_for(self)
@@ -319,7 +322,9 @@ class ExperimentBase(DatablockItem):
         return bool(array.size) and bool(np.any(np.isfinite(array)))
 
     def _serializable_categories(self) -> list:
-        """Omit ``data_range`` from CIF while a measured scan is present."""
+        """
+        Omit ``data_range`` from CIF while a measured scan is present.
+        """
         categories = super()._serializable_categories()
         data_range = getattr(self, '_data_range', None)
         if data_range is not None and self._has_measured_data():

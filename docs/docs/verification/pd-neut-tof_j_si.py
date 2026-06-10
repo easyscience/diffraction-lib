@@ -122,7 +122,7 @@ project.display.pattern_comparison(
 # ## Fit ed-cryspy to FullProf
 
 # %%
-#experiment.linked_phases['si'].scale = 15.102255770454704
+# experiment.linked_phases['si'].scale = 15.102255770454704
 experiment.linked_phases['si'].scale.free = True
 
 project.analysis.fit()
@@ -165,7 +165,7 @@ project.display.pattern_comparison(
 # ## Fit ed-crysfml to FullProf
 
 # %%
-#experiment.linked_phases['si'].scale = 1275.028259237954
+# experiment.linked_phases['si'].scale = 1275.028259237954
 experiment.linked_phases['si'].scale.free = True
 
 project.analysis.fit()
@@ -191,8 +191,16 @@ experiment.linked_phases['si'].scale
 # %%
 verify.assert_patterns_agree(
     [
-        ('cryspy vs FullProf', verify.restrict_to_included(experiment, calc_fullprof), calc_ed_cryspy_refined),
-        ('crysfml vs FullProf', verify.restrict_to_included(experiment, calc_fullprof), calc_ed_crysfml_refined),
+        (
+            'cryspy vs FullProf',
+            verify.restrict_to_included(experiment, calc_fullprof),
+            calc_ed_cryspy_refined,
+        ),
+        (
+            'crysfml vs FullProf',
+            verify.restrict_to_included(experiment, calc_fullprof),
+            calc_ed_crysfml_refined,
+        ),
     ],
     raise_on_failure=False,
 )

@@ -43,7 +43,8 @@ class DataRangeBase(CategoryItem):
 
     Sets the common ``category_code`` shared by the concrete CWL, TOF,
     and single-crystal data-range definitions, and projects the default
-    d-spacing window onto the stored axis whenever a bound is still unset.
+    d-spacing window onto the stored axis whenever a bound is still
+    unset.
     """
 
     _category_code = 'data_range'
@@ -61,7 +62,9 @@ class DataRangeBase(CategoryItem):
         *,
         called_by_minimizer: bool = False,
     ) -> None:
-        """Fill any unset bound before categories that read the range."""
+        """
+        Fill any unset bound before categories that read the range.
+        """
         del called_by_minimizer
         # While a measured scan is present the range is observed from the
         # data, not stored: leave the stored bounds unset (the getters
@@ -78,8 +81,8 @@ class DataRangeBase(CategoryItem):
 
         Subclasses fill their stored ``NaN`` bounds from
         :data:`DEFAULT_D_SPACING_MIN`/:data:`DEFAULT_D_SPACING_MAX`
-        through the instrument. The base implementation is a no-op so the
-        category stays usable when no projection is defined.
+        through the instrument. The base implementation is a no-op so
+        the category stays usable when no projection is defined.
         """
 
     def _instrument(self) -> object | None:
@@ -88,7 +91,9 @@ class DataRangeBase(CategoryItem):
 
     @staticmethod
     def _default_sin_theta_over_lambda_bounds() -> tuple[float, float]:
-        """Return the default ``(min, max)`` sinθ/λ window (Å⁻¹)."""
+        """
+        Return the default ``(min, max)`` sinθ/λ window (Å⁻¹).
+        """
         return (
             1.0 / (2.0 * DEFAULT_D_SPACING_MAX),
             1.0 / (2.0 * DEFAULT_D_SPACING_MIN),
@@ -115,7 +120,9 @@ class DataRangeBase(CategoryItem):
         return bool(checker()) if callable(checker) else False
 
     def _measured_axis_values(self) -> np.ndarray | None:
-        """Return measured active-axis values (powder x-grid by default)."""
+        """
+        Return measured active-axis values (powder x-grid by default).
+        """
         category = self._intensity_category()
         values = getattr(category, 'unfiltered_x', None)
         if values is None:
@@ -123,11 +130,16 @@ class DataRangeBase(CategoryItem):
         return np.asarray(values, dtype=float)
 
     def _measured_step(self, values: np.ndarray) -> float | None:  # noqa: PLR6301
-        """Return the representative step of a measured grid, if uniform."""
+        """
+        Return the representative step of a measured grid, if uniform.
+        """
         return _representative_step(values)
 
     def _measured_axis_range(self) -> tuple[float, float, float | None] | None:
-        """Return measured ``(min, max, step)`` on the active axis, or None."""
+        """
+        Return measured ``(min, max, step)`` on the active axis, or
+        None.
+        """
         if not self._has_measured_data():
             return None
         values = self._measured_axis_values()
@@ -141,7 +153,9 @@ class DataRangeBase(CategoryItem):
         return (range_min, range_max, self._measured_step(values))
 
     def _stored_axis(self) -> tuple[float, float, float | None]:
-        """Return stored ``(min, max, inc)`` after projecting defaults."""
+        """
+        Return stored ``(min, max, inc)`` after projecting defaults.
+        """
         raise NotImplementedError
 
     def _effective_axis(self) -> tuple[float, float, float | None]:
@@ -172,7 +186,9 @@ class DataRangeBase(CategoryItem):
             clear()
 
     def _raise_if_measured(self) -> None:
-        """Reject writes to the range while a measured scan is present."""
+        """
+        Reject writes to the range while a measured scan is present.
+        """
         if not self._has_measured_data():
             return
         name = getattr(self._parent, 'name', None) or '?'
@@ -185,7 +201,9 @@ class DataRangeBase(CategoryItem):
 
 
 def _representative_step(values: np.ndarray) -> float | None:
-    """Return a representative step for sorted x-axis values, or None."""
+    """
+    Return a representative step for sorted x-axis values, or None.
+    """
     steps = np.diff(values)
     median_step = float(np.median(steps))
     if median_step == 0:

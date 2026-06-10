@@ -290,9 +290,9 @@ class TotalDataBase(CategoryCollection):
         """
         Return whether any point carries a finite measured G(r) value.
 
-        Iterates **all** points (unfiltered) so a fully-excluded measured
-        scan is still recognised as measured data, matching the powder
-        Bragg predicate.
+        Iterates **all** points (unfiltered) so a fully-excluded
+        measured scan is still recognised as measured data, matching the
+        powder Bragg predicate.
         """
         measured = np.fromiter(
             (point.g_r_meas.value for point in self._items),

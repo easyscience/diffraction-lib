@@ -128,8 +128,8 @@ project.display.pattern_comparison(
 # ## Fit ed-cryspy to FullProf
 
 # %%
-#experiment.linked_phases['si'].scale = 16.558439186694915
-#experiment.peak.broad_lorentz_gamma_1 = 9.998261092381231
+# experiment.linked_phases['si'].scale = 16.558439186694915
+# experiment.peak.broad_lorentz_gamma_1 = 9.998261092381231
 experiment.linked_phases['si'].scale.free = True
 experiment.peak.broad_lorentz_gamma_1.free = True
 
@@ -177,7 +177,7 @@ project.display.pattern_comparison(
 # ## Fit ed-crysfml to FullProf
 
 # %%
-#experiment.linked_phases['si'].scale = 1275.028259237954
+# experiment.linked_phases['si'].scale = 1275.028259237954
 experiment.linked_phases['si'].scale.free = True
 experiment.peak.broad_lorentz_gamma_1.free = False
 
@@ -207,8 +207,16 @@ experiment.peak.broad_lorentz_gamma_1
 # %%
 verify.assert_patterns_agree(
     [
-        ('cryspy vs FullProf', verify.restrict_to_included(experiment, calc_fullprof), calc_ed_cryspy_refined),
-        ('crysfml vs FullProf', verify.restrict_to_included(experiment, calc_fullprof), calc_ed_crysfml_refined),
+        (
+            'cryspy vs FullProf',
+            verify.restrict_to_included(experiment, calc_fullprof),
+            calc_ed_cryspy_refined,
+        ),
+        (
+            'crysfml vs FullProf',
+            verify.restrict_to_included(experiment, calc_fullprof),
+            calc_ed_crysfml_refined,
+        ),
     ],
     raise_on_failure=False,
 )
