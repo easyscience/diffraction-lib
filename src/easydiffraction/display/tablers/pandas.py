@@ -120,17 +120,32 @@ class PandasTableBackend(TableBackendBase):
         border = f'1px solid {BORDER_COLOR}'
         header = f'{_CELL_STYLE}; border-bottom: {border}; font-weight: bold'
         index = f'{_CELL_STYLE}; color: {INDEX_COLOR}; font-weight: normal; text-align: right'
+        # ``display: table`` overrides MkDocs Material's
+        # ``table:not([class]) { display: inline-block }`` rule. Left as
+        # inline-block the table drops out of the collapsing-border model,
+        # so the header's translucent ``border-bottom`` stacks into a
+        # darker line than the outer border and stops one pixel short of
+        # the right edge. The wrapping ``overflow-x: auto`` div (added
+        # below) restores the horizontal scrolling that Material's
+        # ``inline-block`` would otherwise have provided for wide tables.
         table_style = (
-            f'border: {border}; border-collapse: collapse; margin-top: 0.5em; margin-left: 0.5em'
+            f'border: {border}; border-collapse: collapse; display: table; '
+            f'margin-top: 0.5em; margin-left: 0.5em'
         )
 
         header_cells = ''.join(
             f'<th style="{header}; text-align: {align}">{html.escape(str(column))}</th>'
             for column, align in zip(columns, aligns, strict=False)
         )
+        # ``border-bottom: 0`` neutralises hosts (e.g. JupyterLab's
+        # ``.jp-RenderedHTMLCommon thead``) that paint an opaque header
+        # rule on the thead element. Left in place that rule wins the
+        # border collapse and recolours the divider; zeroing it keeps the
+        # header/body divider the same translucent grey as the outer
+        # border, sourced only from the header cells' ``border-bottom``.
         head = (
             f'<table style="{table_style}">'
-            f'<thead><tr style="{_TRANSPARENT_ROW}">'
+            f'<thead style="border-bottom: 0"><tr style="{_TRANSPARENT_ROW}">'
             f'<th style="{header}"></th>{header_cells}</tr></thead><tbody>'
         )
         parts = [head]
@@ -142,7 +157,7 @@ class PandasTableBackend(TableBackendBase):
             index_cell = f'<th style="{index}">{html.escape(str(idx))}</th>'
             parts.append(f'<tr style="{_TRANSPARENT_ROW}">{index_cell}{cells}</tr>')
         parts.append('</tbody></table>')
-        return ''.join(parts)
+        return f'<div style="overflow-x: auto; max-width: 100%">{"".join(parts)}</div>'
 
     def build_renderable(self, alignments: object, df: object) -> object:
         """
