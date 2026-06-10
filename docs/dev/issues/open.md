@@ -2263,6 +2263,28 @@ agreement check) once the crysfml profile is reconciled.
 
 ---
 
+## 135. 🟡 More Intuitive ADP Creation API (type-aware kwargs)
+
+**Type:** API design
+
+Creating an atom currently requires setting `adp_type` and the
+type-neutral `adp_iso`/`adp_11`… values separately (for example
+`add(..., adp_type='Biso', adp_iso=0.5)`). For scientists this is less
+discoverable than naming the displacement convention directly. Options
+to explore: a richer creation surface with type-aware convenience
+keywords (`b_iso=`/`u_iso=`/`beta=`) that set `adp_type` automatically,
+and/or CIF-style auto-attachment of the sibling isotropic/anisotropic
+values when `adp_type` is set. This revisits the accepted
+[type-neutral-adp-parameters](docs/dev/adrs/accepted/type-neutral-adp-parameters.md)
+ADR — which deliberately chose type-neutral storage to keep parameter
+identity stable across switches — so it needs its own ADR + plan and is
+independent of the β-tensor work that surfaced it.
+
+**Depends on:** the β-tensor ADP support
+([adp-beta-tensor plan](docs/dev/plans/adp-beta-tensor.md)).
+
+---
+
 ## Summary
 
 | #   | Issue                                               | Severity | Type                         |
@@ -2382,3 +2404,4 @@ agreement check) once the crysfml profile is reconciled.
 | 132 | Decide future of show_residual in plots             | 🟢 Low   | API cleanup                  |
 | 133 | Rename asym*empir*\* and add FCJ asymmetry          | 🟢 Low   | Experiment model / Naming    |
 | 134 | Investigate ed-crysfml TOF Jorgensen discrepancy    | 🟡 Med   | Correctness                  |
+| 135 | More intuitive ADP creation API (type-aware kwargs) | 🟡 Med   | API design                   |

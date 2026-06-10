@@ -238,7 +238,7 @@ Tests (Phase 2):
 Each step is one atomic commit. Stage only the files the step touches
 (explicit paths). Commit locally before starting the next step.
 
-- [ ] **P1.1 — ADP ADR extension + follow-up note.** Ensure the
+- [x] **P1.1 — ADP ADR extension + follow-up note.** Ensure the
       _Extension_ section in `type-neutral-adp-parameters.md` records the
       β decision (decisions 1–6 above): first-class `beta` type,
       cell-dependent conversion, dimensionless-units display handling,
