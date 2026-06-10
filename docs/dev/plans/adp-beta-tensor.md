@@ -59,9 +59,12 @@ convention, used by FullProf, SHELX-era data, and cryspy internally — is
   transform.
 - The aniso `adp_ij` parameters declare `units='angstrom_squared'` and
   display `Å²`; β components are dimensionless.
-- The aniso `RangeValidator(ge=0.0, le=10.0)` forbids negatives — wrong
-  for off-diagonal components of _any_ convention, and β values are
-  small (~1e-3) and routinely negative off-diagonal.
+- The aniso **off-diagonal** validators (`adp_12`/`adp_13`/`adp_23`)
+  already use an unrestricted `RangeValidator()` (negatives allowed);
+  only the **diagonal** components (`adp_11`/`adp_22`/`adp_33`) carry
+  `RangeValidator(ge=0.0, le=10.0)`. β diagonals are ~1e-3 (well within
+  `[0, 10]`) and β off-diagonals (small, routinely negative) are already
+  accepted, so **no validator change is needed** for β (resolved Q4).
 - `io/cif/iucr_writer.py::_adp_family()` returns `'B'` or `'U'` from the
   first letter of `adp_type`; `'beta'` starts with `'b'` and would be
   mis-classified as `'B'`. The writer is otherwise already
@@ -112,14 +115,19 @@ added.
 
 3. **Cell-dependent conversion via a new easydiffraction geometry
    helper.** Add a reciprocal-length helper (`a* b* c*` from
-   `a b c α β γ`) under `src/easydiffraction/utils/` (or `core/` if it
-   must stay domain-free — it is pure geometry, so `core/` is
-   acceptable). β↔U/B conversion routes through the parent structure's
-   `cell`; when no parent cell is reachable (atom constructed in
-   isolation) the type switch raises a clear error rather than silently
-   producing wrong numbers — this is a boundary-input edge case per
-   §Project Context. Do **not** depend on cryspy's reciprocal helper for
-   the ed-side conversion.
+   `a b c α β γ`) to
+   `src/easydiffraction/crystallography/crystallography.py` — the
+   existing crystallographic-math module (Wyckoff positions,
+   space-group symmetry constraints), which already hosts this kind of
+   domain geometry. (`core/` is the wrong home: it must stay
+   domain-free; `crystallography/` is the established place for
+   crystallographic math.) β↔U/B conversion routes through the parent
+   structure's `cell`; when no parent cell is reachable (atom
+   constructed in isolation) the type switch raises a clear error rather
+   than silently producing wrong numbers — this is a boundary-input edge
+   case per §Project Context. Do **not** depend on cryspy's reciprocal
+   helper for the ed-side conversion, so the model-layer type switch
+   stays independent of any calculator backend.
 
 4. **Type-aware display units for aniso components.** When the owning
    `adp_type` is `beta`, the `adp_ij` display shows no `Å²` unit (β is
@@ -127,16 +135,7 @@ added.
    lookup on `adp_type`, not by mutating the Parameter's stored unit
    metadata (which stays a single declared unit per the value model).
 
-5. **Relax the aniso off-diagonal validator.** `adp_12`/`adp_13`/
-   `adp_23` change from `RangeValidator(ge=0.0, le=10.0)` to allow
-   negatives (symmetric bound, e.g. `ge=-10.0, le=10.0`). This also
-   fixes a pre-existing correctness gap for Uani/Bani off-diagonals.
-   Diagonal components stay `ge=0.0`. β magnitudes are ≪1 but the
-   existing `le` is kept generous rather than introducing a
-   type-dependent numeric range (flagged: this loosens an existing
-   validator — highlighted for review, not a silent change).
-
-6. **CIF tags.** Register `_atom_site_aniso.beta_11`…`beta_23` on the
+5. **CIF tags.** Register `_atom_site_aniso.beta_11`…`beta_23` on the
    aniso `adp_ij` `CifHandler` name lists (alongside the existing
    `B_ij`/`U_ij`). Extend `_adp_family()` to return `'beta'` for
    `adp_type == 'beta'` (check the full value, not the first letter), so
@@ -144,12 +143,21 @@ added.
    read, a CIF carrying `_atom_site_aniso.beta_*` sets
    `adp_type = 'beta'` and stores the β values verbatim.
 
-7. **cryspy backend.** In `_update_aniso_beta`, add a `BETA` branch that
+6. **cryspy backend.** In `_update_aniso_beta`, add a `BETA` branch that
    writes the stored β straight into `cryspy_beta` (no U→β transform),
    and include `BETA` in the `aniso_types` set in `_set_atom_adps` so
-   `b_iso` is zeroed for β atoms too. Confirm cryspy's β convention
-   matches the CIF/SHELX `β_ij = 2π²·U_ij·a*_i·a*_j` (Open questions Q2;
-   the existing `calc_beta_by_u` usage strongly implies it does).
+   `b_iso` is zeroed for β atoms too. cryspy's β convention is confirmed
+   to match the CIF/SHELX `β_ij = 2π²·U_ij·a*_i·a*_j`:
+   `_update_aniso_beta` already documents that formula and converts B/U
+   through cryspy's `calc_beta_by_u`, using reciprocal lengths from
+   `calc_reciprocal_by_unit_cell_parameters` (resolved Q2).
+
+> **Dropped (was decision 5): off-diagonal validator relaxation.**
+> Verification against current code shows the aniso off-diagonal
+> validators are already unrestricted `RangeValidator()`; only the
+> diagonals carry `RangeValidator(ge=0.0, le=10.0)`, and β values sit
+> within those bounds. No validator change is needed, so the earlier
+> planned relaxation is removed from scope (resolved Q4).
 
 ## Open questions
 
@@ -157,18 +165,31 @@ added.
   2026-06-10). β is a persisted `adp_type` holding β values directly in
   `adp_11`…`adp_23`; the I/O-only-normalise-to-`Uani` alternative is
   rejected. Decision 1 stands.
-- **Q2 (cryspy β convention).** Confirm cryspy's `atom_beta` uses the
-  same `β_ij = 2π²·U_ij·a*_i·a*_j` convention as CIF/SHELX so native β
-  can pass through unscaled. Verify against `calc_beta_by_u` before
-  wiring the passthrough (step P1.6).
+- **Q2 (cryspy β convention). RESOLVED — convention matches** (confirmed
+  2026-06-10 by code read). cryspy's `_update_aniso_beta` already
+  documents `β_ij = 2π²·U_ij·a*_i·a*_j` and routes B/U through cryspy's
+  `calc_beta_by_u` with reciprocal lengths from
+  `calc_reciprocal_by_unit_cell_parameters`. Native β can pass through
+  unscaled (decision 6, step P1.6).
 - **Q3 (crysfml scope). RESOLVED — out of scope** (confirmed
   2026-06-10). β works on cryspy only this PR; crysfml's missing
   anisotropic-tensor wiring is a pre-existing gap tracked separately,
   not addressed here and not given a stop-gap.
-- **Q4 (validator loosening).** Is relaxing the off-diagonal validator
-  to allow negatives acceptable in this PR (decision 5), or should it be
-  split into its own change? It is a real correctness fix but touches
-  existing Uani/Bani behaviour.
+- **Q4 (validator loosening). RESOLVED — no change needed** (confirmed
+  2026-06-10 by code read). The aniso off-diagonal validators are
+  already unrestricted `RangeValidator()`; only diagonals carry
+  `RangeValidator(ge=0.0, le=10.0)`, and β values sit within those
+  bounds. The earlier planned relaxation (former decision 5) is dropped
+  from scope.
+- **Q5 (creation-API UX). RESOLVED — separate ADR + plan** (confirmed
+  2026-06-10). A richer atom-creation API (e.g. `b_iso=`/`u_iso=`/
+  `beta=` convenience kwargs that set `adp_type` automatically, or
+  CIF-style auto-attach of the sibling iso/aniso values) would improve
+  discoverability but **revisits the accepted type-neutral ADP ADR** and
+  is independent of the β math. It is **out of scope** for this PR;
+  tracked as a follow-up issue in `docs/dev/issues/open.md` and to be
+  designed in its own ADR + plan. This β work stays strictly inside the
+  type-neutral model (β is a fourth `adp_type`).
 
 ## Concrete files likely to change
 
@@ -181,10 +202,11 @@ Source:
   — `_convert_adp_values` β branches; cell access for the transform;
   iso↔β seeding/collapse hooks.
 - `src/easydiffraction/datablocks/structure/categories/atom_site_aniso/default.py`
-  — `_atom_site_aniso.beta_*` CIF names; off-diagonal validator;
-  type-aware display units.
-- `src/easydiffraction/core/` or `src/easydiffraction/utils/` — new
-  reciprocal-cell length helper (pure geometry).
+  — `_atom_site_aniso.beta_*` CIF names; type-aware display units (no
+  validator change — off-diagonals already accept negatives).
+- `src/easydiffraction/crystallography/crystallography.py` — new
+  reciprocal-cell length helper (`a* b* c*` from `a b c α β γ`; pure
+  geometry, sits with the existing crystallographic math).
 - `src/easydiffraction/datablocks/structure/item/base.py` — only if the
   cell back-reference for conversion needs wiring through the structure.
 - `src/easydiffraction/io/cif/iucr_writer.py` — `_adp_family()` β case;
@@ -197,8 +219,8 @@ Docs / ADR:
 
 - `docs/dev/adrs/accepted/type-neutral-adp-parameters.md` — Extension
   section (step P1.1).
-- `docs/dev/issues/open.md` — close/relate any ADP item if applicable;
-  otherwise no change.
+- `docs/dev/issues/open.md` — add a follow-up row for the ADP
+  creation-API UX (resolved Q5; step P1.1).
 
 Tests (Phase 2):
 
@@ -208,30 +230,37 @@ Tests (Phase 2):
 - `tests/unit/easydiffraction/analysis/calculators/test_cryspy.py`
 - `tests/unit/easydiffraction/io/cif/test_iucr_writer.py`,
   `test_serialize.py`
-- new unit test for the reciprocal-cell helper.
+- reciprocal-cell helper tests in
+  `tests/unit/easydiffraction/crystallography/test_crystallography.py`.
 
 ## Implementation steps (Phase 1)
 
 Each step is one atomic commit. Stage only the files the step touches
 (explicit paths). Commit locally before starting the next step.
 
-- [ ] **P1.1 — Extend the ADP ADR.** Add an _Extension_ section to
-      `type-neutral-adp-parameters.md` recording the β decision
-      (decisions 1–6 above): first-class `beta` type, cell-dependent
-      conversion, dimensionless-units handling, validator relaxation,
-      and the new CIF tags. Keep the original Decision/Consequences
-      intact. Commit: `Extend type-neutral ADP ADR with beta tensor`
+- [ ] **P1.1 — ADP ADR extension + follow-up note.** Ensure the
+      _Extension_ section in `type-neutral-adp-parameters.md` records the
+      β decision (decisions 1–6 above): first-class `beta` type,
+      cell-dependent conversion, dimensionless-units display handling,
+      and the new CIF tags. Verify it states that off-diagonal negatives
+      are *already* permitted (a statement of existing behaviour), not a
+      newly introduced relaxation. Also add the ADP creation-API UX
+      follow-up row to `docs/dev/issues/open.md` (resolved Q5). Keep the
+      original Decision/Consequences intact. Stage the ADR and `open.md`.
+      Commit: `Extend type-neutral ADP ADR with beta tensor`
 - [ ] **P1.2 — Reciprocal-cell helper.** Add a pure-geometry helper
-      returning `(a*, b*, c*)` from `(a, b, c, α, β, γ)`. No domain
-      imports. Commit: `Add reciprocal-cell length helper`
+      returning `(a*, b*, c*)` from `(a, b, c, α, β, γ)` to
+      `crystallography/crystallography.py` (the crystallographic-math
+      module). Commit: `Add reciprocal-cell length helper`
 - [ ] **P1.3 — `AdpTypeEnum.BETA`.** Add the member and its
       `description()`. Update any exhaustive membership sets that must
       now include it (search `git grep -n "AdpTypeEnum\."`). Commit:
       `Add beta member to AdpTypeEnum`
-- [ ] **P1.4 — aniso category: validator, CIF names, display units.**
-      Relax off-diagonal validator (decision 5); add
+- [ ] **P1.4 — aniso category: CIF names + display units.** Add
       `_atom_site_aniso.beta_*` to the `adp_ij` CIF handlers (decision
-      6); type-aware display units (decision 4). Commit:
+      5); type-aware display units that suppress `Å²` when
+      `adp_type == 'beta'` (decision 4). No validator change — the
+      off-diagonals already accept negatives. Commit:
       `Support beta tensor in atom_site_aniso category`
 - [ ] **P1.5 — type-switch conversion.** Extend `_convert_adp_values`
       with β↔U/B branches using the reciprocal-cell helper and the
@@ -239,8 +268,9 @@ Each step is one atomic commit. Stage only the files the step touches
       iso↔β seeding/collapse. Commit:
       `Convert ADP values to and from the beta tensor`
 - [ ] **P1.6 — cryspy passthrough.** Add the `BETA` branch in
-      `_update_aniso_beta` (store β directly) and include `BETA` in
-      `aniso_types`. Confirm Q2 before committing. Commit:
+      `_update_aniso_beta` (store β directly, no U→β transform) and
+      include `BETA` in `aniso_types`. cryspy convention already
+      confirmed (resolved Q2). Commit:
       `Pass beta tensor straight through to cryspy`
 - [ ] **P1.7 — CIF writer family.** Extend `_adp_family()` to return
       `'beta'`; verify the aniso loop tags and section header for the β
@@ -274,7 +304,8 @@ Test coverage to add:
 - type switches: `Uani↔beta`, `Bani↔beta`, `Uiso→beta`, `beta→Biso`,
   with parameter-object identity preserved (per the ADR) and a clear
   error when no parent cell is present.
-- negative off-diagonal accepted; diagonal still rejects negatives.
+- regression guard: negative off-diagonal accepted (already-existing
+  behaviour that β relies on); diagonal still rejects negatives.
 - CIF round-trip: read a `_atom_site_aniso.beta_*` loop →
   `adp_type == 'beta'` → write emits the β loop unchanged.
 - cryspy: β atom zeroes `b_iso` and populates `atom_beta` with the
