@@ -34,6 +34,7 @@ _CIF_DESCRIPTION_WRAP_LEN = 60
 
 _ADP_FAMILY_B = 'B'
 _ADP_FAMILY_U = 'U'
+_ADP_FAMILY_BETA = 'beta'
 
 
 def format_value(value: object) -> str:
@@ -255,14 +256,19 @@ def _adp_family_from_type(adp_type: str) -> str:
     )
 
     adp_type_enum = AdpTypeEnum(adp_type)
+    if adp_type_enum is AdpTypeEnum.BETA:
+        return _ADP_FAMILY_BETA
     if adp_type_enum in {AdpTypeEnum.UISO, AdpTypeEnum.UANI}:
         return _ADP_FAMILY_U
     return _ADP_FAMILY_B
 
 
 def _adp_family_for_atom_site(item: object) -> str:
-    """Return the ADP tag family for an atom-site row."""
-    return _adp_family_from_type(item.adp_type.value)
+    """Return the ADP tag family for an atom-site (isotropic) row."""
+    family = _adp_family_from_type(item.adp_type.value)
+    # beta has no _atom_site.beta_iso_or_equiv tag; emit a beta atom's
+    # equivalent isotropic value in the B_iso_or_equiv column instead.
+    return _ADP_FAMILY_B if family == _ADP_FAMILY_BETA else family
 
 
 def _adp_family_for_atom_site_aniso(collection: object, item: object) -> str:
@@ -280,6 +286,7 @@ def _group_items_by_adp_family(
     groups = {
         _ADP_FAMILY_B: [],
         _ADP_FAMILY_U: [],
+        _ADP_FAMILY_BETA: [],
     }
     for item in items:
         groups[family_fn(item)].append(item)

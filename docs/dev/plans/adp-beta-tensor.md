@@ -319,7 +319,7 @@ Each step is one atomic commit. Stage only the files the step touches
       (full-value check, not first letter); verify the aniso loop tags
       and section header for the β family. Commit:
       `Emit beta tensor in the atom_site_aniso CIF loop`
-- [ ] **P1.8 — Project CIF serializer family.** In `io/cif/serialize.py`
+- [x] **P1.8 — Project CIF serializer family.** In `io/cif/serialize.py`
       add `_ADP_FAMILY_BETA`, return it from `_adp_family_from_type()`
       for `adp_type == 'beta'`, and add a `beta` group to
       `_group_items_by_adp_family()`. This is what makes project
