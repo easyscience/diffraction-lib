@@ -1,4 +1,5 @@
 COMM Pr2NiO4
+! Current global Chi2 (Bragg contrib.) =      10.89    
 ! Files => DAT-file: prnio,  PCR-file: prnio
 !Job Npr Nph Nba Nex Nsc Nor Dum Iwg Ilo Ias Res Ste Nre Cry Uni Cor Opt Aut
    1   0   1   0   0   0   0   0   0   0   0   0   0   0   1   0   0   0   1
@@ -12,7 +13,7 @@ COMM Pr2NiO4
 !
        0    !Number of refined parameters
 !-------------------------------------------------------------------------------
-!  Data for PHASE number:   1  ==> Current R_Bragg for Pattern#  1:   0.0000
+!  Data for PHASE number:   1  ==> Current R_Bragg for Pattern#  1:   3.2123
 !-------------------------------------------------------------------------------
 Pr2NiO4
 !
