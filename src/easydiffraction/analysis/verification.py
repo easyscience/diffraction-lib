@@ -14,6 +14,7 @@ those pages stay short and readable.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from io import StringIO
 from pathlib import Path
@@ -371,6 +372,49 @@ def load_fullprof_calc_profile(
     background_x, background_y = _parse_fullprof_background(str(base / background_file))
     background = np.interp(x, background_x + zero_shift, background_y)
     return x, icalc - background
+
+
+_FULLPROF_VERSION_RE = re.compile(r'FullProf\.2k\s*\(Version\s+([0-9][0-9.]*)')
+
+
+def fullprof_version(project_dir: str, summary_file: str) -> str:
+    """
+    Return the FullProf version that produced a reference.
+
+    Reads the version from the banner a FullProf run writes near the top
+    of its ``.sum`` (or ``.out``) output — the line
+    ``** PROGRAM FullProf.2k (Version 8.40 - Feb2026-ILL JRC) **`` — and
+    returns just the version number (for example ``'8.40'``), suited to a
+    plot legend such as ``f'FullProf v{version}'``.
+
+    Resolved inside the bundled reference directory, so the caller passes
+    the project sub-folder and the summary file name.
+
+    Parameters
+    ----------
+    project_dir : str
+        Reference sub-folder name (under the bundled reference
+        directory) holding the FullProf project files.
+    summary_file : str
+        File name of a FullProf ``.sum`` or ``.out`` output file.
+
+    Returns
+    -------
+    str
+        The FullProf version number (for example ``'8.40'``).
+
+    Raises
+    ------
+    ValueError
+        If no version banner is found in the file.
+    """
+    path = bundled_reference_dir() / project_dir / summary_file
+    for line in path.read_text(encoding='utf-8', errors='ignore').splitlines():
+        match = _FULLPROF_VERSION_RE.search(line)
+        if match is not None:
+            return match.group(1)
+    msg = f'FullProf summary {path}: no FullProf version banner found.'
+    raise ValueError(msg)
 
 
 def load_fullprof_sc_f2calc(project_dir: str, out_file: str) -> dict[tuple[int, int, int], float]:

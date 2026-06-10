@@ -42,6 +42,24 @@ def test_parse_fullprof_header_parses_fixed_width_run_together():
     assert (x_min, x_step, x_max) == (10.0, 0.5, 12.0)
 
 
+def test_fullprof_version_reads_banner(ref_dir):
+    summary = ref_dir / 'ref.sum'
+    summary.write_text(
+        '  some preamble\n'
+        '        ** PROGRAM FullProf.2k (Version 8.40 - Feb2026-ILL JRC) **\n'
+        '  more lines\n',
+        encoding='utf-8',
+    )
+    assert verify.fullprof_version('', 'ref.sum') == '8.40'
+
+
+def test_fullprof_version_missing_banner_raises(ref_dir):
+    summary = ref_dir / 'ref.sum'
+    summary.write_text('no version banner here\n', encoding='utf-8')
+    with pytest.raises(ValueError, match='no FullProf version banner'):
+        verify.fullprof_version('', 'ref.sum')
+
+
 def test_load_columned_profile_reads_two_columns(ref_dir):
     dat = ref_dir / 'ref.dat'
     dat.write_text('! header line\n10.0 100.0\n10.5 200.0\n11.0 150.0\n', encoding='utf-8')
