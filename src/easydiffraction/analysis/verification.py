@@ -117,68 +117,6 @@ def _parse_fullprof_header(line: str) -> tuple[float, float, float]:
     return minimum, increment, maximum
 
 
-def load_fullprof_profile(project_dir: str, profile_file: str) -> tuple[np.ndarray, np.ndarray]:
-    """
-    Load a FullProf ``.sub``/``.sim`` profile as ``(x, y)`` arrays.
-
-    Resolved inside the bundled reference directory, so the caller
-    passes the project sub-folder and the file name.
-
-    The first line holds ``min increment max`` followed by a comment;
-    the x grid is reconstructed from that header and the remaining lines
-    are flattened into the intensity array. The header is parsed by
-    :func:`_parse_fullprof_header`, which also handles the fixed-width
-    case where the values run together.
-
-    Parameters
-    ----------
-    project_dir : str
-        Reference sub-folder name (under the bundled reference
-        directory) holding the FullProf project files.
-    profile_file : str
-        File name of the FullProf ``.sub`` or ``.sim`` profile file.
-
-    Returns
-    -------
-    tuple[np.ndarray, np.ndarray]
-        The reconstructed x grid and the profile intensities.
-
-    Raises
-    ------
-    ValueError
-        If the file is empty or holds no intensity values after the
-        header, or if the header maximum is more than one full step away
-        from the grid implied by the intensities read from the body (a
-        genuine inconsistency rather than header rounding).
-    """
-    path = str(bundled_reference_dir() / project_dir / profile_file)
-    with Path(path).open(encoding='utf-8') as handle:
-        lines = handle.readlines()
-    if not lines:
-        msg = f'FullProf profile {path}: expected a header line followed by intensities.'
-        raise ValueError(msg)
-    x_min, x_increment, x_max = _parse_fullprof_header(lines[0])
-    body = ' '.join(line.strip() for line in lines[1:])
-    if not body.strip():
-        msg = f'FullProf profile {path}: no intensity values found after the header line.'
-        raise ValueError(msg)
-    y = np.atleast_1d(np.genfromtxt(StringIO(body)))
-    # Build the grid from the intensity count, not the header maximum,
-    # so a maximum rounded a fraction of a step off (a common FullProf
-    # quirk) neither adds nor drops a point. The header maximum is kept
-    # only as a sanity check: a gap over one step is a real error.
-    x = x_min + x_increment * np.arange(y.size)
-    reconstructed_max = x_min + x_increment * (y.size - 1)
-    if abs(reconstructed_max - x_max) > abs(x_increment):
-        msg = (
-            f'FullProf profile {path}: header maximum {x_max} is more than '
-            f'one step from the {y.size}-point grid implied by the '
-            f'intensities (last point {reconstructed_max}).'
-        )
-        raise ValueError(msg)
-    return x, y
-
-
 def load_columned_profile(
     project_dir: str,
     profile_file: str,

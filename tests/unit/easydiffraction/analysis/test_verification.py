@@ -30,71 +30,16 @@ def ref_dir(tmp_path, monkeypatch):
 # ----------------------------------------------------------------------
 
 
-def test_load_fullprof_profile_reconstructs_grid(ref_dir):
-    sub = ref_dir / 'ref.sub'
-    # Header: min increment max + comment, then flattened intensities.
-    sub.write_text(
-        '   10.0   0.5   12.0   ! a comment\n   1.0  2.0  3.0\n   4.0  5.0\n',
-        encoding='utf-8',
-    )
-    x, y = verify.load_fullprof_profile('', 'ref.sub')
-    np.testing.assert_allclose(x, [10.0, 10.5, 11.0, 11.5, 12.0])
-    np.testing.assert_allclose(y, [1.0, 2.0, 3.0, 4.0, 5.0])
+def test_parse_fullprof_header_reads_min_step_max():
+    x_min, x_step, x_max = verify._parse_fullprof_header('   10.0   0.5   12.0   ! comment')
+    assert (x_min, x_step, x_max) == (10.0, 0.5, 12.0)
 
 
-def test_load_fullprof_profile_parses_fixed_width_header(ref_dir):
-    sub = ref_dir / 'ref.sub'
+def test_parse_fullprof_header_parses_fixed_width_run_together():
     # Step and max run together in the fixed 10-character columns, as in
     # FullProf's '5.00000030004.1875'-style headers.
-    sub.write_text(
-        '   10.0000  0.50000012.000000   ! comment\n   1.0 2.0 3.0\n   4.0 5.0\n',
-        encoding='utf-8',
-    )
-    x, y = verify.load_fullprof_profile('', 'ref.sub')
-    np.testing.assert_allclose(x, [10.0, 10.5, 11.0, 11.5, 12.0])
-    np.testing.assert_allclose(y, [1.0, 2.0, 3.0, 4.0, 5.0])
-
-
-def test_load_fullprof_profile_length_mismatch_raises(ref_dir):
-    sub = ref_dir / 'ref.sub'
-    # Header maximum 12.0 implies five points (10.0..12.0 step 0.5) but
-    # only three intensities follow, so the grid built from the body ends
-    # at 11.0 — more than one step short of 12.0: a corrupt reference.
-    sub.write_text(
-        '   10.0   0.5   12.0   ! a comment\n   1.0  2.0  3.0\n',
-        encoding='utf-8',
-    )
-    with pytest.raises(ValueError, match='header maximum'):
-        verify.load_fullprof_profile('', 'ref.sub')
-
-
-def test_load_fullprof_profile_empty_file_raises(ref_dir):
-    sub = ref_dir / 'ref.sub'
-    sub.write_text('', encoding='utf-8')
-    with pytest.raises(ValueError, match='expected a header line'):
-        verify.load_fullprof_profile('', 'ref.sub')
-
-
-def test_load_fullprof_profile_header_only_raises(ref_dir):
-    sub = ref_dir / 'ref.sub'
-    # A header with no intensity lines following must surface a clear
-    # error rather than a confusing grid-mismatch message.
-    sub.write_text('   10.0   0.5   12.0   ! a comment\n', encoding='utf-8')
-    with pytest.raises(ValueError, match='no intensity values'):
-        verify.load_fullprof_profile('', 'ref.sub')
-
-
-def test_load_fullprof_profile_tolerates_rounded_header_maximum(ref_dir):
-    sub = ref_dir / 'ref.sub'
-    # The header maximum is rounded a fraction of a step high (12.0004 vs
-    # the true last point 12.0), which must not add a spurious point.
-    sub.write_text(
-        '   10.0   0.5   12.0004   ! a comment\n   1.0  2.0  3.0  4.0  5.0\n',
-        encoding='utf-8',
-    )
-    x, y = verify.load_fullprof_profile('', 'ref.sub')
-    np.testing.assert_allclose(x, [10.0, 10.5, 11.0, 11.5, 12.0])
-    np.testing.assert_allclose(y, [1.0, 2.0, 3.0, 4.0, 5.0])
+    x_min, x_step, x_max = verify._parse_fullprof_header('   10.0000  0.50000012.000000   !c')
+    assert (x_min, x_step, x_max) == (10.0, 0.5, 12.0)
 
 
 def test_load_columned_profile_reads_two_columns(ref_dir):

@@ -41,7 +41,9 @@ project.structures.add(structure)
 
 # %%
 FULLPROF_PROJECT_DIR = 'pd-neut-tof_j_si'
-FULLPROF_SUB_FILE = 'arg_si1.sub'
+FULLPROF_PRF_FILE = 'arg_si.prf'
+FULLPROF_BAC_FILE = 'arg_si.bac'
+FULLPROF_ZERO = -8.56733  # FullProf Zero
 FULLPROF_SCALE = 0.6620058  # FullProf Scale
 FULLPROF_TWOTHETA_BANK = 144.845  # FullProf 2ThetaBank
 FULLPROF_DTT1 = 7476.91016  # FullProf Dtt1
@@ -54,7 +56,12 @@ FULLPROF_ALPHA_1 = 0.235422  # FullProf alph1
 FULLPROF_BETA_0 = 0.038020  # FullProf beta0
 FULLPROF_BETA_1 = 0.010902  # FullProf beta1
 
-x, calc_fullprof = verify.load_fullprof_profile(FULLPROF_PROJECT_DIR, FULLPROF_SUB_FILE)
+x, calc_fullprof = verify.load_fullprof_calc_profile(
+    FULLPROF_PROJECT_DIR,
+    FULLPROF_PRF_FILE,
+    FULLPROF_BAC_FILE,
+    FULLPROF_ZERO,
+)
 
 # %% [markdown]
 # ## Create the experiment
@@ -72,6 +79,7 @@ verify.set_reference_as_measured(experiment, x, calc_fullprof)
 experiment.linked_phases.create(id='si', scale=FULLPROF_SCALE)
 
 experiment.instrument.setup_twotheta_bank = FULLPROF_TWOTHETA_BANK
+experiment.instrument.calib_d_to_tof_offset = FULLPROF_ZERO
 experiment.instrument.calib_d_to_tof_linear = FULLPROF_DTT1
 experiment.instrument.calib_d_to_tof_quad = FULLPROF_DTT2
 
