@@ -70,12 +70,6 @@ containing Bayesian fit state.
 
 ## Without Measured Data
 
-Calculate and plot a pattern straight from a crystal structure and
-instrument settings — no measured data file required. The calculation
-range comes from the `data_range` category (or its sensible default),
-and the pattern is shown as a two-panel view (calculated curve plus
-background, and a Bragg-peaks row).
-
 - [LBCO `pd-neut-cwl`](ed-27.ipynb) – Calculates a constant-wavelength
   neutron powder pattern for La0.5Ba0.5CoO3 over a chosen 2θ range, with
   background and Bragg markers, and no measured data.
