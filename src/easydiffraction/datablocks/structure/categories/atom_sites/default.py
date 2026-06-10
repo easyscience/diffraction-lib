@@ -946,7 +946,11 @@ class AtomSites(CategoryCollection):
         for axis_param in (atom._fract_x, atom._fract_y, atom._fract_z):
             axis_param._set_symmetry_constrained(value=False)
 
-    def _apply_adp_symmetry_constraints(self) -> None:
+    def _apply_adp_symmetry_constraints(
+        self,
+        *,
+        called_by_minimizer: bool = False,
+    ) -> None:
         """
         Apply symmetry rules to anisotropic ADP tensor components.
 
@@ -998,7 +1002,10 @@ class AtomSites(CategoryCollection):
             adp_keys = ('adp_11', 'adp_22', 'adp_33', 'adp_12', 'adp_13', 'adp_23')
             for key, is_free in zip(adp_keys, ref_i, strict=False):
                 param = getattr(aniso_entry, key)
-                param.value = dummy[key]
+                if called_by_minimizer:
+                    param._set_value_from_minimizer(dummy[key])
+                else:
+                    param.value = dummy[key]
                 param._set_symmetry_constrained(value=not is_free)
 
     def _sync_iso_from_aniso(self) -> None:
@@ -1033,5 +1040,7 @@ class AtomSites(CategoryCollection):
         self._apply_atomic_coordinates_symmetry_constraints(
             called_by_minimizer=called_by_minimizer
         )
-        self._apply_adp_symmetry_constraints()
+        self._apply_adp_symmetry_constraints(
+            called_by_minimizer=called_by_minimizer,
+        )
         self._sync_iso_from_aniso()
