@@ -248,7 +248,7 @@ Each step is one atomic commit. Stage only the files the step touches
       follow-up row to `docs/dev/issues/open.md` (resolved Q5). Keep the
       original Decision/Consequences intact. Stage the ADR and `open.md`.
       Commit: `Extend type-neutral ADP ADR with beta tensor`
-- [ ] **P1.2 — Reciprocal-cell helper.** Add a pure-geometry helper
+- [x] **P1.2 — Reciprocal-cell helper.** Add a pure-geometry helper
       returning `(a*, b*, c*)` from `(a, b, c, α, β, γ)` to
       `crystallography/crystallography.py` (the crystallographic-math
       module). Commit: `Add reciprocal-cell length helper`
