@@ -1,0 +1,6 @@
+  LIST OF REFLECTIONS WITH DELTA/SIGMA > 0.60*max(DELTA/SIGMA)
+  ------------------------------------------------------------
+  => PCR-file:tbti.pcr
+  => F2cal= scale*Corr*F2
+   h   k   l ivk   cod      F2obs         F2cal       Dif/sig   
+   2   2   0   0     1      22.6319      13.3240        8.2862
