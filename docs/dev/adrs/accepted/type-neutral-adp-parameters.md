@@ -40,3 +40,33 @@ sibling collection and synchronize it from `atom_sites`.
 Parameter object identity remains stable across ADP type switches.
 Serialization and calculator code can branch on `adp_type` without
 replacing public parameter objects.
+
+## Extension (2026-06-10): β-tensor support
+
+The dimensionless **β tensor** — the third standard anisotropic ADP
+convention (FullProf, SHELX-era data, cryspy's internal
+representation) — is added as a first-class `adp_type` value, `beta`,
+reusing the same type-neutral `adp_11`…`adp_23` objects. This keeps the
+core decision intact: parameter object identity is still stable across
+a switch to or from `beta`. Implications specific to β:
+
+- **No isotropic form.** `beta` always implies anisotropic; there is no
+  `adp_iso` β counterpart.
+- **Cell-dependent conversion.** Unlike the scalar `B = 8π²U`, the β↔U
+  transform depends on the reciprocal cell:
+  `β_ij = 2π²·U_ij·a*_i·a*_j`. Type switches to/from `beta` therefore
+  require the parent structure's `cell`; with no reachable cell the
+  switch raises rather than producing wrong values.
+- **Dimensionless units.** β components carry no `Å²` unit. The stored
+  Parameter keeps a single declared unit; the display layer suppresses
+  the unit when `adp_type == 'beta'` rather than mutating parameter
+  metadata.
+- **Negative off-diagonals.** Off-diagonal components (any convention,
+  β included) may be negative; the aniso off-diagonal validator allows
+  negatives.
+- **CIF.** `_atom_site_aniso.beta_11`…`beta_23` join the existing
+  `B_ij`/`U_ij` tag lists; the writer's ADP-family grouping gains a
+  `beta` family.
+
+Plan:
+[`adp-beta-tensor.md`](../../plans/adp-beta-tensor.md).
