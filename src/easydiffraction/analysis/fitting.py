@@ -274,6 +274,11 @@ class Fitter:
         measured array; fitting it would feed all-``NaN`` residuals to
         the minimizer. Fitting requires a measured scan.
 
+        Parameters
+        ----------
+        experiments : list[ExperimentBase]
+            Experiments scheduled for fitting.
+
         Raises
         ------
         ValueError
