@@ -5547,10 +5547,10 @@ class Plotter(RendererBase):
 
         title = f"Diffraction pattern for experiment 🔬 '{expt_name}'"
 
-        # When Bragg reflections are available for a powder Bragg pattern,
-        # render the composite (main + Bragg row) figure with no measured
-        # series instead of the single panel — a calculated-only pattern
-        # still gets its Bragg-tick row.
+        # When Bragg reflections are available for a powder Bragg
+        # pattern, render the composite (main + Bragg row) figure with
+        # no measured series instead of the single panel — a
+        # calculated-only pattern still gets its Bragg-tick row.
         _, _, sample_form, scattering_type, _ = self._resolve_x_axis(expt_type, plot_options.x)
         bragg_tick_sets = ()
         if (

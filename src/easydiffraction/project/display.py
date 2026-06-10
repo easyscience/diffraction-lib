@@ -752,8 +752,8 @@ class ProjectDisplay:
                 ('excluded',),
             )
         if status_by_name['calculated'].available:
-            # Calculated-only: offer background and Bragg too (residual is
-            # measured-gated and filtered out automatically).
+            # Calculated-only: offer background and Bragg too (residual
+            # is measured-gated and filtered out automatically).
             return cls._with_available_options(
                 status_by_name,
                 ('calculated',),

@@ -419,8 +419,7 @@ def fullprof_version(project_dir: str, summary_file: str) -> str:
 
 def fullprof_label(project_dir: str, summary_file: str) -> str:
     """
-    Return a FullProf plot-legend label, for example ``'FullProf
-    v8.40'``.
+    Return a FullProf plot-legend label, e.g. ``'FullProf v8.40'``.
 
     Convenience wrapper over :func:`fullprof_version` so verification
     pages set ``reference_label`` in one line rather than repeating the

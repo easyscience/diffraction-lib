@@ -28,7 +28,8 @@ _MAX_SIN_THETA = 0.999999
 # Cap the default-projected upper 2θ bound. The default d-spacing window
 # can project (via the sin cap) to nearly 180° for typical wavelengths;
 # clamp it to a conventional powder maximum so the default range avoids
-# the backscattering limit. Users can still set a larger range explicitly.
+# the backscattering limit. Users can still set a larger range
+# explicitly.
 _DEFAULT_MAX_TWO_THETA = 170.0
 
 

@@ -1282,9 +1282,9 @@ def _cif_measured_data_pd(
 
     x_data = experiment.data.x
     # A generated (calculate-without-measured-data) grid carries absent
-    # (NaN) measured intensities. cryspy only needs the x-grid to compute
-    # the pattern, so write finite placeholders rather than 'nan' tokens
-    # that the engine input parser would choke on.
+    # (NaN) measured intensities. cryspy only needs the x-grid to
+    # compute the pattern, so write finite placeholders rather than
+    # 'nan' tokens that the engine input parser would choke on.
     y_data = np.nan_to_num(np.asarray(experiment.data.intensity_meas, dtype=float), nan=0.0)
     sy_raw = np.asarray(experiment.data.intensity_meas_su, dtype=float)
     sy_data = np.where(np.isfinite(sy_raw), sy_raw, 1.0)

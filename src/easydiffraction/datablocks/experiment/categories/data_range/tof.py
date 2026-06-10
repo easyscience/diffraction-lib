@@ -117,8 +117,9 @@ class TofPdDataRange(DataRangeBase):
     @staticmethod
     def _tof_from_d(d_spacing: float, offset: float, linear: float, quad: float) -> float:
         """
-        Return time-of-flight (μs) for a d-spacing, ``TOF =
-        c0+c1·d+c2·d²``.
+        Return time-of-flight (μs) for a d-spacing.
+
+        ``TOF = c0+c1·d+c2·d²``.
         """
         return float(offset + linear * d_spacing + quad * d_spacing**2)
 

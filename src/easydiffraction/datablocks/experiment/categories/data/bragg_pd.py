@@ -451,8 +451,9 @@ class PdDataBase(CategoryCollection):
                 f'step={x_step}). Set data_range bounds with min < max and step > 0.'
             )
             raise ValueError(msg)
-        # Floor (with a small tolerance) so the last point never exceeds
-        # x_max — an overshoot could push 2θ past the 180° validator limit.
+        # Floor (with a small tolerance) so the last point never
+        # exceeds x_max — an overshoot could push 2θ past the 180°
+        # validator limit.
         num = int(np.floor((x_max - x_min) / x_step + _GRID_STEP_TOLERANCE)) + 1
         return x_min + np.arange(num) * x_step
 
