@@ -197,8 +197,8 @@ def test_closeness_annotation_marks_pass_and_fail():
     passing = verify.ClosenessMetrics(
         profile_difference_percent=1.23,
         max_deviation_percent=0.45,
-        intensity_ratio=1.01,
-        correlation=0.999,
+        intensity_ratio=1.005,
+        correlation=0.9999,
     )
     lines = verify.closeness_annotation(passing)
     assert len(lines) == 4
@@ -249,11 +249,11 @@ def test_assert_patterns_agree_can_report_without_raising():
 
 def test_agreement_tolerances_defaults():
     tolerances = verify.AgreementTolerances()
-    assert tolerances.max_profile_difference_percent == 3.0
-    assert tolerances.max_deviation_percent == 5.0
-    assert tolerances.min_intensity_ratio == pytest.approx(0.98)
-    assert tolerances.max_intensity_ratio == pytest.approx(1.02)
-    assert tolerances.min_correlation == 0.99
+    assert tolerances.max_profile_difference_percent == 2.5
+    assert tolerances.max_deviation_percent == 6.0
+    assert tolerances.min_intensity_ratio == pytest.approx(0.99)
+    assert tolerances.max_intensity_ratio == pytest.approx(1.01)
+    assert tolerances.min_correlation == 0.999
 
 
 # ----------------------------------------------------------------------

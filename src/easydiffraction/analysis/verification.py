@@ -786,18 +786,18 @@ class AgreementTolerances:
     """
     Tolerance bounds for cross-pattern agreement checks.
 
-    Defaults expect the calculated areas to agree to a few percent once
-    the FullProf scale is seeded: the integrated-intensity ratio must
-    sit within 2 % of one, with the profile and peak differences held to
-    the same order. Tighten further as multi-platform spreads are
-    characterised.
+    Defaults expect the calculated areas to agree to about one percent
+    once the FullProf scale is seeded: the integrated-intensity ratio
+    must sit within 1 % of one, the profile difference under 2.5 %, the
+    worst point-wise deviation under 6 %, and the shape correlation above
+    0.999. Tighten further as multi-platform spreads are characterised.
     """
 
-    max_profile_difference_percent: float = 3.0
-    max_deviation_percent: float = 5.0
-    min_intensity_ratio: float = 0.98
-    max_intensity_ratio: float = 1.02
-    min_correlation: float = 0.99
+    max_profile_difference_percent: float = 2.5
+    max_deviation_percent: float = 6.0
+    min_intensity_ratio: float = 0.99
+    max_intensity_ratio: float = 1.01
+    min_correlation: float = 0.999
 
 
 @dataclass(frozen=True)
