@@ -100,15 +100,15 @@ experiment.peak.exp_rise_alpha_1 = 0.5971
 
 # %%
 experiment.background.type = 'line-segment'
-experiment.background.create(id='1', x=10000, y=200)
-experiment.background.create(id='2', x=40000, y=200)
+experiment.background.create(id='1', x=10000, y=500)
+experiment.background.create(id='2', x=40000, y=500)
 
 # %% [markdown]
 # ### Set Calculation Range
 
 # %%
-experiment.data_range.time_of_flight_min = 10000.0
-experiment.data_range.time_of_flight_max = 40000.0
+experiment.data_range.time_of_flight_min = 5000.0
+experiment.data_range.time_of_flight_max = 15000.0
 experiment.data_range.time_of_flight_inc = 2.0
 
 # %% [markdown]
@@ -126,7 +126,7 @@ experiment.linked_phases.create(id='si', scale=10.0)
 project.display.pattern(expt_name='sim')
 
 # %%
-project.display.pattern(expt_name='sim', x_min=15000, x_max=22000)
+project.display.pattern(expt_name='sim', x_min=5000, x_max=6000)
 
 # %% [markdown]
 # ### Inspect as CIF

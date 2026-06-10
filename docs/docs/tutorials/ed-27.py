@@ -29,54 +29,23 @@ project = ed.Project(name='lbco_simulation')
 # %% [markdown]
 # ## 🧩 Define Structure
 
-# %%
-project.structures.create(name='lbco')
+# %% [markdown]
+# ### Download CIF file
 
 # %%
+structure_path = ed.download_data(id=1, destination='data')
+
+# %% [markdown]
+# ### Add Structure from CIF
+
+# %%
+project.structures.add_from_cif_path(structure_path)
+project.structures.show_names()
+
 structure = project.structures['lbco']
 
-# %%
-structure.space_group.name_h_m = 'P m -3 m'
-structure.space_group.it_coordinate_system_code = '1'
-
-# %%
-structure.cell.length_a = 3.88
-
-# %%
-structure.atom_sites.create(
-    label='La',
-    type_symbol='La',
-    fract_x=0,
-    fract_y=0,
-    fract_z=0,
-    adp_iso=0.5,
-    occupancy=0.5,
-)
-structure.atom_sites.create(
-    label='Ba',
-    type_symbol='Ba',
-    fract_x=0,
-    fract_y=0,
-    fract_z=0,
-    adp_iso=0.5,
-    occupancy=0.5,
-)
-structure.atom_sites.create(
-    label='Co',
-    type_symbol='Co',
-    fract_x=0.5,
-    fract_y=0.5,
-    fract_z=0.5,
-    adp_iso=0.5,
-)
-structure.atom_sites.create(
-    label='O',
-    type_symbol='O',
-    fract_x=0,
-    fract_y=0.5,
-    fract_z=0.5,
-    adp_iso=0.5,
-)
+# %% [markdown]
+# ### Plot Structure
 
 # %%
 project.display.structure(struct_name='lbco')
@@ -86,7 +55,7 @@ project.display.structure(struct_name='lbco')
 #
 # ### Create Experiment Without Data
 #
-# Instead of loading a measured data file, the experiment is created
+# Instead of loading a measured data file, the 'virtual' experiment is created
 # directly from its type. With no measured scan present, the pattern is
 # later computed over the `data_range` defined below.
 
@@ -129,13 +98,7 @@ experiment.background.create(id='2', x=160, y=20)
 # With no measured data, the x-grid to calculate on comes from the
 # `data_range` category. It already holds a sensible default window
 # derived from the instrument, so the experiment is calculable without
-# any setup. Here it is printed and then set explicitly.
-
-# %%
-print('Default 2θ range:')
-print('  min:', experiment.data_range.two_theta_min.value)
-print('  max:', experiment.data_range.two_theta_max.value)
-print('  inc:', experiment.data_range.two_theta_inc.value)
+# any setup. Here we change the default window as an example.
 
 # %%
 experiment.data_range.two_theta_min = 10.0
@@ -165,14 +128,18 @@ project.display.pattern(expt_name='sim')
 project.display.pattern(expt_name='sim', x_min=30, x_max=60)
 
 # %% [markdown]
-# ### Inspect as CIF
-#
-# The experiment serialises the calculation range (`data_range`) rather
-# than a measured-data loop, so a saved project restores and recomputes
-# the same pattern.
+# ### Modify Parameters and Recalculate
 
 # %%
-project.experiments['sim'].show_as_cif()
+structure.cell.length_a = 3.6
+structure.atom_sites['O'].adp_iso = 1.2
+experiment.peak.broad_lorentz_y = 0.9
+
+# %%
+project.analysis.calculate()
+
+# %%
+project.display.pattern(expt_name='sim', x_min=30, x_max=60)
 
 # %% [markdown]
 # ## 💾 Save Project

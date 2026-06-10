@@ -99,10 +99,9 @@ experiment.linked_phases.create(id='nacl', scale=1.0)
 # wavelength) is used as-is.
 
 # %%
-print('Default 2θ range:')
-print('  min:', experiment.data_range.two_theta_min.value)
-print('  max:', experiment.data_range.two_theta_max.value)
-print('  inc:', experiment.data_range.two_theta_inc.value)
+print('min:', experiment.data_range.two_theta_min.value)
+print('max:', experiment.data_range.two_theta_max.value)
+print('inc:', experiment.data_range.two_theta_inc.value)
 
 # %% [markdown]
 # ## 🚀 Perform Calculation
