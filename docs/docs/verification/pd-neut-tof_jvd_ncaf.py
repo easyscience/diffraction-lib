@@ -123,6 +123,7 @@ verify.set_reference_as_measured(experiment, x, calc_fullprof)
 experiment.linked_phases.create(id='ncaf', scale=FULLPROF_SCALE)
 
 experiment.instrument.setup_twotheta_bank = FULLPROF_TWOTHETA_BANK
+experiment.instrument.calib_d_to_tof_offset = FULLPROF_ZERO
 experiment.instrument.calib_d_to_tof_linear = FULLPROF_DTT1
 experiment.instrument.calib_d_to_tof_quad = FULLPROF_DTT2
 
