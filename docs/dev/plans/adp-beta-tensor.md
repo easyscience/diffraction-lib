@@ -325,7 +325,7 @@ Each step is one atomic commit. Stage only the files the step touches
       `_group_items_by_adp_family()`. This is what makes project
       save/load round-trip β. Commit:
       `Round-trip beta tensor through the project CIF serializer`
-- [ ] **P1.9 — Consolidate reciprocal helper; defer β ellipsoids.**
+- [x] **P1.9 — Consolidate reciprocal helper; defer β ellipsoids.**
       Refactor `display/structure/builder.py::_reciprocal_lengths` to
       call `crystallography.reciprocal_cell_lengths` (remove the
       duplicate math; keep the `np.ndarray` return shape its callers

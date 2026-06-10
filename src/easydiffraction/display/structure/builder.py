@@ -138,10 +138,7 @@ def _cell_lengths_angles(
 def _reciprocal_lengths(cell: object) -> np.ndarray:
     """Return the reciprocal-cell axis lengths a*, b*, c*."""
     a, b, c, alpha, beta, gamma = _cell_lengths_angles(cell)
-    al, be, ga = np.radians([alpha, beta, gamma])
-    ca, cb, cg = np.cos([al, be, ga])
-    omega = np.sqrt(1.0 - ca * ca - cb * cb - cg * cg + 2.0 * ca * cb * cg)
-    return np.array([np.sin(al) / (a * omega), np.sin(be) / (b * omega), np.sin(ga) / (c * omega)])
+    return np.array(ecr.reciprocal_cell_lengths(a, b, c, alpha, beta, gamma))
 
 
 def _lattice_shifts(
