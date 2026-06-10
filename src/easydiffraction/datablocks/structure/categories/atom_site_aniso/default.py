@@ -24,6 +24,57 @@ from easydiffraction.datablocks.structure.categories.atom_site_aniso.factory imp
 from easydiffraction.io.cif.handler import CifHandler
 
 
+class _AnisoAdpParameter(Parameter):
+    """
+    Aniso ADP component whose display units track ``adp_type``.
+
+    For ``adp_type == 'beta'`` the tensor components are dimensionless,
+    so display units are suppressed at resolve time. The stored unit
+    metadata is left unchanged (a single declared unit per the value
+    model); only the resolved display string is type-aware. All other
+    behaviour is inherited from :class:`Parameter`.
+    """
+
+    def resolve_display_units(self, context: str) -> str:
+        """
+        Return display units, suppressed for a beta-tensor owner.
+
+        Parameters
+        ----------
+        context : str
+            One of ``'latex'``, ``'html'``, or ``'gui'``.
+
+        Returns
+        -------
+        str
+            The inherited display units, or an empty string when the
+            owning atom uses the dimensionless ``beta`` ADP type.
+        """
+        from easydiffraction.datablocks.structure.categories.atom_sites.enums import (  # noqa: PLC0415
+            AdpTypeEnum,
+        )
+
+        units = super().resolve_display_units(context)
+        if self._owning_adp_type() == AdpTypeEnum.BETA.value:
+            return ''
+        return units
+
+    def _owning_adp_type(self) -> str | None:
+        """Return the owning atom's ``adp_type`` value, or ``None``."""
+        aniso_item = getattr(self, '_parent', None)
+        label = getattr(getattr(aniso_item, '_label', None), 'value', None)
+        collection = getattr(aniso_item, '_parent', None)
+        structure = getattr(collection, '_parent', None)
+        atom_sites = getattr(structure, 'atom_sites', None)
+        if atom_sites is None or label is None:
+            return None
+        try:
+            atom = atom_sites[label]
+        except (KeyError, TypeError):
+            return None
+        return getattr(getattr(atom, 'adp_type', None), 'value', None)
+
+
 class AtomSiteAniso(CategoryItem):
     """
     Single atom site anisotropic ADP entry.
@@ -47,7 +98,7 @@ class AtomSiteAniso(CategoryItem):
             cif_handler=CifHandler(names=['_atom_site_aniso.label']),
         )
 
-        self._adp_11 = Parameter(
+        self._adp_11 = _AnisoAdpParameter(
             name='adp_11',
             description='Anisotropic ADP tensor component (1,1).',
             units='angstrom_squared',
@@ -65,10 +116,11 @@ class AtomSiteAniso(CategoryItem):
                 names=[
                     '_atom_site_aniso.B_11',
                     '_atom_site_aniso.U_11',
+                    '_atom_site_aniso.beta_11',
                 ]
             ),
         )
-        self._adp_22 = Parameter(
+        self._adp_22 = _AnisoAdpParameter(
             name='adp_22',
             description='Anisotropic ADP tensor component (2,2).',
             units='angstrom_squared',
@@ -86,10 +138,11 @@ class AtomSiteAniso(CategoryItem):
                 names=[
                     '_atom_site_aniso.B_22',
                     '_atom_site_aniso.U_22',
+                    '_atom_site_aniso.beta_22',
                 ]
             ),
         )
-        self._adp_33 = Parameter(
+        self._adp_33 = _AnisoAdpParameter(
             name='adp_33',
             description='Anisotropic ADP tensor component (3,3).',
             units='angstrom_squared',
@@ -107,10 +160,11 @@ class AtomSiteAniso(CategoryItem):
                 names=[
                     '_atom_site_aniso.B_33',
                     '_atom_site_aniso.U_33',
+                    '_atom_site_aniso.beta_33',
                 ]
             ),
         )
-        self._adp_12 = Parameter(
+        self._adp_12 = _AnisoAdpParameter(
             name='adp_12',
             description='Anisotropic ADP tensor component (1,2).',
             units='angstrom_squared',
@@ -128,10 +182,11 @@ class AtomSiteAniso(CategoryItem):
                 names=[
                     '_atom_site_aniso.B_12',
                     '_atom_site_aniso.U_12',
+                    '_atom_site_aniso.beta_12',
                 ]
             ),
         )
-        self._adp_13 = Parameter(
+        self._adp_13 = _AnisoAdpParameter(
             name='adp_13',
             description='Anisotropic ADP tensor component (1,3).',
             units='angstrom_squared',
@@ -149,10 +204,11 @@ class AtomSiteAniso(CategoryItem):
                 names=[
                     '_atom_site_aniso.B_13',
                     '_atom_site_aniso.U_13',
+                    '_atom_site_aniso.beta_13',
                 ]
             ),
         )
-        self._adp_23 = Parameter(
+        self._adp_23 = _AnisoAdpParameter(
             name='adp_23',
             description='Anisotropic ADP tensor component (2,3).',
             units='angstrom_squared',
@@ -170,6 +226,7 @@ class AtomSiteAniso(CategoryItem):
                 names=[
                     '_atom_site_aniso.B_23',
                     '_atom_site_aniso.U_23',
+                    '_atom_site_aniso.beta_23',
                 ]
             ),
         )

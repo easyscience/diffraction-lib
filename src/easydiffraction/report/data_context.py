@@ -1034,6 +1034,12 @@ def _plain_unit_text(value: str) -> str:
 
 def _descriptor_units(parameter: object, *, context: str) -> str:
     """Return descriptor units without probing missing attributes."""
+    # Prefer the canonical units API so type-aware overrides (e.g. the
+    # dimensionless beta ADP tensor) are honoured consistently with the
+    # GUI and fit-report paths, not just the static display metadata.
+    resolver = _safe_attr(parameter, 'resolve_display_units')
+    if callable(resolver) and context in {'latex', 'html', 'gui'}:
+        return resolver(context)
     display_handler = _safe_attr(parameter, 'display_handler')
     if display_handler is not None:
         if context == 'latex' and display_handler.latex_units is not None:

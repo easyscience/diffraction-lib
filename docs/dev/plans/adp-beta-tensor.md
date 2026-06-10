@@ -298,7 +298,7 @@ Each step is one atomic commit. Stage only the files the step touches
       β atoms fall through to the sphere branch (ellipsoids deferred, Q6).
       The cryspy `aniso_types` set is handled in P1.6. Search
       `git grep -n "AdpTypeEnum\."`. Commit: `Add beta member to AdpTypeEnum`
-- [ ] **P1.4 — aniso category: CIF names + display units.** Add
+- [x] **P1.4 — aniso category: CIF names + display units.** Add
       `_atom_site_aniso.beta_*` to the `adp_ij` CIF handlers (decision
       5); type-aware display units that suppress `Å²` when
       `adp_type == 'beta'` (decision 4). No validator change — the
