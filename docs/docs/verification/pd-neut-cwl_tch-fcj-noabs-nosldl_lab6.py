@@ -103,7 +103,6 @@ experiment.instrument.calib_sample_transparency = FULLPROF_SYSIN
 experiment.calculator.type = 'cryspy'
 
 project.analysis.calculate()
-
 calc_ed_cryspy = experiment.data.intensity_calc
 
 project.display.pattern_comparison(
@@ -119,6 +118,7 @@ project.display.pattern_comparison(
 
 # %%
 experiment.calculator.type = 'crysfml'
+
 project.analysis.calculate()
 calc_ed_crysfml = experiment.data.intensity_calc
 

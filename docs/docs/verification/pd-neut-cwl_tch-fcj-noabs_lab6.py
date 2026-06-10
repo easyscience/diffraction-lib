@@ -104,6 +104,7 @@ experiment.instrument.calib_sample_displacement = FULLPROF_SYCOS
 experiment.instrument.calib_sample_transparency = FULLPROF_SYSIN
 
 experiment.calculator.type = 'cryspy'
+
 project.analysis.calculate()
 calc_ed_cryspy = experiment.data.intensity_calc
 
@@ -142,14 +143,10 @@ project.display.pattern_comparison(
 # ## ed-crysfml VS FullProf
 
 # %%
-experiment.calculator.type = 'crysfml'
-experiment.peak.type = 'thompson-cox-hastings'
 experiment.linked_phases['lab6'].scale = FULLPROF_SCALE
-experiment.linked_phases['lab6'].scale.free = False
+
+experiment.peak.type = 'thompson-cox-hastings'
 experiment.instrument.calib_twotheta_offset = FULLPROF_ZERO
-experiment.instrument.calib_twotheta_offset.free = False
-experiment.instrument.calib_sample_displacement.free = False
-experiment.instrument.calib_sample_transparency.free = False
 experiment.peak.broad_gauss_u = FULLPROF_U
 experiment.peak.broad_gauss_v = FULLPROF_V
 experiment.peak.broad_gauss_w = FULLPROF_W
@@ -157,6 +154,8 @@ experiment.peak.broad_lorentz_x = FULLPROF_X
 experiment.peak.broad_lorentz_y = FULLPROF_Y
 experiment.peak.asym_fcj_1 = FULLPROF_S_L
 experiment.peak.asym_fcj_2 = FULLPROF_D_L
+
+experiment.calculator.type = 'crysfml'
 
 project.analysis.calculate()
 calc_ed_crysfml = experiment.data.intensity_calc
@@ -175,6 +174,9 @@ project.display.pattern_comparison(
 # %%
 experiment.linked_phases['lab6'].scale.free = True
 experiment.instrument.calib_twotheta_offset.free = True
+
+experiment.instrument.calib_sample_displacement.free = False
+experiment.instrument.calib_sample_transparency.free = False
 
 project.analysis.fit()
 project.display.fit.results()
