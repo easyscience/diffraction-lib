@@ -786,7 +786,7 @@ class AtomSites(CategoryCollection):
         and ``adp_iso`` is flagged as fixed for all anisotropic atoms.
         """
         structure = self._parent
-        aniso_types = {AdpTypeEnum.BANI.value, AdpTypeEnum.UANI.value}
+        aniso_types = {AdpTypeEnum.BANI.value, AdpTypeEnum.UANI.value, AdpTypeEnum.BETA.value}
         space_group_name = structure.space_group.name_h_m.value
         space_group_coord_code = structure.space_group.it_coordinate_system_code.value
         aniso_collection = structure.atom_site_aniso
@@ -839,7 +839,7 @@ class AtomSites(CategoryCollection):
         so that the isotropic value stays consistent with the current
         tensor state.
         """
-        aniso_types = {AdpTypeEnum.BANI.value, AdpTypeEnum.UANI.value}
+        aniso_types = {AdpTypeEnum.BANI.value, AdpTypeEnum.UANI.value, AdpTypeEnum.BETA.value}
         for atom in self._items:
             if atom.adp_type.value in aniso_types:
                 atom._collapse_aniso_to_iso()

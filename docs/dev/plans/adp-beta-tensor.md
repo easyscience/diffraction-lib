@@ -286,17 +286,18 @@ Each step is one atomic commit. Stage only the files the step touches
       returning `(a*, b*, c*)` from `(a, b, c, α, β, γ)` to
       `crystallography/crystallography.py` (the crystallographic-math
       module). Commit: `Add reciprocal-cell length helper`
-- [ ] **P1.3 — `AdpTypeEnum.BETA`.** Add the member and its
+- [x] **P1.3 — `AdpTypeEnum.BETA`.** Add the member and its
       `description()`. Extend the "is-anisotropic" `{Bani, Uani}`
       membership sets to include `beta` so β atoms get an aniso row and
       are treated as anisotropic: `item/base.py` (aniso-row sync),
       `atom_sites/default.py` (symmetry-constrained flag and
-      collapse-from-aniso), `atom_site_aniso/default.py` (iso-only
-      check), and `display/structure/builder.py` (ellipsoid-vs-sphere
-      branch). **Leave the B-vs-U sets** (`{Biso, Bani}` / `{Uiso,
-      Uani}`) unchanged — β is neither B nor U. The cryspy `aniso_types`
-      set is handled in P1.6. Search `git grep -n "AdpTypeEnum\."`.
-      Commit: `Add beta member to AdpTypeEnum`
+      collapse-from-aniso), and `atom_site_aniso/default.py` (iso-only
+      check). **Leave the B-vs-U sets** (`{Biso, Bani}` / `{Uiso,
+      Uani}`) unchanged — β is neither B nor U. **Leave
+      `display/structure/builder.py`'s display-shape sets unchanged** so
+      β atoms fall through to the sphere branch (ellipsoids deferred, Q6).
+      The cryspy `aniso_types` set is handled in P1.6. Search
+      `git grep -n "AdpTypeEnum\."`. Commit: `Add beta member to AdpTypeEnum`
 - [ ] **P1.4 — aniso category: CIF names + display units.** Add
       `_atom_site_aniso.beta_*` to the `adp_ij` CIF handlers (decision
       5); type-aware display units that suppress `Å²` when

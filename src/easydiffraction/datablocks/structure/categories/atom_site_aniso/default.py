@@ -274,5 +274,5 @@ class AtomSiteAnisoCollection(CategoryCollection):
             AdpTypeEnum,
         )
 
-        aniso_types = {AdpTypeEnum.BANI.value, AdpTypeEnum.UANI.value}
+        aniso_types = {AdpTypeEnum.BANI.value, AdpTypeEnum.UANI.value, AdpTypeEnum.BETA.value}
         return not any(atom.adp_type.value in aniso_types for atom in atom_sites)

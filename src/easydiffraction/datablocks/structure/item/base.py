@@ -208,7 +208,7 @@ class Structure(DatablockItem):
         switched to an isotropic type, and reorders CIF names on all
         atom-site parameters to match each atom's ``adp_type``.
         """
-        aniso_types = {AdpTypeEnum.BANI, AdpTypeEnum.UANI}
+        aniso_types = {AdpTypeEnum.BANI, AdpTypeEnum.UANI, AdpTypeEnum.BETA}
         existing_labels = {a.label.value for a in self._atom_sites}
         aniso_labels_needed = {
             a.label.value for a in self._atom_sites if a.adp_type.value in aniso_types

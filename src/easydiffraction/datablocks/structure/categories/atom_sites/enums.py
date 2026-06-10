@@ -14,6 +14,7 @@ class AdpTypeEnum(StrEnum):
     UISO = 'Uiso'
     BANI = 'Bani'
     UANI = 'Uani'
+    BETA = 'beta'
 
     @classmethod
     def default(cls) -> AdpTypeEnum:
@@ -27,5 +28,6 @@ class AdpTypeEnum(StrEnum):
             AdpTypeEnum.UISO: 'Isotropic mean-square displacement',
             AdpTypeEnum.BANI: 'Anisotropic B-factor tensor',
             AdpTypeEnum.UANI: 'Anisotropic mean-square displacement tensor',
+            AdpTypeEnum.BETA: 'Anisotropic dimensionless beta tensor',
         }
         return descriptions[self]
