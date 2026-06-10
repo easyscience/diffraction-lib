@@ -221,8 +221,17 @@ class AsciiPlotter(PlotterBase):
         for measured, calculated, and residual series. Bragg tick rows
         are announced but not rendered graphically.
         """
-        y_series = [plot_spec.y_meas, plot_spec.y_calc]
-        labels = ['meas', 'calc']
+        # The measured series is omitted for a calculated-only pattern.
+        y_series = []
+        labels = []
+        if plot_spec.y_meas is not None:
+            y_series.append(plot_spec.y_meas)
+            labels.append('meas')
+        if plot_spec.y_bkg is not None:
+            y_series.append(plot_spec.y_bkg)
+            labels.append('bkg')
+        y_series.append(plot_spec.y_calc)
+        labels.append('calc')
         if plot_spec.y_resid is not None:
             y_series.append(plot_spec.y_resid)
             labels.append('resid')

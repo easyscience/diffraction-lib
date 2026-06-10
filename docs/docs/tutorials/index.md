@@ -72,11 +72,13 @@ containing Bayesian fit state.
 
 Calculate and plot a pattern straight from a crystal structure and
 instrument settings — no measured data file required. The calculation
-range comes from the `data_range` category (or its sensible default).
+range comes from the `data_range` category (or its sensible default),
+and the pattern is shown as a two-panel view (calculated curve plus
+background, and a Bragg-peaks row).
 
 - [LBCO `pd-neut-cwl`](ed-27.ipynb) – Calculates a constant-wavelength
   neutron powder pattern for La0.5Ba0.5CoO3 over a chosen 2θ range, with
-  background, and no measured data.
+  background and Bragg markers, and no measured data.
 - [Si `pd-neut-tof`](ed-28.ipynb) – Calculates a time-of-flight neutron
   powder pattern for Si over a time-of-flight range projected from the
   instrument calibration.

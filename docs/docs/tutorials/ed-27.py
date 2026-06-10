@@ -154,8 +154,9 @@ experiment.linked_phases.create(id='lbco', scale=10.0)
 # ### Display Pattern
 #
 # Plotting the pattern computes the calculated curve over the
-# `data_range` grid and shows it together with the background. There is
-# no measured curve or residual, because there is no measurement.
+# `data_range` grid and shows a two-panel view: the calculated curve
+# with its background on the main panel, plus a Bragg-peaks row. There
+# is no measured curve or residual, because there is no measurement.
 
 # %%
 project.display.pattern(expt_name='sim')

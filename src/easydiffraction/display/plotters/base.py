@@ -53,7 +53,7 @@ class PowderMeasVsCalcSpec:
     """
 
     x: np.ndarray
-    y_meas: np.ndarray
+    y_meas: np.ndarray | None
     y_calc: np.ndarray
     y_resid: np.ndarray | None
     bragg_tick_sets: tuple[BraggTickSet, ...]

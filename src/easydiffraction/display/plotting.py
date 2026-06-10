@@ -652,6 +652,7 @@ class Plotter(RendererBase):
         *,
         show_excluded: bool = False,
         show_background: bool = False,
+        show_bragg: bool = False,
     ) -> None:
         """
         Plot calculated diffraction pattern for an experiment.
@@ -671,6 +672,9 @@ class Plotter(RendererBase):
         show_background : bool, default=False
             Whether to overlay the calculated background on the curve
             (used by calculated-only powder views).
+        show_bragg : bool, default=False
+            Whether to add the Bragg-peaks row for a powder Bragg
+            pattern (renders the composite two-panel figure).
         """
         self._update_project_categories(expt_name)
         experiment = self._project.experiments[expt_name]
@@ -679,6 +683,7 @@ class Plotter(RendererBase):
             x_max=x_max,
             show_excluded=show_excluded,
             show_background=show_background,
+            show_bragg=show_bragg,
             x=x,
         )
         self._plot_calc_data(
@@ -5533,13 +5538,57 @@ class Plotter(RendererBase):
             else ()
         )
 
-        y_series = [y_calc]
-        labels = ['calc']
         y_bkg = self._optional_filtered_y_array(
             getattr(pattern, 'intensity_bkg', None),
             ctx,
         )
-        if self._show_background_enabled(plot_options, background_available=y_bkg is not None):
+        if not self._show_background_enabled(plot_options, background_available=y_bkg is not None):
+            y_bkg = None
+
+        title = f"Diffraction pattern for experiment 🔬 '{expt_name}'"
+
+        # When Bragg reflections are available for a powder Bragg pattern,
+        # render the composite (main + Bragg row) figure with no measured
+        # series instead of the single panel — a calculated-only pattern
+        # still gets its Bragg-tick row.
+        _, _, sample_form, scattering_type, _ = self._resolve_x_axis(expt_type, plot_options.x)
+        bragg_tick_sets = ()
+        if (
+            sample_form == SampleFormEnum.POWDER
+            and scattering_type == ScatteringTypeEnum.BRAGG
+            and self._show_bragg_enabled(plot_options)
+            and np.asarray(ctx['x_filtered']).size
+        ):
+            bragg_tick_sets = self._extract_bragg_tick_sets(
+                experiment=experiment,
+                expt_name=expt_name,
+                x_axis=ctx['x_axis'],
+                x_min=ctx['x_min'],
+                x_max=ctx['x_max'],
+            )
+
+        if bragg_tick_sets:
+            plot_spec = PowderMeasVsCalcSpec(
+                x=ctx['x_filtered'],
+                y_meas=None,
+                y_calc=y_calc,
+                y_resid=None,
+                bragg_tick_sets=bragg_tick_sets,
+                axes_labels=ctx['axes_labels'],
+                title=title,
+                residual_height_fraction=DEFAULT_RESID_HEIGHT,
+                bragg_peaks_height_fraction=DEFAULT_BRAGG_ROW,
+                height=self._composite_plot_height(),
+                y_bkg=y_bkg,
+                excluded_ranges=excluded_ranges,
+                y_meas_su=None,
+            )
+            self._backend.plot_powder_meas_vs_calc(plot_spec=plot_spec)
+            return
+
+        y_series = [y_calc]
+        labels = ['calc']
+        if y_bkg is not None:
             y_series.append(y_bkg)
             labels.append('bkg')
 
@@ -5548,7 +5597,7 @@ class Plotter(RendererBase):
             y_series=y_series,
             labels=labels,
             axes_labels=ctx['axes_labels'],
-            title=f"Diffraction pattern for experiment 🔬 '{expt_name}'",
+            title=title,
             height=self.height,
             excluded_ranges=excluded_ranges,
         )

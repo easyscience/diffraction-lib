@@ -119,15 +119,16 @@ scan exists.
 
 8. **Display extends the unified view.** Building on
    [Unified Pattern View](pattern-display-unification.md),
-   `background` becomes available with calculated-only data — the
-   measured-data requirement in its availability gate is dropped. "No
-   measurement" is represented as _absent_ intensities (not a
+   `background` and `bragg` become available with calculated-only data —
+   the measured-data requirement in their availability gates is dropped.
+   "No measurement" is represented as _absent_ intensities (not a
    zero-filled array), so no phantom measured curve or residual is
-   drawn. A calc-only powder view is the calculated curve plus
-   background on the main panel. The `bragg` row remains measured-gated
-   for now: rendering it without a measured scan needs the composite
-   renderer to support an absent measured series, so it is deferred (see
-   Deferred Work). A calc-only single-crystal view shows per-reflection
+   drawn. A calc-only powder view is a two-panel plot: the calculated
+   curve plus background on the main panel and a Bragg-peaks row. The
+   composite renderer treats the measured series as optional, so the
+   same figure machinery serves both the measured and calculated-only
+   cases (the residual row, which needs a measured scan, is simply
+   absent). A calc-only single-crystal view shows per-reflection
    calculated intensities.
 
 9. **CIF mapping.** CWL bounds reuse the standard
@@ -184,11 +185,3 @@ scan exists.
 - Final custom CIF tag names for the TOF, sinθ/λ, and d-spacing bounds.
 - Concrete default numeric ranges and steps per experiment type.
 - The calc-only single-crystal plot specifics.
-- The calc-only powder **Bragg-tick row**. A calculated-only powder
-  view currently shows the calculated curve plus background on the main
-  panel; the Bragg row is still measured-gated. Rendering it without a
-  measured scan requires the composite powder renderer (and both the
-  Plotly and ASCII backends) to support an absent/optional measured
-  series, which needs run-verified plotting changes best done in the
-  verification phase. Until then `bragg_available` stays measured-gated
-  so the option is never offered for a calc-only pattern.

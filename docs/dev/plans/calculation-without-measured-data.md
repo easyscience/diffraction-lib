@@ -329,9 +329,9 @@ unfiltered points), and (b) set a `data_range` bound and confirm it
 from a crystal structure and instrument settings — no measured data file
 required. Set the calculation range (in 2θ for constant-wavelength or
 time-of-flight for TOF instruments), or just accept the sensible
-defaults, and EasyDiffraction will compute the pattern and show the
-calculated curve together with its background. This makes it easy to
-preview what a candidate structure should look like, to teach, or to
-generate a synthetic pattern before any measurement exists. Fitting
-still requires measured data, as before; the Bragg reflection-marker row
-also remains a measured-data view for now.
+defaults, and EasyDiffraction will compute the pattern and show a
+two-panel view: the calculated curve with its background on the main
+panel, plus a Bragg reflection-marker row. This makes it easy to preview
+what a candidate structure should look like, to teach, or to generate a
+synthetic pattern before any measurement exists. Fitting still requires
+measured data, as before.
