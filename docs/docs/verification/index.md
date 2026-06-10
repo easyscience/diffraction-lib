@@ -76,3 +76,19 @@ and so on. The list below notes only what is specific to each page.
   per-reflection F² against FullProf with anisotropic ADPs, partial
   occupancies, and a split interstitial oxygen. `cryspy` only;
   integrated intensities, no peak profile.
+- [Tb₂Ti₂O₇ `sg-neut-cwl`](sg-neut-cwl_ext-iso_tbti.py) – Terbium
+  titanate (Tb₂Ti₂O₇, _F d -3 m_); per-reflection F² against FullProf
+  with anisotropic ADPs and full occupancies (CIF/ED uses `occupancy=1`
+  notation, FullProf uses site-multiplicity/general-multiplicity). `cryspy`
+  only;
+  integrated intensities, no peak profile. Scale is initialized from FullProf.
+  CryspY extinction (`becker-coppens`, `gauss`) uses two parameters,
+  `radius` and `mosaicity`, both seeded as `0`; only `scale` and `radius`
+  are refined against FullProf.
+- [Tb₂Ti₂O₇ `sg-neut-cwl`](sg-neut-cwl_noext_tbti.py) – Terbium
+  titanate (Tb₂Ti₂O₇, _F d -3 m_); per-reflection F² against a
+  FullProf-no-extinction reference with the same FullProf ADP/scale seed and
+  structure model. `cryspy` only; integrated intensities, no peak
+  profile. Scale is initialized from the FullProf no-ext reference and refined;
+  extinction is disabled on both sides (radius and mosaicity fixed at `0`,
+  model `gauss`). `Uani` is seeded from FullProf; only `scale` is refined.
