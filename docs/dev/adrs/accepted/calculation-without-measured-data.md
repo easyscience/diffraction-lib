@@ -40,11 +40,11 @@ how a saved project with no measured block should restore from the CLI.
 
 Two existing decisions frame the solution:
 
-- [Unified Pattern View](pattern-display-unification.md)
-  already establishes that `pattern()` renders whatever the project
-  state supports. "Only calculated data is available" should simply be
-  one more supported state; today the display gates instead require
-  measured data before background or Bragg can appear.
+- [Unified Pattern View](pattern-display-unification.md) already
+  establishes that `pattern()` renders whatever the project state
+  supports. "Only calculated data is available" should simply be one
+  more supported state; today the display gates instead require measured
+  data before background or Bragg can appear.
 - The IUCr powder and core dictionaries already model an evenly-spaced
   scan **by range**: `_pd_meas.2theta_range_{min,max,inc}` and
   `_pd_proc.2theta_range_{min,max,inc}` are defined to be used "in place
@@ -65,9 +65,9 @@ scan exists.
    (`CwlDataRange`, `TofDataRange`, `ScDataRange`) and exposed uniformly
    as `experiment.data_range`. It is fixed by the experiment type, so it
    has **no** `type` selector — the same treatment
-   [Switchable Category API](switchable-category-api.md)
-   prescribes for fixed, single-type categories, and the same pattern
-   `instrument` already uses for its per-beam-mode classes
+   [Switchable Category API](switchable-category-api.md) prescribes for
+   fixed, single-type categories, and the same pattern `instrument`
+   already uses for its per-beam-mode classes
    ([Immutable Experiment Type](immutable-experiment-type.md)).
 
 2. **Stored truth is the natural input axis (writable).** The values a
@@ -96,8 +96,8 @@ scan exists.
    crystal has bounds but no step.
 
 5. **Writable, guarded by measurement.** Following
-   [Guarded Public Properties](guarded-public-properties.md),
-   the `data_range` axis attributes are writable public properties. The
+   [Guarded Public Properties](guarded-public-properties.md), the
+   `data_range` axis attributes are writable public properties. The
    setter raises when a measured scan is present, because then the range
    is an _observed_ property of the data rather than an input; the
    getter returns the measured-derived range in that case (subsuming
@@ -118,10 +118,10 @@ scan exists.
    serialisable category rather than a method call.
 
 8. **Display extends the unified view.** Building on
-   [Unified Pattern View](pattern-display-unification.md),
-   `background` and `bragg` become available with calculated-only data —
-   the measured-data requirement in their availability gates is dropped.
-   "No measurement" is represented as _absent_ intensities (not a
+   [Unified Pattern View](pattern-display-unification.md), `background`
+   and `bragg` become available with calculated-only data — the
+   measured-data requirement in their availability gates is dropped. "No
+   measurement" is represented as _absent_ intensities (not a
    zero-filled array), so no phantom measured curve or residual is
    drawn. A calc-only powder view is a two-panel plot: the calculated
    curve plus background on the main panel and a Bragg-peaks row. The
@@ -134,8 +134,7 @@ scan exists.
 9. **CIF mapping.** CWL bounds reuse the standard
    `_pd_meas.2theta_range_{min,max,inc}`. TOF, single-crystal, and the
    sinθ/λ–d bounds have no standard range tag, so custom tags are chosen
-   in line with
-   [IUCr CIF Tag Alignment](iucr-cif-tag-alignment.md) and
+   in line with [IUCr CIF Tag Alignment](iucr-cif-tag-alignment.md) and
    [Python and CIF Category Correspondence](python-cif-category-correspondence.md).
 
 ## Consequences

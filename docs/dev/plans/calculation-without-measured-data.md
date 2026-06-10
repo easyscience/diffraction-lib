@@ -2,14 +2,14 @@
 
 This plan follows [`AGENTS.md`](../../../AGENTS.md). No deliberate
 exceptions to those instructions are taken. Where this plan touches
-public API (`experiment.data_range`) and many files, it is the
-"propose a plan and wait for approval" path required by
+public API (`experiment.data_range`) and many files, it is the "propose
+a plan and wait for approval" path required by
 [`AGENTS.md`](../../../AGENTS.md) §Code Style.
 
 ## ADR
 
-Implements [Calculation Without Measured
-Data](../adrs/accepted/calculation-without-measured-data.md)
+Implements
+[Calculation Without Measured Data](../adrs/accepted/calculation-without-measured-data.md)
 (promoted to `accepted/` in **P1.1** per
 [`AGENTS.md`](../../../AGENTS.md) §Change Discipline, before the PR is
 opened).
@@ -28,8 +28,8 @@ Related accepted ADRs this plan builds on:
 - [Guarded Public Properties](../adrs/accepted/guarded-public-properties.md)
   — the writable range attributes are guarded property setters.
 - [IUCr CIF Tag Alignment](../adrs/accepted/iucr-cif-tag-alignment.md)
-  and [Python and CIF Category
-  Correspondence](../adrs/accepted/python-cif-category-correspondence.md)
+  and
+  [Python and CIF Category Correspondence](../adrs/accepted/python-cif-category-correspondence.md)
   — CIF tag choices for the range.
 
 ## Branch and PR
@@ -46,8 +46,8 @@ from measured points:
 
 - `cryspy._cif_range_section` reads `experiment.data.x.min()/.max()`
   (`src/easydiffraction/analysis/calculators/cryspy.py:1134-1136`) →
-  raises `ValueError: zero-size array to reduction operation minimum`
-  on the empty array.
+  raises `ValueError: zero-size array to reduction operation minimum` on
+  the empty array.
 - `crysfml._update_experiment_dict_from_data` passes
   `experiment.data.x.tolist()` as the scan
   (`src/easydiffraction/analysis/calculators/crysfml.py:372-390`) → an
@@ -95,22 +95,25 @@ all present.
 
 - **In scope, fully wired:** Bragg **powder** CWL and TOF — the original
   failure. Generated grid → calculate → display, end to end.
-- **In scope, category + persistence only:** single-crystal `ScDataRange`
-  (sinθ/λ bounds, CIF round-trip, `measured_range` subsumption). The
-  **reflection-generation wiring** (cryspy `calc_hkl`) is **deferred**
-  per the ADR's Deferred Work; until then a single-crystal
-  calculate-without-measured-data attempt raises a clear, named
-  "not yet supported" error rather than crashing.
+- **In scope, category + persistence only:** single-crystal
+  `ScDataRange` (sinθ/λ bounds, CIF round-trip, `measured_range`
+  subsumption). The **reflection-generation wiring** (cryspy `calc_hkl`)
+  is **deferred** per the ADR's Deferred Work; until then a
+  single-crystal calculate-without-measured-data attempt raises a clear,
+  named "not yet supported" error rather than crashing.
 - **Out of scope:** total scattering (`pdffit`, r-space PDF). The
   `total-pd` path keeps requiring measured data; a clear error is raised
   if a calculation is attempted without it. Recorded as deferred.
 
 ## Concrete files likely to change
 
-New package `src/easydiffraction/datablocks/experiment/categories/data_range/`:
+New package
+`src/easydiffraction/datablocks/experiment/categories/data_range/`:
 
-- `__init__.py` — explicit imports of all concrete classes (registration).
-- `base.py` — `DataRangeBase(CategoryItem)`, `_category_code='data_range'`.
+- `__init__.py` — explicit imports of all concrete classes
+  (registration).
+- `base.py` — `DataRangeBase(CategoryItem)`,
+  `_category_code='data_range'`.
 - `cwl.py` — `CwlPdDataRange` (`two_theta_{min,max,inc}`).
 - `tof.py` — `TofPdDataRange` (`time_of_flight_{min,max,inc}`).
 - `sc.py` — `ScDataRange` (`sin_theta_over_lambda_{min,max}`).
@@ -127,8 +130,8 @@ Existing files:
   `.../item/bragg_sc.py` — construct `_data_range` from the experiment
   type; expose `experiment.data_range`; add it to the `categories` list.
 - `.../categories/data/bragg_pd.py` — generate the data-point grid from
-  `data_range` when no measured scan exists, at the top of the calc
-  pass (`_update` / `_phase_calculation_results`).
+  `data_range` when no measured scan exists, at the top of the calc pass
+  (`_update` / `_phase_calculation_results`).
 - `src/easydiffraction/analysis/calculators/cryspy.py`,
   `.../calculators/crysfml.py` — **expected unchanged** (they read the
   now-populated `experiment.data.x`); confirm and add the
@@ -152,98 +155,99 @@ Existing files:
 > create or run tests in Phase 1 (tests are Phase 2). Do not stage
 > unrelated dirty files.
 
-- [x] **P1.1 — Promote the ADR to `accepted/`.**
-  `git mv` the ADR from `suggestions/` to `accepted/`, set its
-  `## Status` to `Accepted`, rewrite its internal `../accepted/…` links
-  to same-directory links, add an "Experiment model / Accepted" row to
-  `docs/dev/adrs/index.md` linking `accepted/…`, and fix any link that
-  pointed at the old `suggestions/` path (`git grep -n
-  calculation-without-measured-data`).
-  Commit: `Promote calculation-without-measured-data ADR to accepted`
+- [x] **P1.1 — Promote the ADR to `accepted/`.** `git mv` the ADR from
+      `suggestions/` to `accepted/`, set its `## Status` to `Accepted`,
+      rewrite its internal `../accepted/…` links to same-directory
+      links, add an "Experiment model / Accepted" row to
+      `docs/dev/adrs/index.md` linking `accepted/…`, and fix any link
+      that pointed at the old `suggestions/` path
+      (`git grep -n calculation-without-measured-data`). Commit:
+      `Promote calculation-without-measured-data ADR to accepted`
 
 - [x] **P1.2 — Add the `data_range` category package (no wiring).**
-  Create `base.py`, `cwl.py`, `tof.py`, `sc.py`, `factory.py`, and
-  `__init__.py` mirroring the `instrument` category: `DataRangeBase`
-  with `_category_code='data_range'`; per-type classes with `TypeInfo`,
-  `Compatibility`, `@DataRangeFactory.register`; numeric descriptors for
-  the stored axis (`min`/`max`, plus `inc` for powder) with units,
-  display handlers, validators, and CIF handlers (CWL reuses
-  `_pd_meas.2theta_range_{min,max,inc}`; TOF/SC custom tags per the ADR
-  CIF mapping). `__init__.py` imports every concrete class to trigger
-  registration.
-  Commit: `Add data_range category package`
+      Create `base.py`, `cwl.py`, `tof.py`, `sc.py`, `factory.py`, and
+      `__init__.py` mirroring the `instrument` category: `DataRangeBase`
+      with `_category_code='data_range'`; per-type classes with
+      `TypeInfo`, `Compatibility`, `@DataRangeFactory.register`; numeric
+      descriptors for the stored axis (`min`/`max`, plus `inc` for
+      powder) with units, display handlers, validators, and CIF handlers
+      (CWL reuses `_pd_meas.2theta_range_{min,max,inc}`; TOF/SC custom
+      tags per the ADR CIF mapping). `__init__.py` imports every
+      concrete class to trigger registration. Commit:
+      `Add data_range category package`
 
-- [x] **P1.3 — Attach `data_range` to experiment items.**
-  Construct `_data_range` from the experiment type in
-  `PdExperimentBase`, `ScExperimentBase`, and the total/sc items
-  (`DataRangeFactory.create(...)`); add `_data_range` to
-  `_attach_category_parents`; add it to each item's `categories` list;
-  expose the read-only `experiment.data_range` accessor. Update the
-  category package `__init__.py` registration import site
-  (`datablocks/experiment/categories/__init__.py` if it aggregates).
-  Commit: `Expose data_range on experiment items`
+- [x] **P1.3 — Attach `data_range` to experiment items.** Construct
+      `_data_range` from the experiment type in `PdExperimentBase`,
+      `ScExperimentBase`, and the total/sc items
+      (`DataRangeFactory.create(...)`); add `_data_range` to
+      `_attach_category_parents`; add it to each item's `categories`
+      list; expose the read-only `experiment.data_range` accessor.
+      Update the category package `__init__.py` registration import site
+      (`datablocks/experiment/categories/__init__.py` if it aggregates).
+      Commit: `Expose data_range on experiment items`
 
 - [x] **P1.4 — Derived sinθ/λ and d-spacing views, axis aliases,
-  defaults.** Add `sin_theta_over_lambda`, `d_spacing`, and
-  `x_{min,max,step}` derived views on each `data_range` class
-  (`sinθ/λ = 1/(2·d)`; CWL via `setup_wavelength`, TOF via
-  `d_to_tof_*`). Author default ranges in d-spacing and project them
-  onto each stored axis through the instrument so a `from_scratch`
-  experiment has a usable default grid.
-  Commit: `Add derived sinθ/λ and d-spacing views to data_range`
+      defaults.** Add `sin_theta_over_lambda`, `d_spacing`, and
+      `x_{min,max,step}` derived views on each `data_range` class
+      (`sinθ/λ = 1/(2·d)`; CWL via `setup_wavelength`, TOF via
+      `d_to_tof_*`). Author default ranges in d-spacing and project them
+      onto each stored axis through the instrument so a `from_scratch`
+      experiment has a usable default grid. Commit:
+      `Add derived sinθ/λ and d-spacing views to data_range`
 
 - [x] **P1.5 — Measurement-guarded getter/setter; subsume
-  `measured_range`.** Make the axis attributes guarded writable
-  properties: the setter raises (clear, named error) when a measured
-  scan is present; the getter returns the measured-derived range when
-  measured data exists and the stored/default range otherwise. Route
-  `experiment.measured_range` through this getter (keep the existing
-  `report/data_context.py:244` consumer working). Loaders/restore seed
-  values via a private `_set_`.
-  Commit: `Guard data_range and subsume measured_range`
+      `measured_range`.** Make the axis attributes guarded writable
+      properties: the setter raises (clear, named error) when a measured
+      scan is present; the getter returns the measured-derived range
+      when measured data exists and the stored/default range otherwise.
+      Route `experiment.measured_range` through this getter (keep the
+      existing `report/data_context.py:244` consumer working).
+      Loaders/restore seed values via a private `_set_`. Commit:
+      `Guard data_range and subsume measured_range`
 
-- [x] **P1.6 — Generate the powder grid from `data_range`.**
-  In the Bragg powder data collection
-  (`categories/data/bragg_pd.py`), when `self._items` is empty and a
-  `data_range` is available, build the data-point grid from the stored
-  axis (`min`/`max`/`inc`) via the existing
-  `_create_items_set_xcoord_and_id` path at the top of the calc pass
-  (`_update` / `_phase_calculation_results`), so `self.x` is populated
-  before `np.zeros_like(self.x)` and before the calculator runs.
-  Calculated-only points have `intensity_meas` absent and
-  `intensity_calc` filled.
-  Commit: `Generate powder calculation grid from data_range`
+- [x] **P1.6 — Generate the powder grid from `data_range`.** In the
+      Bragg powder data collection (`categories/data/bragg_pd.py`), when
+      `self._items` is empty and a `data_range` is available, build the
+      data-point grid from the stored axis (`min`/`max`/`inc`) via the
+      existing `_create_items_set_xcoord_and_id` path at the top of the
+      calc pass (`_update` / `_phase_calculation_results`), so `self.x`
+      is populated before `np.zeros_like(self.x)` and before the
+      calculator runs. Calculated-only points have `intensity_meas`
+      absent and `intensity_calc` filled. Commit:
+      `Generate powder calculation grid from data_range`
 
 - [x] **P1.7 — Confirm calculators need no grid change; add guards.**
-  Verify `cryspy._cif_range_section` and
-  `crysfml._update_experiment_dict_from_data` work unchanged now that
-  `experiment.data.x` is populated from the generated grid (the
-  data-points-define-the-grid invariant holds). For the single-crystal
-  and total-scattering calculate-without-measured-data paths (no grid
-  source in this plan), add a clear, named "not yet supported without
-  measured data" error instead of an empty-array/empty-scan crash.
-  Commit: `Add calc-without-data guards for single crystal and total`
+      Verify `cryspy._cif_range_section` and
+      `crysfml._update_experiment_dict_from_data` work unchanged now
+      that `experiment.data.x` is populated from the generated grid (the
+      data-points-define-the-grid invariant holds). For the
+      single-crystal and total-scattering
+      calculate-without-measured-data paths (no grid source in this
+      plan), add a clear, named "not yet supported without measured
+      data" error instead of an empty-array/empty-scan crash. Commit:
+      `Add calc-without-data guards for single crystal and total`
 
-- [x] **P1.8 — Relax display gates for calculated-only.**
-  In `project/display.py`, drop the `measured_available` requirement
-  from `background_available` and `bragg_available` so a calculated-only
-  powder shows calculated curve + background + Bragg. Keep
-  `residual_available` measured-gated. Ensure "no measurement" is
-  represented as absent intensities (no phantom measured/residual
-  drawn).
-  Commit: `Show background and bragg for calculated-only patterns`
+- [x] **P1.8 — Relax display gates for calculated-only.** In
+      `project/display.py`, drop the `measured_available` requirement
+      from `background_available` and `bragg_available` so a
+      calculated-only powder shows calculated curve + background +
+      Bragg. Keep `residual_available` measured-gated. Ensure "no
+      measurement" is represented as absent intensities (no phantom
+      measured/residual drawn). Commit:
+      `Show background and bragg for calculated-only patterns`
 
 - [x] **P1.9 — Docs touch-ups.** Update any developer docs that describe
-  the experiment categories or the "experiment without measured data"
-  state to mention `data_range` (no tutorial regeneration in Phase 1;
-  tutorial/notebook updates, if any, are handled in Phase 2 with
-  `pixi run notebook-prepare`). Update `docs/dev/issues/open.md` →
-  `closed.md` if an existing issue tracks this.
-  Commit: `Document data_range and calculated-only workflow`
+      the experiment categories or the "experiment without measured
+      data" state to mention `data_range` (no tutorial regeneration in
+      Phase 1; tutorial/notebook updates, if any, are handled in Phase 2
+      with `pixi run notebook-prepare`). Update
+      `docs/dev/issues/open.md` → `closed.md` if an existing issue
+      tracks this. Commit:
+      `Document data_range and calculated-only workflow`
 
 - [x] **P1.10 — Phase 1 review gate (no code).** Mark this step `[x]`
-  and stop for the Phase 1 review.
-  Commit: `Reach Phase 1 review gate`
+      and stop for the Phase 1 review. Commit:
+      `Reach Phase 1 review gate`
 
 ## Open questions
 
@@ -288,17 +292,19 @@ and extend the existing calculator/data/display tests. `pixi run fix`
 regenerates `docs/dev/package-structure/{full,short}.md` — do not edit
 by hand.
 
-Phase 2 integration tests **must** cover an end-to-end calculate-without-
-measured-data run for **both** the `cryspy` and `crysfml` engines, in
-**both** CWL and TOF beam modes (generated grid → calculate → plot with
-calculated curve + background + Bragg). The verification command list
-alone does not guarantee a calc-only case exists in those suites, and
-the cryspy engine input now embeds a finite-placeholder measured loop
-for generated grids (see the `_cif_measured_data_pd` change) that static
-review cannot validate. Phase 2 must also exercise the calc-only display
-render path (auto-include + dispatch) wired in Phase 1, and confirm
-`test_base_coverage.py` (which referenced the removed `_measured_x_values`
-helper) is updated to the `data_range`-backed `measured_range`.
+Phase 2 integration tests **must** cover an end-to-end
+calculate-without- measured-data run for **both** the `cryspy` and
+`crysfml` engines, in **both** CWL and TOF beam modes (generated grid →
+calculate → plot with calculated curve + background + Bragg). The
+verification command list alone does not guarantee a calc-only case
+exists in those suites, and the cryspy engine input now embeds a
+finite-placeholder measured loop for generated grids (see the
+`_cif_measured_data_pd` change) that static review cannot validate.
+Phase 2 must also exercise the calc-only display render path
+(auto-include + dispatch) wired in Phase 1, and confirm
+`test_base_coverage.py` (which referenced the removed
+`_measured_x_values` helper) is updated to the `data_range`-backed
+`measured_range`.
 
 Phase 2 must add a **fully-excluded measured scan** regression test:
 load measured data, add an excluded region spanning the whole scan, then
