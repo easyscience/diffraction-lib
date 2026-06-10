@@ -1049,7 +1049,13 @@ def _set_param_to_default_from_cif(
     """
     value_spec = getattr(param, '_value_spec', None)
     if value_spec is not None and (value_spec.has_default or value_spec.allow_none):
-        param.value = value_spec.default_value()
+        # Assign the spec's own default directly, mirroring construction
+        # (Variable.__init__ sets ``_value`` without validating). The
+        # default is authoritative, so it must not be re-validated here:
+        # a sentinel default such as the ``NaN`` used by ``data_range``
+        # axis bounds legitimately falls outside its RangeValidator and
+        # would otherwise raise when an absent tag is loaded.
+        param._value = value_spec.default_value()
         return
 
     detail = 'missing tag' if raw is None else f'value {raw!r}'

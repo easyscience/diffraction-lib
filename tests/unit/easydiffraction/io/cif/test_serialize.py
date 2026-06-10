@@ -91,6 +91,38 @@ def test_param_from_cif_empty_brackets_marks_free_without_uncertainty():
     assert p.uncertainty is None
 
 
+def test_param_from_cif_missing_tag_keeps_sentinel_default_without_validating():
+    # Regression: a parameter whose default is a sentinel outside its own
+    # validator (e.g. the NaN used by data_range axis bounds, validated
+    # to [0, 180]) must load cleanly when its CIF tag is absent. The
+    # default is authoritative and is applied without re-validation, just
+    # as construction does — otherwise loading an experiment CIF with
+    # measured data (and no data_range tags) raised.
+    import math
+
+    import gemmi
+
+    from easydiffraction.core.validation import AttributeSpec
+    from easydiffraction.core.validation import RangeValidator
+    from easydiffraction.core.variable import Parameter
+    from easydiffraction.io.cif.handler import CifHandler
+
+    p = Parameter(
+        name='two_theta_min',
+        value_spec=AttributeSpec(
+            default=float('nan'),
+            validator=RangeValidator(ge=0, le=180),
+        ),
+        cif_handler=CifHandler(names=['_data_range.2theta_min']),
+    )
+    # Block without the tag: the absent value falls back to the default.
+    doc = gemmi.cif.read_string('data_test\n_instr.2theta_offset 0.5\n')
+
+    p.from_cif(doc.sole_block())
+
+    assert math.isnan(p.value)
+
+
 def test_category_collection_to_cif_empty_and_one_row():
     import easydiffraction.io.cif.serialize as MUT
     from easydiffraction.core.category import CategoryCollection
