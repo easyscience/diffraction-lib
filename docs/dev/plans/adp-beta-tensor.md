@@ -314,7 +314,7 @@ Each step is one atomic commit. Stage only the files the step touches
       include `BETA` in `aniso_types`. cryspy convention already
       confirmed (resolved Q2). Commit:
       `Pass beta tensor straight through to cryspy`
-- [ ] **P1.7 — CIF report writer family.** In `io/cif/iucr_writer.py`,
+- [x] **P1.7 — CIF report writer family.** In `io/cif/iucr_writer.py`,
       extend `_adp_family()` to return `'beta'` for `adp_type == 'beta'`
       (full-value check, not first letter); verify the aniso loop tags
       and section header for the β family. Commit:
