@@ -224,8 +224,8 @@ class TestIsDark:
         ):
             assert is_dark() is True
 
-    def test_javascript_before_system(self) -> None:
-        """Test that JS detection comes before system preferences."""
+    def test_system_preferences_after_settings(self) -> None:
+        """System preferences decide once settings files are silent."""
         from easydiffraction.utils._vendored.theme_detect import is_dark
 
         with (
@@ -238,16 +238,38 @@ class TestIsDark:
                 return_value=None,
             ),
             mock.patch(
-                'easydiffraction.utils._vendored.theme_detect._check_javascript_detection',
+                'easydiffraction.utils._vendored.theme_detect._check_system_preferences',
                 return_value=True,
             ),
-            mock.patch(
-                'easydiffraction.utils._vendored.theme_detect._check_system_preferences',
-                return_value=False,
-            ),
         ):
-            # JS detection should win over system prefs
             assert is_dark() is True
+
+    def test_does_not_invoke_javascript_probe(self) -> None:
+        """is_dark must never run the JS probe (it emits blank output).
+
+        The vendored JavaScript DOM probe publishes a ``Javascript``
+        display as a side effect and cannot return a value under
+        JupyterLab; calling it once per render left blank rows in the
+        notebook. ``is_dark`` must reach a decision without it.
+        """
+        from easydiffraction.utils._vendored import theme_detect
+
+        with (
+            mock.patch.object(
+                theme_detect, '_check_jupyterlab_settings', return_value=None
+            ),
+            mock.patch.object(theme_detect, '_check_vscode_settings', return_value=None),
+            mock.patch.object(
+                theme_detect, '_check_system_preferences', return_value=None
+            ),
+            mock.patch.object(
+                theme_detect, '_check_javascript_detection', return_value=True
+            ) as js_probe,
+        ):
+            # System prefs are silent, so the only thing that could flip
+            # the result is the JS probe; it must stay untouched.
+            assert theme_detect.is_dark() is False
+            js_probe.assert_not_called()
 
 
 class TestGetDetectionResult:
