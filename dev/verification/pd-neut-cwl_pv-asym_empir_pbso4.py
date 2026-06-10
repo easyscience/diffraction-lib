@@ -145,6 +145,7 @@ experiment.peak.asym_empir_3 = FULLPROF_ASY_3
 experiment.peak.asym_empir_4 = FULLPROF_ASY_4
 
 experiment.calculator.type = 'cryspy'
+
 project.analysis.calculate()
 calc_ed_cryspy = experiment.data.intensity_calc
 
@@ -165,6 +166,7 @@ project.display.pattern_comparison(
 # coefficients recovers the FullProf profile, confirming the structure and
 # the symmetric profile are correct.
 experiment.calculator.type = 'cryspy'
+
 experiment.linked_phases['pbso4'].scale.free = True
 experiment.peak.asym_empir_1.free = True
 experiment.peak.asym_empir_2.free = True
@@ -190,9 +192,10 @@ project.display.pattern_comparison(
 
 # %%
 experiment.calculator.type = 'crysfml'
-experiment.peak.type = 'pseudo-voigt'
+
 experiment.linked_phases['pbso4'].scale = FULLPROF_SCALE
-experiment.linked_phases['pbso4'].scale.free = False
+
+experiment.peak.type = 'pseudo-voigt'
 experiment.peak.broad_gauss_u = FULLPROF_U
 experiment.peak.broad_gauss_v = FULLPROF_V
 experiment.peak.broad_gauss_w = FULLPROF_W
