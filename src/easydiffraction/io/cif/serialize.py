@@ -50,14 +50,10 @@ def format_value(value: object) -> str:
 
     # Converting
 
-    # None → CIF unknown marker
-    if value is None:
-        value = '?'
-    # NaN float → CIF unknown marker. NaN is the unset/sentinel value
-    # for optional numeric fields (e.g. data_range bounds before they
-    # are projected); writing a literal 'nan' token would fail reload
-    # validation and confuse other CIF parsers.
-    elif isinstance(value, float) and np.isnan(value):
+    # None or NaN → CIF unknown marker. NaN is the unset sentinel for
+    # optional numeric fields (e.g. data_range bounds before they are
+    # projected); a literal 'nan' token would fail reload validation.
+    if value is None or (isinstance(value, float) and np.isnan(value)):
         value = '?'
     # Booleans use CIF true/false tokens
     elif isinstance(value, bool):
