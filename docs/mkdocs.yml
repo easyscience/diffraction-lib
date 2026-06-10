@@ -227,6 +227,10 @@ nav:
           - HS pd-neut-cwl: tutorials/ed-6.ipynb
           - Si pd-neut-tof: tutorials/ed-7.ipynb
           - NCAF pd-neut-tof: tutorials/ed-8.ipynb
+      - Without Measured Data:
+          - LBCO pd-neut-cwl: tutorials/ed-27.ipynb
+          - Si pd-neut-tof: tutorials/ed-28.ipynb
+          - NaCl pd-xray: tutorials/ed-29.ipynb
       - Single Crystal Diffraction:
           - Tb2TiO7 sg-neut-cwl: tutorials/ed-14.ipynb
           - Taurine sg-neut-tof: tutorials/ed-15.ipynb

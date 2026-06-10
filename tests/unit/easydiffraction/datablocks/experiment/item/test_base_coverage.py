@@ -247,45 +247,23 @@ class TestIntensityCategoryFor:
 
 
 # ------------------------------------------------------------------
-# Module-level helper: _representative_increment
-# ------------------------------------------------------------------
-
-
-class TestRepresentativeIncrement:
-    def test_uniform_spacing_returns_step(self):
-        import numpy as np
-
-        from easydiffraction.datablocks.experiment.item.base import _representative_increment
-
-        values = np.array([0.0, 1.0, 2.0, 3.0])
-        assert _representative_increment(values) == 1.0
-
-    def test_non_uniform_spacing_returns_none(self):
-        import numpy as np
-
-        from easydiffraction.datablocks.experiment.item.base import _representative_increment
-
-        values = np.array([0.0, 1.0, 5.0, 6.0])
-        assert _representative_increment(values) is None
-
-    def test_zero_median_step_returns_none(self):
-        import numpy as np
-
-        from easydiffraction.datablocks.experiment.item.base import _representative_increment
-
-        values = np.array([2.0, 2.0, 2.0, 2.0])
-        assert _representative_increment(values) is None
-
-
-# ------------------------------------------------------------------
-# measured_range / _measured_x_values
+# measured_range (backed by data_range)
 # ------------------------------------------------------------------
 
 
 class TestMeasuredRange:
-    def test_returns_none_when_no_data(self):
+    def test_calc_range_is_nan_without_data_or_wavelength(self):
+        # measured_range now reflects data_range: with no measured scan
+        # and no wavelength to project a default, the calc bounds are the
+        # unset NaN sentinel rather than None. (Grid-axis helpers moved to
+        # the data_range category; see its own unit tests.)
+        import math
+
         ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
-        assert ex.measured_range is None
+        range_min, range_max, increment = ex.measured_range
+        assert math.isnan(range_min)
+        assert math.isnan(range_max)
+        assert math.isnan(increment)
 
     def test_uniform_grid_reports_increment(self):
         import numpy as np
@@ -316,36 +294,6 @@ class TestMeasuredRange:
         assert range_min == 0.0
         assert range_max == 10.0
         assert increment is None
-
-    def test_measured_x_values_none_when_category_missing(self):
-        ex = ConcreteBase(name='ex1', type=_mk_type_powder_cwl_bragg())
-        # ConcreteBase._intensity_category raises AttributeError -> None
-        assert ex._measured_x_values() is None
-
-    def test_measured_x_values_falls_back_to_x_attribute(self):
-        import numpy as np
-
-        ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
-
-        class OnlyX:
-            unfiltered_x = None
-            x = np.array([1.0, 2.0, 3.0])
-
-        category = OnlyX()
-        ex._intensity_category = lambda: category
-        values = ex._measured_x_values()
-        assert list(values) == [1.0, 2.0, 3.0]
-
-    def test_measured_x_values_none_when_no_x_arrays(self):
-        ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
-
-        class NoArrays:
-            unfiltered_x = None
-            x = None
-
-        category = NoArrays()
-        ex._intensity_category = lambda: category
-        assert ex._measured_x_values() is None
 
 
 # ------------------------------------------------------------------

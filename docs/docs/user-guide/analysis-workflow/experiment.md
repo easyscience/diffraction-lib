@@ -144,6 +144,23 @@ project.experiments.create(
 )
 ```
 
+The calculated pattern needs a range to compute over. With no measured
+data loaded, this comes from the `data_range` category, which defaults
+to a sensible window derived from the instrument so the experiment is
+calculable straight away. To choose the range yourself, set its bounds
+and step (in 2θ for constant-wavelength, or time-of-flight for TOF):
+
+```python
+# Set the calculation range explicitly (constant wavelength)
+data_range = project.experiments['hrpt'].data_range
+data_range.two_theta_min = 10.0
+data_range.two_theta_max = 160.0
+data_range.two_theta_inc = 0.05
+```
+
+Once a measured scan is present the range is read from the data instead,
+so `data_range` becomes read-only.
+
 Finally, you can also add an experiment by passing the experiment object
 directly using the `add` method:
 

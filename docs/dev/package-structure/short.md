@@ -145,6 +145,13 @@
 │   │   │   │   ├── 📄 bragg_pd.py
 │   │   │   │   ├── 📄 factory.py
 │   │   │   │   └── 📄 total_pd.py
+│   │   │   ├── 📁 data_range
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 base.py
+│   │   │   │   ├── 📄 cwl.py
+│   │   │   │   ├── 📄 factory.py
+│   │   │   │   ├── 📄 sc.py
+│   │   │   │   └── 📄 tof.py
 │   │   │   ├── 📁 diffrn
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 default.py

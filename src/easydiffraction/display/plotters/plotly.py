@@ -818,27 +818,47 @@ class PlotlyPlotter(PlotterBase):
         padded = [f'{HOVER_HORIZONTAL_PAD}{line}{HOVER_HORIZONTAL_PAD}' for line in lines]
         return '<br>'.join(padded) + extra
 
-    @staticmethod
-    def _powder_meas_vs_calc_hover_data(plot_spec: PowderMeasVsCalcSpec) -> np.ndarray:
-        """Return shared hover values for composite powder traces."""
-        residual_values = (
-            np.asarray(plot_spec.y_resid)
-            if plot_spec.y_resid is not None
-            else np.asarray(plot_spec.y_meas) - np.asarray(plot_spec.y_calc)
-        )
-        if plot_spec.y_bkg is None:
-            return np.column_stack((
-                np.asarray(plot_spec.y_meas),
-                np.asarray(plot_spec.y_calc),
-                residual_values,
-            ))
+    @classmethod
+    def _powder_hover_columns(
+        cls,
+        plot_spec: PowderMeasVsCalcSpec,
+    ) -> list[tuple[np.ndarray, str, str]]:
+        """
+        Return ordered ``(values, label, color)`` for the hover tooltip.
 
-        return np.column_stack((
-            np.asarray(plot_spec.y_meas),
-            np.asarray(plot_spec.y_bkg),
-            np.asarray(plot_spec.y_calc),
-            residual_values,
-        ))
+        The measured and residual entries are omitted for a
+        calculated-only pattern (no measured scan), keeping the
+        customdata columns and the hover template aligned by
+        construction.
+        """
+        calc_label = plot_spec.y_calc_name or 'Icalc'
+        meas_label = plot_spec.y_meas_name or 'Imeas'
+        # Mirror the residual trace name: a plain "Residual" when custom
+        # curve labels are set (the calc-comparison view), otherwise the
+        # default "Imeas - Icalc" difference label.
+        custom_labels = plot_spec.y_meas_name is not None and plot_spec.y_calc_name is not None
+        resid_label = 'Residual' if custom_labels else f'{meas_label} - {calc_label}'
+
+        columns: list[tuple[np.ndarray, str, str]] = []
+        has_meas = plot_spec.y_meas is not None
+        if has_meas:
+            columns.append((np.asarray(plot_spec.y_meas), meas_label, DEFAULT_COLORS['meas']))
+        if plot_spec.y_bkg is not None:
+            columns.append((np.asarray(plot_spec.y_bkg), 'Ibkg', DEFAULT_COLORS['bkg']))
+        columns.append((np.asarray(plot_spec.y_calc), calc_label, DEFAULT_COLORS['calc']))
+
+        residual = plot_spec.y_resid
+        if residual is None and has_meas:
+            residual = np.asarray(plot_spec.y_meas) - np.asarray(plot_spec.y_calc)
+        if residual is not None:
+            columns.append((np.asarray(residual), resid_label, DEFAULT_COLORS['resid']))
+        return columns
+
+    @classmethod
+    def _powder_meas_vs_calc_hover_data(cls, plot_spec: PowderMeasVsCalcSpec) -> np.ndarray:
+        """Return shared hover values for composite powder traces."""
+        columns = cls._powder_hover_columns(plot_spec)
+        return np.column_stack([values for values, _, _ in columns])
 
     @classmethod
     def _powder_meas_vs_calc_hover_template(
@@ -851,49 +871,10 @@ class PlotlyPlotter(PlotterBase):
         Each line is colored to match its curve and padded away from the
         tooltip frame through the shared hover formatter.
         """
-        calc_label = plot_spec.y_calc_name or 'Icalc'
-        meas_label = plot_spec.y_meas_name or 'Imeas'
-        # Mirror the residual trace name: a plain "Residual" when custom
-        # curve labels are set (the calc-comparison view), otherwise the
-        # default "Imeas - Icalc" difference label.
-        custom_labels = plot_spec.y_meas_name is not None and plot_spec.y_calc_name is not None
-        resid_label = 'Residual' if custom_labels else f'{meas_label} - {calc_label}'
-        if plot_spec.y_bkg is None:
-            return cls._format_hover_lines([
-                'x: %{x:,.2f}',
-                cls._hover_color_span(
-                    f'{meas_label}: %{{customdata[0]:,.2f}}',
-                    DEFAULT_COLORS['meas'],
-                ),
-                cls._hover_color_span(
-                    f'{calc_label}: %{{customdata[1]:,.2f}}',
-                    DEFAULT_COLORS['calc'],
-                ),
-                cls._hover_color_span(
-                    f'{resid_label}: %{{customdata[2]:,.2f}}',
-                    DEFAULT_COLORS['resid'],
-                ),
-            ])
-
-        return cls._format_hover_lines([
-            'x: %{x:,.2f}',
-            cls._hover_color_span(
-                f'{meas_label}: %{{customdata[0]:,.2f}}',
-                DEFAULT_COLORS['meas'],
-            ),
-            cls._hover_color_span(
-                'Ibkg: %{customdata[1]:,.2f}',
-                DEFAULT_COLORS['bkg'],
-            ),
-            cls._hover_color_span(
-                f'{calc_label}: %{{customdata[2]:,.2f}}',
-                DEFAULT_COLORS['calc'],
-            ),
-            cls._hover_color_span(
-                f'{resid_label}: %{{customdata[3]:,.2f}}',
-                DEFAULT_COLORS['resid'],
-            ),
-        ])
+        lines = ['x: %{x:,.2f}']
+        for index, (_, label, color) in enumerate(cls._powder_hover_columns(plot_spec)):
+            lines.append(cls._hover_color_span(f'{label}: %{{customdata[{index}]:,.2f}}', color))
+        return cls._format_hover_lines(lines)
 
     @staticmethod
     def _get_single_crystal_trace(
@@ -2510,12 +2491,11 @@ scheduleResize();
         """
         Return an explicit y-range for the main powder intensity row.
         """
-        y_meas = np.asarray(plot_spec.y_meas)
         y_calc = np.asarray(plot_spec.y_calc)
-        if min(y_meas.size, y_calc.size) == 0:
+        if y_calc.size == 0:
             return 0.0, 1.0
 
-        main_series = cls._main_intensity_series(plot_spec, y_meas=y_meas, y_calc=y_calc)
+        main_series = cls._main_intensity_series(plot_spec, y_calc=y_calc)
 
         main_y_min = float(min(np.min(series) for series in main_series))
         main_y_max = float(max(np.max(series) for series in main_series))
@@ -2531,12 +2511,14 @@ scheduleResize();
         cls,
         plot_spec: PowderMeasVsCalcSpec,
         *,
-        y_meas: np.ndarray,
         y_calc: np.ndarray,
     ) -> list[np.ndarray]:
         """Collect all intensity series shown in the main row."""
-        main_series = [y_meas, y_calc]
+        # The measured series is optional: a calculated-only pattern has
+        # no measured scan, so it is skipped from the y-range entirely.
+        main_series = [y_calc]
         for values in (
+            plot_spec.y_meas,
             plot_spec.y_bkg,
             plot_spec.predictive_lower_95,
             plot_spec.predictive_upper_95,
@@ -2794,23 +2776,25 @@ scheduleResize();
         hover_template: str,
     ) -> None:
         """Add measured, background, and calculated traces."""
-        meas_trace = self._get_powder_trace(
-            plot_spec.x,
-            plot_spec.y_meas,
-            'meas',
-            customdata=hover_data,
-            hovertemplate=hover_template,
-        )
-        if plot_spec.y_meas_su is not None:
-            meas_trace.error_y = {
-                'type': 'data',
-                'array': plot_spec.y_meas_su,
-                'visible': True,
-                'color': DEFAULT_COLORS['meas'],
-                'thickness': MEASURED_ERROR_BAR_THICKNESS,
-                'width': MEASURED_ERROR_BAR_WIDTH,
-            }
-        fig.add_trace(meas_trace, row=1, col=1)
+        # The measured trace is omitted for a calculated-only pattern.
+        if plot_spec.y_meas is not None:
+            meas_trace = self._get_powder_trace(
+                plot_spec.x,
+                plot_spec.y_meas,
+                'meas',
+                customdata=hover_data,
+                hovertemplate=hover_template,
+            )
+            if plot_spec.y_meas_su is not None:
+                meas_trace.error_y = {
+                    'type': 'data',
+                    'array': plot_spec.y_meas_su,
+                    'visible': True,
+                    'color': DEFAULT_COLORS['meas'],
+                    'thickness': MEASURED_ERROR_BAR_THICKNESS,
+                    'width': MEASURED_ERROR_BAR_WIDTH,
+                }
+            fig.add_trace(meas_trace, row=1, col=1)
 
         if plot_spec.y_bkg is not None:
             bkg_trace = self._get_powder_trace(

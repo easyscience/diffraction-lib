@@ -14,6 +14,7 @@ from easydiffraction.core.datablock import DatablockItem
 from easydiffraction.datablocks.experiment.categories.background.factory import BackgroundFactory
 from easydiffraction.datablocks.experiment.categories.calculator import CalculatorCategoryFactory
 from easydiffraction.datablocks.experiment.categories.data.factory import DataFactory
+from easydiffraction.datablocks.experiment.categories.data_range.factory import DataRangeFactory
 from easydiffraction.datablocks.experiment.categories.diffrn.factory import DiffrnFactory
 from easydiffraction.datablocks.experiment.categories.excluded_regions.factory import (
     ExcludedRegionsFactory,
@@ -41,7 +42,6 @@ if TYPE_CHECKING:
     from easydiffraction.datablocks.structure.collection import Structures
 
 MeasuredRange = tuple[float, float, float | None]
-_MEASURED_RANGE_UNIFORM_TOLERANCE = 0.01
 
 
 def intensity_category_for(experiment: object) -> object:
@@ -99,6 +99,7 @@ class ExperimentBase(DatablockItem):
             getattr(self, '_linked_phases', None),
             getattr(self, '_excluded_regions', None),
             getattr(self, '_data', None),
+            getattr(self, '_data_range', None),
             getattr(self, '_peak', None),
             getattr(self, '_background', None),
         ]:
@@ -265,32 +266,17 @@ class ExperimentBase(DatablockItem):
 
     @property
     def measured_range(self) -> MeasuredRange | None:
-        """Measured x-axis range as ``(min, max, inc)``."""
-        values = self._measured_x_values()
-        if values is None or values.size == 0:
-            return None
+        """
+        Active-axis range as ``(min, max, inc)``.
 
-        values = np.sort(values.astype(float, copy=False))
-        range_min = float(values[0])
-        range_max = float(values[-1])
-        if values.size == 1:
-            return (range_min, range_max, None)
-
-        increment = _representative_increment(values)
-        return (range_min, range_max, increment)
-
-    def _measured_x_values(self) -> np.ndarray | None:
-        """Return the measured x-axis values for this experiment."""
-        try:
-            category = intensity_category_for(self)
-        except AttributeError:
+        Backed by ``data_range``: the measured range when a measured
+        scan is present, and the stored or default calculation range
+        otherwise. This subsumes the former measured-only behaviour.
+        """
+        data_range = getattr(self, '_data_range', None)
+        if data_range is None:
             return None
-        values = getattr(category, 'unfiltered_x', None)
-        if values is None:
-            values = getattr(category, 'x', None)
-        if values is None:
-            return None
-        return np.asarray(values, dtype=float)
+        return (data_range.x_min, data_range.x_max, data_range.x_step)
 
     # ------------------------------------------------------------------
     #  Diffrn conditions (read-only, single type)
@@ -300,6 +286,50 @@ class ExperimentBase(DatablockItem):
     def diffrn(self) -> object:
         """Ambient conditions recorded during measurement."""
         return self._diffrn
+
+    # ------------------------------------------------------------------
+    #  Data range (fixed by experiment type)
+    # ------------------------------------------------------------------
+
+    @property
+    def data_range(self) -> object:
+        """
+        Reciprocal-space range used to calculate without measured data.
+        """
+        return self._data_range
+
+    def _has_measured_data(self) -> bool:
+        """
+        Return whether this experiment holds measured intensities.
+
+        Existence is judged on the unfiltered points, independent of any
+        excluded regions: the powder data collection exposes an
+        unfiltered predicate, while the single-crystal ``refln``
+        collection's ``intensity_meas`` already iterates all
+        reflections.
+        """
+        try:
+            category = intensity_category_for(self)
+        except AttributeError:
+            return False
+        checker = getattr(category, '_has_measured_intensities', None)
+        if callable(checker):
+            return checker()
+        values = getattr(category, 'intensity_meas', None)
+        if values is None:
+            return False
+        array = np.asarray(values, dtype=float)
+        return bool(array.size) and bool(np.any(np.isfinite(array)))
+
+    def _serializable_categories(self) -> list:
+        """
+        Omit ``data_range`` from CIF while a measured scan is present.
+        """
+        categories = super()._serializable_categories()
+        data_range = getattr(self, '_data_range', None)
+        if data_range is not None and self._has_measured_data():
+            return [category for category in categories if category is not data_range]
+        return categories
 
     def _restore_switchable_types(self, block: object) -> None:
         """
@@ -412,18 +442,6 @@ class ExperimentBase(DatablockItem):
         raise AttributeError(msg)
 
 
-def _representative_increment(values: np.ndarray) -> float | None:
-    """Return a representative increment for sorted x-axis values."""
-    steps = np.diff(values)
-    median_step = float(np.median(steps))
-    if median_step == 0:
-        return None
-    tolerance = abs(median_step) * _MEASURED_RANGE_UNIFORM_TOLERANCE
-    if np.max(np.abs(steps - median_step)) > tolerance:
-        return None
-    return median_step
-
-
 class ScExperimentBase(ExperimentBase):
     """Base class for all single crystal experiments."""
 
@@ -450,6 +468,11 @@ class ScExperimentBase(ExperimentBase):
             scattering_type=self.type.scattering_type.value,
         )
         self._refln = ReflnFactory.create(self._refln_type)
+        self._data_range_type: str = DataRangeFactory.default_tag(
+            beam_mode=self.type.beam_mode.value,
+            sample_form=self.type.sample_form.value,
+        )
+        self._data_range = DataRangeFactory.create(self._data_range_type)
         self._resolve_calculator()
         self._attach_category_parents()
 
@@ -548,6 +571,11 @@ class PdExperimentBase(ExperimentBase):
             scattering_type=self.type.scattering_type.value,
         )
         self._data = DataFactory.create(self._data_type)
+        self._data_range_type: str = DataRangeFactory.default_tag(
+            beam_mode=self.type.beam_mode.value,
+            sample_form=self.type.sample_form.value,
+        )
+        self._data_range = DataRangeFactory.create(self._data_range_type)
         self._peak = PeakFactory.create(
             PeakFactory.default_tag(
                 scattering_type=self.type.scattering_type.value,

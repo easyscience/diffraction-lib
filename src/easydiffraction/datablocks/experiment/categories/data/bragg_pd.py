@@ -36,6 +36,10 @@ if TYPE_CHECKING:
 # Uncertainty values below this threshold are replaced with 1.0
 _MIN_UNCERTAINTY = 0.0001
 
+# Float tolerance so an x-grid whose span is an exact multiple of the
+# step keeps its final point instead of dropping it to rounding noise.
+_GRID_STEP_TOLERANCE = 1e-9
+
 
 class PdDataPointBaseMixin:
     """Single base data point mixin for powder diffraction data."""
@@ -420,6 +424,102 @@ class PdDataBase(CategoryCollection):
         """Get only the items included in calculations."""
         return [item for item, mask in zip(self._items, self._calc_mask, strict=False) if mask]
 
+    # Grid generation when no measured scan exists
+
+    @staticmethod
+    def _grid_from_data_range(data_range: object, experiment_name: str) -> np.ndarray | None:
+        """
+        Return an evenly spaced x-grid from the data range.
+
+        Returns ``None`` when the range cannot be resolved at all (for
+        example no instrument to project defaults), leaving the calc
+        path to report its own "without measured data" error. Raises a
+        clear, named error for an inverted or degenerate range, which is
+        user input rather than a missing source.
+        """
+        x_min = data_range.x_min
+        x_max = data_range.x_max
+        x_step = data_range.x_step
+        if x_step is None or not (
+            np.isfinite(x_min) and np.isfinite(x_max) and np.isfinite(x_step)
+        ):
+            return None
+        if x_max <= x_min or x_step <= 0:
+            msg = (
+                f"Cannot build a calculation grid for experiment '{experiment_name}': "
+                f'the data range is empty or inverted (min={x_min}, max={x_max}, '
+                f'step={x_step}). Set data_range bounds with min < max and step > 0.'
+            )
+            raise ValueError(msg)
+        # Floor (with a small tolerance) so the last point never
+        # exceeds x_max — an overshoot could push 2θ past the 180°
+        # validator limit.
+        num = int(np.floor((x_max - x_min) / x_step + _GRID_STEP_TOLERANCE)) + 1
+        return x_min + np.arange(num) * x_step
+
+    def _has_measured_intensities(self) -> bool:
+        """
+        Return whether any point carries a finite measured intensity.
+
+        Iterates **all** points (unfiltered): whether a measured scan
+        exists is independent of which points are excluded from the
+        calculation. Using the exclusion-filtered ``intensity_meas``
+        here would misread a fully-excluded scan as "no measured data".
+        """
+        measured = np.fromiter(
+            (point.intensity_meas.value for point in self._items),
+            dtype=float,
+            count=len(self._items),
+        )
+        return bool(measured.size) and bool(np.any(np.isfinite(measured)))
+
+    def _clear_generated_grid(self) -> None:
+        """
+        Drop an auto-generated grid so a changed range can rebuild it.
+
+        Only removes points that were generated from ``data_range``
+        (measured intensities absent / all ``NaN``); a measured scan is
+        never cleared.
+        """
+        if not self._items:
+            return
+        if self._has_measured_intensities():
+            return
+        self.clear()
+
+    def _skip_cif_serialization(self) -> bool:
+        """
+        Suppress the data loop for a generated (unmeasured) grid.
+
+        A calculated-only experiment holds generated points whose
+        measured intensities are absent (all ``NaN``); serialising them
+        would emit ``nan`` tokens and duplicate the ``data_range`` model
+        state. The grid is recomputable, so only ``data_range`` is
+        persisted. A measured scan serialises unchanged.
+        """
+        return bool(self._items) and not self._has_measured_intensities()
+
+    def _ensure_grid_from_data_range(self) -> None:
+        """
+        Build the calculation grid from ``data_range`` when unmeasured.
+
+        Runs only when no data points exist yet. Generated points carry
+        an absent (``NaN``) measured intensity so they are never drawn
+        or treated as a measured scan; the calculator still fills
+        ``intensity_calc`` over the populated x-grid.
+        """
+        if self._items:
+            return
+        data_range = getattr(self._parent, 'data_range', None)
+        if data_range is None:
+            return
+        experiment_name = getattr(self._parent, 'name', '?')
+        grid = self._grid_from_data_range(data_range, experiment_name)
+        if grid is None or grid.size == 0:
+            return
+        self._create_items_set_xcoord_and_id(grid)
+        self._set_intensity_meas(np.full(grid.size, np.nan))
+
     # Misc
 
     def _update(
@@ -427,6 +527,7 @@ class PdDataBase(CategoryCollection):
         *,
         called_by_minimizer: bool = False,
     ) -> None:
+        self._ensure_grid_from_data_range()
         experiment = self._parent
         experiments = experiment._parent
         project = experiments._parent

@@ -24,6 +24,7 @@ from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.utils.logging import log
 
 
 class TotalDataPoint(CategoryItem):
@@ -248,6 +249,15 @@ class TotalDataBase(CategoryCollection):
         called_by_minimizer: bool = False,
     ) -> None:
         experiment = self._parent
+        if not self._items:
+            msg = (
+                f"Cannot calculate experiment '{experiment.name}' without measured "
+                'data: total scattering (PDF) requires a measured r-grid. '
+                'Generating it from data_range is not yet supported. Load '
+                'measured data first.'
+            )
+            log.error(msg, exc_type=NotImplementedError)
+            return
         experiments = experiment._parent
         project = experiments._parent
         structures = project.structures
@@ -275,6 +285,21 @@ class TotalDataBase(CategoryCollection):
             calc += structure_scaled_calc
 
         self._set_g_r_calc(calc)
+
+    def _has_measured_intensities(self) -> bool:
+        """
+        Return whether any point carries a finite measured G(r) value.
+
+        Iterates **all** points (unfiltered) so a fully-excluded
+        measured scan is still recognised as measured data, matching the
+        powder Bragg predicate.
+        """
+        measured = np.fromiter(
+            (point.g_r_meas.value for point in self._items),
+            dtype=float,
+            count=len(self._items),
+        )
+        return bool(measured.size) and bool(np.any(np.isfinite(measured)))
 
     # ------------------------------------------------------------------
     #  Public properties

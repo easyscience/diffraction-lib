@@ -5,7 +5,7 @@ COMM  Backscattering Bank (2theta= 144.845)  Si- Argonne
   -1   9   1  -4   2   0   0   0   0   0   0   0   0   0   0   1   0   0   1
 !
 !Ipr Ppl Ioc Mat Pcr Ls1 Ls2 Ls3 NLI Prf Ins Rpa Sym Hkl Fou Sho Ana
-   2   0   1   0   1   0   4   0   0  -3  12   1   1   1   2   0   0
+   2    2    1    0    1    0    4    0    0    2   12    1    1    1    2    0    0
 !
 !  Bkpos        Wdt    Iabscor for Pattern#  1
      150.000   30.00     2

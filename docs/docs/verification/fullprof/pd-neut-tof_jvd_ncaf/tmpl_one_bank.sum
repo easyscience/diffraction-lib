@@ -1,14 +1,14 @@
 
 
         **********************************************************
-        ** PROGRAM FullProf.2k (Version 7.95 - Jan2023-ILL JRC) **
+        ** PROGRAM FullProf.2k (Version 8.40 - Feb2026-ILL JRC) **
         **********************************************************
                        M U L T I -- P A T T E R N                 
             Rietveld, Profile Matching & Integrated Intensity     
                  Refinement of X-ray and/or Neutron Data
 
 
-    Date: 09/06/2026  Time: 15:11:13.659                              
+    Date: 10/06/2026  Time: 11:15:11.405                              
 
  => PCR file code: tmpl_one_bank
  => DAT file code: 55025-5_6raw.gss     -> Relative contribution: 1.0000                                                            
@@ -107,8 +107,8 @@
 
 
  => Absorption parameters: 
-                              0.00000   0.00000
-                              0.00000   0.00000
+                              0.00000       0.00000    
+                              0.00000       0.00000    
 
 
 
@@ -131,7 +131,7 @@
  => Rp:  17.7     Rwp:  12.5     Rexp:    3.21 Chi2:  15.2    
  => Deviance:  0.338E+05     Dev*  :   8.929    
  => DW-Stat.:    0.3495     DW-exp:     1.8991
- => N-sigma of the GoF:      620.204
+ => N-sigma of the GoF:      620.211
 
  ==> RELIABILITY FACTORS FOR POINTS WITH BRAGG CONTRIBUTIONS FOR PATTERN:  1
 
@@ -142,7 +142,7 @@
  => Rp:  17.5     Rwp:  12.5     Rexp:    3.14 Chi2:  15.9    
  => Deviance:  0.336E+05     Dev*  :   9.232    
  => DW-Stat.:    0.3501     DW-exp:     1.8970
- => N-sigma of the GoF:      633.883
+ => N-sigma of the GoF:      633.890
 
  => Global user-weigthed Chi2 (Bragg contrib.):   15.9    
 
@@ -155,7 +155,7 @@
  => Rf-factor=  19.6             ATZ:       17501.770   Brindley:  1.0000
 
  
-              CPU Time:     0.320 seconds
+              CPU Time:     0.281 seconds
                             0.005 minutes
 
- => Run finished at:     Date: 09/06/2026  Time: 15:11:13.975                              
+ => Run finished at:     Date: 10/06/2026  Time: 11:15:11.690                              

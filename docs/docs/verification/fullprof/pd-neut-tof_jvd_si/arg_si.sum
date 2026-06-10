@@ -8,7 +8,7 @@
                  Refinement of X-ray and/or Neutron Data
 
 
-    Date: 09/06/2026  Time: 12:42:03.874                              
+    Date: 10/06/2026  Time: 11:16:59.560                              
 
  => PCR file code: arg_si
  => DAT file code: arg_si               -> Relative contribution: 1.0000                                                            
@@ -170,7 +170,7 @@
  => Rf-factor=  12.7             ATZ:      129420.289   Brindley:  1.0000
 
  
-              CPU Time:     0.352 seconds
-                            0.006 minutes
+              CPU Time:     0.328 seconds
+                            0.005 minutes
 
- => Run finished at:     Date: 09/06/2026  Time: 12:42:04.228                              
+ => Run finished at:     Date: 10/06/2026  Time: 11:16:59.884                              

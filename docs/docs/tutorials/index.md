@@ -68,6 +68,19 @@ containing Bayesian fit state.
   powder diffraction datasets (from two detector banks) of the WISH
   instrument at ISIS.
 
+## Without Measured Data
+
+- [LBCO `pd-neut-cwl`](ed-27.ipynb) – Loads the La0.5Ba0.5CoO3 structure
+  from a CIF and calculates a constant-wavelength neutron powder pattern
+  over a chosen 2θ range, with background and Bragg markers and no
+  measured data, then edits structure and profile parameters and
+  recalculates to show the pattern update.
+- [Si `pd-neut-tof`](ed-28.ipynb) – Calculates a time-of-flight neutron
+  powder pattern for Si, with the calculation window derived from the
+  instrument's TOF calibration and then set explicitly.
+- [NaCl `pd-xray`](ed-29.ipynb) – The most minimal example: an X-ray
+  powder pattern for NaCl using the default calculation range.
+
 ## Single Crystal Diffraction
 
 - [Tb2TiO7 `sg-neut-cwl`](ed-14.ipynb) – Demonstrates structure

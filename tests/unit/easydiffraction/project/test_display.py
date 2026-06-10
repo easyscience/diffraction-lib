@@ -557,6 +557,7 @@ def test_pattern_option_statuses_ignore_placeholder_arrays_without_usable_state(
         background=[],
         refln=[],
         excluded_regions=[],
+        _has_measured_data=lambda: True,
     )
     project = SimpleNamespace(
         experiments={'hrpt': experiment},
@@ -603,6 +604,7 @@ def test_pattern_auto_routes_single_crystal_with_calculated_data(monkeypatch):
         ),
         linked_crystal=SimpleNamespace(id=SimpleNamespace(value='si')),
         excluded_regions=[],
+        _has_measured_data=lambda: True,
     )
     project = SimpleNamespace(
         experiments={'heidi': experiment},

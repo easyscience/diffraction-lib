@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING
 from easydiffraction.analysis.fit_helpers.bayesian import posterior_predictive_cache_key
 from easydiffraction.analysis.verification import closeness_annotation
 from easydiffraction.analysis.verification import pattern_closeness
+from easydiffraction.analysis.verification import restrict_to_included
 from easydiffraction.datablocks.experiment.item.base import intensity_category_for
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
@@ -469,6 +470,13 @@ class ProjectDisplay:
         show_metrics : bool, default=True
             Whether to annotate the plot with closeness metrics.
         """
+        # Drop points in excluded regions so a full-grid reference is
+        # compared and plotted only over the included points (the
+        # experiment's own arrays are already restricted to them).
+        experiment = self._project.experiments[expt_name]
+        self._project.rendering_plot.plotter._update_project_categories(expt_name)
+        reference = restrict_to_included(experiment, reference)
+        candidate = restrict_to_included(experiment, candidate)
         annotation_lines: tuple[str, ...] = ()
         if show_metrics:
             metrics = pattern_closeness(reference, candidate)
@@ -744,10 +752,12 @@ class ProjectDisplay:
                 ('excluded',),
             )
         if status_by_name['calculated'].available:
+            # Calculated-only: offer background and Bragg too (residual
+            # is measured-gated and filtered out automatically).
             return cls._with_available_options(
                 status_by_name,
                 ('calculated',),
-                ('excluded',),
+                optional_point_estimate,
             )
         return ()
 
@@ -800,6 +810,21 @@ class ProjectDisplay:
                 show_excluded=True,
             )
             return
+        if 'calculated' in include_set and 'measured' not in include_set:
+            # Calculated-only: the calc renderer overlays the background
+            # and, for a powder Bragg pattern, adds the Bragg-peaks row
+            # (rendering the composite two-panel figure with no measured
+            # series).
+            self._project.rendering_plot.plotter.plot_calc(
+                expt_name=expt_name,
+                x_min=x_min,
+                x_max=x_max,
+                x=x,
+                show_background='background' in include_set,
+                show_bragg='bragg' in include_set,
+                show_excluded='excluded' in include_set,
+            )
+            return
         if {'measured', 'calculated'}.issubset(include_set):
             self._project.rendering_plot.plotter._plot_meas_vs_calc_request(
                 expt_name=expt_name,
@@ -830,21 +855,19 @@ class ProjectDisplay:
         scattering_type = experiment.type.scattering_type.value
         has_linked_structure = self._has_linked_structure_for_calculation(experiment)
 
-        measured_available = self._has_nonempty_value(getattr(pattern, 'intensity_meas', None))
+        measured_available = experiment._has_measured_data()
         calculated_available = has_linked_structure and self._has_nonempty_value(
             getattr(pattern, 'intensity_calc', None)
         )
         background_available = (
             sample_form == SampleFormEnum.POWDER.value
             and scattering_type == ScatteringTypeEnum.BRAGG.value
-            and measured_available
             and calculated_available
             and self._has_nonempty_value(getattr(experiment, 'background', None))
             and self._has_nonempty_value(getattr(pattern, 'intensity_bkg', None))
         )
         bragg_available = (
-            measured_available
-            and calculated_available
+            calculated_available
             and sample_form == SampleFormEnum.POWDER.value
             and scattering_type == ScatteringTypeEnum.BRAGG.value
             and self._has_nonempty_value(getattr(experiment, 'refln', None))

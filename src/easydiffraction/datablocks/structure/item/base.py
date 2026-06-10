@@ -240,9 +240,10 @@ class Structure(DatablockItem):
         self,
         *,
         called_by_minimizer: bool = False,
+        force: bool = False,
     ) -> None:
         """Update categories with atom_site_aniso sync."""
-        if not called_by_minimizer and not self._need_categories_update:
+        if not called_by_minimizer and not force and not self._need_categories_update:
             return
 
         self._space_group_wyckoff._replace_from_space_group()

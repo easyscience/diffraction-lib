@@ -314,6 +314,18 @@
 │   │   │   │       ├── 🏷️ class TotalDataPoint
 │   │   │   │       ├── 🏷️ class TotalDataBase
 │   │   │   │       └── 🏷️ class TotalData
+│   │   │   ├── 📁 data_range
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 base.py
+│   │   │   │   │   └── 🏷️ class DataRangeBase
+│   │   │   │   ├── 📄 cwl.py
+│   │   │   │   │   └── 🏷️ class CwlPdDataRange
+│   │   │   │   ├── 📄 factory.py
+│   │   │   │   │   └── 🏷️ class DataRangeFactory
+│   │   │   │   ├── 📄 sc.py
+│   │   │   │   │   └── 🏷️ class ScDataRange
+│   │   │   │   └── 📄 tof.py
+│   │   │   │       └── 🏷️ class TofPdDataRange
 │   │   │   ├── 📁 diffrn
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 default.py

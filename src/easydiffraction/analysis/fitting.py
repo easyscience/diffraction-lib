@@ -204,6 +204,7 @@ class Fitter:
             used by the saved emcee chain.
         """
         fit_options = options or FitterFitOptions()
+        self._require_measured_data(experiments)
         # Enforce symmetry constraints (e.g. ADP) before collecting
         # free parameters so that components fixed by site symmetry are
         # excluded from the minimizer's parameter set.
@@ -263,6 +264,37 @@ class Fitter:
             self._backfill_persisted_fitting_time(analysis)
         finally:
             self.minimizer._stop_tracking()
+
+    @staticmethod
+    def _require_measured_data(experiments: list[ExperimentBase]) -> None:
+        """
+        Reject fitting any experiment that has no measured intensities.
+
+        A calculated-only experiment carries an absent (``NaN``)
+        measured array; fitting it would feed all-``NaN`` residuals to
+        the minimizer. Fitting requires a measured scan.
+
+        Parameters
+        ----------
+        experiments : list[ExperimentBase]
+            Experiments scheduled for fitting.
+
+        Raises
+        ------
+        ValueError
+            If any experiment lacks measured data.
+        """
+        for experiment in experiments:
+            has_measured = getattr(experiment, '_has_measured_data', None)
+            if callable(has_measured) and not has_measured():
+                name = getattr(experiment, 'name', '?')
+                msg = (
+                    f"Cannot fit experiment '{name}': it has no measured data. "
+                    'Fitting requires a measured scan; load measured data first. '
+                    '(Calculating a pattern without measured data is supported, '
+                    'but fitting against it is not.)'
+                )
+                raise ValueError(msg)
 
     def _set_minimizer_sidecar_path(self, analysis: object) -> None:
         """Set the analysis results sidecar path when supported."""

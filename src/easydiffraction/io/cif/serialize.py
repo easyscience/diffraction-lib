@@ -50,8 +50,10 @@ def format_value(value: object) -> str:
 
     # Converting
 
-    # None → CIF unknown marker
-    if value is None:
+    # None or NaN → CIF unknown marker. NaN is the unset sentinel for
+    # optional numeric fields (e.g. data_range bounds before they are
+    # projected); a literal 'nan' token would fail reload validation.
+    if value is None or (isinstance(value, float) and np.isnan(value)):
         value = '?'
     # Booleans use CIF true/false tokens
     elif isinstance(value, bool):
@@ -1049,7 +1051,13 @@ def _set_param_to_default_from_cif(
     """
     value_spec = getattr(param, '_value_spec', None)
     if value_spec is not None and (value_spec.has_default or value_spec.allow_none):
-        param.value = value_spec.default_value()
+        # Assign the spec's own default directly, mirroring construction
+        # (Variable.__init__ sets ``_value`` without validating). The
+        # default is authoritative, so it must not be re-validated here:
+        # a sentinel default such as the ``NaN`` used by ``data_range``
+        # axis bounds legitimately falls outside its RangeValidator and
+        # would otherwise raise when an absent tag is loaded.
+        param._value = value_spec.default_value()
         return
 
     detail = 'missing tag' if raw is None else f'value {raw!r}'
