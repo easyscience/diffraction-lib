@@ -105,20 +105,11 @@ experiment.background.create(id='2', x=40000, y=200)
 
 # %% [markdown]
 # ### Set Calculation Range
-#
-# The default range is projected from a d-spacing window through the TOF
-# calibration. Print it, then set an explicit time-of-flight window.
-
-# %%
-print('Default time-of-flight range (µs):')
-print('  min:', experiment.data_range.time_of_flight_min.value)
-print('  max:', experiment.data_range.time_of_flight_max.value)
-print('  inc:', experiment.data_range.time_of_flight_inc.value)
 
 # %%
 experiment.data_range.time_of_flight_min = 10000.0
 experiment.data_range.time_of_flight_max = 40000.0
-experiment.data_range.time_of_flight_inc = 10.0
+experiment.data_range.time_of_flight_inc = 2.0
 
 # %% [markdown]
 # ### Set Linked Phases
