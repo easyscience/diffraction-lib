@@ -304,7 +304,7 @@ Each step is one atomic commit. Stage only the files the step touches
       `adp_type == 'beta'` (decision 4). No validator change — the
       off-diagonals already accept negatives. Commit:
       `Support beta tensor in atom_site_aniso category`
-- [ ] **P1.5 — type-switch conversion.** Extend `_convert_adp_values`
+- [x] **P1.5 — type-switch conversion.** Extend `_convert_adp_values`
       with β↔U/B branches using the reciprocal-cell helper and the
       parent `cell`; raise a clear error when no cell is reachable; wire
       iso↔β seeding/collapse. Commit:
