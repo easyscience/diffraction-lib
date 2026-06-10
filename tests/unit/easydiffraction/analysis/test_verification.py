@@ -60,6 +60,15 @@ def test_fullprof_version_missing_banner_raises(ref_dir):
         verify.fullprof_version('', 'ref.sum')
 
 
+def test_fullprof_label_formats_version(ref_dir):
+    summary = ref_dir / 'ref.sum'
+    summary.write_text(
+        '        ** PROGRAM FullProf.2k (Version 8.40 - Feb2026-ILL JRC) **\n',
+        encoding='utf-8',
+    )
+    assert verify.fullprof_label('', 'ref.sum') == 'FullProf v8.40'
+
+
 class _FakeCategory:
     def __init__(self, mask):
         self._calc_mask = np.asarray(mask, dtype=bool)

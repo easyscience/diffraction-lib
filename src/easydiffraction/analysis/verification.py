@@ -417,6 +417,30 @@ def fullprof_version(project_dir: str, summary_file: str) -> str:
     raise ValueError(msg)
 
 
+def fullprof_label(project_dir: str, summary_file: str) -> str:
+    """
+    Return a FullProf plot-legend label, for example ``'FullProf v8.40'``.
+
+    Convenience wrapper over :func:`fullprof_version` so verification
+    pages set ``reference_label`` in one line rather than repeating the
+    ``f'FullProf v{...}'`` formatting.
+
+    Parameters
+    ----------
+    project_dir : str
+        Reference sub-folder name (under the bundled reference
+        directory) holding the FullProf project files.
+    summary_file : str
+        File name of a FullProf ``.sum`` or ``.out`` output file.
+
+    Returns
+    -------
+    str
+        The legend label ``f'FullProf v{version}'``.
+    """
+    return f'FullProf v{fullprof_version(project_dir, summary_file)}'
+
+
 def load_fullprof_sc_f2calc(project_dir: str, out_file: str) -> dict[tuple[int, int, int], float]:
     """
     Extract calculated F² per reflection from a FullProf SC output.
