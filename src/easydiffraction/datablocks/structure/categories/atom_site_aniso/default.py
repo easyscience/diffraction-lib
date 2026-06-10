@@ -61,6 +61,11 @@ class _AnisoAdpParameter(Parameter):
 
     def _owning_adp_type(self) -> str | None:
         """Return the owning atom's ``adp_type`` value, or ``None``."""
+        # Tolerant walk: display can resolve units before the
+        # param → aniso item → collection → structure → atom_site chain
+        # is fully wired (e.g. during construction or for a detached
+        # parameter). Any broken link falls back to the declared unit
+        # rather than raising in a display path.
         aniso_item = getattr(self, '_parent', None)
         label = getattr(getattr(aniso_item, '_label', None), 'value', None)
         collection = getattr(aniso_item, '_parent', None)
