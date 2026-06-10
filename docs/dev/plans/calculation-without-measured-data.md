@@ -325,7 +325,7 @@ unfiltered points), and (b) set a `data_range` bound and confirm it
 - [x] P1.8 Relax display gates for calculated-only
 - [x] P1.9 Docs touch-ups
 - [x] P1.10 Phase 1 review gate
-- [ ] Phase 2 verification (tests + `pixi run fix/check/*-tests`)
+- [x] Phase 2 verification (tests + `pixi run fix/check/*-tests`)
 
 ## Suggested Pull Request
 
