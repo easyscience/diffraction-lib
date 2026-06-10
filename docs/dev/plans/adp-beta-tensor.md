@@ -374,6 +374,18 @@ Test coverage to add:
   (regression guard around the P1.9 change).
 - cryspy: β atom zeroes `b_iso` and populates `atom_beta` with the
   stored values.
+- equivalent-iso (F1 regression): after a `Uani → beta` **and** a
+  `Bani → beta` switch, `adp_iso_as_b` and the serialized
+  `_atom_site.B_iso_or_equiv` column give the correct `B_eq` computed
+  from the β tensor (not a stale or double-scaled value); `_adp_iso`
+  collapses to a real `U_eq` after an update.
+- report units (F2 regression): `report.data_context._descriptor_units`
+  returns unchanged units for representative **non-β** parameters — one
+  with a `display_handler`, one relying on the `_units` fallback —
+  across `latex`/`html`/`gui` contexts.
+- report β tags (F4): the `iucr_writer` β round-trip emits
+  `_atom_site_aniso.beta_11`…`beta_23` (not a B/U-defaulted tag) under an
+  `Anisotropic ADP (beta)` section header.
 
 ## Suggested Pull Request
 
