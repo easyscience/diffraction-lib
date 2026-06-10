@@ -241,7 +241,6 @@ def test_main_intensity_series_includes_predictive_bounds_and_draws():
 
     series = pp.PlotlyPlotter._main_intensity_series(
         plot_spec,
-        y_meas=np.asarray(plot_spec.y_meas),
         y_calc=np.asarray(plot_spec.y_calc),
     )
     flat_min = min(float(np.min(part)) for part in series)
