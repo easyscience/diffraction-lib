@@ -8,8 +8,8 @@ deliberate exceptions to those instructions are taken by this plan.
 See [Implementation steps (Phase 1)](#implementation-steps-phase-1) for
 the per-step checklist. High-level:
 
-- [ ] Phase 1 — Implementation (code + docs + ADR)
-- [ ] Phase 1 review gate
+- [x] Phase 1 — Implementation (code + docs + ADR)
+- [x] Phase 1 review gate
 - [ ] Phase 2 — Verification (tests + `pixi` gate)
 
 ## ADR
@@ -333,7 +333,7 @@ Each step is one atomic commit. Stage only the files the step touches
       to `docs/dev/issues/open.md` for β→U ADP-ellipsoid display
       (resolved Q6). Commit:
       `Reuse shared reciprocal helper in structure builder`
-- [ ] **P1.10 — Phase 1 review gate.** No-code step. Mark complete,
+- [x] **P1.10 — Phase 1 review gate.** No-code step. Mark complete,
       commit the checklist update alone. Commit:
       `Reach Phase 1 review gate`
 
