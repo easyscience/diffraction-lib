@@ -2723,7 +2723,7 @@ class TestShortTableAndUpdateCategories:
         monkeypatch.setattr(
             CategoryOwner,
             '_update_categories',
-            lambda self, *, called_by_minimizer=False: None,
+            lambda self, *, called_by_minimizer=False, force=False: None,
         )
 
         a._update_categories()

@@ -852,3 +852,29 @@ def test_run_sequential_sets_mode_and_saves_project(monkeypatch, tmp_path):
     assert project.save_calls == 1
     assert analysis.fit_results is None
     assert analysis.fitter.results is None
+
+
+def test_calculate_forces_structure_and_experiment_updates():
+    # Regression: editing a structure marks only the structure dirty, so
+    # a dependent experiment's pattern stayed stale on the next
+    # calculate(). calculate() must force-refresh both so structure edits
+    # (e.g. cell.length_a) are reflected, like experiment edits already
+    # were.
+    from easydiffraction.analysis.analysis import Analysis
+
+    calls: list[tuple[str, bool]] = []
+
+    def _stub(label):
+        ns = SimpleNamespace()
+        ns._update_categories = lambda *, force=False, _l=label: calls.append((_l, force))
+        return ns
+
+    class _Project:
+        structures = [_stub('structure')]
+        experiments = [_stub('experiment')]
+        info = SimpleNamespace(path=None)
+        _varname = 'proj'
+
+    Analysis.calculate(SimpleNamespace(project=_Project()))
+
+    assert calls == [('structure', True), ('experiment', True)]

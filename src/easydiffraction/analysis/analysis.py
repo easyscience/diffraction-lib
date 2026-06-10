@@ -1299,9 +1299,9 @@ class Analysis(
         calculated pattern without running a minimization.
         """
         for structure in self.project.structures:
-            structure._update_categories()
+            structure._update_categories(force=True)
         for experiment in self.project.experiments:
-            experiment._update_categories()
+            experiment._update_categories(force=True)
 
     def undo_fit(self) -> UndoFitOutcome:
         """
@@ -2980,6 +2980,7 @@ class Analysis(
         self,
         *,
         called_by_minimizer: bool = False,
+        force: bool = False,
     ) -> None:
         """
         Update all categories owned by Analysis.
@@ -2991,8 +2992,10 @@ class Analysis(
         ----------
         called_by_minimizer : bool, default=False
             Whether this is called during fitting.
+        force : bool, default=False
+            Bypass the dirty-flag short-circuit and update regardless.
         """
-        super()._update_categories(called_by_minimizer=called_by_minimizer)
+        super()._update_categories(called_by_minimizer=called_by_minimizer, force=force)
 
         # Apply constraints to sync dependent parameters
         if self.constraints.enabled and self.constraints._items:

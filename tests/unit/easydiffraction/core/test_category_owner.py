@@ -113,6 +113,20 @@ def test_category_owner_updates_only_when_needed_and_can_force_minimizer_updates
     assert owner._need_categories_update is False
 
 
+def test_category_owner_force_updates_when_not_dirty():
+    # force=True bypasses the clean-state short-circuit so an explicit
+    # recompute (Analysis.calculate) refreshes categories even when this
+    # owner was not itself edited — e.g. a linked structure changed.
+    update_calls: list[tuple[str, bool]] = []
+    owner = _Owner(update_calls)
+    owner._need_categories_update = False
+
+    owner._update_categories(force=True)
+
+    assert update_calls == [('fast', False), ('slow', False)]
+    assert owner._need_categories_update is False
+
+
 def test_category_owner_descriptor_changes_mark_owner_dirty():
     owner = _Owner()
     owner._need_categories_update = False
