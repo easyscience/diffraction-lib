@@ -506,7 +506,11 @@ class CryspyCalculator(CalculatorBase):
             AdpTypeEnum,
         )
 
-        aniso_types = {AdpTypeEnum.BANI.value, AdpTypeEnum.UANI.value}
+        aniso_types = {
+            AdpTypeEnum.BANI.value,
+            AdpTypeEnum.UANI.value,
+            AdpTypeEnum.BETA.value,
+        }
         cryspy_biso = cryspy_model_dict['atom_b_iso']
         for idx, atom_site in enumerate(structure.atom_sites):
             if atom_site.adp_type.value in aniso_types:
@@ -556,7 +560,9 @@ class CryspyCalculator(CalculatorBase):
         Update cryspy ``atom_beta`` from anisotropic ADP values.
 
         Converts B or U tensor components to cryspy's internal β
-        representation using β_ij = 2π²·U_ij·a*_i·a*_j.
+        representation using β_ij = 2π²·U_ij·a*_i·a*_j. Atoms already
+        stored as the dimensionless β tensor (``adp_type == 'beta'``) are
+        passed straight through, since β is cryspy's native convention.
 
         Parameters
         ----------
@@ -600,11 +606,11 @@ class CryspyCalculator(CalculatorBase):
         for col, atom_idx in enumerate(aniso_index):
             atom = list(structure.atom_sites)[atom_idx]
             adp_enum = AdpTypeEnum(atom.adp_type.value)
-            if adp_enum not in {AdpTypeEnum.BANI, AdpTypeEnum.UANI}:
+            if adp_enum not in {AdpTypeEnum.BANI, AdpTypeEnum.UANI, AdpTypeEnum.BETA}:
                 continue
 
             aniso = structure.atom_site_aniso[atom.label.value]
-            u_vals = [
+            components = [
                 aniso.adp_11.value,
                 aniso.adp_22.value,
                 aniso.adp_33.value,
@@ -613,11 +619,19 @@ class CryspyCalculator(CalculatorBase):
                 aniso.adp_23.value,
             ]
 
-            # Convert to U if stored as B
-            if adp_enum == AdpTypeEnum.BANI:
-                u_vals = [v / factor for v in u_vals]
+            if adp_enum is AdpTypeEnum.BETA:
+                # Already dimensionless β (cryspy's native convention);
+                # pass straight through without a U→β transform.
+                betas = components
+            else:
+                # Convert to U if stored as B, then map U → β.
+                u_vals = (
+                    [v / factor for v in components]
+                    if adp_enum == AdpTypeEnum.BANI
+                    else components
+                )
+                betas = calc_beta_by_u(u_vals, cell_like)
 
-            betas = calc_beta_by_u(u_vals, cell_like)
             for k in range(6):
                 cryspy_beta[k][col] = betas[k]
 

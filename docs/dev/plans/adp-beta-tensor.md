@@ -309,7 +309,7 @@ Each step is one atomic commit. Stage only the files the step touches
       parent `cell`; raise a clear error when no cell is reachable; wire
       iso↔β seeding/collapse. Commit:
       `Convert ADP values to and from the beta tensor`
-- [ ] **P1.6 — cryspy passthrough.** Add the `BETA` branch in
+- [x] **P1.6 — cryspy passthrough.** Add the `BETA` branch in
       `_update_aniso_beta` (store β directly, no U→β transform) and
       include `BETA` in `aniso_types`. cryspy convention already
       confirmed (resolved Q2). Commit:
