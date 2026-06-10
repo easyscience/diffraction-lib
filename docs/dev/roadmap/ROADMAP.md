@@ -135,7 +135,7 @@ Legend:
 | Wavelength                                               | ✅  | ✅  |
 | Second wavelength                                        | 🗓  | 🗓  |
 | 2θ offset                                                | ✅  | ✅  |
-| Sample displacement correction (FullProf _SyCos, SySin_) | 🗓  | 🗓  |
+| Sample displacement correction (FullProf _SyCos, SySin_) | 🚧  | 🗓  |
 
 ### Instrument — Time-of-Flight
 
