@@ -24254,7 +24254,8 @@ calibration — stays well defined. The shared reciprocal currency is
         <p>Base class for data-range category items.</p>
 <p>Sets the common <code>category_code</code> shared by the concrete CWL, TOF,
 and single-crystal data-range definitions, and projects the default
-d-spacing window onto the stored axis whenever a bound is still unset.</p>
+d-spacing window onto the stored axis whenever a bound is still
+unset.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -24731,9 +24732,9 @@ d-spacing window onto the stored axis whenever a bound is still unset.</p>
 
         <p>Constant-wavelength powder calculation range.</p>
 <p>Stores the 2θ window (<code>two_theta_min</code>/<code>two_theta_max</code>) and the
-profile step (<code>two_theta_inc</code>). Unset bounds default to <code>NaN</code> and
-are filled by projecting the default d-spacing window through the
-instrument wavelength.</p>
+profile step (<code>two_theta_inc</code>). Unset bounds default to <code>NaN</code>
+and are filled by projecting the default d-spacing window through
+the instrument wavelength.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -26616,8 +26617,8 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
         <p>Single-crystal calculation range in reciprocal coordinates.</p>
 <p>Single-crystal data has no measurement axis, so sinθ/λ is the stored
 truth. Bounds (<code>sin_theta_over_lambda_min</code>/<code>_max</code>) limit
-reflection generation; there is no profile step. Unset bounds default
-to <code>NaN</code> and are filled from the default d-spacing window
+reflection generation; there is no profile step. Unset bounds
+default to <code>NaN</code> and are filled from the default d-spacing window
 (<code>sinθ/λ = 1/(2·d)</code>, instrument-independent).</p>
 <!-- prettier-ignore-start -->
 
@@ -73598,8 +73599,8 @@ index is rebuilt, matching the invariants <code>__delitem__</code> keeps.</p>
     <div class="doc doc-contents ">
 
         <p>Active-axis range as <code>(min, max, inc)</code>.</p>
-<p>Backed by <code>data_range</code>: the measured range when a measured scan
-is present, and the stored or default calculation range
+<p>Backed by <code>data_range</code>: the measured range when a measured
+scan is present, and the stored or default calculation range
 otherwise. This subsumes the former measured-only behaviour.</p>
 <!-- prettier-ignore-start -->
 
@@ -74637,8 +74638,8 @@ live calculator backend instance.</p>
     <div class="doc doc-contents ">
 
         <p>Active-axis range as <code>(min, max, inc)</code>.</p>
-<p>Backed by <code>data_range</code>: the measured range when a measured scan
-is present, and the stored or default calculation range
+<p>Backed by <code>data_range</code>: the measured range when a measured
+scan is present, and the stored or default calculation range
 otherwise. This subsumes the former measured-only behaviour.</p>
 <!-- prettier-ignore-start -->
 
@@ -75597,8 +75598,8 @@ live calculator backend instance.</p>
     <div class="doc doc-contents ">
 
         <p>Active-axis range as <code>(min, max, inc)</code>.</p>
-<p>Backed by <code>data_range</code>: the measured range when a measured scan
-is present, and the stored or default calculation range
+<p>Backed by <code>data_range</code>: the measured range when a measured
+scan is present, and the stored or default calculation range
 otherwise. This subsumes the former measured-only behaviour.</p>
 <!-- prettier-ignore-start -->
 
@@ -76652,8 +76653,8 @@ live calculator backend instance.</p>
     <div class="doc doc-contents ">
 
         <p>Active-axis range as <code>(min, max, inc)</code>.</p>
-<p>Backed by <code>data_range</code>: the measured range when a measured scan
-is present, and the stored or default calculation range
+<p>Backed by <code>data_range</code>: the measured range when a measured
+scan is present, and the stored or default calculation range
 otherwise. This subsumes the former measured-only behaviour.</p>
 <!-- prettier-ignore-start -->
 
@@ -77697,8 +77698,8 @@ live calculator backend instance.</p>
     <div class="doc doc-contents ">
 
         <p>Active-axis range as <code>(min, max, inc)</code>.</p>
-<p>Backed by <code>data_range</code>: the measured range when a measured scan
-is present, and the stored or default calculation range
+<p>Backed by <code>data_range</code>: the measured range when a measured
+scan is present, and the stored or default calculation range
 otherwise. This subsumes the former measured-only behaviour.</p>
 <!-- prettier-ignore-start -->
 
@@ -78661,8 +78662,8 @@ live calculator backend instance.</p>
     <div class="doc doc-contents ">
 
         <p>Active-axis range as <code>(min, max, inc)</code>.</p>
-<p>Backed by <code>data_range</code>: the measured range when a measured scan
-is present, and the stored or default calculation range
+<p>Backed by <code>data_range</code>: the measured range when a measured
+scan is present, and the stored or default calculation range
 otherwise. This subsumes the former measured-only behaviour.</p>
 <!-- prettier-ignore-start -->
 
@@ -82622,8 +82623,8 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
     <div class="doc doc-contents ">
 
         <p>Active-axis range as <code>(min, max, inc)</code>.</p>
-<p>Backed by <code>data_range</code>: the measured range when a measured scan
-is present, and the stored or default calculation range
+<p>Backed by <code>data_range</code>: the measured range when a measured
+scan is present, and the stored or default calculation range
 otherwise. This subsumes the former measured-only behaviour.</p>
 <!-- prettier-ignore-start -->
 

@@ -58861,7 +58861,7 @@ those pages stay short and readable.</p>
               <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;fullprof_label&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;project_dir&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;summary_file&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.analysis.verification.fullprof_label&lt;/code&gt;)" href="#easydiffraction.analysis.verification.fullprof_label">fullprof_label</a></code></td>
               <td>
                 <div class="doc-md-description">
-                  <p>Return a FullProf plot-legend label, for example <code>'FullProf v8.40'</code>.</p>
+                  <p>Return a FullProf plot-legend label, e.g. <code>'FullProf v8.40'</code>.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -59085,8 +59085,9 @@ those pages stay short and readable.</p>
 <p>Defaults expect the calculated areas to agree to about one percent
 once the FullProf scale is seeded: the integrated-intensity ratio
 must sit within 1 % of one, the profile difference under 2.5 %, the
-worst point-wise deviation under 6 %, and the shape correlation above
-0.999. Tighten further as multi-platform spreads are characterised.</p>
+worst point-wise deviation under 6 %, and the shape correlation
+above 0.999. Tighten further as multi-platform spreads are
+characterised.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -59486,12 +59487,12 @@ directory) holding the FullProf project files.</p>
 
         <p>Return the FullProf version that produced a reference.</p>
 <p>Reads the version from the banner a FullProf run writes near the top
-of its <code>.sum</code> (or <code>.out</code>) output — the line
-<code>** PROGRAM FullProf.2k (Version 8.40 - Feb2026-ILL JRC) **</code> — and
-returns just the version number (for example <code>'8.40'</code>), suited to a
-plot legend such as <code>f'FullProf v{version}'</code>.</p>
-<p>Resolved inside the bundled reference directory, so the caller passes
-the project sub-folder and the summary file name.</p>
+of its <code>.sum</code> (or <code>.out</code>) output — the line <code>** PROGRAM
+FullProf.2k (Version 8.40 - Feb2026-ILL JRC) **</code> — and returns just
+the version number (for example <code>'8.40'</code>), suited to a plot legend
+such as <code>f'FullProf v{version}'</code>.</p>
+<p>Resolved inside the bundled reference directory, so the caller
+passes the project sub-folder and the summary file name.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -59618,7 +59619,7 @@ directory) holding the FullProf project files.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return a FullProf plot-legend label, for example <code>'FullProf v8.40'</code>.</p>
+        <p>Return a FullProf plot-legend label, e.g. <code>'FullProf v8.40'</code>.</p>
 <p>Convenience wrapper over :func:<code>fullprof_version</code> so verification
 pages set <code>reference_label</code> in one line rather than repeating the
 <code>f'FullProf v{...}'</code> formatting.</p>
@@ -60356,10 +60357,10 @@ k, l)</code>.</p>
         <p>Restrict a full-grid array to the experiment's included points.</p>
 <p>Excluded regions drop points from the calculated/measured arrays the
 experiment exposes (<code>intensity_calc</code> and friends iterate the
-included points only), but an external reference loaded onto the full
-grid still spans every point. This filters such a full-length
-reference down to the same included points so it can be compared with
-or plotted against the experiment's arrays.</p>
+included points only), but an external reference loaded onto the
+full grid still spans every point. This filters such a full-length
+reference down to the same included points so it can be compared
+with or plotted against the experiment's arrays.</p>
 <p>Arrays that are not full-length (already restricted) and the
 no-exclusion case are returned unchanged, so the call is safe to
 apply unconditionally.</p>
