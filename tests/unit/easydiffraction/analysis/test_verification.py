@@ -60,6 +60,38 @@ def test_fullprof_version_missing_banner_raises(ref_dir):
         verify.fullprof_version('', 'ref.sum')
 
 
+class _FakeCategory:
+    def __init__(self, mask):
+        self._calc_mask = np.asarray(mask, dtype=bool)
+
+
+class _FakeExperiment:
+    def __init__(self, mask):
+        self._category = _FakeCategory(mask)
+
+    def _intensity_category(self):
+        return self._category
+
+
+def test_restrict_to_included_drops_excluded_points():
+    experiment = _FakeExperiment([True, False, True, True])
+    out = verify.restrict_to_included(experiment, np.array([10.0, 20.0, 30.0, 40.0]))
+    np.testing.assert_allclose(out, [10.0, 30.0, 40.0])
+
+
+def test_restrict_to_included_passes_through_when_no_exclusions():
+    experiment = _FakeExperiment([True, True, True])
+    values = np.array([1.0, 2.0, 3.0])
+    np.testing.assert_allclose(verify.restrict_to_included(experiment, values), values)
+
+
+def test_restrict_to_included_passes_through_already_restricted():
+    # An array shorter than the full mask (already restricted) is left as is.
+    experiment = _FakeExperiment([True, False, True, True])
+    values = np.array([10.0, 30.0, 40.0])
+    np.testing.assert_allclose(verify.restrict_to_included(experiment, values), values)
+
+
 def test_load_columned_profile_reads_two_columns(ref_dir):
     dat = ref_dir / 'ref.dat'
     dat.write_text('! header line\n10.0 100.0\n10.5 200.0\n11.0 150.0\n', encoding='utf-8')

@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING
 from easydiffraction.analysis.fit_helpers.bayesian import posterior_predictive_cache_key
 from easydiffraction.analysis.verification import closeness_annotation
 from easydiffraction.analysis.verification import pattern_closeness
+from easydiffraction.analysis.verification import restrict_to_included
 from easydiffraction.datablocks.experiment.item.base import intensity_category_for
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
@@ -469,6 +470,13 @@ class ProjectDisplay:
         show_metrics : bool, default=True
             Whether to annotate the plot with closeness metrics.
         """
+        # Drop points in excluded regions so a full-grid reference is
+        # compared and plotted only over the included points (the
+        # experiment's own arrays are already restricted to them).
+        experiment = self._project.experiments[expt_name]
+        self._project.rendering_plot.plotter._update_project_categories(expt_name)
+        reference = restrict_to_included(experiment, reference)
+        candidate = restrict_to_included(experiment, candidate)
         annotation_lines: tuple[str, ...] = ()
         if show_metrics:
             metrics = pattern_closeness(reference, candidate)

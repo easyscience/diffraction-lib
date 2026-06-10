@@ -634,6 +634,45 @@ def calculate_reflections(
 # ----------------------------------------------------------------------
 
 
+def restrict_to_included(experiment: object, values: np.ndarray) -> np.ndarray:
+    """
+    Restrict a full-grid array to the experiment's included points.
+
+    Excluded regions drop points from the calculated/measured arrays the
+    experiment exposes (``intensity_calc`` and friends iterate the
+    included points only), but an external reference loaded onto the full
+    grid still spans every point. This filters such a full-length
+    reference down to the same included points so it can be compared with
+    or plotted against the experiment's arrays.
+
+    Arrays that are not full-length (already restricted) and the
+    no-exclusion case are returned unchanged, so the call is safe to
+    apply unconditionally.
+
+    Parameters
+    ----------
+    experiment : object
+        Experiment whose intensity category supplies the inclusion mask.
+    values : np.ndarray
+        Values on the full x grid (for example a FullProf reference).
+
+    Returns
+    -------
+    np.ndarray
+        The values restricted to the included points, or unchanged when
+        no restriction applies.
+    """
+    array = np.asarray(values)
+    category = intensity_category_for(experiment)
+    mask = getattr(category, '_calc_mask', None)
+    if mask is None:
+        return array
+    mask = np.asarray(mask, dtype=bool)
+    if array.shape[:1] == mask.shape and not bool(mask.all()):
+        return array[mask]
+    return array
+
+
 @dataclass(frozen=True)
 class ClosenessMetrics:
     """Closeness scores between a reference and a candidate pattern."""
