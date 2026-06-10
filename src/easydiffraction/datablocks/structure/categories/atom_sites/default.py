@@ -342,17 +342,49 @@ class AtomSite(CategoryItem):
 
     def _collapse_aniso_to_iso(self) -> None:
         """
-        Set adp_iso to the mean of the aniso diagonal.
+        Set adp_iso to the equivalent isotropic value from the tensor.
 
         Writes directly to ``_value`` to bypass range validation,
         because intermediate minimizer steps can produce negative
         anisotropic components whose mean falls outside the nominal
-        ``[0, 100]`` range.
+        ``[0, 100]`` range. For a beta atom the dimensionless diagonal is
+        mapped to U first (via the reciprocal cell), so the stored
+        equivalent is a real U magnitude consistent with the Uani type
+        rather than a dimensionless beta value.
         """
         aniso = self._get_aniso_entry()
         if aniso is None:
             return
-        self._adp_iso._value = (aniso.adp_11.value + aniso.adp_22.value + aniso.adp_33.value) / 3.0
+        if self._adp_type.value == AdpTypeEnum.BETA.value:
+            diag = self._beta_diagonal_as_u(aniso)
+        else:
+            diag = (aniso.adp_11.value, aniso.adp_22.value, aniso.adp_33.value)
+        self._adp_iso._value = (diag[0] + diag[1] + diag[2]) / 3.0
+
+    def _beta_diagonal_as_u(self, aniso: object) -> tuple[float, float, float]:
+        """
+        Return the U-tensor diagonal ``(U11, U22, U33)`` for a beta atom.
+
+        Maps the dimensionless beta diagonal back to U via the reciprocal
+        cell (``U_ii = beta_ii / (2*pi**2 * a*_i**2)``).
+
+        Parameters
+        ----------
+        aniso : object
+            The atom's :class:`AtomSiteAniso` entry holding beta values.
+
+        Returns
+        -------
+        tuple[float, float, float]
+            The equivalent U diagonal components.
+        """
+        a_star, b_star, c_star = self._reciprocal_lengths_for_conversion()
+        two_pi_sq = 2.0 * math.pi**2
+        return (
+            aniso.adp_11.value / (two_pi_sq * a_star * a_star),
+            aniso.adp_22.value / (two_pi_sq * b_star * b_star),
+            aniso.adp_33.value / (two_pi_sq * c_star * c_star),
+        )
 
     def _get_aniso_entry(self) -> object | None:
         """Return the matching AtomSiteAniso entry, or None."""
@@ -721,7 +753,10 @@ class AtomSite(CategoryItem):
         Return the isotropic ADP as a B-factor value.
 
         When ``adp_type`` is ``Uiso`` or ``Uani`` the stored U value is
-        converted to B via B = 8π²U.  Otherwise the stored value is
+        converted to B via B = 8π²U. For a ``beta`` atom the equivalent
+        B is computed straight from the dimensionless beta tensor via the
+        reciprocal cell (independent of the stored ``adp_iso``), so it is
+        never stale after a type switch. Otherwise the stored value is
         returned unchanged.
 
         Returns
@@ -729,7 +764,14 @@ class AtomSite(CategoryItem):
         float
             Equivalent B_iso value.
         """
-        if AdpTypeEnum(self._adp_type.value) in {AdpTypeEnum.UISO, AdpTypeEnum.UANI}:
+        adp_enum = AdpTypeEnum(self._adp_type.value)
+        if adp_enum is AdpTypeEnum.BETA:
+            aniso = self._get_aniso_entry()
+            if aniso is None:
+                return self._adp_iso.value
+            u_diag = self._beta_diagonal_as_u(aniso)
+            return (u_diag[0] + u_diag[1] + u_diag[2]) / 3.0 * 8.0 * math.pi**2
+        if adp_enum in {AdpTypeEnum.UISO, AdpTypeEnum.UANI}:
             return self._adp_iso.value * 8.0 * math.pi**2
         return self._adp_iso.value
 
