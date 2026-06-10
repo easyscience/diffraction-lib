@@ -97,10 +97,10 @@ project.experiments.add(experiment)
 # ## ed-cryspy VS FullProf
 
 # %%
+experiment.calculator.type = 'cryspy'
+
 experiment.instrument.calib_sample_displacement = FULLPROF_SYCOS
 experiment.instrument.calib_sample_transparency = FULLPROF_SYSIN
-
-experiment.calculator.type = 'cryspy'
 
 project.analysis.calculate()
 calc_ed_cryspy = experiment.data.intensity_calc

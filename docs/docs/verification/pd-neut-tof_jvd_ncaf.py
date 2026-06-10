@@ -150,9 +150,9 @@ project.experiments.add(experiment)
 # ## ed-cryspy VS FullProf
 
 # %%
-experiment.linked_phases['ncaf'].scale = FULLPROF_SCALE
-
 experiment.calculator.type = 'cryspy'
+
+experiment.linked_phases['ncaf'].scale = FULLPROF_SCALE
 
 project.analysis.calculate()
 calc_ed_cryspy = experiment.data.intensity_calc
@@ -193,9 +193,9 @@ experiment.linked_phases['ncaf'].scale
 # ## ed-crysfml VS FullProf
 
 # %%
-experiment.linked_phases['ncaf'].scale = FULLPROF_SCALE
-
 experiment.calculator.type = 'crysfml'
+
+experiment.linked_phases['ncaf'].scale = FULLPROF_SCALE
 
 project.analysis.calculate()
 calc_ed_crysfml = experiment.data.intensity_calc

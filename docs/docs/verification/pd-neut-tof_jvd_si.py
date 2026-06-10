@@ -109,9 +109,9 @@ project.experiments.add(experiment)
 # ## ed-cryspy VS FullProf
 
 # %%
-experiment.linked_phases['si'].scale = FULLPROF_SCALE
-
 experiment.calculator.type = 'cryspy'
+
+experiment.linked_phases['si'].scale = FULLPROF_SCALE
 
 project.analysis.calculate()
 calc_ed_cryspy = experiment.data.intensity_calc
@@ -157,10 +157,10 @@ experiment.peak.broad_lorentz_gamma_1
 # ## ed-crysfml VS FullProf
 
 # %%
+experiment.calculator.type = 'crysfml'
+
 experiment.linked_phases['si'].scale = FULLPROF_SCALE
 experiment.peak.broad_lorentz_gamma_1 = FULLPROF_GAMMA_1
-
-experiment.calculator.type = 'crysfml'
 
 project.analysis.calculate()
 calc_ed_crysfml = experiment.data.intensity_calc

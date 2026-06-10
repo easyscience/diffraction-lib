@@ -100,10 +100,10 @@ project.experiments.add(experiment)
 # ## ed-cryspy VS FullProf
 
 # %%
+experiment.calculator.type = 'cryspy'
+
 experiment.instrument.calib_sample_displacement = FULLPROF_SYCOS
 experiment.instrument.calib_sample_transparency = FULLPROF_SYSIN
-
-experiment.calculator.type = 'cryspy'
 
 project.analysis.calculate()
 calc_ed_cryspy = experiment.data.intensity_calc
@@ -143,6 +143,8 @@ project.display.pattern_comparison(
 # ## ed-crysfml VS FullProf
 
 # %%
+experiment.calculator.type = 'crysfml'
+
 experiment.linked_phases['lab6'].scale = FULLPROF_SCALE
 
 experiment.peak.type = 'thompson-cox-hastings'
@@ -154,8 +156,6 @@ experiment.peak.broad_lorentz_x = FULLPROF_X
 experiment.peak.broad_lorentz_y = FULLPROF_Y
 experiment.peak.asym_fcj_1 = FULLPROF_S_L
 experiment.peak.asym_fcj_2 = FULLPROF_D_L
-
-experiment.calculator.type = 'crysfml'
 
 project.analysis.calculate()
 calc_ed_crysfml = experiment.data.intensity_calc
