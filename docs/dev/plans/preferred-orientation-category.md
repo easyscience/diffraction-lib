@@ -164,7 +164,7 @@ CrysPy is already a dependency; no `pyproject.toml`/`pixi.toml`/
   Files: `analysis/calculators/cryspy.py`.
   Commit: `Emit texture loop in cryspy experiment CIF`
 
-- [ ] **P1.4 — CrysPy cached-dictionary pass-through and
+- [x] **P1.4 — CrysPy cached-dictionary pass-through and
   invalidation.**
   In `_update_experiment_in_cryspy_dict`, after the
   `offset_sysin` block, patch `texture_g1`/`texture_g2` from
@@ -265,7 +265,7 @@ thresholds or add `# noqa`; refactor instead.
 - [x] P1.1 Category package
 - [x] P1.2 Bragg experiment wiring
 - [x] P1.3 CrysPy texture-loop emission
-- [ ] P1.4 CrysPy cache pass-through + invalidation
+- [x] P1.4 CrysPy cache pass-through + invalidation
 - [ ] P1.5 IUCr report-writer loop
 - [ ] P1.6 Promote ADR to accepted
 - [ ] P1.7 Phase 1 review gate

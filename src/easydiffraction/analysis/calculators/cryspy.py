@@ -70,6 +70,7 @@ class CryspyCalculator(CalculatorBase):
         self._cryspy_dicts: dict[str, dict[str, Any]] = {}
         self._cached_peak_types: dict[str, str] = {}
         self._cached_adp_types: dict[str, tuple[str, ...]] = {}
+        self._cached_pref_orient: dict[str, tuple] = {}
         self._last_powder_phase_blocks: dict[str, dict[str, Any] | None] = {}
 
     def _invalidate_stale_cache(
@@ -81,15 +82,29 @@ class CryspyCalculator(CalculatorBase):
         """
         Drop cached dict when experiment or structure config changed.
 
-        Checks both the peak profile type and the per-atom ADP types.
-        When either changes the cached dictionary is stale and must be
-        rebuilt from a fresh cryspy object.
+        Checks the peak profile type, the per-atom ADP types, and the
+        preferred-orientation row identities. When any changes the cached
+        dictionary is stale and must be rebuilt from a fresh cryspy
+        object.
         """
         if 'peak' in type(experiment)._public_attrs():
             current_type = experiment.peak.type_info.tag
             if self._cached_peak_types.get(combined_name) != current_type:
                 self._cryspy_dicts.pop(combined_name, None)
             self._cached_peak_types[combined_name] = current_type
+
+        # Preferred-orientation row set/identity. Adding or removing a
+        # row, or changing a row's phase_id or h/k/l, changes the emitted
+        # texture loop's shape and must rebuild the dict. The refinable
+        # r/fraction values are patched in place, so they are excluded.
+        if 'preferred_orientation' in type(experiment)._public_attrs():
+            current_pref_orient = tuple(
+                (item.phase_id.value, item.h.value, item.k.value, item.l.value)
+                for item in experiment.preferred_orientation
+            )
+            if self._cached_pref_orient.get(combined_name) != current_pref_orient:
+                self._cryspy_dicts.pop(combined_name, None)
+            self._cached_pref_orient[combined_name] = current_pref_orient
 
         if structure is not None:
             current_adp = tuple(atom.adp_type.value for atom in structure.atom_sites)
@@ -692,6 +707,14 @@ class CryspyCalculator(CalculatorBase):
                     cryspy_asymmetry[1] = experiment.peak.asym_empir_2.value
                     cryspy_asymmetry[2] = experiment.peak.asym_empir_3.value
                     cryspy_asymmetry[3] = experiment.peak.asym_empir_4.value
+
+                # Preferred orientation (March-Dollase): patch the
+                # refinable coefficient (g_1) and random fraction (g_2)
+                # in place, matched to each emitted texture row by phase
+                # label. h/k/l are fixed descriptors, so texture_axis is
+                # never patched. The keys are absent unless a texture
+                # loop was emitted, so guard.
+                _update_texture_in_cryspy_dict(cryspy_expt_dict, experiment)
 
             elif experiment.type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
                 cryspy_expt_name = f'tof_{experiment.name}'
@@ -1335,6 +1358,30 @@ def _cif_pref_orient_section(
         f'{phase_label} {row.r.value} {row.fraction.value} '
         f'{row.h.value} {row.k.value} {row.l.value}',
     ))
+
+
+def _update_texture_in_cryspy_dict(
+    cryspy_expt_dict: dict[str, Any],
+    experiment: object,
+) -> None:
+    """Patch cryspy texture ``g_1``/``g_2`` from preferred-orientation rows.
+
+    Matches each emitted texture row to a ``pref_orient`` row by phase
+    label and writes the refinable coefficient and random fraction in
+    place. ``h/k/l`` are fixed descriptors, so ``texture_axis`` is never
+    touched. No-op when no texture loop was emitted.
+    """
+    if 'texture_g1' not in cryspy_expt_dict:
+        return
+    pref_orient = getattr(experiment, 'preferred_orientation', None)
+    if pref_orient is None:
+        return
+    rows = {item.phase_id.value: item for item in pref_orient}
+    for index, label in enumerate(cryspy_expt_dict['texture_name']):
+        row = rows.get(str(label))
+        if row is not None:
+            cryspy_expt_dict['texture_g1'][index] = row.r.value
+            cryspy_expt_dict['texture_g2'][index] = row.fraction.value
 
 
 def _cif_background_section(
