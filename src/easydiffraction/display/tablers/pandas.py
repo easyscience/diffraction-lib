@@ -122,12 +122,13 @@ class PandasTableBackend(TableBackendBase):
         index = f'{_CELL_STYLE}; color: {INDEX_COLOR}; font-weight: normal; text-align: right'
         # ``display: table`` overrides MkDocs Material's
         # ``table:not([class]) { display: inline-block }`` rule. Left as
-        # inline-block the table drops out of the collapsing-border model,
-        # so the header's translucent ``border-bottom`` stacks into a
-        # darker line than the outer border and stops one pixel short of
-        # the right edge. The wrapping ``overflow-x: auto`` div (added
-        # below) restores the horizontal scrolling that Material's
-        # ``inline-block`` would otherwise have provided for wide tables.
+        # inline-block the table drops out of the collapsing-border
+        # model, so the header's translucent ``border-bottom`` stacks
+        # into a darker line than the outer border and stops one pixel
+        # short of the right edge. The wrapping ``overflow-x: auto`` div
+        # (added below) restores the horizontal scrolling that
+        # Material's ``inline-block`` would otherwise have provided for
+        # wide tables.
         table_style = (
             f'border: {border}; border-collapse: collapse; display: table; '
             f'margin-top: 0.5em; margin-left: 0.5em'
@@ -140,8 +141,8 @@ class PandasTableBackend(TableBackendBase):
         # ``border-bottom: 0`` neutralises hosts (e.g. JupyterLab's
         # ``.jp-RenderedHTMLCommon thead``) that paint an opaque header
         # rule on the thead element. Left in place that rule wins the
-        # border collapse and recolours the divider; zeroing it keeps the
-        # header/body divider the same translucent grey as the outer
+        # border collapse and recolours the divider; zeroing it keeps
+        # the header/body divider the same translucent grey as the outer
         # border, sourced only from the header cells' ``border-bottom``.
         head = (
             f'<table style="{table_style}">'
