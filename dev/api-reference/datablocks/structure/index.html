@@ -7669,11 +7669,8 @@ object. Assigning to it updates the parameter value.</p>
 
         <p>Return the isotropic ADP as a B-factor value.</p>
 <p>When <code>adp_type</code> is <code>Uiso</code> or <code>Uani</code> the stored U value is
-converted to B via B = 8π²U. For a <code>beta</code> atom the equivalent
-B is computed straight from the dimensionless beta tensor via
-the reciprocal cell (independent of the stored <code>adp_iso</code>), so
-it is never stale after a type switch. Otherwise the stored
-value is returned unchanged.</p>
+converted to B via B = 8π²U.  Otherwise the stored value is
+returned unchanged.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
