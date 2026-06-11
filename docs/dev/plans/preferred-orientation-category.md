@@ -277,9 +277,9 @@ thresholds or add `# noqa`; refactor instead.
 - [x] P1.5 IUCr report-writer loop
 - [x] P1.6 Promote ADR to accepted
 - [x] P1.7 Phase 1 review gate
-- [ ] Phase 2 tests
-- [ ] Phase 2 FullProf reference + verification notebook
-- [ ] Phase 2 full check suite green
+- [x] Phase 2 tests
+- [x] Phase 2 FullProf reference + verification notebook
+- [x] Phase 2 full check suite green
 
 ## Suggested Pull Request
 
