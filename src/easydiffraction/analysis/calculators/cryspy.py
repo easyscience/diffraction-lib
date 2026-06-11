@@ -1385,12 +1385,13 @@ def _cif_pref_orient_section(
 
 
 def _march_r_to_cryspy_g1(r: float) -> float:
-    """Convert the IUCr/FullProf March coefficient to cryspy ``g_1``.
+    """
+    Convert the IUCr/FullProf March coefficient to cryspy ``g_1``.
 
     CrysPy's "Modified March" parametrises March-Dollase with the
     **reciprocal** coefficient ``g_1 = 1/r`` (verified against
     FullProf). The user-facing ``r`` follows the standard
-    IUCr/FullProf/GSAS convention (1 = none, `<1` disk, `>1` needle)
+    IUCr/FullProf/GSAS convention (1 = none, ``<1`` disk, ``>1`` needle)
     and is inverted before it reaches the backend. CrysPy's factor is
     also not volume-normalised, but that is a constant per-phase factor
     absorbed by the scale (it slightly distorts the ``fraction``/``g_2``
