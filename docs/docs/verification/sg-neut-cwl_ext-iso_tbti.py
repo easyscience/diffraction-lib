@@ -90,7 +90,7 @@ FULLPROF_PROJECT_DIR = 'sg-neut-cwl_ext-iso_tbti'
 FULLPROF_OUT_FILE = 'tbti.out'
 FULLPROF_SCALE = 0.37517014  # FullProf Scale
 FULLPROF_WAVELENGTH = 0.7930  # FullProf Lambda
-# cryspy uses Becker-Coppens isotropic extinction, not the one from 
+# cryspy uses Becker-Coppens isotropic extinction, not the one from
 # FullProf
 EXTINCTION_RADIUS = 10.0
 EXTINCTION_MOSAICITY = 35000.0
