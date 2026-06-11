@@ -43,18 +43,21 @@ created. Related accepted ADRs consulted: `iucr-cif-tag-alignment.md`,
   `_pd_pref_orient_March_Dollase.*` export; `march_random_fract`
   namespaced under `_easydiffraction_pref_orient.march_random_fract` and
   omitted from the report when 0; `.hkl`/`.fract` excluded.
-- **Known backend limitation (ADR Decision 6):** CrysPy 0.11.0's texture
+- **CrysPy convention (ADR Decision 6):** CrysPy 0.11.0's texture
   function uses a reciprocal `g1 = 1/r` convention (handled by the
   backend) and is not volume-normalised (absorbed by scale), so the
   exposed `march_r` is the standard, portable March coefficient. The
-  verification notebook **documents this mismatch** rather than
-  asserting agreement.
+  verification notebook documents this convention and, after refining
+  `march_r`/`march_random_fract`/scale, **asserts agreement** with
+  FullProf within the closeness tolerances.
 
 ## Open questions
 
-- None blocking. The CrysPy formula divergence is documented and an
-  upstream issue is staged in `tmp/cryspy/preferred-orientation/`; this
-  plan does not depend on its resolution.
+- None blocking. CrysPy's reciprocal/non-normalised convention is
+  documented (Decision 6) and handled by the backend mapping; a
+  convention note for upstream is staged in
+  `tmp/cryspy/preferred-orientation/`. This plan does not depend on its
+  resolution.
 
 ## No new dependencies
 
@@ -243,17 +246,23 @@ CrysPy is already a dependency; no `pyproject.toml`/`pixi.toml`/
 ### Cross-engine verification notebook (on the LBCO base)
 
 1. Copy `docs/docs/verification/fullprof/pd-neut-cwl_pv_lbco/lbco.pcr`,
-   enable a single March–Dollase direction (texture axis via the phase
-   `Pr1 Pr2 Pr3` line and a non-zero `Pref1`), re-run FullProf locally
-   (`~/Applications/fullprof`) to regenerate `.prf`/`.bac`/`.sum` under
+   enable the March–Dollase model (`Nor=1`) along the phase
+   `Pr1 Pr2 Pr3` direction with non-zero `Pref1` **and** `Pref2` (the
+   reference uses `Pref1=1.2`, `Pref2=0.3`, axis `[0 0 1]`), re-run
+   FullProf locally (`~/Applications/fullprof`) to regenerate
+   `.prf`/`.bac`/`.sum` under
    `docs/docs/verification/fullprof/pd-neut-cwl_pv-march_lbco/`.
 2. Add `docs/docs/verification/pd-neut-cwl_pv-march_lbco.py` building
    the same LBCO model, setting
    `expt.preferred_orientation.create(phase_id='lbco', march_r=<Pref1>, march_random_fract=<Pref2>, index_h=<h>, index_k=<k>, index_l=<l>)`,
    and overlaying CrysPy vs FullProf. Compare CrysPy-only (no CrysFML
-   column, since PO is CrysPy-only). Add a markdown cell explaining the
-   CrysPy formula difference (link the upstream issue): expect agreement
-   at `r=1` and a quantified divergence for `r ≠ 1`.
+   column, since PO is CrysPy-only). Add a markdown cell documenting
+   CrysPy's convention — it uses the reciprocal `g1 = 1/r` (the backend
+   inverts the standard `march_r`) and a non-volume-normalised factor
+   that the scale absorbs, so the as-calculated pattern shows an overall
+   offset. Then refine `march_r`, `march_random_fract`, and the scale:
+   the refined CrysPy result recovers `Pref1`/`Pref2` and agrees with
+   FullProf within the verification tolerances.
 3. `pixi run notebook-prepare` to regenerate the `.ipynb`; commit source
    `.py` + generated `.ipynb` + FullProf reference together.
 
