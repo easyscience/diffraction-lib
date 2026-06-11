@@ -24,19 +24,19 @@ structure.space_group.name_h_m = 'F d -3 m'  # FullProf Space group symbol
 structure.cell.length_a = 10.130  # FullProf a
 
 # Anisotropic sites carry the FullProf β tensor directly: ``adp_type`` is
-# set to ``'beta'`` after the atom is added (the type switch needs the
-# unit cell), then the dimensionless β components are assigned verbatim.
-# F d -3 m is cubic, so symmetry links the remaining β components; only
-# the independent ones are set. FullProf occupancy folds in the site
-# multiplicity; CIF/EasyDiffraction use 1.0 for a fully occupied site.
+# set to ``'beta'`` and the dimensionless β components are assigned
+# verbatim. F d -3 m is cubic, so symmetry links the remaining β
+# components; only the independent ones are set. FullProf occupancy folds
+# in the site multiplicity; CIF/EasyDiffraction use 1.0 for a fully
+# occupied site.
 structure.atom_sites.create(
     label='Tb',  # FullProf Atom
     type_symbol='Tb',  # FullProf Typ
     fract_x=0.5,  # FullProf X
     fract_y=0.5,  # FullProf Y
     fract_z=0.5,  # FullProf Z
+    adp_type='beta',  # FullProf beta tensor
 )
-structure.atom_sites['Tb'].adp_type = 'beta'  # FullProf β tensor
 aniso = structure.atom_site_aniso['Tb']
 aniso.adp_11 = 0.00098991673  # FullProf beta11
 aniso.adp_12 = -0.00047650724  # FullProf beta12
@@ -47,8 +47,8 @@ structure.atom_sites.create(
     fract_x=0,  # FullProf X
     fract_y=0,  # FullProf Y
     fract_z=0,  # FullProf Z
+    adp_type='beta',  # FullProf beta tensor
 )
-structure.atom_sites['Ti'].adp_type = 'beta'  # FullProf β tensor
 aniso = structure.atom_site_aniso['Ti']
 aniso.adp_11 = 0.00090989727  # FullProf beta11
 aniso.adp_12 = -0.00016990340  # FullProf beta12
@@ -59,8 +59,8 @@ structure.atom_sites.create(
     fract_x=0.32804,  # FullProf X
     fract_y=0.125,  # FullProf Y
     fract_z=0.125,  # FullProf Z
+    adp_type='beta',  # FullProf beta tensor
 )
-structure.atom_sites['O1'].adp_type = 'beta'  # FullProf β tensor
 aniso = structure.atom_site_aniso['O1']
 aniso.adp_11 = 0.0012294180  # FullProf beta11
 aniso.adp_22 = 0.00078215479  # FullProf beta22
@@ -72,8 +72,8 @@ structure.atom_sites.create(
     fract_x=0.375,  # FullProf X
     fract_y=0.375,  # FullProf Y
     fract_z=0.375,  # FullProf Z
+    adp_type='beta',  # FullProf beta tensor
 )
-structure.atom_sites['O2'].adp_type = 'beta'  # FullProf β tensor
 aniso = structure.atom_site_aniso['O2']
 aniso.adp_11 = 0.00060762477  # FullProf beta11
 

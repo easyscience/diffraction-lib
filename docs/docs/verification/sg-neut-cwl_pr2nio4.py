@@ -26,20 +26,20 @@ structure.cell.length_b = 5.414600  # FullProf b
 structure.cell.length_c = 12.483399  # FullProf c
 
 # Anisotropic sites carry the FullProf β tensor directly: ``adp_type`` is
-# set to ``'beta'`` after the atom is added (the type switch needs the
-# unit cell), then the dimensionless β components are assigned verbatim.
-# F m m m is orthorhombic, so β11, β22, β33 are independent — each is set
-# explicitly rather than left to a symmetry constraint. FullProf
-# occupancy folds in the site multiplicity; the chemical occupancy here
-# is the FullProf Occ scaled by the multiplicity (1.0 for a full site).
+# set to ``'beta'`` and the dimensionless β components are assigned
+# verbatim. F m m m is orthorhombic, so β11, β22, β33 are independent —
+# each is set explicitly rather than left to a symmetry constraint.
+# FullProf occupancy folds in the site multiplicity; the chemical
+# occupancy here is the FullProf Occ scaled by the multiplicity (1.0 for
+# a full site).
 structure.atom_sites.create(
     label='Pr',  # FullProf Atom
     type_symbol='Pr',  # FullProf Typ
     fract_x=0.5,  # FullProf X
     fract_y=0.5,  # FullProf Y
     fract_z=0.35973,  # FullProf Z
+    adp_type='beta',  # FullProf beta tensor
 )
-structure.atom_sites['Pr'].adp_type = 'beta'  # FullProf β tensor
 aniso = structure.atom_site_aniso['Pr']
 aniso.adp_11 = 0.00710  # FullProf beta11
 aniso.adp_22 = 0.00710  # FullProf beta22
@@ -51,8 +51,8 @@ structure.atom_sites.create(
     fract_x=0,  # FullProf X
     fract_y=0,  # FullProf Y
     fract_z=0,  # FullProf Z
+    adp_type='beta',  # FullProf beta tensor
 )
-structure.atom_sites['Ni'].adp_type = 'beta'  # FullProf β tensor
 aniso = structure.atom_site_aniso['Ni']
 aniso.adp_11 = 0.00280  # FullProf beta11
 aniso.adp_22 = 0.00280  # FullProf beta22
@@ -64,8 +64,8 @@ structure.atom_sites.create(
     fract_x=0.25,  # FullProf X
     fract_y=0.25,  # FullProf Y
     fract_z=0,  # FullProf Z
+    adp_type='beta',  # FullProf beta tensor
 )
-structure.atom_sites['O1'].adp_type = 'beta'  # FullProf β tensor
 aniso = structure.atom_site_aniso['O1']
 aniso.adp_11 = 0.00500  # FullProf beta11
 aniso.adp_22 = 0.00500  # FullProf beta22
@@ -79,8 +79,8 @@ structure.atom_sites.create(
     fract_y=0,  # FullProf Y
     fract_z=0.17385,  # FullProf Z
     occupancy=0.722965,  # FullProf Occ 1.44593 / multiplicity
+    adp_type='beta',  # FullProf beta tensor
 )
-structure.atom_sites['O2'].adp_type = 'beta'  # FullProf β tensor
 aniso = structure.atom_site_aniso['O2']
 aniso.adp_11 = 0.01716  # FullProf beta11
 aniso.adp_22 = 0.01716  # FullProf beta22
@@ -93,8 +93,8 @@ structure.atom_sites.create(
     fract_y=0.25,  # FullProf Y
     fract_z=0.25,  # FullProf Z
     occupancy=0.074655,  # FullProf Occ 0.14931 / multiplicity
+    adp_type='beta',  # FullProf beta tensor
 )
-structure.atom_sites['Oi'].adp_type = 'beta'  # FullProf β tensor
 aniso = structure.atom_site_aniso['Oi']
 aniso.adp_11 = 0.01033  # FullProf beta11
 aniso.adp_22 = 0.01176  # FullProf beta22
