@@ -156,14 +156,26 @@ step P1.9), rather than leaving two copies of the same math.
    serializer is what makes project save/load round-trip β; without it β
    atoms would silently serialize as a B loop.
 
-6. **cryspy backend.** In `_update_aniso_beta`, add a `BETA` branch that
-   writes the stored β straight into `cryspy_beta` (no U→β transform),
-   and include `BETA` in the `aniso_types` set in `_set_atom_adps` so
-   `b_iso` is zeroed for β atoms too. cryspy's β convention is confirmed
-   to match the CIF/SHELX `β_ij = 2π²·U_ij·a*_i·a*_j`:
-   `_update_aniso_beta` already documents that formula and converts B/U
-   through cryspy's `calc_beta_by_u`, using reciprocal lengths from
-   `calc_reciprocal_by_unit_cell_parameters` (resolved Q2).
+6. **cryspy backend (two β paths).** cryspy receives β via **two**
+   complementary routes, both implemented:
+   - **Dict passthrough (refinement steps).** In `_update_aniso_beta`,
+     the `BETA` branch writes the stored β straight into `cryspy_beta`
+     (no U→β transform); `BETA` is in the `aniso_types` set so `b_iso`
+     is zeroed for β atoms. This drives every refinement step. cryspy's
+     β convention matches CIF/SHELX `β_ij = 2π²·U_ij·a*_i·a*_j` (the
+     `calc_beta_by_u` path; resolved Q2).
+   - **CIF-build relabel (initial parse).** cryspy's CIF parser and
+     `apply_space_group_constraint` only understand U/B aniso tags, so
+     during structure-CIF generation
+     `_temporarily_convert_to_u_notation`
+     /`_stash_beta_atom_as_u`/`_beta_reciprocal_pairs` transiently
+     relabel a β atom as `Uani` with `U_ij = β_ij/(2π²·a*_i·a*_j)`, then
+     restore β. cryspy re-derives the identical `atom_beta` via the
+     exact inverse, so the net behaviour is preserved. (Added in Phase 2
+     to fix a `u_11`-not-defined parse failure that only the full CIF
+     round-trip exposed; ed's `reciprocal_cell_lengths` must stay
+     consistent with cryspy's
+     `calc_reciprocal_by_unit_cell_parameters`.)
 
 > **Dropped (was decision 5): off-diagonal validator relaxation.**
 > Verification against current code shows the aniso off-diagonal

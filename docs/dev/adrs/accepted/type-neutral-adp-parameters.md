@@ -67,5 +67,12 @@ from `beta`. Implications specific to β:
 - **CIF.** `_atom_site_aniso.beta_11`…`beta_23` join the existing
   `B_ij`/`U_ij` tag lists; the writer's ADP-family grouping gains a
   `beta` family.
+- **cryspy (two β paths).** β reaches cryspy two ways: the refinement
+  loop writes stored β straight into `cryspy_beta` (β is cryspy's native
+  convention), while cryspy's CIF parser — which understands only U/B
+  aniso tags — is fed a transient `Uani` relabel
+  (`U_ij = β_ij/(2π²·a*_i·a*_j)`) during structure-CIF generation, then
+  β is restored. The round-trip is mathematically exact, so the net
+  behaviour is β-in/β-out.
 
 Plan: [`adp-beta-tensor.md`](../../plans/adp-beta-tensor.md).
