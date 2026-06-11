@@ -955,10 +955,21 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#preferred-orientation-category" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Preferred Orientation Category
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#measured-data-category" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6. Measured Data Category
+        7. Measured Data Category
       
     </span>
   </a>
@@ -2718,6 +2729,8 @@
       
         
       
+        
+      
     
     
     
@@ -2773,6 +2786,34 @@
     
   
     LBCO
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../verification/pd-neut-cwl_pv-march_lbco/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LBCO (preferred orientation)
   
 
     
@@ -3930,10 +3971,21 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#preferred-orientation-category" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Preferred Orientation Category
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#measured-data-category" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6. Measured Data Category
+        7. Measured Data Category
       
     </span>
   </a>
@@ -4264,7 +4316,23 @@ cap the number of points or choose a specific method:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="c1"># Link the structure defined in the previous step to the experiment</span>
 <span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="p">[</span><span class="s1">&#39;hrpt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">linked_phases</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;lbco&#39;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span>
 </code></pre></div>
-<h3 id="measured-data-category">6. Measured Data Category</h3>
+<h3 id="preferred-orientation-category">6. Preferred Orientation Category</h3>
+<p>For textured powders, add a March–Dollase preferred-orientation
+correction per phase. Set the March coefficient <code>march_r</code> (1 = no
+texture, &lt;1 platy/disk, &gt;1 needle), the texture direction
+(<code>index_h</code>, <code>index_k</code>, <code>index_l</code>), and optionally the random untextured
+fraction <code>march_random_fract</code>:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="c1"># Add a March–Dollase preferred-orientation correction for a phase</span>
+<span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="p">[</span><span class="s1">&#39;hrpt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">preferred_orientation</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+    <span class="n">phase_id</span><span class="o">=</span><span class="s1">&#39;lbco&#39;</span><span class="p">,</span> <span class="n">march_r</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span> <span class="n">index_h</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">index_k</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">index_l</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span>
+</code></pre></div>
+<p>This is a constant-wavelength Bragg powder correction, available on the
+<code>cryspy</code> engine. The defaults (<code>march_r=1</code>, <code>march_random_fract=0</code>)
+apply no texture, so it has no effect until you set them. See the
+<a href="../../parameters/pref_orient/">preferred-orientation parameters</a> for
+details.</p>
+<h3 id="measured-data-category">7. Measured Data Category</h3>
 <p>If you do not have a <abbr title="Crystallographic Information File.">CIF</abbr> file for your experiment, you can load measured
 data from a file in a supported format. The measured data will be
 automatically converted into <abbr title="Crystallographic Information File.">CIF</abbr> format and added to the experiment. The
