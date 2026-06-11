@@ -1,6 +1,6 @@
 # ADR: Preferred-Orientation Category (March–Dollase)
 
-**Status:** Proposed **Date:** 2026-06-11
+**Status:** Accepted **Date:** 2026-06-11
 
 This ADR follows the conventions in [`AGENTS.md`](../../../../AGENTS.md).
 
@@ -170,7 +170,7 @@ contract for factory/introspection callers.
   `experiment.preferred_orientation` (attribute, no `type` selector —
   it is a fixed, single-implementation category like `linked_phases`,
   not a switchable one, per
-  [`switchable-category-owned-selectors.md`](../accepted/switchable-category-owned-selectors.md)).
+  [`switchable-category-owned-selectors.md`](switchable-category-owned-selectors.md)).
 
 ### 2. Parameters per row
 
@@ -235,7 +235,7 @@ March–Dollase, so a "simple preferred orientation" workflow only sets
 ### 4. CIF serialization
 
 EasyDiffraction keeps **two** CIF flavours, per
-[`iucr-cif-tag-alignment.md`](../accepted/iucr-cif-tag-alignment.md):
+[`iucr-cif-tag-alignment.md`](iucr-cif-tag-alignment.md):
 short category-scoped tags for the day-to-day default save (and
 round-trip), and dictionary-standard tags for the on-demand IUCr report
 export. Categories with no IUCr counterpart (peak profile U/V/W, FCJ
@@ -452,7 +452,7 @@ Consequences for this category:
 - **Spherical-harmonics texture.** The IUCr dictionary and CrysPy both
   describe it; when a second model is actually needed, promote
   `pref_orient` to a switchable category (`pref_orient.type`) per
-  [`switchable-category-owned-selectors.md`](../accepted/switchable-category-owned-selectors.md),
+  [`switchable-category-owned-selectors.md`](switchable-category-owned-selectors.md),
   with March–Dollase as the default implementation.
 - **Multi-direction March–Dollase** (several axes per phase with
   `.fract` weights). The IUCr names exist; CrysPy's loop already allows

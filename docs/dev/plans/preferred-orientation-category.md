@@ -8,10 +8,11 @@ or the Phase 1 review gate**; commits are atomic and single-purpose.
 
 ## ADR
 
-Implements [`preferred-orientation-category.md`](../adrs/suggestions/preferred-orientation-category.md)
-(currently a **Suggestion**). This plan **owns** that ADR: a Phase 1
-step promotes it from `suggestions/` to `accepted/` (status flip + index
-update) before the PR, per §Change Discipline. No other ADR is created.
+Implements [`preferred-orientation-category.md`](../adrs/accepted/preferred-orientation-category.md)
+(promoted to **Accepted** in step P1.6). This plan **owns** that ADR: a
+Phase 1 step moves it from `suggestions/` to `accepted/` (status flip +
+index update) before the PR, per §Change Discipline. No other ADR is
+created.
 Related accepted ADRs consulted: `iucr-cif-tag-alignment.md`,
 `switchable-category-owned-selectors.md`,
 `loop-category-key-identity.md`, `factory-contracts.md`.
@@ -190,7 +191,7 @@ CrysPy is already a dependency; no `pyproject.toml`/`pixi.toml`/
   Files: `io/cif/iucr_writer.py`.
   Commit: `Write preferred-orientation loop in IUCr report`
 
-- [ ] **P1.6 — Promote the ADR to accepted.**
+- [x] **P1.6 — Promote the ADR to accepted.**
   `git mv docs/dev/adrs/suggestions/preferred-orientation-category.md
   docs/dev/adrs/accepted/preferred-orientation-category.md`, set its
   `**Status:**` to `Accepted`, fix its internal `../accepted/` links to
@@ -267,7 +268,7 @@ thresholds or add `# noqa`; refactor instead.
 - [x] P1.3 CrysPy texture-loop emission
 - [x] P1.4 CrysPy cache pass-through + invalidation
 - [x] P1.5 IUCr report-writer loop
-- [ ] P1.6 Promote ADR to accepted
+- [x] P1.6 Promote ADR to accepted
 - [ ] P1.7 Phase 1 review gate
 - [ ] Phase 2 tests
 - [ ] Phase 2 FullProf reference + verification notebook
