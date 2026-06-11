@@ -661,9 +661,22 @@ class AtomSite(CategoryItem):
         old_type = self._adp_type.value
         self._adp_type.value = value
         new_type = self._adp_type.value
-        if old_type != new_type:
-            self._convert_adp_values(old_type, new_type)
-            self._reorder_adp_cif_names(new_type)
+        if old_type == new_type:
+            return
+        aniso_types = {AdpTypeEnum.BANI, AdpTypeEnum.UANI, AdpTypeEnum.BETA}
+        involves_aniso = (
+            AdpTypeEnum(old_type) in aniso_types or AdpTypeEnum(new_type) in aniso_types
+        )
+        if involves_aniso and '_parent' not in self.__dict__:
+            # Anisotropic switch (tensor seeding or the cell-dependent
+            # beta transform) set inside ``create()`` before the atom is
+            # attached: nothing to convert on a fresh atom and the
+            # parent/cell is unreachable, so defer to the structure's
+            # aniso sync (run on add; see ``AtomSites.add``). Scalar
+            # iso↔iso switches need no parent and run eagerly below.
+            return
+        self._convert_adp_values(old_type, new_type)
+        self._reorder_adp_cif_names(new_type)
 
     @property
     def wyckoff_letter(self) -> StringDescriptor:
@@ -818,6 +831,31 @@ class AtomSites(CategoryCollection):
     def __init__(self) -> None:
         """Initialise an empty atom-sites collection."""
         super().__init__(item_type=AtomSite)
+
+    def add(self, item: object) -> None:
+        """
+        Add an atom site and reconcile the anisotropic-ADP rows.
+
+        Extends :meth:`CategoryCollection.add` so that an atom created
+        with an anisotropic ``adp_type`` (``Bani``/``Uani``/``beta``)
+        immediately exposes its ``atom_site_aniso`` entry, materialising
+        and CIF-reordering it via the parent structure's sync. This lets
+        ``create(adp_type='beta')`` work inline: the row exists (with
+        zero defaults) right after creation, ready for component
+        assignment.
+
+        Parameters
+        ----------
+        item : object
+            The :class:`AtomSite` to add.
+        """
+        super().add(item)
+        structure = getattr(self, '_parent', None)
+        if structure is None or not hasattr(structure, '_sync_atom_site_aniso'):
+            return
+        aniso_types = {AdpTypeEnum.BANI.value, AdpTypeEnum.UANI.value, AdpTypeEnum.BETA.value}
+        if item.adp_type.value in aniso_types:
+            structure._sync_atom_site_aniso()
 
     # ------------------------------------------------------------------
     #  Private helper methods

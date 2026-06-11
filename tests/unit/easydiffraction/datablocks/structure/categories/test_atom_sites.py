@@ -2,8 +2,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 """Tests for atom_sites category (default and factory)."""
 
-import pytest
-
 
 def test_module_import():
     import easydiffraction.datablocks.structure.categories.atom_sites as MUT
@@ -509,12 +507,39 @@ class TestBetaConversion:
         expected = 8.0 * math.pi**2 * u_eq
         assert math.isclose(structure.atom_sites['Fe'].adp_iso.value, expected, rel_tol=1e-6)
 
-    def test_switch_to_beta_without_cell_raises(self):
+    def test_switch_to_beta_on_unattached_atom_defers(self):
         from easydiffraction.datablocks.structure.categories.atom_sites.default import AtomSite
 
+        # Inside create() the atom has no parent yet, so the beta switch
+        # defers the cell-dependent conversion (the structure's aniso sync
+        # completes it on add) rather than raising.
         site = AtomSite()
-        with pytest.raises(ValueError, match='unit cell'):
-            site.adp_type = 'beta'
+        site.adp_type = 'beta'
+        assert site.adp_type.value == 'beta'
+
+    def test_create_with_inline_beta_adp_type(self):
+        from easydiffraction.datablocks.structure.item.base import Structure
+
+        structure = Structure(name='test')
+        structure.space_group.name_h_m = 'P 1'
+        structure.cell.length_a = 5.0
+        structure.cell.length_b = 6.0
+        structure.cell.length_c = 8.0
+        # adp_type='beta' passed inline to create(): the atom is created
+        # with a zero-filled aniso row, ready for direct assignment.
+        structure.atom_sites.create(
+            label='Fe',
+            type_symbol='Fe',
+            fract_x=0.1,
+            fract_y=0.2,
+            fract_z=0.3,
+            adp_type='beta',
+        )
+        assert structure.atom_sites['Fe'].adp_type.value == 'beta'
+        aniso = structure.atom_site_aniso['Fe']
+        assert aniso.adp_11.value == 0.0
+        aniso.adp_11 = 0.0071
+        assert aniso.adp_11.value == 0.0071
 
     def test_adp_iso_as_b_for_beta_atom_matches_b_equivalent(self):
         import math
