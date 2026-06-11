@@ -153,9 +153,16 @@ project.display.pattern_comparison(
 
 # %% [markdown]
 # ## Fit ed-cryspy to FullProf
+#
+# Free the two March–Dollase parameters (`march_r`, `march_random_fract`)
+# and the scale, then refine. Starting from the FullProf values,
+# ed-cryspy converges back to `march_r ≈ Pref1` and
+# `march_random_fract ≈ Pref2`, and the patterns agree.
 
 # %%
 experiment.linked_phases['lbco'].scale.free = True
+experiment.preferred_orientation['lbco'].march_r.free = True
+experiment.preferred_orientation['lbco'].march_random_fract.free = True
 
 project.analysis.fit()
 project.display.fit.results()
