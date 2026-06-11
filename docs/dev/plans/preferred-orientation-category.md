@@ -249,7 +249,7 @@ CrysPy is already a dependency; no `pyproject.toml`/`pixi.toml`/
    `docs/docs/verification/fullprof/pd-neut-cwl_pv-march_lbco/`.
 2. Add `docs/docs/verification/pd-neut-cwl_pv-march_lbco.py` building
    the same LBCO model, setting
-   `expt.preferred_orientation.create(phase_id='lbco', r=<Pref1>, index_h=<h>, index_k=<k>, index_l=<l>)`,
+   `expt.preferred_orientation.create(phase_id='lbco', march_r=<Pref1>, march_random_fract=<Pref2>, index_h=<h>, index_k=<k>, index_l=<l>)`,
    and overlaying CrysPy vs FullProf. Compare CrysPy-only (no CrysFML
    column, since PO is CrysPy-only). Add a markdown cell explaining the
    CrysPy formula difference (link the upstream issue): expect agreement
