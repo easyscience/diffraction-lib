@@ -153,7 +153,6 @@ POSTERIOR_PAIR_TARGET_CONTOUR_GRID_POINT_BUDGET = 73728
 POSTERIOR_PAIR_AUTO_MAX_CONTOUR_PARAMETERS = 6
 PAIR_PLOT_CELL_SIZE_PIXELS = 190
 PAIR_PLOT_MIN_CELL_SIZE_PIXELS = 90
-PAIR_PLOT_MIN_SIZE_PIXELS = 680
 PAIR_PLOT_MARGIN_PIXELS = 120
 PAIR_PLOT_ESTIMATED_CONTAINER_WIDTH_PIXELS = 980
 PAIR_PLOT_SUBPLOT_SPACING = 0.01
@@ -164,7 +163,6 @@ POSTERIOR_PAIR_Y_TITLE_XSHIFT_PIXELS = 16
 POSTERIOR_PAIR_X_TITLE_YSHIFT_PIXELS = 10
 SQUARE_MATRIX_TITLE_YSHIFT_PIXELS = 12
 POSTERIOR_PAIR_GUIDE_LINE_COLOR = 'rgba(125, 140, 173, 0.18)'
-SQUARE_MATRIX_FIXED_ASPECT_RATIO = '1 / 1'
 SQUARE_MATRIX_FIXED_ASPECT_META_KEY = 'fixed_aspect_wrapper'
 SQUARE_MATRIX_LEFT_MARGIN_PIXELS = 40
 SQUARE_MATRIX_RIGHT_MARGIN_PIXELS = 24
@@ -2629,20 +2627,6 @@ class Plotter(RendererBase):
                 PAIR_PLOT_CELL_SIZE_PIXELS,
                 max(PAIR_PLOT_MIN_CELL_SIZE_PIXELS, cell_size),
             )
-        )
-
-    @classmethod
-    def _posterior_pair_figure_height_pixels(cls, n_parameters: int) -> int:
-        """
-        Return the initial figure height for a responsive pair plot.
-        """
-        cell_size = cls._posterior_pair_cell_size_pixels(
-            n_parameters,
-            available_width_pixels=PAIR_PLOT_ESTIMATED_CONTAINER_WIDTH_PIXELS,
-        )
-        return max(
-            PAIR_PLOT_MIN_SIZE_PIXELS,
-            cell_size * n_parameters + PAIR_PLOT_MARGIN_PIXELS,
         )
 
     @staticmethod
