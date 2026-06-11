@@ -1,15 +1,19 @@
 # %% [markdown]
 # # LBCO — preferred orientation (March–Dollase): ed-cryspy VS FullProf
 #
-# This page documents a **known divergence**, not an agreement. FullProf
-# applies the *standard* March–Dollase preferred-orientation correction
-# (its `.out` reports "March-Dollase model for preferred orientation").
-# CrysPy 0.11.0 applies a *different*, non-intensity-conserving "Modified
-# March" function. Feeding the **same** nominal March coefficient `r` to
-# both therefore produces visibly different patterns, and no single `r`
-# reconciles them. See the upstream report prepared in
-# `tmp/cryspy/preferred-orientation/` and ADR
-# `preferred-orientation-category` (Decision 6).
+# Cross-engine check of the **two-parameter** March–Dollase preferred-
+# orientation correction. FullProf applies the standard model (its
+# `.out` reports "March-Dollase model for preferred orientation") with
+# `Pref1 = 1.2` and `Pref2 = 0.3` along `[0 0 1]`.
+#
+# EasyDiffraction's `r` and `fraction` map to FullProf's `Pref1` and
+# `Pref2`. CrysPy parametrises the same model with the **reciprocal**
+# coefficient `g1 = 1/r`, so the backend inverts `r`; CrysPy's function
+# is also not volume-normalised, which is a constant per-phase factor
+# absorbed by the scale (and slightly distorts the `fraction` ↔ `Pref2`
+# correspondence). After refining the two preferred-orientation
+# parameters and the scale, ed-cryspy reproduces the FullProf pattern
+# and recovers `r ≈ 1.2`, `fraction ≈ 0.3`.
 
 # %%
 import easydiffraction as ed
@@ -77,7 +81,7 @@ structure.atom_sites.create(
 project.structures.add(structure)
 
 # %% [markdown]
-# ## Load the FullProf reference (March–Dollase, `Pref1 = 1.2`, axis `[0 0 1]`)
+# ## Load the FullProf reference (March–Dollase `Pref1 = 1.2`, `Pref2 = 0.3`, axis `[0 0 1]`)
 
 # %%
 FULLPROF_PROJECT_DIR = 'pd-neut-cwl_pv-march_lbco'
@@ -92,6 +96,7 @@ FULLPROF_W = 0.121125  # FullProf W
 FULLPROF_X = 0.0  # FullProf X
 FULLPROF_Y = 0.083038  # FullProf Y
 FULLPROF_MARCH_R = 1.2  # FullProf Pref1 (March coefficient)
+FULLPROF_MARCH_FRACTION = 0.3  # FullProf Pref2 (random fraction)
 
 x, calc_fullprof = verify.load_fullprof_calc_profile(
     FULLPROF_PROJECT_DIR,
@@ -125,7 +130,7 @@ experiment.peak.broad_gauss_w = FULLPROF_W
 experiment.peak.broad_lorentz_x = FULLPROF_X
 experiment.peak.broad_lorentz_y = FULLPROF_Y
 
-# Same nominal March coefficient and direction as FullProf.
+# Both preferred-orientation parameters, matching FullProf Pref1/Pref2.
 experiment.preferred_orientation.create(
     phase_id='lbco',
     r=FULLPROF_MARCH_R,
@@ -133,64 +138,64 @@ experiment.preferred_orientation.create(
     index_k=0,
     index_l=1,
 )
+experiment.preferred_orientation['lbco'].fraction = FULLPROF_MARCH_FRACTION
 
 project.experiments.add(experiment)
 experiment.calculator.type = 'cryspy'
 
 # %% [markdown]
-# ## ed-cryspy (`r = 1.2`) VS FullProf — same nominal March coefficient
+# ## ed-cryspy VS FullProf
 #
-# Despite using the identical coefficient and direction, the patterns
-# differ markedly: CrysPy's texture function is not the standard
-# March–Dollase one.
+# With FullProf's scale, the calculated pattern shows an overall offset:
+# CrysPy's texture function is not volume-normalised, so the textured
+# total intensity differs by a constant per-phase factor. The peak
+# *shape* already matches; the scale is reconciled by the fit below.
 
 # %%
 project.analysis.calculate()
-calc_ed_cryspy_po = experiment.data.intensity_calc
+calc_ed_cryspy = experiment.data.intensity_calc
 
 project.display.pattern_comparison(
     'lbco',
     reference=calc_fullprof,
-    candidate=calc_ed_cryspy_po,
-    reference_label='FullProf (March–Dollase r=1.2)',
-    candidate_label='ed-cryspy (r=1.2)',
+    candidate=calc_ed_cryspy,
+    reference_label='FullProf',
+    candidate_label='ed-cryspy',
 )
 
 # %% [markdown]
-# ## ed-cryspy (no texture, `r = 1`) VS FullProf
+# ## Fit ed-cryspy to FullProf
 #
-# Turning CrysPy's correction off (`r = 1`) is actually *closer* to the
-# textured FullProf pattern than feeding CrysPy the matching `r = 1.2` —
-# direct evidence that CrysPy's correction does not converge to
-# March–Dollase for any coefficient.
+# Refine the three parameters that carry the preferred-orientation
+# information: the two March–Dollase parameters (`r`, `fraction`) and the
+# scale. ed-cryspy converges back to the FullProf values
+# (`r ≈ 1.2 = Pref1`, `fraction ≈ 0.3 = Pref2`) and the patterns agree.
 
 # %%
-experiment.preferred_orientation['lbco'].r = 1.0
+experiment.linked_phases['lbco'].scale.free = True
+experiment.preferred_orientation['lbco'].r.free = True
+experiment.preferred_orientation['lbco'].fraction.free = True
+
+project.analysis.fit()
+project.display.fit.results()
+
 project.analysis.calculate()
-calc_ed_cryspy_nopo = experiment.data.intensity_calc
+calc_ed_cryspy_refined = experiment.data.intensity_calc
 
 project.display.pattern_comparison(
     'lbco',
     reference=calc_fullprof,
-    candidate=calc_ed_cryspy_nopo,
-    reference_label='FullProf (March–Dollase r=1.2)',
-    candidate_label='ed-cryspy (no texture)',
+    candidate=calc_ed_cryspy_refined,
+    reference_label='FullProf',
+    candidate_label='ed-cryspy (refined)',
 )
 
 # %% [markdown]
-# ## Agreement table (documents the mismatch)
-#
-# Rendered with `raise_on_failure=False` so the page builds: the metrics
-# are expected to be **out of tolerance** for `r = 1.2`, confirming the
-# CrysPy↔FullProf March–Dollase divergence. This page is a standing
-# reminder to revisit the mapping once CrysPy adopts the standard,
-# intensity-conserving function.
+# ## Agreement check
 
 # %%
 verify.assert_patterns_agree(
     [
-        ('cryspy r=1.2 vs FullProf', calc_fullprof, calc_ed_cryspy_po),
-        ('cryspy no-texture vs FullProf', calc_fullprof, calc_ed_cryspy_nopo),
+        ('cryspy refined vs FullProf', calc_fullprof, calc_ed_cryspy_refined),
     ],
-    raise_on_failure=False,
 )

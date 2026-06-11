@@ -1,5 +1,5 @@
 COMM La0.5Ba0.5CoO3
-! Current global Chi2 (Bragg contrib.) =      1.413    
+! Current global Chi2 (Bragg contrib.) =      1.363    
 ! Files => DAT-file: lbco.dat,  PCR-file: lbco
 !Job Npr Nph Nba Nex Nsc Nor Dum Iwg Ilo Ias Res Ste Nre Cry Uni Cor Opt Aut
    1   7   1   5   2   0   1   0   0   0   0   0   0   0   0   0   0   1   1
@@ -59,7 +59,7 @@ O      O       0.00000  0.50000  0.50000  1.36662   0.06116   0   0   0    0
    3.890790   3.890790   3.890790  90.000000  90.000000  90.000000   #box -0.25 1.25 -0.15 1.15 -0.15 1.15
     0.00000    0.00000    0.00000    0.00000    0.00000    0.00000
 !  Pref1    Pref2      Asy1     Asy2     Asy3     Asy4      S_L      D_L
-  1.20000  0.00000  0.00000  0.00000  0.00000  0.00000  0.00000  0.00000
+  1.20000  0.30000  0.00000  0.00000  0.00000  0.00000  0.00000  0.00000
      0.00     0.00     0.00     0.00     0.00     0.00     0.00     0.00
 !  2Th1/TOF1    2Th2/TOF2  Pattern to plot
       10.300     155.450       1
