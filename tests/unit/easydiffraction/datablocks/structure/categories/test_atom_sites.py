@@ -584,3 +584,79 @@ class TestBetaConversion:
         assert math.isclose(aniso.adp_11.value, 2.0 * math.pi**2 * 0.01 * (1.0 / 5.0) ** 2)
         assert math.isclose(aniso.adp_22.value, 2.0 * math.pi**2 * 0.01 * (1.0 / 6.0) ** 2)
         assert aniso.adp_12.value == 0.0
+
+
+# ------------------------------------------------------------------
+#  ADP symmetry constraints during minimization
+# ------------------------------------------------------------------
+
+
+class TestAdpSymmetryConstraintMinimizerBypass:
+    """Cover the ``called_by_minimizer`` ADP-constraint write path.
+
+    When the minimizer drives anisotropic tensor components, symmetry
+    averaging on a special position can write back a value that is
+    transiently outside the diagonal ``RangeValidator(ge=0, le=10)``.
+    The minimizer path must apply it raw (``_set_value_from_minimizer``)
+    so the fit is not aborted, while the interactive path keeps the
+    validating setter.
+    """
+
+    def _make_cubic_bani(self):
+        from easydiffraction.datablocks.structure.item.base import Structure
+
+        structure = Structure(name='test')
+        # P m -3 m Wyckoff a forces β11=β22=β33 and zero off-diagonals.
+        structure.space_group.name_h_m = 'P m -3 m'
+        structure.atom_sites.create(
+            label='Si',
+            type_symbol='Si',
+            adp_type='Bani',
+            adp_iso=0.3,
+        )
+        structure._sync_atom_site_aniso()
+        aniso = structure.atom_site_aniso['Si']
+        aniso.adp_11 = 0.3
+        aniso.adp_22 = 0.3
+        aniso.adp_33 = 0.3
+        # Populate the Wyckoff letter so the ADP constraint pass engages.
+        structure.atom_sites._update()
+        return structure
+
+    @staticmethod
+    def _drive_out_of_range(aniso):
+        # Distinct sub-zero diagonals (raw minimizer writes); the cubic
+        # constraint equalises them to an out-of-range value that differs
+        # from each current component, so the validating setter would fire.
+        aniso.adp_11._set_value_from_minimizer(-0.3)
+        aniso.adp_22._set_value_from_minimizer(-0.2)
+        aniso.adp_33._set_value_from_minimizer(-0.1)
+
+    def test_minimizer_path_applies_out_of_range_tensor_without_raising(self, monkeypatch):
+        from easydiffraction.utils.logging import Logger
+
+        structure = self._make_cubic_bani()
+        aniso = structure.atom_site_aniso['Si']
+        self._drive_out_of_range(aniso)
+
+        # RAISE mode makes the validating setter abort on a range breach.
+        monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.RAISE, raising=True)
+        structure.atom_sites._apply_adp_symmetry_constraints(called_by_minimizer=True)
+
+        # The constrained diagonals are equalised and applied raw, even
+        # though the value is below the validator's lower bound.
+        assert aniso.adp_11.value == aniso.adp_22.value == aniso.adp_33.value
+        assert aniso.adp_11.value < 0.0
+
+    def test_interactive_path_still_validates(self, monkeypatch):
+        import pytest
+
+        from easydiffraction.utils.logging import Logger
+
+        structure = self._make_cubic_bani()
+        aniso = structure.atom_site_aniso['Si']
+        self._drive_out_of_range(aniso)
+
+        monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.RAISE, raising=True)
+        with pytest.raises(TypeError, match='outside'):
+            structure.atom_sites._apply_adp_symmetry_constraints(called_by_minimizer=False)
