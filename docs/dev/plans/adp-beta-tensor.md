@@ -10,7 +10,7 @@ the per-step checklist. High-level:
 
 - [x] Phase 1 — Implementation (code + docs + ADR)
 - [x] Phase 1 review gate
-- [ ] Phase 2 — Verification (tests + `pixi` gate)
+- [x] Phase 2 — Verification (tests + `pixi` gate)
 
 ## ADR
 
