@@ -407,6 +407,13 @@
 │   │   │   │   │   └── 🏷️ class TotalGaussianDampedSinc
 │   │   │   │   └── 📄 total_mixins.py
 │   │   │   │       └── 🏷️ class TotalBroadeningMixin
+│   │   │   ├── 📁 pref_orient
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 default.py
+│   │   │   │   │   ├── 🏷️ class PrefOrient
+│   │   │   │   │   └── 🏷️ class PrefOrients
+│   │   │   │   └── 📄 factory.py
+│   │   │   │       └── 🏷️ class PrefOrientFactory
 │   │   │   ├── 📁 refln
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 bragg_pd.py

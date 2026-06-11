@@ -70,6 +70,7 @@ class CryspyCalculator(CalculatorBase):
         self._cryspy_dicts: dict[str, dict[str, Any]] = {}
         self._cached_peak_types: dict[str, str] = {}
         self._cached_adp_types: dict[str, tuple[str, ...]] = {}
+        self._cached_pref_orient: dict[str, tuple] = {}
         self._last_powder_phase_blocks: dict[str, dict[str, Any] | None] = {}
 
     def _invalidate_stale_cache(
@@ -81,15 +82,41 @@ class CryspyCalculator(CalculatorBase):
         """
         Drop cached dict when experiment or structure config changed.
 
-        Checks both the peak profile type and the per-atom ADP types.
-        When either changes the cached dictionary is stale and must be
-        rebuilt from a fresh cryspy object.
+        Checks the peak profile type, the per-atom ADP types, and the
+        preferred-orientation row identities. When any changes the
+        cached dictionary is stale and must be rebuilt from a fresh
+        cryspy object.
         """
         if 'peak' in type(experiment)._public_attrs():
             current_type = experiment.peak.type_info.tag
             if self._cached_peak_types.get(combined_name) != current_type:
                 self._cryspy_dicts.pop(combined_name, None)
             self._cached_peak_types[combined_name] = current_type
+
+        # Preferred-orientation row set/identity. Adding or removing a
+        # row, or changing a row's phase_id or Miller direction,
+        # changes the emitted texture loop's shape and must rebuild the
+        # dict. The refinable r/fraction values are patched in place, so
+        # they are excluded. Constant-wavelength only, matching the
+        # texture-loop emission scope; TOF emits no texture and is not
+        # tracked here.
+        supports_texture = (
+            'preferred_orientation' in type(experiment)._public_attrs()
+            and experiment.type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH
+        )
+        if supports_texture:
+            current_pref_orient = tuple(
+                (
+                    item.phase_id.value,
+                    item.index_h.value,
+                    item.index_k.value,
+                    item.index_l.value,
+                )
+                for item in experiment.preferred_orientation
+            )
+            if self._cached_pref_orient.get(combined_name) != current_pref_orient:
+                self._cryspy_dicts.pop(combined_name, None)
+            self._cached_pref_orient[combined_name] = current_pref_orient
 
         if structure is not None:
             current_adp = tuple(atom.adp_type.value for atom in structure.atom_sites)
@@ -693,6 +720,14 @@ class CryspyCalculator(CalculatorBase):
                     cryspy_asymmetry[2] = experiment.peak.asym_empir_3.value
                     cryspy_asymmetry[3] = experiment.peak.asym_empir_4.value
 
+                # Preferred orientation (March-Dollase): patch the
+                # refinable coefficient (g_1) and random fraction (g_2)
+                # in place, matched to each emitted texture row by phase
+                # label. h/k/l are fixed descriptors, so texture_axis is
+                # never patched. The keys are absent unless a texture
+                # loop was emitted, so guard.
+                _update_texture_in_cryspy_dict(cryspy_expt_dict, experiment)
+
             elif experiment.type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
                 cryspy_expt_name = f'tof_{experiment.name}'
                 cryspy_expt_dict = cryspy_dict[cryspy_expt_name]
@@ -1026,6 +1061,7 @@ class CryspyCalculator(CalculatorBase):
         # Structure sections
         _cif_orient_matrix_section(cif_lines, expt_type)
         _cif_phase_section(cif_lines, expt_type, linked_structure)
+        _cif_pref_orient_section(cif_lines, expt_type, experiment, linked_structure)
         _cif_background_section(cif_lines, expt_type, twotheta_min, twotheta_max)
 
         # Measured data
@@ -1295,6 +1331,99 @@ def _cif_phase_section(
             '_phase_scale',
             f'{linked_structure.name} 1.0',
         ))
+
+
+def _cif_pref_orient_section(
+    cif_lines: list[str],
+    expt_type: object | None,
+    experiment: object,
+    linked_structure: object,
+) -> None:
+    """
+    Append the cryspy texture (March-Dollase) loop for the phase.
+
+    cryspy keys texture to a phase by ``_texture_label``, so only the
+    ``pref_orient`` row whose ``phase_id`` matches the phase being
+    calculated is emitted. A row with ``r = 1`` is a mathematical no-op;
+    an empty collection (the default) emits nothing.
+    """
+    # Initial support is constant-wavelength only (ADR Deferred Work);
+    # the TOF pass-through is not wired, so a TOF texture loop would
+    # go stale on refinement. Emit nothing for TOF to keep the scope
+    # consistent end to end.
+    if (
+        expt_type is None
+        or expt_type.sample_form.value != SampleFormEnum.POWDER
+        or expt_type.beam_mode.value != BeamModeEnum.CONSTANT_WAVELENGTH
+    ):
+        return
+    pref_orient = getattr(experiment, 'preferred_orientation', None)
+    if pref_orient is None:
+        return
+    phase_label = linked_structure.name
+    row = next(
+        (item for item in pref_orient if item.phase_id.value == phase_label),
+        None,
+    )
+    if row is None:
+        return
+    cif_lines.extend((
+        '',
+        'loop_',
+        '_texture_label',
+        '_texture_g_1',
+        '_texture_g_2',
+        '_texture_h_ax',
+        '_texture_k_ax',
+        '_texture_l_ax',
+        (
+            f'{phase_label} {_march_r_to_cryspy_g1(row.march_r.value)} '
+            f'{row.march_random_fract.value} '
+            f'{row.index_h.value} {row.index_k.value} {row.index_l.value}'
+        ),
+    ))
+
+
+def _march_r_to_cryspy_g1(r: float) -> float:
+    """
+    Convert the IUCr/FullProf March coefficient to cryspy ``g_1``.
+
+    CrysPy's "Modified March" parametrises March-Dollase with the
+    **reciprocal** coefficient ``g_1 = 1/r`` (verified against
+    FullProf). The user-facing ``r`` follows the standard
+    IUCr/FullProf/GSAS convention (1 = none, ``<1`` disk, ``>1`` needle)
+    and is inverted before it reaches the backend. CrysPy's factor is
+    also not volume-normalised, but that is a constant per-phase factor
+    absorbed by the scale (it slightly distorts the ``fraction``/``g_2``
+    correspondence).
+    """
+    return 1.0 / r
+
+
+def _update_texture_in_cryspy_dict(
+    cryspy_expt_dict: dict[str, Any],
+    experiment: object,
+) -> None:
+    """
+    Patch cryspy texture g_1/g_2 from preferred-orientation rows.
+
+    Matches each emitted texture row to a ``pref_orient`` row by phase
+    label and writes the refinable coefficient and random fraction in
+    place. ``index_h``/``index_k``/``index_l`` are fixed descriptors, so
+    ``texture_axis`` is never touched. No-op when no texture loop was
+    emitted.
+    """
+    if 'texture_g1' not in cryspy_expt_dict:
+        return
+    pref_orient = getattr(experiment, 'preferred_orientation', None)
+    if pref_orient is None:
+        return
+    rows = {item.phase_id.value: item for item in pref_orient}
+    for index, label in enumerate(cryspy_expt_dict['texture_name']):
+        row = rows.get(str(label))
+        if row is not None:
+            cryspy_expt_dict['texture_g1'][index] = _march_r_to_cryspy_g1(row.march_r.value)
+            cryspy_expt_dict['texture_g2'][index] = row.march_random_fract.value
 
 
 def _cif_background_section(

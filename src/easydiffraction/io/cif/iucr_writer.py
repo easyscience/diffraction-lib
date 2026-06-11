@@ -485,6 +485,7 @@ def _write_powder_pattern_block(
     _write_powder_pattern_refinement_section(lines, project)
     _write_powder_profile_loop(lines, experiment)
     _write_powder_refln_loop(lines, experiment)
+    _write_pref_orient_loop(lines, experiment)
     _write_powder_project_extensions(lines, experiment)
     return '\n'.join(lines)
 
@@ -591,6 +592,64 @@ def _write_powder_refln_loop(lines: list[str], experiment: object) -> None:
             '_refln.d_spacing',
         ),
         rows,
+    )
+
+
+def _write_pref_orient_loop(lines: list[str], experiment: object) -> None:
+    """
+    Append the March-Dollase preferred-orientation loop.
+
+    Standard fields use the IUCr ``_pd_pref_orient_March_Dollase.*``
+    category (the ``.id`` serial is synthesised). The non-standard
+    random fraction (CrysPy ``g2``) is emitted under the project
+    namespace and only for rows whose fraction is non-zero, so the
+    common pure March-Dollase case produces a fully standard loop.
+    """
+    rows = list(_collection_values(getattr(experiment, 'preferred_orientation', None)))
+    if not rows:
+        return
+
+    _section(lines, 'Preferred orientation')
+    _write_loop(
+        lines,
+        (
+            '_pd_pref_orient_March_Dollase.id',
+            '_pd_pref_orient_March_Dollase.phase_id',
+            '_pd_pref_orient_March_Dollase.index_h',
+            '_pd_pref_orient_March_Dollase.index_k',
+            '_pd_pref_orient_March_Dollase.index_l',
+            '_pd_pref_orient_March_Dollase.r',
+            '_pd_pref_orient_March_Dollase.r_su',
+        ),
+        [
+            (
+                str(index),
+                _attribute_value(row, 'phase_id'),
+                _attribute_value(row, 'index_h'),
+                _attribute_value(row, 'index_k'),
+                _attribute_value(row, 'index_l'),
+                _attribute_value(row, 'march_r'),
+                getattr(_attribute_descriptor(row, 'march_r'), 'uncertainty', None),
+            )
+            for index, row in enumerate(rows, start=1)
+        ],
+    )
+
+    fraction_rows = [
+        (str(index), _attribute_value(row, 'march_random_fract'))
+        for index, row in enumerate(rows, start=1)
+        if _attribute_value(row, 'march_random_fract')
+    ]
+    if not fraction_rows:
+        return
+    _section(lines, 'Preferred orientation random fraction')
+    _write_loop(
+        lines,
+        (
+            '_easydiffraction_pref_orient.id',
+            '_easydiffraction_pref_orient.march_random_fract',
+        ),
+        fraction_rows,
     )
 
 

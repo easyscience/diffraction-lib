@@ -97,6 +97,7 @@ class ExperimentBase(DatablockItem):
             getattr(self, '_instrument', None),
             getattr(self, '_refln', None),
             getattr(self, '_linked_phases', None),
+            getattr(self, '_pref_orient', None),
             getattr(self, '_excluded_regions', None),
             getattr(self, '_data', None),
             getattr(self, '_data_range', None),

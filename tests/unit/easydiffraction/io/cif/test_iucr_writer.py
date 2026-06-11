@@ -572,3 +572,35 @@ def test_atom_site_aniso_section_renders_beta_header_and_tags():
 
     assert 'Anisotropic ADP (beta)' in text
     assert '_atom_site_aniso.beta_11' in text
+
+
+def test_write_pref_orient_loop_standard_and_fraction():
+    from easydiffraction.datablocks.experiment.categories.pref_orient import PrefOrients
+    from easydiffraction.io.cif import iucr_writer as W
+
+    coll = PrefOrients()
+    coll.create(phase_id='lbco', march_r=0.75, index_h=0, index_k=0, index_l=1)  # fraction=0
+    experiment = SimpleNamespace(preferred_orientation=coll)
+
+    lines: list[str] = []
+    W._write_pref_orient_loop(lines, experiment)
+    text = '\n'.join(lines)
+    assert '_pd_pref_orient_March_Dollase.r' in text
+    assert '_pd_pref_orient_March_Dollase.index_l' in text
+    # fraction == 0 -> the non-standard namespaced item is omitted
+    assert '_easydiffraction_pref_orient.march_random_fract' not in text
+
+    coll['lbco'].march_random_fract = 0.3
+    lines2: list[str] = []
+    W._write_pref_orient_loop(lines2, experiment)
+    assert '_easydiffraction_pref_orient.march_random_fract' in '\n'.join(lines2)
+
+
+def test_write_pref_orient_loop_empty_is_noop():
+    from easydiffraction.datablocks.experiment.categories.pref_orient import PrefOrients
+    from easydiffraction.io.cif import iucr_writer as W
+
+    experiment = SimpleNamespace(preferred_orientation=PrefOrients())
+    lines: list[str] = []
+    W._write_pref_orient_loop(lines, experiment)
+    assert lines == []

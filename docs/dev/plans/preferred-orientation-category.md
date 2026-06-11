@@ -1,0 +1,311 @@
+# Implementation Plan: Preferred-Orientation Category (March–Dollase)
+
+This plan follows [`AGENTS.md`](../../../AGENTS.md). No deliberate
+exceptions to those instructions are taken. Per §Commits and §Planning,
+when an AI agent executes this plan, **every completed Phase 1 step is
+staged with explicit paths and committed locally before the next step or
+the Phase 1 review gate**; commits are atomic and single-purpose.
+
+## ADR
+
+Implements
+[`preferred-orientation-category.md`](../adrs/accepted/preferred-orientation-category.md)
+(promoted to **Accepted** in step P1.6). This plan **owns** that ADR: a
+Phase 1 step moves it from `suggestions/` to `accepted/` (status flip +
+index update) before the PR, per §Change Discipline. No other ADR is
+created. Related accepted ADRs consulted: `iucr-cif-tag-alignment.md`,
+`switchable-category-owned-selectors.md`,
+`loop-category-key-identity.md`, `factory-contracts.md`.
+
+## Branch and PR
+
+- **Branch:** `preferred-orientation-category` (flat slug off
+  `develop`), created and checked out by `/draft-impl-1`'s setup. Do not
+  push unless asked.
+- **PR target:** `develop` (not `master`). See the Suggested Pull
+  Request section at the end.
+
+## Decisions (settled in the ADR)
+
+- New **per-phase loop category `pref_orient`**, owned by the
+  experiment, mirroring `linked_phases`. Keyed by `phase_id`.
+- Parameters per row: `march_r` (March coefficient, refinable, default
+  1.0), `index_h`/`index_k`/`index_l` (fixed integer **descriptors**,
+  default 0/0/1), `march_random_fract` (random fraction, refinable,
+  default 0.0). Defaults are a mathematical no-op.
+- **Scope: Bragg powder only.** Created **only in `BraggPdExperiment`**,
+  not the shared `PdExperimentBase`, so PDF/total-scattering and
+  single-crystal experiments never expose `preferred_orientation`
+  (`AttributeError` on access, not a silent no-op). Compatibility:
+  `sample_form={POWDER}, scattering_type={BRAGG}`.
+- **CrysPy-only** backend support (`CalculatorSupport({CRYSPY})`).
+- CIF: short `_pref_orient.*` round-trip tags + IUCr
+  `_pd_pref_orient_March_Dollase.*` export; `march_random_fract`
+  namespaced under `_easydiffraction_pref_orient.march_random_fract` and
+  omitted from the report when 0; `.hkl`/`.fract` excluded.
+- **CrysPy convention (ADR Decision 6):** CrysPy 0.11.0's texture
+  function uses a reciprocal `g1 = 1/r` convention (handled by the
+  backend) and is not volume-normalised (absorbed by scale), so the
+  exposed `march_r` is the standard, portable March coefficient. The
+  verification notebook documents this convention and, after refining
+  `march_r`/`march_random_fract`/scale, **asserts agreement** with
+  FullProf within the closeness tolerances.
+
+## Open questions
+
+- None blocking. CrysPy's reciprocal/non-normalised convention is
+  documented (Decision 6) and handled by the backend mapping; a
+  convention note for upstream is staged in
+  `tmp/cryspy/preferred-orientation/`. This plan does not depend on its
+  resolution.
+
+## No new dependencies
+
+CrysPy is already a dependency; no `pyproject.toml`/`pixi.toml`/
+`pixi.lock` changes are required or authorised by this plan.
+
+## Concrete files likely to change
+
+**New (Phase 1):**
+
+- `src/easydiffraction/datablocks/experiment/categories/pref_orient/__init__.py`
+- `src/easydiffraction/datablocks/experiment/categories/pref_orient/default.py`
+  (`PrefOrient(CategoryItem)`, `PrefOrients(CategoryCollection)`)
+- `src/easydiffraction/datablocks/experiment/categories/pref_orient/factory.py`
+  (`PrefOrientFactory(FactoryBase)`)
+
+**Edited (Phase 1):**
+
+- `src/easydiffraction/datablocks/experiment/item/bragg_pd.py` (create
+  `_pref_orient`, expose `preferred_orientation` property)
+- `src/easydiffraction/datablocks/experiment/item/base.py` (add
+  `getattr(self, '_pref_orient', None)` to the shared
+  `_attach_category_parents()` hook; no category creation here)
+- `src/easydiffraction/analysis/calculators/cryspy.py`
+  (`_cif_phase_section` neighbour → texture loop emission;
+  `_update_experiment_in_cryspy_dict` pass-through;
+  `_invalidate_stale_cache` signature)
+- `src/easydiffraction/io/cif/iucr_writer.py`
+  (`_write_pref_orient_loop`)
+- `docs/dev/adrs/suggestions/preferred-orientation-category.md` →
+  `docs/dev/adrs/accepted/preferred-orientation-category.md` (promotion)
+  and `docs/dev/adrs/index.md` (status/link)
+
+**New/edited (Phase 2, tests + verification):**
+
+- `tests/unit/easydiffraction/datablocks/experiment/categories/test_pref_orient.py`
+  (parent-level roll-up, matching `test_linked_phases.py`)
+- `tests/unit/easydiffraction/analysis/calculators/test_cryspy.py`
+  (texture emission + cache) and existing experiment/serialisation tests
+- `docs/docs/verification/pd-neut-cwl_pv-march_lbco.py` (+ generated
+  `.ipynb`) and
+  `docs/docs/verification/fullprof/pd-neut-cwl_pv-march_lbco/`
+  (regenerated FullProf reference)
+- `docs/dev/package-structure/full.md` / `short.md` (auto-regenerated by
+  `pixi run fix` — never edited by hand)
+
+## Implementation steps (Phase 1)
+
+> Phase 1 is code + ADR/plan docs only. Do **not** write or run tests,
+> linters, or `pixi` commands here (those are Phase 2). Commit each step
+> atomically with explicit paths and the listed message before moving
+> on.
+
+- [x] **P1.1 — Create the `pref_orient` category package.** Add
+      `default.py` with `PrefOrient(CategoryItem)`
+      (`_category_code='pref_orient'`,
+      `_category_entry_name='phase_id'`) exposing: `phase_id`
+      (`StringDescriptor`, default `'Si'`, regex validator like
+      `LinkedPhase.id`,
+      `CifHandler(['_pref_orient.phase_id'], iucr_name='_pd_pref_orient_March_Dollase.phase_id')`);
+      `march_r` (`Parameter`, default 1.0, `RangeValidator(gt=0.0)`,
+      `iucr_name='_pd_pref_orient_March_Dollase.r'`);
+      `index_h`/`index_k`/`index_l` (`IntegerDescriptor`, defaults
+      0/0/1, `iucr_name='_pd_pref_orient_March_Dollase.index_h/_k/_l'`);
+      `march_random_fract` (`Parameter`, default 0.0,
+      `RangeValidator(ge=0.0, le=1.0)`,
+      `iucr_name='_easydiffraction_pref_orient.march_random_fract'`).
+      Add `PrefOrients(CategoryCollection)` (`item_type=PrefOrient`,
+      `TypeInfo(tag='default')`,
+      `Compatibility(sample_form={POWDER}, scattering_type={BRAGG})`,
+      `CalculatorSupport({CRYSPY})`). Add `factory.py`
+      (`PrefOrientFactory(FactoryBase)`, default rule
+      `frozenset(): 'default'`) and `__init__.py` importing both classes
+      to trigger `@PrefOrientFactory.register`. Mirror the structure of
+      `categories/linked_phases/`. Files: the three new `pref_orient/*`
+      files. Commit: `Add pref_orient preferred-orientation category`
+
+- [x] **P1.2 — Wire `preferred_orientation` into Bragg powder
+      experiment.** Creation and public exposure stay **Bragg-only**;
+      only the parent-attachment hook (shared) gains an optional entry.
+  - In `item/bragg_pd.py` `BraggPdExperiment.__init__`, **before** the
+    existing final `self._attach_category_parents()` call, create
+    `self._pref_orient = PrefOrientFactory.create(PrefOrientFactory.default_tag())`,
+    and add a read-only `preferred_orientation` property returning
+    `self._pref_orient` (no setter, no `type` selector).
+  - In `item/base.py`, add `getattr(self, '_pref_orient', None)` to the
+    `ExperimentBase._attach_category_parents()` list. This mirrors how
+    `_instrument`/`_background`/`_refln` — also created only in
+    `BraggPdExperiment` — are already linked through the shared
+    `getattr(..., None)` hook: non-Bragg experiments never set
+    `_pref_orient`, so they yield `None` and are skipped, and
+    `preferred_orientation` remains absent (`AttributeError`) on them.
+    `PdExperimentBase` and category _creation_ are not touched. This
+    explicit `_parent` link is required so
+    `CategoryCollection.create()`/`add()` marks the experiment dirty
+    (`_need_categories_update`) on row changes.
+  - Confirm default-CIF serialisation is automatic (the owned
+    `CategoryCollection` is picked up by `_serializable_categories`
+    auto-discovery; no explicit registration needed). Files:
+    `item/bragg_pd.py`, `item/base.py`. Commit:
+    `Expose preferred_orientation on Bragg powder experiment`
+
+- [x] **P1.3 — Emit the CrysPy `_texture_*` loop.** In
+      `analysis/calculators/cryspy.py`, after the `_cif_phase_section`
+      call in `_convert_experiment_to_cryspy_cif`, add a
+      `_cif_pref_orient_section` that writes one `_texture_*` loop row
+      per `experiment.preferred_orientation` entry, mapping
+      `march_r→_texture_g_1` (inverted to `g_1 = 1/r`),
+      `fraction→_texture_g_2`,
+      `index_h/index_k/index_l→_texture_h_ax/_k_ax/_l_ax`,
+      `phase_id→_texture_label`. **Constant-wavelength powder only**
+      (guard on `sample_form == POWDER` **and**
+      `beam_mode == CONSTANT_WAVELENGTH`); TOF is Deferred Work and must
+      emit no texture, since its cached-dict pass-through is not wired.
+      Emit only the row matching the linked phase; a row with `r=1` is a
+      no-op. Files: `analysis/calculators/cryspy.py`. Commit:
+      `Emit texture loop in cryspy experiment CIF`
+
+- [x] **P1.4 — CrysPy cached-dictionary pass-through and invalidation.**
+      In `_update_experiment_in_cryspy_dict`, after the `offset_sysin`
+      block, patch `texture_g1`/`texture_g2` from
+      `march_r.value`/`march_random_fract.value` per row, guarded by
+      `if 'texture_g1' in cryspy_expt_dict`. Do **not** patch
+      `texture_axis` (`index_h`/`index_k`/`index_l` are fixed). In
+      `_invalidate_stale_cache`, add a `pref_orient` signature — a tuple
+      of `(phase_id, index_h, index_k, index_l)` per row, in order —
+      tracked per `combined_name` like `_cached_peak_types`, and **only
+      for constant-wavelength** experiments (matching the emission
+      scope); pop the cached dict when the signature changes (row
+      add/remove, `phase_id` or `index_h`/`index_k`/`index_l` edit).
+      Value-only `march_r`/`march_random_fract` edits must not
+      invalidate. Files: `analysis/calculators/cryspy.py`. Commit:
+      `Pass preferred-orientation through cryspy cache`
+
+- [x] **P1.5 — IUCr report-writer loop.** In `io/cif/iucr_writer.py`,
+      add `_write_pref_orient_loop(lines, experiment)` emitting the
+      official
+      `_pd_pref_orient_March_Dollase.{id,phase_id,index_h,index_k,index_l,r,r_su}`
+      columns (synthesise `.id` as a 1-based serial), called from the
+      powder experiment writer alongside the existing profile/refln
+      loops. Emit a separate
+      `_easydiffraction_pref_orient.march_random_fract` item only for
+      rows whose `fraction ≠ 0`; omit it entirely otherwise. Skip the
+      whole loop when the experiment has no `pref_orient` rows. Files:
+      `io/cif/iucr_writer.py`. Commit:
+      `Write preferred-orientation loop in IUCr report`
+
+- [x] **P1.6 — Promote the ADR to accepted.**
+      `git mv docs/dev/adrs/suggestions/preferred-orientation-category.md docs/dev/adrs/accepted/preferred-orientation-category.md`,
+      set its `**Status:**` to `Accepted`, fix its internal
+      `../accepted/` links to `./` as needed, and flip the
+      `docs/dev/adrs/index.md` row from `Suggestion`/`suggestions/...`
+      to `Accepted`/`accepted/...`. (The design-phase
+      `_review-*`/`_reply-*` siblings are removed by `/draft-impl-1`'s
+      Phase A cleanup, not here.) Files: the moved ADR,
+      `docs/dev/adrs/index.md`. Commit:
+      `Promote preferred-orientation-category ADR to accepted`
+
+- [x] **P1.7 — Phase 1 review gate (no code).** Mark P1.1–P1.6 `[x]`,
+      then stop for the Phase 1 review. Commit:
+      `Reach Phase 1 review gate`
+
+## Phase 2 — Verification
+
+> Stop after Phase 1 and wait for review approval before starting
+> Phase 2. Phase 2 adds tests and the verification notebook, then runs
+> the full check suite, committing fixes atomically.
+
+### Tests (add first)
+
+- Unit tests for the category package (the package has only
+  `default.py`/`factory.py`, so the single parent-level roll-up
+  `tests/unit/easydiffraction/datablocks/experiment/categories/test_pref_orient.py`
+  is the accepted layout per §Testing and
+  `tools/test_structure_check.py`, matching the existing
+  `test_linked_phases.py`): defaults are a no-op (`r=1`, `fraction=0`),
+  validators (`r>0`, `0≤fraction≤1`), `.create(...)` row construction,
+  CIF round-trip of `_pref_orient.*`.
+- `preferred_orientation` is present on `BraggPdExperiment` and absent
+  (`AttributeError`) on `TotalPdExperiment`/single-crystal.
+- CrysPy: texture loop emitted; cache pass-through updates `texture_g1`/
+  `texture_g2`; signature change invalidates the cache.
+- IUCr report writer emits the March–Dollase loop; `fraction=0` omits
+  the namespaced item.
+
+### Cross-engine verification notebook (on the LBCO base)
+
+1. Copy `docs/docs/verification/fullprof/pd-neut-cwl_pv_lbco/lbco.pcr`,
+   enable the March–Dollase model (`Nor=1`) along the phase
+   `Pr1 Pr2 Pr3` direction with non-zero `Pref1` **and** `Pref2` (the
+   reference uses `Pref1=1.2`, `Pref2=0.3`, axis `[0 0 1]`), re-run
+   FullProf locally (`~/Applications/fullprof`) to regenerate
+   `.prf`/`.bac`/`.sum` under
+   `docs/docs/verification/fullprof/pd-neut-cwl_pv-march_lbco/`.
+2. Add `docs/docs/verification/pd-neut-cwl_pv-march_lbco.py` building
+   the same LBCO model, setting
+   `expt.preferred_orientation.create(phase_id='lbco', march_r=<Pref1>, march_random_fract=<Pref2>, index_h=<h>, index_k=<k>, index_l=<l>)`,
+   and overlaying CrysPy vs FullProf. Compare CrysPy-only (no CrysFML
+   column, since PO is CrysPy-only). Add a markdown cell documenting
+   CrysPy's convention — it uses the reciprocal `g1 = 1/r` (the backend
+   inverts the standard `march_r`) and a non-volume-normalised factor
+   that the scale absorbs, so the as-calculated pattern shows an overall
+   offset. Then refine `march_r`, `march_random_fract`, and the scale:
+   the refined CrysPy result recovers `Pref1`/`Pref2` and agrees with
+   FullProf within the verification tolerances.
+3. `pixi run notebook-prepare` to regenerate the `.ipynb`; commit source
+   `.py` + generated `.ipynb` + FullProf reference together.
+
+### Verification commands (zsh-safe log-capture)
+
+```sh
+pixi run fix
+pixi run check > /tmp/easydiffraction-check.log 2>&1; check_exit_code=$?; tail -n 200 /tmp/easydiffraction-check.log; exit $check_exit_code
+pixi run unit-tests > /tmp/easydiffraction-unit.log 2>&1; unit_tests_exit_code=$?; tail -n 200 /tmp/easydiffraction-unit.log; exit $unit_tests_exit_code
+pixi run integration-tests > /tmp/easydiffraction-integration.log 2>&1; integration_tests_exit_code=$?; tail -n 200 /tmp/easydiffraction-integration.log; exit $integration_tests_exit_code
+pixi run script-tests > /tmp/easydiffraction-script.log 2>&1; script_tests_exit_code=$?; tail -n 200 /tmp/easydiffraction-script.log; exit $script_tests_exit_code
+```
+
+Notes: `pixi run fix` regenerates `docs/dev/package-structure/full.md`
+and `short.md` automatically (commit them; never hand-edit). Leave
+generated `docs/dev/benchmarking/*.csv` untracked. Do not raise lint
+thresholds or add `# noqa`; refactor instead.
+
+## Status checklist
+
+- [x] P1.1 Category package
+- [x] P1.2 Bragg experiment wiring
+- [x] P1.3 CrysPy texture-loop emission
+- [x] P1.4 CrysPy cache pass-through + invalidation
+- [x] P1.5 IUCr report-writer loop
+- [x] P1.6 Promote ADR to accepted
+- [x] P1.7 Phase 1 review gate
+- [x] Phase 2 tests
+- [x] Phase 2 FullProf reference + verification notebook
+- [x] Phase 2 full check suite green
+
+## Suggested Pull Request
+
+**Title:** Add preferred-orientation (March–Dollase) correction for
+textured powder samples
+
+**Description:** Powder samples whose crystallites pack with a preferred
+orientation (platy or needle-like grains) no longer have to be modelled
+as ideal random powders. You can now add a March–Dollase
+preferred-orientation correction to each phase in a constant-wavelength
+Bragg powder experiment — set a March coefficient and a crystallographic
+direction, refine the coefficient, and see the improved fit. The setting
+is saved and restored in your project CIF and appears in the
+IUCr-aligned report. Corrections run on the CrysPy engine; a
+cross-checked verification example based on the LBCO dataset documents
+how the CrysPy texture model currently compares with FullProf.
