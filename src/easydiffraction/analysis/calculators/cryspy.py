@@ -561,8 +561,9 @@ class CryspyCalculator(CalculatorBase):
 
         Converts B or U tensor components to cryspy's internal β
         representation using β_ij = 2π²·U_ij·a*_i·a*_j. Atoms already
-        stored as the dimensionless β tensor (``adp_type == 'beta'``) are
-        passed straight through, since β is cryspy's native convention.
+        stored as the dimensionless β tensor (``adp_type == 'beta'``)
+        are passed straight through, since β is cryspy's native
+        convention.
 
         Parameters
         ----------
@@ -911,8 +912,8 @@ class CryspyCalculator(CalculatorBase):
         """
         Return the ``2π²·a*_i·a*_j`` factors for a β→U conversion.
 
-        The six factors follow the ``(11, 22, 33, 12, 13, 23)`` component
-        order, so ``U_ij = beta_ij / factor_ij``.
+        The six factors follow the ``(11, 22, 33, 12, 13, 23)``
+        component order, so ``U_ij = beta_ij / factor_ij``.
         """
         from easydiffraction.crystallography import crystallography as ecr  # noqa: PLC0415
 
@@ -946,9 +947,9 @@ class CryspyCalculator(CalculatorBase):
         Relabel a β atom as Uani for cryspy and save its original state.
 
         Converts the stored β components to U (``U_ij = beta_ij /
-        (2π²·a*_i·a*_j)``) and points the CIF names at the U tags, so the
-        atom serialises as a Uani atom. The returned tuple matches the
-        layout consumed by :meth:`_restore_from_u_notation`.
+        (2π²·a*_i·a*_j)``) and points the CIF names at the U tags, so
+        the atom serialises as a Uani atom. The returned tuple matches
+        the layout consumed by :meth:`_restore_from_u_notation`.
         """
         from easydiffraction.datablocks.structure.categories.atom_sites.enums import (  # noqa: PLC0415
             AdpTypeEnum,
@@ -958,8 +959,9 @@ class CryspyCalculator(CalculatorBase):
         orig_iso_val = atom._adp_iso._value
         orig_iso_names = list(atom._adp_iso._cif_handler._names)
 
-        # adp_iso already holds the equivalent U for a beta atom; only the
-        # CIF tag needs relabelling (cryspy zeroes b_iso for aniso atoms).
+        # adp_iso already holds the equivalent U for a beta atom; only
+        # the CIF tag needs relabelling (cryspy zeroes b_iso for aniso
+        # atoms).
         atom._adp_iso._cif_handler._names = [
             '_atom_site.U_iso_or_equiv',
             '_atom_site.B_iso_or_equiv',
@@ -967,9 +969,9 @@ class CryspyCalculator(CalculatorBase):
         atom._adp_type._value = AdpTypeEnum.UANI.value
 
         lbl = atom.label.value
-        aniso = structure.atom_site_aniso[lbl] if lbl in structure.atom_site_aniso else None
-        if aniso is None:
+        if lbl not in structure.atom_site_aniso:
             return (atom, None, None, None, orig_adp_type, orig_iso_names, orig_iso_val)
+        aniso = structure.atom_site_aniso[lbl]
 
         orig_vals = []
         orig_names = []
@@ -977,7 +979,7 @@ class CryspyCalculator(CalculatorBase):
             param = getattr(aniso, f'_adp_{s}')
             orig_vals.append(param._value)
             orig_names.append(list(param._cif_handler._names))
-            param._value = param._value / pair
+            param._value /= pair
             param._cif_handler._names = [
                 f'_atom_site_aniso.U_{s}',
                 f'_atom_site_aniso.B_{s}',

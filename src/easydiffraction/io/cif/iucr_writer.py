@@ -930,7 +930,9 @@ def _atom_site_for_aniso(
 
 
 def _adp_family(atom_site: object) -> str:
-    """Return ``B``, ``U``, or ``beta`` for an atom-site ADP convention."""
+    """
+    Return ``B``, ``U``, or ``beta`` for an atom-site ADP convention.
+    """
     adp_type = str(_attribute_value(atom_site, 'adp_type')).lower()
     if adp_type == 'beta':
         return 'beta'
@@ -938,7 +940,9 @@ def _adp_family(atom_site: object) -> str:
 
 
 def _adp_iso_family(atom_site: object) -> str:
-    """Return ``B`` or ``U`` for the equivalent-isotropic atom-site loop."""
+    """
+    Return ``B`` or ``U`` for the equivalent-isotropic atom-site loop.
+    """
     # beta has no isotropic CIF tag; its equivalent isotropic value is
     # written in the B_iso_or_equiv column alongside the B family.
     return 'U' if _adp_family(atom_site) == 'U' else 'B'

@@ -121,19 +121,19 @@ step P1.9), rather than leaving two copies of the same math.
    helper.** Add a reciprocal-length helper (`a* b* c*` from
    `a b c α β γ`) to
    `src/easydiffraction/crystallography/crystallography.py` — the
-   existing crystallographic-math module (Wyckoff positions,
-   space-group symmetry constraints), which already hosts this kind of
-   domain geometry. (`core/` is the wrong home: it must stay
-   domain-free; `crystallography/` is the established place for
-   crystallographic math.) β↔U/B conversion routes through the parent
-   structure's `cell`; when no parent cell is reachable (atom
-   constructed in isolation) the type switch raises a clear error rather
-   than silently producing wrong numbers — this is a boundary-input edge
-   case per §Project Context. Do **not** depend on cryspy's reciprocal
-   helper for the ed-side conversion, so the model-layer type switch
-   stays independent of any calculator backend. The same shared helper
-   replaces the duplicate private `_reciprocal_lengths` in
-   `display/structure/builder.py` (step P1.9).
+   existing crystallographic-math module (Wyckoff positions, space-group
+   symmetry constraints), which already hosts this kind of domain
+   geometry. (`core/` is the wrong home: it must stay domain-free;
+   `crystallography/` is the established place for crystallographic
+   math.) β↔U/B conversion routes through the parent structure's `cell`;
+   when no parent cell is reachable (atom constructed in isolation) the
+   type switch raises a clear error rather than silently producing wrong
+   numbers — this is a boundary-input edge case per §Project Context. Do
+   **not** depend on cryspy's reciprocal helper for the ed-side
+   conversion, so the model-layer type switch stays independent of any
+   calculator backend. The same shared helper replaces the duplicate
+   private `_reciprocal_lengths` in `display/structure/builder.py` (step
+   P1.9).
 
 4. **Type-aware display units for aniso components.** When the owning
    `adp_type` is `beta`, the `adp_ij` display shows no `Å²` unit (β is
@@ -152,9 +152,9 @@ step P1.9), rather than leaving two copies of the same math.
    (`iucr_writer.py::_adp_family`, step P1.7) **and** the project
    serializer (`io/cif/serialize.py` — new `_ADP_FAMILY_BETA`, a `beta`
    branch in `_adp_family_from_type`, and a `beta` entry in the
-   `_group_items_by_adp_family` grouping dict, step P1.8). The serializer
-   is what makes project save/load round-trip β; without it β atoms would
-   silently serialize as a B loop.
+   `_group_items_by_adp_family` grouping dict, step P1.8). The
+   serializer is what makes project save/load round-trip β; without it β
+   atoms would silently serialize as a B loop.
 
 6. **cryspy backend.** In `_update_aniso_beta`, add a `BETA` branch that
    writes the stored β straight into `cryspy_beta` (no U→β transform),
@@ -238,9 +238,9 @@ Source:
   project CIF round-trip (`_ADP_FAMILY_BETA`, `_adp_family_from_type`,
   `_group_items_by_adp_family`).
 - `src/easydiffraction/display/structure/builder.py` — route the private
-  `_reciprocal_lengths` through `crystallography.reciprocal_cell_lengths`
-  (consolidation); β atoms render as spheres (ellipsoid display
-  deferred, Q6).
+  `_reciprocal_lengths` through
+  `crystallography.reciprocal_cell_lengths` (consolidation); β atoms
+  render as spheres (ellipsoid display deferred, Q6).
 - `src/easydiffraction/analysis/calculators/cryspy.py` —
   `_update_aniso_beta` β passthrough; `aniso_types` includes `BETA`.
 - `src/easydiffraction/datablocks/structure/item/base.py` and the
@@ -273,15 +273,15 @@ Each step is one atomic commit. Stage only the files the step touches
 (explicit paths). Commit locally before starting the next step.
 
 - [x] **P1.1 — ADP ADR extension + follow-up note.** Ensure the
-      _Extension_ section in `type-neutral-adp-parameters.md` records the
-      β decision (decisions 1–6 above): first-class `beta` type,
+      _Extension_ section in `type-neutral-adp-parameters.md` records
+      the β decision (decisions 1–6 above): first-class `beta` type,
       cell-dependent conversion, dimensionless-units display handling,
       and the new CIF tags. Verify it states that off-diagonal negatives
-      are *already* permitted (a statement of existing behaviour), not a
+      are _already_ permitted (a statement of existing behaviour), not a
       newly introduced relaxation. Also add the ADP creation-API UX
       follow-up row to `docs/dev/issues/open.md` (resolved Q5). Keep the
-      original Decision/Consequences intact. Stage the ADR and `open.md`.
-      Commit: `Extend type-neutral ADP ADR with beta tensor`
+      original Decision/Consequences intact. Stage the ADR and
+      `open.md`. Commit: `Extend type-neutral ADP ADR with beta tensor`
 - [x] **P1.2 — Reciprocal-cell helper.** Add a pure-geometry helper
       returning `(a*, b*, c*)` from `(a, b, c, α, β, γ)` to
       `crystallography/crystallography.py` (the crystallographic-math
@@ -292,12 +292,13 @@ Each step is one atomic commit. Stage only the files the step touches
       are treated as anisotropic: `item/base.py` (aniso-row sync),
       `atom_sites/default.py` (symmetry-constrained flag and
       collapse-from-aniso), and `atom_site_aniso/default.py` (iso-only
-      check). **Leave the B-vs-U sets** (`{Biso, Bani}` / `{Uiso,
-      Uani}`) unchanged — β is neither B nor U. **Leave
+      check). **Leave the B-vs-U sets** (`{Biso, Bani}` /
+      `{Uiso,     Uani}`) unchanged — β is neither B nor U. **Leave
       `display/structure/builder.py`'s display-shape sets unchanged** so
-      β atoms fall through to the sphere branch (ellipsoids deferred, Q6).
-      The cryspy `aniso_types` set is handled in P1.6. Search
-      `git grep -n "AdpTypeEnum\."`. Commit: `Add beta member to AdpTypeEnum`
+      β atoms fall through to the sphere branch (ellipsoids deferred,
+      Q6). The cryspy `aniso_types` set is handled in P1.6. Search
+      `git grep -n "AdpTypeEnum\."`. Commit:
+      `Add beta member to AdpTypeEnum`
 - [x] **P1.4 — aniso category: CIF names + display units.** Add
       `_atom_site_aniso.beta_*` to the `adp_ij` CIF handlers (decision
       5); type-aware display units that suppress `Å²` when
@@ -384,8 +385,8 @@ Test coverage to add:
   with a `display_handler`, one relying on the `_units` fallback —
   across `latex`/`html`/`gui` contexts.
 - report β tags (F4): the `iucr_writer` β round-trip emits
-  `_atom_site_aniso.beta_11`…`beta_23` (not a B/U-defaulted tag) under an
-  `Anisotropic ADP (beta)` section header.
+  `_atom_site_aniso.beta_11`…`beta_23` (not a B/U-defaulted tag) under
+  an `Anisotropic ADP (beta)` section header.
 
 ## Suggested Pull Request
 

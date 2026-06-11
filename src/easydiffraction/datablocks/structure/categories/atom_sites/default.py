@@ -274,7 +274,8 @@ class AtomSite(CategoryItem):
 
         Handles B ↔ U conversion using B = 8π²U and iso ↔ ani seeding.
         Conversions to or from the dimensionless ``beta`` tensor are
-        cell-dependent and delegated to :meth:`_convert_adp_values_beta`.
+        cell-dependent and delegated to
+        :meth:`_convert_adp_values_beta`.
 
         Parameters
         ----------
@@ -285,7 +286,7 @@ class AtomSite(CategoryItem):
         """
         old_enum = AdpTypeEnum(old_type)
         new_enum = AdpTypeEnum(new_type)
-        if AdpTypeEnum.BETA in (old_enum, new_enum):
+        if AdpTypeEnum.BETA in {old_enum, new_enum}:
             self._convert_adp_values_beta(old_enum, new_enum)
             return
         factor = 8.0 * math.pi**2
@@ -347,8 +348,8 @@ class AtomSite(CategoryItem):
         Writes directly to ``_value`` to bypass range validation,
         because intermediate minimizer steps can produce negative
         anisotropic components whose mean falls outside the nominal
-        ``[0, 100]`` range. For a beta atom the dimensionless diagonal is
-        mapped to U first (via the reciprocal cell), so the stored
+        ``[0, 100]`` range. For a beta atom the dimensionless diagonal
+        is mapped to U first (via the reciprocal cell), so the stored
         equivalent is a real U magnitude consistent with the Uani type
         rather than a dimensionless beta value.
         """
@@ -363,10 +364,10 @@ class AtomSite(CategoryItem):
 
     def _beta_diagonal_as_u(self, aniso: object) -> tuple[float, float, float]:
         """
-        Return the U-tensor diagonal ``(U11, U22, U33)`` for a beta atom.
+        Return the U diagonal ``(U11, U22, U33)`` for a beta atom.
 
-        Maps the dimensionless beta diagonal back to U via the reciprocal
-        cell (``U_ii = beta_ii / (2*pi**2 * a*_i**2)``).
+        Maps the dimensionless beta diagonal back to U via the
+        reciprocal cell (``U_ii = beta_ii / (2*pi**2 * a*_i**2)``).
 
         Parameters
         ----------
@@ -424,12 +425,16 @@ class AtomSite(CategoryItem):
         """
         Convert ADP values to or from the dimensionless beta tensor.
 
-        The beta transform is cell-dependent
-        (``beta_ij = 2*pi**2 * U_ij * a*_i * a*_j``), so it routes through
-        the parent structure's reciprocal cell and pivots on the U
-        tensor. ``beta`` is always anisotropic, so switching from an
-        isotropic type seeds the diagonal first and switching to an
-        isotropic type collapses it afterwards.
+        The beta transform is cell-dependent (``beta_ij = 2*pi**2 * U_ij
+        * a*_i * a*_j``), so it routes through the parent structure's
+        reciprocal cell and pivots on the U tensor. ``beta`` is always
+        anisotropic, so switching from an isotropic type seeds the
+        diagonal first and switching to an isotropic type collapses it
+        afterwards.
+
+        A reachable parent cell is required;
+        :meth:`_reciprocal_lengths_for_conversion` raises ``ValueError``
+        when none is available.
 
         Parameters
         ----------
@@ -437,11 +442,6 @@ class AtomSite(CategoryItem):
             Previous ADP type.
         new_enum : AdpTypeEnum
             New ADP type.
-
-        Raises
-        ------
-        ValueError
-            If no parent unit cell is reachable for the conversion.
         """
         factor = 8.0 * math.pi**2
         two_pi_sq = 2.0 * math.pi**2
@@ -455,31 +455,59 @@ class AtomSite(CategoryItem):
             a_star * c_star,
             b_star * c_star,
         )
-
         if new_enum is AdpTypeEnum.BETA:
-            # Build a U tensor (seeding the diagonal from the iso value
-            # first when coming from an isotropic type), then map U → β.
-            if old_enum in {AdpTypeEnum.BISO, AdpTypeEnum.UISO}:
-                self._seed_aniso_from_iso()
-            aniso = self._get_aniso_entry()
-            if aniso is None:
-                return
-            if old_enum in {AdpTypeEnum.BISO, AdpTypeEnum.BANI}:
-                for suffix in suffixes:
-                    getattr(aniso, f'_adp_{suffix}').value /= factor
-            for suffix, pair in zip(suffixes, pairs):
-                p = getattr(aniso, f'_adp_{suffix}')
-                p.value = two_pi_sq * p.value * pair
-            return
+            self._convert_to_beta(old_enum, factor, two_pi_sq, suffixes, pairs)
+        else:
+            self._convert_from_beta(new_enum, factor, two_pi_sq, suffixes, pairs)
 
-        # old_enum is BETA, new_enum is a B/U type: map β → U, then
-        # apply U → B and/or collapse the diagonal to the iso value.
+    def _convert_to_beta(
+        self,
+        old_enum: AdpTypeEnum,
+        factor: float,
+        two_pi_sq: float,
+        suffixes: tuple[str, ...],
+        pairs: tuple[float, ...],
+    ) -> None:
+        """
+        Build a U tensor and map it to the dimensionless beta tensor.
+
+        Seeds the diagonal from the iso value first when coming from an
+        isotropic type, then applies ``beta_ij = 2*pi**2 * U_ij * a*_i *
+        a*_j``.
+        """
+        if old_enum in {AdpTypeEnum.BISO, AdpTypeEnum.UISO}:
+            self._seed_aniso_from_iso()
         aniso = self._get_aniso_entry()
         if aniso is None:
             return
-        for suffix, pair in zip(suffixes, pairs):
+        if old_enum in {AdpTypeEnum.BISO, AdpTypeEnum.BANI}:
+            for suffix in suffixes:
+                getattr(aniso, f'_adp_{suffix}').value /= factor
+        for suffix, pair in zip(suffixes, pairs, strict=True):
             p = getattr(aniso, f'_adp_{suffix}')
-            p.value = p.value / (two_pi_sq * pair)
+            p.value = two_pi_sq * p.value * pair
+
+    def _convert_from_beta(
+        self,
+        new_enum: AdpTypeEnum,
+        factor: float,
+        two_pi_sq: float,
+        suffixes: tuple[str, ...],
+        pairs: tuple[float, ...],
+    ) -> None:
+        """
+        Map the beta tensor to U, then to B and/or the iso value.
+
+        Inverts ``beta_ij = 2*pi**2 * U_ij * a*_i * a*_j``, applies ``B
+        = 8*pi**2 * U`` when the new type is a B convention, and
+        collapses the diagonal when the new type is isotropic.
+        """
+        aniso = self._get_aniso_entry()
+        if aniso is None:
+            return
+        for suffix, pair in zip(suffixes, pairs, strict=True):
+            p = getattr(aniso, f'_adp_{suffix}')
+            p.value /= two_pi_sq * pair
         if new_enum in {AdpTypeEnum.BISO, AdpTypeEnum.BANI}:
             for suffix in suffixes:
                 getattr(aniso, f'_adp_{suffix}').value *= factor
@@ -565,7 +593,9 @@ class AtomSite(CategoryItem):
                 ]
 
     def _reorder_adp_cif_names_beta(self) -> None:
-        """Put the beta-family CIF names first for a beta-tensor atom."""
+        """
+        Put the beta-family CIF names first for a beta-tensor atom.
+        """
         # adp_iso has no beta form; keep its B/U-equivalent ordering.
         self._adp_iso._cif_handler._names = [
             '_atom_site.B_iso_or_equiv',
@@ -754,10 +784,10 @@ class AtomSite(CategoryItem):
 
         When ``adp_type`` is ``Uiso`` or ``Uani`` the stored U value is
         converted to B via B = 8π²U. For a ``beta`` atom the equivalent
-        B is computed straight from the dimensionless beta tensor via the
-        reciprocal cell (independent of the stored ``adp_iso``), so it is
-        never stale after a type switch. Otherwise the stored value is
-        returned unchanged.
+        B is computed straight from the dimensionless beta tensor via
+        the reciprocal cell (independent of the stored ``adp_iso``), so
+        it is never stale after a type switch. Otherwise the stored
+        value is returned unchanged.
 
         Returns
         -------
