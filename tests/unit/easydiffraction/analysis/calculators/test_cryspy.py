@@ -383,3 +383,103 @@ def test_temporarily_convert_to_u_notation_stashes_and_restores_beta():
     assert aniso.adp_11.value == pytest.approx(0.001)
     assert aniso.adp_23.value == pytest.approx(-0.0002)
     assert '_atom_site_aniso.beta_11' in aniso.adp_11._cif_handler.names
+
+
+def _bragg_powder_experiment(beam_mode):
+    """Build a real Bragg powder experiment with one PO row."""
+    from easydiffraction import ExperimentFactory
+
+    experiment = ExperimentFactory.from_scratch(
+        name='lbco',
+        sample_form='powder',
+        beam_mode=beam_mode,
+        radiation_probe='neutron',
+        scattering_type='bragg',
+    )
+    experiment.preferred_orientation.create(
+        phase_id='lbco', r=0.5, index_h=0, index_k=0, index_l=1
+    )
+    return experiment
+
+
+def test_cif_pref_orient_section_emits_for_constant_wavelength():
+    import easydiffraction.analysis.calculators.cryspy as MUT
+
+    experiment = _bragg_powder_experiment('constant wavelength')
+    structure = SimpleNamespace(name='lbco')
+    cif_lines: list[str] = []
+    MUT._cif_pref_orient_section(cif_lines, experiment.type, experiment, structure)
+    text = '\n'.join(cif_lines)
+
+    assert '_texture_g_1' in text
+    assert '_texture_label' in text
+    assert 'lbco 0.5' in text
+
+
+def test_cif_pref_orient_section_skips_time_of_flight():
+    # TOF is Deferred Work: no texture loop is emitted (the TOF cached
+    # pass-through is not wired), so values cannot go stale.
+    import easydiffraction.analysis.calculators.cryspy as MUT
+
+    experiment = _bragg_powder_experiment('time-of-flight')
+    structure = SimpleNamespace(name='lbco')
+    cif_lines: list[str] = []
+    MUT._cif_pref_orient_section(cif_lines, experiment.type, experiment, structure)
+
+    assert not any('_texture_g_1' in line for line in cif_lines)
+
+
+def test_update_texture_in_cryspy_dict_patches_g1_and_g2():
+    import easydiffraction.analysis.calculators.cryspy as MUT
+
+    experiment = _bragg_powder_experiment('constant wavelength')
+    experiment.preferred_orientation['lbco'].r = 0.6
+    experiment.preferred_orientation['lbco'].fraction = 0.2
+
+    cryspy_expt_dict = {
+        'texture_name': ['lbco'],
+        'texture_g1': [1.0],
+        'texture_g2': [0.0],
+    }
+    MUT._update_texture_in_cryspy_dict(cryspy_expt_dict, experiment)
+
+    assert cryspy_expt_dict['texture_g1'][0] == 0.6
+    assert cryspy_expt_dict['texture_g2'][0] == 0.2
+
+
+def test_update_texture_in_cryspy_dict_noop_without_texture_keys():
+    import easydiffraction.analysis.calculators.cryspy as MUT
+
+    experiment = _bragg_powder_experiment('constant wavelength')
+    cryspy_expt_dict = {'wavelength': [1.5]}
+    MUT._update_texture_in_cryspy_dict(cryspy_expt_dict, experiment)
+
+    assert 'texture_g1' not in cryspy_expt_dict
+
+
+def test_invalidate_stale_cache_drops_dict_on_pref_orient_axis_change():
+    from easydiffraction.analysis.calculators.cryspy import CryspyCalculator
+
+    experiment = _bragg_powder_experiment('constant wavelength')
+    calc = CryspyCalculator()
+    combined_name = 'lbco_lbco'
+
+    # First pass records the peak/pref-orient signatures (and drops the
+    # cache because nothing was recorded yet); re-populate afterwards.
+    calc._invalidate_stale_cache(combined_name, experiment, None)
+    calc._cryspy_dicts[combined_name] = {'sentinel': True}
+
+    # No change -> cache survives.
+    calc._invalidate_stale_cache(combined_name, experiment, None)
+    assert combined_name in calc._cryspy_dicts
+
+    # Value-only edit must NOT invalidate.
+    experiment.preferred_orientation['lbco'].r = 2.0
+    calc._invalidate_stale_cache(combined_name, experiment, None)
+    assert combined_name in calc._cryspy_dicts
+
+    # Direction edit changes the signature and must drop the cache.
+    experiment.preferred_orientation['lbco'].index_l = 0
+    experiment.preferred_orientation['lbco'].index_h = 1
+    calc._invalidate_stale_cache(combined_name, experiment, None)
+    assert combined_name not in calc._cryspy_dicts
