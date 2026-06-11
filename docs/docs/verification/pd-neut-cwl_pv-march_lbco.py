@@ -2,7 +2,7 @@
 # # LBCO — preferred orientation (March–Dollase)
 #
 # Cross-engine check of the **two-parameter** March–Dollase preferred-
-# orientation correction. FullProf applies the standard model for with 
+# orientation correction. FullProf applies the standard model for with
 # `Pref1 = 1.2` and `Pref2 = 0.3` along `[0 0 1]`.
 
 # %%

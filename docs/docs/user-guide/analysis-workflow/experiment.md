@@ -281,7 +281,28 @@ project.experiments['hrpt'].background.auto_estimate(n_points=10)
 project.experiments['hrpt'].linked_phases.create(id='lbco', scale=10.0)
 ```
 
-### 6. Measured Data Category { #measured-data-category }
+### 6. Preferred Orientation Category { #preferred-orientation-category }
+
+For textured powders, add a March–Dollase preferred-orientation
+correction per phase. Set the March coefficient `march_r` (1 = no
+texture, &lt;1 platy/disk, &gt;1 needle), the texture direction
+(`index_h`, `index_k`, `index_l`), and optionally the random untextured
+fraction `march_random_fract`:
+
+```python
+# Add a March–Dollase preferred-orientation correction for a phase
+project.experiments['hrpt'].preferred_orientation.create(
+    phase_id='lbco', march_r=1.2, index_h=0, index_k=0, index_l=1
+)
+```
+
+This is a constant-wavelength Bragg powder correction, available on the
+`cryspy` engine. The defaults (`march_r=1`, `march_random_fract=0`)
+apply no texture, so it has no effect until you set them. See the
+[preferred-orientation parameters](../parameters/pref_orient.md) for
+details.
+
+### 7. Measured Data Category { #measured-data-category }
 
 If you do not have a CIF file for your experiment, you can load measured
 data from a file in a supported format. The measured data will be

@@ -176,6 +176,11 @@ EasyDiffraction.
     |                                                  | :material-format-superscript: [order][background]          | background.order                 |
     |                                                  | :material-arrow-collapse-up: [coef][background]            | background.coef                  |
     | :material-puzzle: [linked_phases][linked_phases] | :material-scale: [scale][linked_phases]                    | linked_phases['ID'].scale        |
+    | :material-compass-outline: [pref_orient][pref_orient] | :material-chart-bell-curve-cumulative: [march_r][pref_orient]    | preferred_orientation['ID'].march_r           |
+    |                                                  | :material-shuffle-variant: [march_random_fract][pref_orient]   | preferred_orientation['ID'].march_random_fract |
+    |                                                  | :material-axis-arrow: [index_h][pref_orient]               | preferred_orientation['ID'].index_h           |
+    |                                                  | :material-axis-arrow: [index_k][pref_orient]               | preferred_orientation['ID'].index_k           |
+    |                                                  | :material-axis-arrow: [index_l][pref_orient]               | preferred_orientation['ID'].index_l           |
 
 === "CIF name for serialization"
 
@@ -186,6 +191,11 @@ EasyDiffraction.
     |                                                  | :material-format-superscript: [order][background]          | \_pd_background.chebyshev_order        | [pdCIF][0]{:.label-cif} |
     |                                                  | :material-arrow-collapse-up: [coef][background]            | \_pd_background.chebyshev_coef         | [pdCIF][0]{:.label-cif} |
     | :material-puzzle: [linked_phases][linked_phases] | :material-scale: [scale][linked_phases]                    | \_pd_phase_block.scale                 | [pdCIF][0]{:.label-cif} |
+    | :material-compass-outline: [pref_orient][pref_orient] | :material-chart-bell-curve-cumulative: [march_r][pref_orient]    | \_pref_orient.march_r                  | [easydiffractionCIF][0]{:.label-cif} |
+    |                                                  | :material-shuffle-variant: [march_random_fract][pref_orient]   | \_pref_orient.march_random_fract       | [easydiffractionCIF][0]{:.label-cif} |
+    |                                                  | :material-axis-arrow: [index_h][pref_orient]               | \_pref_orient.index_h                  | [easydiffractionCIF][0]{:.label-cif} |
+    |                                                  | :material-axis-arrow: [index_k][pref_orient]               | \_pref_orient.index_k                  | [easydiffractionCIF][0]{:.label-cif} |
+    |                                                  | :material-axis-arrow: [index_l][pref_orient]               | \_pref_orient.index_l                  | [easydiffractionCIF][0]{:.label-cif} |
 
 [pd-neut-cwl][3]{:.label-experiment} [pd-xray][3]{:.label-experiment}
 
@@ -289,4 +299,5 @@ EasyDiffraction.
 [peak]: parameters/peak.md
 [background]: parameters/background.md
 [linked_phases]: parameters/linked_phases.md
+[pref_orient]: parameters/pref_orient.md
 <!-- prettier-ignore-end -->

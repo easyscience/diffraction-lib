@@ -36,6 +36,11 @@ and so on. The list below notes only what is specific to each page.
 
 - [LBCO `pd-neut-cwl`](pd-neut-cwl_pv_lbco.ipynb) – Lanthanum barium
   cobaltate (La₀.₅Ba₀.₅CoO₃, _Pm-3m_); pseudo-Voigt, no asymmetry.
+- [LBCO `pd-neut-cwl` (preferred orientation)](pd-neut-cwl_pv-march_lbco.ipynb)
+  – Lanthanum barium cobaltate (La₀.₅Ba₀.₅CoO₃, _Pm-3m_); two-parameter
+  March–Dollase preferred orientation (`march_r`, `march_random_fract`)
+  along [0 0 1]. cryspy only; refines the scale to absorb cryspy's
+  reciprocal, non-normalised texture convention.
 - [PbSO₄ `pd-neut-cwl` (pseudo-Voigt)](pd-neut-cwl_pv_pbso4.ipynb) –
   Anglesite (PbSO₄, _Pnma_); pseudo-Voigt, no asymmetry.
 - [PbSO₄ `pd-neut-cwl` (empirical asymmetry)](pd-neut-cwl_pv-asym_empir_pbso4.ipynb)
