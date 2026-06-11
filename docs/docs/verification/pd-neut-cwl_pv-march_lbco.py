@@ -28,7 +28,7 @@ from easydiffraction.analysis import verification as verify
 project = ed.Project()
 
 # %% [markdown]
-# ## Define the structure (same La0.5Ba0.5CoO3 as `pd-neut-cwl_pv_lbco`)
+# ## Define the structure
 
 # %%
 structure = StructureFactory.from_scratch(name='lbco')
@@ -81,7 +81,7 @@ structure.atom_sites.create(
 project.structures.add(structure)
 
 # %% [markdown]
-# ## Load the FullProf reference (March–Dollase `Pref1 = 1.2`, `Pref2 = 0.3`, axis `[0 0 1]`)
+# ## Load the FullProf reference
 
 # %%
 FULLPROF_PROJECT_DIR = 'pd-neut-cwl_pv-march_lbco'
@@ -134,11 +134,11 @@ experiment.peak.broad_lorentz_y = FULLPROF_Y
 experiment.preferred_orientation.create(
     phase_id='lbco',
     r=FULLPROF_MARCH_R,
+    fraction=FULLPROF_MARCH_FRACTION,
     index_h=0,
     index_k=0,
     index_l=1,
 )
-experiment.preferred_orientation['lbco'].fraction = FULLPROF_MARCH_FRACTION
 
 project.experiments.add(experiment)
 experiment.calculator.type = 'cryspy'
