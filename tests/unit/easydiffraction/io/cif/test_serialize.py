@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
+import pytest
+
 
 def test_module_import():
     import easydiffraction.io.cif.serialize as MUT
@@ -246,3 +248,47 @@ def test_atom_site_aniso_cif_emits_one_adp_family_per_row():
     assert '_atom_site_aniso.B_11' not in u_loop
     assert 'U1' in u_loop
     assert 'B1' not in u_loop
+
+
+def _make_beta_structure():
+    from easydiffraction.datablocks.structure.item.base import Structure
+
+    structure = Structure(name='beta')
+    structure.space_group.name_h_m = 'P 1'
+    structure.cell.length_a = 5.0
+    structure.cell.length_b = 6.0
+    structure.cell.length_c = 8.0
+    structure.atom_sites.create(label='Fe', type_symbol='Fe', adp_iso=0.0)
+    structure.atom_sites['Fe'].adp_type = 'beta'
+    structure._sync_atom_site_aniso()
+    aniso = structure.atom_site_aniso['Fe']
+    aniso.adp_11 = 0.00123
+    aniso.adp_22 = 0.00078
+    aniso.adp_33 = 0.00091
+    aniso.adp_12 = -0.0004
+    return structure
+
+
+def test_atom_site_aniso_cif_emits_beta_family():
+    structure = _make_beta_structure()
+
+    cif = structure.atom_site_aniso.as_cif
+
+    assert '_atom_site_aniso.beta_11' in cif
+    assert '_atom_site_aniso.beta_23' in cif
+    assert '_atom_site_aniso.U_11' not in cif
+    assert '_atom_site_aniso.B_11' not in cif
+
+
+def test_beta_atom_round_trips_through_cif():
+    from easydiffraction.datablocks.structure.item.factory import StructureFactory
+
+    structure = _make_beta_structure()
+    reloaded = StructureFactory.from_cif_str(structure.as_cif)
+    reloaded._update_categories()
+
+    assert reloaded.atom_sites['Fe'].adp_type.value == 'beta'
+    aniso = reloaded.atom_site_aniso['Fe']
+    assert aniso.adp_11.value == pytest.approx(0.00123)
+    assert aniso.adp_22.value == pytest.approx(0.00078)
+    assert aniso.adp_12.value == pytest.approx(-0.0004)

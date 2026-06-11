@@ -686,3 +686,18 @@ class TestHelpers:
         result = MUT._vec3(np.array([1, 2, 3]))
         assert result == (1.0, 2.0, 3.0)
         assert all(isinstance(component, float) for component in result)
+
+
+def test_reciprocal_lengths_matches_shared_crystallography_helper():
+    from easydiffraction.crystallography.crystallography import reciprocal_cell_lengths
+
+    structure = Structure(name='test')
+    structure.cell.length_a = 5.0
+    structure.cell.length_b = 6.0
+    structure.cell.length_c = 8.0
+
+    got = MUT._reciprocal_lengths(structure.cell)
+    expected = reciprocal_cell_lengths(5.0, 6.0, 8.0, 90.0, 90.0, 90.0)
+
+    assert np.allclose(got, expected)
+    assert np.isclose(got[0], 1.0 / 5.0)

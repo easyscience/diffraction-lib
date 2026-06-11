@@ -526,3 +526,28 @@ def test_iucr_extinction_extensions_preserve_parameter_uncertainties():
     )
 
     assert format_param_value(extinction.radius) in lines[0]
+
+
+def test_adp_family_returns_beta_for_beta_type():
+    from easydiffraction.io.cif.iucr_writer import _adp_family
+
+    atom = SimpleNamespace(adp_type=SimpleNamespace(value='beta'))
+    assert _adp_family(atom) == 'beta'
+
+
+def test_adp_iso_family_maps_beta_to_b_column():
+    from easydiffraction.io.cif.iucr_writer import _adp_iso_family
+
+    # beta has no isotropic CIF tag; its equivalent iso is written in the
+    # B_iso_or_equiv column.
+    atom = SimpleNamespace(adp_type=SimpleNamespace(value='beta'))
+    assert _adp_iso_family(atom) == 'B'
+
+
+def test_atom_site_aniso_tags_for_beta_family():
+    from easydiffraction.io.cif.iucr_writer import _atom_site_aniso_tags
+
+    tags = _atom_site_aniso_tags('beta')
+    assert '_atom_site_aniso.beta_11' in tags
+    assert '_atom_site_aniso.beta_22' in tags
+    assert '_atom_site_aniso.beta_23' in tags

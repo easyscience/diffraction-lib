@@ -67,6 +67,7 @@ def test_reciprocal_cell_lengths_monoclinic_matches_volume_formula():
     )
     volume = a * b * c * omega
     assert a_star == pytest.approx(b * c * np.sin(al) / volume)
+    assert b_star == pytest.approx(a * c * np.sin(be) / volume)
     assert c_star == pytest.approx(a * b * np.sin(ga) / volume)
 
 

@@ -496,3 +496,33 @@ def test_plain_unit_text_renders_squared_degrees_with_superscript():
     assert _plain_unit_text('deg^2') == 'deg²'
     assert _plain_unit_text('deg²') == 'deg²'
     assert _plain_unit_text('degrees') == 'deg'
+
+
+def test_descriptor_units_unchanged_for_non_beta_parameters():
+    from easydiffraction.core.display_handler import DisplayHandler
+    from easydiffraction.core.validation import AttributeSpec
+    from easydiffraction.core.variable import Parameter
+    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.report.data_context import _descriptor_units
+
+    # F2 regression: routing _descriptor_units through resolve_display_units
+    # must leave non-beta parameters unchanged.
+    with_handler = Parameter(
+        name='p',
+        units='angstroms',
+        display_handler=DisplayHandler(display_units='Å', latex_units=r'\AA'),
+        value_spec=AttributeSpec(default=0.0),
+        cif_handler=CifHandler(names=['_p']),
+    )
+    assert _descriptor_units(with_handler, context='html') == 'Å'
+    assert _descriptor_units(with_handler, context='latex') == r'\AA'
+    assert _descriptor_units(with_handler, context='gui') == 'Å'
+
+    fallback = Parameter(
+        name='q',
+        units='degrees',
+        value_spec=AttributeSpec(default=0.0),
+        cif_handler=CifHandler(names=['_q']),
+    )
+    # No display_handler -> resolves to the declared unit.
+    assert _descriptor_units(fallback, context='html') == 'degrees'
