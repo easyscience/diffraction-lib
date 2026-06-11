@@ -126,3 +126,30 @@ def test_preferred_orientation_exposed_on_bragg_powder_only():
         scattering_type='total',
     )
     assert not hasattr(total, 'preferred_orientation')
+
+
+def test_pref_orient_cif_round_trip():
+    from easydiffraction import ExperimentFactory
+
+    experiment = ExperimentFactory.from_scratch(
+        name='lbco',
+        sample_form='powder',
+        beam_mode='constant wavelength',
+        radiation_probe='neutron',
+        scattering_type='bragg',
+    )
+    experiment.preferred_orientation.create(
+        phase_id='lbco',
+        march_r=0.75,
+        march_random_fract=0.2,
+        index_h=1,
+        index_k=0,
+        index_l=2,
+    )
+
+    restored = ExperimentFactory.from_cif_str(experiment.as_cif)
+
+    row = restored.preferred_orientation['lbco']
+    assert row.march_r.value == 0.75
+    assert row.march_random_fract.value == 0.2
+    assert (row.index_h.value, row.index_k.value, row.index_l.value) == (1, 0, 2)
