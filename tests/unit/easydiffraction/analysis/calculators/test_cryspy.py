@@ -356,3 +356,30 @@ def test_update_structure_zeroes_biso_for_beta_atoms():
     CryspyCalculator._update_structure_in_cryspy_dict(cryspy_model_dict, structure)
 
     assert cryspy_model_dict['atom_b_iso'][0] == 0.0
+
+
+def test_temporarily_convert_to_u_notation_stashes_and_restores_beta():
+    import math
+
+    from easydiffraction.analysis.calculators.cryspy import CryspyCalculator
+    from easydiffraction.datablocks.structure.categories.atom_sites.enums import AdpTypeEnum
+
+    structure = _make_beta_structure()
+    # cryspy parses only U/B aniso tags, so a beta atom is sent as Uani:
+    # U_11 = beta_11 / (2*pi**2 * a*^2), with a* = 1/10 for this cell.
+    expected_u11 = 0.001 / (2.0 * math.pi**2 * (1.0 / 10.0) ** 2)
+
+    saved = CryspyCalculator._temporarily_convert_to_u_notation(structure)
+
+    atom = structure.atom_sites['Fe']
+    aniso = structure.atom_site_aniso['Fe']
+    assert atom.adp_type.value == AdpTypeEnum.UANI.value
+    assert aniso.adp_11.value == pytest.approx(expected_u11)
+    assert '_atom_site_aniso.U_11' in aniso.adp_11._cif_handler.names
+
+    CryspyCalculator._restore_from_u_notation(structure, saved)
+
+    assert atom.adp_type.value == AdpTypeEnum.BETA.value
+    assert aniso.adp_11.value == pytest.approx(0.001)
+    assert aniso.adp_23.value == pytest.approx(-0.0002)
+    assert '_atom_site_aniso.beta_11' in aniso.adp_11._cif_handler.names
