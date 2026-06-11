@@ -1026,6 +1026,7 @@ class CryspyCalculator(CalculatorBase):
         # Structure sections
         _cif_orient_matrix_section(cif_lines, expt_type)
         _cif_phase_section(cif_lines, expt_type, linked_structure)
+        _cif_pref_orient_section(cif_lines, expt_type, experiment, linked_structure)
         _cif_background_section(cif_lines, expt_type, twotheta_min, twotheta_max)
 
         # Measured data
@@ -1295,6 +1296,45 @@ def _cif_phase_section(
             '_phase_scale',
             f'{linked_structure.name} 1.0',
         ))
+
+
+def _cif_pref_orient_section(
+    cif_lines: list[str],
+    expt_type: object | None,
+    experiment: object,
+    linked_structure: object,
+) -> None:
+    """Append the cryspy texture (March-Dollase) loop for the phase.
+
+    cryspy keys texture to a phase by ``_texture_label``, so only the
+    ``pref_orient`` row whose ``phase_id`` matches the phase being
+    calculated is emitted. A row with ``r = 1`` is a mathematical
+    no-op; an empty collection (the default) emits nothing.
+    """
+    if expt_type is None or expt_type.sample_form.value != SampleFormEnum.POWDER:
+        return
+    pref_orient = getattr(experiment, 'preferred_orientation', None)
+    if pref_orient is None:
+        return
+    phase_label = linked_structure.name
+    row = next(
+        (item for item in pref_orient if item.phase_id.value == phase_label),
+        None,
+    )
+    if row is None:
+        return
+    cif_lines.extend((
+        '',
+        'loop_',
+        '_texture_label',
+        '_texture_g_1',
+        '_texture_g_2',
+        '_texture_h_ax',
+        '_texture_k_ax',
+        '_texture_l_ax',
+        f'{phase_label} {row.r.value} {row.fraction.value} '
+        f'{row.h.value} {row.k.value} {row.l.value}',
+    ))
 
 
 def _cif_background_section(

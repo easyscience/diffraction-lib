@@ -152,7 +152,7 @@ CrysPy is already a dependency; no `pyproject.toml`/`pixi.toml`/
   Files: `item/bragg_pd.py`, `item/base.py`.
   Commit: `Expose preferred_orientation on Bragg powder experiment`
 
-- [ ] **P1.3 — Emit the CrysPy `_texture_*` loop.**
+- [x] **P1.3 — Emit the CrysPy `_texture_*` loop.**
   In `analysis/calculators/cryspy.py`, after the `_cif_phase_section`
   call in `_convert_experiment_to_cryspy_cif`, add a
   `_cif_pref_orient_section` that writes one `_texture_*` loop row per
@@ -264,7 +264,7 @@ thresholds or add `# noqa`; refactor instead.
 
 - [x] P1.1 Category package
 - [x] P1.2 Bragg experiment wiring
-- [ ] P1.3 CrysPy texture-loop emission
+- [x] P1.3 CrysPy texture-loop emission
 - [ ] P1.4 CrysPy cache pass-through + invalidation
 - [ ] P1.5 IUCr report-writer loop
 - [ ] P1.6 Promote ADR to accepted
