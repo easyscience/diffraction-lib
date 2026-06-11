@@ -3663,33 +3663,34 @@ and so on. The list below notes only what is specific to each page.</p>
 <ul>
 <li><a href="pd-neut-cwl_pv_lbco/">LBCO <code>pd-neut-cwl</code></a> – Lanthanum barium
   cobaltate (La₀.₅Ba₀.₅CoO₃, <em>Pm-3m</em>); pseudo-Voigt, no asymmetry.</li>
-<li><a href="pd-neut-cwl_pv_pbso4/">PbSO₄ <code>pd-neut-cwl</code></a> – Anglesite (PbSO₄,
-  <em>Pnma</em>); pseudo-Voigt, no asymmetry.</li>
-<li><a href="pd-neut-cwl_pv-asym_empir_pbso4/">PbSO₄ <code>pd-neut-cwl</code></a> –
-  Anglesite (PbSO₄, <em>Pnma</em>); pseudo-Voigt with empirical
+<li><a href="pd-neut-cwl_pv_pbso4/">PbSO₄ <code>pd-neut-cwl</code> (pseudo-Voigt)</a> –
+  Anglesite (PbSO₄, <em>Pnma</em>); pseudo-Voigt, no asymmetry.</li>
+<li><a href="pd-neut-cwl_pv-asym_empir_pbso4/">PbSO₄ <code>pd-neut-cwl</code> (empirical asymmetry)</a>
+  – Anglesite (PbSO₄, <em>Pnma</em>); pseudo-Voigt with empirical
   (FullProf-style) axial-divergence asymmetry. Skipped in CI: cryspy and
   FullProf parameterise the empirical asymmetry differently, and crysfml
   has no empirical-asymmetry model.</li>
-<li><a href="pd-neut-cwl_tch-fcj-noabs-nosldl_lab6/">LaB₆ <code>pd-neut-cwl</code></a> –
-  Lanthanum hexaboride (LaB₆, <em>Pm-3m</em>); pseudo-Voigt with SyCos/SySin
+<li><a href="pd-neut-cwl_tch-fcj-noabs-nosldl_lab6/">LaB₆ <code>pd-neut-cwl</code> (SyCos/SySin)</a>
+  – Lanthanum hexaboride (LaB₆, <em>Pm-3m</em>); pseudo-Voigt with SyCos/SySin
   sample-displacement and transparency corrections. Skipped in CI:
   pending the unreleased cryspy build that adds these corrections.</li>
-<li><a href="pd-neut-cwl_tch-fcj-noabs_lab6/">LaB₆ <code>pd-neut-cwl</code></a> – Lanthanum
-  hexaboride (LaB₆, <em>Pm-3m</em>); Thompson–Cox–Hastings with Finger–Cox–
-  Jephcoat axial-divergence asymmetry. Skipped in CI: FCJ asymmetry is
-  crysfml-only.</li>
-<li><a href="pd-neut-cwl_tch-fcj_lab6/">LaB₆ <code>pd-neut-cwl</code></a> – Lanthanum
-  hexaboride (LaB₆, <em>Pm-3m</em>); adds Debye–Scherrer sample absorption (μR)
-  on top of FCJ asymmetry. Skipped in CI: sample absorption is modelled
-  by neither engine.</li>
+<li><a href="pd-neut-cwl_tch-fcj-noabs_lab6/">LaB₆ <code>pd-neut-cwl</code> (FCJ asymmetry)</a>
+  – Lanthanum hexaboride (LaB₆, <em>Pm-3m</em>); Thompson–Cox–Hastings with
+  Finger–Cox– Jephcoat axial-divergence asymmetry. Skipped in CI: FCJ
+  asymmetry is crysfml-only.</li>
+<li><a href="pd-neut-cwl_tch-fcj_lab6/">LaB₆ <code>pd-neut-cwl</code> (absorption)</a> –
+  Lanthanum hexaboride (LaB₆, <em>Pm-3m</em>); adds Debye–Scherrer sample
+  absorption (μR) on top of FCJ asymmetry. Skipped in CI: sample
+  absorption is modelled by neither engine.</li>
 </ul>
 <h2 id="powder-neutron-time-of-flight">Powder, neutron, time-of-flight</h2>
 <ul>
-<li><a href="pd-neut-tof_j_si/">Si <code>pd-neut-tof</code></a> – Silicon (Si, <em>Fd-3m</em>);
-  Jorgensen (back-to-back exponentials with a Gaussian).</li>
-<li><a href="pd-neut-tof_jvd_si/">Si <code>pd-neut-tof</code></a> – Silicon (Si, <em>Fd-3m</em>);
-  Jorgensen–Von Dreele (back-to-back exponentials with a pseudo-Voigt).
-  Skipped in CI: residual cryspy TOF Lorentzian discrepancy.</li>
+<li><a href="pd-neut-tof_j_si/">Si <code>pd-neut-tof</code> (Jorgensen)</a> – Silicon (Si,
+  <em>Fd-3m</em>); Jorgensen (back-to-back exponentials with a Gaussian).</li>
+<li><a href="pd-neut-tof_jvd_si/">Si <code>pd-neut-tof</code> (Jorgensen–Von Dreele)</a> –
+  Silicon (Si, <em>Fd-3m</em>); Jorgensen–Von Dreele (back-to-back exponentials
+  with a pseudo-Voigt). Skipped in CI: residual cryspy TOF Lorentzian
+  discrepancy.</li>
 <li><a href="pd-neut-tof_jvd_ncaf/">NaCaAlF <code>pd-neut-tof</code></a> – Sodium calcium
   aluminium fluoride (Na₂Ca₃Al₂F₁₄, <em>I2₁3</em>); Jorgensen–Von Dreele.
   Skipped in CI: the FullProf reference uses a tabulated
@@ -3698,27 +3699,20 @@ and so on. The list below notes only what is specific to each page.</p>
 </ul>
 <h2 id="single-crystal-neutron-constant-wavelength">Single crystal, neutron, constant wavelength</h2>
 <ul>
-<li><a href="sg-neut-cwl_pr2nio4/">Pr₂NiO₄ <code>sg-neut-cwl</code></a> – Strontium-doped
-  praseodymium nickelate (Pr₂NiO₄:Sr, K₂NiF₄-type, <em>Fmmm</em>);
-  per-reflection F² against FullProf with anisotropic ADPs, partial
-  occupancies, and a split interstitial oxygen. <code>cryspy</code> only;
-  integrated intensities, no peak profile.</li>
-<li><a href="sg-neut-cwl_ext-iso_tbti.py">Tb₂Ti₂O₇ <code>sg-neut-cwl</code></a> – Terbium
-  titanate (Tb₂Ti₂O₇, <em>F d -3 m</em>); per-reflection F² against FullProf
-  with anisotropic ADPs and full occupancies (<abbr title="Crystallographic Information File.">CIF</abbr>/ED uses <code>occupancy=1</code>
-  notation, FullProf uses site-multiplicity/general-multiplicity).
-  <code>cryspy</code> only; integrated intensities, no peak profile. Scale is
-  initialized from FullProf. CryspY extinction (<code>becker-coppens</code>,
-  <code>gauss</code>) uses two parameters, <code>radius</code> and <code>mosaicity</code>, both seeded as
-  <code>0</code>; only <code>scale</code> and <code>radius</code> are refined against FullProf.</li>
-<li><a href="sg-neut-cwl_noext_tbti.py">Tb₂Ti₂O₇ <code>sg-neut-cwl</code></a> – Terbium titanate
-  (Tb₂Ti₂O₇, <em>F d -3 m</em>); per-reflection F² against a
-  FullProf-no-extinction reference with the same FullProf ADP/scale seed
-  and structure model. <code>cryspy</code> only; integrated intensities, no peak
-  profile. Scale is initialized from the FullProf no-ext reference and
-  refined; extinction is disabled on both sides (radius and mosaicity
-  fixed at <code>0</code>, model <code>gauss</code>). <code>Uani</code> is seeded from FullProf; only
-  <code>scale</code> is refined.</li>
+<li><a href="sg-neut-cwl_pr2nio4/">Pr₂NiO₄ <code>sg-neut-cwl</code> (no extinction)</a> –
+  Strontium-doped praseodymium nickelate (Pr₂NiO₄:Sr, K₂NiF₄-type,
+  <em>Fmmm</em>); per-reflection F² against FullProf reference with anisotropic
+  ADPs.</li>
+<li><a href="sg-neut-cwl_noext_tbti/">Tb₂Ti₂O₇ <code>sg-neut-cwl</code> (no extinction)</a>
+  – Terbium titanate (Tb₂Ti₂O₇, <em>F d -3 m</em>); per-reflection F² against a
+  FullProf-no-extinction reference with anisotropic ADPs. Scale is
+  initialized from the FullProf and refined.</li>
+<li><a href="sg-neut-cwl_ext-iso_tbti/">Tb₂Ti₂O₇ <code>sg-neut-cwl</code> (isotropic extinction)</a>
+  – Terbium titanate (Tb₂Ti₂O₇, <em>F d -3 m</em>); per-reflection F² against
+  FullProf reference with anisotropic ADPs and empirical extinction.
+  Cryspy extinction (<code>becker-coppens</code>, <code>gauss</code>) uses two parameters,
+  <code>radius</code> and <code>mosaicity</code>. Only <code>scale</code> and <code>radius</code> are refined
+  against FullProf.</li>
 </ul>
 <!-- prettier-ignore-start -->
 
