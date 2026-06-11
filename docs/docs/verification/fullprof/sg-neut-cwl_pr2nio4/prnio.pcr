@@ -5,7 +5,7 @@ COMM Pr2NiO4
    1   0   1   0   0   0   0   0   0   0   0   0   0   0   1   0   0   0   1
 !
 !Ipr Ppl Ioc Mat Pcr Ls1 Ls2 Ls3 NLI Prf Ins Rpa Sym Hkl Fou Sho Ana
-   2   0   1   0   1   0   4   0   0  -3   0   0   0   0   2   0   0
+   2   0   1   0   1   0   4   0   0   1   0  -1   0   0   2   0   0
 !
 !NCY  Eps  R_at  R_an  R_pr  R_gl     Thmin       Step       Thmax    PSD    Sent0
   5  0.20  1.00  1.00  1.00  1.00      0.0801   0.100000    89.9000   0.000   0.000
