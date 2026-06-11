@@ -418,6 +418,41 @@ Decisions:
   **convention/quality note, not a correctness blocker** — the model is
   standard March–Dollase and reproduces FullProf after refinement.
 
+#### Cross-engine parameter map
+
+All implementations use the same March–Dollase core,
+`[ r² cos²α + sin²α/r ]^(−3/2)`, averaged over symmetry-equivalent
+reflections — verified by reading each source:
+
+- **CrysPy** (`A_functions_base/preferred_orientation.py`):
+  `[ (1/g1) cos²α + g1² sin²α ]^(−3/2)` with `g1 = 1/r`, mixed as
+  `g2 + (1−g2)·(…)` and **not** volume-normalised.
+- **CrysFML** (`CFML_Powder/Pow_Preferred_Orientation.f90`, "Derived
+  from FullProf"): `r² cos²α + sin²α/r`, `par(1)=r`, `par(2)=` per-axis
+  weight summing to 1.
+- **IUCr** (`cif_pow.dic`): `_pd_pref_orient_March_Dollase.r` and
+  `.fract` (per-direction weight, Σ = 1).
+
+The headline coefficient lines up everywhere as the standard `r` (CrysPy
+stores `1/r`). The **second parameter differs in meaning** and splits
+the engines into two families:
+
+|                     | March coeff  | 2nd parameter  | meaning                          |
+| ------------------- | ------------ | -------------- | -------------------------------- |
+| CrysPy              | `g1 = 1/r`   | `g2`           | random (untextured) fraction     |
+| FullProf            | `Pref1 = r`  | `Pref2`        | random (untextured) fraction     |
+| **EasyDiffraction** | **`r`**      | **`fraction`** | random (untextured) fraction     |
+| CrysFML             | `par(1) = r` | `par(2)`       | weight of each axis (multi-axis) |
+| IUCr `.fract`       | `.r`         | `.fract`       | weight of each axis (multi-axis) |
+
+So EasyDiffraction's **`fraction`** is the random-fraction family (=
+CrysPy `g2` = FullProf `Pref2`); it is **not** the IUCr/CrysFML `.fract`
+multi-axis weight (a different quantity), which is why `fraction` is
+project-namespaced and the multi-direction `.fract` is Deferred Work.
+(CrysFML's library _has_ a March–Dollase routine, but the
+EasyDiffraction CrysFML calculator does not wire preferred orientation,
+so PO stays CrysPy-only for now.)
+
 ## Consequences
 
 - Textured powder data can be refined against the CrysPy backend with a
