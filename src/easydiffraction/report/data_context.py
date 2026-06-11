@@ -1037,7 +1037,9 @@ def _descriptor_units(parameter: object, *, context: str) -> str:
     # Prefer the canonical units API so type-aware overrides (e.g. the
     # dimensionless beta ADP tensor) are honoured consistently with the
     # GUI and fit-report paths, not just the static display metadata.
-    resolver = _safe_attr(parameter, 'resolve_display_units')
+    # ``resolve_display_units`` is a method, so read it directly rather
+    # than via ``_safe_attr`` (which only exposes public data attrs).
+    resolver = getattr(parameter, 'resolve_display_units', None)
     if callable(resolver) and context in {'latex', 'html', 'gui'}:
         return resolver(context)
     display_handler = _safe_attr(parameter, 'display_handler')

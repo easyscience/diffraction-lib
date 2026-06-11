@@ -526,3 +526,43 @@ def test_descriptor_units_unchanged_for_non_beta_parameters():
     )
     # No display_handler -> resolves to the declared unit.
     assert _descriptor_units(fallback, context='html') == 'degrees'
+
+
+def test_descriptor_units_resolves_none_unit_to_empty_string():
+    from easydiffraction.core.validation import AttributeSpec
+    from easydiffraction.core.variable import Parameter
+    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.report.data_context import _descriptor_units
+
+    # Intentional delta from routing through resolve_display_units: a
+    # descriptor whose declared unit is the literal 'none' now renders as
+    # an empty string rather than the word 'none'.
+    param = Parameter(
+        name='r',
+        units='none',
+        value_spec=AttributeSpec(default=0.0),
+        cif_handler=CifHandler(names=['_r']),
+    )
+    assert _descriptor_units(param, context='html') == ''
+    assert _descriptor_units(param, context='gui') == ''
+
+
+def test_descriptor_units_suppressed_for_beta_aniso_in_report():
+    from easydiffraction.datablocks.structure.item.base import Structure
+    from easydiffraction.report.data_context import _descriptor_units
+
+    structure = Structure(name='beta')
+    structure.space_group.name_h_m = 'P 1'
+    structure.cell.length_a = 5.0
+    structure.cell.length_b = 6.0
+    structure.cell.length_c = 8.0
+    structure.atom_sites.create(label='Fe', type_symbol='Fe', adp_iso=0.0)
+    structure.atom_sites['Fe'].adp_type = 'beta'
+    structure._sync_atom_site_aniso()
+    aniso = structure.atom_site_aniso['Fe']
+
+    # Report path suppresses the unit for a beta atom (dimensionless)...
+    assert _descriptor_units(aniso.adp_11, context='html') == ''
+    # ...but keeps Å² for a B/U anisotropic atom.
+    structure.atom_sites['Fe'].adp_type = 'Uani'
+    assert _descriptor_units(aniso.adp_11, context='html') == 'Å²'
