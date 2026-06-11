@@ -199,6 +199,33 @@ step P1.9), rather than leaving two copies of the same math.
 > within those bounds. No validator change is needed, so the earlier
 > planned relaxation is removed from scope (resolved Q4).
 
+## Additional in-scope changes (recorded during implementation)
+
+Two user-requested changes landed on this branch beyond the original
+plan steps. They are in scope but were not in the initial checklist, so
+they are recorded here for an accurate Phase 2 scope.
+
+1. **Inline `create(adp_type='beta')` ergonomics.** Creating an atom
+   with an anisotropic `adp_type` and no attached parent previously
+   raised because the cell-dependent conversion has no reachable cell.
+   The `adp_type` setter now defers the conversion when the atom is
+   detached, and `AtomSites.add` materialises the aniso row, so
+   `structure.atom_sites.create(..., adp_type='beta')` yields a β atom
+   with zero-filled components ready for assignment. The three
+   single-crystal verification examples were switched to this inline
+   form (`18582ead`/`01446213`; examples `c5f08431`). Lightly touches
+   the area issue #135 / Q5 deferred — see Open questions.
+2. **Jupyter dark mode + shared figure loader (`f76ea254`).** The
+   live-notebook loader (`ed-figures.js`) could not detect JupyterLab's
+   theme and only re-coloured annotation fonts, so the reflection-
+   comparison plot's metrics box kept its baked light-grey background in
+   dark mode. The loader now detects the JupyterLab (and baked) theme
+   and re-themes the metrics box background/border, and it is made the
+   single source of figure theme-sync, resize, and legend behaviour: the
+   standalone/report HTML path delegates to `window.edFigures` instead
+   of carrying duplicated inline post-scripts. Unrelated to the β tensor
+   but bundled here at the user's request; fully verified in Phase 2.
+
 ## Open questions
 
 - **Q1 (representation). RESOLVED — first-class stored β** (confirmed
@@ -427,4 +454,9 @@ report anisotropic displacements as β values without hand-converting
 them, switch an atom between β, U, and B with the values converted
 automatically using the unit cell, and export β tensors back to CIF.
 Off-diagonal displacement components may now be negative, as the physics
-requires.
+requires. You can also set `adp_type='beta'` directly when creating an
+atom and fill in the components afterwards.
+
+This PR also fixes the interactive plots: figures now respect
+JupyterLab's dark theme, so the comparison plot's metrics box no longer
+stays light-grey in dark mode.
