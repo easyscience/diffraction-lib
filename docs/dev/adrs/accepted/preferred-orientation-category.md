@@ -360,12 +360,14 @@ example). Both are recorded under Alternatives Considered.
      identity of rows** — adding/removing a `pref_orient` row, or
      changing a row's `phase_id` or `index_h`/`index_k`/`index_l` — must drop the cache so the
      CIF is rebuilt. Extend `_invalidate_stale_cache` with a
-     `pref_orient` signature (a tuple of `(phase_id, h, k, l)` per row,
-     in order) tracked per `combined_name` exactly like
-     `_cached_peak_types`/`_cached_adp_types`: when the signature
-     changes, `self._cryspy_dicts.pop(combined_name, None)`. Value-only
-     edits to `r`/`fraction` do **not** invalidate — they flow through
-     path 2.
+     `pref_orient` signature (a tuple of
+     `(phase_id, index_h, index_k, index_l)` per row, in order) tracked
+     per `combined_name` exactly like
+     `_cached_peak_types`/`_cached_adp_types`, and only for
+     constant-wavelength experiments (matching the CW-only emission
+     scope): when the signature changes,
+     `self._cryspy_dicts.pop(combined_name, None)`. Value-only edits to
+     `r`/`fraction` do **not** invalidate — they flow through path 2.
 - **CrysFML / PDFFIT**: declare no support for now (like sample
   displacement on CrysFML). `CalculatorSupport(calculators={CRYSPY})`
   on the category; document the gap in a comment.

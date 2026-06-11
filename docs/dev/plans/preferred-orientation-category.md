@@ -159,9 +159,12 @@ CrysPy is already a dependency; no `pyproject.toml`/`pixi.toml`/
   `_cif_pref_orient_section` that writes one `_texture_*` loop row per
   `experiment.preferred_orientation` entry, mapping
   `r→_texture_g_1`, `fraction→_texture_g_2`,
-  `index_h/index_k/index_l→_texture_h_ax/_k_ax/_l_ax`, `phase_id→_texture_label`. Emit
-  unconditionally (rows with `r=1` are a no-op). Guard on the category
-  existing and being a Bragg powder experiment.
+  `index_h/index_k/index_l→_texture_h_ax/_k_ax/_l_ax`,
+  `phase_id→_texture_label`. **Constant-wavelength powder only** (guard
+  on `sample_form == POWDER` **and** `beam_mode == CONSTANT_WAVELENGTH`);
+  TOF is Deferred Work and must emit no texture, since its cached-dict
+  pass-through is not wired. Emit only the row matching the linked
+  phase; a row with `r=1` is a no-op.
   Files: `analysis/calculators/cryspy.py`.
   Commit: `Emit texture loop in cryspy experiment CIF`
 
@@ -171,11 +174,14 @@ CrysPy is already a dependency; no `pyproject.toml`/`pixi.toml`/
   `offset_sysin` block, patch `texture_g1`/`texture_g2` from
   `r.value`/`fraction.value` per row, guarded by
   `if 'texture_g1' in cryspy_expt_dict`. Do **not** patch
-  `texture_axis` (h/k/l are fixed). In `_invalidate_stale_cache`, add a
-  `pref_orient` signature — a tuple of `(phase_id, h, k, l)` per row, in
-  order — tracked per `combined_name` like `_cached_peak_types`; pop the
-  cached dict when the signature changes (row add/remove, `phase_id` or
-  `index_h`/`index_k`/`index_l` edit). Value-only `r`/`fraction` edits must not invalidate.
+  `texture_axis` (`index_h`/`index_k`/`index_l` are fixed). In
+  `_invalidate_stale_cache`, add a `pref_orient` signature — a tuple of
+  `(phase_id, index_h, index_k, index_l)` per row, in order — tracked
+  per `combined_name` like `_cached_peak_types`, and **only for
+  constant-wavelength** experiments (matching the emission scope); pop
+  the cached dict when the signature changes (row add/remove, `phase_id`
+  or `index_h`/`index_k`/`index_l` edit). Value-only `r`/`fraction`
+  edits must not invalidate.
   Files: `analysis/calculators/cryspy.py`.
   Commit: `Pass preferred-orientation through cryspy cache`
 
@@ -238,7 +244,7 @@ CrysPy is already a dependency; no `pyproject.toml`/`pixi.toml`/
    `docs/docs/verification/fullprof/pd-neut-cwl_pv-march_lbco/`.
 2. Add `docs/docs/verification/pd-neut-cwl_pv-march_lbco.py` building the
    same LBCO model, setting
-   `expt.preferred_orientation.create(phase_id='lbco', r=<Pref1>, h, k, l)`,
+   `expt.preferred_orientation.create(phase_id='lbco', r=<Pref1>, index_h=<h>, index_k=<k>, index_l=<l>)`,
    and overlaying CrysPy vs FullProf. Compare CrysPy-only (no CrysFML
    column, since PO is CrysPy-only). Add a markdown cell explaining the
    CrysPy formula difference (link the upstream issue): expect agreement
