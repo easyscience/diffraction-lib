@@ -1377,7 +1377,8 @@ def _cif_pref_orient_section(
         '_texture_k_ax',
         '_texture_l_ax',
         (
-            f'{phase_label} {_march_r_to_cryspy_g1(row.r.value)} {row.fraction.value} '
+            f'{phase_label} {_march_r_to_cryspy_g1(row.march_r.value)} '
+            f'{row.march_random_fract.value} '
             f'{row.index_h.value} {row.index_k.value} {row.index_l.value}'
         ),
     ))
@@ -1420,8 +1421,8 @@ def _update_texture_in_cryspy_dict(
     for index, label in enumerate(cryspy_expt_dict['texture_name']):
         row = rows.get(str(label))
         if row is not None:
-            cryspy_expt_dict['texture_g1'][index] = _march_r_to_cryspy_g1(row.r.value)
-            cryspy_expt_dict['texture_g2'][index] = row.fraction.value
+            cryspy_expt_dict['texture_g1'][index] = _march_r_to_cryspy_g1(row.march_r.value)
+            cryspy_expt_dict['texture_g2'][index] = row.march_random_fract.value
 
 
 def _cif_background_section(

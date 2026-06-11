@@ -397,7 +397,7 @@ def _bragg_powder_experiment(beam_mode):
         scattering_type='bragg',
     )
     experiment.preferred_orientation.create(
-        phase_id='lbco', r=0.5, index_h=0, index_k=0, index_l=1
+        phase_id='lbco', march_r=0.5, index_h=0, index_k=0, index_l=1
     )
     return experiment
 
@@ -435,8 +435,8 @@ def test_update_texture_in_cryspy_dict_patches_g1_and_g2():
     import easydiffraction.analysis.calculators.cryspy as MUT
 
     experiment = _bragg_powder_experiment('constant wavelength')
-    experiment.preferred_orientation['lbco'].r = 0.6
-    experiment.preferred_orientation['lbco'].fraction = 0.2
+    experiment.preferred_orientation['lbco'].march_r = 0.6
+    experiment.preferred_orientation['lbco'].march_random_fract = 0.2
 
     cryspy_expt_dict = {
         'texture_name': ['lbco'],
@@ -477,7 +477,7 @@ def test_invalidate_stale_cache_drops_dict_on_pref_orient_axis_change():
     assert combined_name in calc._cryspy_dicts
 
     # Value-only edit must NOT invalidate.
-    experiment.preferred_orientation['lbco'].r = 2.0
+    experiment.preferred_orientation['lbco'].march_r = 2.0
     calc._invalidate_stale_cache(combined_name, experiment, None)
     assert combined_name in calc._cryspy_dicts
 

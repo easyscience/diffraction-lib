@@ -12,8 +12,8 @@ def test_pref_orient_defaults_are_noop():
     from easydiffraction.datablocks.experiment.categories.pref_orient import PrefOrient
 
     po = PrefOrient()
-    assert po.r.value == 1.0  # March coefficient: no texture
-    assert po.fraction.value == 0.0  # pure March-Dollase
+    assert po.march_r.value == 1.0  # March coefficient: no texture
+    assert po.march_random_fract.value == 0.0  # pure March-Dollase
     assert (po.index_h.value, po.index_k.value, po.index_l.value) == (0, 0, 1)
     assert po.phase_id.value == 'Si'
 
@@ -23,15 +23,15 @@ def test_pref_orient_property_setters():
 
     po = PrefOrient()
     po.phase_id = 'lbco'
-    po.r = 0.75
-    po.fraction = 0.2
+    po.march_r = 0.75
+    po.march_random_fract = 0.2
     po.index_h = 1
     po.index_k = 0
     po.index_l = 2
 
     assert po.phase_id.value == 'lbco'
-    assert po.r.value == 0.75
-    assert po.fraction.value == 0.2
+    assert po.march_r.value == 0.75
+    assert po.march_random_fract.value == 0.2
     assert (po.index_h.value, po.index_k.value, po.index_l.value) == (1, 0, 2)
 
 
@@ -42,10 +42,10 @@ def test_pref_orient_r_must_be_positive(monkeypatch):
     monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.WARN, raising=True)
 
     po = PrefOrient()
-    po.r = 0.0  # gt=0 -> rejected, keeps default
-    assert po.r.value == 1.0
-    po.r = -0.5
-    assert po.r.value == 1.0
+    po.march_r = 0.0  # gt=0 -> rejected, keeps default
+    assert po.march_r.value == 1.0
+    po.march_r = -0.5
+    assert po.march_r.value == 1.0
 
 
 def test_pref_orient_fraction_within_unit_interval(monkeypatch):
@@ -55,29 +55,29 @@ def test_pref_orient_fraction_within_unit_interval(monkeypatch):
     monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.WARN, raising=True)
 
     po = PrefOrient()
-    po.fraction = 1.5  # le=1 -> rejected
-    assert po.fraction.value == 0.0
-    po.fraction = -0.1  # ge=0 -> rejected
-    assert po.fraction.value == 0.0
-    po.fraction = 0.5  # valid
-    assert po.fraction.value == 0.5
+    po.march_random_fract = 1.5  # le=1 -> rejected
+    assert po.march_random_fract.value == 0.0
+    po.march_random_fract = -0.1  # ge=0 -> rejected
+    assert po.march_random_fract.value == 0.0
+    po.march_random_fract = 0.5  # valid
+    assert po.march_random_fract.value == 0.5
 
 
 def test_pref_orients_create_and_default_cif():
     from easydiffraction.datablocks.experiment.categories.pref_orient import PrefOrients
 
     coll = PrefOrients()
-    coll.create(phase_id='lbco', r=0.8, index_h=0, index_k=0, index_l=1)
+    coll.create(phase_id='lbco', march_r=0.8, index_h=0, index_k=0, index_l=1)
 
     cif = coll.as_cif
     assert 'loop_' in cif
     for tag in (
         '_pref_orient.phase_id',
-        '_pref_orient.r',
+        '_pref_orient.march_r',
         '_pref_orient.index_h',
         '_pref_orient.index_k',
         '_pref_orient.index_l',
-        '_pref_orient.fraction',
+        '_pref_orient.march_random_fract',
     ):
         assert tag in cif
 
@@ -111,7 +111,9 @@ def test_preferred_orientation_exposed_on_bragg_powder_only():
         scattering_type='bragg',
     )
     assert hasattr(bragg, 'preferred_orientation')
-    bragg.preferred_orientation.create(phase_id='bragg', r=0.5, index_h=0, index_k=0, index_l=1)
+    bragg.preferred_orientation.create(
+        phase_id='bragg', march_r=0.5, index_h=0, index_k=0, index_l=1
+    )
     # The collection is parent-linked to the experiment, enabling dirty
     # tracking on row changes.
     assert bragg.preferred_orientation._parent is bragg

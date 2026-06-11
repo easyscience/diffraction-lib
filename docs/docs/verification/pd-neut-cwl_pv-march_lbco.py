@@ -1,19 +1,18 @@
 # %% [markdown]
-# # LBCO — preferred orientation (March–Dollase): ed-cryspy VS FullProf
+# # LBCO — preferred orientation (March–Dollase)
 #
 # Cross-engine check of the **two-parameter** March–Dollase preferred-
 # orientation correction. FullProf applies the standard model (its
 # `.out` reports "March-Dollase model for preferred orientation") with
 # `Pref1 = 1.2` and `Pref2 = 0.3` along `[0 0 1]`.
 #
-# EasyDiffraction's `r` and `fraction` map to FullProf's `Pref1` and
-# `Pref2`. CrysPy parametrises the same model with the **reciprocal**
-# coefficient `g1 = 1/r`, so the backend inverts `r`; CrysPy's function
-# is also not volume-normalised, which is a constant per-phase factor
-# absorbed by the scale (and slightly distorts the `fraction` ↔ `Pref2`
-# correspondence). After refining the two preferred-orientation
-# parameters and the scale, ed-cryspy reproduces the FullProf pattern
-# and recovers `r ≈ 1.2`, `fraction ≈ 0.3`.
+# EasyDiffraction's `march_r` and `march_random_fract` map to FullProf's
+# `Pref1` and `Pref2`. CrysPy parametrises the same model with the
+# **reciprocal** coefficient `g1 = 1/r`, so the backend inverts
+# `march_r`; CrysPy's function is also not volume-normalised, which is a
+# constant per-phase factor absorbed by the scale. Holding the two
+# March–Dollase parameters at the FullProf values and refining only the
+# scale, ed-cryspy reproduces the FullProf pattern.
 
 # %%
 import easydiffraction as ed
@@ -38,44 +37,44 @@ structure.space_group.name_h_m = 'P m -3 m'  # FullProf Space group symbol
 structure.cell.length_a = 3.890790  # FullProf a
 
 structure.atom_sites.create(
-    label='La',
-    type_symbol='La',
-    fract_x=0.0,
-    fract_y=0.0,
-    fract_z=0.0,
-    occupancy=0.5,
-    adp_type='Biso',
-    adp_iso=0.57511,
+    label='La',  # FullProf Atom
+    type_symbol='La',  # FullProf Typ
+    fract_x=0.0,  # FullProf X
+    fract_y=0.0,  # FullProf Y
+    fract_z=0.0,  # FullProf Z
+    occupancy=0.5,  # FullProf Occ
+    adp_type='Biso',  # FullProf Biso
+    adp_iso=0.57511,  # FullProf Biso
 )
 structure.atom_sites.create(
-    label='Ba',
-    type_symbol='Ba',
-    fract_x=0.0,
-    fract_y=0.0,
-    fract_z=0.0,
-    occupancy=0.5,
-    adp_type='Biso',
-    adp_iso=0.57511,
+    label='Ba',  # FullProf Atom
+    type_symbol='Ba',  # FullProf Typ
+    fract_x=0.0,  # FullProf X
+    fract_y=0.0,  # FullProf Y
+    fract_z=0.0,  # FullProf Z
+    occupancy=0.5,  # FullProf Occ
+    adp_type='Biso',  # FullProf Biso
+    adp_iso=0.57511,  # FullProf Biso
 )
 structure.atom_sites.create(
-    label='Co',
-    type_symbol='Co',
-    fract_x=0.5,
-    fract_y=0.5,
-    fract_z=0.5,
-    occupancy=1.0,
-    adp_type='Biso',
-    adp_iso=0.26023,
+    label='Co',  # FullProf Atom
+    type_symbol='Co',  # FullProf Typ
+    fract_x=0.5,  # FullProf X
+    fract_y=0.5,  # FullProf Y
+    fract_z=0.5,  # FullProf Z
+    occupancy=1.0,  # FullProf Occ
+    adp_type='Biso',  # FullProf Biso
+    adp_iso=0.26023,  # FullProf Biso
 )
 structure.atom_sites.create(
-    label='O',
-    type_symbol='O',
-    fract_x=0.0,
-    fract_y=0.5,
-    fract_z=0.5,
-    occupancy=0.97856,
-    adp_type='Biso',
-    adp_iso=1.36662,
+    label='O',  # FullProf Atom
+    type_symbol='O',  # FullProf Typ
+    fract_x=0.0,  # FullProf X
+    fract_y=0.5,  # FullProf Y
+    fract_z=0.5,  # FullProf Z
+    occupancy=0.97856,  # FullProf Occ
+    adp_type='Biso',  # FullProf Biso
+    adp_iso=1.36662,  # FullProf Biso
 )
 
 project.structures.add(structure)
@@ -133,8 +132,8 @@ experiment.peak.broad_lorentz_y = FULLPROF_Y
 # Both preferred-orientation parameters, matching FullProf Pref1/Pref2.
 experiment.preferred_orientation.create(
     phase_id='lbco',
-    r=FULLPROF_MARCH_R,
-    fraction=FULLPROF_MARCH_FRACTION,
+    march_r=FULLPROF_MARCH_R,
+    march_random_fract=FULLPROF_MARCH_FRACTION,
     index_h=0,
     index_k=0,
     index_l=1,
@@ -167,7 +166,8 @@ project.display.pattern_comparison(
 # ## Fit ed-cryspy to FullProf
 #
 # Keep the two March–Dollase parameters fixed at the FullProf values
-# (`r = Pref1`, `fraction = Pref2`) and refine only the scale. The scale
+# (`march_r = Pref1`, `march_random_fract = Pref2`) and refine only the
+# scale. The scale
 # absorbs CrysPy's constant non-normalisation factor, and the patterns
 # agree — so ed-cryspy reproduces the FullProf two-parameter
 # March–Dollase pattern from the known coefficients.

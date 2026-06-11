@@ -174,27 +174,29 @@ metadata documents the same contract for factory/introspection callers.
 | Python attr                       | Type                        | Default     | Meaning                      | CrysPy           | IUCr export name                              |
 | --------------------------------- | --------------------------- | ----------- | ---------------------------- | ---------------- | --------------------------------------------- |
 | `phase_id`                        | StringDescriptor            | `'Si'`      | phase this row corrects      | `_texture_label` | `_pd_pref_orient_March_Dollase.phase_id`      |
-| `r`                               | Parameter (refinable)       | `1.0`       | March coefficient (1 = none) | `g_1`            | `_pd_pref_orient_March_Dollase.r`             |
+| `march_r`                         | Parameter (refinable)       | `1.0`       | March coefficient (1 = none) | `g_1`            | `_pd_pref_orient_March_Dollase.r`             |
 | `index_h` / `index_k` / `index_l` | Descriptor (integer, fixed) | `0 / 0 / 1` | texture direction            | `h_ax/k_ax/l_ax` | `_pd_pref_orient_March_Dollase.index_h/_k/_l` |
-| `fraction`                        | Parameter (refinable)       | `0.0`       | random (untextured) fraction | `g_2`            | _(see Decision 4)_                            |
+| `march_random_fract`              | Parameter (refinable)       | `0.0`       | random (untextured) fraction | `g_2`            | _(see Decision 4)_                            |
 
-The headline parameter is named **`r`** to match the IUCr standard
+The headline parameter is named **`march_r`** to match the IUCr standard
 (`_pd_pref_orient_March_Dollase.r`) and the crystallographic literature
-(Dollase 1986); **`fraction`** is the random/untextured fraction.
+(Dollase 1986); **`march_random_fract`** is the random/untextured
+fraction.
 
-`r` uses `RangeValidator(gt=0.0)`; `fraction` uses
-`RangeValidator(ge=0.0, le=1.0)`. The defaults (`r=1.0`, `fraction=0.0`)
-make an empty or freshly added correction a **mathematical no-op**, so
-existing projects and tutorials are unaffected until a user opts in.
+`march_r` uses `RangeValidator(gt=0.0)`; `march_random_fract` uses
+`RangeValidator(ge=0.0, le=1.0)`. The defaults (`march_r=1.0`,
+`march_random_fract=0.0`) make an empty or freshly added correction a
+**mathematical no-op**, so existing projects and tutorials are
+unaffected until a user opts in.
 
 **`index_h`/`index_k`/`index_l` are integer Descriptors, not refinable
 Parameters.** They use the same names as the existing `refln` categories
 (and avoid a bare ambiguous `l`). CrysPy technically allows refining
 `h_ax/k_ax/l_ax`, but refining a crystallographic texture direction as a
 continuous variable is physically unusual and a common source of
-unstable fits. The direction is a user-set Miller index; only `r` (and
-optionally `fraction`) refine. If a continuous-direction use case ever
-appears, promoting the descriptors to parameters is a
+unstable fits. The direction is a user-set Miller index; only `march_r`
+(and optionally `march_random_fract`) refine. If a continuous-direction
+use case ever appears, promoting the descriptors to parameters is a
 backward-compatible change.
 
 ### 3. User-facing API (Jupyter)
@@ -211,13 +213,13 @@ expt = project.experiments['hrpt']
 # like `experiment.linked_phases.create(id=..., scale=...)`.
 expt.preferred_orientation.create(
     phase_id='lbco',
-    r=0.8,
+    march_r=0.8,
     index_h=0, index_k=0, index_l=1,
 )
 
 po = expt.preferred_orientation['lbco']
-po.r.value = 0.75      # platy texture
-po.r.free = True       # refine the March coefficient
+po.march_r.value = 0.75      # platy texture
+po.march_r.free = True       # refine the March coefficient
 po.index_h.value, po.index_k.value, po.index_l.value = 0, 0, 1  # fixed Miller direction
 
 expt.preferred_orientation.show()      # table of all corrections
@@ -225,10 +227,10 @@ expt.preferred_orientation.show()      # table of all corrections
 
 Reading a property returns the live `Parameter`/`Descriptor` (matching
 every other category); assigning sets `.value`. Refinement follows the
-standard `.free = True` convention and is available on `r` and
-`fraction` only. `fraction` stays optional and defaults to pure
-March–Dollase, so a "simple preferred orientation" workflow only sets
-`r` and the direction.
+standard `.free = True` convention and is available on `march_r` and
+`march_random_fract` only. `march_random_fract` stays optional and
+defaults to pure March–Dollase, so a "simple preferred orientation"
+workflow only sets `march_r` and the direction.
 
 ### 4. CIF serialization
 
@@ -247,11 +249,11 @@ established precedent.
 ```
 loop_
 _pref_orient.phase_id
-_pref_orient.r
+_pref_orient.march_r
 _pref_orient.index_h
 _pref_orient.index_k
 _pref_orient.index_l
-_pref_orient.fraction
+_pref_orient.march_random_fract
   lbco  0.75  0  0  1  0.0
 ```
 
@@ -261,7 +263,7 @@ IUCr `_pd_pref_orient_March_Dollase.id` serial (1, 2, …) is synthesised
 by the report writer and has no Python field.
 
 Per parameter,
-`CifHandler(names=['_pref_orient.r'], iucr_name='_pd_pref_orient_March_Dollase.r')`
+`CifHandler(names=['_pref_orient.march_r'], iucr_name='_pd_pref_orient_March_Dollase.r')`
 — `names[0]` is the canonical round-trip tag, `iucr_name` is what the
 report writer emits. The exported `.r` is the **standard** IUCr/Dollase
 March coefficient: the backend inverts it to CrysPy's reciprocal `g1`
@@ -285,22 +287,23 @@ _pd_pref_orient_March_Dollase.r_su
   1  lbco  0  0  1  0.75  0.0
 ```
 
-**`fraction` (g2) naming — resolved.** CrysPy's `g2` has no IUCr
-standard name; IUCr `.fract` is a different quantity (multi-direction
-weight) and is **not** reused for it. Decision:
+**`march_random_fract` (g2) naming — resolved.** CrysPy's `g2` has no
+IUCr standard name; IUCr `.fract` is a different quantity
+(multi-direction weight) and is **not** reused for it. Decision:
 
-- The canonical default tag is `_pref_orient.fraction`.
-- The report export name is `_easydiffraction_pref_orient.fraction` —
-  consistent with every other non-standard field's
-  `_easydiffraction_<category>.*` form (never grafted onto the official
-  `_pd_pref_orient_March_Dollase` path, and never reusing `.fract`).
+- The canonical default tag is `_pref_orient.march_random_fract`.
+- The report export name is
+  `_easydiffraction_pref_orient.march_random_fract` — consistent with
+  every other non-standard field's `_easydiffraction_<category>.*` form
+  (never grafted onto the official `_pd_pref_orient_March_Dollase` path,
+  and never reusing `.fract`).
 - Because mixing a project-namespace column into the official
   March–Dollase loop is awkward and `g2 = 0` is both the default and the
-  standards-clean case, the report **omits `fraction` entirely when it
-  is 0** and, only when a user has set it non-zero, emits it as a short
-  separate item/loop in the `_easydiffraction_` namespace. The common
-  workflow therefore produces a fully standards-compliant report with no
-  project-namespace noise.
+  standards-clean case, the report **omits `march_random_fract` entirely
+  when it is 0** and, only when a user has set it non-zero, emits it as
+  a short separate item/loop in the `_easydiffraction_` namespace. The
+  common workflow therefore produces a fully standards-compliant report
+  with no project-namespace noise.
 
 Rejected alternatives for `g2`: reusing
 `_pd_pref_orient_March_Dollase.fract` (semantically wrong — would
@@ -320,9 +323,9 @@ Alternatives Considered.
      pass-through (point 2) would let refined values go stale, so TOF
      emits nothing and the cache signature (point 3) is likewise
      CW-scoped. `r = 1` is a no-op, so a default row is harmless. Map
-     `r→_texture_g_1` **inverted as `g_1 = 1/r`**
+     `march_r→_texture_g_1` **inverted as `g_1 = 1/r`**
      (`_march_r_to_cryspy_g1`, see Decision 6 — CrysPy uses the
-     reciprocal convention), `fraction→_texture_g_2`,
+     reciprocal convention), `march_random_fract→_texture_g_2`,
      `index_h/index_k/index_l→_texture_h_ax/_k_ax/_l_ax`,
      `phase_id→_texture_label`. CrysPy parses this into the experiment
      block (`pd_<name>`) of the dictionary under the array keys
@@ -339,15 +342,15 @@ Alternatives Considered.
      ```python
      if 'texture_g1' in cryspy_expt_dict:
          for i, po in enumerate(experiment.preferred_orientation):
-             cryspy_expt_dict['texture_g1'][i] = po.r.value
-             cryspy_expt_dict['texture_g2'][i] = po.fraction.value
+             cryspy_expt_dict['texture_g1'][i] = po.march_r.value
+             cryspy_expt_dict['texture_g2'][i] = po.march_random_fract.value
      ```
 
-     Only `r` and `fraction` **values** are patched.
+     Only `march_r` and `march_random_fract` **values** are patched.
      `index_h`/`index_k`/`index_l` are fixed descriptors (never
      refined), so `texture_axis` is never patched here.
-     `r.free`/`fraction.free` are **not** pushed into the CrysPy dict at
-     all: EasyDiffraction runs CrysPy with
+     `march_r.free`/`march_random_fract.free` are **not** pushed into
+     the CrysPy dict at all: EasyDiffraction runs CrysPy with
      `flag_calc_analytical_derivatives=False`, so CrysPy's
      `flags_texture_*` are unused; the free/fixed state is consumed by
      the EasyDiffraction minimizer, which assembles the parameter list
@@ -368,7 +371,8 @@ Alternatives Considered.
      constant-wavelength experiments (matching the CW-only emission
      scope): when the signature changes,
      `self._cryspy_dicts.pop(combined_name, None)`. Value-only edits to
-     `r`/`fraction` do **not** invalidate — they flow through path 2.
+     `march_r`/`march_random_fract` do **not** invalidate — they flow
+     through path 2.
 
 - **CrysFML / PDFFIT**: declare no support for now (like sample
   displacement on CrysFML). `CalculatorSupport(calculators={CRYSPY})` on
@@ -379,16 +383,17 @@ Alternatives Considered.
   `CFML_Powder/Pow_Preferred_Orientation.f90`), the mapping differs from
   CrysPy and **must not reuse `_march_r_to_cryspy_g1`**:
 
-  - **`r` passes through unchanged** — CrysFML uses the _standard_ March
-    coefficient (`r²cos²α + sin²α/r`, `par(1) = r`). The `1/r` inversion
-    is CrysPy-specific; do **not** apply it for CrysFML.
-  - **`fraction` does not map directly.** CrysFML's second parameter
-    (`par(2)`) is the _multi-axis weight_ (the IUCr `.fract`, = 1 for a
-    single axis), **not** the random/untextured fraction that our
-    `fraction` (= CrysPy `g2`) represents. CrysFML's `MAX_MD` model has
-    no random-fraction term, so wiring `fraction` to CrysFML needs an
-    explicit decision (extend the model, or expose `fraction` only on
-    the CrysPy backend). See the cross-engine map in Decision 6.
+  - **`march_r` passes through unchanged** — CrysFML uses the _standard_
+    March coefficient (`r²cos²α + sin²α/r`, `par(1) = r`). The `1/r`
+    inversion is CrysPy-specific; do **not** apply it for CrysFML.
+  - **`march_random_fract` does not map directly.** CrysFML's second
+    parameter (`par(2)`) is the _multi-axis weight_ (the IUCr `.fract`,
+    = 1 for a single axis), **not** the random/untextured fraction that
+    our `march_random_fract` (= CrysPy `g2`) represents. CrysFML's
+    `MAX_MD` model has no random-fraction term, so wiring
+    `march_random_fract` to CrysFML needs an explicit decision (extend
+    the model, or expose `march_random_fract` only on the CrysPy
+    backend). See the cross-engine map in Decision 6.
 
 ### 6. CrysPy parametrisation: reciprocal `g1 = 1/r` and non-normalisation
 
@@ -414,20 +419,20 @@ conventions, verified empirically against FullProf:
 
 Decisions:
 
-- The backend **maps the user's `r` to CrysPy `g1 = 1/r`** (see Decision
-  5, `_march_r_to_cryspy_g1`), so EasyDiffraction's `r` follows the
+- The backend **maps the user's `march_r` to CrysPy `g1 = 1/r`** (see
+  Decision 5, `_march_r_to_cryspy_g1`), so `march_r` follows the
   standard convention (1 = none, `<1` disk, `>1` needle) and the
   exported `_pd_pref_orient_March_Dollase.r` is **portable** to/from
-  FullProf/GSAS-II. The verification notebook refines `r`, `fraction`,
-  and scale and recovers `r ≈ Pref1`, `fraction ≈ Pref2`, with all
-  cross-engine agreement metrics passing.
-- **`fraction` (`g2`) is only an approximate match to FullProf
+  FullProf/GSAS-II. The verification notebook refines `march_r`,
+  `march_random_fract`, and scale and recovers `r ≈ Pref1`,
+  `fraction ≈ Pref2`, with all cross-engine agreement metrics passing.
+- **`march_random_fract` (`g2`) is only an approximate match to FullProf
   `Pref2`.** Because CrysPy mixes the random fraction _before_ the
   non-normalised texture term, the `g2 ↔ Pref2` relationship is
   nonlinear in `r` (≈ exact for mild texture, e.g.
   `Pref1=1.2, Pref2=0.3` recovers `fraction≈0.33`). Documented; a future
-  improvement could renormalise CrysPy's factor so `fraction` maps to
-  `Pref2` exactly.
+  improvement could renormalise CrysPy's factor so `march_random_fract`
+  maps to `Pref2` exactly.
 - `tmp/cryspy/preferred-orientation/` records the parametrisation for an
   upstream note (the reciprocal convention and missing normalisation are
   non-obvious and arguably worth standardising), but this is a
@@ -453,21 +458,21 @@ The headline coefficient lines up everywhere as the standard `r` (CrysPy
 stores `1/r`). The **second parameter differs in meaning** and splits
 the engines into two families:
 
-|                     | March coeff  | 2nd parameter  | meaning                          |
-| ------------------- | ------------ | -------------- | -------------------------------- |
-| CrysPy              | `g1 = 1/r`   | `g2`           | random (untextured) fraction     |
-| FullProf            | `Pref1 = r`  | `Pref2`        | random (untextured) fraction     |
-| **EasyDiffraction** | **`r`**      | **`fraction`** | random (untextured) fraction     |
-| CrysFML             | `par(1) = r` | `par(2)`       | weight of each axis (multi-axis) |
-| IUCr `.fract`       | `.r`         | `.fract`       | weight of each axis (multi-axis) |
+|                     | March coeff   | 2nd parameter            | meaning                          |
+| ------------------- | ------------- | ------------------------ | -------------------------------- |
+| CrysPy              | `g1 = 1/r`    | `g2`                     | random (untextured) fraction     |
+| FullProf            | `Pref1 = r`   | `Pref2`                  | random (untextured) fraction     |
+| **EasyDiffraction** | **`march_r`** | **`march_random_fract`** | random (untextured) fraction     |
+| CrysFML             | `par(1) = r`  | `par(2)`                 | weight of each axis (multi-axis) |
+| IUCr `.fract`       | `.r`          | `.fract`                 | weight of each axis (multi-axis) |
 
-So EasyDiffraction's **`fraction`** is the random-fraction family (=
-CrysPy `g2` = FullProf `Pref2`); it is **not** the IUCr/CrysFML `.fract`
-multi-axis weight (a different quantity), which is why `fraction` is
-project-namespaced and the multi-direction `.fract` is Deferred Work.
-(CrysFML's library _has_ a March–Dollase routine, but the
-EasyDiffraction CrysFML calculator does not wire preferred orientation,
-so PO stays CrysPy-only for now.)
+So EasyDiffraction's **`march_random_fract`** is the random-fraction
+family (= CrysPy `g2` = FullProf `Pref2`); it is **not** the
+IUCr/CrysFML `.fract` multi-axis weight (a different quantity), which is
+why `march_random_fract` is project-namespaced and the multi-direction
+`.fract` is Deferred Work. (CrysFML's library _has_ a March–Dollase
+routine, but the EasyDiffraction CrysFML calculator does not wire
+preferred orientation, so PO stays CrysPy-only for now.)
 
 ## Consequences
 
@@ -478,12 +483,13 @@ so PO stays CrysPy-only for now.)
 - A new cross-engine verification case (on the `pd-neut-cwl_pv_lbco`
   base, two-parameter March–Dollase) extends the existing FullProf suite
   (consistent with the cross-engine work in commits #195–#199): refining
-  `r`, `fraction`, and scale recovers FullProf's `Pref1`/`Pref2` and all
-  agreement metrics pass.
+  `march_r`, `march_random_fract`, and scale recovers FullProf's
+  `Pref1`/`Pref2` and all agreement metrics pass.
 - The exposed `r` is the standard March coefficient and is portable to
   FullProf/GSAS-II; the backend inverts it to CrysPy's reciprocal `g1`
-  (Decision 5/6). `fraction` is an approximate match to FullProf `Pref2`
-  (CrysPy's non-normalisation), documented in Decision 6.
+  (Decision 5/6). `march_random_fract` is an approximate match to
+  FullProf `Pref2` (CrysPy's non-normalisation), documented in
+  Decision 6.
 
 ## Alternatives Considered
 
@@ -550,8 +556,8 @@ pseudo-Voigt — chosen as the base on request):
    axis `[0 0 1]`).
 2. Add `pd-neut-cwl_pv-march_lbco` (paired `.py`/`.ipynb`) that builds
    the same LBCO model, sets `expt.preferred_orientation` with `r=Pref1`
-   and `fraction=Pref2`, then **refines `r`, `fraction`, and scale**.
-   ed-cryspy recovers `r≈Pref1` and `fraction≈Pref2`, and
+   and `fraction=Pref2`, then **refines `march_r`, `march_random_fract`,
+   and scale**. ed-cryspy recovers `r≈Pref1` and `fraction≈Pref2`, and
    `verify.assert_patterns_agree` passes (Profile diff ≈ 0.7%, area and
    shape within tolerance). The as-calculated step shows the constant
    scale offset from CrysPy's non-normalisation (Decision 6), reconciled

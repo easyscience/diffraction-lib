@@ -579,7 +579,7 @@ def test_write_pref_orient_loop_standard_and_fraction():
     from easydiffraction.io.cif import iucr_writer as W
 
     coll = PrefOrients()
-    coll.create(phase_id='lbco', r=0.75, index_h=0, index_k=0, index_l=1)  # fraction=0
+    coll.create(phase_id='lbco', march_r=0.75, index_h=0, index_k=0, index_l=1)  # fraction=0
     experiment = SimpleNamespace(preferred_orientation=coll)
 
     lines: list[str] = []
@@ -588,12 +588,12 @@ def test_write_pref_orient_loop_standard_and_fraction():
     assert '_pd_pref_orient_March_Dollase.r' in text
     assert '_pd_pref_orient_March_Dollase.index_l' in text
     # fraction == 0 -> the non-standard namespaced item is omitted
-    assert '_easydiffraction_pref_orient.fraction' not in text
+    assert '_easydiffraction_pref_orient.march_random_fract' not in text
 
-    coll['lbco'].fraction = 0.3
+    coll['lbco'].march_random_fract = 0.3
     lines2: list[str] = []
     W._write_pref_orient_loop(lines2, experiment)
-    assert '_easydiffraction_pref_orient.fraction' in '\n'.join(lines2)
+    assert '_easydiffraction_pref_orient.march_random_fract' in '\n'.join(lines2)
 
 
 def test_write_pref_orient_loop_empty_is_noop():

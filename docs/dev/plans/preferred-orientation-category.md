@@ -29,10 +29,10 @@ created. Related accepted ADRs consulted: `iucr-cif-tag-alignment.md`,
 
 - New **per-phase loop category `pref_orient`**, owned by the
   experiment, mirroring `linked_phases`. Keyed by `phase_id`.
-- Parameters per row: `r` (March coefficient, refinable, default 1.0),
-  `index_h`/`index_k`/`index_l` (fixed integer **descriptors**, default
-  0/0/1), `fraction` (random fraction, refinable, default 0.0). Defaults
-  are a mathematical no-op.
+- Parameters per row: `march_r` (March coefficient, refinable, default
+  1.0), `index_h`/`index_k`/`index_l` (fixed integer **descriptors**,
+  default 0/0/1), `march_random_fract` (random fraction, refinable,
+  default 0.0). Defaults are a mathematical no-op.
 - **Scope: Bragg powder only.** Created **only in `BraggPdExperiment`**,
   not the shared `PdExperimentBase`, so PDF/total-scattering and
   single-crystal experiments never expose `preferred_orientation`
@@ -40,13 +40,15 @@ created. Related accepted ADRs consulted: `iucr-cif-tag-alignment.md`,
   `sample_form={POWDER}, scattering_type={BRAGG}`.
 - **CrysPy-only** backend support (`CalculatorSupport({CRYSPY})`).
 - CIF: short `_pref_orient.*` round-trip tags + IUCr
-  `_pd_pref_orient_March_Dollase.*` export; `fraction` namespaced under
-  `_easydiffraction_pref_orient.fraction` and omitted from the report
-  when 0; `.hkl`/`.fract` excluded.
+  `_pd_pref_orient_March_Dollase.*` export; `march_random_fract`
+  namespaced under `_easydiffraction_pref_orient.march_random_fract` and
+  omitted from the report when 0; `.hkl`/`.fract` excluded.
 - **Known backend limitation (ADR Decision 6):** CrysPy 0.11.0's texture
-  function is non-standard and not intensity-conserving, so `r` is not
-  portable to FullProf/GSAS for `r ≠ 1`. The verification notebook
-  **documents this mismatch** rather than asserting agreement.
+  function uses a reciprocal `g1 = 1/r` convention (handled by the
+  backend) and is not volume-normalised (absorbed by scale), so the
+  exposed `march_r` is the standard, portable March coefficient. The
+  verification notebook **documents this mismatch** rather than
+  asserting agreement.
 
 ## Open questions
 
@@ -113,14 +115,14 @@ CrysPy is already a dependency; no `pyproject.toml`/`pixi.toml`/
       (`StringDescriptor`, default `'Si'`, regex validator like
       `LinkedPhase.id`,
       `CifHandler(['_pref_orient.phase_id'], iucr_name='_pd_pref_orient_March_Dollase.phase_id')`);
-      `r` (`Parameter`, default 1.0, `RangeValidator(gt=0.0)`,
+      `march_r` (`Parameter`, default 1.0, `RangeValidator(gt=0.0)`,
       `iucr_name='_pd_pref_orient_March_Dollase.r'`);
       `index_h`/`index_k`/`index_l` (`IntegerDescriptor`, defaults
       0/0/1, `iucr_name='_pd_pref_orient_March_Dollase.index_h/_k/_l'`);
-      `fraction` (`Parameter`, default 0.0,
+      `march_random_fract` (`Parameter`, default 0.0,
       `RangeValidator(ge=0.0, le=1.0)`,
-      `iucr_name='_easydiffraction_pref_orient.fraction'`). Add
-      `PrefOrients(CategoryCollection)` (`item_type=PrefOrient`,
+      `iucr_name='_easydiffraction_pref_orient.march_random_fract'`).
+      Add `PrefOrients(CategoryCollection)` (`item_type=PrefOrient`,
       `TypeInfo(tag='default')`,
       `Compatibility(sample_form={POWDER}, scattering_type={BRAGG})`,
       `CalculatorSupport({CRYSPY})`). Add `factory.py`
@@ -160,7 +162,8 @@ CrysPy is already a dependency; no `pyproject.toml`/`pixi.toml`/
       call in `_convert_experiment_to_cryspy_cif`, add a
       `_cif_pref_orient_section` that writes one `_texture_*` loop row
       per `experiment.preferred_orientation` entry, mapping
-      `r→_texture_g_1`, `fraction→_texture_g_2`,
+      `march_r→_texture_g_1` (inverted to `g_1 = 1/r`),
+      `fraction→_texture_g_2`,
       `index_h/index_k/index_l→_texture_h_ax/_k_ax/_l_ax`,
       `phase_id→_texture_label`. **Constant-wavelength powder only**
       (guard on `sample_form == POWDER` **and**
@@ -173,7 +176,7 @@ CrysPy is already a dependency; no `pyproject.toml`/`pixi.toml`/
 - [x] **P1.4 — CrysPy cached-dictionary pass-through and invalidation.**
       In `_update_experiment_in_cryspy_dict`, after the `offset_sysin`
       block, patch `texture_g1`/`texture_g2` from
-      `r.value`/`fraction.value` per row, guarded by
+      `march_r.value`/`march_random_fract.value` per row, guarded by
       `if 'texture_g1' in cryspy_expt_dict`. Do **not** patch
       `texture_axis` (`index_h`/`index_k`/`index_l` are fixed). In
       `_invalidate_stale_cache`, add a `pref_orient` signature — a tuple
@@ -182,8 +185,8 @@ CrysPy is already a dependency; no `pyproject.toml`/`pixi.toml`/
       for constant-wavelength** experiments (matching the emission
       scope); pop the cached dict when the signature changes (row
       add/remove, `phase_id` or `index_h`/`index_k`/`index_l` edit).
-      Value-only `r`/`fraction` edits must not invalidate. Files:
-      `analysis/calculators/cryspy.py`. Commit:
+      Value-only `march_r`/`march_random_fract` edits must not
+      invalidate. Files: `analysis/calculators/cryspy.py`. Commit:
       `Pass preferred-orientation through cryspy cache`
 
 - [x] **P1.5 — IUCr report-writer loop.** In `io/cif/iucr_writer.py`,
@@ -192,10 +195,11 @@ CrysPy is already a dependency; no `pyproject.toml`/`pixi.toml`/
       `_pd_pref_orient_March_Dollase.{id,phase_id,index_h,index_k,index_l,r,r_su}`
       columns (synthesise `.id` as a 1-based serial), called from the
       powder experiment writer alongside the existing profile/refln
-      loops. Emit a separate `_easydiffraction_pref_orient.fraction`
-      item only for rows whose `fraction ≠ 0`; omit it entirely
-      otherwise. Skip the whole loop when the experiment has no
-      `pref_orient` rows. Files: `io/cif/iucr_writer.py`. Commit:
+      loops. Emit a separate
+      `_easydiffraction_pref_orient.march_random_fract` item only for
+      rows whose `fraction ≠ 0`; omit it entirely otherwise. Skip the
+      whole loop when the experiment has no `pref_orient` rows. Files:
+      `io/cif/iucr_writer.py`. Commit:
       `Write preferred-orientation loop in IUCr report`
 
 - [x] **P1.6 — Promote the ADR to accepted.**

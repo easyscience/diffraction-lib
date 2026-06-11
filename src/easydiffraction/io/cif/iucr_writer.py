@@ -628,17 +628,17 @@ def _write_pref_orient_loop(lines: list[str], experiment: object) -> None:
                 _attribute_value(row, 'index_h'),
                 _attribute_value(row, 'index_k'),
                 _attribute_value(row, 'index_l'),
-                _attribute_value(row, 'r'),
-                getattr(_attribute_descriptor(row, 'r'), 'uncertainty', None),
+                _attribute_value(row, 'march_r'),
+                getattr(_attribute_descriptor(row, 'march_r'), 'uncertainty', None),
             )
             for index, row in enumerate(rows, start=1)
         ],
     )
 
     fraction_rows = [
-        (str(index), _attribute_value(row, 'fraction'))
+        (str(index), _attribute_value(row, 'march_random_fract'))
         for index, row in enumerate(rows, start=1)
-        if _attribute_value(row, 'fraction')
+        if _attribute_value(row, 'march_random_fract')
     ]
     if not fraction_rows:
         return
@@ -647,7 +647,7 @@ def _write_pref_orient_loop(lines: list[str], experiment: object) -> None:
         lines,
         (
             '_easydiffraction_pref_orient.id',
-            '_easydiffraction_pref_orient.fraction',
+            '_easydiffraction_pref_orient.march_random_fract',
         ),
         fraction_rows,
     )

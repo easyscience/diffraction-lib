@@ -48,15 +48,15 @@ class PrefOrient(CategoryItem):
                 latex_name='Phase',
             ),
         )
-        self._r = Parameter(
-            name='r',
+        self._march_r = Parameter(
+            name='march_r',
             description='March coefficient (1 = no preferred orientation).',
             value_spec=AttributeSpec(
                 default=1.0,
                 validator=RangeValidator(gt=0.0),
             ),
             cif_handler=CifHandler(
-                names=['_pref_orient.r'],
+                names=['_pref_orient.march_r'],
                 iucr_name='_pd_pref_orient_March_Dollase.r',
             ),
             display_handler=DisplayHandler(
@@ -103,16 +103,16 @@ class PrefOrient(CategoryItem):
                 latex_name='l',
             ),
         )
-        self._fraction = Parameter(
-            name='fraction',
+        self._march_random_fract = Parameter(
+            name='march_random_fract',
             description='Random (untextured) fraction; 0 = pure March-Dollase.',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0.0, le=1.0),
             ),
             cif_handler=CifHandler(
-                names=['_pref_orient.fraction'],
-                iucr_name='_easydiffraction_pref_orient.fraction',
+                names=['_pref_orient.march_random_fract'],
+                iucr_name='_easydiffraction_pref_orient.march_random_fract',
             ),
             display_handler=DisplayHandler(
                 display_name='Random fraction',
@@ -134,13 +134,13 @@ class PrefOrient(CategoryItem):
         self._phase_id.value = value
 
     @property
-    def r(self) -> Parameter:
+    def march_r(self) -> Parameter:
         """March coefficient (1 = no preferred orientation)."""
-        return self._r
+        return self._march_r
 
-    @r.setter
-    def r(self, value: float) -> None:
-        self._r.value = value
+    @march_r.setter
+    def march_r(self, value: float) -> None:
+        self._march_r.value = value
 
     # Miller indices use the ``index_h``/``index_k``/``index_l`` names
     # already established by the ``refln`` categories. This also avoids
@@ -174,13 +174,13 @@ class PrefOrient(CategoryItem):
         self._index_l.value = value
 
     @property
-    def fraction(self) -> Parameter:
+    def march_random_fract(self) -> Parameter:
         """Random (untextured) fraction; 0 = pure March-Dollase."""
-        return self._fraction
+        return self._march_random_fract
 
-    @fraction.setter
-    def fraction(self, value: float) -> None:
-        self._fraction.value = value
+    @march_random_fract.setter
+    def march_random_fract(self, value: float) -> None:
+        self._march_random_fract.value = value
 
 
 @PrefOrientFactory.register
