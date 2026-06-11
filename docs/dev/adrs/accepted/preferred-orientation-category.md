@@ -178,7 +178,7 @@ contract for factory/introspection callers.
 | --- | --- | --- | --- | --- | --- |
 | `phase_id` | StringDescriptor | `'Si'` | phase this row corrects | `_texture_label` | `_pd_pref_orient_March_Dollase.phase_id` |
 | `r` | Parameter (refinable) | `1.0` | March coefficient (1 = none) | `g_1` | `_pd_pref_orient_March_Dollase.r` |
-| `h` / `k` / `l` | Descriptor (integer, fixed) | `0 / 0 / 1` | texture direction | `h_ax/k_ax/l_ax` | `_pd_pref_orient_March_Dollase.index_h/_k/_l` |
+| `index_h` / `index_k` / `index_l` | Descriptor (integer, fixed) | `0 / 0 / 1` | texture direction | `h_ax/k_ax/l_ax` | `_pd_pref_orient_March_Dollase.index_h/_k/_l` |
 | `fraction` | Parameter (refinable) | `0.0` | random (untextured) fraction | `g_2` | *(see Decision 4)* |
 
 The headline parameter is named **`r`** to match the IUCr standard
@@ -191,11 +191,13 @@ The headline parameter is named **`r`** to match the IUCr standard
 **mathematical no-op**, so existing projects and tutorials are
 unaffected until a user opts in.
 
-**`h`/`k`/`l` are integer Descriptors, not refinable Parameters.**
-CrysPy technically allows refining `h_ax/k_ax/l_ax`, but refining a
-crystallographic texture direction as a continuous variable is
-physically unusual and a common source of unstable fits. The direction
-is a user-set Miller index; only `r` (and optionally `fraction`) refine.
+**`index_h`/`index_k`/`index_l` are integer Descriptors, not refinable
+Parameters.** They use the same names as the existing `refln` categories
+(and avoid a bare ambiguous `l`). CrysPy technically allows refining
+`h_ax/k_ax/l_ax`, but refining a crystallographic texture direction as a
+continuous variable is physically unusual and a common source of
+unstable fits. The direction is a user-set Miller index; only `r` (and
+optionally `fraction`) refine.
 If a continuous-direction use case ever appears, promoting the
 descriptors to parameters is a backward-compatible change.
 
@@ -214,13 +216,13 @@ expt = project.experiments['hrpt']
 expt.preferred_orientation.create(
     phase_id='lbco',
     r=0.8,
-    h=0, k=0, l=1,
+    index_h=0, index_k=0, index_l=1,
 )
 
 po = expt.preferred_orientation['lbco']
 po.r.value = 0.75      # platy texture
 po.r.free = True       # refine the March coefficient
-po.h.value, po.k.value, po.l.value = 0, 0, 1   # fixed Miller direction
+po.index_h.value, po.index_k.value, po.index_l.value = 0, 0, 1  # fixed Miller direction
 
 expt.preferred_orientation.show()      # table of all corrections
 ```
@@ -322,7 +324,7 @@ example). Both are recorded under Alternatives Considered.
      emits nothing and the cache signature (point 3) is likewise
      CW-scoped. `g1 = 1` is a no-op, so a default row is harmless. Map
      `r→_texture_g_1`, `fraction→_texture_g_2`,
-     `h/k/l→_texture_h_ax/_k_ax/_l_ax`, `phase_id→_texture_label`.
+     `index_h/index_k/index_l→_texture_h_ax/_k_ax/_l_ax`, `phase_id→_texture_label`.
      CrysPy parses this into the experiment block (`pd_<name>`) of the
      dictionary under the array keys `texture_g1`, `texture_g2`,
      `texture_axis` (shape `(3, n_rows)`), `texture_name`, and the
@@ -341,7 +343,7 @@ example). Both are recorded under Alternatives Considered.
              cryspy_expt_dict['texture_g2'][i] = po.fraction.value
      ```
 
-     Only `r` and `fraction` **values** are patched. `h/k/l` are fixed
+     Only `r` and `fraction` **values** are patched. `index_h`/`index_k`/`index_l` are fixed
      descriptors (never refined), so `texture_axis` is never patched
      here. `r.free`/`fraction.free` are **not** pushed into the CrysPy
      dict at all: EasyDiffraction runs CrysPy with
@@ -356,7 +358,7 @@ example). Both are recorded under Alternatives Considered.
   3. **Cache invalidation.** The cached dict's array *shapes* and row
      identity are baked in at parse time, so any change to the **set or
      identity of rows** — adding/removing a `pref_orient` row, or
-     changing a row's `phase_id` or `h/k/l` — must drop the cache so the
+     changing a row's `phase_id` or `index_h`/`index_k`/`index_l` — must drop the cache so the
      CIF is rebuilt. Extend `_invalidate_stale_cache` with a
      `pref_orient` signature (a tuple of `(phase_id, h, k, l)` per row,
      in order) tracked per `combined_name` exactly like

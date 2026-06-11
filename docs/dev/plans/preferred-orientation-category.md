@@ -30,7 +30,7 @@ Related accepted ADRs consulted: `iucr-cif-tag-alignment.md`,
 - New **per-phase loop category `pref_orient`**, owned by the
   experiment, mirroring `linked_phases`. Keyed by `phase_id`.
 - Parameters per row: `r` (March coefficient, refinable, default 1.0),
-  `h`/`k`/`l` (fixed integer **descriptors**, default 0/0/1),
+  `index_h`/`index_k`/`index_l` (fixed integer **descriptors**, default 0/0/1),
   `fraction` (random fraction, refinable, default 0.0). Defaults are a
   mathematical no-op.
 - **Scope: Bragg powder only.** Created **only in `BraggPdExperiment`**,
@@ -111,7 +111,7 @@ CrysPy is already a dependency; no `pyproject.toml`/`pixi.toml`/
   validator like `LinkedPhase.id`, `CifHandler(['_pref_orient.phase_id'],
   iucr_name='_pd_pref_orient_March_Dollase.phase_id')`); `r`
   (`Parameter`, default 1.0, `RangeValidator(gt=0.0)`,
-  `iucr_name='_pd_pref_orient_March_Dollase.r'`); `h`/`k`/`l`
+  `iucr_name='_pd_pref_orient_March_Dollase.r'`); `index_h`/`index_k`/`index_l`
   (`IntegerDescriptor`, defaults 0/0/1,
   `iucr_name='_pd_pref_orient_March_Dollase.index_h/_k/_l'`);
   `fraction` (`Parameter`, default 0.0, `RangeValidator(ge=0.0, le=1.0)`,
@@ -159,7 +159,7 @@ CrysPy is already a dependency; no `pyproject.toml`/`pixi.toml`/
   `_cif_pref_orient_section` that writes one `_texture_*` loop row per
   `experiment.preferred_orientation` entry, mapping
   `r→_texture_g_1`, `fraction→_texture_g_2`,
-  `h/k/l→_texture_h_ax/_k_ax/_l_ax`, `phase_id→_texture_label`. Emit
+  `index_h/index_k/index_l→_texture_h_ax/_k_ax/_l_ax`, `phase_id→_texture_label`. Emit
   unconditionally (rows with `r=1` are a no-op). Guard on the category
   existing and being a Bragg powder experiment.
   Files: `analysis/calculators/cryspy.py`.
@@ -175,7 +175,7 @@ CrysPy is already a dependency; no `pyproject.toml`/`pixi.toml`/
   `pref_orient` signature — a tuple of `(phase_id, h, k, l)` per row, in
   order — tracked per `combined_name` like `_cached_peak_types`; pop the
   cached dict when the signature changes (row add/remove, `phase_id` or
-  `h/k/l` edit). Value-only `r`/`fraction` edits must not invalidate.
+  `index_h`/`index_k`/`index_l` edit). Value-only `r`/`fraction` edits must not invalidate.
   Files: `analysis/calculators/cryspy.py`.
   Commit: `Pass preferred-orientation through cryspy cache`
 

@@ -105,7 +105,12 @@ class CryspyCalculator(CalculatorBase):
         )
         if supports_texture:
             current_pref_orient = tuple(
-                (item.phase_id.value, item.h.value, item.k.value, item.l.value)
+                (
+                    item.phase_id.value,
+                    item.index_h.value,
+                    item.index_k.value,
+                    item.index_l.value,
+                )
                 for item in experiment.preferred_orientation
             )
             if self._cached_pref_orient.get(combined_name) != current_pref_orient:
@@ -1370,7 +1375,7 @@ def _cif_pref_orient_section(
         '_texture_k_ax',
         '_texture_l_ax',
         f'{phase_label} {row.r.value} {row.fraction.value} '
-        f'{row.h.value} {row.k.value} {row.l.value}',
+        f'{row.index_h.value} {row.index_k.value} {row.index_l.value}',
     ))
 
 

@@ -624,9 +624,9 @@ def _write_pref_orient_loop(lines: list[str], experiment: object) -> None:
             (
                 str(index),
                 _attribute_value(row, 'phase_id'),
-                _attribute_value(row, 'h'),
-                _attribute_value(row, 'k'),
-                _attribute_value(row, 'l'),
+                _attribute_value(row, 'index_h'),
+                _attribute_value(row, 'index_k'),
+                _attribute_value(row, 'index_l'),
                 _attribute_value(row, 'r'),
                 getattr(_attribute_descriptor(row, 'r'), 'uncertainty', None),
             )

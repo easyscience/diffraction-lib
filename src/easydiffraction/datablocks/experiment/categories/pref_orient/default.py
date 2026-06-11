@@ -66,8 +66,8 @@ class PrefOrient(CategoryItem):
                 latex_name='r',
             ),
         )
-        self._h = IntegerDescriptor(
-            name='h',
+        self._index_h = IntegerDescriptor(
+            name='index_h',
             description='Texture-axis Miller index h',
             value_spec=AttributeSpec(default=0),
             cif_handler=CifHandler(
@@ -79,8 +79,8 @@ class PrefOrient(CategoryItem):
                 latex_name='h',
             ),
         )
-        self._k = IntegerDescriptor(
-            name='k',
+        self._index_k = IntegerDescriptor(
+            name='index_k',
             description='Texture-axis Miller index k',
             value_spec=AttributeSpec(default=0),
             cif_handler=CifHandler(
@@ -92,8 +92,8 @@ class PrefOrient(CategoryItem):
                 latex_name='k',
             ),
         )
-        self._l = IntegerDescriptor(
-            name='l',
+        self._index_l = IntegerDescriptor(
+            name='index_l',
             description='Texture-axis Miller index l',
             value_spec=AttributeSpec(default=1),
             cif_handler=CifHandler(
@@ -144,31 +144,36 @@ class PrefOrient(CategoryItem):
     def r(self, value: float) -> None:
         self._r.value = value
 
+    # Miller indices use the ``index_h``/``index_k``/``index_l`` names
+    # already established by the ``refln`` categories. This also avoids
+    # a bare ambiguous ``l`` name (ruff E741/E743).
+
     @property
-    def h(self) -> IntegerDescriptor:
+    def index_h(self) -> IntegerDescriptor:
         """Texture-axis Miller index h."""
-        return self._h
+        return self._index_h
 
-    @h.setter
-    def h(self, value: int) -> None:
-        self._h.value = value
+    @index_h.setter
+    def index_h(self, value: int) -> None:
+        self._index_h.value = value
 
     @property
-    def k(self) -> IntegerDescriptor:
+    def index_k(self) -> IntegerDescriptor:
         """Texture-axis Miller index k."""
-        return self._k
+        return self._index_k
 
-    @k.setter
-    def k(self, value: int) -> None:
-        self._k.value = value
+    @index_k.setter
+    def index_k(self, value: int) -> None:
+        self._index_k.value = value
 
-    def _get_l(self) -> IntegerDescriptor:
+    @property
+    def index_l(self) -> IntegerDescriptor:
         """Texture-axis Miller index l."""
-        return self._l
+        return self._index_l
 
-    def _set_l(self, value: int) -> None:
-        """Set the texture-axis Miller index l."""
-        self._l.value = value
+    @index_l.setter
+    def index_l(self, value: int) -> None:
+        self._index_l.value = value
 
     @property
     def fraction(self) -> Parameter:
@@ -178,14 +183,6 @@ class PrefOrient(CategoryItem):
     @fraction.setter
     def fraction(self, value: float) -> None:
         self._fraction.value = value
-
-
-# The crystallographic Miller index ``l`` must be public as ``po.l``, but
-# a bare ``def l`` / ``l =`` inside the class body trips ruff E743/E741
-# for the ambiguous single-letter name. Binding the property as a class
-# attribute (an attribute assignment, which the rule does not flag) keeps
-# the public API without a per-line lint suppression.
-PrefOrient.l = property(PrefOrient._get_l, PrefOrient._set_l)
 
 
 @PrefOrientFactory.register
