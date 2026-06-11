@@ -63,9 +63,9 @@ Three independent sources confirm the same simple, widely used model —
    and that `g1=1` (or absence of the loop) is a true no-op default.
    Note `g2=1` collapses `P` to 1 regardless of `g1`, so the **March
    coefficient, not the fraction, is the headline parameter**. (CrysPy's
-   _form_ of the correction is non-standard and not intensity-conserving
-   — see Decision 6; the wiring and no-op behaviour above are
-   nonetheless correct.)
+   `g1` is the _reciprocal_ of the standard March coefficient and its
+   factor is not volume-normalised — both handled by the backend; see
+   Decision 6.)
 
 2. **IUCr powder dictionary (`tmp/iucr-dicts/cif_pow.dic`).** The modern
    DDLm dictionary defines a full `PD_PREF_ORIENT` category and a
@@ -84,13 +84,10 @@ Three independent sources confirm the same simple, widely used model —
    The **roles** line up across all three: IUCr `.r`, FullProf `Pref1`,
    and CrysPy `g1` are all "the March coefficient" of the same category
    shape, and IUCr `.index_h/_k/_l` ≡ CrysPy `h_ax/k_ax/l_ax` exactly.
-   But the _role_ matching `.r ↔ g1` is **not** a numerical equality:
-   CrysPy's current `g1` parametrises a different, non-standard function
-   (Decision 6), so `g1` equals the IUCr/Dollase/FullProf `r` only at
-   `r = 1`. The category therefore adopts the IUCr name `r` for the
-   coefficient slot while treating the CrysPy backend value as a
-   backend-specific March-like coefficient until upstream corrects the
-   formula.
+   The numerical relationship is the **reciprocal**: CrysPy's `g1 = 1/r`
+   (Decision 6), so the backend inverts the user's standard `r` before
+   passing it to CrysPy. The category exposes the IUCr/FullProf/GSAS
+   `r`, and the exported `.r` is portable across engines.
 
    Two names are deliberately **excluded**:
 
@@ -123,11 +120,11 @@ Three independent sources confirm the same simple, widely used model —
 
 The three models agree on the **category shape** — a single scalar March
 coefficient plus an integer direction (and an optional random fraction)
-— so a small, well-scoped category is sufficient. They do **not** all
-agree on the numerical _function_ that coefficient drives: CrysPy 0.11.0
-applies a non-standard, non-conserving variant (Decision 6). The
-category design below is therefore stable regardless, while the CrysPy
-backend value is documented as temporarily non-portable.
+— so a small, well-scoped category is sufficient. They implement the
+**same** March–Dollase function; CrysPy 0.11.0 just expresses it with a
+reciprocal coefficient (`g1 = 1/r`) and an unnormalised scale factor,
+both handled by the backend (Decision 6). The exposed `r` is the
+standard, portable coefficient.
 
 ## Decision
 
@@ -266,10 +263,10 @@ by the report writer and has no Python field.
 Per parameter,
 `CifHandler(names=['_pref_orient.r'], iucr_name='_pd_pref_orient_March_Dollase.r')`
 — `names[0]` is the canonical round-trip tag, `iucr_name` is what the
-report writer emits. (Caveat: until CrysPy adopts the standard function
-— see Decision 6 — the exported `.r` is CrysPy's `g1`, which only equals
-the IUCr/Dollase `r` at `r = 1`. The mapping is kept so the CIF is
-forward-compatible once the backend is corrected.)
+report writer emits. The exported `.r` is the **standard** IUCr/Dollase
+March coefficient: the backend inverts it to CrysPy's reciprocal `g1`
+(Decision 5/6), so `.r` is directly portable to/from FullProf and
+GSAS-II.
 
 **IUCr report CIF** — standard fields under the dictionary category, the
 non-standard `g2` under the project namespace. The IUCr writer is a
@@ -322,8 +319,10 @@ Alternatives Considered.
      Deferred Work, and emitting a TOF texture loop without the TOF
      pass-through (point 2) would let refined values go stale, so TOF
      emits nothing and the cache signature (point 3) is likewise
-     CW-scoped. `g1 = 1` is a no-op, so a default row is harmless. Map
-     `r→_texture_g_1`, `fraction→_texture_g_2`,
+     CW-scoped. `r = 1` is a no-op, so a default row is harmless. Map
+     `r→_texture_g_1` **inverted as `g_1 = 1/r`**
+     (`_march_r_to_cryspy_g1`, see Decision 6 — CrysPy uses the
+     reciprocal convention), `fraction→_texture_g_2`,
      `index_h/index_k/index_l→_texture_h_ax/_k_ax/_l_ax`,
      `phase_id→_texture_label`. CrysPy parses this into the experiment
      block (`pd_<name>`) of the dictionary under the array keys
@@ -375,45 +374,49 @@ Alternatives Considered.
   displacement on CrysFML). `CalculatorSupport(calculators={CRYSPY})` on
   the category; document the gap in a comment.
 
-### 6. Known backend limitation — CrysPy's texture function is non-standard
+### 6. CrysPy parametrisation: reciprocal `g1 = 1/r` and non-normalisation
 
 CrysPy 0.11.0's "Modified March's function"
-(`A_functions_base/preferred_orientation.py`) is **not** the standard
-March–Dollase function that FullProf and GSAS-II use, and it does **not
-conserve scattered intensity**. With `g2 = 0` it applies
+(`A_functions_base/preferred_orientation.py`) **is** the standard
+March–Dollase model — with symmetry averaging over equivalent texture
+axes (correct powder physics) — but expressed with two non-obvious
+conventions, verified empirically against FullProf:
 
-```
-P_cryspy(α) = [ (1/g1) cos²α + g1² sin²α ]^(-3/2)
-```
+1. **Reciprocal coefficient.** CrysPy's `g1` is the _reciprocal_ of the
+   IUCr/FullProf/GSAS March coefficient: **`g1 = 1/r`**. Fitting CrysPy
+   (free scale) to FullProf references confirms the global optimum is
+   always `g1 = 1/Pref1`: `Pref1=0.5 → g1=2.0` (Rwp 0.65%),
+   `Pref1=1.2 → g1=0.833` (Rwp 0.68%), `Pref1=0.8 → g1=1.25` (Rwp
+   0.68%); the wrong, same-value mapping gives Rwp 24–27%.
+2. **Not volume-normalised.** CrysPy's per-reflection factor has an
+   orientation average of `g1^(-3/2)` rather than 1, so the textured
+   total intensity differs from a conserving engine by a **constant
+   per-phase factor** — absorbed entirely by the scale (the peak _shape_
+   is exactly March–Dollase). My earlier "exponents differ, no
+   reparametrisation works" reading was wrong: it compared `g1=r` at
+   fixed scale and omitted both the reciprocal and this scale factor.
 
-whereas the textbook March–Dollase (Dollase 1986) is
+Decisions:
 
-```
-P_dollase(α) = [ r² cos²α + (1/r) sin²α ]^(-3/2)
-```
-
-The exponent pattern differs (`{1/g1, g1²}` vs `{r², 1/r}`), so no
-single `r = f(g1)` makes them equal; and the orientation average of
-CrysPy's form is `g1^(-3/2)`, not `1`, so it rescales the integrated
-total instead of only redistributing it. Numerically, CrysPy `g1=0.5`
-spans 0.354 (axis) → 8.0 (perpendicular) and averages to 2.83, while
-every standard `r` averages to exactly 1.0.
-
-Consequences for this category:
-
-- The decision is to **implement against CrysPy as-is** — the category,
-  API, serialization, and wiring are correct and useful regardless of
-  the backend's internal formula. `r` is passed straight through to
-  CrysPy's `g_1`.
-- **The exported `_pd_pref_orient_March_Dollase.r` value is therefore
-  not yet portable** to/from FullProf/GSAS-II for `r ≠ 1`. This is a
-  documented backend limitation, not a category-design choice; it
-  resolves itself once CrysPy adopts the standard function.
-- The divergence is captured for upstream reporting in
-  `tmp/cryspy/preferred-orientation/` (minimal `rcif`, a comparison
-  script calling the real CrysPy routine, and an `ISSUE.md` with
-  equations and FullProf/GSAS/Dollase references). A CrysPy issue is to
-  be filed; this ADR should link it once it has a number.
+- The backend **maps the user's `r` to CrysPy `g1 = 1/r`** (see Decision
+  5, `_march_r_to_cryspy_g1`), so EasyDiffraction's `r` follows the
+  standard convention (1 = none, `<1` disk, `>1` needle) and the
+  exported `_pd_pref_orient_March_Dollase.r` is **portable** to/from
+  FullProf/GSAS-II. The verification notebook refines `r`, `fraction`,
+  and scale and recovers `r ≈ Pref1`, `fraction ≈ Pref2`, with all
+  cross-engine agreement metrics passing.
+- **`fraction` (`g2`) is only an approximate match to FullProf
+  `Pref2`.** Because CrysPy mixes the random fraction _before_ the
+  non-normalised texture term, the `g2 ↔ Pref2` relationship is
+  nonlinear in `r` (≈ exact for mild texture, e.g.
+  `Pref1=1.2, Pref2=0.3` recovers `fraction≈0.33`). Documented; a future
+  improvement could renormalise CrysPy's factor so `fraction` maps to
+  `Pref2` exactly.
+- `tmp/cryspy/preferred-orientation/` records the parametrisation for an
+  upstream note (the reciprocal convention and missing normalisation are
+  non-obvious and arguably worth standardising), but this is a
+  **convention/quality note, not a correctness blocker** — the model is
+  standard March–Dollase and reproduces FullProf after refinement.
 
 ## Consequences
 
@@ -422,15 +425,14 @@ Consequences for this category:
 - One new category package plus experiment wiring and a CrysPy
   serialization branch; no changes to the structure model.
 - A new cross-engine verification case (on the `pd-neut-cwl_pv_lbco`
-  base) extends the existing FullProf suite (consistent with the
-  cross-engine work in commits #195–#199) and **documents** the CrysPy
-  texture-function divergence rather than hiding it.
-- The `fraction` non-standard tag is a documented, opt-in wart; pure
-  March–Dollase remains the standards-clean default.
-- CrysPy's non-standard texture formula (Decision 6) means refined `r`
-  values are not yet portable to FullProf/GSAS-II; the limitation is
-  documented, reproduced for upstream in
-  `tmp/cryspy/preferred-orientation/`, and clears once CrysPy is fixed.
+  base, two-parameter March–Dollase) extends the existing FullProf suite
+  (consistent with the cross-engine work in commits #195–#199): refining
+  `r`, `fraction`, and scale recovers FullProf's `Pref1`/`Pref2` and all
+  agreement metrics pass.
+- The exposed `r` is the standard March coefficient and is portable to
+  FullProf/GSAS-II; the backend inverts it to CrysPy's reciprocal `g1`
+  (Decision 5/6). `fraction` is an approximate match to FullProf `Pref2`
+  (CrysPy's non-normalisation), documented in Decision 6.
 
 ## Alternatives Considered
 
@@ -484,30 +486,28 @@ orientation**. The only two examples with a non-zero `Pref1`
 annealing_ demos run against _calculated_ data, not Rietveld refinements
 against measured data — unsuitable as a verification reference.
 
-Because of the backend limitation in Decision 6, the verification
-notebook **documents the CrysPy↔FullProf mismatch** rather than
-asserting agreement. It is built on the existing
-**`pd-neut-cwl_pv_lbco`** case (La₀.₅Ba₀.₅CoO₃, neutron CW, pseudo-Voigt
-— chosen as the base on request):
+The verification notebook is a **positive cross-engine agreement check**
+that also exercises both March–Dollase parameters. It is built on the
+existing **`pd-neut-cwl_pv_lbco`** case (La₀.₅Ba₀.₅CoO₃, neutron CW,
+pseudo-Voigt — chosen as the base on request):
 
 1. Copy `docs/docs/verification/fullprof/pd-neut-cwl_pv_lbco/lbco.pcr`,
-   enable a single March–Dollase direction (texture axis `h k l` via the
-   phase `Pr1 Pr2 Pr3` line and a non-zero `Pref1`), and re-run FullProf
-   locally (`~/Applications/fullprof`) to regenerate
-   `.prf`/`.bac`/`.sum` with the standard March–Dollase correction
-   active.
+   enable the March–Dollase model (`Nor=1`) along the phase
+   `Pr1 Pr2 Pr3` direction with a non-zero `Pref1` **and** `Pref2`, and
+   re-run FullProf locally (`~/Applications/fullprof`) to regenerate
+   `.prf`/`.bac`/`.sum` (the reference uses `Pref1=1.2`, `Pref2=0.3`,
+   axis `[0 0 1]`).
 2. Add `pd-neut-cwl_pv-march_lbco` (paired `.py`/`.ipynb`) that builds
-   the same LBCO model in EasyDiffraction, sets
-   `expt.preferred_orientation` with `r` mapped to FullProf's `Pref1`,
-   and overlays the CrysPy pattern on the FullProf reference. The
-   notebook is expected to **show agreement at `r = 1` and a visible,
-   quantified divergence for `r ≠ 1`**, with a markdown cell explaining
-   the CrysPy formula difference and linking the upstream issue. Because
-   PO is CrysPy-only, the case compares CrysPy vs FullProf only (no
-   CrysFML column, unlike the base `lbco` case).
+   the same LBCO model, sets `expt.preferred_orientation` with `r=Pref1`
+   and `fraction=Pref2`, then **refines `r`, `fraction`, and scale**.
+   ed-cryspy recovers `r≈Pref1` and `fraction≈Pref2`, and
+   `verify.assert_patterns_agree` passes (Profile diff ≈ 0.7%, area and
+   shape within tolerance). The as-calculated step shows the constant
+   scale offset from CrysPy's non-normalisation (Decision 6), reconciled
+   by the fit. PO is CrysPy-only, so the case compares CrysPy vs
+   FullProf only (no CrysFML column).
 
 This verification notebook is built **before any user tutorial**, so the
-tutorial can cite a validated, well-understood workflow (including the
-documented caveat). Producing the FullProf reference and the
-verification notebook is the first deliverable of the implementation
-plan's Phase 2.
+tutorial can cite a validated, well-understood workflow. Producing the
+FullProf reference and the verification notebook is the first
+deliverable of the implementation plan's Phase 2.
