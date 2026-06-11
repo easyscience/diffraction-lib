@@ -2,8 +2,19 @@
 # # LBCO — preferred orientation (March–Dollase)
 #
 # Cross-engine check of the **two-parameter** March–Dollase preferred-
-# orientation correction. FullProf applies the standard model for with
+# orientation correction. FullProf applies the standard model (its
+# `.out` reports "March-Dollase model for preferred orientation") with
 # `Pref1 = 1.2` and `Pref2 = 0.3` along `[0 0 1]`.
+#
+# EasyDiffraction exposes the standard `march_r` (= `Pref1`) and
+# `march_random_fract` (= `Pref2`). CrysPy parametrises the **same**
+# model but with the **reciprocal** coefficient `g1 = 1/r` and an
+# overall factor that is not volume-normalised; the backend inverts
+# `march_r` automatically, and the constant non-normalisation factor is
+# absorbed by the scale (so the as-calculated pattern below shows an
+# overall offset before fitting). After refining the two March–Dollase
+# parameters and the scale, ed-cryspy recovers `march_r ≈ 1.2` and
+# `march_random_fract ≈ 0.3` and the patterns agree.
 
 # %%
 import easydiffraction as ed
@@ -187,3 +198,12 @@ verify.assert_patterns_agree(
         ('cryspy refined vs FullProf', calc_fullprof, calc_ed_cryspy_refined),
     ],
 )
+
+# %% [markdown]
+# The refined `march_r` returns to the FullProf `Pref1 = 1.2` and
+# `march_random_fract` to `Pref2 = 0.3` (the latter only approximately,
+# because CrysPy's non-normalised factor makes the random-fraction
+# correspondence slightly non-linear), with all closeness metrics within
+# tolerance. ed-cryspy therefore reproduces the FullProf two-parameter
+# March–Dollase correction once its reciprocal/unnormalised convention is
+# accounted for by the backend mapping and the scale.
