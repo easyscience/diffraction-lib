@@ -341,12 +341,19 @@ Alternatives Considered.
 
      ```python
      if 'texture_g1' in cryspy_expt_dict:
-         for i, po in enumerate(experiment.preferred_orientation):
-             cryspy_expt_dict['texture_g1'][i] = po.march_r.value
-             cryspy_expt_dict['texture_g2'][i] = po.march_random_fract.value
+         rows = {po.phase_id.value: po for po in experiment.preferred_orientation}
+         for i, label in enumerate(cryspy_expt_dict['texture_name']):
+             po = rows.get(str(label))
+             if po is not None:
+                 # March coefficient is inverted to CrysPy's reciprocal g_1.
+                 cryspy_expt_dict['texture_g1'][i] = _march_r_to_cryspy_g1(po.march_r.value)
+                 cryspy_expt_dict['texture_g2'][i] = po.march_random_fract.value
      ```
 
-     Only `march_r` and `march_random_fract` **values** are patched.
+     Each `texture_*` row is matched to its `pref_orient` row by phase
+     label (not row order), and `march_r` is inverted to CrysPy's
+     reciprocal `g_1 = 1/r` (Decision 6). Only `march_r` and
+     `march_random_fract` **values** are patched.
      `index_h`/`index_k`/`index_l` are fixed descriptors (never
      refined), so `texture_axis` is never patched here.
      `march_r.free`/`march_random_fract.free` are **not** pushed into
