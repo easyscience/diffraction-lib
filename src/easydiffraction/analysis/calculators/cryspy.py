@@ -1377,10 +1377,25 @@ def _cif_pref_orient_section(
         '_texture_k_ax',
         '_texture_l_ax',
         (
-            f'{phase_label} {row.r.value} {row.fraction.value} '
+            f'{phase_label} {_march_r_to_cryspy_g1(row.r.value)} {row.fraction.value} '
             f'{row.index_h.value} {row.index_k.value} {row.index_l.value}'
         ),
     ))
+
+
+def _march_r_to_cryspy_g1(r: float) -> float:
+    """Convert the IUCr/FullProf March coefficient ``r`` to cryspy ``g_1``.
+
+    CrysPy's "Modified March" parametrises the March-Dollase distribution
+    with the **reciprocal** coefficient: ``g_1 = 1/r`` (verified against
+    FullProf for `r` in 0.5-1.5; the global best fit is always `1/r`). The
+    user-facing ``r`` therefore follows the standard IUCr/FullProf/GSAS
+    convention (1 = none, `<1` disk, `>1` needle) and is inverted before
+    it reaches the backend. CrysPy's function is additionally not
+    volume-normalised, but that is a constant per-phase factor absorbed by
+    the scale; it slightly distorts the ``fraction`` (g_2) correspondence.
+    """
+    return 1.0 / r
 
 
 def _update_texture_in_cryspy_dict(
@@ -1405,7 +1420,7 @@ def _update_texture_in_cryspy_dict(
     for index, label in enumerate(cryspy_expt_dict['texture_name']):
         row = rows.get(str(label))
         if row is not None:
-            cryspy_expt_dict['texture_g1'][index] = row.r.value
+            cryspy_expt_dict['texture_g1'][index] = _march_r_to_cryspy_g1(row.r.value)
             cryspy_expt_dict['texture_g2'][index] = row.fraction.value
 
 

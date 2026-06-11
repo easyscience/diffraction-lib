@@ -413,7 +413,9 @@ def test_cif_pref_orient_section_emits_for_constant_wavelength():
 
     assert '_texture_g_1' in text
     assert '_texture_label' in text
-    assert 'lbco 0.5' in text
+    # The row's user-facing March coefficient r=0.5 maps to cryspy
+    # g_1 = 1/r = 2.0 (reciprocal convention).
+    assert 'lbco 2.0' in text
 
 
 def test_cif_pref_orient_section_skips_time_of_flight():
@@ -443,7 +445,8 @@ def test_update_texture_in_cryspy_dict_patches_g1_and_g2():
     }
     MUT._update_texture_in_cryspy_dict(cryspy_expt_dict, experiment)
 
-    assert cryspy_expt_dict['texture_g1'][0] == 0.6
+    # r maps to cryspy g_1 = 1/r (reciprocal); fraction maps to g_2.
+    assert cryspy_expt_dict['texture_g1'][0] == pytest.approx(1.0 / 0.6)
     assert cryspy_expt_dict['texture_g2'][0] == 0.2
 
 
