@@ -374,6 +374,22 @@ Alternatives Considered.
   displacement on CrysFML). `CalculatorSupport(calculators={CRYSPY})` on
   the category; document the gap in a comment.
 
+  **When CrysFML preferred orientation is wired** (its library already
+  has a March–Dollase routine,
+  `CFML_Powder/Pow_Preferred_Orientation.f90`), the mapping differs from
+  CrysPy and **must not reuse `_march_r_to_cryspy_g1`**:
+
+  - **`r` passes through unchanged** — CrysFML uses the _standard_ March
+    coefficient (`r²cos²α + sin²α/r`, `par(1) = r`). The `1/r` inversion
+    is CrysPy-specific; do **not** apply it for CrysFML.
+  - **`fraction` does not map directly.** CrysFML's second parameter
+    (`par(2)`) is the _multi-axis weight_ (the IUCr `.fract`, = 1 for a
+    single axis), **not** the random/untextured fraction that our
+    `fraction` (= CrysPy `g2`) represents. CrysFML's `MAX_MD` model has
+    no random-fraction term, so wiring `fraction` to CrysFML needs an
+    explicit decision (extend the model, or expose `fraction` only on
+    the CrysPy backend). See the cross-engine map in Decision 6.
+
 ### 6. CrysPy parametrisation: reciprocal `g1 = 1/r` and non-normalisation
 
 CrysPy 0.11.0's "Modified March's function"
