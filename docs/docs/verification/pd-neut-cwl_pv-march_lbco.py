@@ -2,17 +2,8 @@
 # # LBCO — preferred orientation (March–Dollase)
 #
 # Cross-engine check of the **two-parameter** March–Dollase preferred-
-# orientation correction. FullProf applies the standard model (its
-# `.out` reports "March-Dollase model for preferred orientation") with
+# orientation correction. FullProf applies the standard model for with 
 # `Pref1 = 1.2` and `Pref2 = 0.3` along `[0 0 1]`.
-#
-# EasyDiffraction's `march_r` and `march_random_fract` map to FullProf's
-# `Pref1` and `Pref2`. CrysPy parametrises the same model with the
-# **reciprocal** coefficient `g1 = 1/r`, so the backend inverts
-# `march_r`; CrysPy's function is also not volume-normalised, which is a
-# constant per-phase factor absorbed by the scale. Holding the two
-# March–Dollase parameters at the FullProf values and refining only the
-# scale, ed-cryspy reproduces the FullProf pattern.
 
 # %%
 import easydiffraction as ed
@@ -94,8 +85,11 @@ FULLPROF_V = -0.115345  # FullProf V
 FULLPROF_W = 0.121125  # FullProf W
 FULLPROF_X = 0.0  # FullProf X
 FULLPROF_Y = 0.083038  # FullProf Y
-FULLPROF_MARCH_R = 1.2  # FullProf Pref1 (March coefficient)
-FULLPROF_MARCH_FRACTION = 0.3  # FullProf Pref2 (random fraction)
+FULLPROF_PREF_1 = 1.2  # FullProf Pref1
+FULLPROF_PREF_2 = 0.3  # FullProf Pref2
+FULLPROF_PR_1 = 0  # FullProf Pr1
+FULLPROF_PR_2 = 0  # FullProf Pr2
+FULLPROF_PR_3 = 1  # FullProf Pr3
 
 x, calc_fullprof = verify.load_fullprof_calc_profile(
     FULLPROF_PROJECT_DIR,
@@ -129,28 +123,23 @@ experiment.peak.broad_gauss_w = FULLPROF_W
 experiment.peak.broad_lorentz_x = FULLPROF_X
 experiment.peak.broad_lorentz_y = FULLPROF_Y
 
-# Both preferred-orientation parameters, matching FullProf Pref1/Pref2.
 experiment.preferred_orientation.create(
     phase_id='lbco',
-    march_r=FULLPROF_MARCH_R,
-    march_random_fract=FULLPROF_MARCH_FRACTION,
-    index_h=0,
-    index_k=0,
-    index_l=1,
+    march_r=FULLPROF_PREF_1,
+    march_random_fract=FULLPROF_PREF_2,
+    index_h=FULLPROF_PR_1,
+    index_k=FULLPROF_PR_2,
+    index_l=FULLPROF_PR_3,
 )
 
 project.experiments.add(experiment)
-experiment.calculator.type = 'cryspy'
 
 # %% [markdown]
 # ## ed-cryspy VS FullProf
-#
-# With FullProf's scale, the calculated pattern shows an overall offset:
-# CrysPy's texture function is not volume-normalised, so the textured
-# total intensity differs by a constant per-phase factor. The peak
-# *shape* already matches; the scale is reconciled by the fit below.
 
 # %%
+experiment.calculator.type = 'cryspy'
+
 project.analysis.calculate()
 calc_ed_cryspy = experiment.data.intensity_calc
 
@@ -164,13 +153,6 @@ project.display.pattern_comparison(
 
 # %% [markdown]
 # ## Fit ed-cryspy to FullProf
-#
-# Keep the two March–Dollase parameters fixed at the FullProf values
-# (`march_r = Pref1`, `march_random_fract = Pref2`) and refine only the
-# scale. The scale
-# absorbs CrysPy's constant non-normalisation factor, and the patterns
-# agree — so ed-cryspy reproduces the FullProf two-parameter
-# March–Dollase pattern from the known coefficients.
 
 # %%
 experiment.linked_phases['lbco'].scale.free = True
