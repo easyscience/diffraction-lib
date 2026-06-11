@@ -202,7 +202,7 @@ CrysPy is already a dependency; no `pyproject.toml`/`pixi.toml`/
   Files: the moved ADR, `docs/dev/adrs/index.md`.
   Commit: `Promote preferred-orientation-category ADR to accepted`
 
-- [ ] **P1.7 — Phase 1 review gate (no code).**
+- [x] **P1.7 — Phase 1 review gate (no code).**
   Mark P1.1–P1.6 `[x]`, then stop for the Phase 1 review.
   Commit: `Reach Phase 1 review gate`
 
@@ -269,7 +269,7 @@ thresholds or add `# noqa`; refactor instead.
 - [x] P1.4 CrysPy cache pass-through + invalidation
 - [x] P1.5 IUCr report-writer loop
 - [x] P1.6 Promote ADR to accepted
-- [ ] P1.7 Phase 1 review gate
+- [x] P1.7 Phase 1 review gate
 - [ ] Phase 2 tests
 - [ ] Phase 2 FullProf reference + verification notebook
 - [ ] Phase 2 full check suite green
