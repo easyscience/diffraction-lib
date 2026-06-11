@@ -166,15 +166,14 @@ project.display.pattern_comparison(
 # %% [markdown]
 # ## Fit ed-cryspy to FullProf
 #
-# Refine the three parameters that carry the preferred-orientation
-# information: the two March–Dollase parameters (`r`, `fraction`) and the
-# scale. ed-cryspy converges back to the FullProf values
-# (`r ≈ 1.2 = Pref1`, `fraction ≈ 0.3 = Pref2`) and the patterns agree.
+# Keep the two March–Dollase parameters fixed at the FullProf values
+# (`r = Pref1`, `fraction = Pref2`) and refine only the scale. The scale
+# absorbs CrysPy's constant non-normalisation factor, and the patterns
+# agree — so ed-cryspy reproduces the FullProf two-parameter
+# March–Dollase pattern from the known coefficients.
 
 # %%
 experiment.linked_phases['lbco'].scale.free = True
-experiment.preferred_orientation['lbco'].r.free = True
-experiment.preferred_orientation['lbco'].fraction.free = True
 
 project.analysis.fit()
 project.display.fit.results()
