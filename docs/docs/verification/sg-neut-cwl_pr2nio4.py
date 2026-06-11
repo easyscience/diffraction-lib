@@ -2,8 +2,6 @@
 # # Pr₂NiO₄ — neutron single crystal, constant wavelength
 
 # %%
-import numpy as np
-
 import easydiffraction as ed
 from easydiffraction import ExperimentFactory
 from easydiffraction import StructureFactory
@@ -20,50 +18,99 @@ project = ed.Project()
 
 # %%
 structure = StructureFactory.from_scratch(name='pr2nio4')
+
 structure.space_group.name_h_m = 'F m m m'  # FullProf Space group symbol
+
 structure.cell.length_a = 5.417799  # FullProf a
 structure.cell.length_b = 5.414600  # FullProf b
 structure.cell.length_c = 12.483399  # FullProf c
 
-cell_lengths = (
-    structure.cell.length_a.value,
-    structure.cell.length_b.value,
-    structure.cell.length_c.value,
+# Anisotropic sites carry the FullProf β tensor directly: ``adp_type`` is
+# set to ``'beta'`` after the atom is added (the type switch needs the
+# unit cell), then the dimensionless β components are assigned verbatim.
+# F m m m is orthorhombic, so β11, β22, β33 are independent — each is set
+# explicitly rather than left to a symmetry constraint. FullProf
+# occupancy folds in the site multiplicity; the chemical occupancy here
+# is the FullProf Occ scaled by the multiplicity (1.0 for a full site).
+structure.atom_sites.create(
+    label='Pr',  # FullProf Atom
+    type_symbol='Pr',  # FullProf Typ
+    fract_x=0.50000,  # FullProf X
+    fract_y=0.50000,  # FullProf Y
+    fract_z=0.35973,  # FullProf Z
 )
+structure.atom_sites['Pr'].adp_type = 'beta'  # FullProf β tensor
+aniso = structure.atom_site_aniso['Pr']
+aniso.adp_11 = 0.00710  # FullProf β11
+aniso.adp_22 = 0.00710  # FullProf β22
+aniso.adp_33 = 0.00084  # FullProf β33
 
+structure.atom_sites.create(
+    label='Ni',  # FullProf Atom
+    type_symbol='Ni',  # FullProf Typ
+    fract_x=0.00000,  # FullProf X
+    fract_y=0.00000,  # FullProf Y
+    fract_z=0.00000,  # FullProf Z
+)
+structure.atom_sites['Ni'].adp_type = 'beta'  # FullProf β tensor
+aniso = structure.atom_site_aniso['Ni']
+aniso.adp_11 = 0.00280  # FullProf β11
+aniso.adp_22 = 0.00280  # FullProf β22
+aniso.adp_33 = 0.00151  # FullProf β33
 
-def beta_to_u(beta: float, axis_i: int, axis_j: int) -> float:
-    """Convert a FullProf β component to the CIF U convention."""
-    return beta * cell_lengths[axis_i] * cell_lengths[axis_j] / (2.0 * np.pi**2)
+structure.atom_sites.create(
+    label='O1',  # FullProf Atom
+    type_symbol='O',  # FullProf Typ
+    fract_x=0.25000,  # FullProf X
+    fract_y=0.25000,  # FullProf Y
+    fract_z=0.00000,  # FullProf Z
+)
+structure.atom_sites['O1'].adp_type = 'beta'  # FullProf β tensor
+aniso = structure.atom_site_aniso['O1']
+aniso.adp_11 = 0.00500  # FullProf β11
+aniso.adp_22 = 0.00500  # FullProf β22
+aniso.adp_33 = 0.00413  # FullProf β33
+aniso.adp_12 = -0.00140  # FullProf β12
 
+structure.atom_sites.create(
+    label='O2',  # FullProf Atom
+    type_symbol='O',  # FullProf Typ
+    fract_x=0.00000,  # FullProf X
+    fract_y=0.00000,  # FullProf Y
+    fract_z=0.17385,  # FullProf Z
+    occupancy=0.722965,  # FullProf Occ 1.44593 / multiplicity
+)
+structure.atom_sites['O2'].adp_type = 'beta'  # FullProf β tensor
+aniso = structure.atom_site_aniso['O2']
+aniso.adp_11 = 0.01716  # FullProf β11
+aniso.adp_22 = 0.01716  # FullProf β22
+aniso.adp_33 = 0.00045  # FullProf β33
 
-# label, type, (x, y, z), CIF occupancy, β11, β22, β33, β12
-aniso_sites = [
-    ('Pr', 'Pr', (0.50000, 0.50000, 0.35973), 1.000000, 0.00710, 0.00710, 0.00084, 0.00000),
-    ('Ni', 'Ni', (0.00000, 0.00000, 0.00000), 1.000000, 0.00280, 0.00280, 0.00151, 0.00000),
-    ('O1', 'O', (0.25000, 0.25000, 0.00000), 1.000000, 0.00500, 0.00500, 0.00413, -0.00140),
-    ('O2', 'O', (0.00000, 0.00000, 0.17385), 0.701385, 0.01716, 0.01716, 0.00045, 0.00000),
-    ('Oi', 'O', (0.25000, 0.25000, 0.25000), 0.074655, 0.01044, 0.01177, 0.00098, 0.00000),
-]
-for label, symbol, (x, y, z), occupancy, beta_11, beta_22, beta_33, beta_12 in aniso_sites:
-    structure.atom_sites.create(
-        label=label, type_symbol=symbol, fract_x=x, fract_y=y, fract_z=z, adp_iso=0.0
-    )
-    structure.atom_sites[label].occupancy = occupancy
-    structure.atom_sites[label].adp_type = 'Uani'
-    aniso = structure.atom_site_aniso[label]
-    aniso.adp_11 = beta_to_u(beta_11, 0, 0)
-    aniso.adp_22 = beta_to_u(beta_22, 1, 1)
-    aniso.adp_33 = beta_to_u(beta_33, 2, 2)
-    aniso.adp_12 = beta_to_u(beta_12, 0, 1)
+structure.atom_sites.create(
+    label='Oi',  # FullProf Atom
+    type_symbol='O',  # FullProf Typ
+    fract_x=0.25000,  # FullProf X
+    fract_y=0.25000,  # FullProf Y
+    fract_z=0.25000,  # FullProf Z
+    occupancy=0.074655,  # FullProf Occ 0.14931 / multiplicity
+)
+structure.atom_sites['Oi'].adp_type = 'beta'  # FullProf β tensor
+aniso = structure.atom_site_aniso['Oi']
+aniso.adp_11 = 0.01033  # FullProf β11
+aniso.adp_22 = 0.01176  # FullProf β22
+aniso.adp_33 = 0.00100  # FullProf β33
 
 # The split interstitial oxygen Od is refined with an isotropic B.
 structure.atom_sites.create(
-    label='Od', type_symbol='O', fract_x=0.07347, fract_y=0.07347, fract_z=0.17349, adp_iso=0.0
+    label='Od',  # FullProf Atom
+    type_symbol='O',  # FullProf Typ
+    fract_x=0.07347,  # FullProf X
+    fract_y=0.07347,  # FullProf Y
+    fract_z=0.17349,  # FullProf Z
+    occupancy=0.074654,  # FullProf Occ 0.59723 / multiplicity
+    adp_type='Biso',  # FullProf Biso
+    adp_iso=2.31435,  # FullProf Biso
 )
-structure.atom_sites['Od'].occupancy = 0.074654
-structure.atom_sites['Od'].adp_type = 'Biso'
-structure.atom_sites['Od'].adp_iso = 2.31435
 
 project.structures.add(structure)
 
@@ -129,7 +176,13 @@ project.display.reflection_comparison(
     reference=reference_refined,
     candidate=candidate_refined,
     reference_label='FullProf',
-    candidate_label='ed-cryspy (refined)',
+    candidate_label='ed-cryspy (scale only)',
+)
+
+verify.report_refinement_closeness(
+    reference,
+    candidate,
+    candidate_refined,
 )
 
 # %% [markdown]
