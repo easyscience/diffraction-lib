@@ -596,7 +596,8 @@ def _write_powder_refln_loop(lines: list[str], experiment: object) -> None:
 
 
 def _write_pref_orient_loop(lines: list[str], experiment: object) -> None:
-    """Append the March-Dollase preferred-orientation loop.
+    """
+    Append the March-Dollase preferred-orientation loop.
 
     Standard fields use the IUCr ``_pd_pref_orient_March_Dollase.*``
     category (the ``.id`` serial is synthesised). The non-standard

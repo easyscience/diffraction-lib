@@ -83,9 +83,9 @@ class CryspyCalculator(CalculatorBase):
         Drop cached dict when experiment or structure config changed.
 
         Checks the peak profile type, the per-atom ADP types, and the
-        preferred-orientation row identities. When any changes the cached
-        dictionary is stale and must be rebuilt from a fresh cryspy
-        object.
+        preferred-orientation row identities. When any changes the
+        cached dictionary is stale and must be rebuilt from a fresh
+        cryspy object.
         """
         if 'peak' in type(experiment)._public_attrs():
             current_type = experiment.peak.type_info.tag
@@ -94,11 +94,12 @@ class CryspyCalculator(CalculatorBase):
             self._cached_peak_types[combined_name] = current_type
 
         # Preferred-orientation row set/identity. Adding or removing a
-        # row, or changing a row's phase_id or h/k/l, changes the emitted
-        # texture loop's shape and must rebuild the dict. The refinable
-        # r/fraction values are patched in place, so they are excluded.
-        # Constant-wavelength only, matching the texture-loop emission
-        # scope; TOF emits no texture and is not tracked here.
+        # row, or changing a row's phase_id or Miller direction,
+        # changes the emitted texture loop's shape and must rebuild the
+        # dict. The refinable r/fraction values are patched in place, so
+        # they are excluded. Constant-wavelength only, matching the
+        # texture-loop emission scope; TOF emits no texture and is not
+        # tracked here.
         supports_texture = (
             'preferred_orientation' in type(experiment)._public_attrs()
             and experiment.type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH
@@ -1338,12 +1339,13 @@ def _cif_pref_orient_section(
     experiment: object,
     linked_structure: object,
 ) -> None:
-    """Append the cryspy texture (March-Dollase) loop for the phase.
+    """
+    Append the cryspy texture (March-Dollase) loop for the phase.
 
     cryspy keys texture to a phase by ``_texture_label``, so only the
     ``pref_orient`` row whose ``phase_id`` matches the phase being
-    calculated is emitted. A row with ``r = 1`` is a mathematical
-    no-op; an empty collection (the default) emits nothing.
+    calculated is emitted. A row with ``r = 1`` is a mathematical no-op;
+    an empty collection (the default) emits nothing.
     """
     # Initial support is constant-wavelength only (ADR Deferred Work);
     # the TOF pass-through is not wired, so a TOF texture loop would
@@ -1374,8 +1376,10 @@ def _cif_pref_orient_section(
         '_texture_h_ax',
         '_texture_k_ax',
         '_texture_l_ax',
-        f'{phase_label} {row.r.value} {row.fraction.value} '
-        f'{row.index_h.value} {row.index_k.value} {row.index_l.value}',
+        (
+            f'{phase_label} {row.r.value} {row.fraction.value} '
+            f'{row.index_h.value} {row.index_k.value} {row.index_l.value}'
+        ),
     ))
 
 
@@ -1383,12 +1387,14 @@ def _update_texture_in_cryspy_dict(
     cryspy_expt_dict: dict[str, Any],
     experiment: object,
 ) -> None:
-    """Patch cryspy texture ``g_1``/``g_2`` from preferred-orientation rows.
+    """
+    Patch cryspy texture g_1/g_2 from preferred-orientation rows.
 
     Matches each emitted texture row to a ``pref_orient`` row by phase
     label and writes the refinable coefficient and random fraction in
-    place. ``h/k/l`` are fixed descriptors, so ``texture_axis`` is never
-    touched. No-op when no texture loop was emitted.
+    place. ``index_h``/``index_k``/``index_l`` are fixed descriptors, so
+    ``texture_axis`` is never touched. No-op when no texture loop was
+    emitted.
     """
     if 'texture_g1' not in cryspy_expt_dict:
         return

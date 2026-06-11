@@ -16,9 +16,7 @@ from easydiffraction.core.validation import RegexValidator
 from easydiffraction.core.variable import IntegerDescriptor
 from easydiffraction.core.variable import Parameter
 from easydiffraction.core.variable import StringDescriptor
-from easydiffraction.datablocks.experiment.categories.pref_orient.factory import (
-    PrefOrientFactory,
-)
+from easydiffraction.datablocks.experiment.categories.pref_orient.factory import PrefOrientFactory
 from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
