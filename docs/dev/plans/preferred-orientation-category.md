@@ -178,7 +178,7 @@ CrysPy is already a dependency; no `pyproject.toml`/`pixi.toml`/
   Files: `analysis/calculators/cryspy.py`.
   Commit: `Pass preferred-orientation through cryspy cache`
 
-- [ ] **P1.5 — IUCr report-writer loop.**
+- [x] **P1.5 — IUCr report-writer loop.**
   In `io/cif/iucr_writer.py`, add `_write_pref_orient_loop(lines,
   experiment)` emitting the official
   `_pd_pref_orient_March_Dollase.{id,phase_id,index_h,index_k,index_l,r,r_su}`
@@ -266,7 +266,7 @@ thresholds or add `# noqa`; refactor instead.
 - [x] P1.2 Bragg experiment wiring
 - [x] P1.3 CrysPy texture-loop emission
 - [x] P1.4 CrysPy cache pass-through + invalidation
-- [ ] P1.5 IUCr report-writer loop
+- [x] P1.5 IUCr report-writer loop
 - [ ] P1.6 Promote ADR to accepted
 - [ ] P1.7 Phase 1 review gate
 - [ ] Phase 2 tests
