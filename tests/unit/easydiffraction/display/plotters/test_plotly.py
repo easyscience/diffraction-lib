@@ -292,24 +292,49 @@ def test_serialize_html_standalone_embeds_loader_once():
 
     marker = 'window.edFigures.watchTheme = watchTheme;'
 
-    # The figure that carries the Plotly bundle also carries the loader.
-    with_bundle = pp.PlotlyPlotter.serialize_html(
+    # A self-contained figure embeds the loader by default.
+    embedded = pp.PlotlyPlotter.serialize_html(
         fig,
         include_plotlyjs=True,
         mode=FigureEmbedMode.STANDALONE,
     )
-    assert marker in with_bundle
-    assert 'window.edFigures.watchTheme(graphDiv,' in with_bundle
+    assert marker in embedded
+    assert 'window.edFigures.watchTheme(graphDiv,' in embedded
 
-    # Later figures omit the bundle, so they omit the loader too and
-    # reuse the already-defined window.edFigures.
-    without_bundle = pp.PlotlyPlotter.serialize_html(
+    # A later figure on the same page opts out, reusing the
+    # already-defined window.edFigures.
+    reused = pp.PlotlyPlotter.serialize_html(
+        fig,
+        include_plotlyjs=False,
+        include_helper_loader=False,
+        mode=FigureEmbedMode.STANDALONE,
+    )
+    assert marker not in reused
+    assert 'window.edFigures.watchTheme(graphDiv,' in reused
+
+
+def test_serialize_html_standalone_loader_decoupled_from_plotlyjs():
+    import plotly.graph_objects as go
+
+    import easydiffraction.display.plotters.plotly as pp
+    from easydiffraction.utils.environment import FigureEmbedMode
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=[0, 1, 2], y=[1, 2, 3], name='calc'))
+
+    marker = 'window.edFigures.watchTheme = watchTheme;'
+
+    # External-Plotly standalone snippet: Plotly is supplied elsewhere
+    # (include_plotlyjs=False), but the helper loader must still be
+    # embedded by default so theme sync, resize, and the legend toggle
+    # are not silently lost.
+    html = pp.PlotlyPlotter.serialize_html(
         fig,
         include_plotlyjs=False,
         mode=FigureEmbedMode.STANDALONE,
     )
-    assert marker not in without_bundle
-    assert 'window.edFigures.watchTheme(graphDiv,' in without_bundle
+    assert marker in html
+    assert 'window.edFigures.watchTheme(graphDiv,' in html
 
 
 def test_wrap_html_figure_wraps_fixed_aspect():

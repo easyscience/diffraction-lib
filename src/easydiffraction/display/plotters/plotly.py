@@ -1416,6 +1416,7 @@ class PlotlyPlotter(PlotterBase):
         fig: object,
         *,
         include_plotlyjs: bool | str,
+        include_helper_loader: bool = True,
         mode: FigureEmbedMode = FigureEmbedMode.STANDALONE,
         force_template: str | None = None,
         axis_frame_color: str | None = None,
@@ -1430,6 +1431,13 @@ class PlotlyPlotter(PlotterBase):
             Plotly figure to serialize.
         include_plotlyjs : bool | str
             Plotly JavaScript inclusion mode passed to Plotly.
+        include_helper_loader : bool, default=True
+            Whether to embed the shared ``ed-figures.js`` loader that
+            the eager post script delegates to (theme sync, resize,
+            legend). Defaults to ``True`` so a self-contained snippet
+            keeps those controls even when Plotly itself is provided
+            externally (``include_plotlyjs=False``). A multi-figure page
+            embeds it once and passes ``False`` for later figures.
         mode : FigureEmbedMode, default=FigureEmbedMode.STANDALONE
             Embedding mode. ``SHARED`` emits a lazy placeholder for the
             docs loader; ``INLINE``/``STANDALONE`` serialize eagerly.
@@ -1489,10 +1497,12 @@ class PlotlyPlotter(PlotterBase):
             post_script=cls._html_post_script(fig),
         )
         wrapped = cls._wrap_html_figure(fig, html_fig)
-        # The figure that carries the Plotly bundle also carries the
-        # shared loader once per page; later figures (bundle omitted)
-        # reuse the already-defined ``window.edFigures``.
-        if include_plotlyjs:
+        # Embed the shared loader so the eager post script has a
+        # ``window.edFigures`` to delegate to. Decoupled from
+        # ``include_plotlyjs`` (Plotly may be supplied externally): a
+        # multi-figure page sets ``include_helper_loader=False`` for
+        # later figures so the loader is embedded only once.
+        if include_helper_loader:
             wrapped = f'{cls._standalone_loader_script()}\n{wrapped}'
         return wrapped
 
