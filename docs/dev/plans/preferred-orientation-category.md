@@ -103,7 +103,7 @@ CrysPy is already a dependency; no `pyproject.toml`/`pixi.toml`/
 > linters, or `pixi` commands here (those are Phase 2). Commit each step
 > atomically with explicit paths and the listed message before moving on.
 
-- [ ] **P1.1 — Create the `pref_orient` category package.**
+- [x] **P1.1 — Create the `pref_orient` category package.**
   Add `default.py` with `PrefOrient(CategoryItem)`
   (`_category_code='pref_orient'`, `_category_entry_name='phase_id'`)
   exposing: `phase_id` (`StringDescriptor`, default `'Si'`, regex
@@ -262,7 +262,7 @@ thresholds or add `# noqa`; refactor instead.
 
 ## Status checklist
 
-- [ ] P1.1 Category package
+- [x] P1.1 Category package
 - [ ] P1.2 Bragg experiment wiring
 - [ ] P1.3 CrysPy texture-loop emission
 - [ ] P1.4 CrysPy cache pass-through + invalidation
