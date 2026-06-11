@@ -97,7 +97,13 @@ class CryspyCalculator(CalculatorBase):
         # row, or changing a row's phase_id or h/k/l, changes the emitted
         # texture loop's shape and must rebuild the dict. The refinable
         # r/fraction values are patched in place, so they are excluded.
-        if 'preferred_orientation' in type(experiment)._public_attrs():
+        # Constant-wavelength only, matching the texture-loop emission
+        # scope; TOF emits no texture and is not tracked here.
+        supports_texture = (
+            'preferred_orientation' in type(experiment)._public_attrs()
+            and experiment.type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH
+        )
+        if supports_texture:
             current_pref_orient = tuple(
                 (item.phase_id.value, item.h.value, item.k.value, item.l.value)
                 for item in experiment.preferred_orientation
@@ -1334,7 +1340,15 @@ def _cif_pref_orient_section(
     calculated is emitted. A row with ``r = 1`` is a mathematical
     no-op; an empty collection (the default) emits nothing.
     """
-    if expt_type is None or expt_type.sample_form.value != SampleFormEnum.POWDER:
+    # Initial support is constant-wavelength only (ADR Deferred Work);
+    # the TOF pass-through is not wired, so a TOF texture loop would
+    # go stale on refinement. Emit nothing for TOF to keep the scope
+    # consistent end to end.
+    if (
+        expt_type is None
+        or expt_type.sample_form.value != SampleFormEnum.POWDER
+        or expt_type.beam_mode.value != BeamModeEnum.CONSTANT_WAVELENGTH
+    ):
         return
     pref_orient = getattr(experiment, 'preferred_orientation', None)
     if pref_orient is None:

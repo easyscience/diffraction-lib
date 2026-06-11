@@ -315,9 +315,12 @@ example). Both are recorded under Alternatives Considered.
   every other experiment parameter is handled:
 
   1. **CIF construction** (`_convert_experiment_to_cryspy_cif`): after
-     `_cif_phase_section`, emit a `_texture_*` loop with one row per
-     `pref_orient` entry (emit unconditionally for every row;
-     `g1 = 1` is a no-op so a default row is harmless). Map
+     `_cif_phase_section`, emit a `_texture_*` loop for the matching
+     `pref_orient` row. **Constant-wavelength only** for now — TOF is
+     Deferred Work, and emitting a TOF texture loop without the TOF
+     pass-through (point 2) would let refined values go stale, so TOF
+     emits nothing and the cache signature (point 3) is likewise
+     CW-scoped. `g1 = 1` is a no-op, so a default row is harmless. Map
      `r→_texture_g_1`, `fraction→_texture_g_2`,
      `h/k/l→_texture_h_ax/_k_ax/_l_ax`, `phase_id→_texture_label`.
      CrysPy parses this into the experiment block (`pd_<name>`) of the
