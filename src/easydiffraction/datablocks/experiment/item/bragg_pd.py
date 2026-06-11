@@ -12,6 +12,7 @@ from easydiffraction.core.metadata import Compatibility
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.datablocks.experiment.categories.background.factory import BackgroundFactory
 from easydiffraction.datablocks.experiment.categories.instrument.factory import InstrumentFactory
+from easydiffraction.datablocks.experiment.categories.pref_orient.factory import PrefOrientFactory
 from easydiffraction.datablocks.experiment.categories.refln.factory import ReflnFactory
 from easydiffraction.datablocks.experiment.item.base import PdExperimentBase
 from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
@@ -63,6 +64,7 @@ class BraggPdExperiment(PdExperimentBase):
         )
         self._instrument = InstrumentFactory.create(self._instrument_type)
         self._background = BackgroundFactory.create(BackgroundFactory.default_tag())
+        self._pref_orient = PrefOrientFactory.create(PrefOrientFactory.default_tag())
         self._refln = None
         self._sync_refln_category()
         self._attach_category_parents()
@@ -186,6 +188,15 @@ class BraggPdExperiment(PdExperimentBase):
     def background(self) -> object:
         """Active background model for this experiment."""
         return self._background
+
+    # ------------------------------------------------------------------
+    #  Preferred orientation (Bragg powder only)
+    # ------------------------------------------------------------------
+
+    @property
+    def preferred_orientation(self) -> object:
+        """Per-phase March-Dollase preferred-orientation corrections."""
+        return self._pref_orient
 
     def _restore_switchable_types(self, block: object) -> None:
         """

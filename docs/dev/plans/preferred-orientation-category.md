@@ -126,7 +126,7 @@ CrysPy is already a dependency; no `pyproject.toml`/`pixi.toml`/
   Files: the three new `pref_orient/*` files.
   Commit: `Add pref_orient preferred-orientation category`
 
-- [ ] **P1.2 — Wire `preferred_orientation` into Bragg powder
+- [x] **P1.2 — Wire `preferred_orientation` into Bragg powder
   experiment.**
   Creation and public exposure stay **Bragg-only**; only the
   parent-attachment hook (shared) gains an optional entry.
@@ -263,7 +263,7 @@ thresholds or add `# noqa`; refactor instead.
 ## Status checklist
 
 - [x] P1.1 Category package
-- [ ] P1.2 Bragg experiment wiring
+- [x] P1.2 Bragg experiment wiring
 - [ ] P1.3 CrysPy texture-loop emission
 - [ ] P1.4 CrysPy cache pass-through + invalidation
 - [ ] P1.5 IUCr report-writer loop
