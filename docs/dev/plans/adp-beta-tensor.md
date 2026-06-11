@@ -177,6 +177,21 @@ step P1.9), rather than leaving two copies of the same math.
      consistent with cryspy's
      `calc_reciprocal_by_unit_cell_parameters`.)
 
+7. **Symmetry-constraint write path bypasses validation during a fit.**
+   `AtomSites._apply_adp_symmetry_constraints` takes a
+   `called_by_minimizer` flag (mirroring the coordinate-constraint
+   pass). When the minimizer is driving the refinement it writes the
+   symmetry-averaged tensor components back through
+   `Parameter._set_value_from_minimizer` (raw, no validation) rather
+   than the `param.value` setter. This matters for β/U/B anisotropic
+   atoms on special positions: the minimizer explores trial values that
+   may be transiently below the diagonal `RangeValidator(ge=0, le=10)`
+   lower bound, and the averaged write-back can land out of range; the
+   validating setter would raise mid-fit and abort the refinement. The
+   interactive (non-minimizer) path keeps full validation. Covered by
+   `TestAdpSymmetryConstraintMinimizerBypass`. (Landed on the branch via
+   `1e3db602`; recorded here so the bypass is documented and tested.)
+
 > **Dropped (was decision 5): off-diagonal validator relaxation.**
 > Verification against current code shows the aniso off-diagonal
 > validators are already unrestricted `RangeValidator()`; only the
