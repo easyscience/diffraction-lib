@@ -67,5 +67,21 @@ from `beta`. Implications specific to β:
 - **CIF.** `_atom_site_aniso.beta_11`…`beta_23` join the existing
   `B_ij`/`U_ij` tag lists; the writer's ADP-family grouping gains a
   `beta` family.
+- **Minimizer write path bypasses validation.** Applying site-symmetry
+  constraints to the aniso tensor during a fit
+  (`AtomSites._apply_adp_symmetry_constraints(called_by_minimizer=True)`)
+  writes components through `Parameter._set_value_from_minimizer`, which
+  skips the diagonal `RangeValidator(ge=0, le=10)`. The minimizer
+  explores trial values that may transiently fall below zero, and the
+  symmetry-averaged write-back can too; validating it would abort the
+  refinement. The interactive path keeps full validation. Applies to
+  every aniso convention (Bani/Uani/beta).
+- **cryspy (two β paths).** β reaches cryspy two ways: the refinement
+  loop writes stored β straight into `cryspy_beta` (β is cryspy's native
+  convention), while cryspy's CIF parser — which understands only U/B
+  aniso tags — is fed a transient `Uani` relabel
+  (`U_ij = β_ij/(2π²·a*_i·a*_j)`) during structure-CIF generation, then
+  β is restored. The round-trip is mathematically exact, so the net
+  behaviour is β-in/β-out.
 
 Plan: [`adp-beta-tensor.md`](../../plans/adp-beta-tensor.md).

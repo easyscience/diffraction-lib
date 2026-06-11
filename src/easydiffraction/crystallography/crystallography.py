@@ -1039,6 +1039,69 @@ def orthogonalization_matrix(
     ])
 
 
+def reciprocal_cell_lengths(
+    a: float,
+    b: float,
+    c: float,
+    alpha: float,
+    beta: float,
+    gamma: float,
+) -> tuple[float, float, float]:
+    """
+    Reciprocal-cell edge lengths from direct-cell parameters.
+
+    Uses the crystallographic convention with no ``2*pi`` factor: ``a* =
+    b * c * sin(alpha) / V`` (and cyclically for ``b*`` and ``c*``),
+    where ``V`` is the direct-cell volume. These are the reciprocal
+    lengths the beta-tensor ADP transform expects (``beta_ij = 2 * pi**2
+    * U_ij * a*_i * a*_j``). Edge lengths are in angstrom and angles in
+    degrees.
+
+    Parameters
+    ----------
+    a : float
+        Unit-cell edge length ``a`` (angstrom).
+    b : float
+        Unit-cell edge length ``b`` (angstrom).
+    c : float
+        Unit-cell edge length ``c`` (angstrom).
+    alpha : float
+        Unit-cell angle ``alpha`` (degrees).
+    beta : float
+        Unit-cell angle ``beta`` (degrees).
+    gamma : float
+        Unit-cell angle ``gamma`` (degrees).
+
+    Returns
+    -------
+    tuple[float, float, float]
+        Reciprocal edge lengths ``(a*, b*, c*)`` in inverse angstrom.
+
+    Raises
+    ------
+    ValueError
+        If the parameters do not describe a valid positive-volume cell.
+    """
+    if a <= 0.0 or b <= 0.0 or c <= 0.0:
+        msg = f'Non-positive cell edge in ({a}, {b}, {c}); cannot compute reciprocal-cell lengths.'
+        raise ValueError(msg)
+    al, be, ga = np.radians([alpha, beta, gamma])
+    cos_al, cos_be, cos_ga = np.cos([al, be, ga])
+    sin_al, sin_be, sin_ga = np.sin([al, be, ga])
+    volume_factor = 1.0 - cos_al**2 - cos_be**2 - cos_ga**2 + 2.0 * cos_al * cos_be * cos_ga
+    if volume_factor <= 0.0:
+        msg = (
+            f'Degenerate cell angles ({alpha}, {beta}, {gamma}); cannot '
+            f'compute reciprocal-cell lengths.'
+        )
+        raise ValueError(msg)
+    volume = a * b * c * np.sqrt(volume_factor)
+    a_star = b * c * sin_al / volume
+    b_star = a * c * sin_be / volume
+    c_star = a * b * sin_ga / volume
+    return float(a_star), float(b_star), float(c_star)
+
+
 def fractional_to_cartesian(frac: object, matrix: np.ndarray) -> np.ndarray:
     """
     Convert fractional coordinates to Cartesian using a cell matrix.

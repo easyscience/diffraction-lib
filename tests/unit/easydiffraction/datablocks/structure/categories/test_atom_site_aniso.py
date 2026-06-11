@@ -4,6 +4,8 @@
 
 import math
 
+import pytest
+
 # ------------------------------------------------------------------
 #  Module import
 # ------------------------------------------------------------------
@@ -495,3 +497,65 @@ class TestAdpTypeSwitchingPaths:
         structure.atom_sites['Si'].adp_type = 'Bani'
         structure.atom_sites._update()
         assert structure.atom_sites['Si'].adp_iso.free is False
+
+
+class TestBetaDisplayAndTags:
+    def _make_beta_structure(self):
+        from easydiffraction.datablocks.structure.item.base import Structure
+
+        structure = Structure(name='test')
+        structure.space_group.name_h_m = 'P 1'
+        structure.cell.length_a = 5.0
+        structure.cell.length_b = 6.0
+        structure.cell.length_c = 8.0
+        structure.atom_sites.create(label='Fe', type_symbol='Fe', adp_iso=0.0)
+        structure.atom_sites['Fe'].adp_type = 'beta'
+        structure._sync_atom_site_aniso()
+        return structure
+
+    def test_beta_suppresses_display_units(self):
+        structure = self._make_beta_structure()
+        aniso = structure.atom_site_aniso['Fe']
+        assert aniso.adp_11.resolve_display_units('gui') == ''
+        assert aniso.adp_12.resolve_display_units('latex') == ''
+
+    def test_uani_keeps_angstrom_squared_units(self):
+        structure = self._make_beta_structure()
+        structure.atom_sites['Fe'].adp_type = 'Uani'
+        aniso = structure.atom_site_aniso['Fe']
+        assert aniso.adp_11.resolve_display_units('gui') == 'Å²'
+
+    def test_beta_cif_names_registered_on_aniso_components(self):
+        from easydiffraction.datablocks.structure.categories.atom_site_aniso.default import (
+            AtomSiteAniso,
+        )
+
+        entry = AtomSiteAniso()
+        assert '_atom_site_aniso.beta_11' in entry.adp_11._cif_handler.names
+        assert '_atom_site_aniso.beta_23' in entry.adp_23._cif_handler.names
+
+    def test_off_diagonal_accepts_negative_value(self):
+        from easydiffraction.datablocks.structure.categories.atom_site_aniso.default import (
+            AtomSiteAniso,
+        )
+
+        # Off-diagonal components (any convention, beta included) may be
+        # negative; the validator is unrestricted.
+        entry = AtomSiteAniso()
+        entry.adp_12 = -0.0005
+        entry.adp_13 = -0.00047650724
+        assert entry.adp_12.value == -0.0005
+        assert entry.adp_13.value == pytest.approx(-0.00047650724)
+
+    def test_diagonal_rejects_negative_value_in_raise_mode(self, monkeypatch):
+        from easydiffraction.datablocks.structure.categories.atom_site_aniso.default import (
+            AtomSiteAniso,
+        )
+        from easydiffraction.utils.logging import Logger
+
+        # Diagonal components keep the non-negative range guard
+        # (RangeValidator(ge=0.0, le=10.0)); a negative value is rejected.
+        monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.RAISE, raising=True)
+        entry = AtomSiteAniso()
+        with pytest.raises(TypeError, match='outside'):
+            entry.adp_11 = -0.1

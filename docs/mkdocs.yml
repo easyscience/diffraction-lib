@@ -267,7 +267,9 @@ nav:
           - Si (Jorgensen–Von Dreele): verification/pd-neut-tof_jvd_si.ipynb
           - NaCaAlF: verification/pd-neut-tof_jvd_ncaf.ipynb
       - Single crystal, neutron, constant wavelength:
-          - Pr2NiO4: verification/sg-neut-cwl_pr2nio4.ipynb
+          - Pr2NiO4 (no extinction): verification/sg-neut-cwl_pr2nio4.ipynb
+          - Tb2Ti2O7 (no extinction): verification/sg-neut-cwl_noext_tbti.ipynb
+          - Tb2Ti2O7: verification/sg-neut-cwl_ext-iso_tbti.ipynb
   - Command-Line:
       - Command-Line: cli/index.md
   - API Reference:

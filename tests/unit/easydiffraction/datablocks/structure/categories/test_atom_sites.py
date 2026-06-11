@@ -417,3 +417,246 @@ class TestAtomSiteWyckoffDetection:
         reloaded._update_categories()
         assert reloaded.atom_sites['A'].wyckoff_letter.value == 'a'
         assert reloaded.atom_sites['A'].multiplicity.value == 1
+
+
+# ------------------------------------------------------------------
+#  Beta-tensor conversion (cell-dependent)
+# ------------------------------------------------------------------
+
+
+class TestBetaConversion:
+    def _make_structure(self):
+        from easydiffraction.datablocks.structure.item.base import Structure
+
+        structure = Structure(name='test')
+        structure.space_group.name_h_m = 'P 1'
+        structure.cell.length_a = 5.0
+        structure.cell.length_b = 6.0
+        structure.cell.length_c = 8.0
+        structure.atom_sites.create(label='Fe', type_symbol='Fe', adp_iso=0.0)
+        structure.atom_sites['Fe'].adp_type = 'Uani'
+        structure._sync_atom_site_aniso()
+        return structure
+
+    def _set_aniso(self, structure, vals):
+        aniso = structure.atom_site_aniso['Fe']
+        aniso.adp_11, aniso.adp_22, aniso.adp_33 = vals[0], vals[1], vals[2]
+        aniso.adp_12, aniso.adp_13, aniso.adp_23 = vals[3], vals[4], vals[5]
+        return aniso
+
+    def _read_aniso(self, structure):
+        aniso = structure.atom_site_aniso['Fe']
+        return (
+            aniso.adp_11.value,
+            aniso.adp_22.value,
+            aniso.adp_33.value,
+            aniso.adp_12.value,
+            aniso.adp_13.value,
+            aniso.adp_23.value,
+        )
+
+    def test_uani_to_beta_round_trip(self):
+        import math
+
+        structure = self._make_structure()
+        u_vals = (0.012, 0.008, 0.015, -0.002, 0.001, -0.003)
+        self._set_aniso(structure, u_vals)
+        structure.atom_sites['Fe'].adp_type = 'beta'
+        structure.atom_sites['Fe'].adp_type = 'Uani'
+        for got, expected in zip(self._read_aniso(structure), u_vals, strict=True):
+            assert math.isclose(got, expected, rel_tol=1e-9, abs_tol=1e-12)
+
+    def test_uani_to_beta_uses_reciprocal_formula(self):
+        import math
+
+        structure = self._make_structure()
+        self._set_aniso(structure, (0.012, 0.0, 0.0, 0.0, 0.0, 0.0))
+        structure.atom_sites['Fe'].adp_type = 'beta'
+        # beta_11 = 2*pi**2 * U_11 * a*^2, with a* = 1/5 for this cell.
+        expected = 2.0 * math.pi**2 * 0.012 * (1.0 / 5.0) ** 2
+        assert math.isclose(structure.atom_site_aniso['Fe'].adp_11.value, expected, rel_tol=1e-9)
+
+    def test_bani_to_beta_round_trip(self):
+        import math
+
+        structure = self._make_structure()
+        structure.atom_sites['Fe'].adp_type = 'Bani'
+        b_vals = (0.9, 0.6, 1.2, -0.1, 0.05, -0.15)
+        self._set_aniso(structure, b_vals)
+        structure.atom_sites['Fe'].adp_type = 'beta'
+        structure.atom_sites['Fe'].adp_type = 'Bani'
+        for got, expected in zip(self._read_aniso(structure), b_vals, strict=True):
+            assert math.isclose(got, expected, rel_tol=1e-9, abs_tol=1e-12)
+
+    def test_param_identity_preserved_uani_to_beta(self):
+        structure = self._make_structure()
+        self._set_aniso(structure, (0.01, 0.01, 0.01, 0.0, 0.0, 0.0))
+        before = structure.atom_site_aniso['Fe'].adp_11
+        structure.atom_sites['Fe'].adp_type = 'beta'
+        after = structure.atom_site_aniso['Fe'].adp_11
+        assert before is after
+
+    def test_beta_to_biso_collapses_to_b_equivalent(self):
+        import math
+
+        structure = self._make_structure()
+        self._set_aniso(structure, (0.012, 0.008, 0.015, 0.0, 0.0, 0.0))
+        structure.atom_sites['Fe'].adp_type = 'beta'
+        structure.atom_sites['Fe'].adp_type = 'Biso'
+        u_eq = (0.012 + 0.008 + 0.015) / 3.0
+        expected = 8.0 * math.pi**2 * u_eq
+        assert math.isclose(structure.atom_sites['Fe'].adp_iso.value, expected, rel_tol=1e-6)
+
+    def test_switch_to_beta_on_unattached_atom_defers(self):
+        from easydiffraction.datablocks.structure.categories.atom_sites.default import AtomSite
+
+        # Inside create() the atom has no parent yet, so the beta switch
+        # defers the cell-dependent conversion (the structure's aniso sync
+        # completes it on add) rather than raising.
+        site = AtomSite()
+        site.adp_type = 'beta'
+        assert site.adp_type.value == 'beta'
+
+    def test_create_with_inline_beta_adp_type(self):
+        from easydiffraction.datablocks.structure.item.base import Structure
+
+        structure = Structure(name='test')
+        structure.space_group.name_h_m = 'P 1'
+        structure.cell.length_a = 5.0
+        structure.cell.length_b = 6.0
+        structure.cell.length_c = 8.0
+        # adp_type='beta' passed inline to create(): the atom is created
+        # with a zero-filled aniso row, ready for direct assignment.
+        structure.atom_sites.create(
+            label='Fe',
+            type_symbol='Fe',
+            fract_x=0.1,
+            fract_y=0.2,
+            fract_z=0.3,
+            adp_type='beta',
+        )
+        assert structure.atom_sites['Fe'].adp_type.value == 'beta'
+        aniso = structure.atom_site_aniso['Fe']
+        assert aniso.adp_11.value == 0.0
+        aniso.adp_11 = 0.0071
+        assert aniso.adp_11.value == 0.0071
+
+    def test_adp_iso_as_b_for_beta_atom_matches_b_equivalent(self):
+        import math
+
+        structure = self._make_structure()
+        u_vals = (0.012, 0.008, 0.015, 0.0, 0.0, 0.0)
+        self._set_aniso(structure, u_vals)
+        structure.atom_sites['Fe'].adp_type = 'beta'
+        # F1 regression: equivalent B computed straight from the beta
+        # tensor, independent of the stored adp_iso.
+        u_eq = (0.012 + 0.008 + 0.015) / 3.0
+        expected = 8.0 * math.pi**2 * u_eq
+        assert math.isclose(structure.atom_sites['Fe'].adp_iso_as_b, expected, rel_tol=1e-6)
+
+    def test_adp_iso_as_b_for_beta_from_bani(self):
+        import math
+
+        # F1 completeness: the equivalent B is correct for a beta atom
+        # reached from Bani too (B_eq = mean of the B diagonal).
+        structure = self._make_structure()
+        structure.atom_sites['Fe'].adp_type = 'Bani'
+        self._set_aniso(structure, (0.9, 0.6, 1.2, 0.0, 0.0, 0.0))
+        structure.atom_sites['Fe'].adp_type = 'beta'
+        expected = (0.9 + 0.6 + 1.2) / 3.0
+        assert math.isclose(structure.atom_sites['Fe'].adp_iso_as_b, expected, rel_tol=1e-6)
+
+    def test_uiso_to_beta_seeds_and_converts_diagonal(self):
+        import math
+
+        from easydiffraction.datablocks.structure.item.base import Structure
+
+        # iso → anisotropic-beta seeding: the diagonal is seeded from the
+        # isotropic U then mapped to beta (off-diagonals stay zero).
+        structure = Structure(name='test')
+        structure.space_group.name_h_m = 'P 1'
+        structure.cell.length_a = 5.0
+        structure.cell.length_b = 6.0
+        structure.cell.length_c = 8.0
+        structure.atom_sites.create(label='Fe', type_symbol='Fe', adp_type='Uiso', adp_iso=0.01)
+        structure.atom_sites['Fe'].adp_type = 'beta'
+        aniso = structure.atom_site_aniso['Fe']
+        assert math.isclose(aniso.adp_11.value, 2.0 * math.pi**2 * 0.01 * (1.0 / 5.0) ** 2)
+        assert math.isclose(aniso.adp_22.value, 2.0 * math.pi**2 * 0.01 * (1.0 / 6.0) ** 2)
+        assert aniso.adp_12.value == 0.0
+
+
+# ------------------------------------------------------------------
+#  ADP symmetry constraints during minimization
+# ------------------------------------------------------------------
+
+
+class TestAdpSymmetryConstraintMinimizerBypass:
+    """Cover the ``called_by_minimizer`` ADP-constraint write path.
+
+    When the minimizer drives anisotropic tensor components, symmetry
+    averaging on a special position can write back a value that is
+    transiently outside the diagonal ``RangeValidator(ge=0, le=10)``.
+    The minimizer path must apply it raw (``_set_value_from_minimizer``)
+    so the fit is not aborted, while the interactive path keeps the
+    validating setter.
+    """
+
+    def _make_cubic_bani(self):
+        from easydiffraction.datablocks.structure.item.base import Structure
+
+        structure = Structure(name='test')
+        # P m -3 m Wyckoff a forces β11=β22=β33 and zero off-diagonals.
+        structure.space_group.name_h_m = 'P m -3 m'
+        structure.atom_sites.create(
+            label='Si',
+            type_symbol='Si',
+            adp_type='Bani',
+            adp_iso=0.3,
+        )
+        structure._sync_atom_site_aniso()
+        aniso = structure.atom_site_aniso['Si']
+        aniso.adp_11 = 0.3
+        aniso.adp_22 = 0.3
+        aniso.adp_33 = 0.3
+        # Populate the Wyckoff letter so the ADP constraint pass engages.
+        structure.atom_sites._update()
+        return structure
+
+    @staticmethod
+    def _drive_out_of_range(aniso):
+        # Distinct sub-zero diagonals (raw minimizer writes); the cubic
+        # constraint equalises them to an out-of-range value that differs
+        # from each current component, so the validating setter would fire.
+        aniso.adp_11._set_value_from_minimizer(-0.3)
+        aniso.adp_22._set_value_from_minimizer(-0.2)
+        aniso.adp_33._set_value_from_minimizer(-0.1)
+
+    def test_minimizer_path_applies_out_of_range_tensor_without_raising(self, monkeypatch):
+        from easydiffraction.utils.logging import Logger
+
+        structure = self._make_cubic_bani()
+        aniso = structure.atom_site_aniso['Si']
+        self._drive_out_of_range(aniso)
+
+        # RAISE mode makes the validating setter abort on a range breach.
+        monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.RAISE, raising=True)
+        structure.atom_sites._apply_adp_symmetry_constraints(called_by_minimizer=True)
+
+        # The constrained diagonals are equalised and applied raw, even
+        # though the value is below the validator's lower bound.
+        assert aniso.adp_11.value == aniso.adp_22.value == aniso.adp_33.value
+        assert aniso.adp_11.value < 0.0
+
+    def test_interactive_path_still_validates(self, monkeypatch):
+        import pytest
+
+        from easydiffraction.utils.logging import Logger
+
+        structure = self._make_cubic_bani()
+        aniso = structure.atom_site_aniso['Si']
+        self._drive_out_of_range(aniso)
+
+        monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.RAISE, raising=True)
+        with pytest.raises(TypeError, match='outside'):
+            structure.atom_sites._apply_adp_symmetry_constraints(called_by_minimizer=False)

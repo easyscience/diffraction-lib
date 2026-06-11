@@ -456,6 +456,7 @@
 │   │   │   ├── 📁 atom_site_aniso
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 default.py
+│   │   │   │   │   ├── 🏷️ class _AnisoAdpParameter
 │   │   │   │   │   ├── 🏷️ class AtomSiteAniso
 │   │   │   │   │   └── 🏷️ class AtomSiteAnisoCollection
 │   │   │   │   └── 📄 factory.py

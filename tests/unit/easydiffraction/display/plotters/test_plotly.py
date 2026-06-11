@@ -215,84 +215,126 @@ def test_composite_x_range_is_tight():
     assert pp.PlotlyPlotter._composite_x_range(np.array([])) == (None, None)
 
 
-def test_html_post_script_carries_theme_resize_and_legend_toggle():
+def test_html_post_script_delegates_to_shared_loader():
     import plotly.graph_objects as go
 
     import easydiffraction.display.plotters.plotly as pp
 
     # A named trace gives the figure a visible legend, so the legend
-    # toggle is included. This post-script is embedded by the report
-    # (STANDALONE) serializer; the live loader provides the same
-    # behaviour via ed-figures.js instead.
+    # toggle is requested. The STANDALONE (report) serializer no longer
+    # inlines theme/resize/legend logic; it delegates to the shared
+    # ed-figures.js loader through ``window.edFigures``, which stays the
+    # single source of that behaviour.
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=[0, 1, 2], y=[1, 2, 3], name='calc'))
     post_script = pp.PlotlyPlotter._html_post_script(fig)
 
-    assert 'data-jp-theme-light' in post_script
-    assert 'data-md-color-scheme' in post_script
-    assert 'graphDiv.dataset.edPlotlyTheme' in post_script
-    assert f"background: '{pp.DARK_BACKGROUND_COLOR}'" in post_script
-    assert f"background: '{pp.LIGHT_BACKGROUND_COLOR}'" in post_script
-    assert f"axisFrame: '{pp.DARK_AXIS_FRAME_COLOR}'" in post_script
-    assert f"axisFrame: '{pp.LIGHT_AXIS_FRAME_COLOR}'" in post_script
-    assert f"innerTickGrid: '{pp.DARK_INNER_TICK_GRID_COLOR}'" in post_script
-    assert f"innerTickGrid: '{pp.LIGHT_INNER_TICK_GRID_COLOR}'" in post_script
-    assert f"hoverBackground: '{pp.DARK_HOVER_BACKGROUND_COLOR}'" in post_script
-    assert f"legend: '{pp.DARK_LEGEND_BACKGROUND_COLOR}'" in post_script
-    assert "'modebar.color'" in post_script
-    assert "'modebar.activecolor'" in post_script
-    assert 'rgbaFromColor' in post_script
-    # Modebar icons are also themed via a class-based !important rule so
-    # they stay visible regardless of Plotly's inline fills.
-    assert 'ed-plotly-themed-modebar' in post_script
-    assert 'const correlationColorscale = function (colors) {' in post_script
-    assert 'const themeSync = meta.ed_plotly_theme_sync;' in post_script
-    assert 'const applyAnnotationTheme = function (update, colors) {' in post_script
-    # The top-left metrics box must re-theme its background and border on a
-    # theme switch, not just its font colour (its baked light bgcolor would
-    # otherwise survive the dark switch).
-    assert "annotation.name === 'ed-metrics-box'" in post_script
-    assert "].bgcolor'] = colors.legend;" in post_script
-    assert "].bordercolor'] = colors.axisFrame;" in post_script
-    assert 'const shapeIndexes = themeSync.axis_frame_shape_indexes;' in post_script
-    assert 'if (themeSync.correlation_heatmap !== true) {' in post_script
-    assert 'window.Plotly.restyle(' in post_script
-    assert 'window.Plotly.relayout(graphDiv, update)' in post_script
-    assert 'Promise.all(pending).then(function () {' in post_script
-    assert 'window.Plotly.Plots.resize(graphDiv)' in post_script
-    assert "document.addEventListener('visibilitychange'" in post_script
-    assert "window.addEventListener('focus', scheduleResize);" in post_script
-    assert 'new ResizeObserver(scheduleResize)' in post_script
-    assert 'data-legend-toggle="true"' in post_script
-    assert 'Toggle legend' in post_script
-    assert 'graphDiv.dataset.legendVisible' in post_script
-    assert 'const applyLegendVisibility = function (legendVisible) {' in post_script
-    assert "legend.style.display = legendVisible ? 'inline' : 'none';" in post_script
-    assert 'const readLegendVisibility = function () {' in post_script
-    assert "if (graphDiv.layout && typeof graphDiv.layout.showlegend === 'boolean')" in post_script
-    assert "legendButton.classList.toggle('active', legendVisible);" in post_script
-    assert "graphDiv.on('plotly_relayout', function (eventData) {" in post_script
-    assert 'legendButton.onclick = toggleLegend;' in post_script
-    assert 'resolveLegendButtonFill(legendVisible ? 0.7 : 0.3)' in post_script
-    assert "legendButtonGroup.className = 'modebar-group';" in post_script
-    assert 'modebar.appendChild(legendButtonGroup);' in post_script
-    assert 'legendButton.innerHTML' in post_script
-    assert 'height="1em" width="1em"' in post_script
+    # Plotly's to_html substitutes the plot id token at render time.
+    assert "document.getElementById('{plot_id}')" in post_script
+    assert 'window.edFigures.watchTheme(graphDiv,' in post_script
+    assert 'window.edFigures.watchResize(graphDiv)' in post_script
+    assert 'window.edFigures.installLegendToggle(graphDiv)' in post_script
+    # The baked theme payload carries both the light and dark colours
+    # the loader picks between.
+    assert f'"background": "{pp.LIGHT_BACKGROUND_COLOR}"' in post_script
+    assert f'"background": "{pp.DARK_BACKGROUND_COLOR}"' in post_script
+    assert f'"legend": "{pp.DARK_LEGEND_BACKGROUND_COLOR}"' in post_script
+    assert f'"axisFrame": "{pp.LIGHT_AXIS_FRAME_COLOR}"' in post_script
+    # The legend trace makes the toggle active rather than gated off.
+    assert 'if (true) {' in post_script
 
 
-def test_html_post_script_skips_legend_toggle_without_legend():
+def test_html_post_script_gates_legend_toggle_without_legend():
     import plotly.graph_objects as go
 
     import easydiffraction.display.plotters.plotly as pp
 
-    # No visible legend (unnamed, non-legend trace) → no legend toggle,
-    # but the theme-sync block is always present.
+    # No visible legend (unnamed, non-legend trace) → the legend toggle
+    # is gated off, but theme sync and resize delegation are always
+    # present.
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=[0, 1], y=[1, 2], showlegend=False))
     post_script = pp.PlotlyPlotter._html_post_script(fig)
 
-    assert 'data-jp-theme-light' in post_script
-    assert 'data-legend-toggle="true"' not in post_script
+    assert 'window.edFigures.watchTheme(graphDiv,' in post_script
+    assert 'window.edFigures.watchResize(graphDiv)' in post_script
+    assert 'if (false) {' in post_script
+
+
+def test_shared_loader_owns_theme_resize_and_legend_behaviour():
+    import easydiffraction.display.plotters.plotly as pp
+
+    # ed-figures.js is the single source for theme sync, resize, and the
+    # legend toggle. It must detect both mkdocs Material and JupyterLab
+    # host themes, re-theme the metrics box background/border (not just
+    # its font), and expose the entry points the standalone path calls.
+    loader = pp._packaged_asset(pp._FIGURE_LOADER_ASSET)
+
+    assert 'data-md-color-scheme' in loader
+    assert 'data-jp-theme-light' in loader
+    assert "var METRICS_ANNOTATION_NAME = 'ed-metrics-box';" in loader
+    assert 'annotation.name === METRICS_ANNOTATION_NAME' in loader
+    assert "].bgcolor'] = colors.legend;" in loader
+    assert "].bordercolor'] = colors.axisFrame;" in loader
+    assert 'window.edFigures.watchTheme = watchTheme;' in loader
+    assert 'window.edFigures.watchResize = watchResize;' in loader
+    assert 'window.edFigures.installLegendToggle = installLegendToggle;' in loader
+
+
+def test_serialize_html_standalone_embeds_loader_once():
+    import plotly.graph_objects as go
+
+    import easydiffraction.display.plotters.plotly as pp
+    from easydiffraction.utils.environment import FigureEmbedMode
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=[0, 1, 2], y=[1, 2, 3], name='calc'))
+
+    marker = 'window.edFigures.watchTheme = watchTheme;'
+
+    # A self-contained figure embeds the loader by default.
+    embedded = pp.PlotlyPlotter.serialize_html(
+        fig,
+        include_plotlyjs=True,
+        mode=FigureEmbedMode.STANDALONE,
+    )
+    assert marker in embedded
+    assert 'window.edFigures.watchTheme(graphDiv,' in embedded
+
+    # A later figure on the same page opts out, reusing the
+    # already-defined window.edFigures.
+    reused = pp.PlotlyPlotter.serialize_html(
+        fig,
+        include_plotlyjs=False,
+        include_helper_loader=False,
+        mode=FigureEmbedMode.STANDALONE,
+    )
+    assert marker not in reused
+    assert 'window.edFigures.watchTheme(graphDiv,' in reused
+
+
+def test_serialize_html_standalone_loader_decoupled_from_plotlyjs():
+    import plotly.graph_objects as go
+
+    import easydiffraction.display.plotters.plotly as pp
+    from easydiffraction.utils.environment import FigureEmbedMode
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=[0, 1, 2], y=[1, 2, 3], name='calc'))
+
+    marker = 'window.edFigures.watchTheme = watchTheme;'
+
+    # External-Plotly standalone snippet: Plotly is supplied elsewhere
+    # (include_plotlyjs=False), but the helper loader must still be
+    # embedded by default so theme sync, resize, and the legend toggle
+    # are not silently lost.
+    html = pp.PlotlyPlotter.serialize_html(
+        fig,
+        include_plotlyjs=False,
+        mode=FigureEmbedMode.STANDALONE,
+    )
+    assert marker in html
+    assert 'window.edFigures.watchTheme(graphDiv,' in html
 
 
 def test_wrap_html_figure_wraps_fixed_aspect():
@@ -1174,7 +1216,10 @@ def test_serialize_html_inline_is_eager_self_contained():
         mode=FigureEmbedMode.INLINE,
     )
 
-    assert 'data-ed-figure' not in html
+    # Eager INLINE output is not the lazy SHARED placeholder. (The
+    # embedded loader mentions the placeholder selector in a string, so
+    # match the actual placeholder div, not the bare attribute.)
+    assert '<div class="ed-figure" data-ed-figure="plotly">' not in html
     # Eager render embeds the plot div / runtime call.
     assert 'plotly-graph-div' in html or 'newPlot' in html
 

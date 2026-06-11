@@ -26,6 +26,10 @@
 
   var FIGURE_SELECTOR = '.ed-figure[data-ed-figure="plotly"]';
   var ROOT_MARGIN = '200px';
+  // Mirrors `_METRICS_ANNOTATION_NAME` in plotly.py: the tag on the
+  // comparison plot's metrics box, so theme-sync can re-colour its
+  // background and border, not just its font.
+  var METRICS_ANNOTATION_NAME = 'ed-metrics-box';
 
   function plotlyConfig() {
     return {
@@ -54,12 +58,39 @@
     }
   }
 
-  function hostTheme() {
-    var scheme =
+  function hostTheme(graphDiv, theme) {
+    var materialScheme =
       (document.body && document.body.getAttribute('data-md-color-scheme')) ||
       (document.documentElement &&
         document.documentElement.getAttribute('data-md-color-scheme'));
-    return scheme === 'slate' ? 'dark' : 'light';
+    if (materialScheme === 'slate') {
+      return 'dark';
+    }
+    if (materialScheme === 'default') {
+      return 'light';
+    }
+
+    var jupyterThemeLight =
+      (document.body && document.body.getAttribute('data-jp-theme-light')) ||
+      (document.documentElement &&
+        document.documentElement.getAttribute('data-jp-theme-light'));
+    if (jupyterThemeLight === 'false') {
+      return 'dark';
+    }
+    if (jupyterThemeLight === 'true') {
+      return 'light';
+    }
+
+    // Some Jupyter front-ends expose no detectable theme attribute, so
+    // fall back to the theme Python baked into the figure (matched on
+    // the dark plot background) rather than defaulting to light.
+    if (graphDiv && theme && theme.dark) {
+      var layout = graphDiv._fullLayout || graphDiv.layout || {};
+      if (layout.plot_bgcolor === theme.dark.background) {
+        return 'dark';
+      }
+    }
+    return 'light';
   }
 
   // ---- Theme sync -----------------------------------------------------
@@ -138,7 +169,7 @@
     if (!graphDiv || !window.Plotly || !theme) {
       return;
     }
-    var mode = hostTheme();
+    var mode = hostTheme(graphDiv, theme);
     var colors = theme[mode] || theme.light;
     if (!colors) {
       return;
@@ -174,8 +205,12 @@
       (graphDiv.layout && graphDiv.layout.annotations) ||
       (graphDiv._fullLayout && graphDiv._fullLayout.annotations) ||
       [];
-    annotations.forEach(function (_unused, index) {
+    annotations.forEach(function (annotation, index) {
       update['annotations[' + index + '].font.color'] = colors.foreground;
+      if (annotation && annotation.name === METRICS_ANNOTATION_NAME) {
+        update['annotations[' + index + '].bgcolor'] = colors.legend;
+        update['annotations[' + index + '].bordercolor'] = colors.axisFrame;
+      }
     });
     if (themeSync && Array.isArray(themeSync.axisFrameShapeIndexes)) {
       themeSync.axisFrameShapeIndexes.forEach(function (shapeIndex) {
@@ -219,7 +254,11 @@
     });
     var filter = {
       attributes: true,
-      attributeFilter: ['data-md-color-scheme'],
+      attributeFilter: [
+        'data-md-color-scheme',
+        'data-jp-theme-light',
+        'data-jp-theme-name',
+      ],
     };
     observer.observe(document.documentElement, filter);
     if (document.body) {
@@ -428,6 +467,12 @@
   window.edFigures.activate = activate;
   window.edFigures.render = render;
   window.edFigures.renderSpec = renderSpec;
+  // Exposed so the standalone-HTML path (self-contained reports) can
+  // drive the same theme-sync, resize, and legend behaviour instead of
+  // carrying its own inline copy. This file is the single source.
+  window.edFigures.watchTheme = watchTheme;
+  window.edFigures.watchResize = watchResize;
+  window.edFigures.installLegendToggle = installLegendToggle;
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', activate);

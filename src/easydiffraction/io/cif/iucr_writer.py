@@ -276,7 +276,7 @@ def _write_atom_site_sections(lines: list[str], structure: object) -> None:
         rows = [
             _atom_site_row(atom_site)
             for atom_site in atom_sites
-            if _adp_family(atom_site) == family
+            if _adp_iso_family(atom_site) == family
         ]
         if not rows:
             continue
@@ -291,7 +291,7 @@ def _write_atom_site_aniso_sections(lines: list[str], structure: object) -> None
         str(_attribute_value(atom_site, 'label')): atom_site
         for atom_site in _collection_values(getattr(structure, 'atom_sites', None))
     }
-    for family in ('B', 'U'):
+    for family in ('B', 'U', 'beta'):
         rows = [
             _atom_site_aniso_row(aniso_site)
             for aniso_site in aniso_sites
@@ -930,9 +930,22 @@ def _atom_site_for_aniso(
 
 
 def _adp_family(atom_site: object) -> str:
-    """Return ``B`` or ``U`` for an atom-site ADP convention."""
-    adp_type = _attribute_value(atom_site, 'adp_type')
-    return 'B' if str(adp_type).lower().startswith('b') else 'U'
+    """
+    Return ``B``, ``U``, or ``beta`` for an atom-site ADP convention.
+    """
+    adp_type = str(_attribute_value(atom_site, 'adp_type')).lower()
+    if adp_type == 'beta':
+        return 'beta'
+    return 'B' if adp_type.startswith('b') else 'U'
+
+
+def _adp_iso_family(atom_site: object) -> str:
+    """
+    Return ``B`` or ``U`` for the equivalent-isotropic atom-site loop.
+    """
+    # beta has no isotropic CIF tag; its equivalent isotropic value is
+    # written in the B_iso_or_equiv column alongside the B family.
+    return 'U' if _adp_family(atom_site) == 'U' else 'B'
 
 
 def _sc_refln_row(refln: object) -> tuple[object, ...]:

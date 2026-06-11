@@ -176,6 +176,9 @@ def _fit_figure_html_context(
 ) -> dict[str, str]:
     """Return fit figure HTML snippets by experiment id."""
     include_plotlyjs: bool | str = True if offline else 'cdn'
+    # The shared helper loader is embedded once, with the first figure;
+    # later figures reuse the page-level ``window.edFigures``.
+    include_helper_loader = True
     report_style = report_style_context()
     rendered: dict[str, str] = {}
     for experiment in _experiment_contexts(context):
@@ -187,9 +190,11 @@ def _fit_figure_html_context(
         rendered[experiment_id] = _figure_html(
             figure,
             include_plotlyjs=include_plotlyjs,
+            include_helper_loader=include_helper_loader,
             report_style=report_style,
         )
         include_plotlyjs = False
+        include_helper_loader = False
     return rendered
 
 
@@ -317,6 +322,7 @@ def _figure_html(
     figure: object,
     *,
     include_plotlyjs: bool | str,
+    include_helper_loader: bool = True,
     report_style: dict[str, object],
 ) -> str:
     """Return an HTML snippet for one figure-like object."""
@@ -325,6 +331,7 @@ def _figure_html(
         return PlotlyPlotter.serialize_html(
             figure,
             include_plotlyjs=include_plotlyjs,
+            include_helper_loader=include_helper_loader,
             mode=FigureEmbedMode.STANDALONE,
             force_template='plotly_white',
             axis_frame_color=str(report_style['axis_hex']),
