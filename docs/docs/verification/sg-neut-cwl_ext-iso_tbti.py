@@ -38,8 +38,8 @@ structure.atom_sites.create(
 )
 structure.atom_sites['Tb'].adp_type = 'beta'  # FullProf β tensor
 aniso = structure.atom_site_aniso['Tb']
-aniso.adp_11 = 0.00098991673  # FullProf β11
-aniso.adp_12 = -0.00047650724  # FullProf β12
+aniso.adp_11 = 0.00098991673  # FullProf beta11
+aniso.adp_12 = -0.00047650724  # FullProf beta12
 
 structure.atom_sites.create(
     label='Ti',  # FullProf Atom
@@ -50,8 +50,8 @@ structure.atom_sites.create(
 )
 structure.atom_sites['Ti'].adp_type = 'beta'  # FullProf β tensor
 aniso = structure.atom_site_aniso['Ti']
-aniso.adp_11 = 0.00090989727  # FullProf β11
-aniso.adp_12 = -0.00016990340  # FullProf β12
+aniso.adp_11 = 0.00090989727  # FullProf beta11
+aniso.adp_12 = -0.00016990340  # FullProf beta12
 
 structure.atom_sites.create(
     label='O1',  # FullProf Atom
@@ -62,9 +62,9 @@ structure.atom_sites.create(
 )
 structure.atom_sites['O1'].adp_type = 'beta'  # FullProf β tensor
 aniso = structure.atom_site_aniso['O1']
-aniso.adp_11 = 0.0012294180  # FullProf β11
-aniso.adp_22 = 0.00078215479  # FullProf β22
-aniso.adp_23 = 0.00041246481  # FullProf β23
+aniso.adp_11 = 0.0012294180  # FullProf beta11
+aniso.adp_22 = 0.00078215479  # FullProf beta22
+aniso.adp_23 = 0.00041246481  # FullProf beta23
 
 structure.atom_sites.create(
     label='O2',  # FullProf Atom
@@ -75,9 +75,12 @@ structure.atom_sites.create(
 )
 structure.atom_sites['O2'].adp_type = 'beta'  # FullProf β tensor
 aniso = structure.atom_site_aniso['O2']
-aniso.adp_11 = 0.00060762477  # FullProf β11
+aniso.adp_11 = 0.00060762477  # FullProf beta11
 
 project.structures.add(structure)
+
+# %%
+structure.show_as_cif()
 
 # %% [markdown]
 # ## Load the FullProf reference
@@ -87,8 +90,8 @@ FULLPROF_PROJECT_DIR = 'sg-neut-cwl_ext-iso_tbti'
 FULLPROF_OUT_FILE = 'tbti.out'
 FULLPROF_SCALE = 0.37517014  # FullProf Scale
 FULLPROF_WAVELENGTH = 0.7930  # FullProf Lambda
-# Becker-Coppens isotropic extinction; cryspy uses its own radius and
-# mosaicity parameters, seeded from the FullProf refinement.
+# cryspy uses Becker-Coppens isotropic extinction, not the one from 
+# FullProf
 EXTINCTION_RADIUS = 10.0
 EXTINCTION_MOSAICITY = 35000.0
 
@@ -112,6 +115,7 @@ experiment.extinction.type = 'becker-coppens'
 experiment.extinction.model = 'gauss'
 experiment.extinction.radius.value = EXTINCTION_RADIUS
 experiment.extinction.mosaicity.value = EXTINCTION_MOSAICITY
+
 verify.set_reference_reflections(experiment, f2calc)
 
 project.experiments.add(experiment)
@@ -136,6 +140,7 @@ project.display.reflection_comparison(
 
 # %%
 experiment.calculator.type = 'cryspy'
+
 experiment.linked_crystal.scale.free = True
 experiment.extinction.radius.free = True
 

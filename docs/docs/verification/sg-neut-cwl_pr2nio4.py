@@ -35,70 +35,70 @@ structure.cell.length_c = 12.483399  # FullProf c
 structure.atom_sites.create(
     label='Pr',  # FullProf Atom
     type_symbol='Pr',  # FullProf Typ
-    fract_x=0.50000,  # FullProf X
-    fract_y=0.50000,  # FullProf Y
+    fract_x=0.5,  # FullProf X
+    fract_y=0.5,  # FullProf Y
     fract_z=0.35973,  # FullProf Z
 )
 structure.atom_sites['Pr'].adp_type = 'beta'  # FullProf β tensor
 aniso = structure.atom_site_aniso['Pr']
-aniso.adp_11 = 0.00710  # FullProf β11
-aniso.adp_22 = 0.00710  # FullProf β22
-aniso.adp_33 = 0.00084  # FullProf β33
+aniso.adp_11 = 0.00710  # FullProf beta11
+aniso.adp_22 = 0.00710  # FullProf beta22
+aniso.adp_33 = 0.00084  # FullProf beta33
 
 structure.atom_sites.create(
     label='Ni',  # FullProf Atom
     type_symbol='Ni',  # FullProf Typ
-    fract_x=0.00000,  # FullProf X
-    fract_y=0.00000,  # FullProf Y
-    fract_z=0.00000,  # FullProf Z
+    fract_x=0,  # FullProf X
+    fract_y=0,  # FullProf Y
+    fract_z=0,  # FullProf Z
 )
 structure.atom_sites['Ni'].adp_type = 'beta'  # FullProf β tensor
 aniso = structure.atom_site_aniso['Ni']
-aniso.adp_11 = 0.00280  # FullProf β11
-aniso.adp_22 = 0.00280  # FullProf β22
-aniso.adp_33 = 0.00151  # FullProf β33
+aniso.adp_11 = 0.00280  # FullProf beta11
+aniso.adp_22 = 0.00280  # FullProf beta22
+aniso.adp_33 = 0.00151  # FullProf beta33
 
 structure.atom_sites.create(
     label='O1',  # FullProf Atom
     type_symbol='O',  # FullProf Typ
-    fract_x=0.25000,  # FullProf X
-    fract_y=0.25000,  # FullProf Y
-    fract_z=0.00000,  # FullProf Z
+    fract_x=0.25,  # FullProf X
+    fract_y=0.25,  # FullProf Y
+    fract_z=0,  # FullProf Z
 )
 structure.atom_sites['O1'].adp_type = 'beta'  # FullProf β tensor
 aniso = structure.atom_site_aniso['O1']
-aniso.adp_11 = 0.00500  # FullProf β11
-aniso.adp_22 = 0.00500  # FullProf β22
-aniso.adp_33 = 0.00413  # FullProf β33
-aniso.adp_12 = -0.00140  # FullProf β12
+aniso.adp_11 = 0.00500  # FullProf beta11
+aniso.adp_22 = 0.00500  # FullProf beta22
+aniso.adp_33 = 0.00413  # FullProf beta33
+aniso.adp_12 = -0.00140  # FullProf beta12
 
 structure.atom_sites.create(
     label='O2',  # FullProf Atom
     type_symbol='O',  # FullProf Typ
-    fract_x=0.00000,  # FullProf X
-    fract_y=0.00000,  # FullProf Y
+    fract_x=0,  # FullProf X
+    fract_y=0,  # FullProf Y
     fract_z=0.17385,  # FullProf Z
     occupancy=0.722965,  # FullProf Occ 1.44593 / multiplicity
 )
 structure.atom_sites['O2'].adp_type = 'beta'  # FullProf β tensor
 aniso = structure.atom_site_aniso['O2']
-aniso.adp_11 = 0.01716  # FullProf β11
-aniso.adp_22 = 0.01716  # FullProf β22
-aniso.adp_33 = 0.00045  # FullProf β33
+aniso.adp_11 = 0.01716  # FullProf beta11
+aniso.adp_22 = 0.01716  # FullProf beta22
+aniso.adp_33 = 0.00045  # FullProf beta33
 
 structure.atom_sites.create(
     label='Oi',  # FullProf Atom
     type_symbol='O',  # FullProf Typ
-    fract_x=0.25000,  # FullProf X
-    fract_y=0.25000,  # FullProf Y
-    fract_z=0.25000,  # FullProf Z
+    fract_x=0.25,  # FullProf X
+    fract_y=0.25,  # FullProf Y
+    fract_z=0.25,  # FullProf Z
     occupancy=0.074655,  # FullProf Occ 0.14931 / multiplicity
 )
 structure.atom_sites['Oi'].adp_type = 'beta'  # FullProf β tensor
 aniso = structure.atom_site_aniso['Oi']
-aniso.adp_11 = 0.01033  # FullProf β11
-aniso.adp_22 = 0.01176  # FullProf β22
-aniso.adp_33 = 0.00100  # FullProf β33
+aniso.adp_11 = 0.01033  # FullProf beta11
+aniso.adp_22 = 0.01176  # FullProf beta22
+aniso.adp_33 = 0.00100  # FullProf beta33
 
 # The split interstitial oxygen Od is refined with an isotropic B.
 structure.atom_sites.create(
@@ -113,6 +113,9 @@ structure.atom_sites.create(
 )
 
 project.structures.add(structure)
+
+# %%
+structure.show_as_cif()
 
 # %% [markdown]
 # ## Load the FullProf reference
@@ -136,9 +139,11 @@ experiment = ExperimentFactory.from_scratch(
     radiation_probe='neutron',
     scattering_type='bragg',
 )
+
 experiment.linked_crystal.id = 'pr2nio4'
 experiment.linked_crystal.scale = FULLPROF_SCALE
 experiment.instrument.setup_wavelength = FULLPROF_WAVELENGTH
+
 verify.set_reference_reflections(experiment, f2calc)
 
 project.experiments.add(experiment)
@@ -163,6 +168,7 @@ project.display.reflection_comparison(
 
 # %%
 experiment.calculator.type = 'cryspy'
+
 experiment.linked_crystal.scale.free = True
 
 project.analysis.fit()
