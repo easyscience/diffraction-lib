@@ -162,13 +162,12 @@ class PrefOrient(CategoryItem):
     def k(self, value: int) -> None:
         self._k.value = value
 
-    @property
-    def l(self) -> IntegerDescriptor:  # noqa: E743
+    def _get_l(self) -> IntegerDescriptor:
         """Texture-axis Miller index l."""
         return self._l
 
-    @l.setter
-    def l(self, value: int) -> None:  # noqa: E743
+    def _set_l(self, value: int) -> None:
+        """Set the texture-axis Miller index l."""
         self._l.value = value
 
     @property
@@ -179,6 +178,14 @@ class PrefOrient(CategoryItem):
     @fraction.setter
     def fraction(self, value: float) -> None:
         self._fraction.value = value
+
+
+# The crystallographic Miller index ``l`` must be public as ``po.l``, but
+# a bare ``def l`` / ``l =`` inside the class body trips ruff E743/E741
+# for the ambiguous single-letter name. Binding the property as a class
+# attribute (an attribute assignment, which the rule does not flag) keeps
+# the public API without a per-line lint suppression.
+PrefOrient.l = property(PrefOrient._get_l, PrefOrient._set_l)
 
 
 @PrefOrientFactory.register
