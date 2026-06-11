@@ -292,3 +292,17 @@ def test_beta_atom_round_trips_through_cif():
     assert aniso.adp_11.value == pytest.approx(0.00123)
     assert aniso.adp_22.value == pytest.approx(0.00078)
     assert aniso.adp_12.value == pytest.approx(-0.0004)
+
+    # F1 column guard: the serialized _atom_site.B_iso_or_equiv for a beta
+    # atom is the equivalent B computed from the beta tensor (not stale).
+    import math
+
+    two_pi_sq = 2.0 * math.pi**2
+    u_eq = (
+        0.00123 / (two_pi_sq * (1.0 / 5.0) ** 2)
+        + 0.00078 / (two_pi_sq * (1.0 / 6.0) ** 2)
+        + 0.00091 / (two_pi_sq * (1.0 / 8.0) ** 2)
+    ) / 3.0
+    expected_b_eq = 8.0 * math.pi**2 * u_eq
+    assert structure.atom_sites['Fe'].adp_iso_as_b == pytest.approx(expected_b_eq, rel=1e-9)
+    assert reloaded.atom_sites['Fe'].adp_iso_as_b == pytest.approx(expected_b_eq, rel=1e-9)

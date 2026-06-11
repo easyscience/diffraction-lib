@@ -553,3 +553,34 @@ class TestBetaConversion:
         u_eq = (0.012 + 0.008 + 0.015) / 3.0
         expected = 8.0 * math.pi**2 * u_eq
         assert math.isclose(structure.atom_sites['Fe'].adp_iso_as_b, expected, rel_tol=1e-6)
+
+    def test_adp_iso_as_b_for_beta_from_bani(self):
+        import math
+
+        # F1 completeness: the equivalent B is correct for a beta atom
+        # reached from Bani too (B_eq = mean of the B diagonal).
+        structure = self._make_structure()
+        structure.atom_sites['Fe'].adp_type = 'Bani'
+        self._set_aniso(structure, (0.9, 0.6, 1.2, 0.0, 0.0, 0.0))
+        structure.atom_sites['Fe'].adp_type = 'beta'
+        expected = (0.9 + 0.6 + 1.2) / 3.0
+        assert math.isclose(structure.atom_sites['Fe'].adp_iso_as_b, expected, rel_tol=1e-6)
+
+    def test_uiso_to_beta_seeds_and_converts_diagonal(self):
+        import math
+
+        from easydiffraction.datablocks.structure.item.base import Structure
+
+        # iso → anisotropic-beta seeding: the diagonal is seeded from the
+        # isotropic U then mapped to beta (off-diagonals stay zero).
+        structure = Structure(name='test')
+        structure.space_group.name_h_m = 'P 1'
+        structure.cell.length_a = 5.0
+        structure.cell.length_b = 6.0
+        structure.cell.length_c = 8.0
+        structure.atom_sites.create(label='Fe', type_symbol='Fe', adp_type='Uiso', adp_iso=0.01)
+        structure.atom_sites['Fe'].adp_type = 'beta'
+        aniso = structure.atom_site_aniso['Fe']
+        assert math.isclose(aniso.adp_11.value, 2.0 * math.pi**2 * 0.01 * (1.0 / 5.0) ** 2)
+        assert math.isclose(aniso.adp_22.value, 2.0 * math.pi**2 * 0.01 * (1.0 / 6.0) ** 2)
+        assert aniso.adp_12.value == 0.0

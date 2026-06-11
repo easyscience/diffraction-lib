@@ -551,3 +551,24 @@ def test_atom_site_aniso_tags_for_beta_family():
     assert '_atom_site_aniso.beta_11' in tags
     assert '_atom_site_aniso.beta_22' in tags
     assert '_atom_site_aniso.beta_23' in tags
+
+
+def test_atom_site_aniso_section_renders_beta_header_and_tags():
+    from easydiffraction.datablocks.structure.item.base import Structure
+    from easydiffraction.io.cif.iucr_writer import _write_atom_site_aniso_sections
+
+    structure = Structure(name='beta')
+    structure.space_group.name_h_m = 'P 1'
+    structure.cell.length_a = 5.0
+    structure.cell.length_b = 6.0
+    structure.cell.length_c = 8.0
+    structure.atom_sites.create(label='Fe', type_symbol='Fe', adp_type='beta')
+    structure.atom_site_aniso['Fe'].adp_11 = 0.001
+    structure._update_categories()
+
+    lines = []
+    _write_atom_site_aniso_sections(lines, structure)
+    text = '\n'.join(lines)
+
+    assert 'Anisotropic ADP (beta)' in text
+    assert '_atom_site_aniso.beta_11' in text

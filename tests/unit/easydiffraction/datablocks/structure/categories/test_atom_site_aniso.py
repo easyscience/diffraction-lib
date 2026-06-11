@@ -546,3 +546,16 @@ class TestBetaDisplayAndTags:
         entry.adp_13 = -0.00047650724
         assert entry.adp_12.value == -0.0005
         assert entry.adp_13.value == pytest.approx(-0.00047650724)
+
+    def test_diagonal_rejects_negative_value_in_raise_mode(self, monkeypatch):
+        from easydiffraction.datablocks.structure.categories.atom_site_aniso.default import (
+            AtomSiteAniso,
+        )
+        from easydiffraction.utils.logging import Logger
+
+        # Diagonal components keep the non-negative range guard
+        # (RangeValidator(ge=0.0, le=10.0)); a negative value is rejected.
+        monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.RAISE, raising=True)
+        entry = AtomSiteAniso()
+        with pytest.raises(TypeError, match='outside'):
+            entry.adp_11 = -0.1
