@@ -2845,6 +2845,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -2899,7 +2903,63 @@
   <span class="md-ellipsis">
     
   
-    Pr2NiO4
+    Pr2NiO4 (no extinction)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../verification/sg-neut-cwl_noext_tbti/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tb2Ti2O7 (no extinction)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../verification/sg-neut-cwl_ext-iso_tbti/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tb2Ti2O7
   
 
     
@@ -7669,8 +7729,11 @@ object. Assigning to it updates the parameter value.</p>
 
         <p>Return the isotropic ADP as a B-factor value.</p>
 <p>When <code>adp_type</code> is <code>Uiso</code> or <code>Uani</code> the stored U value is
-converted to B via B = 8π²U.  Otherwise the stored value is
-returned unchanged.</p>
+converted to B via B = 8π²U. For a <code>beta</code> atom the equivalent
+B is computed straight from the dimensionless beta tensor via
+the reciprocal cell (independent of the stored <code>adp_iso</code>), so
+it is never stale after a type switch. Otherwise the stored
+value is returned unchanged.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -7957,6 +8020,17 @@ returned unchanged.</p>
       </thead>
       <tbody>
             <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;item&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.structure.categories.atom_sites.default.AtomSites.add&lt;/code&gt;)" href="#easydiffraction.datablocks.structure.categories.atom_sites.default.AtomSites.add">add</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Add an atom site and reconcile the anisotropic-ADP rows.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
               <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;fm&quot;&gt;__str__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.structure.categories.atom_sites.default.AtomSites.__str__&lt;/code&gt;)" href="#easydiffraction.datablocks.structure.categories.atom_sites.default.AtomSites.__str__">__str__</a></code></td>
               <td>
                 <div class="doc-md-description">
@@ -8137,17 +8211,6 @@ returned unchanged.</p>
               <td>
                 <div class="doc-md-description">
                   <p>Populate this collection from a <abbr title="Crystallographic Information File.">CIF</abbr> block.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-                </div>
-              </td>
-            </tr>
-            <tr class="doc-section-item">
-              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;item&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.structure.categories.atom_sites.default.AtomSites.add&lt;/code&gt;)" href="#easydiffraction.datablocks.structure.categories.atom_sites.default.AtomSites.add">add</a></code></td>
-              <td>
-                <div class="doc-md-description">
-                  <p>Insert or replace a pre-built item into the collection.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -8412,6 +8475,68 @@ returned unchanged.</p>
 
 
 <h10 id="easydiffraction.datablocks.structure.categories.atom_sites.default.AtomSites-functions">Functions</h10>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.structure.categories.atom_sites.default.AtomSites.add" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">add</span><span class="p">(</span><span class="n">item</span><span class="p">)</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Add an atom site and reconcile the anisotropic-ADP rows.</p>
+<p>Extends :meth:<code>CategoryCollection.add</code> so that an atom created
+with an anisotropic <code>adp_type</code> (<code>Bani</code>/<code>Uani</code>/<code>beta</code>)
+immediately exposes its <code>atom_site_aniso</code> entry, materialising
+and <abbr title="Crystallographic Information File.">CIF</abbr>-reordering it via the parent structure's sync. This lets
+<code>create(adp_type='beta')</code> work inline: the row exists (with
+zero defaults) right after creation, ready for component
+assignment.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>item</code>
+            </td>
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The :class:<code>AtomSite</code> to add.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
 
 <div class="doc doc-object doc-function">
 
@@ -8886,61 +9011,6 @@ how :meth:<code>add</code> layers it on the base insert.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
-
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h11 id="easydiffraction.datablocks.structure.categories.atom_sites.default.AtomSites.add" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">add</span><span class="p">(</span><span class="n">item</span><span class="p">)</span></code>
-
-</h11>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Insert or replace a pre-built item into the collection.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-
-
-<p><span class="doc-section-title">Parameters:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Description</th>
-          <th>Default</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>item</code>
-            </td>
-            <td>
-                  <code><span title="object">object</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>A <code>CategoryItem</code> instance to add.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-      </tbody>
-    </table>
 
 
     </div>

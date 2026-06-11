@@ -2847,6 +2847,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -2901,7 +2905,63 @@
   <span class="md-ellipsis">
     
   
-    Pr2NiO4
+    Pr2NiO4 (no extinction)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sg-neut-cwl_noext_tbti/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tb2Ti2O7 (no extinction)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sg-neut-cwl_ext-iso_tbti/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tb2Ti2O7
   
 
     
@@ -3643,6 +3703,22 @@ and so on. The list below notes only what is specific to each page.</p>
   per-reflection F² against FullProf with anisotropic ADPs, partial
   occupancies, and a split interstitial oxygen. <code>cryspy</code> only;
   integrated intensities, no peak profile.</li>
+<li><a href="sg-neut-cwl_ext-iso_tbti.py">Tb₂Ti₂O₇ <code>sg-neut-cwl</code></a> – Terbium
+  titanate (Tb₂Ti₂O₇, <em>F d -3 m</em>); per-reflection F² against FullProf
+  with anisotropic ADPs and full occupancies (<abbr title="Crystallographic Information File.">CIF</abbr>/ED uses <code>occupancy=1</code>
+  notation, FullProf uses site-multiplicity/general-multiplicity).
+  <code>cryspy</code> only; integrated intensities, no peak profile. Scale is
+  initialized from FullProf. CryspY extinction (<code>becker-coppens</code>,
+  <code>gauss</code>) uses two parameters, <code>radius</code> and <code>mosaicity</code>, both seeded as
+  <code>0</code>; only <code>scale</code> and <code>radius</code> are refined against FullProf.</li>
+<li><a href="sg-neut-cwl_noext_tbti.py">Tb₂Ti₂O₇ <code>sg-neut-cwl</code></a> – Terbium titanate
+  (Tb₂Ti₂O₇, <em>F d -3 m</em>); per-reflection F² against a
+  FullProf-no-extinction reference with the same FullProf ADP/scale seed
+  and structure model. <code>cryspy</code> only; integrated intensities, no peak
+  profile. Scale is initialized from the FullProf no-ext reference and
+  refined; extinction is disabled on both sides (radius and mosaicity
+  fixed at <code>0</code>, model <code>gauss</code>). <code>Uani</code> is seeded from FullProf; only
+  <code>scale</code> is refined.</li>
 </ul>
 <!-- prettier-ignore-start -->
 
