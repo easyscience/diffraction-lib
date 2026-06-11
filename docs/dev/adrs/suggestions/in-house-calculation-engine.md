@@ -26,9 +26,8 @@ external engines: `cryspy` and `crysfml` for Bragg scattering, `pdffit2`
 for total scattering. Each is wrapped behind the
 [`CalculatorBase`](../../../../src/easydiffraction/analysis/calculators/base.py)
 contract and selected through the switchable `experiment.calculator`
-category (`CalculatorEnum` in
-`datablocks/experiment/item/enums.py`; the `.type` setter swaps the
-engine via `CalculatorFactory.create()`).
+category (`CalculatorEnum` in `datablocks/experiment/item/enums.py`; the
+`.type` setter swaps the engine via `CalculatorFactory.create()`).
 
 Relying solely on external engines has recurring costs that this project
 keeps paying:
@@ -39,23 +38,22 @@ keeps paying:
    EasyDiffraction side but cannot be verified or shipped because they
    depend on the unreleased `cryspy` PR #46 (open issue 131; the
    verification page is in `ci_skip.txt`).
-2. **Corrections with no clean home.** Sample absorption
-   (Debye–Scherrer `μR`, open issue 119) is a small, well-specified,
-   angle-dependent intensity factor. Investigation shows **both**
-   `cryspy` and `crysfml` return only a *finished, convolved profile* to
-   our layer — `cryspy.calculate_pattern` returns
-   `signal_plus + signal_minus`
+2. **Corrections with no clean home.** Sample absorption (Debye–Scherrer
+   `μR`, open issue 119) is a small, well-specified, angle-dependent
+   intensity factor. Investigation shows **both** `cryspy` and `crysfml`
+   return only a _finished, convolved profile_ to our layer —
+   `cryspy.calculate_pattern` returns `signal_plus + signal_minus`
    (`analysis/calculators/cryspy.py:264-276`) and
    `crysfml.calculate_pattern` returns `np.asarray(y)`
    (`analysis/calculators/crysfml.py:169`). The EasyDiffraction layer
    never receives per-reflection integrated intensities, so it can only
-   ever apply an *approximate* point-wise correction; the exact
+   ever apply an _approximate_ point-wise correction; the exact
    per-reflection form requires owning the convolution, i.e. owning an
    engine.
 3. **Divergence and opacity.** Cross-engine verification already records
    places where `cryspy` and `crysfml` disagree with FullProf and each
-   other (open issues 130, 134). Debugging a black-box backend is
-   harder than debugging code we own.
+   other (open issues 130, 134). Debugging a black-box backend is harder
+   than debugging code we own.
 4. **Reproducibility and packaging.** External engines pin native
    builds, platform wheels, and version constraints. A pure-Python /
    NumPy engine is always importable, archival, and trivially
@@ -101,7 +99,7 @@ deliberately bounded initial scope.
    [Factory Tag Naming](../accepted/factory-tag-naming.md),
    [Enum-Backed Closed Value Sets](../accepted/enum-backed-closed-values.md),
    and [Selector Families](../accepted/selector-families.md) (the
-   calculator is a *backend selector*) ADRs. Being pure Python/NumPy, it
+   calculator is a _backend selector_) ADRs. Being pure Python/NumPy, it
    is always `engine_imported = True` and therefore always available via
    `CalculatorFactory._supported_map`.
 
@@ -112,14 +110,13 @@ deliberately bounded initial scope.
    reference codes within published tolerances (Decision 5).
 
 4. **MVP calculation loop.** The first slice computes, for CWL neutron
-   powder, one phase:
-   `F(hkl) = Σ_j b_j · occ_j · exp(2πi h·r_j) · DW_j` → `|F|²` →
-   `× (Lorentz–polarization × multiplicity)` → place peaks at the
-   reflection `2θ_hkl` → convolve with a pseudo-Voigt → sum → add the
-   existing EasyDiffraction background. `calculate_structure_factors`
-   and `last_powder_refln_records` are implemented so the reflection
-   table and structure-factor path work identically to the existing
-   backends.
+   powder, one phase: `F(hkl) = Σ_j b_j · occ_j · exp(2πi h·r_j) · DW_j`
+   → `|F|²` → `× (Lorentz–polarization × multiplicity)` → place peaks at
+   the reflection `2θ_hkl` → convolve with a pseudo-Voigt → sum → add
+   the existing EasyDiffraction background.
+   `calculate_structure_factors` and `last_powder_refln_records` are
+   implemented so the reflection table and structure-factor path work
+   identically to the existing backends.
 
 5. **Every feature is verification-gated.** No native-engine feature is
    "done" until a page under `docs/docs/verification/` compares it to
@@ -130,13 +127,13 @@ deliberately bounded initial scope.
 
 6. **The engine is the right home for owned corrections.** Corrections
    currently blocked on or awkward in the backends — sample absorption
-   (`μR`, issue 119), the exact per-reflection `SyCos`/`SySin`
-   (issue 131), and basic preferred orientation — are implemented
-   **inside** the native engine with the physically exact
-   per-reflection math, since the engine owns the integrated
-   intensities before convolution. (A backend-agnostic *point-wise*
-   absorption approximation in the data layer remains available for the
-   external backends and is orthogonal to this ADR.)
+   (`μR`, issue 119), the exact per-reflection `SyCos`/`SySin` (issue
+   131), and basic preferred orientation — are implemented **inside**
+   the native engine with the physically exact per-reflection math,
+   since the engine owns the integrated intensities before convolution.
+   (A backend-agnostic _point-wise_ absorption approximation in the data
+   layer remains available for the external backends and is orthogonal
+   to this ADR.)
 
 ## Consequences
 
@@ -166,26 +163,26 @@ deliberately bounded initial scope.
 - A naive NumPy implementation will be slower than the optimized native
   backends until profiled and vectorized; performance is its own work
   stream.
-- Risk of scope creep toward full parity; the bounded scope
-  (Decision 1) must be actively defended.
+- Risk of scope creep toward full parity; the bounded scope (Decision 1)
+  must be actively defended.
 
 ## Alternatives Considered
 
-| # | Alternative | Verdict |
-| --- | --- | --- |
-| A | **Status quo** — depend entirely on `cryspy`/`crysfml`/`pdffit2`. | Rejected. Perpetuates upstream blocking (issue 131) and leaves corrections like absorption (issue 119) without an exact home. |
-| B | **Fork or vendor an existing engine** (e.g. a `cryspy`/`crysfml` subset). | Rejected. Inherits the backend's complexity, build system, and licensing while still not being code we understand end to end. |
-| C | **In-house engine targeting full parity** with the external backends. | Rejected. Multi-year effort; the long tail (magnetic, polarized, extinction, total scattering) has poor cost/benefit and is well served by the backends. |
-| D | **In-house core + keep backends for the frontier** (this ADR). | **Chosen.** Owns the common 80% (neutron powder Rietveld), keeps backends for the rest, reuses all existing framework. |
-| E | **Only point-wise corrections in the data layer**, no real engine. | Insufficient as a strategy. Solves the immediate absorption case approximately but does not generalize to structure factors or profiles, and does not remove upstream blocking. Complementary, not a substitute. |
+| #   | Alternative                                                               | Verdict                                                                                                                                                                                                          |
+| --- | ------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A   | **Status quo** — depend entirely on `cryspy`/`crysfml`/`pdffit2`.         | Rejected. Perpetuates upstream blocking (issue 131) and leaves corrections like absorption (issue 119) without an exact home.                                                                                    |
+| B   | **Fork or vendor an existing engine** (e.g. a `cryspy`/`crysfml` subset). | Rejected. Inherits the backend's complexity, build system, and licensing while still not being code we understand end to end.                                                                                    |
+| C   | **In-house engine targeting full parity** with the external backends.     | Rejected. Multi-year effort; the long tail (magnetic, polarized, extinction, total scattering) has poor cost/benefit and is well served by the backends.                                                         |
+| D   | **In-house core + keep backends for the frontier** (this ADR).            | **Chosen.** Owns the common 80% (neutron powder Rietveld), keeps backends for the rest, reuses all existing framework.                                                                                           |
+| E   | **Only point-wise corrections in the data layer**, no real engine.        | Insufficient as a strategy. Solves the immediate absorption case approximately but does not generalize to structure factors or profiles, and does not remove upstream blocking. Complementary, not a substitute. |
 
 ## Deferred Work / Open Questions
 
 1. **Scattering-data source.** Neutron scattering lengths and X-ray form
    factors: reuse `cryspy`'s tables, vendor a small dataset, or add a
    dependency (e.g. `periodictable`). This needs an explicit dependency
-   decision per [`AGENTS.md`](../../../../AGENTS.md) §Architecture before
-   any package is added.
+   decision per [`AGENTS.md`](../../../../AGENTS.md) §Architecture
+   before any package is added.
 2. **Engine tag / `CalculatorEnum` member name.** Candidates:
    `EASYDIFFRACTION` / `'easydiffraction'`, `NATIVE` / `'native'`,
    `EASY` / `'easy'`. To be fixed under
