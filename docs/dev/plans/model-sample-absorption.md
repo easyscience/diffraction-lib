@@ -231,7 +231,7 @@ P1.1; see §ADR):**
   no backend imports.
   *Commit:* `Add Hewat cylindrical absorption factor helper`
 
-- [ ] **P1.4 — Apply A(θ) in both backends**
+- [x] **P1.4 — Apply A(θ) in both backends**
   `cryspy.py`: before `return y_calc`, multiply by
   `absorption.factor(experiment.data.x, experiment.absorption)` when the
   experiment exposes `absorption`. `crysfml.py`: same, in
@@ -317,7 +317,7 @@ P1.1; see §ADR):**
 - [x] P1.2 Wire `absorption` into the powder-Bragg experiment owner
       (incl. `_absorption.type` restore on load)
 - [x] P1.3 Add the shared Hewat A(θ) helper
-- [ ] P1.4 Apply A(θ) in both backends (incl. empty/no-data guard)
+- [x] P1.4 Apply A(θ) in both backends (incl. empty/no-data guard)
 - [ ] P1.5 Persist the absorption category in experiment CIF
 - [ ] P1.6 Document the sample-absorption parameters
 - [ ] P1.7 Phase 1 review gate

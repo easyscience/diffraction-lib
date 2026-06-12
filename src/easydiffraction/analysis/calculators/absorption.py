@@ -27,6 +27,39 @@ HEWAT_MAX_VALIDATED_MU_R = 1.5
 _WARNED_MU_R: set[float] = set()
 
 
+def apply(y: object, experiment: object) -> object:
+    """
+    Apply the sample-absorption correction to a calculated pattern.
+
+    Shared by both backends so the absorption term stays identical
+    across calculators. The pattern is returned unchanged when the
+    experiment exposes no ``absorption`` category (single-crystal /
+    total scattering), or when it is empty or its length does not match
+    the 2-theta grid (the backends' "no calculated data" paths).
+
+    Parameters
+    ----------
+    y : object
+        Calculated intensities (NumPy array or list).
+    experiment : object
+        Experiment providing ``data.x`` (the 2-theta grid) and, when
+        applicable, the active ``absorption`` category.
+
+    Returns
+    -------
+    object
+        Corrected intensities, or ``y`` unchanged when no correction
+        applies.
+    """
+    if not hasattr(experiment, 'absorption'):
+        return y
+    y_values = np.asarray(y, dtype=float)
+    two_theta = np.asarray(experiment.data.x, dtype=float)
+    if y_values.size == 0 or y_values.shape != two_theta.shape:
+        return y
+    return y_values * factor(two_theta, experiment.absorption)
+
+
 def factor(two_theta: np.ndarray, absorption: object) -> np.ndarray:
     """
     Return the per-point sample-absorption correction A.
