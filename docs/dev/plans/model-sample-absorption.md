@@ -6,8 +6,9 @@ No deliberate exceptions are taken.
 ## ADR
 
 Implements
-[`docs/dev/adrs/suggestions/model-sample-absorption.md`](../adrs/suggestions/model-sample-absorption.md)
-(Status: Proposed; review cycle 1 closed). This plan **owns** that ADR.
+[`docs/dev/adrs/accepted/model-sample-absorption.md`](../adrs/accepted/model-sample-absorption.md)
+(Status: Accepted; promoted from `suggestions/` in Phase A). This plan
+**owns** that ADR.
 
 **ADR promotion happens in `/draft-impl-1` Phase A (design-history
 cleanup), at task start — not as a numbered Phase 1 step.** Before P1.1,
