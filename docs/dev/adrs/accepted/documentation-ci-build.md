@@ -1,6 +1,6 @@
 # ADR: Documentation CI and Build Verification
 
-**Status:** Proposed  
+**Status:** Accepted  
 **Date:** 2026-05-31
 
 ## Group
@@ -76,6 +76,20 @@ rate-limited external domains, and cache results where practical.
 Use `codespell` first for low-noise spelling checks. Consider `Vale`
 after the project has a small EasyDiffraction style vocabulary and an
 allowlist for crystallographic terms, package names, and CIF tags.
+
+## Implementation Status
+
+Most of this ADR is already in place; it is accepted to record the
+chosen direction and to track the remaining gaps.
+
+| # | Decision | Status |
+| - | -------- | ------ |
+| 1 | MkDocs `--strict` build | **Done** — `docs-build` pixi task runs `mkdocs build --strict`; wired into the `lint-format.yml` "docs strict build" gate and the `docs.yml` deploy workflow. |
+| 2 | `mkdocstrings` for API pages | **Done** — `mkdocstrings` + `mkdocstrings-python` configured in `docs/mkdocs.yml` (handler `paths: ['src']`); the `api-reference/*.md` pages use `:::` directives. |
+| 3 | Snippet smoke tests | **Not done** — no task imports or executes the user-facing snippets in `quick-reference/`, `user-guide/first-steps.md`, or `user-guide/analysis-workflow/*.md`. Highest-value remaining gap. |
+| 4 | Tutorial freshness check | **Partial** — `notebook-prepare` plus `notebook-tests`/`notebook-exec-ci` exist, but no no-write task asserts that `notebook-prepare` leaves the committed `.ipynb` unchanged. |
+| 5 | `lychee` link checking | **Done for local/relative links** — `link-check` pixi task (config in `lychee.toml`) is wired into `lint-format.yml`. External-URL checking is deferred (see issue 114). |
+| 6 | `codespell`, then `Vale` | **codespell done** — `spell-check` pixi task wired into `lint-format.yml`. `Vale` deferred. |
 
 ## Options Considered
 
@@ -179,11 +193,14 @@ Cons:
 
 ## Deferred Work
 
-- Decide whether link checking runs on every pull request, nightly, or
-  both.
-- Decide whether snippet smoke tests extract fenced code blocks
+- Add snippet smoke tests for user-facing examples (decision 3). Tracked
+  by the `documentation-snippet-tests` implementation plan. Open
+  question carried into that plan: extract fenced code blocks
   automatically or rely on explicitly named snippets.
-- Decide whether docs CI should build only source Markdown or also build
-  rendered notebooks.
-- Add the chosen checks to `pixi.toml`, CI configuration, and developer
-  documentation after this ADR is accepted.
+- Add a no-write `notebook-prepare-check` task that fails CI when the
+  committed notebooks are out of date with their `.py` sources
+  (decision 4).
+- Enable external-URL link checking in the docs gate (decision 5),
+  scheduled or cached to avoid flakiness. Tracked by issue 114.
+- Adopt `Vale` prose linting once an EasyDiffraction style vocabulary
+  and crystallographic-term allowlist exist (decision 6).
