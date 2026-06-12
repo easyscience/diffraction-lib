@@ -60,6 +60,11 @@ and so on. The list below notes only what is specific to each page.
   Lanthanum hexaboride (LaB₆, _Pm-3m_); adds Debye–Scherrer sample
   absorption (μR = 0.7), now modelled by both engines, on top of FCJ
   asymmetry. Skipped in CI: FCJ asymmetry is crysfml-only.
+- [LaB₆ `pd-neut-cwl` (absorption, no FCJ)](pd-neut-cwl_tch-fcj-nosldl_lab6.ipynb)
+  – Lanthanum hexaboride (LaB₆, _Pm-3m_); Debye–Scherrer sample
+  absorption (μR = 0.7) with FCJ asymmetry switched off, isolating the
+  absorption correction. ed-cryspy matches FullProf (enabling the
+  correction removes a ≈ 2.9× intensity mismatch).
 
 ## Powder, neutron, time-of-flight
 

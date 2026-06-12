@@ -17,6 +17,7 @@ pd-neut-cwl_pv-asym_empir_pbso4  # Asymmetry params are different. Empirical asy
 pd-neut-cwl_tch-fcj-noabs-nosldl_lab6  # needs unreleased cryspy PR #46 (SyCos/SySin, cos2theta convention)
 pd-neut-cwl_tch-fcj-noabs_lab6  # FCJ asymmetry (S_L/D_L) not implemented in cryspy; see issues/open.md
 pd-neut-cwl_tch-fcj_lab6  # FCJ asymmetry (S_L/D_L) not implemented in cryspy; absorption (muR=0.7, HEWAT) now modelled; see issues/open.md
+pd-neut-cwl_tch-fcj-nosldl_lab6  # absorption demo passes on develop cryspy; released cryspy needs PR #46 (SyCos/SySin); see issues/open.md
 pd-neut-tof_j_si  # ed-crysfml TOF Jorgensen profile ~8.5% off after fitting scale (area ratio 1.09, corr 0.997); cryspy matches FullProf
 pd-neut-tof_jvd_si  # cryspy TOF Lorentzian discrepancy; see issues/open.md
 sc-neut-cwl_ext-iso_tbti  # Different asymmetry types in cryspy vs FullProf
