@@ -187,6 +187,17 @@ P1.1; see §ADR):**
   FCJ reason, and the absorption maths is instead asserted by the
   unit/backend tests above (helper 4-decimal check + both backend call
   sites).
+- `docs/docs/verification/pd-neut-cwl_tch-fcj-nosldl_lab6.py` — a
+  dedicated page that **isolates** absorption against a FullProf
+  reference with FCJ switched off (`S_L = D_L = 0`, μR = 0.7). It
+  asserts **ed-cryspy vs FullProf** (`raise_on_failure=True`): enabling
+  `cylinder-hewat` removes a ≈ 2.9× intensity mismatch and the page
+  passes (profile diff 0.84 %, area ratio 1.0021, shape correlation
+  1.0000), confirming the correction end-to-end. It is in `ci_skip.txt`
+  only because ed-cryspy's SyCos/SySin needs the unreleased cryspy PR
+  #46; it passes today on the develop cryspy. (crysfml has a separate
+  base-intensity convention difference for LaB₆, so only cryspy is
+  asserted.)
 
 ## Implementation steps (Phase 1)
 
