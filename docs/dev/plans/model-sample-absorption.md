@@ -177,8 +177,16 @@ P1.1; see §ADR):**
   `…/test_crysfml.py` — A(θ) application, including the empty/no-data
   path guard from P1.4.
 - `docs/docs/verification/pd-neut-cwl_tch-fcj_lab6.py` — enable
-  `absorption.type='cylinder-hewat'`, `mu_r=0.7`; expect it to reach the
-  corr that `pd-neut-cwl_tch-fcj-noabs_lab6.py` (μR=0) already passes.
+  `absorption.type='cylinder-hewat'`, `mu_r=0.7` so both engines apply
+  the correction. **Scoped outcome:** the page exercises the feature and
+  the "modelled by neither engine" docs are corrected, but a full
+  non-skipped agreement assertion is **deferred** — the page also drives
+  the cryspy comparison, which still lacks FCJ axial-divergence
+  asymmetry (a separate open issue, same reason `…-noabs_lab6` is
+  skipped). The page therefore stays in `ci_skip.txt` for the narrower
+  FCJ reason, and the absorption maths is instead asserted by the
+  unit/backend tests above (helper 4-decimal check + both backend call
+  sites).
 
 ## Implementation steps (Phase 1)
 
@@ -310,8 +318,10 @@ P1.1; see §ADR):**
      gating (absent for single-crystal / total).
    - both backends apply A(θ); single-crystal/total unaffected.
    - CIF round-trip of `_absorption.*`.
-   - verification page `pd-neut-cwl_tch-fcj_lab6` reaches the target
-     corr with `cylinder-hewat`, `mu_r=0.7`.
+   - verification page `pd-neut-cwl_tch-fcj_lab6` **enables**
+     `cylinder-hewat`, `mu_r=0.7` (feature exercised; full agreement
+     assertion deferred — see the scoped-outcome note in the Phase-2
+     file list, blocked by the separate cryspy FCJ limitation).
 2. **Run the suite** (capture logs where useful):
 
    ```bash
