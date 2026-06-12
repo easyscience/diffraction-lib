@@ -220,7 +220,7 @@ P1.1; see §ADR):**
   background/peak restore exactly.
   *Commit:* `Wire absorption category into powder experiment owner`
 
-- [ ] **P1.3 — Add the shared Hewat A(θ) helper**
+- [x] **P1.3 — Add the shared Hewat A(θ) helper**
   New `analysis/calculators/absorption.py`:
   `HEWAT_MAX_VALIDATED_MU_R = 1.5`;
   `factor(two_theta, absorption) -> np.ndarray` returning all-ones for
@@ -316,7 +316,7 @@ P1.1; see §ADR):**
 - [x] P1.1 Add the `absorption` switchable-category package
 - [x] P1.2 Wire `absorption` into the powder-Bragg experiment owner
       (incl. `_absorption.type` restore on load)
-- [ ] P1.3 Add the shared Hewat A(θ) helper
+- [x] P1.3 Add the shared Hewat A(θ) helper
 - [ ] P1.4 Apply A(θ) in both backends (incl. empty/no-data guard)
 - [ ] P1.5 Persist the absorption category in experiment CIF
 - [ ] P1.6 Document the sample-absorption parameters
