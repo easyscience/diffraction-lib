@@ -57,7 +57,8 @@ def test_crysfml_calculate_pattern_preserves_empty_no_data(monkeypatch):
     monkeypatch.setattr(calc, '_crysfml_dict', lambda s, e: {})
 
     def _raise(_dict, _experiment):
-        raise KeyError('no calculated data')
+        msg = 'no calculated data'
+        raise KeyError(msg)
 
     monkeypatch.setattr(calc, '_calculate_adjusted_pattern', _raise)
 
