@@ -181,7 +181,7 @@ P1.1; see §ADR):**
 > Code and docs only. No tests in Phase 1 (added in Phase 2). Commit
 > each step atomically with explicit paths.
 
-- [ ] **P1.1 — Add the `absorption` switchable-category package**
+- [x] **P1.1 — Add the `absorption` switchable-category package**
   First add `AbsorptionTypeEnum` (`NONE='none'`,
   `CYLINDER_HEWAT='cylinder-hewat'`) to
   `datablocks/experiment/item/enums.py`, with a `description()` per
@@ -313,7 +313,7 @@ P1.1; see §ADR):**
 
 - [ ] Phase A — Promote the ADR to accepted + clean design history
       (done in `/draft-impl-1` setup, before P1.1; see §ADR)
-- [ ] P1.1 Add the `absorption` switchable-category package
+- [x] P1.1 Add the `absorption` switchable-category package
 - [ ] P1.2 Wire `absorption` into the powder-Bragg experiment owner
       (incl. `_absorption.type` restore on load)
 - [ ] P1.3 Add the shared Hewat A(θ) helper
