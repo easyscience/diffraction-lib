@@ -226,13 +226,13 @@ These two contracts are intentionally separate, so the switchable
 category can be extended without churn while the calculation layer grows
 only as physics demands:
 
-- **Category/swap contract — stable across *all* types.** Every type
+- **Category/swap contract — stable across _all_ types.** Every type
   (CWL or TOF, Phase 1 or future) is a class registered on
   `AbsorptionFactory`, selected through `experiment.absorption.type`,
   swapped by the single `_swap_absorption` hook. Adding a type never
   changes the category, the hook, the selector surface, or the CIF
   identity tag. This is what the "no rework" claim refers to.
-- **Calculation contract — per beam mode.** *How* a type turns its
+- **Calculation contract — per beam mode.** _How_ a type turns its
   parameters into an applied correction is **not** uniform:
   - **CWL types** (`cylinder-hewat`, `cylinder-lobanov`, `flat-plate`)
     share the §2 helper `factor(two_theta, params) → A(2θ)`, applied as
@@ -414,8 +414,8 @@ backend round-trip.
 ## Deferred Work
 
 All of these are designed into the taxonomy and CIF tags above but **not
-built in Phase 1**. Two contracts must be kept separate (see §3a
-"Stable vs. calculation contract"):
+built in Phase 1**. Two contracts must be kept separate (see §3a "Stable
+vs. calculation contract"):
 
 - **Category/swap contract (stable for all future types):** each is a
   new class registered on the same `AbsorptionFactory`, gated by
@@ -424,7 +424,7 @@ built in Phase 1**. Two contracts must be kept separate (see §3a
 - **Calculation contract (per beam mode):** CWL types reuse the shared
   2θ helper `factor(two_theta, params)`. **TOF types do not** — they
   require a separate wavelength-aware application path (§3a), so adding
-  a TOF form *does* extend the calculation layer even though it leaves
+  a TOF form _does_ extend the calculation layer even though it leaves
   the category/swap contract untouched.
 
 None appears in the FullProf example suite (only the cylinder does), so

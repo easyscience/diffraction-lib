@@ -11,6 +11,7 @@ from typing import Any
 import numpy as np
 
 from easydiffraction.core.datablock import DatablockItem
+from easydiffraction.datablocks.experiment.categories.absorption.factory import AbsorptionFactory
 from easydiffraction.datablocks.experiment.categories.background.factory import BackgroundFactory
 from easydiffraction.datablocks.experiment.categories.calculator import CalculatorCategoryFactory
 from easydiffraction.datablocks.experiment.categories.data.factory import DataFactory
@@ -19,7 +20,6 @@ from easydiffraction.datablocks.experiment.categories.diffrn.factory import Diff
 from easydiffraction.datablocks.experiment.categories.excluded_regions.factory import (
     ExcludedRegionsFactory,
 )
-from easydiffraction.datablocks.experiment.categories.absorption.factory import AbsorptionFactory
 from easydiffraction.datablocks.experiment.categories.extinction.factory import ExtinctionFactory
 from easydiffraction.datablocks.experiment.categories.instrument.factory import InstrumentFactory
 from easydiffraction.datablocks.experiment.categories.linked_crystal.factory import (
