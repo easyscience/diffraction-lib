@@ -269,7 +269,7 @@ P1.1; see §ADR):**
   > `/draft-impl-1` Phase A design-history cleanup before P1.1; see the
   > §ADR section.)
 
-- [ ] **P1.6 — Document the sample-absorption parameters**
+- [x] **P1.6 — Document the sample-absorption parameters**
   Add `docs/docs/user-guide/parameters/absorption.md` (template:
   `parameters/pref_orient.md`): the `absorption.type` selector,
   `cylinder-hewat`, `mu_r`, the Hewat range note and out-of-range
@@ -328,7 +328,7 @@ P1.1; see §ADR):**
 - [x] P1.4 Apply A(θ) in both backends (incl. empty/no-data guard)
 - [x] P1.5 Persist the absorption category in experiment CIF
       (verified automatic; no source change)
-- [ ] P1.6 Document the sample-absorption parameters
+- [x] P1.6 Document the sample-absorption parameters
 - [ ] P1.7 Phase 1 review gate
 - [ ] Phase 2 verification complete
 
