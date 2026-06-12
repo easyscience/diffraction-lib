@@ -56,3 +56,28 @@ class AbsorptionBase(CategoryItem, SwitchableCategoryBase):
                 radiation_probe=filters.get('radiation_probe'),
             )
         ]
+
+    def from_cif(self, block: object, idx: int = 0) -> None:
+        """
+        Populate parameters from CIF, skipping the active-type selector.
+
+        ``_absorption.type`` is restored with owner-context validation
+        by ``_restore_switchable_types`` before parameters are loaded.
+        Re-loading it through the generic descriptor path would set the
+        public ``type`` selector even when the persisted tag was
+        rejected for the experiment context (for example a CWL-only
+        ``cylinder-hewat`` tag in a time-of-flight file), leaving the
+        live category and its selector inconsistent. The type descriptor
+        is therefore intentionally skipped here.
+
+        Parameters
+        ----------
+        block : object
+            Parsed CIF block to read parameter values from.
+        idx : int, default=0
+            Loop index for the parameter values.
+        """
+        for param in self.parameters:
+            if param is self._type:
+                continue
+            param.from_cif(block, idx=idx)
