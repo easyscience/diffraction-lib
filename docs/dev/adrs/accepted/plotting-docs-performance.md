@@ -450,7 +450,7 @@ Settled in discussion on 2026-06-02:
   payload + faster draw) — a separate, data-side optimization.
 - A docs CI budget check (page weight / figure count) to catch
   regressions, aligning with
-  [`documentation-ci-build.md`](../suggestions/documentation-ci-build.md).
+  [`documentation-ci-build.md`](documentation-ci-build.md).
 - Hoist a single importmap into the **report** template `<head>` for
   standalone reports that render multiple Three.js scenes (the same
   per-scene-importmap bug as docs, but governed by

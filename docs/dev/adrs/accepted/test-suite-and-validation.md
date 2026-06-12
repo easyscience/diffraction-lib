@@ -66,7 +66,7 @@ accumulated:
   slow and therefore runs on pull requests only. There is no fast,
   every-push check that the site builds strictly, links resolve, and
   prose is clean. This overlaps the unimplemented
-  [Documentation CI and Build Verification](../suggestions/documentation-ci-build.md)
+  [Documentation CI and Build Verification](documentation-ci-build.md)
   suggestion.
 
 This ADR amends [Test Strategy](../accepted/test-strategy.md): the
@@ -338,7 +338,7 @@ prompt drift feedback. It is deliberately **separate from `docs.yml`**,
 which executes all tutorials and then builds and deploys — slow, and
 therefore pull-request-only. The detailed catalogue of documentation
 checks is owned by
-[Documentation CI and Build Verification](../suggestions/documentation-ci-build.md),
+[Documentation CI and Build Verification](documentation-ci-build.md),
 which this ADR coordinates with: that ADR defines _what_ the checks are;
 this ADR's decision is that the cheap, deterministic subset runs as part
 of the every-push test workflow. Promoting that ADR is part of this
@@ -443,15 +443,15 @@ drafting conversation, per the dependency-approval rule):
 - `pytest-benchmark` — performance-regression benchmarks (§7).
 
 Coordinated with
-[Documentation CI and Build Verification](../suggestions/documentation-ci-build.md),
+[Documentation CI and Build Verification](documentation-ci-build.md),
 which carries the documentation-check tools (`codespell`, a link checker
 such as `lychee`, and later `Vale`) used by §9.
 
 ## Related ADRs
 
 - [Test Strategy](../accepted/test-strategy.md) — amended by this ADR.
-- [Documentation CI and Build Verification](../suggestions/documentation-ci-build.md)
-  — coordinated with §9.
+- [Documentation CI and Build Verification](documentation-ci-build.md) —
+  coordinated with §9.
 - [Lint Complexity Thresholds](../accepted/lint-complexity-thresholds.md)
   — sibling Quality guardrail.
 - [Notebook Generation Source of Truth](../accepted/notebook-generation.md)

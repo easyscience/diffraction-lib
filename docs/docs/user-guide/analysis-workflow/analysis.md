@@ -392,8 +392,8 @@ for Ba will be equal to that of La during the refinement process.
 
 ### Viewing Constraints
 
-To view the defined constraints, you can use the `show_constraints`
-method:
+To view the defined constraints, you can use the `show` method on
+`project.analysis.constraints`:
 
 ```python
 project.analysis.constraints.show()

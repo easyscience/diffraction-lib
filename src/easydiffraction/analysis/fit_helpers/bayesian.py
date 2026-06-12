@@ -28,7 +28,6 @@ R_HAT_CONVERGENCE_THRESHOLD = 1.01
 ESS_BULK_CONVERGENCE_THRESHOLD = 400.0
 POSTERIOR_SAMPLE_NDIM = 3
 DEFAULT_CI_LEVELS = (0.68, 0.95)
-DEFAULT_CREDIBLE_INTERVAL_LEVELS = DEFAULT_CI_LEVELS
 IntervalLevels = tuple[float, ...]
 SettingsMap = dict[str, object] | None
 DiagnosticsMap = dict[str, object] | None

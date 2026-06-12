@@ -83,10 +83,10 @@ containing Bayesian fit state.
 
 ## Single Crystal Diffraction
 
-- [Tb2TiO7 `sg-neut-cwl`](ed-14.ipynb) – Demonstrates structure
+- [Tb2TiO7 `sc-neut-cwl`](ed-14.ipynb) – Demonstrates structure
   refinement of Tb2TiO7 using constant wavelength neutron single crystal
   diffraction data from HEiDi at FRM II.
-- [Taurine `sg-neut-tof`](ed-15.ipynb) – Demonstrates structure
+- [Taurine `sc-neut-tof`](ed-15.ipynb) – Demonstrates structure
   refinement of Taurine using time-of-flight neutron single crystal
   diffraction data from SENJU at J-PARC.
 

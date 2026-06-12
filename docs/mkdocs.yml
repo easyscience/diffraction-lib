@@ -232,8 +232,8 @@ nav:
           - Si pd-neut-tof: tutorials/ed-28.ipynb
           - NaCl pd-xray: tutorials/ed-29.ipynb
       - Single Crystal Diffraction:
-          - Tb2TiO7 sg-neut-cwl: tutorials/ed-14.ipynb
-          - Taurine sg-neut-tof: tutorials/ed-15.ipynb
+          - Tb2TiO7 sc-neut-cwl: tutorials/ed-14.ipynb
+          - Taurine sc-neut-tof: tutorials/ed-15.ipynb
       - Pair Distribution Function:
           - Ni pd-neut-cwl: tutorials/ed-10.ipynb
           - Si pd-neut-tof: tutorials/ed-11.ipynb
@@ -268,9 +268,9 @@ nav:
           - Si (Jorgensen–Von Dreele): verification/pd-neut-tof_jvd_si.ipynb
           - NaCaAlF: verification/pd-neut-tof_jvd_ncaf.ipynb
       - Single crystal, neutron, constant wavelength:
-          - Pr2NiO4 (no extinction): verification/sg-neut-cwl_pr2nio4.ipynb
-          - Tb2Ti2O7 (no extinction): verification/sg-neut-cwl_noext_tbti.ipynb
-          - Tb2Ti2O7: verification/sg-neut-cwl_ext-iso_tbti.ipynb
+          - Pr2NiO4 (no extinction): verification/sc-neut-cwl_pr2nio4.ipynb
+          - Tb2Ti2O7 (no extinction): verification/sc-neut-cwl_noext_tbti.ipynb
+          - Tb2Ti2O7: verification/sc-neut-cwl_ext-iso_tbti.ipynb
   - Command-Line:
       - Command-Line: cli/index.md
   - API Reference:

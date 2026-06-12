@@ -31,19 +31,30 @@ A(θ) = exp( -(1.7133 − 0.0368·sin²θ)·μR + (0.0927 + 0.375·sin²θ)·μR
 
 A Lobanov–Alte-da-Veiga form covers `μR > 3`.
 
-**Implementation sketch:**
+**Design:** captured in
+[`adrs/suggestions/model-sample-absorption.md`](../adrs/suggestions/model-sample-absorption.md)
+— a switchable `experiment.absorption` category (mirroring `extinction`)
+with a calculator-independent A(θ) envelope.
 
-- Add a `μR` instrument parameter for CWL powder (Debye–Scherrer).
-- `crysfml`: CrysFML08 already implements this — reachable via
-  `Lorentz_abs_CW(..., ilor='DBS', cabs='HEWAT', tmv=μR)` through
-  pycrysfml.
-- `cryspy`: multiply each reflection's intensity by `A(θ_hkl)`,
-  analogous to the existing Lorentz factor (one extra term).
+**What the backends actually provide (corrected):**
+
+- `cryspy`: **no** absorption code at all (only Debye–Waller and sphere
+  _extinction_); its CW intensity loop has no slot to multiply A(θ).
+- `crysfml`: CrysFML08 implements `Lorentz_abs_CW` in Fortran, but it is
+  **not** wrapped in `PythonAPI/`, and the high-level
+  `cw_powder_pattern_from_dict` path we call applies a plain Lorentz
+  factor with no absorption. So it is **not** reachable through
+  pycrysfml today without upstream changes.
+
+**Implication:** neither backend can apply the correction internally
+without changes we do not own. The chosen approach computes A(θ) in
+EasyDiffraction and applies it as a pointwise envelope on the calculated
+pattern, identically for both calculators (see the ADR).
 
 **Note:** absorption is nearly degenerate with Biso + scale (its angle
 term is linear in `sin²θ`, like the Debye–Waller), so refining Biso can
 partly absorb it — but that biases Biso, so an explicit correction is
-preferable.
+preferable. In FullProf `μR` is normally **fixed**, not refined.
 
 **References:**
 
@@ -52,10 +63,16 @@ preferable.
 - CrysFML08:
   [`Src/CFML_Powder/Pow_Lorentz_Absorption.f90`](https://code.ill.fr/scientific-software/CrysFML2008/-/blob/master/Src/CFML_Powder/Pow_Lorentz_Absorption.f90),
   `Lorentz_abs_CW`.
-- FullProf `μR`: `.pcr` Lambda line field 7; `iabscor = 2` selects
-  HEWAT.
+- FullProf splits absorption into a refineable **magnitude** and a
+  **type**: CW uses `μR` on the `.pcr` Lambda line (fixed there — no
+  refinement codeword), with the cylindrical Hewat form implied; TOF
+  uses `Iabscor` (`1` flat plate, `2` cylinder, `3` exponential
+  `exp(−ABS·λᶜ)`). `Cthm`/`Rpolarz`/`2nd-muR` on the Lambda line are
+  polarization and container terms, not the primary absorption knob.
 
-**Depends on:** adding a `μR` instrument parameter.
+**Depends on:** the switchable `experiment.absorption` category in the
+ADR above (supersedes the earlier "add a `μR` instrument parameter"
+sketch).
 
 ---
 
@@ -2041,7 +2058,7 @@ The fast docs gate (`docs-build` + `link-check` + `spell-check`) catches
 broken nav/internal links and typos on every push, but does not yet
 check external URLs. Add a `lychee` link checker (with an allowlist for
 rate-limited/unstable domains), coordinated with the
-[Documentation CI and Build Verification](../adrs/suggestions/documentation-ci-build.md)
+[Documentation CI and Build Verification](../adrs/accepted/documentation-ci-build.md)
 ADR. Run it nightly or on pull requests to avoid flakiness from external
 sites. Also covers link-checking of URLs that appear only inside
 executed notebook output cells (a feature that does not exist yet).

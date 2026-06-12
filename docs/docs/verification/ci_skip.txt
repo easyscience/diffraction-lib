@@ -19,4 +19,4 @@ pd-neut-cwl_tch-fcj-noabs_lab6  # FCJ asymmetry (S_L/D_L) not implemented in cry
 pd-neut-cwl_tch-fcj_lab6  # unmodelled sample absorption (muR=0.7, HEWAT) + FCJ asymmetry; see issues/open.md
 pd-neut-tof_j_si  # ed-crysfml TOF Jorgensen profile ~8.5% off after fitting scale (area ratio 1.09, corr 0.997); cryspy matches FullProf
 pd-neut-tof_jvd_si  # cryspy TOF Lorentzian discrepancy; see issues/open.md
-sg-neut-cwl_ext-iso_tbti  # Different asymmetry types in cryspy vs FullProf
+sc-neut-cwl_ext-iso_tbti  # Different asymmetry types in cryspy vs FullProf

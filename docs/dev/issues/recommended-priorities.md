@@ -83,7 +83,7 @@ session:
 - **[`cif-numeric-precision.md`](../adrs/suggestions/cif-numeric-precision.md)**
   — s.u.-aware CIF serialization (file size + meaningful precision).
 - **[`fit-output-files-and-data-exports.md`](../adrs/suggestions/fit-output-files-and-data-exports.md)**.
-- **[`documentation-ci-build.md`](../adrs/suggestions/documentation-ci-build.md)**.
+- **[`documentation-ci-build.md`](../adrs/accepted/documentation-ci-build.md)**.
 - **[`in-house-calculation-engine.md`](../adrs/suggestions/in-house-calculation-engine.md)**
   — drafted 2026-06-10 (in review): own the core (neutron powder
   Rietveld) in-repo, keep cryspy/crysfml/pdffit for the frontier.

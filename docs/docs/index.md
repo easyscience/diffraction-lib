@@ -16,6 +16,9 @@ Here is a brief overview of the main documentation sections:
 - [:material-school: Tutorials](tutorials/index.md) – Offers practical,
   step-by-step examples demonstrating common workflows and data analysis
   tasks.
+- [:material-check-decagram: Verification](verification/index.md) –
+  Cross-checks EasyDiffraction calculations against reference results
+  from external software (FullProf) across supported experiment types.
 - [:material-console: Command-Line Interface](cli/index.md) – Describes
   how to use EasyDiffraction from the terminal for batch fitting and
   other tasks.
