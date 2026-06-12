@@ -51,7 +51,6 @@ class MinimizerBase(ABC):
         self._max_iterations: int | None = max_iterations
         self.result: FitResults | None = None
         self._previous_chi2: float | None = None
-        self._iteration: int | None = None
         self._best_chi2: float | None = None
         self._best_iteration: int | None = None
         self._fitting_time: float | None = None
