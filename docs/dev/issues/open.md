@@ -32,7 +32,7 @@ A(θ) = exp( -(1.7133 − 0.0368·sin²θ)·μR + (0.0927 + 0.375·sin²θ)·μR
 A Lobanov–Alte-da-Veiga form covers `μR > 3`.
 
 **Design:** captured in
-[`adrs/suggestions/model-sample-absorption.md`](../adrs/suggestions/model-sample-absorption.md)
+[`adrs/accepted/model-sample-absorption.md`](../adrs/accepted/model-sample-absorption.md)
 — a switchable `experiment.absorption` category (mirroring `extinction`)
 with a calculator-independent A(θ) envelope.
 
