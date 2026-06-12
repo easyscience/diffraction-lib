@@ -117,7 +117,12 @@ class ExperimentBase(DatablockItem):
         if category is getattr(self, '_extinction', None):
             return {'calculator': calculator}
         if category is getattr(self, '_absorption', None):
-            return {'calculator': calculator}
+            return {
+                'calculator': calculator,
+                'sample_form': self.type.sample_form.value,
+                'scattering_type': self.type.scattering_type.value,
+                'beam_mode': self.type.beam_mode.value,
+            }
         if category is getattr(self, '_peak', None):
             return {
                 'calculator': calculator,

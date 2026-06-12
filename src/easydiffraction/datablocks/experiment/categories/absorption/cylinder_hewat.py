@@ -14,6 +14,7 @@ from easydiffraction.core.variable import Parameter
 from easydiffraction.datablocks.experiment.categories.absorption.base import AbsorptionBase
 from easydiffraction.datablocks.experiment.categories.absorption.factory import AbsorptionFactory
 from easydiffraction.datablocks.experiment.item.enums import AbsorptionTypeEnum
+from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
@@ -43,6 +44,7 @@ class CylinderHewatAbsorption(AbsorptionBase):
     compatibility = Compatibility(
         sample_form=frozenset({SampleFormEnum.POWDER}),
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
+        beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH}),
     )
     calculator_support = CalculatorSupport(
         calculators=frozenset({CalculatorEnum.CRYSPY, CalculatorEnum.CRYSFML}),
