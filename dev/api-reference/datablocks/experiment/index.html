@@ -2473,6 +2473,8 @@
       
         
       
+        
+      
     
     
     
@@ -2696,6 +2698,34 @@
     
   
     LaB6 (absorption)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../verification/pd-neut-cwl_tch-fcj-nosldl_lab6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LaB6 (absorption, no FCJ)
   
 
     
@@ -3858,6 +3888,17 @@
       </thead>
       <tbody>
           <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code&gt;absorption&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption">absorption</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Sample-absorption correction category (cylindrical Debye-Scherrer).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
             <td><code><a class="autorefs autorefs-internal" title="&lt;code&gt;background&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.background&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.background">background</a></code></td>
             <td>
               <div class="doc-md-description">
@@ -4035,6 +4076,2965 @@
 
 
 <h4 id="easydiffraction.datablocks.experiment.categories-modules">Modules</h4>
+
+<div class="doc doc-object doc-module">
+
+
+
+<h5 id="easydiffraction.datablocks.experiment.categories.absorption" class="doc doc-heading">
+            <code>absorption</code>
+
+
+</h5>
+
+    <div class="doc doc-contents ">
+
+        <p>Sample-absorption correction category (cylindrical Debye-Scherrer).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+
+
+
+
+<p><span class="doc-section-title">Modules:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code&gt;base&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.base&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.base">base</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Base class for sample-absorption correction categories.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code&gt;cylinder_hewat&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat">cylinder_hewat</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Cylindrical Debye-Scherrer absorption correction (Hewat).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code&gt;factory&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.factory&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.factory">factory</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Absorption factory — delegates entirely to <code>FactoryBase</code>.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code&gt;none&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.none&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.none">none</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>No-op sample-absorption correction (the default).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+<h6 id="easydiffraction.datablocks.experiment.categories.absorption-classes">Classes</h6>
+
+<h6 id="easydiffraction.datablocks.experiment.categories.absorption-modules">Modules</h6>
+
+<div class="doc doc-object doc-module">
+
+
+
+<h7 id="easydiffraction.datablocks.experiment.categories.absorption.base" class="doc doc-heading">
+            <code>base</code>
+
+
+</h7>
+
+    <div class="doc doc-contents ">
+
+        <p>Base class for sample-absorption correction categories.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Classes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;AbsorptionBase&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.base.AbsorptionBase&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.base.AbsorptionBase">AbsorptionBase</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Base class for sample-absorption correction categories.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+<h8 id="easydiffraction.datablocks.experiment.categories.absorption.base-classes">Classes</h8>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h9 id="easydiffraction.datablocks.experiment.categories.absorption.base.AbsorptionBase" class="doc doc-heading">
+              <code class="highlight language-python"><span class="n">AbsorptionBase</span><span class="p">()</span></code>
+
+</h9>
+
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>Base class for sample-absorption correction categories.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Methods:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;from_cif&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;block&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;idx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.base.AbsorptionBase.from_cif&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.base.AbsorptionBase.from_cif">from_cif</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Populate parameters from <abbr title="Crystallographic Information File.">CIF</abbr>, skipping the active-type selector.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;show_supported&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.base.AbsorptionBase.show_supported&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.base.AbsorptionBase.show_supported">show_supported</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Print supported types and mark the active one.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;fm&quot;&gt;__str__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.base.AbsorptionBase.__str__&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.base.AbsorptionBase.__str__">__str__</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Human-readable representation of this component.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;fm&quot;&gt;__repr__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.base.AbsorptionBase.__repr__&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.base.AbsorptionBase.__repr__">__repr__</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Return the developer representation of this object.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;fm&quot;&gt;__getattr__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.base.AbsorptionBase.__getattr__&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.base.AbsorptionBase.__getattr__">__getattr__</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Raise a descriptive error for unknown attribute access.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;fm&quot;&gt;__setattr__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.base.AbsorptionBase.__setattr__&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.base.AbsorptionBase.__setattr__">__setattr__</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Set an attribute with access-control diagnostics.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;help&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.base.AbsorptionBase.help&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.base.AbsorptionBase.help">help</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Print parameters, other properties, and methods.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+      </tbody>
+    </table>
+
+
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;nb&quot;&gt;type&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.base.AbsorptionBase.type&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.base.AbsorptionBase.type">type</a></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Active factory tag for this category.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;unique_name&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.base.AbsorptionBase.unique_name&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.base.AbsorptionBase.unique_name">unique_name</a></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Fully qualified name: datablock, category, entry.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;parameters&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.base.AbsorptionBase.parameters&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.base.AbsorptionBase.parameters">parameters</a></code></td>
+            <td>
+                  <code><span title="list">list</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>All GenericDescriptorBase instances on this item.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;as_cif&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.base.AbsorptionBase.as_cif&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.base.AbsorptionBase.as_cif">as_cif</a></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+<h10 id="easydiffraction.datablocks.experiment.categories.absorption.base.AbsorptionBase-attributes">Attributes</h10>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.absorption.base.AbsorptionBase.type" class="doc doc-heading">
+            <code class="highlight language-python"><span class="nb">type</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Active factory tag for this category.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.absorption.base.AbsorptionBase.unique_name" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">unique_name</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Fully qualified name: datablock, category, entry.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.absorption.base.AbsorptionBase.parameters" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">parameters</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>All GenericDescriptorBase instances on this item.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.absorption.base.AbsorptionBase.as_cif" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">as_cif</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+
+<h10 id="easydiffraction.datablocks.experiment.categories.absorption.base.AbsorptionBase-functions">Functions</h10>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.absorption.base.AbsorptionBase.from_cif" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">from_cif</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">idx</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Populate parameters from <abbr title="Crystallographic Information File.">CIF</abbr>, skipping the active-type selector.</p>
+<p><code>_absorption.type</code> is restored with owner-context validation
+by <code>_restore_switchable_types</code> before parameters are loaded.
+Re-loading it through the generic descriptor path would set the
+public <code>type</code> selector even when the persisted tag was
+rejected for the experiment context (for example a CWL-only
+<code>cylinder-hewat</code> tag in a time-of-flight file), leaving the
+live category and its selector inconsistent. The type descriptor
+is therefore intentionally skipped here.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>block</code>
+            </td>
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Parsed <abbr title="Crystallographic Information File.">CIF</abbr> block to read parameter values from.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>idx</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Loop index for the parameter values.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                  <code>0</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.absorption.base.AbsorptionBase.show_supported" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">show_supported</span><span class="p">()</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Print supported types and mark the active one.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.absorption.base.AbsorptionBase.__str__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__str__</span><span class="p">()</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Human-readable representation of this component.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.absorption.base.AbsorptionBase.__repr__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__repr__</span><span class="p">()</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return the developer representation of this object.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.absorption.base.AbsorptionBase.__getattr__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__getattr__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Raise a descriptive error for unknown attribute access.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.absorption.base.AbsorptionBase.__setattr__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__setattr__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Set an attribute with access-control diagnostics.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.absorption.base.AbsorptionBase.help" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">help</span><span class="p">()</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Print parameters, other properties, and methods.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+<h7 id="easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat" class="doc doc-heading">
+            <code>cylinder_hewat</code>
+
+
+</h7>
+
+    <div class="doc doc-contents ">
+
+        <p>Cylindrical Debye-Scherrer absorption correction (Hewat).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Classes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;CylinderHewatAbsorption&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat.CylinderHewatAbsorption&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat.CylinderHewatAbsorption">CylinderHewatAbsorption</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Cylindrical Debye-Scherrer absorption correction (Hewat).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+<h8 id="easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat-classes">Classes</h8>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h9 id="easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat.CylinderHewatAbsorption" class="doc doc-heading">
+              <code class="highlight language-python"><span class="n">CylinderHewatAbsorption</span><span class="p">()</span></code>
+
+</h9>
+
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>Cylindrical Debye-Scherrer absorption correction (Hewat).</p>
+<p>Applies the angle-dependent transmission factor</p>
+<p><code>A(θ) = exp(-(1.7133 - 0.0368·sin²θ)·μR
+          + (0.0927 + 0.375·sin²θ)·μR²)</code></p>
+<p>for a cylindrical sample, where <code>μR</code> is the linear absorption
+coefficient times the sample radius. Validated to four decimals
+against FullProf for μR ≲ 1.5; for larger μR a Lobanov form is
+preferable (not yet implemented).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Methods:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;show_supported&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat.CylinderHewatAbsorption.show_supported&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat.CylinderHewatAbsorption.show_supported">show_supported</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Print supported types and mark the active one.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;fm&quot;&gt;__str__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat.CylinderHewatAbsorption.__str__&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat.CylinderHewatAbsorption.__str__">__str__</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Human-readable representation of this component.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;fm&quot;&gt;__repr__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat.CylinderHewatAbsorption.__repr__&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat.CylinderHewatAbsorption.__repr__">__repr__</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Return the developer representation of this object.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;fm&quot;&gt;__getattr__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat.CylinderHewatAbsorption.__getattr__&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat.CylinderHewatAbsorption.__getattr__">__getattr__</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Raise a descriptive error for unknown attribute access.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;fm&quot;&gt;__setattr__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat.CylinderHewatAbsorption.__setattr__&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat.CylinderHewatAbsorption.__setattr__">__setattr__</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Set an attribute with access-control diagnostics.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;help&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat.CylinderHewatAbsorption.help&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat.CylinderHewatAbsorption.help">help</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Print parameters, other properties, and methods.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;from_cif&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;block&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;idx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat.CylinderHewatAbsorption.from_cif&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat.CylinderHewatAbsorption.from_cif">from_cif</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Populate parameters from <abbr title="Crystallographic Information File.">CIF</abbr>, skipping the active-type selector.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+      </tbody>
+    </table>
+
+
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;mu_r&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat.CylinderHewatAbsorption.mu_r&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat.CylinderHewatAbsorption.mu_r">mu_r</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;Parameter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cif_handler&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.Parameter&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.Parameter">Parameter</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Absorption coefficient times sample radius (μR).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;nb&quot;&gt;type&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat.CylinderHewatAbsorption.type&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat.CylinderHewatAbsorption.type">type</a></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Active factory tag for this category.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;unique_name&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat.CylinderHewatAbsorption.unique_name&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat.CylinderHewatAbsorption.unique_name">unique_name</a></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Fully qualified name: datablock, category, entry.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;parameters&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat.CylinderHewatAbsorption.parameters&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat.CylinderHewatAbsorption.parameters">parameters</a></code></td>
+            <td>
+                  <code><span title="list">list</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>All GenericDescriptorBase instances on this item.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;as_cif&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat.CylinderHewatAbsorption.as_cif&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat.CylinderHewatAbsorption.as_cif">as_cif</a></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+<h10 id="easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat.CylinderHewatAbsorption-attributes">Attributes</h10>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat.CylinderHewatAbsorption.mu_r" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">mu_r</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Absorption coefficient times sample radius (μR).</p>
+<p>Reading this property returns the underlying <code>Parameter</code>
+object. Assigning to it updates the parameter value.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat.CylinderHewatAbsorption.type" class="doc doc-heading">
+            <code class="highlight language-python"><span class="nb">type</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Active factory tag for this category.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat.CylinderHewatAbsorption.unique_name" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">unique_name</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Fully qualified name: datablock, category, entry.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat.CylinderHewatAbsorption.parameters" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">parameters</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>All GenericDescriptorBase instances on this item.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat.CylinderHewatAbsorption.as_cif" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">as_cif</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+
+<h10 id="easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat.CylinderHewatAbsorption-functions">Functions</h10>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat.CylinderHewatAbsorption.show_supported" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">show_supported</span><span class="p">()</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Print supported types and mark the active one.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat.CylinderHewatAbsorption.__str__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__str__</span><span class="p">()</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Human-readable representation of this component.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat.CylinderHewatAbsorption.__repr__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__repr__</span><span class="p">()</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return the developer representation of this object.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat.CylinderHewatAbsorption.__getattr__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__getattr__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Raise a descriptive error for unknown attribute access.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat.CylinderHewatAbsorption.__setattr__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__setattr__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Set an attribute with access-control diagnostics.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat.CylinderHewatAbsorption.help" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">help</span><span class="p">()</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Print parameters, other properties, and methods.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat.CylinderHewatAbsorption.from_cif" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">from_cif</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">idx</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Populate parameters from <abbr title="Crystallographic Information File.">CIF</abbr>, skipping the active-type selector.</p>
+<p><code>_absorption.type</code> is restored with owner-context validation
+by <code>_restore_switchable_types</code> before parameters are loaded.
+Re-loading it through the generic descriptor path would set the
+public <code>type</code> selector even when the persisted tag was
+rejected for the experiment context (for example a CWL-only
+<code>cylinder-hewat</code> tag in a time-of-flight file), leaving the
+live category and its selector inconsistent. The type descriptor
+is therefore intentionally skipped here.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>block</code>
+            </td>
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Parsed <abbr title="Crystallographic Information File.">CIF</abbr> block to read parameter values from.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>idx</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Loop index for the parameter values.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                  <code>0</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+<h7 id="easydiffraction.datablocks.experiment.categories.absorption.factory" class="doc doc-heading">
+            <code>factory</code>
+
+
+</h7>
+
+    <div class="doc doc-contents ">
+
+        <p>Absorption factory — delegates entirely to <code>FactoryBase</code>.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Classes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code&gt;AbsorptionFactory&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.factory.AbsorptionFactory&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.factory.AbsorptionFactory">AbsorptionFactory</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Create sample-absorption correction models by tag.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+<h8 id="easydiffraction.datablocks.experiment.categories.absorption.factory-classes">Classes</h8>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h9 id="easydiffraction.datablocks.experiment.categories.absorption.factory.AbsorptionFactory" class="doc doc-heading">
+            <code>AbsorptionFactory</code>
+
+
+</h9>
+
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>Create sample-absorption correction models by tag.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Methods:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;__init_subclass__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.factory.AbsorptionFactory.__init_subclass__&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.factory.AbsorptionFactory.__init_subclass__">__init_subclass__</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Give each subclass its own independent registry and rules.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;register&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;klass&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-classmethod&quot;&gt;&lt;code&gt;classmethod&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.factory.AbsorptionFactory.register&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.factory.AbsorptionFactory.register">register</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Class decorator to register a concrete class.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;supported_tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-classmethod&quot;&gt;&lt;code&gt;classmethod&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.factory.AbsorptionFactory.supported_tags&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.factory.AbsorptionFactory.supported_tags">supported_tags</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Return list of all supported tags.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;default_tag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;conditions&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-classmethod&quot;&gt;&lt;code&gt;classmethod&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.factory.AbsorptionFactory.default_tag&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.factory.AbsorptionFactory.default_tag">default_tag</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Resolve the default tag for a given experimental context.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;create&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-classmethod&quot;&gt;&lt;code&gt;classmethod&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.factory.AbsorptionFactory.create&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.factory.AbsorptionFactory.create">create</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Instantiate a registered class by <em>tag</em>.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;create_default_for&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;conditions&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-classmethod&quot;&gt;&lt;code&gt;classmethod&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.factory.AbsorptionFactory.create_default_for&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.factory.AbsorptionFactory.create_default_for">create_default_for</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Instantiate the default class for a given context.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;supported_for&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;calculator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sample_form&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;scattering_type&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;beam_mode&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;radiation_probe&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-classmethod&quot;&gt;&lt;code&gt;classmethod&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.factory.AbsorptionFactory.supported_for&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.factory.AbsorptionFactory.supported_for">supported_for</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Return classes matching conditions and/or calculator.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;show_supported&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;calculator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sample_form&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;scattering_type&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;beam_mode&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;radiation_probe&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-classmethod&quot;&gt;&lt;code&gt;classmethod&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.factory.AbsorptionFactory.show_supported&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.factory.AbsorptionFactory.show_supported">show_supported</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Pretty-print a table of supported types.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+<h10 id="easydiffraction.datablocks.experiment.categories.absorption.factory.AbsorptionFactory-functions">Functions</h10>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.absorption.factory.AbsorptionFactory.__init_subclass__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">__init_subclass__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Give each subclass its own independent registry and rules.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.absorption.factory.AbsorptionFactory.register" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">register</span><span class="p">(</span><span class="n">klass</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Class decorator to register a concrete class.</p>
+<p>Usage::</p>
+<p>@SomeFactory.register class MyClass(SomeBase):     type_info =
+TypeInfo(...)</p>
+<p>Returns the class unmodified.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.absorption.factory.AbsorptionFactory.supported_tags" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">supported_tags</span><span class="p">()</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return list of all supported tags.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.absorption.factory.AbsorptionFactory.default_tag" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">default_tag</span><span class="p">(</span><span class="o">**</span><span class="n">conditions</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Resolve the default tag for a given experimental context.</p>
+<p>Uses <em>largest-subset matching</em>: the rule whose key is the
+biggest subset of the given conditions wins. A rule with an
+empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>**conditions</code>
+            </td>
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Experimental-axis values, e.g.
+<code>scattering_type=ScatteringTypeEnum.BRAGG</code>.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                  <code>{}</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The resolved default tag string.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If no rule matches the given conditions.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.absorption.factory.AbsorptionFactory.create" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">create</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Instantiate a registered class by <em>tag</em>.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>tag</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>type_info.tag</code> value.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>**kwargs</code>
+            </td>
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Forwarded to the class constructor.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                  <code>{}</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A new instance of the registered class.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If <em>tag</em> is not in the registry.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.absorption.factory.AbsorptionFactory.create_default_for" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">create_default_for</span><span class="p">(</span><span class="o">**</span><span class="n">conditions</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Instantiate the default class for a given context.</p>
+<p>Combines <code>default_tag(**conditions)</code> with <code>create(tag)</code>.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>**conditions</code>
+            </td>
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Experimental-axis values.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                  <code>{}</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A new instance of the default class.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.absorption.factory.AbsorptionFactory.supported_for" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">supported_for</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">calculator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sample_form</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scattering_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">beam_mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">radiation_probe</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return classes matching conditions and/or calculator.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>calculator</code>
+            </td>
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Optional <code>CalculatorEnum</code> value.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>sample_form</code>
+            </td>
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Optional <code>SampleFormEnum</code> value.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>scattering_type</code>
+            </td>
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Optional <code>ScatteringTypeEnum</code> value.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>beam_mode</code>
+            </td>
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Optional <code>BeamModeEnum</code> value.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>radiation_probe</code>
+            </td>
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Optional <code>RadiationProbeEnum</code> value.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="list">list</span>[<span title="type">type</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Classes matching the given conditions.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.absorption.factory.AbsorptionFactory.show_supported" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">show_supported</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">calculator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sample_form</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scattering_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">beam_mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">radiation_probe</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Pretty-print a table of supported types.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>calculator</code>
+            </td>
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Optional <code>CalculatorEnum</code> filter.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>sample_form</code>
+            </td>
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Optional <code>SampleFormEnum</code> filter.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>scattering_type</code>
+            </td>
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Optional <code>ScatteringTypeEnum</code> filter.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>beam_mode</code>
+            </td>
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Optional <code>BeamModeEnum</code> filter.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>radiation_probe</code>
+            </td>
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Optional <code>RadiationProbeEnum</code> filter.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+<h7 id="easydiffraction.datablocks.experiment.categories.absorption.none" class="doc doc-heading">
+            <code>none</code>
+
+
+</h7>
+
+    <div class="doc doc-contents ">
+
+        <p>No-op sample-absorption correction (the default).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Classes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;NoAbsorption&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.none.NoAbsorption&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.none.NoAbsorption">NoAbsorption</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>No sample-absorption correction; the applied factor is unity.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+<h8 id="easydiffraction.datablocks.experiment.categories.absorption.none-classes">Classes</h8>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h9 id="easydiffraction.datablocks.experiment.categories.absorption.none.NoAbsorption" class="doc doc-heading">
+              <code class="highlight language-python"><span class="n">NoAbsorption</span><span class="p">()</span></code>
+
+</h9>
+
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>No sample-absorption correction; the applied factor is unity.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Methods:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;show_supported&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.none.NoAbsorption.show_supported&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.none.NoAbsorption.show_supported">show_supported</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Print supported types and mark the active one.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;fm&quot;&gt;__str__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.none.NoAbsorption.__str__&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.none.NoAbsorption.__str__">__str__</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Human-readable representation of this component.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;fm&quot;&gt;__repr__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.none.NoAbsorption.__repr__&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.none.NoAbsorption.__repr__">__repr__</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Return the developer representation of this object.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;fm&quot;&gt;__getattr__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.none.NoAbsorption.__getattr__&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.none.NoAbsorption.__getattr__">__getattr__</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Raise a descriptive error for unknown attribute access.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;fm&quot;&gt;__setattr__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.none.NoAbsorption.__setattr__&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.none.NoAbsorption.__setattr__">__setattr__</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Set an attribute with access-control diagnostics.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;help&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.none.NoAbsorption.help&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.none.NoAbsorption.help">help</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Print parameters, other properties, and methods.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;from_cif&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;block&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;idx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.none.NoAbsorption.from_cif&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.none.NoAbsorption.from_cif">from_cif</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Populate parameters from <abbr title="Crystallographic Information File.">CIF</abbr>, skipping the active-type selector.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+      </tbody>
+    </table>
+
+
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;nb&quot;&gt;type&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.none.NoAbsorption.type&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.none.NoAbsorption.type">type</a></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Active factory tag for this category.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;unique_name&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.none.NoAbsorption.unique_name&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.none.NoAbsorption.unique_name">unique_name</a></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Fully qualified name: datablock, category, entry.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;parameters&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.none.NoAbsorption.parameters&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.none.NoAbsorption.parameters">parameters</a></code></td>
+            <td>
+                  <code><span title="list">list</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>All GenericDescriptorBase instances on this item.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;as_cif&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.absorption.none.NoAbsorption.as_cif&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.absorption.none.NoAbsorption.as_cif">as_cif</a></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+<h10 id="easydiffraction.datablocks.experiment.categories.absorption.none.NoAbsorption-attributes">Attributes</h10>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.absorption.none.NoAbsorption.type" class="doc doc-heading">
+            <code class="highlight language-python"><span class="nb">type</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Active factory tag for this category.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.absorption.none.NoAbsorption.unique_name" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">unique_name</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Fully qualified name: datablock, category, entry.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.absorption.none.NoAbsorption.parameters" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">parameters</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>All GenericDescriptorBase instances on this item.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.absorption.none.NoAbsorption.as_cif" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">as_cif</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+
+<h10 id="easydiffraction.datablocks.experiment.categories.absorption.none.NoAbsorption-functions">Functions</h10>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.absorption.none.NoAbsorption.show_supported" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">show_supported</span><span class="p">()</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Print supported types and mark the active one.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.absorption.none.NoAbsorption.__str__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__str__</span><span class="p">()</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Human-readable representation of this component.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.absorption.none.NoAbsorption.__repr__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__repr__</span><span class="p">()</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return the developer representation of this object.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.absorption.none.NoAbsorption.__getattr__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__getattr__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Raise a descriptive error for unknown attribute access.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.absorption.none.NoAbsorption.__setattr__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__setattr__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Set an attribute with access-control diagnostics.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.absorption.none.NoAbsorption.help" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">help</span><span class="p">()</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Print parameters, other properties, and methods.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.absorption.none.NoAbsorption.from_cif" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">from_cif</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">idx</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Populate parameters from <abbr title="Crystallographic Information File.">CIF</abbr>, skipping the active-type selector.</p>
+<p><code>_absorption.type</code> is restored with owner-context validation
+by <code>_restore_switchable_types</code> before parameters are loaded.
+Re-loading it through the generic descriptor path would set the
+public <code>type</code> selector even when the persisted tag was
+rejected for the experiment context (for example a CWL-only
+<code>cylinder-hewat</code> tag in a time-of-flight file), leaving the
+live category and its selector inconsistent. The type descriptor
+is therefore intentionally skipped here.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>block</code>
+            </td>
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Parsed <abbr title="Crystallographic Information File.">CIF</abbr> block to read parameter values from.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>idx</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Loop index for the parameter values.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                  <code>0</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+  </div>
+
+    </div>
+
+</div>
 
 <div class="doc doc-object doc-module">
 
@@ -79140,6 +82140,24 @@ live calculator backend instance.</p>
             </td>
           </tr>
           <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;absorption&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.item.bragg_pd.BraggPdExperiment.absorption&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.item.bragg_pd.BraggPdExperiment.absorption">absorption</a></code></td>
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Active sample-absorption correction for this experiment.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
             <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;unique_name&lt;/span&gt;&lt;/code&gt;
 
   &lt;span class=&quot;doc doc-labels&quot;&gt;
@@ -79516,6 +82534,31 @@ live calculator backend instance.</p>
     <div class="doc doc-contents ">
 
         <p>Per-phase March-Dollase preferred-orientation corrections.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h9 id="easydiffraction.datablocks.experiment.item.bragg_pd.BraggPdExperiment.absorption" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">absorption</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h9>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Active sample-absorption correction for this experiment.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -82197,6 +85240,17 @@ live calculator backend instance.</p>
               </div>
             </td>
           </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code&gt;AbsorptionTypeEnum&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.item.enums.AbsorptionTypeEnum&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.item.enums.AbsorptionTypeEnum">AbsorptionTypeEnum</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Sample-absorption correction types for powder experiments.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
       </tbody>
     </table>
 
@@ -83428,6 +86482,197 @@ live calculator backend instance.</p>
     <div class="doc doc-contents ">
 
         <p>Return a human-readable description of this extinction model.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Description string for the current enum member.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h7 id="easydiffraction.datablocks.experiment.item.enums.AbsorptionTypeEnum" class="doc doc-heading">
+            <code>AbsorptionTypeEnum</code>
+
+
+</h7>
+
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>Sample-absorption correction types for powder experiments.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Methods:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;default&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-classmethod&quot;&gt;&lt;code&gt;classmethod&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.item.enums.AbsorptionTypeEnum.default&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.item.enums.AbsorptionTypeEnum.default">default</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Return the default absorption type (NONE).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;description&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.item.enums.AbsorptionTypeEnum.description&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.item.enums.AbsorptionTypeEnum.description">description</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Return a human-readable description of this absorption type.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+<h8 id="easydiffraction.datablocks.experiment.item.enums.AbsorptionTypeEnum-functions">Functions</h8>
+
+<div class="doc doc-object doc-function">
+
+
+<h9 id="easydiffraction.datablocks.experiment.item.enums.AbsorptionTypeEnum.default" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">default</span><span class="p">()</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+</h9>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return the default absorption type (NONE).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code&gt;AbsorptionTypeEnum&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.item.enums.AbsorptionTypeEnum&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.item.enums.AbsorptionTypeEnum">AbsorptionTypeEnum</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The default enum member.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h9 id="easydiffraction.datablocks.experiment.item.enums.AbsorptionTypeEnum.description" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">description</span><span class="p">()</span></code>
+
+</h9>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return a human-readable description of this absorption type.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->

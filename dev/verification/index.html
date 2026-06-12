@@ -2475,6 +2475,8 @@
       
         
       
+        
+      
     
     
     
@@ -2698,6 +2700,34 @@
     
   
     LaB6 (absorption)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="pd-neut-cwl_tch-fcj-nosldl_lab6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LaB6 (absorption, no FCJ)
   
 
     
@@ -3715,8 +3745,13 @@ and so on. The list below notes only what is specific to each page.</p>
   asymmetry is crysfml-only.</li>
 <li><a href="pd-neut-cwl_tch-fcj_lab6/">LaB₆ <code>pd-neut-cwl</code> (absorption)</a> –
   Lanthanum hexaboride (LaB₆, <em>Pm-3m</em>); adds Debye–Scherrer sample
-  absorption (μR) on top of FCJ asymmetry. Skipped in CI: sample
-  absorption is modelled by neither engine.</li>
+  absorption (μR = 0.7), now modelled by both engines, on top of FCJ
+  asymmetry. Skipped in CI: FCJ asymmetry is crysfml-only.</li>
+<li><a href="pd-neut-cwl_tch-fcj-nosldl_lab6/">LaB₆ <code>pd-neut-cwl</code> (absorption, no FCJ)</a>
+  – Lanthanum hexaboride (LaB₆, <em>Pm-3m</em>); Debye–Scherrer sample
+  absorption (μR = 0.7) with FCJ asymmetry switched off, isolating the
+  absorption correction. ed-cryspy matches FullProf (enabling the
+  correction removes a ≈ 2.9× intensity mismatch).</li>
 </ul>
 <h2 id="powder-neutron-time-of-flight">Powder, neutron, time-of-flight</h2>
 <ul>

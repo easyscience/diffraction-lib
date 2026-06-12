@@ -2473,6 +2473,8 @@
       
         
       
+        
+      
     
     
     
@@ -2696,6 +2698,34 @@
     
   
     LaB6 (absorption)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../verification/pd-neut-cwl_tch-fcj-nosldl_lab6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LaB6 (absorption, no FCJ)
   
 
     
@@ -5869,6 +5899,17 @@ calculated pattern without running a minimization.</p>
       </thead>
       <tbody>
           <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code&gt;absorption&lt;/code&gt; (&lt;code&gt;easydiffraction.analysis.calculators.absorption&lt;/code&gt;)" href="#easydiffraction.analysis.calculators.absorption">absorption</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Calculator-independent sample-absorption correction factor.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
             <td><code><a class="autorefs autorefs-internal" title="&lt;code&gt;base&lt;/code&gt; (&lt;code&gt;easydiffraction.analysis.calculators.base&lt;/code&gt;)" href="#easydiffraction.analysis.calculators.base">base</a></code></td>
             <td>
               <div class="doc-md-description">
@@ -5958,6 +5999,304 @@ calculated pattern without running a minimization.</p>
 <h4 id="easydiffraction.analysis.calculators-classes">Classes</h4>
 
 <h4 id="easydiffraction.analysis.calculators-modules">Modules</h4>
+
+<div class="doc doc-object doc-module">
+
+
+
+<h5 id="easydiffraction.analysis.calculators.absorption" class="doc doc-heading">
+            <code>absorption</code>
+
+
+</h5>
+
+    <div class="doc doc-contents ">
+
+        <p>Calculator-independent sample-absorption correction factor.</p>
+<p>The correction is a slowly varying envelope of <code>sin^2(theta)</code>, so it
+is applied pointwise to the calculated pattern by both backends rather
+than per reflection. This keeps the cryspy and crysfml results
+bit-for-bit consistent on the absorption term.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Functions:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;apply&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;experiment&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.analysis.calculators.absorption.apply&lt;/code&gt;)" href="#easydiffraction.analysis.calculators.absorption.apply">apply</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Apply the sample-absorption correction to a calculated pattern.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;factor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;two_theta&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;absorption&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.analysis.calculators.absorption.factor&lt;/code&gt;)" href="#easydiffraction.analysis.calculators.absorption.factor">factor</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Return the per-point sample-absorption correction A.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+<h6 id="easydiffraction.analysis.calculators.absorption-classes">Classes</h6>
+<h6 id="easydiffraction.analysis.calculators.absorption-functions">Functions</h6>
+
+<div class="doc doc-object doc-function">
+
+
+<h7 id="easydiffraction.analysis.calculators.absorption.apply" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">apply</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span></code>
+
+</h7>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Apply the sample-absorption correction to a calculated pattern.</p>
+<p>Shared by both backends so the absorption term stays identical
+across calculators. The pattern is returned unchanged when the
+experiment exposes no <code>absorption</code> category (single-crystal /
+total scattering), or when it is empty or its length does not match
+the 2-theta grid (the backends' "no calculated data" paths).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>y</code>
+            </td>
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Calculated intensities (NumPy array or list).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>experiment</code>
+            </td>
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Experiment providing <code>data.x</code> (the 2-theta grid) and, when
+applicable, the active <code>absorption</code> category.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Corrected intensities, or <code>y</code> unchanged when no correction
+applies.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h7 id="easydiffraction.analysis.calculators.absorption.factor" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">factor</span><span class="p">(</span><span class="n">two_theta</span><span class="p">,</span> <span class="n">absorption</span><span class="p">)</span></code>
+
+</h7>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return the per-point sample-absorption correction A.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>two_theta</code>
+            </td>
+            <td>
+                  <code><span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Scattering angle 2-theta grid in degrees.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>absorption</code>
+            </td>
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Active absorption category (its <code>type_info.tag</code> selects the
+correction form).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Multiplicative correction A with the same shape as
+<code>two_theta</code>; all ones when no correction applies.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
 
 <div class="doc doc-object doc-module">
 
@@ -6954,7 +7293,7 @@ list of floats.</p>
 
 </div>
 
-
+<h6 id="easydiffraction.analysis.calculators.crysfml-modules">Modules</h6>
 
 
   </div>
@@ -7424,7 +7763,7 @@ list of floats.</p>
 
 </div>
 <h6 id="easydiffraction.analysis.calculators.cryspy-functions">Functions</h6>
-
+<h6 id="easydiffraction.analysis.calculators.cryspy-modules">Modules</h6>
 
 
   </div>
