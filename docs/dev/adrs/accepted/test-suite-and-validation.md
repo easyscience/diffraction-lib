@@ -450,8 +450,8 @@ such as `lychee`, and later `Vale`) used by §9.
 ## Related ADRs
 
 - [Test Strategy](../accepted/test-strategy.md) — amended by this ADR.
-- [Documentation CI and Build Verification](documentation-ci-build.md)
-  — coordinated with §9.
+- [Documentation CI and Build Verification](documentation-ci-build.md) —
+  coordinated with §9.
 - [Lint Complexity Thresholds](../accepted/lint-complexity-thresholds.md)
   — sibling Quality guardrail.
 - [Notebook Generation Source of Truth](../accepted/notebook-generation.md)

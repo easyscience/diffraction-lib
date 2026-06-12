@@ -33,8 +33,8 @@ A Lobanov–Alte-da-Veiga form covers `μR > 3`.
 
 **Design:** captured in
 [`adrs/suggestions/model-sample-absorption.md`](../adrs/suggestions/model-sample-absorption.md)
-— a switchable `experiment.absorption` category (mirroring
-`extinction`) with a calculator-independent A(θ) envelope.
+— a switchable `experiment.absorption` category (mirroring `extinction`)
+with a calculator-independent A(θ) envelope.
 
 **What the backends actually provide (corrected):**
 

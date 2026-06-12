@@ -30,13 +30,13 @@ shape would catch it before merge.
 
 ## Decisions
 
-- **Explicit markers, not blanket extraction.** Only fenced ` ```python `
-  blocks explicitly opted in are executed. Many documented snippets are
-  intentionally non-self-contained (they reference a `project` built in
-  an earlier block, download data, or run `fit()` against a real
-  backend); auto-running every block would force heavy fixtures and
-  network/backends, which the ADR rules out. The opt-in marker is an
-  HTML comment on the line immediately before the fence:
+- **Explicit markers, not blanket extraction.** Only fenced
+  ` ```python ` blocks explicitly opted in are executed. Many documented
+  snippets are intentionally non-self-contained (they reference a
+  `project` built in an earlier block, download data, or run `fit()`
+  against a real backend); auto-running every block would force heavy
+  fixtures and network/backends, which the ADR rules out. The opt-in
+  marker is an HTML comment on the line immediately before the fence:
   `<!-- api-shape-test -->`. This keeps the test set curated and the
   intent visible in the source Markdown.
 - **API shape only, no computation.** Marked snippets construct small
@@ -45,10 +45,10 @@ shape would catch it before merge.
   `project.analysis.minimizer.show_supported()`,
   `project.display.parameters.all()`). They must not download data, run
   `fit()`, or select a real calculator/sampler backend.
-- **No network, no real backends, no notebooks.** The runner sets a guard
-  (monkeypatched `download_data`/`download_tutorial` that raise, and a
-  check that no marked snippet imports a calculator backend). Snippets
-  run in a unique temp working directory.
+- **No network, no real backends, no notebooks.** The runner sets a
+  guard (monkeypatched `download_data`/`download_tutorial` that raise,
+  and a check that no marked snippet imports a calculator backend).
+  Snippets run in a unique temp working directory.
 - **Test tier: `tests/functional/`.** These are fast, in-process,
   backend-free checks of the public API as documented — the same tier as
   the existing functional suite (`pixi run functional-tests`, no
@@ -82,21 +82,24 @@ shape would catch it before merge.
 ## Concrete files likely to change
 
 - New: `tests/functional/test_docs_snippets.py` — the runner: snippet
-  extraction (reuse the Markdown-walking style of `tools/test_scripts.py`
-  and the skip-list pattern of `docs/docs/conftest.py`), the
-  marked-snippet execution test, and the always-on import-shape test.
+  extraction (reuse the Markdown-walking style of
+  `tools/test_scripts.py` and the skip-list pattern of
+  `docs/docs/conftest.py`), the marked-snippet execution test, and the
+  always-on import-shape test.
 - New (optional): a tiny helper module if extraction logic is shared,
   e.g. `tests/functional/_docs_snippets.py`.
-- `pixi.toml` — add a `docs-snippet-tests` convenience task (and, per the
-  open question, optionally have `functional-tests` already cover it).
+- `pixi.toml` — add a `docs-snippet-tests` convenience task (and, per
+  the open question, optionally have `functional-tests` already cover
+  it).
 - `docs/docs/quick-reference/index.md`,
   `docs/docs/user-guide/first-steps.md`,
   `docs/docs/user-guide/analysis-workflow/*.md` — add
-  `<!-- api-shape-test -->` markers above the curated safe snippets; make
-  minimal edits only where a snippet must be self-contained to run.
+  `<!-- api-shape-test -->` markers above the curated safe snippets;
+  make minimal edits only where a snippet must be self-contained to run.
 - `docs/dev/adrs/accepted/documentation-ci-build.md` — flip decision 3
   in the Implementation Status table from "Not done" to "Done" and drop
-  the matching Deferred Work bullet (final Phase 1 step before the gate).
+  the matching Deferred Work bullet (final Phase 1 step before the
+  gate).
 
 ## Implementation steps (Phase 1)
 
@@ -107,61 +110,59 @@ moving to the next step (per AGENTS.md → Commits). Do not create or run
 the test suite as a debugging tool during Phase 1; Phase 2 owns
 verification.
 
-- [ ] **P1.1 — Add the import-shape test (always-on).**
-  Create `tests/functional/test_docs_snippets.py` with the doc-page list
-  and a parametrised test that extracts every `from easydiffraction
-  import <name>` and `ed.<name>` reference from the listed pages and
-  asserts each name resolves on the installed `easydiffraction` package.
-  Files: `tests/functional/test_docs_snippets.py`.
-  Commit: `Add import-shape smoke test for doc snippets`
+- [ ] **P1.1 — Add the import-shape test (always-on).** Create
+      `tests/functional/test_docs_snippets.py` with the doc-page list
+      and a parametrised test that extracts every
+      `from easydiffraction import <name>` and `ed.<name>` reference
+      from the listed pages and asserts each name resolves on the
+      installed `easydiffraction` package. Files:
+      `tests/functional/test_docs_snippets.py`. Commit:
+      `Add import-shape smoke test for doc snippets`
 
-- [ ] **P1.2 — Add the marked-snippet extractor and runner.**
-  Extend the test module to collect ` ```python ` blocks preceded by
-  `<!-- api-shape-test -->`, and exec each page's marked blocks in a
-  shared namespace inside a unique temp cwd, with `download_data` /
-  `download_tutorial` monkeypatched to raise and a guard rejecting any
-  real-backend selection. No snippets are marked yet, so the test is a
-  no-op collection at this point.
-  Files: `tests/functional/test_docs_snippets.py` (+ optional
-  `tests/functional/_docs_snippets.py`).
-  Commit: `Add marked-snippet runner for doc smoke tests`
+- [ ] **P1.2 — Add the marked-snippet extractor and runner.** Extend the
+      test module to collect ` ```python ` blocks preceded by
+      `<!-- api-shape-test -->`, and exec each page's marked blocks in a
+      shared namespace inside a unique temp cwd, with `download_data` /
+      `download_tutorial` monkeypatched to raise and a guard rejecting
+      any real-backend selection. No snippets are marked yet, so the
+      test is a no-op collection at this point. Files:
+      `tests/functional/test_docs_snippets.py` (+ optional
+      `tests/functional/_docs_snippets.py`). Commit:
+      `Add marked-snippet runner for doc smoke tests`
 
 - [ ] **P1.3 — Mark and (minimally) adapt Quick Reference snippets.**
-  Add `<!-- api-shape-test -->` to the backend-free, self-contained
-  snippets in `quick-reference/index.md` (session start, build-a-project
-  in code, show/select-type blocks). Make the smallest edits needed for
-  them to run standalone; do not change documented behaviour.
-  Files: `docs/docs/quick-reference/index.md`,
-  `tests/functional/test_docs_snippets.py` (if fixtures needed).
-  Commit: `Mark Quick Reference snippets for smoke testing`
+      Add `<!-- api-shape-test -->` to the backend-free, self-contained
+      snippets in `quick-reference/index.md` (session start,
+      build-a-project in code, show/select-type blocks). Make the
+      smallest edits needed for them to run standalone; do not change
+      documented behaviour. Files: `docs/docs/quick-reference/index.md`,
+      `tests/functional/test_docs_snippets.py` (if fixtures needed).
+      Commit: `Mark Quick Reference snippets for smoke testing`
 
 - [ ] **P1.4 — Mark and adapt First Steps and Analysis Workflow
-  snippets.**
-  Same treatment for `user-guide/first-steps.md` and
-  `user-guide/analysis-workflow/*.md`.
-  Files: `docs/docs/user-guide/first-steps.md`,
-  `docs/docs/user-guide/analysis-workflow/*.md`.
-  Commit: `Mark user-guide snippets for smoke testing`
+      snippets.** Same treatment for `user-guide/first-steps.md` and
+      `user-guide/analysis-workflow/*.md`. Files:
+      `docs/docs/user-guide/first-steps.md`,
+      `docs/docs/user-guide/analysis-workflow/*.md`. Commit:
+      `Mark user-guide snippets for smoke testing`
 
-- [ ] **P1.5 — Add the `docs-snippet-tests` pixi task.**
-  Add a convenience task running the new file (e.g.
-  `docs-snippet-tests = 'python -m pytest
-  tests/functional/test_docs_snippets.py --color=yes -v'`). Confirm the
-  open question on `functional-tests` coverage; if folding in, no
-  workflow change is required.
-  Files: `pixi.toml`.
-  Commit: `Add docs-snippet-tests pixi task`
+- [ ] **P1.5 — Add the `docs-snippet-tests` pixi task.** Add a
+      convenience task running the new file (e.g.
+      `docs-snippet-tests = 'python -m pytest tests/functional/test_docs_snippets.py --color=yes -v'`).
+      Confirm the open question on `functional-tests` coverage; if
+      folding in, no workflow change is required. Files: `pixi.toml`.
+      Commit: `Add docs-snippet-tests pixi task`
 
-- [ ] **P1.6 — Update the ADR Implementation Status.**
-  In `documentation-ci-build.md`, flip decision 3 to "Done" with a
-  pointer to the new task, and remove the snippet-tests bullet from
-  Deferred Work.
-  Files: `docs/dev/adrs/accepted/documentation-ci-build.md`.
-  Commit: `Mark snippet smoke tests done in documentation-ci-build ADR`
+- [ ] **P1.6 — Update the ADR Implementation Status.** In
+      `documentation-ci-build.md`, flip decision 3 to "Done" with a
+      pointer to the new task, and remove the snippet-tests bullet from
+      Deferred Work. Files:
+      `docs/dev/adrs/accepted/documentation-ci-build.md`. Commit:
+      `Mark snippet smoke tests done in documentation-ci-build ADR`
 
-- [ ] **P1.7 — Phase 1 review gate (no code).**
-  Mark this item `[x]` and commit the checklist update alone.
-  Commit: `Reach Phase 1 review gate`
+- [ ] **P1.7 — Phase 1 review gate (no code).** Mark this item `[x]` and
+      commit the checklist update alone. Commit:
+      `Reach Phase 1 review gate`
 
 ## Verification (Phase 2)
 
@@ -200,10 +201,10 @@ Expectations:
 
 **Title:** Catch broken code examples in the documentation automatically
 
-**Description:** EasyDiffraction now checks its own documentation: a fast
-test confirms that the Python commands shown in the Quick Reference,
-First Steps, and Analysis Workflow pages still match the current
-software. If a future change renames or removes something used in an
-example, the check fails before the documentation goes out, so the
+**Description:** EasyDiffraction now checks its own documentation: a
+fast test confirms that the Python commands shown in the Quick
+Reference, First Steps, and Analysis Workflow pages still match the
+current software. If a future change renames or removes something used
+in an example, the check fails before the documentation goes out, so the
 commands you copy from the guides keep working. The check runs entirely
 offline and does not perform any real calculations, so it stays quick.

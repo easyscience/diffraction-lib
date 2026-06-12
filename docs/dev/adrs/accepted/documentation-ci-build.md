@@ -82,14 +82,14 @@ allowlist for crystallographic terms, package names, and CIF tags.
 Most of this ADR is already in place; it is accepted to record the
 chosen direction and to track the remaining gaps.
 
-| # | Decision | Status |
-| - | -------- | ------ |
-| 1 | MkDocs `--strict` build | **Done** — `docs-build` pixi task runs `mkdocs build --strict`; wired into the `lint-format.yml` "docs strict build" gate and the `docs.yml` deploy workflow. |
-| 2 | `mkdocstrings` for API pages | **Done** — `mkdocstrings` + `mkdocstrings-python` configured in `docs/mkdocs.yml` (handler `paths: ['src']`); the `api-reference/*.md` pages use `:::` directives. |
-| 3 | Snippet smoke tests | **Not done** — no task imports or executes the user-facing snippets in `quick-reference/`, `user-guide/first-steps.md`, or `user-guide/analysis-workflow/*.md`. Highest-value remaining gap. |
-| 4 | Tutorial freshness check | **Partial** — `notebook-prepare` plus `notebook-tests`/`notebook-exec-ci` exist, but no no-write task asserts that `notebook-prepare` leaves the committed `.ipynb` unchanged. |
-| 5 | `lychee` link checking | **Done for local/relative links** — `link-check` pixi task (config in `lychee.toml`) is wired into `lint-format.yml`. External-URL checking is deferred (see issue 114). |
-| 6 | `codespell`, then `Vale` | **codespell done** — `spell-check` pixi task wired into `lint-format.yml`. `Vale` deferred. |
+| #   | Decision                     | Status                                                                                                                                                                                       |
+| --- | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | MkDocs `--strict` build      | **Done** — `docs-build` pixi task runs `mkdocs build --strict`; wired into the `lint-format.yml` "docs strict build" gate and the `docs.yml` deploy workflow.                                |
+| 2   | `mkdocstrings` for API pages | **Done** — `mkdocstrings` + `mkdocstrings-python` configured in `docs/mkdocs.yml` (handler `paths: ['src']`); the `api-reference/*.md` pages use `:::` directives.                           |
+| 3   | Snippet smoke tests          | **Not done** — no task imports or executes the user-facing snippets in `quick-reference/`, `user-guide/first-steps.md`, or `user-guide/analysis-workflow/*.md`. Highest-value remaining gap. |
+| 4   | Tutorial freshness check     | **Partial** — `notebook-prepare` plus `notebook-tests`/`notebook-exec-ci` exist, but no no-write task asserts that `notebook-prepare` leaves the committed `.ipynb` unchanged.               |
+| 5   | `lychee` link checking       | **Done for local/relative links** — `link-check` pixi task (config in `lychee.toml`) is wired into `lint-format.yml`. External-URL checking is deferred (see issue 114).                     |
+| 6   | `codespell`, then `Vale`     | **codespell done** — `spell-check` pixi task wired into `lint-format.yml`. `Vale` deferred.                                                                                                  |
 
 ## Options Considered
 
@@ -198,8 +198,8 @@ Cons:
   question carried into that plan: extract fenced code blocks
   automatically or rely on explicitly named snippets.
 - Add a no-write `notebook-prepare-check` task that fails CI when the
-  committed notebooks are out of date with their `.py` sources
-  (decision 4).
+  committed notebooks are out of date with their `.py` sources (decision
+  4).
 - Enable external-URL link checking in the docs gate (decision 5),
   scheduled or cached to avoid flakiness. Tracked by issue 114.
 - Adopt `Vale` prose linting once an EasyDiffraction style vocabulary
