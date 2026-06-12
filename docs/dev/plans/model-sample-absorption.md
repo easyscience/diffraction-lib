@@ -283,7 +283,7 @@ P1.1; see §ADR):**
   did.
   *Commit:* `Document sample-absorption parameters`
 
-- [ ] **P1.7 — Phase 1 review gate** (no code)
+- [x] **P1.7 — Phase 1 review gate** (no code)
   Mark this checklist complete and stop for Phase 1 review.
   *Commit:* `Reach Phase 1 review gate`
 
@@ -329,7 +329,7 @@ P1.1; see §ADR):**
 - [x] P1.5 Persist the absorption category in experiment CIF
       (verified automatic; no source change)
 - [x] P1.6 Document the sample-absorption parameters
-- [ ] P1.7 Phase 1 review gate
+- [x] P1.7 Phase 1 review gate
 - [ ] Phase 2 verification complete
 
 ## Suggested Pull Request
