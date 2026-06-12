@@ -194,6 +194,16 @@ class AnalysisDisplay:
             if param._identity.category_code not in _SUMMARY_HIDDEN_PARAMETER_CATEGORIES
         ]
 
+    def _summary_parameters_by_datablock(
+        self,
+    ) -> dict[str, list[GenericDescriptorBase]]:
+        """Return summary parameters grouped by datablock kind."""
+        project = self._analysis.project
+        return {
+            'structures': self._summary_parameters(project.structures.parameters),
+            'experiments': self._summary_parameters(project.experiments.parameters),
+        }
+
     def all_params(self) -> None:
         """Print all parameters for structures and experiments."""
         project = self._analysis.project
@@ -307,14 +317,9 @@ class AnalysisDisplay:
         code.
         """
         project = self._analysis.project
-        structures_params = self._summary_parameters(project.structures.parameters)
-        experiments_params = self._summary_parameters(project.experiments.parameters)
-        all_params = {
-            'structures': structures_params,
-            'experiments': experiments_params,
-        }
+        all_params = self._summary_parameters_by_datablock()
 
-        if not structures_params and not experiments_params:
+        if not all_params['structures'] and not all_params['experiments']:
             log.warning('No parameters found.')
             return
 
@@ -370,15 +375,9 @@ class AnalysisDisplay:
         The output explains which unique identifiers are used when
         creating CIF-based constraints.
         """
-        project = self._analysis.project
-        structures_params = self._summary_parameters(project.structures.parameters)
-        experiments_params = self._summary_parameters(project.experiments.parameters)
-        all_params = {
-            'structures': structures_params,
-            'experiments': experiments_params,
-        }
+        all_params = self._summary_parameters_by_datablock()
 
-        if not structures_params and not experiments_params:
+        if not all_params['structures'] and not all_params['experiments']:
             log.warning('No parameters found.')
             return
 
