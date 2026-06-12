@@ -233,9 +233,9 @@ P1.1; see §ADR):**
       `factor(two_theta, absorption) -> np.ndarray` returning all-ones
       for `type='none'` and the Hewat envelope for `cylinder-hewat`
       (`A = exp(-(1.7133-0.0368·sin²θ)·μR + (0.0927+0.375·sin²θ)·μR²)`,
-      θ = radians(two*theta)/2). Emit the single guarded `log.warning`
+      `θ = radians(two_theta)/2`). Emit the single guarded `log.warning`
       when `mu_r > HEWAT_MAX_VALIDATED_MU_R` (Open question 2). Pure
-      NumPy, no backend imports. \_Commit:*
+      NumPy, no backend imports. _Commit:_
       `Add Hewat cylindrical absorption factor helper`
 
 - [x] **P1.4 — Apply A(θ) in both backends** `cryspy.py`: before
