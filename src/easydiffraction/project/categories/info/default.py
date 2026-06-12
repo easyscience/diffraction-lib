@@ -153,13 +153,6 @@ class ProjectInfo(CategoryItem):
         """Return the creation timestamp."""
         return self._parse_timestamp(self._created_descriptor.value)
 
-    def _set_created(self, value: datetime.datetime | str) -> None:
-        """Set the creation timestamp from runtime or CIF input."""
-        if isinstance(value, datetime.datetime):
-            self._created_descriptor.value = self._format_timestamp(value)
-            return
-        self._created_descriptor.value = value
-
     @property
     def last_modified(self) -> datetime.datetime:
         """Return the last modified timestamp."""
