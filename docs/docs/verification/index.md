@@ -29,7 +29,7 @@ effect; each such page states the reason below.
 
 Pages are grouped by **experiment type** (sample form, radiation probe,
 and beam mode). Coverage grows to span every supported combination —
-`pd-neut-cwl`, `pd-neut-tof`, `pd-xray`, `sg-neut-cwl`, `sg-neut-tof`,
+`pd-neut-cwl`, `pd-neut-tof`, `pd-xray`, `sc-neut-cwl`, `sc-neut-tof`,
 and so on. The list below notes only what is specific to each page.
 
 ## Powder, neutron, constant wavelength
@@ -72,15 +72,15 @@ and so on. The list below notes only what is specific to each page.
 
 ## Single crystal, neutron, constant wavelength
 
-- [Pr₂NiO₄ `sg-neut-cwl` (no extinction)](sg-neut-cwl_pr2nio4.ipynb) –
+- [Pr₂NiO₄ `sc-neut-cwl` (no extinction)](sc-neut-cwl_pr2nio4.ipynb) –
   Strontium-doped praseodymium nickelate (Pr₂NiO₄:Sr, K₂NiF₄-type,
   _Fmmm_); per-reflection F² against FullProf reference with anisotropic
   ADPs.
-- [Tb₂Ti₂O₇ `sg-neut-cwl` (no extinction)](sg-neut-cwl_noext_tbti.ipynb)
+- [Tb₂Ti₂O₇ `sc-neut-cwl` (no extinction)](sc-neut-cwl_noext_tbti.ipynb)
   – Terbium titanate (Tb₂Ti₂O₇, _F d -3 m_); per-reflection F² against a
   FullProf-no-extinction reference with anisotropic ADPs. Scale is
   initialized from the FullProf and refined.
-- [Tb₂Ti₂O₇ `sg-neut-cwl` (isotropic extinction)](sg-neut-cwl_ext-iso_tbti.ipynb)
+- [Tb₂Ti₂O₇ `sc-neut-cwl` (isotropic extinction)](sc-neut-cwl_ext-iso_tbti.ipynb)
   – Terbium titanate (Tb₂Ti₂O₇, _F d -3 m_); per-reflection F² against
   FullProf reference with anisotropic ADPs and empirical extinction.
   Cryspy extinction (`becker-coppens`, `gauss`) uses two parameters,
