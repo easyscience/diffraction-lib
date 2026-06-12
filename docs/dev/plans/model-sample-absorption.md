@@ -248,14 +248,22 @@ P1.1; see §ADR):**
   intact. (Verified by a Phase 2 no-data test.)
   *Commit:* `Apply absorption correction in cryspy and crysfml backends`
 
-- [ ] **P1.5 — Persist the absorption category in experiment CIF**
-  Confirm `_absorption.type` / `_absorption.mu_r` round-trip through the
-  standard category serialization (descriptor `CifHandler`); add
-  `absorption` to the experiment's serializable categories if not picked
-  up automatically. Add IUCr export
-  (`_easydiffraction_absorption.*`) in `iucr_writer.py` if the standard
-  path does not already emit it.
-  *Commit:* `Persist absorption category in experiment CIF`
+- [x] **P1.5 — Persist the absorption category in experiment CIF**
+  **Verified: no source change required.**
+  `CategoryOwner.categories` auto-discovers every `CategoryItem` in
+  `vars(self)` (`core/category_owner.py:20`), so `_absorption` is in
+  `_serializable_categories()` automatically — `_absorption.type` (and
+  `_absorption.mu_r` for `cylinder-hewat`) are written via the
+  descriptors' `CifHandler`. The load side is already handled by the
+  `_absorption.type` restore added in P1.2 (the type is swapped before
+  descriptor loading, so `mu_r` has its descriptor when its value is
+  read). IUCr **report** export (`iucr_writer.py`) is **deferred**: the
+  sibling `pref_orient` category from #200 is likewise not in
+  `iucr_writer.py`, so absorption follows the same precedent (resolved
+  Open Question 2). The `_easydiffraction_absorption.*` IUCr-aligned
+  names are already carried on the descriptors for the standard
+  IUCr-aligned path.
+  *Commit:* `Confirm absorption category round-trips in experiment CIF`
 
   > (ADR promotion is **not** a numbered step — it is done in the
   > `/draft-impl-1` Phase A design-history cleanup before P1.1; see the
@@ -318,7 +326,8 @@ P1.1; see §ADR):**
       (incl. `_absorption.type` restore on load)
 - [x] P1.3 Add the shared Hewat A(θ) helper
 - [x] P1.4 Apply A(θ) in both backends (incl. empty/no-data guard)
-- [ ] P1.5 Persist the absorption category in experiment CIF
+- [x] P1.5 Persist the absorption category in experiment CIF
+      (verified automatic; no source change)
 - [ ] P1.6 Document the sample-absorption parameters
 - [ ] P1.7 Phase 1 review gate
 - [ ] Phase 2 verification complete
