@@ -257,12 +257,13 @@ P1.1; see §ADR):**
   descriptors' `CifHandler`. The load side is already handled by the
   `_absorption.type` restore added in P1.2 (the type is swapped before
   descriptor loading, so `mu_r` has its descriptor when its value is
-  read). IUCr **report** export (`iucr_writer.py`) is **deferred**: the
-  sibling `pref_orient` category from #200 is likewise not in
-  `iucr_writer.py`, so absorption follows the same precedent (resolved
-  Open Question 2). The `_easydiffraction_absorption.*` IUCr-aligned
-  names are already carried on the descriptors for the standard
-  IUCr-aligned path.
+  read). IUCr **report** export (`iucr_writer.py`) **is implemented**
+  (impl-review-1 finding 1): `_powder_extension_items` emits
+  `_easydiffraction_absorption.type` always and `_easydiffraction_absorption.mu_r`
+  for the cylindrical Hewat class, mirroring the existing
+  `peak`/`background` type extensions and the `pref_orient` loop. (The
+  earlier "deferred" note rested on a truncated grep that missed
+  `_write_pref_orient_loop`; corrected.)
   *Commit:* `Confirm absorption category round-trips in experiment CIF`
 
   > (ADR promotion is **not** a numbered step — it is done in the

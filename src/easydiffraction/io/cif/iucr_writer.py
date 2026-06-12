@@ -1276,6 +1276,7 @@ def _powder_extension_items(experiment: object) -> list[tuple[str, object]]:
     calculator = getattr(experiment, 'calculator', None)
     peak = getattr(experiment, 'peak', None)
     background = getattr(experiment, 'background', None)
+    absorption = getattr(experiment, 'absorption', None)
     items: list[tuple[str, object]] = []
     items.extend(
         _iucr_items(
@@ -1286,6 +1287,10 @@ def _powder_extension_items(experiment: object) -> list[tuple[str, object]]:
     items.extend(_iucr_items(calculator, ('type',)))
     items.extend(_iucr_items(peak, ('type',)))
     items.extend(_iucr_items(background, ('type',)))
+    items.extend(_iucr_items(absorption, ('type',)))
+    # ``mu_r`` exists only on the cylindrical Hewat absorption class.
+    if absorption is not None and hasattr(absorption, 'mu_r'):
+        items.extend(_iucr_items(absorption, ('mu_r',)))
     return items
 
 
