@@ -36,7 +36,7 @@ experiment types:
 
 ### X-ray Diffraction
 
-- [pd-xray][0]{:.label-experiment} Powder X-ray diffraction.
+- [pd-xray][0]{:.label-experiment} – Powder X-ray diffraction.
 
 <!-- prettier-ignore-start -->
 [0]: #

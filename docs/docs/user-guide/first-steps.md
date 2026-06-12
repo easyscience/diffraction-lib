@@ -37,14 +37,14 @@ A complete tutorial using the `import` syntax can be found
 ### Importing specific parts
 
 Alternatively, you can import specific classes or methods from the
-package. For example, you can import the `Project`, `Structure`,
-`Experiment` classes and `download_from_repository` method like this:
+package. For example, you can import the `Project`, `StructureFactory`,
+`ExperimentFactory` classes and `download_data` method like this:
 
 ```python
 from easydiffraction import Project
-from easydiffraction import Structure
-from easydiffraction import Experiment
-from easydiffraction import download_from_repository
+from easydiffraction import StructureFactory
+from easydiffraction import ExperimentFactory
+from easydiffraction import download_data
 ```
 
 This enables you to use these classes and methods directly without the
@@ -62,28 +62,26 @@ A complete tutorial using the `from` syntax can be found
 ## Utility functions
 
 EasyDiffraction also provides several utility functions that can
-simplify your workflow. One of them is the `download_from_repository`
-function, which allows you to download data files from our remote
-repository, making it easy to access and use them while experimenting
-with EasyDiffraction.
+simplify your workflow. One of them is the `download_data` function,
+which allows you to download example datasets by their numeric ID from
+our remote repository, making it easy to access and use them while
+experimenting with EasyDiffraction.
 
-For example, you can download a data file like this:
+You can list the available datasets and their IDs with `list_data()`,
+then download one like this:
 
 ```python
 import easydiffraction as ed
 
-ed.download_from_repository(
-    'hrpt_lbco.xye',
-    branch='docs',
-    destination='data',
-)
+ed.list_data()
+
+data_path = ed.download_data(id=3, destination='data')
 ```
 
-This command will download the `hrpt_lbco.xye` file from the `docs`
-branch of the EasyDiffraction repository and save it in the `data`
-directory of your current working directory. This is particularly useful
-for quickly accessing example datasets without having to manually
-download them.
+This command downloads the dataset with ID `3` and saves it in the
+`data` directory of your current working directory, returning the full
+path to the downloaded file. This is particularly useful for quickly
+accessing example datasets without having to manually download them.
 
 ## Help methods
 

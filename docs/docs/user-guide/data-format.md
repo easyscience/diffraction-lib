@@ -62,7 +62,7 @@ isotropic displacement parameters (_Biso_)
 | Label | Type | x   | y   | z   | occ | Biso   |
 | ----- | ---- | --- | --- | --- | --- | ------ |
 | La    | La   | 0   | 0   | 0   | 0.5 | 0.4958 |
-| Ba    | Ba   | 0   | 0   | 0   | 0.5 | 0.4958 |
+| Ba    | Ba   | 0   | 0   | 0   | 0.5 | 0.4943 |
 | Co    | Co   | 0.5 | 0.5 | 0.5 | 1.0 | 0.2567 |
 | O     | O    | 0   | 0.5 | 0.5 | 1.0 | 1.4041 |
 
@@ -97,7 +97,7 @@ loop_
 <span class="green"><b>_atom_site</b>.ADP_type</span>
 <span class="green"><b>_atom_site</b>.B_iso_or_equiv</span>
 La La   0   0   0     a   0.5  Biso 0.4958
-Ba Ba   0   0   0     a   0.5  Biso 0.4958
+Ba Ba   0   0   0     a   0.5  Biso 0.4943
 Co Co   0.5 0.5 0.5   b   1    Biso 0.2567
 O  O    0   0.5 0.5   c   1    Biso 1.4041
 </pre>
