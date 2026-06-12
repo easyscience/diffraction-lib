@@ -58,8 +58,8 @@ and so on. The list below notes only what is specific to each page.
   asymmetry is crysfml-only.
 - [LaB₆ `pd-neut-cwl` (absorption)](pd-neut-cwl_tch-fcj_lab6.ipynb) –
   Lanthanum hexaboride (LaB₆, _Pm-3m_); adds Debye–Scherrer sample
-  absorption (μR) on top of FCJ asymmetry. Skipped in CI: sample
-  absorption is modelled by neither engine.
+  absorption (μR = 0.7), now modelled by both engines, on top of FCJ
+  asymmetry. Skipped in CI: FCJ asymmetry is crysfml-only.
 
 ## Powder, neutron, time-of-flight
 

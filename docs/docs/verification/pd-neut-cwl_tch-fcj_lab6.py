@@ -60,6 +60,7 @@ FULLPROF_SYCOS = 0.05281  # FullProf SyCos
 FULLPROF_SYSIN = 0.09068  # FullProf SySin
 FULLPROF_S_L = 0.08000  # FullProf S_L
 FULLPROF_D_L = 0.08000  # FullProf D_L
+FULLPROF_MU_R = 0.7  # FullProf muR (cylindrical absorption)
 
 x, calc_fullprof = verify.load_fullprof_calc_profile(
     FULLPROF_PROJECT_DIR,
@@ -93,7 +94,12 @@ experiment.peak.broad_lorentz_x = FULLPROF_X
 experiment.peak.broad_lorentz_y = FULLPROF_Y
 # Engine-specific corrections are applied in each engine's section below:
 # SyCos/SySin (cryspy only) and the FCJ S_L/D_L asymmetry (crysfml only).
-# Sample absorption (muR = 0.7) is modelled by neither engine.
+
+# Sample absorption (Debye-Scherrer cylinder, muR = 0.7) is modelled by
+# both engines via the calculator-independent A(theta) envelope, so it is
+# set once here and applies to every calculation below.
+experiment.absorption.type = 'cylinder-hewat'
+experiment.absorption.mu_r = FULLPROF_MU_R
 
 project.experiments.add(experiment)
 
