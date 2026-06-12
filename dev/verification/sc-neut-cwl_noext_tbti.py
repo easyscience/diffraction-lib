@@ -1,5 +1,5 @@
 # %% [markdown]
-# # Tb₂Ti₂O₇ — neutron single crystal, constant wavelength, isotropic extinction
+# # Tb₂Ti₂O₇ — neutron single crystal, constant wavelength, no extinction
 
 # %%
 import easydiffraction as ed
@@ -25,10 +25,10 @@ structure.cell.length_a = 10.130  # FullProf a
 
 # Anisotropic sites carry the FullProf β tensor directly: ``adp_type`` is
 # set to ``'beta'`` and the dimensionless β components are assigned
-# verbatim. F d -3 m is cubic, so symmetry links the remaining β
-# components; only the independent ones are set. FullProf occupancy folds
-# in the site multiplicity; CIF/EasyDiffraction use 1.0 for a fully
-# occupied site.
+# verbatim. F d -3 m is cubic, so site symmetry links the remaining β
+# components and only the independent ones are set. FullProf occupancy is
+# the site multiplicity over the general multiplicity; CIF/EasyDiffraction
+# use 1.0 for a fully occupied site.
 structure.atom_sites.create(
     label='Tb',  # FullProf Atom
     type_symbol='Tb',  # FullProf Typ
@@ -86,14 +86,10 @@ structure.show_as_cif()
 # ## Load the FullProf reference
 
 # %%
-FULLPROF_PROJECT_DIR = 'sg-neut-cwl_ext-iso_tbti'
+FULLPROF_PROJECT_DIR = 'sc-neut-cwl_noext_tbti'
 FULLPROF_OUT_FILE = 'tbti.out'
-FULLPROF_SCALE = 0.37517014  # FullProf Scale
+FULLPROF_SCALE = 0.28749475  # FullProf Scale
 FULLPROF_WAVELENGTH = 0.7930  # FullProf Lambda
-# cryspy uses Becker-Coppens isotropic extinction, not the one from
-# FullProf
-EXTINCTION_RADIUS = 10.0
-EXTINCTION_MOSAICITY = 35000.0
 
 f2calc = verify.load_fullprof_sc_f2calc(FULLPROF_PROJECT_DIR, FULLPROF_OUT_FILE)
 
@@ -108,13 +104,10 @@ experiment = ExperimentFactory.from_scratch(
     radiation_probe='neutron',
     scattering_type='bragg',
 )
+
 experiment.linked_crystal.id = 'tbti'
 experiment.linked_crystal.scale = FULLPROF_SCALE
 experiment.instrument.setup_wavelength = FULLPROF_WAVELENGTH
-experiment.extinction.type = 'becker-coppens'
-experiment.extinction.model = 'gauss'
-experiment.extinction.radius.value = EXTINCTION_RADIUS
-experiment.extinction.mosaicity.value = EXTINCTION_MOSAICITY
 
 verify.set_reference_reflections(experiment, f2calc)
 
@@ -142,7 +135,6 @@ project.display.reflection_comparison(
 experiment.calculator.type = 'cryspy'
 
 experiment.linked_crystal.scale.free = True
-experiment.extinction.radius.free = True
 
 project.analysis.fit()
 project.display.fit.results()
@@ -155,7 +147,7 @@ project.display.reflection_comparison(
     reference=reference_refined,
     candidate=candidate_refined,
     reference_label='FullProf',
-    candidate_label='ed-cryspy (scale + ext radius)',
+    candidate_label='ed-cryspy (scale only)',
 )
 
 verify.report_refinement_closeness(

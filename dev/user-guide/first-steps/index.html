@@ -1789,7 +1789,7 @@
   <span class="md-ellipsis">
     
   
-    Tb2TiO7 sg-neut-cwl
+    Tb2TiO7 sc-neut-cwl
   
 
     
@@ -1817,7 +1817,7 @@
   <span class="md-ellipsis">
     
   
-    Taurine sg-neut-tof
+    Taurine sc-neut-tof
   
 
     
@@ -3097,7 +3097,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../verification/sg-neut-cwl_pr2nio4/" class="md-nav__link">
+      <a href="../../verification/sc-neut-cwl_pr2nio4/" class="md-nav__link">
         
   
   
@@ -3125,7 +3125,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../verification/sg-neut-cwl_noext_tbti/" class="md-nav__link">
+      <a href="../../verification/sc-neut-cwl_noext_tbti/" class="md-nav__link">
         
   
   
@@ -3153,7 +3153,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../verification/sg-neut-cwl_ext-iso_tbti/" class="md-nav__link">
+      <a href="../../verification/sc-neut-cwl_ext-iso_tbti/" class="md-nav__link">
         
   
   
@@ -3947,12 +3947,12 @@ project instance like this:</p>
 <a href="../../tutorials/ed-3/">here</a>.</p>
 <h3 id="importing-specific-parts">Importing specific parts</h3>
 <p>Alternatively, you can import specific classes or methods from the
-package. For example, you can import the <code>Project</code>, <code>Structure</code>,
-<code>Experiment</code> classes and <code>download_from_repository</code> method like this:</p>
+package. For example, you can import the <code>Project</code>, <code>StructureFactory</code>,
+<code>ExperimentFactory</code> classes and <code>download_data</code> method like this:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction</span><span class="w"> </span><span class="kn">import</span> <span class="n">Project</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction</span><span class="w"> </span><span class="kn">import</span> <span class="n">Structure</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction</span><span class="w"> </span><span class="kn">import</span> <span class="n">Experiment</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction</span><span class="w"> </span><span class="kn">import</span> <span class="n">download_from_repository</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction</span><span class="w"> </span><span class="kn">import</span> <span class="n">StructureFactory</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExperimentFactory</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction</span><span class="w"> </span><span class="kn">import</span> <span class="n">download_data</span>
 </code></pre></div>
 <p>This enables you to use these classes and methods directly without the
 package prefix. This is especially useful when you're using only a few
@@ -3964,24 +3964,22 @@ you can create a project instance like this:</p>
 <a href="../../tutorials/ed-4/">here</a>.</p>
 <h2 id="utility-functions">Utility functions</h2>
 <p>EasyDiffraction also provides several utility functions that can
-simplify your workflow. One of them is the <code>download_from_repository</code>
-function, which allows you to download data files from our remote
-repository, making it easy to access and use them while experimenting
-with EasyDiffraction.</p>
-<p>For example, you can download a data file like this:</p>
+simplify your workflow. One of them is the <code>download_data</code> function,
+which allows you to download example datasets by their numeric ID from
+our remote repository, making it easy to access and use them while
+experimenting with EasyDiffraction.</p>
+<p>You can list the available datasets and their IDs with <code>list_data()</code>,
+then download one like this:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">easydiffraction</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ed</span>
 
-<span class="n">ed</span><span class="o">.</span><span class="n">download_from_repository</span><span class="p">(</span>
-    <span class="s1">&#39;hrpt_lbco.xye&#39;</span><span class="p">,</span>
-    <span class="n">branch</span><span class="o">=</span><span class="s1">&#39;docs&#39;</span><span class="p">,</span>
-    <span class="n">destination</span><span class="o">=</span><span class="s1">&#39;data&#39;</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="n">ed</span><span class="o">.</span><span class="n">list_data</span><span class="p">()</span>
+
+<span class="n">data_path</span> <span class="o">=</span> <span class="n">ed</span><span class="o">.</span><span class="n">download_data</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
 </code></pre></div>
-<p>This command will download the <code>hrpt_lbco.xye</code> file from the <code>docs</code>
-branch of the EasyDiffraction repository and save it in the <code>data</code>
-directory of your current working directory. This is particularly useful
-for quickly accessing example datasets without having to manually
-download them.</p>
+<p>This command downloads the dataset with ID <code>3</code> and saves it in the
+<code>data</code> directory of your current working directory, returning the full
+path to the downloaded file. This is particularly useful for quickly
+accessing example datasets without having to manually download them.</p>
 <h2 id="help-methods">Help methods</h2>
 <p>EasyDiffraction provides several helper methods to display supported
 engines for calculation, minimization, and plotting. These methods can
