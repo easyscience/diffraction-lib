@@ -203,7 +203,7 @@ P1.1; see §ADR):**
   `AbsorptionFactory._default_rules = {frozenset(): 'none'}`.
   *Commit:* `Add absorption switchable category package`
 
-- [ ] **P1.2 — Wire `absorption` into the powder-Bragg experiment owner**
+- [x] **P1.2 — Wire `absorption` into the powder-Bragg experiment owner**
   In `item/base.py` add `_swap_absorption`/`_replace_absorption`
   mirroring extinction (create via factory, reparent, set `type`),
   include `absorption` in parent-attach and `_serializable_categories`.
@@ -314,7 +314,7 @@ P1.1; see §ADR):**
 - [ ] Phase A — Promote the ADR to accepted + clean design history
       (done in `/draft-impl-1` setup, before P1.1; see §ADR)
 - [x] P1.1 Add the `absorption` switchable-category package
-- [ ] P1.2 Wire `absorption` into the powder-Bragg experiment owner
+- [x] P1.2 Wire `absorption` into the powder-Bragg experiment owner
       (incl. `_absorption.type` restore on load)
 - [ ] P1.3 Add the shared Hewat A(θ) helper
 - [ ] P1.4 Apply A(θ) in both backends (incl. empty/no-data guard)
