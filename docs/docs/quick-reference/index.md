@@ -154,7 +154,9 @@ project.display.parameters.all()
 project.display.parameters.fittable()
 project.display.parameters.free()
 project.display.parameters.access()
-project.display.parameters.cif_uids()
+project.display.parameters.uid()
+project.display.parameters.edstar()
+project.display.parameters.cif()
 ```
 
 ## Show Tables and Select Types

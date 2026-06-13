@@ -112,17 +112,17 @@ def test_how_to_access_parameters_prints_paths_and_uids(capsys, monkeypatch):
     assert any("proj.structures['db1'].catA.alpha" in r for r in flat_rows)
     assert any("proj.experiments['db2'].catB['row1'].beta" in r for r in flat_rows)
 
-    # Now check CIF unique identifiers via the new API
+    # Now check constraint unique identifiers via the new API
     captured2 = {}
 
     def fake_render_table2(**kwargs):
         captured2.update(kwargs)
 
     monkeypatch.setattr(analysis_mod, 'render_table', fake_render_table2)
-    a.display.parameter_cif_uids()
+    a.display.parameter_uids()
     headers2 = captured2.get('columns_headers') or []
     data2 = captured2.get('columns_data') or []
-    assert 'Unique Identifier for CIF Constraints' in headers2
+    assert 'Unique Identifier for Constraints' in headers2
     assert isinstance(data2[0][3], TableLink)
     assert data2[0][3] == 'alpha'
     assert data2[0][3].url.endswith('/user-guide/parameters/catA/#cata-alpha')
@@ -130,6 +130,30 @@ def test_how_to_access_parameters_prints_paths_and_uids(capsys, monkeypatch):
     # Unique names are datablock.category[.entry].parameter
     assert any('db1 catA  alpha' in r.replace('.', ' ') for r in flat_rows2)
     assert any('db2 catB row1 beta' in r.replace('.', ' ') for r in flat_rows2)
+
+    # EdSTAR persistence tags
+    captured3 = {}
+
+    def fake_render_table3(**kwargs):
+        captured3.update(kwargs)
+
+    monkeypatch.setattr(analysis_mod, 'render_table', fake_render_table3)
+    a.display.parameter_edstar_tags()
+    assert 'EdSTAR Tag' in (captured3.get('columns_headers') or [])
+    edstar_rows = [' '.join(map(str, row)) for row in captured3.get('columns_data') or []]
+    assert any('_catA.alpha' in r for r in edstar_rows)
+
+    # Report CIF tags
+    captured4 = {}
+
+    def fake_render_table4(**kwargs):
+        captured4.update(kwargs)
+
+    monkeypatch.setattr(analysis_mod, 'render_table', fake_render_table4)
+    a.display.parameter_cif_tags()
+    assert 'CIF Tag' in (captured4.get('columns_headers') or [])
+    cif_rows = [' '.join(map(str, row)) for row in captured4.get('columns_data') or []]
+    assert any('_catA.alpha' in r for r in cif_rows)
 
 
 def test_how_to_access_parameters_skips_large_loop_categories(capsys, monkeypatch):
@@ -168,7 +192,7 @@ def test_how_to_access_parameters_skips_large_loop_categories(capsys, monkeypatc
     assert not any('refln' in row for row in flat_rows)
 
 
-def test_parameter_cif_uids_skips_large_loop_categories(monkeypatch):
+def test_parameter_uids_skips_large_loop_categories(monkeypatch):
     import easydiffraction.analysis.analysis as analysis_mod
     from easydiffraction.analysis.analysis import Analysis
 
@@ -193,7 +217,7 @@ def test_parameter_cif_uids_skips_large_loop_categories(monkeypatch):
         captured.update(kwargs)
 
     monkeypatch.setattr(analysis_mod, 'render_table', fake_render_table)
-    Analysis(Project()).display.parameter_cif_uids()
+    Analysis(Project()).display.parameter_uids()
 
     flat_rows = [' '.join(map(str, row)) for row in captured.get('columns_data') or []]
     assert any('db1 catA  alpha' in row.replace('.', ' ') for row in flat_rows)
@@ -469,7 +493,7 @@ def test_how_to_access_and_cif_uids_include_integer_descriptors(monkeypatch):
     assert any("proj.structures['lbco'].atom_site['O'].multiplicity" in row for row in access_rows)
 
     captured.clear()
-    a.display.parameter_cif_uids()
+    a.display.parameter_uids()
 
     uid_rows = [' '.join(map(str, row)) for row in captured.get('columns_data') or []]
     assert any('multiplicity' in row for row in uid_rows)

@@ -74,6 +74,8 @@ from easydiffraction.utils.utils import render_object_help
 from easydiffraction.utils.utils import render_table
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from easydiffraction.analysis.categories.fit_result import FitResultBase
     from easydiffraction.analysis.categories.minimizer.base import MinimizerCategoryBase
     from easydiffraction.core.posterior import PosteriorParameterSummary
@@ -370,12 +372,24 @@ class AnalysisDisplay:
             columns_data=columns_data,
         )
 
-    def parameter_cif_uids(self) -> None:
+    def _show_parameter_names(
+        self,
+        *,
+        column_header: str,
+        paragraph_title: str,
+        value_fn: Callable[[object], object],
+    ) -> None:
         """
-        Show CIF unique IDs for all parameters.
+        Render one name column for every summary parameter.
 
-        The output explains which unique identifiers are used when
-        creating CIF-based constraints.
+        Parameters
+        ----------
+        column_header : str
+            Header for the per-parameter name column.
+        paragraph_title : str
+            Console paragraph title shown above the table.
+        value_fn : Callable[[object], object]
+            Returns the value to show for a parameter.
         """
         all_params = self._summary_parameters_by_datablock()
 
@@ -388,38 +402,51 @@ class AnalysisDisplay:
             'category',
             'entry',
             'parameter',
-            'Unique Identifier for CIF Constraints',
+            column_header,
+        ]
+        columns_alignment = ['left', 'left', 'left', 'left', 'left']
+
+        columns_data = [
+            [
+                param._identity.datablock_entry_name,
+                param._identity.category_code,
+                param._identity.category_entry_name or '',
+                parameter_docs_link(param),
+                value_fn(param),
+            ]
+            for params in all_params.values()
+            for param in params
         ]
 
-        columns_alignment = [
-            'left',
-            'left',
-            'left',
-            'left',
-            'left',
-        ]
-
-        columns_data = []
-        for params in all_params.values():
-            for param in params:
-                datablock_entry_name = param._identity.datablock_entry_name
-                category_code = param._identity.category_code
-                category_entry_name = param._identity.category_entry_name or ''
-                param_label = parameter_docs_link(param)
-                cif_uid = param._cif_handler.uid
-                columns_data.append([
-                    datablock_entry_name,
-                    category_code,
-                    category_entry_name,
-                    param_label,
-                    cif_uid,
-                ])
-
-        console.paragraph('Show parameter CIF unique identifiers')
+        console.paragraph(paragraph_title)
         render_table(
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,
             columns_data=columns_data,
+        )
+
+    def parameter_uids(self) -> None:
+        """Show the constraint unique identifier per parameter."""
+        self._show_parameter_names(
+            column_header='Unique Identifier for Constraints',
+            paragraph_title='Show parameter unique identifiers for constraints',
+            value_fn=lambda param: param._cif_handler.uid,
+        )
+
+    def parameter_edstar_tags(self) -> None:
+        """Show the EdSTAR persistence tag for every parameter."""
+        self._show_parameter_names(
+            column_header='EdSTAR Tag',
+            paragraph_title='Show parameter EdSTAR tags',
+            value_fn=lambda param: param._cif_handler.project_name,
+        )
+
+    def parameter_cif_tags(self) -> None:
+        """Show the report CIF tag for every parameter."""
+        self._show_parameter_names(
+            column_header='CIF Tag',
+            paragraph_title='Show parameter CIF tags',
+            value_fn=lambda param: param._cif_handler.iucr_name,
         )
 
     def constraints(self) -> None:

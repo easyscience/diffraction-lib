@@ -89,9 +89,17 @@ class ParameterDisplay:
         """Show Python access paths for all parameters."""
         self._project.analysis.display.how_to_access_parameters()
 
-    def cif_uids(self) -> None:
-        """Show CIF unique identifiers for all parameters."""
-        self._project.analysis.display.parameter_cif_uids()
+    def uid(self) -> None:
+        """Show the constraint unique identifier for all parameters."""
+        self._project.analysis.display.parameter_uids()
+
+    def edstar(self) -> None:
+        """Show the EdSTAR persistence tag for all parameters."""
+        self._project.analysis.display.parameter_edstar_tags()
+
+    def cif(self) -> None:
+        """Show the report CIF tag for all parameters."""
+        self._project.analysis.display.parameter_cif_tags()
 
     def help(self) -> None:
         """Print available parameter-display methods."""
