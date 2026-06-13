@@ -740,8 +740,8 @@ project_1.save_as(dir_path='projects/ed_13_reference')
 
 # %% tags=["solution", "hide-input"]
 project_2 = ed.Project(name='main')
-project_2.info.title = 'La0.5Ba0.5CoO3 Fit'
-project_2.info.description = 'Fitting simulated powder diffraction pattern of La0.5Ba0.5CoO3.'
+project_2.metadata.title = 'La0.5Ba0.5CoO3 Fit'
+project_2.metadata.description = 'Fitting simulated powder diffraction pattern of La0.5Ba0.5CoO3.'
 
 # %% [markdown]
 # ### 🔬 Exercise 2: Define an Experiment
