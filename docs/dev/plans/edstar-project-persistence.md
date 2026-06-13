@@ -7,8 +7,8 @@ This plan follows `AGENTS.md`. There are no deliberate exceptions.
 - [x] Draft implementation plan from the accepted local instructions and
   current repository context.
 - [x] Review and accept this plan.
-- [ ] Phase 1 - implementation commits complete.
-- [ ] Phase 1 review complete.
+- [x] Phase 1 - implementation commits complete.
+- [x] Phase 1 review complete.
 - [ ] Phase 2 - tests and verification complete.
 - [ ] Phase 2 review complete.
 
