@@ -44,8 +44,9 @@ on that letter:
 - The IUCr writer emits `_atom_site.Wyckoff_symbol`
   ([`iucr_writer.py:876`](../../../../src/easydiffraction/io/cif/iucr_writer.py)).
 
-Two gaps remain, both recorded as open issue **#51**
-([`open.md:999`](../../../../docs/dev/issues/open.md)):
+Two gaps remain, both recorded under issue **#51** (now closed —
+verify these gaps before relying on this paragraph)
+([`#51`](../../../../docs/dev/issues/closed/access-space-group-from-atomsites-for-wyckoff-letters.md)):
 
 1. The set of letters a site may take is a hardcoded placeholder,
    `['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i']`, with a TODO to read

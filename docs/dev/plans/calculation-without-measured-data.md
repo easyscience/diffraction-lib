@@ -241,7 +241,7 @@ Existing files:
       data" state to mention `data_range` (no tutorial regeneration in
       Phase 1; tutorial/notebook updates, if any, are handled in Phase 2
       with `pixi run notebook-prepare`). Update
-      `docs/dev/issues/open.md` → `closed.md` if an existing issue
+      `docs/dev/issues/open/` → `closed/` if an existing issue
       tracks this. Commit:
       `Document data_range and calculated-only workflow`
 

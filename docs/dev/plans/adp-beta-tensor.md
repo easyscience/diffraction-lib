@@ -254,7 +254,7 @@ they are recorded here for an accurate Phase 2 scope.
   CIF-style auto-attach of the sibling iso/aniso values) would improve
   discoverability but **revisits the accepted type-neutral ADP ADR** and
   is independent of the β math. It is **out of scope** for this PR;
-  tracked as a follow-up issue in `docs/dev/issues/open.md` and to be
+  tracked as a follow-up issue in `docs/dev/issues/open/` and to be
   designed in its own ADR + plan. This β work stays strictly inside the
   type-neutral model (β is a fourth `adp_type`).
 - **Q6 (β ADP-ellipsoid display). RESOLVED — deferred** (confirmed
@@ -263,7 +263,7 @@ they are recorded here for an accurate Phase 2 scope.
   reciprocal-length math. Drawing β ellipsoids would need a β→U
   conversion in the renderer. That is **out of scope**: β atoms render
   as spheres for now (no crash, no wrong ellipsoid), tracked as a
-  follow-up issue in `docs/dev/issues/open.md` (step P1.9). The
+  follow-up issue in `docs/dev/issues/open/` (step P1.9). The
   duplicate `_reciprocal_lengths` helper is still consolidated onto the
   shared helper (step P1.9); only the ellipsoid math is deferred.
 
@@ -305,7 +305,7 @@ Docs / ADR:
 
 - `docs/dev/adrs/accepted/type-neutral-adp-parameters.md` — Extension
   section (step P1.1).
-- `docs/dev/issues/open.md` — add a follow-up row for the ADP
+- `docs/dev/issues/open/` — add a follow-up row for the ADP
   creation-API UX (resolved Q5; step P1.1).
 
 Tests (Phase 2):
@@ -333,7 +333,7 @@ Each step is one atomic commit. Stage only the files the step touches
       and the new CIF tags. Verify it states that off-diagonal negatives
       are _already_ permitted (a statement of existing behaviour), not a
       newly introduced relaxation. Also add the ADP creation-API UX
-      follow-up row to `docs/dev/issues/open.md` (resolved Q5). Keep the
+      follow-up row to `docs/dev/issues/open/` (resolved Q5). Keep the
       original Decision/Consequences intact. Stage the ADR and
       `open.md`. Commit: `Extend type-neutral ADP ADR with beta tensor`
 - [x] **P1.2 — Reciprocal-cell helper.** Add a pure-geometry helper
@@ -385,7 +385,7 @@ Each step is one atomic commit. Stage only the files the step touches
       call `crystallography.reciprocal_cell_lengths` (remove the
       duplicate math; keep the `np.ndarray` return shape its callers
       expect). β atoms keep rendering as spheres; add a follow-up issue
-      to `docs/dev/issues/open.md` for β→U ADP-ellipsoid display
+      to `docs/dev/issues/open/` for β→U ADP-ellipsoid display
       (resolved Q6). Commit:
       `Reuse shared reciprocal helper in structure builder`
 - [x] **P1.10 — Phase 1 review gate.** No-code step. Mark complete,

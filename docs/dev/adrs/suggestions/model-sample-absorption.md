@@ -29,7 +29,7 @@ This is not hypothetical. The verification reference
 the unmodelled correction is the _entire_ intensity residual on the
 companion `pd-neut-cwl_tch-fcj_abs_lab6` page (≈5 % profile difference),
 while the μR = 0 page passes to corr 0.9999. See
-[issue #119](../../issues/open.md).
+[issue #119](../../issues/open/highest_model-sample-absorption-debye-scherrer-r.md).
 
 ### What the three reference sources provide
 

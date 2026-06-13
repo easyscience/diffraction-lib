@@ -2,7 +2,7 @@
 #
 # Fast every-push docs gate: verify local/relative links only. External
 # URL checking is deferred to avoid flakiness from rate-limited sites
-# (see docs/dev/issues/open.md issue 114).
+# (see docs/dev/issues/index.md (issue 114)).
 
 # Skip online links entirely — deterministic and fast, no network.
 offline = true
