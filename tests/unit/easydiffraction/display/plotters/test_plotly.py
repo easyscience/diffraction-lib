@@ -494,7 +494,7 @@ def test_get_bragg_tick_trace_includes_peak_metadata():
 
     trace = PlotlyPlotter._get_bragg_tick_trace(
         tick_set=BraggTickSet(
-            phase_id='phase-a',
+            structure_id='phase-a',
             x=np.array([1.5, 2.5]),
             h=np.array([1, 2]),
             k=np.array([0, 1]),
@@ -536,7 +536,7 @@ def test_plot_powder_meas_vs_calc_creates_synced_three_panel_figure(monkeypatch)
         y_meas_su=np.array([0.2, 0.3, 0.4]),
         bragg_tick_sets=(
             BraggTickSet(
-                phase_id='phase-a',
+                structure_id='phase-a',
                 x=np.array([1.5]),
                 h=np.array([1]),
                 k=np.array([0]),
@@ -545,7 +545,7 @@ def test_plot_powder_meas_vs_calc_creates_synced_three_panel_figure(monkeypatch)
                 f_calc=np.array([10.0]),
             ),
             BraggTickSet(
-                phase_id='phase-b',
+                structure_id='phase-b',
                 x=np.array([2.5]),
                 h=np.array([2]),
                 k=np.array([1]),
@@ -650,7 +650,7 @@ def test_plot_powder_meas_vs_calc_adds_background_curve(monkeypatch):
         y_resid=np.array([1.0, 1.0, 0.5]),
         bragg_tick_sets=(
             BraggTickSet(
-                phase_id='phase-a',
+                structure_id='phase-a',
                 x=np.array([1.5]),
                 h=np.array([1]),
                 k=np.array([0]),
@@ -731,7 +731,7 @@ def test_bragg_row_height_pixels_scale_linearly_with_phase_count():
         y_resid=np.array([0.0, 0.0]),
         bragg_tick_sets=(
             BraggTickSet(
-                phase_id='phase-a',
+                structure_id='phase-a',
                 x=np.array([1.5]),
                 h=np.array([1]),
                 k=np.array([0]),
@@ -754,7 +754,7 @@ def test_bragg_row_height_pixels_scale_linearly_with_phase_count():
         bragg_tick_sets=(
             single_phase.bragg_tick_sets[0],
             BraggTickSet(
-                phase_id='phase-b',
+                structure_id='phase-b',
                 x=np.array([2.5]),
                 h=np.array([2]),
                 k=np.array([1]),
@@ -792,7 +792,7 @@ def test_plot_powder_meas_vs_calc_grows_total_height_for_many_phases(monkeypatch
     def plot_spec(phase_count: int) -> PowderMeasVsCalcSpec:
         bragg_tick_sets = tuple(
             BraggTickSet(
-                phase_id=f'phase-{idx}',
+                structure_id=f'phase-{idx}',
                 x=np.array([1.0 + idx]),
                 h=np.array([idx + 1]),
                 k=np.array([0]),
@@ -859,7 +859,7 @@ def test_plot_powder_meas_vs_calc_uses_explicit_plotly_height_as_pixels(monkeypa
             y_resid=np.array([1.0, 1.0, 0.5]),
             bragg_tick_sets=(
                 BraggTickSet(
-                    phase_id='phase-a',
+                    structure_id='phase-a',
                     x=np.array([1.5]),
                     h=np.array([1]),
                     k=np.array([0]),
@@ -896,7 +896,7 @@ def test_plot_powder_meas_vs_calc_keeps_top_and_bottom_rows_fixed(monkeypatch):
 
     bragg_tick_sets = (
         BraggTickSet(
-            phase_id='phase-a',
+            structure_id='phase-a',
             x=np.array([1.5]),
             h=np.array([1]),
             k=np.array([0]),

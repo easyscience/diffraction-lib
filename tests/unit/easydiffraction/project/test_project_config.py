@@ -12,29 +12,29 @@ def test_project_config_exposes_project_info_chart_and_table_categories():
     from easydiffraction.project.categories.rendering_table import RenderingTable
     from easydiffraction.project.categories.report import Report
     from easydiffraction.project.project_config import ProjectConfig
-    from easydiffraction.project.project_info import ProjectInfo
+    from easydiffraction.project.project_metadata import ProjectMetadata
 
     config = ProjectConfig(name='beer', title='Beer title', description='Some description')
 
     assert isinstance(config, CategoryOwner)
-    assert isinstance(config.info, ProjectInfo)
+    assert isinstance(config.metadata, ProjectMetadata)
     assert isinstance(config.rendering_plot, RenderingPlot)
     assert isinstance(config.report, Report)
     assert isinstance(config.rendering_table, RenderingTable)
-    assert config.info._parent is config
+    assert config.metadata._parent is config
     assert config.rendering_plot._parent is config
     assert config.report._parent is config
     assert config.rendering_table._parent is config
-    assert config.info.name == 'beer'
-    assert config.info.title == 'Beer title'
-    assert config.info.description == 'Some description'
-    assert config.info.path is None
-    assert isinstance(config.info.created, datetime.datetime)
-    assert isinstance(config.info.last_modified, datetime.datetime)
+    assert config.metadata.name == 'beer'
+    assert config.metadata.title == 'Beer title'
+    assert config.metadata.description == 'Some description'
+    assert config.metadata.path is None
+    assert isinstance(config.metadata.created, datetime.datetime)
+    assert isinstance(config.metadata.last_modified, datetime.datetime)
     assert config.verbosity._parent is config
     assert config.verbosity.fit.value == 'full'
     assert config.categories == [
-        config.info,
+        config.metadata,
         config.rendering_plot,
         config.report,
         config.rendering_table,
@@ -44,7 +44,7 @@ def test_project_config_exposes_project_info_chart_and_table_categories():
         config.structure_style,
     ]
     assert config.parameters == (
-        config.info.parameters
+        config.metadata.parameters
         + config.rendering_plot.parameters
         + config.report.parameters
         + config.rendering_table.parameters
@@ -63,11 +63,11 @@ def test_project_config_as_cif_has_project_chart_and_table_sections_without_data
     cif_text = config.as_cif
 
     assert not cif_text.startswith('data_')
-    assert '_project.id               beer' in cif_text
-    assert '_project.title' in cif_text
-    assert '_project.description' in cif_text
-    assert '_project.created' in cif_text
-    assert '_project.last_modified' in cif_text
+    assert '_metadata.name             beer' in cif_text
+    assert '_metadata.title' in cif_text
+    assert '_metadata.description' in cif_text
+    assert '_metadata.created' in cif_text
+    assert '_metadata.last_modified' in cif_text
     assert '_rendering_plot.type' in cif_text
     assert '_report.cif' in cif_text
     assert '_report.html' in cif_text
@@ -88,7 +88,7 @@ def test_project_save_and_load_use_auto_display_defaults_when_unset(tmp_path):
     project = Project(name='beer', title='Beer title', description='Some description')
     project.save_as(str(tmp_path / 'proj'))
 
-    project_cif = (tmp_path / 'proj' / 'project.cif').read_text()
+    project_cif = (tmp_path / 'proj' / 'project.edstar').read_text()
 
     assert not project_cif.startswith('data_')
     assert '_rendering_plot.type auto' in project_cif
@@ -113,20 +113,20 @@ def test_project_save_and_load_keep_project_config_section_format(tmp_path):
     project.rendering_table.type = 'rich'
     project.save_as(str(tmp_path / 'proj'))
 
-    project_cif = (tmp_path / 'proj' / 'project.cif').read_text()
+    project_cif = (tmp_path / 'proj' / 'project.edstar').read_text()
     assert not project_cif.startswith('data_')
-    assert '_project.id               beer' in project_cif
+    assert '_metadata.name             beer' in project_cif
     assert '_rendering_plot.type asciichartpy' in project_cif
     assert '_report.cif false' in project_cif
     assert '_rendering_table.type rich' in project_cif
     assert '_verbosity.fit full' in project_cif
 
     loaded = Project.load(str(tmp_path / 'proj'))
-    assert loaded.info.name == 'beer'
-    assert loaded.info.title == 'Beer title'
-    assert loaded.info.description == 'Some description'
-    assert isinstance(loaded.info.created, datetime.datetime)
-    assert isinstance(loaded.info.last_modified, datetime.datetime)
+    assert loaded.metadata.name == 'beer'
+    assert loaded.metadata.title == 'Beer title'
+    assert loaded.metadata.description == 'Some description'
+    assert isinstance(loaded.metadata.created, datetime.datetime)
+    assert isinstance(loaded.metadata.last_modified, datetime.datetime)
     assert loaded.rendering_plot.type == 'asciichartpy'
     assert loaded.rendering_table.type == 'rich'
     assert loaded.verbosity.fit.value == 'full'
@@ -143,14 +143,14 @@ def test_project_save_wraps_long_description_as_cif_text_field(tmp_path):
     project = Project(name='beer', title='Beer title', description=description)
     project.save_as(str(tmp_path / 'proj'))
 
-    project_cif = (tmp_path / 'proj' / 'project.cif').read_text()
+    project_cif = (tmp_path / 'proj' / 'project.edstar').read_text()
 
-    assert '_project.description' in project_cif
-    description_tail = project_cif.split('_project.description', maxsplit=1)[1].lstrip(' ')
+    assert '_metadata.description' in project_cif
+    description_tail = project_cif.split('_metadata.description', maxsplit=1)[1].lstrip(' ')
     assert description_tail.startswith('\n;\n')
-    assert '\n;\n_project.created' in project_cif
+    assert '\n;\n_metadata.created' in project_cif
     description_block = description_tail.split('\n;\n', maxsplit=1)[1]
-    description_block = description_block.split('\n;\n_project.created', maxsplit=1)[0]
+    description_block = description_block.split('\n;\n_metadata.created', maxsplit=1)[0]
     description_lines = description_block.splitlines()
 
     assert len(description_lines) > 1
@@ -161,4 +161,4 @@ def test_project_save_wraps_long_description_as_cif_text_field(tmp_path):
 
     loaded = Project.load(str(tmp_path / 'proj'))
 
-    assert loaded.info.description == description
+    assert loaded.metadata.description == description

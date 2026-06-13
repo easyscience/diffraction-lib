@@ -148,7 +148,7 @@ def test_adp_atom_site_loop_truncates_to_max_display():
     structure = Structure(name='many')
     for i in range(6):
         structure.atom_sites.create(
-            label=f'U{i}',
+            id=f'U{i}',
             type_symbol='O',
             adp_type='Uiso',
             adp_iso=0.01,
@@ -157,7 +157,8 @@ def test_adp_atom_site_loop_truncates_to_max_display():
     out = MUT.category_collection_to_cif(structure.atom_sites, max_display=4)
 
     assert '...' in out.splitlines()
-    assert '_atom_site.U_iso_or_equiv' in out
+    # EdSTAR persistence uses the type-neutral isotropic ADP tag.
+    assert '_atom_site.adp_iso' in out
 
 
 # ----------------------------------------------------------------------
@@ -256,14 +257,14 @@ def test_format_project_description_blank_is_unknown_marker():
 
 
 def test_project_info_to_cif_title_without_space_is_unquoted():
-    from easydiffraction.project.project_info import ProjectInfo
+    from easydiffraction.project.project_metadata import ProjectMetadata
 
-    info = ProjectInfo(name='p1', title='NoSpaces', description='short')
+    metadata = ProjectMetadata(name='p1', title='NoSpaces', description='short')
 
-    out = MUT.project_info_to_cif(info)
+    out = MUT.project_metadata_to_cif(metadata)
 
-    assert '_project.title            NoSpaces' in out
-    assert '_project.title            "' not in out
+    assert '_metadata.title            NoSpaces' in out
+    assert '_metadata.title            "' not in out
 
 
 # ----------------------------------------------------------------------
@@ -289,7 +290,7 @@ def test_project_config_to_cif_includes_publication_and_method_sections(monkeypa
     monkeypatch.setattr(MUT, 'category_owner_to_cif', lambda owner: 'PUBLICATION')
 
     class Project:
-        info = _Section('INFO')
+        metadata = _Section('INFO')
         rendering_plot = _Section('PLOT')
         report = _Section('REPORT')
         publication = object()
@@ -305,7 +306,7 @@ def test_project_to_cif_assembles_structures_experiments_and_analysis(monkeypatc
     monkeypatch.setattr(MUT, 'project_config_to_cif', lambda project: 'CONFIG')
 
     class Project:
-        info = _Section('CFG')
+        metadata = _Section('CFG')
         structures = _Section('STRUCT')
         experiments = _Section('EXP')
         analysis = _Section('ANALYSIS')
@@ -331,7 +332,7 @@ def test_populate_project_info_uses_manual_reader_when_no_from_cif():
     ).sole_block()
     info = PlainInfo()
 
-    MUT._populate_project_info_from_block(info, block)
+    MUT._populate_project_metadata_from_block(info, block)
 
     assert info.name == 'MYID'
     assert info.title == 'My Title'
@@ -348,7 +349,7 @@ def test_populate_project_info_manual_reader_skips_absent_fields():
     block = gemmi.cif.read_string('data_p\n_project.id ONLYID\n').sole_block()
     info = PlainInfo()
 
-    MUT._populate_project_info_from_block(info, block)
+    MUT._populate_project_metadata_from_block(info, block)
 
     assert info.name == 'ONLYID'
     assert info.title == 'unchanged'
@@ -356,18 +357,18 @@ def test_populate_project_info_manual_reader_skips_absent_fields():
 
 
 def test_project_info_from_cif_populates_real_project_info():
-    from easydiffraction.project.project_info import ProjectInfo
+    from easydiffraction.project.project_metadata import ProjectMetadata
 
-    info = ProjectInfo(name='orig', title='Orig', description='orig desc')
+    metadata = ProjectMetadata(name='orig', title='Orig', description='orig desc')
 
-    MUT.project_info_from_cif(
-        info,
+    MUT.project_metadata_from_cif(
+        metadata,
         "_project.id restored\n_project.title 'New Title'\n_project.description Desc\n",
     )
 
-    assert info.name == 'restored'
-    assert info.title == 'New Title'
-    assert info.description == 'Desc'
+    assert metadata.name == 'restored'
+    assert metadata.title == 'New Title'
+    assert metadata.description == 'Desc'
 
 
 def test_make_cif_string_reader_handles_unknown_and_text_fields():
@@ -392,7 +393,7 @@ def test_project_config_from_cif_dispatches_to_every_section():
 
     class FakeProject:
         def __init__(self) -> None:
-            self.info = FakeSection()
+            self.metadata = FakeSection()
             self.rendering_plot = FakeSection()
             self.report = FakeSection()
             self.publication = FakeSection()
@@ -407,7 +408,7 @@ def test_project_config_from_cif_dispatches_to_every_section():
     MUT.project_config_from_cif(project, '_project.id foo\n')
 
     sections = (
-        project.info,
+        project.metadata,
         project.rendering_plot,
         project.report,
         project.publication,

@@ -129,7 +129,7 @@ def test_ascii_plotter_plot_powder_meas_vs_calc_announces_plotly_only_bragg_row(
             y_resid=np.array([0.5, -0.5, 1.0]),
             bragg_tick_sets=(
                 BraggTickSet(
-                    phase_id='phase-a',
+                    structure_id='phase-a',
                     x=np.array([0.5]),
                     h=np.array([1]),
                     k=np.array([0]),

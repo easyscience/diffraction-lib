@@ -25,8 +25,8 @@ def test_experiment_factory_from_scratch():
         scattering_type=ScatteringTypeEnum.BRAGG.value,
     )
     # Instance should be created (BraggPdExperiment)
-    assert hasattr(ex, 'type')
-    assert ex.type.sample_form.value == SampleFormEnum.POWDER.value
+    assert hasattr(ex, 'experiment_type')
+    assert ex.experiment_type.sample_form.value == SampleFormEnum.POWDER.value
 
 
 def test_from_cif_str_restores_non_default_peak_profile_type():

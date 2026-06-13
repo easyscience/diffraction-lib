@@ -111,7 +111,7 @@ def test_emcee_resume_parameter_set_mismatch_raises_before_sampler():
     analysis = SimpleNamespace(
         fit_parameters=[
             SimpleNamespace(
-                param_unique_name=SimpleNamespace(value='saved.param'),
+                parameter_unique_name=SimpleNamespace(value='saved.param'),
             ),
         ],
     )

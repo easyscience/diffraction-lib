@@ -214,7 +214,7 @@ def _predictive_project(*, sidecar, fit_results, engine='plotly'):
             fit_results=fit_results,
             _persisted_fit_state_sidecar=sidecar,
         ),
-        experiments={'hrpt': SimpleNamespace(type=SimpleNamespace())},
+        experiments={'hrpt': SimpleNamespace(experiment_type=SimpleNamespace())},
         rendering_plot=SimpleNamespace(plotter=plotter),
     )
 
@@ -701,35 +701,35 @@ def _linked_display(structure_names):
     return ProjectDisplay(project)
 
 
-def test_linked_structure_matches_via_linked_phases():
+def test_linked_structure_matches_via_linked_structures():
     display = _linked_display(['phase-a'])
-    linked_phase = SimpleNamespace(
+    linked_structure = SimpleNamespace(
         _identity=SimpleNamespace(category_entry_name='phase-a'),
     )
-    experiment = SimpleNamespace(linked_phases=[linked_phase])
+    experiment = SimpleNamespace(linked_structures=[linked_structure])
 
     assert display._has_linked_structure_for_calculation(experiment) is True
 
 
-def test_linked_structure_phases_present_but_no_match_falls_to_crystal():
+def test_linked_structure_structures_present_but_no_match_falls_to_single():
     display = _linked_display(['phase-a'])
-    linked_phase = SimpleNamespace(
+    linked_structure = SimpleNamespace(
         _identity=SimpleNamespace(category_entry_name='other'),
     )
     experiment = SimpleNamespace(
-        linked_phases=[linked_phase],
-        linked_crystal=SimpleNamespace(id=SimpleNamespace(value='phase-a')),
+        linked_structures=[linked_structure],
+        linked_structure=SimpleNamespace(structure_id=SimpleNamespace(value='phase-a')),
     )
 
-    # No phase matched, but linked_crystal id does.
+    # No linked structure matched, but linked_structure id does.
     assert display._has_linked_structure_for_calculation(experiment) is True
 
 
 def test_linked_structure_no_match_anywhere():
     display = _linked_display(['phase-a'])
     experiment = SimpleNamespace(
-        linked_phases=[],
-        linked_crystal=SimpleNamespace(id=SimpleNamespace(value='missing')),
+        linked_structures=[],
+        linked_structure=SimpleNamespace(structure_id=SimpleNamespace(value='missing')),
     )
 
     assert display._has_linked_structure_for_calculation(experiment) is False

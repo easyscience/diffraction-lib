@@ -91,7 +91,7 @@ def _minimal_template(**overrides):
         'structure_cif': 'struct',
         'experiment_cif': 'expt',
         'initial_params': {},
-        'free_param_unique_names': ['cell.a'],
+        'free_parameter_unique_names': ['cell.a'],
         'alias_defs': [],
         'constraint_defs': [],
         'constraints_enabled': False,
@@ -188,7 +188,7 @@ class TestApplyConstraints:
         constraint_calls = []
         analysis = SimpleNamespace(
             aliases=SimpleNamespace(
-                create=lambda *, label, param: alias_calls.append((label, param)),
+                create=lambda *, id, param: alias_calls.append((id, param)),
             ),
             constraints=SimpleNamespace(
                 create=lambda *, expression: constraint_calls.append(expression),
@@ -202,7 +202,7 @@ class TestApplyConstraints:
 
         _apply_constraints(
             project,
-            [{'label': 'A', 'param_unique_name': 'cell.a'}],
+            [{'id': 'A', 'parameter_unique_name': 'cell.a'}],
             ['A = 2 * B'],
         )
 
@@ -213,7 +213,7 @@ class TestApplyConstraints:
         alias_calls = []
         analysis = SimpleNamespace(
             aliases=SimpleNamespace(
-                create=lambda *, label, param: alias_calls.append((label, param)),
+                create=lambda *, id, param: alias_calls.append((id, param)),
             ),
             constraints=SimpleNamespace(create=lambda *, expression: None),
         )
@@ -225,7 +225,7 @@ class TestApplyConstraints:
 
         _apply_constraints(
             project,
-            [{'label': 'A', 'param_unique_name': 'does.not.exist'}],
+            [{'id': 'A', 'parameter_unique_name': 'does.not.exist'}],
             [],
         )
 
@@ -370,7 +370,7 @@ class TestCollectResults:
             iterations=17,
         )
         project = self._project([free, fixed], fit_results)
-        template = _minimal_template(free_param_unique_names=['cell.a'])
+        template = _minimal_template(free_parameter_unique_names=['cell.a'])
 
         result = _collect_results(project, template)
 
@@ -387,7 +387,7 @@ class TestCollectResults:
         _patch_variable_types(monkeypatch)
         fit_results = SimpleNamespace(success=True, reduced_chi_square=2.0, iterations=0)
         project = self._project([], fit_results, best_iteration=42)
-        template = _minimal_template(free_param_unique_names=[])
+        template = _minimal_template(free_parameter_unique_names=[])
 
         result = _collect_results(project, template)
 
@@ -396,7 +396,7 @@ class TestCollectResults:
     def test_handles_missing_fit_results(self, monkeypatch):
         _patch_variable_types(monkeypatch)
         project = self._project([], None, best_iteration=7)
-        template = _minimal_template(free_param_unique_names=[])
+        template = _minimal_template(free_parameter_unique_names=[])
 
         result = _collect_results(project, template)
 
@@ -414,9 +414,9 @@ class TestCollectResults:
 class TestFitWorker:
     def test_success_path_builds_project_and_collects(self, monkeypatch):
         template = _minimal_template(
-            free_param_unique_names=['cell.a'],
+            free_parameter_unique_names=['cell.a'],
             constraints_enabled=True,
-            alias_defs=[{'label': 'A', 'param_unique_name': 'cell.a'}],
+            alias_defs=[{'id': 'A', 'parameter_unique_name': 'cell.a'}],
             constraint_defs=['A = 1'],
         )
         events = []
@@ -539,7 +539,7 @@ class TestFitWorker:
     def test_skips_constraints_when_disabled(self, monkeypatch):
         template = _minimal_template(
             constraints_enabled=False,
-            alias_defs=[{'label': 'A', 'param_unique_name': 'cell.a'}],
+            alias_defs=[{'id': 'A', 'parameter_unique_name': 'cell.a'}],
         )
         events = []
         expt = SimpleNamespace(
@@ -621,8 +621,8 @@ class TestBuildTemplate:
         temp_desc = _FakeNumericDescriptor(300.0)
 
         alias = SimpleNamespace(
-            label=SimpleNamespace(value='A'),
-            param_unique_name=SimpleNamespace(value='cell.a'),
+            id=SimpleNamespace(value='A'),
+            parameter_unique_name=SimpleNamespace(value='cell.a'),
         )
         constraint = SimpleNamespace(expression=SimpleNamespace(value='A = 1'))
         extract_rule = SimpleNamespace(
@@ -645,9 +645,9 @@ class TestBuildTemplate:
         assert template.structure_cif == 'STRUCT_CIF'
         assert template.experiment_cif == 'EXPT_CIF'
         # Only the free, non-user-constrained parameter is collected.
-        assert template.free_param_unique_names == ['cell.a']
+        assert template.free_parameter_unique_names == ['cell.a']
         assert template.initial_params == {'cell.a': pytest.approx(5.0)}
-        assert template.alias_defs == [{'label': 'A', 'param_unique_name': 'cell.a'}]
+        assert template.alias_defs == [{'id': 'A', 'parameter_unique_name': 'cell.a'}]
         assert template.constraint_defs == ['A = 1']
         assert template.constraints_enabled is True
         assert template.minimizer_tag == 'bumps'
@@ -802,7 +802,7 @@ def _precondition_project(
     return SimpleNamespace(
         structures=[object()] * n_structures,
         experiments=[object()] * n_experiments,
-        info=SimpleNamespace(path=path),
+        metadata=SimpleNamespace(path=path),
         parameters=params,
     )
 
@@ -854,8 +854,8 @@ class TestCheckSeqPreconditions:
 
 class TestSetupCsvAndRecovery:
     def test_fresh_run_writes_header(self, tmp_path, monkeypatch):
-        project = SimpleNamespace(info=SimpleNamespace(path=tmp_path))
-        template = _minimal_template(free_param_unique_names=['cell.a'])
+        project = SimpleNamespace(metadata=SimpleNamespace(path=tmp_path))
+        template = _minimal_template(free_parameter_unique_names=['cell.a'])
 
         monkeypatch.setattr(
             sequential_mod,
@@ -878,9 +878,9 @@ class TestSetupCsvAndRecovery:
         assert first_row == header
 
     def test_resume_recovers_params_and_skips_header(self, tmp_path, monkeypatch):
-        project = SimpleNamespace(info=SimpleNamespace(path=tmp_path))
+        project = SimpleNamespace(metadata=SimpleNamespace(path=tmp_path))
         template = _minimal_template(
-            free_param_unique_names=['cell.a'],
+            free_parameter_unique_names=['cell.a'],
             initial_params={'cell.a': 1.0},
         )
         recovered = {'cell.a': 9.9}
@@ -910,7 +910,7 @@ class TestSetupCsvAndRecovery:
         assert any('Resuming from CSV' in msg for msg in prints)
 
     def test_resume_silent_does_not_print(self, tmp_path, monkeypatch):
-        project = SimpleNamespace(info=SimpleNamespace(path=tmp_path))
+        project = SimpleNamespace(metadata=SimpleNamespace(path=tmp_path))
         template = _minimal_template()
         prints = []
         monkeypatch.setattr(
@@ -1102,7 +1102,7 @@ class TestFindLastSuccessful:
 
 class TestRunFitLoopSequential:
     def test_sequential_path_calls_worker_and_propagates_params(self, monkeypatch, tmp_path):
-        template = _minimal_template(free_param_unique_names=['cell.a'])
+        template = _minimal_template(free_parameter_unique_names=['cell.a'])
         appended = []
         worker_templates = []
 
@@ -1148,7 +1148,7 @@ class TestRunFitLoopSequential:
         # When a chunk has no successful result, the template's
         # initial_params must stay unchanged for the next chunk.
         template = _minimal_template(
-            free_param_unique_names=['cell.a'],
+            free_parameter_unique_names=['cell.a'],
             initial_params={'cell.a': 1.0},
         )
         seen_initial = []

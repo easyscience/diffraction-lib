@@ -39,8 +39,8 @@ def test_tof_calibration_transformer_emits_powers_and_ids():
     instrument = SimpleNamespace(
         calib_d_to_tof_offset=_Descriptor(1.0),
         calib_d_to_tof_linear=_Descriptor(2.0),
-        calib_d_to_tof_quad=_Descriptor(3.0),
-        calib_d_to_tof_recip=_Descriptor(4.0),
+        calib_d_to_tof_quadratic=_Descriptor(3.0),
+        calib_d_to_tof_reciprocal=_Descriptor(4.0),
     )
     experiment = SimpleNamespace(name='bank1', instrument=instrument)
 

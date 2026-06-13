@@ -301,7 +301,7 @@ def test_fit_resume_with_params_invokes_resume_validation(monkeypatch):
     # resume path runs the resume validation instead of capturing state.
     monkeypatch.setattr(fitter, '_validate_resume_parameter_set', fake_validate)
 
-    persisted = [SimpleNamespace(param_unique_name=SimpleNamespace(value='a'))]
+    persisted = [SimpleNamespace(parameter_unique_name=SimpleNamespace(value='a'))]
     analysis = SimpleNamespace(
         fit_parameters=persisted,
         fit_result=SimpleNamespace(),
@@ -333,7 +333,7 @@ def test_validate_resume_parameter_set_no_persisted_names_is_noop():
 def test_validate_resume_parameter_set_matching_names_ok():
     from easydiffraction.analysis.fitting import Fitter
 
-    persisted = [SimpleNamespace(param_unique_name=SimpleNamespace(value='a'))]
+    persisted = [SimpleNamespace(parameter_unique_name=SimpleNamespace(value='a'))]
     analysis = SimpleNamespace(fit_parameters=persisted)
     param = SimpleNamespace(unique_name='a')
 
@@ -343,7 +343,7 @@ def test_validate_resume_parameter_set_matching_names_ok():
 def test_validate_resume_parameter_set_mismatch_raises():
     from easydiffraction.analysis.fitting import Fitter
 
-    persisted = [SimpleNamespace(param_unique_name=SimpleNamespace(value='a'))]
+    persisted = [SimpleNamespace(parameter_unique_name=SimpleNamespace(value='a'))]
     analysis = SimpleNamespace(fit_parameters=persisted)
     param = SimpleNamespace(unique_name='b')
 
@@ -363,7 +363,7 @@ def test_set_minimizer_sidecar_path_noop_when_analysis_none():
 def test_set_minimizer_sidecar_path_noop_when_no_attribute():
     fitter = _make_fitter_with_dummy_minimizer()
     # Minimizer without _sidecar_path attribute -> early return, no crash.
-    analysis = SimpleNamespace(project=SimpleNamespace(info=SimpleNamespace(path=None)))
+    analysis = SimpleNamespace(project=SimpleNamespace(metadata=SimpleNamespace(path=None)))
 
     fitter._set_minimizer_sidecar_path(analysis)
 
@@ -373,7 +373,7 @@ def test_set_minimizer_sidecar_path_noop_when_no_attribute():
 def test_set_minimizer_sidecar_path_none_when_no_project_path():
     fitter = _make_fitter_with_dummy_minimizer()
     fitter.minimizer._sidecar_path = 'unset'
-    analysis = SimpleNamespace(project=SimpleNamespace(info=SimpleNamespace(path=None)))
+    analysis = SimpleNamespace(project=SimpleNamespace(metadata=SimpleNamespace(path=None)))
 
     fitter._set_minimizer_sidecar_path(analysis)
 
@@ -384,7 +384,7 @@ def test_set_minimizer_sidecar_path_builds_results_path(tmp_path):
     fitter = _make_fitter_with_dummy_minimizer()
     fitter.minimizer._sidecar_path = None
     analysis = SimpleNamespace(
-        project=SimpleNamespace(info=SimpleNamespace(path=tmp_path)),
+        project=SimpleNamespace(metadata=SimpleNamespace(path=tmp_path)),
     )
 
     fitter._set_minimizer_sidecar_path(analysis)

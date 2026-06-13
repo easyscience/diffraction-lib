@@ -20,7 +20,7 @@ def _fit_parameters_with_parent_result_kind(result_kind: str):
 
     collection = FitParameters()
     collection.create(
-        param_unique_name='cosio.cell.length_a',
+        parameter_unique_name='cosio.cell.length_a',
         fit_min=-1.0,
         fit_max=1.0,
         start_value=10.3,
@@ -42,7 +42,7 @@ def test_fit_parameters_cif_omits_posterior_columns_for_deterministic_result():
     cif_text = collection.as_cif
 
     assert '_fit_parameter.start_value' in cif_text
-    assert '_fit_parameter.fit_bounds_uncertainty_multiplier' not in cif_text
+    assert '_fit_parameter.bounds_uncertainty_multiplier' not in cif_text
     assert '_fit_parameter.posterior_median' not in cif_text
     assert '_fit_parameter.posterior_effective_sample_size_bulk' not in cif_text
 
@@ -51,11 +51,11 @@ def test_fit_parameters_cif_keeps_uncertainty_multiplier_when_populated():
     from easydiffraction.analysis.enums import FitResultKindEnum
 
     collection = _fit_parameters_with_parent_result_kind(FitResultKindEnum.DETERMINISTIC.value)
-    collection['cosio.cell.length_a']._set_fit_bounds_uncertainty_multiplier(4.0)
+    collection['cosio.cell.length_a']._set_bounds_uncertainty_multiplier(4.0)
 
     cif_text = collection.as_cif
 
-    assert '_fit_parameter.fit_bounds_uncertainty_multiplier' in cif_text
+    assert '_fit_parameter.bounds_uncertainty_multiplier' in cif_text
     assert '4.' in cif_text
 
 

@@ -20,7 +20,7 @@ def test_pd_cwl_data_point_defaults():
     from easydiffraction.datablocks.experiment.categories.data.bragg_pd import PdCwlDataPoint
 
     pt = PdCwlDataPoint()
-    assert pt.point_id.value == '0'
+    assert pt.id.value == '0'
     assert pt.d_spacing.value == 0.0
     assert pt.two_theta.value == 0.0
     assert pt.intensity_meas.value == 0.0
@@ -28,14 +28,14 @@ def test_pd_cwl_data_point_defaults():
     assert pt.intensity_calc.value == 0.0
     assert pt.intensity_bkg.value == 0.0
     assert pt.calc_status.value == 'incl'
-    assert pt._identity.category_code == 'pd_data'
+    assert pt._identity.category_code == 'data'
 
 
 def test_pd_tof_data_point_defaults():
     from easydiffraction.datablocks.experiment.categories.data.bragg_pd import PdTofDataPoint
 
     pt = PdTofDataPoint()
-    assert pt.point_id.value == '0'
+    assert pt.id.value == '0'
     assert pt.d_spacing.value == 0.0
     assert pt.time_of_flight.value == 0.0
     assert pt.intensity_meas.value == 0.0
@@ -43,7 +43,7 @@ def test_pd_tof_data_point_defaults():
     assert pt.intensity_calc.value == 0.0
     assert pt.intensity_bkg.value == 0.0
     assert pt.calc_status.value == 'incl'
-    assert pt._identity.category_code == 'pd_data'
+    assert pt._identity.category_code == 'data'
 
 
 def test_pd_cwl_data_collection_create_and_properties():
@@ -77,9 +77,9 @@ def test_pd_cwl_data_collection_create_and_properties():
     np.testing.assert_array_almost_equal(coll.intensity_meas_su, su)
 
     # Check point IDs are set
-    assert coll._items[0].point_id.value == '1'
-    assert coll._items[1].point_id.value == '2'
-    assert coll._items[2].point_id.value == '3'
+    assert coll._items[0].id.value == '1'
+    assert coll._items[1].id.value == '2'
+    assert coll._items[2].id.value == '3'
 
 
 def test_pd_tof_data_collection_create_and_properties():
@@ -103,8 +103,8 @@ def test_pd_tof_data_collection_create_and_properties():
     np.testing.assert_array_almost_equal(coll.unfiltered_x, x_vals)
 
     # Check point IDs are set
-    assert coll._items[0].point_id.value == '1'
-    assert coll._items[2].point_id.value == '3'
+    assert coll._items[0].id.value == '1'
+    assert coll._items[2].id.value == '3'
 
 
 def test_pd_data_items_resolve_experiment_datablock_name():
@@ -117,7 +117,7 @@ def test_pd_data_items_resolve_experiment_datablock_name():
 
     param = coll._items[0].intensity_meas
     assert param._identity.datablock_entry_name == 'hrpt'
-    assert param.unique_name == 'hrpt.pd_data.1.intensity_meas'
+    assert param.unique_name == 'hrpt.data.1.intensity_meas'
 
 
 def test_pd_data_calc_status_exclusion():

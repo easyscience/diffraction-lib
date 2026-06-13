@@ -58,7 +58,7 @@ def _add_atom(
     adp_iso=0.5,
 ):
     structure.atom_sites.create(
-        label=label,
+        id=label,
         type_symbol=type_symbol,
         fract_x=fract_x,
         fract_y=fract_y,
@@ -496,7 +496,7 @@ class TestBuildSceneBonds:
         )
         assert scene.bonds == ()
 
-    def test_bond_distance_incr_enables_distant_bond(self):
+    def test_bond_distance_inc_enables_distant_bond(self):
         # Two atoms 2.5 angstrom apart (beyond summed covalent radii)
         # bond only once the increment is generous enough.
         structure = _make_structure('stretch')
@@ -504,7 +504,7 @@ class TestBuildSceneBonds:
         _add_atom(structure, label='Fe2', type_symbol='Fe', fract_x=0.5, fract_y=0.0, fract_z=0.0)
         structure._sync_atom_site_aniso()
 
-        structure.geom.bond_distance_incr = 0.0
+        structure.geom.bond_distance_inc = 0.0
         scene_tight = build_scene(
             structure,
             style=StructureStyle(),
@@ -512,7 +512,7 @@ class TestBuildSceneBonds:
             features=frozenset({'bonds'}),
         )
 
-        structure.geom.bond_distance_incr = 5.0
+        structure.geom.bond_distance_inc = 5.0
         scene_loose = build_scene(
             structure,
             style=StructureStyle(),

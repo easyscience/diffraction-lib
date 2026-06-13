@@ -110,8 +110,8 @@ def test_least_squares_fit_result_serializes_only_active_families():
 
     cif_text = fit_result.as_cif
 
-    assert '_fit_result.prof_R_factor' not in cif_text
-    assert '_fit_result.R_factor_all' not in cif_text
+    assert '_fit_result.prof_r_factor' not in cif_text
+    assert '_fit_result.r_factor_all' not in cif_text
     assert '_fit_result.number_restraints' not in cif_text
     assert '_fit_result.number_constraints' not in cif_text
     assert '_fit_result.shift_over_su_max' not in cif_text
@@ -121,14 +121,14 @@ def test_least_squares_fit_result_serializes_only_active_families():
     fit_result._set_number_constraints(1)
     cif_text = fit_result.as_cif
 
-    assert '_fit_result.R_factor_all 0.12' in cif_text
+    assert '_fit_result.r_factor_all 0.12' in cif_text
     assert '_fit_result.number_constraints 1' in cif_text
-    assert '_fit_result.prof_R_factor' not in cif_text
+    assert '_fit_result.prof_r_factor' not in cif_text
 
     fit_result._set_prof_r_factor(0.21)
     cif_text = fit_result.as_cif
 
-    assert '_fit_result.prof_R_factor 0.21' in cif_text
+    assert '_fit_result.prof_r_factor 0.21' in cif_text
 
 
 def test_least_squares_fit_result_omits_duplicate_exit_reason():

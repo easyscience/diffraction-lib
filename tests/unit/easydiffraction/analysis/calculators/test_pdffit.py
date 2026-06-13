@@ -60,8 +60,10 @@ class _DummyExperiment:
         self.name = 'E'
         self.peak = _DummyPeak()
         self.data = type('D', (), {'x': np.linspace(0.0, 1.0, 5)})()
-        self.type = type('T', (), {'radiation_probe': type('P', (), {'value': 'neutron'})()})()
-        self.linked_phases = _DummyLinkedPhases()
+        self.experiment_type = type(
+            'T', (), {'radiation_probe': type('P', (), {'value': 'neutron'})()}
+        )()
+        self.linked_structures = _DummyLinkedPhases()
 
 
 class _DummyStructure:

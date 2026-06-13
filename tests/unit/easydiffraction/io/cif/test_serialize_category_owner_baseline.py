@@ -44,40 +44,38 @@ def test_real_analysis_as_cif_is_singleton_section_without_data_header() -> None
 def test_real_analysis_as_cif_includes_stamped_software() -> None:
     project = Project(name='proj')
     analysis = project.analysis
-    analysis.software.framework.name = 'EasyDiffraction'
-    analysis.software.framework.version = '0.17.0'
-    analysis.software.framework.url = 'https://github.com/easyscience/diffraction-lib'
-    analysis.software.calculator.name = 'cryspy'
-    analysis.software.calculator.version = '0.11.0'
-    analysis.software.minimizer.name = 'lmfit'
-    analysis.software.minimizer.version = '1.3.4'
-    analysis.software.timestamp = '2026-05-29T12:00:00+00:00'
+    analysis.software['framework'].name = 'EasyDiffraction'
+    analysis.software['framework'].version = '0.17.0'
+    analysis.software['framework'].url = 'https://github.com/easyscience/diffraction-lib'
+    analysis.software['calculator'].name = 'cryspy'
+    analysis.software['calculator'].version = '0.11.0'
+    analysis.software['minimizer'].name = 'lmfit'
+    analysis.software['minimizer'].version = '1.3.4'
 
     analysis_cif = analysis.as_cif
 
-    assert '_software.framework_name EasyDiffraction' in analysis_cif
-    assert '_software.framework_version 0.17.0' in analysis_cif
-    assert '_software.calculator_name cryspy' in analysis_cif
-    assert '_software.calculator_version 0.11.0' in analysis_cif
-    assert '_software.minimizer_name lmfit' in analysis_cif
-    assert '_software.minimizer_version 1.3.4' in analysis_cif
-    assert '_software.timestamp 2026-05-29T12:00:00+00:00' in analysis_cif
+    assert '_software.id' in analysis_cif
+    assert '_software.name' in analysis_cif
+    assert '_software.version' in analysis_cif
+    assert 'framework EasyDiffraction 0.17.0' in analysis_cif
+    assert 'calculator cryspy 0.11.0' in analysis_cif
+    assert 'minimizer lmfit 1.3.4' in analysis_cif
 
 
 def test_real_analysis_from_cif_restores_stamped_software() -> None:
     source = Project(name='proj')
-    source.analysis.software.framework.name = 'EasyDiffraction'
-    source.analysis.software.framework.version = '0.17.0'
-    source.analysis.software.calculator.name = 'cryspy'
-    source.analysis.software.minimizer.name = 'lmfit'
+    source.analysis.software['framework'].name = 'EasyDiffraction'
+    source.analysis.software['framework'].version = '0.17.0'
+    source.analysis.software['calculator'].name = 'cryspy'
+    source.analysis.software['minimizer'].name = 'lmfit'
 
     target = Project(name='restored')
     analysis_from_cif(target.analysis, source.analysis.as_cif)
 
-    assert target.analysis.software.framework.name.value == 'EasyDiffraction'
-    assert target.analysis.software.framework.version.value == '0.17.0'
-    assert target.analysis.software.calculator.name.value == 'cryspy'
-    assert target.analysis.software.minimizer.name.value == 'lmfit'
+    assert target.analysis.software['framework'].name.value == 'EasyDiffraction'
+    assert target.analysis.software['framework'].version.value == '0.17.0'
+    assert target.analysis.software['calculator'].name.value == 'cryspy'
+    assert target.analysis.software['minimizer'].name.value == 'lmfit'
 
 
 def test_real_analysis_as_cif_includes_aliases_and_constraints_when_present() -> None:
@@ -86,13 +84,13 @@ def test_real_analysis_as_cif_includes_aliases_and_constraints_when_present() ->
     parameter = project.structures['phase_1'].cell.length_a
 
     analysis = project.analysis
-    analysis.aliases.create(label='a_param', param=parameter)
+    analysis.aliases.create(id='a_param', param=parameter)
     analysis.constraints.create(expression='a_param = a_param')
 
     analysis_cif = analysis.as_cif
 
-    assert '_alias.label' in analysis_cif
-    assert '_alias.param_unique_name' in analysis_cif
+    assert '_alias.id' in analysis_cif
+    assert '_alias.parameter_unique_name' in analysis_cif
     assert '_constraint.id' in analysis_cif
     assert '_constraint.expression' in analysis_cif
     assert 'a_param = a_param' in analysis_cif

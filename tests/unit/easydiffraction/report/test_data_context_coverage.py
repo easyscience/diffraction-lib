@@ -424,7 +424,7 @@ def test_fit_data_axes_labels_falls_back_on_unknown_combination():
 def _single_crystal_experiment():
     return SimpleNamespace(
         name='heidi',
-        type=SimpleNamespace(
+        experiment_type=SimpleNamespace(
             sample_form=_Descriptor('single crystal'),
             scattering_type=_Descriptor('bragg'),
         ),
@@ -543,7 +543,7 @@ def test_collection_category_context_truncates_long_loops():
 
     category = LineSegmentBackground()
     for index in range(_REPORT_LOOP_DISPLAY_LIMIT + 6):
-        category.create(id=str(index), x=float(index), y=float(index) + 0.5)
+        category.create(id=str(index), position=float(index), intensity=float(index) + 0.5)
 
     context = _collection_category_context(category, truncate=True)
 
@@ -559,8 +559,8 @@ def test_collection_category_context_keeps_short_loops_untruncated():
     from easydiffraction.report.data_context import _collection_category_context
 
     category = LineSegmentBackground()
-    category.create(id='1', x=1.0, y=2.0)
-    category.create(id='2', x=2.0, y=3.0)
+    category.create(id='1', position=1.0, intensity=2.0)
+    category.create(id='2', position=2.0, intensity=3.0)
 
     context = _collection_category_context(category, truncate=True)
 

@@ -18,7 +18,7 @@ def _parent(*, calib=None, measured=False, x=None):
         instrument = SimpleNamespace(
             calib_d_to_tof_offset=SimpleNamespace(value=offset),
             calib_d_to_tof_linear=SimpleNamespace(value=linear),
-            calib_d_to_tof_quad=SimpleNamespace(value=quad),
+            calib_d_to_tof_quadratic=SimpleNamespace(value=quad),
         )
     else:
         instrument = None

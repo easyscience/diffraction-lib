@@ -334,7 +334,7 @@ def test_render_html_report_uses_plotly_fit_style_order():
                 },
                 'bragg_tick_sets': (
                     BraggTickSet(
-                        phase_id='phase-a',
+                        structure_id='phase-a',
                         x=np.array([1.5]),
                         h=np.array([1]),
                         k=np.array([0]),

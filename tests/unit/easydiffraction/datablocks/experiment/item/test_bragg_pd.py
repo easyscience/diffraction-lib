@@ -36,7 +36,7 @@ def _mk_type_powder_tof_bragg():
 
 
 def test_background_defaults_and_change():
-    expt = BraggPdExperiment(name='e1', type=_mk_type_powder_cwl_bragg())
+    expt = BraggPdExperiment(name='e1', experiment_type=_mk_type_powder_cwl_bragg())
     # default background type
     assert expt.background.type == BackgroundFactory.default_tag()
 
@@ -53,7 +53,7 @@ def test_background_defaults_and_change():
 
 
 def test_load_ascii_data_rounds_and_defaults_sy(tmp_path: pytest.TempPathFactory):
-    expt = BraggPdExperiment(name='e1', type=_mk_type_powder_cwl_bragg())
+    expt = BraggPdExperiment(name='e1', experiment_type=_mk_type_powder_cwl_bragg())
 
     # Case 1: provide only two columns -> sy defaults to sqrt(y) and min clipped to 1.0
     p = tmp_path / 'data2col.dat'
@@ -90,15 +90,15 @@ def test_load_ascii_data_rounds_and_defaults_sy(tmp_path: pytest.TempPathFactory
 
 
 def test_bragg_pd_experiment_creates_beam_mode_specific_refln_collection():
-    cwl_experiment = BraggPdExperiment(name='cwl', type=_mk_type_powder_cwl_bragg())
-    tof_experiment = BraggPdExperiment(name='tof', type=_mk_type_powder_tof_bragg())
+    cwl_experiment = BraggPdExperiment(name='cwl', experiment_type=_mk_type_powder_cwl_bragg())
+    tof_experiment = BraggPdExperiment(name='tof', experiment_type=_mk_type_powder_tof_bragg())
 
     assert isinstance(cwl_experiment.refln, PowderCwlReflnData)
     assert isinstance(tof_experiment.refln, PowderTofReflnData)
 
 
 def test_bragg_pd_experiment_disables_refln_for_crysfml_and_restores_it_for_cryspy():
-    experiment = BraggPdExperiment(name='powder', type=_mk_type_powder_cwl_bragg())
+    experiment = BraggPdExperiment(name='powder', experiment_type=_mk_type_powder_cwl_bragg())
 
     assert isinstance(experiment.refln, PowderCwlReflnData)
 
@@ -127,8 +127,8 @@ def test_pd_data_update_populates_and_clears_refln():
             del experiment, called_by_minimizer
             return structure.pattern
 
-        def last_powder_refln_records(self, structure, experiment, *, phase_id):
-            del experiment, phase_id
+        def last_powder_refln_records(self, structure, experiment, *, structure_id):
+            del experiment, structure_id
             if not self.return_records:
                 return None
             return structure.records
@@ -139,9 +139,9 @@ def test_pd_data_update_populates_and_clears_refln():
             self.pattern = pattern
             self.records = records
 
-    experiment = BraggPdExperiment(name='powder', type=_mk_type_powder_cwl_bragg())
-    experiment.linked_phases.create(id='phase_a', scale=2.0)
-    experiment.linked_phases.create(id='phase_b', scale=3.0)
+    experiment = BraggPdExperiment(name='powder', experiment_type=_mk_type_powder_cwl_bragg())
+    experiment.linked_structures.create(structure_id='phase_a', scale=2.0)
+    experiment.linked_structures.create(structure_id='phase_b', scale=3.0)
     experiment.data._create_items_set_xcoord_and_id(np.array([10.0, 20.0, 30.0]))
     experiment.data._set_intensity_meas(np.array([100.0, 110.0, 120.0]))
 
@@ -151,7 +151,7 @@ def test_pd_data_update_populates_and_clears_refln():
             np.array([1.0, 2.0, 3.0]),
             [
                 PowderReflnRecord(
-                    phase_id='phase_a',
+                    structure_id='phase_a',
                     d_spacing=2.1,
                     sin_theta_over_lambda=0.25,
                     index_h=1,
@@ -168,7 +168,7 @@ def test_pd_data_update_populates_and_clears_refln():
             np.array([4.0, 5.0, 6.0]),
             [
                 PowderReflnRecord(
-                    phase_id='phase_b',
+                    structure_id='phase_b',
                     d_spacing=1.8,
                     sin_theta_over_lambda=0.28,
                     index_h=2,
@@ -189,7 +189,7 @@ def test_pd_data_update_populates_and_clears_refln():
     experiment.data._update()
 
     np.testing.assert_allclose(experiment.data.intensity_calc, np.array([14.0, 19.0, 24.0]))
-    np.testing.assert_array_equal(experiment.refln.phase_id, np.array(['phase_a', 'phase_b']))
+    np.testing.assert_array_equal(experiment.refln.structure_id, np.array(['phase_a', 'phase_b']))
     np.testing.assert_allclose(experiment.refln.two_theta, np.array([14.5, 18.5]))
 
     experiment._calculator.return_records = False
@@ -213,8 +213,8 @@ def test_pd_data_update_skips_refln_records_when_category_is_disabled():
             del experiment, called_by_minimizer
             return structure.pattern
 
-        def last_powder_refln_records(self, structure, experiment, *, phase_id):
-            del structure, experiment, phase_id
+        def last_powder_refln_records(self, structure, experiment, *, structure_id):
+            del structure, experiment, structure_id
             msg = 'Powder reflection metadata should not be requested'
             raise AssertionError(msg)
 
@@ -223,8 +223,8 @@ def test_pd_data_update_skips_refln_records_when_category_is_disabled():
             self.name = name
             self.pattern = pattern
 
-    experiment = BraggPdExperiment(name='powder', type=_mk_type_powder_cwl_bragg())
-    experiment.linked_phases.create(id='phase_a', scale=2.0)
+    experiment = BraggPdExperiment(name='powder', experiment_type=_mk_type_powder_cwl_bragg())
+    experiment.linked_structures.create(structure_id='phase_a', scale=2.0)
     experiment.data._create_items_set_xcoord_and_id(np.array([10.0, 20.0, 30.0]))
     experiment.data._set_intensity_meas(np.array([100.0, 110.0, 120.0]))
 

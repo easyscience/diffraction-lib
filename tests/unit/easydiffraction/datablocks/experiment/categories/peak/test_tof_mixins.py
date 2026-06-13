@@ -29,19 +29,19 @@ def test_tof_gaussian_lorentzian_and_bbe_mixins():
     names = {param.name for param in p.parameters}
     # Gaussian broadening
     assert {
-        'gauss_sigma_0',
-        'gauss_sigma_1',
-        'gauss_sigma_2',
+        'broad_gauss_sigma_0',
+        'broad_gauss_sigma_1',
+        'broad_gauss_sigma_2',
     }.issubset(names)
     # Lorentzian broadening
     assert {
-        'lorentz_gamma_0',
-        'lorentz_gamma_1',
-        'lorentz_gamma_2',
+        'broad_lorentz_gamma_0',
+        'broad_lorentz_gamma_1',
+        'broad_lorentz_gamma_2',
     }.issubset(names)
     # BBE rise and decay
-    assert {'rise_alpha_0', 'rise_alpha_1'}.issubset(names)
-    assert {'decay_beta_0', 'decay_beta_1'}.issubset(names)
+    assert {'exp_rise_alpha_0', 'exp_rise_alpha_1'}.issubset(names)
+    assert {'exp_decay_beta_0', 'exp_decay_beta_1'}.issubset(names)
 
     # Verify setters update values
     p.broad_gauss_sigma_0 = 1.0
@@ -74,8 +74,8 @@ def test_tof_double_exponential_mixin():
     p = DoublePeak()
     names = {param.name for param in p.parameters}
     # Gaussian + Lorentzian broadening from existing mixins
-    assert {'gauss_sigma_0', 'gauss_sigma_1', 'gauss_sigma_2'}.issubset(names)
-    assert {'lorentz_gamma_0', 'lorentz_gamma_1', 'lorentz_gamma_2'}.issubset(names)
+    assert {'broad_gauss_sigma_0', 'broad_gauss_sigma_1', 'broad_gauss_sigma_2'}.issubset(names)
+    assert {'broad_lorentz_gamma_0', 'broad_lorentz_gamma_1', 'broad_lorentz_gamma_2'}.issubset(names)
     # Double-exp rise
     assert {'dexp_rise_alpha_1', 'dexp_rise_alpha_2'}.issubset(names)
     # Double-exp decay

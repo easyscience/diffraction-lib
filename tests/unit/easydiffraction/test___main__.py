@@ -241,7 +241,7 @@ def test_cli_fit_dry_clears_path(monkeypatch, tmp_path):
         name = 'exp1'
 
     class FakeProject:
-        info = FakeInfo()
+        metadata = FakeInfo()
         experiments = [FakeExperiment()]
 
         class _analysis:
@@ -284,7 +284,7 @@ def test_cli_fit_dry_clears_path(monkeypatch, tmp_path):
 
     result = runner.invoke(main_mod.app, ['fit', '--dry', str(proj_dir)])
     assert result.exit_code == 0
-    assert fake_project.info._path is None
+    assert fake_project.metadata._path is None
 
 
 def test_cli_undo_noop_exits_zero_and_does_not_save(monkeypatch, tmp_path):

@@ -102,27 +102,27 @@ def test_datablock_collection_to_cif_concatenates_blocks():
 
 def test_project_info_to_cif_contains_core_fields():
     import easydiffraction.io.cif.serialize as MUT
-    from easydiffraction.project.project_info import ProjectInfo
+    from easydiffraction.project.project_metadata import ProjectMetadata
 
-    info = ProjectInfo(name='p1', title='My Title', description='Some description text')
-    out = MUT.project_info_to_cif(info)
-    assert '_project.id               p1' in out
-    assert '_project.title            "My Title"' in out
-    assert '_project.description      "Some description text"' in out
-    assert '_project.created          "' in out
-    assert '_project.last_modified    "' in out
+    metadata = ProjectMetadata(name='p1', title='My Title', description='Some description text')
+    out = MUT.project_metadata_to_cif(metadata)
+    assert '_metadata.name             p1' in out
+    assert '_metadata.title            "My Title"' in out
+    assert '_metadata.description      "Some description text"' in out
+    assert '_metadata.created          "' in out
+    assert '_metadata.last_modified    "' in out
 
 
 def test_project_info_to_cif_wraps_long_description_as_text_field():
     import easydiffraction.io.cif.serialize as MUT
-    from easydiffraction.project.project_info import ProjectInfo
+    from easydiffraction.project.project_metadata import ProjectMetadata
 
     description = ' '.join(['long'] * 20)
-    info = ProjectInfo(name='p1', title='My Title', description=description)
+    metadata = ProjectMetadata(name='p1', title='My Title', description=description)
 
-    out = MUT.project_info_to_cif(info)
+    out = MUT.project_metadata_to_cif(metadata)
 
-    assert '_project.description      ' in out
+    assert '_metadata.description      ' in out
     assert '\n;\n' in out
     assert 'long long long long long long long long long long long long' in out
 

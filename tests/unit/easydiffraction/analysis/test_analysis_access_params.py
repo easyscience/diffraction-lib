@@ -130,7 +130,7 @@ def test_how_to_access_parameters_skips_large_loop_categories(capsys, monkeypatc
     from easydiffraction.analysis.analysis import Analysis
 
     visible = _make_param('db1', 'catA', '', 'alpha', 1.0)
-    data_param = _make_param('db2', 'pd_data', '1', 'intensity_meas', 2.0)
+    data_param = _make_param('db2', 'data', '1', 'intensity_meas', 2.0)
     refln_param = _make_param('db2', 'refln', '1', 'f_calc', 3.0)
 
     class Coll:
@@ -157,7 +157,7 @@ def test_how_to_access_parameters_skips_large_loop_categories(capsys, monkeypatc
 
     flat_rows = [' '.join(map(str, row)) for row in captured.get('columns_data') or []]
     assert any("proj.structures['db1'].catA.alpha" in row for row in flat_rows)
-    assert not any('pd_data' in row for row in flat_rows)
+    assert not any('data' in row for row in flat_rows)
     assert not any('refln' in row for row in flat_rows)
 
 
@@ -166,7 +166,7 @@ def test_parameter_cif_uids_skips_large_loop_categories(monkeypatch):
     from easydiffraction.analysis.analysis import Analysis
 
     visible = _make_param('db1', 'catA', '', 'alpha', 1.0)
-    data_param = _make_param('db2', 'pd_data', '1', 'intensity_meas', 2.0)
+    data_param = _make_param('db2', 'data', '1', 'intensity_meas', 2.0)
     refln_param = _make_param('db2', 'refln', '1', 'f_calc', 3.0)
 
     class Coll:
@@ -190,7 +190,7 @@ def test_parameter_cif_uids_skips_large_loop_categories(monkeypatch):
 
     flat_rows = [' '.join(map(str, row)) for row in captured.get('columns_data') or []]
     assert any('db1 catA  alpha' in row.replace('.', ' ') for row in flat_rows)
-    assert not any('pd_data' in row for row in flat_rows)
+    assert not any('data' in row for row in flat_rows)
     assert not any('refln' in row for row in flat_rows)
 
 
@@ -200,7 +200,7 @@ def test_all_params_skips_large_loop_categories(monkeypatch):
 
     structure_param = _make_param('s1', 'cell', '', 'length_a', 4.0)
     visible_experiment_param = _make_param('e1', 'instrument', '', 'wavelength', 1.5)
-    data_param = _make_param('e1', 'pd_data', '1', 'intensity_meas', 10.0)
+    data_param = _make_param('e1', 'data', '1', 'intensity_meas', 10.0)
     refln_param = _make_param('e1', 'refln', '1', 'f_calc', 12.0)
 
     class Coll:

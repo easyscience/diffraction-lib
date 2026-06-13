@@ -22,11 +22,11 @@ import easydiffraction.project.project as project_module
 from easydiffraction.project.project import Project
 from easydiffraction.project.project import _apply_csv_row_to_diffrn
 from easydiffraction.project.project import _apply_csv_row_to_params
-from easydiffraction.project.project import _load_cif_directory
+from easydiffraction.project.project import _load_edstar_directory
 from easydiffraction.project.project import _load_project_analysis
-from easydiffraction.project.project import _load_project_info
+from easydiffraction.project.project import _load_project_metadata
 from easydiffraction.project.project import _resolve_data_path_from_results_csv
-from easydiffraction.project.project import _resolved_analysis_cif_path
+from easydiffraction.project.project import _resolved_analysis_path
 from easydiffraction.utils.logging import Logger
 
 
@@ -163,48 +163,68 @@ def test_resolve_data_path_joins_relative_to_project():
 
 
 # ----------------------------------------------------------------------
-# _load_cif_directory / _load_project_info / _resolved_analysis_cif_path
+# _load_edstar_directory / _load_project_metadata / _resolved_analysis_path
 # ----------------------------------------------------------------------
 
 
-def test_load_cif_directory_skips_missing_directory(tmp_path):
+def test_load_edstar_directory_skips_missing_directory(tmp_path):
     calls: list[str] = []
 
-    _load_cif_directory(tmp_path / 'absent', calls.append)
+    _load_edstar_directory(
+        tmp_path / 'absent',
+        calls.append,
+        replacement='structures/<structure>.edstar',
+    )
 
     assert calls == []
 
 
-def test_load_cif_directory_loads_sorted_cif_files(tmp_path):
-    cif_dir = tmp_path / 'structures'
-    cif_dir.mkdir()
-    (cif_dir / 'b.cif').write_text('b')
-    (cif_dir / 'a.cif').write_text('a')
-    (cif_dir / 'note.txt').write_text('ignored')
+def test_load_edstar_directory_loads_sorted_edstar_files(tmp_path):
+    edstar_dir = tmp_path / 'structures'
+    edstar_dir.mkdir()
+    (edstar_dir / 'b.edstar').write_text('b')
+    (edstar_dir / 'a.edstar').write_text('a')
+    (edstar_dir / 'note.txt').write_text('ignored')
 
     calls: list[str] = []
-    _load_cif_directory(cif_dir, calls.append)
+    _load_edstar_directory(
+        edstar_dir,
+        calls.append,
+        replacement='structures/<structure>.edstar',
+    )
 
-    assert calls == [str(cif_dir / 'a.cif'), str(cif_dir / 'b.cif')]
+    assert calls == [str(edstar_dir / 'a.edstar'), str(edstar_dir / 'b.edstar')]
 
 
-def test_load_project_info_no_cif_leaves_project_untouched(tmp_path):
+def test_load_edstar_directory_rejects_legacy_cif(tmp_path):
+    edstar_dir = tmp_path / 'structures'
+    edstar_dir.mkdir()
+    (edstar_dir / 'lbco.cif').write_text('legacy')
+
+    with pytest.raises(ValueError, match='structures/<structure>.edstar'):
+        _load_edstar_directory(
+            edstar_dir,
+            lambda _path: None,
+            replacement='structures/<structure>.edstar',
+        )
+
+
+def test_load_project_metadata_no_edstar_raises(tmp_path):
     project = Project(name='unchanged_info')
 
-    _load_project_info(project, tmp_path)
-
-    assert project.name == 'unchanged_info'
-
-
-def test_resolved_analysis_cif_path_returns_none_when_absent(tmp_path):
-    assert _resolved_analysis_cif_path(tmp_path) is None
+    with pytest.raises(FileNotFoundError, match='project.edstar'):
+        _load_project_metadata(project, tmp_path)
 
 
-def test_resolved_analysis_cif_path_uses_root_fallback(tmp_path):
-    root_cif = tmp_path / 'analysis.cif'
-    root_cif.write_text('analysis')
+def test_resolved_analysis_path_returns_none_when_absent(tmp_path):
+    assert _resolved_analysis_path(tmp_path) is None
 
-    assert _resolved_analysis_cif_path(tmp_path) == root_cif
+
+def test_resolved_analysis_path_uses_root_fallback(tmp_path):
+    root_edstar = tmp_path / 'analysis.edstar'
+    root_edstar.write_text('analysis')
+
+    assert _resolved_analysis_path(tmp_path) == root_edstar
 
 
 def test_load_project_analysis_no_cif_is_noop(tmp_path):
@@ -236,7 +256,7 @@ def test_current_project_path_none_when_unsaved(monkeypatch):
 def test_current_project_path_reports_saved_path(tmp_path):
     project = Project(name='tracked')
     expected = tmp_path / 'tracked-project'
-    project.info.path = expected
+    project.metadata.path = expected
 
     assert Project.current_project_path() == expected
 
@@ -348,11 +368,11 @@ def test_resolve_alias_references_warns_on_unknown_parameter(monkeypatch):
     structure.cell.length_a = 4.0
 
     project.analysis.aliases.create(
-        label='a_param',
+        id='a_param',
         param=structure.cell.length_a,
     )
     alias = project.analysis.aliases['a_param']
-    alias.param_unique_name.value = 'does.not.exist'
+    alias.parameter_unique_name.value = 'does.not.exist'
 
     warnings: list[str] = []
     monkeypatch.setattr(project_module.log, 'warning', warnings.append)
@@ -376,15 +396,15 @@ def test_save_without_path_logs_error_and_returns(monkeypatch):
 
     project.save()
 
-    assert project.info.path is None
+    assert project.metadata.path is None
     assert any('save_as()' in message for message in errors)
 
 
-def test_save_writes_experiment_cif_files(tmp_path, monkeypatch):
+def test_save_writes_experiment_edstar_files(tmp_path, monkeypatch):
     from easydiffraction.analysis.analysis import Analysis
-    from easydiffraction.project.project_info import ProjectInfo
+    from easydiffraction.project.project_metadata import ProjectMetadata
 
-    monkeypatch.setattr(ProjectInfo, 'as_cif', property(lambda self: 'info'))
+    monkeypatch.setattr(ProjectMetadata, 'as_cif', property(lambda self: 'info'))
     monkeypatch.setattr(Analysis, 'as_cif', property(lambda self: 'analysis'))
 
     project = Project(name='with_experiments')
@@ -400,15 +420,18 @@ def test_save_writes_experiment_cif_files(tmp_path, monkeypatch):
     project._experiments = _Experiments(parameters=[])
     project.save_as(str(tmp_path / 'proj'))
 
-    written = (tmp_path / 'proj' / 'experiments' / 'scan1.cif').read_text()
-    assert written == 'data_scan1'
+    # Experiments are persisted as EdSTAR files carrying the schema
+    # marker; the original section header is preserved.
+    written = (tmp_path / 'proj' / 'experiments' / 'scan1.edstar').read_text()
+    assert written.startswith('data_scan1')
+    assert '_edstar.schema_name EasyDiffraction' in written
 
 
 def test_save_as_temporary_writes_under_system_tempdir(monkeypatch):
     from easydiffraction.analysis.analysis import Analysis
-    from easydiffraction.project.project_info import ProjectInfo
+    from easydiffraction.project.project_metadata import ProjectMetadata
 
-    monkeypatch.setattr(ProjectInfo, 'as_cif', property(lambda self: 'info'))
+    monkeypatch.setattr(ProjectMetadata, 'as_cif', property(lambda self: 'info'))
     monkeypatch.setattr(Analysis, 'as_cif', property(lambda self: 'analysis'))
 
     project = Project(name='temp_save')
@@ -418,8 +441,8 @@ def test_save_as_temporary_writes_under_system_tempdir(monkeypatch):
     try:
         project.save_as(unique_dir, temporary=True)
         expected = pathlib.Path(tempfile.gettempdir()) / unique_dir
-        assert (expected / 'project.cif').is_file()
-        assert project.info.path == expected
+        assert (expected / 'project.edstar').is_file()
+        assert project.metadata.path == expected
     finally:
         import shutil
 
@@ -430,9 +453,9 @@ def test_save_as_temporary_writes_under_system_tempdir(monkeypatch):
 
 def test_save_as_overwrite_clears_children_when_target_is_cwd(tmp_path, monkeypatch):
     from easydiffraction.analysis.analysis import Analysis
-    from easydiffraction.project.project_info import ProjectInfo
+    from easydiffraction.project.project_metadata import ProjectMetadata
 
-    monkeypatch.setattr(ProjectInfo, 'as_cif', property(lambda self: 'info'))
+    monkeypatch.setattr(ProjectMetadata, 'as_cif', property(lambda self: 'info'))
     monkeypatch.setattr(Analysis, 'as_cif', property(lambda self: 'analysis'))
 
     target = tmp_path / 'cwd_project'
@@ -453,7 +476,7 @@ def test_save_as_overwrite_clears_children_when_target_is_cwd(tmp_path, monkeypa
     # children are removed before the fresh project is written.
     assert not stale_file.exists()
     assert not stale_dir.exists()
-    assert (target / 'project.cif').is_file()
+    assert (target / 'project.edstar').is_file()
 
 
 # ----------------------------------------------------------------------
@@ -470,8 +493,8 @@ def test_apply_params_from_csv_requires_saved_path():
 
 def test_apply_params_from_csv_missing_results_csv(tmp_path):
     project = Project(name='missing_csv')
-    project.info.path = tmp_path / 'proj'
-    (project.info.path / 'analysis').mkdir(parents=True)
+    project.metadata.path = tmp_path / 'proj'
+    (project.metadata.path / 'analysis').mkdir(parents=True)
 
     with pytest.raises(FileNotFoundError, match='Results CSV not found'):
         project.apply_params_from_csv(0)
@@ -520,8 +543,8 @@ def _stub_project_collections(project: Project):
 
 def test_apply_params_from_csv_out_of_range_raises(tmp_path):
     project = Project(name='range_csv')
-    project.info.path = tmp_path / 'proj'
-    _write_results_csv(project.info.path / 'analysis', [{'file_path': ''}])
+    project.metadata.path = tmp_path / 'proj'
+    _write_results_csv(project.metadata.path / 'analysis', [{'file_path': ''}])
     _stub_project_collections(project)
 
     with pytest.raises(IndexError, match='out of range'):
@@ -530,8 +553,8 @@ def test_apply_params_from_csv_out_of_range_raises(tmp_path):
 
 def test_apply_params_from_csv_negative_index_out_of_range_raises(tmp_path):
     project = Project(name='neg_range_csv')
-    project.info.path = tmp_path / 'proj'
-    _write_results_csv(project.info.path / 'analysis', [{'file_path': ''}])
+    project.metadata.path = tmp_path / 'proj'
+    _write_results_csv(project.metadata.path / 'analysis', [{'file_path': ''}])
     _stub_project_collections(project)
 
     with pytest.raises(IndexError, match='out of range'):
@@ -542,9 +565,9 @@ def test_apply_params_from_csv_negative_index_skips_absent_data_file(tmp_path, m
     monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.WARN, raising=True)
 
     project = Project(name='neg_csv')
-    project.info.path = tmp_path / 'proj'
+    project.metadata.path = tmp_path / 'proj'
     _write_results_csv(
-        project.info.path / 'analysis',
+        project.metadata.path / 'analysis',
         [
             {'file_path': 'first.dat'},
             {'file_path': 'experiments/missing.dat'},

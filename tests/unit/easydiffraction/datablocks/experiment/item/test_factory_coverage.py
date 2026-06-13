@@ -22,9 +22,9 @@ class TestExperimentFactoryFromScratch:
             scattering_type='bragg',
         )
         assert ex.name == 'test_pd'
-        assert ex.type.sample_form.value == SampleFormEnum.POWDER.value
-        assert ex.type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH.value
-        assert ex.type.scattering_type.value == ScatteringTypeEnum.BRAGG.value
+        assert ex.experiment_type.sample_form.value == SampleFormEnum.POWDER.value
+        assert ex.experiment_type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH.value
+        assert ex.experiment_type.scattering_type.value == ScatteringTypeEnum.BRAGG.value
 
     def test_powder_bragg_tof(self):
         ex = ExperimentFactory.from_scratch(
@@ -35,7 +35,7 @@ class TestExperimentFactoryFromScratch:
             scattering_type='bragg',
         )
         assert ex.name == 'test_tof'
-        assert ex.type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT.value
+        assert ex.experiment_type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT.value
 
     def test_single_crystal_cwl(self):
         ex = ExperimentFactory.from_scratch(
@@ -46,7 +46,7 @@ class TestExperimentFactoryFromScratch:
             scattering_type='bragg',
         )
         assert ex.name == 'test_sc'
-        assert ex.type.sample_form.value == SampleFormEnum.SINGLE_CRYSTAL.value
+        assert ex.experiment_type.sample_form.value == SampleFormEnum.SINGLE_CRYSTAL.value
 
     def test_single_crystal_tof(self):
         ex = ExperimentFactory.from_scratch(
@@ -57,7 +57,7 @@ class TestExperimentFactoryFromScratch:
             scattering_type='bragg',
         )
         assert ex.name == 'test_sc_tof'
-        assert ex.type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT.value
+        assert ex.experiment_type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT.value
 
     def test_total_scattering(self):
         ex = ExperimentFactory.from_scratch(
@@ -65,14 +65,14 @@ class TestExperimentFactoryFromScratch:
             sample_form='powder',
             scattering_type='total',
         )
-        assert ex.type.scattering_type.value == ScatteringTypeEnum.TOTAL.value
+        assert ex.experiment_type.scattering_type.value == ScatteringTypeEnum.TOTAL.value
 
     def test_defaults_used_when_none(self):
         ex = ExperimentFactory.from_scratch(name='defaults')
-        assert ex.type.sample_form.value == SampleFormEnum.default().value
-        assert ex.type.beam_mode.value == BeamModeEnum.default().value
-        assert ex.type.scattering_type.value == ScatteringTypeEnum.default().value
-        assert ex.type.radiation_probe.value == RadiationProbeEnum.default().value
+        assert ex.experiment_type.sample_form.value == SampleFormEnum.default().value
+        assert ex.experiment_type.beam_mode.value == BeamModeEnum.default().value
+        assert ex.experiment_type.scattering_type.value == ScatteringTypeEnum.default().value
+        assert ex.experiment_type.radiation_probe.value == RadiationProbeEnum.default().value
 
 
 class TestExperimentFactoryInstantiationBlocked:

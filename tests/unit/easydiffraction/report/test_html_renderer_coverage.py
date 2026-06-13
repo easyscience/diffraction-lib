@@ -36,7 +36,7 @@ def test_html_report_path_builds_from_project_info(tmp_path):
 
     project = SimpleNamespace(
         name='demo',
-        info=SimpleNamespace(path=str(tmp_path)),
+        metadata=SimpleNamespace(path=str(tmp_path)),
     )
 
     result = html_report_path(project)
@@ -49,7 +49,7 @@ def test_html_report_path_defaults_project_name(tmp_path):
 
     # A project that exposes a saved path but no name falls back to
     # the 'project' default filename stem.
-    project = SimpleNamespace(info=SimpleNamespace(path=str(tmp_path)))
+    project = SimpleNamespace(metadata=SimpleNamespace(path=str(tmp_path)))
 
     result = html_report_path(project)
 
@@ -59,7 +59,7 @@ def test_html_report_path_defaults_project_name(tmp_path):
 def test_html_report_path_raises_without_saved_path():
     from easydiffraction.report.html_renderer import html_report_path
 
-    project = SimpleNamespace(name='demo', info=SimpleNamespace(path=None))
+    project = SimpleNamespace(name='demo', metadata=SimpleNamespace(path=None))
 
     with pytest.raises(FileNotFoundError, match='Save the project first'):
         html_report_path(project)
@@ -155,7 +155,7 @@ def test_save_html_report_builds_path_from_project(tmp_path, monkeypatch):
     _stub_structure_figures(monkeypatch)
     project = SimpleNamespace(
         name='proj',
-        info=SimpleNamespace(path=str(tmp_path)),
+        metadata=SimpleNamespace(path=str(tmp_path)),
     )
 
     result = save_html_report(project, _minimal_context())
