@@ -32,6 +32,43 @@ def _open_pdffit_devnull() -> object:
         return os.fdopen(os.dup(tmp_devnull.fileno()), 'w')
 
 
+_ANISO_SUFFIXES = ('11', '22', '33', '12', '13', '23')
+_B_TO_U_FACTOR = 8.0 * np.pi**2
+
+
+def _normalize_b_family_adp_to_u(structure: Structure) -> list[tuple]:
+    """
+    Temporarily convert B-convention ADP values to U notation.
+
+    diffpy reads a single isotropic/anisotropic ADP column, so a
+    structure mixing ``Biso``/``Uiso`` (or ``Bani``/``Uani``) atoms must
+    be normalized to one convention. B-family values are divided by
+    8π² so every row can be written under the U tags. Returns saved
+    state for restoration. ``beta`` atoms keep their stored equivalent
+    values unchanged.
+    """
+    saved: list[tuple] = []
+    for atom in structure.atom_sites:
+        adp_type = str(atom.adp_type.value).lower()
+        if adp_type not in {'biso', 'bani'}:
+            continue
+        saved.append((atom._adp_iso, atom._adp_iso._value))
+        atom._adp_iso._value /= _B_TO_U_FACTOR
+        if atom.id.value in structure.atom_site_aniso:
+            aniso = structure.atom_site_aniso[atom.id.value]
+            for suffix in _ANISO_SUFFIXES:
+                param = getattr(aniso, f'_adp_{suffix}')
+                saved.append((param, param._value))
+                param._value /= _B_TO_U_FACTOR
+    return saved
+
+
+def _restore_adp_values(saved: list[tuple]) -> None:
+    """Restore ADP values saved by ``_normalize_b_family_adp_to_u``."""
+    for param, value in saved:
+        param._value = value
+
+
 def _structure_cif_for_pdffit(structure: Structure) -> str:
     """
     Return structure CIF using legacy IUCr tags diffpy recognizes.
@@ -39,25 +76,25 @@ def _structure_cif_for_pdffit(structure: Structure) -> str:
     EdSTAR persistence renamed several CIF tags (``_atom_site.id``,
     ``_space_group.name_h_m``, type-neutral ``_atom_site.adp_iso``).
     diffpy's CIF parser only understands the legacy IUCr spellings, so
-    map them back; the isotropic/anisotropic displacement tag uses the
-    structure's active B/U family (values stay in their native
-    convention, which diffpy interprets per tag).
+    map them back. All ADP values are normalized to the U convention
+    first, so mixed B/U structures are written consistently under the U
+    tags rather than mislabeling one family.
     """
-    cif = structure.as_cif
-    families = {
-        'U' if str(atom.adp_type.value).lower().startswith('u') else 'B'
-        for atom in structure.atom_sites
-    }
-    family = 'U' if families == {'U'} else 'B'
+    saved = _normalize_b_family_adp_to_u(structure)
+    try:
+        cif = structure.as_cif
+    finally:
+        _restore_adp_values(saved)
+
     replacements = [
         ('_atom_site_aniso.id', '_atom_site_aniso.label'),
         ('_atom_site.id', '_atom_site.label'),
         ('_space_group.name_h_m', '_space_group.name_H-M_alt'),
         ('_space_group.coord_system_code', '_space_group.IT_coordinate_system_code'),
-        ('_atom_site.adp_iso', f'_atom_site.{family}_iso_or_equiv'),
+        ('_atom_site.adp_iso', '_atom_site.U_iso_or_equiv'),
         *(
-            (f'_atom_site_aniso.adp_{suffix}', f'_atom_site_aniso.{family}_{suffix}')
-            for suffix in ('11', '22', '33', '12', '13', '23')
+            (f'_atom_site_aniso.adp_{suffix}', f'_atom_site_aniso.U_{suffix}')
+            for suffix in _ANISO_SUFFIXES
         ),
     ]
     for edstar_tag, iucr_tag in replacements:

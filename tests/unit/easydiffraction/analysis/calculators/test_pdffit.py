@@ -144,6 +144,48 @@ def test_structure_cif_for_pdffit_uses_legacy_iucr_tags():
     assert '_atom_site.id' not in cif
     assert '_space_group.name_H-M_alt' in cif
     assert '_space_group.name_h_m' not in cif
-    # The default adp_type is Biso, so the B-family isotropic tag is used.
-    assert '_atom_site.B_iso_or_equiv' in cif
+    # ADPs are normalized to the U convention for diffpy.
+    assert '_atom_site.U_iso_or_equiv' in cif
+    assert '_atom_site.B_iso_or_equiv' not in cif
     assert '_atom_site.adp_iso' not in cif
+
+
+def test_structure_cif_for_pdffit_normalizes_mixed_b_u_iso_adp():
+    import math
+
+    from easydiffraction.analysis.calculators.pdffit import _structure_cif_for_pdffit
+    from easydiffraction.datablocks.structure.item.base import Structure
+
+    structure = Structure(name='mixed')
+    structure.space_group.name_h_m = 'P 1'
+    structure.cell.length_a = 5.0
+    structure.atom_sites.create(
+        id='B1',
+        type_symbol='Si',
+        fract_x=0,
+        fract_y=0,
+        fract_z=0,
+        adp_type='Biso',
+        adp_iso=0.8,
+    )
+    structure.atom_sites.create(
+        id='U1',
+        type_symbol='O',
+        fract_x=0.5,
+        fract_y=0.5,
+        fract_z=0.5,
+        adp_type='Uiso',
+        adp_iso=0.01,
+    )
+
+    cif = _structure_cif_for_pdffit(structure)
+
+    # Both rows use the U tag; the Biso value is converted (B / 8π² ≈
+    # 0.0101) while the native Uiso value is left as-is.
+    assert '_atom_site.U_iso_or_equiv' in cif
+    assert '_atom_site.B_iso_or_equiv' not in cif
+    assert math.isclose(0.8 / (8.0 * math.pi**2), 0.010132, abs_tol=1e-5)
+    assert '0.0101' in cif
+    assert '0.01' in cif
+    # The live structure is restored to its original B value afterwards.
+    assert structure.atom_sites['B1'].adp_iso.value == 0.8
