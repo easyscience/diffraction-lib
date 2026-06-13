@@ -112,7 +112,7 @@ class Experiments(DatablockCollection):
         edstar_path : str
             Path to an EdSTAR experiment file.
         """
-        body = edstar_body_from_text(pathlib.Path(edstar_path).read_text())
+        body = edstar_body_from_text(pathlib.Path(edstar_path).read_text(encoding='utf-8'))
         experiment = ExperimentFactory.from_cif_str(body)
         self.add(experiment)
 

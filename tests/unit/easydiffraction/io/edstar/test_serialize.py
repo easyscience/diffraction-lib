@@ -128,32 +128,26 @@ def _wrap(body: str) -> str:
 def test_background_fields_without_type_selector_raise():
     body = 'loop_\n_background.position\n_background.intensity\n10 0.5'
 
-    with pytest.raises(ValueError, match='_background.type selector'):
+    with pytest.raises(ValueError, match=r'_background\.type selector'):
         edstar_body_from_text(_wrap(body))
 
 
 def test_unknown_background_type_raises():
     body = '_background.type bogus'
 
-    with pytest.raises(ValueError, match='Unknown _background.type'):
+    with pytest.raises(ValueError, match=r'Unknown _background\.type'):
         edstar_body_from_text(_wrap(body))
 
 
 def test_line_segment_type_rejects_chebyshev_fields():
-    body = (
-        '_background.type line-segment\n'
-        'loop_\n_background.order\n_background.coef\n0 1.0'
-    )
+    body = '_background.type line-segment\nloop_\n_background.order\n_background.coef\n0 1.0'
 
     with pytest.raises(ValueError, match='line-segment background cannot contain'):
         edstar_body_from_text(_wrap(body))
 
 
 def test_chebyshev_type_rejects_line_segment_fields():
-    body = (
-        '_background.type chebyshev\n'
-        'loop_\n_background.position\n_background.intensity\n10 0.5'
-    )
+    body = '_background.type chebyshev\nloop_\n_background.position\n_background.intensity\n10 0.5'
 
     with pytest.raises(ValueError, match='chebyshev background cannot contain'):
         edstar_body_from_text(_wrap(body))
@@ -161,8 +155,7 @@ def test_chebyshev_type_rejects_line_segment_fields():
 
 def test_consistent_line_segment_background_validates():
     body = (
-        '_background.type line-segment\n'
-        'loop_\n_background.position\n_background.intensity\n10 0.5'
+        '_background.type line-segment\nloop_\n_background.position\n_background.intensity\n10 0.5'
     )
 
     recovered = edstar_body_from_text(_wrap(body))

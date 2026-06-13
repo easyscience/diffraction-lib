@@ -344,7 +344,8 @@ class CrysfmlCalculator(CalculatorBase):
             experiment_dict,
             _INSTRUMENT_ATTRIBUTE_MAP,
         )
-        # if hasattr(experiment.instrument, 'calib_d_to_tof_reciprocal'):
+        # if hasattr(experiment.instrument,
+        #            'calib_d_to_tof_reciprocal'):
         #    ??? = experiment.instrument.calib_d_to_tof_reciprocal.value
 
     def _update_experiment_dict_from_peak(

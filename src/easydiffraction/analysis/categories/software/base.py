@@ -18,13 +18,13 @@ class SoftwareRole(CategoryItem):
     _category_code = 'software'
     _category_entry_name = 'id'
 
-    def __init__(self, role: SoftwareRoleEnum | str = SoftwareRoleEnum.FRAMEWORK) -> None:
+    def __init__(self, role: SoftwareRoleEnum | str = 'framework') -> None:
         """
         Create descriptors for one software role.
 
         Parameters
         ----------
-        role : SoftwareRoleEnum | str, default=SoftwareRoleEnum.FRAMEWORK
+        role : SoftwareRoleEnum | str, default='framework'
             Software role represented by this row.
         """
         super().__init__()

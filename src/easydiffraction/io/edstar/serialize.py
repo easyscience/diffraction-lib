@@ -48,15 +48,15 @@ def section_to_edstar(body: str) -> str:
         header, _, rest = cleaned_body.partition('\n')
         return f'{header}\n\n{marker}\n\n{rest.strip()}\n'
 
-    return (
-        f'{marker}\n\n'
-        f'{cleaned_body}\n'
-    )
+    return f'{marker}\n\n{cleaned_body}\n'
 
 
 def edstar_body_from_text(text: str) -> str:
     """
     Validate EdSTAR text and return its section body.
+
+    An invalid schema marker or inconsistent selector/body content
+    raises ``ValueError`` via the validation helpers.
 
     Parameters
     ----------
@@ -67,11 +67,6 @@ def edstar_body_from_text(text: str) -> str:
     -------
     str
         Section body with schema marker lines removed.
-
-    Raises
-    ------
-    ValueError
-        If the schema marker or selector/body content is invalid.
     """
     _validate_schema_marker(_marker_block_from_text(text))
     body = _strip_schema_marker_lines(text).strip()
@@ -84,9 +79,7 @@ def _marker_block_from_text(text: str) -> object:
     """Parse EdSTAR schema marker lines as one anonymous STAR block."""
     import gemmi  # noqa: PLC0415
 
-    marker_text = '\n'.join(
-        line for line in text.splitlines() if _is_schema_marker_line(line)
-    )
+    marker_text = '\n'.join(line for line in text.splitlines() if _is_schema_marker_line(line))
     return gemmi.cif.read_string(f'data_edstar\n\n{marker_text}').sole_block()
 
 
@@ -127,10 +120,7 @@ def _validate_schema_marker(block: object) -> None:
     try:
         major_version = int(schema_version.split('.', maxsplit=1)[0])
     except ValueError as exc:
-        msg = (
-            f'EdSTAR schema version must start with an integer, got '
-            f'{schema_version!r}.'
-        )
+        msg = f'EdSTAR schema version must start with an integer, got {schema_version!r}.'
         raise ValueError(msg) from exc
 
     if major_version != 1:

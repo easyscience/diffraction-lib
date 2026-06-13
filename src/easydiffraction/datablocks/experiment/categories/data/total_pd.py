@@ -266,9 +266,9 @@ class TotalDataBase(CategoryCollection):
         initial_calc = np.zeros_like(self.x)
         calc = initial_calc
 
-        # TODO: refactor _get_valid_linked_structures to only be responsible
-        #  for returning list. Warning message should be defined here,
-        #  at least some of them.
+        # TODO: refactor _get_valid_linked_structures to only be
+        #  responsible for returning list. Warning message should be
+        #  defined here, at least some of them.
         # TODO: Adapt following the _update method in bragg_sc.py
         for linked_structure in experiment._get_valid_linked_structures(structures):
             structure_id = linked_structure._identity.category_entry_name

@@ -217,7 +217,7 @@ def _resolved_analysis_path(project_path: pathlib.Path) -> pathlib.Path | None:
 def _persistence_body_from_path(path: pathlib.Path) -> str:
     """Read EdSTAR text for a project section."""
     if path.suffix == '.edstar':
-        text = path.read_text()
+        text = path.read_text(encoding='utf-8')
         return edstar_body_from_text(text)
 
     _raise_legacy_project_cif_error(path, replacement='a .edstar file')
@@ -520,9 +520,9 @@ class Project(GuardedBase):  # noqa: PLR0904
         Resolve alias ``parameter_unique_name`` strings to live objects.
 
         After loading structures and experiments from CIF, aliases only
-        contain the ``parameter_unique_name`` string.  This method builds a
-        ``{unique_name: param}`` map from all project parameters and
-        wires each alias's ``_param_ref``.
+        contain the ``parameter_unique_name`` string.  This method
+        builds a ``{unique_name: param}`` map from all project
+        parameters and wires each alias's ``_param_ref``.
         """
         aliases = self._analysis.aliases
         if not aliases._items:

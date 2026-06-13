@@ -95,7 +95,7 @@ class Structures(DatablockCollection):
         edstar_path : str
             Filesystem path to an EdSTAR structure file.
         """
-        body = edstar_body_from_text(pathlib.Path(edstar_path).read_text())
+        body = edstar_body_from_text(pathlib.Path(edstar_path).read_text(encoding='utf-8'))
         structure = StructureFactory.from_cif_str(body)
         self.add(structure)
 

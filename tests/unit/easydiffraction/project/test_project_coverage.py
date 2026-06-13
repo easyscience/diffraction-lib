@@ -201,7 +201,7 @@ def test_load_edstar_directory_rejects_legacy_cif(tmp_path):
     edstar_dir.mkdir()
     (edstar_dir / 'lbco.cif').write_text('legacy')
 
-    with pytest.raises(ValueError, match='structures/<structure>.edstar'):
+    with pytest.raises(ValueError, match=r'structures/<structure>\.edstar'):
         _load_edstar_directory(
             edstar_dir,
             lambda _path: None,
@@ -212,7 +212,7 @@ def test_load_edstar_directory_rejects_legacy_cif(tmp_path):
 def test_load_project_metadata_no_edstar_raises(tmp_path):
     project = Project(name='unchanged_info')
 
-    with pytest.raises(FileNotFoundError, match='project.edstar'):
+    with pytest.raises(FileNotFoundError, match=r'project\.edstar'):
         _load_project_metadata(project, tmp_path)
 
 

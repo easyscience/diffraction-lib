@@ -1729,7 +1729,7 @@ class PlotlyPlotter(PlotterBase):
         color: str,
     ) -> object:
         """
-        Create a hover-capable Bragg tick trace for one linked structure.
+        Create a Bragg tick hover trace for one linked structure.
 
         Only the Miller-index line is colored to match the phase tick
         marker; the phase name and x line use the default tooltip text
