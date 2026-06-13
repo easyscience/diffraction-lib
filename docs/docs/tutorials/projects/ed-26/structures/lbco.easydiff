@@ -1,7 +1,7 @@
 data_lbco
 
-_edstar.schema_name EasyDiffraction
-_edstar.schema_version 1
+_easydiff.schema_name EasyDiffraction
+_easydiff.schema_version 1
 
 _cell.length_a 3.891323(83)
 _cell.length_b 3.89132257

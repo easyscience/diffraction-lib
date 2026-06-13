@@ -1,12 +1,12 @@
-_edstar.schema_name EasyDiffraction
-_edstar.schema_version 1
+_easydiff.schema_name EasyDiffraction
+_easydiff.schema_version 1
 
-_metadata.name             lbco_hrpt_bumps_dream
+_metadata.name             lbco_hrpt_emcee
 _metadata.title            "Untitled Project"
 _metadata.description      ?
-_metadata.created          "13 Jun 2026 19:20:04"
-_metadata.last_modified    "13 Jun 2026 19:24:02"
-_metadata.timestamp        2026-06-13T19:24:02+00:00
+_metadata.created          "13 Jun 2026 19:08:13"
+_metadata.last_modified    "13 Jun 2026 19:08:20"
+_metadata.timestamp        2026-06-13T19:09:42+00:00
 
 _rendering_plot.type auto
 
