@@ -8,7 +8,7 @@ This plan follows `AGENTS.md`. There are no deliberate exceptions.
   current repository context.
 - [x] Review and accept this plan.
 - [x] Phase 1 - implementation commits complete.
-- [x] Phase 1 review complete.
+- [ ] Phase 1 review complete.
 - [ ] Phase 2 - tests and verification complete.
 - [ ] Phase 2 review complete.
 
@@ -421,6 +421,28 @@ code/EdSTAR/CIF reference.
 
   ```text
   Reach EdSTAR Phase 1 review gate
+  ```
+
+- [x] P1.14 - Rename the space-group coordinate-system parameter.
+
+  Record the post-review Phase 1 scope addition requested after the
+  original review gate: rename
+  `structure.space_group.it_coordinate_system_code` to
+  `structure.space_group.coord_system_code` and write EdSTAR with
+  `_space_group.coord_system_code`. Keep official CIF import/report
+  names as `_space_group.IT_coordinate_system_code`, and do not preserve
+  the pre-release lowercase EdSTAR spelling as a legacy alias.
+
+  Update the accepted ADR, live ADR references, handler inventory,
+  source call sites, user docs, tutorials, and regenerated notebooks.
+  This reopened the Phase 1 review cycle after the original review-3
+  sentinel; Phase 1 review is complete only after the follow-up review
+  accepts this additional step.
+
+  Commit:
+
+  ```text
+  Rename space-group coordinate-system parameter
   ```
 
 ## Verification Steps (Phase 2)

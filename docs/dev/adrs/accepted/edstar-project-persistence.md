@@ -250,10 +250,11 @@ from the allowlist.
 
 **Approved abbreviations:** `calc` (calculated), `meas` (measured),
 `coef` (coefficient), `su` (standard uncertainty), `iso`/`aniso`
-(isotropic/anisotropic), `fract` (fractional), `inc` (increment),
-`min`/`max`, `prof` (profile), `r`/`wr`/`gt` (R-factor / weighted-R /
-greater-than), `h_m` (Hermann–Mauguin), `it` (International Tables),
-`id`, `index_h`/`index_k`/`index_l` (Miller indices), `adp` (atomic
+(isotropic/anisotropic), `fract` (fractional), `coord` (coordinate,
+only for coordinate-code/template names), `inc` (increment), `min`/`max`,
+`prof` (profile), `r`/`wr`/`gt` (R-factor / weighted-R / greater-than),
+`h_m` (Hermann–Mauguin), `it` (International Tables), `id`,
+`index_h`/`index_k`/`index_l` (Miller indices), `adp` (atomic
 displacement parameter), `tof` (time-of-flight), `cwl` (constant
 wavelength), `fcj` (Finger–Cox–Jephcoat), `q` (momentum transfer).
 
@@ -697,8 +698,8 @@ reviewer does not "correct" them toward a different precedent.
   still the International Tables coordinate-system qualifier, and report
   CIF still writes `_space_group.IT_coordinate_system_code`, but the
   project-facing API and EdSTAR field use `coord_system_code`. `coord`
-  already appears in CIF/EasyDiffraction names such as `cartn_coord`,
-  `fract_coord`, and `coords_xyz`; `it` is not otherwise used in
+  is already used in EasyDiffraction's Wyckoff-coordinate vocabulary
+  (`coord_code`, `coords_xyz`), while `it` is not otherwise used in
   project-facing parameter names.
 - **`_data` is intentional.** `experiment.data` is already a mass-noun
   owner attribute, so EdSTAR keeps `_data` instead of inventing
