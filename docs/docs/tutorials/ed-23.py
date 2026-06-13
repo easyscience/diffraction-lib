@@ -11,10 +11,6 @@
 # ## 🛠️ Import Library
 
 # %%
-import os
-import pathlib
-import shutil
-
 import easydiffraction as ed
 
 # %% [markdown]
@@ -23,27 +19,20 @@ import easydiffraction as ed
 # %% [markdown]
 # ### Locate Project
 #
-# Temporary: load a new-format Co2SiO4 scan project bundled with the
-# documentation (with `analysis/results.csv`). This will switch back to
-# `ed.download_data(id=37, ...)` once the updated project archives are
-# published to the EasyDiffraction data repository.
+# Download and extract the saved Co2SiO4 scan project from the
+# EasyDiffraction data repository.
 
 # %%
-bundled_project = 'docs/docs/tutorials/projects/ed-23'
-artifact_root = pathlib.Path(os.environ.get('EASYDIFFRACTION_ARTIFACT_ROOT', '.'))
-project_dir = artifact_root / 'projects' / 'ed_23_cosio_d20_scan_input'
-shutil.rmtree(project_dir, ignore_errors=True)
-shutil.copytree(bundled_project, project_dir)
+project_dir = ed.download_data(id=41, destination='projects', overwrite=True)
 
 # %% [markdown]
 # ### Load Project
 #
-# The bundled project is copied to a writable working directory first so
-# resuming the sequential fit (which appends to `analysis/results.csv`)
-# writes there, leaving the bundled read-only copy untouched.
+# The project is downloaded into a fresh writable working directory so
+# resuming the sequential fit appends to its `analysis/results.csv`.
 
 # %%
-project = ed.Project.load(str(project_dir))
+project = ed.Project.load(project_dir)
 
 # %% [markdown]
 # ## 🚀 Perform Analysis

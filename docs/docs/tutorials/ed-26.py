@@ -37,14 +37,11 @@ import easydiffraction as ed
 # %% [markdown]
 # ### Locate Project
 #
-# Temporary: load a new-format emcee project bundled with the
-# documentation, with the persisted chain and posterior caches. This
-# will switch back to `ed.download_data(id=38, ...)` once the updated
-# project archives are published to the EasyDiffraction data
-# repository.
+# Download and extract the saved emcee project, with the persisted chain
+# and posterior caches, from the EasyDiffraction data repository.
 
 # %%
-project_dir = 'docs/docs/tutorials/projects/ed-26'
+project_dir = ed.download_data(id=42, destination='projects')
 
 # %% [markdown]
 # ### Load Project

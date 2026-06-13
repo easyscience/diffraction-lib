@@ -132,9 +132,9 @@ _DATA_REPO = 'easyscience/diffraction'
 _DATA_ROOT = 'data'
 _DOCS_BASE_URL = 'https://easyscience.github.io/diffraction-lib'
 # commit SHA preferred
-_DATA_INDEX_REF = '83657ee120fc6a30fda231649692930eaa038758'
+_DATA_INDEX_REF = 'fa8466337f6ea793dbeb06161d24d066be91be68'
 # macOS: sha256sum index.json
-_DATA_INDEX_HASH = 'sha256:e7685d7c81c3b3559a7f630178f4d1b7f441fb1ed14388c10ab9f6aeb93927a7'
+_DATA_INDEX_HASH = 'sha256:623a4b99ee6d5452d4092bd5c08676e6479bb6800baa1644478977e3755cd068'
 
 
 def _build_data_url(path: str) -> str:
