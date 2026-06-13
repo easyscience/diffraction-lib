@@ -954,7 +954,7 @@
       "category_entry_name": null,
       "context": "analysis",
       "current_cif_names": [
-        "_fit_result.prof_R_factor"
+        "_fit_result.prof_r_factor"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "prof_r_factor",
@@ -964,10 +964,11 @@
       "import_names": [
         "_fit_result.prof_R_factor"
       ],
-      "iucr_name": "_fit_result.prof_R_factor",
+      "iucr_name": "_fit_result.prof_r_factor",
       "owner_class": "LeastSquaresFitResult",
-      "project_name": "_fit_result.prof_R_factor",
+      "project_name": "_fit_result.prof_r_factor",
       "read_names": [
+        "_fit_result.prof_r_factor",
         "_fit_result.prof_R_factor"
       ],
       "unique_name": "fit_result.prof_r_factor"
@@ -977,7 +978,7 @@
       "category_entry_name": null,
       "context": "analysis",
       "current_cif_names": [
-        "_fit_result.prof_wR_expected"
+        "_fit_result.prof_wr_expected"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "prof_wr_expected",
@@ -987,10 +988,11 @@
       "import_names": [
         "_fit_result.prof_wR_expected"
       ],
-      "iucr_name": "_fit_result.prof_wR_expected",
+      "iucr_name": "_fit_result.prof_wr_expected",
       "owner_class": "LeastSquaresFitResult",
-      "project_name": "_fit_result.prof_wR_expected",
+      "project_name": "_fit_result.prof_wr_expected",
       "read_names": [
+        "_fit_result.prof_wr_expected",
         "_fit_result.prof_wR_expected"
       ],
       "unique_name": "fit_result.prof_wr_expected"
@@ -1000,7 +1002,7 @@
       "category_entry_name": null,
       "context": "analysis",
       "current_cif_names": [
-        "_fit_result.prof_wR_factor"
+        "_fit_result.prof_wr_factor"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "prof_wr_factor",
@@ -1010,10 +1012,11 @@
       "import_names": [
         "_fit_result.prof_wR_factor"
       ],
-      "iucr_name": "_fit_result.prof_wR_factor",
+      "iucr_name": "_fit_result.prof_wr_factor",
       "owner_class": "LeastSquaresFitResult",
-      "project_name": "_fit_result.prof_wR_factor",
+      "project_name": "_fit_result.prof_wr_factor",
       "read_names": [
+        "_fit_result.prof_wr_factor",
         "_fit_result.prof_wR_factor"
       ],
       "unique_name": "fit_result.prof_wr_factor"
@@ -1046,7 +1049,7 @@
       "category_entry_name": null,
       "context": "analysis",
       "current_cif_names": [
-        "_fit_result.R_factor_all"
+        "_fit_result.r_factor_all"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "r_factor_all",
@@ -1056,10 +1059,11 @@
       "import_names": [
         "_fit_result.R_factor_all"
       ],
-      "iucr_name": "_fit_result.R_factor_all",
+      "iucr_name": "_fit_result.r_factor_all",
       "owner_class": "LeastSquaresFitResult",
-      "project_name": "_fit_result.R_factor_all",
+      "project_name": "_fit_result.r_factor_all",
       "read_names": [
+        "_fit_result.r_factor_all",
         "_fit_result.R_factor_all"
       ],
       "unique_name": "fit_result.r_factor_all"
@@ -1069,7 +1073,7 @@
       "category_entry_name": null,
       "context": "analysis",
       "current_cif_names": [
-        "_fit_result.R_factor_gt"
+        "_fit_result.r_factor_gt"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "r_factor_gt",
@@ -1079,10 +1083,11 @@
       "import_names": [
         "_fit_result.R_factor_gt"
       ],
-      "iucr_name": "_fit_result.R_factor_gt",
+      "iucr_name": "_fit_result.r_factor_gt",
       "owner_class": "LeastSquaresFitResult",
-      "project_name": "_fit_result.R_factor_gt",
+      "project_name": "_fit_result.r_factor_gt",
       "read_names": [
+        "_fit_result.r_factor_gt",
         "_fit_result.R_factor_gt"
       ],
       "unique_name": "fit_result.r_factor_gt"
@@ -1230,7 +1235,7 @@
       "category_entry_name": null,
       "context": "analysis",
       "current_cif_names": [
-        "_fit_result.wR_factor_all"
+        "_fit_result.wr_factor_all"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "wr_factor_all",
@@ -1240,10 +1245,11 @@
       "import_names": [
         "_fit_result.wR_factor_all"
       ],
-      "iucr_name": "_fit_result.wR_factor_all",
+      "iucr_name": "_fit_result.wr_factor_all",
       "owner_class": "LeastSquaresFitResult",
-      "project_name": "_fit_result.wR_factor_all",
+      "project_name": "_fit_result.wr_factor_all",
       "read_names": [
+        "_fit_result.wr_factor_all",
         "_fit_result.wR_factor_all"
       ],
       "unique_name": "fit_result.wr_factor_all"
@@ -1253,7 +1259,7 @@
       "category_entry_name": null,
       "context": "analysis",
       "current_cif_names": [
-        "_fit_result.wR_factor_gt"
+        "_fit_result.wr_factor_gt"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "wr_factor_gt",
@@ -1263,10 +1269,11 @@
       "import_names": [
         "_fit_result.wR_factor_gt"
       ],
-      "iucr_name": "_fit_result.wR_factor_gt",
+      "iucr_name": "_fit_result.wr_factor_gt",
       "owner_class": "LeastSquaresFitResult",
-      "project_name": "_fit_result.wR_factor_gt",
+      "project_name": "_fit_result.wr_factor_gt",
       "read_names": [
+        "_fit_result.wr_factor_gt",
         "_fit_result.wR_factor_gt"
       ],
       "unique_name": "fit_result.wr_factor_gt"
@@ -1670,24 +1677,223 @@
       "unique_name": "inventory_experiment.calculator.type"
     },
     {
+      "category_code": "data",
+      "category_entry_name": "0",
+      "context": "experiment.bragg_pd_cwl",
+      "current_cif_names": [
+        "_data.calc_status"
+      ],
+      "descriptor_class": "StringDescriptor",
+      "descriptor_name": "calc_status",
+      "descriptor_path": "experiment.bragg_pd_cwl.data[].calc_status",
+      "docs_anchor": "data-calc-status",
+      "docs_page": "data",
+      "import_names": [
+        "_pd_data.refinement_status"
+      ],
+      "iucr_name": "_pd_data.refinement_status",
+      "owner_class": "PdCwlDataPoint",
+      "project_name": "_data.calc_status",
+      "read_names": [
+        "_data.calc_status",
+        "_pd_data.refinement_status"
+      ],
+      "unique_name": "data.0.calc_status"
+    },
+    {
+      "category_code": "data",
+      "category_entry_name": "0",
+      "context": "experiment.bragg_pd_cwl",
+      "current_cif_names": [
+        "_data.d_spacing"
+      ],
+      "descriptor_class": "NumericDescriptor",
+      "descriptor_name": "d_spacing",
+      "descriptor_path": "experiment.bragg_pd_cwl.data[].d_spacing",
+      "docs_anchor": "data-d-spacing",
+      "docs_page": "data",
+      "import_names": [
+        "_pd_proc.d_spacing"
+      ],
+      "iucr_name": "_pd_proc.d_spacing",
+      "owner_class": "PdCwlDataPoint",
+      "project_name": "_data.d_spacing",
+      "read_names": [
+        "_data.d_spacing",
+        "_pd_proc.d_spacing"
+      ],
+      "unique_name": "data.0.d_spacing"
+    },
+    {
+      "category_code": "data",
+      "category_entry_name": "0",
+      "context": "experiment.bragg_pd_cwl",
+      "current_cif_names": [
+        "_data.id"
+      ],
+      "descriptor_class": "StringDescriptor",
+      "descriptor_name": "id",
+      "descriptor_path": "experiment.bragg_pd_cwl.data[].id",
+      "docs_anchor": "data-id",
+      "docs_page": "data",
+      "import_names": [
+        "_pd_data.point_id"
+      ],
+      "iucr_name": "_pd_data.point_id",
+      "owner_class": "PdCwlDataPoint",
+      "project_name": "_data.id",
+      "read_names": [
+        "_data.id",
+        "_pd_data.point_id"
+      ],
+      "unique_name": "data.0.id"
+    },
+    {
+      "category_code": "data",
+      "category_entry_name": "0",
+      "context": "experiment.bragg_pd_cwl",
+      "current_cif_names": [
+        "_data.intensity_bkg"
+      ],
+      "descriptor_class": "NumericDescriptor",
+      "descriptor_name": "intensity_bkg",
+      "descriptor_path": "experiment.bragg_pd_cwl.data[].intensity_bkg",
+      "docs_anchor": "data-intensity-bkg",
+      "docs_page": "data",
+      "import_names": [
+        "_pd_calc.intensity_bkg"
+      ],
+      "iucr_name": "_pd_calc.intensity_bkg",
+      "owner_class": "PdCwlDataPoint",
+      "project_name": "_data.intensity_bkg",
+      "read_names": [
+        "_data.intensity_bkg",
+        "_pd_calc.intensity_bkg"
+      ],
+      "unique_name": "data.0.intensity_bkg"
+    },
+    {
+      "category_code": "data",
+      "category_entry_name": "0",
+      "context": "experiment.bragg_pd_cwl",
+      "current_cif_names": [
+        "_data.intensity_calc"
+      ],
+      "descriptor_class": "NumericDescriptor",
+      "descriptor_name": "intensity_calc",
+      "descriptor_path": "experiment.bragg_pd_cwl.data[].intensity_calc",
+      "docs_anchor": "data-intensity-calc",
+      "docs_page": "data",
+      "import_names": [
+        "_pd_calc.intensity_total"
+      ],
+      "iucr_name": "_pd_calc.intensity_total",
+      "owner_class": "PdCwlDataPoint",
+      "project_name": "_data.intensity_calc",
+      "read_names": [
+        "_data.intensity_calc",
+        "_pd_calc.intensity_total"
+      ],
+      "unique_name": "data.0.intensity_calc"
+    },
+    {
+      "category_code": "data",
+      "category_entry_name": "0",
+      "context": "experiment.bragg_pd_cwl",
+      "current_cif_names": [
+        "_data.intensity_meas"
+      ],
+      "descriptor_class": "NumericDescriptor",
+      "descriptor_name": "intensity_meas",
+      "descriptor_path": "experiment.bragg_pd_cwl.data[].intensity_meas",
+      "docs_anchor": "data-intensity-meas",
+      "docs_page": "data",
+      "import_names": [
+        "_pd_meas.intensity_total",
+        "_pd_proc.intensity_norm"
+      ],
+      "iucr_name": "_pd_meas.intensity_total",
+      "owner_class": "PdCwlDataPoint",
+      "project_name": "_data.intensity_meas",
+      "read_names": [
+        "_data.intensity_meas",
+        "_pd_meas.intensity_total",
+        "_pd_proc.intensity_norm"
+      ],
+      "unique_name": "data.0.intensity_meas"
+    },
+    {
+      "category_code": "data",
+      "category_entry_name": "0",
+      "context": "experiment.bragg_pd_cwl",
+      "current_cif_names": [
+        "_data.intensity_meas_su"
+      ],
+      "descriptor_class": "NumericDescriptor",
+      "descriptor_name": "intensity_meas_su",
+      "descriptor_path": "experiment.bragg_pd_cwl.data[].intensity_meas_su",
+      "docs_anchor": "data-intensity-meas-su",
+      "docs_page": "data",
+      "import_names": [
+        "_pd_meas.intensity_total_su",
+        "_pd_proc.intensity_norm_su"
+      ],
+      "iucr_name": "_pd_meas.intensity_total_su",
+      "owner_class": "PdCwlDataPoint",
+      "project_name": "_data.intensity_meas_su",
+      "read_names": [
+        "_data.intensity_meas_su",
+        "_pd_meas.intensity_total_su",
+        "_pd_proc.intensity_norm_su"
+      ],
+      "unique_name": "data.0.intensity_meas_su"
+    },
+    {
+      "category_code": "data",
+      "category_entry_name": "0",
+      "context": "experiment.bragg_pd_cwl",
+      "current_cif_names": [
+        "_data.two_theta"
+      ],
+      "descriptor_class": "NumericDescriptor",
+      "descriptor_name": "two_theta",
+      "descriptor_path": "experiment.bragg_pd_cwl.data[].two_theta",
+      "docs_anchor": "data-two-theta",
+      "docs_page": "data",
+      "import_names": [
+        "_pd_proc.2theta_scan",
+        "_pd_meas.2theta_scan"
+      ],
+      "iucr_name": "_pd_proc.2theta_scan",
+      "owner_class": "PdCwlDataPoint",
+      "project_name": "_data.two_theta",
+      "read_names": [
+        "_data.two_theta",
+        "_pd_proc.2theta_scan",
+        "_pd_meas.2theta_scan"
+      ],
+      "unique_name": "data.0.two_theta"
+    },
+    {
       "category_code": "data_range",
       "category_entry_name": null,
       "context": "experiment.bragg_pd_cwl",
       "current_cif_names": [
-        "_pd_meas.2theta_range_inc"
+        "_data_range.two_theta_inc"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "two_theta_inc",
       "descriptor_path": "experiment.bragg_pd_cwl.data_range.two_theta_inc",
-      "docs_anchor": "pd-meas-2theta-range-inc",
-      "docs_page": "pd_meas",
+      "docs_anchor": "data-range-two-theta-inc",
+      "docs_page": "data_range",
       "import_names": [
         "_pd_meas.2theta_range_inc"
       ],
       "iucr_name": "_pd_meas.2theta_range_inc",
       "owner_class": "CwlPdDataRange",
-      "project_name": "_pd_meas.2theta_range_inc",
+      "project_name": "_data_range.two_theta_inc",
       "read_names": [
+        "_data_range.two_theta_inc",
         "_pd_meas.2theta_range_inc"
       ],
       "unique_name": "inventory_experiment.data_range.two_theta_inc"
@@ -1697,20 +1903,21 @@
       "category_entry_name": null,
       "context": "experiment.bragg_pd_cwl",
       "current_cif_names": [
-        "_pd_meas.2theta_range_max"
+        "_data_range.two_theta_max"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "two_theta_max",
       "descriptor_path": "experiment.bragg_pd_cwl.data_range.two_theta_max",
-      "docs_anchor": "pd-meas-2theta-range-max",
-      "docs_page": "pd_meas",
+      "docs_anchor": "data-range-two-theta-max",
+      "docs_page": "data_range",
       "import_names": [
         "_pd_meas.2theta_range_max"
       ],
       "iucr_name": "_pd_meas.2theta_range_max",
       "owner_class": "CwlPdDataRange",
-      "project_name": "_pd_meas.2theta_range_max",
+      "project_name": "_data_range.two_theta_max",
       "read_names": [
+        "_data_range.two_theta_max",
         "_pd_meas.2theta_range_max"
       ],
       "unique_name": "inventory_experiment.data_range.two_theta_max"
@@ -1720,20 +1927,21 @@
       "category_entry_name": null,
       "context": "experiment.bragg_pd_cwl",
       "current_cif_names": [
-        "_pd_meas.2theta_range_min"
+        "_data_range.two_theta_min"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "two_theta_min",
       "descriptor_path": "experiment.bragg_pd_cwl.data_range.two_theta_min",
-      "docs_anchor": "pd-meas-2theta-range-min",
-      "docs_page": "pd_meas",
+      "docs_anchor": "data-range-two-theta-min",
+      "docs_page": "data_range",
       "import_names": [
         "_pd_meas.2theta_range_min"
       ],
       "iucr_name": "_pd_meas.2theta_range_min",
       "owner_class": "CwlPdDataRange",
-      "project_name": "_pd_meas.2theta_range_min",
+      "project_name": "_data_range.two_theta_min",
       "read_names": [
+        "_data_range.two_theta_min",
         "_pd_meas.2theta_range_min"
       ],
       "unique_name": "inventory_experiment.data_range.two_theta_min"
@@ -3044,20 +3252,21 @@
       "category_entry_name": null,
       "context": "experiment.bragg_pd_tof",
       "current_cif_names": [
-        "_pd_meas.time_of_flight_range_inc"
+        "_data_range.time_of_flight_inc"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "time_of_flight_inc",
       "descriptor_path": "experiment.bragg_pd_tof.data_range.time_of_flight_inc",
-      "docs_anchor": "pd-meas-time-of-flight-range-inc",
-      "docs_page": "pd_meas",
+      "docs_anchor": "data-range-time-of-flight-inc",
+      "docs_page": "data_range",
       "import_names": [
         "_pd_meas.time_of_flight_range_inc"
       ],
       "iucr_name": "_pd_meas.time_of_flight_range_inc",
       "owner_class": "TofPdDataRange",
-      "project_name": "_pd_meas.time_of_flight_range_inc",
+      "project_name": "_data_range.time_of_flight_inc",
       "read_names": [
+        "_data_range.time_of_flight_inc",
         "_pd_meas.time_of_flight_range_inc"
       ],
       "unique_name": "inventory_experiment.data_range.time_of_flight_inc"
@@ -3067,20 +3276,21 @@
       "category_entry_name": null,
       "context": "experiment.bragg_pd_tof",
       "current_cif_names": [
-        "_pd_meas.time_of_flight_range_max"
+        "_data_range.time_of_flight_max"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "time_of_flight_max",
       "descriptor_path": "experiment.bragg_pd_tof.data_range.time_of_flight_max",
-      "docs_anchor": "pd-meas-time-of-flight-range-max",
-      "docs_page": "pd_meas",
+      "docs_anchor": "data-range-time-of-flight-max",
+      "docs_page": "data_range",
       "import_names": [
         "_pd_meas.time_of_flight_range_max"
       ],
       "iucr_name": "_pd_meas.time_of_flight_range_max",
       "owner_class": "TofPdDataRange",
-      "project_name": "_pd_meas.time_of_flight_range_max",
+      "project_name": "_data_range.time_of_flight_max",
       "read_names": [
+        "_data_range.time_of_flight_max",
         "_pd_meas.time_of_flight_range_max"
       ],
       "unique_name": "inventory_experiment.data_range.time_of_flight_max"
@@ -3090,20 +3300,21 @@
       "category_entry_name": null,
       "context": "experiment.bragg_pd_tof",
       "current_cif_names": [
-        "_pd_meas.time_of_flight_range_min"
+        "_data_range.time_of_flight_min"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "time_of_flight_min",
       "descriptor_path": "experiment.bragg_pd_tof.data_range.time_of_flight_min",
-      "docs_anchor": "pd-meas-time-of-flight-range-min",
-      "docs_page": "pd_meas",
+      "docs_anchor": "data-range-time-of-flight-min",
+      "docs_page": "data_range",
       "import_names": [
         "_pd_meas.time_of_flight_range_min"
       ],
       "iucr_name": "_pd_meas.time_of_flight_range_min",
       "owner_class": "TofPdDataRange",
-      "project_name": "_pd_meas.time_of_flight_range_min",
+      "project_name": "_data_range.time_of_flight_min",
       "read_names": [
+        "_data_range.time_of_flight_min",
         "_pd_meas.time_of_flight_range_min"
       ],
       "unique_name": "inventory_experiment.data_range.time_of_flight_min"
@@ -3199,75 +3410,6 @@
         "_diffrn.ambient_temperature"
       ],
       "unique_name": "inventory_experiment.diffrn.ambient_temperature"
-    },
-    {
-      "category_code": "excluded_regions",
-      "category_entry_name": "0",
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_excluded_region.end"
-      ],
-      "descriptor_class": "NumericDescriptor",
-      "descriptor_name": "end",
-      "descriptor_path": "experiment.bragg_pd_tof.excluded_regions[].end",
-      "docs_anchor": "excluded-region-end",
-      "docs_page": "excluded_region",
-      "import_names": [
-        "_excluded_region.end"
-      ],
-      "iucr_name": "_easydiffraction_excluded_region.end",
-      "owner_class": "ExcludedRegion",
-      "project_name": "_excluded_region.end",
-      "read_names": [
-        "_excluded_region.end"
-      ],
-      "unique_name": "excluded_regions.0.end"
-    },
-    {
-      "category_code": "excluded_regions",
-      "category_entry_name": "0",
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_excluded_region.id"
-      ],
-      "descriptor_class": "StringDescriptor",
-      "descriptor_name": "id",
-      "descriptor_path": "experiment.bragg_pd_tof.excluded_regions[].id",
-      "docs_anchor": "excluded-region-id",
-      "docs_page": "excluded_region",
-      "import_names": [
-        "_excluded_region.id"
-      ],
-      "iucr_name": "_easydiffraction_excluded_region.id",
-      "owner_class": "ExcludedRegion",
-      "project_name": "_excluded_region.id",
-      "read_names": [
-        "_excluded_region.id"
-      ],
-      "unique_name": "excluded_regions.0.id"
-    },
-    {
-      "category_code": "excluded_regions",
-      "category_entry_name": "0",
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_excluded_region.start"
-      ],
-      "descriptor_class": "NumericDescriptor",
-      "descriptor_name": "start",
-      "descriptor_path": "experiment.bragg_pd_tof.excluded_regions[].start",
-      "docs_anchor": "excluded-region-start",
-      "docs_page": "excluded_region",
-      "import_names": [
-        "_excluded_region.start"
-      ],
-      "iucr_name": "_easydiffraction_excluded_region.start",
-      "owner_class": "ExcludedRegion",
-      "project_name": "_excluded_region.start",
-      "read_names": [
-        "_excluded_region.start"
-      ],
-      "unique_name": "excluded_regions.0.start"
     },
     {
       "category_code": "experiment_type",
@@ -3486,165 +3628,220 @@
       "unique_name": "inventory_experiment.instrument.twotheta_bank"
     },
     {
+      "category_code": "linked_structure",
+      "category_entry_name": "Si",
+      "context": "experiment.bragg_pd_tof",
+      "current_cif_names": [
+        "_linked_structure.scale"
+      ],
+      "descriptor_class": "Parameter",
+      "descriptor_name": "scale",
+      "descriptor_path": "experiment.bragg_pd_tof.linked_structures[].scale",
+      "docs_anchor": "linked-structure-scale",
+      "docs_page": "linked_structure",
+      "import_names": [
+        "_pd_phase_block.scale"
+      ],
+      "iucr_name": "_pd_phase_block.scale",
+      "owner_class": "LinkedStructure",
+      "project_name": "_linked_structure.scale",
+      "read_names": [
+        "_linked_structure.scale",
+        "_pd_phase_block.scale"
+      ],
+      "unique_name": "linked_structure.Si.scale"
+    },
+    {
+      "category_code": "linked_structure",
+      "category_entry_name": "Si",
+      "context": "experiment.bragg_pd_tof",
+      "current_cif_names": [
+        "_linked_structure.structure_id"
+      ],
+      "descriptor_class": "StringDescriptor",
+      "descriptor_name": "structure_id",
+      "descriptor_path": "experiment.bragg_pd_tof.linked_structures[].structure_id",
+      "docs_anchor": "linked-structure-structure-id",
+      "docs_page": "linked_structure",
+      "import_names": [
+        "_pd_phase_block.id"
+      ],
+      "iucr_name": "_pd_phase_block.id",
+      "owner_class": "LinkedStructure",
+      "project_name": "_linked_structure.structure_id",
+      "read_names": [
+        "_linked_structure.structure_id",
+        "_pd_phase_block.id"
+      ],
+      "unique_name": "linked_structure.Si.structure_id"
+    },
+    {
       "category_code": "peak",
       "category_entry_name": null,
       "context": "experiment.bragg_pd_tof",
       "current_cif_names": [
-        "_peak.gauss_sigma_0"
+        "_peak.broad_gauss_sigma_0"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "gauss_sigma_0",
+      "descriptor_name": "broad_gauss_sigma_0",
       "descriptor_path": "experiment.bragg_pd_tof.peak.broad_gauss_sigma_0",
-      "docs_anchor": "peak-gauss-sigma-0",
+      "docs_anchor": "peak-broad-gauss-sigma-0",
       "docs_page": "peak",
       "import_names": [
         "_peak.gauss_sigma_0"
       ],
       "iucr_name": "_easydiffraction_peak.gauss_sigma_0",
       "owner_class": "TofJorgensen",
-      "project_name": "_peak.gauss_sigma_0",
+      "project_name": "_peak.broad_gauss_sigma_0",
       "read_names": [
+        "_peak.broad_gauss_sigma_0",
         "_peak.gauss_sigma_0"
       ],
-      "unique_name": "inventory_experiment.peak.gauss_sigma_0"
+      "unique_name": "inventory_experiment.peak.broad_gauss_sigma_0"
     },
     {
       "category_code": "peak",
       "category_entry_name": null,
       "context": "experiment.bragg_pd_tof",
       "current_cif_names": [
-        "_peak.gauss_sigma_1"
+        "_peak.broad_gauss_sigma_1"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "gauss_sigma_1",
+      "descriptor_name": "broad_gauss_sigma_1",
       "descriptor_path": "experiment.bragg_pd_tof.peak.broad_gauss_sigma_1",
-      "docs_anchor": "peak-gauss-sigma-1",
+      "docs_anchor": "peak-broad-gauss-sigma-1",
       "docs_page": "peak",
       "import_names": [
         "_peak.gauss_sigma_1"
       ],
       "iucr_name": "_easydiffraction_peak.gauss_sigma_1",
       "owner_class": "TofJorgensen",
-      "project_name": "_peak.gauss_sigma_1",
+      "project_name": "_peak.broad_gauss_sigma_1",
       "read_names": [
+        "_peak.broad_gauss_sigma_1",
         "_peak.gauss_sigma_1"
       ],
-      "unique_name": "inventory_experiment.peak.gauss_sigma_1"
+      "unique_name": "inventory_experiment.peak.broad_gauss_sigma_1"
     },
     {
       "category_code": "peak",
       "category_entry_name": null,
       "context": "experiment.bragg_pd_tof",
       "current_cif_names": [
-        "_peak.gauss_sigma_2"
+        "_peak.broad_gauss_sigma_2"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "gauss_sigma_2",
+      "descriptor_name": "broad_gauss_sigma_2",
       "descriptor_path": "experiment.bragg_pd_tof.peak.broad_gauss_sigma_2",
-      "docs_anchor": "peak-gauss-sigma-2",
+      "docs_anchor": "peak-broad-gauss-sigma-2",
       "docs_page": "peak",
       "import_names": [
         "_peak.gauss_sigma_2"
       ],
       "iucr_name": "_easydiffraction_peak.gauss_sigma_2",
       "owner_class": "TofJorgensen",
-      "project_name": "_peak.gauss_sigma_2",
+      "project_name": "_peak.broad_gauss_sigma_2",
       "read_names": [
+        "_peak.broad_gauss_sigma_2",
         "_peak.gauss_sigma_2"
       ],
-      "unique_name": "inventory_experiment.peak.gauss_sigma_2"
+      "unique_name": "inventory_experiment.peak.broad_gauss_sigma_2"
     },
     {
       "category_code": "peak",
       "category_entry_name": null,
       "context": "experiment.bragg_pd_tof",
       "current_cif_names": [
-        "_peak.decay_beta_0"
+        "_peak.exp_decay_beta_0"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "decay_beta_0",
+      "descriptor_name": "exp_decay_beta_0",
       "descriptor_path": "experiment.bragg_pd_tof.peak.exp_decay_beta_0",
-      "docs_anchor": "peak-decay-beta-0",
+      "docs_anchor": "peak-exp-decay-beta-0",
       "docs_page": "peak",
       "import_names": [
         "_peak.decay_beta_0"
       ],
       "iucr_name": "_easydiffraction_peak.decay_beta_0",
       "owner_class": "TofJorgensen",
-      "project_name": "_peak.decay_beta_0",
+      "project_name": "_peak.exp_decay_beta_0",
       "read_names": [
+        "_peak.exp_decay_beta_0",
         "_peak.decay_beta_0"
       ],
-      "unique_name": "inventory_experiment.peak.decay_beta_0"
+      "unique_name": "inventory_experiment.peak.exp_decay_beta_0"
     },
     {
       "category_code": "peak",
       "category_entry_name": null,
       "context": "experiment.bragg_pd_tof",
       "current_cif_names": [
-        "_peak.decay_beta_1"
+        "_peak.exp_decay_beta_1"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "decay_beta_1",
+      "descriptor_name": "exp_decay_beta_1",
       "descriptor_path": "experiment.bragg_pd_tof.peak.exp_decay_beta_1",
-      "docs_anchor": "peak-decay-beta-1",
+      "docs_anchor": "peak-exp-decay-beta-1",
       "docs_page": "peak",
       "import_names": [
         "_peak.decay_beta_1"
       ],
       "iucr_name": "_easydiffraction_peak.decay_beta_1",
       "owner_class": "TofJorgensen",
-      "project_name": "_peak.decay_beta_1",
+      "project_name": "_peak.exp_decay_beta_1",
       "read_names": [
+        "_peak.exp_decay_beta_1",
         "_peak.decay_beta_1"
       ],
-      "unique_name": "inventory_experiment.peak.decay_beta_1"
+      "unique_name": "inventory_experiment.peak.exp_decay_beta_1"
     },
     {
       "category_code": "peak",
       "category_entry_name": null,
       "context": "experiment.bragg_pd_tof",
       "current_cif_names": [
-        "_peak.rise_alpha_0"
+        "_peak.exp_rise_alpha_0"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "rise_alpha_0",
+      "descriptor_name": "exp_rise_alpha_0",
       "descriptor_path": "experiment.bragg_pd_tof.peak.exp_rise_alpha_0",
-      "docs_anchor": "peak-rise-alpha-0",
+      "docs_anchor": "peak-exp-rise-alpha-0",
       "docs_page": "peak",
       "import_names": [
         "_peak.rise_alpha_0"
       ],
       "iucr_name": "_easydiffraction_peak.rise_alpha_0",
       "owner_class": "TofJorgensen",
-      "project_name": "_peak.rise_alpha_0",
+      "project_name": "_peak.exp_rise_alpha_0",
       "read_names": [
+        "_peak.exp_rise_alpha_0",
         "_peak.rise_alpha_0"
       ],
-      "unique_name": "inventory_experiment.peak.rise_alpha_0"
+      "unique_name": "inventory_experiment.peak.exp_rise_alpha_0"
     },
     {
       "category_code": "peak",
       "category_entry_name": null,
       "context": "experiment.bragg_pd_tof",
       "current_cif_names": [
-        "_peak.rise_alpha_1"
+        "_peak.exp_rise_alpha_1"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "rise_alpha_1",
+      "descriptor_name": "exp_rise_alpha_1",
       "descriptor_path": "experiment.bragg_pd_tof.peak.exp_rise_alpha_1",
-      "docs_anchor": "peak-rise-alpha-1",
+      "docs_anchor": "peak-exp-rise-alpha-1",
       "docs_page": "peak",
       "import_names": [
         "_peak.rise_alpha_1"
       ],
       "iucr_name": "_easydiffraction_peak.rise_alpha_1",
       "owner_class": "TofJorgensen",
-      "project_name": "_peak.rise_alpha_1",
+      "project_name": "_peak.exp_rise_alpha_1",
       "read_names": [
+        "_peak.exp_rise_alpha_1",
         "_peak.rise_alpha_1"
       ],
-      "unique_name": "inventory_experiment.peak.rise_alpha_1"
+      "unique_name": "inventory_experiment.peak.exp_rise_alpha_1"
     },
     {
       "category_code": "peak",
@@ -3668,6 +3865,450 @@
         "_peak.type"
       ],
       "unique_name": "inventory_experiment.peak.type"
+    },
+    {
+      "category_code": "preferred_orientation",
+      "category_entry_name": "Si",
+      "context": "experiment.bragg_pd_tof",
+      "current_cif_names": [
+        "_preferred_orientation.index_h"
+      ],
+      "descriptor_class": "IntegerDescriptor",
+      "descriptor_name": "index_h",
+      "descriptor_path": "experiment.bragg_pd_tof.pref_orient[].index_h",
+      "docs_anchor": "preferred-orientation-index-h",
+      "docs_page": "preferred_orientation",
+      "import_names": [
+        "_pref_orient.index_h"
+      ],
+      "iucr_name": "_pd_pref_orient_March_Dollase.index_h",
+      "owner_class": "PrefOrient",
+      "project_name": "_preferred_orientation.index_h",
+      "read_names": [
+        "_preferred_orientation.index_h",
+        "_pref_orient.index_h"
+      ],
+      "unique_name": "preferred_orientation.Si.index_h"
+    },
+    {
+      "category_code": "preferred_orientation",
+      "category_entry_name": "Si",
+      "context": "experiment.bragg_pd_tof",
+      "current_cif_names": [
+        "_preferred_orientation.index_k"
+      ],
+      "descriptor_class": "IntegerDescriptor",
+      "descriptor_name": "index_k",
+      "descriptor_path": "experiment.bragg_pd_tof.pref_orient[].index_k",
+      "docs_anchor": "preferred-orientation-index-k",
+      "docs_page": "preferred_orientation",
+      "import_names": [
+        "_pref_orient.index_k"
+      ],
+      "iucr_name": "_pd_pref_orient_March_Dollase.index_k",
+      "owner_class": "PrefOrient",
+      "project_name": "_preferred_orientation.index_k",
+      "read_names": [
+        "_preferred_orientation.index_k",
+        "_pref_orient.index_k"
+      ],
+      "unique_name": "preferred_orientation.Si.index_k"
+    },
+    {
+      "category_code": "preferred_orientation",
+      "category_entry_name": "Si",
+      "context": "experiment.bragg_pd_tof",
+      "current_cif_names": [
+        "_preferred_orientation.index_l"
+      ],
+      "descriptor_class": "IntegerDescriptor",
+      "descriptor_name": "index_l",
+      "descriptor_path": "experiment.bragg_pd_tof.pref_orient[].index_l",
+      "docs_anchor": "preferred-orientation-index-l",
+      "docs_page": "preferred_orientation",
+      "import_names": [
+        "_pref_orient.index_l"
+      ],
+      "iucr_name": "_pd_pref_orient_March_Dollase.index_l",
+      "owner_class": "PrefOrient",
+      "project_name": "_preferred_orientation.index_l",
+      "read_names": [
+        "_preferred_orientation.index_l",
+        "_pref_orient.index_l"
+      ],
+      "unique_name": "preferred_orientation.Si.index_l"
+    },
+    {
+      "category_code": "preferred_orientation",
+      "category_entry_name": "Si",
+      "context": "experiment.bragg_pd_tof",
+      "current_cif_names": [
+        "_preferred_orientation.march_r"
+      ],
+      "descriptor_class": "Parameter",
+      "descriptor_name": "march_r",
+      "descriptor_path": "experiment.bragg_pd_tof.pref_orient[].march_r",
+      "docs_anchor": "preferred-orientation-march-r",
+      "docs_page": "preferred_orientation",
+      "import_names": [
+        "_pref_orient.march_r"
+      ],
+      "iucr_name": "_pd_pref_orient_March_Dollase.r",
+      "owner_class": "PrefOrient",
+      "project_name": "_preferred_orientation.march_r",
+      "read_names": [
+        "_preferred_orientation.march_r",
+        "_pref_orient.march_r"
+      ],
+      "unique_name": "preferred_orientation.Si.march_r"
+    },
+    {
+      "category_code": "preferred_orientation",
+      "category_entry_name": "Si",
+      "context": "experiment.bragg_pd_tof",
+      "current_cif_names": [
+        "_preferred_orientation.march_random_fract"
+      ],
+      "descriptor_class": "Parameter",
+      "descriptor_name": "march_random_fract",
+      "descriptor_path": "experiment.bragg_pd_tof.pref_orient[].march_random_fract",
+      "docs_anchor": "preferred-orientation-march-random-fract",
+      "docs_page": "preferred_orientation",
+      "import_names": [
+        "_pref_orient.march_random_fract"
+      ],
+      "iucr_name": "_easydiffraction_pref_orient.march_random_fract",
+      "owner_class": "PrefOrient",
+      "project_name": "_preferred_orientation.march_random_fract",
+      "read_names": [
+        "_preferred_orientation.march_random_fract",
+        "_pref_orient.march_random_fract"
+      ],
+      "unique_name": "preferred_orientation.Si.march_random_fract"
+    },
+    {
+      "category_code": "preferred_orientation",
+      "category_entry_name": "Si",
+      "context": "experiment.bragg_pd_tof",
+      "current_cif_names": [
+        "_preferred_orientation.structure_id"
+      ],
+      "descriptor_class": "StringDescriptor",
+      "descriptor_name": "structure_id",
+      "descriptor_path": "experiment.bragg_pd_tof.pref_orient[].structure_id",
+      "docs_anchor": "preferred-orientation-structure-id",
+      "docs_page": "preferred_orientation",
+      "import_names": [
+        "_pref_orient.phase_id"
+      ],
+      "iucr_name": "_pd_pref_orient_March_Dollase.phase_id",
+      "owner_class": "PrefOrient",
+      "project_name": "_preferred_orientation.structure_id",
+      "read_names": [
+        "_preferred_orientation.structure_id",
+        "_pref_orient.phase_id"
+      ],
+      "unique_name": "preferred_orientation.Si.structure_id"
+    },
+    {
+      "category_code": "refln",
+      "category_entry_name": "0",
+      "context": "experiment.bragg_pd_tof",
+      "current_cif_names": [
+        "_refln.d_spacing"
+      ],
+      "descriptor_class": "NumericDescriptor",
+      "descriptor_name": "d_spacing",
+      "descriptor_path": "experiment.bragg_pd_tof.refln[].d_spacing",
+      "docs_anchor": "refln-d-spacing",
+      "docs_page": "refln",
+      "import_names": [
+        "_refln.d_spacing"
+      ],
+      "iucr_name": "_refln.d_spacing",
+      "owner_class": "PowderTofRefln",
+      "project_name": "_refln.d_spacing",
+      "read_names": [
+        "_refln.d_spacing"
+      ],
+      "unique_name": "refln.0.d_spacing"
+    },
+    {
+      "category_code": "refln",
+      "category_entry_name": "0",
+      "context": "experiment.bragg_pd_tof",
+      "current_cif_names": [
+        "_refln.f_calc"
+      ],
+      "descriptor_class": "NumericDescriptor",
+      "descriptor_name": "f_calc",
+      "descriptor_path": "experiment.bragg_pd_tof.refln[].f_calc",
+      "docs_anchor": "refln-f-calc",
+      "docs_page": "refln",
+      "import_names": [
+        "_refln.f_calc"
+      ],
+      "iucr_name": "_refln.f_calc",
+      "owner_class": "PowderTofRefln",
+      "project_name": "_refln.f_calc",
+      "read_names": [
+        "_refln.f_calc"
+      ],
+      "unique_name": "refln.0.f_calc"
+    },
+    {
+      "category_code": "refln",
+      "category_entry_name": "0",
+      "context": "experiment.bragg_pd_tof",
+      "current_cif_names": [
+        "_refln.f_squared_calc"
+      ],
+      "descriptor_class": "NumericDescriptor",
+      "descriptor_name": "f_squared_calc",
+      "descriptor_path": "experiment.bragg_pd_tof.refln[].f_squared_calc",
+      "docs_anchor": "refln-f-squared-calc",
+      "docs_page": "refln",
+      "import_names": [
+        "_refln.f_squared_calc"
+      ],
+      "iucr_name": "_refln.f_squared_calc",
+      "owner_class": "PowderTofRefln",
+      "project_name": "_refln.f_squared_calc",
+      "read_names": [
+        "_refln.f_squared_calc"
+      ],
+      "unique_name": "refln.0.f_squared_calc"
+    },
+    {
+      "category_code": "refln",
+      "category_entry_name": "0",
+      "context": "experiment.bragg_pd_tof",
+      "current_cif_names": [
+        "_refln.id"
+      ],
+      "descriptor_class": "StringDescriptor",
+      "descriptor_name": "id",
+      "descriptor_path": "experiment.bragg_pd_tof.refln[].id",
+      "docs_anchor": "refln-id",
+      "docs_page": "refln",
+      "import_names": [
+        "_refln.id"
+      ],
+      "iucr_name": "_refln.id",
+      "owner_class": "PowderTofRefln",
+      "project_name": "_refln.id",
+      "read_names": [
+        "_refln.id"
+      ],
+      "unique_name": "refln.0.id"
+    },
+    {
+      "category_code": "refln",
+      "category_entry_name": "0",
+      "context": "experiment.bragg_pd_tof",
+      "current_cif_names": [
+        "_refln.index_h"
+      ],
+      "descriptor_class": "NumericDescriptor",
+      "descriptor_name": "index_h",
+      "descriptor_path": "experiment.bragg_pd_tof.refln[].index_h",
+      "docs_anchor": "refln-index-h",
+      "docs_page": "refln",
+      "import_names": [
+        "_refln.index_h"
+      ],
+      "iucr_name": "_refln.index_h",
+      "owner_class": "PowderTofRefln",
+      "project_name": "_refln.index_h",
+      "read_names": [
+        "_refln.index_h"
+      ],
+      "unique_name": "refln.0.index_h"
+    },
+    {
+      "category_code": "refln",
+      "category_entry_name": "0",
+      "context": "experiment.bragg_pd_tof",
+      "current_cif_names": [
+        "_refln.index_k"
+      ],
+      "descriptor_class": "NumericDescriptor",
+      "descriptor_name": "index_k",
+      "descriptor_path": "experiment.bragg_pd_tof.refln[].index_k",
+      "docs_anchor": "refln-index-k",
+      "docs_page": "refln",
+      "import_names": [
+        "_refln.index_k"
+      ],
+      "iucr_name": "_refln.index_k",
+      "owner_class": "PowderTofRefln",
+      "project_name": "_refln.index_k",
+      "read_names": [
+        "_refln.index_k"
+      ],
+      "unique_name": "refln.0.index_k"
+    },
+    {
+      "category_code": "refln",
+      "category_entry_name": "0",
+      "context": "experiment.bragg_pd_tof",
+      "current_cif_names": [
+        "_refln.index_l"
+      ],
+      "descriptor_class": "NumericDescriptor",
+      "descriptor_name": "index_l",
+      "descriptor_path": "experiment.bragg_pd_tof.refln[].index_l",
+      "docs_anchor": "refln-index-l",
+      "docs_page": "refln",
+      "import_names": [
+        "_refln.index_l"
+      ],
+      "iucr_name": "_refln.index_l",
+      "owner_class": "PowderTofRefln",
+      "project_name": "_refln.index_l",
+      "read_names": [
+        "_refln.index_l"
+      ],
+      "unique_name": "refln.0.index_l"
+    },
+    {
+      "category_code": "refln",
+      "category_entry_name": "0",
+      "context": "experiment.bragg_pd_tof",
+      "current_cif_names": [
+        "_refln.intensity_calc"
+      ],
+      "descriptor_class": "NumericDescriptor",
+      "descriptor_name": "intensity_calc",
+      "descriptor_path": "experiment.bragg_pd_tof.refln[].intensity_calc",
+      "docs_anchor": "refln-intensity-calc",
+      "docs_page": "refln",
+      "import_names": [
+        "_refln.intensity_calc"
+      ],
+      "iucr_name": "_refln.intensity_calc",
+      "owner_class": "PowderTofRefln",
+      "project_name": "_refln.intensity_calc",
+      "read_names": [
+        "_refln.intensity_calc"
+      ],
+      "unique_name": "refln.0.intensity_calc"
+    },
+    {
+      "category_code": "refln",
+      "category_entry_name": "0",
+      "context": "experiment.bragg_pd_tof",
+      "current_cif_names": [
+        "_refln.intensity_meas"
+      ],
+      "descriptor_class": "NumericDescriptor",
+      "descriptor_name": "intensity_meas",
+      "descriptor_path": "experiment.bragg_pd_tof.refln[].intensity_meas",
+      "docs_anchor": "refln-intensity-meas",
+      "docs_page": "refln",
+      "import_names": [
+        "_refln.intensity_meas"
+      ],
+      "iucr_name": "_refln.intensity_meas",
+      "owner_class": "PowderTofRefln",
+      "project_name": "_refln.intensity_meas",
+      "read_names": [
+        "_refln.intensity_meas"
+      ],
+      "unique_name": "refln.0.intensity_meas"
+    },
+    {
+      "category_code": "refln",
+      "category_entry_name": "0",
+      "context": "experiment.bragg_pd_tof",
+      "current_cif_names": [
+        "_refln.intensity_meas_su"
+      ],
+      "descriptor_class": "NumericDescriptor",
+      "descriptor_name": "intensity_meas_su",
+      "descriptor_path": "experiment.bragg_pd_tof.refln[].intensity_meas_su",
+      "docs_anchor": "refln-intensity-meas-su",
+      "docs_page": "refln",
+      "import_names": [
+        "_refln.intensity_meas_su"
+      ],
+      "iucr_name": "_refln.intensity_meas_su",
+      "owner_class": "PowderTofRefln",
+      "project_name": "_refln.intensity_meas_su",
+      "read_names": [
+        "_refln.intensity_meas_su"
+      ],
+      "unique_name": "refln.0.intensity_meas_su"
+    },
+    {
+      "category_code": "refln",
+      "category_entry_name": "0",
+      "context": "experiment.bragg_pd_tof",
+      "current_cif_names": [
+        "_refln.sin_theta_over_lambda"
+      ],
+      "descriptor_class": "NumericDescriptor",
+      "descriptor_name": "sin_theta_over_lambda",
+      "descriptor_path": "experiment.bragg_pd_tof.refln[].sin_theta_over_lambda",
+      "docs_anchor": "refln-sin-theta-over-lambda",
+      "docs_page": "refln",
+      "import_names": [
+        "_refln.sin_theta_over_lambda"
+      ],
+      "iucr_name": "_refln.sin_theta_over_lambda",
+      "owner_class": "PowderTofRefln",
+      "project_name": "_refln.sin_theta_over_lambda",
+      "read_names": [
+        "_refln.sin_theta_over_lambda"
+      ],
+      "unique_name": "refln.0.sin_theta_over_lambda"
+    },
+    {
+      "category_code": "refln",
+      "category_entry_name": "0",
+      "context": "experiment.bragg_pd_tof",
+      "current_cif_names": [
+        "_refln.structure_id"
+      ],
+      "descriptor_class": "StringDescriptor",
+      "descriptor_name": "structure_id",
+      "descriptor_path": "experiment.bragg_pd_tof.refln[].structure_id",
+      "docs_anchor": "refln-structure-id",
+      "docs_page": "refln",
+      "import_names": [
+        "_refln.phase_id"
+      ],
+      "iucr_name": "_pd_refln.phase_id",
+      "owner_class": "PowderTofRefln",
+      "project_name": "_refln.structure_id",
+      "read_names": [
+        "_refln.structure_id",
+        "_refln.phase_id"
+      ],
+      "unique_name": "refln.0.structure_id"
+    },
+    {
+      "category_code": "refln",
+      "category_entry_name": "0",
+      "context": "experiment.bragg_pd_tof",
+      "current_cif_names": [
+        "_refln.time_of_flight"
+      ],
+      "descriptor_class": "NumericDescriptor",
+      "descriptor_name": "time_of_flight",
+      "descriptor_path": "experiment.bragg_pd_tof.refln[].time_of_flight",
+      "docs_anchor": "refln-time-of-flight",
+      "docs_page": "refln",
+      "import_names": [
+        "_refln.time_of_flight"
+      ],
+      "iucr_name": "_refln.time_of_flight",
+      "owner_class": "PowderTofRefln",
+      "project_name": "_refln.time_of_flight",
+      "read_names": [
+        "_refln.time_of_flight"
+      ],
+      "unique_name": "refln.0.time_of_flight"
     },
     {
       "category_code": "calculator",
@@ -3697,20 +4338,21 @@
       "category_entry_name": null,
       "context": "experiment.bragg_sc_cwl",
       "current_cif_names": [
-        "_refln.sin_theta_over_lambda_range_max"
+        "_data_range.sin_theta_over_lambda_max"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "sin_theta_over_lambda_max",
       "descriptor_path": "experiment.bragg_sc_cwl.data_range.sin_theta_over_lambda_max",
-      "docs_anchor": "refln-sin-theta-over-lambda-range-max",
-      "docs_page": "refln",
+      "docs_anchor": "data-range-sin-theta-over-lambda-max",
+      "docs_page": "data_range",
       "import_names": [
         "_refln.sin_theta_over_lambda_range_max"
       ],
       "iucr_name": "_refln.sin_theta_over_lambda_range_max",
       "owner_class": "ScDataRange",
-      "project_name": "_refln.sin_theta_over_lambda_range_max",
+      "project_name": "_data_range.sin_theta_over_lambda_max",
       "read_names": [
+        "_data_range.sin_theta_over_lambda_max",
         "_refln.sin_theta_over_lambda_range_max"
       ],
       "unique_name": "inventory_experiment.data_range.sin_theta_over_lambda_max"
@@ -3720,20 +4362,21 @@
       "category_entry_name": null,
       "context": "experiment.bragg_sc_cwl",
       "current_cif_names": [
-        "_refln.sin_theta_over_lambda_range_min"
+        "_data_range.sin_theta_over_lambda_min"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "sin_theta_over_lambda_min",
       "descriptor_path": "experiment.bragg_sc_cwl.data_range.sin_theta_over_lambda_min",
-      "docs_anchor": "refln-sin-theta-over-lambda-range-min",
-      "docs_page": "refln",
+      "docs_anchor": "data-range-sin-theta-over-lambda-min",
+      "docs_page": "data_range",
       "import_names": [
         "_refln.sin_theta_over_lambda_range_min"
       ],
       "iucr_name": "_refln.sin_theta_over_lambda_range_min",
       "owner_class": "ScDataRange",
-      "project_name": "_refln.sin_theta_over_lambda_range_min",
+      "project_name": "_data_range.sin_theta_over_lambda_min",
       "read_names": [
+        "_data_range.sin_theta_over_lambda_min",
         "_refln.sin_theta_over_lambda_range_min"
       ],
       "unique_name": "inventory_experiment.data_range.sin_theta_over_lambda_min"
@@ -4325,20 +4968,21 @@
       "category_entry_name": null,
       "context": "experiment.bragg_sc_tof",
       "current_cif_names": [
-        "_refln.sin_theta_over_lambda_range_max"
+        "_data_range.sin_theta_over_lambda_max"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "sin_theta_over_lambda_max",
       "descriptor_path": "experiment.bragg_sc_tof.data_range.sin_theta_over_lambda_max",
-      "docs_anchor": "refln-sin-theta-over-lambda-range-max",
-      "docs_page": "refln",
+      "docs_anchor": "data-range-sin-theta-over-lambda-max",
+      "docs_page": "data_range",
       "import_names": [
         "_refln.sin_theta_over_lambda_range_max"
       ],
       "iucr_name": "_refln.sin_theta_over_lambda_range_max",
       "owner_class": "ScDataRange",
-      "project_name": "_refln.sin_theta_over_lambda_range_max",
+      "project_name": "_data_range.sin_theta_over_lambda_max",
       "read_names": [
+        "_data_range.sin_theta_over_lambda_max",
         "_refln.sin_theta_over_lambda_range_max"
       ],
       "unique_name": "inventory_experiment.data_range.sin_theta_over_lambda_max"
@@ -4348,20 +4992,21 @@
       "category_entry_name": null,
       "context": "experiment.bragg_sc_tof",
       "current_cif_names": [
-        "_refln.sin_theta_over_lambda_range_min"
+        "_data_range.sin_theta_over_lambda_min"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "sin_theta_over_lambda_min",
       "descriptor_path": "experiment.bragg_sc_tof.data_range.sin_theta_over_lambda_min",
-      "docs_anchor": "refln-sin-theta-over-lambda-range-min",
-      "docs_page": "refln",
+      "docs_anchor": "data-range-sin-theta-over-lambda-min",
+      "docs_page": "data_range",
       "import_names": [
         "_refln.sin_theta_over_lambda_range_min"
       ],
       "iucr_name": "_refln.sin_theta_over_lambda_range_min",
       "owner_class": "ScDataRange",
-      "project_name": "_refln.sin_theta_over_lambda_range_min",
+      "project_name": "_data_range.sin_theta_over_lambda_min",
       "read_names": [
+        "_data_range.sin_theta_over_lambda_min",
         "_refln.sin_theta_over_lambda_range_min"
       ],
       "unique_name": "inventory_experiment.data_range.sin_theta_over_lambda_min"
@@ -5096,20 +5741,21 @@
       "category_entry_name": null,
       "context": "experiment.total_pd_cwl",
       "current_cif_names": [
-        "_pd_meas.2theta_range_inc"
+        "_data_range.two_theta_inc"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "two_theta_inc",
       "descriptor_path": "experiment.total_pd_cwl.data_range.two_theta_inc",
-      "docs_anchor": "pd-meas-2theta-range-inc",
-      "docs_page": "pd_meas",
+      "docs_anchor": "data-range-two-theta-inc",
+      "docs_page": "data_range",
       "import_names": [
         "_pd_meas.2theta_range_inc"
       ],
       "iucr_name": "_pd_meas.2theta_range_inc",
       "owner_class": "CwlPdDataRange",
-      "project_name": "_pd_meas.2theta_range_inc",
+      "project_name": "_data_range.two_theta_inc",
       "read_names": [
+        "_data_range.two_theta_inc",
         "_pd_meas.2theta_range_inc"
       ],
       "unique_name": "inventory_experiment.data_range.two_theta_inc"
@@ -5119,20 +5765,21 @@
       "category_entry_name": null,
       "context": "experiment.total_pd_cwl",
       "current_cif_names": [
-        "_pd_meas.2theta_range_max"
+        "_data_range.two_theta_max"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "two_theta_max",
       "descriptor_path": "experiment.total_pd_cwl.data_range.two_theta_max",
-      "docs_anchor": "pd-meas-2theta-range-max",
-      "docs_page": "pd_meas",
+      "docs_anchor": "data-range-two-theta-max",
+      "docs_page": "data_range",
       "import_names": [
         "_pd_meas.2theta_range_max"
       ],
       "iucr_name": "_pd_meas.2theta_range_max",
       "owner_class": "CwlPdDataRange",
-      "project_name": "_pd_meas.2theta_range_max",
+      "project_name": "_data_range.two_theta_max",
       "read_names": [
+        "_data_range.two_theta_max",
         "_pd_meas.2theta_range_max"
       ],
       "unique_name": "inventory_experiment.data_range.two_theta_max"
@@ -5142,20 +5789,21 @@
       "category_entry_name": null,
       "context": "experiment.total_pd_cwl",
       "current_cif_names": [
-        "_pd_meas.2theta_range_min"
+        "_data_range.two_theta_min"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "two_theta_min",
       "descriptor_path": "experiment.total_pd_cwl.data_range.two_theta_min",
-      "docs_anchor": "pd-meas-2theta-range-min",
-      "docs_page": "pd_meas",
+      "docs_anchor": "data-range-two-theta-min",
+      "docs_page": "data_range",
       "import_names": [
         "_pd_meas.2theta_range_min"
       ],
       "iucr_name": "_pd_meas.2theta_range_min",
       "owner_class": "CwlPdDataRange",
-      "project_name": "_pd_meas.2theta_range_min",
+      "project_name": "_data_range.two_theta_min",
       "read_names": [
+        "_data_range.two_theta_min",
         "_pd_meas.2theta_range_min"
       ],
       "unique_name": "inventory_experiment.data_range.two_theta_min"
@@ -5798,20 +6446,21 @@
       "category_entry_name": null,
       "context": "experiment.total_pd_tof",
       "current_cif_names": [
-        "_pd_meas.time_of_flight_range_inc"
+        "_data_range.time_of_flight_inc"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "time_of_flight_inc",
       "descriptor_path": "experiment.total_pd_tof.data_range.time_of_flight_inc",
-      "docs_anchor": "pd-meas-time-of-flight-range-inc",
-      "docs_page": "pd_meas",
+      "docs_anchor": "data-range-time-of-flight-inc",
+      "docs_page": "data_range",
       "import_names": [
         "_pd_meas.time_of_flight_range_inc"
       ],
       "iucr_name": "_pd_meas.time_of_flight_range_inc",
       "owner_class": "TofPdDataRange",
-      "project_name": "_pd_meas.time_of_flight_range_inc",
+      "project_name": "_data_range.time_of_flight_inc",
       "read_names": [
+        "_data_range.time_of_flight_inc",
         "_pd_meas.time_of_flight_range_inc"
       ],
       "unique_name": "inventory_experiment.data_range.time_of_flight_inc"
@@ -5821,20 +6470,21 @@
       "category_entry_name": null,
       "context": "experiment.total_pd_tof",
       "current_cif_names": [
-        "_pd_meas.time_of_flight_range_max"
+        "_data_range.time_of_flight_max"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "time_of_flight_max",
       "descriptor_path": "experiment.total_pd_tof.data_range.time_of_flight_max",
-      "docs_anchor": "pd-meas-time-of-flight-range-max",
-      "docs_page": "pd_meas",
+      "docs_anchor": "data-range-time-of-flight-max",
+      "docs_page": "data_range",
       "import_names": [
         "_pd_meas.time_of_flight_range_max"
       ],
       "iucr_name": "_pd_meas.time_of_flight_range_max",
       "owner_class": "TofPdDataRange",
-      "project_name": "_pd_meas.time_of_flight_range_max",
+      "project_name": "_data_range.time_of_flight_max",
       "read_names": [
+        "_data_range.time_of_flight_max",
         "_pd_meas.time_of_flight_range_max"
       ],
       "unique_name": "inventory_experiment.data_range.time_of_flight_max"
@@ -5844,20 +6494,21 @@
       "category_entry_name": null,
       "context": "experiment.total_pd_tof",
       "current_cif_names": [
-        "_pd_meas.time_of_flight_range_min"
+        "_data_range.time_of_flight_min"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "time_of_flight_min",
       "descriptor_path": "experiment.total_pd_tof.data_range.time_of_flight_min",
-      "docs_anchor": "pd-meas-time-of-flight-range-min",
-      "docs_page": "pd_meas",
+      "docs_anchor": "data-range-time-of-flight-min",
+      "docs_page": "data_range",
       "import_names": [
         "_pd_meas.time_of_flight_range_min"
       ],
       "iucr_name": "_pd_meas.time_of_flight_range_min",
       "owner_class": "TofPdDataRange",
-      "project_name": "_pd_meas.time_of_flight_range_min",
+      "project_name": "_data_range.time_of_flight_min",
       "read_names": [
+        "_data_range.time_of_flight_min",
         "_pd_meas.time_of_flight_range_min"
       ],
       "unique_name": "inventory_experiment.data_range.time_of_flight_min"
@@ -6381,14 +7032,12 @@
       "category_entry_name": "",
       "context": "factory.AtomSiteAnisoFactory.default",
       "current_cif_names": [
-        "_atom_site_aniso.B_11",
-        "_atom_site_aniso.U_11",
-        "_atom_site_aniso.beta_11"
+        "_atom_site_aniso.adp_11"
       ],
       "descriptor_class": "_AnisoAdpParameter",
       "descriptor_name": "adp_11",
       "descriptor_path": "factory.AtomSiteAnisoFactory.default[].adp_11",
-      "docs_anchor": "atom-site-aniso-b-11",
+      "docs_anchor": "atom-site-aniso-adp-11",
       "docs_page": "atom_site_aniso",
       "import_names": [
         "_atom_site_aniso.B_11",
@@ -6397,8 +7046,9 @@
       ],
       "iucr_name": "_atom_site_aniso.B_11",
       "owner_class": "AtomSiteAniso",
-      "project_name": "_atom_site_aniso.B_11",
+      "project_name": "_atom_site_aniso.adp_11",
       "read_names": [
+        "_atom_site_aniso.adp_11",
         "_atom_site_aniso.B_11",
         "_atom_site_aniso.U_11",
         "_atom_site_aniso.beta_11"
@@ -6410,14 +7060,12 @@
       "category_entry_name": "",
       "context": "factory.AtomSiteAnisoFactory.default",
       "current_cif_names": [
-        "_atom_site_aniso.B_12",
-        "_atom_site_aniso.U_12",
-        "_atom_site_aniso.beta_12"
+        "_atom_site_aniso.adp_12"
       ],
       "descriptor_class": "_AnisoAdpParameter",
       "descriptor_name": "adp_12",
       "descriptor_path": "factory.AtomSiteAnisoFactory.default[].adp_12",
-      "docs_anchor": "atom-site-aniso-b-12",
+      "docs_anchor": "atom-site-aniso-adp-12",
       "docs_page": "atom_site_aniso",
       "import_names": [
         "_atom_site_aniso.B_12",
@@ -6426,8 +7074,9 @@
       ],
       "iucr_name": "_atom_site_aniso.B_12",
       "owner_class": "AtomSiteAniso",
-      "project_name": "_atom_site_aniso.B_12",
+      "project_name": "_atom_site_aniso.adp_12",
       "read_names": [
+        "_atom_site_aniso.adp_12",
         "_atom_site_aniso.B_12",
         "_atom_site_aniso.U_12",
         "_atom_site_aniso.beta_12"
@@ -6439,14 +7088,12 @@
       "category_entry_name": "",
       "context": "factory.AtomSiteAnisoFactory.default",
       "current_cif_names": [
-        "_atom_site_aniso.B_13",
-        "_atom_site_aniso.U_13",
-        "_atom_site_aniso.beta_13"
+        "_atom_site_aniso.adp_13"
       ],
       "descriptor_class": "_AnisoAdpParameter",
       "descriptor_name": "adp_13",
       "descriptor_path": "factory.AtomSiteAnisoFactory.default[].adp_13",
-      "docs_anchor": "atom-site-aniso-b-13",
+      "docs_anchor": "atom-site-aniso-adp-13",
       "docs_page": "atom_site_aniso",
       "import_names": [
         "_atom_site_aniso.B_13",
@@ -6455,8 +7102,9 @@
       ],
       "iucr_name": "_atom_site_aniso.B_13",
       "owner_class": "AtomSiteAniso",
-      "project_name": "_atom_site_aniso.B_13",
+      "project_name": "_atom_site_aniso.adp_13",
       "read_names": [
+        "_atom_site_aniso.adp_13",
         "_atom_site_aniso.B_13",
         "_atom_site_aniso.U_13",
         "_atom_site_aniso.beta_13"
@@ -6468,14 +7116,12 @@
       "category_entry_name": "",
       "context": "factory.AtomSiteAnisoFactory.default",
       "current_cif_names": [
-        "_atom_site_aniso.B_22",
-        "_atom_site_aniso.U_22",
-        "_atom_site_aniso.beta_22"
+        "_atom_site_aniso.adp_22"
       ],
       "descriptor_class": "_AnisoAdpParameter",
       "descriptor_name": "adp_22",
       "descriptor_path": "factory.AtomSiteAnisoFactory.default[].adp_22",
-      "docs_anchor": "atom-site-aniso-b-22",
+      "docs_anchor": "atom-site-aniso-adp-22",
       "docs_page": "atom_site_aniso",
       "import_names": [
         "_atom_site_aniso.B_22",
@@ -6484,8 +7130,9 @@
       ],
       "iucr_name": "_atom_site_aniso.B_22",
       "owner_class": "AtomSiteAniso",
-      "project_name": "_atom_site_aniso.B_22",
+      "project_name": "_atom_site_aniso.adp_22",
       "read_names": [
+        "_atom_site_aniso.adp_22",
         "_atom_site_aniso.B_22",
         "_atom_site_aniso.U_22",
         "_atom_site_aniso.beta_22"
@@ -6497,14 +7144,12 @@
       "category_entry_name": "",
       "context": "factory.AtomSiteAnisoFactory.default",
       "current_cif_names": [
-        "_atom_site_aniso.B_23",
-        "_atom_site_aniso.U_23",
-        "_atom_site_aniso.beta_23"
+        "_atom_site_aniso.adp_23"
       ],
       "descriptor_class": "_AnisoAdpParameter",
       "descriptor_name": "adp_23",
       "descriptor_path": "factory.AtomSiteAnisoFactory.default[].adp_23",
-      "docs_anchor": "atom-site-aniso-b-23",
+      "docs_anchor": "atom-site-aniso-adp-23",
       "docs_page": "atom_site_aniso",
       "import_names": [
         "_atom_site_aniso.B_23",
@@ -6513,8 +7158,9 @@
       ],
       "iucr_name": "_atom_site_aniso.B_23",
       "owner_class": "AtomSiteAniso",
-      "project_name": "_atom_site_aniso.B_23",
+      "project_name": "_atom_site_aniso.adp_23",
       "read_names": [
+        "_atom_site_aniso.adp_23",
         "_atom_site_aniso.B_23",
         "_atom_site_aniso.U_23",
         "_atom_site_aniso.beta_23"
@@ -6526,14 +7172,12 @@
       "category_entry_name": "",
       "context": "factory.AtomSiteAnisoFactory.default",
       "current_cif_names": [
-        "_atom_site_aniso.B_33",
-        "_atom_site_aniso.U_33",
-        "_atom_site_aniso.beta_33"
+        "_atom_site_aniso.adp_33"
       ],
       "descriptor_class": "_AnisoAdpParameter",
       "descriptor_name": "adp_33",
       "descriptor_path": "factory.AtomSiteAnisoFactory.default[].adp_33",
-      "docs_anchor": "atom-site-aniso-b-33",
+      "docs_anchor": "atom-site-aniso-adp-33",
       "docs_page": "atom_site_aniso",
       "import_names": [
         "_atom_site_aniso.B_33",
@@ -6542,8 +7186,9 @@
       ],
       "iucr_name": "_atom_site_aniso.B_33",
       "owner_class": "AtomSiteAniso",
-      "project_name": "_atom_site_aniso.B_33",
+      "project_name": "_atom_site_aniso.adp_33",
       "read_names": [
+        "_atom_site_aniso.adp_33",
         "_atom_site_aniso.B_33",
         "_atom_site_aniso.U_33",
         "_atom_site_aniso.beta_33"
@@ -6579,13 +7224,12 @@
       "category_entry_name": "Si",
       "context": "factory.AtomSitesFactory.default",
       "current_cif_names": [
-        "_atom_site.B_iso_or_equiv",
-        "_atom_site.U_iso_or_equiv"
+        "_atom_site.adp_iso"
       ],
       "descriptor_class": "Parameter",
       "descriptor_name": "adp_iso",
       "descriptor_path": "factory.AtomSitesFactory.default[].adp_iso",
-      "docs_anchor": "atom-site-b-iso-or-equiv",
+      "docs_anchor": "atom-site-adp-iso",
       "docs_page": "atom_site",
       "import_names": [
         "_atom_site.B_iso_or_equiv",
@@ -6593,8 +7237,9 @@
       ],
       "iucr_name": "_atom_site.B_iso_or_equiv",
       "owner_class": "AtomSite",
-      "project_name": "_atom_site.B_iso_or_equiv",
+      "project_name": "_atom_site.adp_iso",
       "read_names": [
+        "_atom_site.adp_iso",
         "_atom_site.B_iso_or_equiv",
         "_atom_site.U_iso_or_equiv"
       ],
@@ -6605,7 +7250,6 @@
       "category_entry_name": "Si",
       "context": "factory.AtomSitesFactory.default",
       "current_cif_names": [
-        "_atom_site.ADP_type",
         "_atom_site.adp_type"
       ],
       "descriptor_class": "EnumDescriptor",
@@ -6614,15 +7258,14 @@
       "docs_anchor": "atom-site-adp-type",
       "docs_page": "atom_site",
       "import_names": [
-        "_atom_site.ADP_type",
-        "_atom_site.adp_type"
+        "_atom_site.ADP_type"
       ],
       "iucr_name": "_atom_site.ADP_type",
       "owner_class": "AtomSite",
-      "project_name": "_atom_site.ADP_type",
+      "project_name": "_atom_site.adp_type",
       "read_names": [
-        "_atom_site.ADP_type",
-        "_atom_site.adp_type"
+        "_atom_site.adp_type",
+        "_atom_site.ADP_type"
       ],
       "unique_name": "atom_site.Si.adp_type"
     },
@@ -6724,20 +7367,21 @@
       "category_entry_name": "Si",
       "context": "factory.AtomSitesFactory.default",
       "current_cif_names": [
-        "_atom_site.site_symmetry_multiplicity"
+        "_atom_site.multiplicity"
       ],
       "descriptor_class": "IntegerDescriptor",
       "descriptor_name": "multiplicity",
       "descriptor_path": "factory.AtomSitesFactory.default[].multiplicity",
-      "docs_anchor": "atom-site-site-symmetry-multiplicity",
+      "docs_anchor": "atom-site-multiplicity",
       "docs_page": "atom_site",
       "import_names": [
         "_atom_site.site_symmetry_multiplicity"
       ],
       "iucr_name": "_atom_site.site_symmetry_multiplicity",
       "owner_class": "AtomSite",
-      "project_name": "_atom_site.site_symmetry_multiplicity",
+      "project_name": "_atom_site.multiplicity",
       "read_names": [
+        "_atom_site.multiplicity",
         "_atom_site.site_symmetry_multiplicity"
       ],
       "unique_name": "atom_site.Si.multiplicity"
@@ -6793,27 +7437,24 @@
       "category_entry_name": "Si",
       "context": "factory.AtomSitesFactory.default",
       "current_cif_names": [
-        "_atom_site.Wyckoff_symbol",
-        "_atom_site.Wyckoff_letter",
         "_atom_site.wyckoff_letter"
       ],
       "descriptor_class": "StringDescriptor",
       "descriptor_name": "wyckoff_letter",
       "descriptor_path": "factory.AtomSitesFactory.default[].wyckoff_letter",
-      "docs_anchor": "atom-site-wyckoff-symbol",
+      "docs_anchor": "atom-site-wyckoff-letter",
       "docs_page": "atom_site",
       "import_names": [
         "_atom_site.Wyckoff_symbol",
-        "_atom_site.Wyckoff_letter",
-        "_atom_site.wyckoff_letter"
+        "_atom_site.Wyckoff_letter"
       ],
       "iucr_name": "_atom_site.Wyckoff_symbol",
       "owner_class": "AtomSite",
-      "project_name": "_atom_site.Wyckoff_symbol",
+      "project_name": "_atom_site.wyckoff_letter",
       "read_names": [
+        "_atom_site.wyckoff_letter",
         "_atom_site.Wyckoff_symbol",
-        "_atom_site.Wyckoff_letter",
-        "_atom_site.wyckoff_letter"
+        "_atom_site.Wyckoff_letter"
       ],
       "unique_name": "atom_site.Si.wyckoff_letter"
     },
@@ -6845,20 +7486,21 @@
       "category_entry_name": "0",
       "context": "factory.BackgroundFactory.chebyshev",
       "current_cif_names": [
-        "_pd_background.Chebyshev_coef"
+        "_background.coef"
       ],
       "descriptor_class": "Parameter",
       "descriptor_name": "coef",
       "descriptor_path": "factory.BackgroundFactory.chebyshev[].coef",
-      "docs_anchor": "pd-background-chebyshev-coef",
-      "docs_page": "pd_background",
+      "docs_anchor": "background-coef",
+      "docs_page": "background",
       "import_names": [
         "_pd_background.Chebyshev_coef"
       ],
       "iucr_name": "_pd_background.Chebyshev_coef",
       "owner_class": "PolynomialTerm",
-      "project_name": "_pd_background.Chebyshev_coef",
+      "project_name": "_background.coef",
       "read_names": [
+        "_background.coef",
         "_pd_background.Chebyshev_coef"
       ],
       "unique_name": "background.0.coef"
@@ -6868,20 +7510,21 @@
       "category_entry_name": "0",
       "context": "factory.BackgroundFactory.chebyshev",
       "current_cif_names": [
-        "_pd_background.id"
+        "_background.id"
       ],
       "descriptor_class": "StringDescriptor",
       "descriptor_name": "id",
       "descriptor_path": "factory.BackgroundFactory.chebyshev[].id",
-      "docs_anchor": "pd-background-id",
-      "docs_page": "pd_background",
+      "docs_anchor": "background-id",
+      "docs_page": "background",
       "import_names": [
         "_pd_background.id"
       ],
       "iucr_name": "_pd_background.id",
       "owner_class": "PolynomialTerm",
-      "project_name": "_pd_background.id",
+      "project_name": "_background.id",
       "read_names": [
+        "_background.id",
         "_pd_background.id"
       ],
       "unique_name": "background.0.id"
@@ -6891,20 +7534,21 @@
       "category_entry_name": "0",
       "context": "factory.BackgroundFactory.chebyshev",
       "current_cif_names": [
-        "_pd_background.Chebyshev_order"
+        "_background.order"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "order",
       "descriptor_path": "factory.BackgroundFactory.chebyshev[].order",
-      "docs_anchor": "pd-background-chebyshev-order",
-      "docs_page": "pd_background",
+      "docs_anchor": "background-order",
+      "docs_page": "background",
       "import_names": [
         "_pd_background.Chebyshev_order"
       ],
       "iucr_name": "_pd_background.Chebyshev_order",
       "owner_class": "PolynomialTerm",
-      "project_name": "_pd_background.Chebyshev_order",
+      "project_name": "_background.order",
       "read_names": [
+        "_background.order",
         "_pd_background.Chebyshev_order"
       ],
       "unique_name": "background.0.order"
@@ -7758,20 +8402,21 @@
       "category_entry_name": null,
       "context": "factory.DataRangeFactory.cwl-pd",
       "current_cif_names": [
-        "_pd_meas.2theta_range_inc"
+        "_data_range.two_theta_inc"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "two_theta_inc",
       "descriptor_path": "factory.DataRangeFactory.cwl-pd.two_theta_inc",
-      "docs_anchor": "pd-meas-2theta-range-inc",
-      "docs_page": "pd_meas",
+      "docs_anchor": "data-range-two-theta-inc",
+      "docs_page": "data_range",
       "import_names": [
         "_pd_meas.2theta_range_inc"
       ],
       "iucr_name": "_pd_meas.2theta_range_inc",
       "owner_class": "CwlPdDataRange",
-      "project_name": "_pd_meas.2theta_range_inc",
+      "project_name": "_data_range.two_theta_inc",
       "read_names": [
+        "_data_range.two_theta_inc",
         "_pd_meas.2theta_range_inc"
       ],
       "unique_name": "data_range.two_theta_inc"
@@ -7781,20 +8426,21 @@
       "category_entry_name": null,
       "context": "factory.DataRangeFactory.cwl-pd",
       "current_cif_names": [
-        "_pd_meas.2theta_range_max"
+        "_data_range.two_theta_max"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "two_theta_max",
       "descriptor_path": "factory.DataRangeFactory.cwl-pd.two_theta_max",
-      "docs_anchor": "pd-meas-2theta-range-max",
-      "docs_page": "pd_meas",
+      "docs_anchor": "data-range-two-theta-max",
+      "docs_page": "data_range",
       "import_names": [
         "_pd_meas.2theta_range_max"
       ],
       "iucr_name": "_pd_meas.2theta_range_max",
       "owner_class": "CwlPdDataRange",
-      "project_name": "_pd_meas.2theta_range_max",
+      "project_name": "_data_range.two_theta_max",
       "read_names": [
+        "_data_range.two_theta_max",
         "_pd_meas.2theta_range_max"
       ],
       "unique_name": "data_range.two_theta_max"
@@ -7804,20 +8450,21 @@
       "category_entry_name": null,
       "context": "factory.DataRangeFactory.cwl-pd",
       "current_cif_names": [
-        "_pd_meas.2theta_range_min"
+        "_data_range.two_theta_min"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "two_theta_min",
       "descriptor_path": "factory.DataRangeFactory.cwl-pd.two_theta_min",
-      "docs_anchor": "pd-meas-2theta-range-min",
-      "docs_page": "pd_meas",
+      "docs_anchor": "data-range-two-theta-min",
+      "docs_page": "data_range",
       "import_names": [
         "_pd_meas.2theta_range_min"
       ],
       "iucr_name": "_pd_meas.2theta_range_min",
       "owner_class": "CwlPdDataRange",
-      "project_name": "_pd_meas.2theta_range_min",
+      "project_name": "_data_range.two_theta_min",
       "read_names": [
+        "_data_range.two_theta_min",
         "_pd_meas.2theta_range_min"
       ],
       "unique_name": "data_range.two_theta_min"
@@ -7827,20 +8474,21 @@
       "category_entry_name": null,
       "context": "factory.DataRangeFactory.sc",
       "current_cif_names": [
-        "_refln.sin_theta_over_lambda_range_max"
+        "_data_range.sin_theta_over_lambda_max"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "sin_theta_over_lambda_max",
       "descriptor_path": "factory.DataRangeFactory.sc.sin_theta_over_lambda_max",
-      "docs_anchor": "refln-sin-theta-over-lambda-range-max",
-      "docs_page": "refln",
+      "docs_anchor": "data-range-sin-theta-over-lambda-max",
+      "docs_page": "data_range",
       "import_names": [
         "_refln.sin_theta_over_lambda_range_max"
       ],
       "iucr_name": "_refln.sin_theta_over_lambda_range_max",
       "owner_class": "ScDataRange",
-      "project_name": "_refln.sin_theta_over_lambda_range_max",
+      "project_name": "_data_range.sin_theta_over_lambda_max",
       "read_names": [
+        "_data_range.sin_theta_over_lambda_max",
         "_refln.sin_theta_over_lambda_range_max"
       ],
       "unique_name": "data_range.sin_theta_over_lambda_max"
@@ -7850,20 +8498,21 @@
       "category_entry_name": null,
       "context": "factory.DataRangeFactory.sc",
       "current_cif_names": [
-        "_refln.sin_theta_over_lambda_range_min"
+        "_data_range.sin_theta_over_lambda_min"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "sin_theta_over_lambda_min",
       "descriptor_path": "factory.DataRangeFactory.sc.sin_theta_over_lambda_min",
-      "docs_anchor": "refln-sin-theta-over-lambda-range-min",
-      "docs_page": "refln",
+      "docs_anchor": "data-range-sin-theta-over-lambda-min",
+      "docs_page": "data_range",
       "import_names": [
         "_refln.sin_theta_over_lambda_range_min"
       ],
       "iucr_name": "_refln.sin_theta_over_lambda_range_min",
       "owner_class": "ScDataRange",
-      "project_name": "_refln.sin_theta_over_lambda_range_min",
+      "project_name": "_data_range.sin_theta_over_lambda_min",
       "read_names": [
+        "_data_range.sin_theta_over_lambda_min",
         "_refln.sin_theta_over_lambda_range_min"
       ],
       "unique_name": "data_range.sin_theta_over_lambda_min"
@@ -7873,20 +8522,21 @@
       "category_entry_name": null,
       "context": "factory.DataRangeFactory.tof-pd",
       "current_cif_names": [
-        "_pd_meas.time_of_flight_range_inc"
+        "_data_range.time_of_flight_inc"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "time_of_flight_inc",
       "descriptor_path": "factory.DataRangeFactory.tof-pd.time_of_flight_inc",
-      "docs_anchor": "pd-meas-time-of-flight-range-inc",
-      "docs_page": "pd_meas",
+      "docs_anchor": "data-range-time-of-flight-inc",
+      "docs_page": "data_range",
       "import_names": [
         "_pd_meas.time_of_flight_range_inc"
       ],
       "iucr_name": "_pd_meas.time_of_flight_range_inc",
       "owner_class": "TofPdDataRange",
-      "project_name": "_pd_meas.time_of_flight_range_inc",
+      "project_name": "_data_range.time_of_flight_inc",
       "read_names": [
+        "_data_range.time_of_flight_inc",
         "_pd_meas.time_of_flight_range_inc"
       ],
       "unique_name": "data_range.time_of_flight_inc"
@@ -7896,20 +8546,21 @@
       "category_entry_name": null,
       "context": "factory.DataRangeFactory.tof-pd",
       "current_cif_names": [
-        "_pd_meas.time_of_flight_range_max"
+        "_data_range.time_of_flight_max"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "time_of_flight_max",
       "descriptor_path": "factory.DataRangeFactory.tof-pd.time_of_flight_max",
-      "docs_anchor": "pd-meas-time-of-flight-range-max",
-      "docs_page": "pd_meas",
+      "docs_anchor": "data-range-time-of-flight-max",
+      "docs_page": "data_range",
       "import_names": [
         "_pd_meas.time_of_flight_range_max"
       ],
       "iucr_name": "_pd_meas.time_of_flight_range_max",
       "owner_class": "TofPdDataRange",
-      "project_name": "_pd_meas.time_of_flight_range_max",
+      "project_name": "_data_range.time_of_flight_max",
       "read_names": [
+        "_data_range.time_of_flight_max",
         "_pd_meas.time_of_flight_range_max"
       ],
       "unique_name": "data_range.time_of_flight_max"
@@ -7919,20 +8570,21 @@
       "category_entry_name": null,
       "context": "factory.DataRangeFactory.tof-pd",
       "current_cif_names": [
-        "_pd_meas.time_of_flight_range_min"
+        "_data_range.time_of_flight_min"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "time_of_flight_min",
       "descriptor_path": "factory.DataRangeFactory.tof-pd.time_of_flight_min",
-      "docs_anchor": "pd-meas-time-of-flight-range-min",
-      "docs_page": "pd_meas",
+      "docs_anchor": "data-range-time-of-flight-min",
+      "docs_page": "data_range",
       "import_names": [
         "_pd_meas.time_of_flight_range_min"
       ],
       "iucr_name": "_pd_meas.time_of_flight_range_min",
       "owner_class": "TofPdDataRange",
-      "project_name": "_pd_meas.time_of_flight_range_min",
+      "project_name": "_data_range.time_of_flight_min",
       "read_names": [
+        "_data_range.time_of_flight_min",
         "_pd_meas.time_of_flight_range_min"
       ],
       "unique_name": "data_range.time_of_flight_min"
@@ -9629,7 +10281,7 @@
       "category_entry_name": null,
       "context": "factory.FitResultFactory.least_squares",
       "current_cif_names": [
-        "_fit_result.prof_R_factor"
+        "_fit_result.prof_r_factor"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "prof_r_factor",
@@ -9639,10 +10291,11 @@
       "import_names": [
         "_fit_result.prof_R_factor"
       ],
-      "iucr_name": "_fit_result.prof_R_factor",
+      "iucr_name": "_fit_result.prof_r_factor",
       "owner_class": "LeastSquaresFitResult",
-      "project_name": "_fit_result.prof_R_factor",
+      "project_name": "_fit_result.prof_r_factor",
       "read_names": [
+        "_fit_result.prof_r_factor",
         "_fit_result.prof_R_factor"
       ],
       "unique_name": "fit_result.prof_r_factor"
@@ -9652,7 +10305,7 @@
       "category_entry_name": null,
       "context": "factory.FitResultFactory.least_squares",
       "current_cif_names": [
-        "_fit_result.prof_wR_expected"
+        "_fit_result.prof_wr_expected"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "prof_wr_expected",
@@ -9662,10 +10315,11 @@
       "import_names": [
         "_fit_result.prof_wR_expected"
       ],
-      "iucr_name": "_fit_result.prof_wR_expected",
+      "iucr_name": "_fit_result.prof_wr_expected",
       "owner_class": "LeastSquaresFitResult",
-      "project_name": "_fit_result.prof_wR_expected",
+      "project_name": "_fit_result.prof_wr_expected",
       "read_names": [
+        "_fit_result.prof_wr_expected",
         "_fit_result.prof_wR_expected"
       ],
       "unique_name": "fit_result.prof_wr_expected"
@@ -9675,7 +10329,7 @@
       "category_entry_name": null,
       "context": "factory.FitResultFactory.least_squares",
       "current_cif_names": [
-        "_fit_result.prof_wR_factor"
+        "_fit_result.prof_wr_factor"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "prof_wr_factor",
@@ -9685,10 +10339,11 @@
       "import_names": [
         "_fit_result.prof_wR_factor"
       ],
-      "iucr_name": "_fit_result.prof_wR_factor",
+      "iucr_name": "_fit_result.prof_wr_factor",
       "owner_class": "LeastSquaresFitResult",
-      "project_name": "_fit_result.prof_wR_factor",
+      "project_name": "_fit_result.prof_wr_factor",
       "read_names": [
+        "_fit_result.prof_wr_factor",
         "_fit_result.prof_wR_factor"
       ],
       "unique_name": "fit_result.prof_wr_factor"
@@ -9721,7 +10376,7 @@
       "category_entry_name": null,
       "context": "factory.FitResultFactory.least_squares",
       "current_cif_names": [
-        "_fit_result.R_factor_all"
+        "_fit_result.r_factor_all"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "r_factor_all",
@@ -9731,10 +10386,11 @@
       "import_names": [
         "_fit_result.R_factor_all"
       ],
-      "iucr_name": "_fit_result.R_factor_all",
+      "iucr_name": "_fit_result.r_factor_all",
       "owner_class": "LeastSquaresFitResult",
-      "project_name": "_fit_result.R_factor_all",
+      "project_name": "_fit_result.r_factor_all",
       "read_names": [
+        "_fit_result.r_factor_all",
         "_fit_result.R_factor_all"
       ],
       "unique_name": "fit_result.r_factor_all"
@@ -9744,7 +10400,7 @@
       "category_entry_name": null,
       "context": "factory.FitResultFactory.least_squares",
       "current_cif_names": [
-        "_fit_result.R_factor_gt"
+        "_fit_result.r_factor_gt"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "r_factor_gt",
@@ -9754,10 +10410,11 @@
       "import_names": [
         "_fit_result.R_factor_gt"
       ],
-      "iucr_name": "_fit_result.R_factor_gt",
+      "iucr_name": "_fit_result.r_factor_gt",
       "owner_class": "LeastSquaresFitResult",
-      "project_name": "_fit_result.R_factor_gt",
+      "project_name": "_fit_result.r_factor_gt",
       "read_names": [
+        "_fit_result.r_factor_gt",
         "_fit_result.R_factor_gt"
       ],
       "unique_name": "fit_result.r_factor_gt"
@@ -9905,7 +10562,7 @@
       "category_entry_name": null,
       "context": "factory.FitResultFactory.least_squares",
       "current_cif_names": [
-        "_fit_result.wR_factor_all"
+        "_fit_result.wr_factor_all"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "wr_factor_all",
@@ -9915,10 +10572,11 @@
       "import_names": [
         "_fit_result.wR_factor_all"
       ],
-      "iucr_name": "_fit_result.wR_factor_all",
+      "iucr_name": "_fit_result.wr_factor_all",
       "owner_class": "LeastSquaresFitResult",
-      "project_name": "_fit_result.wR_factor_all",
+      "project_name": "_fit_result.wr_factor_all",
       "read_names": [
+        "_fit_result.wr_factor_all",
         "_fit_result.wR_factor_all"
       ],
       "unique_name": "fit_result.wr_factor_all"
@@ -9928,7 +10586,7 @@
       "category_entry_name": null,
       "context": "factory.FitResultFactory.least_squares",
       "current_cif_names": [
-        "_fit_result.wR_factor_gt"
+        "_fit_result.wr_factor_gt"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "wr_factor_gt",
@@ -9938,10 +10596,11 @@
       "import_names": [
         "_fit_result.wR_factor_gt"
       ],
-      "iucr_name": "_fit_result.wR_factor_gt",
+      "iucr_name": "_fit_result.wr_factor_gt",
       "owner_class": "LeastSquaresFitResult",
-      "project_name": "_fit_result.wR_factor_gt",
+      "project_name": "_fit_result.wr_factor_gt",
       "read_names": [
+        "_fit_result.wr_factor_gt",
         "_fit_result.wR_factor_gt"
       ],
       "unique_name": "fit_result.wr_factor_gt"
@@ -9974,23 +10633,24 @@
       "category_entry_name": null,
       "context": "factory.GeomFactory.default",
       "current_cif_names": [
-        "_geom.bond_distance_incr"
+        "_geom.bond_distance_inc"
       ],
       "descriptor_class": "NumericDescriptor",
-      "descriptor_name": "bond_distance_incr",
-      "descriptor_path": "factory.GeomFactory.default.bond_distance_incr",
-      "docs_anchor": "geom-bond-distance-incr",
+      "descriptor_name": "bond_distance_inc",
+      "descriptor_path": "factory.GeomFactory.default.bond_distance_inc",
+      "docs_anchor": "geom-bond-distance-inc",
       "docs_page": "geom",
       "import_names": [
         "_geom.bond_distance_incr"
       ],
       "iucr_name": "_geom.bond_distance_incr",
       "owner_class": "Geom",
-      "project_name": "_geom.bond_distance_incr",
+      "project_name": "_geom.bond_distance_inc",
       "read_names": [
+        "_geom.bond_distance_inc",
         "_geom.bond_distance_incr"
       ],
-      "unique_name": "geom.bond_distance_incr"
+      "unique_name": "geom.bond_distance_inc"
     },
     {
       "category_code": "geom",
@@ -11713,138 +12373,144 @@
       "category_entry_name": null,
       "context": "factory.PeakFactory.tof-double-jorgensen-von-dreele",
       "current_cif_names": [
-        "_peak.gauss_sigma_0"
+        "_peak.broad_gauss_sigma_0"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "gauss_sigma_0",
+      "descriptor_name": "broad_gauss_sigma_0",
       "descriptor_path": "factory.PeakFactory.tof-double-jorgensen-von-dreele.broad_gauss_sigma_0",
-      "docs_anchor": "peak-gauss-sigma-0",
+      "docs_anchor": "peak-broad-gauss-sigma-0",
       "docs_page": "peak",
       "import_names": [
         "_peak.gauss_sigma_0"
       ],
       "iucr_name": "_easydiffraction_peak.gauss_sigma_0",
       "owner_class": "TofDoubleJorgensenVonDreele",
-      "project_name": "_peak.gauss_sigma_0",
+      "project_name": "_peak.broad_gauss_sigma_0",
       "read_names": [
+        "_peak.broad_gauss_sigma_0",
         "_peak.gauss_sigma_0"
       ],
-      "unique_name": "peak.gauss_sigma_0"
+      "unique_name": "peak.broad_gauss_sigma_0"
     },
     {
       "category_code": "peak",
       "category_entry_name": null,
       "context": "factory.PeakFactory.tof-double-jorgensen-von-dreele",
       "current_cif_names": [
-        "_peak.gauss_sigma_1"
+        "_peak.broad_gauss_sigma_1"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "gauss_sigma_1",
+      "descriptor_name": "broad_gauss_sigma_1",
       "descriptor_path": "factory.PeakFactory.tof-double-jorgensen-von-dreele.broad_gauss_sigma_1",
-      "docs_anchor": "peak-gauss-sigma-1",
+      "docs_anchor": "peak-broad-gauss-sigma-1",
       "docs_page": "peak",
       "import_names": [
         "_peak.gauss_sigma_1"
       ],
       "iucr_name": "_easydiffraction_peak.gauss_sigma_1",
       "owner_class": "TofDoubleJorgensenVonDreele",
-      "project_name": "_peak.gauss_sigma_1",
+      "project_name": "_peak.broad_gauss_sigma_1",
       "read_names": [
+        "_peak.broad_gauss_sigma_1",
         "_peak.gauss_sigma_1"
       ],
-      "unique_name": "peak.gauss_sigma_1"
+      "unique_name": "peak.broad_gauss_sigma_1"
     },
     {
       "category_code": "peak",
       "category_entry_name": null,
       "context": "factory.PeakFactory.tof-double-jorgensen-von-dreele",
       "current_cif_names": [
-        "_peak.gauss_sigma_2"
+        "_peak.broad_gauss_sigma_2"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "gauss_sigma_2",
+      "descriptor_name": "broad_gauss_sigma_2",
       "descriptor_path": "factory.PeakFactory.tof-double-jorgensen-von-dreele.broad_gauss_sigma_2",
-      "docs_anchor": "peak-gauss-sigma-2",
+      "docs_anchor": "peak-broad-gauss-sigma-2",
       "docs_page": "peak",
       "import_names": [
         "_peak.gauss_sigma_2"
       ],
       "iucr_name": "_easydiffraction_peak.gauss_sigma_2",
       "owner_class": "TofDoubleJorgensenVonDreele",
-      "project_name": "_peak.gauss_sigma_2",
+      "project_name": "_peak.broad_gauss_sigma_2",
       "read_names": [
+        "_peak.broad_gauss_sigma_2",
         "_peak.gauss_sigma_2"
       ],
-      "unique_name": "peak.gauss_sigma_2"
+      "unique_name": "peak.broad_gauss_sigma_2"
     },
     {
       "category_code": "peak",
       "category_entry_name": null,
       "context": "factory.PeakFactory.tof-double-jorgensen-von-dreele",
       "current_cif_names": [
-        "_peak.lorentz_gamma_0"
+        "_peak.broad_lorentz_gamma_0"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "lorentz_gamma_0",
+      "descriptor_name": "broad_lorentz_gamma_0",
       "descriptor_path": "factory.PeakFactory.tof-double-jorgensen-von-dreele.broad_lorentz_gamma_0",
-      "docs_anchor": "peak-lorentz-gamma-0",
+      "docs_anchor": "peak-broad-lorentz-gamma-0",
       "docs_page": "peak",
       "import_names": [
         "_peak.lorentz_gamma_0"
       ],
       "iucr_name": "_easydiffraction_peak.lorentz_gamma_0",
       "owner_class": "TofDoubleJorgensenVonDreele",
-      "project_name": "_peak.lorentz_gamma_0",
+      "project_name": "_peak.broad_lorentz_gamma_0",
       "read_names": [
+        "_peak.broad_lorentz_gamma_0",
         "_peak.lorentz_gamma_0"
       ],
-      "unique_name": "peak.lorentz_gamma_0"
+      "unique_name": "peak.broad_lorentz_gamma_0"
     },
     {
       "category_code": "peak",
       "category_entry_name": null,
       "context": "factory.PeakFactory.tof-double-jorgensen-von-dreele",
       "current_cif_names": [
-        "_peak.lorentz_gamma_1"
+        "_peak.broad_lorentz_gamma_1"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "lorentz_gamma_1",
+      "descriptor_name": "broad_lorentz_gamma_1",
       "descriptor_path": "factory.PeakFactory.tof-double-jorgensen-von-dreele.broad_lorentz_gamma_1",
-      "docs_anchor": "peak-lorentz-gamma-1",
+      "docs_anchor": "peak-broad-lorentz-gamma-1",
       "docs_page": "peak",
       "import_names": [
         "_peak.lorentz_gamma_1"
       ],
       "iucr_name": "_easydiffraction_peak.lorentz_gamma_1",
       "owner_class": "TofDoubleJorgensenVonDreele",
-      "project_name": "_peak.lorentz_gamma_1",
+      "project_name": "_peak.broad_lorentz_gamma_1",
       "read_names": [
+        "_peak.broad_lorentz_gamma_1",
         "_peak.lorentz_gamma_1"
       ],
-      "unique_name": "peak.lorentz_gamma_1"
+      "unique_name": "peak.broad_lorentz_gamma_1"
     },
     {
       "category_code": "peak",
       "category_entry_name": null,
       "context": "factory.PeakFactory.tof-double-jorgensen-von-dreele",
       "current_cif_names": [
-        "_peak.lorentz_gamma_2"
+        "_peak.broad_lorentz_gamma_2"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "lorentz_gamma_2",
+      "descriptor_name": "broad_lorentz_gamma_2",
       "descriptor_path": "factory.PeakFactory.tof-double-jorgensen-von-dreele.broad_lorentz_gamma_2",
-      "docs_anchor": "peak-lorentz-gamma-2",
+      "docs_anchor": "peak-broad-lorentz-gamma-2",
       "docs_page": "peak",
       "import_names": [
         "_peak.lorentz_gamma_2"
       ],
       "iucr_name": "_easydiffraction_peak.lorentz_gamma_2",
       "owner_class": "TofDoubleJorgensenVonDreele",
-      "project_name": "_peak.lorentz_gamma_2",
+      "project_name": "_peak.broad_lorentz_gamma_2",
       "read_names": [
+        "_peak.broad_lorentz_gamma_2",
         "_peak.lorentz_gamma_2"
       ],
-      "unique_name": "peak.lorentz_gamma_2"
+      "unique_name": "peak.broad_lorentz_gamma_2"
     },
     {
       "category_code": "peak",
@@ -12058,161 +12724,168 @@
       "category_entry_name": null,
       "context": "factory.PeakFactory.tof-jorgensen",
       "current_cif_names": [
-        "_peak.gauss_sigma_0"
+        "_peak.broad_gauss_sigma_0"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "gauss_sigma_0",
+      "descriptor_name": "broad_gauss_sigma_0",
       "descriptor_path": "factory.PeakFactory.tof-jorgensen.broad_gauss_sigma_0",
-      "docs_anchor": "peak-gauss-sigma-0",
+      "docs_anchor": "peak-broad-gauss-sigma-0",
       "docs_page": "peak",
       "import_names": [
         "_peak.gauss_sigma_0"
       ],
       "iucr_name": "_easydiffraction_peak.gauss_sigma_0",
       "owner_class": "TofJorgensen",
-      "project_name": "_peak.gauss_sigma_0",
+      "project_name": "_peak.broad_gauss_sigma_0",
       "read_names": [
+        "_peak.broad_gauss_sigma_0",
         "_peak.gauss_sigma_0"
       ],
-      "unique_name": "peak.gauss_sigma_0"
+      "unique_name": "peak.broad_gauss_sigma_0"
     },
     {
       "category_code": "peak",
       "category_entry_name": null,
       "context": "factory.PeakFactory.tof-jorgensen",
       "current_cif_names": [
-        "_peak.gauss_sigma_1"
+        "_peak.broad_gauss_sigma_1"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "gauss_sigma_1",
+      "descriptor_name": "broad_gauss_sigma_1",
       "descriptor_path": "factory.PeakFactory.tof-jorgensen.broad_gauss_sigma_1",
-      "docs_anchor": "peak-gauss-sigma-1",
+      "docs_anchor": "peak-broad-gauss-sigma-1",
       "docs_page": "peak",
       "import_names": [
         "_peak.gauss_sigma_1"
       ],
       "iucr_name": "_easydiffraction_peak.gauss_sigma_1",
       "owner_class": "TofJorgensen",
-      "project_name": "_peak.gauss_sigma_1",
+      "project_name": "_peak.broad_gauss_sigma_1",
       "read_names": [
+        "_peak.broad_gauss_sigma_1",
         "_peak.gauss_sigma_1"
       ],
-      "unique_name": "peak.gauss_sigma_1"
+      "unique_name": "peak.broad_gauss_sigma_1"
     },
     {
       "category_code": "peak",
       "category_entry_name": null,
       "context": "factory.PeakFactory.tof-jorgensen",
       "current_cif_names": [
-        "_peak.gauss_sigma_2"
+        "_peak.broad_gauss_sigma_2"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "gauss_sigma_2",
+      "descriptor_name": "broad_gauss_sigma_2",
       "descriptor_path": "factory.PeakFactory.tof-jorgensen.broad_gauss_sigma_2",
-      "docs_anchor": "peak-gauss-sigma-2",
+      "docs_anchor": "peak-broad-gauss-sigma-2",
       "docs_page": "peak",
       "import_names": [
         "_peak.gauss_sigma_2"
       ],
       "iucr_name": "_easydiffraction_peak.gauss_sigma_2",
       "owner_class": "TofJorgensen",
-      "project_name": "_peak.gauss_sigma_2",
+      "project_name": "_peak.broad_gauss_sigma_2",
       "read_names": [
+        "_peak.broad_gauss_sigma_2",
         "_peak.gauss_sigma_2"
       ],
-      "unique_name": "peak.gauss_sigma_2"
+      "unique_name": "peak.broad_gauss_sigma_2"
     },
     {
       "category_code": "peak",
       "category_entry_name": null,
       "context": "factory.PeakFactory.tof-jorgensen",
       "current_cif_names": [
-        "_peak.decay_beta_0"
+        "_peak.exp_decay_beta_0"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "decay_beta_0",
+      "descriptor_name": "exp_decay_beta_0",
       "descriptor_path": "factory.PeakFactory.tof-jorgensen.exp_decay_beta_0",
-      "docs_anchor": "peak-decay-beta-0",
+      "docs_anchor": "peak-exp-decay-beta-0",
       "docs_page": "peak",
       "import_names": [
         "_peak.decay_beta_0"
       ],
       "iucr_name": "_easydiffraction_peak.decay_beta_0",
       "owner_class": "TofJorgensen",
-      "project_name": "_peak.decay_beta_0",
+      "project_name": "_peak.exp_decay_beta_0",
       "read_names": [
+        "_peak.exp_decay_beta_0",
         "_peak.decay_beta_0"
       ],
-      "unique_name": "peak.decay_beta_0"
+      "unique_name": "peak.exp_decay_beta_0"
     },
     {
       "category_code": "peak",
       "category_entry_name": null,
       "context": "factory.PeakFactory.tof-jorgensen",
       "current_cif_names": [
-        "_peak.decay_beta_1"
+        "_peak.exp_decay_beta_1"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "decay_beta_1",
+      "descriptor_name": "exp_decay_beta_1",
       "descriptor_path": "factory.PeakFactory.tof-jorgensen.exp_decay_beta_1",
-      "docs_anchor": "peak-decay-beta-1",
+      "docs_anchor": "peak-exp-decay-beta-1",
       "docs_page": "peak",
       "import_names": [
         "_peak.decay_beta_1"
       ],
       "iucr_name": "_easydiffraction_peak.decay_beta_1",
       "owner_class": "TofJorgensen",
-      "project_name": "_peak.decay_beta_1",
+      "project_name": "_peak.exp_decay_beta_1",
       "read_names": [
+        "_peak.exp_decay_beta_1",
         "_peak.decay_beta_1"
       ],
-      "unique_name": "peak.decay_beta_1"
+      "unique_name": "peak.exp_decay_beta_1"
     },
     {
       "category_code": "peak",
       "category_entry_name": null,
       "context": "factory.PeakFactory.tof-jorgensen",
       "current_cif_names": [
-        "_peak.rise_alpha_0"
+        "_peak.exp_rise_alpha_0"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "rise_alpha_0",
+      "descriptor_name": "exp_rise_alpha_0",
       "descriptor_path": "factory.PeakFactory.tof-jorgensen.exp_rise_alpha_0",
-      "docs_anchor": "peak-rise-alpha-0",
+      "docs_anchor": "peak-exp-rise-alpha-0",
       "docs_page": "peak",
       "import_names": [
         "_peak.rise_alpha_0"
       ],
       "iucr_name": "_easydiffraction_peak.rise_alpha_0",
       "owner_class": "TofJorgensen",
-      "project_name": "_peak.rise_alpha_0",
+      "project_name": "_peak.exp_rise_alpha_0",
       "read_names": [
+        "_peak.exp_rise_alpha_0",
         "_peak.rise_alpha_0"
       ],
-      "unique_name": "peak.rise_alpha_0"
+      "unique_name": "peak.exp_rise_alpha_0"
     },
     {
       "category_code": "peak",
       "category_entry_name": null,
       "context": "factory.PeakFactory.tof-jorgensen",
       "current_cif_names": [
-        "_peak.rise_alpha_1"
+        "_peak.exp_rise_alpha_1"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "rise_alpha_1",
+      "descriptor_name": "exp_rise_alpha_1",
       "descriptor_path": "factory.PeakFactory.tof-jorgensen.exp_rise_alpha_1",
-      "docs_anchor": "peak-rise-alpha-1",
+      "docs_anchor": "peak-exp-rise-alpha-1",
       "docs_page": "peak",
       "import_names": [
         "_peak.rise_alpha_1"
       ],
       "iucr_name": "_easydiffraction_peak.rise_alpha_1",
       "owner_class": "TofJorgensen",
-      "project_name": "_peak.rise_alpha_1",
+      "project_name": "_peak.exp_rise_alpha_1",
       "read_names": [
+        "_peak.exp_rise_alpha_1",
         "_peak.rise_alpha_1"
       ],
-      "unique_name": "peak.rise_alpha_1"
+      "unique_name": "peak.exp_rise_alpha_1"
     },
     {
       "category_code": "peak",
@@ -12242,230 +12915,240 @@
       "category_entry_name": null,
       "context": "factory.PeakFactory.tof-jorgensen-von-dreele",
       "current_cif_names": [
-        "_peak.gauss_sigma_0"
+        "_peak.broad_gauss_sigma_0"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "gauss_sigma_0",
+      "descriptor_name": "broad_gauss_sigma_0",
       "descriptor_path": "factory.PeakFactory.tof-jorgensen-von-dreele.broad_gauss_sigma_0",
-      "docs_anchor": "peak-gauss-sigma-0",
+      "docs_anchor": "peak-broad-gauss-sigma-0",
       "docs_page": "peak",
       "import_names": [
         "_peak.gauss_sigma_0"
       ],
       "iucr_name": "_easydiffraction_peak.gauss_sigma_0",
       "owner_class": "TofJorgensenVonDreele",
-      "project_name": "_peak.gauss_sigma_0",
+      "project_name": "_peak.broad_gauss_sigma_0",
       "read_names": [
+        "_peak.broad_gauss_sigma_0",
         "_peak.gauss_sigma_0"
       ],
-      "unique_name": "peak.gauss_sigma_0"
+      "unique_name": "peak.broad_gauss_sigma_0"
     },
     {
       "category_code": "peak",
       "category_entry_name": null,
       "context": "factory.PeakFactory.tof-jorgensen-von-dreele",
       "current_cif_names": [
-        "_peak.gauss_sigma_1"
+        "_peak.broad_gauss_sigma_1"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "gauss_sigma_1",
+      "descriptor_name": "broad_gauss_sigma_1",
       "descriptor_path": "factory.PeakFactory.tof-jorgensen-von-dreele.broad_gauss_sigma_1",
-      "docs_anchor": "peak-gauss-sigma-1",
+      "docs_anchor": "peak-broad-gauss-sigma-1",
       "docs_page": "peak",
       "import_names": [
         "_peak.gauss_sigma_1"
       ],
       "iucr_name": "_easydiffraction_peak.gauss_sigma_1",
       "owner_class": "TofJorgensenVonDreele",
-      "project_name": "_peak.gauss_sigma_1",
+      "project_name": "_peak.broad_gauss_sigma_1",
       "read_names": [
+        "_peak.broad_gauss_sigma_1",
         "_peak.gauss_sigma_1"
       ],
-      "unique_name": "peak.gauss_sigma_1"
+      "unique_name": "peak.broad_gauss_sigma_1"
     },
     {
       "category_code": "peak",
       "category_entry_name": null,
       "context": "factory.PeakFactory.tof-jorgensen-von-dreele",
       "current_cif_names": [
-        "_peak.gauss_sigma_2"
+        "_peak.broad_gauss_sigma_2"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "gauss_sigma_2",
+      "descriptor_name": "broad_gauss_sigma_2",
       "descriptor_path": "factory.PeakFactory.tof-jorgensen-von-dreele.broad_gauss_sigma_2",
-      "docs_anchor": "peak-gauss-sigma-2",
+      "docs_anchor": "peak-broad-gauss-sigma-2",
       "docs_page": "peak",
       "import_names": [
         "_peak.gauss_sigma_2"
       ],
       "iucr_name": "_easydiffraction_peak.gauss_sigma_2",
       "owner_class": "TofJorgensenVonDreele",
-      "project_name": "_peak.gauss_sigma_2",
+      "project_name": "_peak.broad_gauss_sigma_2",
       "read_names": [
+        "_peak.broad_gauss_sigma_2",
         "_peak.gauss_sigma_2"
       ],
-      "unique_name": "peak.gauss_sigma_2"
+      "unique_name": "peak.broad_gauss_sigma_2"
     },
     {
       "category_code": "peak",
       "category_entry_name": null,
       "context": "factory.PeakFactory.tof-jorgensen-von-dreele",
       "current_cif_names": [
-        "_peak.lorentz_gamma_0"
+        "_peak.broad_lorentz_gamma_0"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "lorentz_gamma_0",
+      "descriptor_name": "broad_lorentz_gamma_0",
       "descriptor_path": "factory.PeakFactory.tof-jorgensen-von-dreele.broad_lorentz_gamma_0",
-      "docs_anchor": "peak-lorentz-gamma-0",
+      "docs_anchor": "peak-broad-lorentz-gamma-0",
       "docs_page": "peak",
       "import_names": [
         "_peak.lorentz_gamma_0"
       ],
       "iucr_name": "_easydiffraction_peak.lorentz_gamma_0",
       "owner_class": "TofJorgensenVonDreele",
-      "project_name": "_peak.lorentz_gamma_0",
+      "project_name": "_peak.broad_lorentz_gamma_0",
       "read_names": [
+        "_peak.broad_lorentz_gamma_0",
         "_peak.lorentz_gamma_0"
       ],
-      "unique_name": "peak.lorentz_gamma_0"
+      "unique_name": "peak.broad_lorentz_gamma_0"
     },
     {
       "category_code": "peak",
       "category_entry_name": null,
       "context": "factory.PeakFactory.tof-jorgensen-von-dreele",
       "current_cif_names": [
-        "_peak.lorentz_gamma_1"
+        "_peak.broad_lorentz_gamma_1"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "lorentz_gamma_1",
+      "descriptor_name": "broad_lorentz_gamma_1",
       "descriptor_path": "factory.PeakFactory.tof-jorgensen-von-dreele.broad_lorentz_gamma_1",
-      "docs_anchor": "peak-lorentz-gamma-1",
+      "docs_anchor": "peak-broad-lorentz-gamma-1",
       "docs_page": "peak",
       "import_names": [
         "_peak.lorentz_gamma_1"
       ],
       "iucr_name": "_easydiffraction_peak.lorentz_gamma_1",
       "owner_class": "TofJorgensenVonDreele",
-      "project_name": "_peak.lorentz_gamma_1",
+      "project_name": "_peak.broad_lorentz_gamma_1",
       "read_names": [
+        "_peak.broad_lorentz_gamma_1",
         "_peak.lorentz_gamma_1"
       ],
-      "unique_name": "peak.lorentz_gamma_1"
+      "unique_name": "peak.broad_lorentz_gamma_1"
     },
     {
       "category_code": "peak",
       "category_entry_name": null,
       "context": "factory.PeakFactory.tof-jorgensen-von-dreele",
       "current_cif_names": [
-        "_peak.lorentz_gamma_2"
+        "_peak.broad_lorentz_gamma_2"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "lorentz_gamma_2",
+      "descriptor_name": "broad_lorentz_gamma_2",
       "descriptor_path": "factory.PeakFactory.tof-jorgensen-von-dreele.broad_lorentz_gamma_2",
-      "docs_anchor": "peak-lorentz-gamma-2",
+      "docs_anchor": "peak-broad-lorentz-gamma-2",
       "docs_page": "peak",
       "import_names": [
         "_peak.lorentz_gamma_2"
       ],
       "iucr_name": "_easydiffraction_peak.lorentz_gamma_2",
       "owner_class": "TofJorgensenVonDreele",
-      "project_name": "_peak.lorentz_gamma_2",
+      "project_name": "_peak.broad_lorentz_gamma_2",
       "read_names": [
+        "_peak.broad_lorentz_gamma_2",
         "_peak.lorentz_gamma_2"
       ],
-      "unique_name": "peak.lorentz_gamma_2"
+      "unique_name": "peak.broad_lorentz_gamma_2"
     },
     {
       "category_code": "peak",
       "category_entry_name": null,
       "context": "factory.PeakFactory.tof-jorgensen-von-dreele",
       "current_cif_names": [
-        "_peak.decay_beta_0"
+        "_peak.exp_decay_beta_0"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "decay_beta_0",
+      "descriptor_name": "exp_decay_beta_0",
       "descriptor_path": "factory.PeakFactory.tof-jorgensen-von-dreele.exp_decay_beta_0",
-      "docs_anchor": "peak-decay-beta-0",
+      "docs_anchor": "peak-exp-decay-beta-0",
       "docs_page": "peak",
       "import_names": [
         "_peak.decay_beta_0"
       ],
       "iucr_name": "_easydiffraction_peak.decay_beta_0",
       "owner_class": "TofJorgensenVonDreele",
-      "project_name": "_peak.decay_beta_0",
+      "project_name": "_peak.exp_decay_beta_0",
       "read_names": [
+        "_peak.exp_decay_beta_0",
         "_peak.decay_beta_0"
       ],
-      "unique_name": "peak.decay_beta_0"
+      "unique_name": "peak.exp_decay_beta_0"
     },
     {
       "category_code": "peak",
       "category_entry_name": null,
       "context": "factory.PeakFactory.tof-jorgensen-von-dreele",
       "current_cif_names": [
-        "_peak.decay_beta_1"
+        "_peak.exp_decay_beta_1"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "decay_beta_1",
+      "descriptor_name": "exp_decay_beta_1",
       "descriptor_path": "factory.PeakFactory.tof-jorgensen-von-dreele.exp_decay_beta_1",
-      "docs_anchor": "peak-decay-beta-1",
+      "docs_anchor": "peak-exp-decay-beta-1",
       "docs_page": "peak",
       "import_names": [
         "_peak.decay_beta_1"
       ],
       "iucr_name": "_easydiffraction_peak.decay_beta_1",
       "owner_class": "TofJorgensenVonDreele",
-      "project_name": "_peak.decay_beta_1",
+      "project_name": "_peak.exp_decay_beta_1",
       "read_names": [
+        "_peak.exp_decay_beta_1",
         "_peak.decay_beta_1"
       ],
-      "unique_name": "peak.decay_beta_1"
+      "unique_name": "peak.exp_decay_beta_1"
     },
     {
       "category_code": "peak",
       "category_entry_name": null,
       "context": "factory.PeakFactory.tof-jorgensen-von-dreele",
       "current_cif_names": [
-        "_peak.rise_alpha_0"
+        "_peak.exp_rise_alpha_0"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "rise_alpha_0",
+      "descriptor_name": "exp_rise_alpha_0",
       "descriptor_path": "factory.PeakFactory.tof-jorgensen-von-dreele.exp_rise_alpha_0",
-      "docs_anchor": "peak-rise-alpha-0",
+      "docs_anchor": "peak-exp-rise-alpha-0",
       "docs_page": "peak",
       "import_names": [
         "_peak.rise_alpha_0"
       ],
       "iucr_name": "_easydiffraction_peak.rise_alpha_0",
       "owner_class": "TofJorgensenVonDreele",
-      "project_name": "_peak.rise_alpha_0",
+      "project_name": "_peak.exp_rise_alpha_0",
       "read_names": [
+        "_peak.exp_rise_alpha_0",
         "_peak.rise_alpha_0"
       ],
-      "unique_name": "peak.rise_alpha_0"
+      "unique_name": "peak.exp_rise_alpha_0"
     },
     {
       "category_code": "peak",
       "category_entry_name": null,
       "context": "factory.PeakFactory.tof-jorgensen-von-dreele",
       "current_cif_names": [
-        "_peak.rise_alpha_1"
+        "_peak.exp_rise_alpha_1"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "rise_alpha_1",
+      "descriptor_name": "exp_rise_alpha_1",
       "descriptor_path": "factory.PeakFactory.tof-jorgensen-von-dreele.exp_rise_alpha_1",
-      "docs_anchor": "peak-rise-alpha-1",
+      "docs_anchor": "peak-exp-rise-alpha-1",
       "docs_page": "peak",
       "import_names": [
         "_peak.rise_alpha_1"
       ],
       "iucr_name": "_easydiffraction_peak.rise_alpha_1",
       "owner_class": "TofJorgensenVonDreele",
-      "project_name": "_peak.rise_alpha_1",
+      "project_name": "_peak.exp_rise_alpha_1",
       "read_names": [
+        "_peak.exp_rise_alpha_1",
         "_peak.rise_alpha_1"
       ],
-      "unique_name": "peak.rise_alpha_1"
+      "unique_name": "peak.exp_rise_alpha_1"
     },
     {
       "category_code": "peak",
@@ -12495,138 +13178,144 @@
       "category_entry_name": null,
       "context": "factory.PeakFactory.tof-pseudo-voigt",
       "current_cif_names": [
-        "_peak.gauss_sigma_0"
+        "_peak.broad_gauss_sigma_0"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "gauss_sigma_0",
+      "descriptor_name": "broad_gauss_sigma_0",
       "descriptor_path": "factory.PeakFactory.tof-pseudo-voigt.broad_gauss_sigma_0",
-      "docs_anchor": "peak-gauss-sigma-0",
+      "docs_anchor": "peak-broad-gauss-sigma-0",
       "docs_page": "peak",
       "import_names": [
         "_peak.gauss_sigma_0"
       ],
       "iucr_name": "_easydiffraction_peak.gauss_sigma_0",
       "owner_class": "TofPseudoVoigt",
-      "project_name": "_peak.gauss_sigma_0",
+      "project_name": "_peak.broad_gauss_sigma_0",
       "read_names": [
+        "_peak.broad_gauss_sigma_0",
         "_peak.gauss_sigma_0"
       ],
-      "unique_name": "peak.gauss_sigma_0"
+      "unique_name": "peak.broad_gauss_sigma_0"
     },
     {
       "category_code": "peak",
       "category_entry_name": null,
       "context": "factory.PeakFactory.tof-pseudo-voigt",
       "current_cif_names": [
-        "_peak.gauss_sigma_1"
+        "_peak.broad_gauss_sigma_1"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "gauss_sigma_1",
+      "descriptor_name": "broad_gauss_sigma_1",
       "descriptor_path": "factory.PeakFactory.tof-pseudo-voigt.broad_gauss_sigma_1",
-      "docs_anchor": "peak-gauss-sigma-1",
+      "docs_anchor": "peak-broad-gauss-sigma-1",
       "docs_page": "peak",
       "import_names": [
         "_peak.gauss_sigma_1"
       ],
       "iucr_name": "_easydiffraction_peak.gauss_sigma_1",
       "owner_class": "TofPseudoVoigt",
-      "project_name": "_peak.gauss_sigma_1",
+      "project_name": "_peak.broad_gauss_sigma_1",
       "read_names": [
+        "_peak.broad_gauss_sigma_1",
         "_peak.gauss_sigma_1"
       ],
-      "unique_name": "peak.gauss_sigma_1"
+      "unique_name": "peak.broad_gauss_sigma_1"
     },
     {
       "category_code": "peak",
       "category_entry_name": null,
       "context": "factory.PeakFactory.tof-pseudo-voigt",
       "current_cif_names": [
-        "_peak.gauss_sigma_2"
+        "_peak.broad_gauss_sigma_2"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "gauss_sigma_2",
+      "descriptor_name": "broad_gauss_sigma_2",
       "descriptor_path": "factory.PeakFactory.tof-pseudo-voigt.broad_gauss_sigma_2",
-      "docs_anchor": "peak-gauss-sigma-2",
+      "docs_anchor": "peak-broad-gauss-sigma-2",
       "docs_page": "peak",
       "import_names": [
         "_peak.gauss_sigma_2"
       ],
       "iucr_name": "_easydiffraction_peak.gauss_sigma_2",
       "owner_class": "TofPseudoVoigt",
-      "project_name": "_peak.gauss_sigma_2",
+      "project_name": "_peak.broad_gauss_sigma_2",
       "read_names": [
+        "_peak.broad_gauss_sigma_2",
         "_peak.gauss_sigma_2"
       ],
-      "unique_name": "peak.gauss_sigma_2"
+      "unique_name": "peak.broad_gauss_sigma_2"
     },
     {
       "category_code": "peak",
       "category_entry_name": null,
       "context": "factory.PeakFactory.tof-pseudo-voigt",
       "current_cif_names": [
-        "_peak.lorentz_gamma_0"
+        "_peak.broad_lorentz_gamma_0"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "lorentz_gamma_0",
+      "descriptor_name": "broad_lorentz_gamma_0",
       "descriptor_path": "factory.PeakFactory.tof-pseudo-voigt.broad_lorentz_gamma_0",
-      "docs_anchor": "peak-lorentz-gamma-0",
+      "docs_anchor": "peak-broad-lorentz-gamma-0",
       "docs_page": "peak",
       "import_names": [
         "_peak.lorentz_gamma_0"
       ],
       "iucr_name": "_easydiffraction_peak.lorentz_gamma_0",
       "owner_class": "TofPseudoVoigt",
-      "project_name": "_peak.lorentz_gamma_0",
+      "project_name": "_peak.broad_lorentz_gamma_0",
       "read_names": [
+        "_peak.broad_lorentz_gamma_0",
         "_peak.lorentz_gamma_0"
       ],
-      "unique_name": "peak.lorentz_gamma_0"
+      "unique_name": "peak.broad_lorentz_gamma_0"
     },
     {
       "category_code": "peak",
       "category_entry_name": null,
       "context": "factory.PeakFactory.tof-pseudo-voigt",
       "current_cif_names": [
-        "_peak.lorentz_gamma_1"
+        "_peak.broad_lorentz_gamma_1"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "lorentz_gamma_1",
+      "descriptor_name": "broad_lorentz_gamma_1",
       "descriptor_path": "factory.PeakFactory.tof-pseudo-voigt.broad_lorentz_gamma_1",
-      "docs_anchor": "peak-lorentz-gamma-1",
+      "docs_anchor": "peak-broad-lorentz-gamma-1",
       "docs_page": "peak",
       "import_names": [
         "_peak.lorentz_gamma_1"
       ],
       "iucr_name": "_easydiffraction_peak.lorentz_gamma_1",
       "owner_class": "TofPseudoVoigt",
-      "project_name": "_peak.lorentz_gamma_1",
+      "project_name": "_peak.broad_lorentz_gamma_1",
       "read_names": [
+        "_peak.broad_lorentz_gamma_1",
         "_peak.lorentz_gamma_1"
       ],
-      "unique_name": "peak.lorentz_gamma_1"
+      "unique_name": "peak.broad_lorentz_gamma_1"
     },
     {
       "category_code": "peak",
       "category_entry_name": null,
       "context": "factory.PeakFactory.tof-pseudo-voigt",
       "current_cif_names": [
-        "_peak.lorentz_gamma_2"
+        "_peak.broad_lorentz_gamma_2"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "lorentz_gamma_2",
+      "descriptor_name": "broad_lorentz_gamma_2",
       "descriptor_path": "factory.PeakFactory.tof-pseudo-voigt.broad_lorentz_gamma_2",
-      "docs_anchor": "peak-lorentz-gamma-2",
+      "docs_anchor": "peak-broad-lorentz-gamma-2",
       "docs_page": "peak",
       "import_names": [
         "_peak.lorentz_gamma_2"
       ],
       "iucr_name": "_easydiffraction_peak.lorentz_gamma_2",
       "owner_class": "TofPseudoVoigt",
-      "project_name": "_peak.lorentz_gamma_2",
+      "project_name": "_peak.broad_lorentz_gamma_2",
       "read_names": [
+        "_peak.broad_lorentz_gamma_2",
         "_peak.lorentz_gamma_2"
       ],
-      "unique_name": "peak.lorentz_gamma_2"
+      "unique_name": "peak.broad_lorentz_gamma_2"
     },
     {
       "category_code": "peak",
@@ -14625,11 +15314,7 @@
       "category_entry_name": null,
       "context": "factory.SpaceGroupFactory.default",
       "current_cif_names": [
-        "_space_group.IT_coordinate_system_code",
-        "_space_group.it_coordinate_system_code",
-        "_space_group_IT_coordinate_system_code",
-        "_symmetry.IT_coordinate_system_code",
-        "_symmetry_IT_coordinate_system_code"
+        "_space_group.it_coordinate_system_code"
       ],
       "descriptor_class": "StringDescriptor",
       "descriptor_name": "it_coordinate_system_code",
@@ -14638,17 +15323,16 @@
       "docs_page": "space_group",
       "import_names": [
         "_space_group.IT_coordinate_system_code",
-        "_space_group.it_coordinate_system_code",
         "_space_group_IT_coordinate_system_code",
         "_symmetry.IT_coordinate_system_code",
         "_symmetry_IT_coordinate_system_code"
       ],
       "iucr_name": "_space_group.IT_coordinate_system_code",
       "owner_class": "SpaceGroup",
-      "project_name": "_space_group.IT_coordinate_system_code",
+      "project_name": "_space_group.it_coordinate_system_code",
       "read_names": [
-        "_space_group.IT_coordinate_system_code",
         "_space_group.it_coordinate_system_code",
+        "_space_group.IT_coordinate_system_code",
         "_space_group_IT_coordinate_system_code",
         "_symmetry.IT_coordinate_system_code",
         "_symmetry_IT_coordinate_system_code"
@@ -14660,30 +15344,25 @@
       "category_entry_name": null,
       "context": "factory.SpaceGroupFactory.default",
       "current_cif_names": [
-        "_space_group.name_H-M_alt",
-        "_space_group.name_h_m",
-        "_space_group_name_H-M_alt",
-        "_symmetry.space_group_name_H-M",
-        "_symmetry_space_group_name_H-M"
+        "_space_group.name_h_m"
       ],
       "descriptor_class": "StringDescriptor",
       "descriptor_name": "name_h_m",
       "descriptor_path": "factory.SpaceGroupFactory.default.name_h_m",
-      "docs_anchor": "space-group-name-h-m-alt",
+      "docs_anchor": "space-group-name-h-m",
       "docs_page": "space_group",
       "import_names": [
         "_space_group.name_H-M_alt",
-        "_space_group.name_h_m",
         "_space_group_name_H-M_alt",
         "_symmetry.space_group_name_H-M",
         "_symmetry_space_group_name_H-M"
       ],
       "iucr_name": "_space_group.name_H-M_alt",
       "owner_class": "SpaceGroup",
-      "project_name": "_space_group.name_H-M_alt",
+      "project_name": "_space_group.name_h_m",
       "read_names": [
-        "_space_group.name_H-M_alt",
         "_space_group.name_h_m",
+        "_space_group.name_H-M_alt",
         "_space_group_name_H-M_alt",
         "_symmetry.space_group_name_H-M",
         "_symmetry_space_group_name_H-M"
@@ -15736,14 +16415,12 @@
       "category_entry_name": "",
       "context": "structure",
       "current_cif_names": [
-        "_atom_site_aniso.B_11",
-        "_atom_site_aniso.U_11",
-        "_atom_site_aniso.beta_11"
+        "_atom_site_aniso.adp_11"
       ],
       "descriptor_class": "_AnisoAdpParameter",
       "descriptor_name": "adp_11",
       "descriptor_path": "structure.atom_site_aniso[].adp_11",
-      "docs_anchor": "atom-site-aniso-b-11",
+      "docs_anchor": "atom-site-aniso-adp-11",
       "docs_page": "atom_site_aniso",
       "import_names": [
         "_atom_site_aniso.B_11",
@@ -15752,8 +16429,9 @@
       ],
       "iucr_name": "_atom_site_aniso.B_11",
       "owner_class": "AtomSiteAniso",
-      "project_name": "_atom_site_aniso.B_11",
+      "project_name": "_atom_site_aniso.adp_11",
       "read_names": [
+        "_atom_site_aniso.adp_11",
         "_atom_site_aniso.B_11",
         "_atom_site_aniso.U_11",
         "_atom_site_aniso.beta_11"
@@ -15765,14 +16443,12 @@
       "category_entry_name": "",
       "context": "structure",
       "current_cif_names": [
-        "_atom_site_aniso.B_12",
-        "_atom_site_aniso.U_12",
-        "_atom_site_aniso.beta_12"
+        "_atom_site_aniso.adp_12"
       ],
       "descriptor_class": "_AnisoAdpParameter",
       "descriptor_name": "adp_12",
       "descriptor_path": "structure.atom_site_aniso[].adp_12",
-      "docs_anchor": "atom-site-aniso-b-12",
+      "docs_anchor": "atom-site-aniso-adp-12",
       "docs_page": "atom_site_aniso",
       "import_names": [
         "_atom_site_aniso.B_12",
@@ -15781,8 +16457,9 @@
       ],
       "iucr_name": "_atom_site_aniso.B_12",
       "owner_class": "AtomSiteAniso",
-      "project_name": "_atom_site_aniso.B_12",
+      "project_name": "_atom_site_aniso.adp_12",
       "read_names": [
+        "_atom_site_aniso.adp_12",
         "_atom_site_aniso.B_12",
         "_atom_site_aniso.U_12",
         "_atom_site_aniso.beta_12"
@@ -15794,14 +16471,12 @@
       "category_entry_name": "",
       "context": "structure",
       "current_cif_names": [
-        "_atom_site_aniso.B_13",
-        "_atom_site_aniso.U_13",
-        "_atom_site_aniso.beta_13"
+        "_atom_site_aniso.adp_13"
       ],
       "descriptor_class": "_AnisoAdpParameter",
       "descriptor_name": "adp_13",
       "descriptor_path": "structure.atom_site_aniso[].adp_13",
-      "docs_anchor": "atom-site-aniso-b-13",
+      "docs_anchor": "atom-site-aniso-adp-13",
       "docs_page": "atom_site_aniso",
       "import_names": [
         "_atom_site_aniso.B_13",
@@ -15810,8 +16485,9 @@
       ],
       "iucr_name": "_atom_site_aniso.B_13",
       "owner_class": "AtomSiteAniso",
-      "project_name": "_atom_site_aniso.B_13",
+      "project_name": "_atom_site_aniso.adp_13",
       "read_names": [
+        "_atom_site_aniso.adp_13",
         "_atom_site_aniso.B_13",
         "_atom_site_aniso.U_13",
         "_atom_site_aniso.beta_13"
@@ -15823,14 +16499,12 @@
       "category_entry_name": "",
       "context": "structure",
       "current_cif_names": [
-        "_atom_site_aniso.B_22",
-        "_atom_site_aniso.U_22",
-        "_atom_site_aniso.beta_22"
+        "_atom_site_aniso.adp_22"
       ],
       "descriptor_class": "_AnisoAdpParameter",
       "descriptor_name": "adp_22",
       "descriptor_path": "structure.atom_site_aniso[].adp_22",
-      "docs_anchor": "atom-site-aniso-b-22",
+      "docs_anchor": "atom-site-aniso-adp-22",
       "docs_page": "atom_site_aniso",
       "import_names": [
         "_atom_site_aniso.B_22",
@@ -15839,8 +16513,9 @@
       ],
       "iucr_name": "_atom_site_aniso.B_22",
       "owner_class": "AtomSiteAniso",
-      "project_name": "_atom_site_aniso.B_22",
+      "project_name": "_atom_site_aniso.adp_22",
       "read_names": [
+        "_atom_site_aniso.adp_22",
         "_atom_site_aniso.B_22",
         "_atom_site_aniso.U_22",
         "_atom_site_aniso.beta_22"
@@ -15852,14 +16527,12 @@
       "category_entry_name": "",
       "context": "structure",
       "current_cif_names": [
-        "_atom_site_aniso.B_23",
-        "_atom_site_aniso.U_23",
-        "_atom_site_aniso.beta_23"
+        "_atom_site_aniso.adp_23"
       ],
       "descriptor_class": "_AnisoAdpParameter",
       "descriptor_name": "adp_23",
       "descriptor_path": "structure.atom_site_aniso[].adp_23",
-      "docs_anchor": "atom-site-aniso-b-23",
+      "docs_anchor": "atom-site-aniso-adp-23",
       "docs_page": "atom_site_aniso",
       "import_names": [
         "_atom_site_aniso.B_23",
@@ -15868,8 +16541,9 @@
       ],
       "iucr_name": "_atom_site_aniso.B_23",
       "owner_class": "AtomSiteAniso",
-      "project_name": "_atom_site_aniso.B_23",
+      "project_name": "_atom_site_aniso.adp_23",
       "read_names": [
+        "_atom_site_aniso.adp_23",
         "_atom_site_aniso.B_23",
         "_atom_site_aniso.U_23",
         "_atom_site_aniso.beta_23"
@@ -15881,14 +16555,12 @@
       "category_entry_name": "",
       "context": "structure",
       "current_cif_names": [
-        "_atom_site_aniso.B_33",
-        "_atom_site_aniso.U_33",
-        "_atom_site_aniso.beta_33"
+        "_atom_site_aniso.adp_33"
       ],
       "descriptor_class": "_AnisoAdpParameter",
       "descriptor_name": "adp_33",
       "descriptor_path": "structure.atom_site_aniso[].adp_33",
-      "docs_anchor": "atom-site-aniso-b-33",
+      "docs_anchor": "atom-site-aniso-adp-33",
       "docs_page": "atom_site_aniso",
       "import_names": [
         "_atom_site_aniso.B_33",
@@ -15897,8 +16569,9 @@
       ],
       "iucr_name": "_atom_site_aniso.B_33",
       "owner_class": "AtomSiteAniso",
-      "project_name": "_atom_site_aniso.B_33",
+      "project_name": "_atom_site_aniso.adp_33",
       "read_names": [
+        "_atom_site_aniso.adp_33",
         "_atom_site_aniso.B_33",
         "_atom_site_aniso.U_33",
         "_atom_site_aniso.beta_33"
@@ -15934,13 +16607,12 @@
       "category_entry_name": "Si",
       "context": "structure",
       "current_cif_names": [
-        "_atom_site.B_iso_or_equiv",
-        "_atom_site.U_iso_or_equiv"
+        "_atom_site.adp_iso"
       ],
       "descriptor_class": "Parameter",
       "descriptor_name": "adp_iso",
       "descriptor_path": "structure.atom_sites[].adp_iso",
-      "docs_anchor": "atom-site-b-iso-or-equiv",
+      "docs_anchor": "atom-site-adp-iso",
       "docs_page": "atom_site",
       "import_names": [
         "_atom_site.B_iso_or_equiv",
@@ -15948,8 +16620,9 @@
       ],
       "iucr_name": "_atom_site.B_iso_or_equiv",
       "owner_class": "AtomSite",
-      "project_name": "_atom_site.B_iso_or_equiv",
+      "project_name": "_atom_site.adp_iso",
       "read_names": [
+        "_atom_site.adp_iso",
         "_atom_site.B_iso_or_equiv",
         "_atom_site.U_iso_or_equiv"
       ],
@@ -15960,7 +16633,6 @@
       "category_entry_name": "Si",
       "context": "structure",
       "current_cif_names": [
-        "_atom_site.ADP_type",
         "_atom_site.adp_type"
       ],
       "descriptor_class": "EnumDescriptor",
@@ -15969,15 +16641,14 @@
       "docs_anchor": "atom-site-adp-type",
       "docs_page": "atom_site",
       "import_names": [
-        "_atom_site.ADP_type",
-        "_atom_site.adp_type"
+        "_atom_site.ADP_type"
       ],
       "iucr_name": "_atom_site.ADP_type",
       "owner_class": "AtomSite",
-      "project_name": "_atom_site.ADP_type",
+      "project_name": "_atom_site.adp_type",
       "read_names": [
-        "_atom_site.ADP_type",
-        "_atom_site.adp_type"
+        "_atom_site.adp_type",
+        "_atom_site.ADP_type"
       ],
       "unique_name": "atom_site.Si.adp_type"
     },
@@ -16079,20 +16750,21 @@
       "category_entry_name": "Si",
       "context": "structure",
       "current_cif_names": [
-        "_atom_site.site_symmetry_multiplicity"
+        "_atom_site.multiplicity"
       ],
       "descriptor_class": "IntegerDescriptor",
       "descriptor_name": "multiplicity",
       "descriptor_path": "structure.atom_sites[].multiplicity",
-      "docs_anchor": "atom-site-site-symmetry-multiplicity",
+      "docs_anchor": "atom-site-multiplicity",
       "docs_page": "atom_site",
       "import_names": [
         "_atom_site.site_symmetry_multiplicity"
       ],
       "iucr_name": "_atom_site.site_symmetry_multiplicity",
       "owner_class": "AtomSite",
-      "project_name": "_atom_site.site_symmetry_multiplicity",
+      "project_name": "_atom_site.multiplicity",
       "read_names": [
+        "_atom_site.multiplicity",
         "_atom_site.site_symmetry_multiplicity"
       ],
       "unique_name": "atom_site.Si.multiplicity"
@@ -16148,27 +16820,24 @@
       "category_entry_name": "Si",
       "context": "structure",
       "current_cif_names": [
-        "_atom_site.Wyckoff_symbol",
-        "_atom_site.Wyckoff_letter",
         "_atom_site.wyckoff_letter"
       ],
       "descriptor_class": "StringDescriptor",
       "descriptor_name": "wyckoff_letter",
       "descriptor_path": "structure.atom_sites[].wyckoff_letter",
-      "docs_anchor": "atom-site-wyckoff-symbol",
+      "docs_anchor": "atom-site-wyckoff-letter",
       "docs_page": "atom_site",
       "import_names": [
         "_atom_site.Wyckoff_symbol",
-        "_atom_site.Wyckoff_letter",
-        "_atom_site.wyckoff_letter"
+        "_atom_site.Wyckoff_letter"
       ],
       "iucr_name": "_atom_site.Wyckoff_symbol",
       "owner_class": "AtomSite",
-      "project_name": "_atom_site.Wyckoff_symbol",
+      "project_name": "_atom_site.wyckoff_letter",
       "read_names": [
+        "_atom_site.wyckoff_letter",
         "_atom_site.Wyckoff_symbol",
-        "_atom_site.Wyckoff_letter",
-        "_atom_site.wyckoff_letter"
+        "_atom_site.Wyckoff_letter"
       ],
       "unique_name": "atom_site.Si.wyckoff_letter"
     },
@@ -16315,23 +16984,24 @@
       "category_entry_name": null,
       "context": "structure",
       "current_cif_names": [
-        "_geom.bond_distance_incr"
+        "_geom.bond_distance_inc"
       ],
       "descriptor_class": "NumericDescriptor",
-      "descriptor_name": "bond_distance_incr",
-      "descriptor_path": "structure.geom.bond_distance_incr",
-      "docs_anchor": "geom-bond-distance-incr",
+      "descriptor_name": "bond_distance_inc",
+      "descriptor_path": "structure.geom.bond_distance_inc",
+      "docs_anchor": "geom-bond-distance-inc",
       "docs_page": "geom",
       "import_names": [
         "_geom.bond_distance_incr"
       ],
       "iucr_name": "_geom.bond_distance_incr",
       "owner_class": "Geom",
-      "project_name": "_geom.bond_distance_incr",
+      "project_name": "_geom.bond_distance_inc",
       "read_names": [
+        "_geom.bond_distance_inc",
         "_geom.bond_distance_incr"
       ],
-      "unique_name": "inventory_structure.geom.bond_distance_incr"
+      "unique_name": "inventory_structure.geom.bond_distance_inc"
     },
     {
       "category_code": "geom",
@@ -16361,11 +17031,7 @@
       "category_entry_name": null,
       "context": "structure",
       "current_cif_names": [
-        "_space_group.IT_coordinate_system_code",
-        "_space_group.it_coordinate_system_code",
-        "_space_group_IT_coordinate_system_code",
-        "_symmetry.IT_coordinate_system_code",
-        "_symmetry_IT_coordinate_system_code"
+        "_space_group.it_coordinate_system_code"
       ],
       "descriptor_class": "StringDescriptor",
       "descriptor_name": "it_coordinate_system_code",
@@ -16374,17 +17040,16 @@
       "docs_page": "space_group",
       "import_names": [
         "_space_group.IT_coordinate_system_code",
-        "_space_group.it_coordinate_system_code",
         "_space_group_IT_coordinate_system_code",
         "_symmetry.IT_coordinate_system_code",
         "_symmetry_IT_coordinate_system_code"
       ],
       "iucr_name": "_space_group.IT_coordinate_system_code",
       "owner_class": "SpaceGroup",
-      "project_name": "_space_group.IT_coordinate_system_code",
+      "project_name": "_space_group.it_coordinate_system_code",
       "read_names": [
-        "_space_group.IT_coordinate_system_code",
         "_space_group.it_coordinate_system_code",
+        "_space_group.IT_coordinate_system_code",
         "_space_group_IT_coordinate_system_code",
         "_symmetry.IT_coordinate_system_code",
         "_symmetry_IT_coordinate_system_code"
@@ -16396,30 +17061,25 @@
       "category_entry_name": null,
       "context": "structure",
       "current_cif_names": [
-        "_space_group.name_H-M_alt",
-        "_space_group.name_h_m",
-        "_space_group_name_H-M_alt",
-        "_symmetry.space_group_name_H-M",
-        "_symmetry_space_group_name_H-M"
+        "_space_group.name_h_m"
       ],
       "descriptor_class": "StringDescriptor",
       "descriptor_name": "name_h_m",
       "descriptor_path": "structure.space_group.name_h_m",
-      "docs_anchor": "space-group-name-h-m-alt",
+      "docs_anchor": "space-group-name-h-m",
       "docs_page": "space_group",
       "import_names": [
         "_space_group.name_H-M_alt",
-        "_space_group.name_h_m",
         "_space_group_name_H-M_alt",
         "_symmetry.space_group_name_H-M",
         "_symmetry_space_group_name_H-M"
       ],
       "iucr_name": "_space_group.name_H-M_alt",
       "owner_class": "SpaceGroup",
-      "project_name": "_space_group.name_H-M_alt",
+      "project_name": "_space_group.name_h_m",
       "read_names": [
-        "_space_group.name_H-M_alt",
         "_space_group.name_h_m",
+        "_space_group.name_H-M_alt",
         "_space_group_name_H-M_alt",
         "_symmetry.space_group_name_H-M",
         "_symmetry_space_group_name_H-M"

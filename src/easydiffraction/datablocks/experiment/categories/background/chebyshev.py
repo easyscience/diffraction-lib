@@ -57,7 +57,11 @@ class PolynomialTerm(CategoryItem):
                 #  Do we need conversion between CIF and internal label?
                 validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
             ),
-            cif_handler=CifHandler(names=['_pd_background.id']),
+            cif_handler=CifHandler(
+                names=['_background.id'],
+                import_names=['_pd_background.id'],
+                iucr_name='_pd_background.id',
+            ),
         )
         self._order = NumericDescriptor(
             name='order',
@@ -66,7 +70,11 @@ class PolynomialTerm(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_pd_background.Chebyshev_order']),
+            cif_handler=CifHandler(
+                names=['_background.order'],
+                import_names=['_pd_background.Chebyshev_order'],
+                iucr_name='_pd_background.Chebyshev_order',
+            ),
         )
         self._coef = Parameter(
             name='coef',
@@ -75,7 +83,11 @@ class PolynomialTerm(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_pd_background.Chebyshev_coef']),
+            cif_handler=CifHandler(
+                names=['_background.coef'],
+                import_names=['_pd_background.Chebyshev_coef'],
+                iucr_name='_pd_background.Chebyshev_coef',
+            ),
         )
 
     # ------------------------------------------------------------------

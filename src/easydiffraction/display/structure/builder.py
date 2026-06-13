@@ -518,7 +518,7 @@ def build_scene(
     if 'bonds' in features:
         geom = getattr(structure, 'geom', None)
         geom_min = geom.min_bond_distance_cutoff.value if geom is not None else 0.0
-        geom_incr = geom.bond_distance_incr.value if geom is not None else DEFAULT_BOND_INCR
+        geom_incr = geom.bond_distance_inc.value if geom is not None else DEFAULT_BOND_INCR
         bonds = tuple(_build_bonds(scene_atoms, geom_min, geom_incr))
 
     show_atoms = 'atoms' in features

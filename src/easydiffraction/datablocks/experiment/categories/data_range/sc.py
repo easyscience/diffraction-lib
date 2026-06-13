@@ -63,7 +63,11 @@ class ScDataRange(DataRangeBase):
                 default=np.nan,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(names=['_refln.sin_theta_over_lambda_range_min']),
+            cif_handler=CifHandler(
+                names=['_data_range.sin_theta_over_lambda_min'],
+                import_names=['_refln.sin_theta_over_lambda_range_min'],
+                iucr_name='_refln.sin_theta_over_lambda_range_min',
+            ),
         )
         self._sin_theta_over_lambda_max = NumericDescriptor(
             name='sin_theta_over_lambda_max',
@@ -79,7 +83,11 @@ class ScDataRange(DataRangeBase):
                 default=np.nan,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(names=['_refln.sin_theta_over_lambda_range_max']),
+            cif_handler=CifHandler(
+                names=['_data_range.sin_theta_over_lambda_max'],
+                import_names=['_refln.sin_theta_over_lambda_range_max'],
+                iucr_name='_refln.sin_theta_over_lambda_range_max',
+            ),
         )
 
     # ------------------------------------------------------------------

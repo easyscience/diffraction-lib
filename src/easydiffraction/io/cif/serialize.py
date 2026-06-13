@@ -397,10 +397,6 @@ def category_collection_to_cif(
     if not len(collection):
         return '\n'.join(lines)
 
-    adp_cif = _adp_collection_to_cif(collection, max_display)
-    if adp_cif is not None:
-        return _join_scalar_and_loop_lines(lines, adp_cif)
-
     loop_cif = _standard_collection_loop_to_cif(collection, max_display)
     return _join_scalar_and_loop_lines(lines, loop_cif)
 

@@ -66,14 +66,14 @@ class SpaceGroup(CategoryItem):
                 ),
             ),
             cif_handler=CifHandler(
-                # TODO: Keep only version with "." and automate ...
-                names=[
+                names=['_space_group.name_h_m'],
+                import_names=[
                     '_space_group.name_H-M_alt',
-                    '_space_group.name_h_m',
                     '_space_group_name_H-M_alt',
                     '_symmetry.space_group_name_H-M',
                     '_symmetry_space_group_name_H-M',
-                ]
+                ],
+                iucr_name='_space_group.name_H-M_alt',
             ),
         )
         self._it_coordinate_system_code = StringDescriptor(
@@ -90,13 +90,14 @@ class SpaceGroup(CategoryItem):
                 ),
             ),
             cif_handler=CifHandler(
-                names=[
+                names=['_space_group.it_coordinate_system_code'],
+                import_names=[
                     '_space_group.IT_coordinate_system_code',
-                    '_space_group.it_coordinate_system_code',
                     '_space_group_IT_coordinate_system_code',
                     '_symmetry.IT_coordinate_system_code',
                     '_symmetry_IT_coordinate_system_code',
-                ]
+                ],
+                iucr_name='_space_group.IT_coordinate_system_code',
             ),
         )
 

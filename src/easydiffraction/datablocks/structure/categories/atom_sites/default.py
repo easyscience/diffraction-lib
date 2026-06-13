@@ -143,11 +143,12 @@ class AtomSite(CategoryItem):
                 ),
             ),
             cif_handler=CifHandler(
-                names=[
+                names=['_atom_site.wyckoff_letter'],
+                import_names=[
                     '_atom_site.Wyckoff_symbol',
                     '_atom_site.Wyckoff_letter',
-                    '_atom_site.wyckoff_letter',
-                ]
+                ],
+                iucr_name='_atom_site.Wyckoff_symbol',
             ),
         )
         self._multiplicity = IntegerDescriptor(
@@ -159,7 +160,11 @@ class AtomSite(CategoryItem):
                 latex_name='Mult.',
             ),
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(names=['_atom_site.site_symmetry_multiplicity']),
+            cif_handler=CifHandler(
+                names=['_atom_site.multiplicity'],
+                import_names=['_atom_site.site_symmetry_multiplicity'],
+                iucr_name='_atom_site.site_symmetry_multiplicity',
+            ),
         )
         self._occupancy = Parameter(
             name='occupancy',
@@ -190,10 +195,12 @@ class AtomSite(CategoryItem):
                 validator=RangeValidator(ge=0.0, le=10.0),
             ),
             cif_handler=CifHandler(
-                names=[
+                names=['_atom_site.adp_iso'],
+                import_names=[
                     '_atom_site.B_iso_or_equiv',
                     '_atom_site.U_iso_or_equiv',
-                ]
+                ],
+                iucr_name='_atom_site.B_iso_or_equiv',
             ),
         )
         self._adp_type = EnumDescriptor(
@@ -205,7 +212,11 @@ class AtomSite(CategoryItem):
                 display_name='ADP type',
                 latex_name='ADP type',
             ),
-            cif_handler=CifHandler(names=['_atom_site.ADP_type', '_atom_site.adp_type']),
+            cif_handler=CifHandler(
+                names=['_atom_site.adp_type'],
+                import_names=['_atom_site.ADP_type'],
+                iucr_name='_atom_site.ADP_type',
+            ),
         )
 
     # ------------------------------------------------------------------

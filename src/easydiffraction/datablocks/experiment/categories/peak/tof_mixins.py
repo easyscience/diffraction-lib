@@ -35,7 +35,7 @@ class TofGaussianBroadeningMixin:
         super().__init__()
 
         self._broad_gauss_sigma_0 = Parameter(
-            name='gauss_sigma_0',
+            name='broad_gauss_sigma_0',
             description='Gaussian broadening (instrumental resolution)',
             units='microseconds_squared',
             display_handler=DisplayHandler(
@@ -47,12 +47,13 @@ class TofGaussianBroadeningMixin:
                 validator=RangeValidator(),
             ),
             cif_handler=CifHandler(
-                names=['_peak.gauss_sigma_0'],
+                names=['_peak.broad_gauss_sigma_0'],
+                import_names=['_peak.gauss_sigma_0'],
                 iucr_name='_easydiffraction_peak.gauss_sigma_0',
             ),
         )
         self._broad_gauss_sigma_1 = Parameter(
-            name='gauss_sigma_1',
+            name='broad_gauss_sigma_1',
             description='Gaussian broadening (dependent on d-spacing)',
             units='microseconds_per_angstrom',
             display_handler=DisplayHandler(
@@ -64,12 +65,13 @@ class TofGaussianBroadeningMixin:
                 validator=RangeValidator(),
             ),
             cif_handler=CifHandler(
-                names=['_peak.gauss_sigma_1'],
+                names=['_peak.broad_gauss_sigma_1'],
+                import_names=['_peak.gauss_sigma_1'],
                 iucr_name='_easydiffraction_peak.gauss_sigma_1',
             ),
         )
         self._broad_gauss_sigma_2 = Parameter(
-            name='gauss_sigma_2',
+            name='broad_gauss_sigma_2',
             description='Gaussian broadening (instrument-dependent term)',
             units='microseconds_squared_per_angstrom_squared',
             display_handler=DisplayHandler(
@@ -81,7 +83,8 @@ class TofGaussianBroadeningMixin:
                 validator=RangeValidator(),
             ),
             cif_handler=CifHandler(
-                names=['_peak.gauss_sigma_2'],
+                names=['_peak.broad_gauss_sigma_2'],
+                import_names=['_peak.gauss_sigma_2'],
                 iucr_name='_easydiffraction_peak.gauss_sigma_2',
             ),
         )
@@ -140,7 +143,7 @@ class TofLorentzianBroadeningMixin:
         super().__init__()
 
         self._broad_lorentz_gamma_0 = Parameter(
-            name='lorentz_gamma_0',
+            name='broad_lorentz_gamma_0',
             description='Lorentzian broadening (microstrain effects)',
             units='microseconds',
             display_handler=DisplayHandler(
@@ -152,12 +155,13 @@ class TofLorentzianBroadeningMixin:
                 validator=RangeValidator(),
             ),
             cif_handler=CifHandler(
-                names=['_peak.lorentz_gamma_0'],
+                names=['_peak.broad_lorentz_gamma_0'],
+                import_names=['_peak.lorentz_gamma_0'],
                 iucr_name='_easydiffraction_peak.lorentz_gamma_0',
             ),
         )
         self._broad_lorentz_gamma_1 = Parameter(
-            name='lorentz_gamma_1',
+            name='broad_lorentz_gamma_1',
             description='Lorentzian broadening (dependent on d-spacing)',
             units='microseconds_per_angstrom',
             display_handler=DisplayHandler(
@@ -169,12 +173,13 @@ class TofLorentzianBroadeningMixin:
                 validator=RangeValidator(),
             ),
             cif_handler=CifHandler(
-                names=['_peak.lorentz_gamma_1'],
+                names=['_peak.broad_lorentz_gamma_1'],
+                import_names=['_peak.lorentz_gamma_1'],
                 iucr_name='_easydiffraction_peak.lorentz_gamma_1',
             ),
         )
         self._broad_lorentz_gamma_2 = Parameter(
-            name='lorentz_gamma_2',
+            name='broad_lorentz_gamma_2',
             description='Lorentzian broadening (instrument-dependent term)',
             units='microseconds_squared_per_angstrom_squared',
             display_handler=DisplayHandler(
@@ -186,7 +191,8 @@ class TofLorentzianBroadeningMixin:
                 validator=RangeValidator(),
             ),
             cif_handler=CifHandler(
-                names=['_peak.lorentz_gamma_2'],
+                names=['_peak.broad_lorentz_gamma_2'],
+                import_names=['_peak.lorentz_gamma_2'],
                 iucr_name='_easydiffraction_peak.lorentz_gamma_2',
             ),
         )
@@ -257,7 +263,7 @@ class TofBackToBackExponentialMixin:
         super().__init__()
 
         self._exp_rise_alpha_0 = Parameter(
-            name='rise_alpha_0',
+            name='exp_rise_alpha_0',
             description='Back-to-back exponential rise α₀',
             units='microseconds',
             display_handler=DisplayHandler(
@@ -269,12 +275,13 @@ class TofBackToBackExponentialMixin:
                 validator=RangeValidator(),
             ),
             cif_handler=CifHandler(
-                names=['_peak.rise_alpha_0'],
+                names=['_peak.exp_rise_alpha_0'],
+                import_names=['_peak.rise_alpha_0'],
                 iucr_name='_easydiffraction_peak.rise_alpha_0',
             ),
         )
         self._exp_rise_alpha_1 = Parameter(
-            name='rise_alpha_1',
+            name='exp_rise_alpha_1',
             description='Back-to-back exponential rise α₁',
             units='microseconds_per_angstrom',
             display_handler=DisplayHandler(
@@ -286,12 +293,13 @@ class TofBackToBackExponentialMixin:
                 validator=RangeValidator(),
             ),
             cif_handler=CifHandler(
-                names=['_peak.rise_alpha_1'],
+                names=['_peak.exp_rise_alpha_1'],
+                import_names=['_peak.rise_alpha_1'],
                 iucr_name='_easydiffraction_peak.rise_alpha_1',
             ),
         )
         self._exp_decay_beta_0 = Parameter(
-            name='decay_beta_0',
+            name='exp_decay_beta_0',
             description='Back-to-back exponential decay β₀',
             units='microseconds',
             display_handler=DisplayHandler(
@@ -303,12 +311,13 @@ class TofBackToBackExponentialMixin:
                 validator=RangeValidator(),
             ),
             cif_handler=CifHandler(
-                names=['_peak.decay_beta_0'],
+                names=['_peak.exp_decay_beta_0'],
+                import_names=['_peak.decay_beta_0'],
                 iucr_name='_easydiffraction_peak.decay_beta_0',
             ),
         )
         self._exp_decay_beta_1 = Parameter(
-            name='decay_beta_1',
+            name='exp_decay_beta_1',
             description='Back-to-back exponential decay β₁',
             units='microseconds_per_angstrom',
             display_handler=DisplayHandler(
@@ -320,7 +329,8 @@ class TofBackToBackExponentialMixin:
                 validator=RangeValidator(),
             ),
             cif_handler=CifHandler(
-                names=['_peak.decay_beta_1'],
+                names=['_peak.exp_decay_beta_1'],
+                import_names=['_peak.decay_beta_1'],
                 iucr_name='_easydiffraction_peak.decay_beta_1',
             ),
         )

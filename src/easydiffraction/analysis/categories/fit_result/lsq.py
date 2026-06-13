@@ -17,6 +17,17 @@ from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.io.cif.handler import CifHandler
 
 
+def _fit_result_cif_handler(name: str, cif_name: str | None = None) -> CifHandler:
+    """Return an EdSTAR-first handler for one fit-result descriptor."""
+    names = [f'_fit_result.{name}']
+    if cif_name is None:
+        return CifHandler(names=names)
+    return CifHandler(
+        names=names,
+        import_names=[f'_fit_result.{cif_name}'],
+    )
+
+
 class _LeastSquaresCoreProperties:
     """Core deterministic least-squares result descriptors."""
 
@@ -489,7 +500,7 @@ class LeastSquaresFitResult(
             name=name,
             description=description,
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(names=[f'_fit_result.{cif_name or name}']),
+            cif_handler=_fit_result_cif_handler(name, cif_name),
             display_handler=_result_display_handler(display_name),
         )
 
@@ -508,7 +519,7 @@ class LeastSquaresFitResult(
             name=name,
             description=description,
             value_spec=AttributeSpec(default=default, allow_none=allow_none),
-            cif_handler=CifHandler(names=[f'_fit_result.{cif_name or name}']),
+            cif_handler=_fit_result_cif_handler(name, cif_name),
             display_handler=_result_display_handler(display_name),
         )
 

@@ -72,7 +72,11 @@ class CwlPdDataRange(DataRangeBase):
                 default=np.nan,
                 validator=RangeValidator(ge=0, le=180),
             ),
-            cif_handler=CifHandler(names=['_pd_meas.2theta_range_min']),
+            cif_handler=CifHandler(
+                names=['_data_range.two_theta_min'],
+                import_names=['_pd_meas.2theta_range_min'],
+                iucr_name='_pd_meas.2theta_range_min',
+            ),
         )
         self._two_theta_max = NumericDescriptor(
             name='two_theta_max',
@@ -88,7 +92,11 @@ class CwlPdDataRange(DataRangeBase):
                 default=np.nan,
                 validator=RangeValidator(ge=0, le=180),
             ),
-            cif_handler=CifHandler(names=['_pd_meas.2theta_range_max']),
+            cif_handler=CifHandler(
+                names=['_data_range.two_theta_max'],
+                import_names=['_pd_meas.2theta_range_max'],
+                iucr_name='_pd_meas.2theta_range_max',
+            ),
         )
         self._two_theta_inc = NumericDescriptor(
             name='two_theta_inc',
@@ -104,7 +112,11 @@ class CwlPdDataRange(DataRangeBase):
                 default=np.nan,
                 validator=RangeValidator(gt=0, le=180),
             ),
-            cif_handler=CifHandler(names=['_pd_meas.2theta_range_inc']),
+            cif_handler=CifHandler(
+                names=['_data_range.two_theta_inc'],
+                import_names=['_pd_meas.2theta_range_inc'],
+                iucr_name='_pd_meas.2theta_range_inc',
+            ),
         )
 
     # ------------------------------------------------------------------

@@ -64,7 +64,11 @@ class TofPdDataRange(DataRangeBase):
                 default=np.nan,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(names=['_pd_meas.time_of_flight_range_min']),
+            cif_handler=CifHandler(
+                names=['_data_range.time_of_flight_min'],
+                import_names=['_pd_meas.time_of_flight_range_min'],
+                iucr_name='_pd_meas.time_of_flight_range_min',
+            ),
         )
         self._time_of_flight_max = NumericDescriptor(
             name='time_of_flight_max',
@@ -80,7 +84,11 @@ class TofPdDataRange(DataRangeBase):
                 default=np.nan,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(names=['_pd_meas.time_of_flight_range_max']),
+            cif_handler=CifHandler(
+                names=['_data_range.time_of_flight_max'],
+                import_names=['_pd_meas.time_of_flight_range_max'],
+                iucr_name='_pd_meas.time_of_flight_range_max',
+            ),
         )
         self._time_of_flight_inc = NumericDescriptor(
             name='time_of_flight_inc',
@@ -96,7 +104,11 @@ class TofPdDataRange(DataRangeBase):
                 default=np.nan,
                 validator=RangeValidator(gt=0),
             ),
-            cif_handler=CifHandler(names=['_pd_meas.time_of_flight_range_inc']),
+            cif_handler=CifHandler(
+                names=['_data_range.time_of_flight_inc'],
+                import_names=['_pd_meas.time_of_flight_range_inc'],
+                iucr_name='_pd_meas.time_of_flight_range_inc',
+            ),
         )
 
     # ------------------------------------------------------------------
