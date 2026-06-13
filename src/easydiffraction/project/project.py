@@ -21,6 +21,8 @@ from easydiffraction.io.cif.serialize import analysis_from_cif
 from easydiffraction.io.cif.serialize import project_config_from_cif
 from easydiffraction.io.cif.serialize import project_config_to_cif
 from easydiffraction.io.cif.serialize import project_to_cif
+from easydiffraction.io.edstar import edstar_body_from_text
+from easydiffraction.io.edstar import section_to_edstar
 from easydiffraction.io.results_sidecar import read_analysis_results_sidecar
 from easydiffraction.io.results_sidecar import write_analysis_results_sidecar
 from easydiffraction.project.display import ProjectDisplay
@@ -134,6 +136,24 @@ def _load_cif_directory(
         add_from_cif_path(str(cif_file))
 
 
+def _load_edstar_or_cif_directory(
+    section_dir: pathlib.Path,
+    add_from_edstar_path: Callable[[str], None],
+    add_from_cif_path: Callable[[str], None],
+) -> None:
+    """Load EdSTAR files, falling back to legacy CIF files."""
+    if not section_dir.is_dir():
+        return
+
+    edstar_files = sorted(section_dir.glob('*.edstar'))
+    if edstar_files:
+        for edstar_file in edstar_files:
+            add_from_edstar_path(str(edstar_file))
+        return
+
+    _load_cif_directory(section_dir, add_from_cif_path)
+
+
 def _create_loading_project(project_cls: type[Project]) -> Project:
     """Create a project instance while suppressing varname lookup."""
     project_cls._loading = True
@@ -145,35 +165,50 @@ def _create_loading_project(project_cls: type[Project]) -> Project:
 
 def _load_project_info(project: Project, project_path: pathlib.Path) -> None:
     """
-    Restore project configuration from ``project.cif`` when present.
+    Restore project configuration from EdSTAR or legacy CIF.
     """
+    project_edstar_path = project_path / 'project.edstar'
+    if project_edstar_path.is_file():
+        body = edstar_body_from_text(project_edstar_path.read_text())
+        project_config_from_cif(project, body)
+        return
+
     project_cif_path = project_path / 'project.cif'
     if project_cif_path.is_file():
         project_config_from_cif(project, project_cif_path.read_text())
 
 
-def _resolved_analysis_cif_path(project_path: pathlib.Path) -> pathlib.Path | None:
-    """Return the preferred analysis CIF path for a saved project."""
-    analysis_cif_path = project_path / 'analysis' / 'analysis.cif'
-    if analysis_cif_path.is_file():
-        return analysis_cif_path
-
-    analysis_cif_path = project_path / 'analysis.cif'
-    if analysis_cif_path.is_file():
-        return analysis_cif_path
+def _resolved_analysis_path(project_path: pathlib.Path) -> pathlib.Path | None:
+    """Return the preferred analysis path for a saved project."""
+    for analysis_path in (
+        project_path / 'analysis' / 'analysis.edstar',
+        project_path / 'analysis.edstar',
+        project_path / 'analysis' / 'analysis.cif',
+        project_path / 'analysis.cif',
+    ):
+        if analysis_path.is_file():
+            return analysis_path
     return None
+
+
+def _persistence_body_from_path(path: pathlib.Path) -> str:
+    """Read EdSTAR or legacy CIF text for a project section."""
+    text = path.read_text()
+    if path.suffix == '.edstar':
+        return edstar_body_from_text(text)
+    return text
 
 
 def _load_project_analysis(project: Project, project_path: pathlib.Path) -> None:
     """Restore analysis categories and sidecar state from disk."""
-    analysis_cif_path = _resolved_analysis_cif_path(project_path)
-    if analysis_cif_path is None:
+    analysis_path = _resolved_analysis_path(project_path)
+    if analysis_path is None:
         return
 
-    analysis_from_cif(project._analysis, analysis_cif_path.read_text())
+    analysis_from_cif(project._analysis, _persistence_body_from_path(analysis_path))
     read_analysis_results_sidecar(
         analysis=project._analysis,
-        analysis_dir=analysis_cif_path.parent,
+        analysis_dir=analysis_path.parent,
     )
     param_map = project._build_parameter_map()
     if project._analysis.fit_parameters:
@@ -404,10 +439,10 @@ class Project(GuardedBase):  # noqa: PLR0904
         """
         Load a project from a saved directory.
 
-        Reads ``project.cif``, ``structures/*.cif``,
-        ``experiments/*.cif``, and ``analysis.cif`` from *dir_path* and
-        reconstructs the full project state, including project-level
-        display configuration.
+        Reads EdSTAR project files from *dir_path* and reconstructs the
+        full project state, including project-level display
+        configuration. Legacy beta CIF project files remain accepted as
+        read-only compatibility input when no EdSTAR sibling exists.
 
         Parameters
         ----------
@@ -435,8 +470,16 @@ class Project(GuardedBase):  # noqa: PLR0904
 
         _load_project_info(project, project_path)
         project.info.path = project_path
-        _load_cif_directory(project_path / 'structures', project._structures.add_from_cif_path)
-        _load_cif_directory(project_path / 'experiments', project._experiments.add_from_cif_path)
+        _load_edstar_or_cif_directory(
+            project_path / 'structures',
+            project._structures.add_from_edstar_path,
+            project._structures.add_from_cif_path,
+        )
+        _load_edstar_or_cif_directory(
+            project_path / 'experiments',
+            project._experiments.add_from_edstar_path,
+            project._experiments.add_from_cif_path,
+        )
         _load_project_analysis(project, project_path)
 
         # 5. Resolve alias param references
@@ -509,19 +552,19 @@ class Project(GuardedBase):  # noqa: PLR0904
         self.info.path.mkdir(parents=True, exist_ok=True)
 
         # Save project-level configuration
-        with (self.info.path / 'project.cif').open('w') as f:
-            f.write(project_config_to_cif(self))
-            console.print('├── 📄 project.cif')
+        with (self.info.path / 'project.edstar').open('w') as f:
+            f.write(section_to_edstar(project_config_to_cif(self)))
+            console.print('├── 📄 project.edstar')
 
         # Save structures
         sm_dir = self.info.path / 'structures'
         sm_dir.mkdir(parents=True, exist_ok=True)
         console.print('├── 📁 structures/')
         for structure in self.structures.values():
-            file_name: str = f'{structure.name}.cif'
+            file_name: str = f'{structure.name}.edstar'
             file_path = sm_dir / file_name
             with file_path.open('w') as f:
-                f.write(structure.as_cif)
+                f.write(section_to_edstar(structure.as_cif))
                 console.print(f'│   └── 📄 {file_name}')
 
         # Save experiments
@@ -529,17 +572,17 @@ class Project(GuardedBase):  # noqa: PLR0904
         expt_dir.mkdir(parents=True, exist_ok=True)
         console.print('├── 📁 experiments/')
         for experiment in self.experiments.values():
-            file_name: str = f'{experiment.name}.cif'
+            file_name: str = f'{experiment.name}.edstar'
             file_path = expt_dir / file_name
             with file_path.open('w') as f:
-                f.write(experiment.as_cif)
+                f.write(section_to_edstar(experiment.as_cif))
                 console.print(f'│   └── 📄 {file_name}')
 
         # Save analysis
         analysis_dir = self.info.path / 'analysis'
         analysis_dir.mkdir(parents=True, exist_ok=True)
-        with (analysis_dir / 'analysis.cif').open('w') as f:
-            f.write(self.analysis.as_cif)
+        with (analysis_dir / 'analysis.edstar').open('w') as f:
+            f.write(section_to_edstar(self.analysis.as_cif))
             console.print('├── 📁 analysis/')
         write_analysis_results_sidecar(
             analysis=self.analysis,
@@ -547,7 +590,9 @@ class Project(GuardedBase):  # noqa: PLR0904
         )
 
         analysis_file_names = sorted(
-            path.name for path in analysis_dir.iterdir() if path.is_file()
+            path.name
+            for path in analysis_dir.iterdir()
+            if path.is_file() and path.suffix in {'.edstar', '.csv', '.h5'}
         )
         for index, file_name in enumerate(analysis_file_names):
             branch = '└──' if index == len(analysis_file_names) - 1 else '├──'

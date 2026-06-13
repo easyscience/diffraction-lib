@@ -232,7 +232,7 @@ code/EdSTAR/CIF reference.
   Add EdSTAR persistence inventory audit
   ```
 
-- [ ] P1.4 - Introduce EdSTAR project file save/load.
+- [x] P1.4 - Introduce EdSTAR project file save/load.
 
   Add EdSTAR serialization and parsing boundaries, including schema
   marker writing/validation and selector/body consistency checks. Update

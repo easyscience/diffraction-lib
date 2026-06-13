@@ -2,11 +2,14 @@
 # SPDX-License-Identifier: BSD-3-Clause
 """Collection of experiment data blocks."""
 
+import pathlib
+
 from typeguard import typechecked
 
 from easydiffraction.core.datablock import DatablockCollection
 from easydiffraction.datablocks.experiment.item.base import ExperimentBase
 from easydiffraction.datablocks.experiment.item.factory import ExperimentFactory
+from easydiffraction.io.edstar import edstar_body_from_text
 from easydiffraction.utils.enums import VerbosityEnum
 from easydiffraction.utils.logging import console
 
@@ -94,6 +97,23 @@ class Experiments(DatablockCollection):
             Path to a CIF document.
         """
         experiment = ExperimentFactory.from_cif_path(cif_path)
+        self.add(experiment)
+
+    @typechecked
+    def add_from_edstar_path(
+        self,
+        edstar_path: str,
+    ) -> None:
+        """
+        Add an experiment from an EdSTAR file.
+
+        Parameters
+        ----------
+        edstar_path : str
+            Path to an EdSTAR experiment file.
+        """
+        body = edstar_body_from_text(pathlib.Path(edstar_path).read_text())
+        experiment = ExperimentFactory.from_cif_str(body)
         self.add(experiment)
 
     @typechecked
