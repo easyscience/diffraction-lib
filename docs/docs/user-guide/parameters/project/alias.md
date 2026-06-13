@@ -6,7 +6,7 @@
 | --- | --- |
 | \_alias.id | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_alias.id`.
+Human-readable alias id for a parameter.
 
 ## :material-form-textbox: parameter_unique_name { #alias-parameter-unique-name }
 
@@ -14,7 +14,7 @@ EdSTAR key `_alias.id`.
 | --- | --- |
 | \_alias.parameter_unique_name | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_alias.parameter_unique_name`.
+Unique name of the referenced parameter.
 
 <!-- prettier-ignore-start -->
 [0]: #

@@ -1,5 +1,7 @@
 # :material-microscope: instrument
 
+[pd-neut-cwl][3]{:.label-experiment} [pd-neut-tof][3]{:.label-experiment} [pd-xray][3]{:.label-experiment} [sc-neut-cwl][3]{:.label-experiment} [pd-neut-total][3]{:.label-experiment} [pd-xray-total][3]{:.label-experiment}
+
 ### :material-wrench: setup_wavelength { #instrument-setup-wavelength }
 
 | Access | Source |
@@ -8,8 +10,7 @@
 | \_instrument.setup_wavelength | [EdSTAR][0]{:.label-cif} |
 | \_diffrn_radiation_wavelength.value [:material-open-in-new:](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Idiffrn_radiation_wavelength.value.html "IUCr definition") | [coreCIF][0]{:.label-cif} |
 
-Incident neutron or X-ray wavelength for constant-wavelength
-experiments.
+Incident neutron or X-ray wavelength.
 
 ### :material-tune: calib_twotheta_offset { #instrument-calib-twotheta-offset }
 
@@ -19,7 +20,7 @@ experiments.
 | \_instrument.calib_twotheta_offset | [EdSTAR][0]{:.label-cif} |
 | \_pd_calib.2theta_offset | [pdCIF][0]{:.label-cif} |
 
-Two-theta zero offset for constant-wavelength powder experiments.
+Instrument misalignment offset.
 
 ### :material-wrench: setup_twotheta_bank { #instrument-setup-twotheta-bank }
 
@@ -29,7 +30,7 @@ Two-theta zero offset for constant-wavelength powder experiments.
 | \_instrument.setup_twotheta_bank | [EdSTAR][0]{:.label-cif} |
 | \_instr.2theta_bank | [easydiffractionCIF][0]{:.label-cif} |
 
-Detector-bank two-theta angle for time-of-flight powder experiments.
+Detector bank position.
 
 ### :material-tune: calib_d_to_tof_reciprocal { #instrument-calib-d-to-tof-reciprocal }
 
@@ -39,7 +40,7 @@ Detector-bank two-theta angle for time-of-flight powder experiments.
 | \_instrument.calib_d_to_tof_reciprocal | [EdSTAR][0]{:.label-cif} |
 | \_instr.d_to_tof_recip | [easydiffractionCIF][0]{:.label-cif} |
 
-Reciprocal d-spacing term in the time-of-flight calibration.
+TOF reciprocal velocity correction.
 
 ### :material-tune: calib_d_to_tof_offset { #instrument-calib-d-to-tof-offset }
 
@@ -49,7 +50,7 @@ Reciprocal d-spacing term in the time-of-flight calibration.
 | \_instrument.calib_d_to_tof_offset | [EdSTAR][0]{:.label-cif} |
 | \_instr.d_to_tof_offset | [easydiffractionCIF][0]{:.label-cif} |
 
-Offset term in the time-of-flight calibration.
+TOF offset.
 
 ### :material-tune: calib_d_to_tof_linear { #instrument-calib-d-to-tof-linear }
 
@@ -59,7 +60,7 @@ Offset term in the time-of-flight calibration.
 | \_instrument.calib_d_to_tof_linear | [EdSTAR][0]{:.label-cif} |
 | \_instr.d_to_tof_linear | [easydiffractionCIF][0]{:.label-cif} |
 
-Linear d-spacing term in the time-of-flight calibration.
+TOF linear conversion.
 
 ### :material-tune: calib_d_to_tof_quadratic { #instrument-calib-d-to-tof-quadratic }
 
@@ -69,7 +70,7 @@ Linear d-spacing term in the time-of-flight calibration.
 | \_instrument.calib_d_to_tof_quadratic | [EdSTAR][0]{:.label-cif} |
 | \_instr.d_to_tof_quad | [easydiffractionCIF][0]{:.label-cif} |
 
-Quadratic d-spacing term in the time-of-flight calibration.
+TOF quadratic correction.
 
 ## Additional EdSTAR Keys
 
@@ -79,7 +80,7 @@ Quadratic d-spacing term in the time-of-flight calibration.
 | --- | --- |
 | \_instrument.calib_sample_displacement | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_instrument.calib_sample_displacement`.
+Specimen displacement from the diffractometer axis.
 
 ### :material-tag: calib_sample_transparency { #instrument-calib-sample-transparency }
 
@@ -87,8 +88,9 @@ EdSTAR key `_instrument.calib_sample_displacement`.
 | --- | --- |
 | \_instrument.calib_sample_transparency | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_instrument.calib_sample_transparency`.
+Sample transparency (beam penetration) shift.
 
 <!-- prettier-ignore-start -->
 [0]: #
+[3]: ../../glossary.md#experiment-type-labels
 <!-- prettier-ignore-end -->

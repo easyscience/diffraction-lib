@@ -6,7 +6,7 @@
 | --- | --- |
 | \_rendering_structure.type | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_rendering_structure.type`.
+Structure-view renderer backend type. Supported values include `auto`, `ascii`, and `threejs`.
 
 <!-- prettier-ignore-start -->
 [0]: #

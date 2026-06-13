@@ -1,12 +1,14 @@
 # :material-waveform: pd_background
 
+[pd-neut-cwl][3]{:.label-experiment} [pd-neut-tof][3]{:.label-experiment} [pd-xray][3]{:.label-experiment}
+
 ## :material-tag: Chebyshev_order { #pd-background-chebyshev-order }
 
 | Access | Source |
 | --- | --- |
 | \_pd_background.Chebyshev_order | [pdCIF][0]{:.label-cif} |
 
-pdCIF alias for [`_background.order`](background.md#background-order).
+Order used in a Chebyshev polynomial background term.
 
 ## :material-tag: Chebyshev_coef { #pd-background-chebyshev-coef }
 
@@ -14,7 +16,7 @@ pdCIF alias for [`_background.order`](background.md#background-order).
 | --- | --- |
 | \_pd_background.Chebyshev_coef | [pdCIF][0]{:.label-cif} |
 
-pdCIF alias for [`_background.coef`](background.md#background-coef).
+Coefficient used in a Chebyshev polynomial background term.
 
 ## :material-tag: id { #pd-background-id }
 
@@ -22,8 +24,9 @@ pdCIF alias for [`_background.coef`](background.md#background-coef).
 | --- | --- |
 | \_pd_background.id | [pdCIF][0]{:.label-cif} |
 
-pdCIF alias for [`_background.id`](background.md#background-id).
+Identifier for this background line segment.
 
 <!-- prettier-ignore-start -->
 [0]: #
+[3]: ../../glossary.md#experiment-type-labels
 <!-- prettier-ignore-end -->

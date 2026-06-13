@@ -6,7 +6,7 @@
 | --- | --- |
 | \_fit_parameter_correlation.correlation | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_parameter_correlation.correlation`.
+Persisted correlation coefficient for the parameter pair.
 
 ## :material-tag: id { #fit-parameter-correlation-id }
 
@@ -14,7 +14,7 @@ EdSTAR key `_fit_parameter_correlation.correlation`.
 | --- | --- |
 | \_fit_parameter_correlation.id | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_parameter_correlation.id`.
+Stable identifier for the persisted correlation row.
 
 ## :material-form-textbox: parameter_unique_name_i { #fit-parameter-correlation-parameter-unique-name-i }
 
@@ -22,7 +22,7 @@ EdSTAR key `_fit_parameter_correlation.id`.
 | --- | --- |
 | \_fit_parameter_correlation.parameter_unique_name_i | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_parameter_correlation.parameter_unique_name_i`.
+First unique parameter name in the persisted pair.
 
 ## :material-form-textbox: parameter_unique_name_j { #fit-parameter-correlation-parameter-unique-name-j }
 
@@ -30,7 +30,7 @@ EdSTAR key `_fit_parameter_correlation.parameter_unique_name_i`.
 | --- | --- |
 | \_fit_parameter_correlation.parameter_unique_name_j | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_parameter_correlation.parameter_unique_name_j`.
+Second unique parameter name in the persisted pair.
 
 ## :material-tag: source_kind { #fit-parameter-correlation-source-kind }
 
@@ -38,7 +38,7 @@ EdSTAR key `_fit_parameter_correlation.parameter_unique_name_j`.
 | --- | --- |
 | \_fit_parameter_correlation.source_kind | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_parameter_correlation.source_kind`.
+Origin of the persisted correlation summary. Supported values include `deterministic` and `posterior`.
 
 <!-- prettier-ignore-start -->
 [0]: #

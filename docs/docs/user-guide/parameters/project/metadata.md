@@ -6,7 +6,7 @@
 | --- | --- |
 | \_metadata.created | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_metadata.created`.
+Project creation timestamp.
 
 ## :material-text-box-outline: description { #metadata-description }
 
@@ -14,7 +14,7 @@ EdSTAR key `_metadata.created`.
 | --- | --- |
 | \_metadata.description | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_metadata.description`.
+Project description.
 
 ## :material-tag: last_modified { #metadata-last-modified }
 
@@ -22,7 +22,7 @@ EdSTAR key `_metadata.description`.
 | --- | --- |
 | \_metadata.last_modified | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_metadata.last_modified`.
+Project last-modified timestamp.
 
 ## :material-form-textbox: name { #metadata-name }
 
@@ -30,7 +30,7 @@ EdSTAR key `_metadata.last_modified`.
 | --- | --- |
 | \_metadata.name | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_metadata.name`.
+Project identifier.
 
 ## :material-tag: timestamp { #metadata-timestamp }
 
@@ -38,7 +38,7 @@ EdSTAR key `_metadata.name`.
 | --- | --- |
 | \_metadata.timestamp | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_metadata.timestamp`.
+Project fit timestamp.
 
 ## :material-format-title: title { #metadata-title }
 
@@ -46,7 +46,7 @@ EdSTAR key `_metadata.timestamp`.
 | --- | --- |
 | \_metadata.title | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_metadata.title`.
+Project title.
 
 <!-- prettier-ignore-start -->
 [0]: #

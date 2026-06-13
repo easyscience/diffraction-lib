@@ -2,6 +2,8 @@
 
 ## Constant-Wavelength Powder Profiles
 
+[pd-neut-cwl][3]{:.label-experiment} [pd-xray][3]{:.label-experiment}
+
 ### :material-arrow-expand-horizontal: broad_gauss_u { #peak-broad-gauss-u }
 
 | Access | Source |
@@ -10,7 +12,7 @@
 | \_peak.broad_gauss_u | [EdSTAR][0]{:.label-cif} |
 | \_easydiffraction_peak.broad_gauss_u | [easydiffractionCIF][0]{:.label-cif} |
 
-Gaussian broadening coefficient _U_.
+Gaussian broadening from sample size and resolution.
 
 ### :material-arrow-expand-horizontal: broad_gauss_v { #peak-broad-gauss-v }
 
@@ -20,7 +22,7 @@ Gaussian broadening coefficient _U_.
 | \_peak.broad_gauss_v | [EdSTAR][0]{:.label-cif} |
 | \_easydiffraction_peak.broad_gauss_v | [easydiffractionCIF][0]{:.label-cif} |
 
-Gaussian broadening coefficient _V_.
+Gaussian broadening instrumental contribution.
 
 ### :material-arrow-expand-horizontal: broad_gauss_w { #peak-broad-gauss-w }
 
@@ -30,7 +32,7 @@ Gaussian broadening coefficient _V_.
 | \_peak.broad_gauss_w | [EdSTAR][0]{:.label-cif} |
 | \_easydiffraction_peak.broad_gauss_w | [easydiffractionCIF][0]{:.label-cif} |
 
-Gaussian broadening coefficient _W_.
+Gaussian broadening instrumental contribution.
 
 ### :material-arrow-expand-horizontal: broad_lorentz_x { #peak-broad-lorentz-x }
 
@@ -40,7 +42,7 @@ Gaussian broadening coefficient _W_.
 | \_peak.broad_lorentz_x | [EdSTAR][0]{:.label-cif} |
 | \_easydiffraction_peak.broad_lorentz_x | [easydiffractionCIF][0]{:.label-cif} |
 
-Lorentzian broadening coefficient _X_.
+Lorentzian broadening from sample strain effects.
 
 ### :material-arrow-expand-horizontal: broad_lorentz_y { #peak-broad-lorentz-y }
 
@@ -50,9 +52,11 @@ Lorentzian broadening coefficient _X_.
 | \_peak.broad_lorentz_y | [EdSTAR][0]{:.label-cif} |
 | \_easydiffraction_peak.broad_lorentz_y | [easydiffractionCIF][0]{:.label-cif} |
 
-Lorentzian broadening coefficient _Y_.
+Lorentzian broadening from microstructural defects.
 
 ## Time-Of-Flight Powder Profiles
+
+[pd-neut-tof][3]{:.label-experiment}
 
 ### :material-arrow-expand-horizontal: broad_gauss_sigma_0 { #peak-broad-gauss-sigma-0 }
 
@@ -62,7 +66,7 @@ Lorentzian broadening coefficient _Y_.
 | \_peak.broad_gauss_sigma_0 | [EdSTAR][0]{:.label-cif} |
 | \_easydiffraction_peak.gauss_sigma_0 | [easydiffractionCIF][0]{:.label-cif} |
 
-Gaussian time-of-flight broadening term.
+Gaussian broadening (instrumental resolution).
 
 ### :material-arrow-expand-horizontal: broad_gauss_sigma_1 { #peak-broad-gauss-sigma-1 }
 
@@ -72,7 +76,7 @@ Gaussian time-of-flight broadening term.
 | \_peak.broad_gauss_sigma_1 | [EdSTAR][0]{:.label-cif} |
 | \_easydiffraction_peak.gauss_sigma_1 | [easydiffractionCIF][0]{:.label-cif} |
 
-Gaussian time-of-flight broadening term.
+Gaussian broadening (dependent on d-spacing).
 
 ### :material-arrow-expand-horizontal: broad_gauss_sigma_2 { #peak-broad-gauss-sigma-2 }
 
@@ -82,7 +86,7 @@ Gaussian time-of-flight broadening term.
 | \_peak.broad_gauss_sigma_2 | [EdSTAR][0]{:.label-cif} |
 | \_easydiffraction_peak.gauss_sigma_2 | [easydiffractionCIF][0]{:.label-cif} |
 
-Gaussian time-of-flight broadening term.
+Gaussian broadening (instrument-dependent term).
 
 ### :material-arrow-expand-horizontal: broad_lorentz_gamma_0 { #peak-broad-lorentz-gamma-0 }
 
@@ -92,7 +96,7 @@ Gaussian time-of-flight broadening term.
 | \_peak.broad_lorentz_gamma_0 | [EdSTAR][0]{:.label-cif} |
 | \_easydiffraction_peak.lorentz_gamma_0 | [easydiffractionCIF][0]{:.label-cif} |
 
-Lorentzian time-of-flight broadening term.
+Lorentzian broadening (microstrain effects).
 
 ### :material-arrow-expand-horizontal: broad_lorentz_gamma_1 { #peak-broad-lorentz-gamma-1 }
 
@@ -102,7 +106,7 @@ Lorentzian time-of-flight broadening term.
 | \_peak.broad_lorentz_gamma_1 | [EdSTAR][0]{:.label-cif} |
 | \_easydiffraction_peak.lorentz_gamma_1 | [easydiffractionCIF][0]{:.label-cif} |
 
-Lorentzian time-of-flight broadening term.
+Lorentzian broadening (dependent on d-spacing).
 
 ### :material-arrow-expand-horizontal: broad_lorentz_gamma_2 { #peak-broad-lorentz-gamma-2 }
 
@@ -112,7 +116,7 @@ Lorentzian time-of-flight broadening term.
 | \_peak.broad_lorentz_gamma_2 | [EdSTAR][0]{:.label-cif} |
 | \_easydiffraction_peak.lorentz_gamma_2 | [easydiffractionCIF][0]{:.label-cif} |
 
-Lorentzian time-of-flight broadening term.
+Lorentzian broadening (instrument-dependent term).
 
 ### :material-arrow-bottom-right: exp_decay_beta_0 { #peak-exp-decay-beta-0 }
 
@@ -122,7 +126,7 @@ Lorentzian time-of-flight broadening term.
 | \_peak.exp_decay_beta_0 | [EdSTAR][0]{:.label-cif} |
 | \_easydiffraction_peak.decay_beta_0 | [easydiffractionCIF][0]{:.label-cif} |
 
-Back-to-back exponential decay term.
+Back-to-back exponential decay β₀.
 
 ### :material-arrow-bottom-right: exp_decay_beta_1 { #peak-exp-decay-beta-1 }
 
@@ -132,7 +136,7 @@ Back-to-back exponential decay term.
 | \_peak.exp_decay_beta_1 | [EdSTAR][0]{:.label-cif} |
 | \_easydiffraction_peak.decay_beta_1 | [easydiffractionCIF][0]{:.label-cif} |
 
-Back-to-back exponential decay term.
+Back-to-back exponential decay β₁.
 
 ### :material-scale-unbalanced: exp_rise_alpha_0 { #peak-exp-rise-alpha-0 }
 
@@ -142,7 +146,7 @@ Back-to-back exponential decay term.
 | \_peak.exp_rise_alpha_0 | [EdSTAR][0]{:.label-cif} |
 | \_easydiffraction_peak.rise_alpha_0 | [easydiffractionCIF][0]{:.label-cif} |
 
-Back-to-back exponential rise term.
+Back-to-back exponential rise α₀.
 
 ### :material-scale-unbalanced: exp_rise_alpha_1 { #peak-exp-rise-alpha-1 }
 
@@ -152,9 +156,11 @@ Back-to-back exponential rise term.
 | \_peak.exp_rise_alpha_1 | [EdSTAR][0]{:.label-cif} |
 | \_easydiffraction_peak.rise_alpha_1 | [easydiffractionCIF][0]{:.label-cif} |
 
-Back-to-back exponential rise term.
+Back-to-back exponential rise α₁.
 
 ## Total-Scattering Profiles
+
+[pd-neut-total][3]{:.label-experiment} [pd-xray-total][3]{:.label-experiment}
 
 ### :material-content-cut: cutoff_q { #peak-cutoff-q }
 
@@ -164,7 +170,7 @@ Back-to-back exponential rise term.
 | \_peak.cutoff_q | [EdSTAR][0]{:.label-cif} |
 | \_easydiffraction_peak.cutoff_q | [easydiffractionCIF][0]{:.label-cif} |
 
-Q-space cutoff used by the total-scattering peak model.
+Q-value cutoff for Fourier transform.
 
 ### :material-arrow-expand-horizontal: broad_q { #peak-broad-q }
 
@@ -174,7 +180,7 @@ Q-space cutoff used by the total-scattering peak model.
 | \_peak.broad_q | [EdSTAR][0]{:.label-cif} |
 | \_easydiffraction_peak.broad_q | [easydiffractionCIF][0]{:.label-cif} |
 
-Q-space broadening term.
+Quadratic peak broadening from thermal uncertainty.
 
 ### :material-knife: sharp_delta_1 { #peak-sharp-delta-1 }
 
@@ -184,7 +190,7 @@ Q-space broadening term.
 | \_peak.sharp_delta_1 | [EdSTAR][0]{:.label-cif} |
 | \_easydiffraction_peak.sharp_delta_1 | [easydiffractionCIF][0]{:.label-cif} |
 
-Peak sharpening term.
+Peak sharpening coefficient (1/r dependence).
 
 ### :material-knife: sharp_delta_2 { #peak-sharp-delta-2 }
 
@@ -194,7 +200,7 @@ Peak sharpening term.
 | \_peak.sharp_delta_2 | [EdSTAR][0]{:.label-cif} |
 | \_easydiffraction_peak.sharp_delta_2 | [easydiffractionCIF][0]{:.label-cif} |
 
-Peak sharpening term.
+Peak sharpening coefficient (1/r² dependence).
 
 ### :material-arrow-bottom-right: damp_q { #peak-damp-q }
 
@@ -204,7 +210,7 @@ Peak sharpening term.
 | \_peak.damp_q | [EdSTAR][0]{:.label-cif} |
 | \_easydiffraction_peak.damp_q | [easydiffractionCIF][0]{:.label-cif} |
 
-Q-space damping term.
+Q-resolution damping for high-r PDF peak amplitude.
 
 ### :material-arrow-bottom-right: damp_particle_diameter { #peak-damp-particle-diameter }
 
@@ -214,9 +220,11 @@ Q-space damping term.
 | \_peak.damp_particle_diameter | [EdSTAR][0]{:.label-cif} |
 | \_easydiffraction_peak.damp_particle_diameter | [easydiffractionCIF][0]{:.label-cif} |
 
-Particle-diameter damping term.
+Particle diameter for spherical envelope damping correction.
 
 ## Additional EdSTAR Keys
+
+[pd-neut-cwl][3]{:.label-experiment} [pd-neut-tof][3]{:.label-experiment} [pd-xray][3]{:.label-experiment} [sc-neut-cwl][3]{:.label-experiment} [pd-neut-total][3]{:.label-experiment} [pd-xray-total][3]{:.label-experiment}
 
 ### :material-tag: asym_empir_1 { #peak-asym-empir-1 }
 
@@ -224,7 +232,7 @@ Particle-diameter damping term.
 | --- | --- |
 | \_peak.asym_empir_1 | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_peak.asym_empir_1`.
+Empirical asymmetry coefficient p1.
 
 ### :material-tag: asym_empir_2 { #peak-asym-empir-2 }
 
@@ -232,7 +240,7 @@ EdSTAR key `_peak.asym_empir_1`.
 | --- | --- |
 | \_peak.asym_empir_2 | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_peak.asym_empir_2`.
+Empirical asymmetry coefficient p2.
 
 ### :material-tag: asym_empir_3 { #peak-asym-empir-3 }
 
@@ -240,7 +248,7 @@ EdSTAR key `_peak.asym_empir_2`.
 | --- | --- |
 | \_peak.asym_empir_3 | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_peak.asym_empir_3`.
+Empirical asymmetry coefficient p3.
 
 ### :material-tag: asym_empir_4 { #peak-asym-empir-4 }
 
@@ -248,7 +256,7 @@ EdSTAR key `_peak.asym_empir_3`.
 | --- | --- |
 | \_peak.asym_empir_4 | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_peak.asym_empir_4`.
+Empirical asymmetry coefficient p4.
 
 ### :material-tag: asym_fcj_1 { #peak-asym-fcj-1 }
 
@@ -256,7 +264,7 @@ EdSTAR key `_peak.asym_empir_4`.
 | --- | --- |
 | \_peak.asym_fcj_1 | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_peak.asym_fcj_1`.
+Finger-Cox-Jephcoat asymmetry parameter 1.
 
 ### :material-tag: asym_fcj_2 { #peak-asym-fcj-2 }
 
@@ -264,7 +272,7 @@ EdSTAR key `_peak.asym_fcj_1`.
 | --- | --- |
 | \_peak.asym_fcj_2 | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_peak.asym_fcj_2`.
+Finger-Cox-Jephcoat asymmetry parameter 2.
 
 ### :material-tag: dexp_decay_beta_00 { #peak-dexp-decay-beta-00 }
 
@@ -272,7 +280,7 @@ EdSTAR key `_peak.asym_fcj_2`.
 | --- | --- |
 | \_peak.dexp_decay_beta_00 | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_peak.dexp_decay_beta_00`.
+Double-exp first-regime decay β₀₀.
 
 ### :material-tag: dexp_decay_beta_01 { #peak-dexp-decay-beta-01 }
 
@@ -280,7 +288,7 @@ EdSTAR key `_peak.dexp_decay_beta_00`.
 | --- | --- |
 | \_peak.dexp_decay_beta_01 | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_peak.dexp_decay_beta_01`.
+Double-exp first-regime decay β₀₁.
 
 ### :material-tag: dexp_decay_beta_10 { #peak-dexp-decay-beta-10 }
 
@@ -288,7 +296,7 @@ EdSTAR key `_peak.dexp_decay_beta_01`.
 | --- | --- |
 | \_peak.dexp_decay_beta_10 | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_peak.dexp_decay_beta_10`.
+Double-exp second-regime decay β₁₀.
 
 ### :material-tag: dexp_rise_alpha_1 { #peak-dexp-rise-alpha-1 }
 
@@ -296,7 +304,7 @@ EdSTAR key `_peak.dexp_decay_beta_10`.
 | --- | --- |
 | \_peak.dexp_rise_alpha_1 | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_peak.dexp_rise_alpha_1`.
+Double-exp rise parameter α₁.
 
 ### :material-tag: dexp_rise_alpha_2 { #peak-dexp-rise-alpha-2 }
 
@@ -304,7 +312,7 @@ EdSTAR key `_peak.dexp_rise_alpha_1`.
 | --- | --- |
 | \_peak.dexp_rise_alpha_2 | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_peak.dexp_rise_alpha_2`.
+Double-exp rise parameter α₂.
 
 ### :material-tag: dexp_switch_r_01 { #peak-dexp-switch-r-01 }
 
@@ -312,7 +320,7 @@ EdSTAR key `_peak.dexp_rise_alpha_2`.
 | --- | --- |
 | \_peak.dexp_switch_r_01 | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_peak.dexp_switch_r_01`.
+Double-exp switching function r₀₁.
 
 ### :material-tag: dexp_switch_r_02 { #peak-dexp-switch-r-02 }
 
@@ -320,7 +328,7 @@ EdSTAR key `_peak.dexp_switch_r_01`.
 | --- | --- |
 | \_peak.dexp_switch_r_02 | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_peak.dexp_switch_r_02`.
+Double-exp switching function r₀₂.
 
 ### :material-tag: dexp_switch_r_03 { #peak-dexp-switch-r-03 }
 
@@ -328,7 +336,7 @@ EdSTAR key `_peak.dexp_switch_r_02`.
 | --- | --- |
 | \_peak.dexp_switch_r_03 | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_peak.dexp_switch_r_03`.
+Double-exp switching function r₀₃.
 
 ### :material-shape: type { #peak-type }
 
@@ -336,8 +344,9 @@ EdSTAR key `_peak.dexp_switch_r_03`.
 | --- | --- |
 | \_peak.type | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_peak.type`.
+Active peak profile type tag. Supported values include `cwl-pseudo-voigt`, `cwl-pseudo-voigt-empirical-asymmetry`, `cwl-thompson-cox-hastings`, `tof-pseudo-voigt`, `tof-jorgensen`, `tof-jorgensen-von-dreele`, `tof-double-jorgensen-von-dreele`, and `total-gaussian-damped-sinc`.
 
 <!-- prettier-ignore-start -->
 [0]: #
+[3]: ../../glossary.md#experiment-type-labels
 <!-- prettier-ignore-end -->

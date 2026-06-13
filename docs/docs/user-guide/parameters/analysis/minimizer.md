@@ -6,7 +6,7 @@
 | --- | --- |
 | \_minimizer.burn_in_steps | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_minimizer.burn_in_steps`.
+Sampler iterations discarded as warm-up.
 
 ## :material-tag: initialization_method { #minimizer-initialization-method }
 
@@ -14,7 +14,7 @@ EdSTAR key `_minimizer.burn_in_steps`.
 | --- | --- |
 | \_minimizer.initialization_method | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_minimizer.initialization_method`.
+Sampler initialization method. Supported values depend on the minimizer; available values include `latin_hypercube`, `ball`, `uniform`, and `prior`.
 
 ## :material-arrow-collapse-right: max_iterations { #minimizer-max-iterations }
 
@@ -22,7 +22,7 @@ EdSTAR key `_minimizer.initialization_method`.
 | --- | --- |
 | \_minimizer.max_iterations | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_minimizer.max_iterations`.
+Maximum solver iterations.
 
 ## :material-tag: parallel_workers { #minimizer-parallel-workers }
 
@@ -30,7 +30,7 @@ EdSTAR key `_minimizer.max_iterations`.
 | --- | --- |
 | \_minimizer.parallel_workers | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_minimizer.parallel_workers`.
+Worker count; 0 uses all available CPUs.
 
 ## :material-tag: population_size { #minimizer-population-size }
 
@@ -38,7 +38,7 @@ EdSTAR key `_minimizer.parallel_workers`.
 | --- | --- |
 | \_minimizer.population_size | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_minimizer.population_size`.
+Number of chains or walkers.
 
 ## :material-tag: proposal_moves { #minimizer-proposal-moves }
 
@@ -46,7 +46,7 @@ EdSTAR key `_minimizer.population_size`.
 | --- | --- |
 | \_minimizer.proposal_moves | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_minimizer.proposal_moves`.
+Single emcee proposal move; move mixtures are not persisted in v1.
 
 ## :material-tag: random_seed { #minimizer-random-seed }
 
@@ -54,7 +54,7 @@ EdSTAR key `_minimizer.proposal_moves`.
 | --- | --- |
 | \_minimizer.random_seed | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_minimizer.random_seed`.
+Random seed; None uses a system-derived seed.
 
 ## :material-tag: sampling_steps { #minimizer-sampling-steps }
 
@@ -62,7 +62,7 @@ EdSTAR key `_minimizer.random_seed`.
 | --- | --- |
 | \_minimizer.sampling_steps | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_minimizer.sampling_steps`.
+Total sampler iterations per chain.
 
 ## :material-tag: thinning_interval { #minimizer-thinning-interval }
 
@@ -70,7 +70,7 @@ EdSTAR key `_minimizer.sampling_steps`.
 | --- | --- |
 | \_minimizer.thinning_interval | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_minimizer.thinning_interval`.
+Sampler thinning interval.
 
 ## :material-shape: type { #minimizer-type }
 
@@ -78,7 +78,7 @@ EdSTAR key `_minimizer.thinning_interval`.
 | --- | --- |
 | \_minimizer.type | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_minimizer.type`.
+Minimizer category type. Supported values include `lmfit`, `lmfit (leastsq)`, `lmfit (least_squares)`, `dfols`, `bumps`, `bumps (lm)`, `bumps (dream)`, `bumps (amoeba)`, `bumps (de)`, and `emcee`.
 
 <!-- prettier-ignore-start -->
 [0]: #

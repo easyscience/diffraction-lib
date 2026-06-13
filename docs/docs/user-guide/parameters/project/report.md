@@ -6,7 +6,7 @@
 | --- | --- |
 | \_report.cif | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_report.cif`.
+Whether to write CIF reports when saving.
 
 ## :material-tag: html { #report-html }
 
@@ -14,7 +14,7 @@ EdSTAR key `_report.cif`.
 | --- | --- |
 | \_report.html | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_report.html`.
+Whether to write HTML reports when saving.
 
 ## :material-tag: html_offline { #report-html-offline }
 
@@ -22,7 +22,7 @@ EdSTAR key `_report.html`.
 | --- | --- |
 | \_report.html_offline | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_report.html_offline`.
+Whether HTML reports should embed assets.
 
 ## :material-tag: pdf { #report-pdf }
 
@@ -30,7 +30,7 @@ EdSTAR key `_report.html_offline`.
 | --- | --- |
 | \_report.pdf | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_report.pdf`.
+Whether to write PDF reports when saving.
 
 ## :material-tag: tex { #report-tex }
 
@@ -38,7 +38,7 @@ EdSTAR key `_report.pdf`.
 | --- | --- |
 | \_report.tex | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_report.tex`.
+Whether to write TeX reports when saving.
 
 <!-- prettier-ignore-start -->
 [0]: #

@@ -1,5 +1,7 @@
 # :material-puzzle: linked_structure
 
+[pd-neut-cwl][3]{:.label-experiment} [pd-neut-tof][3]{:.label-experiment} [pd-xray][3]{:.label-experiment}
+
 ## :material-identifier: structure_id { #linked-structure-structure-id }
 
 | Access | Source |
@@ -8,7 +10,7 @@
 | \_linked_structure.structure_id | [EdSTAR][0]{:.label-cif} |
 | \_pd_phase_block.id | [pdCIF][0]{:.label-cif} |
 
-Identifier of the structure linked to the experiment.
+Identifier of the linked structure.
 
 ## :material-scale: scale { #linked-structure-scale }
 
@@ -18,8 +20,9 @@ Identifier of the structure linked to the experiment.
 | \_linked_structure.scale | [EdSTAR][0]{:.label-cif} |
 | \_pd_phase_block.scale | [pdCIF][0]{:.label-cif} |
 
-Scale factor for the linked structure in the experiment.
+Scale factor of the linked structure.
 
 <!-- prettier-ignore-start -->
 [0]: #
+[3]: ../../glossary.md#experiment-type-labels
 <!-- prettier-ignore-end -->

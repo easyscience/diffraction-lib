@@ -6,7 +6,7 @@
 | --- | --- |
 | \_joint_fit.experiment_id | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_joint_fit.experiment_id`.
+Experiment identifier.
 
 ## :material-tag: weight { #joint-fit-weight }
 
@@ -14,7 +14,7 @@ EdSTAR key `_joint_fit.experiment_id`.
 | --- | --- |
 | \_joint_fit.weight | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_joint_fit.weight`.
+Weight factor.
 
 <!-- prettier-ignore-start -->
 [0]: #

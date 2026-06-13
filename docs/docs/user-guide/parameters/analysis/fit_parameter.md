@@ -6,7 +6,7 @@
 | --- | --- |
 | \_fit_parameter.bounds_uncertainty_multiplier | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_parameter.bounds_uncertainty_multiplier`.
+Multiplier used to derive fit bounds from uncertainty.
 
 ## :material-arrow-collapse-right: fit_max { #fit-parameter-fit-max }
 
@@ -14,7 +14,7 @@ EdSTAR key `_fit_parameter.bounds_uncertainty_multiplier`.
 | --- | --- |
 | \_fit_parameter.fit_max | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_parameter.fit_max`.
+Persisted upper fit bound.
 
 ## :material-arrow-collapse-left: fit_min { #fit-parameter-fit-min }
 
@@ -22,7 +22,7 @@ EdSTAR key `_fit_parameter.fit_max`.
 | --- | --- |
 | \_fit_parameter.fit_min | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_parameter.fit_min`.
+Persisted lower fit bound.
 
 ## :material-form-textbox: parameter_unique_name { #fit-parameter-parameter-unique-name }
 
@@ -30,7 +30,7 @@ EdSTAR key `_fit_parameter.fit_min`.
 | --- | --- |
 | \_fit_parameter.parameter_unique_name | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_parameter.parameter_unique_name`.
+Unique name of the referenced live parameter.
 
 ## :material-numeric: posterior_best_sample_value { #fit-parameter-posterior-best-sample-value }
 
@@ -38,7 +38,7 @@ EdSTAR key `_fit_parameter.parameter_unique_name`.
 | --- | --- |
 | \_fit_parameter.posterior_best_sample_value | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_parameter.posterior_best_sample_value`.
+Highest-posterior sampled parameter value.
 
 ## :material-tag: posterior_effective_sample_size_bulk { #fit-parameter-posterior-effective-sample-size-bulk }
 
@@ -46,7 +46,7 @@ EdSTAR key `_fit_parameter.posterior_best_sample_value`.
 | --- | --- |
 | \_fit_parameter.posterior_effective_sample_size_bulk | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_parameter.posterior_effective_sample_size_bulk`.
+Bulk effective sample size when available.
 
 ## :material-tag: posterior_gelman_rubin { #fit-parameter-posterior-gelman-rubin }
 
@@ -54,7 +54,7 @@ EdSTAR key `_fit_parameter.posterior_effective_sample_size_bulk`.
 | --- | --- |
 | \_fit_parameter.posterior_gelman_rubin | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_parameter.posterior_gelman_rubin`.
+Rank-normalized split-R-hat when available.
 
 ## :material-tag: posterior_interval_68_high { #fit-parameter-posterior-interval-68-high }
 
@@ -62,7 +62,7 @@ EdSTAR key `_fit_parameter.posterior_gelman_rubin`.
 | --- | --- |
 | \_fit_parameter.posterior_interval_68_high | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_parameter.posterior_interval_68_high`.
+Upper bound of the 68% credible interval.
 
 ## :material-tag: posterior_interval_68_low { #fit-parameter-posterior-interval-68-low }
 
@@ -70,7 +70,7 @@ EdSTAR key `_fit_parameter.posterior_interval_68_high`.
 | --- | --- |
 | \_fit_parameter.posterior_interval_68_low | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_parameter.posterior_interval_68_low`.
+Lower bound of the 68% credible interval.
 
 ## :material-tag: posterior_interval_95_high { #fit-parameter-posterior-interval-95-high }
 
@@ -78,7 +78,7 @@ EdSTAR key `_fit_parameter.posterior_interval_68_low`.
 | --- | --- |
 | \_fit_parameter.posterior_interval_95_high | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_parameter.posterior_interval_95_high`.
+Upper bound of the 95% credible interval.
 
 ## :material-tag: posterior_interval_95_low { #fit-parameter-posterior-interval-95-low }
 
@@ -86,7 +86,7 @@ EdSTAR key `_fit_parameter.posterior_interval_95_high`.
 | --- | --- |
 | \_fit_parameter.posterior_interval_95_low | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_parameter.posterior_interval_95_low`.
+Lower bound of the 95% credible interval.
 
 ## :material-tag: posterior_median { #fit-parameter-posterior-median }
 
@@ -94,7 +94,7 @@ EdSTAR key `_fit_parameter.posterior_interval_95_low`.
 | --- | --- |
 | \_fit_parameter.posterior_median | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_parameter.posterior_median`.
+Posterior median value.
 
 ## :material-tag: posterior_uncertainty { #fit-parameter-posterior-uncertainty }
 
@@ -102,7 +102,7 @@ EdSTAR key `_fit_parameter.posterior_median`.
 | --- | --- |
 | \_fit_parameter.posterior_uncertainty | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_parameter.posterior_uncertainty`.
+Posterior standard deviation.
 
 ## :material-play: start_uncertainty { #fit-parameter-start-uncertainty }
 
@@ -110,7 +110,7 @@ EdSTAR key `_fit_parameter.posterior_uncertainty`.
 | --- | --- |
 | \_fit_parameter.start_uncertainty | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_parameter.start_uncertainty`.
+Persisted pre-fit uncertainty snapshot.
 
 ## :material-play: start_value { #fit-parameter-start-value }
 
@@ -118,7 +118,7 @@ EdSTAR key `_fit_parameter.start_uncertainty`.
 | --- | --- |
 | \_fit_parameter.start_value | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_parameter.start_value`.
+Persisted pre-fit value snapshot.
 
 <!-- prettier-ignore-start -->
 [0]: #

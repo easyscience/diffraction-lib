@@ -6,7 +6,7 @@
 | --- | --- |
 | \_software.id | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_software.id`.
+Software role. Supported values include `framework`, `calculator`, and `minimizer`.
 
 ## :material-form-textbox: name { #software-name }
 
@@ -14,7 +14,7 @@ EdSTAR key `_software.id`.
 | --- | --- |
 | \_software.name | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_software.name`.
+Software package name.
 
 ## :material-link: url { #software-url }
 
@@ -22,7 +22,7 @@ EdSTAR key `_software.name`.
 | --- | --- |
 | \_software.url | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_software.url`.
+Software project URL.
 
 ## :material-numeric: version { #software-version }
 
@@ -30,7 +30,7 @@ EdSTAR key `_software.url`.
 | --- | --- |
 | \_software.version | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_software.version`.
+Software package version.
 
 <!-- prettier-ignore-start -->
 [0]: #

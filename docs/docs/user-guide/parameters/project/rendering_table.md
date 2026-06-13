@@ -6,7 +6,7 @@
 | --- | --- |
 | \_rendering_table.type | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_rendering_table.type`.
+Table renderer backend type. Supported values include `auto`, `rich`, and `pandas`.
 
 <!-- prettier-ignore-start -->
 [0]: #

@@ -6,7 +6,7 @@
 | --- | --- |
 | \_rendering_plot.type | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_rendering_plot.type`.
+RenderingPlot renderer backend type. Supported values include `auto`, `asciichartpy`, and `plotly`.
 
 <!-- prettier-ignore-start -->
 [0]: #

@@ -6,7 +6,7 @@
 | --- | --- |
 | \_structure_style.adp_probability | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_structure_style.adp_probability`.
+ORTEP probability level, a fraction in (0, 1).
 
 ## :material-scale: atom_scale { #structure-style-atom-scale }
 
@@ -14,7 +14,7 @@ EdSTAR key `_structure_style.adp_probability`.
 | --- | --- |
 | \_structure_style.atom_scale | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_structure_style.atom_scale`.
+Overall ball-atom size factor (square-root compressed).
 
 ## :material-tag: atom_view { #structure-style-atom-view }
 
@@ -22,7 +22,7 @@ EdSTAR key `_structure_style.atom_scale`.
 | --- | --- |
 | \_structure_style.atom_view | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_structure_style.atom_view`.
+How atoms are sized and shaped in the structure view. Supported values include `vdw`, `covalent`, `ionic`, and `adp`.
 
 ## :material-tag: color_scheme { #structure-style-color-scheme }
 
@@ -30,7 +30,7 @@ EdSTAR key `_structure_style.atom_view`.
 | --- | --- |
 | \_structure_style.color_scheme | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_structure_style.color_scheme`.
+Standard element colour scheme. Supported values include `jmol` and `vesta`.
 
 <!-- prettier-ignore-start -->
 [0]: #

@@ -1,12 +1,14 @@
 # :material-grid: space_group_Wyckoff
 
+[pd-neut-cwl][3]{:.label-experiment} [pd-neut-tof][3]{:.label-experiment} [pd-xray][3]{:.label-experiment} [sc-neut-cwl][3]{:.label-experiment}
+
 ## :material-tag: coords_xyz { #space-group-wyckoff-coords-xyz }
 
 | Access | Source |
 | --- | --- |
 | \_space_group_Wyckoff.coords_xyz | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_space_group_Wyckoff.coords_xyz`.
+Coordinates of the Wyckoff orbit.
 
 ## :material-tag: id { #space-group-wyckoff-id }
 
@@ -14,7 +16,7 @@ EdSTAR key `_space_group_Wyckoff.coords_xyz`.
 | --- | --- |
 | \_space_group_Wyckoff.id | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_space_group_Wyckoff.id`.
+Identifier of the Wyckoff position.
 
 ## :material-tag: letter { #space-group-wyckoff-letter }
 
@@ -22,7 +24,7 @@ EdSTAR key `_space_group_Wyckoff.id`.
 | --- | --- |
 | \_space_group_Wyckoff.letter | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_space_group_Wyckoff.letter`.
+Wyckoff letter of the position.
 
 ## :material-tag: multiplicity { #space-group-wyckoff-multiplicity }
 
@@ -30,7 +32,7 @@ EdSTAR key `_space_group_Wyckoff.letter`.
 | --- | --- |
 | \_space_group_Wyckoff.multiplicity | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_space_group_Wyckoff.multiplicity`.
+Multiplicity of the Wyckoff position.
 
 ## :material-tag: site_symmetry { #space-group-wyckoff-site-symmetry }
 
@@ -38,8 +40,9 @@ EdSTAR key `_space_group_Wyckoff.multiplicity`.
 | --- | --- |
 | \_space_group_Wyckoff.site_symmetry | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_space_group_Wyckoff.site_symmetry`.
+Site-symmetry symbol of the Wyckoff position.
 
 <!-- prettier-ignore-start -->
 [0]: #
+[3]: ../../glossary.md#experiment-type-labels
 <!-- prettier-ignore-end -->

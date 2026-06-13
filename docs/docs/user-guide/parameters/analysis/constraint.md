@@ -6,7 +6,7 @@
 | --- | --- |
 | \_constraint.expression | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_constraint.expression`.
+Constraint equation, e.g. "occ_Ba = 1 - occ_La".
 
 ## :material-tag: id { #constraint-id }
 
@@ -14,7 +14,7 @@ EdSTAR key `_constraint.expression`.
 | --- | --- |
 | \_constraint.id | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_constraint.id`.
+Explicit identifier for this constraint row.
 
 <!-- prettier-ignore-start -->
 [0]: #

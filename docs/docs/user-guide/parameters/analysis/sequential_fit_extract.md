@@ -6,7 +6,7 @@
 | --- | --- |
 | \_sequential_fit_extract.id | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_sequential_fit_extract.id`.
+Identifier for this extract rule.
 
 ## :material-tag: pattern { #sequential-fit-extract-pattern }
 
@@ -14,7 +14,7 @@ EdSTAR key `_sequential_fit_extract.id`.
 | --- | --- |
 | \_sequential_fit_extract.pattern | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_sequential_fit_extract.pattern`.
+Regex used to extract one numeric capture group.
 
 ## :material-tag: required { #sequential-fit-extract-required }
 
@@ -22,7 +22,7 @@ EdSTAR key `_sequential_fit_extract.pattern`.
 | --- | --- |
 | \_sequential_fit_extract.required | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_sequential_fit_extract.required`.
+Whether this extract rule must match every file.
 
 ## :material-tag: target { #sequential-fit-extract-target }
 
@@ -30,7 +30,7 @@ EdSTAR key `_sequential_fit_extract.required`.
 | --- | --- |
 | \_sequential_fit_extract.target | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_sequential_fit_extract.target`.
+diffrn attribute updated by this extract rule.
 
 <!-- prettier-ignore-start -->
 [0]: #

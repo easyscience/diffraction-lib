@@ -6,7 +6,7 @@
 | --- | --- |
 | \_structure_view.range_a_max | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_structure_view.range_a_max`.
+Upper fractional bound along the unit-cell a axis.
 
 ## :material-arrow-left-right: range_a_min { #structure-view-range-a-min }
 
@@ -14,7 +14,7 @@ EdSTAR key `_structure_view.range_a_max`.
 | --- | --- |
 | \_structure_view.range_a_min | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_structure_view.range_a_min`.
+Lower fractional bound along the unit-cell a axis.
 
 ## :material-arrow-left-right: range_b_max { #structure-view-range-b-max }
 
@@ -22,7 +22,7 @@ EdSTAR key `_structure_view.range_a_min`.
 | --- | --- |
 | \_structure_view.range_b_max | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_structure_view.range_b_max`.
+Upper fractional bound along the unit-cell b axis.
 
 ## :material-arrow-left-right: range_b_min { #structure-view-range-b-min }
 
@@ -30,7 +30,7 @@ EdSTAR key `_structure_view.range_b_max`.
 | --- | --- |
 | \_structure_view.range_b_min | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_structure_view.range_b_min`.
+Lower fractional bound along the unit-cell b axis.
 
 ## :material-arrow-left-right: range_c_max { #structure-view-range-c-max }
 
@@ -38,7 +38,7 @@ EdSTAR key `_structure_view.range_b_min`.
 | --- | --- |
 | \_structure_view.range_c_max | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_structure_view.range_c_max`.
+Upper fractional bound along the unit-cell c axis.
 
 ## :material-arrow-left-right: range_c_min { #structure-view-range-c-min }
 
@@ -46,7 +46,7 @@ EdSTAR key `_structure_view.range_c_max`.
 | --- | --- |
 | \_structure_view.range_c_min | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_structure_view.range_c_min`.
+Lower fractional bound along the unit-cell c axis.
 
 ## :material-tag: show_labels { #structure-view-show-labels }
 
@@ -54,7 +54,7 @@ EdSTAR key `_structure_view.range_c_min`.
 | --- | --- |
 | \_structure_view.show_labels | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_structure_view.show_labels`.
+Show atom labels when the view opens.
 
 ## :material-tag: show_moments { #structure-view-show-moments }
 
@@ -62,7 +62,7 @@ EdSTAR key `_structure_view.show_labels`.
 | --- | --- |
 | \_structure_view.show_moments | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_structure_view.show_moments`.
+Show magnetic-moment arrows where the data exists.
 
 <!-- prettier-ignore-start -->
 [0]: #

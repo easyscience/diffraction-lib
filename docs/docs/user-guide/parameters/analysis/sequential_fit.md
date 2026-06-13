@@ -6,7 +6,7 @@
 | --- | --- |
 | \_sequential_fit.chunk_size | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_sequential_fit.chunk_size`.
+Chunk-size token for sequential fitting.
 
 ## :material-tag: data_dir { #sequential-fit-data-dir }
 
@@ -14,7 +14,7 @@ EdSTAR key `_sequential_fit.chunk_size`.
 | --- | --- |
 | \_sequential_fit.data_dir | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_sequential_fit.data_dir`.
+Directory containing sequential-fit data files.
 
 ## :material-tag: file_pattern { #sequential-fit-file-pattern }
 
@@ -22,7 +22,7 @@ EdSTAR key `_sequential_fit.data_dir`.
 | --- | --- |
 | \_sequential_fit.file_pattern | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_sequential_fit.file_pattern`.
+Glob pattern selecting sequential-fit files.
 
 ## :material-arrow-collapse-right: max_workers { #sequential-fit-max-workers }
 
@@ -30,7 +30,7 @@ EdSTAR key `_sequential_fit.file_pattern`.
 | --- | --- |
 | \_sequential_fit.max_workers | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_sequential_fit.max_workers`.
+Worker-count token for sequential fitting.
 
 ## :material-tag: reverse { #sequential-fit-reverse }
 
@@ -38,7 +38,7 @@ EdSTAR key `_sequential_fit.max_workers`.
 | --- | --- |
 | \_sequential_fit.reverse | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_sequential_fit.reverse`.
+Whether to process sequential-fit files in reverse.
 
 <!-- prettier-ignore-start -->
 [0]: #

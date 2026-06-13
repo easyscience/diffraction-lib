@@ -1,5 +1,7 @@
 # :material-compass-outline: preferred_orientation
 
+[pd-neut-cwl][3]{:.label-experiment} [pd-neut-tof][3]{:.label-experiment} [pd-xray][3]{:.label-experiment}
+
 ## :material-identifier: structure_id { #preferred-orientation-structure-id }
 
 | Access | Source |
@@ -8,7 +10,7 @@
 | \_preferred_orientation.structure_id | [EdSTAR][0]{:.label-cif} |
 | \_pd_pref_orient_March_Dollase.phase_id | [pdCIF][0]{:.label-cif} |
 
-Identifier of the linked structure corrected by this row.
+Identifier of the corrected structure.
 
 ## :material-chart-bell-curve-cumulative: march_r { #preferred-orientation-march-r }
 
@@ -18,9 +20,7 @@ Identifier of the linked structure corrected by this row.
 | \_preferred_orientation.march_r | [EdSTAR][0]{:.label-cif} |
 | \_pd_pref_orient_March_Dollase.r | [pdCIF][0]{:.label-cif} |
 
-March coefficient `r`. `r = 1` means no preferred orientation, `r < 1`
-describes plate-like crystallites, and `r > 1` describes needle-like
-crystallites.
+March coefficient (1 = no preferred orientation).
 
 ## :material-axis-arrow: index_h { #preferred-orientation-index-h }
 
@@ -30,7 +30,7 @@ crystallites.
 | \_preferred_orientation.index_h | [EdSTAR][0]{:.label-cif} |
 | \_pd_pref_orient_March_Dollase.index_h | [pdCIF][0]{:.label-cif} |
 
-Texture-axis Miller index _h_.
+Texture-axis Miller index h.
 
 ## :material-axis-arrow: index_k { #preferred-orientation-index-k }
 
@@ -40,7 +40,7 @@ Texture-axis Miller index _h_.
 | \_preferred_orientation.index_k | [EdSTAR][0]{:.label-cif} |
 | \_pd_pref_orient_March_Dollase.index_k | [pdCIF][0]{:.label-cif} |
 
-Texture-axis Miller index _k_.
+Texture-axis Miller index k.
 
 ## :material-axis-arrow: index_l { #preferred-orientation-index-l }
 
@@ -50,7 +50,7 @@ Texture-axis Miller index _k_.
 | \_preferred_orientation.index_l | [EdSTAR][0]{:.label-cif} |
 | \_pd_pref_orient_March_Dollase.index_l | [pdCIF][0]{:.label-cif} |
 
-Texture-axis Miller index _l_.
+Texture-axis Miller index l.
 
 ## :material-shuffle-variant: march_random_fract { #preferred-orientation-march-random-fract }
 
@@ -60,8 +60,9 @@ Texture-axis Miller index _l_.
 | \_preferred_orientation.march_random_fract | [EdSTAR][0]{:.label-cif} |
 | \_easydiffraction_pref_orient.march_random_fract | [easydiffractionCIF][0]{:.label-cif} |
 
-Random, untextured fraction of crystallites.
+Random (untextured) fraction; 0 = pure March-Dollase.
 
 <!-- prettier-ignore-start -->
 [0]: #
+[3]: ../../glossary.md#experiment-type-labels
 <!-- prettier-ignore-end -->

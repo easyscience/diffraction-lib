@@ -6,7 +6,7 @@
 | --- | --- |
 | \_fitting_mode.type | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fitting_mode.type`.
+Active fitting mode. Supported values include `single`, `joint`, and `sequential`.
 
 <!-- prettier-ignore-start -->
 [0]: #

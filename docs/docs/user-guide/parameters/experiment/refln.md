@@ -1,12 +1,14 @@
 # :material-diamond-outline: refln
 
+[pd-neut-cwl][3]{:.label-experiment} [pd-neut-tof][3]{:.label-experiment} [pd-xray][3]{:.label-experiment} [sc-neut-cwl][3]{:.label-experiment}
+
 ## :material-tag: d_spacing { #refln-d-spacing }
 
 | Access | Source |
 | --- | --- |
 | \_refln.d_spacing | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_refln.d_spacing`.
+Distance between lattice planes for this reflection.
 
 ## :material-tag: f_calc { #refln-f-calc }
 
@@ -14,7 +16,7 @@ EdSTAR key `_refln.d_spacing`.
 | --- | --- |
 | \_refln.f_calc | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_refln.f_calc`.
+Calculated structure-factor amplitude for this reflection.
 
 ## :material-tag: f_squared_calc { #refln-f-squared-calc }
 
@@ -22,7 +24,7 @@ EdSTAR key `_refln.f_calc`.
 | --- | --- |
 | \_refln.f_squared_calc | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_refln.f_squared_calc`.
+Calculated structure-factor amplitude squared for this reflection.
 
 ## :material-tag: id { #refln-id }
 
@@ -30,7 +32,7 @@ EdSTAR key `_refln.f_squared_calc`.
 | --- | --- |
 | \_refln.id | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_refln.id`.
+Identifier of the reflection.
 
 ## :material-tag: index_h { #refln-index-h }
 
@@ -38,7 +40,7 @@ EdSTAR key `_refln.id`.
 | --- | --- |
 | \_refln.index_h | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_refln.index_h`.
+Miller index h of a measured reflection.
 
 ## :material-tag: index_k { #refln-index-k }
 
@@ -46,7 +48,7 @@ EdSTAR key `_refln.index_h`.
 | --- | --- |
 | \_refln.index_k | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_refln.index_k`.
+Miller index k of a measured reflection.
 
 ## :material-tag: index_l { #refln-index-l }
 
@@ -54,7 +56,7 @@ EdSTAR key `_refln.index_k`.
 | --- | --- |
 | \_refln.index_l | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_refln.index_l`.
+Miller index l of a measured reflection.
 
 ## :material-arrow-collapse-up: intensity_calc { #refln-intensity-calc }
 
@@ -62,7 +64,7 @@ EdSTAR key `_refln.index_l`.
 | --- | --- |
 | \_refln.intensity_calc | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_refln.intensity_calc`.
+Intensity of the reflection calculated from atom site data.
 
 ## :material-arrow-collapse-up: intensity_meas { #refln-intensity-meas }
 
@@ -70,7 +72,7 @@ EdSTAR key `_refln.intensity_calc`.
 | --- | --- |
 | \_refln.intensity_meas | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_refln.intensity_meas`.
+The intensity of the reflection derived from the measurements.
 
 ## :material-arrow-collapse-up: intensity_meas_su { #refln-intensity-meas-su }
 
@@ -78,7 +80,7 @@ EdSTAR key `_refln.intensity_meas`.
 | --- | --- |
 | \_refln.intensity_meas_su | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_refln.intensity_meas_su`.
+Standard uncertainty of the measured intensity.
 
 ## :material-tag: sin_theta_over_lambda { #refln-sin-theta-over-lambda }
 
@@ -86,7 +88,7 @@ EdSTAR key `_refln.intensity_meas_su`.
 | --- | --- |
 | \_refln.sin_theta_over_lambda | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_refln.sin_theta_over_lambda`.
+The sin(θ)/λ value for this reflection.
 
 ## :material-arrow-left-right: sin_theta_over_lambda_range_max { #refln-sin-theta-over-lambda-range-max }
 
@@ -94,7 +96,7 @@ EdSTAR key `_refln.sin_theta_over_lambda`.
 | --- | --- |
 | \_refln.sin_theta_over_lambda_range_max | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_refln.sin_theta_over_lambda_range_max`.
+Upper sinθ/λ bound of the calculation range.
 
 ## :material-arrow-left-right: sin_theta_over_lambda_range_min { #refln-sin-theta-over-lambda-range-min }
 
@@ -102,7 +104,7 @@ EdSTAR key `_refln.sin_theta_over_lambda_range_max`.
 | --- | --- |
 | \_refln.sin_theta_over_lambda_range_min | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_refln.sin_theta_over_lambda_range_min`.
+Lower sinθ/λ bound of the calculation range.
 
 ## :material-tag: structure_id { #refln-structure-id }
 
@@ -110,7 +112,7 @@ EdSTAR key `_refln.sin_theta_over_lambda_range_min`.
 | --- | --- |
 | \_refln.structure_id | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_refln.structure_id`.
+Identifier of the linked structure for this reflection.
 
 ## :material-timer-outline: time_of_flight { #refln-time-of-flight }
 
@@ -118,7 +120,7 @@ EdSTAR key `_refln.structure_id`.
 | --- | --- |
 | \_refln.time_of_flight | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_refln.time_of_flight`.
+Calculated time-of-flight position for this reflection.
 
 ## :material-angle-acute: two_theta { #refln-two-theta }
 
@@ -126,7 +128,7 @@ EdSTAR key `_refln.time_of_flight`.
 | --- | --- |
 | \_refln.two_theta | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_refln.two_theta`.
+Calculated 2theta position for this reflection.
 
 ## :material-sine-wave: wavelength { #refln-wavelength }
 
@@ -134,8 +136,9 @@ EdSTAR key `_refln.two_theta`.
 | --- | --- |
 | \_refln.wavelength | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_refln.wavelength`.
+Mean wavelength of radiation for this reflection.
 
 <!-- prettier-ignore-start -->
 [0]: #
+[3]: ../../glossary.md#experiment-type-labels
 <!-- prettier-ignore-end -->

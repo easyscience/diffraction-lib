@@ -6,7 +6,7 @@
 | --- | --- |
 | \_fit_result.R_factor_all | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_result.R_factor_all`.
+R factor for all observed data in the deterministic fit.
 
 ## :material-tag: R_factor_gt { #fit-result-r-factor-gt }
 
@@ -14,7 +14,7 @@ EdSTAR key `_fit_result.R_factor_all`.
 | --- | --- |
 | \_fit_result.R_factor_gt | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_result.R_factor_gt`.
+R factor for observations above the threshold.
 
 ## :material-tag: acceptance_rate_mean { #fit-result-acceptance-rate-mean }
 
@@ -22,7 +22,7 @@ EdSTAR key `_fit_result.R_factor_gt`.
 | --- | --- |
 | \_fit_result.acceptance_rate_mean | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_result.acceptance_rate_mean`.
+Mean sampler acceptance rate.
 
 ## :material-tag: background_function { #fit-result-background-function }
 
@@ -30,7 +30,7 @@ EdSTAR key `_fit_result.acceptance_rate_mean`.
 | --- | --- |
 | \_fit_result.background_function | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_result.background_function`.
+Active background function names for the deterministic fit.
 
 ## :material-tag: best_log_posterior { #fit-result-best-log-posterior }
 
@@ -38,7 +38,7 @@ EdSTAR key `_fit_result.background_function`.
 | --- | --- |
 | \_fit_result.best_log_posterior | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_result.best_log_posterior`.
+Best log-posterior value found.
 
 ## :material-tag: correlation_available { #fit-result-correlation-available }
 
@@ -46,7 +46,7 @@ EdSTAR key `_fit_result.best_log_posterior`.
 | --- | --- |
 | \_fit_result.correlation_available | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_result.correlation_available`.
+Whether correlations were available for the persisted deterministic fit.
 
 ## :material-tag: covariance_available { #fit-result-covariance-available }
 
@@ -54,7 +54,7 @@ EdSTAR key `_fit_result.correlation_available`.
 | --- | --- |
 | \_fit_result.covariance_available | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_result.covariance_available`.
+Whether covariance was available for the persisted deterministic fit.
 
 ## :material-tag: credible_interval_inner { #fit-result-credible-interval-inner }
 
@@ -62,7 +62,7 @@ EdSTAR key `_fit_result.covariance_available`.
 | --- | --- |
 | \_fit_result.credible_interval_inner | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_result.credible_interval_inner`.
+Inner credible-interval level used in summaries.
 
 ## :material-tag: credible_interval_outer { #fit-result-credible-interval-outer }
 
@@ -70,7 +70,7 @@ EdSTAR key `_fit_result.credible_interval_inner`.
 | --- | --- |
 | \_fit_result.credible_interval_outer | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_result.credible_interval_outer`.
+Outer credible-interval level used in summaries.
 
 ## :material-tag: degrees_of_freedom { #fit-result-degrees-of-freedom }
 
@@ -78,7 +78,7 @@ EdSTAR key `_fit_result.credible_interval_outer`.
 | --- | --- |
 | \_fit_result.degrees_of_freedom | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_result.degrees_of_freedom`.
+Degrees of freedom for the persisted deterministic fit.
 
 ## :material-arrow-collapse-left: effective_sample_size_min { #fit-result-effective-sample-size-min }
 
@@ -86,7 +86,7 @@ EdSTAR key `_fit_result.degrees_of_freedom`.
 | --- | --- |
 | \_fit_result.effective_sample_size_min | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_result.effective_sample_size_min`.
+Minimum bulk effective sample size.
 
 ## :material-tag: exit_reason { #fit-result-exit-reason }
 
@@ -94,7 +94,7 @@ EdSTAR key `_fit_result.effective_sample_size_min`.
 | --- | --- |
 | \_fit_result.exit_reason | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_result.exit_reason`.
+Backend exit reason for the persisted deterministic fit.
 
 ## :material-tag: fitting_time { #fit-result-fitting-time }
 
@@ -102,7 +102,7 @@ EdSTAR key `_fit_result.exit_reason`.
 | --- | --- |
 | \_fit_result.fitting_time | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_result.fitting_time`.
+Fitting time in seconds for the latest persisted projection.
 
 ## :material-arrow-collapse-right: gelman_rubin_max { #fit-result-gelman-rubin-max }
 
@@ -110,7 +110,7 @@ EdSTAR key `_fit_result.fitting_time`.
 | --- | --- |
 | \_fit_result.gelman_rubin_max | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_result.gelman_rubin_max`.
+Maximum rank-normalized split R-hat.
 
 ## :material-tag: iterations { #fit-result-iterations }
 
@@ -118,7 +118,7 @@ EdSTAR key `_fit_result.gelman_rubin_max`.
 | --- | --- |
 | \_fit_result.iterations | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_result.iterations`.
+Iteration count for the latest persisted fit-result projection.
 
 ## :material-tag: message { #fit-result-message }
 
@@ -126,7 +126,7 @@ EdSTAR key `_fit_result.iterations`.
 | --- | --- |
 | \_fit_result.message | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_result.message`.
+Status message for the latest persisted fit-result projection.
 
 ## :material-tag: n_data_points { #fit-result-n-data-points }
 
@@ -134,7 +134,7 @@ EdSTAR key `_fit_result.message`.
 | --- | --- |
 | \_fit_result.n_data_points | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_result.n_data_points`.
+Number of data points used in the persisted deterministic fit.
 
 ## :material-tag: n_free_parameters { #fit-result-n-free-parameters }
 
@@ -142,7 +142,7 @@ EdSTAR key `_fit_result.n_data_points`.
 | --- | --- |
 | \_fit_result.n_free_parameters | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_result.n_free_parameters`.
+Number of free parameters in the persisted deterministic fit.
 
 ## :material-tag: n_parameters { #fit-result-n-parameters }
 
@@ -150,7 +150,7 @@ EdSTAR key `_fit_result.n_free_parameters`.
 | --- | --- |
 | \_fit_result.n_parameters | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_result.n_parameters`.
+Number of parameters considered in the persisted deterministic fit.
 
 ## :material-tag: number_constraints { #fit-result-number-constraints }
 
@@ -158,7 +158,7 @@ EdSTAR key `_fit_result.n_parameters`.
 | --- | --- |
 | \_fit_result.number_constraints | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_result.number_constraints`.
+Number of constraints used in the deterministic fit.
 
 ## :material-tag: number_reflns_gt { #fit-result-number-reflns-gt }
 
@@ -166,7 +166,7 @@ EdSTAR key `_fit_result.number_constraints`.
 | --- | --- |
 | \_fit_result.number_reflns_gt | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_result.number_reflns_gt`.
+Number of reflections above the observed threshold.
 
 ## :material-tag: number_reflns_total { #fit-result-number-reflns-total }
 
@@ -174,7 +174,7 @@ EdSTAR key `_fit_result.number_reflns_gt`.
 | --- | --- |
 | \_fit_result.number_reflns_total | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_result.number_reflns_total`.
+Total number of reflections represented in the fit.
 
 ## :material-tag: number_restraints { #fit-result-number-restraints }
 
@@ -182,7 +182,7 @@ EdSTAR key `_fit_result.number_reflns_total`.
 | --- | --- |
 | \_fit_result.number_restraints | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_result.number_restraints`.
+Number of restraints used in the deterministic fit.
 
 ## :material-form-textbox: objective_name { #fit-result-objective-name }
 
@@ -190,7 +190,7 @@ EdSTAR key `_fit_result.number_restraints`.
 | --- | --- |
 | \_fit_result.objective_name | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_result.objective_name`.
+Objective function name for the persisted deterministic fit.
 
 ## :material-numeric: objective_value { #fit-result-objective-value }
 
@@ -198,7 +198,7 @@ EdSTAR key `_fit_result.objective_name`.
 | --- | --- |
 | \_fit_result.objective_value | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_result.objective_value`.
+Objective value for the persisted deterministic fit.
 
 ## :material-form-textbox: point_estimate_name { #fit-result-point-estimate-name }
 
@@ -206,7 +206,7 @@ EdSTAR key `_fit_result.objective_value`.
 | --- | --- |
 | \_fit_result.point_estimate_name | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_result.point_estimate_name`.
+Committed sampled point estimate name.
 
 ## :material-tag: prof_R_factor { #fit-result-prof-r-factor }
 
@@ -214,7 +214,7 @@ EdSTAR key `_fit_result.point_estimate_name`.
 | --- | --- |
 | \_fit_result.prof_R_factor | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_result.prof_R_factor`.
+Profile R factor for powder deterministic fits.
 
 ## :material-tag: prof_wR_expected { #fit-result-prof-wr-expected }
 
@@ -222,7 +222,7 @@ EdSTAR key `_fit_result.prof_R_factor`.
 | --- | --- |
 | \_fit_result.prof_wR_expected | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_result.prof_wR_expected`.
+Expected weighted profile R factor for powder fits.
 
 ## :material-tag: prof_wR_factor { #fit-result-prof-wr-factor }
 
@@ -230,7 +230,7 @@ EdSTAR key `_fit_result.prof_wR_expected`.
 | --- | --- |
 | \_fit_result.prof_wR_factor | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_result.prof_wR_factor`.
+Weighted profile R factor for powder deterministic fits.
 
 ## :material-tag: profile_function { #fit-result-profile-function }
 
@@ -238,7 +238,7 @@ EdSTAR key `_fit_result.prof_wR_factor`.
 | --- | --- |
 | \_fit_result.profile_function | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_result.profile_function`.
+Active profile function names for the deterministic fit.
 
 ## :material-tag: reduced_chi_square { #fit-result-reduced-chi-square }
 
@@ -246,7 +246,7 @@ EdSTAR key `_fit_result.profile_function`.
 | --- | --- |
 | \_fit_result.reduced_chi_square | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_result.reduced_chi_square`.
+Reduced chi-square for the latest persisted projection.
 
 ## :material-tag: resolved_random_seed { #fit-result-resolved-random-seed }
 
@@ -254,7 +254,7 @@ EdSTAR key `_fit_result.reduced_chi_square`.
 | --- | --- |
 | \_fit_result.resolved_random_seed | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_result.resolved_random_seed`.
+Runtime random seed used by the sampler.
 
 ## :material-tag: result_kind { #fit-result-result-kind }
 
@@ -262,7 +262,7 @@ EdSTAR key `_fit_result.resolved_random_seed`.
 | --- | --- |
 | \_fit_result.result_kind | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_result.result_kind`.
+Kind of the latest persisted fit-result projection. Supported values include `deterministic` and `bayesian`.
 
 ## :material-tag: sampler_completed { #fit-result-sampler-completed }
 
@@ -270,7 +270,7 @@ EdSTAR key `_fit_result.result_kind`.
 | --- | --- |
 | \_fit_result.sampler_completed | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_result.sampler_completed`.
+Whether the sampler completed and returned posterior data.
 
 ## :material-arrow-collapse-right: shift_over_su_max { #fit-result-shift-over-su-max }
 
@@ -278,7 +278,7 @@ EdSTAR key `_fit_result.sampler_completed`.
 | --- | --- |
 | \_fit_result.shift_over_su_max | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_result.shift_over_su_max`.
+Maximum absolute parameter shift divided by s.u.
 
 ## :material-tag: shift_over_su_mean { #fit-result-shift-over-su-mean }
 
@@ -286,7 +286,7 @@ EdSTAR key `_fit_result.shift_over_su_max`.
 | --- | --- |
 | \_fit_result.shift_over_su_mean | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_result.shift_over_su_mean`.
+Mean absolute parameter shift divided by s.u.
 
 ## :material-tag: success { #fit-result-success }
 
@@ -294,7 +294,7 @@ EdSTAR key `_fit_result.shift_over_su_mean`.
 | --- | --- |
 | \_fit_result.success | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_result.success`.
+Whether the latest persisted fit-result projection succeeded.
 
 ## :material-tag: threshold_expression { #fit-result-threshold-expression }
 
@@ -302,7 +302,7 @@ EdSTAR key `_fit_result.success`.
 | --- | --- |
 | \_fit_result.threshold_expression | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_result.threshold_expression`.
+Expression defining the observed-reflection threshold.
 
 ## :material-tag: wR_factor_all { #fit-result-wr-factor-all }
 
@@ -310,7 +310,7 @@ EdSTAR key `_fit_result.threshold_expression`.
 | --- | --- |
 | \_fit_result.wR_factor_all | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_result.wR_factor_all`.
+Weighted R factor for all observed data in the fit.
 
 ## :material-tag: wR_factor_gt { #fit-result-wr-factor-gt }
 
@@ -318,7 +318,7 @@ EdSTAR key `_fit_result.wR_factor_all`.
 | --- | --- |
 | \_fit_result.wR_factor_gt | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_fit_result.wR_factor_gt`.
+Weighted R factor for observations above the threshold.
 
 <!-- prettier-ignore-start -->
 [0]: #

@@ -1,12 +1,14 @@
 # :material-waveform: background
 
+[pd-neut-cwl][3]{:.label-experiment} [pd-neut-tof][3]{:.label-experiment} [pd-xray][3]{:.label-experiment}
+
 ## :material-tag: id { #background-id }
 
 | Access | Source |
 | --- | --- |
 | \_background.id | [EdSTAR][0]{:.label-cif} |
 
-Stable row identifier for a line-segment background point.
+Identifier for this background line segment.
 
 ## :material-arrow-collapse-right: position { #background-position }
 
@@ -16,7 +18,7 @@ Stable row identifier for a line-segment background point.
 | \_background.position | [EdSTAR][0]{:.label-cif} |
 | \_pd_background.line_segment_X | [pdCIF][0]{:.label-cif} |
 
-X-axis position of the background point.
+Position used to create many straight-line segments.
 
 ## :material-arrow-collapse-up: intensity { #background-intensity }
 
@@ -26,7 +28,7 @@ X-axis position of the background point.
 | \_background.intensity | [EdSTAR][0]{:.label-cif} |
 | \_pd_background.line_segment_intensity | [pdCIF][0]{:.label-cif} |
 
-Background intensity at the stored position.
+Intensity used to create many straight-line segments.
 
 ## :material-format-superscript: order { #background-order }
 
@@ -36,7 +38,7 @@ Background intensity at the stored position.
 | \_background.order | [EdSTAR][0]{:.label-cif} |
 | \_pd_background.Chebyshev_order | [pdCIF][0]{:.label-cif} |
 
-Chebyshev polynomial term order.
+Order used in a Chebyshev polynomial background term.
 
 ## :material-arrow-collapse-up: coef { #background-coef }
 
@@ -46,7 +48,7 @@ Chebyshev polynomial term order.
 | \_background.coef | [EdSTAR][0]{:.label-cif} |
 | \_pd_background.Chebyshev_coef | [pdCIF][0]{:.label-cif} |
 
-Chebyshev polynomial coefficient.
+Coefficient used in a Chebyshev polynomial background term.
 
 ## :material-shape: type { #background-type }
 
@@ -54,8 +56,9 @@ Chebyshev polynomial coefficient.
 | --- | --- |
 | \_background.type | [EdSTAR][0]{:.label-cif} |
 
-Background model type.
+Active background type tag. Supported values include `line-segment` and `chebyshev`.
 
 <!-- prettier-ignore-start -->
 [0]: #
+[3]: ../../glossary.md#experiment-type-labels
 <!-- prettier-ignore-end -->

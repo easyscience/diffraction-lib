@@ -6,7 +6,7 @@
 | --- | --- |
 | \_verbosity.fit | [EdSTAR][0]{:.label-cif} |
 
-EdSTAR key `_verbosity.fit`.
+Fitting process output verbosity. Supported values include `full`, `short`, and `silent`.
 
 <!-- prettier-ignore-start -->
 [0]: #
