@@ -14,14 +14,11 @@ individual issue files** — not here.
 
 | #   | Issue | Priority | Type |
 | --- | --- | --- | --- |
-| 3 | [Rebuild Joint-Fit Weights on Every Fit](open/highest_rebuild-joint-fit-weights-on-every-fit.md) | `[priority] highest` | Fragility |
 | 15 | [Validate Joint-Fit Weights Before Residual Normalisation](open/highest_validate-joint-fit-weights-before-residual-normalisation.md) | `[priority] highest` | Correctness |
-| 84 | [Serialise `None` as `.` in CIF Output](open/highest_serialise-none-as-in-cif-output.md) | `[priority] highest` | Correctness |
 | 85 | [Retain Per-Experiment Fitted Parameters for Plotting](open/highest_retain-per-experiment-fitted-parameters-for-plotting.md) | `[priority] highest` | Correctness / UX |
 | 119 | [Model Sample Absorption (Debye–Scherrer, μR)](open/highest_model-sample-absorption-debye-scherrer-r.md) | `[priority] highest` | Physics / Engine feature |
 | 130 | [cryspy Diverges on TOF Jorgensen–Von Dreele Lorentzian](open/highest_cryspy-diverges-on-tof-jorgensen-von-dreele-lorentzian.md) | `[priority] highest` | Correctness |
 | 134 | [Investigate ed-crysfml TOF Jorgensen Profile Discrepancy](open/highest_investigate-ed-crysfml-tof-jorgensen-profile-discrepancy.md) | `[priority] highest` | Correctness |
-| 137 | [CLI `fit` Command Never Saves Results to Disk](open/highest_cli-fit-command-never-saves-results-to-disk.md) | `[priority] highest` | Correctness |
 | 138 | [`calculate_structure_factors` Contract Disagrees Across Backends and Caller](open/highest_calculate-structure-factors-contract-disagrees-across-backends-and-caller.md) | `[priority] highest` | Correctness / Maintainability |
 | 139 | [Unknown Switchable-Category Type on CIF Restore Silently Drops Parameters](open/highest_unknown-switchable-category-type-on-cif-restore-silently-drops-parameters.md) | `[priority] highest` | Robustness |
 | 140 | [Unify Uncertainty-Floor Handling Across Bragg PD, Single-Crystal, and PDF Data](open/highest_unify-uncertainty-floor-handling-across-bragg-pd-single-crystal-and-pdf-data.md) | `[priority] highest` | Correctness / Robustness |
@@ -71,14 +68,12 @@ individual issue files** — not here.
 | 11 | [Document Category `_update` Contract](open/low_document-category-update-contract.md) | `[priority] low` | Maintainability |
 | 13 | [Suppress Redundant Dirty-Flag Sets in Symmetry Constraints](open/low_suppress-redundant-dirty-flag-sets-in-symmetry-constraints.md) | `[priority] low` | Performance |
 | 14 | [Finer-Grained Parameter Change Tracking](open/low_finer-grained-parameter-change-tracking.md) | `[priority] low` | Performance |
-| 16 | [Add Serial Pattern-Generation Benchmarks](open/low_add-serial-pattern-generation-benchmarks.md) | `[priority] low` | Performance |
 | 17 | [Use PDF-Specific CIF Names for Total Scattering](open/low_use-pdf-specific-cif-names-for-total-scattering.md) | `[priority] low` | Naming |
 | 18 | [Move CIF v2→v1 Conversion Out of Calculator](open/low_move-cif-v2-v1-conversion-out-of-calculator.md) | `[priority] low` | Maintainability |
 | 19 | [Add Debug-Mode Logging for Calculator Imports](open/low_add-debug-mode-logging-for-calculator-imports.md) | `[priority] low` | Diagnostics |
 | 20 | [Redirect or Suppress CrysPy stderr Warnings](open/low_redirect-or-suppress-cryspy-stderr-warnings.md) | `[priority] low` | UX |
 | 22 | [Check CrysPy Single-Crystal Instrument Mapping](open/low_check-cryspy-single-crystal-instrument-mapping.md) | `[priority] low` | Correctness |
 | 23 | [Investigate PyCrysFML Pattern Length Discrepancy](open/low_investigate-pycrysfml-pattern-length-discrepancy.md) | `[priority] low` | Correctness |
-| 24 | [Process Default Values on Experiment Creation](open/low_process-default-values-on-experiment-creation.md) | `[priority] low` | Design |
 | 26 | [Clarify `dtype` Usage in Data Point Arrays](open/low_clarify-dtype-usage-in-data-point-arrays.md) | `[priority] low` | Cleanup |
 | 27 | [Handle Zero Uncertainty in Bragg PD Data](open/low_handle-zero-uncertainty-in-bragg-pd-data.md) | `[priority] low` | Correctness |
 | 28 | [Clarify Bragg PD Data Collection Description](open/low_clarify-bragg-pd-data-collection-description.md) | `[priority] low` | Cleanup |
@@ -91,7 +86,6 @@ individual issue files** — not here.
 | 39 | [Improve `_update_priority` Handling in Categories](open/low_improve-update-priority-handling-in-categories.md) | `[priority] low` | Design |
 | 41 | [Check Whether `_mark_dirty` in `_set_value` is Actually Used](open/low_check-whether-mark-dirty-in-set-value-is-actually-used.md) | `[priority] low` | Cleanup |
 | 42 | [MkDocs Doesn't Unpack Types in Validation Module](open/low_mkdocs-doesn-t-unpack-types-in-validation-module.md) | `[priority] low` | Docs |
-| 43 | [Fix Summary Display Inconsistencies](open/low_fix-summary-display-inconsistencies.md) | `[priority] low` | UX |
 | 44 | [Merge Parameter Record Construction in Analysis](open/low_merge-parameter-record-construction-in-analysis.md) | `[priority] low` | Cleanup |
 | 45 | [Decide Default for Alias/Constraint Descriptors](open/low_decide-default-for-alias-constraint-descriptors.md) | `[priority] low` | Design |
 | 46 | [Improve `JointFitItem` Descriptions](open/low_improve-jointfititem-descriptions.md) | `[priority] low` | Naming |
@@ -103,9 +97,7 @@ individual issue files** — not here.
 | 53 | [Move `show()` to `CategoryCollection` Base Class](open/low_move-show-to-categorycollection-base-class.md) | `[priority] low` | Maintainability |
 | 54 | [Add `point_id` to Excluded Regions](open/low_add-point-id-to-excluded-regions.md) | `[priority] low` | Completeness |
 | 55 | [Fix Jupyter Scroll Disabling for MkDocs](open/low_fix-jupyter-scroll-disabling-for-mkdocs.md) | `[priority] low` | Docs / UX |
-| 56 | [Make ASCII Plot Width Configurable](open/low_make-ascii-plot-width-configurable.md) | `[priority] low` | UX |
 | 57 | [Clean Up CIF Deserialisation Helpers](open/low_clean-up-cif-deserialisation-helpers.md) | `[priority] low` | Maintainability |
-| 58 | [Move `as_cif` / `show_as_cif` from `ProjectInfo` to `io.cif.serialize`](open/low_move-as-cif-show-as-cif-from-projectinfo-to-io-cif-serialize.md) | `[priority] low` | Maintainability |
 | 59 | [Add CIF Name Validation or Normalisation in Parse](open/low_add-cif-name-validation-or-normalisation-in-parse.md) | `[priority] low` | Robustness |
 | 60 | [Unify `mkdir` Usage Across the Codebase](open/low_unify-mkdir-usage-across-the-codebase.md) | `[priority] low` | Cleanup |
 | 62 | [Complete Migration from `render_table` to `TableRenderer`](open/low_complete-migration-from-render-table-to-tablerenderer.md) | `[priority] low` | Cleanup |
@@ -127,7 +119,6 @@ individual issue files** — not here.
 | 94 | [Revisit Powder `refln` Phase Labels and Row IDs](open/low_revisit-powder-refln-phase-labels-and-row-ids.md) | `[priority] low` | Naming / CIF UX |
 | 102 | [Drop Compute-and-Ignore `result_kind` Validation in CIF Restore](open/low_drop-compute-and-ignore-result-kind-validation-in-cif-restore.md) | `[priority] low` | Dead code / clarity **Source:** Review 8 finding F7. |
 | 104 | [Tighten `FitParameterItem.posterior_summary` NaN Behaviour](open/low_tighten-fitparameteritem-posterior-summary-nan-behaviour.md) | `[priority] low` | Robustness / partial-data edge case **Source:** Review 8 |
-| 105 | [Remove Orphaned Fit-Result Reset Helper](open/low_remove-orphaned-fit-result-reset-helper.md) | `[priority] low` | Cleanup **Source:** `minimizer-input-output-split` review 6. |
 | 106 | [Document `FitResultBase.result_kind` Default Rationale](open/low_document-fitresultbase-result-kind-default-rationale.md) | `[priority] low` | Code readability **Source:** `minimizer-input-output-split` |
 | 108 | [Smarter Automatic Bond Detection (Near-Neighbour Analysis)](open/low_smarter-automatic-bond-detection-near-neighbour-analysis.md) | `[priority] low` | UX / Visualization |
 | 109 | [Let More Tables Adapt to Terminal Width](open/low_let-more-tables-adapt-to-terminal-width.md) | `[priority] low` | UX / Display |
@@ -164,12 +155,21 @@ individual issue files** — not here.
 
 | #   | Issue |
 | --- | --- |
+| 3 | [Rebuild Joint-Fit Weights on Every Fit](closed/rebuild-joint-fit-weights-on-every-fit.md) |
+| 16 | [Add Serial Pattern-Generation Benchmarks](closed/add-serial-pattern-generation-benchmarks.md) |
+| 24 | [Process Default Values on Experiment Creation](closed/process-default-values-on-experiment-creation.md) |
+| 43 | [Fix Summary Display Inconsistencies](closed/fix-summary-display-inconsistencies.md) |
 | 51 | [Access Space Group from `AtomSites` for Wyckoff Letters](closed/access-space-group-from-atomsites-for-wyckoff-letters.md) |
+| 56 | [Make ASCII Plot Width Configurable](closed/make-ascii-plot-width-configurable.md) |
+| 58 | [Move `as_cif` / `show_as_cif` from `ProjectInfo` to `io.cif.serialize`](closed/move-as-cif-show-as-cif-from-projectinfo-to-io-cif-serialize.md) |
 | 72 | [Warn on All Switchable-Category Type Changes](closed/warn-on-all-switchable-category-type-changes.md) |
 | 76 | [Consistent `_type` Suffix in Switchable-Category API Names](closed/consistent-type-suffix-in-switchable-category-api-names.md) |
 | 77 | [Add Help Methods to Public Discovery Facades](closed/add-help-methods-to-public-discovery-facades.md) |
 | 78 | [Add `SEQUENTIAL` to `FitModeEnum` and Show Methods to Analysis](closed/add-sequential-to-fitmodeenum-and-show-methods-to-analysis.md) |
+| 84 | [Serialise `None` as `.` in CIF Output](closed/serialise-none-as-in-cif-output.md) |
 | 100 | [Collapse Duplicate Predictive-Cache-Key Helpers](closed/collapse-duplicate-predictive-cache-key-helpers.md) |
 | 101 | [Remove Dead Branch in `_fit_state_categories`](closed/remove-dead-branch-in-fit-state-categories.md) |
 | 103 | [Make `_sync_engine_from_minimizer_category` Skip-Keys Declarative](closed/make-sync-engine-from-minimizer-category-skip-keys-declarative.md) |
+| 105 | [Remove Orphaned Fit-Result Reset Helper](closed/remove-orphaned-fit-result-reset-helper.md) |
+| 137 | [CLI `fit` Command Never Saves Results to Disk](closed/cli-fit-command-never-saves-results-to-disk.md) |
 | 164 | [Reconcile Git-Ignored `AGENTS.md` / `CLAUDE.md` With Their Checked-In Role](closed/reconcile-git-ignored-agents-md-claude-md-with-their-checked-in-role.md) |
