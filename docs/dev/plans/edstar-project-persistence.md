@@ -215,7 +215,7 @@ code/EdSTAR/CIF reference.
   Add explicit persistence names to handlers
   ```
 
-- [ ] P1.3 - Add the generated handler inventory audit.
+- [x] P1.3 - Add the generated handler inventory audit.
 
   Add a tool that imports the registered concrete categories and emits a
   deterministic inventory of descriptor paths, EdSTAR names, legacy CIF
