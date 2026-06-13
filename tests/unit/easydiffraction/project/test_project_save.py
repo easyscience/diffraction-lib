@@ -13,8 +13,8 @@ def test_project_save_uses_cwd_when_no_explicit_path(monkeypatch, tmp_path, caps
     out = capsys.readouterr().out
     # It should announce saving and create the three core files
     assert 'Saving project' in out
-    assert (tmp_path / 'project.edstar').exists()
-    assert (tmp_path / 'analysis' / 'analysis.edstar').exists()
+    assert (tmp_path / 'project.easydiff').exists()
+    assert (tmp_path / 'analysis' / 'analysis.easydiff').exists()
     assert not (tmp_path / 'summary.cif').exists()
     assert not (tmp_path / 'reports').exists()
 
@@ -34,8 +34,8 @@ def test_project_save_as_writes_core_files(tmp_path, monkeypatch):
     p.save_as(str(target))
 
     # Assert expected files/dirs exist
-    assert (target / 'project.edstar').is_file()
-    assert (target / 'analysis' / 'analysis.edstar').is_file()
+    assert (target / 'project.easydiff').is_file()
+    assert (target / 'analysis' / 'analysis.easydiff').is_file()
     assert not (target / 'summary.cif').exists()
     assert not (target / 'reports').exists()
     assert (target / 'structures').is_dir()
@@ -60,7 +60,7 @@ def test_project_save_lists_existing_analysis_results_csv(tmp_path, monkeypatch,
     p.save()
 
     out = capsys.readouterr().out
-    assert 'analysis.edstar' in out
+    assert 'analysis.easydiff' in out
     assert 'results.csv' in out
 
 
@@ -81,7 +81,7 @@ def test_project_save_as_overwrites_existing_directory_by_default(tmp_path, monk
     project.save_as(str(target))
 
     assert not stale_file.exists()
-    assert (target / 'project.edstar').is_file()
+    assert (target / 'project.easydiff').is_file()
 
 
 def test_project_save_as_preserves_existing_directory_when_disabled(tmp_path, monkeypatch):
@@ -104,7 +104,7 @@ def test_project_save_as_preserves_existing_directory_when_disabled(tmp_path, mo
     )
 
     assert stale_file.exists()
-    assert (target / 'project.edstar').is_file()
+    assert (target / 'project.easydiff').is_file()
 
 
 def test_project_save_omits_empty_fit_state_sections(tmp_path):
@@ -113,7 +113,7 @@ def test_project_save_omits_empty_fit_state_sections(tmp_path):
     project = Project(name='no_fit_state')
     project.save_as(str(tmp_path / 'proj'))
 
-    analysis_cif = (tmp_path / 'proj' / 'analysis' / 'analysis.edstar').read_text()
+    analysis_cif = (tmp_path / 'proj' / 'analysis' / 'analysis.easydiff').read_text()
 
     assert '_fit_parameter.parameter_unique_name' not in analysis_cif
     assert '_fit_result.result_kind' not in analysis_cif

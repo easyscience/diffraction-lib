@@ -121,7 +121,7 @@ def test_pdffit_cif_v2_to_v1_regex_behavior(monkeypatch):
 
 
 def test_structure_cif_for_pdffit_uses_legacy_iucr_tags():
-    """EdSTAR structure tags map to the legacy spellings diffpy reads."""
+    """EasyDiff structure tags map to the legacy spellings diffpy reads."""
     from easydiffraction.analysis.calculators.pdffit import _structure_cif_for_pdffit
     from easydiffraction.datablocks.structure.item.base import Structure
 

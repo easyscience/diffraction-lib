@@ -131,17 +131,17 @@ def test_how_to_access_parameters_prints_paths_and_uids(capsys, monkeypatch):
     assert any('db1 catA  alpha' in r.replace('.', ' ') for r in flat_rows2)
     assert any('db2 catB row1 beta' in r.replace('.', ' ') for r in flat_rows2)
 
-    # EdSTAR persistence tags
+    # EasyDiff persistence tags
     captured3 = {}
 
     def fake_render_table3(**kwargs):
         captured3.update(kwargs)
 
     monkeypatch.setattr(analysis_mod, 'render_table', fake_render_table3)
-    a.display.parameter_edstar_tags()
-    assert 'EdSTAR Tag' in (captured3.get('columns_headers') or [])
-    edstar_rows = [' '.join(map(str, row)) for row in captured3.get('columns_data') or []]
-    assert any('_catA.alpha' in r for r in edstar_rows)
+    a.display.parameter_easydiff_tags()
+    assert 'EasyDiff Tag' in (captured3.get('columns_headers') or [])
+    easydiff_rows = [' '.join(map(str, row)) for row in captured3.get('columns_data') or []]
+    assert any('_catA.alpha' in r for r in easydiff_rows)
 
     # Report CIF tags
     captured4 = {}

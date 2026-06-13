@@ -22,7 +22,7 @@ import easydiffraction.project.project as project_module
 from easydiffraction.project.project import Project
 from easydiffraction.project.project import _apply_csv_row_to_diffrn
 from easydiffraction.project.project import _apply_csv_row_to_params
-from easydiffraction.project.project import _load_edstar_directory
+from easydiffraction.project.project import _load_easydiff_directory
 from easydiffraction.project.project import _load_project_analysis
 from easydiffraction.project.project import _load_project_metadata
 from easydiffraction.project.project import _resolve_data_path_from_results_csv
@@ -163,56 +163,56 @@ def test_resolve_data_path_joins_relative_to_project():
 
 
 # ----------------------------------------------------------------------
-# _load_edstar_directory / _load_project_metadata / _resolved_analysis_path
+# _load_easydiff_directory / _load_project_metadata / _resolved_analysis_path
 # ----------------------------------------------------------------------
 
 
-def test_load_edstar_directory_skips_missing_directory(tmp_path):
+def test_load_easydiff_directory_skips_missing_directory(tmp_path):
     calls: list[str] = []
 
-    _load_edstar_directory(
+    _load_easydiff_directory(
         tmp_path / 'absent',
         calls.append,
-        replacement='structures/<structure>.edstar',
+        replacement='structures/<structure>.easydiff',
     )
 
     assert calls == []
 
 
-def test_load_edstar_directory_loads_sorted_edstar_files(tmp_path):
-    edstar_dir = tmp_path / 'structures'
-    edstar_dir.mkdir()
-    (edstar_dir / 'b.edstar').write_text('b')
-    (edstar_dir / 'a.edstar').write_text('a')
-    (edstar_dir / 'note.txt').write_text('ignored')
+def test_load_easydiff_directory_loads_sorted_easydiff_files(tmp_path):
+    easydiff_dir = tmp_path / 'structures'
+    easydiff_dir.mkdir()
+    (easydiff_dir / 'b.easydiff').write_text('b')
+    (easydiff_dir / 'a.easydiff').write_text('a')
+    (easydiff_dir / 'note.txt').write_text('ignored')
 
     calls: list[str] = []
-    _load_edstar_directory(
-        edstar_dir,
+    _load_easydiff_directory(
+        easydiff_dir,
         calls.append,
-        replacement='structures/<structure>.edstar',
+        replacement='structures/<structure>.easydiff',
     )
 
-    assert calls == [str(edstar_dir / 'a.edstar'), str(edstar_dir / 'b.edstar')]
+    assert calls == [str(easydiff_dir / 'a.easydiff'), str(easydiff_dir / 'b.easydiff')]
 
 
-def test_load_edstar_directory_rejects_legacy_cif(tmp_path):
-    edstar_dir = tmp_path / 'structures'
-    edstar_dir.mkdir()
-    (edstar_dir / 'lbco.cif').write_text('legacy')
+def test_load_easydiff_directory_rejects_legacy_cif(tmp_path):
+    easydiff_dir = tmp_path / 'structures'
+    easydiff_dir.mkdir()
+    (easydiff_dir / 'lbco.cif').write_text('legacy')
 
-    with pytest.raises(ValueError, match=r'structures/<structure>\.edstar'):
-        _load_edstar_directory(
-            edstar_dir,
+    with pytest.raises(ValueError, match=r'structures/<structure>\.easydiff'):
+        _load_easydiff_directory(
+            easydiff_dir,
             lambda _path: None,
-            replacement='structures/<structure>.edstar',
+            replacement='structures/<structure>.easydiff',
         )
 
 
-def test_load_project_metadata_no_edstar_raises(tmp_path):
+def test_load_project_metadata_no_easydiff_raises(tmp_path):
     project = Project(name='unchanged_info')
 
-    with pytest.raises(FileNotFoundError, match=r'project\.edstar'):
+    with pytest.raises(FileNotFoundError, match=r'project\.easydiff'):
         _load_project_metadata(project, tmp_path)
 
 
@@ -221,10 +221,10 @@ def test_resolved_analysis_path_returns_none_when_absent(tmp_path):
 
 
 def test_resolved_analysis_path_uses_root_fallback(tmp_path):
-    root_edstar = tmp_path / 'analysis.edstar'
-    root_edstar.write_text('analysis')
+    root_easydiff = tmp_path / 'analysis.easydiff'
+    root_easydiff.write_text('analysis')
 
-    assert _resolved_analysis_path(tmp_path) == root_edstar
+    assert _resolved_analysis_path(tmp_path) == root_easydiff
 
 
 def test_load_project_analysis_no_cif_is_noop(tmp_path):
@@ -400,7 +400,7 @@ def test_save_without_path_logs_error_and_returns(monkeypatch):
     assert any('save_as()' in message for message in errors)
 
 
-def test_save_writes_experiment_edstar_files(tmp_path, monkeypatch):
+def test_save_writes_experiment_easydiff_files(tmp_path, monkeypatch):
     from easydiffraction.analysis.analysis import Analysis
     from easydiffraction.project.project_metadata import ProjectMetadata
 
@@ -420,11 +420,11 @@ def test_save_writes_experiment_edstar_files(tmp_path, monkeypatch):
     project._experiments = _Experiments(parameters=[])
     project.save_as(str(tmp_path / 'proj'))
 
-    # Experiments are persisted as EdSTAR files carrying the schema
+    # Experiments are persisted as EasyDiff files carrying the schema
     # marker; the original section header is preserved.
-    written = (tmp_path / 'proj' / 'experiments' / 'scan1.edstar').read_text()
+    written = (tmp_path / 'proj' / 'experiments' / 'scan1.easydiff').read_text()
     assert written.startswith('data_scan1')
-    assert '_edstar.schema_name EasyDiffraction' in written
+    assert '_easydiff.schema_name EasyDiffraction' in written
 
 
 def test_save_as_temporary_writes_under_system_tempdir(monkeypatch):
@@ -441,7 +441,7 @@ def test_save_as_temporary_writes_under_system_tempdir(monkeypatch):
     try:
         project.save_as(unique_dir, temporary=True)
         expected = pathlib.Path(tempfile.gettempdir()) / unique_dir
-        assert (expected / 'project.edstar').is_file()
+        assert (expected / 'project.easydiff').is_file()
         assert project.metadata.path == expected
     finally:
         import shutil
@@ -476,7 +476,7 @@ def test_save_as_overwrite_clears_children_when_target_is_cwd(tmp_path, monkeypa
     # children are removed before the fresh project is written.
     assert not stale_file.exists()
     assert not stale_dir.exists()
-    assert (target / 'project.edstar').is_file()
+    assert (target / 'project.easydiff').is_file()
 
 
 # ----------------------------------------------------------------------
