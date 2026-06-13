@@ -197,7 +197,7 @@ code/EdSTAR/CIF reference.
   Accept EdSTAR project persistence ADR
   ```
 
-- [ ] P1.2 - Make handler names explicit before changing tags.
+- [x] P1.2 - Make handler names explicit before changing tags.
 
   Extend `CifHandler` so each descriptor can declare:
   `project_name` for EdSTAR write tags, `import_names` for accepted read

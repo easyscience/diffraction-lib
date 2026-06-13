@@ -130,6 +130,7 @@ def format_bulleted_warning(header: str, items: list[str]) -> str:
 
 _DATA_REPO = 'easyscience/diffraction'
 _DATA_ROOT = 'data'
+_DOCS_BASE_URL = 'https://easyscience.github.io/diffraction-lib'
 # commit SHA preferred
 _DATA_INDEX_REF = '83657ee120fc6a30fda231649692930eaa038758'
 # macOS: sha256sum index.json
@@ -515,6 +516,67 @@ def _get_version_for_url(package_name: str = 'easydiffraction') -> str:
     if _is_dev_version(package_name):
         return 'dev'
     return stripped_package_version(package_name) or 'dev'
+
+
+def parameter_docs_url(
+    data_name: str,
+    *,
+    page: str | None = None,
+    anchor: str | None = None,
+    package_name: str = 'easydiffraction',
+) -> str:
+    """
+    Return a versioned parameter documentation URL.
+
+    Parameters
+    ----------
+    data_name : str
+        EdSTAR data name, such as ``'_cell.length_a'``.
+    page : str | None, default=None
+        Parameter reference page override.
+    anchor : str | None, default=None
+        Parameter anchor override.
+    package_name : str, default='easydiffraction'
+        Package used to resolve the documentation version.
+
+    Returns
+    -------
+    str
+        Absolute URL for the parameter reference entry.
+    """
+    resolved_page, resolved_anchor = _parameter_docs_route(
+        data_name,
+        page=page,
+        anchor=anchor,
+    )
+    version = _get_version_for_url(package_name)
+    base_url = f'{_DOCS_BASE_URL}/{version}/user-guide/parameters/{resolved_page}/'
+    return f'{base_url}#{resolved_anchor}'
+
+
+def _parameter_docs_route(
+    data_name: str,
+    *,
+    page: str | None,
+    anchor: str | None,
+) -> tuple[str, str]:
+    """Resolve the parameter-reference page and anchor."""
+    category, item = _split_parameter_data_name(data_name)
+    resolved_page = page or category
+    resolved_anchor = anchor or _parameter_docs_anchor(category, item)
+    return resolved_page.strip('/'), resolved_anchor
+
+
+def _split_parameter_data_name(data_name: str) -> tuple[str, str]:
+    """Split a data name into category and item components."""
+    category, _, item = data_name.strip().lstrip('_').partition('.')
+    return category, item
+
+
+def _parameter_docs_anchor(category: str, item: str) -> str:
+    """Return the stable docs anchor for a category item."""
+    parts = [part for part in (category, item) if part]
+    return '-'.join(parts).replace('_', '-').lower()
 
 
 def _safe_urlopen(request_or_url: object) -> object:  # type: ignore[no-untyped-def]

@@ -199,6 +199,11 @@ class GenericDescriptorBase(GuardedBase):
         """Optional labels and units for display contexts."""
         return self._display_handler
 
+    @property
+    def url(self) -> str:
+        """Online documentation URL for this persisted descriptor."""
+        return self._cif_handler.url
+
     def resolve_display_name(self, context: str) -> str:
         """
         Return the display label for the requested context.
