@@ -570,14 +570,14 @@ class PdDataBase(CategoryCollection):
         refln_records: list[PowderReflnRecord] = []
         missing_refln_records = False
 
-        for linked_phase in experiment._get_valid_linked_phases(structures):
-            structure_id = linked_phase._identity.category_entry_name
+        for linked_structure in experiment._get_valid_linked_structures(structures):
+            structure_id = linked_structure._identity.category_entry_name
             structure = structures[structure_id]
             structure_scaled_calc, structure_refln_records = self._phase_result(
                 structure=structure,
                 experiment=experiment,
                 calculator=calculator,
-                linked_phase=linked_phase,
+                linked_structure=linked_structure,
                 called_by_minimizer=called_by_minimizer,
                 collect_refln_records=collect_refln_records,
             )
@@ -597,7 +597,7 @@ class PdDataBase(CategoryCollection):
         structure: object,
         experiment: object,
         calculator: object,
-        linked_phase: object,
+        linked_structure: object,
         called_by_minimizer: bool,
         collect_refln_records: bool,
     ) -> tuple[np.ndarray, list[PowderReflnRecord] | None]:
@@ -606,14 +606,14 @@ class PdDataBase(CategoryCollection):
             experiment,
             called_by_minimizer=called_by_minimizer,
         )
-        structure_scaled_calc = linked_phase.scale.value * structure_calc
+        structure_scaled_calc = linked_structure.scale.value * structure_calc
         if not collect_refln_records:
             return structure_scaled_calc, []
 
         structure_refln_records = calculator.last_powder_refln_records(
             structure,
             experiment,
-            phase_id=linked_phase.id.value,
+            phase_id=linked_structure.structure_id.value,
         )
         return structure_scaled_calc, structure_refln_records
 

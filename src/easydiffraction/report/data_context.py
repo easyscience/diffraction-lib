@@ -215,7 +215,7 @@ class ReportDataContext:
         return {
             'id': _safe_attr(experiment, 'name'),
             'type': _field_values(
-                _safe_attr(experiment, 'type'),
+                _safe_attr(experiment, 'experiment_type'),
                 _EXPERIMENT_TYPE_FIELDS,
             ),
             'calculator': {
@@ -1131,7 +1131,7 @@ def _fit_data_context(experiment: object) -> dict[str, object] | None:
 
 def _fit_data_axes_labels(experiment: object, x_descriptor: object) -> list[str]:
     """Return Plotly display-axis labels for a report fit figure."""
-    experiment_type = _safe_attr(experiment, 'type')
+    experiment_type = _safe_attr(experiment, 'experiment_type')
     try:
         sample_form = experiment_type.sample_form.value
         scattering_type = experiment_type.scattering_type.value
@@ -1170,7 +1170,7 @@ def _fit_data_bragg_tick_sets(
 
 def _is_powder_bragg_experiment(experiment: object) -> bool:
     """Return whether an experiment can use powder Bragg plot panels."""
-    experiment_type = _safe_attr(experiment, 'type')
+    experiment_type = _safe_attr(experiment, 'experiment_type')
     sample_form = _value(_safe_attr(experiment_type, 'sample_form'))
     scattering_type = _value(_safe_attr(experiment_type, 'scattering_type'))
     return sample_form == 'powder' and scattering_type == 'bragg'
@@ -1178,7 +1178,7 @@ def _is_powder_bragg_experiment(experiment: object) -> bool:
 
 def _is_single_crystal_bragg_experiment(experiment: object) -> bool:
     """Return whether an experiment is single-crystal Bragg."""
-    experiment_type = _safe_attr(experiment, 'type')
+    experiment_type = _safe_attr(experiment, 'experiment_type')
     sample_form = _value(_safe_attr(experiment_type, 'sample_form'))
     scattering_type = _value(_safe_attr(experiment_type, 'scattering_type'))
     return sample_form == 'single crystal' and scattering_type == 'bragg'

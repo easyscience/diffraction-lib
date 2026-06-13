@@ -140,8 +140,8 @@ experiment = ExperimentFactory.from_scratch(
     scattering_type='bragg',
 )
 
-experiment.linked_crystal.id = 'pr2nio4'
-experiment.linked_crystal.scale = FULLPROF_SCALE
+experiment.linked_structure.structure_id = 'pr2nio4'
+experiment.linked_structure.scale = FULLPROF_SCALE
 experiment.instrument.setup_wavelength = FULLPROF_WAVELENGTH
 
 verify.set_reference_reflections(experiment, f2calc)
@@ -169,7 +169,7 @@ project.display.reflection_comparison(
 # %%
 experiment.calculator.type = 'cryspy'
 
-experiment.linked_crystal.scale.free = True
+experiment.linked_structure.scale.free = True
 
 project.analysis.fit()
 project.display.fit.results()

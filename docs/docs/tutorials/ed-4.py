@@ -160,7 +160,7 @@ for id, x, y in [
 # #### Set Linked Phases
 
 # %%
-expt1.linked_phases.create(id='pbso4', scale=1.5)
+expt1.linked_structures.create(structure_id='pbso4', scale=1.5)
 
 # %% [markdown]
 # ### Experiment 2: xrd
@@ -224,7 +224,7 @@ for id, x, y in [
 # #### Set Linked Phases
 
 # %%
-expt2.linked_phases.create(id='pbso4', scale=0.001)
+expt2.linked_structures.create(structure_id='pbso4', scale=0.001)
 
 # %% [markdown]
 # ## 📦 Define Project
@@ -281,7 +281,7 @@ structure.cell.length_c.free = True
 # Set experiment parameters to be optimized.
 
 # %%
-expt1.linked_phases['pbso4'].scale.free = True
+expt1.linked_structures['pbso4'].scale.free = True
 
 expt1.instrument.calib_twotheta_offset.free = True
 
@@ -291,7 +291,7 @@ expt1.peak.broad_gauss_w.free = True
 expt1.peak.broad_lorentz_y.free = True
 
 # %%
-expt2.linked_phases['pbso4'].scale.free = True
+expt2.linked_structures['pbso4'].scale.free = True
 
 expt2.instrument.calib_twotheta_offset.free = True
 

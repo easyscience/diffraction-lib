@@ -115,7 +115,7 @@ experiment.data_range.time_of_flight_inc = 2.0
 # ### Set Linked Phases
 
 # %%
-experiment.linked_phases.create(id='si', scale=10.0)
+experiment.linked_structures.create(structure_id='si', scale=10.0)
 
 # %% [markdown]
 # ## 🚀 Perform Calculation

@@ -113,7 +113,7 @@ experiment = ExperimentFactory.from_scratch(
 )
 verify.set_reference_as_measured(experiment, x, calc_fullprof)
 
-experiment.linked_phases.create(id='pbso4', scale=FULLPROF_SCALE)
+experiment.linked_structures.create(structure_id='pbso4', scale=FULLPROF_SCALE)
 
 experiment.instrument.setup_wavelength = FULLPROF_WAVELENGTH
 experiment.instrument.calib_twotheta_offset = FULLPROF_ZERO
@@ -167,7 +167,7 @@ project.display.pattern_comparison(
 # the symmetric profile are correct.
 experiment.calculator.type = 'cryspy'
 
-experiment.linked_phases['pbso4'].scale.free = True
+experiment.linked_structures['pbso4'].scale.free = True
 experiment.peak.asym_empir_1.free = True
 experiment.peak.asym_empir_2.free = True
 experiment.peak.asym_empir_3.free = True
@@ -193,7 +193,7 @@ project.display.pattern_comparison(
 # %%
 experiment.calculator.type = 'crysfml'
 
-experiment.linked_phases['pbso4'].scale = FULLPROF_SCALE
+experiment.linked_structures['pbso4'].scale = FULLPROF_SCALE
 
 experiment.peak.type = 'pseudo-voigt'
 experiment.peak.broad_gauss_u = FULLPROF_U
@@ -217,7 +217,7 @@ project.display.pattern_comparison(
 # ## Fit ed-crysfml to FullProf
 
 # %%
-experiment.linked_phases['pbso4'].scale.free = True
+experiment.linked_structures['pbso4'].scale.free = True
 experiment.instrument.calib_twotheta_offset.free = True
 
 project.analysis.fit()

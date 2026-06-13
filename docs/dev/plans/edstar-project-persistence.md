@@ -310,7 +310,7 @@ code/EdSTAR/CIF reference.
   Rename structure row identities to id
   ```
 
-- [ ] P1.8 - Rename experiment type and linked-structure surfaces.
+- [x] P1.8 - Rename experiment type and linked-structure surfaces.
 
   Rename `experiment.type` to `experiment.experiment_type`. Rename
   powder `linked_phases` to `linked_structures`, single-crystal

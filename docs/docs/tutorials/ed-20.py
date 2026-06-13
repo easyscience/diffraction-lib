@@ -159,12 +159,12 @@ for point in expt_s2.background:
 # ### Set Linked Phases
 
 # %%
-expt_s2.linked_phases.create(id='ferrite', scale=10)
-expt_s2.linked_phases.create(id='austenite', scale=10)
+expt_s2.linked_structures.create(structure_id='ferrite', scale=10)
+expt_s2.linked_structures.create(structure_id='austenite', scale=10)
 
 # %%
-expt_n2.linked_phases.create(id='ferrite', scale=10)
-expt_n2.linked_phases.create(id='austenite', scale=10)
+expt_n2.linked_structures.create(structure_id='ferrite', scale=10)
+expt_n2.linked_structures.create(structure_id='austenite', scale=10)
 
 # %% [markdown]
 # ### Set Excluded Regions
@@ -244,8 +244,8 @@ ferrite.atom_sites['Fe'].adp_iso.free = True
 austenite.atom_sites['Fe'].adp_iso.free = True
 
 # %%
-expt_s2.linked_phases['ferrite'].scale.free = True
-expt_s2.linked_phases['austenite'].scale.free = True
+expt_s2.linked_structures['ferrite'].scale.free = True
+expt_s2.linked_structures['austenite'].scale.free = True
 
 expt_s2.peak.broad_gauss_sigma_0.free = True
 expt_s2.peak.broad_gauss_sigma_1.free = True
@@ -258,8 +258,8 @@ for segment in expt_s2.background:
     segment.y.free = True
 
 # %%
-expt_n2.linked_phases['ferrite'].scale.free = True
-expt_n2.linked_phases['austenite'].scale.free = True
+expt_n2.linked_structures['ferrite'].scale.free = True
+expt_n2.linked_structures['austenite'].scale.free = True
 
 expt_n2.peak.broad_gauss_sigma_0.free = True
 expt_n2.peak.broad_gauss_sigma_1.free = True
@@ -276,17 +276,17 @@ for segment in expt_n2.background:
 
 # %%
 project.analysis.aliases.create(
-    id='s2_ferrite_scale', param=expt_s2.linked_phases['ferrite'].scale
+    id='s2_ferrite_scale', param=expt_s2.linked_structures['ferrite'].scale
 )
 project.analysis.aliases.create(
-    id='s2_austenite_scale', param=expt_s2.linked_phases['austenite'].scale
+    id='s2_austenite_scale', param=expt_s2.linked_structures['austenite'].scale
 )
 
 project.analysis.aliases.create(
-    id='n2_ferrite_scale', param=expt_n2.linked_phases['ferrite'].scale
+    id='n2_ferrite_scale', param=expt_n2.linked_structures['ferrite'].scale
 )
 project.analysis.aliases.create(
-    id='n2_austenite_scale', param=expt_n2.linked_phases['austenite'].scale
+    id='n2_austenite_scale', param=expt_n2.linked_structures['austenite'].scale
 )
 
 project.analysis.constraints.create(expression='n2_ferrite_scale = s2_ferrite_scale')

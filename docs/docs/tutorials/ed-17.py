@@ -197,7 +197,7 @@ expt.background.create(id='14', x=150, y=241)
 # ### Set Linked Phases
 
 # %%
-expt.linked_phases.create(id='cosio', scale=1.2)
+expt.linked_structures.create(structure_id='cosio', scale=1.2)
 
 # %% [markdown]
 # ## 🚀 Perform Analysis
@@ -233,7 +233,7 @@ struct.atom_sites['O2'].adp_iso.free = True
 struct.atom_sites['O3'].adp_iso.free = True
 
 # %%
-expt.linked_phases['cosio'].scale.free = True
+expt.linked_structures['cosio'].scale.free = True
 
 expt.instrument.calib_twotheta_offset.free = True
 

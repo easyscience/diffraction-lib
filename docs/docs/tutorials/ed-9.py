@@ -183,8 +183,8 @@ experiment.background.create(id='13', x=110000, y=0.2)
 # ### Set Linked Phases
 
 # %%
-experiment.linked_phases.create(id='lbco', scale=4.0)
-experiment.linked_phases.create(id='si', scale=0.2)
+experiment.linked_structures.create(structure_id='lbco', scale=4.0)
+experiment.linked_structures.create(structure_id='si', scale=0.2)
 
 # %% [markdown]
 # ## 📦 Define Project
@@ -277,8 +277,8 @@ structure_2.cell.length_a.free = True
 # Set experiment parameters to be optimized.
 
 # %%
-experiment.linked_phases['lbco'].scale.free = True
-experiment.linked_phases['si'].scale.free = True
+experiment.linked_structures['lbco'].scale.free = True
+experiment.linked_structures['si'].scale.free = True
 
 experiment.peak.broad_gauss_sigma_0.free = True
 experiment.peak.broad_gauss_sigma_1.free = True

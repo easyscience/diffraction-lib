@@ -523,7 +523,7 @@ project_1.display.structure(struct_name='si')
 # for more details about linking a structure to an experiment.
 
 # %%
-project_1.experiments['sim_si'].linked_phases.create(id='si', scale=1.0)
+project_1.experiments['sim_si'].linked_structures.create(structure_id='si', scale=1.0)
 
 # %% [markdown]
 # ### 🚀 Analyze and Fit the Data
@@ -575,7 +575,7 @@ project_1.experiments['sim_si'].linked_phases.create(id='si', scale=1.0)
 # sample is considered a reference sample with known parameters.
 
 # %%
-project_1.experiments['sim_si'].linked_phases['si'].scale.free = True
+project_1.experiments['sim_si'].linked_structures['si'].scale.free = True
 
 for line_segment in project_1.experiments['sim_si'].background:
     line_segment.y.free = True
@@ -1080,14 +1080,14 @@ project_2.display.structure(struct_name='lbco')
 # **Hint:**
 
 # %% [markdown] tags=["dmsc-school-hint"]
-# Use the `linked_phases` attribute of the experiment to link the
+# Use the `linked_structures` attribute of the experiment to link the
 # crystal structure.
 
 # %% [markdown]
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2.experiments['sim_lbco'].linked_phases.create(id='lbco', scale=1.0)
+project_2.experiments['sim_lbco'].linked_structures.create(structure_id='lbco', scale=1.0)
 
 # %% [markdown]
 # ### 🚀 Exercise 5: Analyze and Fit the Data
@@ -1108,7 +1108,7 @@ project_2.experiments['sim_lbco'].linked_phases.create(id='lbco', scale=1.0)
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2.experiments['sim_lbco'].linked_phases['lbco'].scale.free = True
+project_2.experiments['sim_lbco'].linked_structures['lbco'].scale.free = True
 
 for line_segment in project_2.experiments['sim_lbco'].background:
     line_segment.y.free = True
@@ -1414,7 +1414,7 @@ project_2.structures['si'].atom_sites.create(
 )
 
 # Assign Structure to Experiment
-project_2.experiments['sim_lbco'].linked_phases.create(id='si', scale=1.0)
+project_2.experiments['sim_lbco'].linked_structures.create(structure_id='si', scale=1.0)
 
 # %% [markdown]
 # #### Exercise 5.11: Refine the Scale of the Si Phase
@@ -1446,7 +1446,7 @@ project_2.display.pattern(expt_name='sim_lbco')
 # and Si peaks are visible in the calculated pattern. However, their
 # intensities are much too high. Therefore, we need to refine the scale
 # factor of the Si phase.
-project_2.experiments['sim_lbco'].linked_phases['si'].scale.free = True
+project_2.experiments['sim_lbco'].linked_structures['si'].scale.free = True
 
 # Now we can perform the fit with both phases included.
 project_2.analysis.fit()

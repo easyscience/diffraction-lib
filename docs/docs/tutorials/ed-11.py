@@ -74,7 +74,7 @@ project.experiments.add_from_data_path(
 
 # %%
 experiment = project.experiments['nomad']
-experiment.linked_phases.create(id='si', scale=1.0)
+experiment.linked_structures.create(structure_id='si', scale=1.0)
 experiment.peak.damp_q = 0.02
 experiment.peak.broad_q = 0.03
 experiment.peak.cutoff_q = 35.0
@@ -91,7 +91,7 @@ experiment.peak.damp_particle_diameter = 0
 # %%
 project.structures['si'].cell.length_a.free = True
 project.structures['si'].atom_sites['Si'].adp_iso.free = True
-experiment.linked_phases['si'].scale.free = True
+experiment.linked_structures['si'].scale.free = True
 
 # %%
 experiment.peak.damp_q.free = True

@@ -65,7 +65,7 @@ project.experiments.add_from_data_path(
 )
 
 # %%
-project.experiments['pdf'].linked_phases.create(id='ni', scale=1.0)
+project.experiments['pdf'].linked_structures.create(structure_id='ni', scale=1.0)
 project.experiments['pdf'].peak.damp_q = 0
 project.experiments['pdf'].peak.broad_q = 0.03
 project.experiments['pdf'].peak.cutoff_q = 27.0
@@ -84,7 +84,7 @@ project.structures['ni'].cell.length_a.free = True
 project.structures['ni'].atom_sites['Ni'].adp_iso.free = True
 
 # %%
-project.experiments['pdf'].linked_phases['ni'].scale.free = True
+project.experiments['pdf'].linked_structures['ni'].scale.free = True
 project.experiments['pdf'].peak.broad_q.free = True
 project.experiments['pdf'].peak.sharp_delta_2.free = True
 

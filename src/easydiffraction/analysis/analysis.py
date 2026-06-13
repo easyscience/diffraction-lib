@@ -1967,7 +1967,7 @@ class Analysis(
     def _is_powder_fit(experiments: list[object]) -> bool:
         """Return whether any experiment in the fit is powder data."""
         return any(
-            experiment.type.sample_form.value == SampleFormEnum.POWDER.value
+            experiment.experiment_type.sample_form.value == SampleFormEnum.POWDER.value
             for experiment in experiments
         )
 
@@ -2407,7 +2407,10 @@ class Analysis(
         predictive_payload: dict[str, dict[str, object]] = {}
         for experiment_name in self.project.experiments.names:
             experiment = self.project.experiments[experiment_name]
-            x_axis, x_axis_name, _, _, _ = plotter._resolve_x_axis(experiment.type, None)
+            x_axis, x_axis_name, _, _, _ = plotter._resolve_x_axis(
+                experiment.experiment_type,
+                None,
+            )
             summary = plotter._build_posterior_predictive_summary(
                 fit_results=results,
                 experiment=experiment,

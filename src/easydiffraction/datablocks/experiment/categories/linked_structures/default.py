@@ -1,9 +1,10 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Default linked-crystal reference (id + scale)."""
+"""Linked structures allow combining models with scale factors."""
 
 from __future__ import annotations
 
+from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.metadata import Compatibility
@@ -13,56 +14,50 @@ from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import RegexValidator
 from easydiffraction.core.variable import Parameter
 from easydiffraction.core.variable import StringDescriptor
-from easydiffraction.datablocks.experiment.categories.linked_crystal.factory import (
-    LinkedCrystalFactory,
+from easydiffraction.datablocks.experiment.categories.linked_structures.factory import (
+    LinkedStructuresFactory,
 )
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.io.cif.handler import CifHandler
 
 
-@LinkedCrystalFactory.register
-class LinkedCrystal(CategoryItem):
-    """Linked crystal reference for single-crystal diffraction."""
+class LinkedStructure(CategoryItem):
+    """Link to a structure by id with a scale factor."""
 
-    _category_code = 'linked_crystal'
-
-    type_info = TypeInfo(
-        tag='default',
-        description='Crystal reference with id and scale factor',
-    )
-    compatibility = Compatibility(
-        sample_form=frozenset({SampleFormEnum.SINGLE_CRYSTAL}),
-    )
+    _category_code = 'linked_structure'
+    _category_entry_name = 'structure_id'
 
     def __init__(self) -> None:
         super().__init__()
 
-        self._id = StringDescriptor(
-            name='id',
-            description='Identifier of the linked crystal',
+        self._structure_id = StringDescriptor(
+            name='structure_id',
+            description='Identifier of the linked structure',
             value_spec=AttributeSpec(
                 default='Si',
                 validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
             ),
             cif_handler=CifHandler(
-                names=['_sc_crystal_block.id'],
-                iucr_name='_easydiffraction_sc_crystal_block.id',
+                names=['_linked_structure.structure_id'],
+                import_names=['_pd_phase_block.id'],
+                iucr_name='_pd_phase_block.id',
             ),
             display_handler=DisplayHandler(
-                display_name='Crystal',
-                latex_name='Crystal',
+                display_name='Structure',
+                latex_name='Structure',
             ),
         )
         self._scale = Parameter(
             name='scale',
-            description='Scale factor of the linked crystal',
+            description='Scale factor of the linked structure.',
             value_spec=AttributeSpec(
                 default=1.0,
-                validator=RangeValidator(),
+                validator=RangeValidator(ge=0.0),
             ),
             cif_handler=CifHandler(
-                names=['_sc_crystal_block.scale'],
-                iucr_name='_easydiffraction_sc_crystal_block.scale',
+                names=['_linked_structure.scale'],
+                import_names=['_pd_phase_block.scale'],
+                iucr_name='_pd_phase_block.scale',
             ),
             display_handler=DisplayHandler(
                 display_name='Scale',
@@ -75,24 +70,24 @@ class LinkedCrystal(CategoryItem):
     # ------------------------------------------------------------------
 
     @property
-    def id(self) -> StringDescriptor:
+    def structure_id(self) -> StringDescriptor:
         """
-        Identifier of the linked crystal.
+        Identifier of the linked structure.
 
         Reading this property returns the underlying
         ``StringDescriptor`` object. Assigning to it updates the
         parameter value.
         """
-        return self._id
+        return self._structure_id
 
-    @id.setter
-    def id(self, value: str) -> None:
-        self._id.value = value
+    @structure_id.setter
+    def structure_id(self, value: str) -> None:
+        self._structure_id.value = value
 
     @property
     def scale(self) -> Parameter:
         """
-        Scale factor of the linked crystal.
+        Scale factor of the linked structure.
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -102,3 +97,20 @@ class LinkedCrystal(CategoryItem):
     @scale.setter
     def scale(self, value: float) -> None:
         self._scale.value = value
+
+
+@LinkedStructuresFactory.register
+class LinkedStructures(CategoryCollection):
+    """Collection of LinkedStructure instances."""
+
+    type_info = TypeInfo(
+        tag='default',
+        description='Structure references with scale factors',
+    )
+    compatibility = Compatibility(
+        sample_form=frozenset({SampleFormEnum.POWDER}),
+    )
+
+    def __init__(self) -> None:
+        """Create an empty collection of linked structures."""
+        super().__init__(item_type=LinkedStructure)

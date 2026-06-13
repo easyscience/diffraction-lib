@@ -28,7 +28,7 @@ from easydiffraction.io.cif.handler import CifHandler
 class ExperimentType(CategoryItem):
     """Container of attributes defining the experiment type."""
 
-    _category_code = 'expt_type'
+    _category_code = 'experiment_type'
 
     type_info = TypeInfo(
         tag='default',
@@ -43,7 +43,8 @@ class ExperimentType(CategoryItem):
             enum=SampleFormEnum,
             description='Powder diffraction or single crystal diffraction',
             cif_handler=CifHandler(
-                names=['_expt_type.sample_form'],
+                names=['_experiment_type.sample_form'],
+                import_names=['_expt_type.sample_form'],
                 iucr_name='_easydiffraction_experiment_type.sample_form',
             ),
             display_handler=DisplayHandler(
@@ -57,7 +58,8 @@ class ExperimentType(CategoryItem):
             enum=BeamModeEnum,
             description='Constant wavelength (CW) or time-of-flight (TOF) measurement',
             cif_handler=CifHandler(
-                names=['_expt_type.beam_mode'],
+                names=['_experiment_type.beam_mode'],
+                import_names=['_expt_type.beam_mode'],
                 iucr_name='_easydiffraction_experiment_type.beam_mode',
             ),
             display_handler=DisplayHandler(
@@ -70,7 +72,8 @@ class ExperimentType(CategoryItem):
             enum=RadiationProbeEnum,
             description='Neutron or X-ray diffraction measurement',
             cif_handler=CifHandler(
-                names=['_expt_type.radiation_probe'],
+                names=['_experiment_type.radiation_probe'],
+                import_names=['_expt_type.radiation_probe'],
                 iucr_name='_easydiffraction_experiment_type.radiation_probe',
             ),
             display_handler=DisplayHandler(
@@ -83,7 +86,8 @@ class ExperimentType(CategoryItem):
             enum=ScatteringTypeEnum,
             description='Conventional Bragg diffraction or total scattering (PDF)',
             cif_handler=CifHandler(
-                names=['_expt_type.scattering_type'],
+                names=['_experiment_type.scattering_type'],
+                import_names=['_expt_type.scattering_type'],
                 iucr_name='_easydiffraction_experiment_type.scattering_type',
             ),
             display_handler=DisplayHandler(

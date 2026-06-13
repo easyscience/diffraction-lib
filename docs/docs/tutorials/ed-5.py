@@ -160,7 +160,7 @@ expt.background.create(id='14', x=150, y=500)
 # ### Set Linked Phases
 
 # %%
-expt.linked_phases.create(id='cosio', scale=1.0)
+expt.linked_structures.create(structure_id='cosio', scale=1.0)
 
 # %% [markdown]
 # ## 📦 Define Project
@@ -228,7 +228,7 @@ for label in ('O1', 'O2', 'O3'):
     atom_site.occupancy.free = True
 
 # %%
-expt.linked_phases['cosio'].scale.free = True
+expt.linked_structures['cosio'].scale.free = True
 
 expt.instrument.calib_twotheta_offset.free = True
 

@@ -185,13 +185,16 @@ class CrysfmlCalculator(CalculatorBase):
         experiment: ExperimentBase,
     ) -> list[float] | None:
         """Calculate a Crysfml pattern without length adjustment."""
-        if experiment.type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH:
+        if experiment.experiment_type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH:
             _, y = cfml_py_utilities.cw_powder_pattern_from_dict(crysfml_dict)
             return y
-        if experiment.type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
+        if experiment.experiment_type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
             _, y = cfml_py_utilities.tof_powder_pattern_from_dict(crysfml_dict)
             return y
-        log.warning(f'[CrysfmlCalculator] Unsupported beam mode {experiment.type.beam_mode.value}')
+        log.warning(
+            f'[CrysfmlCalculator] Unsupported beam mode '
+            f'{experiment.experiment_type.beam_mode.value}'
+        )
         return None
 
     def _adjust_pattern_length(  # noqa: PLR6301
@@ -317,7 +320,7 @@ class CrysfmlCalculator(CalculatorBase):
             A dictionary representation of the experiment.
         """
         experiment_dict = {
-            '_diffrn_radiation_probe': experiment.type.radiation_probe.value,
+            '_diffrn_radiation_probe': experiment.experiment_type.radiation_probe.value,
         }
         self._update_experiment_dict_from_instrument(experiment_dict, experiment)
         self._update_experiment_dict_from_peak(experiment_dict, experiment)

@@ -329,7 +329,7 @@ project.experiments['hrpt'].background.show()
 # Link the structure defined in the previous step to the experiment.
 
 # %%
-project.experiments['hrpt'].linked_phases.create(id='lbco', scale=10.0)
+project.experiments['hrpt'].linked_structures.create(structure_id='lbco', scale=10.0)
 
 # %% [markdown]
 # ### Show Experiment as CIF
@@ -455,7 +455,7 @@ project.structures['lbco'].cell.length_a.free = True
 # Set experiment parameters to be refined.
 
 # %%
-project.experiments['hrpt'].linked_phases['lbco'].scale.free = True
+project.experiments['hrpt'].linked_structures['lbco'].scale.free = True
 project.experiments['hrpt'].instrument.calib_twotheta_offset.free = True
 project.experiments['hrpt'].background['10'].y.free = True
 project.experiments['hrpt'].background['30'].y.free = True

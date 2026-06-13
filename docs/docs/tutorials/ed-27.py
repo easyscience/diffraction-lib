@@ -109,7 +109,7 @@ experiment.data_range.two_theta_inc = 0.05
 # ### Set Linked Phases
 
 # %%
-experiment.linked_phases.create(id='lbco', scale=10.0)
+experiment.linked_structures.create(structure_id='lbco', scale=10.0)
 
 # %% [markdown]
 # ## 🚀 Perform Calculation

@@ -110,7 +110,7 @@ for x in range(0, 35000, 5000):
 # #### Set Linked Phases
 
 # %%
-bragg_expt.linked_phases.create(id='si', scale=13.0)
+bragg_expt.linked_structures.create(structure_id='si', scale=13.0)
 
 # %% [markdown]
 # ### Experiment 2: PDF (NOMAD, TOF)
@@ -146,7 +146,7 @@ pdf_expt.peak.damp_particle_diameter = 0
 # #### Set Linked Phases
 
 # %%
-pdf_expt.linked_phases.create(id='si', scale=1.0)
+pdf_expt.linked_structures.create(structure_id='si', scale=1.0)
 
 # %% [markdown]
 # ## 📦 Define Project
@@ -214,7 +214,7 @@ structure.atom_sites['Si'].adp_iso.free = True
 # Bragg experiment parameters.
 
 # %%
-bragg_expt.linked_phases['si'].scale.free = True
+bragg_expt.linked_structures['si'].scale.free = True
 bragg_expt.instrument.calib_d_to_tof_offset.free = True
 bragg_expt.peak.broad_gauss_sigma_0.free = True
 bragg_expt.peak.broad_gauss_sigma_1.free = True
@@ -226,7 +226,7 @@ for point in bragg_expt.background:
 # PDF experiment parameters.
 
 # %%
-pdf_expt.linked_phases['si'].scale.free = True
+pdf_expt.linked_structures['si'].scale.free = True
 pdf_expt.peak.damp_q.free = True
 pdf_expt.peak.broad_q.free = True
 pdf_expt.peak.sharp_delta_1.free = True

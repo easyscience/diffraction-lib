@@ -214,7 +214,7 @@ Here is an example of how to set parameters to be refined:
 project.structures['lbco'].cell.length_a.free = True
 
 # Set experiment parameters to be refined.
-project.experiments['hrpt'].linked_phases['lbco'].scale.free = True
+project.experiments['hrpt'].linked_structures['lbco'].scale.free = True
 project.experiments['hrpt'].instrument.calib_twotheta_offset.free = True
 project.experiments['hrpt'].background['10'].y.free = True
 project.experiments['hrpt'].background['165'].y.free = True

@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Linked-phases factory — delegates entirely to ``FactoryBase``."""
+"""Linked-structures factory delegates to ``FactoryBase``."""
 
 from __future__ import annotations
 
@@ -9,8 +9,8 @@ from typing import ClassVar
 from easydiffraction.core.factory import FactoryBase
 
 
-class LinkedPhasesFactory(FactoryBase):
-    """Create linked-phases collections by tag."""
+class LinkedStructuresFactory(FactoryBase):
+    """Create linked-structures collections by tag."""
 
     _default_rules: ClassVar[dict] = {
         frozenset(): 'default',

@@ -217,7 +217,7 @@ class PosteriorDisplay:
         analysis = self._project.analysis
         experiment = self._project.experiments[expt_name]
         plotter = self._project.rendering_plot.plotter
-        _, x_axis_name, _, _, _ = plotter._resolve_x_axis(experiment.type, x)
+        _, x_axis_name, _, _, _ = plotter._resolve_x_axis(experiment.experiment_type, x)
         x_axis_name = str(x_axis_name)
         require_draws = plotter.engine == PlotterEngineEnum.PLOTLY.value and style in {
             'draws',
@@ -851,8 +851,8 @@ class ProjectDisplay:
         self._project.rendering_plot.plotter._update_project_categories(expt_name)
         experiment = self._project.experiments[expt_name]
         pattern = intensity_category_for(experiment)
-        sample_form = experiment.type.sample_form.value
-        scattering_type = experiment.type.scattering_type.value
+        sample_form = experiment.experiment_type.sample_form.value
+        scattering_type = experiment.experiment_type.scattering_type.value
         has_linked_structure = self._has_linked_structure_for_calculation(experiment)
 
         measured_available = experiment._has_measured_data()
@@ -1027,17 +1027,21 @@ class ProjectDisplay:
         """Return whether the experiment links to a known structure."""
         structure_names = set(getattr(self._project.structures, 'names', ()))
 
-        linked_phases = getattr(experiment, 'linked_phases', None)
-        if self._has_nonempty_value(linked_phases):
-            for linked_phase in linked_phases:
-                identity = getattr(linked_phase, '_identity', None)
+        linked_structures = getattr(experiment, 'linked_structures', None)
+        if self._has_nonempty_value(linked_structures):
+            for linked_structure in linked_structures:
+                identity = getattr(linked_structure, '_identity', None)
                 category_entry_name = getattr(identity, 'category_entry_name', None)
                 if category_entry_name in structure_names:
                     return True
 
-        linked_crystal = getattr(experiment, 'linked_crystal', None)
-        linked_crystal_id = getattr(getattr(linked_crystal, 'id', None), 'value', None)
-        return linked_crystal_id in structure_names
+        linked_structure = getattr(experiment, 'linked_structure', None)
+        linked_structure_id = getattr(
+            getattr(linked_structure, 'structure_id', None),
+            'value',
+            None,
+        )
+        return linked_structure_id in structure_names
 
     def _uncertainty_status(
         self,

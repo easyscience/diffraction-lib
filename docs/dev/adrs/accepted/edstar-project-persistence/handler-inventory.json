@@ -1290,52 +1290,6 @@
       "unique_name": "fitting_mode.type"
     },
     {
-      "category_code": "joint_fit",
-      "category_entry_name": "_",
-      "context": "analysis",
-      "current_cif_names": [
-        "_joint_fit.experiment_id"
-      ],
-      "descriptor_class": "StringDescriptor",
-      "descriptor_name": "experiment_id",
-      "descriptor_path": "analysis.joint_fit[].experiment_id",
-      "docs_anchor": "joint-fit-experiment-id",
-      "docs_page": "joint_fit",
-      "import_names": [
-        "_joint_fit.experiment_id"
-      ],
-      "iucr_name": "_easydiffraction_joint_fit.experiment_id",
-      "owner_class": "JointFitItem",
-      "project_name": "_joint_fit.experiment_id",
-      "read_names": [
-        "_joint_fit.experiment_id"
-      ],
-      "unique_name": "joint_fit._.experiment_id"
-    },
-    {
-      "category_code": "joint_fit",
-      "category_entry_name": "_",
-      "context": "analysis",
-      "current_cif_names": [
-        "_joint_fit.weight"
-      ],
-      "descriptor_class": "NumericDescriptor",
-      "descriptor_name": "weight",
-      "descriptor_path": "analysis.joint_fit[].weight",
-      "docs_anchor": "joint-fit-weight",
-      "docs_page": "joint_fit",
-      "import_names": [
-        "_joint_fit.weight"
-      ],
-      "iucr_name": "_easydiffraction_joint_fit.weight",
-      "owner_class": "JointFitItem",
-      "project_name": "_joint_fit.weight",
-      "read_names": [
-        "_joint_fit.weight"
-      ],
-      "unique_name": "joint_fit._.weight"
-    },
-    {
       "category_code": "minimizer",
       "category_entry_name": null,
       "context": "analysis",
@@ -1495,98 +1449,6 @@
         "_sequential_fit.reverse"
       ],
       "unique_name": "sequential_fit.reverse"
-    },
-    {
-      "category_code": "sequential_fit_extract",
-      "category_entry_name": "_",
-      "context": "analysis",
-      "current_cif_names": [
-        "_sequential_fit_extract.id"
-      ],
-      "descriptor_class": "StringDescriptor",
-      "descriptor_name": "id",
-      "descriptor_path": "analysis.sequential_fit_extract[].id",
-      "docs_anchor": "sequential-fit-extract-id",
-      "docs_page": "sequential_fit_extract",
-      "import_names": [
-        "_sequential_fit_extract.id"
-      ],
-      "iucr_name": "_easydiffraction_sequential_fit_extract.id",
-      "owner_class": "SequentialFitExtractItem",
-      "project_name": "_sequential_fit_extract.id",
-      "read_names": [
-        "_sequential_fit_extract.id"
-      ],
-      "unique_name": "sequential_fit_extract._.id"
-    },
-    {
-      "category_code": "sequential_fit_extract",
-      "category_entry_name": "_",
-      "context": "analysis",
-      "current_cif_names": [
-        "_sequential_fit_extract.pattern"
-      ],
-      "descriptor_class": "StringDescriptor",
-      "descriptor_name": "pattern",
-      "descriptor_path": "analysis.sequential_fit_extract[].pattern",
-      "docs_anchor": "sequential-fit-extract-pattern",
-      "docs_page": "sequential_fit_extract",
-      "import_names": [
-        "_sequential_fit_extract.pattern"
-      ],
-      "iucr_name": "_easydiffraction_sequential_fit_extract.pattern",
-      "owner_class": "SequentialFitExtractItem",
-      "project_name": "_sequential_fit_extract.pattern",
-      "read_names": [
-        "_sequential_fit_extract.pattern"
-      ],
-      "unique_name": "sequential_fit_extract._.pattern"
-    },
-    {
-      "category_code": "sequential_fit_extract",
-      "category_entry_name": "_",
-      "context": "analysis",
-      "current_cif_names": [
-        "_sequential_fit_extract.required"
-      ],
-      "descriptor_class": "BoolDescriptor",
-      "descriptor_name": "required",
-      "descriptor_path": "analysis.sequential_fit_extract[].required",
-      "docs_anchor": "sequential-fit-extract-required",
-      "docs_page": "sequential_fit_extract",
-      "import_names": [
-        "_sequential_fit_extract.required"
-      ],
-      "iucr_name": "_easydiffraction_sequential_fit_extract.required",
-      "owner_class": "SequentialFitExtractItem",
-      "project_name": "_sequential_fit_extract.required",
-      "read_names": [
-        "_sequential_fit_extract.required"
-      ],
-      "unique_name": "sequential_fit_extract._.required"
-    },
-    {
-      "category_code": "sequential_fit_extract",
-      "category_entry_name": "_",
-      "context": "analysis",
-      "current_cif_names": [
-        "_sequential_fit_extract.target"
-      ],
-      "descriptor_class": "StringDescriptor",
-      "descriptor_name": "target",
-      "descriptor_path": "analysis.sequential_fit_extract[].target",
-      "docs_anchor": "sequential-fit-extract-target",
-      "docs_page": "sequential_fit_extract",
-      "import_names": [
-        "_sequential_fit_extract.target"
-      ],
-      "iucr_name": "_easydiffraction_sequential_fit_extract.target",
-      "owner_class": "SequentialFitExtractItem",
-      "project_name": "_sequential_fit_extract.target",
-      "read_names": [
-        "_sequential_fit_extract.target"
-      ],
-      "unique_name": "sequential_fit_extract._.target"
     },
     {
       "category_code": "software",
@@ -1800,199 +1662,6 @@
         "_calculator.type"
       ],
       "unique_name": "inventory_experiment.calculator.type"
-    },
-    {
-      "category_code": "pd_data",
-      "category_entry_name": "0",
-      "context": "experiment.bragg_pd_cwl",
-      "current_cif_names": [
-        "_pd_data.refinement_status"
-      ],
-      "descriptor_class": "StringDescriptor",
-      "descriptor_name": "calc_status",
-      "descriptor_path": "experiment.bragg_pd_cwl.data[].calc_status",
-      "docs_anchor": "pd-data-refinement-status",
-      "docs_page": "pd_data",
-      "import_names": [
-        "_pd_data.refinement_status"
-      ],
-      "iucr_name": "_pd_data.refinement_status",
-      "owner_class": "PdCwlDataPoint",
-      "project_name": "_pd_data.refinement_status",
-      "read_names": [
-        "_pd_data.refinement_status"
-      ],
-      "unique_name": "pd_data.0.calc_status"
-    },
-    {
-      "category_code": "pd_data",
-      "category_entry_name": "0",
-      "context": "experiment.bragg_pd_cwl",
-      "current_cif_names": [
-        "_pd_proc.d_spacing"
-      ],
-      "descriptor_class": "NumericDescriptor",
-      "descriptor_name": "d_spacing",
-      "descriptor_path": "experiment.bragg_pd_cwl.data[].d_spacing",
-      "docs_anchor": "pd-proc-d-spacing",
-      "docs_page": "pd_proc",
-      "import_names": [
-        "_pd_proc.d_spacing"
-      ],
-      "iucr_name": "_pd_proc.d_spacing",
-      "owner_class": "PdCwlDataPoint",
-      "project_name": "_pd_proc.d_spacing",
-      "read_names": [
-        "_pd_proc.d_spacing"
-      ],
-      "unique_name": "pd_data.0.d_spacing"
-    },
-    {
-      "category_code": "pd_data",
-      "category_entry_name": "0",
-      "context": "experiment.bragg_pd_cwl",
-      "current_cif_names": [
-        "_pd_calc.intensity_bkg"
-      ],
-      "descriptor_class": "NumericDescriptor",
-      "descriptor_name": "intensity_bkg",
-      "descriptor_path": "experiment.bragg_pd_cwl.data[].intensity_bkg",
-      "docs_anchor": "pd-calc-intensity-bkg",
-      "docs_page": "pd_calc",
-      "import_names": [
-        "_pd_calc.intensity_bkg"
-      ],
-      "iucr_name": "_pd_calc.intensity_bkg",
-      "owner_class": "PdCwlDataPoint",
-      "project_name": "_pd_calc.intensity_bkg",
-      "read_names": [
-        "_pd_calc.intensity_bkg"
-      ],
-      "unique_name": "pd_data.0.intensity_bkg"
-    },
-    {
-      "category_code": "pd_data",
-      "category_entry_name": "0",
-      "context": "experiment.bragg_pd_cwl",
-      "current_cif_names": [
-        "_pd_calc.intensity_total"
-      ],
-      "descriptor_class": "NumericDescriptor",
-      "descriptor_name": "intensity_calc",
-      "descriptor_path": "experiment.bragg_pd_cwl.data[].intensity_calc",
-      "docs_anchor": "pd-calc-intensity-total",
-      "docs_page": "pd_calc",
-      "import_names": [
-        "_pd_calc.intensity_total"
-      ],
-      "iucr_name": "_pd_calc.intensity_total",
-      "owner_class": "PdCwlDataPoint",
-      "project_name": "_pd_calc.intensity_total",
-      "read_names": [
-        "_pd_calc.intensity_total"
-      ],
-      "unique_name": "pd_data.0.intensity_calc"
-    },
-    {
-      "category_code": "pd_data",
-      "category_entry_name": "0",
-      "context": "experiment.bragg_pd_cwl",
-      "current_cif_names": [
-        "_pd_meas.intensity_total",
-        "_pd_proc.intensity_norm"
-      ],
-      "descriptor_class": "NumericDescriptor",
-      "descriptor_name": "intensity_meas",
-      "descriptor_path": "experiment.bragg_pd_cwl.data[].intensity_meas",
-      "docs_anchor": "pd-meas-intensity-total",
-      "docs_page": "pd_meas",
-      "import_names": [
-        "_pd_meas.intensity_total",
-        "_pd_proc.intensity_norm"
-      ],
-      "iucr_name": "_pd_meas.intensity_total",
-      "owner_class": "PdCwlDataPoint",
-      "project_name": "_pd_meas.intensity_total",
-      "read_names": [
-        "_pd_meas.intensity_total",
-        "_pd_proc.intensity_norm"
-      ],
-      "unique_name": "pd_data.0.intensity_meas"
-    },
-    {
-      "category_code": "pd_data",
-      "category_entry_name": "0",
-      "context": "experiment.bragg_pd_cwl",
-      "current_cif_names": [
-        "_pd_meas.intensity_total_su",
-        "_pd_proc.intensity_norm_su"
-      ],
-      "descriptor_class": "NumericDescriptor",
-      "descriptor_name": "intensity_meas_su",
-      "descriptor_path": "experiment.bragg_pd_cwl.data[].intensity_meas_su",
-      "docs_anchor": "pd-meas-intensity-total-su",
-      "docs_page": "pd_meas",
-      "import_names": [
-        "_pd_meas.intensity_total_su",
-        "_pd_proc.intensity_norm_su"
-      ],
-      "iucr_name": "_pd_meas.intensity_total_su",
-      "owner_class": "PdCwlDataPoint",
-      "project_name": "_pd_meas.intensity_total_su",
-      "read_names": [
-        "_pd_meas.intensity_total_su",
-        "_pd_proc.intensity_norm_su"
-      ],
-      "unique_name": "pd_data.0.intensity_meas_su"
-    },
-    {
-      "category_code": "pd_data",
-      "category_entry_name": "0",
-      "context": "experiment.bragg_pd_cwl",
-      "current_cif_names": [
-        "_pd_data.point_id"
-      ],
-      "descriptor_class": "StringDescriptor",
-      "descriptor_name": "point_id",
-      "descriptor_path": "experiment.bragg_pd_cwl.data[].point_id",
-      "docs_anchor": "pd-data-point-id",
-      "docs_page": "pd_data",
-      "import_names": [
-        "_pd_data.point_id"
-      ],
-      "iucr_name": "_pd_data.point_id",
-      "owner_class": "PdCwlDataPoint",
-      "project_name": "_pd_data.point_id",
-      "read_names": [
-        "_pd_data.point_id"
-      ],
-      "unique_name": "pd_data.0.point_id"
-    },
-    {
-      "category_code": "pd_data",
-      "category_entry_name": "0",
-      "context": "experiment.bragg_pd_cwl",
-      "current_cif_names": [
-        "_pd_proc.2theta_scan",
-        "_pd_meas.2theta_scan"
-      ],
-      "descriptor_class": "NumericDescriptor",
-      "descriptor_name": "two_theta",
-      "descriptor_path": "experiment.bragg_pd_cwl.data[].two_theta",
-      "docs_anchor": "pd-proc-2theta-scan",
-      "docs_page": "pd_proc",
-      "import_names": [
-        "_pd_proc.2theta_scan",
-        "_pd_meas.2theta_scan"
-      ],
-      "iucr_name": "_pd_proc.2theta_scan",
-      "owner_class": "PdCwlDataPoint",
-      "project_name": "_pd_proc.2theta_scan",
-      "read_names": [
-        "_pd_proc.2theta_scan",
-        "_pd_meas.2theta_scan"
-      ],
-      "unique_name": "pd_data.0.two_theta"
     },
     {
       "category_code": "data_range",
@@ -2225,6 +1894,102 @@
       "unique_name": "excluded_regions.0.start"
     },
     {
+      "category_code": "experiment_type",
+      "category_entry_name": null,
+      "context": "experiment.bragg_pd_cwl",
+      "current_cif_names": [
+        "_experiment_type.beam_mode"
+      ],
+      "descriptor_class": "EnumDescriptor",
+      "descriptor_name": "beam_mode",
+      "descriptor_path": "experiment.bragg_pd_cwl.experiment_type.beam_mode",
+      "docs_anchor": "experiment-type-beam-mode",
+      "docs_page": "experiment_type",
+      "import_names": [
+        "_expt_type.beam_mode"
+      ],
+      "iucr_name": "_easydiffraction_experiment_type.beam_mode",
+      "owner_class": "ExperimentType",
+      "project_name": "_experiment_type.beam_mode",
+      "read_names": [
+        "_experiment_type.beam_mode",
+        "_expt_type.beam_mode"
+      ],
+      "unique_name": "inventory_experiment.experiment_type.beam_mode"
+    },
+    {
+      "category_code": "experiment_type",
+      "category_entry_name": null,
+      "context": "experiment.bragg_pd_cwl",
+      "current_cif_names": [
+        "_experiment_type.radiation_probe"
+      ],
+      "descriptor_class": "EnumDescriptor",
+      "descriptor_name": "radiation_probe",
+      "descriptor_path": "experiment.bragg_pd_cwl.experiment_type.radiation_probe",
+      "docs_anchor": "experiment-type-radiation-probe",
+      "docs_page": "experiment_type",
+      "import_names": [
+        "_expt_type.radiation_probe"
+      ],
+      "iucr_name": "_easydiffraction_experiment_type.radiation_probe",
+      "owner_class": "ExperimentType",
+      "project_name": "_experiment_type.radiation_probe",
+      "read_names": [
+        "_experiment_type.radiation_probe",
+        "_expt_type.radiation_probe"
+      ],
+      "unique_name": "inventory_experiment.experiment_type.radiation_probe"
+    },
+    {
+      "category_code": "experiment_type",
+      "category_entry_name": null,
+      "context": "experiment.bragg_pd_cwl",
+      "current_cif_names": [
+        "_experiment_type.sample_form"
+      ],
+      "descriptor_class": "EnumDescriptor",
+      "descriptor_name": "sample_form",
+      "descriptor_path": "experiment.bragg_pd_cwl.experiment_type.sample_form",
+      "docs_anchor": "experiment-type-sample-form",
+      "docs_page": "experiment_type",
+      "import_names": [
+        "_expt_type.sample_form"
+      ],
+      "iucr_name": "_easydiffraction_experiment_type.sample_form",
+      "owner_class": "ExperimentType",
+      "project_name": "_experiment_type.sample_form",
+      "read_names": [
+        "_experiment_type.sample_form",
+        "_expt_type.sample_form"
+      ],
+      "unique_name": "inventory_experiment.experiment_type.sample_form"
+    },
+    {
+      "category_code": "experiment_type",
+      "category_entry_name": null,
+      "context": "experiment.bragg_pd_cwl",
+      "current_cif_names": [
+        "_experiment_type.scattering_type"
+      ],
+      "descriptor_class": "EnumDescriptor",
+      "descriptor_name": "scattering_type",
+      "descriptor_path": "experiment.bragg_pd_cwl.experiment_type.scattering_type",
+      "docs_anchor": "experiment-type-scattering-type",
+      "docs_page": "experiment_type",
+      "import_names": [
+        "_expt_type.scattering_type"
+      ],
+      "iucr_name": "_easydiffraction_experiment_type.scattering_type",
+      "owner_class": "ExperimentType",
+      "project_name": "_experiment_type.scattering_type",
+      "read_names": [
+        "_experiment_type.scattering_type",
+        "_expt_type.scattering_type"
+      ],
+      "unique_name": "inventory_experiment.experiment_type.scattering_type"
+    },
+    {
       "category_code": "instrument",
       "category_entry_name": null,
       "context": "experiment.bragg_pd_cwl",
@@ -2317,50 +2082,52 @@
       "unique_name": "inventory_experiment.instrument.wavelength"
     },
     {
-      "category_code": "linked_phases",
+      "category_code": "linked_structure",
       "category_entry_name": "Si",
       "context": "experiment.bragg_pd_cwl",
       "current_cif_names": [
-        "_pd_phase_block.id"
-      ],
-      "descriptor_class": "StringDescriptor",
-      "descriptor_name": "id",
-      "descriptor_path": "experiment.bragg_pd_cwl.linked_phases[].id",
-      "docs_anchor": "pd-phase-block-id",
-      "docs_page": "pd_phase_block",
-      "import_names": [
-        "_pd_phase_block.id"
-      ],
-      "iucr_name": "_pd_phase_block.id",
-      "owner_class": "LinkedPhase",
-      "project_name": "_pd_phase_block.id",
-      "read_names": [
-        "_pd_phase_block.id"
-      ],
-      "unique_name": "linked_phases.Si.id"
-    },
-    {
-      "category_code": "linked_phases",
-      "category_entry_name": "Si",
-      "context": "experiment.bragg_pd_cwl",
-      "current_cif_names": [
-        "_pd_phase_block.scale"
+        "_linked_structure.scale"
       ],
       "descriptor_class": "Parameter",
       "descriptor_name": "scale",
-      "descriptor_path": "experiment.bragg_pd_cwl.linked_phases[].scale",
-      "docs_anchor": "pd-phase-block-scale",
-      "docs_page": "pd_phase_block",
+      "descriptor_path": "experiment.bragg_pd_cwl.linked_structures[].scale",
+      "docs_anchor": "linked-structure-scale",
+      "docs_page": "linked_structure",
       "import_names": [
         "_pd_phase_block.scale"
       ],
       "iucr_name": "_pd_phase_block.scale",
-      "owner_class": "LinkedPhase",
-      "project_name": "_pd_phase_block.scale",
+      "owner_class": "LinkedStructure",
+      "project_name": "_linked_structure.scale",
       "read_names": [
+        "_linked_structure.scale",
         "_pd_phase_block.scale"
       ],
-      "unique_name": "linked_phases.Si.scale"
+      "unique_name": "linked_structure.Si.scale"
+    },
+    {
+      "category_code": "linked_structure",
+      "category_entry_name": "Si",
+      "context": "experiment.bragg_pd_cwl",
+      "current_cif_names": [
+        "_linked_structure.structure_id"
+      ],
+      "descriptor_class": "StringDescriptor",
+      "descriptor_name": "structure_id",
+      "descriptor_path": "experiment.bragg_pd_cwl.linked_structures[].structure_id",
+      "docs_anchor": "linked-structure-structure-id",
+      "docs_page": "linked_structure",
+      "import_names": [
+        "_pd_phase_block.id"
+      ],
+      "iucr_name": "_pd_phase_block.id",
+      "owner_class": "LinkedStructure",
+      "project_name": "_linked_structure.structure_id",
+      "read_names": [
+        "_linked_structure.structure_id",
+        "_pd_phase_block.id"
+      ],
+      "unique_name": "linked_structure.Si.structure_id"
     },
     {
       "category_code": "peak",
@@ -2938,98 +2705,6 @@
       "unique_name": "refln.0.two_theta"
     },
     {
-      "category_code": "expt_type",
-      "category_entry_name": null,
-      "context": "experiment.bragg_pd_cwl",
-      "current_cif_names": [
-        "_expt_type.beam_mode"
-      ],
-      "descriptor_class": "EnumDescriptor",
-      "descriptor_name": "beam_mode",
-      "descriptor_path": "experiment.bragg_pd_cwl.type.beam_mode",
-      "docs_anchor": "expt-type-beam-mode",
-      "docs_page": "expt_type",
-      "import_names": [
-        "_expt_type.beam_mode"
-      ],
-      "iucr_name": "_easydiffraction_experiment_type.beam_mode",
-      "owner_class": "ExperimentType",
-      "project_name": "_expt_type.beam_mode",
-      "read_names": [
-        "_expt_type.beam_mode"
-      ],
-      "unique_name": "inventory_experiment.expt_type.beam_mode"
-    },
-    {
-      "category_code": "expt_type",
-      "category_entry_name": null,
-      "context": "experiment.bragg_pd_cwl",
-      "current_cif_names": [
-        "_expt_type.radiation_probe"
-      ],
-      "descriptor_class": "EnumDescriptor",
-      "descriptor_name": "radiation_probe",
-      "descriptor_path": "experiment.bragg_pd_cwl.type.radiation_probe",
-      "docs_anchor": "expt-type-radiation-probe",
-      "docs_page": "expt_type",
-      "import_names": [
-        "_expt_type.radiation_probe"
-      ],
-      "iucr_name": "_easydiffraction_experiment_type.radiation_probe",
-      "owner_class": "ExperimentType",
-      "project_name": "_expt_type.radiation_probe",
-      "read_names": [
-        "_expt_type.radiation_probe"
-      ],
-      "unique_name": "inventory_experiment.expt_type.radiation_probe"
-    },
-    {
-      "category_code": "expt_type",
-      "category_entry_name": null,
-      "context": "experiment.bragg_pd_cwl",
-      "current_cif_names": [
-        "_expt_type.sample_form"
-      ],
-      "descriptor_class": "EnumDescriptor",
-      "descriptor_name": "sample_form",
-      "descriptor_path": "experiment.bragg_pd_cwl.type.sample_form",
-      "docs_anchor": "expt-type-sample-form",
-      "docs_page": "expt_type",
-      "import_names": [
-        "_expt_type.sample_form"
-      ],
-      "iucr_name": "_easydiffraction_experiment_type.sample_form",
-      "owner_class": "ExperimentType",
-      "project_name": "_expt_type.sample_form",
-      "read_names": [
-        "_expt_type.sample_form"
-      ],
-      "unique_name": "inventory_experiment.expt_type.sample_form"
-    },
-    {
-      "category_code": "expt_type",
-      "category_entry_name": null,
-      "context": "experiment.bragg_pd_cwl",
-      "current_cif_names": [
-        "_expt_type.scattering_type"
-      ],
-      "descriptor_class": "EnumDescriptor",
-      "descriptor_name": "scattering_type",
-      "descriptor_path": "experiment.bragg_pd_cwl.type.scattering_type",
-      "docs_anchor": "expt-type-scattering-type",
-      "docs_page": "expt_type",
-      "import_names": [
-        "_expt_type.scattering_type"
-      ],
-      "iucr_name": "_easydiffraction_experiment_type.scattering_type",
-      "owner_class": "ExperimentType",
-      "project_name": "_expt_type.scattering_type",
-      "read_names": [
-        "_expt_type.scattering_type"
-      ],
-      "unique_name": "inventory_experiment.expt_type.scattering_type"
-    },
-    {
       "category_code": null,
       "category_entry_name": null,
       "context": "experiment.bragg_pd_tof",
@@ -3571,6 +3246,102 @@
       "unique_name": "excluded_regions.0.start"
     },
     {
+      "category_code": "experiment_type",
+      "category_entry_name": null,
+      "context": "experiment.bragg_pd_tof",
+      "current_cif_names": [
+        "_experiment_type.beam_mode"
+      ],
+      "descriptor_class": "EnumDescriptor",
+      "descriptor_name": "beam_mode",
+      "descriptor_path": "experiment.bragg_pd_tof.experiment_type.beam_mode",
+      "docs_anchor": "experiment-type-beam-mode",
+      "docs_page": "experiment_type",
+      "import_names": [
+        "_expt_type.beam_mode"
+      ],
+      "iucr_name": "_easydiffraction_experiment_type.beam_mode",
+      "owner_class": "ExperimentType",
+      "project_name": "_experiment_type.beam_mode",
+      "read_names": [
+        "_experiment_type.beam_mode",
+        "_expt_type.beam_mode"
+      ],
+      "unique_name": "inventory_experiment.experiment_type.beam_mode"
+    },
+    {
+      "category_code": "experiment_type",
+      "category_entry_name": null,
+      "context": "experiment.bragg_pd_tof",
+      "current_cif_names": [
+        "_experiment_type.radiation_probe"
+      ],
+      "descriptor_class": "EnumDescriptor",
+      "descriptor_name": "radiation_probe",
+      "descriptor_path": "experiment.bragg_pd_tof.experiment_type.radiation_probe",
+      "docs_anchor": "experiment-type-radiation-probe",
+      "docs_page": "experiment_type",
+      "import_names": [
+        "_expt_type.radiation_probe"
+      ],
+      "iucr_name": "_easydiffraction_experiment_type.radiation_probe",
+      "owner_class": "ExperimentType",
+      "project_name": "_experiment_type.radiation_probe",
+      "read_names": [
+        "_experiment_type.radiation_probe",
+        "_expt_type.radiation_probe"
+      ],
+      "unique_name": "inventory_experiment.experiment_type.radiation_probe"
+    },
+    {
+      "category_code": "experiment_type",
+      "category_entry_name": null,
+      "context": "experiment.bragg_pd_tof",
+      "current_cif_names": [
+        "_experiment_type.sample_form"
+      ],
+      "descriptor_class": "EnumDescriptor",
+      "descriptor_name": "sample_form",
+      "descriptor_path": "experiment.bragg_pd_tof.experiment_type.sample_form",
+      "docs_anchor": "experiment-type-sample-form",
+      "docs_page": "experiment_type",
+      "import_names": [
+        "_expt_type.sample_form"
+      ],
+      "iucr_name": "_easydiffraction_experiment_type.sample_form",
+      "owner_class": "ExperimentType",
+      "project_name": "_experiment_type.sample_form",
+      "read_names": [
+        "_experiment_type.sample_form",
+        "_expt_type.sample_form"
+      ],
+      "unique_name": "inventory_experiment.experiment_type.sample_form"
+    },
+    {
+      "category_code": "experiment_type",
+      "category_entry_name": null,
+      "context": "experiment.bragg_pd_tof",
+      "current_cif_names": [
+        "_experiment_type.scattering_type"
+      ],
+      "descriptor_class": "EnumDescriptor",
+      "descriptor_name": "scattering_type",
+      "descriptor_path": "experiment.bragg_pd_tof.experiment_type.scattering_type",
+      "docs_anchor": "experiment-type-scattering-type",
+      "docs_page": "experiment_type",
+      "import_names": [
+        "_expt_type.scattering_type"
+      ],
+      "iucr_name": "_easydiffraction_experiment_type.scattering_type",
+      "owner_class": "ExperimentType",
+      "project_name": "_experiment_type.scattering_type",
+      "read_names": [
+        "_experiment_type.scattering_type",
+        "_expt_type.scattering_type"
+      ],
+      "unique_name": "inventory_experiment.experiment_type.scattering_type"
+    },
+    {
       "category_code": "instrument",
       "category_entry_name": null,
       "context": "experiment.bragg_pd_tof",
@@ -3686,50 +3457,52 @@
       "unique_name": "inventory_experiment.instrument.twotheta_bank"
     },
     {
-      "category_code": "linked_phases",
+      "category_code": "linked_structure",
       "category_entry_name": "Si",
       "context": "experiment.bragg_pd_tof",
       "current_cif_names": [
-        "_pd_phase_block.id"
-      ],
-      "descriptor_class": "StringDescriptor",
-      "descriptor_name": "id",
-      "descriptor_path": "experiment.bragg_pd_tof.linked_phases[].id",
-      "docs_anchor": "pd-phase-block-id",
-      "docs_page": "pd_phase_block",
-      "import_names": [
-        "_pd_phase_block.id"
-      ],
-      "iucr_name": "_pd_phase_block.id",
-      "owner_class": "LinkedPhase",
-      "project_name": "_pd_phase_block.id",
-      "read_names": [
-        "_pd_phase_block.id"
-      ],
-      "unique_name": "linked_phases.Si.id"
-    },
-    {
-      "category_code": "linked_phases",
-      "category_entry_name": "Si",
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_pd_phase_block.scale"
+        "_linked_structure.scale"
       ],
       "descriptor_class": "Parameter",
       "descriptor_name": "scale",
-      "descriptor_path": "experiment.bragg_pd_tof.linked_phases[].scale",
-      "docs_anchor": "pd-phase-block-scale",
-      "docs_page": "pd_phase_block",
+      "descriptor_path": "experiment.bragg_pd_tof.linked_structures[].scale",
+      "docs_anchor": "linked-structure-scale",
+      "docs_page": "linked_structure",
       "import_names": [
         "_pd_phase_block.scale"
       ],
       "iucr_name": "_pd_phase_block.scale",
-      "owner_class": "LinkedPhase",
-      "project_name": "_pd_phase_block.scale",
+      "owner_class": "LinkedStructure",
+      "project_name": "_linked_structure.scale",
       "read_names": [
+        "_linked_structure.scale",
         "_pd_phase_block.scale"
       ],
-      "unique_name": "linked_phases.Si.scale"
+      "unique_name": "linked_structure.Si.scale"
+    },
+    {
+      "category_code": "linked_structure",
+      "category_entry_name": "Si",
+      "context": "experiment.bragg_pd_tof",
+      "current_cif_names": [
+        "_linked_structure.structure_id"
+      ],
+      "descriptor_class": "StringDescriptor",
+      "descriptor_name": "structure_id",
+      "descriptor_path": "experiment.bragg_pd_tof.linked_structures[].structure_id",
+      "docs_anchor": "linked-structure-structure-id",
+      "docs_page": "linked_structure",
+      "import_names": [
+        "_pd_phase_block.id"
+      ],
+      "iucr_name": "_pd_phase_block.id",
+      "owner_class": "LinkedStructure",
+      "project_name": "_linked_structure.structure_id",
+      "read_names": [
+        "_linked_structure.structure_id",
+        "_pd_phase_block.id"
+      ],
+      "unique_name": "linked_structure.Si.structure_id"
     },
     {
       "category_code": "peak",
@@ -3916,535 +3689,6 @@
       "unique_name": "inventory_experiment.peak.type"
     },
     {
-      "category_code": "pref_orient",
-      "category_entry_name": "Si",
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_pref_orient.index_h"
-      ],
-      "descriptor_class": "IntegerDescriptor",
-      "descriptor_name": "index_h",
-      "descriptor_path": "experiment.bragg_pd_tof.pref_orient[].index_h",
-      "docs_anchor": "pref-orient-index-h",
-      "docs_page": "pref_orient",
-      "import_names": [
-        "_pref_orient.index_h"
-      ],
-      "iucr_name": "_pd_pref_orient_March_Dollase.index_h",
-      "owner_class": "PrefOrient",
-      "project_name": "_pref_orient.index_h",
-      "read_names": [
-        "_pref_orient.index_h"
-      ],
-      "unique_name": "pref_orient.Si.index_h"
-    },
-    {
-      "category_code": "pref_orient",
-      "category_entry_name": "Si",
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_pref_orient.index_k"
-      ],
-      "descriptor_class": "IntegerDescriptor",
-      "descriptor_name": "index_k",
-      "descriptor_path": "experiment.bragg_pd_tof.pref_orient[].index_k",
-      "docs_anchor": "pref-orient-index-k",
-      "docs_page": "pref_orient",
-      "import_names": [
-        "_pref_orient.index_k"
-      ],
-      "iucr_name": "_pd_pref_orient_March_Dollase.index_k",
-      "owner_class": "PrefOrient",
-      "project_name": "_pref_orient.index_k",
-      "read_names": [
-        "_pref_orient.index_k"
-      ],
-      "unique_name": "pref_orient.Si.index_k"
-    },
-    {
-      "category_code": "pref_orient",
-      "category_entry_name": "Si",
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_pref_orient.index_l"
-      ],
-      "descriptor_class": "IntegerDescriptor",
-      "descriptor_name": "index_l",
-      "descriptor_path": "experiment.bragg_pd_tof.pref_orient[].index_l",
-      "docs_anchor": "pref-orient-index-l",
-      "docs_page": "pref_orient",
-      "import_names": [
-        "_pref_orient.index_l"
-      ],
-      "iucr_name": "_pd_pref_orient_March_Dollase.index_l",
-      "owner_class": "PrefOrient",
-      "project_name": "_pref_orient.index_l",
-      "read_names": [
-        "_pref_orient.index_l"
-      ],
-      "unique_name": "pref_orient.Si.index_l"
-    },
-    {
-      "category_code": "pref_orient",
-      "category_entry_name": "Si",
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_pref_orient.march_r"
-      ],
-      "descriptor_class": "Parameter",
-      "descriptor_name": "march_r",
-      "descriptor_path": "experiment.bragg_pd_tof.pref_orient[].march_r",
-      "docs_anchor": "pref-orient-march-r",
-      "docs_page": "pref_orient",
-      "import_names": [
-        "_pref_orient.march_r"
-      ],
-      "iucr_name": "_pd_pref_orient_March_Dollase.r",
-      "owner_class": "PrefOrient",
-      "project_name": "_pref_orient.march_r",
-      "read_names": [
-        "_pref_orient.march_r"
-      ],
-      "unique_name": "pref_orient.Si.march_r"
-    },
-    {
-      "category_code": "pref_orient",
-      "category_entry_name": "Si",
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_pref_orient.march_random_fract"
-      ],
-      "descriptor_class": "Parameter",
-      "descriptor_name": "march_random_fract",
-      "descriptor_path": "experiment.bragg_pd_tof.pref_orient[].march_random_fract",
-      "docs_anchor": "pref-orient-march-random-fract",
-      "docs_page": "pref_orient",
-      "import_names": [
-        "_pref_orient.march_random_fract"
-      ],
-      "iucr_name": "_easydiffraction_pref_orient.march_random_fract",
-      "owner_class": "PrefOrient",
-      "project_name": "_pref_orient.march_random_fract",
-      "read_names": [
-        "_pref_orient.march_random_fract"
-      ],
-      "unique_name": "pref_orient.Si.march_random_fract"
-    },
-    {
-      "category_code": "pref_orient",
-      "category_entry_name": "Si",
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_pref_orient.phase_id"
-      ],
-      "descriptor_class": "StringDescriptor",
-      "descriptor_name": "phase_id",
-      "descriptor_path": "experiment.bragg_pd_tof.pref_orient[].phase_id",
-      "docs_anchor": "pref-orient-phase-id",
-      "docs_page": "pref_orient",
-      "import_names": [
-        "_pref_orient.phase_id"
-      ],
-      "iucr_name": "_pd_pref_orient_March_Dollase.phase_id",
-      "owner_class": "PrefOrient",
-      "project_name": "_pref_orient.phase_id",
-      "read_names": [
-        "_pref_orient.phase_id"
-      ],
-      "unique_name": "pref_orient.Si.phase_id"
-    },
-    {
-      "category_code": "refln",
-      "category_entry_name": "0",
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_refln.d_spacing"
-      ],
-      "descriptor_class": "NumericDescriptor",
-      "descriptor_name": "d_spacing",
-      "descriptor_path": "experiment.bragg_pd_tof.refln[].d_spacing",
-      "docs_anchor": "refln-d-spacing",
-      "docs_page": "refln",
-      "import_names": [
-        "_refln.d_spacing"
-      ],
-      "iucr_name": "_refln.d_spacing",
-      "owner_class": "PowderTofRefln",
-      "project_name": "_refln.d_spacing",
-      "read_names": [
-        "_refln.d_spacing"
-      ],
-      "unique_name": "refln.0.d_spacing"
-    },
-    {
-      "category_code": "refln",
-      "category_entry_name": "0",
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_refln.f_calc"
-      ],
-      "descriptor_class": "NumericDescriptor",
-      "descriptor_name": "f_calc",
-      "descriptor_path": "experiment.bragg_pd_tof.refln[].f_calc",
-      "docs_anchor": "refln-f-calc",
-      "docs_page": "refln",
-      "import_names": [
-        "_refln.f_calc"
-      ],
-      "iucr_name": "_refln.f_calc",
-      "owner_class": "PowderTofRefln",
-      "project_name": "_refln.f_calc",
-      "read_names": [
-        "_refln.f_calc"
-      ],
-      "unique_name": "refln.0.f_calc"
-    },
-    {
-      "category_code": "refln",
-      "category_entry_name": "0",
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_refln.f_squared_calc"
-      ],
-      "descriptor_class": "NumericDescriptor",
-      "descriptor_name": "f_squared_calc",
-      "descriptor_path": "experiment.bragg_pd_tof.refln[].f_squared_calc",
-      "docs_anchor": "refln-f-squared-calc",
-      "docs_page": "refln",
-      "import_names": [
-        "_refln.f_squared_calc"
-      ],
-      "iucr_name": "_refln.f_squared_calc",
-      "owner_class": "PowderTofRefln",
-      "project_name": "_refln.f_squared_calc",
-      "read_names": [
-        "_refln.f_squared_calc"
-      ],
-      "unique_name": "refln.0.f_squared_calc"
-    },
-    {
-      "category_code": "refln",
-      "category_entry_name": "0",
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_refln.id"
-      ],
-      "descriptor_class": "StringDescriptor",
-      "descriptor_name": "id",
-      "descriptor_path": "experiment.bragg_pd_tof.refln[].id",
-      "docs_anchor": "refln-id",
-      "docs_page": "refln",
-      "import_names": [
-        "_refln.id"
-      ],
-      "iucr_name": "_refln.id",
-      "owner_class": "PowderTofRefln",
-      "project_name": "_refln.id",
-      "read_names": [
-        "_refln.id"
-      ],
-      "unique_name": "refln.0.id"
-    },
-    {
-      "category_code": "refln",
-      "category_entry_name": "0",
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_refln.index_h"
-      ],
-      "descriptor_class": "NumericDescriptor",
-      "descriptor_name": "index_h",
-      "descriptor_path": "experiment.bragg_pd_tof.refln[].index_h",
-      "docs_anchor": "refln-index-h",
-      "docs_page": "refln",
-      "import_names": [
-        "_refln.index_h"
-      ],
-      "iucr_name": "_refln.index_h",
-      "owner_class": "PowderTofRefln",
-      "project_name": "_refln.index_h",
-      "read_names": [
-        "_refln.index_h"
-      ],
-      "unique_name": "refln.0.index_h"
-    },
-    {
-      "category_code": "refln",
-      "category_entry_name": "0",
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_refln.index_k"
-      ],
-      "descriptor_class": "NumericDescriptor",
-      "descriptor_name": "index_k",
-      "descriptor_path": "experiment.bragg_pd_tof.refln[].index_k",
-      "docs_anchor": "refln-index-k",
-      "docs_page": "refln",
-      "import_names": [
-        "_refln.index_k"
-      ],
-      "iucr_name": "_refln.index_k",
-      "owner_class": "PowderTofRefln",
-      "project_name": "_refln.index_k",
-      "read_names": [
-        "_refln.index_k"
-      ],
-      "unique_name": "refln.0.index_k"
-    },
-    {
-      "category_code": "refln",
-      "category_entry_name": "0",
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_refln.index_l"
-      ],
-      "descriptor_class": "NumericDescriptor",
-      "descriptor_name": "index_l",
-      "descriptor_path": "experiment.bragg_pd_tof.refln[].index_l",
-      "docs_anchor": "refln-index-l",
-      "docs_page": "refln",
-      "import_names": [
-        "_refln.index_l"
-      ],
-      "iucr_name": "_refln.index_l",
-      "owner_class": "PowderTofRefln",
-      "project_name": "_refln.index_l",
-      "read_names": [
-        "_refln.index_l"
-      ],
-      "unique_name": "refln.0.index_l"
-    },
-    {
-      "category_code": "refln",
-      "category_entry_name": "0",
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_refln.intensity_calc"
-      ],
-      "descriptor_class": "NumericDescriptor",
-      "descriptor_name": "intensity_calc",
-      "descriptor_path": "experiment.bragg_pd_tof.refln[].intensity_calc",
-      "docs_anchor": "refln-intensity-calc",
-      "docs_page": "refln",
-      "import_names": [
-        "_refln.intensity_calc"
-      ],
-      "iucr_name": "_refln.intensity_calc",
-      "owner_class": "PowderTofRefln",
-      "project_name": "_refln.intensity_calc",
-      "read_names": [
-        "_refln.intensity_calc"
-      ],
-      "unique_name": "refln.0.intensity_calc"
-    },
-    {
-      "category_code": "refln",
-      "category_entry_name": "0",
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_refln.intensity_meas"
-      ],
-      "descriptor_class": "NumericDescriptor",
-      "descriptor_name": "intensity_meas",
-      "descriptor_path": "experiment.bragg_pd_tof.refln[].intensity_meas",
-      "docs_anchor": "refln-intensity-meas",
-      "docs_page": "refln",
-      "import_names": [
-        "_refln.intensity_meas"
-      ],
-      "iucr_name": "_refln.intensity_meas",
-      "owner_class": "PowderTofRefln",
-      "project_name": "_refln.intensity_meas",
-      "read_names": [
-        "_refln.intensity_meas"
-      ],
-      "unique_name": "refln.0.intensity_meas"
-    },
-    {
-      "category_code": "refln",
-      "category_entry_name": "0",
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_refln.intensity_meas_su"
-      ],
-      "descriptor_class": "NumericDescriptor",
-      "descriptor_name": "intensity_meas_su",
-      "descriptor_path": "experiment.bragg_pd_tof.refln[].intensity_meas_su",
-      "docs_anchor": "refln-intensity-meas-su",
-      "docs_page": "refln",
-      "import_names": [
-        "_refln.intensity_meas_su"
-      ],
-      "iucr_name": "_refln.intensity_meas_su",
-      "owner_class": "PowderTofRefln",
-      "project_name": "_refln.intensity_meas_su",
-      "read_names": [
-        "_refln.intensity_meas_su"
-      ],
-      "unique_name": "refln.0.intensity_meas_su"
-    },
-    {
-      "category_code": "refln",
-      "category_entry_name": "0",
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_refln.phase_id"
-      ],
-      "descriptor_class": "StringDescriptor",
-      "descriptor_name": "phase_id",
-      "descriptor_path": "experiment.bragg_pd_tof.refln[].phase_id",
-      "docs_anchor": "refln-phase-id",
-      "docs_page": "refln",
-      "import_names": [
-        "_refln.phase_id"
-      ],
-      "iucr_name": "_refln.phase_id",
-      "owner_class": "PowderTofRefln",
-      "project_name": "_refln.phase_id",
-      "read_names": [
-        "_refln.phase_id"
-      ],
-      "unique_name": "refln.0.phase_id"
-    },
-    {
-      "category_code": "refln",
-      "category_entry_name": "0",
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_refln.sin_theta_over_lambda"
-      ],
-      "descriptor_class": "NumericDescriptor",
-      "descriptor_name": "sin_theta_over_lambda",
-      "descriptor_path": "experiment.bragg_pd_tof.refln[].sin_theta_over_lambda",
-      "docs_anchor": "refln-sin-theta-over-lambda",
-      "docs_page": "refln",
-      "import_names": [
-        "_refln.sin_theta_over_lambda"
-      ],
-      "iucr_name": "_refln.sin_theta_over_lambda",
-      "owner_class": "PowderTofRefln",
-      "project_name": "_refln.sin_theta_over_lambda",
-      "read_names": [
-        "_refln.sin_theta_over_lambda"
-      ],
-      "unique_name": "refln.0.sin_theta_over_lambda"
-    },
-    {
-      "category_code": "refln",
-      "category_entry_name": "0",
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_refln.time_of_flight"
-      ],
-      "descriptor_class": "NumericDescriptor",
-      "descriptor_name": "time_of_flight",
-      "descriptor_path": "experiment.bragg_pd_tof.refln[].time_of_flight",
-      "docs_anchor": "refln-time-of-flight",
-      "docs_page": "refln",
-      "import_names": [
-        "_refln.time_of_flight"
-      ],
-      "iucr_name": "_refln.time_of_flight",
-      "owner_class": "PowderTofRefln",
-      "project_name": "_refln.time_of_flight",
-      "read_names": [
-        "_refln.time_of_flight"
-      ],
-      "unique_name": "refln.0.time_of_flight"
-    },
-    {
-      "category_code": "expt_type",
-      "category_entry_name": null,
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_expt_type.beam_mode"
-      ],
-      "descriptor_class": "EnumDescriptor",
-      "descriptor_name": "beam_mode",
-      "descriptor_path": "experiment.bragg_pd_tof.type.beam_mode",
-      "docs_anchor": "expt-type-beam-mode",
-      "docs_page": "expt_type",
-      "import_names": [
-        "_expt_type.beam_mode"
-      ],
-      "iucr_name": "_easydiffraction_experiment_type.beam_mode",
-      "owner_class": "ExperimentType",
-      "project_name": "_expt_type.beam_mode",
-      "read_names": [
-        "_expt_type.beam_mode"
-      ],
-      "unique_name": "inventory_experiment.expt_type.beam_mode"
-    },
-    {
-      "category_code": "expt_type",
-      "category_entry_name": null,
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_expt_type.radiation_probe"
-      ],
-      "descriptor_class": "EnumDescriptor",
-      "descriptor_name": "radiation_probe",
-      "descriptor_path": "experiment.bragg_pd_tof.type.radiation_probe",
-      "docs_anchor": "expt-type-radiation-probe",
-      "docs_page": "expt_type",
-      "import_names": [
-        "_expt_type.radiation_probe"
-      ],
-      "iucr_name": "_easydiffraction_experiment_type.radiation_probe",
-      "owner_class": "ExperimentType",
-      "project_name": "_expt_type.radiation_probe",
-      "read_names": [
-        "_expt_type.radiation_probe"
-      ],
-      "unique_name": "inventory_experiment.expt_type.radiation_probe"
-    },
-    {
-      "category_code": "expt_type",
-      "category_entry_name": null,
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_expt_type.sample_form"
-      ],
-      "descriptor_class": "EnumDescriptor",
-      "descriptor_name": "sample_form",
-      "descriptor_path": "experiment.bragg_pd_tof.type.sample_form",
-      "docs_anchor": "expt-type-sample-form",
-      "docs_page": "expt_type",
-      "import_names": [
-        "_expt_type.sample_form"
-      ],
-      "iucr_name": "_easydiffraction_experiment_type.sample_form",
-      "owner_class": "ExperimentType",
-      "project_name": "_expt_type.sample_form",
-      "read_names": [
-        "_expt_type.sample_form"
-      ],
-      "unique_name": "inventory_experiment.expt_type.sample_form"
-    },
-    {
-      "category_code": "expt_type",
-      "category_entry_name": null,
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_expt_type.scattering_type"
-      ],
-      "descriptor_class": "EnumDescriptor",
-      "descriptor_name": "scattering_type",
-      "descriptor_path": "experiment.bragg_pd_tof.type.scattering_type",
-      "docs_anchor": "expt-type-scattering-type",
-      "docs_page": "expt_type",
-      "import_names": [
-        "_expt_type.scattering_type"
-      ],
-      "iucr_name": "_easydiffraction_experiment_type.scattering_type",
-      "owner_class": "ExperimentType",
-      "project_name": "_expt_type.scattering_type",
-      "read_names": [
-        "_expt_type.scattering_type"
-      ],
-      "unique_name": "inventory_experiment.expt_type.scattering_type"
-    },
-    {
       "category_code": "calculator",
       "category_entry_name": null,
       "context": "experiment.bragg_sc_cwl",
@@ -4606,6 +3850,102 @@
       "unique_name": "inventory_experiment.diffrn.ambient_temperature"
     },
     {
+      "category_code": "experiment_type",
+      "category_entry_name": null,
+      "context": "experiment.bragg_sc_cwl",
+      "current_cif_names": [
+        "_experiment_type.beam_mode"
+      ],
+      "descriptor_class": "EnumDescriptor",
+      "descriptor_name": "beam_mode",
+      "descriptor_path": "experiment.bragg_sc_cwl.experiment_type.beam_mode",
+      "docs_anchor": "experiment-type-beam-mode",
+      "docs_page": "experiment_type",
+      "import_names": [
+        "_expt_type.beam_mode"
+      ],
+      "iucr_name": "_easydiffraction_experiment_type.beam_mode",
+      "owner_class": "ExperimentType",
+      "project_name": "_experiment_type.beam_mode",
+      "read_names": [
+        "_experiment_type.beam_mode",
+        "_expt_type.beam_mode"
+      ],
+      "unique_name": "inventory_experiment.experiment_type.beam_mode"
+    },
+    {
+      "category_code": "experiment_type",
+      "category_entry_name": null,
+      "context": "experiment.bragg_sc_cwl",
+      "current_cif_names": [
+        "_experiment_type.radiation_probe"
+      ],
+      "descriptor_class": "EnumDescriptor",
+      "descriptor_name": "radiation_probe",
+      "descriptor_path": "experiment.bragg_sc_cwl.experiment_type.radiation_probe",
+      "docs_anchor": "experiment-type-radiation-probe",
+      "docs_page": "experiment_type",
+      "import_names": [
+        "_expt_type.radiation_probe"
+      ],
+      "iucr_name": "_easydiffraction_experiment_type.radiation_probe",
+      "owner_class": "ExperimentType",
+      "project_name": "_experiment_type.radiation_probe",
+      "read_names": [
+        "_experiment_type.radiation_probe",
+        "_expt_type.radiation_probe"
+      ],
+      "unique_name": "inventory_experiment.experiment_type.radiation_probe"
+    },
+    {
+      "category_code": "experiment_type",
+      "category_entry_name": null,
+      "context": "experiment.bragg_sc_cwl",
+      "current_cif_names": [
+        "_experiment_type.sample_form"
+      ],
+      "descriptor_class": "EnumDescriptor",
+      "descriptor_name": "sample_form",
+      "descriptor_path": "experiment.bragg_sc_cwl.experiment_type.sample_form",
+      "docs_anchor": "experiment-type-sample-form",
+      "docs_page": "experiment_type",
+      "import_names": [
+        "_expt_type.sample_form"
+      ],
+      "iucr_name": "_easydiffraction_experiment_type.sample_form",
+      "owner_class": "ExperimentType",
+      "project_name": "_experiment_type.sample_form",
+      "read_names": [
+        "_experiment_type.sample_form",
+        "_expt_type.sample_form"
+      ],
+      "unique_name": "inventory_experiment.experiment_type.sample_form"
+    },
+    {
+      "category_code": "experiment_type",
+      "category_entry_name": null,
+      "context": "experiment.bragg_sc_cwl",
+      "current_cif_names": [
+        "_experiment_type.scattering_type"
+      ],
+      "descriptor_class": "EnumDescriptor",
+      "descriptor_name": "scattering_type",
+      "descriptor_path": "experiment.bragg_sc_cwl.experiment_type.scattering_type",
+      "docs_anchor": "experiment-type-scattering-type",
+      "docs_page": "experiment_type",
+      "import_names": [
+        "_expt_type.scattering_type"
+      ],
+      "iucr_name": "_easydiffraction_experiment_type.scattering_type",
+      "owner_class": "ExperimentType",
+      "project_name": "_experiment_type.scattering_type",
+      "read_names": [
+        "_experiment_type.scattering_type",
+        "_expt_type.scattering_type"
+      ],
+      "unique_name": "inventory_experiment.experiment_type.scattering_type"
+    },
+    {
       "category_code": "extinction",
       "category_entry_name": null,
       "context": "experiment.bragg_sc_cwl",
@@ -4721,50 +4061,52 @@
       "unique_name": "inventory_experiment.instrument.wavelength"
     },
     {
-      "category_code": "linked_crystal",
+      "category_code": "linked_structure",
       "category_entry_name": null,
       "context": "experiment.bragg_sc_cwl",
       "current_cif_names": [
-        "_sc_crystal_block.id"
-      ],
-      "descriptor_class": "StringDescriptor",
-      "descriptor_name": "id",
-      "descriptor_path": "experiment.bragg_sc_cwl.linked_crystal.id",
-      "docs_anchor": "sc-crystal-block-id",
-      "docs_page": "sc_crystal_block",
-      "import_names": [
-        "_sc_crystal_block.id"
-      ],
-      "iucr_name": "_easydiffraction_sc_crystal_block.id",
-      "owner_class": "LinkedCrystal",
-      "project_name": "_sc_crystal_block.id",
-      "read_names": [
-        "_sc_crystal_block.id"
-      ],
-      "unique_name": "inventory_experiment.linked_crystal.id"
-    },
-    {
-      "category_code": "linked_crystal",
-      "category_entry_name": null,
-      "context": "experiment.bragg_sc_cwl",
-      "current_cif_names": [
-        "_sc_crystal_block.scale"
+        "_linked_structure.scale"
       ],
       "descriptor_class": "Parameter",
       "descriptor_name": "scale",
-      "descriptor_path": "experiment.bragg_sc_cwl.linked_crystal.scale",
-      "docs_anchor": "sc-crystal-block-scale",
-      "docs_page": "sc_crystal_block",
+      "descriptor_path": "experiment.bragg_sc_cwl.linked_structure.scale",
+      "docs_anchor": "linked-structure-scale",
+      "docs_page": "linked_structure",
       "import_names": [
         "_sc_crystal_block.scale"
       ],
       "iucr_name": "_easydiffraction_sc_crystal_block.scale",
-      "owner_class": "LinkedCrystal",
-      "project_name": "_sc_crystal_block.scale",
+      "owner_class": "LinkedStructure",
+      "project_name": "_linked_structure.scale",
       "read_names": [
+        "_linked_structure.scale",
         "_sc_crystal_block.scale"
       ],
-      "unique_name": "inventory_experiment.linked_crystal.scale"
+      "unique_name": "inventory_experiment.linked_structure.scale"
+    },
+    {
+      "category_code": "linked_structure",
+      "category_entry_name": null,
+      "context": "experiment.bragg_sc_cwl",
+      "current_cif_names": [
+        "_linked_structure.structure_id"
+      ],
+      "descriptor_class": "StringDescriptor",
+      "descriptor_name": "structure_id",
+      "descriptor_path": "experiment.bragg_sc_cwl.linked_structure.structure_id",
+      "docs_anchor": "linked-structure-structure-id",
+      "docs_page": "linked_structure",
+      "import_names": [
+        "_sc_crystal_block.id"
+      ],
+      "iucr_name": "_easydiffraction_sc_crystal_block.id",
+      "owner_class": "LinkedStructure",
+      "project_name": "_linked_structure.structure_id",
+      "read_names": [
+        "_linked_structure.structure_id",
+        "_sc_crystal_block.id"
+      ],
+      "unique_name": "inventory_experiment.linked_structure.structure_id"
     },
     {
       "category_code": "refln",
@@ -4974,98 +4316,6 @@
       "unique_name": "refln.0.sin_theta_over_lambda"
     },
     {
-      "category_code": "expt_type",
-      "category_entry_name": null,
-      "context": "experiment.bragg_sc_cwl",
-      "current_cif_names": [
-        "_expt_type.beam_mode"
-      ],
-      "descriptor_class": "EnumDescriptor",
-      "descriptor_name": "beam_mode",
-      "descriptor_path": "experiment.bragg_sc_cwl.type.beam_mode",
-      "docs_anchor": "expt-type-beam-mode",
-      "docs_page": "expt_type",
-      "import_names": [
-        "_expt_type.beam_mode"
-      ],
-      "iucr_name": "_easydiffraction_experiment_type.beam_mode",
-      "owner_class": "ExperimentType",
-      "project_name": "_expt_type.beam_mode",
-      "read_names": [
-        "_expt_type.beam_mode"
-      ],
-      "unique_name": "inventory_experiment.expt_type.beam_mode"
-    },
-    {
-      "category_code": "expt_type",
-      "category_entry_name": null,
-      "context": "experiment.bragg_sc_cwl",
-      "current_cif_names": [
-        "_expt_type.radiation_probe"
-      ],
-      "descriptor_class": "EnumDescriptor",
-      "descriptor_name": "radiation_probe",
-      "descriptor_path": "experiment.bragg_sc_cwl.type.radiation_probe",
-      "docs_anchor": "expt-type-radiation-probe",
-      "docs_page": "expt_type",
-      "import_names": [
-        "_expt_type.radiation_probe"
-      ],
-      "iucr_name": "_easydiffraction_experiment_type.radiation_probe",
-      "owner_class": "ExperimentType",
-      "project_name": "_expt_type.radiation_probe",
-      "read_names": [
-        "_expt_type.radiation_probe"
-      ],
-      "unique_name": "inventory_experiment.expt_type.radiation_probe"
-    },
-    {
-      "category_code": "expt_type",
-      "category_entry_name": null,
-      "context": "experiment.bragg_sc_cwl",
-      "current_cif_names": [
-        "_expt_type.sample_form"
-      ],
-      "descriptor_class": "EnumDescriptor",
-      "descriptor_name": "sample_form",
-      "descriptor_path": "experiment.bragg_sc_cwl.type.sample_form",
-      "docs_anchor": "expt-type-sample-form",
-      "docs_page": "expt_type",
-      "import_names": [
-        "_expt_type.sample_form"
-      ],
-      "iucr_name": "_easydiffraction_experiment_type.sample_form",
-      "owner_class": "ExperimentType",
-      "project_name": "_expt_type.sample_form",
-      "read_names": [
-        "_expt_type.sample_form"
-      ],
-      "unique_name": "inventory_experiment.expt_type.sample_form"
-    },
-    {
-      "category_code": "expt_type",
-      "category_entry_name": null,
-      "context": "experiment.bragg_sc_cwl",
-      "current_cif_names": [
-        "_expt_type.scattering_type"
-      ],
-      "descriptor_class": "EnumDescriptor",
-      "descriptor_name": "scattering_type",
-      "descriptor_path": "experiment.bragg_sc_cwl.type.scattering_type",
-      "docs_anchor": "expt-type-scattering-type",
-      "docs_page": "expt_type",
-      "import_names": [
-        "_expt_type.scattering_type"
-      ],
-      "iucr_name": "_easydiffraction_experiment_type.scattering_type",
-      "owner_class": "ExperimentType",
-      "project_name": "_expt_type.scattering_type",
-      "read_names": [
-        "_expt_type.scattering_type"
-      ],
-      "unique_name": "inventory_experiment.expt_type.scattering_type"
-    },
-    {
       "category_code": "calculator",
       "category_entry_name": null,
       "context": "experiment.bragg_sc_tof",
@@ -5227,6 +4477,102 @@
       "unique_name": "inventory_experiment.diffrn.ambient_temperature"
     },
     {
+      "category_code": "experiment_type",
+      "category_entry_name": null,
+      "context": "experiment.bragg_sc_tof",
+      "current_cif_names": [
+        "_experiment_type.beam_mode"
+      ],
+      "descriptor_class": "EnumDescriptor",
+      "descriptor_name": "beam_mode",
+      "descriptor_path": "experiment.bragg_sc_tof.experiment_type.beam_mode",
+      "docs_anchor": "experiment-type-beam-mode",
+      "docs_page": "experiment_type",
+      "import_names": [
+        "_expt_type.beam_mode"
+      ],
+      "iucr_name": "_easydiffraction_experiment_type.beam_mode",
+      "owner_class": "ExperimentType",
+      "project_name": "_experiment_type.beam_mode",
+      "read_names": [
+        "_experiment_type.beam_mode",
+        "_expt_type.beam_mode"
+      ],
+      "unique_name": "inventory_experiment.experiment_type.beam_mode"
+    },
+    {
+      "category_code": "experiment_type",
+      "category_entry_name": null,
+      "context": "experiment.bragg_sc_tof",
+      "current_cif_names": [
+        "_experiment_type.radiation_probe"
+      ],
+      "descriptor_class": "EnumDescriptor",
+      "descriptor_name": "radiation_probe",
+      "descriptor_path": "experiment.bragg_sc_tof.experiment_type.radiation_probe",
+      "docs_anchor": "experiment-type-radiation-probe",
+      "docs_page": "experiment_type",
+      "import_names": [
+        "_expt_type.radiation_probe"
+      ],
+      "iucr_name": "_easydiffraction_experiment_type.radiation_probe",
+      "owner_class": "ExperimentType",
+      "project_name": "_experiment_type.radiation_probe",
+      "read_names": [
+        "_experiment_type.radiation_probe",
+        "_expt_type.radiation_probe"
+      ],
+      "unique_name": "inventory_experiment.experiment_type.radiation_probe"
+    },
+    {
+      "category_code": "experiment_type",
+      "category_entry_name": null,
+      "context": "experiment.bragg_sc_tof",
+      "current_cif_names": [
+        "_experiment_type.sample_form"
+      ],
+      "descriptor_class": "EnumDescriptor",
+      "descriptor_name": "sample_form",
+      "descriptor_path": "experiment.bragg_sc_tof.experiment_type.sample_form",
+      "docs_anchor": "experiment-type-sample-form",
+      "docs_page": "experiment_type",
+      "import_names": [
+        "_expt_type.sample_form"
+      ],
+      "iucr_name": "_easydiffraction_experiment_type.sample_form",
+      "owner_class": "ExperimentType",
+      "project_name": "_experiment_type.sample_form",
+      "read_names": [
+        "_experiment_type.sample_form",
+        "_expt_type.sample_form"
+      ],
+      "unique_name": "inventory_experiment.experiment_type.sample_form"
+    },
+    {
+      "category_code": "experiment_type",
+      "category_entry_name": null,
+      "context": "experiment.bragg_sc_tof",
+      "current_cif_names": [
+        "_experiment_type.scattering_type"
+      ],
+      "descriptor_class": "EnumDescriptor",
+      "descriptor_name": "scattering_type",
+      "descriptor_path": "experiment.bragg_sc_tof.experiment_type.scattering_type",
+      "docs_anchor": "experiment-type-scattering-type",
+      "docs_page": "experiment_type",
+      "import_names": [
+        "_expt_type.scattering_type"
+      ],
+      "iucr_name": "_easydiffraction_experiment_type.scattering_type",
+      "owner_class": "ExperimentType",
+      "project_name": "_experiment_type.scattering_type",
+      "read_names": [
+        "_experiment_type.scattering_type",
+        "_expt_type.scattering_type"
+      ],
+      "unique_name": "inventory_experiment.experiment_type.scattering_type"
+    },
+    {
       "category_code": "extinction",
       "category_entry_name": null,
       "context": "experiment.bragg_sc_tof",
@@ -5319,50 +4665,52 @@
       "unique_name": "inventory_experiment.extinction.type"
     },
     {
-      "category_code": "linked_crystal",
+      "category_code": "linked_structure",
       "category_entry_name": null,
       "context": "experiment.bragg_sc_tof",
       "current_cif_names": [
-        "_sc_crystal_block.id"
-      ],
-      "descriptor_class": "StringDescriptor",
-      "descriptor_name": "id",
-      "descriptor_path": "experiment.bragg_sc_tof.linked_crystal.id",
-      "docs_anchor": "sc-crystal-block-id",
-      "docs_page": "sc_crystal_block",
-      "import_names": [
-        "_sc_crystal_block.id"
-      ],
-      "iucr_name": "_easydiffraction_sc_crystal_block.id",
-      "owner_class": "LinkedCrystal",
-      "project_name": "_sc_crystal_block.id",
-      "read_names": [
-        "_sc_crystal_block.id"
-      ],
-      "unique_name": "inventory_experiment.linked_crystal.id"
-    },
-    {
-      "category_code": "linked_crystal",
-      "category_entry_name": null,
-      "context": "experiment.bragg_sc_tof",
-      "current_cif_names": [
-        "_sc_crystal_block.scale"
+        "_linked_structure.scale"
       ],
       "descriptor_class": "Parameter",
       "descriptor_name": "scale",
-      "descriptor_path": "experiment.bragg_sc_tof.linked_crystal.scale",
-      "docs_anchor": "sc-crystal-block-scale",
-      "docs_page": "sc_crystal_block",
+      "descriptor_path": "experiment.bragg_sc_tof.linked_structure.scale",
+      "docs_anchor": "linked-structure-scale",
+      "docs_page": "linked_structure",
       "import_names": [
         "_sc_crystal_block.scale"
       ],
       "iucr_name": "_easydiffraction_sc_crystal_block.scale",
-      "owner_class": "LinkedCrystal",
-      "project_name": "_sc_crystal_block.scale",
+      "owner_class": "LinkedStructure",
+      "project_name": "_linked_structure.scale",
       "read_names": [
+        "_linked_structure.scale",
         "_sc_crystal_block.scale"
       ],
-      "unique_name": "inventory_experiment.linked_crystal.scale"
+      "unique_name": "inventory_experiment.linked_structure.scale"
+    },
+    {
+      "category_code": "linked_structure",
+      "category_entry_name": null,
+      "context": "experiment.bragg_sc_tof",
+      "current_cif_names": [
+        "_linked_structure.structure_id"
+      ],
+      "descriptor_class": "StringDescriptor",
+      "descriptor_name": "structure_id",
+      "descriptor_path": "experiment.bragg_sc_tof.linked_structure.structure_id",
+      "docs_anchor": "linked-structure-structure-id",
+      "docs_page": "linked_structure",
+      "import_names": [
+        "_sc_crystal_block.id"
+      ],
+      "iucr_name": "_easydiffraction_sc_crystal_block.id",
+      "owner_class": "LinkedStructure",
+      "project_name": "_linked_structure.structure_id",
+      "read_names": [
+        "_linked_structure.structure_id",
+        "_sc_crystal_block.id"
+      ],
+      "unique_name": "inventory_experiment.linked_structure.structure_id"
     },
     {
       "category_code": "refln",
@@ -5593,98 +4941,6 @@
         "_refln.wavelength"
       ],
       "unique_name": "refln.0.wavelength"
-    },
-    {
-      "category_code": "expt_type",
-      "category_entry_name": null,
-      "context": "experiment.bragg_sc_tof",
-      "current_cif_names": [
-        "_expt_type.beam_mode"
-      ],
-      "descriptor_class": "EnumDescriptor",
-      "descriptor_name": "beam_mode",
-      "descriptor_path": "experiment.bragg_sc_tof.type.beam_mode",
-      "docs_anchor": "expt-type-beam-mode",
-      "docs_page": "expt_type",
-      "import_names": [
-        "_expt_type.beam_mode"
-      ],
-      "iucr_name": "_easydiffraction_experiment_type.beam_mode",
-      "owner_class": "ExperimentType",
-      "project_name": "_expt_type.beam_mode",
-      "read_names": [
-        "_expt_type.beam_mode"
-      ],
-      "unique_name": "inventory_experiment.expt_type.beam_mode"
-    },
-    {
-      "category_code": "expt_type",
-      "category_entry_name": null,
-      "context": "experiment.bragg_sc_tof",
-      "current_cif_names": [
-        "_expt_type.radiation_probe"
-      ],
-      "descriptor_class": "EnumDescriptor",
-      "descriptor_name": "radiation_probe",
-      "descriptor_path": "experiment.bragg_sc_tof.type.radiation_probe",
-      "docs_anchor": "expt-type-radiation-probe",
-      "docs_page": "expt_type",
-      "import_names": [
-        "_expt_type.radiation_probe"
-      ],
-      "iucr_name": "_easydiffraction_experiment_type.radiation_probe",
-      "owner_class": "ExperimentType",
-      "project_name": "_expt_type.radiation_probe",
-      "read_names": [
-        "_expt_type.radiation_probe"
-      ],
-      "unique_name": "inventory_experiment.expt_type.radiation_probe"
-    },
-    {
-      "category_code": "expt_type",
-      "category_entry_name": null,
-      "context": "experiment.bragg_sc_tof",
-      "current_cif_names": [
-        "_expt_type.sample_form"
-      ],
-      "descriptor_class": "EnumDescriptor",
-      "descriptor_name": "sample_form",
-      "descriptor_path": "experiment.bragg_sc_tof.type.sample_form",
-      "docs_anchor": "expt-type-sample-form",
-      "docs_page": "expt_type",
-      "import_names": [
-        "_expt_type.sample_form"
-      ],
-      "iucr_name": "_easydiffraction_experiment_type.sample_form",
-      "owner_class": "ExperimentType",
-      "project_name": "_expt_type.sample_form",
-      "read_names": [
-        "_expt_type.sample_form"
-      ],
-      "unique_name": "inventory_experiment.expt_type.sample_form"
-    },
-    {
-      "category_code": "expt_type",
-      "category_entry_name": null,
-      "context": "experiment.bragg_sc_tof",
-      "current_cif_names": [
-        "_expt_type.scattering_type"
-      ],
-      "descriptor_class": "EnumDescriptor",
-      "descriptor_name": "scattering_type",
-      "descriptor_path": "experiment.bragg_sc_tof.type.scattering_type",
-      "docs_anchor": "expt-type-scattering-type",
-      "docs_page": "expt_type",
-      "import_names": [
-        "_expt_type.scattering_type"
-      ],
-      "iucr_name": "_easydiffraction_experiment_type.scattering_type",
-      "owner_class": "ExperimentType",
-      "project_name": "_expt_type.scattering_type",
-      "read_names": [
-        "_expt_type.scattering_type"
-      ],
-      "unique_name": "inventory_experiment.expt_type.scattering_type"
     },
     {
       "category_code": "calculator",
@@ -6078,50 +5334,148 @@
       "unique_name": "excluded_regions.0.start"
     },
     {
-      "category_code": "linked_phases",
-      "category_entry_name": "Si",
+      "category_code": "experiment_type",
+      "category_entry_name": null,
       "context": "experiment.total_pd_cwl",
       "current_cif_names": [
-        "_pd_phase_block.id"
+        "_experiment_type.beam_mode"
       ],
-      "descriptor_class": "StringDescriptor",
-      "descriptor_name": "id",
-      "descriptor_path": "experiment.total_pd_cwl.linked_phases[].id",
-      "docs_anchor": "pd-phase-block-id",
-      "docs_page": "pd_phase_block",
+      "descriptor_class": "EnumDescriptor",
+      "descriptor_name": "beam_mode",
+      "descriptor_path": "experiment.total_pd_cwl.experiment_type.beam_mode",
+      "docs_anchor": "experiment-type-beam-mode",
+      "docs_page": "experiment_type",
       "import_names": [
-        "_pd_phase_block.id"
+        "_expt_type.beam_mode"
       ],
-      "iucr_name": "_pd_phase_block.id",
-      "owner_class": "LinkedPhase",
-      "project_name": "_pd_phase_block.id",
+      "iucr_name": "_easydiffraction_experiment_type.beam_mode",
+      "owner_class": "ExperimentType",
+      "project_name": "_experiment_type.beam_mode",
       "read_names": [
-        "_pd_phase_block.id"
+        "_experiment_type.beam_mode",
+        "_expt_type.beam_mode"
       ],
-      "unique_name": "linked_phases.Si.id"
+      "unique_name": "inventory_experiment.experiment_type.beam_mode"
     },
     {
-      "category_code": "linked_phases",
+      "category_code": "experiment_type",
+      "category_entry_name": null,
+      "context": "experiment.total_pd_cwl",
+      "current_cif_names": [
+        "_experiment_type.radiation_probe"
+      ],
+      "descriptor_class": "EnumDescriptor",
+      "descriptor_name": "radiation_probe",
+      "descriptor_path": "experiment.total_pd_cwl.experiment_type.radiation_probe",
+      "docs_anchor": "experiment-type-radiation-probe",
+      "docs_page": "experiment_type",
+      "import_names": [
+        "_expt_type.radiation_probe"
+      ],
+      "iucr_name": "_easydiffraction_experiment_type.radiation_probe",
+      "owner_class": "ExperimentType",
+      "project_name": "_experiment_type.radiation_probe",
+      "read_names": [
+        "_experiment_type.radiation_probe",
+        "_expt_type.radiation_probe"
+      ],
+      "unique_name": "inventory_experiment.experiment_type.radiation_probe"
+    },
+    {
+      "category_code": "experiment_type",
+      "category_entry_name": null,
+      "context": "experiment.total_pd_cwl",
+      "current_cif_names": [
+        "_experiment_type.sample_form"
+      ],
+      "descriptor_class": "EnumDescriptor",
+      "descriptor_name": "sample_form",
+      "descriptor_path": "experiment.total_pd_cwl.experiment_type.sample_form",
+      "docs_anchor": "experiment-type-sample-form",
+      "docs_page": "experiment_type",
+      "import_names": [
+        "_expt_type.sample_form"
+      ],
+      "iucr_name": "_easydiffraction_experiment_type.sample_form",
+      "owner_class": "ExperimentType",
+      "project_name": "_experiment_type.sample_form",
+      "read_names": [
+        "_experiment_type.sample_form",
+        "_expt_type.sample_form"
+      ],
+      "unique_name": "inventory_experiment.experiment_type.sample_form"
+    },
+    {
+      "category_code": "experiment_type",
+      "category_entry_name": null,
+      "context": "experiment.total_pd_cwl",
+      "current_cif_names": [
+        "_experiment_type.scattering_type"
+      ],
+      "descriptor_class": "EnumDescriptor",
+      "descriptor_name": "scattering_type",
+      "descriptor_path": "experiment.total_pd_cwl.experiment_type.scattering_type",
+      "docs_anchor": "experiment-type-scattering-type",
+      "docs_page": "experiment_type",
+      "import_names": [
+        "_expt_type.scattering_type"
+      ],
+      "iucr_name": "_easydiffraction_experiment_type.scattering_type",
+      "owner_class": "ExperimentType",
+      "project_name": "_experiment_type.scattering_type",
+      "read_names": [
+        "_experiment_type.scattering_type",
+        "_expt_type.scattering_type"
+      ],
+      "unique_name": "inventory_experiment.experiment_type.scattering_type"
+    },
+    {
+      "category_code": "linked_structure",
       "category_entry_name": "Si",
       "context": "experiment.total_pd_cwl",
       "current_cif_names": [
-        "_pd_phase_block.scale"
+        "_linked_structure.scale"
       ],
       "descriptor_class": "Parameter",
       "descriptor_name": "scale",
-      "descriptor_path": "experiment.total_pd_cwl.linked_phases[].scale",
-      "docs_anchor": "pd-phase-block-scale",
-      "docs_page": "pd_phase_block",
+      "descriptor_path": "experiment.total_pd_cwl.linked_structures[].scale",
+      "docs_anchor": "linked-structure-scale",
+      "docs_page": "linked_structure",
       "import_names": [
         "_pd_phase_block.scale"
       ],
       "iucr_name": "_pd_phase_block.scale",
-      "owner_class": "LinkedPhase",
-      "project_name": "_pd_phase_block.scale",
+      "owner_class": "LinkedStructure",
+      "project_name": "_linked_structure.scale",
       "read_names": [
+        "_linked_structure.scale",
         "_pd_phase_block.scale"
       ],
-      "unique_name": "linked_phases.Si.scale"
+      "unique_name": "linked_structure.Si.scale"
+    },
+    {
+      "category_code": "linked_structure",
+      "category_entry_name": "Si",
+      "context": "experiment.total_pd_cwl",
+      "current_cif_names": [
+        "_linked_structure.structure_id"
+      ],
+      "descriptor_class": "StringDescriptor",
+      "descriptor_name": "structure_id",
+      "descriptor_path": "experiment.total_pd_cwl.linked_structures[].structure_id",
+      "docs_anchor": "linked-structure-structure-id",
+      "docs_page": "linked_structure",
+      "import_names": [
+        "_pd_phase_block.id"
+      ],
+      "iucr_name": "_pd_phase_block.id",
+      "owner_class": "LinkedStructure",
+      "project_name": "_linked_structure.structure_id",
+      "read_names": [
+        "_linked_structure.structure_id",
+        "_pd_phase_block.id"
+      ],
+      "unique_name": "linked_structure.Si.structure_id"
     },
     {
       "category_code": "peak",
@@ -6283,98 +5637,6 @@
         "_peak.type"
       ],
       "unique_name": "inventory_experiment.peak.type"
-    },
-    {
-      "category_code": "expt_type",
-      "category_entry_name": null,
-      "context": "experiment.total_pd_cwl",
-      "current_cif_names": [
-        "_expt_type.beam_mode"
-      ],
-      "descriptor_class": "EnumDescriptor",
-      "descriptor_name": "beam_mode",
-      "descriptor_path": "experiment.total_pd_cwl.type.beam_mode",
-      "docs_anchor": "expt-type-beam-mode",
-      "docs_page": "expt_type",
-      "import_names": [
-        "_expt_type.beam_mode"
-      ],
-      "iucr_name": "_easydiffraction_experiment_type.beam_mode",
-      "owner_class": "ExperimentType",
-      "project_name": "_expt_type.beam_mode",
-      "read_names": [
-        "_expt_type.beam_mode"
-      ],
-      "unique_name": "inventory_experiment.expt_type.beam_mode"
-    },
-    {
-      "category_code": "expt_type",
-      "category_entry_name": null,
-      "context": "experiment.total_pd_cwl",
-      "current_cif_names": [
-        "_expt_type.radiation_probe"
-      ],
-      "descriptor_class": "EnumDescriptor",
-      "descriptor_name": "radiation_probe",
-      "descriptor_path": "experiment.total_pd_cwl.type.radiation_probe",
-      "docs_anchor": "expt-type-radiation-probe",
-      "docs_page": "expt_type",
-      "import_names": [
-        "_expt_type.radiation_probe"
-      ],
-      "iucr_name": "_easydiffraction_experiment_type.radiation_probe",
-      "owner_class": "ExperimentType",
-      "project_name": "_expt_type.radiation_probe",
-      "read_names": [
-        "_expt_type.radiation_probe"
-      ],
-      "unique_name": "inventory_experiment.expt_type.radiation_probe"
-    },
-    {
-      "category_code": "expt_type",
-      "category_entry_name": null,
-      "context": "experiment.total_pd_cwl",
-      "current_cif_names": [
-        "_expt_type.sample_form"
-      ],
-      "descriptor_class": "EnumDescriptor",
-      "descriptor_name": "sample_form",
-      "descriptor_path": "experiment.total_pd_cwl.type.sample_form",
-      "docs_anchor": "expt-type-sample-form",
-      "docs_page": "expt_type",
-      "import_names": [
-        "_expt_type.sample_form"
-      ],
-      "iucr_name": "_easydiffraction_experiment_type.sample_form",
-      "owner_class": "ExperimentType",
-      "project_name": "_expt_type.sample_form",
-      "read_names": [
-        "_expt_type.sample_form"
-      ],
-      "unique_name": "inventory_experiment.expt_type.sample_form"
-    },
-    {
-      "category_code": "expt_type",
-      "category_entry_name": null,
-      "context": "experiment.total_pd_cwl",
-      "current_cif_names": [
-        "_expt_type.scattering_type"
-      ],
-      "descriptor_class": "EnumDescriptor",
-      "descriptor_name": "scattering_type",
-      "descriptor_path": "experiment.total_pd_cwl.type.scattering_type",
-      "docs_anchor": "expt-type-scattering-type",
-      "docs_page": "expt_type",
-      "import_names": [
-        "_expt_type.scattering_type"
-      ],
-      "iucr_name": "_easydiffraction_experiment_type.scattering_type",
-      "owner_class": "ExperimentType",
-      "project_name": "_expt_type.scattering_type",
-      "read_names": [
-        "_expt_type.scattering_type"
-      ],
-      "unique_name": "inventory_experiment.expt_type.scattering_type"
     },
     {
       "category_code": "calculator",
@@ -6768,50 +6030,148 @@
       "unique_name": "excluded_regions.0.start"
     },
     {
-      "category_code": "linked_phases",
-      "category_entry_name": "Si",
+      "category_code": "experiment_type",
+      "category_entry_name": null,
       "context": "experiment.total_pd_tof",
       "current_cif_names": [
-        "_pd_phase_block.id"
+        "_experiment_type.beam_mode"
       ],
-      "descriptor_class": "StringDescriptor",
-      "descriptor_name": "id",
-      "descriptor_path": "experiment.total_pd_tof.linked_phases[].id",
-      "docs_anchor": "pd-phase-block-id",
-      "docs_page": "pd_phase_block",
+      "descriptor_class": "EnumDescriptor",
+      "descriptor_name": "beam_mode",
+      "descriptor_path": "experiment.total_pd_tof.experiment_type.beam_mode",
+      "docs_anchor": "experiment-type-beam-mode",
+      "docs_page": "experiment_type",
       "import_names": [
-        "_pd_phase_block.id"
+        "_expt_type.beam_mode"
       ],
-      "iucr_name": "_pd_phase_block.id",
-      "owner_class": "LinkedPhase",
-      "project_name": "_pd_phase_block.id",
+      "iucr_name": "_easydiffraction_experiment_type.beam_mode",
+      "owner_class": "ExperimentType",
+      "project_name": "_experiment_type.beam_mode",
       "read_names": [
-        "_pd_phase_block.id"
+        "_experiment_type.beam_mode",
+        "_expt_type.beam_mode"
       ],
-      "unique_name": "linked_phases.Si.id"
+      "unique_name": "inventory_experiment.experiment_type.beam_mode"
     },
     {
-      "category_code": "linked_phases",
+      "category_code": "experiment_type",
+      "category_entry_name": null,
+      "context": "experiment.total_pd_tof",
+      "current_cif_names": [
+        "_experiment_type.radiation_probe"
+      ],
+      "descriptor_class": "EnumDescriptor",
+      "descriptor_name": "radiation_probe",
+      "descriptor_path": "experiment.total_pd_tof.experiment_type.radiation_probe",
+      "docs_anchor": "experiment-type-radiation-probe",
+      "docs_page": "experiment_type",
+      "import_names": [
+        "_expt_type.radiation_probe"
+      ],
+      "iucr_name": "_easydiffraction_experiment_type.radiation_probe",
+      "owner_class": "ExperimentType",
+      "project_name": "_experiment_type.radiation_probe",
+      "read_names": [
+        "_experiment_type.radiation_probe",
+        "_expt_type.radiation_probe"
+      ],
+      "unique_name": "inventory_experiment.experiment_type.radiation_probe"
+    },
+    {
+      "category_code": "experiment_type",
+      "category_entry_name": null,
+      "context": "experiment.total_pd_tof",
+      "current_cif_names": [
+        "_experiment_type.sample_form"
+      ],
+      "descriptor_class": "EnumDescriptor",
+      "descriptor_name": "sample_form",
+      "descriptor_path": "experiment.total_pd_tof.experiment_type.sample_form",
+      "docs_anchor": "experiment-type-sample-form",
+      "docs_page": "experiment_type",
+      "import_names": [
+        "_expt_type.sample_form"
+      ],
+      "iucr_name": "_easydiffraction_experiment_type.sample_form",
+      "owner_class": "ExperimentType",
+      "project_name": "_experiment_type.sample_form",
+      "read_names": [
+        "_experiment_type.sample_form",
+        "_expt_type.sample_form"
+      ],
+      "unique_name": "inventory_experiment.experiment_type.sample_form"
+    },
+    {
+      "category_code": "experiment_type",
+      "category_entry_name": null,
+      "context": "experiment.total_pd_tof",
+      "current_cif_names": [
+        "_experiment_type.scattering_type"
+      ],
+      "descriptor_class": "EnumDescriptor",
+      "descriptor_name": "scattering_type",
+      "descriptor_path": "experiment.total_pd_tof.experiment_type.scattering_type",
+      "docs_anchor": "experiment-type-scattering-type",
+      "docs_page": "experiment_type",
+      "import_names": [
+        "_expt_type.scattering_type"
+      ],
+      "iucr_name": "_easydiffraction_experiment_type.scattering_type",
+      "owner_class": "ExperimentType",
+      "project_name": "_experiment_type.scattering_type",
+      "read_names": [
+        "_experiment_type.scattering_type",
+        "_expt_type.scattering_type"
+      ],
+      "unique_name": "inventory_experiment.experiment_type.scattering_type"
+    },
+    {
+      "category_code": "linked_structure",
       "category_entry_name": "Si",
       "context": "experiment.total_pd_tof",
       "current_cif_names": [
-        "_pd_phase_block.scale"
+        "_linked_structure.scale"
       ],
       "descriptor_class": "Parameter",
       "descriptor_name": "scale",
-      "descriptor_path": "experiment.total_pd_tof.linked_phases[].scale",
-      "docs_anchor": "pd-phase-block-scale",
-      "docs_page": "pd_phase_block",
+      "descriptor_path": "experiment.total_pd_tof.linked_structures[].scale",
+      "docs_anchor": "linked-structure-scale",
+      "docs_page": "linked_structure",
       "import_names": [
         "_pd_phase_block.scale"
       ],
       "iucr_name": "_pd_phase_block.scale",
-      "owner_class": "LinkedPhase",
-      "project_name": "_pd_phase_block.scale",
+      "owner_class": "LinkedStructure",
+      "project_name": "_linked_structure.scale",
       "read_names": [
+        "_linked_structure.scale",
         "_pd_phase_block.scale"
       ],
-      "unique_name": "linked_phases.Si.scale"
+      "unique_name": "linked_structure.Si.scale"
+    },
+    {
+      "category_code": "linked_structure",
+      "category_entry_name": "Si",
+      "context": "experiment.total_pd_tof",
+      "current_cif_names": [
+        "_linked_structure.structure_id"
+      ],
+      "descriptor_class": "StringDescriptor",
+      "descriptor_name": "structure_id",
+      "descriptor_path": "experiment.total_pd_tof.linked_structures[].structure_id",
+      "docs_anchor": "linked-structure-structure-id",
+      "docs_page": "linked_structure",
+      "import_names": [
+        "_pd_phase_block.id"
+      ],
+      "iucr_name": "_pd_phase_block.id",
+      "owner_class": "LinkedStructure",
+      "project_name": "_linked_structure.structure_id",
+      "read_names": [
+        "_linked_structure.structure_id",
+        "_pd_phase_block.id"
+      ],
+      "unique_name": "linked_structure.Si.structure_id"
     },
     {
       "category_code": "peak",
@@ -6973,98 +6333,6 @@
         "_peak.type"
       ],
       "unique_name": "inventory_experiment.peak.type"
-    },
-    {
-      "category_code": "expt_type",
-      "category_entry_name": null,
-      "context": "experiment.total_pd_tof",
-      "current_cif_names": [
-        "_expt_type.beam_mode"
-      ],
-      "descriptor_class": "EnumDescriptor",
-      "descriptor_name": "beam_mode",
-      "descriptor_path": "experiment.total_pd_tof.type.beam_mode",
-      "docs_anchor": "expt-type-beam-mode",
-      "docs_page": "expt_type",
-      "import_names": [
-        "_expt_type.beam_mode"
-      ],
-      "iucr_name": "_easydiffraction_experiment_type.beam_mode",
-      "owner_class": "ExperimentType",
-      "project_name": "_expt_type.beam_mode",
-      "read_names": [
-        "_expt_type.beam_mode"
-      ],
-      "unique_name": "inventory_experiment.expt_type.beam_mode"
-    },
-    {
-      "category_code": "expt_type",
-      "category_entry_name": null,
-      "context": "experiment.total_pd_tof",
-      "current_cif_names": [
-        "_expt_type.radiation_probe"
-      ],
-      "descriptor_class": "EnumDescriptor",
-      "descriptor_name": "radiation_probe",
-      "descriptor_path": "experiment.total_pd_tof.type.radiation_probe",
-      "docs_anchor": "expt-type-radiation-probe",
-      "docs_page": "expt_type",
-      "import_names": [
-        "_expt_type.radiation_probe"
-      ],
-      "iucr_name": "_easydiffraction_experiment_type.radiation_probe",
-      "owner_class": "ExperimentType",
-      "project_name": "_expt_type.radiation_probe",
-      "read_names": [
-        "_expt_type.radiation_probe"
-      ],
-      "unique_name": "inventory_experiment.expt_type.radiation_probe"
-    },
-    {
-      "category_code": "expt_type",
-      "category_entry_name": null,
-      "context": "experiment.total_pd_tof",
-      "current_cif_names": [
-        "_expt_type.sample_form"
-      ],
-      "descriptor_class": "EnumDescriptor",
-      "descriptor_name": "sample_form",
-      "descriptor_path": "experiment.total_pd_tof.type.sample_form",
-      "docs_anchor": "expt-type-sample-form",
-      "docs_page": "expt_type",
-      "import_names": [
-        "_expt_type.sample_form"
-      ],
-      "iucr_name": "_easydiffraction_experiment_type.sample_form",
-      "owner_class": "ExperimentType",
-      "project_name": "_expt_type.sample_form",
-      "read_names": [
-        "_expt_type.sample_form"
-      ],
-      "unique_name": "inventory_experiment.expt_type.sample_form"
-    },
-    {
-      "category_code": "expt_type",
-      "category_entry_name": null,
-      "context": "experiment.total_pd_tof",
-      "current_cif_names": [
-        "_expt_type.scattering_type"
-      ],
-      "descriptor_class": "EnumDescriptor",
-      "descriptor_name": "scattering_type",
-      "descriptor_path": "experiment.total_pd_tof.type.scattering_type",
-      "docs_anchor": "expt-type-scattering-type",
-      "docs_page": "expt_type",
-      "import_names": [
-        "_expt_type.scattering_type"
-      ],
-      "iucr_name": "_easydiffraction_experiment_type.scattering_type",
-      "owner_class": "ExperimentType",
-      "project_name": "_expt_type.scattering_type",
-      "read_names": [
-        "_expt_type.scattering_type"
-      ],
-      "unique_name": "inventory_experiment.expt_type.scattering_type"
     },
     {
       "category_code": "alias",
@@ -8818,96 +8086,100 @@
       "unique_name": "excluded_regions.0.start"
     },
     {
-      "category_code": "expt_type",
+      "category_code": "experiment_type",
       "category_entry_name": null,
       "context": "factory.ExperimentTypeFactory.default",
       "current_cif_names": [
-        "_expt_type.beam_mode"
+        "_experiment_type.beam_mode"
       ],
       "descriptor_class": "EnumDescriptor",
       "descriptor_name": "beam_mode",
       "descriptor_path": "factory.ExperimentTypeFactory.default.beam_mode",
-      "docs_anchor": "expt-type-beam-mode",
-      "docs_page": "expt_type",
+      "docs_anchor": "experiment-type-beam-mode",
+      "docs_page": "experiment_type",
       "import_names": [
         "_expt_type.beam_mode"
       ],
       "iucr_name": "_easydiffraction_experiment_type.beam_mode",
       "owner_class": "ExperimentType",
-      "project_name": "_expt_type.beam_mode",
+      "project_name": "_experiment_type.beam_mode",
       "read_names": [
+        "_experiment_type.beam_mode",
         "_expt_type.beam_mode"
       ],
-      "unique_name": "expt_type.beam_mode"
+      "unique_name": "experiment_type.beam_mode"
     },
     {
-      "category_code": "expt_type",
+      "category_code": "experiment_type",
       "category_entry_name": null,
       "context": "factory.ExperimentTypeFactory.default",
       "current_cif_names": [
-        "_expt_type.radiation_probe"
+        "_experiment_type.radiation_probe"
       ],
       "descriptor_class": "EnumDescriptor",
       "descriptor_name": "radiation_probe",
       "descriptor_path": "factory.ExperimentTypeFactory.default.radiation_probe",
-      "docs_anchor": "expt-type-radiation-probe",
-      "docs_page": "expt_type",
+      "docs_anchor": "experiment-type-radiation-probe",
+      "docs_page": "experiment_type",
       "import_names": [
         "_expt_type.radiation_probe"
       ],
       "iucr_name": "_easydiffraction_experiment_type.radiation_probe",
       "owner_class": "ExperimentType",
-      "project_name": "_expt_type.radiation_probe",
+      "project_name": "_experiment_type.radiation_probe",
       "read_names": [
+        "_experiment_type.radiation_probe",
         "_expt_type.radiation_probe"
       ],
-      "unique_name": "expt_type.radiation_probe"
+      "unique_name": "experiment_type.radiation_probe"
     },
     {
-      "category_code": "expt_type",
+      "category_code": "experiment_type",
       "category_entry_name": null,
       "context": "factory.ExperimentTypeFactory.default",
       "current_cif_names": [
-        "_expt_type.sample_form"
+        "_experiment_type.sample_form"
       ],
       "descriptor_class": "EnumDescriptor",
       "descriptor_name": "sample_form",
       "descriptor_path": "factory.ExperimentTypeFactory.default.sample_form",
-      "docs_anchor": "expt-type-sample-form",
-      "docs_page": "expt_type",
+      "docs_anchor": "experiment-type-sample-form",
+      "docs_page": "experiment_type",
       "import_names": [
         "_expt_type.sample_form"
       ],
       "iucr_name": "_easydiffraction_experiment_type.sample_form",
       "owner_class": "ExperimentType",
-      "project_name": "_expt_type.sample_form",
+      "project_name": "_experiment_type.sample_form",
       "read_names": [
+        "_experiment_type.sample_form",
         "_expt_type.sample_form"
       ],
-      "unique_name": "expt_type.sample_form"
+      "unique_name": "experiment_type.sample_form"
     },
     {
-      "category_code": "expt_type",
+      "category_code": "experiment_type",
       "category_entry_name": null,
       "context": "factory.ExperimentTypeFactory.default",
       "current_cif_names": [
-        "_expt_type.scattering_type"
+        "_experiment_type.scattering_type"
       ],
       "descriptor_class": "EnumDescriptor",
       "descriptor_name": "scattering_type",
       "descriptor_path": "factory.ExperimentTypeFactory.default.scattering_type",
-      "docs_anchor": "expt-type-scattering-type",
-      "docs_page": "expt_type",
+      "docs_anchor": "experiment-type-scattering-type",
+      "docs_page": "experiment_type",
       "import_names": [
         "_expt_type.scattering_type"
       ],
       "iucr_name": "_easydiffraction_experiment_type.scattering_type",
       "owner_class": "ExperimentType",
-      "project_name": "_expt_type.scattering_type",
+      "project_name": "_experiment_type.scattering_type",
       "read_names": [
+        "_experiment_type.scattering_type",
         "_expt_type.scattering_type"
       ],
-      "unique_name": "expt_type.scattering_type"
+      "unique_name": "experiment_type.scattering_type"
     },
     {
       "category_code": "extinction",
@@ -11003,96 +10275,100 @@
       "unique_name": "joint_fit._.weight"
     },
     {
-      "category_code": "linked_crystal",
+      "category_code": "linked_structure",
       "category_entry_name": null,
-      "context": "factory.LinkedCrystalFactory.default",
+      "context": "factory.LinkedStructureFactory.default",
       "current_cif_names": [
-        "_sc_crystal_block.id"
-      ],
-      "descriptor_class": "StringDescriptor",
-      "descriptor_name": "id",
-      "descriptor_path": "factory.LinkedCrystalFactory.default.id",
-      "docs_anchor": "sc-crystal-block-id",
-      "docs_page": "sc_crystal_block",
-      "import_names": [
-        "_sc_crystal_block.id"
-      ],
-      "iucr_name": "_easydiffraction_sc_crystal_block.id",
-      "owner_class": "LinkedCrystal",
-      "project_name": "_sc_crystal_block.id",
-      "read_names": [
-        "_sc_crystal_block.id"
-      ],
-      "unique_name": "linked_crystal.id"
-    },
-    {
-      "category_code": "linked_crystal",
-      "category_entry_name": null,
-      "context": "factory.LinkedCrystalFactory.default",
-      "current_cif_names": [
-        "_sc_crystal_block.scale"
+        "_linked_structure.scale"
       ],
       "descriptor_class": "Parameter",
       "descriptor_name": "scale",
-      "descriptor_path": "factory.LinkedCrystalFactory.default.scale",
-      "docs_anchor": "sc-crystal-block-scale",
-      "docs_page": "sc_crystal_block",
+      "descriptor_path": "factory.LinkedStructureFactory.default.scale",
+      "docs_anchor": "linked-structure-scale",
+      "docs_page": "linked_structure",
       "import_names": [
         "_sc_crystal_block.scale"
       ],
       "iucr_name": "_easydiffraction_sc_crystal_block.scale",
-      "owner_class": "LinkedCrystal",
-      "project_name": "_sc_crystal_block.scale",
+      "owner_class": "LinkedStructure",
+      "project_name": "_linked_structure.scale",
       "read_names": [
+        "_linked_structure.scale",
         "_sc_crystal_block.scale"
       ],
-      "unique_name": "linked_crystal.scale"
+      "unique_name": "linked_structure.scale"
     },
     {
-      "category_code": "linked_phases",
-      "category_entry_name": "Si",
-      "context": "factory.LinkedPhasesFactory.default",
+      "category_code": "linked_structure",
+      "category_entry_name": null,
+      "context": "factory.LinkedStructureFactory.default",
       "current_cif_names": [
-        "_pd_phase_block.id"
+        "_linked_structure.structure_id"
       ],
       "descriptor_class": "StringDescriptor",
-      "descriptor_name": "id",
-      "descriptor_path": "factory.LinkedPhasesFactory.default[].id",
-      "docs_anchor": "pd-phase-block-id",
-      "docs_page": "pd_phase_block",
+      "descriptor_name": "structure_id",
+      "descriptor_path": "factory.LinkedStructureFactory.default.structure_id",
+      "docs_anchor": "linked-structure-structure-id",
+      "docs_page": "linked_structure",
       "import_names": [
-        "_pd_phase_block.id"
+        "_sc_crystal_block.id"
       ],
-      "iucr_name": "_pd_phase_block.id",
-      "owner_class": "LinkedPhase",
-      "project_name": "_pd_phase_block.id",
+      "iucr_name": "_easydiffraction_sc_crystal_block.id",
+      "owner_class": "LinkedStructure",
+      "project_name": "_linked_structure.structure_id",
       "read_names": [
-        "_pd_phase_block.id"
+        "_linked_structure.structure_id",
+        "_sc_crystal_block.id"
       ],
-      "unique_name": "linked_phases.Si.id"
+      "unique_name": "linked_structure.structure_id"
     },
     {
-      "category_code": "linked_phases",
+      "category_code": "linked_structure",
       "category_entry_name": "Si",
-      "context": "factory.LinkedPhasesFactory.default",
+      "context": "factory.LinkedStructuresFactory.default",
       "current_cif_names": [
-        "_pd_phase_block.scale"
+        "_linked_structure.scale"
       ],
       "descriptor_class": "Parameter",
       "descriptor_name": "scale",
-      "descriptor_path": "factory.LinkedPhasesFactory.default[].scale",
-      "docs_anchor": "pd-phase-block-scale",
-      "docs_page": "pd_phase_block",
+      "descriptor_path": "factory.LinkedStructuresFactory.default[].scale",
+      "docs_anchor": "linked-structure-scale",
+      "docs_page": "linked_structure",
       "import_names": [
         "_pd_phase_block.scale"
       ],
       "iucr_name": "_pd_phase_block.scale",
-      "owner_class": "LinkedPhase",
-      "project_name": "_pd_phase_block.scale",
+      "owner_class": "LinkedStructure",
+      "project_name": "_linked_structure.scale",
       "read_names": [
+        "_linked_structure.scale",
         "_pd_phase_block.scale"
       ],
-      "unique_name": "linked_phases.Si.scale"
+      "unique_name": "linked_structure.Si.scale"
+    },
+    {
+      "category_code": "linked_structure",
+      "category_entry_name": "Si",
+      "context": "factory.LinkedStructuresFactory.default",
+      "current_cif_names": [
+        "_linked_structure.structure_id"
+      ],
+      "descriptor_class": "StringDescriptor",
+      "descriptor_name": "structure_id",
+      "descriptor_path": "factory.LinkedStructuresFactory.default[].structure_id",
+      "docs_anchor": "linked-structure-structure-id",
+      "docs_page": "linked_structure",
+      "import_names": [
+        "_pd_phase_block.id"
+      ],
+      "iucr_name": "_pd_phase_block.id",
+      "owner_class": "LinkedStructure",
+      "project_name": "_linked_structure.structure_id",
+      "read_names": [
+        "_linked_structure.structure_id",
+        "_pd_phase_block.id"
+      ],
+      "unique_name": "linked_structure.Si.structure_id"
     },
     {
       "category_code": "minimizer",

@@ -72,8 +72,8 @@ def _import_registration_modules() -> None:
     import easydiffraction.datablocks.experiment.categories.experiment_type  # noqa: F401
     import easydiffraction.datablocks.experiment.categories.extinction  # noqa: F401
     import easydiffraction.datablocks.experiment.categories.instrument  # noqa: F401
-    import easydiffraction.datablocks.experiment.categories.linked_crystal  # noqa: F401
-    import easydiffraction.datablocks.experiment.categories.linked_phases  # noqa: F401
+    import easydiffraction.datablocks.experiment.categories.linked_structure  # noqa: F401
+    import easydiffraction.datablocks.experiment.categories.linked_structures  # noqa: F401
     import easydiffraction.datablocks.experiment.categories.peak  # noqa: F401
     import easydiffraction.datablocks.experiment.categories.pref_orient  # noqa: F401
     import easydiffraction.datablocks.experiment.categories.refln  # noqa: F401

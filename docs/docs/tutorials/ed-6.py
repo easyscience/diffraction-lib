@@ -131,7 +131,7 @@ expt.background.auto_estimate()
 # ### Set Linked Phases
 
 # %%
-expt.linked_phases.create(id='hs', scale=0.5)
+expt.linked_structures.create(structure_id='hs', scale=0.5)
 
 # %% [markdown]
 # ## 📦 Define Project
@@ -186,7 +186,7 @@ project.display.pattern(expt_name='hrpt', x_min=48, x_max=51)
 structure.cell.length_a.free = True
 structure.cell.length_c.free = True
 
-expt.linked_phases['hs'].scale.free = True
+expt.linked_structures['hs'].scale.free = True
 expt.instrument.calib_twotheta_offset.free = True
 
 # %% [markdown]

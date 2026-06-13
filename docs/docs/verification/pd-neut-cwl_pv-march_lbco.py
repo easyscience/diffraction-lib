@@ -122,7 +122,7 @@ experiment = ExperimentFactory.from_scratch(
 )
 verify.set_reference_as_measured(experiment, x, calc_fullprof)
 
-experiment.linked_phases.create(id='lbco', scale=FULLPROF_SCALE)
+experiment.linked_structures.create(structure_id='lbco', scale=FULLPROF_SCALE)
 
 experiment.instrument.setup_wavelength = FULLPROF_WAVELENGTH
 experiment.instrument.calib_twotheta_offset = FULLPROF_ZERO
@@ -171,7 +171,7 @@ project.display.pattern_comparison(
 # `march_random_fract ≈ Pref2`, and the patterns agree.
 
 # %%
-experiment.linked_phases['lbco'].scale.free = True
+experiment.linked_structures['lbco'].scale.free = True
 experiment.preferred_orientation['lbco'].march_r.free = True
 experiment.preferred_orientation['lbco'].march_random_fract.free = True
 

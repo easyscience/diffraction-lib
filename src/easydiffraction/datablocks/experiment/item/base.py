@@ -21,11 +21,11 @@ from easydiffraction.datablocks.experiment.categories.excluded_regions.factory i
 )
 from easydiffraction.datablocks.experiment.categories.extinction.factory import ExtinctionFactory
 from easydiffraction.datablocks.experiment.categories.instrument.factory import InstrumentFactory
-from easydiffraction.datablocks.experiment.categories.linked_crystal.factory import (
-    LinkedCrystalFactory,
+from easydiffraction.datablocks.experiment.categories.linked_structure.factory import (
+    LinkedStructureFactory,
 )
-from easydiffraction.datablocks.experiment.categories.linked_phases.factory import (
-    LinkedPhasesFactory,
+from easydiffraction.datablocks.experiment.categories.linked_structures.factory import (
+    LinkedStructuresFactory,
 )
 from easydiffraction.datablocks.experiment.categories.peak.factory import PeakFactory
 from easydiffraction.datablocks.experiment.categories.refln.factory import ReflnFactory
@@ -70,11 +70,11 @@ class ExperimentBase(DatablockItem):
         self,
         *,
         name: str,
-        type: ExperimentType,
+        experiment_type: ExperimentType,
     ) -> None:
         super().__init__()
         self._name = name
-        self._type = type
+        self._experiment_type = experiment_type
         self._calculator = None
         self._identity.datablock_entry_name = lambda: self.name
 
@@ -89,14 +89,14 @@ class ExperimentBase(DatablockItem):
     def _attach_category_parents(self) -> None:
         """Link owned categories back to this experiment object."""
         for category in [
-            self._type,
+            self._experiment_type,
             getattr(self, '_diffrn', None),
             getattr(self, '_calculator_category', None),
             getattr(self, '_extinction', None),
-            getattr(self, '_linked_crystal', None),
+            getattr(self, '_linked_structure', None),
             getattr(self, '_instrument', None),
             getattr(self, '_refln', None),
-            getattr(self, '_linked_phases', None),
+            getattr(self, '_linked_structures', None),
             getattr(self, '_pref_orient', None),
             getattr(self, '_excluded_regions', None),
             getattr(self, '_data', None),
@@ -117,9 +117,9 @@ class ExperimentBase(DatablockItem):
         if category is getattr(self, '_peak', None):
             return {
                 'calculator': calculator,
-                'sample_form': self.type.sample_form.value,
-                'scattering_type': self.type.scattering_type.value,
-                'beam_mode': self.type.beam_mode.value,
+                'sample_form': self.experiment_type.sample_form.value,
+                'scattering_type': self.experiment_type.scattering_type.value,
+                'beam_mode': self.experiment_type.beam_mode.value,
             }
         return {}
 
@@ -261,9 +261,9 @@ class ExperimentBase(DatablockItem):
         self._name = new
 
     @property
-    def type(self) -> object:  # TODO: Consider another name
+    def experiment_type(self) -> object:
         """Experiment type: sample form, probe, beam mode."""
-        return self._type
+        return self._experiment_type
 
     @property
     def measured_range(self) -> MeasuredRange | None:
@@ -400,7 +400,7 @@ class ExperimentBase(DatablockItem):
         from easydiffraction.analysis.calculators.factory import CalculatorFactory  # noqa: PLC0415
 
         return CalculatorFactory.default_tag(
-            scattering_type=self.type.scattering_type.value,
+            scattering_type=self.experiment_type.scattering_type.value,
         )
 
     def _resolve_calculator(self) -> None:
@@ -450,28 +450,28 @@ class ScExperimentBase(ExperimentBase):
         self,
         *,
         name: str,
-        type: ExperimentType,
+        experiment_type: ExperimentType,
     ) -> None:
-        super().__init__(name=name, type=type)
+        super().__init__(name=name, experiment_type=experiment_type)
 
         self._extinction = ExtinctionFactory.create(ExtinctionFactory.default_tag())
-        self._linked_crystal_type: str = LinkedCrystalFactory.default_tag()
-        self._linked_crystal = LinkedCrystalFactory.create(self._linked_crystal_type)
+        self._linked_structure_type: str = LinkedStructureFactory.default_tag()
+        self._linked_structure = LinkedStructureFactory.create(self._linked_structure_type)
         self._instrument_type: str = InstrumentFactory.default_tag(
-            scattering_type=self.type.scattering_type.value,
-            beam_mode=self.type.beam_mode.value,
-            sample_form=self.type.sample_form.value,
+            scattering_type=self.experiment_type.scattering_type.value,
+            beam_mode=self.experiment_type.beam_mode.value,
+            sample_form=self.experiment_type.sample_form.value,
         )
         self._instrument = InstrumentFactory.create(self._instrument_type)
         self._refln_type: str = ReflnFactory.default_tag(
-            sample_form=self.type.sample_form.value,
-            beam_mode=self.type.beam_mode.value,
-            scattering_type=self.type.scattering_type.value,
+            sample_form=self.experiment_type.sample_form.value,
+            beam_mode=self.experiment_type.beam_mode.value,
+            scattering_type=self.experiment_type.scattering_type.value,
         )
         self._refln = ReflnFactory.create(self._refln_type)
         self._data_range_type: str = DataRangeFactory.default_tag(
-            beam_mode=self.type.beam_mode.value,
-            sample_form=self.type.sample_form.value,
+            beam_mode=self.experiment_type.beam_mode.value,
+            sample_form=self.experiment_type.sample_form.value,
         )
         self._data_range = DataRangeFactory.create(self._data_range_type)
         self._resolve_calculator()
@@ -508,13 +508,13 @@ class ScExperimentBase(ExperimentBase):
             self._replace_extinction(extinction_tag, announce=False, strict=False)
 
     # ------------------------------------------------------------------
-    #  Linked crystal (read-only, single type)
+    #  Linked structure (read-only, single type)
     # ------------------------------------------------------------------
 
     @property
-    def linked_crystal(self) -> object:
-        """Linked crystal model for this experiment."""
-        return self._linked_crystal
+    def linked_structure(self) -> object:
+        """Linked structure model for this experiment."""
+        return self._linked_structure
 
     # ------------------------------------------------------------------
     #  Instrument (fixed at creation)
@@ -558,40 +558,40 @@ class PdExperimentBase(ExperimentBase):
         self,
         *,
         name: str,
-        type: ExperimentType,
+        experiment_type: ExperimentType,
     ) -> None:
-        super().__init__(name=name, type=type)
+        super().__init__(name=name, experiment_type=experiment_type)
 
-        self._linked_phases_type: str = LinkedPhasesFactory.default_tag()
-        self._linked_phases = LinkedPhasesFactory.create(self._linked_phases_type)
+        self._linked_structures_type: str = LinkedStructuresFactory.default_tag()
+        self._linked_structures = LinkedStructuresFactory.create(self._linked_structures_type)
         self._excluded_regions_type: str = ExcludedRegionsFactory.default_tag()
         self._excluded_regions = ExcludedRegionsFactory.create(self._excluded_regions_type)
         self._data_type: str = DataFactory.default_tag(
-            sample_form=self.type.sample_form.value,
-            beam_mode=self.type.beam_mode.value,
-            scattering_type=self.type.scattering_type.value,
+            sample_form=self.experiment_type.sample_form.value,
+            beam_mode=self.experiment_type.beam_mode.value,
+            scattering_type=self.experiment_type.scattering_type.value,
         )
         self._data = DataFactory.create(self._data_type)
         self._data_range_type: str = DataRangeFactory.default_tag(
-            beam_mode=self.type.beam_mode.value,
-            sample_form=self.type.sample_form.value,
+            beam_mode=self.experiment_type.beam_mode.value,
+            sample_form=self.experiment_type.sample_form.value,
         )
         self._data_range = DataRangeFactory.create(self._data_range_type)
         self._peak = PeakFactory.create(
             PeakFactory.default_tag(
-                scattering_type=self.type.scattering_type.value,
-                beam_mode=self.type.beam_mode.value,
+                scattering_type=self.experiment_type.scattering_type.value,
+                beam_mode=self.experiment_type.beam_mode.value,
             )
         )
         self._resolve_calculator()
         self._attach_category_parents()
 
-    def _get_valid_linked_phases(
+    def _get_valid_linked_structures(
         self,
         structures: Structures,
     ) -> list[Any]:
         """
-        Get valid linked phases for this experiment.
+        Get valid linked structures for this experiment.
 
         Parameters
         ----------
@@ -601,26 +601,29 @@ class PdExperimentBase(ExperimentBase):
         Returns
         -------
         list[Any]
-            A list of valid linked phases.
+            A list of valid linked structures.
         """
-        if not self.linked_phases:
-            log.warning('No linked phases defined. Returning empty pattern.')
+        if not self.linked_structures:
+            log.warning('No linked structures defined. Returning empty pattern.')
             return []
 
-        valid_linked_phases = []
-        for linked_phase in self.linked_phases:
-            if linked_phase._identity.category_entry_name not in structures.names:
+        valid_linked_structures = []
+        for linked_structure in self.linked_structures:
+            if linked_structure._identity.category_entry_name not in structures.names:
                 log.warning(
-                    f"Linked phase '{linked_phase.id.value}' not "
+                    f"Linked structure '{linked_structure.structure_id.value}' not "
                     f'found in Structures {structures.names}. Skipping it.'
                 )
                 continue
-            valid_linked_phases.append(linked_phase)
+            valid_linked_structures.append(linked_structure)
 
-        if not valid_linked_phases:
-            log.warning('None of the linked phases found in Structures. Returning empty pattern.')
+        if not valid_linked_structures:
+            log.warning(
+                'None of the linked structures found in Structures. '
+                'Returning empty pattern.'
+            )
 
-        return valid_linked_phases
+        return valid_linked_structures
 
     @abstractmethod
     def _load_ascii_data_to_experiment(self, data_path: str) -> int:
@@ -640,9 +643,9 @@ class PdExperimentBase(ExperimentBase):
         """
 
     @property
-    def linked_phases(self) -> object:
-        """Collection of phases linked to this experiment."""
-        return self._linked_phases
+    def linked_structures(self) -> object:
+        """Collection of structures linked to this experiment."""
+        return self._linked_structures
 
     @property
     def excluded_regions(self) -> object:
@@ -747,8 +750,8 @@ class PdExperimentBase(ExperimentBase):
         Return the context that resolves local peak profile aliases.
         """
         return {
-            'scattering_type': self.type.scattering_type.value,
-            'beam_mode': self.type.beam_mode.value,
+            'scattering_type': self.experiment_type.scattering_type.value,
+            'beam_mode': self.experiment_type.beam_mode.value,
         }
 
     def _restore_switchable_types(self, block: object) -> None:

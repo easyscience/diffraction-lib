@@ -118,7 +118,7 @@ class ExperimentFactory(FactoryBase):
             param.from_cif(block)
 
         expt_class = cls._resolve_class(expt_type)
-        expt_obj = expt_class(name=name, type=expt_type)
+        expt_obj = expt_class(name=name, experiment_type=expt_type)
 
         # Restore switchable category types before loading parameters
         # so implementation-specific descriptors exist for from_cif.
@@ -172,7 +172,7 @@ class ExperimentFactory(FactoryBase):
             scattering_type=scattering_type,
         )
         expt_class = cls._resolve_class(expt_type)
-        return expt_class(name=name, type=expt_type)
+        return expt_class(name=name, experiment_type=expt_type)
 
     # TODO: add minimal default configuration for missing parameters
     @classmethod

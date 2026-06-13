@@ -637,7 +637,7 @@ class Plotter(RendererBase):
             experiment,
             intensity_category_for(experiment),
             expt_name,
-            experiment.type,
+            experiment.experiment_type,
             plot_options,
         )
 
@@ -688,7 +688,7 @@ class Plotter(RendererBase):
             experiment,
             intensity_category_for(experiment),
             expt_name,
-            experiment.type,
+            experiment.experiment_type,
             plot_options,
         )
 
@@ -776,7 +776,10 @@ class Plotter(RendererBase):
         """
         self._update_project_categories(expt_name)
         experiment = self._project.experiments[expt_name]
-        x_axis, _, sample_form, scattering_type, _ = self._resolve_x_axis(experiment.type, None)
+        x_axis, _, sample_form, scattering_type, _ = self._resolve_x_axis(
+            experiment.experiment_type,
+            None,
+        )
         axes_labels = self._get_axes_labels(sample_form, scattering_type, x_axis)
         x = np.asarray(intensity_category_for(experiment).x, dtype=float)
         reference = np.asarray(reference, dtype=float)
@@ -1448,7 +1451,7 @@ class Plotter(RendererBase):
         self._update_project_categories(expt_name)
         experiment = self._project.experiments[expt_name]
         x_axis, _, sample_form, scattering_type, _ = self._resolve_x_axis(
-            experiment.type,
+            experiment.experiment_type,
             plot_options.x,
         )
 
@@ -1598,7 +1601,7 @@ class Plotter(RendererBase):
         ctx = self._prepare_powder_context(
             pattern,
             expt_name,
-            experiment.type,
+            experiment.experiment_type,
             plot_options.x_min,
             plot_options.x_max,
             plot_options.x,
@@ -4331,7 +4334,7 @@ class Plotter(RendererBase):
         ctx = self._prepare_powder_context(
             pattern,
             expt_name,
-            experiment.type,
+            experiment.experiment_type,
             plot_options.x_min,
             plot_options.x_max,
             plot_options.x,
@@ -5663,7 +5666,7 @@ class Plotter(RendererBase):
             X-range, residual, and x-axis selection options.
         """
         pattern = intensity_category_for(experiment)
-        expt_type = experiment.type
+        expt_type = experiment.experiment_type
 
         x_axis, _, sample_form, scattering_type, _ = self._resolve_x_axis(
             expt_type,

@@ -108,8 +108,8 @@ experiment = ExperimentFactory.from_scratch(
     radiation_probe='neutron',
     scattering_type='bragg',
 )
-experiment.linked_crystal.id = 'tbti'
-experiment.linked_crystal.scale = FULLPROF_SCALE
+experiment.linked_structure.structure_id = 'tbti'
+experiment.linked_structure.scale = FULLPROF_SCALE
 experiment.instrument.setup_wavelength = FULLPROF_WAVELENGTH
 experiment.extinction.type = 'becker-coppens'
 experiment.extinction.model = 'gauss'
@@ -141,7 +141,7 @@ project.display.reflection_comparison(
 # %%
 experiment.calculator.type = 'cryspy'
 
-experiment.linked_crystal.scale.free = True
+experiment.linked_structure.scale.free = True
 experiment.extinction.radius.free = True
 
 project.analysis.fit()

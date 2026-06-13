@@ -90,7 +90,7 @@ experiment.peak.broad_gauss_w = 0.1
 # ### Set Linked Phases
 
 # %%
-experiment.linked_phases.create(id='nacl', scale=1.0)
+experiment.linked_structures.create(structure_id='nacl', scale=1.0)
 
 # %% [markdown]
 # ### Inspect the Default Calculation Range

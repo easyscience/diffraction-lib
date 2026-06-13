@@ -243,10 +243,10 @@ for idx, (x, y) in enumerate(
 # ### Set Linked Phases
 
 # %%
-expt56.linked_phases.create(id='ncaf', scale=1.0)
+expt56.linked_structures.create(structure_id='ncaf', scale=1.0)
 
 # %%
-expt47.linked_phases.create(id='ncaf', scale=2.0)
+expt47.linked_structures.create(structure_id='ncaf', scale=2.0)
 
 # %% [markdown]
 # ### Set Excluded Regions
@@ -307,7 +307,7 @@ structure.atom_sites['F2'].adp_iso.free = True
 structure.atom_sites['F3'].adp_iso.free = True
 
 # %%
-expt56.linked_phases['ncaf'].scale.free = True
+expt56.linked_structures['ncaf'].scale.free = True
 expt56.instrument.calib_d_to_tof_offset.free = True
 expt56.instrument.calib_d_to_tof_linear.free = True
 expt56.peak.broad_gauss_sigma_2.free = True
@@ -315,7 +315,7 @@ expt56.peak.exp_decay_beta_0.free = True
 expt56.peak.exp_decay_beta_1.free = True
 expt56.peak.exp_rise_alpha_1.free = True
 
-expt47.linked_phases['ncaf'].scale.free = True
+expt47.linked_structures['ncaf'].scale.free = True
 expt47.instrument.calib_d_to_tof_linear.free = True
 expt47.instrument.calib_d_to_tof_offset.free = True
 expt47.peak.broad_gauss_sigma_2.free = True

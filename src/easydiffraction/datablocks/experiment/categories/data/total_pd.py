@@ -266,13 +266,13 @@ class TotalDataBase(CategoryCollection):
         initial_calc = np.zeros_like(self.x)
         calc = initial_calc
 
-        # TODO: refactor _get_valid_linked_phases to only be responsible
+        # TODO: refactor _get_valid_linked_structures to only be responsible
         #  for returning list. Warning message should be defined here,
         #  at least some of them.
         # TODO: Adapt following the _update method in bragg_sc.py
-        for linked_phase in experiment._get_valid_linked_phases(structures):
-            structure_id = linked_phase._identity.category_entry_name
-            structure_scale = linked_phase.scale.value
+        for linked_structure in experiment._get_valid_linked_structures(structures):
+            structure_id = linked_structure._identity.category_entry_name
+            structure_scale = linked_structure.scale.value
             structure = structures[structure_id]
 
             structure_calc = calculator.calculate_pattern(

@@ -145,7 +145,7 @@ class PdffitCalculator(CalculatorBase):
         # -------------------------
 
         # Set some peak-related parameters
-        calculator.setvar('pscale', experiment.linked_phases[structure.name].scale.value)
+        calculator.setvar('pscale', experiment.linked_structures[structure.name].scale.value)
         calculator.setvar('delta1', experiment.peak.sharp_delta_1.value)
         calculator.setvar('delta2', experiment.peak.sharp_delta_2.value)
         calculator.setvar('spdiameter', experiment.peak.damp_particle_diameter.value)
@@ -156,7 +156,7 @@ class PdffitCalculator(CalculatorBase):
 
         # Assign the data to the PDFfit calculator
         calculator.read_data_lists(
-            stype=experiment.type.radiation_probe.value[0].upper(),
+            stype=experiment.experiment_type.radiation_probe.value[0].upper(),
             qmax=experiment.peak.cutoff_q.value,
             qdamp=experiment.peak.damp_q.value,
             r_data=x,

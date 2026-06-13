@@ -106,7 +106,7 @@ for x in range(0, 35000, 5000):
 # ### Set Linked Phases
 
 # %%
-expt.linked_phases.create(id='si', scale=10.0)
+expt.linked_structures.create(structure_id='si', scale=10.0)
 
 # %% [markdown]
 # ## 📦 Define Project
@@ -157,7 +157,7 @@ project.display.pattern(expt_name='sepd', x_min=23200, x_max=23700)
 # %%
 structure.cell.length_a.free = True
 
-expt.linked_phases['si'].scale.free = True
+expt.linked_structures['si'].scale.free = True
 expt.instrument.calib_d_to_tof_offset.free = True
 
 # %% [markdown]

@@ -102,7 +102,7 @@ class CryspyCalculator(CalculatorBase):
         # tracked here.
         supports_texture = (
             'preferred_orientation' in type(experiment)._public_attrs()
-            and experiment.type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH
+            and experiment.experiment_type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH
         )
         if supports_texture:
             current_pref_orient = tuple(
@@ -281,11 +281,14 @@ class CryspyCalculator(CalculatorBase):
             BeamModeEnum.CONSTANT_WAVELENGTH: 'pd',
             BeamModeEnum.TIME_OF_FLIGHT: 'tof',
         }
-        beam_mode = experiment.type.beam_mode.value
+        beam_mode = experiment.experiment_type.beam_mode.value
         if beam_mode in prefixes:
             cryspy_block_name = f'{prefixes[beam_mode]}_{experiment.name}'
         else:
-            log.warning(f'[CryspyCalculator] Unknown beam mode {experiment.type.beam_mode.value}')
+            log.warning(
+                f'[CryspyCalculator] Unknown beam mode '
+                f'{experiment.experiment_type.beam_mode.value}'
+            )
             return []
 
         try:
@@ -320,7 +323,10 @@ class CryspyCalculator(CalculatorBase):
         core_arrays = self._powder_refln_core_arrays(phase_block)
         if core_arrays is None:
             return None
-        x_values = self._powder_refln_x_values(phase_block, experiment.type.beam_mode.value)
+        x_values = self._powder_refln_x_values(
+            phase_block,
+            experiment.experiment_type.beam_mode.value,
+        )
         if x_values is None:
             return None
 
@@ -332,7 +338,7 @@ class CryspyCalculator(CalculatorBase):
         return [
             self._powder_refln_record(
                 phase_id=phase_id,
-                beam_mode=experiment.type.beam_mode.value,
+                beam_mode=experiment.experiment_type.beam_mode.value,
                 hkl=(index_h, index_k, index_l),
                 values=(sthovl, d_value, x_value, f_value, f_sq_value),
             )
@@ -678,8 +684,8 @@ class CryspyCalculator(CalculatorBase):
         experiment : ExperimentBase
             The source experiment.
         """
-        if experiment.type.sample_form.value == SampleFormEnum.POWDER:
-            if experiment.type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH:
+        if experiment.experiment_type.sample_form.value == SampleFormEnum.POWDER:
+            if experiment.experiment_type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH:
                 cryspy_expt_name = f'pd_{experiment.name}'
                 cryspy_expt_dict = cryspy_dict[cryspy_expt_name]
 
@@ -728,7 +734,7 @@ class CryspyCalculator(CalculatorBase):
                 # loop was emitted, so guard.
                 _update_texture_in_cryspy_dict(cryspy_expt_dict, experiment)
 
-            elif experiment.type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
+            elif experiment.experiment_type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
                 cryspy_expt_name = f'tof_{experiment.name}'
                 cryspy_expt_dict = cryspy_dict[cryspy_expt_name]
 
@@ -748,12 +754,12 @@ class CryspyCalculator(CalculatorBase):
 
                 _update_tof_peak_in_cryspy_dict(cryspy_expt_dict, experiment.peak)
 
-        if experiment.type.sample_form.value == SampleFormEnum.SINGLE_CRYSTAL:
+        if experiment.experiment_type.sample_form.value == SampleFormEnum.SINGLE_CRYSTAL:
             cryspy_expt_name = f'diffrn_{experiment.name}'
             cryspy_expt_dict = cryspy_dict[cryspy_expt_name]
 
             # Instrument
-            if experiment.type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH:
+            if experiment.experiment_type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH:
                 cryspy_expt_dict['wavelength'][0] = experiment.instrument.setup_wavelength.value
 
             # Extinction
@@ -1042,7 +1048,7 @@ class CryspyCalculator(CalculatorBase):
             The Cryspy CIF string representation of the experiment.
         """
         attrs = type(experiment)._public_attrs()
-        expt_type = experiment.type if 'type' in attrs else None
+        expt_type = experiment.experiment_type if 'experiment_type' in attrs else None
         instrument = experiment.instrument if 'instrument' in attrs else None
         peak = experiment.peak if 'peak' in attrs else None
         extinction = experiment.extinction if 'extinction' in attrs else None

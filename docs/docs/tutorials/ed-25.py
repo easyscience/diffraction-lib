@@ -154,7 +154,7 @@ experiment = project.experiments['hrpt']
 # Link the structural phase to the experiment.
 
 # %%
-experiment.linked_phases.create(id='lbco', scale=9.1351)
+experiment.linked_structures.create(structure_id='lbco', scale=9.1351)
 
 # %% [markdown]
 # Set instrument and peak profile parameters.
@@ -206,7 +206,7 @@ experiment.excluded_regions.create(id='2', start=100, end=180)
 structure.cell.length_a.free = True
 
 # %%
-experiment.linked_phases['lbco'].scale.free = True
+experiment.linked_structures['lbco'].scale.free = True
 experiment.peak.broad_gauss_u.free = True
 experiment.peak.broad_gauss_v.free = True
 experiment.instrument.calib_twotheta_offset.free = True

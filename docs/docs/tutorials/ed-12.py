@@ -100,7 +100,7 @@ project.experiments['xray_pdf'].peak.sharp_delta_2 = 5
 project.experiments['xray_pdf'].peak.damp_particle_diameter = 0
 
 # %%
-project.experiments['xray_pdf'].linked_phases.create(id='nacl', scale=0.5)
+project.experiments['xray_pdf'].linked_structures.create(structure_id='nacl', scale=0.5)
 
 # %% [markdown]
 # ## 🚀 Perform Analysis
@@ -114,7 +114,7 @@ project.structures['nacl'].atom_sites['Na'].adp_iso.free = True
 project.structures['nacl'].atom_sites['Cl'].adp_iso.free = True
 
 # %%
-project.experiments['xray_pdf'].linked_phases['nacl'].scale.free = True
+project.experiments['xray_pdf'].linked_structures['nacl'].scale.free = True
 project.experiments['xray_pdf'].peak.damp_q.free = True
 project.experiments['xray_pdf'].peak.sharp_delta_2.free = True
 

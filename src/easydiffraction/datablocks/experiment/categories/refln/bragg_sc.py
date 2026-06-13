@@ -383,18 +383,18 @@ class ReflnDataBase(CategoryCollection):
         structures = project.structures
         calculator = experiment.calculator.calculator
 
-        linked_crystal = experiment.linked_crystal
-        linked_crystal_id = experiment.linked_crystal.id.value
+        linked_structure = experiment.linked_structure
+        linked_structure_id = experiment.linked_structure.structure_id.value
 
-        if linked_crystal_id not in structures.names:
+        if linked_structure_id not in structures.names:
             log.error(
-                f"Linked crystal ID '{linked_crystal_id}' not found in "
+                f"Linked structure ID '{linked_structure_id}' not found in "
                 f'structure IDs {structures.names}.'
             )
             return
 
-        structure_id = linked_crystal_id
-        structure_scale = linked_crystal.scale.value
+        structure_id = linked_structure_id
+        structure_scale = linked_structure.scale.value
         structure = structures[structure_id]
 
         stol, raw_calc = calculator.calculate_structure_factors(

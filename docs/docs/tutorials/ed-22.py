@@ -90,8 +90,8 @@ experiment = project.experiments['heidi']
 # Link the crystal structure to the experiment and set its scale factor.
 
 # %%
-experiment.linked_crystal.id = 'tbti'
-experiment.linked_crystal.scale = 1.0
+experiment.linked_structure.structure_id = 'tbti'
+experiment.linked_structure.scale = 1.0
 
 # %% [markdown]
 # Set the instrument wavelength and starting extinction parameters.
@@ -132,7 +132,7 @@ structure.atom_sites['O1'].adp_iso.free = True
 structure.atom_sites['O2'].adp_iso.free = True
 
 # %%
-experiment.linked_crystal.scale.free = True
+experiment.linked_structure.scale.free = True
 experiment.extinction.radius.free = True
 
 # %% [markdown]

@@ -124,7 +124,7 @@ experiment.excluded_regions.create(id='2', start=165, end=180)
 experiment.background.auto_estimate()
 
 # %%
-experiment.linked_phases.create(id='lbco', scale=10.0)
+experiment.linked_structures.create(structure_id='lbco', scale=10.0)
 
 # %% [markdown]
 # ## 🚀 Perform Analysis
@@ -151,7 +151,7 @@ experiment.peak.broad_lorentz_y.free = True
 for point in experiment.background:
     point.y.free = True
 
-experiment.linked_phases['lbco'].scale.free = True
+experiment.linked_structures['lbco'].scale.free = True
 
 # %%
 project.analysis.fit()

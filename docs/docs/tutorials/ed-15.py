@@ -59,8 +59,8 @@ project.experiments.add_from_data_path(
 experiment = project.experiments['senju']
 
 # %%
-experiment.linked_crystal.id = 'taurine'
-experiment.linked_crystal.scale = 1.0
+experiment.linked_structure.structure_id = 'taurine'
+experiment.linked_structure.scale = 1.0
 
 # %%
 experiment.extinction.mosaicity = 1000.0
@@ -76,7 +76,7 @@ experiment.extinction.radius = 100.0
 project.display.pattern(expt_name='senju')
 
 # %%
-experiment.linked_crystal.scale.free = True
+experiment.linked_structure.scale.free = True
 experiment.extinction.radius.free = True
 
 # %%

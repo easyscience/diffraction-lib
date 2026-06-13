@@ -278,7 +278,7 @@ project.experiments['hrpt'].background.auto_estimate(n_points=10)
 
 ```python
 # Link the structure defined in the previous step to the experiment
-project.experiments['hrpt'].linked_phases.create(id='lbco', scale=10.0)
+project.experiments['hrpt'].linked_structures.create(structure_id='lbco', scale=10.0)
 ```
 
 ### 6. Preferred Orientation Category { #preferred-orientation-category }

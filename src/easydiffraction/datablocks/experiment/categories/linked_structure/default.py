@@ -1,10 +1,9 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Linked phases allow combining phases with scale factors."""
+"""Default linked-structure reference for single-crystal experiments."""
 
 from __future__ import annotations
 
-from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.metadata import Compatibility
@@ -14,43 +13,59 @@ from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import RegexValidator
 from easydiffraction.core.variable import Parameter
 from easydiffraction.core.variable import StringDescriptor
-from easydiffraction.datablocks.experiment.categories.linked_phases.factory import (
-    LinkedPhasesFactory,
+from easydiffraction.datablocks.experiment.categories.linked_structure.factory import (
+    LinkedStructureFactory,
 )
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.io.cif.handler import CifHandler
 
 
-class LinkedPhase(CategoryItem):
-    """Link to a phase by id with a scale factor."""
+@LinkedStructureFactory.register
+class LinkedStructure(CategoryItem):
+    """Linked structure reference for single-crystal diffraction."""
 
-    _category_code = 'linked_phases'
-    _category_entry_name = 'id'
+    _category_code = 'linked_structure'
+
+    type_info = TypeInfo(
+        tag='default',
+        description='Structure reference with id and scale factor',
+    )
+    compatibility = Compatibility(
+        sample_form=frozenset({SampleFormEnum.SINGLE_CRYSTAL}),
+    )
 
     def __init__(self) -> None:
         super().__init__()
 
-        self._id = StringDescriptor(
-            name='id',
-            description='Identifier of the linked phase',
+        self._structure_id = StringDescriptor(
+            name='structure_id',
+            description='Identifier of the linked structure',
             value_spec=AttributeSpec(
                 default='Si',
                 validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
             ),
-            cif_handler=CifHandler(names=['_pd_phase_block.id']),
+            cif_handler=CifHandler(
+                names=['_linked_structure.structure_id'],
+                import_names=['_sc_crystal_block.id'],
+                iucr_name='_easydiffraction_sc_crystal_block.id',
+            ),
             display_handler=DisplayHandler(
-                display_name='Phase',
-                latex_name='Phase',
+                display_name='Structure',
+                latex_name='Structure',
             ),
         )
         self._scale = Parameter(
             name='scale',
-            description='Scale factor of the linked phase.',
+            description='Scale factor of the linked structure',
             value_spec=AttributeSpec(
                 default=1.0,
-                validator=RangeValidator(ge=0.0),
+                validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_pd_phase_block.scale']),
+            cif_handler=CifHandler(
+                names=['_linked_structure.scale'],
+                import_names=['_sc_crystal_block.scale'],
+                iucr_name='_easydiffraction_sc_crystal_block.scale',
+            ),
             display_handler=DisplayHandler(
                 display_name='Scale',
                 latex_name='Scale',
@@ -62,24 +77,24 @@ class LinkedPhase(CategoryItem):
     # ------------------------------------------------------------------
 
     @property
-    def id(self) -> StringDescriptor:
+    def structure_id(self) -> StringDescriptor:
         """
-        Identifier of the linked phase.
+        Identifier of the linked structure.
 
         Reading this property returns the underlying
         ``StringDescriptor`` object. Assigning to it updates the
         parameter value.
         """
-        return self._id
+        return self._structure_id
 
-    @id.setter
-    def id(self, value: str) -> None:
-        self._id.value = value
+    @structure_id.setter
+    def structure_id(self, value: str) -> None:
+        self._structure_id.value = value
 
     @property
     def scale(self) -> Parameter:
         """
-        Scale factor of the linked phase.
+        Scale factor of the linked structure.
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -89,20 +104,3 @@ class LinkedPhase(CategoryItem):
     @scale.setter
     def scale(self, value: float) -> None:
         self._scale.value = value
-
-
-@LinkedPhasesFactory.register
-class LinkedPhases(CategoryCollection):
-    """Collection of LinkedPhase instances."""
-
-    type_info = TypeInfo(
-        tag='default',
-        description='Phase references with scale factors',
-    )
-    compatibility = Compatibility(
-        sample_form=frozenset({SampleFormEnum.POWDER}),
-    )
-
-    def __init__(self) -> None:
-        """Create an empty collection of linked phases."""
-        super().__init__(item_type=LinkedPhase)

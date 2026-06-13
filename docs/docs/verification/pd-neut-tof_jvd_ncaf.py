@@ -122,7 +122,7 @@ experiment = ExperimentFactory.from_scratch(
 )
 verify.set_reference_as_measured(experiment, x, calc_fullprof)
 
-experiment.linked_phases.create(id='ncaf', scale=FULLPROF_SCALE)
+experiment.linked_structures.create(structure_id='ncaf', scale=FULLPROF_SCALE)
 
 experiment.instrument.setup_twotheta_bank = FULLPROF_TWOTHETA_BANK
 experiment.instrument.calib_d_to_tof_offset = FULLPROF_ZERO
@@ -152,7 +152,7 @@ project.experiments.add(experiment)
 # %%
 experiment.calculator.type = 'cryspy'
 
-experiment.linked_phases['ncaf'].scale = FULLPROF_SCALE
+experiment.linked_structures['ncaf'].scale = FULLPROF_SCALE
 
 project.analysis.calculate()
 calc_ed_cryspy = experiment.data.intensity_calc
@@ -169,8 +169,8 @@ project.display.pattern_comparison(
 # ## Fit ed-cryspy to FullProf
 
 # %%
-# experiment.linked_phases['ncaf'].scale = 1.0927822317965166
-experiment.linked_phases['ncaf'].scale.free = True
+# experiment.linked_structures['ncaf'].scale = 1.0927822317965166
+experiment.linked_structures['ncaf'].scale.free = True
 
 project.analysis.fit()
 project.display.fit.results()
@@ -187,7 +187,7 @@ project.display.pattern_comparison(
 )
 
 # %%
-experiment.linked_phases['ncaf'].scale
+experiment.linked_structures['ncaf'].scale
 
 # %% [markdown]
 # ## ed-crysfml VS FullProf
@@ -195,7 +195,7 @@ experiment.linked_phases['ncaf'].scale
 # %%
 experiment.calculator.type = 'crysfml'
 
-experiment.linked_phases['ncaf'].scale = FULLPROF_SCALE
+experiment.linked_structures['ncaf'].scale = FULLPROF_SCALE
 
 project.analysis.calculate()
 calc_ed_crysfml = experiment.data.intensity_calc
@@ -212,8 +212,8 @@ project.display.pattern_comparison(
 # ## Fit ed-crysfml to FullProf
 
 # %%
-# experiment.linked_phases['ncaf'].scale = 307.9429
-experiment.linked_phases['ncaf'].scale.free = True
+# experiment.linked_structures['ncaf'].scale = 307.9429
+experiment.linked_structures['ncaf'].scale.free = True
 
 project.analysis.fit()
 project.display.fit.results()
@@ -230,7 +230,7 @@ project.display.pattern_comparison(
 )
 
 # %%
-experiment.linked_phases['ncaf'].scale
+experiment.linked_structures['ncaf'].scale
 
 # %% [markdown]
 # ## Agreement check

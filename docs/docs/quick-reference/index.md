@@ -131,7 +131,7 @@ experiment.excluded_regions.create(id='2', start=165, end=180)
 Link a structure to an experiment:
 
 ```python
-experiment.linked_phases.create(id='lbco', scale=10.0)
+experiment.linked_structures.create(structure_id='lbco', scale=10.0)
 ```
 
 ## Inspect the Project
@@ -268,7 +268,7 @@ structure.cell.length_a.help()
 structure.atom_sites['O'].adp_iso.help()
 
 experiment.instrument.calib_twotheta_offset.help()
-experiment.linked_phases['lbco'].scale.help()
+experiment.linked_structures['lbco'].scale.help()
 ```
 
 The usual navigation pattern is:
@@ -288,7 +288,7 @@ structure.atom_sites['O'].adp_iso.free = True
 experiment.instrument.calib_twotheta_offset.free = True
 experiment.peak.broad_gauss_u.free = True
 experiment.background['1'].y.free = True
-experiment.linked_phases['lbco'].scale.free = True
+experiment.linked_structures['lbco'].scale.free = True
 ```
 
 Choose calculators and minimizers:
