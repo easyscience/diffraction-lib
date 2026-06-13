@@ -1,6 +1,6 @@
 # ADR: EdSTAR Project Persistence
 
-**Status:** Suggestion  
+**Status:** Accepted  
 **Date:** 2026-06-12
 
 ## Group
@@ -28,7 +28,7 @@ not mirror official CIF names:
 
 The current accepted ADRs split the save/export surface only partly.
 Default project files are still named `*.cif`, while
-[`iucr-cif-tag-alignment.md`](../accepted/iucr-cif-tag-alignment.md)
+[`iucr-cif-tag-alignment.md`](iucr-cif-tag-alignment.md)
 also says the default save should use IUCr-aligned structure tags in
 some areas. That makes the project files look stricter than they really
 are, and it pushes unfriendly official names back into the round-trip
@@ -46,24 +46,24 @@ ADRs. Acceptance must update those ADRs and
 does not describe conflicting persistence layouts.
 
 - Supersedes the **default-save naming and file-extension** parts of
-  [`iucr-cif-tag-alignment.md`](../accepted/iucr-cif-tag-alignment.md).
+  [`iucr-cif-tag-alignment.md`](iucr-cif-tag-alignment.md).
   Report-CIF export remains governed by that ADR's IUCr-aligned writer
   policy.
 - Amends
-  [`python-cif-category-correspondence.md`](../accepted/python-cif-category-correspondence.md)
+  [`python-cif-category-correspondence.md`](python-cif-category-correspondence.md)
   by replacing the scoped Python-to-`project.cif` correspondence with
   Python-to-EdSTAR correspondence across project files.
 - Amends
-  [`project-facade-and-persistence.md`](../accepted/project-facade-and-persistence.md)
+  [`project-facade-and-persistence.md`](project-facade-and-persistence.md)
   by replacing `project.cif`, `structures/*.cif`,
   `experiments/*.cif`, and `analysis/analysis.cif` with the `.edstar`
   project layout.
 - Amends
-  [`category-owner-sections.md`](../accepted/category-owner-sections.md)
+  [`category-owner-sections.md`](category-owner-sections.md)
   only for file-format terminology. The distinction between real data
   blocks and singleton category-owner sections remains.
 - Carries forward
-  [`free-flag-cif-encoding.md`](../accepted/free-flag-cif-encoding.md)
+  [`free-flag-cif-encoding.md`](free-flag-cif-encoding.md)
   for free/fixed parameter encoding inside STAR values.
 
 Other accepted ADRs that mention `project.cif`, `analysis/analysis.cif`,
@@ -321,7 +321,7 @@ resolved unambiguously, load rejects with a clear error.
 ### Free/Fixed Fit Flags
 
 EdSTAR keeps the accepted free/fixed parameter encoding from
-[`free-flag-cif-encoding.md`](../accepted/free-flag-cif-encoding.md):
+[`free-flag-cif-encoding.md`](free-flag-cif-encoding.md):
 
 - fixed or constrained numeric parameters write as plain values;
 - independently free parameters write with uncertainty brackets, for

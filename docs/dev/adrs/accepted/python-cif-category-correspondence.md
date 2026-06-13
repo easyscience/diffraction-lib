@@ -5,6 +5,12 @@
 
 ## Context
 
+[`edstar-project-persistence.md`](edstar-project-persistence.md)
+replaces this ADR's scoped Python-to-`project.cif` correspondence with
+Python-to-EdSTAR correspondence for regular project persistence. This
+ADR remains historical context for the old CIF layout and for the
+reasoning behind previous Python/CIF naming exceptions.
+
 EasyDiffraction exposes a Python object graph and persists state in CIF
 files. The public Python API should be easy for scientists to predict,
 while CIF output should remain readable and semantically useful.

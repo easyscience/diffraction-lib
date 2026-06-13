@@ -6,7 +6,7 @@ This plan follows `AGENTS.md`. There are no deliberate exceptions.
 
 - [x] Draft implementation plan from the accepted local instructions and
   current repository context.
-- [ ] Review and accept this plan.
+- [x] Review and accept this plan.
 - [ ] Phase 1 - implementation commits complete.
 - [ ] Phase 1 review complete.
 - [ ] Phase 2 - tests and verification complete.
@@ -24,7 +24,7 @@ runs the verification commands listed below.
 ## Related ADR
 
 - ADR:
-  `docs/dev/adrs/suggestions/edstar-project-persistence.md`
+  `docs/dev/adrs/accepted/edstar-project-persistence.md`
 - Implementation branch:
   `edstar-project-persistence`
 - Pull request target:
@@ -125,7 +125,6 @@ code/EdSTAR/CIF reference.
 ## Concrete Files Likely To Change
 
 - ADRs and plan:
-  `docs/dev/adrs/suggestions/edstar-project-persistence.md`,
   `docs/dev/adrs/accepted/edstar-project-persistence.md`,
   `docs/dev/adrs/index.md`,
   accepted ADRs that explicitly describe the superseded CIF project
@@ -184,7 +183,7 @@ code/EdSTAR/CIF reference.
 
 ## Implementation Steps (Phase 1)
 
-- [ ] P1.1 - Promote the ADR and mark superseded layout text.
+- [x] P1.1 - Promote the ADR and mark superseded layout text.
 
   Move the ADR into `docs/dev/adrs/accepted/`, set status to Accepted,
   update `docs/dev/adrs/index.md`, and add narrow cross-reference notes

@@ -13,6 +13,11 @@ runs alongside the
 [`python-cif-category-correspondence.md`](python-cif-category-correspondence.md)
 suggestion (Python-side correspondence).
 
+[`edstar-project-persistence.md`](edstar-project-persistence.md)
+supersedes this ADR's default-save file-extension and project-tag
+naming policy. This ADR remains authoritative for strict IUCr/pdCIF
+report export under `reports/<project>.cif`.
+
 Grounded in:
 
 - COMCIFS

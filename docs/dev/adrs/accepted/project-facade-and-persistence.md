@@ -12,6 +12,13 @@ Accepted current design.
 
 Persistence.
 
+## Amendment
+
+[`edstar-project-persistence.md`](edstar-project-persistence.md)
+replaces the default project-save file layout with `.edstar` files. This
+ADR remains historical context for the `Project` facade, singleton
+sections versus real datablocks, and report artifact placement.
+
 ## Context
 
 `Project` is the top-level user facade. It owns project metadata,
