@@ -2,16 +2,16 @@
 
 ## :material-tag: expression { #constraint-expression }
 
-| Access | Source |
-| --- | --- |
+| Access                  | Source                   |
+| ----------------------- | ------------------------ |
 | \_constraint.expression | [EdSTAR][0]{:.label-cif} |
 
 Constraint equation, e.g. "occ_Ba = 1 - occ_La".
 
 ## :material-tag: id { #constraint-id }
 
-| Access | Source |
-| --- | --- |
+| Access          | Source                   |
+| --------------- | ------------------------ |
 | \_constraint.id | [EdSTAR][0]{:.label-cif} |
 
 Explicit identifier for this constraint row.

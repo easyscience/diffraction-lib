@@ -2,11 +2,12 @@
 
 ## :material-tag: fit { #verbosity-fit }
 
-| Access | Source |
-| --- | --- |
+| Access          | Source                   |
+| --------------- | ------------------------ |
 | \_verbosity.fit | [EdSTAR][0]{:.label-cif} |
 
-Fitting process output verbosity. Supported values include `full`, `short`, and `silent`.
+Fitting process output verbosity. Supported values include `full`,
+`short`, and `silent`.
 
 <!-- prettier-ignore-start -->
 [0]: #
