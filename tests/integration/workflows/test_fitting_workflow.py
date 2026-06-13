@@ -28,7 +28,7 @@ def _make_fit_ready_project():
     s.space_group.name_h_m = 'P m -3 m'
     s.cell.length_a = 3.89
     s.atom_sites.create(
-        label='La',
+        id='La',
         type_symbol='La',
         fract_x=0,
         fract_y=0,
@@ -38,7 +38,7 @@ def _make_fit_ready_project():
         adp_iso=0.5,
     )
     s.atom_sites.create(
-        label='Ba',
+        id='Ba',
         type_symbol='Ba',
         fract_x=0,
         fract_y=0,
@@ -48,7 +48,7 @@ def _make_fit_ready_project():
         adp_iso=0.5,
     )
     s.atom_sites.create(
-        label='Co',
+        id='Co',
         type_symbol='Co',
         fract_x=0.5,
         fract_y=0.5,
@@ -57,7 +57,7 @@ def _make_fit_ready_project():
         adp_iso=0.5,
     )
     s.atom_sites.create(
-        label='O',
+        id='O',
         type_symbol='O',
         fract_x=0,
         fract_y=0.5,
@@ -80,16 +80,16 @@ def _make_fit_ready_project():
     expt.peak.broad_gauss_w = 0.123
     expt.peak.broad_lorentz_x = 0
     expt.peak.broad_lorentz_y = 0.0797
-    expt.background.create(id='1', x=10, y=170)
-    expt.background.create(id='2', x=165, y=170)
-    expt.linked_phases.create(id='lbco', scale=9.0)
+    expt.background.create(id='1', position=10, intensity=170)
+    expt.background.create(id='2', position=165, intensity=170)
+    expt.linked_structures.create(structure_id='lbco', scale=9.0)
 
     # Free parameters
     s.cell.length_a.free = True
-    expt.linked_phases['lbco'].scale.free = True
+    expt.linked_structures['lbco'].scale.free = True
     expt.instrument.calib_twotheta_offset.free = True
-    expt.background['1'].y.free = True
-    expt.background['2'].y.free = True
+    expt.background['1'].intensity.free = True
+    expt.background['2'].intensity.free = True
 
     return project
 
@@ -99,7 +99,7 @@ class TestAliases:
         project = _make_fit_ready_project()
         s = project.structures['lbco']
         project.analysis.aliases.create(
-            label='biso_La',
+            id='biso_La',
             param=s.atom_sites['La'].adp_iso,
         )
         assert len(project.analysis.aliases) == 1
@@ -108,11 +108,11 @@ class TestAliases:
         project = _make_fit_ready_project()
         s = project.structures['lbco']
         project.analysis.aliases.create(
-            label='biso_La',
+            id='biso_La',
             param=s.atom_sites['La'].adp_iso,
         )
         project.analysis.aliases.create(
-            label='biso_Ba',
+            id='biso_Ba',
             param=s.atom_sites['Ba'].adp_iso,
         )
         assert len(project.analysis.aliases) == 2
@@ -123,11 +123,11 @@ class TestConstraints:
         project = _make_fit_ready_project()
         s = project.structures['lbco']
         project.analysis.aliases.create(
-            label='biso_La',
+            id='biso_La',
             param=s.atom_sites['La'].adp_iso,
         )
         project.analysis.aliases.create(
-            label='biso_Ba',
+            id='biso_Ba',
             param=s.atom_sites['Ba'].adp_iso,
         )
         project.analysis.constraints.create(
@@ -169,11 +169,11 @@ class TestFitting:
         s.atom_sites['Ba'].adp_iso.free = True
 
         project.analysis.aliases.create(
-            label='biso_La',
+            id='biso_La',
             param=s.atom_sites['La'].adp_iso,
         )
         project.analysis.aliases.create(
-            label='biso_Ba',
+            id='biso_Ba',
             param=s.atom_sites['Ba'].adp_iso,
         )
         project.analysis.constraints.create(

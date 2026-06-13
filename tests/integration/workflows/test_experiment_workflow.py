@@ -27,7 +27,7 @@ def _make_project_with_experiment():
     s.space_group.name_h_m = 'P m -3 m'
     s.cell.length_a = 3.89
     s.atom_sites.create(
-        label='La',
+        id='La',
         type_symbol='La',
         fract_x=0,
         fract_y=0,
@@ -94,31 +94,31 @@ class TestBackground:
     def test_create_background_points(self):
         project = _make_project_with_experiment()
         expt = project.experiments['hrpt']
-        expt.background.create(id='1', x=10, y=170)
-        expt.background.create(id='2', x=165, y=170)
+        expt.background.create(id='1', position=10, intensity=170)
+        expt.background.create(id='2', position=165, intensity=170)
         assert len(expt.background) == 2
 
     def test_background_y_is_fittable(self):
         project = _make_project_with_experiment()
         expt = project.experiments['hrpt']
-        expt.background.create(id='1', x=10, y=170)
-        expt.background['1'].y.free = True
-        assert expt.background['1'].y.free is True
+        expt.background.create(id='1', position=10, intensity=170)
+        expt.background['1'].intensity.free = True
+        assert expt.background['1'].intensity.free is True
 
 
 class TestLinkedPhases:
     def test_create_linked_phase(self):
         project = _make_project_with_experiment()
         expt = project.experiments['hrpt']
-        expt.linked_phases.create(id='lbco', scale=9.0)
-        assert len(expt.linked_phases) == 1
+        expt.linked_structures.create(structure_id='lbco', scale=9.0)
+        assert len(expt.linked_structures) == 1
 
     def test_linked_phase_scale_is_fittable(self):
         project = _make_project_with_experiment()
         expt = project.experiments['hrpt']
-        expt.linked_phases.create(id='lbco', scale=9.0)
-        expt.linked_phases['lbco'].scale.free = True
-        assert expt.linked_phases['lbco'].scale.free is True
+        expt.linked_structures.create(structure_id='lbco', scale=9.0)
+        expt.linked_structures['lbco'].scale.free = True
+        assert expt.linked_structures['lbco'].scale.free is True
 
 
 class TestExcludedRegions:

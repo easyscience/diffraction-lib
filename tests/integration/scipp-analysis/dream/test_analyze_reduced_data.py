@@ -66,12 +66,12 @@ def project_with_data(
     structure = project.structures['diamond']
 
     structure.space_group.name_h_m = 'F d -3 m'
-    structure.space_group.it_coordinate_system_code = '1'
+    structure.space_group.coord_system_code = '1'
 
     structure.cell.length_a = 3.567
 
     structure.atom_sites.create(
-        label='C',
+        id='C',
         type_symbol='C',
         fract_x=0.125,
         fract_y=0.125,
@@ -85,8 +85,8 @@ def project_with_data(
     experiment = project.experiments['reduced_tof']
 
     # Step 4: Configure experiment
-    # Link phase
-    experiment.linked_phases.create(id='diamond', scale=0.8)
+    # Link structure
+    experiment.linked_structures.create(structure_id='diamond', scale=0.8)
 
     # Instrument setup
     experiment.instrument.setup_twotheta_bank = 90.0
@@ -116,8 +116,8 @@ def project_with_data(
         ('8', 61000, 0.7),
         ('9', 70000, 0.6),
     ]
-    for id_, x, y in background_points:
-        experiment.background.create(id=id_, x=x, y=y)
+    for id_, position, intensity in background_points:
+        experiment.background.create(id=id_, position=position, intensity=intensity)
 
     return project
 
@@ -136,7 +136,7 @@ def fitted_project(
     structure.atom_sites['C'].adp_iso.free = True
 
     # Set free parameters for experiment
-    experiment.linked_phases['diamond'].scale.free = True
+    experiment.linked_structures['diamond'].scale.free = True
     experiment.instrument.calib_d_to_tof_linear.free = True
 
     experiment.peak.broad_gauss_sigma_0.free = True
@@ -144,7 +144,7 @@ def fitted_project(
     experiment.peak.exp_decay_beta_0.free = True
 
     for point in experiment.background:
-        point.y.free = True
+        point.intensity.free = True
 
     # Step 6: Do fitting
     project.analysis.fit()
@@ -179,7 +179,7 @@ def test_analyze_reduced_data__phase_linked(
 ) -> None:
     """Verify phase is correctly linked to experiment."""
     experiment = project_with_data.experiments['reduced_tof']
-    assert 'diamond' in experiment.linked_phases.names
+    assert 'diamond' in experiment.linked_structures.names
 
 
 def test_analyze_reduced_data__background_set(

@@ -69,14 +69,14 @@ def test_cli_fit_loads_and_fits(monkeypatch, tmp_path):
 
     calls: list[str] = []
 
-    class FakeInfo:
+    class FakeMetadata:
         _path = '/some/path'
 
     class FakeExperiment:
         name = 'exp1'
 
     class FakeProject:
-        info = FakeInfo()
+        metadata = FakeMetadata()
         experiments = [FakeExperiment()]
 
         class _analysis:
@@ -114,7 +114,7 @@ def test_cli_fit_loads_and_fits(monkeypatch, tmp_path):
 
     project_dir = tmp_path / 'proj'
     project_dir.mkdir()
-    (project_dir / 'project.cif').write_text('_project.id test\n')
+    (project_dir / 'project.edstar').write_text('_metadata.name test\n')
 
     monkeypatch.setattr(Project, 'load', staticmethod(lambda path: fake_project))
 
@@ -128,14 +128,14 @@ def test_cli_fit_dry_clears_path(monkeypatch, tmp_path):
     import easydiffraction.__main__ as main_mod
     from easydiffraction.project.project import Project
 
-    class FakeInfo:
+    class FakeMetadata:
         _path = '/some/path'
 
     class FakeExperiment:
         name = 'exp1'
 
     class FakeProject:
-        info = FakeInfo()
+        metadata = FakeMetadata()
         experiments = [FakeExperiment()]
 
         class _analysis:
@@ -172,11 +172,11 @@ def test_cli_fit_dry_clears_path(monkeypatch, tmp_path):
 
     project_dir = tmp_path / 'proj'
     project_dir.mkdir()
-    (project_dir / 'project.cif').write_text('_project.id test\n')
+    (project_dir / 'project.edstar').write_text('_metadata.name test\n')
 
     monkeypatch.setattr(Project, 'load', staticmethod(lambda path: fake_project))
 
     result = runner.invoke(main_mod.app, ['fit', '--dry', str(project_dir)])
 
     assert result.exit_code == 0
-    assert fake_project.info._path is None
+    assert fake_project.metadata._path is None

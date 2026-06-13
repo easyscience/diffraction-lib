@@ -82,7 +82,9 @@ def test_experiment_show_as_cif_omits_empty_category_gaps(lbco_fitted_project, m
     expt.show_as_cif()
 
     cif_text = captured['cif_text']
-    assert re.search(r'_pd_phase_block\.scale\n[^\n]+\n\n_background\.type', cif_text) is not None
+    assert (
+        re.search(r'_linked_structure\.scale\n[^\n]+\n\n_background\.type', cif_text) is not None
+    )
     assert re.search(r'_background\.type [^\n]+\n\nloop_', cif_text) is not None
     assert '\n\n\n' not in cif_text
 
@@ -106,8 +108,8 @@ def test_experiment_switchable_category_types(lbco_fitted_project):
     # Peak profile
     expt.peak.show_supported()
     assert isinstance(expt.peak.type, str)
-    # Linked phases
-    assert expt.linked_phases is not None
+    # Linked structures
+    assert expt.linked_structures is not None
     # Calculator
     expt.calculator.show_supported()
     assert isinstance(expt.calculator.type, str)
@@ -139,7 +141,7 @@ def test_structure_atom_sites_iteration(lbco_fitted_project):
     model = project.structures['lbco']
     count = 0
     for site in model.atom_sites:
-        assert site.label.value is not None
+        assert site.id.value is not None
         assert site.type_symbol.value is not None
         count += 1
     assert count == 4

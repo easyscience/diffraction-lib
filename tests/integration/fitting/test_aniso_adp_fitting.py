@@ -25,8 +25,8 @@ def _setup_tbti_project():
         radiation_probe='neutron',
     )
     experiment = project.experiments['heidi']
-    experiment.linked_crystal.id = 'tbti'
-    experiment.linked_crystal.scale = 1.0
+    experiment.linked_structure.structure_id = 'tbti'
+    experiment.linked_structure.scale = 1.0
     experiment.instrument.setup_wavelength = 0.793
     experiment.extinction.mosaicity = 35000
     experiment.extinction.radius = 10
@@ -52,7 +52,7 @@ def test_iso_then_aniso_fit() -> None:
     s.atom_sites['O2'].occupancy.free = True
     for name in ('Tb', 'Ti', 'O1', 'O2'):
         s.atom_sites[name].adp_iso.free = True
-    e.linked_crystal.scale.free = True
+    e.linked_structure.scale.free = True
     e.extinction.radius.free = True
 
     # Fit isotropic

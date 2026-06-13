@@ -17,10 +17,10 @@ def test_single_fit_neutron_pd_tof_si() -> None:
     # Set structure
     model = StructureFactory.from_scratch(name='si')
     model.space_group.name_h_m = 'F d -3 m'
-    model.space_group.it_coordinate_system_code = '2'
+    model.space_group.coord_system_code = '2'
     model.cell.length_a = 5.4315
     model.atom_sites.create(
-        label='Si',
+        id='Si',
         type_symbol='Si',
         fract_x=0.125,
         fract_y=0.125,
@@ -39,7 +39,7 @@ def test_single_fit_neutron_pd_tof_si() -> None:
     expt.instrument.setup_twotheta_bank = 144.845
     expt.instrument.calib_d_to_tof_offset = -9.29
     expt.instrument.calib_d_to_tof_linear = 7476.91
-    expt.instrument.calib_d_to_tof_quad = -1.54
+    expt.instrument.calib_d_to_tof_quadratic = -1.54
     expt.peak.type = 'jorgensen'
     expt.peak.broad_gauss_sigma_0 = 4.2
     expt.peak.broad_gauss_sigma_1 = 45.8
@@ -48,9 +48,9 @@ def test_single_fit_neutron_pd_tof_si() -> None:
     expt.peak.exp_decay_beta_1 = 0.00946
     expt.peak.exp_rise_alpha_0 = 0.0
     expt.peak.exp_rise_alpha_1 = 0.5971
-    expt.linked_phases.create(id='si', scale=14.92)
+    expt.linked_structures.create(structure_id='si', scale=14.92)
     for x in range(0, 35000, 5000):
-        expt.background.create(id=str(x), x=x, y=200)
+        expt.background.create(id=str(x), position=x, intensity=200)
 
     # Create project
     project = Project()
@@ -63,10 +63,10 @@ def test_single_fit_neutron_pd_tof_si() -> None:
     # Select fitting parameters
     model.cell.length_a.free = True
     model.atom_sites['Si'].adp_iso.free = True
-    expt.linked_phases['si'].scale.free = True
+    expt.linked_structures['si'].scale.free = True
     expt.instrument.calib_d_to_tof_offset.free = True
     for point in expt.background:
-        point.y.free = True
+        point.intensity.free = True
 
     # Perform fit
     project.analysis.fit()
@@ -83,10 +83,10 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
     # Set structure
     model = StructureFactory.from_scratch(name='ncaf')
     model.space_group.name_h_m = 'I 21 3'
-    model.space_group.it_coordinate_system_code = '1'
+    model.space_group.coord_system_code = '1'
     model.cell.length_a = 10.250256
     model.atom_sites.create(
-        label='Ca',
+        id='Ca',
         type_symbol='Ca',
         fract_x=0.4661,
         fract_y=0.0,
@@ -95,7 +95,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
         adp_iso=0.9,
     )
     model.atom_sites.create(
-        label='Al',
+        id='Al',
         type_symbol='Al',
         fract_x=0.25171,
         fract_y=0.25171,
@@ -104,7 +104,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
         adp_iso=0.66,
     )
     model.atom_sites.create(
-        label='Na',
+        id='Na',
         type_symbol='Na',
         fract_x=0.08481,
         fract_y=0.08481,
@@ -113,7 +113,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
         adp_iso=1.9,
     )
     model.atom_sites.create(
-        label='F1',
+        id='F1',
         type_symbol='F',
         fract_x=0.1375,
         fract_y=0.3053,
@@ -122,7 +122,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
         adp_iso=0.9,
     )
     model.atom_sites.create(
-        label='F2',
+        id='F2',
         type_symbol='F',
         fract_x=0.3626,
         fract_y=0.3634,
@@ -131,7 +131,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
         adp_iso=1.28,
     )
     model.atom_sites.create(
-        label='F3',
+        id='F3',
         type_symbol='F',
         fract_x=0.4612,
         fract_y=0.4612,
@@ -152,7 +152,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
     expt.instrument.setup_twotheta_bank = 152.827
     expt.instrument.calib_d_to_tof_offset = -13.7123
     expt.instrument.calib_d_to_tof_linear = 20773.1
-    expt.instrument.calib_d_to_tof_quad = -1.08308
+    expt.instrument.calib_d_to_tof_quadratic = -1.08308
     expt.peak.type = 'jorgensen'
     expt.peak.broad_gauss_sigma_0 = 0.0
     expt.peak.broad_gauss_sigma_1 = 0.0
@@ -161,7 +161,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
     expt.peak.exp_decay_beta_1 = 0.0099
     expt.peak.exp_rise_alpha_0 = -0.009
     expt.peak.exp_rise_alpha_1 = 0.1085
-    expt.linked_phases.create(id='ncaf', scale=1.0928)
+    expt.linked_structures.create(structure_id='ncaf', scale=1.0928)
     for x, y in [
         (9162, 465),
         (11136, 593),
@@ -192,7 +192,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
         (91958, 268),
         (102712, 262),
     ]:
-        expt.background.create(id=str(x), x=x, y=y)
+        expt.background.create(id=str(x), position=x, intensity=y)
 
     # Create project
     project = Project()
@@ -203,7 +203,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
     project.analysis.minimizer.type = 'lmfit'
 
     # Select fitting parameters
-    expt.linked_phases['ncaf'].scale.free = True
+    expt.linked_structures['ncaf'].scale.free = True
     expt.instrument.calib_d_to_tof_offset.free = True
     expt.peak.broad_gauss_sigma_2.free = True
     expt.peak.exp_decay_beta_1.free = True

@@ -25,7 +25,7 @@ def _lbco_structure():
     model.space_group.name_h_m = 'P m -3 m'
     model.cell.length_a = 3.88
     model.atom_sites.create(
-        label='La',
+        id='La',
         type_symbol='La',
         fract_x=0,
         fract_y=0,
@@ -35,7 +35,7 @@ def _lbco_structure():
         adp_iso=0.1,
     )
     model.atom_sites.create(
-        label='Ba',
+        id='Ba',
         type_symbol='Ba',
         fract_x=0,
         fract_y=0,
@@ -45,7 +45,7 @@ def _lbco_structure():
         adp_iso=0.1,
     )
     model.atom_sites.create(
-        label='Co',
+        id='Co',
         type_symbol='Co',
         fract_x=0.5,
         fract_y=0.5,
@@ -54,7 +54,7 @@ def _lbco_structure():
         adp_iso=0.1,
     )
     model.atom_sites.create(
-        label='O',
+        id='O',
         type_symbol='O',
         fract_x=0,
         fract_y=0.5,
@@ -69,10 +69,10 @@ def _si_structure():
     """Build the silicon structure model (used for the TOF cases)."""
     model = StructureFactory.from_scratch(name='si')
     model.space_group.name_h_m = 'F d -3 m'
-    model.space_group.it_coordinate_system_code = '2'
+    model.space_group.coord_system_code = '2'
     model.cell.length_a = 5.4315
     model.atom_sites.create(
-        label='Si',
+        id='Si',
         type_symbol='Si',
         fract_x=0.125,
         fract_y=0.125,
@@ -99,12 +99,12 @@ def _cwl_calc_only_project():
     experiment.peak.broad_gauss_u = 0.1
     experiment.peak.broad_gauss_v = -0.1
     experiment.peak.broad_gauss_w = 0.2
-    experiment.background.create(id='1', x=10, y=20)
-    experiment.background.create(id='2', x=60, y=20)
+    experiment.background.create(id='1', position=10, intensity=20)
+    experiment.background.create(id='2', position=60, intensity=20)
     experiment.data_range.two_theta_min = 20.0
     experiment.data_range.two_theta_max = 60.0
     experiment.data_range.two_theta_inc = 0.1
-    experiment.linked_phases.create(id='lbco', scale=10.0)
+    experiment.linked_structures.create(structure_id='lbco', scale=10.0)
     return project
 
 
@@ -123,7 +123,7 @@ def _tof_calc_only_project():
     experiment.instrument.setup_twotheta_bank = 144.845
     experiment.instrument.calib_d_to_tof_offset = 0.0
     experiment.instrument.calib_d_to_tof_linear = 7476.91
-    experiment.instrument.calib_d_to_tof_quad = -1.54
+    experiment.instrument.calib_d_to_tof_quadratic = -1.54
     experiment.peak.broad_gauss_sigma_0 = 3.0
     experiment.peak.broad_gauss_sigma_1 = 40.0
     experiment.peak.broad_gauss_sigma_2 = 2.0
@@ -132,12 +132,12 @@ def _tof_calc_only_project():
     experiment.peak.exp_rise_alpha_0 = 0.0
     experiment.peak.exp_rise_alpha_1 = 0.5971
     experiment.background.type = 'line-segment'
-    experiment.background.create(id='1', x=5000, y=20)
-    experiment.background.create(id='2', x=15000, y=20)
+    experiment.background.create(id='1', position=5000, intensity=20)
+    experiment.background.create(id='2', position=15000, intensity=20)
     experiment.data_range.time_of_flight_min = 5000.0
     experiment.data_range.time_of_flight_max = 15000.0
     experiment.data_range.time_of_flight_inc = 5.0
-    experiment.linked_phases.create(id='si', scale=10.0)
+    experiment.linked_structures.create(structure_id='si', scale=10.0)
     return project
 
 

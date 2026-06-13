@@ -53,16 +53,16 @@ def _assert_tracks_reference(tmp_path, name, data_id, beam_mode, probe, excluded
 
     # The tutorial's hand-placed background is the reference curve.
     for px, py in ref_points:
-        experiment.background.create(x=px, y=py)
-    ref_x = np.array([p.x.value for p in experiment.background])
-    ref_y = np.array([p.y.value for p in experiment.background])
+        experiment.background.create(position=px, intensity=py)
+    ref_x = np.array([p.position.value for p in experiment.background])
+    ref_y = np.array([p.intensity.value for p in experiment.background])
     reference = np.interp(x, ref_x, ref_y)
 
     # Strip the reference and estimate the background automatically.
     experiment.background.auto_estimate()
     points = list(experiment.background)
-    est_x = np.array([p.x.value for p in points])
-    est_y = np.array([p.y.value for p in points])
+    est_x = np.array([p.position.value for p in points])
+    est_y = np.array([p.intensity.value for p in points])
     estimate = np.interp(x, est_x, est_y)
 
     span = x.max() - x.min()

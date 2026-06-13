@@ -17,10 +17,10 @@ def test_single_fit_pdf_xray_pd_cw_nacl() -> None:
     project.structures.create(name='nacl')
     structure = project.structures['nacl']
     structure.space_group.name_h_m = 'F m -3 m'
-    structure.space_group.it_coordinate_system_code = '1'
+    structure.space_group.coord_system_code = '1'
     structure.cell.length_a = 5.6018
     structure.atom_sites.create(
-        label='Na',
+        id='Na',
         type_symbol='Na',
         fract_x=0,
         fract_y=0,
@@ -29,7 +29,7 @@ def test_single_fit_pdf_xray_pd_cw_nacl() -> None:
         adp_iso=1.1053,
     )
     structure.atom_sites.create(
-        label='Cl',
+        id='Cl',
         type_symbol='Cl',
         fract_x=0.5,
         fract_y=0.5,
@@ -56,13 +56,13 @@ def test_single_fit_pdf_xray_pd_cw_nacl() -> None:
     experiment.peak.sharp_delta_1 = 0
     experiment.peak.sharp_delta_2 = 3.5041
     experiment.peak.damp_particle_diameter = 0
-    experiment.linked_phases.create(id='nacl', scale=0.4254)
+    experiment.linked_structures.create(structure_id='nacl', scale=0.4254)
 
     # Select fitting parameters
     structure.cell.length_a.free = True
     structure.atom_sites['Na'].adp_iso.free = True
     structure.atom_sites['Cl'].adp_iso.free = True
-    experiment.linked_phases['nacl'].scale.free = True
+    experiment.linked_structures['nacl'].scale.free = True
     experiment.peak.damp_q.free = True
     experiment.peak.sharp_delta_2.free = True
 
@@ -81,10 +81,10 @@ def test_single_fit_pdf_neutron_pd_cw_ni():
     project.structures.create(name='ni')
     structure = project.structures['ni']
     structure.space_group.name_h_m.value = 'F m -3 m'
-    structure.space_group.it_coordinate_system_code = '1'
+    structure.space_group.coord_system_code = '1'
     structure.cell.length_a = 3.526
     structure.atom_sites.create(
-        label='Ni',
+        id='Ni',
         type_symbol='Ni',
         fract_x=0,
         fract_y=0,
@@ -110,12 +110,12 @@ def test_single_fit_pdf_neutron_pd_cw_ni():
     experiment.peak.sharp_delta_1 = 0
     experiment.peak.sharp_delta_2 = 2.5587
     experiment.peak.damp_particle_diameter = 0
-    experiment.linked_phases.create(id='ni', scale=0.9892)
+    experiment.linked_structures.create(structure_id='ni', scale=0.9892)
 
     # Select fitting parameters
     structure.cell.length_a.free = True
     structure.atom_sites['Ni'].adp_iso.free = True
-    experiment.linked_phases['ni'].scale.free = True
+    experiment.linked_structures['ni'].scale.free = True
     experiment.peak.broad_q.free = True
     experiment.peak.sharp_delta_2.free = True
 
@@ -134,10 +134,10 @@ def test_single_fit_pdf_neutron_pd_tof_si():
     project.structures.create(name='si')
     structure = project.structures['si']
     structure.space_group.name_h_m.value = 'F d -3 m'
-    structure.space_group.it_coordinate_system_code = '1'
+    structure.space_group.coord_system_code = '1'
     structure.cell.length_a = 5.4306
     structure.atom_sites.create(
-        label='Si',
+        id='Si',
         type_symbol='Si',
         fract_x=0,
         fract_y=0,
@@ -163,12 +163,12 @@ def test_single_fit_pdf_neutron_pd_tof_si():
     experiment.peak.sharp_delta_1 = 2.54
     experiment.peak.sharp_delta_2 = -1.7525
     experiment.peak.damp_particle_diameter = 0
-    experiment.linked_phases.create(id='si', scale=1.2728)
+    experiment.linked_structures.create(structure_id='si', scale=1.2728)
 
     # Select fitting parameters
     project.structures['si'].cell.length_a.free = True
     project.structures['si'].atom_sites['Si'].adp_iso.free = True
-    experiment.linked_phases['si'].scale.free = True
+    experiment.linked_structures['si'].scale.free = True
     experiment.peak.damp_q.free = True
     experiment.peak.broad_q.free = True
     experiment.peak.sharp_delta_1.free = True

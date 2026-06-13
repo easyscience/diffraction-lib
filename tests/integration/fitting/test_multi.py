@@ -18,10 +18,10 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
     # Set structures
     model_1 = StructureFactory.from_scratch(name='lbco')
     model_1.space_group.name_h_m = 'P m -3 m'
-    model_1.space_group.it_coordinate_system_code = '1'
+    model_1.space_group.coord_system_code = '1'
     model_1.cell.length_a = 3.8909
     model_1.atom_sites.create(
-        label='La',
+        id='La',
         type_symbol='La',
         fract_x=0,
         fract_y=0,
@@ -31,7 +31,7 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
         occupancy=0.5,
     )
     model_1.atom_sites.create(
-        label='Ba',
+        id='Ba',
         type_symbol='Ba',
         fract_x=0,
         fract_y=0,
@@ -41,7 +41,7 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
         occupancy=0.5,
     )
     model_1.atom_sites.create(
-        label='Co',
+        id='Co',
         type_symbol='Co',
         fract_x=0.5,
         fract_y=0.5,
@@ -50,7 +50,7 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
         adp_iso=0.2567,
     )
     model_1.atom_sites.create(
-        label='O',
+        id='O',
         type_symbol='O',
         fract_x=0,
         fract_y=0.5,
@@ -61,10 +61,10 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
 
     model_2 = StructureFactory.from_scratch(name='si')
     model_2.space_group.name_h_m = 'F d -3 m'
-    model_2.space_group.it_coordinate_system_code = '2'
+    model_2.space_group.coord_system_code = '2'
     model_2.cell.length_a = 5.43146
     model_2.atom_sites.create(
-        label='Si',
+        id='Si',
         type_symbol='Si',
         fract_x=0.0,
         fract_y=0.0,
@@ -83,7 +83,7 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
     expt.instrument.setup_twotheta_bank = 94.90931761529106
     expt.instrument.calib_d_to_tof_offset = 0.0
     expt.instrument.calib_d_to_tof_linear = 58724.76869981215
-    expt.instrument.calib_d_to_tof_quad = -0.00001
+    expt.instrument.calib_d_to_tof_quadratic = -0.00001
     expt.peak.type = 'jorgensen'
     expt.peak.broad_gauss_sigma_0 = 45137
     expt.peak.broad_gauss_sigma_1 = -52394
@@ -92,10 +92,10 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
     expt.peak.exp_decay_beta_1 = 0.0041
     expt.peak.exp_rise_alpha_0 = 0.0
     expt.peak.exp_rise_alpha_1 = 0.0097
-    expt.linked_phases.create(id='lbco', scale=4.0)
-    expt.linked_phases.create(id='si', scale=0.2)
+    expt.linked_structures.create(structure_id='lbco', scale=4.0)
+    expt.linked_structures.create(structure_id='si', scale=0.2)
     for x in range(45000, 115000, 5000):
-        expt.background.create(id=str(x), x=x, y=0.2)
+        expt.background.create(id=str(x), position=x, intensity=0.2)
 
     # Create project
     project = Project()
@@ -117,8 +117,8 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
     model_1.atom_sites['O'].adp_iso.free = True
     model_2.cell.length_a.free = True
     model_2.atom_sites['Si'].adp_iso.free = True
-    expt.linked_phases['lbco'].scale.free = True
-    expt.linked_phases['si'].scale.free = True
+    expt.linked_structures['lbco'].scale.free = True
+    expt.linked_structures['si'].scale.free = True
     expt.peak.broad_gauss_sigma_0.free = True
     expt.peak.broad_gauss_sigma_1.free = True
     expt.peak.broad_gauss_sigma_2.free = True
@@ -126,7 +126,7 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
     expt.peak.exp_decay_beta_0.free = True
     expt.peak.exp_decay_beta_1.free = True
     for point in expt.background:
-        point.y.free = True
+        point.intensity.free = True
 
     # Perform fit
     project.analysis.fit()
@@ -143,10 +143,10 @@ def _test_joint_fit_bragg_pdf_neutron_pd_tof_si() -> None:
     # Set structure (shared between Bragg and PDF experiments)
     model = StructureFactory.from_scratch(name='si')
     model.space_group.name_h_m = 'F d -3 m'
-    model.space_group.it_coordinate_system_code = '2'
+    model.space_group.coord_system_code = '2'
     model.cell.length_a = 5.431
     model.atom_sites.create(
-        label='Si',
+        id='Si',
         type_symbol='Si',
         fract_x=0.125,
         fract_y=0.125,
@@ -164,7 +164,7 @@ def _test_joint_fit_bragg_pdf_neutron_pd_tof_si() -> None:
     bragg_expt.instrument.setup_twotheta_bank = 144.845
     bragg_expt.instrument.calib_d_to_tof_offset = 0.0
     bragg_expt.instrument.calib_d_to_tof_linear = 7476.91
-    bragg_expt.instrument.calib_d_to_tof_quad = -1.54
+    bragg_expt.instrument.calib_d_to_tof_quadratic = -1.54
     bragg_expt.peak.type = 'jorgensen'
     bragg_expt.peak.broad_gauss_sigma_0 = 3.0
     bragg_expt.peak.broad_gauss_sigma_1 = 40.0
@@ -173,9 +173,9 @@ def _test_joint_fit_bragg_pdf_neutron_pd_tof_si() -> None:
     bragg_expt.peak.exp_decay_beta_1 = 0.00946
     bragg_expt.peak.exp_rise_alpha_0 = 0.0
     bragg_expt.peak.exp_rise_alpha_1 = 0.5971
-    bragg_expt.linked_phases.create(id='si', scale=10.0)
+    bragg_expt.linked_structures.create(structure_id='si', scale=10.0)
     for x in range(0, 35000, 5000):
-        bragg_expt.background.create(id=str(x), x=x, y=200)
+        bragg_expt.background.create(id=str(x), position=x, intensity=200)
 
     # Set PDF experiment (NOMAD, TOF)
     pdf_data_path = ed.download_data(id=5, destination=TEMP_DIR)
@@ -191,7 +191,7 @@ def _test_joint_fit_bragg_pdf_neutron_pd_tof_si() -> None:
     pdf_expt.peak.sharp_delta_1 = 0.0
     pdf_expt.peak.sharp_delta_2 = 4.0
     pdf_expt.peak.damp_particle_diameter = 0
-    pdf_expt.linked_phases.create(id='si', scale=1.0)
+    pdf_expt.linked_structures.create(structure_id='si', scale=1.0)
 
     # Create project
     project = Project()
@@ -208,13 +208,13 @@ def _test_joint_fit_bragg_pdf_neutron_pd_tof_si() -> None:
     model.atom_sites['Si'].adp_iso.free = True
 
     # Select fitting parameters — Bragg experiment
-    bragg_expt.linked_phases['si'].scale.free = True
+    bragg_expt.linked_structures['si'].scale.free = True
     bragg_expt.instrument.calib_d_to_tof_offset.free = True
     for point in bragg_expt.background:
-        point.y.free = True
+        point.intensity.free = True
 
     # Select fitting parameters — PDF experiment
-    pdf_expt.linked_phases['si'].scale.free = True
+    pdf_expt.linked_structures['si'].scale.free = True
     pdf_expt.peak.damp_q.free = True
     pdf_expt.peak.broad_q.free = True
     pdf_expt.peak.sharp_delta_1.free = True
