@@ -37,6 +37,7 @@ from easydiffraction.analysis.categories.software import SoftwareFactory
 from easydiffraction.analysis.enums import FitCorrelationSourceEnum
 from easydiffraction.analysis.enums import FitModeEnum
 from easydiffraction.analysis.enums import FitResultKindEnum
+from easydiffraction.analysis.enums import SoftwareRoleEnum
 from easydiffraction.analysis.fit_helpers.bayesian import ESS_BULK_CONVERGENCE_THRESHOLD
 from easydiffraction.analysis.fit_helpers.bayesian import R_HAT_CONVERGENCE_THRESHOLD
 from easydiffraction.analysis.fit_helpers.bayesian import BayesianFitResults
@@ -663,7 +664,7 @@ class Analysis(
     def _stamp_software_provenance(self) -> None:
         """Record software identities for the latest successful fit."""
         self._set_software_role(
-            self.software.framework,
+            self.software[SoftwareRoleEnum.FRAMEWORK.value],
             (
                 'EasyDiffraction',
                 package_version('easydiffraction'),
@@ -671,14 +672,14 @@ class Analysis(
             ),
         )
         self._set_software_role(
-            self.software.calculator,
+            self.software[SoftwareRoleEnum.CALCULATOR.value],
             self._calculator_software_values(),
         )
         self._set_software_role(
-            self.software.minimizer,
+            self.software[SoftwareRoleEnum.MINIMIZER.value],
             self._software_values(self.minimizer),
         )
-        self.software.timestamp = datetime.now(tz=UTC).isoformat(timespec='seconds')
+        self.project.metadata.timestamp = datetime.now(tz=UTC).isoformat(timespec='seconds')
 
     def _swap_minimizer(self, new_type: str) -> None:
         """Switch the active minimizer category."""
@@ -1204,7 +1205,7 @@ class Analysis(
 
     def _has_software_provenance(self) -> bool:
         """Return True when software provenance has been stamped."""
-        return any(parameter.value is not None for parameter in self.software.parameters)
+        return self.software.has_provenance()
 
     # ------------------------------------------------------------------
     #  Parameter helpers

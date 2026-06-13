@@ -51,7 +51,7 @@ def html_report_path(
     if path is not None:
         return pathlib.Path(path)
 
-    project_path = getattr(getattr(project, 'info', None), 'path', None)
+    project_path = getattr(getattr(project, 'metadata', None), 'path', None)
     if project_path is None:
         msg = 'Project has no saved path. Save the project first.'
         raise FileNotFoundError(msg)

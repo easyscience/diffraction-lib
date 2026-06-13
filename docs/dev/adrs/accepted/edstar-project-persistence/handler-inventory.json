@@ -1589,233 +1589,95 @@
     },
     {
       "category_code": "software",
-      "category_entry_name": null,
+      "category_entry_name": "framework",
       "context": "analysis",
       "current_cif_names": [
-        "_software.calculator_name"
+        "_software.id"
       ],
-      "descriptor_class": "StringDescriptor",
-      "descriptor_name": "calculator_name",
-      "descriptor_path": "analysis.software.calculator.name",
-      "docs_anchor": "software-calculator-name",
+      "descriptor_class": "EnumDescriptor",
+      "descriptor_name": "id",
+      "descriptor_path": "analysis.software[].id",
+      "docs_anchor": "software-id",
       "docs_page": "software",
       "import_names": [
-        "_software.calculator_name"
+        "_software.id"
       ],
-      "iucr_name": "_software.calculator_name",
+      "iucr_name": "_software.id",
       "owner_class": "SoftwareRole",
-      "project_name": "_software.calculator_name",
+      "project_name": "_software.id",
       "read_names": [
-        "_software.calculator_name"
+        "_software.id"
       ],
-      "unique_name": "software.calculator_name"
+      "unique_name": "software.framework.id"
     },
     {
       "category_code": "software",
-      "category_entry_name": null,
+      "category_entry_name": "framework",
       "context": "analysis",
       "current_cif_names": [
-        "_software.calculator_url"
+        "_software.name"
       ],
       "descriptor_class": "StringDescriptor",
-      "descriptor_name": "calculator_url",
-      "descriptor_path": "analysis.software.calculator.url",
-      "docs_anchor": "software-calculator-url",
+      "descriptor_name": "name",
+      "descriptor_path": "analysis.software[].name",
+      "docs_anchor": "software-name",
       "docs_page": "software",
       "import_names": [
-        "_software.calculator_url"
+        "_software.name"
       ],
-      "iucr_name": "_software.calculator_url",
+      "iucr_name": "_software.name",
       "owner_class": "SoftwareRole",
-      "project_name": "_software.calculator_url",
+      "project_name": "_software.name",
       "read_names": [
-        "_software.calculator_url"
+        "_software.name"
       ],
-      "unique_name": "software.calculator_url"
+      "unique_name": "software.framework.name"
     },
     {
       "category_code": "software",
-      "category_entry_name": null,
+      "category_entry_name": "framework",
       "context": "analysis",
       "current_cif_names": [
-        "_software.calculator_version"
+        "_software.url"
       ],
       "descriptor_class": "StringDescriptor",
-      "descriptor_name": "calculator_version",
-      "descriptor_path": "analysis.software.calculator.version",
-      "docs_anchor": "software-calculator-version",
+      "descriptor_name": "url",
+      "descriptor_path": "analysis.software[].url",
+      "docs_anchor": "software-url",
       "docs_page": "software",
       "import_names": [
-        "_software.calculator_version"
+        "_software.url"
       ],
-      "iucr_name": "_software.calculator_version",
+      "iucr_name": "_software.url",
       "owner_class": "SoftwareRole",
-      "project_name": "_software.calculator_version",
+      "project_name": "_software.url",
       "read_names": [
-        "_software.calculator_version"
+        "_software.url"
       ],
-      "unique_name": "software.calculator_version"
+      "unique_name": "software.framework.url"
     },
     {
       "category_code": "software",
-      "category_entry_name": null,
+      "category_entry_name": "framework",
       "context": "analysis",
       "current_cif_names": [
-        "_software.framework_name"
+        "_software.version"
       ],
       "descriptor_class": "StringDescriptor",
-      "descriptor_name": "framework_name",
-      "descriptor_path": "analysis.software.framework.name",
-      "docs_anchor": "software-framework-name",
+      "descriptor_name": "version",
+      "descriptor_path": "analysis.software[].version",
+      "docs_anchor": "software-version",
       "docs_page": "software",
       "import_names": [
-        "_software.framework_name"
+        "_software.version"
       ],
-      "iucr_name": "_software.framework_name",
+      "iucr_name": "_software.version",
       "owner_class": "SoftwareRole",
-      "project_name": "_software.framework_name",
+      "project_name": "_software.version",
       "read_names": [
-        "_software.framework_name"
+        "_software.version"
       ],
-      "unique_name": "software.framework_name"
-    },
-    {
-      "category_code": "software",
-      "category_entry_name": null,
-      "context": "analysis",
-      "current_cif_names": [
-        "_software.framework_url"
-      ],
-      "descriptor_class": "StringDescriptor",
-      "descriptor_name": "framework_url",
-      "descriptor_path": "analysis.software.framework.url",
-      "docs_anchor": "software-framework-url",
-      "docs_page": "software",
-      "import_names": [
-        "_software.framework_url"
-      ],
-      "iucr_name": "_software.framework_url",
-      "owner_class": "SoftwareRole",
-      "project_name": "_software.framework_url",
-      "read_names": [
-        "_software.framework_url"
-      ],
-      "unique_name": "software.framework_url"
-    },
-    {
-      "category_code": "software",
-      "category_entry_name": null,
-      "context": "analysis",
-      "current_cif_names": [
-        "_software.framework_version"
-      ],
-      "descriptor_class": "StringDescriptor",
-      "descriptor_name": "framework_version",
-      "descriptor_path": "analysis.software.framework.version",
-      "docs_anchor": "software-framework-version",
-      "docs_page": "software",
-      "import_names": [
-        "_software.framework_version"
-      ],
-      "iucr_name": "_software.framework_version",
-      "owner_class": "SoftwareRole",
-      "project_name": "_software.framework_version",
-      "read_names": [
-        "_software.framework_version"
-      ],
-      "unique_name": "software.framework_version"
-    },
-    {
-      "category_code": "software",
-      "category_entry_name": null,
-      "context": "analysis",
-      "current_cif_names": [
-        "_software.minimizer_name"
-      ],
-      "descriptor_class": "StringDescriptor",
-      "descriptor_name": "minimizer_name",
-      "descriptor_path": "analysis.software.minimizer.name",
-      "docs_anchor": "software-minimizer-name",
-      "docs_page": "software",
-      "import_names": [
-        "_software.minimizer_name"
-      ],
-      "iucr_name": "_software.minimizer_name",
-      "owner_class": "SoftwareRole",
-      "project_name": "_software.minimizer_name",
-      "read_names": [
-        "_software.minimizer_name"
-      ],
-      "unique_name": "software.minimizer_name"
-    },
-    {
-      "category_code": "software",
-      "category_entry_name": null,
-      "context": "analysis",
-      "current_cif_names": [
-        "_software.minimizer_url"
-      ],
-      "descriptor_class": "StringDescriptor",
-      "descriptor_name": "minimizer_url",
-      "descriptor_path": "analysis.software.minimizer.url",
-      "docs_anchor": "software-minimizer-url",
-      "docs_page": "software",
-      "import_names": [
-        "_software.minimizer_url"
-      ],
-      "iucr_name": "_software.minimizer_url",
-      "owner_class": "SoftwareRole",
-      "project_name": "_software.minimizer_url",
-      "read_names": [
-        "_software.minimizer_url"
-      ],
-      "unique_name": "software.minimizer_url"
-    },
-    {
-      "category_code": "software",
-      "category_entry_name": null,
-      "context": "analysis",
-      "current_cif_names": [
-        "_software.minimizer_version"
-      ],
-      "descriptor_class": "StringDescriptor",
-      "descriptor_name": "minimizer_version",
-      "descriptor_path": "analysis.software.minimizer.version",
-      "docs_anchor": "software-minimizer-version",
-      "docs_page": "software",
-      "import_names": [
-        "_software.minimizer_version"
-      ],
-      "iucr_name": "_software.minimizer_version",
-      "owner_class": "SoftwareRole",
-      "project_name": "_software.minimizer_version",
-      "read_names": [
-        "_software.minimizer_version"
-      ],
-      "unique_name": "software.minimizer_version"
-    },
-    {
-      "category_code": "software",
-      "category_entry_name": null,
-      "context": "analysis",
-      "current_cif_names": [
-        "_software.timestamp"
-      ],
-      "descriptor_class": "StringDescriptor",
-      "descriptor_name": "timestamp",
-      "descriptor_path": "analysis.software.timestamp",
-      "docs_anchor": "software-timestamp",
-      "docs_page": "software",
-      "import_names": [
-        "_software.timestamp"
-      ],
-      "iucr_name": "_software.timestamp",
-      "owner_class": "Software",
-      "project_name": "_software.timestamp",
-      "read_names": [
-        "_software.timestamp"
-      ],
-      "unique_name": "software.timestamp"
+      "unique_name": "software.framework.version"
     },
     {
       "category_code": null,
@@ -2452,52 +2314,6 @@
         "_instr.wavelength"
       ],
       "unique_name": "inventory_experiment.instrument.wavelength"
-    },
-    {
-      "category_code": "linked_phases",
-      "category_entry_name": "Si",
-      "context": "experiment.bragg_pd_cwl",
-      "current_cif_names": [
-        "_pd_phase_block.id"
-      ],
-      "descriptor_class": "StringDescriptor",
-      "descriptor_name": "id",
-      "descriptor_path": "experiment.bragg_pd_cwl.linked_phases[].id",
-      "docs_anchor": "pd-phase-block-id",
-      "docs_page": "pd_phase_block",
-      "import_names": [
-        "_pd_phase_block.id"
-      ],
-      "iucr_name": "_pd_phase_block.id",
-      "owner_class": "LinkedPhase",
-      "project_name": "_pd_phase_block.id",
-      "read_names": [
-        "_pd_phase_block.id"
-      ],
-      "unique_name": "linked_phases.Si.id"
-    },
-    {
-      "category_code": "linked_phases",
-      "category_entry_name": "Si",
-      "context": "experiment.bragg_pd_cwl",
-      "current_cif_names": [
-        "_pd_phase_block.scale"
-      ],
-      "descriptor_class": "Parameter",
-      "descriptor_name": "scale",
-      "descriptor_path": "experiment.bragg_pd_cwl.linked_phases[].scale",
-      "docs_anchor": "pd-phase-block-scale",
-      "docs_page": "pd_phase_block",
-      "import_names": [
-        "_pd_phase_block.scale"
-      ],
-      "iucr_name": "_pd_phase_block.scale",
-      "owner_class": "LinkedPhase",
-      "project_name": "_pd_phase_block.scale",
-      "read_names": [
-        "_pd_phase_block.scale"
-      ],
-      "unique_name": "linked_phases.Si.scale"
     },
     {
       "category_code": "peak",
@@ -14916,233 +14732,95 @@
     },
     {
       "category_code": "software",
-      "category_entry_name": null,
+      "category_entry_name": "framework",
       "context": "factory.SoftwareFactory.default",
       "current_cif_names": [
-        "_software.calculator_name"
+        "_software.id"
       ],
-      "descriptor_class": "StringDescriptor",
-      "descriptor_name": "calculator_name",
-      "descriptor_path": "factory.SoftwareFactory.default.calculator.name",
-      "docs_anchor": "software-calculator-name",
+      "descriptor_class": "EnumDescriptor",
+      "descriptor_name": "id",
+      "descriptor_path": "factory.SoftwareFactory.default[].id",
+      "docs_anchor": "software-id",
       "docs_page": "software",
       "import_names": [
-        "_software.calculator_name"
+        "_software.id"
       ],
-      "iucr_name": "_software.calculator_name",
+      "iucr_name": "_software.id",
       "owner_class": "SoftwareRole",
-      "project_name": "_software.calculator_name",
+      "project_name": "_software.id",
       "read_names": [
-        "_software.calculator_name"
+        "_software.id"
       ],
-      "unique_name": "software.calculator_name"
+      "unique_name": "software.framework.id"
     },
     {
       "category_code": "software",
-      "category_entry_name": null,
+      "category_entry_name": "framework",
       "context": "factory.SoftwareFactory.default",
       "current_cif_names": [
-        "_software.calculator_url"
+        "_software.name"
       ],
       "descriptor_class": "StringDescriptor",
-      "descriptor_name": "calculator_url",
-      "descriptor_path": "factory.SoftwareFactory.default.calculator.url",
-      "docs_anchor": "software-calculator-url",
+      "descriptor_name": "name",
+      "descriptor_path": "factory.SoftwareFactory.default[].name",
+      "docs_anchor": "software-name",
       "docs_page": "software",
       "import_names": [
-        "_software.calculator_url"
+        "_software.name"
       ],
-      "iucr_name": "_software.calculator_url",
+      "iucr_name": "_software.name",
       "owner_class": "SoftwareRole",
-      "project_name": "_software.calculator_url",
+      "project_name": "_software.name",
       "read_names": [
-        "_software.calculator_url"
+        "_software.name"
       ],
-      "unique_name": "software.calculator_url"
+      "unique_name": "software.framework.name"
     },
     {
       "category_code": "software",
-      "category_entry_name": null,
+      "category_entry_name": "framework",
       "context": "factory.SoftwareFactory.default",
       "current_cif_names": [
-        "_software.calculator_version"
+        "_software.url"
       ],
       "descriptor_class": "StringDescriptor",
-      "descriptor_name": "calculator_version",
-      "descriptor_path": "factory.SoftwareFactory.default.calculator.version",
-      "docs_anchor": "software-calculator-version",
+      "descriptor_name": "url",
+      "descriptor_path": "factory.SoftwareFactory.default[].url",
+      "docs_anchor": "software-url",
       "docs_page": "software",
       "import_names": [
-        "_software.calculator_version"
+        "_software.url"
       ],
-      "iucr_name": "_software.calculator_version",
+      "iucr_name": "_software.url",
       "owner_class": "SoftwareRole",
-      "project_name": "_software.calculator_version",
+      "project_name": "_software.url",
       "read_names": [
-        "_software.calculator_version"
+        "_software.url"
       ],
-      "unique_name": "software.calculator_version"
+      "unique_name": "software.framework.url"
     },
     {
       "category_code": "software",
-      "category_entry_name": null,
+      "category_entry_name": "framework",
       "context": "factory.SoftwareFactory.default",
       "current_cif_names": [
-        "_software.framework_name"
+        "_software.version"
       ],
       "descriptor_class": "StringDescriptor",
-      "descriptor_name": "framework_name",
-      "descriptor_path": "factory.SoftwareFactory.default.framework.name",
-      "docs_anchor": "software-framework-name",
+      "descriptor_name": "version",
+      "descriptor_path": "factory.SoftwareFactory.default[].version",
+      "docs_anchor": "software-version",
       "docs_page": "software",
       "import_names": [
-        "_software.framework_name"
+        "_software.version"
       ],
-      "iucr_name": "_software.framework_name",
+      "iucr_name": "_software.version",
       "owner_class": "SoftwareRole",
-      "project_name": "_software.framework_name",
+      "project_name": "_software.version",
       "read_names": [
-        "_software.framework_name"
+        "_software.version"
       ],
-      "unique_name": "software.framework_name"
-    },
-    {
-      "category_code": "software",
-      "category_entry_name": null,
-      "context": "factory.SoftwareFactory.default",
-      "current_cif_names": [
-        "_software.framework_url"
-      ],
-      "descriptor_class": "StringDescriptor",
-      "descriptor_name": "framework_url",
-      "descriptor_path": "factory.SoftwareFactory.default.framework.url",
-      "docs_anchor": "software-framework-url",
-      "docs_page": "software",
-      "import_names": [
-        "_software.framework_url"
-      ],
-      "iucr_name": "_software.framework_url",
-      "owner_class": "SoftwareRole",
-      "project_name": "_software.framework_url",
-      "read_names": [
-        "_software.framework_url"
-      ],
-      "unique_name": "software.framework_url"
-    },
-    {
-      "category_code": "software",
-      "category_entry_name": null,
-      "context": "factory.SoftwareFactory.default",
-      "current_cif_names": [
-        "_software.framework_version"
-      ],
-      "descriptor_class": "StringDescriptor",
-      "descriptor_name": "framework_version",
-      "descriptor_path": "factory.SoftwareFactory.default.framework.version",
-      "docs_anchor": "software-framework-version",
-      "docs_page": "software",
-      "import_names": [
-        "_software.framework_version"
-      ],
-      "iucr_name": "_software.framework_version",
-      "owner_class": "SoftwareRole",
-      "project_name": "_software.framework_version",
-      "read_names": [
-        "_software.framework_version"
-      ],
-      "unique_name": "software.framework_version"
-    },
-    {
-      "category_code": "software",
-      "category_entry_name": null,
-      "context": "factory.SoftwareFactory.default",
-      "current_cif_names": [
-        "_software.minimizer_name"
-      ],
-      "descriptor_class": "StringDescriptor",
-      "descriptor_name": "minimizer_name",
-      "descriptor_path": "factory.SoftwareFactory.default.minimizer.name",
-      "docs_anchor": "software-minimizer-name",
-      "docs_page": "software",
-      "import_names": [
-        "_software.minimizer_name"
-      ],
-      "iucr_name": "_software.minimizer_name",
-      "owner_class": "SoftwareRole",
-      "project_name": "_software.minimizer_name",
-      "read_names": [
-        "_software.minimizer_name"
-      ],
-      "unique_name": "software.minimizer_name"
-    },
-    {
-      "category_code": "software",
-      "category_entry_name": null,
-      "context": "factory.SoftwareFactory.default",
-      "current_cif_names": [
-        "_software.minimizer_url"
-      ],
-      "descriptor_class": "StringDescriptor",
-      "descriptor_name": "minimizer_url",
-      "descriptor_path": "factory.SoftwareFactory.default.minimizer.url",
-      "docs_anchor": "software-minimizer-url",
-      "docs_page": "software",
-      "import_names": [
-        "_software.minimizer_url"
-      ],
-      "iucr_name": "_software.minimizer_url",
-      "owner_class": "SoftwareRole",
-      "project_name": "_software.minimizer_url",
-      "read_names": [
-        "_software.minimizer_url"
-      ],
-      "unique_name": "software.minimizer_url"
-    },
-    {
-      "category_code": "software",
-      "category_entry_name": null,
-      "context": "factory.SoftwareFactory.default",
-      "current_cif_names": [
-        "_software.minimizer_version"
-      ],
-      "descriptor_class": "StringDescriptor",
-      "descriptor_name": "minimizer_version",
-      "descriptor_path": "factory.SoftwareFactory.default.minimizer.version",
-      "docs_anchor": "software-minimizer-version",
-      "docs_page": "software",
-      "import_names": [
-        "_software.minimizer_version"
-      ],
-      "iucr_name": "_software.minimizer_version",
-      "owner_class": "SoftwareRole",
-      "project_name": "_software.minimizer_version",
-      "read_names": [
-        "_software.minimizer_version"
-      ],
-      "unique_name": "software.minimizer_version"
-    },
-    {
-      "category_code": "software",
-      "category_entry_name": null,
-      "context": "factory.SoftwareFactory.default",
-      "current_cif_names": [
-        "_software.timestamp"
-      ],
-      "descriptor_class": "StringDescriptor",
-      "descriptor_name": "timestamp",
-      "descriptor_path": "factory.SoftwareFactory.default.timestamp",
-      "docs_anchor": "software-timestamp",
-      "docs_page": "software",
-      "import_names": [
-        "_software.timestamp"
-      ],
-      "iucr_name": "_software.timestamp",
-      "owner_class": "Software",
-      "project_name": "_software.timestamp",
-      "read_names": [
-        "_software.timestamp"
-      ],
-      "unique_name": "software.timestamp"
+      "unique_name": "software.framework.version"
     },
     {
       "category_code": "space_group",

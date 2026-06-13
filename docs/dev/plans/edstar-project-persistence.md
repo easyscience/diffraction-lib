@@ -277,7 +277,7 @@ code/EdSTAR/CIF reference.
   Rename project info facade to metadata
   ```
 
-- [ ] P1.6 - Convert analysis software to a role loop.
+- [x] P1.6 - Convert analysis software to a role loop.
 
   Replace the wide `_software.framework_name`,
   `_software.calculator_name`, and `_software.minimizer_name` style with

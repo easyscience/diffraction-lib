@@ -262,10 +262,8 @@ class ReportDataContext:
         analysis = _safe_attr(self._project, 'analysis')
         software = _safe_attr(analysis, 'software')
         return {
-            'framework': _software_role_context(_safe_attr(software, 'framework')),
-            'calculator': _software_role_context(_safe_attr(software, 'calculator')),
-            'minimizer': _software_role_context(_safe_attr(software, 'minimizer')),
-            'fit_datetime': _attr_value(software, 'timestamp'),
+            'roles': _software_roles_context(software),
+            'fit_datetime': _safe_attr(_safe_attr(self._project, 'metadata'), 'timestamp'),
         }
 
 
@@ -1068,13 +1066,29 @@ def _category_code(category: object) -> str | None:
     return getattr(item_type, '_category_code', None)
 
 
-def _software_role_context(role: object) -> dict[str, object]:
+def _software_role_context(
+    role: object,
+    role_id: str | None = None,
+) -> dict[str, object]:
     """Return one software role context."""
     return {
+        'id': _attr_value(role, 'id') or role_id,
         'name': _attr_value(role, 'name'),
         'version': _attr_value(role, 'version'),
         'url': _attr_value(role, 'url'),
     }
+
+
+def _software_roles_context(software: object) -> list[dict[str, object]]:
+    """Return report contexts for the canonical software roles."""
+    roles: list[dict[str, object]] = []
+    for role_id in ('framework', 'calculator', 'minimizer'):
+        try:
+            role = software[role_id] if software is not None else None
+        except (KeyError, TypeError):
+            role = None
+        roles.append(_software_role_context(role, role_id))
+    return roles
 
 
 def _fit_data_context(experiment: object) -> dict[str, object] | None:

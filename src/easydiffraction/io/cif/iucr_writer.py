@@ -773,7 +773,7 @@ def _report_path(
     if path is not None:
         return pathlib.Path(path)
 
-    project_path = getattr(getattr(project, 'info', None), 'path', None)
+    project_path = getattr(getattr(project, 'metadata', None), 'path', None)
     if project_path is None:
         msg = 'Project has no saved path. Save the project first.'
         raise FileNotFoundError(msg)
@@ -809,7 +809,13 @@ def _role_descriptor_value(role: object, attr_name: str) -> object:
 def _software_role_label(project: object, role_name: str) -> str:
     """Return a persisted software role label or CIF unknown."""
     software = _analysis_software(project)
-    role = getattr(software, role_name, None)
+    if software is None:
+        role = None
+    else:
+        try:
+            role = software[role_name]
+        except (KeyError, TypeError):
+            role = None
     name = _role_descriptor_value(role, 'name')
     if name in {None, ''}:
         return '?'
@@ -822,8 +828,7 @@ def _software_role_label(project: object, role_name: str) -> str:
 
 def _software_fit_datetime(project: object) -> object | None:
     """Return the persisted fit timestamp, if available."""
-    software = _analysis_software(project)
-    timestamp = _descriptor_value(getattr(software, 'timestamp', None))
+    timestamp = getattr(getattr(project, 'metadata', None), 'timestamp', None)
     if timestamp in {None, ''}:
         return None
     return timestamp
