@@ -157,7 +157,6 @@ _PARAMETER_DOCS_BLOCKS = {
         'data',
         'diffrn',
         'excluded_region',
-        'excluded_regions',
         'experiment_type',
         'extinction',
         'instrument',

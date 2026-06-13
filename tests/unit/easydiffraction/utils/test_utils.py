@@ -269,6 +269,36 @@ def test_parameter_docs_url_maps_data_range_items(monkeypatch):
     )
 
 
+def test_parameter_docs_blocks_match_docs_tree():
+    """Guard the owner-grouped route map against docs-tree drift."""
+    import pathlib
+
+    import easydiffraction.utils.utils as MUT
+
+    repo_root = pathlib.Path(__file__).resolve().parents[4]
+    params_dir = repo_root / 'docs' / 'docs' / 'user-guide' / 'parameters'
+
+    docs_pages = {
+        (owner_dir.name, page.stem)
+        for owner_dir in params_dir.iterdir()
+        if owner_dir.is_dir()
+        for page in owner_dir.glob('*.md')
+    }
+    mapped_pages = {
+        (block, category)
+        for block, categories in MUT._PARAMETER_DOCS_BLOCKS.items()
+        for category in categories
+    }
+
+    # Every grouped route must resolve to an existing reference page and
+    # vice versa, so runtime parameter URLs cannot drift from the docs.
+    assert mapped_pages == docs_pages
+
+    # Each mapped category resolves to its own owner/category route.
+    for block, category in mapped_pages:
+        assert MUT._parameter_docs_page(category) == f'{block}/{category}'
+
+
 @pytest.mark.filterwarnings('ignore:Failed to fetch tutorials index:UserWarning')
 def test_fetch_tutorials_index_returns_empty_on_error(monkeypatch):
     import easydiffraction.utils.utils as MUT
