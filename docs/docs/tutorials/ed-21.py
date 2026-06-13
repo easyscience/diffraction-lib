@@ -179,10 +179,10 @@ experiment.peak.broad_lorentz_y = 0.0844
 # exclude regions that are not intended to contribute to the fit.
 
 # %%
-experiment.background.create(id='1', x=10, y=168.5585)
-experiment.background.create(id='2', x=30, y=164.3357)
-experiment.background.create(id='3', x=50, y=166.8881)
-experiment.background.create(id='4', x=110, y=175.4006)
+experiment.background.create(id='1', position=10, intensity=168.5585)
+experiment.background.create(id='2', position=30, intensity=164.3357)
+experiment.background.create(id='3', position=50, intensity=166.8881)
+experiment.background.create(id='4', position=110, intensity=175.4006)
 
 # %%
 experiment.excluded_regions.create(id='1', start=0, end=10)

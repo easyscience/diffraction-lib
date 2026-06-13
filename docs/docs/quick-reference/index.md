@@ -121,8 +121,8 @@ experiment.peak.broad_lorentz_y = 0.1
 Add background points and excluded regions:
 
 ```python
-experiment.background.create(id='1', x=10, y=170)
-experiment.background.create(id='2', x=30, y=170)
+experiment.background.create(id='1', position=10, intensity=170)
+experiment.background.create(id='2', position=30, intensity=170)
 
 experiment.excluded_regions.create(id='1', start=0, end=5)
 experiment.excluded_regions.create(id='2', start=165, end=180)
@@ -287,7 +287,7 @@ structure.atom_sites['O'].adp_iso.free = True
 
 experiment.instrument.calib_twotheta_offset.free = True
 experiment.peak.broad_gauss_u.free = True
-experiment.background['1'].y.free = True
+experiment.background['1'].intensity.free = True
 experiment.linked_structures['lbco'].scale.free = True
 ```
 

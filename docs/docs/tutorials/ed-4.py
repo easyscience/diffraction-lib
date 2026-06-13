@@ -154,10 +154,10 @@ for id, x, y in [
     ('7', 120.0, 244.4525),
     ('8', 153.0, 226.0595),
 ]:
-    expt1.background.create(id=id, x=x, y=y)
+    expt1.background.create(id=id, position=x, intensity=y)
 
 # %% [markdown]
-# #### Set Linked Phases
+# #### Set Linked Structures
 
 # %%
 expt1.linked_structures.create(structure_id='pbso4', scale=1.5)
@@ -221,7 +221,7 @@ for id, x, y in [
     expt2.background.create(id=id, order=x, coef=y)
 
 # %% [markdown]
-# #### Set Linked Phases
+# #### Set Linked Structures
 
 # %%
 expt2.linked_structures.create(structure_id='pbso4', scale=0.001)

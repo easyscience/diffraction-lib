@@ -89,8 +89,8 @@ experiment.peak.broad_lorentz_y = 0.1
 # ### Set Background
 
 # %%
-experiment.background.create(id='1', x=10, y=20)
-experiment.background.create(id='2', x=160, y=20)
+experiment.background.create(id='1', position=10, intensity=20)
+experiment.background.create(id='2', position=160, intensity=20)
 
 # %% [markdown]
 # ### Set Calculation Range
@@ -106,7 +106,7 @@ experiment.data_range.two_theta_max = 160.0
 experiment.data_range.two_theta_inc = 0.05
 
 # %% [markdown]
-# ### Set Linked Phases
+# ### Set Linked Structures
 
 # %%
 experiment.linked_structures.create(structure_id='lbco', scale=10.0)

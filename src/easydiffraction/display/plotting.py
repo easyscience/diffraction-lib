@@ -5979,7 +5979,7 @@ class Plotter(RendererBase):
         """
         arrays: dict[str, np.ndarray] = {}
         for name in (
-            'phase_id',
+            'structure_id',
             'index_h',
             'index_k',
             'index_l',
@@ -6017,29 +6017,29 @@ class Plotter(RendererBase):
         mask: np.ndarray,
     ) -> tuple[BraggTickSet, ...]:
         """
-        Group masked reflection arrays into per-phase tick sets.
+        Group masked reflection arrays into per-structure tick sets.
         """
-        phase_ids = arrays['phase_id'][mask]
-        unique_phase_ids = []
-        for raw_phase_id in phase_ids:
+        structure_ids = arrays['structure_id'][mask]
+        unique_structure_ids = []
+        for raw_structure_id in structure_ids:
             if not any(
-                np.array_equal(raw_phase_id, existing_phase_id)
-                for existing_phase_id in unique_phase_ids
+                np.array_equal(raw_structure_id, existing_structure_id)
+                for existing_structure_id in unique_structure_ids
             ):
-                unique_phase_ids.append(raw_phase_id)
+                unique_structure_ids.append(raw_structure_id)
 
         tick_sets = []
-        for raw_phase_id in unique_phase_ids:
-            phase_mask = mask & (arrays['phase_id'] == raw_phase_id)
+        for raw_structure_id in unique_structure_ids:
+            structure_mask = mask & (arrays['structure_id'] == raw_structure_id)
             tick_sets.append(
                 BraggTickSet(
-                    phase_id=str(raw_phase_id),
-                    x=arrays['x'][phase_mask],
-                    h=arrays['index_h'][phase_mask],
-                    k=arrays['index_k'][phase_mask],
-                    ell=arrays['index_l'][phase_mask],
-                    f_squared_calc=arrays['f_squared_calc'][phase_mask],
-                    f_calc=arrays['f_calc'][phase_mask],
+                    structure_id=str(raw_structure_id),
+                    x=arrays['x'][structure_mask],
+                    h=arrays['index_h'][structure_mask],
+                    k=arrays['index_k'][structure_mask],
+                    ell=arrays['index_l'][structure_mask],
+                    f_squared_calc=arrays['f_squared_calc'][structure_mask],
+                    f_calc=arrays['f_calc'][structure_mask],
                 )
             )
 
@@ -6064,7 +6064,7 @@ class Plotter(RendererBase):
                 refln.time_of_flight,
                 experiment.instrument.calib_d_to_tof_offset.value,
                 experiment.instrument.calib_d_to_tof_linear.value,
-                experiment.instrument.calib_d_to_tof_quad.value,
+                experiment.instrument.calib_d_to_tof_quadratic.value,
             )
         return refln.d_spacing
 

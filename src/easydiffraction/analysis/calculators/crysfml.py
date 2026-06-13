@@ -43,7 +43,7 @@ _INSTRUMENT_ATTRIBUTE_MAP: tuple[tuple[str, str], ...] = (
     # corrections are intentionally left unmapped here.
     ('calib_d_to_tof_offset', '_pd_meas_tof_offset'),
     ('calib_d_to_tof_linear', '_pd_meas_tof_dtt1'),
-    ('calib_d_to_tof_quad', '_pd_meas_tof_dtt2'),
+    ('calib_d_to_tof_quadratic', '_pd_meas_tof_dtt2'),
     ('setup_twotheta_bank', '_pd_meas_tof_bank_angle'),
 )
 
@@ -344,8 +344,8 @@ class CrysfmlCalculator(CalculatorBase):
             experiment_dict,
             _INSTRUMENT_ATTRIBUTE_MAP,
         )
-        # if hasattr(experiment.instrument, 'calib_d_to_tof_recip'):
-        #    ??? = experiment.instrument.calib_d_to_tof_recip.value
+        # if hasattr(experiment.instrument, 'calib_d_to_tof_reciprocal'):
+        #    ??? = experiment.instrument.calib_d_to_tof_reciprocal.value
 
     def _update_experiment_dict_from_peak(
         self,

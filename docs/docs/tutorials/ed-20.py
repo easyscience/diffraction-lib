@@ -153,10 +153,10 @@ expt_s2.background.show()
 
 # %%
 for point in expt_s2.background:
-    expt_n2.background.create(id=point.id.value, x=point.x.value, y=point.y.value)
+    expt_n2.background.create(id=point.id.value, position=point.position.value, intensity=point.intensity.value)
 
 # %% [markdown]
-# ### Set Linked Phases
+# ### Set Linked Structures
 
 # %%
 expt_s2.linked_structures.create(structure_id='ferrite', scale=10)
@@ -255,7 +255,7 @@ expt_s2.peak.broad_lorentz_gamma_0.free = True
 expt_s2.instrument.calib_d_to_tof_offset.free = True
 
 for segment in expt_s2.background:
-    segment.y.free = True
+    segment.intensity.free = True
 
 # %%
 expt_n2.linked_structures['ferrite'].scale.free = True
@@ -269,7 +269,7 @@ expt_n2.peak.broad_lorentz_gamma_0.free = True
 expt_n2.instrument.calib_d_to_tof_offset.free = True
 
 for segment in expt_n2.background:
-    segment.y.free = True
+    segment.intensity.free = True
 
 # %% [markdown]
 # ### Add Constraints
@@ -305,9 +305,9 @@ project.analysis.fit()
 
 # %%
 for segment in expt_s2.background:
-    segment.y.free = False
+    segment.intensity.free = False
 for segment in expt_n2.background:
-    segment.y.free = False
+    segment.intensity.free = False
 
 # %%
 project.analysis.fit()

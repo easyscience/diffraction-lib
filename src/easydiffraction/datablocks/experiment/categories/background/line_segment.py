@@ -57,42 +57,50 @@ class LineSegment(CategoryItem):
                 #  Do we need conversion between CIF and internal label?
                 validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
             ),
-            cif_handler=CifHandler(names=['_pd_background.id']),
+            cif_handler=CifHandler(
+                names=['_background.id'],
+                import_names=['_pd_background.id'],
+                iucr_name='_pd_background.id',
+            ),
             display_handler=DisplayHandler(
                 display_name='ID',
                 latex_name='ID',
             ),
         )
-        self._x = NumericDescriptor(
-            name='x',
-            description='X-coordinates used to create many straight-line segments',
+        self._position = NumericDescriptor(
+            name='position',
+            description='Position used to create many straight-line segments',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
             ),
             cif_handler=CifHandler(
-                names=[
+                names=['_background.position'],
+                import_names=[
                     '_pd_background.line_segment_X',
                     '_pd_background_line_segment_X',
-                ]
+                ],
+                iucr_name='_pd_background.line_segment_X',
             ),
             display_handler=DisplayHandler(
-                display_name='x',
+                display_name='Position',
                 latex_name='$x$',
             ),
         )
-        self._y = Parameter(
-            name='y',  # TODO: rename to intensity
+        self._intensity = Parameter(
+            name='intensity',
             description='Intensity used to create many straight-line segments',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
-            ),  # TODO: rename to intensity
+            ),
             cif_handler=CifHandler(
-                names=[
+                names=['_background.intensity'],
+                import_names=[
                     '_pd_background.line_segment_intensity',
                     '_pd_background_line_segment_intensity',
-                ]
+                ],
+                iucr_name='_pd_background.line_segment_intensity',
             ),
             display_handler=DisplayHandler(
                 display_name='Intensity',
@@ -120,33 +128,33 @@ class LineSegment(CategoryItem):
         self._id.value = value
 
     @property
-    def x(self) -> NumericDescriptor:
+    def position(self) -> NumericDescriptor:
         """
-        X-coordinates used to create many straight-line segments.
+        Position used to create many straight-line segments.
 
         Reading this property returns the underlying
         ``NumericDescriptor`` object. Assigning to it updates the
         parameter value.
         """
-        return self._x
+        return self._position
 
-    @x.setter
-    def x(self, value: float) -> None:
-        self._x.value = value
+    @position.setter
+    def position(self, value: float) -> None:
+        self._position.value = value
 
     @property
-    def y(self) -> Parameter:
+    def intensity(self) -> Parameter:
         """
         Intensity used to create many straight-line segments.
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
         """
-        return self._y
+        return self._intensity
 
-    @y.setter
-    def y(self, value: float) -> None:
-        self._y.value = value
+    @intensity.setter
+    def intensity(self, value: float) -> None:
+        self._intensity.value = value
 
 
 def _resolve_method(method: str) -> str:
@@ -279,8 +287,8 @@ class LineSegmentBackground(BackgroundBase):
             data._set_intensity_bkg(np.zeros_like(x))
             return
 
-        segments_x = np.array([point.x.value for point in self._items])
-        segments_y = np.array([point.y.value for point in self._items])
+        segments_x = np.array([point.position.value for point in self._items])
+        segments_y = np.array([point.intensity.value for point in self._items])
         interp_func = interp1d(
             segments_x,
             segments_y,
@@ -362,9 +370,9 @@ class LineSegmentBackground(BackgroundBase):
             log.info('Replacing existing background points with a new estimate.')
         self.clear()
         for index, (point_x, height) in enumerate(zip(anchor_x, heights, strict=True), start=1):
-            self.create(id=str(index), x=float(point_x), y=float(height))
+            self.create(id=str(index), position=float(point_x), intensity=float(height))
         for point in self._items:
-            point.y.free = False
+            point.intensity.free = False
 
         count = len(self)
         width_pts = result.width
@@ -375,7 +383,9 @@ class LineSegmentBackground(BackgroundBase):
         """Print a table of control points (x, intensity)."""
         columns_headers: list[str] = ['X', 'Intensity']
         columns_alignment = ['left', 'left']
-        columns_data: list[list[float]] = [[p.x.value, p.y.value] for p in self._items]
+        columns_data: list[list[float]] = [
+            [p.position.value, p.intensity.value] for p in self._items
+        ]
 
         console.paragraph('Line-segment background points')
         render_table(

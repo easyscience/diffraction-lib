@@ -83,7 +83,7 @@ bragg_expt = ExperimentFactory.from_data_path(
 bragg_expt.instrument.setup_twotheta_bank = 144.845
 bragg_expt.instrument.calib_d_to_tof_offset = -9.2
 bragg_expt.instrument.calib_d_to_tof_linear = 7476.91
-bragg_expt.instrument.calib_d_to_tof_quad = -1.54
+bragg_expt.instrument.calib_d_to_tof_quadratic = -1.54
 
 # %% [markdown]
 # #### Set Peak Profile
@@ -104,10 +104,10 @@ bragg_expt.peak.exp_rise_alpha_1 = 0.5971
 # %%
 bragg_expt.background.type = 'line-segment'
 for x in range(0, 35000, 5000):
-    bragg_expt.background.create(id=str(x), x=x, y=200)
+    bragg_expt.background.create(id=str(x), position=x, intensity=200)
 
 # %% [markdown]
-# #### Set Linked Phases
+# #### Set Linked Structures
 
 # %%
 bragg_expt.linked_structures.create(structure_id='si', scale=13.0)
@@ -143,7 +143,7 @@ pdf_expt.peak.sharp_delta_2 = 4.0
 pdf_expt.peak.damp_particle_diameter = 0
 
 # %% [markdown]
-# #### Set Linked Phases
+# #### Set Linked Structures
 
 # %%
 pdf_expt.linked_structures.create(structure_id='si', scale=1.0)
@@ -220,7 +220,7 @@ bragg_expt.peak.broad_gauss_sigma_0.free = True
 bragg_expt.peak.broad_gauss_sigma_1.free = True
 bragg_expt.peak.broad_gauss_sigma_2.free = True
 for point in bragg_expt.background:
-    point.y.free = True
+    point.intensity.free = True
 
 # %% [markdown]
 # PDF experiment parameters.

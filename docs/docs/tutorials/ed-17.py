@@ -123,7 +123,7 @@ project.display.structure(struct_name='cosio')
 #
 # For sequential fitting, we create a single template experiment from
 # the first data file. This template defines the instrument, peak
-# profile, background, and linked phases that will be reused for every
+# profile, background, and linked structures that will be reused for every
 # data file in the scan.
 #
 # ### Download Data
@@ -178,23 +178,23 @@ expt.excluded_regions.create(id='2', start=150, end=180)
 # ### Set Background
 
 # %%
-expt.background.create(id='1', x=8, y=609)
-expt.background.create(id='2', x=9, y=581)
-expt.background.create(id='3', x=10, y=563)
-expt.background.create(id='4', x=11, y=540)
-expt.background.create(id='5', x=12, y=520)
-expt.background.create(id='6', x=15, y=507)
-expt.background.create(id='7', x=25, y=463)
-expt.background.create(id='8', x=30, y=434)
-expt.background.create(id='9', x=50, y=451)
-expt.background.create(id='10', x=70, y=431)
-expt.background.create(id='11', x=90, y=414)
-expt.background.create(id='12', x=110, y=361)
-expt.background.create(id='13', x=130, y=292)
-expt.background.create(id='14', x=150, y=241)
+expt.background.create(id='1', position=8, intensity=609)
+expt.background.create(id='2', position=9, intensity=581)
+expt.background.create(id='3', position=10, intensity=563)
+expt.background.create(id='4', position=11, intensity=540)
+expt.background.create(id='5', position=12, intensity=520)
+expt.background.create(id='6', position=15, intensity=507)
+expt.background.create(id='7', position=25, intensity=463)
+expt.background.create(id='8', position=30, intensity=434)
+expt.background.create(id='9', position=50, intensity=451)
+expt.background.create(id='10', position=70, intensity=431)
+expt.background.create(id='11', position=90, intensity=414)
+expt.background.create(id='12', position=110, intensity=361)
+expt.background.create(id='13', position=130, intensity=292)
+expt.background.create(id='14', position=150, intensity=241)
 
 # %% [markdown]
-# ### Set Linked Phases
+# ### Set Linked Structures
 
 # %%
 expt.linked_structures.create(structure_id='cosio', scale=1.2)
@@ -243,7 +243,7 @@ expt.peak.broad_gauss_w.free = True
 expt.peak.broad_lorentz_y.free = True
 
 for point in expt.background:
-    point.y.free = True
+    point.intensity.free = True
 
 # %% [markdown]
 # ### Set Constraints

@@ -151,8 +151,8 @@ class TofCalibrationTransformer(IucrCategoryTransformer):
         for row_id, power, attr_name in (
             ('offset', 0, 'calib_d_to_tof_offset'),
             ('linear', 1, 'calib_d_to_tof_linear'),
-            ('quad', 2, 'calib_d_to_tof_quad'),
-            ('recip', -1, 'calib_d_to_tof_recip'),
+            ('quad', 2, 'calib_d_to_tof_quadratic'),
+            ('recip', -1, 'calib_d_to_tof_reciprocal'),
         ):
             coeff = _attribute_value(instrument, attr_name)
             if _finite_number(coeff) == 0:

@@ -38,10 +38,10 @@ experiment.instrument.setup_twotheta_bank
 Time-of-flight calibration terms converting d-spacing to time of flight.
 In Python these are accessed as:
 
-- `experiment.instrument.calib_d_to_tof_recip`
+- `experiment.instrument.calib_d_to_tof_reciprocal`
 - `experiment.instrument.calib_d_to_tof_offset`
 - `experiment.instrument.calib_d_to_tof_linear`
-- `experiment.instrument.calib_d_to_tof_quad`
+- `experiment.instrument.calib_d_to_tof_quadratic`
 
 They serialize to the following CIF tags:
 

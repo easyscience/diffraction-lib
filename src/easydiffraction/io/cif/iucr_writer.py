@@ -624,7 +624,7 @@ def _write_pref_orient_loop(lines: list[str], experiment: object) -> None:
         [
             (
                 str(index),
-                _attribute_value(row, 'phase_id'),
+                _attribute_value(row, 'structure_id'),
                 _attribute_value(row, 'index_h'),
                 _attribute_value(row, 'index_k'),
                 _attribute_value(row, 'index_l'),
@@ -1287,7 +1287,7 @@ def _powder_refln_row(refln: object) -> tuple[object, ...]:
         _attribute_value(refln, 'index_l'),
         '?',
         _attribute_value(refln, 'f_squared_calc'),
-        _attribute_value(refln, 'phase_id'),
+        _attribute_value(refln, 'structure_id'),
         _attribute_value(refln, 'd_spacing'),
     )
 

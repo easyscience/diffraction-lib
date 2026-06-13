@@ -193,9 +193,9 @@ aspects of the experiment:
    parameters, such as broadening and asymmetry.
 3. **Background Category**: Defines the background type and allows you
    to add background points.
-4. **Linked Phases Category**: Links the structure defined in the
+4. **Linked Structures Category**: Links the structure defined in the
    previous step to the experiment, allowing you to specify the scale
-   factor for the linked phase.
+   factor for the linked structure.
 5. **Measured Data Category**: Contains the measured data. The expected
    format depends on the experiment type, but generally includes columns
    for 2θ angle or TOF and intensity.
@@ -237,11 +237,11 @@ project.experiments['hrpt'].peak.broad_lorentz_y = 0.1
 project.experiments['hrpt'].background.type = 'line-segment'
 
 # Add background points
-project.experiments['hrpt'].background.create(x=10, y=170)
-project.experiments['hrpt'].background.create(x=30, y=170)
-project.experiments['hrpt'].background.create(x=50, y=170)
-project.experiments['hrpt'].background.create(x=110, y=170)
-project.experiments['hrpt'].background.create(x=165, y=170)
+project.experiments['hrpt'].background.create(position=10, intensity=170)
+project.experiments['hrpt'].background.create(position=30, intensity=170)
+project.experiments['hrpt'].background.create(position=50, intensity=170)
+project.experiments['hrpt'].background.create(position=110, intensity=170)
+project.experiments['hrpt'].background.create(position=165, intensity=170)
 ```
 
 Instead of placing every point by hand, you can let EasyDiffraction
@@ -274,7 +274,7 @@ cap the number of points or choose a specific method:
 project.experiments['hrpt'].background.auto_estimate(n_points=10)
 ```
 
-### 5. Linked Phases Category { #linked-phases-category }
+### 5. Linked Structures Category { #linked-structures-category }
 
 ```python
 # Link the structure defined in the previous step to the experiment
@@ -292,7 +292,7 @@ fraction `march_random_fract`:
 ```python
 # Add a March–Dollase preferred-orientation correction for a phase
 project.experiments['hrpt'].preferred_orientation.create(
-    phase_id='lbco', march_r=1.2, index_h=0, index_k=0, index_l=1
+    structure_id='lbco', march_r=1.2, index_h=0, index_k=0, index_l=1
 )
 ```
 

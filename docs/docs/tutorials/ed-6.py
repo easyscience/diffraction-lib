@@ -128,7 +128,7 @@ expt.peak.broad_lorentz_y = 0
 expt.background.auto_estimate()
 
 # %% [markdown]
-# ### Set Linked Phases
+# ### Set Linked Structures
 
 # %%
 expt.linked_structures.create(structure_id='hs', scale=0.5)
@@ -225,7 +225,7 @@ expt.peak.broad_gauss_w.free = True
 expt.peak.broad_lorentz_y.free = True
 
 for point in expt.background:
-    point.y.free = True
+    point.intensity.free = True
 
 # %% [markdown]
 # Show free parameters after selection.

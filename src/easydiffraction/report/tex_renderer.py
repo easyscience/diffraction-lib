@@ -45,7 +45,7 @@ _FIT_X_FIELD_TAGS = {
     'r': '_pd_proc.r',
 }
 _FIT_CSV_FIELD_TAGS = (
-    ('point_id', '_pd_data.point_id'),
+    ('id', '_pd_data.point_id'),
     ('d_spacing', '_pd_proc.d_spacing'),
     ('intensity_meas', '_pd_meas.intensity_total'),
     ('intensity_meas_su', '_pd_meas.intensity_total_su'),
@@ -55,7 +55,7 @@ _FIT_CSV_FIELD_TAGS = (
 )
 _REFLN_CSV_FIELD_TAGS = (
     ('id', '_refln.id'),
-    ('phase_id', '_refln.phase_id'),
+    ('structure_id', '_pd_refln.phase_id'),
     ('d_spacing', '_refln.d_spacing'),
     ('sin_theta_over_lambda', '_refln.sin_theta_over_lambda'),
     ('index_h', '_refln.index_h'),
@@ -521,7 +521,7 @@ def _fit_csv_columns(
     category_values = _category_values(
         source_experiment,
         experiment,
-        code='pd_data',
+        code='data',
     )
     x_field = _fit_x_field(category_values, fit_data)
     row_count = len(list(x_data['values']))
@@ -537,7 +537,7 @@ def _fit_csv_columns(
         ),
     ]
     fallback_values = {
-        'point_id': [str(index + 1) for index in range(row_count)],
+        'id': [str(index + 1) for index in range(row_count)],
         'd_spacing': _empty_csv_values(row_count),
         'intensity_meas': list(meas['values']),
         'intensity_meas_su': _series_values_or_empty(meas.get('su'), row_count),
@@ -579,7 +579,7 @@ def _fit_csv_plot_columns(
     fit_data: dict[str, object],
 ) -> dict[str, str]:
     """Return CSV column tags used by the standalone fit figure."""
-    x_field = _fit_x_field(_context_category_values(experiment, 'pd_data'), fit_data)
+    x_field = _fit_x_field(_context_category_values(experiment, 'data'), fit_data)
     return {
         'x': _FIT_X_FIELD_TAGS[x_field],
         'meas': '_pd_meas.intensity_total',
@@ -632,25 +632,25 @@ def _write_refln_category_csvs(
     values: dict[str, list[object]],
     data_dir: pathlib.Path,
 ) -> dict[str, dict[str, str]]:
-    """Write reflection-category rows split by phase id."""
-    phase_values = values.get('phase_id')
-    if phase_values is None:
+    """Write reflection-category rows split by structure id."""
+    structure_values = values.get('structure_id')
+    if structure_values is None:
         return {}
 
-    row_indexes_by_phase: dict[str, list[int]] = {}
-    for row_index, phase_value in enumerate(phase_values):
-        if _is_csv_empty(phase_value):
+    row_indexes_by_structure: dict[str, list[int]] = {}
+    for row_index, structure_value in enumerate(structure_values):
+        if _is_csv_empty(structure_value):
             continue
-        phase_id = str(phase_value)
-        row_indexes_by_phase.setdefault(phase_id, []).append(row_index)
+        structure_id = str(structure_value)
+        row_indexes_by_structure.setdefault(structure_id, []).append(row_index)
 
     csvs: dict[str, dict[str, str]] = {}
     x_column = _refln_x_column(values)
-    for phase_id, row_indexes in row_indexes_by_phase.items():
-        csv_path = data_dir / _bragg_csv_filename(expt_id, phase_id)
+    for structure_id, row_indexes in row_indexes_by_structure.items():
+        csv_path = data_dir / _bragg_csv_filename(expt_id, structure_id)
         columns = _refln_csv_columns(values, row_indexes)
         _write_csv(csv_path, expt_id, columns)
-        csvs[phase_id] = {
+        csvs[structure_id] = {
             'filename': csv_path.name,
             'x_column': x_column,
         }
@@ -689,11 +689,11 @@ def _write_bragg_tick_set_csvs(
     """Write fallback Bragg CSVs from plot tick-set data."""
     csvs: dict[str, dict[str, str]] = {}
     for tick_set in fit_data.get('bragg_tick_sets') or ():
-        phase_id = str(tick_set.phase_id)
-        csv_path = data_dir / _bragg_csv_filename(expt_id, phase_id)
+        structure_id = str(tick_set.structure_id)
+        csv_path = data_dir / _bragg_csv_filename(expt_id, structure_id)
         columns = _bragg_tick_set_columns(tick_set)
         _write_csv(csv_path, expt_id, columns)
-        csvs[phase_id] = {
+        csvs[structure_id] = {
             'filename': csv_path.name,
             'x_column': '_refln.two_theta',
         }
@@ -705,7 +705,7 @@ def _bragg_tick_set_columns(tick_set: object) -> list[tuple[str, list[object]]]:
     row_count = len(tick_set.x)
     return [
         ('_refln.id', [str(index + 1) for index in range(row_count)]),
-        ('_refln.phase_id', [tick_set.phase_id] * row_count),
+        ('_pd_refln.phase_id', [tick_set.structure_id] * row_count),
         ('_refln.index_h', list(tick_set.h)),
         ('_refln.index_k', list(tick_set.k)),
         ('_refln.index_l', list(tick_set.ell)),
@@ -715,9 +715,9 @@ def _bragg_tick_set_columns(tick_set: object) -> list[tuple[str, list[object]]]:
     ]
 
 
-def _bragg_csv_filename(expt_id: str, phase_id: str) -> str:
-    """Return the Bragg-position CSV filename for one phase."""
-    return f'{_safe_asset_stem(expt_id)}_{_safe_asset_stem(phase_id)}.csv'
+def _bragg_csv_filename(expt_id: str, structure_id: str) -> str:
+    """Return the Bragg-position CSV filename for one structure."""
+    return f'{_safe_asset_stem(expt_id)}_{_safe_asset_stem(structure_id)}.csv'
 
 
 def _bragg_tick_sources(
@@ -727,12 +727,12 @@ def _bragg_tick_sources(
     """Return template context for Bragg-position CSV sources."""
     sources = []
     for tick_set in fit_data.get('bragg_tick_sets') or ():
-        phase_id = str(tick_set.phase_id)
-        bragg_csv = bragg_csvs.get(phase_id)
+        structure_id = str(tick_set.structure_id)
+        bragg_csv = bragg_csvs.get(structure_id)
         if bragg_csv is None:
             continue
         sources.append({
-            'phase_id': phase_id,
+            'structure_id': structure_id,
             'csv_filename': bragg_csv['filename'],
             'x_column': bragg_csv['x_column'],
         })

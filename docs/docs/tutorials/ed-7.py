@@ -79,7 +79,7 @@ expt = ExperimentFactory.from_data_path(
 expt.instrument.setup_twotheta_bank = 144.845
 expt.instrument.calib_d_to_tof_offset = 0.0
 expt.instrument.calib_d_to_tof_linear = 7476.91
-expt.instrument.calib_d_to_tof_quad = -1.54
+expt.instrument.calib_d_to_tof_quadratic = -1.54
 
 # %% [markdown]
 # ### Set Peak Profile
@@ -100,10 +100,10 @@ expt.peak.exp_rise_alpha_1 = 0.5971
 # %%
 expt.background.type = 'line-segment'
 for x in range(0, 35000, 5000):
-    expt.background.create(id=str(x), x=x, y=200)
+    expt.background.create(id=str(x), position=x, intensity=200)
 
 # %% [markdown]
-# ### Set Linked Phases
+# ### Set Linked Structures
 
 # %%
 expt.linked_structures.create(structure_id='si', scale=10.0)
@@ -189,7 +189,7 @@ project.display.pattern(expt_name='sepd', x_min=23200, x_max=23700)
 
 # %%
 for point in expt.background:
-    point.y.free = True
+    point.intensity.free = True
 
 # %% [markdown]
 # Show free parameters after selection.
@@ -220,7 +220,7 @@ project.display.pattern(expt_name='sepd', x_min=23200, x_max=23700)
 
 # %%
 for point in expt.background:
-    point.y.free = False
+    point.intensity.free = False
 
 # %% [markdown]
 # Set more parameters to be refined.

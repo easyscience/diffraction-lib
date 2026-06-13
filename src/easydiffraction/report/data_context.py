@@ -59,7 +59,7 @@ _EXPERIMENT_DIFFRN_FIELDS = (
 )
 _REPORT_LOOP_DISPLAY_LIMIT = DEFAULT_LOOP_DISPLAY_LIMIT
 _FULL_WIDTH_TABLE_CHAR_LIMIT = 40
-_TRUNCATED_DATA_CATEGORY_CODES = frozenset({'pd_data', 'total_data'})
+_TRUNCATED_DATA_CATEGORY_CODES = frozenset({'data'})
 _NUMERIC_TEXT_RE = re.compile(r'^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:\(\d+\))?(?:[eE][+-]?\d+)?$')
 _ADP_ANISO_CIF_RE = re.compile(r'^_atom_site_aniso\.([BU])_(\d{2})$')
 _NUMBER_PARTS_RE = re.compile(

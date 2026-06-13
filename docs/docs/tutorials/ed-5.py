@@ -141,23 +141,23 @@ expt.peak.broad_gauss_w = 0.4
 expt.background.show_supported()
 
 # %%
-expt.background.create(id='1', x=8, y=500)
-expt.background.create(id='2', x=9, y=500)
-expt.background.create(id='3', x=10, y=500)
-expt.background.create(id='4', x=11, y=500)
-expt.background.create(id='5', x=12, y=500)
-expt.background.create(id='6', x=15, y=500)
-expt.background.create(id='7', x=25, y=500)
-expt.background.create(id='8', x=30, y=500)
-expt.background.create(id='9', x=50, y=500)
-expt.background.create(id='10', x=70, y=500)
-expt.background.create(id='11', x=90, y=500)
-expt.background.create(id='12', x=110, y=500)
-expt.background.create(id='13', x=130, y=500)
-expt.background.create(id='14', x=150, y=500)
+expt.background.create(id='1', position=8, intensity=500)
+expt.background.create(id='2', position=9, intensity=500)
+expt.background.create(id='3', position=10, intensity=500)
+expt.background.create(id='4', position=11, intensity=500)
+expt.background.create(id='5', position=12, intensity=500)
+expt.background.create(id='6', position=15, intensity=500)
+expt.background.create(id='7', position=25, intensity=500)
+expt.background.create(id='8', position=30, intensity=500)
+expt.background.create(id='9', position=50, intensity=500)
+expt.background.create(id='10', position=70, intensity=500)
+expt.background.create(id='11', position=90, intensity=500)
+expt.background.create(id='12', position=110, intensity=500)
+expt.background.create(id='13', position=130, intensity=500)
+expt.background.create(id='14', position=150, intensity=500)
 
 # %% [markdown]
-# ### Set Linked Phases
+# ### Set Linked Structures
 
 # %%
 expt.linked_structures.create(structure_id='cosio', scale=1.0)
@@ -240,7 +240,7 @@ expt.peak.broad_lorentz_y.free = True
 expt.peak.asym_empir_2.free = True
 
 for point in expt.background:
-    point.y.free = True
+    point.intensity.free = True
 
 # %% [markdown]
 # Show free parameters after selection.

@@ -40,9 +40,9 @@ class CwlInstrumentBase(InstrumentBase):
                 validator=RangeValidator(ge=0.0),
             ),
             cif_handler=CifHandler(
-                names=[
-                    '_instr.wavelength',
-                ]
+                names=['_instrument.setup_wavelength'],
+                import_names=['_instr.wavelength'],
+                iucr_name='_diffrn_radiation_wavelength.value',
             ),
         )
 
@@ -124,9 +124,9 @@ class CwlPdInstrument(CwlInstrumentBase):
                 validator=RangeValidator(),
             ),
             cif_handler=CifHandler(
-                names=[
-                    '_instr.2theta_offset',
-                ]
+                names=['_instrument.calib_twotheta_offset'],
+                import_names=['_instr.2theta_offset'],
+                iucr_name='_pd_calib.2theta_offset',
             ),
         )
 
@@ -145,9 +145,9 @@ class CwlPdInstrument(CwlInstrumentBase):
                 validator=RangeValidator(),
             ),
             cif_handler=CifHandler(
-                names=[
-                    '_instr.sample_displacement',
-                ]
+                names=['_instrument.calib_sample_displacement'],
+                import_names=['_instr.sample_displacement'],
+                iucr_name='_instr.sample_displacement',
             ),
         )
 
@@ -166,9 +166,9 @@ class CwlPdInstrument(CwlInstrumentBase):
                 validator=RangeValidator(),
             ),
             cif_handler=CifHandler(
-                names=[
-                    '_instr.sample_transparency',
-                ]
+                names=['_instrument.calib_sample_transparency'],
+                import_names=['_instr.sample_transparency'],
+                iucr_name='_instr.sample_transparency',
             ),
         )
 

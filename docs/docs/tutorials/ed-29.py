@@ -87,7 +87,7 @@ experiment.peak.broad_gauss_v = -0.1
 experiment.peak.broad_gauss_w = 0.1
 
 # %% [markdown]
-# ### Set Linked Phases
+# ### Set Linked Structures
 
 # %%
 experiment.linked_structures.create(structure_id='nacl', scale=1.0)

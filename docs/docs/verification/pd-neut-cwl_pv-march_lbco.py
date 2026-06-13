@@ -135,7 +135,7 @@ experiment.peak.broad_lorentz_x = FULLPROF_X
 experiment.peak.broad_lorentz_y = FULLPROF_Y
 
 experiment.preferred_orientation.create(
-    phase_id='lbco',
+    structure_id='lbco',
     march_r=FULLPROF_PREF_1,
     march_random_fract=FULLPROF_PREF_2,
     index_h=FULLPROF_PR_1,

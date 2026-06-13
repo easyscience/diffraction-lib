@@ -171,8 +171,8 @@ EasyDiffraction.
 
     | Category                                         | Parameter                                                  | How to access in the code        |
     |--------------------------------------------------|------------------------------------------------------------|----------------------------------|
-    | :material-waveform: [background][background]     | :material-arrow-collapse-right: [x][background]            | background.x                     |
-    |                                                  | :material-arrow-collapse-up: [y][background]               | background.y                     |
+    | :material-waveform: [background][background]     | :material-arrow-collapse-right: [position][background]     | background.position              |
+    |                                                  | :material-arrow-collapse-up: [intensity][background]       | background.intensity             |
     |                                                  | :material-format-superscript: [order][background]          | background.order                 |
     |                                                  | :material-arrow-collapse-up: [coef][background]            | background.coef                  |
     | :material-puzzle: [linked_structures][linked_structures] | :material-scale: [scale][linked_structures]                    | linked_structures['ID'].scale        |
@@ -186,8 +186,8 @@ EasyDiffraction.
 
     | Category                                         | Parameter                                                  | CIF name for serialization             | CIF dictionary          |
     |--------------------------------------------------|------------------------------------------------------------|----------------------------------------|-------------------------|
-    | :material-waveform: [background][background]     | :material-arrow-collapse-right: [x][background]            | \_pd_background.line_segment_X         | [pdCIF][0]{:.label-cif} |
-    |                                                  | :material-arrow-collapse-up: [y][background]               | \_pd_background.line_segment_intensity | [pdCIF][0]{:.label-cif} |
+    | :material-waveform: [background][background]     | :material-arrow-collapse-right: [position][background]     | \_pd_background.line_segment_X         | [pdCIF][0]{:.label-cif} |
+    |                                                  | :material-arrow-collapse-up: [intensity][background]       | \_pd_background.line_segment_intensity | [pdCIF][0]{:.label-cif} |
     |                                                  | :material-format-superscript: [order][background]          | \_pd_background.chebyshev_order        | [pdCIF][0]{:.label-cif} |
     |                                                  | :material-arrow-collapse-up: [coef][background]            | \_pd_background.chebyshev_coef         | [pdCIF][0]{:.label-cif} |
     | :material-puzzle: [linked_structures][linked_structures] | :material-scale: [scale][linked_structures]                    | \_pd_phase_block.scale                 | [pdCIF][0]{:.label-cif} |
@@ -230,10 +230,10 @@ EasyDiffraction.
     | Category                                       | Parameter                                                      | How to access in the code        |
     |------------------------------------------------|----------------------------------------------------------------|----------------------------------|
     | :material-microscope: [instrument][instrument] | :material-wrench: [setup_twotheta_bank][instrument]            | instrument.setup_twotheta_bank   |
-    |                                                | :material-tune: [calib_d_to_tof_recip][instrument]             | instrument.calib_d_to_tof_recip  |
+    |                                                | :material-tune: [calib_d_to_tof_reciprocal][instrument]             | instrument.calib_d_to_tof_reciprocal  |
     |                                                | :material-tune: [calib_d_to_tof_offset][instrument]            | instrument.calib_d_to_tof_offset |
     |                                                | :material-tune: [calib_d_to_tof_linear][instrument]            | instrument.calib_d_to_tof_linear |
-    |                                                | :material-tune: [calib_d_to_tof_quad][instrument]              | instrument.calib_d_to_tof_quad   |
+    |                                                | :material-tune: [calib_d_to_tof_quadratic][instrument]              | instrument.calib_d_to_tof_quadratic   |
     | :material-shape: [peak][peak]                  | :material-arrow-expand-horizontal: [broad_gauss_sigma_0][peak] | peak.broad_gauss_sigma_0         |
     |                                                | :material-arrow-expand-horizontal: [broad_gauss_sigma_1][peak] | peak.broad_gauss_sigma_1         |
     |                                                | :material-arrow-expand-horizontal: [broad_gauss_sigma_2][peak] | peak.broad_gauss_sigma_2         |
@@ -247,10 +247,10 @@ EasyDiffraction.
     | Category                                       | Parameter                                                      | CIF name for serialization         | CIF dictionary                       |
     |------------------------------------------------|----------------------------------------------------------------|------------------------------------|--------------------------------------|
     | :material-microscope: [instrument][instrument] | :material-wrench: [setup_twotheta_bank][instrument]            | \_instr.2theta_bank                | [easydiffractionCIF][0]{:.label-cif} |
-    |                                                | :material-tune: [calib_d_to_tof_recip][instrument]             | \_instr.d_to_tof_recip             | [easydiffractionCIF][0]{:.label-cif} |
+    |                                                | :material-tune: [calib_d_to_tof_reciprocal][instrument]             | \_instr.d_to_tof_recip             | [easydiffractionCIF][0]{:.label-cif} |
     |                                                | :material-tune: [calib_d_to_tof_offset][instrument]            | \_instr.d_to_tof_offset            | [easydiffractionCIF][0]{:.label-cif} |
     |                                                | :material-tune: [calib_d_to_tof_linear][instrument]            | \_instr.d_to_tof_linear            | [easydiffractionCIF][0]{:.label-cif} |
-    |                                                | :material-tune: [calib_d_to_tof_quad][instrument]              | \_instr.d_to_tof_quad              | [easydiffractionCIF][0]{:.label-cif} |
+    |                                                | :material-tune: [calib_d_to_tof_quadratic][instrument]              | \_instr.d_to_tof_quad              | [easydiffractionCIF][0]{:.label-cif} |
     | :material-shape: [peak][peak]                  | :material-arrow-expand-horizontal: [broad_gauss_sigma_0][peak] | \_peak.gauss_sigma_0               | [easydiffractionCIF][0]{:.label-cif} |
     |                                                | :material-arrow-expand-horizontal: [broad_gauss_sigma_1][peak] | \_peak.gauss_sigma_1               | [easydiffractionCIF][0]{:.label-cif} |
     |                                                | :material-arrow-expand-horizontal: [broad_gauss_sigma_2][peak] | \_peak.gauss_sigma_2               | [easydiffractionCIF][0]{:.label-cif} |

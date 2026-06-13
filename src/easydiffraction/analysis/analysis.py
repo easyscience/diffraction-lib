@@ -82,8 +82,7 @@ if TYPE_CHECKING:
 # data and derived, read-only tables that would only add noise. The
 # space_group_Wyckoff table also carries unreadably long coords_xyz.
 _SUMMARY_HIDDEN_PARAMETER_CATEGORIES = frozenset({
-    'pd_data',
-    'total_data',
+    'data',
     'refln',
     'space_group_Wyckoff',
 })

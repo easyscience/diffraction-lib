@@ -165,22 +165,22 @@ experiment.background.type = 'line-segment'
 # Add background points.
 
 # %%
-experiment.background.create(id='1', x=45000, y=0.2)
-experiment.background.create(id='2', x=50000, y=0.2)
-experiment.background.create(id='3', x=55000, y=0.2)
-experiment.background.create(id='4', x=65000, y=0.2)
-experiment.background.create(id='5', x=70000, y=0.2)
-experiment.background.create(id='6', x=75000, y=0.2)
-experiment.background.create(id='7', x=80000, y=0.2)
-experiment.background.create(id='8', x=85000, y=0.2)
-experiment.background.create(id='9', x=90000, y=0.2)
-experiment.background.create(id='10', x=95000, y=0.2)
-experiment.background.create(id='11', x=100000, y=0.2)
-experiment.background.create(id='12', x=105000, y=0.2)
-experiment.background.create(id='13', x=110000, y=0.2)
+experiment.background.create(id='1', position=45000, intensity=0.2)
+experiment.background.create(id='2', position=50000, intensity=0.2)
+experiment.background.create(id='3', position=55000, intensity=0.2)
+experiment.background.create(id='4', position=65000, intensity=0.2)
+experiment.background.create(id='5', position=70000, intensity=0.2)
+experiment.background.create(id='6', position=75000, intensity=0.2)
+experiment.background.create(id='7', position=80000, intensity=0.2)
+experiment.background.create(id='8', position=85000, intensity=0.2)
+experiment.background.create(id='9', position=90000, intensity=0.2)
+experiment.background.create(id='10', position=95000, intensity=0.2)
+experiment.background.create(id='11', position=100000, intensity=0.2)
+experiment.background.create(id='12', position=105000, intensity=0.2)
+experiment.background.create(id='13', position=110000, intensity=0.2)
 
 # %% [markdown]
-# ### Set Linked Phases
+# ### Set Linked Structures
 
 # %%
 experiment.linked_structures.create(structure_id='lbco', scale=4.0)
@@ -289,7 +289,7 @@ experiment.peak.exp_decay_beta_0.free = True
 experiment.peak.exp_decay_beta_1.free = True
 
 for point in experiment.background:
-    point.y.free = True
+    point.intensity.free = True
 
 # %% [markdown]
 # ### Run Fitting

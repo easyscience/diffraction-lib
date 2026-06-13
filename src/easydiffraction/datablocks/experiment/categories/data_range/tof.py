@@ -104,24 +104,29 @@ class TofPdDataRange(DataRangeBase):
     # ------------------------------------------------------------------
 
     def _tof_calibration(self) -> tuple[float, float, float] | None:
-        """Return ``(offset, linear, quad)`` calibration, or None."""
+        """Return ``(offset, linear, quadratic)`` calibration, or None."""
         instrument = self._instrument()
         if instrument is None:
             return None
         return (
             instrument.calib_d_to_tof_offset.value,
             instrument.calib_d_to_tof_linear.value,
-            instrument.calib_d_to_tof_quad.value,
+            instrument.calib_d_to_tof_quadratic.value,
         )
 
     @staticmethod
-    def _tof_from_d(d_spacing: float, offset: float, linear: float, quad: float) -> float:
+    def _tof_from_d(
+        d_spacing: float,
+        offset: float,
+        linear: float,
+        quadratic: float,
+    ) -> float:
         """
         Return time-of-flight (μs) for a d-spacing.
 
         ``TOF = c0+c1·d+c2·d²``.
         """
-        return float(offset + linear * d_spacing + quad * d_spacing**2)
+        return float(offset + linear * d_spacing + quadratic * d_spacing**2)
 
     def _ensure_default_range(self) -> None:
         """
@@ -130,14 +135,14 @@ class TofPdDataRange(DataRangeBase):
         calibration = self._tof_calibration()
         if calibration is None:
             return
-        offset, linear, quad = calibration
+        offset, linear, quadratic = calibration
         if np.isnan(self._time_of_flight_min.value):
             self._time_of_flight_min._value = self._tof_from_d(
-                DEFAULT_D_SPACING_MIN, offset, linear, quad
+                DEFAULT_D_SPACING_MIN, offset, linear, quadratic
             )
         if np.isnan(self._time_of_flight_max.value):
             self._time_of_flight_max._value = self._tof_from_d(
-                DEFAULT_D_SPACING_MAX, offset, linear, quad
+                DEFAULT_D_SPACING_MAX, offset, linear, quadratic
             )
         if np.isnan(self._time_of_flight_inc.value):
             span = self._time_of_flight_max.value - self._time_of_flight_min.value

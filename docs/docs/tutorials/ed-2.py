@@ -149,7 +149,7 @@ experiment.peak.broad_gauss_w.free = True
 experiment.peak.broad_lorentz_y.free = True
 
 for point in experiment.background:
-    point.y.free = True
+    point.intensity.free = True
 
 experiment.linked_structures['lbco'].scale.free = True
 

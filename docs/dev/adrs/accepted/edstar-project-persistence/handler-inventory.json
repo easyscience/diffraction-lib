@@ -1570,20 +1570,21 @@
       "category_entry_name": "0",
       "context": "experiment.bragg_pd_cwl",
       "current_cif_names": [
-        "_pd_background.id"
+        "_background.id"
       ],
       "descriptor_class": "StringDescriptor",
       "descriptor_name": "id",
       "descriptor_path": "experiment.bragg_pd_cwl.background[].id",
-      "docs_anchor": "pd-background-id",
-      "docs_page": "pd_background",
+      "docs_anchor": "background-id",
+      "docs_page": "background",
       "import_names": [
         "_pd_background.id"
       ],
       "iucr_name": "_pd_background.id",
       "owner_class": "LineSegment",
-      "project_name": "_pd_background.id",
+      "project_name": "_background.id",
       "read_names": [
+        "_background.id",
         "_pd_background.id"
       ],
       "unique_name": "background.0.id"
@@ -1593,52 +1594,52 @@
       "category_entry_name": "0",
       "context": "experiment.bragg_pd_cwl",
       "current_cif_names": [
-        "_pd_background.line_segment_X",
-        "_pd_background_line_segment_X"
-      ],
-      "descriptor_class": "NumericDescriptor",
-      "descriptor_name": "x",
-      "descriptor_path": "experiment.bragg_pd_cwl.background[].x",
-      "docs_anchor": "pd-background-line-segment-x",
-      "docs_page": "pd_background",
-      "import_names": [
-        "_pd_background.line_segment_X",
-        "_pd_background_line_segment_X"
-      ],
-      "iucr_name": "_pd_background.line_segment_X",
-      "owner_class": "LineSegment",
-      "project_name": "_pd_background.line_segment_X",
-      "read_names": [
-        "_pd_background.line_segment_X",
-        "_pd_background_line_segment_X"
-      ],
-      "unique_name": "background.0.x"
-    },
-    {
-      "category_code": "background",
-      "category_entry_name": "0",
-      "context": "experiment.bragg_pd_cwl",
-      "current_cif_names": [
-        "_pd_background.line_segment_intensity",
-        "_pd_background_line_segment_intensity"
+        "_background.intensity"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "y",
-      "descriptor_path": "experiment.bragg_pd_cwl.background[].y",
-      "docs_anchor": "pd-background-line-segment-intensity",
-      "docs_page": "pd_background",
+      "descriptor_name": "intensity",
+      "descriptor_path": "experiment.bragg_pd_cwl.background[].intensity",
+      "docs_anchor": "background-intensity",
+      "docs_page": "background",
       "import_names": [
         "_pd_background.line_segment_intensity",
         "_pd_background_line_segment_intensity"
       ],
       "iucr_name": "_pd_background.line_segment_intensity",
       "owner_class": "LineSegment",
-      "project_name": "_pd_background.line_segment_intensity",
+      "project_name": "_background.intensity",
       "read_names": [
+        "_background.intensity",
         "_pd_background.line_segment_intensity",
         "_pd_background_line_segment_intensity"
       ],
-      "unique_name": "background.0.y"
+      "unique_name": "background.0.intensity"
+    },
+    {
+      "category_code": "background",
+      "category_entry_name": "0",
+      "context": "experiment.bragg_pd_cwl",
+      "current_cif_names": [
+        "_background.position"
+      ],
+      "descriptor_class": "NumericDescriptor",
+      "descriptor_name": "position",
+      "descriptor_path": "experiment.bragg_pd_cwl.background[].position",
+      "docs_anchor": "background-position",
+      "docs_page": "background",
+      "import_names": [
+        "_pd_background.line_segment_X",
+        "_pd_background_line_segment_X"
+      ],
+      "iucr_name": "_pd_background.line_segment_X",
+      "owner_class": "LineSegment",
+      "project_name": "_background.position",
+      "read_names": [
+        "_background.position",
+        "_pd_background.line_segment_X",
+        "_pd_background_line_segment_X"
+      ],
+      "unique_name": "background.0.position"
     },
     {
       "category_code": "calculator",
@@ -1994,20 +1995,21 @@
       "category_entry_name": null,
       "context": "experiment.bragg_pd_cwl",
       "current_cif_names": [
-        "_instr.sample_displacement"
+        "_instrument.calib_sample_displacement"
       ],
       "descriptor_class": "Parameter",
       "descriptor_name": "sample_displacement",
       "descriptor_path": "experiment.bragg_pd_cwl.instrument.calib_sample_displacement",
-      "docs_anchor": "instr-sample-displacement",
-      "docs_page": "instr",
+      "docs_anchor": "instrument-calib-sample-displacement",
+      "docs_page": "instrument",
       "import_names": [
         "_instr.sample_displacement"
       ],
       "iucr_name": "_instr.sample_displacement",
       "owner_class": "CwlPdInstrument",
-      "project_name": "_instr.sample_displacement",
+      "project_name": "_instrument.calib_sample_displacement",
       "read_names": [
+        "_instrument.calib_sample_displacement",
         "_instr.sample_displacement"
       ],
       "unique_name": "inventory_experiment.instrument.sample_displacement"
@@ -2017,20 +2019,21 @@
       "category_entry_name": null,
       "context": "experiment.bragg_pd_cwl",
       "current_cif_names": [
-        "_instr.sample_transparency"
+        "_instrument.calib_sample_transparency"
       ],
       "descriptor_class": "Parameter",
       "descriptor_name": "sample_transparency",
       "descriptor_path": "experiment.bragg_pd_cwl.instrument.calib_sample_transparency",
-      "docs_anchor": "instr-sample-transparency",
-      "docs_page": "instr",
+      "docs_anchor": "instrument-calib-sample-transparency",
+      "docs_page": "instrument",
       "import_names": [
         "_instr.sample_transparency"
       ],
       "iucr_name": "_instr.sample_transparency",
       "owner_class": "CwlPdInstrument",
-      "project_name": "_instr.sample_transparency",
+      "project_name": "_instrument.calib_sample_transparency",
       "read_names": [
+        "_instrument.calib_sample_transparency",
         "_instr.sample_transparency"
       ],
       "unique_name": "inventory_experiment.instrument.sample_transparency"
@@ -2040,20 +2043,21 @@
       "category_entry_name": null,
       "context": "experiment.bragg_pd_cwl",
       "current_cif_names": [
-        "_instr.2theta_offset"
+        "_instrument.calib_twotheta_offset"
       ],
       "descriptor_class": "Parameter",
       "descriptor_name": "twotheta_offset",
       "descriptor_path": "experiment.bragg_pd_cwl.instrument.calib_twotheta_offset",
-      "docs_anchor": "instr-2theta-offset",
-      "docs_page": "instr",
+      "docs_anchor": "instrument-calib-twotheta-offset",
+      "docs_page": "instrument",
       "import_names": [
         "_instr.2theta_offset"
       ],
-      "iucr_name": "_instr.2theta_offset",
+      "iucr_name": "_pd_calib.2theta_offset",
       "owner_class": "CwlPdInstrument",
-      "project_name": "_instr.2theta_offset",
+      "project_name": "_instrument.calib_twotheta_offset",
       "read_names": [
+        "_instrument.calib_twotheta_offset",
         "_instr.2theta_offset"
       ],
       "unique_name": "inventory_experiment.instrument.twotheta_offset"
@@ -2063,20 +2067,21 @@
       "category_entry_name": null,
       "context": "experiment.bragg_pd_cwl",
       "current_cif_names": [
-        "_instr.wavelength"
+        "_instrument.setup_wavelength"
       ],
       "descriptor_class": "Parameter",
       "descriptor_name": "wavelength",
       "descriptor_path": "experiment.bragg_pd_cwl.instrument.setup_wavelength",
-      "docs_anchor": "instr-wavelength",
-      "docs_page": "instr",
+      "docs_anchor": "instrument-setup-wavelength",
+      "docs_page": "instrument",
       "import_names": [
         "_instr.wavelength"
       ],
-      "iucr_name": "_instr.wavelength",
+      "iucr_name": "_diffrn_radiation_wavelength.value",
       "owner_class": "CwlPdInstrument",
-      "project_name": "_instr.wavelength",
+      "project_name": "_instrument.setup_wavelength",
       "read_names": [
+        "_instrument.setup_wavelength",
         "_instr.wavelength"
       ],
       "unique_name": "inventory_experiment.instrument.wavelength"
@@ -2268,142 +2273,148 @@
       "unique_name": "inventory_experiment.peak.type"
     },
     {
-      "category_code": "pref_orient",
+      "category_code": "preferred_orientation",
       "category_entry_name": "Si",
       "context": "experiment.bragg_pd_cwl",
       "current_cif_names": [
-        "_pref_orient.index_h"
+        "_preferred_orientation.index_h"
       ],
       "descriptor_class": "IntegerDescriptor",
       "descriptor_name": "index_h",
       "descriptor_path": "experiment.bragg_pd_cwl.pref_orient[].index_h",
-      "docs_anchor": "pref-orient-index-h",
-      "docs_page": "pref_orient",
+      "docs_anchor": "preferred-orientation-index-h",
+      "docs_page": "preferred_orientation",
       "import_names": [
         "_pref_orient.index_h"
       ],
       "iucr_name": "_pd_pref_orient_March_Dollase.index_h",
       "owner_class": "PrefOrient",
-      "project_name": "_pref_orient.index_h",
+      "project_name": "_preferred_orientation.index_h",
       "read_names": [
+        "_preferred_orientation.index_h",
         "_pref_orient.index_h"
       ],
-      "unique_name": "pref_orient.Si.index_h"
+      "unique_name": "preferred_orientation.Si.index_h"
     },
     {
-      "category_code": "pref_orient",
+      "category_code": "preferred_orientation",
       "category_entry_name": "Si",
       "context": "experiment.bragg_pd_cwl",
       "current_cif_names": [
-        "_pref_orient.index_k"
+        "_preferred_orientation.index_k"
       ],
       "descriptor_class": "IntegerDescriptor",
       "descriptor_name": "index_k",
       "descriptor_path": "experiment.bragg_pd_cwl.pref_orient[].index_k",
-      "docs_anchor": "pref-orient-index-k",
-      "docs_page": "pref_orient",
+      "docs_anchor": "preferred-orientation-index-k",
+      "docs_page": "preferred_orientation",
       "import_names": [
         "_pref_orient.index_k"
       ],
       "iucr_name": "_pd_pref_orient_March_Dollase.index_k",
       "owner_class": "PrefOrient",
-      "project_name": "_pref_orient.index_k",
+      "project_name": "_preferred_orientation.index_k",
       "read_names": [
+        "_preferred_orientation.index_k",
         "_pref_orient.index_k"
       ],
-      "unique_name": "pref_orient.Si.index_k"
+      "unique_name": "preferred_orientation.Si.index_k"
     },
     {
-      "category_code": "pref_orient",
+      "category_code": "preferred_orientation",
       "category_entry_name": "Si",
       "context": "experiment.bragg_pd_cwl",
       "current_cif_names": [
-        "_pref_orient.index_l"
+        "_preferred_orientation.index_l"
       ],
       "descriptor_class": "IntegerDescriptor",
       "descriptor_name": "index_l",
       "descriptor_path": "experiment.bragg_pd_cwl.pref_orient[].index_l",
-      "docs_anchor": "pref-orient-index-l",
-      "docs_page": "pref_orient",
+      "docs_anchor": "preferred-orientation-index-l",
+      "docs_page": "preferred_orientation",
       "import_names": [
         "_pref_orient.index_l"
       ],
       "iucr_name": "_pd_pref_orient_March_Dollase.index_l",
       "owner_class": "PrefOrient",
-      "project_name": "_pref_orient.index_l",
+      "project_name": "_preferred_orientation.index_l",
       "read_names": [
+        "_preferred_orientation.index_l",
         "_pref_orient.index_l"
       ],
-      "unique_name": "pref_orient.Si.index_l"
+      "unique_name": "preferred_orientation.Si.index_l"
     },
     {
-      "category_code": "pref_orient",
+      "category_code": "preferred_orientation",
       "category_entry_name": "Si",
       "context": "experiment.bragg_pd_cwl",
       "current_cif_names": [
-        "_pref_orient.march_r"
+        "_preferred_orientation.march_r"
       ],
       "descriptor_class": "Parameter",
       "descriptor_name": "march_r",
       "descriptor_path": "experiment.bragg_pd_cwl.pref_orient[].march_r",
-      "docs_anchor": "pref-orient-march-r",
-      "docs_page": "pref_orient",
+      "docs_anchor": "preferred-orientation-march-r",
+      "docs_page": "preferred_orientation",
       "import_names": [
         "_pref_orient.march_r"
       ],
       "iucr_name": "_pd_pref_orient_March_Dollase.r",
       "owner_class": "PrefOrient",
-      "project_name": "_pref_orient.march_r",
+      "project_name": "_preferred_orientation.march_r",
       "read_names": [
+        "_preferred_orientation.march_r",
         "_pref_orient.march_r"
       ],
-      "unique_name": "pref_orient.Si.march_r"
+      "unique_name": "preferred_orientation.Si.march_r"
     },
     {
-      "category_code": "pref_orient",
+      "category_code": "preferred_orientation",
       "category_entry_name": "Si",
       "context": "experiment.bragg_pd_cwl",
       "current_cif_names": [
-        "_pref_orient.march_random_fract"
+        "_preferred_orientation.march_random_fract"
       ],
       "descriptor_class": "Parameter",
       "descriptor_name": "march_random_fract",
       "descriptor_path": "experiment.bragg_pd_cwl.pref_orient[].march_random_fract",
-      "docs_anchor": "pref-orient-march-random-fract",
-      "docs_page": "pref_orient",
+      "docs_anchor": "preferred-orientation-march-random-fract",
+      "docs_page": "preferred_orientation",
       "import_names": [
         "_pref_orient.march_random_fract"
       ],
       "iucr_name": "_easydiffraction_pref_orient.march_random_fract",
       "owner_class": "PrefOrient",
-      "project_name": "_pref_orient.march_random_fract",
+      "project_name": "_preferred_orientation.march_random_fract",
       "read_names": [
+        "_preferred_orientation.march_random_fract",
         "_pref_orient.march_random_fract"
       ],
-      "unique_name": "pref_orient.Si.march_random_fract"
+      "unique_name": "preferred_orientation.Si.march_random_fract"
     },
     {
-      "category_code": "pref_orient",
+      "category_code": "preferred_orientation",
       "category_entry_name": "Si",
       "context": "experiment.bragg_pd_cwl",
       "current_cif_names": [
-        "_pref_orient.phase_id"
+        "_preferred_orientation.structure_id"
       ],
       "descriptor_class": "StringDescriptor",
-      "descriptor_name": "phase_id",
-      "descriptor_path": "experiment.bragg_pd_cwl.pref_orient[].phase_id",
-      "docs_anchor": "pref-orient-phase-id",
-      "docs_page": "pref_orient",
+      "descriptor_name": "structure_id",
+      "descriptor_path": "experiment.bragg_pd_cwl.pref_orient[].structure_id",
+      "docs_anchor": "preferred-orientation-structure-id",
+      "docs_page": "preferred_orientation",
       "import_names": [
         "_pref_orient.phase_id"
       ],
       "iucr_name": "_pd_pref_orient_March_Dollase.phase_id",
       "owner_class": "PrefOrient",
-      "project_name": "_pref_orient.phase_id",
+      "project_name": "_preferred_orientation.structure_id",
       "read_names": [
+        "_preferred_orientation.structure_id",
         "_pref_orient.phase_id"
       ],
-      "unique_name": "pref_orient.Si.phase_id"
+      "unique_name": "preferred_orientation.Si.structure_id"
     },
     {
       "category_code": "refln",
@@ -2640,29 +2651,6 @@
       "category_entry_name": "0",
       "context": "experiment.bragg_pd_cwl",
       "current_cif_names": [
-        "_refln.phase_id"
-      ],
-      "descriptor_class": "StringDescriptor",
-      "descriptor_name": "phase_id",
-      "descriptor_path": "experiment.bragg_pd_cwl.refln[].phase_id",
-      "docs_anchor": "refln-phase-id",
-      "docs_page": "refln",
-      "import_names": [
-        "_refln.phase_id"
-      ],
-      "iucr_name": "_refln.phase_id",
-      "owner_class": "PowderCwlRefln",
-      "project_name": "_refln.phase_id",
-      "read_names": [
-        "_refln.phase_id"
-      ],
-      "unique_name": "refln.0.phase_id"
-    },
-    {
-      "category_code": "refln",
-      "category_entry_name": "0",
-      "context": "experiment.bragg_pd_cwl",
-      "current_cif_names": [
         "_refln.sin_theta_over_lambda"
       ],
       "descriptor_class": "NumericDescriptor",
@@ -2680,6 +2668,30 @@
         "_refln.sin_theta_over_lambda"
       ],
       "unique_name": "refln.0.sin_theta_over_lambda"
+    },
+    {
+      "category_code": "refln",
+      "category_entry_name": "0",
+      "context": "experiment.bragg_pd_cwl",
+      "current_cif_names": [
+        "_refln.structure_id"
+      ],
+      "descriptor_class": "StringDescriptor",
+      "descriptor_name": "structure_id",
+      "descriptor_path": "experiment.bragg_pd_cwl.refln[].structure_id",
+      "docs_anchor": "refln-structure-id",
+      "docs_page": "refln",
+      "import_names": [
+        "_refln.phase_id"
+      ],
+      "iucr_name": "_pd_refln.phase_id",
+      "owner_class": "PowderCwlRefln",
+      "project_name": "_refln.structure_id",
+      "read_names": [
+        "_refln.structure_id",
+        "_refln.phase_id"
+      ],
+      "unique_name": "refln.0.structure_id"
     },
     {
       "category_code": "refln",
@@ -2732,20 +2744,21 @@
       "category_entry_name": "0",
       "context": "experiment.bragg_pd_tof",
       "current_cif_names": [
-        "_pd_background.id"
+        "_background.id"
       ],
       "descriptor_class": "StringDescriptor",
       "descriptor_name": "id",
       "descriptor_path": "experiment.bragg_pd_tof.background[].id",
-      "docs_anchor": "pd-background-id",
-      "docs_page": "pd_background",
+      "docs_anchor": "background-id",
+      "docs_page": "background",
       "import_names": [
         "_pd_background.id"
       ],
       "iucr_name": "_pd_background.id",
       "owner_class": "LineSegment",
-      "project_name": "_pd_background.id",
+      "project_name": "_background.id",
       "read_names": [
+        "_background.id",
         "_pd_background.id"
       ],
       "unique_name": "background.0.id"
@@ -2755,52 +2768,52 @@
       "category_entry_name": "0",
       "context": "experiment.bragg_pd_tof",
       "current_cif_names": [
-        "_pd_background.line_segment_X",
-        "_pd_background_line_segment_X"
-      ],
-      "descriptor_class": "NumericDescriptor",
-      "descriptor_name": "x",
-      "descriptor_path": "experiment.bragg_pd_tof.background[].x",
-      "docs_anchor": "pd-background-line-segment-x",
-      "docs_page": "pd_background",
-      "import_names": [
-        "_pd_background.line_segment_X",
-        "_pd_background_line_segment_X"
-      ],
-      "iucr_name": "_pd_background.line_segment_X",
-      "owner_class": "LineSegment",
-      "project_name": "_pd_background.line_segment_X",
-      "read_names": [
-        "_pd_background.line_segment_X",
-        "_pd_background_line_segment_X"
-      ],
-      "unique_name": "background.0.x"
-    },
-    {
-      "category_code": "background",
-      "category_entry_name": "0",
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_pd_background.line_segment_intensity",
-        "_pd_background_line_segment_intensity"
+        "_background.intensity"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "y",
-      "descriptor_path": "experiment.bragg_pd_tof.background[].y",
-      "docs_anchor": "pd-background-line-segment-intensity",
-      "docs_page": "pd_background",
+      "descriptor_name": "intensity",
+      "descriptor_path": "experiment.bragg_pd_tof.background[].intensity",
+      "docs_anchor": "background-intensity",
+      "docs_page": "background",
       "import_names": [
         "_pd_background.line_segment_intensity",
         "_pd_background_line_segment_intensity"
       ],
       "iucr_name": "_pd_background.line_segment_intensity",
       "owner_class": "LineSegment",
-      "project_name": "_pd_background.line_segment_intensity",
+      "project_name": "_background.intensity",
       "read_names": [
+        "_background.intensity",
         "_pd_background.line_segment_intensity",
         "_pd_background_line_segment_intensity"
       ],
-      "unique_name": "background.0.y"
+      "unique_name": "background.0.intensity"
+    },
+    {
+      "category_code": "background",
+      "category_entry_name": "0",
+      "context": "experiment.bragg_pd_tof",
+      "current_cif_names": [
+        "_background.position"
+      ],
+      "descriptor_class": "NumericDescriptor",
+      "descriptor_name": "position",
+      "descriptor_path": "experiment.bragg_pd_tof.background[].position",
+      "docs_anchor": "background-position",
+      "docs_page": "background",
+      "import_names": [
+        "_pd_background.line_segment_X",
+        "_pd_background_line_segment_X"
+      ],
+      "iucr_name": "_pd_background.line_segment_X",
+      "owner_class": "LineSegment",
+      "project_name": "_background.position",
+      "read_names": [
+        "_background.position",
+        "_pd_background.line_segment_X",
+        "_pd_background_line_segment_X"
+      ],
+      "unique_name": "background.0.position"
     },
     {
       "category_code": "calculator",
@@ -2826,194 +2839,200 @@
       "unique_name": "inventory_experiment.calculator.type"
     },
     {
-      "category_code": "pd_data",
+      "category_code": "data",
       "category_entry_name": "0",
       "context": "experiment.bragg_pd_tof",
       "current_cif_names": [
-        "_pd_data.refinement_status"
+        "_data.calc_status"
       ],
       "descriptor_class": "StringDescriptor",
       "descriptor_name": "calc_status",
       "descriptor_path": "experiment.bragg_pd_tof.data[].calc_status",
-      "docs_anchor": "pd-data-refinement-status",
-      "docs_page": "pd_data",
+      "docs_anchor": "data-calc-status",
+      "docs_page": "data",
       "import_names": [
         "_pd_data.refinement_status"
       ],
       "iucr_name": "_pd_data.refinement_status",
       "owner_class": "PdTofDataPoint",
-      "project_name": "_pd_data.refinement_status",
+      "project_name": "_data.calc_status",
       "read_names": [
+        "_data.calc_status",
         "_pd_data.refinement_status"
       ],
-      "unique_name": "pd_data.0.calc_status"
+      "unique_name": "data.0.calc_status"
     },
     {
-      "category_code": "pd_data",
+      "category_code": "data",
       "category_entry_name": "0",
       "context": "experiment.bragg_pd_tof",
       "current_cif_names": [
-        "_pd_proc.d_spacing"
+        "_data.d_spacing"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "d_spacing",
       "descriptor_path": "experiment.bragg_pd_tof.data[].d_spacing",
-      "docs_anchor": "pd-proc-d-spacing",
-      "docs_page": "pd_proc",
+      "docs_anchor": "data-d-spacing",
+      "docs_page": "data",
       "import_names": [
         "_pd_proc.d_spacing"
       ],
       "iucr_name": "_pd_proc.d_spacing",
       "owner_class": "PdTofDataPoint",
-      "project_name": "_pd_proc.d_spacing",
+      "project_name": "_data.d_spacing",
       "read_names": [
+        "_data.d_spacing",
         "_pd_proc.d_spacing"
       ],
-      "unique_name": "pd_data.0.d_spacing"
+      "unique_name": "data.0.d_spacing"
     },
     {
-      "category_code": "pd_data",
+      "category_code": "data",
       "category_entry_name": "0",
       "context": "experiment.bragg_pd_tof",
       "current_cif_names": [
-        "_pd_calc.intensity_bkg"
+        "_data.id"
+      ],
+      "descriptor_class": "StringDescriptor",
+      "descriptor_name": "id",
+      "descriptor_path": "experiment.bragg_pd_tof.data[].id",
+      "docs_anchor": "data-id",
+      "docs_page": "data",
+      "import_names": [
+        "_pd_data.point_id"
+      ],
+      "iucr_name": "_pd_data.point_id",
+      "owner_class": "PdTofDataPoint",
+      "project_name": "_data.id",
+      "read_names": [
+        "_data.id",
+        "_pd_data.point_id"
+      ],
+      "unique_name": "data.0.id"
+    },
+    {
+      "category_code": "data",
+      "category_entry_name": "0",
+      "context": "experiment.bragg_pd_tof",
+      "current_cif_names": [
+        "_data.intensity_bkg"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "intensity_bkg",
       "descriptor_path": "experiment.bragg_pd_tof.data[].intensity_bkg",
-      "docs_anchor": "pd-calc-intensity-bkg",
-      "docs_page": "pd_calc",
+      "docs_anchor": "data-intensity-bkg",
+      "docs_page": "data",
       "import_names": [
         "_pd_calc.intensity_bkg"
       ],
       "iucr_name": "_pd_calc.intensity_bkg",
       "owner_class": "PdTofDataPoint",
-      "project_name": "_pd_calc.intensity_bkg",
+      "project_name": "_data.intensity_bkg",
       "read_names": [
+        "_data.intensity_bkg",
         "_pd_calc.intensity_bkg"
       ],
-      "unique_name": "pd_data.0.intensity_bkg"
+      "unique_name": "data.0.intensity_bkg"
     },
     {
-      "category_code": "pd_data",
+      "category_code": "data",
       "category_entry_name": "0",
       "context": "experiment.bragg_pd_tof",
       "current_cif_names": [
-        "_pd_calc.intensity_total"
+        "_data.intensity_calc"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "intensity_calc",
       "descriptor_path": "experiment.bragg_pd_tof.data[].intensity_calc",
-      "docs_anchor": "pd-calc-intensity-total",
-      "docs_page": "pd_calc",
+      "docs_anchor": "data-intensity-calc",
+      "docs_page": "data",
       "import_names": [
         "_pd_calc.intensity_total"
       ],
       "iucr_name": "_pd_calc.intensity_total",
       "owner_class": "PdTofDataPoint",
-      "project_name": "_pd_calc.intensity_total",
+      "project_name": "_data.intensity_calc",
       "read_names": [
+        "_data.intensity_calc",
         "_pd_calc.intensity_total"
       ],
-      "unique_name": "pd_data.0.intensity_calc"
+      "unique_name": "data.0.intensity_calc"
     },
     {
-      "category_code": "pd_data",
+      "category_code": "data",
       "category_entry_name": "0",
       "context": "experiment.bragg_pd_tof",
       "current_cif_names": [
-        "_pd_meas.intensity_total",
-        "_pd_proc.intensity_norm"
+        "_data.intensity_meas"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "intensity_meas",
       "descriptor_path": "experiment.bragg_pd_tof.data[].intensity_meas",
-      "docs_anchor": "pd-meas-intensity-total",
-      "docs_page": "pd_meas",
+      "docs_anchor": "data-intensity-meas",
+      "docs_page": "data",
       "import_names": [
         "_pd_meas.intensity_total",
         "_pd_proc.intensity_norm"
       ],
       "iucr_name": "_pd_meas.intensity_total",
       "owner_class": "PdTofDataPoint",
-      "project_name": "_pd_meas.intensity_total",
+      "project_name": "_data.intensity_meas",
       "read_names": [
+        "_data.intensity_meas",
         "_pd_meas.intensity_total",
         "_pd_proc.intensity_norm"
       ],
-      "unique_name": "pd_data.0.intensity_meas"
+      "unique_name": "data.0.intensity_meas"
     },
     {
-      "category_code": "pd_data",
+      "category_code": "data",
       "category_entry_name": "0",
       "context": "experiment.bragg_pd_tof",
       "current_cif_names": [
-        "_pd_meas.intensity_total_su",
-        "_pd_proc.intensity_norm_su"
+        "_data.intensity_meas_su"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "intensity_meas_su",
       "descriptor_path": "experiment.bragg_pd_tof.data[].intensity_meas_su",
-      "docs_anchor": "pd-meas-intensity-total-su",
-      "docs_page": "pd_meas",
+      "docs_anchor": "data-intensity-meas-su",
+      "docs_page": "data",
       "import_names": [
         "_pd_meas.intensity_total_su",
         "_pd_proc.intensity_norm_su"
       ],
       "iucr_name": "_pd_meas.intensity_total_su",
       "owner_class": "PdTofDataPoint",
-      "project_name": "_pd_meas.intensity_total_su",
+      "project_name": "_data.intensity_meas_su",
       "read_names": [
+        "_data.intensity_meas_su",
         "_pd_meas.intensity_total_su",
         "_pd_proc.intensity_norm_su"
       ],
-      "unique_name": "pd_data.0.intensity_meas_su"
+      "unique_name": "data.0.intensity_meas_su"
     },
     {
-      "category_code": "pd_data",
+      "category_code": "data",
       "category_entry_name": "0",
       "context": "experiment.bragg_pd_tof",
       "current_cif_names": [
-        "_pd_data.point_id"
-      ],
-      "descriptor_class": "StringDescriptor",
-      "descriptor_name": "point_id",
-      "descriptor_path": "experiment.bragg_pd_tof.data[].point_id",
-      "docs_anchor": "pd-data-point-id",
-      "docs_page": "pd_data",
-      "import_names": [
-        "_pd_data.point_id"
-      ],
-      "iucr_name": "_pd_data.point_id",
-      "owner_class": "PdTofDataPoint",
-      "project_name": "_pd_data.point_id",
-      "read_names": [
-        "_pd_data.point_id"
-      ],
-      "unique_name": "pd_data.0.point_id"
-    },
-    {
-      "category_code": "pd_data",
-      "category_entry_name": "0",
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_pd_meas.time_of_flight"
+        "_data.time_of_flight"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "time_of_flight",
       "descriptor_path": "experiment.bragg_pd_tof.data[].time_of_flight",
-      "docs_anchor": "pd-meas-time-of-flight",
-      "docs_page": "pd_meas",
+      "docs_anchor": "data-time-of-flight",
+      "docs_page": "data",
       "import_names": [
         "_pd_meas.time_of_flight"
       ],
       "iucr_name": "_pd_meas.time_of_flight",
       "owner_class": "PdTofDataPoint",
-      "project_name": "_pd_meas.time_of_flight",
+      "project_name": "_data.time_of_flight",
       "read_names": [
+        "_data.time_of_flight",
         "_pd_meas.time_of_flight"
       ],
-      "unique_name": "pd_data.0.time_of_flight"
+      "unique_name": "data.0.time_of_flight"
     },
     {
       "category_code": "data_range",
@@ -3346,20 +3365,21 @@
       "category_entry_name": null,
       "context": "experiment.bragg_pd_tof",
       "current_cif_names": [
-        "_instr.d_to_tof_linear"
+        "_instrument.calib_d_to_tof_linear"
       ],
       "descriptor_class": "Parameter",
       "descriptor_name": "d_to_tof_linear",
       "descriptor_path": "experiment.bragg_pd_tof.instrument.calib_d_to_tof_linear",
-      "docs_anchor": "instr-d-to-tof-linear",
-      "docs_page": "instr",
+      "docs_anchor": "instrument-calib-d-to-tof-linear",
+      "docs_page": "instrument",
       "import_names": [
         "_instr.d_to_tof_linear"
       ],
-      "iucr_name": "_instr.d_to_tof_linear",
+      "iucr_name": "_instrument.calib_d_to_tof_linear",
       "owner_class": "TofPdInstrument",
-      "project_name": "_instr.d_to_tof_linear",
+      "project_name": "_instrument.calib_d_to_tof_linear",
       "read_names": [
+        "_instrument.calib_d_to_tof_linear",
         "_instr.d_to_tof_linear"
       ],
       "unique_name": "inventory_experiment.instrument.d_to_tof_linear"
@@ -3369,20 +3389,21 @@
       "category_entry_name": null,
       "context": "experiment.bragg_pd_tof",
       "current_cif_names": [
-        "_instr.d_to_tof_offset"
+        "_instrument.calib_d_to_tof_offset"
       ],
       "descriptor_class": "Parameter",
       "descriptor_name": "d_to_tof_offset",
       "descriptor_path": "experiment.bragg_pd_tof.instrument.calib_d_to_tof_offset",
-      "docs_anchor": "instr-d-to-tof-offset",
-      "docs_page": "instr",
+      "docs_anchor": "instrument-calib-d-to-tof-offset",
+      "docs_page": "instrument",
       "import_names": [
         "_instr.d_to_tof_offset"
       ],
-      "iucr_name": "_instr.d_to_tof_offset",
+      "iucr_name": "_instrument.calib_d_to_tof_offset",
       "owner_class": "TofPdInstrument",
-      "project_name": "_instr.d_to_tof_offset",
+      "project_name": "_instrument.calib_d_to_tof_offset",
       "read_names": [
+        "_instrument.calib_d_to_tof_offset",
         "_instr.d_to_tof_offset"
       ],
       "unique_name": "inventory_experiment.instrument.d_to_tof_offset"
@@ -3392,117 +3413,72 @@
       "category_entry_name": null,
       "context": "experiment.bragg_pd_tof",
       "current_cif_names": [
-        "_instr.d_to_tof_quad"
+        "_instrument.calib_d_to_tof_quadratic"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "d_to_tof_quad",
-      "descriptor_path": "experiment.bragg_pd_tof.instrument.calib_d_to_tof_quad",
-      "docs_anchor": "instr-d-to-tof-quad",
-      "docs_page": "instr",
+      "descriptor_name": "d_to_tof_quadratic",
+      "descriptor_path": "experiment.bragg_pd_tof.instrument.calib_d_to_tof_quadratic",
+      "docs_anchor": "instrument-calib-d-to-tof-quadratic",
+      "docs_page": "instrument",
       "import_names": [
         "_instr.d_to_tof_quad"
       ],
-      "iucr_name": "_instr.d_to_tof_quad",
+      "iucr_name": "_instrument.calib_d_to_tof_quadratic",
       "owner_class": "TofPdInstrument",
-      "project_name": "_instr.d_to_tof_quad",
+      "project_name": "_instrument.calib_d_to_tof_quadratic",
       "read_names": [
+        "_instrument.calib_d_to_tof_quadratic",
         "_instr.d_to_tof_quad"
       ],
-      "unique_name": "inventory_experiment.instrument.d_to_tof_quad"
+      "unique_name": "inventory_experiment.instrument.d_to_tof_quadratic"
     },
     {
       "category_code": "instrument",
       "category_entry_name": null,
       "context": "experiment.bragg_pd_tof",
       "current_cif_names": [
-        "_instr.d_to_tof_recip"
+        "_instrument.calib_d_to_tof_reciprocal"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "d_to_tof_recip",
-      "descriptor_path": "experiment.bragg_pd_tof.instrument.calib_d_to_tof_recip",
-      "docs_anchor": "instr-d-to-tof-recip",
-      "docs_page": "instr",
+      "descriptor_name": "d_to_tof_reciprocal",
+      "descriptor_path": "experiment.bragg_pd_tof.instrument.calib_d_to_tof_reciprocal",
+      "docs_anchor": "instrument-calib-d-to-tof-reciprocal",
+      "docs_page": "instrument",
       "import_names": [
         "_instr.d_to_tof_recip"
       ],
-      "iucr_name": "_instr.d_to_tof_recip",
+      "iucr_name": "_instrument.calib_d_to_tof_reciprocal",
       "owner_class": "TofPdInstrument",
-      "project_name": "_instr.d_to_tof_recip",
+      "project_name": "_instrument.calib_d_to_tof_reciprocal",
       "read_names": [
+        "_instrument.calib_d_to_tof_reciprocal",
         "_instr.d_to_tof_recip"
       ],
-      "unique_name": "inventory_experiment.instrument.d_to_tof_recip"
+      "unique_name": "inventory_experiment.instrument.d_to_tof_reciprocal"
     },
     {
       "category_code": "instrument",
       "category_entry_name": null,
       "context": "experiment.bragg_pd_tof",
       "current_cif_names": [
-        "_instr.2theta_bank"
+        "_instrument.setup_twotheta_bank"
       ],
       "descriptor_class": "Parameter",
       "descriptor_name": "twotheta_bank",
       "descriptor_path": "experiment.bragg_pd_tof.instrument.setup_twotheta_bank",
-      "docs_anchor": "instr-2theta-bank",
-      "docs_page": "instr",
+      "docs_anchor": "instrument-setup-twotheta-bank",
+      "docs_page": "instrument",
       "import_names": [
         "_instr.2theta_bank"
       ],
-      "iucr_name": "_instr.2theta_bank",
+      "iucr_name": "_instrument.setup_twotheta_bank",
       "owner_class": "TofPdInstrument",
-      "project_name": "_instr.2theta_bank",
+      "project_name": "_instrument.setup_twotheta_bank",
       "read_names": [
+        "_instrument.setup_twotheta_bank",
         "_instr.2theta_bank"
       ],
       "unique_name": "inventory_experiment.instrument.twotheta_bank"
-    },
-    {
-      "category_code": "linked_structure",
-      "category_entry_name": "Si",
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_linked_structure.scale"
-      ],
-      "descriptor_class": "Parameter",
-      "descriptor_name": "scale",
-      "descriptor_path": "experiment.bragg_pd_tof.linked_structures[].scale",
-      "docs_anchor": "linked-structure-scale",
-      "docs_page": "linked_structure",
-      "import_names": [
-        "_pd_phase_block.scale"
-      ],
-      "iucr_name": "_pd_phase_block.scale",
-      "owner_class": "LinkedStructure",
-      "project_name": "_linked_structure.scale",
-      "read_names": [
-        "_linked_structure.scale",
-        "_pd_phase_block.scale"
-      ],
-      "unique_name": "linked_structure.Si.scale"
-    },
-    {
-      "category_code": "linked_structure",
-      "category_entry_name": "Si",
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_linked_structure.structure_id"
-      ],
-      "descriptor_class": "StringDescriptor",
-      "descriptor_name": "structure_id",
-      "descriptor_path": "experiment.bragg_pd_tof.linked_structures[].structure_id",
-      "docs_anchor": "linked-structure-structure-id",
-      "docs_page": "linked_structure",
-      "import_names": [
-        "_pd_phase_block.id"
-      ],
-      "iucr_name": "_pd_phase_block.id",
-      "owner_class": "LinkedStructure",
-      "project_name": "_linked_structure.structure_id",
-      "read_names": [
-        "_linked_structure.structure_id",
-        "_pd_phase_block.id"
-      ],
-      "unique_name": "linked_structure.Si.structure_id"
     },
     {
       "category_code": "peak",
@@ -4042,20 +4018,21 @@
       "category_entry_name": null,
       "context": "experiment.bragg_sc_cwl",
       "current_cif_names": [
-        "_instr.wavelength"
+        "_instrument.setup_wavelength"
       ],
       "descriptor_class": "Parameter",
       "descriptor_name": "wavelength",
       "descriptor_path": "experiment.bragg_sc_cwl.instrument.setup_wavelength",
-      "docs_anchor": "instr-wavelength",
-      "docs_page": "instr",
+      "docs_anchor": "instrument-setup-wavelength",
+      "docs_page": "instrument",
       "import_names": [
         "_instr.wavelength"
       ],
-      "iucr_name": "_instr.wavelength",
+      "iucr_name": "_diffrn_radiation_wavelength.value",
       "owner_class": "CwlScInstrument",
-      "project_name": "_instr.wavelength",
+      "project_name": "_instrument.setup_wavelength",
       "read_names": [
+        "_instrument.setup_wavelength",
         "_instr.wavelength"
       ],
       "unique_name": "inventory_experiment.instrument.wavelength"
@@ -4966,142 +4943,148 @@
       "unique_name": "inventory_experiment.calculator.type"
     },
     {
-      "category_code": "total_data",
+      "category_code": "data",
       "category_entry_name": "0",
       "context": "experiment.total_pd_cwl",
       "current_cif_names": [
-        "_pd_data.refinement_status"
+        "_data.calc_status"
       ],
       "descriptor_class": "StringDescriptor",
       "descriptor_name": "calc_status",
       "descriptor_path": "experiment.total_pd_cwl.data[].calc_status",
-      "docs_anchor": "pd-data-refinement-status",
-      "docs_page": "pd_data",
+      "docs_anchor": "data-calc-status",
+      "docs_page": "data",
       "import_names": [
         "_pd_data.refinement_status"
       ],
       "iucr_name": "_pd_data.refinement_status",
       "owner_class": "TotalDataPoint",
-      "project_name": "_pd_data.refinement_status",
+      "project_name": "_data.calc_status",
       "read_names": [
+        "_data.calc_status",
         "_pd_data.refinement_status"
       ],
-      "unique_name": "total_data.0.calc_status"
+      "unique_name": "data.0.calc_status"
     },
     {
-      "category_code": "total_data",
+      "category_code": "data",
       "category_entry_name": "0",
       "context": "experiment.total_pd_cwl",
       "current_cif_names": [
-        "_pd_calc.intensity_total"
+        "_data.g_r_calc"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "g_r_calc",
       "descriptor_path": "experiment.total_pd_cwl.data[].g_r_calc",
-      "docs_anchor": "pd-calc-intensity-total",
-      "docs_page": "pd_calc",
+      "docs_anchor": "data-g-r-calc",
+      "docs_page": "data",
       "import_names": [
         "_pd_calc.intensity_total"
       ],
       "iucr_name": "_pd_calc.intensity_total",
       "owner_class": "TotalDataPoint",
-      "project_name": "_pd_calc.intensity_total",
+      "project_name": "_data.g_r_calc",
       "read_names": [
+        "_data.g_r_calc",
         "_pd_calc.intensity_total"
       ],
-      "unique_name": "total_data.0.g_r_calc"
+      "unique_name": "data.0.g_r_calc"
     },
     {
-      "category_code": "total_data",
+      "category_code": "data",
       "category_entry_name": "0",
       "context": "experiment.total_pd_cwl",
       "current_cif_names": [
-        "_pd_meas.intensity_total"
+        "_data.g_r_meas"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "g_r_meas",
       "descriptor_path": "experiment.total_pd_cwl.data[].g_r_meas",
-      "docs_anchor": "pd-meas-intensity-total",
-      "docs_page": "pd_meas",
+      "docs_anchor": "data-g-r-meas",
+      "docs_page": "data",
       "import_names": [
         "_pd_meas.intensity_total"
       ],
       "iucr_name": "_pd_meas.intensity_total",
       "owner_class": "TotalDataPoint",
-      "project_name": "_pd_meas.intensity_total",
+      "project_name": "_data.g_r_meas",
       "read_names": [
+        "_data.g_r_meas",
         "_pd_meas.intensity_total"
       ],
-      "unique_name": "total_data.0.g_r_meas"
+      "unique_name": "data.0.g_r_meas"
     },
     {
-      "category_code": "total_data",
+      "category_code": "data",
       "category_entry_name": "0",
       "context": "experiment.total_pd_cwl",
       "current_cif_names": [
-        "_pd_meas.intensity_total_su"
+        "_data.g_r_meas_su"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "g_r_meas_su",
       "descriptor_path": "experiment.total_pd_cwl.data[].g_r_meas_su",
-      "docs_anchor": "pd-meas-intensity-total-su",
-      "docs_page": "pd_meas",
+      "docs_anchor": "data-g-r-meas-su",
+      "docs_page": "data",
       "import_names": [
         "_pd_meas.intensity_total_su"
       ],
       "iucr_name": "_pd_meas.intensity_total_su",
       "owner_class": "TotalDataPoint",
-      "project_name": "_pd_meas.intensity_total_su",
+      "project_name": "_data.g_r_meas_su",
       "read_names": [
+        "_data.g_r_meas_su",
         "_pd_meas.intensity_total_su"
       ],
-      "unique_name": "total_data.0.g_r_meas_su"
+      "unique_name": "data.0.g_r_meas_su"
     },
     {
-      "category_code": "total_data",
+      "category_code": "data",
       "category_entry_name": "0",
       "context": "experiment.total_pd_cwl",
       "current_cif_names": [
-        "_pd_data.point_id"
+        "_data.id"
       ],
       "descriptor_class": "StringDescriptor",
-      "descriptor_name": "point_id",
-      "descriptor_path": "experiment.total_pd_cwl.data[].point_id",
-      "docs_anchor": "pd-data-point-id",
-      "docs_page": "pd_data",
+      "descriptor_name": "id",
+      "descriptor_path": "experiment.total_pd_cwl.data[].id",
+      "docs_anchor": "data-id",
+      "docs_page": "data",
       "import_names": [
         "_pd_data.point_id"
       ],
       "iucr_name": "_pd_data.point_id",
       "owner_class": "TotalDataPoint",
-      "project_name": "_pd_data.point_id",
+      "project_name": "_data.id",
       "read_names": [
+        "_data.id",
         "_pd_data.point_id"
       ],
-      "unique_name": "total_data.0.point_id"
+      "unique_name": "data.0.id"
     },
     {
-      "category_code": "total_data",
+      "category_code": "data",
       "category_entry_name": "0",
       "context": "experiment.total_pd_cwl",
       "current_cif_names": [
-        "_pd_proc.r"
+        "_data.r"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "r",
       "descriptor_path": "experiment.total_pd_cwl.data[].r",
-      "docs_anchor": "pd-proc-r",
-      "docs_page": "pd_proc",
+      "docs_anchor": "data-r",
+      "docs_page": "data",
       "import_names": [
         "_pd_proc.r"
       ],
       "iucr_name": "_pd_proc.r",
       "owner_class": "TotalDataPoint",
-      "project_name": "_pd_proc.r",
+      "project_name": "_data.r",
       "read_names": [
+        "_data.r",
         "_pd_proc.r"
       ],
-      "unique_name": "total_data.0.r"
+      "unique_name": "data.0.r"
     },
     {
       "category_code": "data_range",
@@ -5662,142 +5645,148 @@
       "unique_name": "inventory_experiment.calculator.type"
     },
     {
-      "category_code": "total_data",
+      "category_code": "data",
       "category_entry_name": "0",
       "context": "experiment.total_pd_tof",
       "current_cif_names": [
-        "_pd_data.refinement_status"
+        "_data.calc_status"
       ],
       "descriptor_class": "StringDescriptor",
       "descriptor_name": "calc_status",
       "descriptor_path": "experiment.total_pd_tof.data[].calc_status",
-      "docs_anchor": "pd-data-refinement-status",
-      "docs_page": "pd_data",
+      "docs_anchor": "data-calc-status",
+      "docs_page": "data",
       "import_names": [
         "_pd_data.refinement_status"
       ],
       "iucr_name": "_pd_data.refinement_status",
       "owner_class": "TotalDataPoint",
-      "project_name": "_pd_data.refinement_status",
+      "project_name": "_data.calc_status",
       "read_names": [
+        "_data.calc_status",
         "_pd_data.refinement_status"
       ],
-      "unique_name": "total_data.0.calc_status"
+      "unique_name": "data.0.calc_status"
     },
     {
-      "category_code": "total_data",
+      "category_code": "data",
       "category_entry_name": "0",
       "context": "experiment.total_pd_tof",
       "current_cif_names": [
-        "_pd_calc.intensity_total"
+        "_data.g_r_calc"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "g_r_calc",
       "descriptor_path": "experiment.total_pd_tof.data[].g_r_calc",
-      "docs_anchor": "pd-calc-intensity-total",
-      "docs_page": "pd_calc",
+      "docs_anchor": "data-g-r-calc",
+      "docs_page": "data",
       "import_names": [
         "_pd_calc.intensity_total"
       ],
       "iucr_name": "_pd_calc.intensity_total",
       "owner_class": "TotalDataPoint",
-      "project_name": "_pd_calc.intensity_total",
+      "project_name": "_data.g_r_calc",
       "read_names": [
+        "_data.g_r_calc",
         "_pd_calc.intensity_total"
       ],
-      "unique_name": "total_data.0.g_r_calc"
+      "unique_name": "data.0.g_r_calc"
     },
     {
-      "category_code": "total_data",
+      "category_code": "data",
       "category_entry_name": "0",
       "context": "experiment.total_pd_tof",
       "current_cif_names": [
-        "_pd_meas.intensity_total"
+        "_data.g_r_meas"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "g_r_meas",
       "descriptor_path": "experiment.total_pd_tof.data[].g_r_meas",
-      "docs_anchor": "pd-meas-intensity-total",
-      "docs_page": "pd_meas",
+      "docs_anchor": "data-g-r-meas",
+      "docs_page": "data",
       "import_names": [
         "_pd_meas.intensity_total"
       ],
       "iucr_name": "_pd_meas.intensity_total",
       "owner_class": "TotalDataPoint",
-      "project_name": "_pd_meas.intensity_total",
+      "project_name": "_data.g_r_meas",
       "read_names": [
+        "_data.g_r_meas",
         "_pd_meas.intensity_total"
       ],
-      "unique_name": "total_data.0.g_r_meas"
+      "unique_name": "data.0.g_r_meas"
     },
     {
-      "category_code": "total_data",
+      "category_code": "data",
       "category_entry_name": "0",
       "context": "experiment.total_pd_tof",
       "current_cif_names": [
-        "_pd_meas.intensity_total_su"
+        "_data.g_r_meas_su"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "g_r_meas_su",
       "descriptor_path": "experiment.total_pd_tof.data[].g_r_meas_su",
-      "docs_anchor": "pd-meas-intensity-total-su",
-      "docs_page": "pd_meas",
+      "docs_anchor": "data-g-r-meas-su",
+      "docs_page": "data",
       "import_names": [
         "_pd_meas.intensity_total_su"
       ],
       "iucr_name": "_pd_meas.intensity_total_su",
       "owner_class": "TotalDataPoint",
-      "project_name": "_pd_meas.intensity_total_su",
+      "project_name": "_data.g_r_meas_su",
       "read_names": [
+        "_data.g_r_meas_su",
         "_pd_meas.intensity_total_su"
       ],
-      "unique_name": "total_data.0.g_r_meas_su"
+      "unique_name": "data.0.g_r_meas_su"
     },
     {
-      "category_code": "total_data",
+      "category_code": "data",
       "category_entry_name": "0",
       "context": "experiment.total_pd_tof",
       "current_cif_names": [
-        "_pd_data.point_id"
+        "_data.id"
       ],
       "descriptor_class": "StringDescriptor",
-      "descriptor_name": "point_id",
-      "descriptor_path": "experiment.total_pd_tof.data[].point_id",
-      "docs_anchor": "pd-data-point-id",
-      "docs_page": "pd_data",
+      "descriptor_name": "id",
+      "descriptor_path": "experiment.total_pd_tof.data[].id",
+      "docs_anchor": "data-id",
+      "docs_page": "data",
       "import_names": [
         "_pd_data.point_id"
       ],
       "iucr_name": "_pd_data.point_id",
       "owner_class": "TotalDataPoint",
-      "project_name": "_pd_data.point_id",
+      "project_name": "_data.id",
       "read_names": [
+        "_data.id",
         "_pd_data.point_id"
       ],
-      "unique_name": "total_data.0.point_id"
+      "unique_name": "data.0.id"
     },
     {
-      "category_code": "total_data",
+      "category_code": "data",
       "category_entry_name": "0",
       "context": "experiment.total_pd_tof",
       "current_cif_names": [
-        "_pd_proc.r"
+        "_data.r"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "r",
       "descriptor_path": "experiment.total_pd_tof.data[].r",
-      "docs_anchor": "pd-proc-r",
-      "docs_page": "pd_proc",
+      "docs_anchor": "data-r",
+      "docs_page": "data",
       "import_names": [
         "_pd_proc.r"
       ],
       "iucr_name": "_pd_proc.r",
       "owner_class": "TotalDataPoint",
-      "project_name": "_pd_proc.r",
+      "project_name": "_data.r",
       "read_names": [
+        "_data.r",
         "_pd_proc.r"
       ],
-      "unique_name": "total_data.0.r"
+      "unique_name": "data.0.r"
     },
     {
       "category_code": "data_range",
@@ -6942,20 +6931,21 @@
       "category_entry_name": "0",
       "context": "factory.BackgroundFactory.line-segment",
       "current_cif_names": [
-        "_pd_background.id"
+        "_background.id"
       ],
       "descriptor_class": "StringDescriptor",
       "descriptor_name": "id",
       "descriptor_path": "factory.BackgroundFactory.line-segment[].id",
-      "docs_anchor": "pd-background-id",
-      "docs_page": "pd_background",
+      "docs_anchor": "background-id",
+      "docs_page": "background",
       "import_names": [
         "_pd_background.id"
       ],
       "iucr_name": "_pd_background.id",
       "owner_class": "LineSegment",
-      "project_name": "_pd_background.id",
+      "project_name": "_background.id",
       "read_names": [
+        "_background.id",
         "_pd_background.id"
       ],
       "unique_name": "background.0.id"
@@ -6965,52 +6955,52 @@
       "category_entry_name": "0",
       "context": "factory.BackgroundFactory.line-segment",
       "current_cif_names": [
-        "_pd_background.line_segment_X",
-        "_pd_background_line_segment_X"
-      ],
-      "descriptor_class": "NumericDescriptor",
-      "descriptor_name": "x",
-      "descriptor_path": "factory.BackgroundFactory.line-segment[].x",
-      "docs_anchor": "pd-background-line-segment-x",
-      "docs_page": "pd_background",
-      "import_names": [
-        "_pd_background.line_segment_X",
-        "_pd_background_line_segment_X"
-      ],
-      "iucr_name": "_pd_background.line_segment_X",
-      "owner_class": "LineSegment",
-      "project_name": "_pd_background.line_segment_X",
-      "read_names": [
-        "_pd_background.line_segment_X",
-        "_pd_background_line_segment_X"
-      ],
-      "unique_name": "background.0.x"
-    },
-    {
-      "category_code": "background",
-      "category_entry_name": "0",
-      "context": "factory.BackgroundFactory.line-segment",
-      "current_cif_names": [
-        "_pd_background.line_segment_intensity",
-        "_pd_background_line_segment_intensity"
+        "_background.intensity"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "y",
-      "descriptor_path": "factory.BackgroundFactory.line-segment[].y",
-      "docs_anchor": "pd-background-line-segment-intensity",
-      "docs_page": "pd_background",
+      "descriptor_name": "intensity",
+      "descriptor_path": "factory.BackgroundFactory.line-segment[].intensity",
+      "docs_anchor": "background-intensity",
+      "docs_page": "background",
       "import_names": [
         "_pd_background.line_segment_intensity",
         "_pd_background_line_segment_intensity"
       ],
       "iucr_name": "_pd_background.line_segment_intensity",
       "owner_class": "LineSegment",
-      "project_name": "_pd_background.line_segment_intensity",
+      "project_name": "_background.intensity",
       "read_names": [
+        "_background.intensity",
         "_pd_background.line_segment_intensity",
         "_pd_background_line_segment_intensity"
       ],
-      "unique_name": "background.0.y"
+      "unique_name": "background.0.intensity"
+    },
+    {
+      "category_code": "background",
+      "category_entry_name": "0",
+      "context": "factory.BackgroundFactory.line-segment",
+      "current_cif_names": [
+        "_background.position"
+      ],
+      "descriptor_class": "NumericDescriptor",
+      "descriptor_name": "position",
+      "descriptor_path": "factory.BackgroundFactory.line-segment[].position",
+      "docs_anchor": "background-position",
+      "docs_page": "background",
+      "import_names": [
+        "_pd_background.line_segment_X",
+        "_pd_background_line_segment_X"
+      ],
+      "iucr_name": "_pd_background.line_segment_X",
+      "owner_class": "LineSegment",
+      "project_name": "_background.position",
+      "read_names": [
+        "_background.position",
+        "_pd_background.line_segment_X",
+        "_pd_background_line_segment_X"
+      ],
+      "unique_name": "background.0.position"
     },
     {
       "category_code": "calculator",
@@ -7220,525 +7210,542 @@
       "unique_name": "constraint._.id"
     },
     {
-      "category_code": "pd_data",
+      "category_code": "data",
       "category_entry_name": "0",
       "context": "factory.DataFactory.bragg-pd",
       "current_cif_names": [
-        "_pd_data.refinement_status"
+        "_data.calc_status"
       ],
       "descriptor_class": "StringDescriptor",
       "descriptor_name": "calc_status",
       "descriptor_path": "factory.DataFactory.bragg-pd[].calc_status",
-      "docs_anchor": "pd-data-refinement-status",
-      "docs_page": "pd_data",
+      "docs_anchor": "data-calc-status",
+      "docs_page": "data",
       "import_names": [
         "_pd_data.refinement_status"
       ],
       "iucr_name": "_pd_data.refinement_status",
       "owner_class": "PdCwlDataPoint",
-      "project_name": "_pd_data.refinement_status",
+      "project_name": "_data.calc_status",
       "read_names": [
+        "_data.calc_status",
         "_pd_data.refinement_status"
       ],
-      "unique_name": "pd_data.0.calc_status"
+      "unique_name": "data.0.calc_status"
     },
     {
-      "category_code": "pd_data",
+      "category_code": "data",
       "category_entry_name": "0",
       "context": "factory.DataFactory.bragg-pd",
       "current_cif_names": [
-        "_pd_proc.d_spacing"
+        "_data.d_spacing"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "d_spacing",
       "descriptor_path": "factory.DataFactory.bragg-pd[].d_spacing",
-      "docs_anchor": "pd-proc-d-spacing",
-      "docs_page": "pd_proc",
+      "docs_anchor": "data-d-spacing",
+      "docs_page": "data",
       "import_names": [
         "_pd_proc.d_spacing"
       ],
       "iucr_name": "_pd_proc.d_spacing",
       "owner_class": "PdCwlDataPoint",
-      "project_name": "_pd_proc.d_spacing",
+      "project_name": "_data.d_spacing",
       "read_names": [
+        "_data.d_spacing",
         "_pd_proc.d_spacing"
       ],
-      "unique_name": "pd_data.0.d_spacing"
+      "unique_name": "data.0.d_spacing"
     },
     {
-      "category_code": "pd_data",
+      "category_code": "data",
       "category_entry_name": "0",
       "context": "factory.DataFactory.bragg-pd",
       "current_cif_names": [
-        "_pd_calc.intensity_bkg"
+        "_data.id"
+      ],
+      "descriptor_class": "StringDescriptor",
+      "descriptor_name": "id",
+      "descriptor_path": "factory.DataFactory.bragg-pd[].id",
+      "docs_anchor": "data-id",
+      "docs_page": "data",
+      "import_names": [
+        "_pd_data.point_id"
+      ],
+      "iucr_name": "_pd_data.point_id",
+      "owner_class": "PdCwlDataPoint",
+      "project_name": "_data.id",
+      "read_names": [
+        "_data.id",
+        "_pd_data.point_id"
+      ],
+      "unique_name": "data.0.id"
+    },
+    {
+      "category_code": "data",
+      "category_entry_name": "0",
+      "context": "factory.DataFactory.bragg-pd",
+      "current_cif_names": [
+        "_data.intensity_bkg"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "intensity_bkg",
       "descriptor_path": "factory.DataFactory.bragg-pd[].intensity_bkg",
-      "docs_anchor": "pd-calc-intensity-bkg",
-      "docs_page": "pd_calc",
+      "docs_anchor": "data-intensity-bkg",
+      "docs_page": "data",
       "import_names": [
         "_pd_calc.intensity_bkg"
       ],
       "iucr_name": "_pd_calc.intensity_bkg",
       "owner_class": "PdCwlDataPoint",
-      "project_name": "_pd_calc.intensity_bkg",
+      "project_name": "_data.intensity_bkg",
       "read_names": [
+        "_data.intensity_bkg",
         "_pd_calc.intensity_bkg"
       ],
-      "unique_name": "pd_data.0.intensity_bkg"
+      "unique_name": "data.0.intensity_bkg"
     },
     {
-      "category_code": "pd_data",
+      "category_code": "data",
       "category_entry_name": "0",
       "context": "factory.DataFactory.bragg-pd",
       "current_cif_names": [
-        "_pd_calc.intensity_total"
+        "_data.intensity_calc"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "intensity_calc",
       "descriptor_path": "factory.DataFactory.bragg-pd[].intensity_calc",
-      "docs_anchor": "pd-calc-intensity-total",
-      "docs_page": "pd_calc",
+      "docs_anchor": "data-intensity-calc",
+      "docs_page": "data",
       "import_names": [
         "_pd_calc.intensity_total"
       ],
       "iucr_name": "_pd_calc.intensity_total",
       "owner_class": "PdCwlDataPoint",
-      "project_name": "_pd_calc.intensity_total",
+      "project_name": "_data.intensity_calc",
       "read_names": [
+        "_data.intensity_calc",
         "_pd_calc.intensity_total"
       ],
-      "unique_name": "pd_data.0.intensity_calc"
+      "unique_name": "data.0.intensity_calc"
     },
     {
-      "category_code": "pd_data",
+      "category_code": "data",
       "category_entry_name": "0",
       "context": "factory.DataFactory.bragg-pd",
       "current_cif_names": [
-        "_pd_meas.intensity_total",
-        "_pd_proc.intensity_norm"
+        "_data.intensity_meas"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "intensity_meas",
       "descriptor_path": "factory.DataFactory.bragg-pd[].intensity_meas",
-      "docs_anchor": "pd-meas-intensity-total",
-      "docs_page": "pd_meas",
+      "docs_anchor": "data-intensity-meas",
+      "docs_page": "data",
       "import_names": [
         "_pd_meas.intensity_total",
         "_pd_proc.intensity_norm"
       ],
       "iucr_name": "_pd_meas.intensity_total",
       "owner_class": "PdCwlDataPoint",
-      "project_name": "_pd_meas.intensity_total",
+      "project_name": "_data.intensity_meas",
       "read_names": [
+        "_data.intensity_meas",
         "_pd_meas.intensity_total",
         "_pd_proc.intensity_norm"
       ],
-      "unique_name": "pd_data.0.intensity_meas"
+      "unique_name": "data.0.intensity_meas"
     },
     {
-      "category_code": "pd_data",
+      "category_code": "data",
       "category_entry_name": "0",
       "context": "factory.DataFactory.bragg-pd",
       "current_cif_names": [
-        "_pd_meas.intensity_total_su",
-        "_pd_proc.intensity_norm_su"
+        "_data.intensity_meas_su"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "intensity_meas_su",
       "descriptor_path": "factory.DataFactory.bragg-pd[].intensity_meas_su",
-      "docs_anchor": "pd-meas-intensity-total-su",
-      "docs_page": "pd_meas",
+      "docs_anchor": "data-intensity-meas-su",
+      "docs_page": "data",
       "import_names": [
         "_pd_meas.intensity_total_su",
         "_pd_proc.intensity_norm_su"
       ],
       "iucr_name": "_pd_meas.intensity_total_su",
       "owner_class": "PdCwlDataPoint",
-      "project_name": "_pd_meas.intensity_total_su",
+      "project_name": "_data.intensity_meas_su",
       "read_names": [
+        "_data.intensity_meas_su",
         "_pd_meas.intensity_total_su",
         "_pd_proc.intensity_norm_su"
       ],
-      "unique_name": "pd_data.0.intensity_meas_su"
+      "unique_name": "data.0.intensity_meas_su"
     },
     {
-      "category_code": "pd_data",
+      "category_code": "data",
       "category_entry_name": "0",
       "context": "factory.DataFactory.bragg-pd",
       "current_cif_names": [
-        "_pd_data.point_id"
-      ],
-      "descriptor_class": "StringDescriptor",
-      "descriptor_name": "point_id",
-      "descriptor_path": "factory.DataFactory.bragg-pd[].point_id",
-      "docs_anchor": "pd-data-point-id",
-      "docs_page": "pd_data",
-      "import_names": [
-        "_pd_data.point_id"
-      ],
-      "iucr_name": "_pd_data.point_id",
-      "owner_class": "PdCwlDataPoint",
-      "project_name": "_pd_data.point_id",
-      "read_names": [
-        "_pd_data.point_id"
-      ],
-      "unique_name": "pd_data.0.point_id"
-    },
-    {
-      "category_code": "pd_data",
-      "category_entry_name": "0",
-      "context": "factory.DataFactory.bragg-pd",
-      "current_cif_names": [
-        "_pd_proc.2theta_scan",
-        "_pd_meas.2theta_scan"
+        "_data.two_theta"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "two_theta",
       "descriptor_path": "factory.DataFactory.bragg-pd[].two_theta",
-      "docs_anchor": "pd-proc-2theta-scan",
-      "docs_page": "pd_proc",
+      "docs_anchor": "data-two-theta",
+      "docs_page": "data",
       "import_names": [
         "_pd_proc.2theta_scan",
         "_pd_meas.2theta_scan"
       ],
       "iucr_name": "_pd_proc.2theta_scan",
       "owner_class": "PdCwlDataPoint",
-      "project_name": "_pd_proc.2theta_scan",
+      "project_name": "_data.two_theta",
       "read_names": [
+        "_data.two_theta",
         "_pd_proc.2theta_scan",
         "_pd_meas.2theta_scan"
       ],
-      "unique_name": "pd_data.0.two_theta"
+      "unique_name": "data.0.two_theta"
     },
     {
-      "category_code": "pd_data",
+      "category_code": "data",
       "category_entry_name": "0",
       "context": "factory.DataFactory.bragg-pd-tof",
       "current_cif_names": [
-        "_pd_data.refinement_status"
+        "_data.calc_status"
       ],
       "descriptor_class": "StringDescriptor",
       "descriptor_name": "calc_status",
       "descriptor_path": "factory.DataFactory.bragg-pd-tof[].calc_status",
-      "docs_anchor": "pd-data-refinement-status",
-      "docs_page": "pd_data",
+      "docs_anchor": "data-calc-status",
+      "docs_page": "data",
       "import_names": [
         "_pd_data.refinement_status"
       ],
       "iucr_name": "_pd_data.refinement_status",
       "owner_class": "PdTofDataPoint",
-      "project_name": "_pd_data.refinement_status",
+      "project_name": "_data.calc_status",
       "read_names": [
+        "_data.calc_status",
         "_pd_data.refinement_status"
       ],
-      "unique_name": "pd_data.0.calc_status"
+      "unique_name": "data.0.calc_status"
     },
     {
-      "category_code": "pd_data",
+      "category_code": "data",
       "category_entry_name": "0",
       "context": "factory.DataFactory.bragg-pd-tof",
       "current_cif_names": [
-        "_pd_proc.d_spacing"
+        "_data.d_spacing"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "d_spacing",
       "descriptor_path": "factory.DataFactory.bragg-pd-tof[].d_spacing",
-      "docs_anchor": "pd-proc-d-spacing",
-      "docs_page": "pd_proc",
+      "docs_anchor": "data-d-spacing",
+      "docs_page": "data",
       "import_names": [
         "_pd_proc.d_spacing"
       ],
       "iucr_name": "_pd_proc.d_spacing",
       "owner_class": "PdTofDataPoint",
-      "project_name": "_pd_proc.d_spacing",
+      "project_name": "_data.d_spacing",
       "read_names": [
+        "_data.d_spacing",
         "_pd_proc.d_spacing"
       ],
-      "unique_name": "pd_data.0.d_spacing"
+      "unique_name": "data.0.d_spacing"
     },
     {
-      "category_code": "pd_data",
+      "category_code": "data",
       "category_entry_name": "0",
       "context": "factory.DataFactory.bragg-pd-tof",
       "current_cif_names": [
-        "_pd_calc.intensity_bkg"
+        "_data.id"
+      ],
+      "descriptor_class": "StringDescriptor",
+      "descriptor_name": "id",
+      "descriptor_path": "factory.DataFactory.bragg-pd-tof[].id",
+      "docs_anchor": "data-id",
+      "docs_page": "data",
+      "import_names": [
+        "_pd_data.point_id"
+      ],
+      "iucr_name": "_pd_data.point_id",
+      "owner_class": "PdTofDataPoint",
+      "project_name": "_data.id",
+      "read_names": [
+        "_data.id",
+        "_pd_data.point_id"
+      ],
+      "unique_name": "data.0.id"
+    },
+    {
+      "category_code": "data",
+      "category_entry_name": "0",
+      "context": "factory.DataFactory.bragg-pd-tof",
+      "current_cif_names": [
+        "_data.intensity_bkg"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "intensity_bkg",
       "descriptor_path": "factory.DataFactory.bragg-pd-tof[].intensity_bkg",
-      "docs_anchor": "pd-calc-intensity-bkg",
-      "docs_page": "pd_calc",
+      "docs_anchor": "data-intensity-bkg",
+      "docs_page": "data",
       "import_names": [
         "_pd_calc.intensity_bkg"
       ],
       "iucr_name": "_pd_calc.intensity_bkg",
       "owner_class": "PdTofDataPoint",
-      "project_name": "_pd_calc.intensity_bkg",
+      "project_name": "_data.intensity_bkg",
       "read_names": [
+        "_data.intensity_bkg",
         "_pd_calc.intensity_bkg"
       ],
-      "unique_name": "pd_data.0.intensity_bkg"
+      "unique_name": "data.0.intensity_bkg"
     },
     {
-      "category_code": "pd_data",
+      "category_code": "data",
       "category_entry_name": "0",
       "context": "factory.DataFactory.bragg-pd-tof",
       "current_cif_names": [
-        "_pd_calc.intensity_total"
+        "_data.intensity_calc"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "intensity_calc",
       "descriptor_path": "factory.DataFactory.bragg-pd-tof[].intensity_calc",
-      "docs_anchor": "pd-calc-intensity-total",
-      "docs_page": "pd_calc",
+      "docs_anchor": "data-intensity-calc",
+      "docs_page": "data",
       "import_names": [
         "_pd_calc.intensity_total"
       ],
       "iucr_name": "_pd_calc.intensity_total",
       "owner_class": "PdTofDataPoint",
-      "project_name": "_pd_calc.intensity_total",
+      "project_name": "_data.intensity_calc",
       "read_names": [
+        "_data.intensity_calc",
         "_pd_calc.intensity_total"
       ],
-      "unique_name": "pd_data.0.intensity_calc"
+      "unique_name": "data.0.intensity_calc"
     },
     {
-      "category_code": "pd_data",
+      "category_code": "data",
       "category_entry_name": "0",
       "context": "factory.DataFactory.bragg-pd-tof",
       "current_cif_names": [
-        "_pd_meas.intensity_total",
-        "_pd_proc.intensity_norm"
+        "_data.intensity_meas"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "intensity_meas",
       "descriptor_path": "factory.DataFactory.bragg-pd-tof[].intensity_meas",
-      "docs_anchor": "pd-meas-intensity-total",
-      "docs_page": "pd_meas",
+      "docs_anchor": "data-intensity-meas",
+      "docs_page": "data",
       "import_names": [
         "_pd_meas.intensity_total",
         "_pd_proc.intensity_norm"
       ],
       "iucr_name": "_pd_meas.intensity_total",
       "owner_class": "PdTofDataPoint",
-      "project_name": "_pd_meas.intensity_total",
+      "project_name": "_data.intensity_meas",
       "read_names": [
+        "_data.intensity_meas",
         "_pd_meas.intensity_total",
         "_pd_proc.intensity_norm"
       ],
-      "unique_name": "pd_data.0.intensity_meas"
+      "unique_name": "data.0.intensity_meas"
     },
     {
-      "category_code": "pd_data",
+      "category_code": "data",
       "category_entry_name": "0",
       "context": "factory.DataFactory.bragg-pd-tof",
       "current_cif_names": [
-        "_pd_meas.intensity_total_su",
-        "_pd_proc.intensity_norm_su"
+        "_data.intensity_meas_su"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "intensity_meas_su",
       "descriptor_path": "factory.DataFactory.bragg-pd-tof[].intensity_meas_su",
-      "docs_anchor": "pd-meas-intensity-total-su",
-      "docs_page": "pd_meas",
+      "docs_anchor": "data-intensity-meas-su",
+      "docs_page": "data",
       "import_names": [
         "_pd_meas.intensity_total_su",
         "_pd_proc.intensity_norm_su"
       ],
       "iucr_name": "_pd_meas.intensity_total_su",
       "owner_class": "PdTofDataPoint",
-      "project_name": "_pd_meas.intensity_total_su",
+      "project_name": "_data.intensity_meas_su",
       "read_names": [
+        "_data.intensity_meas_su",
         "_pd_meas.intensity_total_su",
         "_pd_proc.intensity_norm_su"
       ],
-      "unique_name": "pd_data.0.intensity_meas_su"
+      "unique_name": "data.0.intensity_meas_su"
     },
     {
-      "category_code": "pd_data",
+      "category_code": "data",
       "category_entry_name": "0",
       "context": "factory.DataFactory.bragg-pd-tof",
       "current_cif_names": [
-        "_pd_data.point_id"
-      ],
-      "descriptor_class": "StringDescriptor",
-      "descriptor_name": "point_id",
-      "descriptor_path": "factory.DataFactory.bragg-pd-tof[].point_id",
-      "docs_anchor": "pd-data-point-id",
-      "docs_page": "pd_data",
-      "import_names": [
-        "_pd_data.point_id"
-      ],
-      "iucr_name": "_pd_data.point_id",
-      "owner_class": "PdTofDataPoint",
-      "project_name": "_pd_data.point_id",
-      "read_names": [
-        "_pd_data.point_id"
-      ],
-      "unique_name": "pd_data.0.point_id"
-    },
-    {
-      "category_code": "pd_data",
-      "category_entry_name": "0",
-      "context": "factory.DataFactory.bragg-pd-tof",
-      "current_cif_names": [
-        "_pd_meas.time_of_flight"
+        "_data.time_of_flight"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "time_of_flight",
       "descriptor_path": "factory.DataFactory.bragg-pd-tof[].time_of_flight",
-      "docs_anchor": "pd-meas-time-of-flight",
-      "docs_page": "pd_meas",
+      "docs_anchor": "data-time-of-flight",
+      "docs_page": "data",
       "import_names": [
         "_pd_meas.time_of_flight"
       ],
       "iucr_name": "_pd_meas.time_of_flight",
       "owner_class": "PdTofDataPoint",
-      "project_name": "_pd_meas.time_of_flight",
+      "project_name": "_data.time_of_flight",
       "read_names": [
+        "_data.time_of_flight",
         "_pd_meas.time_of_flight"
       ],
-      "unique_name": "pd_data.0.time_of_flight"
+      "unique_name": "data.0.time_of_flight"
     },
     {
-      "category_code": "total_data",
+      "category_code": "data",
       "category_entry_name": "0",
       "context": "factory.DataFactory.total-pd",
       "current_cif_names": [
-        "_pd_data.refinement_status"
+        "_data.calc_status"
       ],
       "descriptor_class": "StringDescriptor",
       "descriptor_name": "calc_status",
       "descriptor_path": "factory.DataFactory.total-pd[].calc_status",
-      "docs_anchor": "pd-data-refinement-status",
-      "docs_page": "pd_data",
+      "docs_anchor": "data-calc-status",
+      "docs_page": "data",
       "import_names": [
         "_pd_data.refinement_status"
       ],
       "iucr_name": "_pd_data.refinement_status",
       "owner_class": "TotalDataPoint",
-      "project_name": "_pd_data.refinement_status",
+      "project_name": "_data.calc_status",
       "read_names": [
+        "_data.calc_status",
         "_pd_data.refinement_status"
       ],
-      "unique_name": "total_data.0.calc_status"
+      "unique_name": "data.0.calc_status"
     },
     {
-      "category_code": "total_data",
+      "category_code": "data",
       "category_entry_name": "0",
       "context": "factory.DataFactory.total-pd",
       "current_cif_names": [
-        "_pd_calc.intensity_total"
+        "_data.g_r_calc"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "g_r_calc",
       "descriptor_path": "factory.DataFactory.total-pd[].g_r_calc",
-      "docs_anchor": "pd-calc-intensity-total",
-      "docs_page": "pd_calc",
+      "docs_anchor": "data-g-r-calc",
+      "docs_page": "data",
       "import_names": [
         "_pd_calc.intensity_total"
       ],
       "iucr_name": "_pd_calc.intensity_total",
       "owner_class": "TotalDataPoint",
-      "project_name": "_pd_calc.intensity_total",
+      "project_name": "_data.g_r_calc",
       "read_names": [
+        "_data.g_r_calc",
         "_pd_calc.intensity_total"
       ],
-      "unique_name": "total_data.0.g_r_calc"
+      "unique_name": "data.0.g_r_calc"
     },
     {
-      "category_code": "total_data",
+      "category_code": "data",
       "category_entry_name": "0",
       "context": "factory.DataFactory.total-pd",
       "current_cif_names": [
-        "_pd_meas.intensity_total"
+        "_data.g_r_meas"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "g_r_meas",
       "descriptor_path": "factory.DataFactory.total-pd[].g_r_meas",
-      "docs_anchor": "pd-meas-intensity-total",
-      "docs_page": "pd_meas",
+      "docs_anchor": "data-g-r-meas",
+      "docs_page": "data",
       "import_names": [
         "_pd_meas.intensity_total"
       ],
       "iucr_name": "_pd_meas.intensity_total",
       "owner_class": "TotalDataPoint",
-      "project_name": "_pd_meas.intensity_total",
+      "project_name": "_data.g_r_meas",
       "read_names": [
+        "_data.g_r_meas",
         "_pd_meas.intensity_total"
       ],
-      "unique_name": "total_data.0.g_r_meas"
+      "unique_name": "data.0.g_r_meas"
     },
     {
-      "category_code": "total_data",
+      "category_code": "data",
       "category_entry_name": "0",
       "context": "factory.DataFactory.total-pd",
       "current_cif_names": [
-        "_pd_meas.intensity_total_su"
+        "_data.g_r_meas_su"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "g_r_meas_su",
       "descriptor_path": "factory.DataFactory.total-pd[].g_r_meas_su",
-      "docs_anchor": "pd-meas-intensity-total-su",
-      "docs_page": "pd_meas",
+      "docs_anchor": "data-g-r-meas-su",
+      "docs_page": "data",
       "import_names": [
         "_pd_meas.intensity_total_su"
       ],
       "iucr_name": "_pd_meas.intensity_total_su",
       "owner_class": "TotalDataPoint",
-      "project_name": "_pd_meas.intensity_total_su",
+      "project_name": "_data.g_r_meas_su",
       "read_names": [
+        "_data.g_r_meas_su",
         "_pd_meas.intensity_total_su"
       ],
-      "unique_name": "total_data.0.g_r_meas_su"
+      "unique_name": "data.0.g_r_meas_su"
     },
     {
-      "category_code": "total_data",
+      "category_code": "data",
       "category_entry_name": "0",
       "context": "factory.DataFactory.total-pd",
       "current_cif_names": [
-        "_pd_data.point_id"
+        "_data.id"
       ],
       "descriptor_class": "StringDescriptor",
-      "descriptor_name": "point_id",
-      "descriptor_path": "factory.DataFactory.total-pd[].point_id",
-      "docs_anchor": "pd-data-point-id",
-      "docs_page": "pd_data",
+      "descriptor_name": "id",
+      "descriptor_path": "factory.DataFactory.total-pd[].id",
+      "docs_anchor": "data-id",
+      "docs_page": "data",
       "import_names": [
         "_pd_data.point_id"
       ],
       "iucr_name": "_pd_data.point_id",
       "owner_class": "TotalDataPoint",
-      "project_name": "_pd_data.point_id",
+      "project_name": "_data.id",
       "read_names": [
+        "_data.id",
         "_pd_data.point_id"
       ],
-      "unique_name": "total_data.0.point_id"
+      "unique_name": "data.0.id"
     },
     {
-      "category_code": "total_data",
+      "category_code": "data",
       "category_entry_name": "0",
       "context": "factory.DataFactory.total-pd",
       "current_cif_names": [
-        "_pd_proc.r"
+        "_data.r"
       ],
       "descriptor_class": "NumericDescriptor",
       "descriptor_name": "r",
       "descriptor_path": "factory.DataFactory.total-pd[].r",
-      "docs_anchor": "pd-proc-r",
-      "docs_page": "pd_proc",
+      "docs_anchor": "data-r",
+      "docs_page": "data",
       "import_names": [
         "_pd_proc.r"
       ],
       "iucr_name": "_pd_proc.r",
       "owner_class": "TotalDataPoint",
-      "project_name": "_pd_proc.r",
+      "project_name": "_data.r",
       "read_names": [
+        "_data.r",
         "_pd_proc.r"
       ],
-      "unique_name": "total_data.0.r"
+      "unique_name": "data.0.r"
     },
     {
       "category_code": "data_range",
@@ -10003,20 +10010,21 @@
       "category_entry_name": null,
       "context": "factory.InstrumentFactory.cwl-pd",
       "current_cif_names": [
-        "_instr.sample_displacement"
+        "_instrument.calib_sample_displacement"
       ],
       "descriptor_class": "Parameter",
       "descriptor_name": "sample_displacement",
       "descriptor_path": "factory.InstrumentFactory.cwl-pd.calib_sample_displacement",
-      "docs_anchor": "instr-sample-displacement",
-      "docs_page": "instr",
+      "docs_anchor": "instrument-calib-sample-displacement",
+      "docs_page": "instrument",
       "import_names": [
         "_instr.sample_displacement"
       ],
       "iucr_name": "_instr.sample_displacement",
       "owner_class": "CwlPdInstrument",
-      "project_name": "_instr.sample_displacement",
+      "project_name": "_instrument.calib_sample_displacement",
       "read_names": [
+        "_instrument.calib_sample_displacement",
         "_instr.sample_displacement"
       ],
       "unique_name": "instrument.sample_displacement"
@@ -10026,20 +10034,21 @@
       "category_entry_name": null,
       "context": "factory.InstrumentFactory.cwl-pd",
       "current_cif_names": [
-        "_instr.sample_transparency"
+        "_instrument.calib_sample_transparency"
       ],
       "descriptor_class": "Parameter",
       "descriptor_name": "sample_transparency",
       "descriptor_path": "factory.InstrumentFactory.cwl-pd.calib_sample_transparency",
-      "docs_anchor": "instr-sample-transparency",
-      "docs_page": "instr",
+      "docs_anchor": "instrument-calib-sample-transparency",
+      "docs_page": "instrument",
       "import_names": [
         "_instr.sample_transparency"
       ],
       "iucr_name": "_instr.sample_transparency",
       "owner_class": "CwlPdInstrument",
-      "project_name": "_instr.sample_transparency",
+      "project_name": "_instrument.calib_sample_transparency",
       "read_names": [
+        "_instrument.calib_sample_transparency",
         "_instr.sample_transparency"
       ],
       "unique_name": "instrument.sample_transparency"
@@ -10049,20 +10058,21 @@
       "category_entry_name": null,
       "context": "factory.InstrumentFactory.cwl-pd",
       "current_cif_names": [
-        "_instr.2theta_offset"
+        "_instrument.calib_twotheta_offset"
       ],
       "descriptor_class": "Parameter",
       "descriptor_name": "twotheta_offset",
       "descriptor_path": "factory.InstrumentFactory.cwl-pd.calib_twotheta_offset",
-      "docs_anchor": "instr-2theta-offset",
-      "docs_page": "instr",
+      "docs_anchor": "instrument-calib-twotheta-offset",
+      "docs_page": "instrument",
       "import_names": [
         "_instr.2theta_offset"
       ],
-      "iucr_name": "_instr.2theta_offset",
+      "iucr_name": "_pd_calib.2theta_offset",
       "owner_class": "CwlPdInstrument",
-      "project_name": "_instr.2theta_offset",
+      "project_name": "_instrument.calib_twotheta_offset",
       "read_names": [
+        "_instrument.calib_twotheta_offset",
         "_instr.2theta_offset"
       ],
       "unique_name": "instrument.twotheta_offset"
@@ -10072,20 +10082,21 @@
       "category_entry_name": null,
       "context": "factory.InstrumentFactory.cwl-pd",
       "current_cif_names": [
-        "_instr.wavelength"
+        "_instrument.setup_wavelength"
       ],
       "descriptor_class": "Parameter",
       "descriptor_name": "wavelength",
       "descriptor_path": "factory.InstrumentFactory.cwl-pd.setup_wavelength",
-      "docs_anchor": "instr-wavelength",
-      "docs_page": "instr",
+      "docs_anchor": "instrument-setup-wavelength",
+      "docs_page": "instrument",
       "import_names": [
         "_instr.wavelength"
       ],
-      "iucr_name": "_instr.wavelength",
+      "iucr_name": "_diffrn_radiation_wavelength.value",
       "owner_class": "CwlPdInstrument",
-      "project_name": "_instr.wavelength",
+      "project_name": "_instrument.setup_wavelength",
       "read_names": [
+        "_instrument.setup_wavelength",
         "_instr.wavelength"
       ],
       "unique_name": "instrument.wavelength"
@@ -10095,20 +10106,21 @@
       "category_entry_name": null,
       "context": "factory.InstrumentFactory.cwl-sc",
       "current_cif_names": [
-        "_instr.wavelength"
+        "_instrument.setup_wavelength"
       ],
       "descriptor_class": "Parameter",
       "descriptor_name": "wavelength",
       "descriptor_path": "factory.InstrumentFactory.cwl-sc.setup_wavelength",
-      "docs_anchor": "instr-wavelength",
-      "docs_page": "instr",
+      "docs_anchor": "instrument-setup-wavelength",
+      "docs_page": "instrument",
       "import_names": [
         "_instr.wavelength"
       ],
-      "iucr_name": "_instr.wavelength",
+      "iucr_name": "_diffrn_radiation_wavelength.value",
       "owner_class": "CwlScInstrument",
-      "project_name": "_instr.wavelength",
+      "project_name": "_instrument.setup_wavelength",
       "read_names": [
+        "_instrument.setup_wavelength",
         "_instr.wavelength"
       ],
       "unique_name": "instrument.wavelength"
@@ -10118,20 +10130,21 @@
       "category_entry_name": null,
       "context": "factory.InstrumentFactory.tof-pd",
       "current_cif_names": [
-        "_instr.d_to_tof_linear"
+        "_instrument.calib_d_to_tof_linear"
       ],
       "descriptor_class": "Parameter",
       "descriptor_name": "d_to_tof_linear",
       "descriptor_path": "factory.InstrumentFactory.tof-pd.calib_d_to_tof_linear",
-      "docs_anchor": "instr-d-to-tof-linear",
-      "docs_page": "instr",
+      "docs_anchor": "instrument-calib-d-to-tof-linear",
+      "docs_page": "instrument",
       "import_names": [
         "_instr.d_to_tof_linear"
       ],
-      "iucr_name": "_instr.d_to_tof_linear",
+      "iucr_name": "_instrument.calib_d_to_tof_linear",
       "owner_class": "TofPdInstrument",
-      "project_name": "_instr.d_to_tof_linear",
+      "project_name": "_instrument.calib_d_to_tof_linear",
       "read_names": [
+        "_instrument.calib_d_to_tof_linear",
         "_instr.d_to_tof_linear"
       ],
       "unique_name": "instrument.d_to_tof_linear"
@@ -10141,20 +10154,21 @@
       "category_entry_name": null,
       "context": "factory.InstrumentFactory.tof-pd",
       "current_cif_names": [
-        "_instr.d_to_tof_offset"
+        "_instrument.calib_d_to_tof_offset"
       ],
       "descriptor_class": "Parameter",
       "descriptor_name": "d_to_tof_offset",
       "descriptor_path": "factory.InstrumentFactory.tof-pd.calib_d_to_tof_offset",
-      "docs_anchor": "instr-d-to-tof-offset",
-      "docs_page": "instr",
+      "docs_anchor": "instrument-calib-d-to-tof-offset",
+      "docs_page": "instrument",
       "import_names": [
         "_instr.d_to_tof_offset"
       ],
-      "iucr_name": "_instr.d_to_tof_offset",
+      "iucr_name": "_instrument.calib_d_to_tof_offset",
       "owner_class": "TofPdInstrument",
-      "project_name": "_instr.d_to_tof_offset",
+      "project_name": "_instrument.calib_d_to_tof_offset",
       "read_names": [
+        "_instrument.calib_d_to_tof_offset",
         "_instr.d_to_tof_offset"
       ],
       "unique_name": "instrument.d_to_tof_offset"
@@ -10164,66 +10178,69 @@
       "category_entry_name": null,
       "context": "factory.InstrumentFactory.tof-pd",
       "current_cif_names": [
-        "_instr.d_to_tof_quad"
+        "_instrument.calib_d_to_tof_quadratic"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "d_to_tof_quad",
-      "descriptor_path": "factory.InstrumentFactory.tof-pd.calib_d_to_tof_quad",
-      "docs_anchor": "instr-d-to-tof-quad",
-      "docs_page": "instr",
+      "descriptor_name": "d_to_tof_quadratic",
+      "descriptor_path": "factory.InstrumentFactory.tof-pd.calib_d_to_tof_quadratic",
+      "docs_anchor": "instrument-calib-d-to-tof-quadratic",
+      "docs_page": "instrument",
       "import_names": [
         "_instr.d_to_tof_quad"
       ],
-      "iucr_name": "_instr.d_to_tof_quad",
+      "iucr_name": "_instrument.calib_d_to_tof_quadratic",
       "owner_class": "TofPdInstrument",
-      "project_name": "_instr.d_to_tof_quad",
+      "project_name": "_instrument.calib_d_to_tof_quadratic",
       "read_names": [
+        "_instrument.calib_d_to_tof_quadratic",
         "_instr.d_to_tof_quad"
       ],
-      "unique_name": "instrument.d_to_tof_quad"
+      "unique_name": "instrument.d_to_tof_quadratic"
     },
     {
       "category_code": "instrument",
       "category_entry_name": null,
       "context": "factory.InstrumentFactory.tof-pd",
       "current_cif_names": [
-        "_instr.d_to_tof_recip"
+        "_instrument.calib_d_to_tof_reciprocal"
       ],
       "descriptor_class": "Parameter",
-      "descriptor_name": "d_to_tof_recip",
-      "descriptor_path": "factory.InstrumentFactory.tof-pd.calib_d_to_tof_recip",
-      "docs_anchor": "instr-d-to-tof-recip",
-      "docs_page": "instr",
+      "descriptor_name": "d_to_tof_reciprocal",
+      "descriptor_path": "factory.InstrumentFactory.tof-pd.calib_d_to_tof_reciprocal",
+      "docs_anchor": "instrument-calib-d-to-tof-reciprocal",
+      "docs_page": "instrument",
       "import_names": [
         "_instr.d_to_tof_recip"
       ],
-      "iucr_name": "_instr.d_to_tof_recip",
+      "iucr_name": "_instrument.calib_d_to_tof_reciprocal",
       "owner_class": "TofPdInstrument",
-      "project_name": "_instr.d_to_tof_recip",
+      "project_name": "_instrument.calib_d_to_tof_reciprocal",
       "read_names": [
+        "_instrument.calib_d_to_tof_reciprocal",
         "_instr.d_to_tof_recip"
       ],
-      "unique_name": "instrument.d_to_tof_recip"
+      "unique_name": "instrument.d_to_tof_reciprocal"
     },
     {
       "category_code": "instrument",
       "category_entry_name": null,
       "context": "factory.InstrumentFactory.tof-pd",
       "current_cif_names": [
-        "_instr.2theta_bank"
+        "_instrument.setup_twotheta_bank"
       ],
       "descriptor_class": "Parameter",
       "descriptor_name": "twotheta_bank",
       "descriptor_path": "factory.InstrumentFactory.tof-pd.setup_twotheta_bank",
-      "docs_anchor": "instr-2theta-bank",
-      "docs_page": "instr",
+      "docs_anchor": "instrument-setup-twotheta-bank",
+      "docs_page": "instrument",
       "import_names": [
         "_instr.2theta_bank"
       ],
-      "iucr_name": "_instr.2theta_bank",
+      "iucr_name": "_instrument.setup_twotheta_bank",
       "owner_class": "TofPdInstrument",
-      "project_name": "_instr.2theta_bank",
+      "project_name": "_instrument.setup_twotheta_bank",
       "read_names": [
+        "_instrument.setup_twotheta_bank",
         "_instr.2theta_bank"
       ],
       "unique_name": "instrument.twotheta_bank"
@@ -12786,142 +12803,148 @@
       "unique_name": "peak.type"
     },
     {
-      "category_code": "pref_orient",
+      "category_code": "preferred_orientation",
       "category_entry_name": "Si",
       "context": "factory.PrefOrientFactory.default",
       "current_cif_names": [
-        "_pref_orient.index_h"
+        "_preferred_orientation.index_h"
       ],
       "descriptor_class": "IntegerDescriptor",
       "descriptor_name": "index_h",
       "descriptor_path": "factory.PrefOrientFactory.default[].index_h",
-      "docs_anchor": "pref-orient-index-h",
-      "docs_page": "pref_orient",
+      "docs_anchor": "preferred-orientation-index-h",
+      "docs_page": "preferred_orientation",
       "import_names": [
         "_pref_orient.index_h"
       ],
       "iucr_name": "_pd_pref_orient_March_Dollase.index_h",
       "owner_class": "PrefOrient",
-      "project_name": "_pref_orient.index_h",
+      "project_name": "_preferred_orientation.index_h",
       "read_names": [
+        "_preferred_orientation.index_h",
         "_pref_orient.index_h"
       ],
-      "unique_name": "pref_orient.Si.index_h"
+      "unique_name": "preferred_orientation.Si.index_h"
     },
     {
-      "category_code": "pref_orient",
+      "category_code": "preferred_orientation",
       "category_entry_name": "Si",
       "context": "factory.PrefOrientFactory.default",
       "current_cif_names": [
-        "_pref_orient.index_k"
+        "_preferred_orientation.index_k"
       ],
       "descriptor_class": "IntegerDescriptor",
       "descriptor_name": "index_k",
       "descriptor_path": "factory.PrefOrientFactory.default[].index_k",
-      "docs_anchor": "pref-orient-index-k",
-      "docs_page": "pref_orient",
+      "docs_anchor": "preferred-orientation-index-k",
+      "docs_page": "preferred_orientation",
       "import_names": [
         "_pref_orient.index_k"
       ],
       "iucr_name": "_pd_pref_orient_March_Dollase.index_k",
       "owner_class": "PrefOrient",
-      "project_name": "_pref_orient.index_k",
+      "project_name": "_preferred_orientation.index_k",
       "read_names": [
+        "_preferred_orientation.index_k",
         "_pref_orient.index_k"
       ],
-      "unique_name": "pref_orient.Si.index_k"
+      "unique_name": "preferred_orientation.Si.index_k"
     },
     {
-      "category_code": "pref_orient",
+      "category_code": "preferred_orientation",
       "category_entry_name": "Si",
       "context": "factory.PrefOrientFactory.default",
       "current_cif_names": [
-        "_pref_orient.index_l"
+        "_preferred_orientation.index_l"
       ],
       "descriptor_class": "IntegerDescriptor",
       "descriptor_name": "index_l",
       "descriptor_path": "factory.PrefOrientFactory.default[].index_l",
-      "docs_anchor": "pref-orient-index-l",
-      "docs_page": "pref_orient",
+      "docs_anchor": "preferred-orientation-index-l",
+      "docs_page": "preferred_orientation",
       "import_names": [
         "_pref_orient.index_l"
       ],
       "iucr_name": "_pd_pref_orient_March_Dollase.index_l",
       "owner_class": "PrefOrient",
-      "project_name": "_pref_orient.index_l",
+      "project_name": "_preferred_orientation.index_l",
       "read_names": [
+        "_preferred_orientation.index_l",
         "_pref_orient.index_l"
       ],
-      "unique_name": "pref_orient.Si.index_l"
+      "unique_name": "preferred_orientation.Si.index_l"
     },
     {
-      "category_code": "pref_orient",
+      "category_code": "preferred_orientation",
       "category_entry_name": "Si",
       "context": "factory.PrefOrientFactory.default",
       "current_cif_names": [
-        "_pref_orient.march_r"
+        "_preferred_orientation.march_r"
       ],
       "descriptor_class": "Parameter",
       "descriptor_name": "march_r",
       "descriptor_path": "factory.PrefOrientFactory.default[].march_r",
-      "docs_anchor": "pref-orient-march-r",
-      "docs_page": "pref_orient",
+      "docs_anchor": "preferred-orientation-march-r",
+      "docs_page": "preferred_orientation",
       "import_names": [
         "_pref_orient.march_r"
       ],
       "iucr_name": "_pd_pref_orient_March_Dollase.r",
       "owner_class": "PrefOrient",
-      "project_name": "_pref_orient.march_r",
+      "project_name": "_preferred_orientation.march_r",
       "read_names": [
+        "_preferred_orientation.march_r",
         "_pref_orient.march_r"
       ],
-      "unique_name": "pref_orient.Si.march_r"
+      "unique_name": "preferred_orientation.Si.march_r"
     },
     {
-      "category_code": "pref_orient",
+      "category_code": "preferred_orientation",
       "category_entry_name": "Si",
       "context": "factory.PrefOrientFactory.default",
       "current_cif_names": [
-        "_pref_orient.march_random_fract"
+        "_preferred_orientation.march_random_fract"
       ],
       "descriptor_class": "Parameter",
       "descriptor_name": "march_random_fract",
       "descriptor_path": "factory.PrefOrientFactory.default[].march_random_fract",
-      "docs_anchor": "pref-orient-march-random-fract",
-      "docs_page": "pref_orient",
+      "docs_anchor": "preferred-orientation-march-random-fract",
+      "docs_page": "preferred_orientation",
       "import_names": [
         "_pref_orient.march_random_fract"
       ],
       "iucr_name": "_easydiffraction_pref_orient.march_random_fract",
       "owner_class": "PrefOrient",
-      "project_name": "_pref_orient.march_random_fract",
+      "project_name": "_preferred_orientation.march_random_fract",
       "read_names": [
+        "_preferred_orientation.march_random_fract",
         "_pref_orient.march_random_fract"
       ],
-      "unique_name": "pref_orient.Si.march_random_fract"
+      "unique_name": "preferred_orientation.Si.march_random_fract"
     },
     {
-      "category_code": "pref_orient",
+      "category_code": "preferred_orientation",
       "category_entry_name": "Si",
       "context": "factory.PrefOrientFactory.default",
       "current_cif_names": [
-        "_pref_orient.phase_id"
+        "_preferred_orientation.structure_id"
       ],
       "descriptor_class": "StringDescriptor",
-      "descriptor_name": "phase_id",
-      "descriptor_path": "factory.PrefOrientFactory.default[].phase_id",
-      "docs_anchor": "pref-orient-phase-id",
-      "docs_page": "pref_orient",
+      "descriptor_name": "structure_id",
+      "descriptor_path": "factory.PrefOrientFactory.default[].structure_id",
+      "docs_anchor": "preferred-orientation-structure-id",
+      "docs_page": "preferred_orientation",
       "import_names": [
         "_pref_orient.phase_id"
       ],
       "iucr_name": "_pd_pref_orient_March_Dollase.phase_id",
       "owner_class": "PrefOrient",
-      "project_name": "_pref_orient.phase_id",
+      "project_name": "_preferred_orientation.structure_id",
       "read_names": [
+        "_preferred_orientation.structure_id",
         "_pref_orient.phase_id"
       ],
-      "unique_name": "pref_orient.Si.phase_id"
+      "unique_name": "preferred_orientation.Si.structure_id"
     },
     {
       "category_code": "metadata",
@@ -13302,29 +13325,6 @@
       "category_entry_name": "0",
       "context": "factory.ReflnFactory.bragg-pd-refln",
       "current_cif_names": [
-        "_refln.phase_id"
-      ],
-      "descriptor_class": "StringDescriptor",
-      "descriptor_name": "phase_id",
-      "descriptor_path": "factory.ReflnFactory.bragg-pd-refln[].phase_id",
-      "docs_anchor": "refln-phase-id",
-      "docs_page": "refln",
-      "import_names": [
-        "_refln.phase_id"
-      ],
-      "iucr_name": "_refln.phase_id",
-      "owner_class": "PowderCwlRefln",
-      "project_name": "_refln.phase_id",
-      "read_names": [
-        "_refln.phase_id"
-      ],
-      "unique_name": "refln.0.phase_id"
-    },
-    {
-      "category_code": "refln",
-      "category_entry_name": "0",
-      "context": "factory.ReflnFactory.bragg-pd-refln",
-      "current_cif_names": [
         "_refln.sin_theta_over_lambda"
       ],
       "descriptor_class": "NumericDescriptor",
@@ -13342,6 +13342,30 @@
         "_refln.sin_theta_over_lambda"
       ],
       "unique_name": "refln.0.sin_theta_over_lambda"
+    },
+    {
+      "category_code": "refln",
+      "category_entry_name": "0",
+      "context": "factory.ReflnFactory.bragg-pd-refln",
+      "current_cif_names": [
+        "_refln.structure_id"
+      ],
+      "descriptor_class": "StringDescriptor",
+      "descriptor_name": "structure_id",
+      "descriptor_path": "factory.ReflnFactory.bragg-pd-refln[].structure_id",
+      "docs_anchor": "refln-structure-id",
+      "docs_page": "refln",
+      "import_names": [
+        "_refln.phase_id"
+      ],
+      "iucr_name": "_pd_refln.phase_id",
+      "owner_class": "PowderCwlRefln",
+      "project_name": "_refln.structure_id",
+      "read_names": [
+        "_refln.structure_id",
+        "_refln.phase_id"
+      ],
+      "unique_name": "refln.0.structure_id"
     },
     {
       "category_code": "refln",
@@ -13601,29 +13625,6 @@
       "category_entry_name": "0",
       "context": "factory.ReflnFactory.bragg-pd-tof-refln",
       "current_cif_names": [
-        "_refln.phase_id"
-      ],
-      "descriptor_class": "StringDescriptor",
-      "descriptor_name": "phase_id",
-      "descriptor_path": "factory.ReflnFactory.bragg-pd-tof-refln[].phase_id",
-      "docs_anchor": "refln-phase-id",
-      "docs_page": "refln",
-      "import_names": [
-        "_refln.phase_id"
-      ],
-      "iucr_name": "_refln.phase_id",
-      "owner_class": "PowderTofRefln",
-      "project_name": "_refln.phase_id",
-      "read_names": [
-        "_refln.phase_id"
-      ],
-      "unique_name": "refln.0.phase_id"
-    },
-    {
-      "category_code": "refln",
-      "category_entry_name": "0",
-      "context": "factory.ReflnFactory.bragg-pd-tof-refln",
-      "current_cif_names": [
         "_refln.sin_theta_over_lambda"
       ],
       "descriptor_class": "NumericDescriptor",
@@ -13641,6 +13642,30 @@
         "_refln.sin_theta_over_lambda"
       ],
       "unique_name": "refln.0.sin_theta_over_lambda"
+    },
+    {
+      "category_code": "refln",
+      "category_entry_name": "0",
+      "context": "factory.ReflnFactory.bragg-pd-tof-refln",
+      "current_cif_names": [
+        "_refln.structure_id"
+      ],
+      "descriptor_class": "StringDescriptor",
+      "descriptor_name": "structure_id",
+      "descriptor_path": "factory.ReflnFactory.bragg-pd-tof-refln[].structure_id",
+      "docs_anchor": "refln-structure-id",
+      "docs_page": "refln",
+      "import_names": [
+        "_refln.phase_id"
+      ],
+      "iucr_name": "_pd_refln.phase_id",
+      "owner_class": "PowderTofRefln",
+      "project_name": "_refln.structure_id",
+      "read_names": [
+        "_refln.structure_id",
+        "_refln.phase_id"
+      ],
+      "unique_name": "refln.0.structure_id"
     },
     {
       "category_code": "refln",

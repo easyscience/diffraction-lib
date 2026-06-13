@@ -216,8 +216,8 @@ project.structures['lbco'].cell.length_a.free = True
 # Set experiment parameters to be refined.
 project.experiments['hrpt'].linked_structures['lbco'].scale.free = True
 project.experiments['hrpt'].instrument.calib_twotheta_offset.free = True
-project.experiments['hrpt'].background['10'].y.free = True
-project.experiments['hrpt'].background['165'].y.free = True
+project.experiments['hrpt'].background['10'].intensity.free = True
+project.experiments['hrpt'].background['165'].intensity.free = True
 ```
 
 After setting the parameters to be refined, you can perform the fit
@@ -285,7 +285,7 @@ regions where peaks overlap:
 project.experiments['hrpt'].background.auto_estimate()
 
 # Optionally free some of the new (fixed) points and fit again
-project.experiments['hrpt'].background['1'].y.free = True
+project.experiments['hrpt'].background['1'].intensity.free = True
 project.analysis.fit()
 ```
 

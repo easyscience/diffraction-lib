@@ -35,23 +35,23 @@ class TotalDataPoint(CategoryItem):
     original measurement was CWL or TOF.
     """
 
-    _category_code = 'total_data'
-    _category_entry_name = 'point_id'
+    _category_code = 'data'
+    _category_entry_name = 'id'
 
     def __init__(self) -> None:
         super().__init__()
 
-        self._point_id = StringDescriptor(
-            name='point_id',
+        self._id = StringDescriptor(
+            name='id',
             description='Identifier for this data point in the dataset',
             value_spec=AttributeSpec(
                 default='0',
                 validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
             ),
             cif_handler=CifHandler(
-                names=[
-                    '_pd_data.point_id',  # TODO: Use total scattering CIF names
-                ]
+                names=['_data.id'],
+                import_names=['_pd_data.point_id'],
+                iucr_name='_pd_data.point_id',
             ),
         )
         self._r = NumericDescriptor(
@@ -67,9 +67,9 @@ class TotalDataPoint(CategoryItem):
                 validator=RangeValidator(ge=0),
             ),
             cif_handler=CifHandler(
-                names=[
-                    '_pd_proc.r',  # TODO: Use PDF-specific CIF names
-                ]
+                names=['_data.r'],
+                import_names=['_pd_proc.r'],
+                iucr_name='_pd_proc.r',
             ),
         )
         self._g_r_meas = NumericDescriptor(
@@ -79,9 +79,9 @@ class TotalDataPoint(CategoryItem):
                 default=0.0,
             ),
             cif_handler=CifHandler(
-                names=[
-                    '_pd_meas.intensity_total',  # TODO: Use PDF-specific CIF names
-                ]
+                names=['_data.g_r_meas'],
+                import_names=['_pd_meas.intensity_total'],
+                iucr_name='_pd_meas.intensity_total',
             ),
         )
         self._g_r_meas_su = NumericDescriptor(
@@ -92,9 +92,9 @@ class TotalDataPoint(CategoryItem):
                 validator=RangeValidator(ge=0),
             ),
             cif_handler=CifHandler(
-                names=[
-                    '_pd_meas.intensity_total_su',  # TODO: Use PDF-specific CIF names
-                ]
+                names=['_data.g_r_meas_su'],
+                import_names=['_pd_meas.intensity_total_su'],
+                iucr_name='_pd_meas.intensity_total_su',
             ),
         )
         self._g_r_calc = NumericDescriptor(
@@ -104,9 +104,9 @@ class TotalDataPoint(CategoryItem):
                 default=0.0,
             ),
             cif_handler=CifHandler(
-                names=[
-                    '_pd_calc.intensity_total',  # TODO: Use PDF-specific CIF names
-                ]
+                names=['_data.g_r_calc'],
+                import_names=['_pd_calc.intensity_total'],
+                iucr_name='_pd_calc.intensity_total',
             ),
         )
         self._calc_status = StringDescriptor(
@@ -117,9 +117,9 @@ class TotalDataPoint(CategoryItem):
                 validator=MembershipValidator(allowed=['incl', 'excl']),
             ),
             cif_handler=CifHandler(
-                names=[
-                    '_pd_data.refinement_status',  # TODO: Use PDF-specific CIF names
-                ]
+                names=['_data.calc_status'],
+                import_names=['_pd_data.refinement_status'],
+                iucr_name='_pd_data.refinement_status',
             ),
         )
 
@@ -128,14 +128,14 @@ class TotalDataPoint(CategoryItem):
     # ------------------------------------------------------------------
 
     @property
-    def point_id(self) -> StringDescriptor:
+    def id(self) -> StringDescriptor:
         """
         Identifier for this data point in the dataset.
 
         Reading this property returns the underlying
         ``StringDescriptor`` object.
         """
-        return self._point_id
+        return self._id
 
     @property
     def r(self) -> NumericDescriptor:
@@ -199,10 +199,10 @@ class TotalDataBase(CategoryCollection):
 
     # Should be set only once
 
-    def _set_point_id(self, values: object) -> None:
-        """Set point IDs."""
+    def _set_id(self, values: object) -> None:
+        """Set data-point IDs."""
         for p, v in zip(self._items, values, strict=True):
-            p.point_id._value = v
+            p.id._value = v
 
     def _set_g_r_meas(self, values: object) -> None:
         """Set measured G(r)."""
@@ -399,7 +399,7 @@ class TotalData(TotalDataBase):
             p.r._value = v
 
         # Set point IDs
-        self._set_point_id([str(i + 1) for i in range(values.size)])
+        self._set_id([str(i + 1) for i in range(values.size)])
 
     # ------------------------------------------------------------------
     #  Public properties

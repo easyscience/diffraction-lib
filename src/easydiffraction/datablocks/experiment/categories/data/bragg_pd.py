@@ -47,8 +47,8 @@ class PdDataPointBaseMixin:
     def __init__(self) -> None:
         super().__init__()
 
-        self._point_id = StringDescriptor(
-            name='point_id',
+        self._id = StringDescriptor(
+            name='id',
             description='Identifier for this data point in the dataset',
             display_handler=DisplayHandler(
                 display_name='ID',
@@ -62,9 +62,9 @@ class PdDataPointBaseMixin:
                 validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
             ),
             cif_handler=CifHandler(
-                names=[
-                    '_pd_data.point_id',
-                ]
+                names=['_data.id'],
+                import_names=['_pd_data.point_id'],
+                iucr_name='_pd_data.point_id',
             ),
         )
         self._d_spacing = NumericDescriptor(
@@ -81,7 +81,11 @@ class PdDataPointBaseMixin:
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(names=['_pd_proc.d_spacing']),
+            cif_handler=CifHandler(
+                names=['_data.d_spacing'],
+                import_names=['_pd_proc.d_spacing'],
+                iucr_name='_pd_proc.d_spacing',
+            ),
         )
         self._intensity_meas = NumericDescriptor(
             name='intensity_meas',
@@ -95,10 +99,12 @@ class PdDataPointBaseMixin:
                 validator=RangeValidator(ge=0),
             ),
             cif_handler=CifHandler(
-                names=[
+                names=['_data.intensity_meas'],
+                import_names=[
                     '_pd_meas.intensity_total',
                     '_pd_proc.intensity_norm',
-                ]
+                ],
+                iucr_name='_pd_meas.intensity_total',
             ),
         )
         self._intensity_meas_su = NumericDescriptor(
@@ -113,10 +119,12 @@ class PdDataPointBaseMixin:
                 validator=RangeValidator(ge=0),
             ),
             cif_handler=CifHandler(
-                names=[
+                names=['_data.intensity_meas_su'],
+                import_names=[
                     '_pd_meas.intensity_total_su',
                     '_pd_proc.intensity_norm_su',
-                ]
+                ],
+                iucr_name='_pd_meas.intensity_total_su',
             ),
         )
         self._intensity_calc = NumericDescriptor(
@@ -130,7 +138,11 @@ class PdDataPointBaseMixin:
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(names=['_pd_calc.intensity_total']),
+            cif_handler=CifHandler(
+                names=['_data.intensity_calc'],
+                import_names=['_pd_calc.intensity_total'],
+                iucr_name='_pd_calc.intensity_total',
+            ),
         )
         self._intensity_bkg = NumericDescriptor(
             name='intensity_bkg',
@@ -143,7 +155,11 @@ class PdDataPointBaseMixin:
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(names=['_pd_calc.intensity_bkg']),
+            cif_handler=CifHandler(
+                names=['_data.intensity_bkg'],
+                import_names=['_pd_calc.intensity_bkg'],
+                iucr_name='_pd_calc.intensity_bkg',
+            ),
         )
         self._calc_status = StringDescriptor(
             name='calc_status',
@@ -157,9 +173,9 @@ class PdDataPointBaseMixin:
                 validator=MembershipValidator(allowed=['incl', 'excl']),
             ),
             cif_handler=CifHandler(
-                names=[
-                    '_pd_data.refinement_status',  # TODO: rename to calc_status
-                ]
+                names=['_data.calc_status'],
+                import_names=['_pd_data.refinement_status'],
+                iucr_name='_pd_data.refinement_status',
             ),
         )
 
@@ -168,14 +184,14 @@ class PdDataPointBaseMixin:
     # ------------------------------------------------------------------
 
     @property
-    def point_id(self) -> StringDescriptor:
+    def id(self) -> StringDescriptor:
         """
         Identifier for this data point in the dataset.
 
         Reading this property returns the underlying
         ``StringDescriptor`` object.
         """
-        return self._point_id
+        return self._id
 
     @property
     def d_spacing(self) -> NumericDescriptor:
@@ -259,10 +275,12 @@ class PdCwlDataPointMixin:
                 validator=RangeValidator(ge=0, le=180),
             ),
             cif_handler=CifHandler(
-                names=[
+                names=['_data.two_theta'],
+                import_names=[
                     '_pd_proc.2theta_scan',
                     '_pd_meas.2theta_scan',
-                ]
+                ],
+                iucr_name='_pd_proc.2theta_scan',
             ),
         )
 
@@ -301,7 +319,11 @@ class PdTofDataPointMixin:
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(names=['_pd_meas.time_of_flight']),
+            cif_handler=CifHandler(
+                names=['_data.time_of_flight'],
+                import_names=['_pd_meas.time_of_flight'],
+                iucr_name='_pd_meas.time_of_flight',
+            ),
         )
 
     # ------------------------------------------------------------------
@@ -334,8 +356,8 @@ class PdCwlDataPoint(
 ):
     """Powder diffraction data point for CWL experiments."""
 
-    _category_code = 'pd_data'
-    _category_entry_name = 'point_id'
+    _category_code = 'data'
+    _category_entry_name = 'id'
 
     def __init__(self) -> None:
         super().__init__()
@@ -348,8 +370,8 @@ class PdTofDataPoint(
 ):
     """Powder diffraction data point for time-of-flight experiments."""
 
-    _category_code = 'pd_data'
-    _category_entry_name = 'point_id'
+    _category_code = 'data'
+    _category_entry_name = 'id'
 
     def __init__(self) -> None:
         super().__init__()
@@ -372,10 +394,10 @@ class PdDataBase(CategoryCollection):
 
     # Should be set only once
 
-    def _set_point_id(self, values: object) -> None:
-        """Set point IDs."""
+    def _set_id(self, values: object) -> None:
+        """Set data-point IDs."""
         for p, v in zip(self._items, values, strict=True):
-            p.point_id._value = v
+            p.id._value = v
 
     def _set_intensity_meas(self, values: object) -> None:
         """Set measured intensity."""
@@ -613,7 +635,7 @@ class PdDataBase(CategoryCollection):
         structure_refln_records = calculator.last_powder_refln_records(
             structure,
             experiment,
-            phase_id=linked_structure.structure_id.value,
+            structure_id=linked_structure.structure_id.value,
         )
         return structure_scaled_calc, structure_refln_records
 
@@ -740,7 +762,7 @@ class PdCwlData(PdDataBase):
             p.two_theta._value = v
 
         # Set point IDs
-        self._set_point_id([str(i + 1) for i in range(values.size)])
+        self._set_id([str(i + 1) for i in range(values.size)])
 
     # Misc
 
@@ -826,7 +848,7 @@ class PdTofData(PdDataBase):
             p.time_of_flight._value = v
 
         # Set point IDs
-        self._set_point_id([str(i + 1) for i in range(values.size)])
+        self._set_id([str(i + 1) for i in range(values.size)])
 
     # Misc
 
@@ -842,7 +864,7 @@ class PdTofData(PdDataBase):
             self.x,
             experiment.instrument.calib_d_to_tof_offset.value,
             experiment.instrument.calib_d_to_tof_linear.value,
-            experiment.instrument.calib_d_to_tof_quad.value,
+            experiment.instrument.calib_d_to_tof_quadratic.value,
         )
         self._set_d_spacing(d_spacing)
 

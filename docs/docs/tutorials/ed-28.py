@@ -81,7 +81,7 @@ experiment = project.experiments['sim']
 experiment.instrument.setup_twotheta_bank = 144.845
 experiment.instrument.calib_d_to_tof_offset = 0.0
 experiment.instrument.calib_d_to_tof_linear = 7476.91
-experiment.instrument.calib_d_to_tof_quad = -1.54
+experiment.instrument.calib_d_to_tof_quadratic = -1.54
 
 # %% [markdown]
 # ### Set Peak Profile
@@ -100,8 +100,8 @@ experiment.peak.exp_rise_alpha_1 = 0.5971
 
 # %%
 experiment.background.type = 'line-segment'
-experiment.background.create(id='1', x=10000, y=500)
-experiment.background.create(id='2', x=40000, y=500)
+experiment.background.create(id='1', position=10000, intensity=500)
+experiment.background.create(id='2', position=40000, intensity=500)
 
 # %% [markdown]
 # ### Set Calculation Range
@@ -112,7 +112,7 @@ experiment.data_range.time_of_flight_max = 15000.0
 experiment.data_range.time_of_flight_inc = 2.0
 
 # %% [markdown]
-# ### Set Linked Phases
+# ### Set Linked Structures
 
 # %%
 experiment.linked_structures.create(structure_id='si', scale=10.0)

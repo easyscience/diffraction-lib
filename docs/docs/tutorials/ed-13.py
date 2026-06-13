@@ -363,13 +363,13 @@ project_1.experiments['sim_si'].background.show_supported()
 
 # %%
 project_1.experiments['sim_si'].background.type = 'line-segment'
-project_1.experiments['sim_si'].background.create(id='1', x=50000, y=0.01)
-project_1.experiments['sim_si'].background.create(id='2', x=60000, y=0.01)
-project_1.experiments['sim_si'].background.create(id='3', x=70000, y=0.01)
-project_1.experiments['sim_si'].background.create(id='4', x=80000, y=0.01)
-project_1.experiments['sim_si'].background.create(id='5', x=90000, y=0.01)
-project_1.experiments['sim_si'].background.create(id='6', x=100000, y=0.01)
-project_1.experiments['sim_si'].background.create(id='7', x=110000, y=0.01)
+project_1.experiments['sim_si'].background.create(id='1', position=50000, intensity=0.01)
+project_1.experiments['sim_si'].background.create(id='2', position=60000, intensity=0.01)
+project_1.experiments['sim_si'].background.create(id='3', position=70000, intensity=0.01)
+project_1.experiments['sim_si'].background.create(id='4', position=80000, intensity=0.01)
+project_1.experiments['sim_si'].background.create(id='5', position=90000, intensity=0.01)
+project_1.experiments['sim_si'].background.create(id='6', position=100000, intensity=0.01)
+project_1.experiments['sim_si'].background.create(id='7', position=110000, intensity=0.01)
 
 # %% [markdown]
 # ### 🧩 Create a Structure – Si
@@ -519,7 +519,7 @@ project_1.display.structure(struct_name='si')
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See
-# [documentation](https://docs.easydiffraction.org/lib/latest/user-guide/analysis-workflow/experiment/#linked-phases-category)
+# [documentation](https://docs.easydiffraction.org/lib/latest/user-guide/analysis-workflow/experiment/#linked-structures-category)
 # for more details about linking a structure to an experiment.
 
 # %%
@@ -578,7 +578,7 @@ project_1.experiments['sim_si'].linked_structures.create(structure_id='si', scal
 project_1.experiments['sim_si'].linked_structures['si'].scale.free = True
 
 for line_segment in project_1.experiments['sim_si'].background:
-    line_segment.y.free = True
+    line_segment.intensity.free = True
 
 project_1.experiments['sim_si'].peak.broad_gauss_sigma_0.free = True
 project_1.experiments['sim_si'].peak.broad_gauss_sigma_1.free = True
@@ -878,13 +878,13 @@ project_2.experiments['sim_lbco'].peak.exp_rise_alpha_1 = sim_si_peak.exp_rise_a
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2.experiments['sim_lbco'].background.create(id='1', x=50000, y=0.2)
-project_2.experiments['sim_lbco'].background.create(id='2', x=60000, y=0.2)
-project_2.experiments['sim_lbco'].background.create(id='3', x=70000, y=0.2)
-project_2.experiments['sim_lbco'].background.create(id='4', x=80000, y=0.2)
-project_2.experiments['sim_lbco'].background.create(id='5', x=90000, y=0.2)
-project_2.experiments['sim_lbco'].background.create(id='6', x=100000, y=0.2)
-project_2.experiments['sim_lbco'].background.create(id='7', x=110000, y=0.2)
+project_2.experiments['sim_lbco'].background.create(id='1', position=50000, intensity=0.2)
+project_2.experiments['sim_lbco'].background.create(id='2', position=60000, intensity=0.2)
+project_2.experiments['sim_lbco'].background.create(id='3', position=70000, intensity=0.2)
+project_2.experiments['sim_lbco'].background.create(id='4', position=80000, intensity=0.2)
+project_2.experiments['sim_lbco'].background.create(id='5', position=90000, intensity=0.2)
+project_2.experiments['sim_lbco'].background.create(id='6', position=100000, intensity=0.2)
+project_2.experiments['sim_lbco'].background.create(id='7', position=110000, intensity=0.2)
 
 # %% [markdown]
 # ### 🧩 Exercise 3: Define a Structure – LBCO
@@ -1111,7 +1111,7 @@ project_2.experiments['sim_lbco'].linked_structures.create(structure_id='lbco', 
 project_2.experiments['sim_lbco'].linked_structures['lbco'].scale.free = True
 
 for line_segment in project_2.experiments['sim_lbco'].background:
-    line_segment.y.free = True
+    line_segment.intensity.free = True
 
 # %% [markdown]
 # #### Exercise 5.2: Run Fitting

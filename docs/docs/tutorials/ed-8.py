@@ -132,13 +132,13 @@ expt47 = ExperimentFactory.from_data_path(
 expt56.instrument.setup_twotheta_bank = 152.827
 expt56.instrument.calib_d_to_tof_offset = -13.5
 expt56.instrument.calib_d_to_tof_linear = 20773.0
-expt56.instrument.calib_d_to_tof_quad = -1.08308
+expt56.instrument.calib_d_to_tof_quadratic = -1.08308
 
 # %%
 expt47.instrument.setup_twotheta_bank = 121.660
 expt47.instrument.calib_d_to_tof_offset = -15.0
 expt47.instrument.calib_d_to_tof_linear = 18660.0
-expt47.instrument.calib_d_to_tof_quad = -0.47488
+expt47.instrument.calib_d_to_tof_quadratic = -0.47488
 
 # %% [markdown]
 # ### Set Peak Profile
@@ -201,7 +201,7 @@ for idx, (x, y) in enumerate(
     ],
     start=1,
 ):
-    expt56.background.create(id=str(idx), x=x, y=y)
+    expt56.background.create(id=str(idx), position=x, intensity=y)
 
 # %%
 expt47.background.type = 'line-segment'
@@ -237,10 +237,10 @@ for idx, (x, y) in enumerate(
     ],
     start=1,
 ):
-    expt47.background.create(id=str(idx), x=x, y=y)
+    expt47.background.create(id=str(idx), position=x, intensity=y)
 
 # %% [markdown]
-# ### Set Linked Phases
+# ### Set Linked Structures
 
 # %%
 expt56.linked_structures.create(structure_id='ncaf', scale=1.0)

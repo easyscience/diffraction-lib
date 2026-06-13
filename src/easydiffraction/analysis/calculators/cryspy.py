@@ -94,7 +94,7 @@ class CryspyCalculator(CalculatorBase):
             self._cached_peak_types[combined_name] = current_type
 
         # Preferred-orientation row set/identity. Adding or removing a
-        # row, or changing a row's phase_id or Miller direction,
+        # row, or changing a row's structure_id or Miller direction,
         # changes the emitted texture loop's shape and must rebuild the
         # dict. The refinable r/fraction values are patched in place, so
         # they are excluded. Constant-wavelength only, matching the
@@ -107,7 +107,7 @@ class CryspyCalculator(CalculatorBase):
         if supports_texture:
             current_pref_orient = tuple(
                 (
-                    item.phase_id.value,
+                    item.structure_id.value,
                     item.index_h.value,
                     item.index_k.value,
                     item.index_l.value,
@@ -310,7 +310,7 @@ class CryspyCalculator(CalculatorBase):
         structure: Structure,
         experiment: ExperimentBase,
         *,
-        phase_id: str,
+        structure_id: str,
     ) -> list[PowderReflnRecord] | None:
         """
         Return powder reflection records from the latest pattern run.
@@ -337,7 +337,7 @@ class CryspyCalculator(CalculatorBase):
 
         return [
             self._powder_refln_record(
-                phase_id=phase_id,
+                structure_id=structure_id,
                 beam_mode=experiment.experiment_type.beam_mode.value,
                 hkl=(index_h, index_k, index_l),
                 values=(sthovl, d_value, x_value, f_value, f_sq_value),
@@ -430,7 +430,7 @@ class CryspyCalculator(CalculatorBase):
     @staticmethod
     def _powder_refln_record(
         *,
-        phase_id: str,
+        structure_id: str,
         beam_mode: BeamModeEnum,
         hkl: tuple[int, int, int],
         values: tuple[float, float, float, float, float],
@@ -448,7 +448,7 @@ class CryspyCalculator(CalculatorBase):
             x_kwargs = {'time_of_flight': float(x_value)}
 
         return PowderReflnRecord(
-            phase_id=phase_id,
+            structure_id=structure_id,
             d_spacing=float(d_spacing),
             sin_theta_over_lambda=float(sin_theta_over_lambda),
             index_h=int(index_h),
@@ -741,7 +741,9 @@ class CryspyCalculator(CalculatorBase):
                 # Instrument
                 cryspy_expt_dict['zero'][0] = experiment.instrument.calib_d_to_tof_offset.value
                 cryspy_expt_dict['dtt1'][0] = experiment.instrument.calib_d_to_tof_linear.value
-                cryspy_expt_dict['dtt2'][0] = experiment.instrument.calib_d_to_tof_quad.value
+                cryspy_expt_dict['dtt2'][0] = (
+                    experiment.instrument.calib_d_to_tof_quadratic.value
+                )
                 cryspy_expt_dict['ttheta_bank'] = np.deg2rad(
                     experiment.instrument.setup_twotheta_bank.value
                 )
@@ -1117,7 +1119,7 @@ def _cif_instrument_section(
                 'setup_twotheta_bank': '_tof_parameters_2theta_bank',
                 'calib_d_to_tof_offset': '_tof_parameters_Zero',
                 'calib_d_to_tof_linear': '_tof_parameters_Dtt1',
-                'calib_d_to_tof_quad': '_tof_parameters_dtt2',
+                'calib_d_to_tof_quadratic': '_tof_parameters_dtt2',
             }
         elif expt_type.sample_form.value == SampleFormEnum.SINGLE_CRYSTAL:
             instrument_mapping = {}  # TODO: Check this mapping!
@@ -1349,7 +1351,7 @@ def _cif_pref_orient_section(
     Append the cryspy texture (March-Dollase) loop for the phase.
 
     cryspy keys texture to a phase by ``_texture_label``, so only the
-    ``pref_orient`` row whose ``phase_id`` matches the phase being
+    ``preferred_orientation`` row whose ``structure_id`` matches the phase being
     calculated is emitted. A row with ``r = 1`` is a mathematical no-op;
     an empty collection (the default) emits nothing.
     """
@@ -1368,7 +1370,7 @@ def _cif_pref_orient_section(
         return
     phase_label = linked_structure.name
     row = next(
-        (item for item in pref_orient if item.phase_id.value == phase_label),
+        (item for item in pref_orient if item.structure_id.value == phase_label),
         None,
     )
     if row is None:
@@ -1413,7 +1415,7 @@ def _update_texture_in_cryspy_dict(
     """
     Patch cryspy texture g_1/g_2 from preferred-orientation rows.
 
-    Matches each emitted texture row to a ``pref_orient`` row by phase
+    Matches each emitted texture row to a preferred-orientation row by phase
     label and writes the refinable coefficient and random fraction in
     place. ``index_h``/``index_k``/``index_l`` are fixed descriptors, so
     ``texture_axis`` is never touched. No-op when no texture loop was
@@ -1424,7 +1426,7 @@ def _update_texture_in_cryspy_dict(
     pref_orient = getattr(experiment, 'preferred_orientation', None)
     if pref_orient is None:
         return
-    rows = {item.phase_id.value: item for item in pref_orient}
+    rows = {item.structure_id.value: item for item in pref_orient}
     for index, label in enumerate(cryspy_expt_dict['texture_name']):
         row = rows.get(str(label))
         if row is not None:

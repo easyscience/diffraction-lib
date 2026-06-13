@@ -328,7 +328,7 @@ code/EdSTAR/CIF reference.
   Rename experiment structure link categories
   ```
 
-- [ ] P1.9 - Rename experiment data and instrument fields.
+- [x] P1.9 - Rename experiment data and instrument fields.
 
   Apply the remaining experiment-side API/EdSTAR renames from the ADR:
   powder `refln.phase_id` to `structure_id`,

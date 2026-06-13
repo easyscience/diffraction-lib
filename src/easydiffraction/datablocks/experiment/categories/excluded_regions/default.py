@@ -33,7 +33,7 @@ class ExcludedRegion(CategoryItem):
     def __init__(self) -> None:
         super().__init__()
 
-        # TODO: Add point_id as for the background
+        # TODO: Add id as for the background
         self._id = StringDescriptor(
             name='id',
             description='Identifier for this excluded region',

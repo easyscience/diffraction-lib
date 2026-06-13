@@ -1729,7 +1729,7 @@ class PlotlyPlotter(PlotterBase):
         color: str,
     ) -> object:
         """
-        Create a hover-capable Bragg tick trace for one linked phase.
+        Create a hover-capable Bragg tick trace for one linked structure.
 
         Only the Miller-index line is colored to match the phase tick
         marker; the phase name and x line use the default tooltip text
@@ -1743,7 +1743,7 @@ class PlotlyPlotter(PlotterBase):
             index_k = int(tick_set.k[idx])
             index_l = int(tick_set.ell[idx])
             lines = [
-                tick_set.phase_id,
+                tick_set.structure_id,
                 f'x: {float(x_value):,.2f}',
                 cls._hover_color_span(
                     f'Miller indices: ({index_h} {index_k} {index_l})',
@@ -1764,7 +1764,7 @@ class PlotlyPlotter(PlotterBase):
                 'line': {'width': BRAGG_TICK_MARKER_LINE_WIDTH},
                 'color': color,
             },
-            name=f'Bragg peaks: {tick_set.phase_id}',
+            name=f'Bragg peaks: {tick_set.structure_id}',
             text=hover_text,
             hovertemplate='%{text}',
         )
@@ -2470,7 +2470,7 @@ class PlotlyPlotter(PlotterBase):
         fig.update_yaxes(
             tickmode='array',
             tickvals=[float(idx + 1) for idx in range(len(plot_spec.bragg_tick_sets))],
-            ticktext=[tick_set.phase_id for tick_set in plot_spec.bragg_tick_sets],
+            ticktext=[tick_set.structure_id for tick_set in plot_spec.bragg_tick_sets],
             range=[float(len(plot_spec.bragg_tick_sets)) + 0.5, 0.5],
             showgrid=False,
             row=layout.bragg_row,

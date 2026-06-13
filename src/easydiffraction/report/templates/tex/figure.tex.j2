@@ -59,7 +59,7 @@ legend style={draw=none, fill=white, fill opacity=0.5, text opacity=1, font=\foo
 {% for tick_set in bragg_tick_sources %}
 {% set tick_style = bragg_styles[loop.index0 % (bragg_styles | length)] -%}
 \addlegendimage{color={{ tick_style.color_name }}, only marks, mark=|, mark size=5pt}
-\addlegendentry{Bragg peaks: {{ tick_set.phase_id | tex }}}
+\addlegendentry{Bragg peaks: {{ tick_set.structure_id | tex }}}
 {% endfor %}
 {% if bragg_tick_sources %}
 \nextgroupplot[
@@ -68,7 +68,7 @@ ymin=0.5,
 ymax={{ (bragg_tick_sources | length) + 0.5 }},
 y dir=reverse,
 ytick={{ "{" }}{% for tick_set in bragg_tick_sources %}{{ loop.index }}{% if not loop.last %},{% endif %}{% endfor %}{{ "}" }},
-yticklabels={{ "{" }}{% for tick_set in bragg_tick_sources %}{{ "{" }}{{ tick_set.phase_id | tex }}{{ "}" }}{% if not loop.last %},{% endif %}{% endfor %}{{ "}" }},
+yticklabels={{ "{" }}{% for tick_set in bragg_tick_sources %}{{ "{" }}{{ tick_set.structure_id | tex }}{{ "}" }}{% if not loop.last %},{% endif %}{% endfor %}{{ "}" }},
 yticklabel style={font=\footnotesize},
 ymajorgrids=false,
 xticklabels=\empty,

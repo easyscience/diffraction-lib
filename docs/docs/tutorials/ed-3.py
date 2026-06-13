@@ -311,11 +311,11 @@ project.experiments['hrpt'].background.type = 'line-segment'
 # Add background points.
 
 # %%
-project.experiments['hrpt'].background.create(id='10', x=10, y=170)
-project.experiments['hrpt'].background.create(id='30', x=30, y=170)
-project.experiments['hrpt'].background.create(id='50', x=50, y=170)
-project.experiments['hrpt'].background.create(id='110', x=110, y=170)
-project.experiments['hrpt'].background.create(id='165', x=165, y=170)
+project.experiments['hrpt'].background.create(id='10', position=10, intensity=170)
+project.experiments['hrpt'].background.create(id='30', position=30, intensity=170)
+project.experiments['hrpt'].background.create(id='50', position=50, intensity=170)
+project.experiments['hrpt'].background.create(id='110', position=110, intensity=170)
+project.experiments['hrpt'].background.create(id='165', position=165, intensity=170)
 
 # %% [markdown]
 # Show current background points.
@@ -324,7 +324,7 @@ project.experiments['hrpt'].background.create(id='165', x=165, y=170)
 project.experiments['hrpt'].background.show()
 
 # %% [markdown]
-# ### Set Linked Phases
+# ### Set Linked Structures
 #
 # Link the structure defined in the previous step to the experiment.
 
@@ -457,11 +457,11 @@ project.structures['lbco'].cell.length_a.free = True
 # %%
 project.experiments['hrpt'].linked_structures['lbco'].scale.free = True
 project.experiments['hrpt'].instrument.calib_twotheta_offset.free = True
-project.experiments['hrpt'].background['10'].y.free = True
-project.experiments['hrpt'].background['30'].y.free = True
-project.experiments['hrpt'].background['50'].y.free = True
-project.experiments['hrpt'].background['110'].y.free = True
-project.experiments['hrpt'].background['165'].y.free = True
+project.experiments['hrpt'].background['10'].intensity.free = True
+project.experiments['hrpt'].background['30'].intensity.free = True
+project.experiments['hrpt'].background['50'].intensity.free = True
+project.experiments['hrpt'].background['110'].intensity.free = True
+project.experiments['hrpt'].background['165'].intensity.free = True
 
 # %% [markdown]
 # Show free parameters after selection.
