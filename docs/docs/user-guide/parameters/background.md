@@ -1,35 +1,30 @@
 [pdCIF][2]{:.label-cif}
 
-# \_pd_background
+# `_background`
 
-This category defines various background functions that could be used
-when calculating diffractograms. Please see the
-[IUCr page](https://www.iucr.org/resources/cif/dictionaries/browse/cif_pd)
-for further details.
+EdSTAR stores line-segment background points under `_background`.
+Report CIF maps these rows to the corresponding pdCIF background names.
 
 !!! tip "Automatic background estimation"
 
-    Line-segment background points can be detected automatically from the
-    measured pattern with
-    [`background.auto_estimate()`](../analysis-workflow/experiment.md#background-category),
-    instead of entering them by hand.
+    Line-segment background points can be detected automatically with
+    [`background.auto_estimate()`](../analysis-workflow/experiment.md#background-category).
 
-## [\_pd_background.line_segment_X](https://www.iucr.org/resources/cif/dictionaries/browse/cif_pd)
+## `_background.id` { #background-id }
 
-List of X-coordinates used to create many straight-line segments
-representing the background in a calculated diffractogram.
+Stable row identifier for a line-segment background point.
 
-Supported values: `2theta` and `time-of-flight`
+## `_background.position` { #background-position }
 
-## [\_pd_background.line_segment_intensity](https://www.iucr.org/resources/cif/dictionaries/browse/cif_pd)
+X-axis position of the background point.
 
-List of intensities used to create many straight-line segments
-representing the background in a calculated diffractogram.
+## `_background.intensity` { #background-intensity }
 
-## [\_pd_background.X_coordinate](https://www.iucr.org/resources/cif/dictionaries/browse/cif_pd)
+Background intensity at the stored position.
 
-The type of X-coordinate against which the pd_background values were
-calculated.
+## `_background.type` { #background-type }
+
+Background model type.
 
 <!-- prettier-ignore-start -->
 [0]: #

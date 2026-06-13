@@ -1,22 +1,22 @@
 [coreCIF][1]{:.label-cif}
 
-# \_space_group
+# `_space_group`
 
-Contains all the data items that refer to the space group as a whole.
-Please see the
-[IUCr page](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/CSPACE_GROUP.html)
-for further details.
+EdSTAR keeps the standard CIF space-group category because these names
+are already familiar to crystallographers. The same keys are used for
+strict CIF import and report export.
 
-## [\_space_group.name_H-M_alt](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Ispace_group.name_H-M_alt.html)
+## `_space_group.name_H-M_alt` { #space-group-name-h-m-alt }
 
-The international Hermann-Mauguin space-group symbol as defined in
-International Tables for Crystallography Volume A. It allows any
-Hermann-Mauguin symbol to be given.
+International Hermann-Mauguin space-group symbol.
 
-## [\_space_group.IT_coordinate_system_code](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Ispace_group.IT_coordinate_system_code.html)
+[IUCr definition](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Ispace_group.name_H-M_alt.html)
 
-A qualifier taken from the enumeration list identifying which setting in
-International Tables for Crystallography Volume A (2002) (IT) is used.
+## `_space_group.IT_coordinate_system_code` { #space-group-it-coordinate-system-code }
+
+Setting code from International Tables for Crystallography.
+
+[IUCr definition](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Ispace_group.IT_coordinate_system_code.html)
 
 <!-- prettier-ignore-start -->
 [0]: #

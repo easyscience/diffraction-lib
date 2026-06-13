@@ -76,15 +76,15 @@ The example below illustrates a typical **project structure** for a
 <div class="cif">
 <pre>
 📁 <span class="red"><b>La0.5Ba0.5CoO3</b></span>     - project root
-├── 📄 <span class="orange"><b>project.cif</b></span>    - project configuration
+├── 📄 <span class="orange"><b>project.edstar</b></span> - project configuration
 ├── 📁 structures  - structures
-│   ├── 📄 <span class="orange"><b>lbco.cif</b></span>   - LBCO
+│   ├── 📄 <span class="orange"><b>lbco.edstar</b></span> - LBCO
 │   └── ...
 ├── 📁 experiments - experiments
-│   ├── 📄 <span class="orange"><b>hrpt.cif</b></span>   - HRPT pattern
+│   ├── 📄 <span class="orange"><b>hrpt.edstar</b></span> - HRPT pattern
 │   └── ...
 ├── 📁 analysis    - analysis
-│   ├── 📄 <span class="orange"><b>analysis.cif</b></span> - fit state
+│   ├── 📄 <span class="orange"><b>analysis.edstar</b></span> - fit state
 │   └── 📄 <span class="orange"><b>results.h5</b></span>   - Bayesian arrays
 └── 📁 reports     - reports
     ├── 📄 <span class="orange"><b>La0.5Ba0.5CoO3.cif</b></span>  - IUCr
@@ -102,13 +102,13 @@ directory, showing the main files created by a typical workflow.
 !!! warning "Important"
 
     If you save the project right after creating it, the project directory will
-    only contain the `project.cif` file. The other folders and files will be
+    only contain the `project.edstar` file. The other folders and files will be
     created as you add structures, experiments, and set up the analysis. The
     reports folder is created only when at least one of
     `project.report.cif`, `project.report.html`, `project.report.tex`,
     or `project.report.pdf` is set to `True` before `project.save()`.
 
-### 1. <span class="orange">project.cif</span>
+### 1. <span class="orange">project.edstar</span>
 
 This file stores project-level metadata and display configuration.
 
@@ -116,12 +116,14 @@ This file stores project-level metadata and display configuration.
 
 <div class="cif">
 <pre>
-<span class="blue"><b>_project</b>.id</span>          lbco_hrpt
-<span class="blue"><b>_project</b>.title</span>       "La0.5Ba0.5CoO3 from neutron diffraction at HRPT@PSI"
-<span class="blue"><b>_project</b>.description</span> "neutrons, powder, constant wavelength, HRPT@PSI"
+<span class="blue"><b>_edstar</b>.schema_name</span>    EasyDiffraction
+<span class="blue"><b>_edstar</b>.schema_version</span> 1
 
-<span class="blue"><b>_project</b>.created</span>     "18 May 2026 10:15:00"
-<span class="blue"><b>_project</b>.last_modified</span> "18 May 2026 10:20:00"
+<span class="blue"><b>_metadata</b>.name</span>          lbco_hrpt
+<span class="blue"><b>_metadata</b>.title</span>         "La0.5Ba0.5CoO3 from neutron diffraction at HRPT@PSI"
+<span class="blue"><b>_metadata</b>.description</span>   "neutrons, powder, constant wavelength, HRPT@PSI"
+<span class="blue"><b>_metadata</b>.created</span>       "18 May 2026 10:15:00"
+<span class="blue"><b>_metadata</b>.last_modified</span> "18 May 2026 10:20:00"
 
 <span class="blue"><b>_rendering_plot</b>.type</span>      auto
 <span class="blue"><b>_report</b>.cif</span>               false
@@ -140,7 +142,7 @@ This file stores project-level metadata and display configuration.
 
 <!-- prettier-ignore-end -->
 
-### 2. structures / <span class="orange">lbco.cif</span>
+### 2. structures / <span class="orange">lbco.edstar</span>
 
 This file contains crystallographic information associated with the
 structure model, including **space group**, **unit cell parameters**,
@@ -163,7 +165,7 @@ data_<span class="red"><b>lbco</b></span>
 <span class="blue"><b>_cell</b>.angle_gamma</span>  90
 
 loop_
-<span class="green"><b>_atom_site</b>.label</span>
+<span class="green"><b>_atom_site</b>.id</span>
 <span class="green"><b>_atom_site</b>.type_symbol</span>
 <span class="green"><b>_atom_site</b>.fract_x</span>
 <span class="green"><b>_atom_site</b>.fract_y</span>
@@ -181,7 +183,7 @@ O  O    0   0.5 0.5   c   1    Biso 1.4041
 
 <!-- prettier-ignore-end -->
 
-### 3. experiments / <span class="orange">hrpt.cif</span>
+### 3. experiments / <span class="orange">hrpt.edstar</span>
 
 This file contains the **experiment type**, **calculation engine**,
 **instrumental parameters**, **peak parameters**, **associated phases**,
@@ -193,15 +195,15 @@ This file contains the **experiment type**, **calculation engine**,
 <pre>
 data_<span class="red"><b>hrpt</b></span>
 
-<span class="blue"><b>_expt_type</b>.beam_mode</span>        "constant wavelength"
-<span class="blue"><b>_expt_type</b>.radiation_probe</span>  neutron
-<span class="blue"><b>_expt_type</b>.sample_form</span>      powder
-<span class="blue"><b>_expt_type</b>.scattering_type</span>  bragg
+<span class="blue"><b>_experiment_type</b>.beam_mode</span>        "constant wavelength"
+<span class="blue"><b>_experiment_type</b>.radiation_probe</span>  neutron
+<span class="blue"><b>_experiment_type</b>.sample_form</span>      powder
+<span class="blue"><b>_experiment_type</b>.scattering_type</span>  bragg
 
 <span class="blue"><b>_calculator</b>.type</span> cryspy
 
-<span class="blue"><b>_instr</b>.wavelength</span>    1.494
-<span class="blue"><b>_instr</b>.2theta_offset</span> 0.6225(4)
+<span class="blue"><b>_instrument</b>.setup_wavelength</span>        1.494
+<span class="blue"><b>_instrument</b>.calib_twotheta_offset</span> 0.6225(4)
 
 <span class="blue"><b>_peak</b>.broad_gauss_u</span>    0.0834
 <span class="blue"><b>_peak</b>.broad_gauss_v</span>   -0.1168
@@ -210,35 +212,32 @@ data_<span class="red"><b>hrpt</b></span>
 <span class="blue"><b>_peak</b>.broad_lorentz_y</span>  0.0797
 
 loop_
-<span class="green"><b>_pd_phase_block</b>.id</span>
-<span class="green"><b>_pd_phase_block</b>.scale</span>
+<span class="green"><b>_linked_structure</b>.structure_id</span>
+<span class="green"><b>_linked_structure</b>.scale</span>
 lbco 9.0976(3)
 
 loop_
-<span class="green"><b>_pd_background</b>.line_segment_X</span>
-<span class="green"><b>_pd_background</b>.line_segment_intensity</span>
-<span class="green"><b>_pd_background</b>.X_coordinate</span>
- 10  174.3  2theta
- 20  159.8  2theta
- 30  167.9  2theta
- 50  166.1  2theta
- 70  172.3  2theta
- 90  171.1  2theta
-110  172.4  2theta
-130  182.5  2theta
-150  173.0  2theta
-165  171.1  2theta
+<span class="green"><b>_background</b>.id</span>
+<span class="green"><b>_background</b>.position</span>
+<span class="green"><b>_background</b>.intensity</span>
+1  10  174.3
+2  20  159.8
+3  30  167.9
+4  50  166.1
+5  70  172.3
+6  90  171.1
 
 loop_
-<span class="green"><b>_pd_meas</b>.2theta_scan</span>
-<span class="green"><b>_pd_meas</b>.intensity_total</span>
-<span class="green"><b>_pd_meas</b>.intensity_total_su</span>
- 10.00  167  12.6
- 10.05  157  12.5
- 10.10  187  13.3
- 10.15  197  14.0
- 10.20  164  12.5
- 10.25  171  13.0
+<span class="green"><b>_data</b>.id</span>
+<span class="green"><b>_data</b>.two_theta</span>
+<span class="green"><b>_data</b>.intensity_meas</span>
+<span class="green"><b>_data</b>.intensity_meas_su</span>
+1  10.00  167  12.6
+2  10.05  157  12.5
+3  10.10  187  13.3
+4  10.15  197  14.0
+5  10.20  164  12.5
+6  10.25  171  13.0
 ...
 164.60  153  20.7
 164.65  173  30.1
@@ -251,7 +250,7 @@ loop_
 
 <!-- prettier-ignore-end -->
 
-### 4. analysis / <span class="orange">analysis.cif</span>
+### 4. analysis / <span class="orange">analysis.edstar</span>
 
 This file contains settings used for data analysis, including the choice
 of **calculation** and **fitting** engines, as well as user defined

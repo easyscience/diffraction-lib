@@ -1,55 +1,49 @@
-[customCIF][0]{:.label-cif}
+[easydiffractionCIF][0]{:.label-cif}
 
-# \_instr
+# `_instrument`
 
-This category stores instrument setup and calibration parameters used by
-EasyDiffraction experiments. Constant-wavelength and time-of-flight
-experiments use different subsets of the category.
+EdSTAR stores instrument setup and calibration parameters under
+`_instrument`. Report CIF maps these values to EasyDiffraction's CIF
+instrument category names.
 
-## \_instr.wavelength
+## `_instrument.setup_wavelength` { #instrument-setup-wavelength }
 
 Incident neutron or X-ray wavelength for constant-wavelength
-experiments. In Python this is accessed as:
+experiments.
 
-```python
-experiment.instrument.setup_wavelength
-```
+## `_instrument.calib_twotheta_offset` { #instrument-calib-twotheta-offset }
 
-## \_instr.2theta_offset
+Two-theta zero offset for constant-wavelength powder experiments.
 
-Two-theta zero offset for constant-wavelength powder experiments. In
-Python this is accessed as:
+## `_instrument.setup_twotheta_bank` { #instrument-setup-twotheta-bank }
 
-```python
-experiment.instrument.calib_twotheta_offset
-```
+Detector-bank two-theta angle for time-of-flight powder experiments.
 
-## \_instr.2theta_bank
+## `_instrument.calib_d_to_tof_reciprocal` { #instrument-calib-d-to-tof-reciprocal }
 
-Detector-bank two-theta angle for time-of-flight powder experiments. In
-Python this is accessed as:
+Reciprocal d-spacing term in the time-of-flight calibration.
 
-```python
-experiment.instrument.setup_twotheta_bank
-```
+## `_instrument.calib_d_to_tof_offset` { #instrument-calib-d-to-tof-offset }
 
-## \_instr.d_to_tof
+Offset term in the time-of-flight calibration.
 
-Time-of-flight calibration terms converting d-spacing to time of flight.
-In Python these are accessed as:
+## `_instrument.calib_d_to_tof_linear` { #instrument-calib-d-to-tof-linear }
 
-- `experiment.instrument.calib_d_to_tof_reciprocal`
-- `experiment.instrument.calib_d_to_tof_offset`
-- `experiment.instrument.calib_d_to_tof_linear`
-- `experiment.instrument.calib_d_to_tof_quadratic`
+Linear d-spacing term in the time-of-flight calibration.
 
-They serialize to the following CIF tags:
+## `_instrument.calib_d_to_tof_quadratic` { #instrument-calib-d-to-tof-quadratic }
 
-- `_instr.d_to_tof_recip`
-- `_instr.d_to_tof_offset`
-- `_instr.d_to_tof_linear`
-- `_instr.d_to_tof_quad`
+Quadratic d-spacing term in the time-of-flight calibration.
 
+## Additional EdSTAR Keys
+
+### `_instrument.calib_sample_displacement` { #instrument-calib-sample-displacement }
+
+EdSTAR key `_instrument.calib_sample_displacement`.
+
+### `_instrument.calib_sample_transparency` { #instrument-calib-sample-transparency }
+
+EdSTAR key `_instrument.calib_sample_transparency`.
 <!-- prettier-ignore-start -->
 [0]: #
 [1]: https://www.iucr.org/resources/cif/dictionaries/browse/cif_core

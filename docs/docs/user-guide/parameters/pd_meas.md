@@ -1,27 +1,33 @@
-[pdCIF][2]{:.label-cif}
+[easydiffractionCIF][0]{:.label-cif}
 
-# \_pd_meas
+# `_pd_meas`
 
-This section contains the measured diffractogram, similar to this
-[IUCr section](https://www.iucr.org/resources/cif/dictionaries/browse/cif_pd).
+EasyDiffraction EdSTAR reference for the `_pd_meas` category.
+These entries provide stable anchors for runtime parameter links.
 
-## [\_pd_meas.2theta_scan](https://raw.githubusercontent.com/COMCIFS/Powder_Dictionary/master/cif_pow.dic)
+### `_pd_meas.2theta_range_inc` { #pd-meas-2theta-range-inc }
 
-2θ diffraction angle (in degrees) for intensity points measured in a
-scanning method.
+EdSTAR key `_pd_meas.2theta_range_inc`.
 
-## [\_pd_meas.time-of-flight](https://raw.githubusercontent.com/COMCIFS/Powder_Dictionary/master/cif_pow.dic)
+### `_pd_meas.2theta_range_max` { #pd-meas-2theta-range-max }
 
-Measured time (in microseconds) for time-of-flight neutron measurements.
+EdSTAR key `_pd_meas.2theta_range_max`.
 
-## [\_pd_meas.intensity_total](https://raw.githubusercontent.com/COMCIFS/Powder_Dictionary/master/cif_pow.dic)
+### `_pd_meas.2theta_range_min` { #pd-meas-2theta-range-min }
 
-Intensity recorded at each measurement point as a function of angle.
+EdSTAR key `_pd_meas.2theta_range_min`.
 
-## [\_pd_meas.intensity_total_su](https://raw.githubusercontent.com/COMCIFS/Powder_Dictionary/master/cif_pow.dic)
+### `_pd_meas.time_of_flight_range_inc` { #pd-meas-time-of-flight-range-inc }
 
-Standard uncertainty of \_pd_meas.2theta_scan.
+EdSTAR key `_pd_meas.time_of_flight_range_inc`.
 
+### `_pd_meas.time_of_flight_range_max` { #pd-meas-time-of-flight-range-max }
+
+EdSTAR key `_pd_meas.time_of_flight_range_max`.
+
+### `_pd_meas.time_of_flight_range_min` { #pd-meas-time-of-flight-range-min }
+
+EdSTAR key `_pd_meas.time_of_flight_range_min`.
 <!-- prettier-ignore-start -->
 [0]: #
 [1]: https://www.iucr.org/resources/cif/dictionaries/browse/cif_core

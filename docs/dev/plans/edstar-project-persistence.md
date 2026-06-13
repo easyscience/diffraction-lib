@@ -368,7 +368,7 @@ code/EdSTAR/CIF reference.
   Rename analysis parameter reference fields
   ```
 
-- [ ] P1.11 - Rework parameter docs and runtime links.
+- [x] P1.11 - Rework parameter docs and runtime links.
 
   Update `docs/docs/user-guide/parameters.md` to use three tabs:
   "How to access in the code", "Keys in EdSTAR", and "Keys in CIF".

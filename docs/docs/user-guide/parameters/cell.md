@@ -1,27 +1,33 @@
 [coreCIF][1]{:.label-cif}
 
-# \_cell
+# `_cell`
 
-Data items in this category record details about the crystallographic
-cell parameters and their measurement. Please see the
-[IUCr page](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/CCELL.html)
-for further details.
+EdSTAR uses the standard CIF cell category for unit-cell lengths and
+angles. The same keys are used for CIF import and report export.
 
-## \_cell.angle
+## `_cell.length_a` { #cell-length-a }
 
-The angles between the bounding cell axes in degrees.
+Length of the _a_ cell axis in angstroms.
 
-- [\_cell.angle_alpha](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Icell.angle_alpha.html)
-- [\_cell.angle_beta](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Icell.angle_beta.html)
-- [\_cell.angle_gamma](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Icell.angle_gamma.html)
+## `_cell.length_b` { #cell-length-b }
 
-## \_cell.length
+Length of the _b_ cell axis in angstroms.
 
-The lengths of each cell axis in angstroms.
+## `_cell.length_c` { #cell-length-c }
 
-- [\_cell.length_a](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Icell.length_a.html)
-- [\_cell.length_b](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Icell.length_b.html)
-- [\_cell.length_c](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Icell.length_c.html)
+Length of the _c_ cell axis in angstroms.
+
+## `_cell.angle_alpha` { #cell-angle-alpha }
+
+Angle between the _b_ and _c_ cell axes in degrees.
+
+## `_cell.angle_beta` { #cell-angle-beta }
+
+Angle between the _a_ and _c_ cell axes in degrees.
+
+## `_cell.angle_gamma` { #cell-angle-gamma }
+
+Angle between the _a_ and _b_ cell axes in degrees.
 
 <!-- prettier-ignore-start -->
 [0]: #
