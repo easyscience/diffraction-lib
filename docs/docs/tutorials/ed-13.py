@@ -491,7 +491,7 @@ project_1.structures['si'].cell.length_a = 5.43
 
 # %%
 project_1.structures['si'].atom_sites.create(
-    label='Si',
+    id='Si',
     type_symbol='Si',
     fract_x=0.0,
     fract_y=0.0,
@@ -1024,7 +1024,7 @@ project_2.structures['lbco'].cell.length_a = 3.88
 
 # %% tags=["solution", "hide-input"]
 project_2.structures['lbco'].atom_sites.create(
-    label='La',
+    id='La',
     type_symbol='La',
     fract_x=0,
     fract_y=0,
@@ -1034,7 +1034,7 @@ project_2.structures['lbco'].atom_sites.create(
     adp_iso=0.95,
 )
 project_2.structures['lbco'].atom_sites.create(
-    label='Ba',
+    id='Ba',
     type_symbol='Ba',
     fract_x=0,
     fract_y=0,
@@ -1044,7 +1044,7 @@ project_2.structures['lbco'].atom_sites.create(
     adp_iso=0.95,
 )
 project_2.structures['lbco'].atom_sites.create(
-    label='Co',
+    id='Co',
     type_symbol='Co',
     fract_x=0.5,
     fract_y=0.5,
@@ -1053,7 +1053,7 @@ project_2.structures['lbco'].atom_sites.create(
     adp_iso=0.80,
 )
 project_2.structures['lbco'].atom_sites.create(
-    label='O',
+    id='O',
     type_symbol='O',
     fract_x=0,
     fract_y=0.5,
@@ -1405,7 +1405,7 @@ project_2.structures['si'].cell.length_a = 5.43
 
 # Set Atom Sites
 project_2.structures['si'].atom_sites.create(
-    label='Si',
+    id='Si',
     type_symbol='Si',
     fract_x=0.125,
     fract_y=0.125,

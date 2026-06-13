@@ -50,7 +50,7 @@ structure.cell.length_c = 6.95
 
 # %%
 structure.atom_sites.create(
-    label='Pb',
+    id='Pb',
     type_symbol='Pb',
     fract_x=0.1876,
     fract_y=0.25,
@@ -58,7 +58,7 @@ structure.atom_sites.create(
     adp_iso=1.37,
 )
 structure.atom_sites.create(
-    label='S',
+    id='S',
     type_symbol='S',
     fract_x=0.0654,
     fract_y=0.25,
@@ -66,7 +66,7 @@ structure.atom_sites.create(
     adp_iso=0.3777,
 )
 structure.atom_sites.create(
-    label='O1',
+    id='O1',
     type_symbol='O',
     fract_x=0.9082,
     fract_y=0.25,
@@ -74,7 +74,7 @@ structure.atom_sites.create(
     adp_iso=1.9764,
 )
 structure.atom_sites.create(
-    label='O2',
+    id='O2',
     type_symbol='O',
     fract_x=0.1935,
     fract_y=0.25,
@@ -82,7 +82,7 @@ structure.atom_sites.create(
     adp_iso=1.4456,
 )
 structure.atom_sites.create(
-    label='O3',
+    id='O3',
     type_symbol='O',
     fract_x=0.0811,
     fract_y=0.0272,

@@ -42,7 +42,7 @@ class AtomSite(CategoryItem):
     """
 
     _category_code = 'atom_site'
-    _category_entry_name = 'label'
+    _category_entry_name = 'id'
 
     def __init__(self) -> None:
         """Initialise the atom site with default descriptor values."""
@@ -56,21 +56,25 @@ class AtomSite(CategoryItem):
         self._wyckoff_coord_baseline: tuple[float, float, float] | None = None
         self._wyckoff_key_baseline: tuple[str, str | None] | None = None
 
-        self._label = StringDescriptor(
-            name='label',
+        self._id = StringDescriptor(
+            name='id',
             description='Unique identifier for the atom site.',
             display_handler=DisplayHandler(
-                display_name='Label',
-                latex_name='Label',
+                display_name='ID',
+                latex_name='ID',
             ),
             value_spec=AttributeSpec(
                 default='Si',
                 # TODO: the following pattern is valid for dict key
-                #  (keywords are not checked). CIF label is less strict.
-                #  Do we need conversion between CIF and internal label?
+                #  (keywords are not checked). CIF id is less strict.
+                #  Do we need conversion between CIF and internal id?
                 validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
             ),
-            cif_handler=CifHandler(names=['_atom_site.label']),
+            cif_handler=CifHandler(
+                names=['_atom_site.id'],
+                import_names=['_atom_site.label'],
+                iucr_name='_atom_site.label',
+            ),
         )
         self._type_symbol = StringDescriptor(
             name='type_symbol',
@@ -398,7 +402,7 @@ class AtomSite(CategoryItem):
         aniso_coll = getattr(structure, '_atom_site_aniso', None)
         if aniso_coll is None:
             return None
-        lbl = self._label.value
+        lbl = self._id.value
         if lbl in aniso_coll:
             return aniso_coll[lbl]
         return None
@@ -537,7 +541,7 @@ class AtomSite(CategoryItem):
         if cell is None:
             msg = (
                 f"Cannot convert the ADP type to or from 'beta' for atom "
-                f"'{self._label.value}': no unit cell is reachable. Add the atom "
+                f"'{self._id.value}': no unit cell is reachable. Add the atom "
                 f'to a structure with a defined cell before switching to or from '
                 f'the beta tensor.'
             )
@@ -617,7 +621,7 @@ class AtomSite(CategoryItem):
     # ------------------------------------------------------------------
 
     @property
-    def label(self) -> StringDescriptor:
+    def id(self) -> StringDescriptor:
         """
         Unique identifier for the atom site.
 
@@ -625,11 +629,11 @@ class AtomSite(CategoryItem):
         ``StringDescriptor`` object. Assigning to it updates the
         parameter value.
         """
-        return self._label
+        return self._id
 
-    @label.setter
-    def label(self, value: str) -> None:
-        self._label.value = value
+    @id.setter
+    def id(self, value: str) -> None:
+        self._id.value = value
 
     @property
     def type_symbol(self) -> StringDescriptor:
@@ -924,7 +928,7 @@ class AtomSites(CategoryCollection):
         self._clear_fract_symmetry_constrained(atom)
         if atom.wyckoff_letter.value and not called_by_minimizer:
             log.warning(
-                f'Wyckoff letter of {atom.label.value} is stored but not '
+                f'Wyckoff letter of {atom.id.value} is stored but not '
                 f'validated because the space group is untabulated'
             )
         atom._wyckoff_coord_baseline = (atom.fract_x.value, atom.fract_y.value, atom.fract_z.value)
@@ -962,7 +966,7 @@ class AtomSites(CategoryCollection):
             position = ecr.detect_wyckoff_position(name_hm, coord_code, coords)
             if position is not None and letter_before and position.letter != letter_before:
                 log.warning(
-                    f'change moved the Wyckoff letter of {atom.label.value} '
+                    f'change moved the Wyckoff letter of {atom.id.value} '
                     f'from {letter_before} to {position.letter}'
                 )
             if position is not None:
@@ -995,12 +999,12 @@ class AtomSites(CategoryCollection):
         if moved and not called_by_minimizer:
             if not detect:
                 log.warning(
-                    f'coordinates of {atom.label.value} did not fit letter '
+                    f'coordinates of {atom.id.value} did not fit letter '
                     f'{position.letter} and were adjusted'
                 )
             elif letter_before and position.letter == letter_before:
                 log.warning(
-                    f'coordinates of {atom.label.value} were adjusted to satisfy '
+                    f'coordinates of {atom.id.value} were adjusted to satisfy '
                     f'Wyckoff letter {position.letter}'
                 )
         atom._wyckoff_coord_baseline = snapped
@@ -1043,7 +1047,7 @@ class AtomSites(CategoryCollection):
             wl = atom.wyckoff_letter.value
             if not wl:
                 continue
-            lbl = atom.label.value
+            lbl = atom.id.value
             if lbl not in aniso_collection:
                 continue
             aniso_entry = aniso_collection[lbl]

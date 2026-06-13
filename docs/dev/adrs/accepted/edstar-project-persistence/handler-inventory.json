@@ -5,23 +5,24 @@
       "category_entry_name": "_",
       "context": "analysis",
       "current_cif_names": [
-        "_alias.label"
+        "_alias.id"
       ],
       "descriptor_class": "StringDescriptor",
-      "descriptor_name": "label",
-      "descriptor_path": "analysis.aliases[].label",
-      "docs_anchor": "alias-label",
+      "descriptor_name": "id",
+      "descriptor_path": "analysis.aliases[].id",
+      "docs_anchor": "alias-id",
       "docs_page": "alias",
       "import_names": [
         "_alias.label"
       ],
-      "iucr_name": "_easydiffraction_alias.label",
+      "iucr_name": "_easydiffraction_alias.id",
       "owner_class": "Alias",
-      "project_name": "_alias.label",
+      "project_name": "_alias.id",
       "read_names": [
+        "_alias.id",
         "_alias.label"
       ],
-      "unique_name": "alias._.label"
+      "unique_name": "alias._.id"
     },
     {
       "category_code": "alias",
@@ -2316,6 +2317,52 @@
       "unique_name": "inventory_experiment.instrument.wavelength"
     },
     {
+      "category_code": "linked_phases",
+      "category_entry_name": "Si",
+      "context": "experiment.bragg_pd_cwl",
+      "current_cif_names": [
+        "_pd_phase_block.id"
+      ],
+      "descriptor_class": "StringDescriptor",
+      "descriptor_name": "id",
+      "descriptor_path": "experiment.bragg_pd_cwl.linked_phases[].id",
+      "docs_anchor": "pd-phase-block-id",
+      "docs_page": "pd_phase_block",
+      "import_names": [
+        "_pd_phase_block.id"
+      ],
+      "iucr_name": "_pd_phase_block.id",
+      "owner_class": "LinkedPhase",
+      "project_name": "_pd_phase_block.id",
+      "read_names": [
+        "_pd_phase_block.id"
+      ],
+      "unique_name": "linked_phases.Si.id"
+    },
+    {
+      "category_code": "linked_phases",
+      "category_entry_name": "Si",
+      "context": "experiment.bragg_pd_cwl",
+      "current_cif_names": [
+        "_pd_phase_block.scale"
+      ],
+      "descriptor_class": "Parameter",
+      "descriptor_name": "scale",
+      "descriptor_path": "experiment.bragg_pd_cwl.linked_phases[].scale",
+      "docs_anchor": "pd-phase-block-scale",
+      "docs_page": "pd_phase_block",
+      "import_names": [
+        "_pd_phase_block.scale"
+      ],
+      "iucr_name": "_pd_phase_block.scale",
+      "owner_class": "LinkedPhase",
+      "project_name": "_pd_phase_block.scale",
+      "read_names": [
+        "_pd_phase_block.scale"
+      ],
+      "unique_name": "linked_phases.Si.scale"
+    },
+    {
       "category_code": "peak",
       "category_entry_name": null,
       "context": "experiment.bragg_pd_cwl",
@@ -2452,6 +2499,443 @@
         "_peak.type"
       ],
       "unique_name": "inventory_experiment.peak.type"
+    },
+    {
+      "category_code": "pref_orient",
+      "category_entry_name": "Si",
+      "context": "experiment.bragg_pd_cwl",
+      "current_cif_names": [
+        "_pref_orient.index_h"
+      ],
+      "descriptor_class": "IntegerDescriptor",
+      "descriptor_name": "index_h",
+      "descriptor_path": "experiment.bragg_pd_cwl.pref_orient[].index_h",
+      "docs_anchor": "pref-orient-index-h",
+      "docs_page": "pref_orient",
+      "import_names": [
+        "_pref_orient.index_h"
+      ],
+      "iucr_name": "_pd_pref_orient_March_Dollase.index_h",
+      "owner_class": "PrefOrient",
+      "project_name": "_pref_orient.index_h",
+      "read_names": [
+        "_pref_orient.index_h"
+      ],
+      "unique_name": "pref_orient.Si.index_h"
+    },
+    {
+      "category_code": "pref_orient",
+      "category_entry_name": "Si",
+      "context": "experiment.bragg_pd_cwl",
+      "current_cif_names": [
+        "_pref_orient.index_k"
+      ],
+      "descriptor_class": "IntegerDescriptor",
+      "descriptor_name": "index_k",
+      "descriptor_path": "experiment.bragg_pd_cwl.pref_orient[].index_k",
+      "docs_anchor": "pref-orient-index-k",
+      "docs_page": "pref_orient",
+      "import_names": [
+        "_pref_orient.index_k"
+      ],
+      "iucr_name": "_pd_pref_orient_March_Dollase.index_k",
+      "owner_class": "PrefOrient",
+      "project_name": "_pref_orient.index_k",
+      "read_names": [
+        "_pref_orient.index_k"
+      ],
+      "unique_name": "pref_orient.Si.index_k"
+    },
+    {
+      "category_code": "pref_orient",
+      "category_entry_name": "Si",
+      "context": "experiment.bragg_pd_cwl",
+      "current_cif_names": [
+        "_pref_orient.index_l"
+      ],
+      "descriptor_class": "IntegerDescriptor",
+      "descriptor_name": "index_l",
+      "descriptor_path": "experiment.bragg_pd_cwl.pref_orient[].index_l",
+      "docs_anchor": "pref-orient-index-l",
+      "docs_page": "pref_orient",
+      "import_names": [
+        "_pref_orient.index_l"
+      ],
+      "iucr_name": "_pd_pref_orient_March_Dollase.index_l",
+      "owner_class": "PrefOrient",
+      "project_name": "_pref_orient.index_l",
+      "read_names": [
+        "_pref_orient.index_l"
+      ],
+      "unique_name": "pref_orient.Si.index_l"
+    },
+    {
+      "category_code": "pref_orient",
+      "category_entry_name": "Si",
+      "context": "experiment.bragg_pd_cwl",
+      "current_cif_names": [
+        "_pref_orient.march_r"
+      ],
+      "descriptor_class": "Parameter",
+      "descriptor_name": "march_r",
+      "descriptor_path": "experiment.bragg_pd_cwl.pref_orient[].march_r",
+      "docs_anchor": "pref-orient-march-r",
+      "docs_page": "pref_orient",
+      "import_names": [
+        "_pref_orient.march_r"
+      ],
+      "iucr_name": "_pd_pref_orient_March_Dollase.r",
+      "owner_class": "PrefOrient",
+      "project_name": "_pref_orient.march_r",
+      "read_names": [
+        "_pref_orient.march_r"
+      ],
+      "unique_name": "pref_orient.Si.march_r"
+    },
+    {
+      "category_code": "pref_orient",
+      "category_entry_name": "Si",
+      "context": "experiment.bragg_pd_cwl",
+      "current_cif_names": [
+        "_pref_orient.march_random_fract"
+      ],
+      "descriptor_class": "Parameter",
+      "descriptor_name": "march_random_fract",
+      "descriptor_path": "experiment.bragg_pd_cwl.pref_orient[].march_random_fract",
+      "docs_anchor": "pref-orient-march-random-fract",
+      "docs_page": "pref_orient",
+      "import_names": [
+        "_pref_orient.march_random_fract"
+      ],
+      "iucr_name": "_easydiffraction_pref_orient.march_random_fract",
+      "owner_class": "PrefOrient",
+      "project_name": "_pref_orient.march_random_fract",
+      "read_names": [
+        "_pref_orient.march_random_fract"
+      ],
+      "unique_name": "pref_orient.Si.march_random_fract"
+    },
+    {
+      "category_code": "pref_orient",
+      "category_entry_name": "Si",
+      "context": "experiment.bragg_pd_cwl",
+      "current_cif_names": [
+        "_pref_orient.phase_id"
+      ],
+      "descriptor_class": "StringDescriptor",
+      "descriptor_name": "phase_id",
+      "descriptor_path": "experiment.bragg_pd_cwl.pref_orient[].phase_id",
+      "docs_anchor": "pref-orient-phase-id",
+      "docs_page": "pref_orient",
+      "import_names": [
+        "_pref_orient.phase_id"
+      ],
+      "iucr_name": "_pd_pref_orient_March_Dollase.phase_id",
+      "owner_class": "PrefOrient",
+      "project_name": "_pref_orient.phase_id",
+      "read_names": [
+        "_pref_orient.phase_id"
+      ],
+      "unique_name": "pref_orient.Si.phase_id"
+    },
+    {
+      "category_code": "refln",
+      "category_entry_name": "0",
+      "context": "experiment.bragg_pd_cwl",
+      "current_cif_names": [
+        "_refln.d_spacing"
+      ],
+      "descriptor_class": "NumericDescriptor",
+      "descriptor_name": "d_spacing",
+      "descriptor_path": "experiment.bragg_pd_cwl.refln[].d_spacing",
+      "docs_anchor": "refln-d-spacing",
+      "docs_page": "refln",
+      "import_names": [
+        "_refln.d_spacing"
+      ],
+      "iucr_name": "_refln.d_spacing",
+      "owner_class": "PowderCwlRefln",
+      "project_name": "_refln.d_spacing",
+      "read_names": [
+        "_refln.d_spacing"
+      ],
+      "unique_name": "refln.0.d_spacing"
+    },
+    {
+      "category_code": "refln",
+      "category_entry_name": "0",
+      "context": "experiment.bragg_pd_cwl",
+      "current_cif_names": [
+        "_refln.f_calc"
+      ],
+      "descriptor_class": "NumericDescriptor",
+      "descriptor_name": "f_calc",
+      "descriptor_path": "experiment.bragg_pd_cwl.refln[].f_calc",
+      "docs_anchor": "refln-f-calc",
+      "docs_page": "refln",
+      "import_names": [
+        "_refln.f_calc"
+      ],
+      "iucr_name": "_refln.f_calc",
+      "owner_class": "PowderCwlRefln",
+      "project_name": "_refln.f_calc",
+      "read_names": [
+        "_refln.f_calc"
+      ],
+      "unique_name": "refln.0.f_calc"
+    },
+    {
+      "category_code": "refln",
+      "category_entry_name": "0",
+      "context": "experiment.bragg_pd_cwl",
+      "current_cif_names": [
+        "_refln.f_squared_calc"
+      ],
+      "descriptor_class": "NumericDescriptor",
+      "descriptor_name": "f_squared_calc",
+      "descriptor_path": "experiment.bragg_pd_cwl.refln[].f_squared_calc",
+      "docs_anchor": "refln-f-squared-calc",
+      "docs_page": "refln",
+      "import_names": [
+        "_refln.f_squared_calc"
+      ],
+      "iucr_name": "_refln.f_squared_calc",
+      "owner_class": "PowderCwlRefln",
+      "project_name": "_refln.f_squared_calc",
+      "read_names": [
+        "_refln.f_squared_calc"
+      ],
+      "unique_name": "refln.0.f_squared_calc"
+    },
+    {
+      "category_code": "refln",
+      "category_entry_name": "0",
+      "context": "experiment.bragg_pd_cwl",
+      "current_cif_names": [
+        "_refln.id"
+      ],
+      "descriptor_class": "StringDescriptor",
+      "descriptor_name": "id",
+      "descriptor_path": "experiment.bragg_pd_cwl.refln[].id",
+      "docs_anchor": "refln-id",
+      "docs_page": "refln",
+      "import_names": [
+        "_refln.id"
+      ],
+      "iucr_name": "_refln.id",
+      "owner_class": "PowderCwlRefln",
+      "project_name": "_refln.id",
+      "read_names": [
+        "_refln.id"
+      ],
+      "unique_name": "refln.0.id"
+    },
+    {
+      "category_code": "refln",
+      "category_entry_name": "0",
+      "context": "experiment.bragg_pd_cwl",
+      "current_cif_names": [
+        "_refln.index_h"
+      ],
+      "descriptor_class": "NumericDescriptor",
+      "descriptor_name": "index_h",
+      "descriptor_path": "experiment.bragg_pd_cwl.refln[].index_h",
+      "docs_anchor": "refln-index-h",
+      "docs_page": "refln",
+      "import_names": [
+        "_refln.index_h"
+      ],
+      "iucr_name": "_refln.index_h",
+      "owner_class": "PowderCwlRefln",
+      "project_name": "_refln.index_h",
+      "read_names": [
+        "_refln.index_h"
+      ],
+      "unique_name": "refln.0.index_h"
+    },
+    {
+      "category_code": "refln",
+      "category_entry_name": "0",
+      "context": "experiment.bragg_pd_cwl",
+      "current_cif_names": [
+        "_refln.index_k"
+      ],
+      "descriptor_class": "NumericDescriptor",
+      "descriptor_name": "index_k",
+      "descriptor_path": "experiment.bragg_pd_cwl.refln[].index_k",
+      "docs_anchor": "refln-index-k",
+      "docs_page": "refln",
+      "import_names": [
+        "_refln.index_k"
+      ],
+      "iucr_name": "_refln.index_k",
+      "owner_class": "PowderCwlRefln",
+      "project_name": "_refln.index_k",
+      "read_names": [
+        "_refln.index_k"
+      ],
+      "unique_name": "refln.0.index_k"
+    },
+    {
+      "category_code": "refln",
+      "category_entry_name": "0",
+      "context": "experiment.bragg_pd_cwl",
+      "current_cif_names": [
+        "_refln.index_l"
+      ],
+      "descriptor_class": "NumericDescriptor",
+      "descriptor_name": "index_l",
+      "descriptor_path": "experiment.bragg_pd_cwl.refln[].index_l",
+      "docs_anchor": "refln-index-l",
+      "docs_page": "refln",
+      "import_names": [
+        "_refln.index_l"
+      ],
+      "iucr_name": "_refln.index_l",
+      "owner_class": "PowderCwlRefln",
+      "project_name": "_refln.index_l",
+      "read_names": [
+        "_refln.index_l"
+      ],
+      "unique_name": "refln.0.index_l"
+    },
+    {
+      "category_code": "refln",
+      "category_entry_name": "0",
+      "context": "experiment.bragg_pd_cwl",
+      "current_cif_names": [
+        "_refln.intensity_calc"
+      ],
+      "descriptor_class": "NumericDescriptor",
+      "descriptor_name": "intensity_calc",
+      "descriptor_path": "experiment.bragg_pd_cwl.refln[].intensity_calc",
+      "docs_anchor": "refln-intensity-calc",
+      "docs_page": "refln",
+      "import_names": [
+        "_refln.intensity_calc"
+      ],
+      "iucr_name": "_refln.intensity_calc",
+      "owner_class": "PowderCwlRefln",
+      "project_name": "_refln.intensity_calc",
+      "read_names": [
+        "_refln.intensity_calc"
+      ],
+      "unique_name": "refln.0.intensity_calc"
+    },
+    {
+      "category_code": "refln",
+      "category_entry_name": "0",
+      "context": "experiment.bragg_pd_cwl",
+      "current_cif_names": [
+        "_refln.intensity_meas"
+      ],
+      "descriptor_class": "NumericDescriptor",
+      "descriptor_name": "intensity_meas",
+      "descriptor_path": "experiment.bragg_pd_cwl.refln[].intensity_meas",
+      "docs_anchor": "refln-intensity-meas",
+      "docs_page": "refln",
+      "import_names": [
+        "_refln.intensity_meas"
+      ],
+      "iucr_name": "_refln.intensity_meas",
+      "owner_class": "PowderCwlRefln",
+      "project_name": "_refln.intensity_meas",
+      "read_names": [
+        "_refln.intensity_meas"
+      ],
+      "unique_name": "refln.0.intensity_meas"
+    },
+    {
+      "category_code": "refln",
+      "category_entry_name": "0",
+      "context": "experiment.bragg_pd_cwl",
+      "current_cif_names": [
+        "_refln.intensity_meas_su"
+      ],
+      "descriptor_class": "NumericDescriptor",
+      "descriptor_name": "intensity_meas_su",
+      "descriptor_path": "experiment.bragg_pd_cwl.refln[].intensity_meas_su",
+      "docs_anchor": "refln-intensity-meas-su",
+      "docs_page": "refln",
+      "import_names": [
+        "_refln.intensity_meas_su"
+      ],
+      "iucr_name": "_refln.intensity_meas_su",
+      "owner_class": "PowderCwlRefln",
+      "project_name": "_refln.intensity_meas_su",
+      "read_names": [
+        "_refln.intensity_meas_su"
+      ],
+      "unique_name": "refln.0.intensity_meas_su"
+    },
+    {
+      "category_code": "refln",
+      "category_entry_name": "0",
+      "context": "experiment.bragg_pd_cwl",
+      "current_cif_names": [
+        "_refln.phase_id"
+      ],
+      "descriptor_class": "StringDescriptor",
+      "descriptor_name": "phase_id",
+      "descriptor_path": "experiment.bragg_pd_cwl.refln[].phase_id",
+      "docs_anchor": "refln-phase-id",
+      "docs_page": "refln",
+      "import_names": [
+        "_refln.phase_id"
+      ],
+      "iucr_name": "_refln.phase_id",
+      "owner_class": "PowderCwlRefln",
+      "project_name": "_refln.phase_id",
+      "read_names": [
+        "_refln.phase_id"
+      ],
+      "unique_name": "refln.0.phase_id"
+    },
+    {
+      "category_code": "refln",
+      "category_entry_name": "0",
+      "context": "experiment.bragg_pd_cwl",
+      "current_cif_names": [
+        "_refln.sin_theta_over_lambda"
+      ],
+      "descriptor_class": "NumericDescriptor",
+      "descriptor_name": "sin_theta_over_lambda",
+      "descriptor_path": "experiment.bragg_pd_cwl.refln[].sin_theta_over_lambda",
+      "docs_anchor": "refln-sin-theta-over-lambda",
+      "docs_page": "refln",
+      "import_names": [
+        "_refln.sin_theta_over_lambda"
+      ],
+      "iucr_name": "_refln.sin_theta_over_lambda",
+      "owner_class": "PowderCwlRefln",
+      "project_name": "_refln.sin_theta_over_lambda",
+      "read_names": [
+        "_refln.sin_theta_over_lambda"
+      ],
+      "unique_name": "refln.0.sin_theta_over_lambda"
+    },
+    {
+      "category_code": "refln",
+      "category_entry_name": "0",
+      "context": "experiment.bragg_pd_cwl",
+      "current_cif_names": [
+        "_refln.two_theta"
+      ],
+      "descriptor_class": "NumericDescriptor",
+      "descriptor_name": "two_theta",
+      "descriptor_path": "experiment.bragg_pd_cwl.refln[].two_theta",
+      "docs_anchor": "refln-two-theta",
+      "docs_page": "refln",
+      "import_names": [
+        "_refln.two_theta"
+      ],
+      "iucr_name": "_refln.two_theta",
+      "owner_class": "PowderCwlRefln",
+      "project_name": "_refln.two_theta",
+      "read_names": [
+        "_refln.two_theta"
+      ],
+      "unique_name": "refln.0.two_theta"
     },
     {
       "category_code": "expt_type",
@@ -6587,23 +7071,24 @@
       "category_entry_name": "_",
       "context": "factory.AliasesFactory.default",
       "current_cif_names": [
-        "_alias.label"
+        "_alias.id"
       ],
       "descriptor_class": "StringDescriptor",
-      "descriptor_name": "label",
-      "descriptor_path": "factory.AliasesFactory.default[].label",
-      "docs_anchor": "alias-label",
+      "descriptor_name": "id",
+      "descriptor_path": "factory.AliasesFactory.default[].id",
+      "docs_anchor": "alias-id",
       "docs_page": "alias",
       "import_names": [
         "_alias.label"
       ],
-      "iucr_name": "_easydiffraction_alias.label",
+      "iucr_name": "_easydiffraction_alias.id",
       "owner_class": "Alias",
-      "project_name": "_alias.label",
+      "project_name": "_alias.id",
       "read_names": [
+        "_alias.id",
         "_alias.label"
       ],
-      "unique_name": "alias._.label"
+      "unique_name": "alias._.id"
     },
     {
       "category_code": "alias",
@@ -6807,23 +7292,24 @@
       "category_entry_name": "",
       "context": "factory.AtomSiteAnisoFactory.default",
       "current_cif_names": [
-        "_atom_site_aniso.label"
+        "_atom_site_aniso.id"
       ],
       "descriptor_class": "StringDescriptor",
-      "descriptor_name": "label",
-      "descriptor_path": "factory.AtomSiteAnisoFactory.default[].label",
-      "docs_anchor": "atom-site-aniso-label",
+      "descriptor_name": "id",
+      "descriptor_path": "factory.AtomSiteAnisoFactory.default[].id",
+      "docs_anchor": "atom-site-aniso-id",
       "docs_page": "atom_site_aniso",
       "import_names": [
         "_atom_site_aniso.label"
       ],
       "iucr_name": "_atom_site_aniso.label",
       "owner_class": "AtomSiteAniso",
-      "project_name": "_atom_site_aniso.label",
+      "project_name": "_atom_site_aniso.id",
       "read_names": [
+        "_atom_site_aniso.id",
         "_atom_site_aniso.label"
       ],
-      "unique_name": "atom_site_aniso.label"
+      "unique_name": "atom_site_aniso.id"
     },
     {
       "category_code": "atom_site",
@@ -6951,23 +7437,24 @@
       "category_entry_name": "Si",
       "context": "factory.AtomSitesFactory.default",
       "current_cif_names": [
-        "_atom_site.label"
+        "_atom_site.id"
       ],
       "descriptor_class": "StringDescriptor",
-      "descriptor_name": "label",
-      "descriptor_path": "factory.AtomSitesFactory.default[].label",
-      "docs_anchor": "atom-site-label",
+      "descriptor_name": "id",
+      "descriptor_path": "factory.AtomSitesFactory.default[].id",
+      "docs_anchor": "atom-site-id",
       "docs_page": "atom_site",
       "import_names": [
         "_atom_site.label"
       ],
       "iucr_name": "_atom_site.label",
       "owner_class": "AtomSite",
-      "project_name": "_atom_site.label",
+      "project_name": "_atom_site.id",
       "read_names": [
+        "_atom_site.id",
         "_atom_site.label"
       ],
-      "unique_name": "atom_site.Si.label"
+      "unique_name": "atom_site.Si.id"
     },
     {
       "category_code": "atom_site",
@@ -16112,23 +16599,24 @@
       "category_entry_name": "",
       "context": "structure",
       "current_cif_names": [
-        "_atom_site_aniso.label"
+        "_atom_site_aniso.id"
       ],
       "descriptor_class": "StringDescriptor",
-      "descriptor_name": "label",
-      "descriptor_path": "structure.atom_site_aniso[].label",
-      "docs_anchor": "atom-site-aniso-label",
+      "descriptor_name": "id",
+      "descriptor_path": "structure.atom_site_aniso[].id",
+      "docs_anchor": "atom-site-aniso-id",
       "docs_page": "atom_site_aniso",
       "import_names": [
         "_atom_site_aniso.label"
       ],
       "iucr_name": "_atom_site_aniso.label",
       "owner_class": "AtomSiteAniso",
-      "project_name": "_atom_site_aniso.label",
+      "project_name": "_atom_site_aniso.id",
       "read_names": [
+        "_atom_site_aniso.id",
         "_atom_site_aniso.label"
       ],
-      "unique_name": "atom_site_aniso.label"
+      "unique_name": "atom_site_aniso.id"
     },
     {
       "category_code": "atom_site",
@@ -16256,23 +16744,24 @@
       "category_entry_name": "Si",
       "context": "structure",
       "current_cif_names": [
-        "_atom_site.label"
+        "_atom_site.id"
       ],
       "descriptor_class": "StringDescriptor",
-      "descriptor_name": "label",
-      "descriptor_path": "structure.atom_sites[].label",
-      "docs_anchor": "atom-site-label",
+      "descriptor_name": "id",
+      "descriptor_path": "structure.atom_sites[].id",
+      "docs_anchor": "atom-site-id",
       "docs_page": "atom_site",
       "import_names": [
         "_atom_site.label"
       ],
       "iucr_name": "_atom_site.label",
       "owner_class": "AtomSite",
-      "project_name": "_atom_site.label",
+      "project_name": "_atom_site.id",
       "read_names": [
+        "_atom_site.id",
         "_atom_site.label"
       ],
-      "unique_name": "atom_site.Si.label"
+      "unique_name": "atom_site.Si.id"
     },
     {
       "category_code": "atom_site",

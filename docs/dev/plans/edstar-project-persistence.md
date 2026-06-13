@@ -295,7 +295,7 @@ code/EdSTAR/CIF reference.
   Persist software provenance as role rows
   ```
 
-- [ ] P1.7 - Rename structure identity fields.
+- [x] P1.7 - Rename structure identity fields.
 
   Rename atom-site and anisotropic ADP public row identity from `label`
   to `id`, and rename alias row identity from `label` to `id` where it

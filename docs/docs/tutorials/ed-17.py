@@ -63,7 +63,7 @@ struct.cell.length_c = 4.79
 
 # %%
 struct.atom_sites.create(
-    label='Co1',
+    id='Co1',
     type_symbol='Co',
     fract_x=0,
     fract_y=0,
@@ -71,7 +71,7 @@ struct.atom_sites.create(
     adp_iso=0.3,
 )
 struct.atom_sites.create(
-    label='Co2',
+    id='Co2',
     type_symbol='Co',
     fract_x=0.279,
     fract_y=0.25,
@@ -79,7 +79,7 @@ struct.atom_sites.create(
     adp_iso=0.3,
 )
 struct.atom_sites.create(
-    label='Si',
+    id='Si',
     type_symbol='Si',
     fract_x=0.094,
     fract_y=0.25,
@@ -87,7 +87,7 @@ struct.atom_sites.create(
     adp_iso=0.34,
 )
 struct.atom_sites.create(
-    label='O1',
+    id='O1',
     type_symbol='O',
     fract_x=0.091,
     fract_y=0.25,
@@ -95,7 +95,7 @@ struct.atom_sites.create(
     adp_iso=0.63,
 )
 struct.atom_sites.create(
-    label='O2',
+    id='O2',
     type_symbol='O',
     fract_x=0.448,
     fract_y=0.25,
@@ -103,7 +103,7 @@ struct.atom_sites.create(
     adp_iso=0.59,
 )
 struct.atom_sites.create(
-    label='O3',
+    id='O3',
     type_symbol='O',
     fract_x=0.164,
     fract_y=0.032,
@@ -252,11 +252,11 @@ for point in expt.background:
 
 # %%
 analysis.aliases.create(
-    label='biso_Co1',
+    id='biso_Co1',
     param=struct.atom_sites['Co1'].adp_iso,
 )
 analysis.aliases.create(
-    label='biso_Co2',
+    id='biso_Co2',
     param=struct.atom_sites['Co2'].adp_iso,
 )
 

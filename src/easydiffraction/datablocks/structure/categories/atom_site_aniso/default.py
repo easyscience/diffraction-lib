@@ -67,14 +67,14 @@ class _AnisoAdpParameter(Parameter):
         # parameter). Any broken link falls back to the declared unit
         # rather than raising in a display path.
         aniso_item = getattr(self, '_parent', None)
-        label = getattr(getattr(aniso_item, '_label', None), 'value', None)
+        atom_id = getattr(getattr(aniso_item, '_id', None), 'value', None)
         collection = getattr(aniso_item, '_parent', None)
         structure = getattr(collection, '_parent', None)
         atom_sites = getattr(structure, 'atom_sites', None)
-        if atom_sites is None or label is None:
+        if atom_sites is None or atom_id is None:
             return None
         try:
-            atom = atom_sites[label]
+            atom = atom_sites[atom_id]
         except (KeyError, TypeError):
             return None
         return getattr(getattr(atom, 'adp_type', None), 'value', None)
@@ -84,23 +84,27 @@ class AtomSiteAniso(CategoryItem):
     """
     Single atom site anisotropic ADP entry.
 
-    Each entry mirrors an :class:`AtomSite` by label and holds six
+    Each entry mirrors an :class:`AtomSite` by id and holds six
     tensor components whose physical meaning (B or U) is determined by
     ``atom_site.adp_type``.
     """
 
     _category_code = 'atom_site_aniso'
-    _category_entry_name = 'label'
+    _category_entry_name = 'id'
 
     def __init__(self) -> None:
         """Initialise with default zero-valued tensor components."""
         super().__init__()
 
-        self._label = StringDescriptor(
-            name='label',
-            description='Atom-site label matching the parent atom_site entry.',
+        self._id = StringDescriptor(
+            name='id',
+            description='Atom-site id matching the parent atom_site entry.',
             value_spec=AttributeSpec(default=''),
-            cif_handler=CifHandler(names=['_atom_site_aniso.label']),
+            cif_handler=CifHandler(
+                names=['_atom_site_aniso.id'],
+                import_names=['_atom_site_aniso.label'],
+                iucr_name='_atom_site_aniso.label',
+            ),
         )
 
         self._adp_11 = _AnisoAdpParameter(
@@ -241,13 +245,13 @@ class AtomSiteAniso(CategoryItem):
     # ------------------------------------------------------------------
 
     @property
-    def label(self) -> StringDescriptor:
-        """Label matching the parent atom_site entry."""
-        return self._label
+    def id(self) -> StringDescriptor:
+        """ID matching the parent atom_site entry."""
+        return self._id
 
-    @label.setter
-    def label(self, value: str) -> None:
-        self._label.value = value
+    @id.setter
+    def id(self, value: str) -> None:
+        self._id.value = value
 
     @property
     def adp_11(self) -> Parameter:

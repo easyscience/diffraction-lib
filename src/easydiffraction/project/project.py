@@ -513,7 +513,7 @@ class Project(GuardedBase):  # noqa: PLR0904
                 alias._set_param(param_map[uname])
             else:
                 log.warning(
-                    f"Alias '{alias.label.value}' references unknown "
+                    f"Alias '{alias.id.value}' references unknown "
                     f"parameter '{uname}'. Reference not resolved."
                 )
 

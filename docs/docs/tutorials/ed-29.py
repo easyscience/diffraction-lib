@@ -40,7 +40,7 @@ structure.cell.length_a = 5.62
 
 # %%
 structure.atom_sites.create(
-    label='Na',
+    id='Na',
     type_symbol='Na',
     fract_x=0,
     fract_y=0,
@@ -48,7 +48,7 @@ structure.atom_sites.create(
     adp_iso=0.5,
 )
 structure.atom_sites.create(
-    label='Cl',
+    id='Cl',
     type_symbol='Cl',
     fract_x=0.5,
     fract_y=0.5,

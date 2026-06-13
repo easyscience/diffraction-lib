@@ -184,7 +184,7 @@ class ReportDataContext:
     def _atom_site_context(atom_site: object) -> dict[str, object]:
         """Return one atom-site row."""
         return {
-            'label': _attr_value(atom_site, 'label'),
+            'label': _attr_value(atom_site, 'id'),
             'type_symbol': _attr_value(atom_site, 'type_symbol'),
             'fract_x': _attr_display_value(atom_site, 'fract_x'),
             'fract_y': _attr_display_value(atom_site, 'fract_y'),
@@ -198,7 +198,7 @@ class ReportDataContext:
     def _atom_site_aniso_context(aniso_site: object) -> dict[str, object]:
         """Return one atom-site-aniso row."""
         return {
-            'label': _attr_value(aniso_site, 'label'),
+            'label': _attr_value(aniso_site, 'id'),
             'adp_11': _attr_display_value(aniso_site, 'adp_11'),
             'adp_22': _attr_display_value(aniso_site, 'adp_22'),
             'adp_33': _attr_display_value(aniso_site, 'adp_33'),

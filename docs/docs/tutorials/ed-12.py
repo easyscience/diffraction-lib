@@ -47,7 +47,7 @@ project.structures['nacl'].space_group.name_h_m = 'F m -3 m'
 project.structures['nacl'].space_group.it_coordinate_system_code = '1'
 project.structures['nacl'].cell.length_a = 5.62
 project.structures['nacl'].atom_sites.create(
-    label='Na',
+    id='Na',
     type_symbol='Na',
     fract_x=0,
     fract_y=0,
@@ -55,7 +55,7 @@ project.structures['nacl'].atom_sites.create(
     adp_iso=1.0,
 )
 project.structures['nacl'].atom_sites.create(
-    label='Cl',
+    id='Cl',
     type_symbol='Cl',
     fract_x=0.5,
     fract_y=0.5,

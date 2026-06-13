@@ -36,7 +36,7 @@ ferrite.space_group.it_coordinate_system_code = '1'
 ferrite.cell.length_a = 2.886
 
 ferrite.atom_sites.create(
-    label='Fe',
+    id='Fe',
     type_symbol='Fe',
     fract_x=0.0,
     fract_y=0.0,
@@ -57,7 +57,7 @@ austenite.space_group.it_coordinate_system_code = '1'
 austenite.cell.length_a = 3.6468
 
 austenite.atom_sites.create(
-    label='Fe',
+    id='Fe',
     type_symbol='Fe',
     fract_x=0.0,
     fract_y=0.0,
@@ -276,17 +276,17 @@ for segment in expt_n2.background:
 
 # %%
 project.analysis.aliases.create(
-    label='s2_ferrite_scale', param=expt_s2.linked_phases['ferrite'].scale
+    id='s2_ferrite_scale', param=expt_s2.linked_phases['ferrite'].scale
 )
 project.analysis.aliases.create(
-    label='s2_austenite_scale', param=expt_s2.linked_phases['austenite'].scale
+    id='s2_austenite_scale', param=expt_s2.linked_phases['austenite'].scale
 )
 
 project.analysis.aliases.create(
-    label='n2_ferrite_scale', param=expt_n2.linked_phases['ferrite'].scale
+    id='n2_ferrite_scale', param=expt_n2.linked_phases['ferrite'].scale
 )
 project.analysis.aliases.create(
-    label='n2_austenite_scale', param=expt_n2.linked_phases['austenite'].scale
+    id='n2_austenite_scale', param=expt_n2.linked_phases['austenite'].scale
 )
 
 project.analysis.constraints.create(expression='n2_ferrite_scale = s2_ferrite_scale')

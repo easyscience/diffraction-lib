@@ -4,7 +4,7 @@
 Alias category for mapping friendly names to parameters.
 
 Defines a small record type used by analysis configuration to refer to
-parameters via readable labels instead of opaque identifiers. At runtime
+parameters via readable ids instead of opaque identifiers. At runtime
 each alias holds a direct object reference to the parameter; for CIF
 serialization the parameter's ``unique_name`` is stored.
 """
@@ -25,28 +25,29 @@ class Alias(CategoryItem):
     """
     Single alias entry.
 
-    Maps a human-readable ``label`` to a parameter object. The
+    Maps a human-readable ``id`` to a parameter object. The
     ``param_unique_name`` descriptor stores the parameter's
     ``unique_name`` for CIF serialization.
     """
 
     _category_code = 'alias'
-    _category_entry_name = 'label'
+    _category_entry_name = 'id'
 
     def __init__(self) -> None:
         """Initialize the alias descriptors and parameter reference."""
         super().__init__()
 
-        self._label = StringDescriptor(
-            name='label',
-            description='Human-readable alias for a parameter.',
+        self._id = StringDescriptor(
+            name='id',
+            description='Human-readable alias id for a parameter.',
             value_spec=AttributeSpec(
                 default='_',  # TODO: Maybe None?
                 validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
             ),
             cif_handler=CifHandler(
-                names=['_alias.label'],
-                iucr_name='_easydiffraction_alias.label',
+                names=['_alias.id'],
+                import_names=['_alias.label'],
+                iucr_name='_easydiffraction_alias.id',
             ),
         )
         self._param_unique_name = StringDescriptor(
@@ -71,20 +72,20 @@ class Alias(CategoryItem):
     # ------------------------------------------------------------------
 
     @property
-    def label(self) -> StringDescriptor:
+    def id(self) -> StringDescriptor:
         """
-        Human-readable alias label (e.g. ``'biso_La'``).
+        Human-readable alias id (e.g. ``'biso_La'``).
 
         Reading this property returns the underlying
         ``StringDescriptor`` object. Assigning to it updates the
         parameter value.
         """
-        return self._label
+        return self._id
 
-    @label.setter
-    def label(self, value: str) -> None:
-        """Set the alias label value."""
-        self._label.value = value
+    @id.setter
+    def id(self, value: str) -> None:
+        """Set the alias id value."""
+        self._id.value = value
 
     @property
     def param(self) -> object | None:
@@ -118,7 +119,7 @@ class Alias(CategoryItem):
         """
         Descriptors owned by this alias (excludes the param reference).
         """
-        return [self._label, self._param_unique_name]
+        return [self._id, self._param_unique_name]
 
 
 @AliasesFactory.register
@@ -134,18 +135,18 @@ class Aliases(CategoryCollection):
         """Create an empty collection of aliases."""
         super().__init__(item_type=Alias)
 
-    def create(self, *, label: str, param: object) -> None:
+    def create(self, *, id: str, param: object) -> None:
         """
-        Create a new alias mapping a label to a parameter.
+        Create a new alias mapping an id to a parameter.
 
         Parameters
         ----------
-        label : str
+        id : str
             Human-readable alias name (e.g. ``'biso_La'``).
         param : object
             The parameter object to reference.
         """
         item = Alias()
-        item.label = label
+        item.id = id
         item._set_param(param)
         self.add(item)

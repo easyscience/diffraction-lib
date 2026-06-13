@@ -46,7 +46,7 @@ structure.cell.length_a = 10.250256
 
 # %%
 structure.atom_sites.create(
-    label='Ca',
+    id='Ca',
     type_symbol='Ca',
     fract_x=0.4663,
     fract_y=0.0,
@@ -54,7 +54,7 @@ structure.atom_sites.create(
     adp_iso=0.92,
 )
 structure.atom_sites.create(
-    label='Al',
+    id='Al',
     type_symbol='Al',
     fract_x=0.2521,
     fract_y=0.2521,
@@ -62,7 +62,7 @@ structure.atom_sites.create(
     adp_iso=0.73,
 )
 structure.atom_sites.create(
-    label='Na',
+    id='Na',
     type_symbol='Na',
     fract_x=0.0851,
     fract_y=0.0851,
@@ -70,7 +70,7 @@ structure.atom_sites.create(
     adp_iso=2.08,
 )
 structure.atom_sites.create(
-    label='F1',
+    id='F1',
     type_symbol='F',
     fract_x=0.1377,
     fract_y=0.3054,
@@ -78,7 +78,7 @@ structure.atom_sites.create(
     adp_iso=0.90,
 )
 structure.atom_sites.create(
-    label='F2',
+    id='F2',
     type_symbol='F',
     fract_x=0.3625,
     fract_y=0.3633,
@@ -86,7 +86,7 @@ structure.atom_sites.create(
     adp_iso=1.37,
 )
 structure.atom_sites.create(
-    label='F3',
+    id='F3',
     type_symbol='F',
     fract_x=0.4612,
     fract_y=0.4612,

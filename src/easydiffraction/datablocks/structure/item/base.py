@@ -204,33 +204,33 @@ class Structure(DatablockItem):
         Reconcile ``atom_site_aniso`` with anisotropic atoms only.
 
         Adds an entry for every atom whose ``adp_type`` is ``Bani`` or
-        ``Uani``, removes entries whose label is stale or whose atom has
+        ``Uani``, removes entries whose id is stale or whose atom has
         switched to an isotropic type, and reorders CIF names on all
         atom-site parameters to match each atom's ``adp_type``.
         """
         aniso_types = {AdpTypeEnum.BANI, AdpTypeEnum.UANI, AdpTypeEnum.BETA}
-        existing_labels = {a.label.value for a in self._atom_sites}
-        aniso_labels_needed = {
-            a.label.value for a in self._atom_sites if a.adp_type.value in aniso_types
+        existing_ids = {a.id.value for a in self._atom_sites}
+        aniso_ids_needed = {
+            a.id.value for a in self._atom_sites if a.adp_type.value in aniso_types
         }
-        current_aniso_labels = {a.label.value for a in self._atom_site_aniso}
+        current_aniso_ids = {a.id.value for a in self._atom_site_aniso}
 
         # Add missing entries for anisotropic atoms
         for atom in self._atom_sites:
-            lbl = atom.label.value
-            if lbl not in current_aniso_labels and atom.adp_type.value in aniso_types:
+            atom_id = atom.id.value
+            if atom_id not in current_aniso_ids and atom.adp_type.value in aniso_types:
                 entry = AtomSiteAniso()
-                entry.label = lbl
+                entry.id = atom_id
                 self._atom_site_aniso.add(entry)
 
-        # Remove entries for isotropic atoms and stale labels
+        # Remove entries for isotropic atoms and stale ids
         stale = [
-            a.label.value
+            a.id.value
             for a in self._atom_site_aniso
-            if a.label.value not in existing_labels or a.label.value not in aniso_labels_needed
+            if a.id.value not in existing_ids or a.id.value not in aniso_ids_needed
         ]
-        for lbl in stale:
-            self._atom_site_aniso.remove(lbl)
+        for atom_id in stale:
+            self._atom_site_aniso.remove(atom_id)
 
         # Reorder CIF names to match each atom's adp_type
         for atom in self._atom_sites:

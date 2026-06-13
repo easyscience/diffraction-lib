@@ -287,15 +287,15 @@ def _write_atom_site_sections(lines: list[str], structure: object) -> None:
 def _write_atom_site_aniso_sections(lines: list[str], structure: object) -> None:
     """Append anisotropic ADP loops grouped by ADP convention."""
     aniso_sites = list(_collection_values(getattr(structure, 'atom_site_aniso', None)))
-    atom_site_by_label = {
-        str(_attribute_value(atom_site, 'label')): atom_site
+    atom_site_by_id = {
+        str(_attribute_value(atom_site, 'id')): atom_site
         for atom_site in _collection_values(getattr(structure, 'atom_sites', None))
     }
     for family in ('B', 'U', 'beta'):
         rows = [
             _atom_site_aniso_row(aniso_site)
             for aniso_site in aniso_sites
-            if _adp_family(_atom_site_for_aniso(atom_site_by_label, aniso_site)) == family
+            if _adp_family(_atom_site_for_aniso(atom_site_by_id, aniso_site)) == family
         ]
         if not rows:
             continue
@@ -945,7 +945,7 @@ def _atom_site_tags(family: str) -> tuple[str, ...]:
 def _atom_site_row(atom_site: object) -> tuple[object, ...]:
     """Return one atom-site loop row."""
     return (
-        _attribute_descriptor(atom_site, 'label'),
+        _attribute_descriptor(atom_site, 'id'),
         _attribute_descriptor(atom_site, 'type_symbol'),
         _attribute_descriptor(atom_site, 'fract_x'),
         _attribute_descriptor(atom_site, 'fract_y'),
@@ -974,7 +974,7 @@ def _atom_site_aniso_tags(family: str) -> tuple[str, ...]:
 def _atom_site_aniso_row(aniso_site: object) -> tuple[object, ...]:
     """Return one anisotropic-ADP loop row."""
     return (
-        _attribute_descriptor(aniso_site, 'label'),
+        _attribute_descriptor(aniso_site, 'id'),
         _attribute_descriptor(aniso_site, 'adp_11'),
         _attribute_descriptor(aniso_site, 'adp_22'),
         _attribute_descriptor(aniso_site, 'adp_33'),
@@ -985,12 +985,12 @@ def _atom_site_aniso_row(aniso_site: object) -> tuple[object, ...]:
 
 
 def _atom_site_for_aniso(
-    atom_site_by_label: dict[str, object],
+    atom_site_by_id: dict[str, object],
     aniso_site: object,
 ) -> object | None:
     """Return the atom-site row that owns an anisotropic-ADP row."""
-    label = str(_attribute_value(aniso_site, 'label'))
-    return atom_site_by_label.get(label)
+    atom_id = str(_attribute_value(aniso_site, 'id'))
+    return atom_site_by_id.get(atom_id)
 
 
 def _adp_family(atom_site: object) -> str:

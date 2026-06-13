@@ -637,7 +637,7 @@ class CryspyCalculator(CalculatorBase):
             if adp_enum not in {AdpTypeEnum.BANI, AdpTypeEnum.UANI, AdpTypeEnum.BETA}:
                 continue
 
-            aniso = structure.atom_site_aniso[atom.label.value]
+            aniso = structure.atom_site_aniso[atom.id.value]
             components = [
                 aniso.adp_11.value,
                 aniso.adp_22.value,
@@ -877,7 +877,7 @@ class CryspyCalculator(CalculatorBase):
                 saved.append((atom, None, None, None, orig_adp_type, orig_iso_names, orig_iso_val))
             else:
                 atom._adp_type._value = AdpTypeEnum.UANI.value
-                lbl = atom.label.value
+                lbl = atom.id.value
                 if lbl in structure.atom_site_aniso:
                     aniso = structure.atom_site_aniso[lbl]
                 else:
@@ -1003,7 +1003,7 @@ class CryspyCalculator(CalculatorBase):
         ]
         atom._adp_type._value = AdpTypeEnum.UANI.value
 
-        lbl = atom.label.value
+        lbl = atom.id.value
         if lbl not in structure.atom_site_aniso:
             return (atom, None, None, None, orig_adp_type, orig_iso_names, orig_iso_val)
         aniso = structure.atom_site_aniso[lbl]

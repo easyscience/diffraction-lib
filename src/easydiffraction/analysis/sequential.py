@@ -231,7 +231,7 @@ def _apply_constraints(
     project : object
         The worker's project instance.
     alias_defs : list[dict[str, str]]
-        Each dict has ``label`` and ``param_unique_name``.
+        Each dict has ``id`` and ``param_unique_name``.
     constraint_defs : list[str]
         Constraint expression strings.
     """
@@ -242,7 +242,7 @@ def _apply_constraints(
         param = by_name.get(alias_def['param_unique_name'])
         if param is not None:
             project.analysis.aliases.create(
-                label=alias_def['label'],
+                id=alias_def['id'],
                 param=param,
             )
 
@@ -600,7 +600,7 @@ def _build_template(project: object) -> SequentialFitTemplate:
     # Collect alias definitions
     alias_defs: list[dict[str, str]] = [
         {
-            'label': alias.label.value,
+            'id': alias.id.value,
             'param_unique_name': alias.param_unique_name.value,
         }
         for alias in project.analysis.aliases

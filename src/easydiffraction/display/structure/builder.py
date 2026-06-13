@@ -262,7 +262,7 @@ def _atom_shape(
     view = AtomViewEnum(style.atom_view.value)
     radius, substituted = radius_for(element, view.radius_model())
     ball_radius = _display_radius(radius, style)
-    label = atom.label.value
+    label = atom.id.value
     adp_type = AdpTypeEnum(atom.adp_type.value)
     scale = float(chi.ppf(style.adp_probability.value, 3))
     if (
@@ -306,7 +306,7 @@ def _atom_primitive(
             shape[1],
             shape[2],
             colour,
-            atom.label.value,
+            atom.id.value,
             asymmetric=asymmetric,
         )
     else:
@@ -314,11 +314,11 @@ def _atom_primitive(
             _vec3(centre),
             shape[1],
             colour,
-            atom.label.value,
+            atom.id.value,
             asymmetric=asymmetric,
         )
     return (
-        _SceneAtom(primitive, centre, element, colour, atom.label.value),
+        _SceneAtom(primitive, centre, element, colour, atom.id.value),
         substituted,
     )
 
@@ -341,7 +341,7 @@ def _wedge_atom(
     major_atom, _occ, major_element, major_colour, _radius, major_rot = max(
         rows, key=itemgetter(1)
     )
-    label = '/'.join(r[0].label.value for r in rows)
+    label = '/'.join(r[0].id.value for r in rows)
     shape, _ = _atom_shape(major_atom, ctx, major_rot)
     if shape[0] == 'ellipsoid':
         primitive = AdpEllipsoid(

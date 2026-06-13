@@ -51,7 +51,7 @@ structure.cell.length_a = 3.88
 
 # %%
 structure.atom_sites.create(
-    label='La',
+    id='La',
     type_symbol='La',
     fract_x=0,
     fract_y=0,
@@ -60,7 +60,7 @@ structure.atom_sites.create(
     occupancy=0.5,
 )
 structure.atom_sites.create(
-    label='Ba',
+    id='Ba',
     type_symbol='Ba',
     fract_x=0,
     fract_y=0,
@@ -69,7 +69,7 @@ structure.atom_sites.create(
     occupancy=0.5,
 )
 structure.atom_sites.create(
-    label='Co',
+    id='Co',
     type_symbol='Co',
     fract_x=0.5,
     fract_y=0.5,
@@ -77,7 +77,7 @@ structure.atom_sites.create(
     adp_iso=0.5,
 )
 structure.atom_sites.create(
-    label='O',
+    id='O',
     type_symbol='O',
     fract_x=0,
     fract_y=0.5,
@@ -177,11 +177,11 @@ project.display.pattern(expt_name='hrpt')
 # Therefore, it is necessary to constrain them to be equal. First we
 # define aliases and then use them to create a constraint.
 project.analysis.aliases.create(
-    label='biso_La',
+    id='biso_La',
     param=project.structures['lbco'].atom_sites['La'].adp_iso,
 )
 project.analysis.aliases.create(
-    label='biso_Ba',
+    id='biso_Ba',
     param=project.structures['lbco'].atom_sites['Ba'].adp_iso,
 )
 project.analysis.constraints.create(expression='biso_Ba = biso_La')

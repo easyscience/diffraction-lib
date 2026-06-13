@@ -45,7 +45,7 @@ structure.cell.length_c = 14.1
 
 # %%
 structure.atom_sites.create(
-    label='Zn',
+    id='Zn',
     type_symbol='Zn',
     fract_x=0,
     fract_y=0,
@@ -53,7 +53,7 @@ structure.atom_sites.create(
     adp_iso=0.5,
 )
 structure.atom_sites.create(
-    label='Cu',
+    id='Cu',
     type_symbol='Cu',
     fract_x=0.5,
     fract_y=0,
@@ -61,7 +61,7 @@ structure.atom_sites.create(
     adp_iso=0.5,
 )
 structure.atom_sites.create(
-    label='O',
+    id='O',
     type_symbol='O',
     fract_x=0.21,
     fract_y=-0.21,
@@ -69,7 +69,7 @@ structure.atom_sites.create(
     adp_iso=0.5,
 )
 structure.atom_sites.create(
-    label='Cl',
+    id='Cl',
     type_symbol='Cl',
     fract_x=0,
     fract_y=0,
@@ -77,7 +77,7 @@ structure.atom_sites.create(
     adp_iso=0.5,
 )
 structure.atom_sites.create(
-    label='H',
+    id='H',
     type_symbol='2H',
     fract_x=0.13,
     fract_y=-0.13,

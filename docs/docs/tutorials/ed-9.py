@@ -43,7 +43,7 @@ structure_1.cell.length_a = 3.8909
 
 # %%
 structure_1.atom_sites.create(
-    label='La',
+    id='La',
     type_symbol='La',
     fract_x=0,
     fract_y=0,
@@ -52,7 +52,7 @@ structure_1.atom_sites.create(
     occupancy=0.5,
 )
 structure_1.atom_sites.create(
-    label='Ba',
+    id='Ba',
     type_symbol='Ba',
     fract_x=0,
     fract_y=0,
@@ -61,7 +61,7 @@ structure_1.atom_sites.create(
     occupancy=0.5,
 )
 structure_1.atom_sites.create(
-    label='Co',
+    id='Co',
     type_symbol='Co',
     fract_x=0.5,
     fract_y=0.5,
@@ -69,7 +69,7 @@ structure_1.atom_sites.create(
     adp_iso=0.2567,
 )
 structure_1.atom_sites.create(
-    label='O',
+    id='O',
     type_symbol='O',
     fract_x=0,
     fract_y=0.5,
@@ -101,7 +101,7 @@ structure_2.cell.length_a = 5.43146
 
 # %%
 structure_2.atom_sites.create(
-    label='Si',
+    id='Si',
     type_symbol='Si',
     fract_x=0.0,
     fract_y=0.0,

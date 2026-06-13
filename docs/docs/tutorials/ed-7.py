@@ -45,7 +45,7 @@ structure.cell.length_a = 5.431
 
 # %%
 structure.atom_sites.create(
-    label='Si',
+    id='Si',
     type_symbol='Si',
     fract_x=0.125,
     fract_y=0.125,

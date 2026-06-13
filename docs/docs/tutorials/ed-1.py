@@ -86,11 +86,11 @@ project.display.fit.correlations()
 # Therefore, it is necessary to constrain them to be equal. First we
 # define aliases and then use them to create a constraint.
 project.analysis.aliases.create(
-    label='biso_La',
+    id='biso_La',
     param=project.structures['lbco'].atom_sites['La'].adp_iso,
 )
 project.analysis.aliases.create(
-    label='biso_Ba',
+    id='biso_Ba',
     param=project.structures['lbco'].atom_sites['Ba'].adp_iso,
 )
 project.analysis.constraints.create(expression='biso_Ba = biso_La')

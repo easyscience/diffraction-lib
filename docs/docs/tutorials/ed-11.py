@@ -42,7 +42,7 @@ structure.space_group.name_h_m.value = 'F d -3 m'
 structure.space_group.it_coordinate_system_code = '1'
 structure.cell.length_a = 5.43146
 structure.atom_sites.create(
-    label='Si',
+    id='Si',
     type_symbol='Si',
     fract_x=0,
     fract_y=0,

@@ -272,7 +272,7 @@ def _adp_family_for_atom_site(item: object) -> str:
 def _adp_family_for_atom_site_aniso(collection: object, item: object) -> str:
     """Return the ADP tag family for an atom-site-aniso row."""
     structure = collection._parent
-    atom_site = structure.atom_sites[item.label.value]
+    atom_site = structure.atom_sites[item.id.value]
     return _adp_family_from_type(atom_site.adp_type.value)
 
 

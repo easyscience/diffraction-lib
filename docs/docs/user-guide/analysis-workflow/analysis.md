@@ -349,21 +349,21 @@ An example of setting aliases for parameters in a structure:
 ```python
 # Set aliases for the atomic displacement parameters
 project.analysis.aliases.create(
-    label='biso_La',
+    id='biso_La',
     param=project.structures['lbco'].atom_sites['La'].adp_iso,
 )
 project.analysis.aliases.create(
-    label='biso_Ba',
+    id='biso_Ba',
     param=project.structures['lbco'].atom_sites['Ba'].adp_iso,
 )
 
 # Set aliases for the occupancies of the atom sites
 project.analysis.aliases.create(
-    label='occ_La',
+    id='occ_La',
     param=project.structures['lbco'].atom_sites['La'].occupancy,
 )
 project.analysis.aliases.create(
-    label='occ_Ba',
+    id='occ_Ba',
     param=project.structures['lbco'].atom_sites['Ba'].occupancy,
 )
 ```

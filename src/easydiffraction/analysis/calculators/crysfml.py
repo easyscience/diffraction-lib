@@ -286,7 +286,7 @@ class CrysfmlCalculator(CalculatorBase):
 
         for atom in structure.atom_sites:
             atom_site = {
-                '_label': atom.label.value,
+                '_label': atom.id.value,
                 '_type_symbol': _element_symbol(atom.type_symbol.value),
                 '_fract_x': atom.fract_x.value,
                 '_fract_y': atom.fract_y.value,
