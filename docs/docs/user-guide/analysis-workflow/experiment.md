@@ -64,7 +64,7 @@ example, if the CIF file contains a data block with the id `hrpt`,
 <pre>
 data_<span class="red"><b>hrpt</b></span>
 
-<span class="blue"><b>_expt_type</b>.beam_mode</span>  "constant wavelength"
+<span class="blue"><b>_experiment_type</b>.beam_mode</span>  "constant wavelength"
 ...
 </pre>
 </div>
@@ -404,29 +404,34 @@ Defined experiments 🔬
 ['hrpt']
 ```
 
-## Viewing an Experiment as CIF
+## Viewing an Experiment as EdSTAR
 
-To inspect an experiment in CIF format, use:
+To inspect an experiment in the project persistence format, use:
 
 ```python
-# Show experiment as CIF
+# Show experiment as EdSTAR text
 project.experiments['hrpt'].show_as_cif()
 ```
 
 Example output:
 
 ```
-Experiment 🔬 'hrpt' as cif
+Experiment 🔬 'hrpt' as EdSTAR
 ╒═════════════════════════════════════════════╕
 │ data_hrpt                                   │
 │                                             │
-│ _expt_type.beam_mode  "constant wavelength" │
-│ _expt_type.radiation_probe  neutron         │
-│ _expt_type.sample_form  powder              │
-│ _expt_type.scattering_type  bragg           │
+│ _edstar.schema_name EasyDiffraction         │
+│ _edstar.schema_version 1                    │
 │                                             │
-│ _instr.2theta_offset  0.6                   │
-│ _instr.wavelength  1.494                    │
+│ _experiment_type.beam_mode  "constant wavelength" │
+│ _experiment_type.radiation_probe  neutron   │
+│ _experiment_type.sample_form  powder        │
+│ _experiment_type.scattering_type  bragg     │
+│                                             │
+│ _calculator.type  cryspy                    │
+│                                             │
+│ _instrument.calib_twotheta_offset  0.6      │
+│ _instrument.setup_wavelength  1.494         │
 │                                             │
 │ _peak.broad_gauss_u  0.1                    │
 │ _peak.broad_gauss_v  -0.1                   │
@@ -435,28 +440,30 @@ Experiment 🔬 'hrpt' as cif
 │ _peak.broad_lorentz_y  0.1                  │
 │                                             │
 │ loop_                                       │
-│ _pd_phase_block.id                          │
-│ _pd_phase_block.scale                       │
+│ _linked_structure.structure_id              │
+│ _linked_structure.scale                     │
 │ lbco 10.0                                   │
 │                                             │
 │ loop_                                       │
-│ _pd_background.line_segment_X               │
-│ _pd_background.line_segment_intensity       │
-│ 10 170                                      │
-│ 30 170                                      │
-│ 50 170                                      │
-│ 110 170                                     │
-│ 165 170                                     │
+│ _background.id                              │
+│ _background.position                        │
+│ _background.intensity                       │
+│ 1 10 170                                    │
+│ 2 30 170                                    │
+│ 3 50 170                                    │
+│ 4 110 170                                   │
+│ 5 165 170                                   │
 │                                             │
 │ loop_                                       │
-│ _pd_meas.2theta_scan                        │
-│ _pd_meas.intensity_total                    │
-│ _pd_meas.intensity_total_su                 │
-│ 10.0 167.0 12.6                             │
-│ 10.05 157.0 12.5                            │
-│ 10.1 187.0 13.3                             │
-│ 10.15 197.0 14.0                            │
-│ 10.2 164.0 12.5                             │
+│ _data.id                                    │
+│ _data.two_theta                             │
+│ _data.intensity_meas                        │
+│ _data.intensity_meas_su                     │
+│ 1 10.0 167.0 12.6                           │
+│ 2 10.05 157.0 12.5                          │
+│ 3 10.1 187.0 13.3                           │
+│ 4 10.15 197.0 14.0                          │
+│ 5 10.2 164.0 12.5                           │
 │ ...                                         │
 │ 164.65 173.0 30.1                           │
 │ 164.7 187.0 27.9                            │
@@ -468,15 +475,17 @@ Experiment 🔬 'hrpt' as cif
 
 ## Saving an Experiment
 
-Saving the project, as described in the [Project](project.md) section, will 
-also save the experiment. Each experiment is saved as a separate CIF file in 
-the `experiments` subdirectory of the project directory. The project file 
-contains references to these files.
+Saving the project, as described in the [Project](project.md) section, will
+also save the experiment. Each experiment is saved as a separate
+`.edstar` file in the `experiments` subdirectory of the project
+directory. The project file contains references to these files.
 
-EasyDiffraction supports different types of experiments, and each experiment 
-is saved in a dedicated CIF file with experiment-specific parameters. 
+EasyDiffraction supports different types of experiments, and each
+experiment is saved in a dedicated EdSTAR file with experiment-specific
+parameters.
 
-Below are examples of how different experiments are saved in CIF format.
+Below are examples of how different experiments are saved in EdSTAR
+format.
 
 ### [pd-neut-cwl][3]{:.label-experiment}
 
@@ -489,13 +498,13 @@ experiment:
 <pre>
 data_<span class="red"><b>hrpt</b></span>
 
-<span class="blue"><b>_expt_type</b>.beam_mode</span>        "constant wavelength"
-<span class="blue"><b>_expt_type</b>.radiation_probe</span>  neutron
-<span class="blue"><b>_expt_type</b>.sample_form</span>      powder
-<span class="blue"><b>_expt_type</b>.scattering_type</span>  bragg
+<span class="blue"><b>_experiment_type</b>.beam_mode</span>        "constant wavelength"
+<span class="blue"><b>_experiment_type</b>.radiation_probe</span>  neutron
+<span class="blue"><b>_experiment_type</b>.sample_form</span>      powder
+<span class="blue"><b>_experiment_type</b>.scattering_type</span>  bragg
 
-<span class="blue"><b>_instr</b>.wavelength</span>    1.494
-<span class="blue"><b>_instr</b>.2theta_offset</span> 0.6225(4)
+<span class="blue"><b>_instrument</b>.setup_wavelength</span>       1.494
+<span class="blue"><b>_instrument</b>.calib_twotheta_offset</span> 0.6225(4)
 
 <span class="blue"><b>_peak</b>.broad_gauss_u</span>    0.0834
 <span class="blue"><b>_peak</b>.broad_gauss_v</span>   -0.1168
@@ -504,35 +513,36 @@ data_<span class="red"><b>hrpt</b></span>
 <span class="blue"><b>_peak</b>.broad_lorentz_y</span>  0.0797
 
 loop_
-<span class="green"><b>_pd_phase_block</b>.id</span>
-<span class="green"><b>_pd_phase_block</b>.scale</span>
+<span class="green"><b>_linked_structure</b>.structure_id</span>
+<span class="green"><b>_linked_structure</b>.scale</span>
 lbco 9.0976(3)
 
 loop_
-<span class="green"><b>_pd_background</b>.line_segment_X</span>
-<span class="green"><b>_pd_background</b>.line_segment_intensity</span>
-<span class="green"><b>_pd_background</b>.X_coordinate</span>
- 10  174.3  2theta
- 20  159.8  2theta
- 30  167.9  2theta
- 50  166.1  2theta
- 70  172.3  2theta
- 90  171.1  2theta
-110  172.4  2theta
-130  182.5  2theta
-150  173.0  2theta
-165  171.1  2theta
+<span class="green"><b>_background</b>.id</span>
+<span class="green"><b>_background</b>.position</span>
+<span class="green"><b>_background</b>.intensity</span>
+ 1   10  174.3
+ 2   20  159.8
+ 3   30  167.9
+ 4   50  166.1
+ 5   70  172.3
+ 6   90  171.1
+ 7  110  172.4
+ 8  130  182.5
+ 9  150  173.0
+10  165  171.1
 
 loop_
-<span class="green"><b>_pd_meas</b>.2theta_scan</span>
-<span class="green"><b>_pd_meas</b>.intensity_total</span>
-<span class="green"><b>_pd_meas</b>.intensity_total_su</span>
- 10.00  167  12.6
- 10.05  157  12.5
- 10.10  187  13.3
- 10.15  197  14.0
- 10.20  164  12.5
- 10.25  171  13.0
+<span class="green"><b>_data</b>.id</span>
+<span class="green"><b>_data</b>.two_theta</span>
+<span class="green"><b>_data</b>.intensity_meas</span>
+<span class="green"><b>_data</b>.intensity_meas_su</span>
+1   10.00  167  12.6
+2   10.05  157  12.5
+3   10.10  187  13.3
+4   10.15  197  14.0
+5   10.20  164  12.5
+6   10.25  171  13.0
 ...
 164.60  153  20.7
 164.65  173  30.1
@@ -555,57 +565,61 @@ experiment:
 <pre>
 data_<span class="red"><b>wish</b></span>
 
-<span class="blue"><b>_diffrn_radiation</b>.probe</span> neutron
+<span class="blue"><b>_experiment_type</b>.beam_mode</span>        "time-of-flight"
+<span class="blue"><b>_experiment_type</b>.radiation_probe</span>  neutron
+<span class="blue"><b>_experiment_type</b>.sample_form</span>      powder
+<span class="blue"><b>_experiment_type</b>.scattering_type</span>  bragg
 
-<span class="blue"><b>_instr</b>.2theta_bank</span> 152.827
+<span class="blue"><b>_instrument</b>.setup_twotheta_bank</span> 152.827
 
-<span class="blue"><b>_instr</b>.d_to_tof_linear</span> 20773.1(3)
-<span class="blue"><b>_instr</b>.d_to_tof_quad</span>    -1.08308
-<span class="blue"><b>_instr</b>.d_to_tof_offset</span>   -13.7(5)
+<span class="blue"><b>_instrument</b>.calib_d_to_tof_linear</span>    20773.1(3)
+<span class="blue"><b>_instrument</b>.calib_d_to_tof_quadratic</span> -1.08308
+<span class="blue"><b>_instrument</b>.calib_d_to_tof_offset</span>    -13.7(5)
 
-<span class="blue"><b>_peak</b>.rise_alpha_0</span> -0.009(1)
-<span class="blue"><b>_peak</b>.rise_alpha_1</span>  0.109(2)
-<span class="blue"><b>_peak</b>.decay_beta_0</span>  0.00670(3)
-<span class="blue"><b>_peak</b>.decay_beta_1</span>  0.0100(3)
-<span class="blue"><b>_peak</b>.gauss_sigma_0</span> 0
-<span class="blue"><b>_peak</b>.gauss_sigma_1</span> 0
-<span class="blue"><b>_peak</b>.gauss_sigma_2</span> 15.7(8)
+<span class="blue"><b>_peak</b>.exp_rise_alpha_0</span>    -0.009(1)
+<span class="blue"><b>_peak</b>.exp_rise_alpha_1</span>     0.109(2)
+<span class="blue"><b>_peak</b>.exp_decay_beta_0</span>     0.00670(3)
+<span class="blue"><b>_peak</b>.exp_decay_beta_1</span>     0.0100(3)
+<span class="blue"><b>_peak</b>.broad_gauss_sigma_0</span> 0
+<span class="blue"><b>_peak</b>.broad_gauss_sigma_1</span> 0
+<span class="blue"><b>_peak</b>.broad_gauss_sigma_2</span> 15.7(8)
 
 loop_
-<span class="green"><b>_pd_phase_block</b>.id</span>
-<span class="green"><b>_pd_phase_block</b>.scale</span>
+<span class="green"><b>_linked_structure</b>.structure_id</span>
+<span class="green"><b>_linked_structure</b>.scale</span>
 ncaf 1.093(5)
 
 loop_
-<span class="green"><b>_pd_background</b>.line_segment_X</span>
-<span class="green"><b>_pd_background</b>.line_segment_intensity</span>
-<span class="green"><b>_pd_background</b>.X_coordinate</span>
-  9162.3  465(38) time-of-flight
- 11136.8  593(30) time-of-flight
- 14906.5  546(18) time-of-flight
- 17352.2  496(14) time-of-flight
- 20179.5  452(10) time-of-flight
- 22176.0  468(12) time-of-flight
- 24644.7  380(6)  time-of-flight
- 28257.2  378(4)  time-of-flight
- 34034.4  328(4)  time-of-flight
- 41214.6  323(3)  time-of-flight
- 49830.9  273(3)  time-of-flight
- 58204.9  260(4)  time-of-flight
- 70186.9  262(5)  time-of-flight
- 82103.2  268(5)  time-of-flight
-102712.0  262(15) time-of-flight
+<span class="green"><b>_background</b>.id</span>
+<span class="green"><b>_background</b>.position</span>
+<span class="green"><b>_background</b>.intensity</span>
+ 1    9162.3  465(38)
+ 2   11136.8  593(30)
+ 3   14906.5  546(18)
+ 4   17352.2  496(14)
+ 5   20179.5  452(10)
+ 6   22176.0  468(12)
+ 7   24644.7  380(6)
+ 8   28257.2  378(4)
+ 9   34034.4  328(4)
+10   41214.6  323(3)
+11   49830.9  273(3)
+12   58204.9  260(4)
+13   70186.9  262(5)
+14   82103.2  268(5)
+15  102712.0  262(15)
 
 loop_
-<span class="green"><b>_pd_meas</b>.time_of_flight</span>
-<span class="green"><b>_pd_meas</b>.intensity_total</span>
-<span class="green"><b>_pd_meas</b>.intensity_total_su</span>
-  9001.0  616.523  124.564
-  9006.8  578.769  123.141
-  9012.6  574.184  120.507
-  9018.5  507.739  111.300
-  9024.3  404.672  101.616
-  9030.1  469.244  107.991
+<span class="green"><b>_data</b>.id</span>
+<span class="green"><b>_data</b>.time_of_flight</span>
+<span class="green"><b>_data</b>.intensity_meas</span>
+<span class="green"><b>_data</b>.intensity_meas_su</span>
+1    9001.0  616.523  124.564
+2    9006.8  578.769  123.141
+3    9012.6  574.184  120.507
+4    9018.5  507.739  111.300
+5    9024.3  404.672  101.616
+6    9030.1  469.244  107.991
 ...
 103085.0  275.072   60.978
 103151.4  214.187   55.675
@@ -626,12 +640,16 @@ This example represents a single-crystal neutron diffraction experiment:
 <pre>
 data_<span class="red"><b>heidi</b></span>
 
-<span class="blue"><b>_diffrn_radiation</b>.probe</span> neutron
-<span class="blue"><b>_instr</b>.wavelength</span>       0.793
+<span class="blue"><b>_experiment_type</b>.beam_mode</span>        "constant wavelength"
+<span class="blue"><b>_experiment_type</b>.radiation_probe</span>  neutron
+<span class="blue"><b>_experiment_type</b>.sample_form</span>      "single crystal"
+<span class="blue"><b>_experiment_type</b>.scattering_type</span>  bragg
+
+<span class="blue"><b>_instrument</b>.setup_wavelength</span>       0.793
 
 loop_
-<span class="green"><b>_exptl_crystal</b>.id</span>
-<span class="green"><b>_exptl_crystal</b>.scale</span>
+<span class="green"><b>_linked_structure</b>.structure_id</span>
+<span class="green"><b>_linked_structure</b>.scale</span>
 tbti 2.92(6)
 
 loop_
