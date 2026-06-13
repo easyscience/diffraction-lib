@@ -1214,7 +1214,8 @@ implementation should add a small documentation-url resolver that:
 - uses the versioned documentation base published by `mike`, for example
   `https://easyscience.github.io/diffraction-lib/{version}/`;
 - maps an EdSTAR name to the parameter-reference route, for example
-  `_cell.length_a` -> `user-guide/parameters/structure/cell/#cell-length-a`;
+  `_cell.length_a` ->
+  `user-guide/parameters/structure/cell/#cell-length-a`;
 - falls back to a descriptor-specific override only for rare cases where
   a page or anchor cannot be derived from the EdSTAR name.
 
