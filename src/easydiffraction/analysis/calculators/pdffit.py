@@ -42,10 +42,10 @@ def _normalize_b_family_adp_to_u(structure: Structure) -> list[tuple]:
 
     diffpy reads a single isotropic/anisotropic ADP column, so a
     structure mixing ``Biso``/``Uiso`` (or ``Bani``/``Uani``) atoms must
-    be normalized to one convention. B-family values are divided by
-    8π² so every row can be written under the U tags. Returns saved
-    state for restoration. ``beta`` atoms keep their stored equivalent
-    values unchanged.
+    be normalized to one convention. B-family values are divided by 8π²
+    so every row can be written under the U tags. Returns saved state
+    for restoration. ``beta`` atoms keep their stored equivalent values
+    unchanged.
     """
     saved: list[tuple] = []
     for atom in structure.atom_sites:
