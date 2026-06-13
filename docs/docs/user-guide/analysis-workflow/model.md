@@ -156,7 +156,7 @@ Structure 🧩 'lbco' as EdSTAR
 │ _edstar.schema_name EasyDiffraction       │
 │ _edstar.schema_version 1                  │
 │                                           │
-│ _space_group.it_coordinate_system_code  1 │
+│ _space_group.coord_system_code  1          │
 │ _space_group.name_h_m  "P m -3 m"         │
 │                                           │
 │ _cell.angle_alpha  90                     │
@@ -267,7 +267,7 @@ Below is an example of the saved EdSTAR file for the `lbco` structure:
 data_<span class="red"><b>lbco</b></span>
 
 <span class="blue"><b>_space_group</b>.name_h_m</span>                    "P m -3 m"
-<span class="blue"><b>_space_group</b>.it_coordinate_system_code</span>  1
+<span class="blue"><b>_space_group</b>.coord_system_code</span>  1
 
 <span class="blue"><b>_cell</b>.length_a</span>      3.8909
 <span class="blue"><b>_cell</b>.length_b</span>      3.8909

@@ -4011,306 +4011,6 @@
       "unique_name": "preferred_orientation.Si.structure_id"
     },
     {
-      "category_code": "refln",
-      "category_entry_name": "0",
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_refln.d_spacing"
-      ],
-      "descriptor_class": "NumericDescriptor",
-      "descriptor_name": "d_spacing",
-      "descriptor_path": "experiment.bragg_pd_tof.refln[].d_spacing",
-      "docs_anchor": "refln-d-spacing",
-      "docs_page": "refln",
-      "import_names": [
-        "_refln.d_spacing"
-      ],
-      "iucr_name": "_refln.d_spacing",
-      "owner_class": "PowderTofRefln",
-      "project_name": "_refln.d_spacing",
-      "read_names": [
-        "_refln.d_spacing"
-      ],
-      "unique_name": "refln.0.d_spacing"
-    },
-    {
-      "category_code": "refln",
-      "category_entry_name": "0",
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_refln.f_calc"
-      ],
-      "descriptor_class": "NumericDescriptor",
-      "descriptor_name": "f_calc",
-      "descriptor_path": "experiment.bragg_pd_tof.refln[].f_calc",
-      "docs_anchor": "refln-f-calc",
-      "docs_page": "refln",
-      "import_names": [
-        "_refln.f_calc"
-      ],
-      "iucr_name": "_refln.f_calc",
-      "owner_class": "PowderTofRefln",
-      "project_name": "_refln.f_calc",
-      "read_names": [
-        "_refln.f_calc"
-      ],
-      "unique_name": "refln.0.f_calc"
-    },
-    {
-      "category_code": "refln",
-      "category_entry_name": "0",
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_refln.f_squared_calc"
-      ],
-      "descriptor_class": "NumericDescriptor",
-      "descriptor_name": "f_squared_calc",
-      "descriptor_path": "experiment.bragg_pd_tof.refln[].f_squared_calc",
-      "docs_anchor": "refln-f-squared-calc",
-      "docs_page": "refln",
-      "import_names": [
-        "_refln.f_squared_calc"
-      ],
-      "iucr_name": "_refln.f_squared_calc",
-      "owner_class": "PowderTofRefln",
-      "project_name": "_refln.f_squared_calc",
-      "read_names": [
-        "_refln.f_squared_calc"
-      ],
-      "unique_name": "refln.0.f_squared_calc"
-    },
-    {
-      "category_code": "refln",
-      "category_entry_name": "0",
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_refln.id"
-      ],
-      "descriptor_class": "StringDescriptor",
-      "descriptor_name": "id",
-      "descriptor_path": "experiment.bragg_pd_tof.refln[].id",
-      "docs_anchor": "refln-id",
-      "docs_page": "refln",
-      "import_names": [
-        "_refln.id"
-      ],
-      "iucr_name": "_refln.id",
-      "owner_class": "PowderTofRefln",
-      "project_name": "_refln.id",
-      "read_names": [
-        "_refln.id"
-      ],
-      "unique_name": "refln.0.id"
-    },
-    {
-      "category_code": "refln",
-      "category_entry_name": "0",
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_refln.index_h"
-      ],
-      "descriptor_class": "NumericDescriptor",
-      "descriptor_name": "index_h",
-      "descriptor_path": "experiment.bragg_pd_tof.refln[].index_h",
-      "docs_anchor": "refln-index-h",
-      "docs_page": "refln",
-      "import_names": [
-        "_refln.index_h"
-      ],
-      "iucr_name": "_refln.index_h",
-      "owner_class": "PowderTofRefln",
-      "project_name": "_refln.index_h",
-      "read_names": [
-        "_refln.index_h"
-      ],
-      "unique_name": "refln.0.index_h"
-    },
-    {
-      "category_code": "refln",
-      "category_entry_name": "0",
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_refln.index_k"
-      ],
-      "descriptor_class": "NumericDescriptor",
-      "descriptor_name": "index_k",
-      "descriptor_path": "experiment.bragg_pd_tof.refln[].index_k",
-      "docs_anchor": "refln-index-k",
-      "docs_page": "refln",
-      "import_names": [
-        "_refln.index_k"
-      ],
-      "iucr_name": "_refln.index_k",
-      "owner_class": "PowderTofRefln",
-      "project_name": "_refln.index_k",
-      "read_names": [
-        "_refln.index_k"
-      ],
-      "unique_name": "refln.0.index_k"
-    },
-    {
-      "category_code": "refln",
-      "category_entry_name": "0",
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_refln.index_l"
-      ],
-      "descriptor_class": "NumericDescriptor",
-      "descriptor_name": "index_l",
-      "descriptor_path": "experiment.bragg_pd_tof.refln[].index_l",
-      "docs_anchor": "refln-index-l",
-      "docs_page": "refln",
-      "import_names": [
-        "_refln.index_l"
-      ],
-      "iucr_name": "_refln.index_l",
-      "owner_class": "PowderTofRefln",
-      "project_name": "_refln.index_l",
-      "read_names": [
-        "_refln.index_l"
-      ],
-      "unique_name": "refln.0.index_l"
-    },
-    {
-      "category_code": "refln",
-      "category_entry_name": "0",
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_refln.intensity_calc"
-      ],
-      "descriptor_class": "NumericDescriptor",
-      "descriptor_name": "intensity_calc",
-      "descriptor_path": "experiment.bragg_pd_tof.refln[].intensity_calc",
-      "docs_anchor": "refln-intensity-calc",
-      "docs_page": "refln",
-      "import_names": [
-        "_refln.intensity_calc"
-      ],
-      "iucr_name": "_refln.intensity_calc",
-      "owner_class": "PowderTofRefln",
-      "project_name": "_refln.intensity_calc",
-      "read_names": [
-        "_refln.intensity_calc"
-      ],
-      "unique_name": "refln.0.intensity_calc"
-    },
-    {
-      "category_code": "refln",
-      "category_entry_name": "0",
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_refln.intensity_meas"
-      ],
-      "descriptor_class": "NumericDescriptor",
-      "descriptor_name": "intensity_meas",
-      "descriptor_path": "experiment.bragg_pd_tof.refln[].intensity_meas",
-      "docs_anchor": "refln-intensity-meas",
-      "docs_page": "refln",
-      "import_names": [
-        "_refln.intensity_meas"
-      ],
-      "iucr_name": "_refln.intensity_meas",
-      "owner_class": "PowderTofRefln",
-      "project_name": "_refln.intensity_meas",
-      "read_names": [
-        "_refln.intensity_meas"
-      ],
-      "unique_name": "refln.0.intensity_meas"
-    },
-    {
-      "category_code": "refln",
-      "category_entry_name": "0",
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_refln.intensity_meas_su"
-      ],
-      "descriptor_class": "NumericDescriptor",
-      "descriptor_name": "intensity_meas_su",
-      "descriptor_path": "experiment.bragg_pd_tof.refln[].intensity_meas_su",
-      "docs_anchor": "refln-intensity-meas-su",
-      "docs_page": "refln",
-      "import_names": [
-        "_refln.intensity_meas_su"
-      ],
-      "iucr_name": "_refln.intensity_meas_su",
-      "owner_class": "PowderTofRefln",
-      "project_name": "_refln.intensity_meas_su",
-      "read_names": [
-        "_refln.intensity_meas_su"
-      ],
-      "unique_name": "refln.0.intensity_meas_su"
-    },
-    {
-      "category_code": "refln",
-      "category_entry_name": "0",
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_refln.sin_theta_over_lambda"
-      ],
-      "descriptor_class": "NumericDescriptor",
-      "descriptor_name": "sin_theta_over_lambda",
-      "descriptor_path": "experiment.bragg_pd_tof.refln[].sin_theta_over_lambda",
-      "docs_anchor": "refln-sin-theta-over-lambda",
-      "docs_page": "refln",
-      "import_names": [
-        "_refln.sin_theta_over_lambda"
-      ],
-      "iucr_name": "_refln.sin_theta_over_lambda",
-      "owner_class": "PowderTofRefln",
-      "project_name": "_refln.sin_theta_over_lambda",
-      "read_names": [
-        "_refln.sin_theta_over_lambda"
-      ],
-      "unique_name": "refln.0.sin_theta_over_lambda"
-    },
-    {
-      "category_code": "refln",
-      "category_entry_name": "0",
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_refln.structure_id"
-      ],
-      "descriptor_class": "StringDescriptor",
-      "descriptor_name": "structure_id",
-      "descriptor_path": "experiment.bragg_pd_tof.refln[].structure_id",
-      "docs_anchor": "refln-structure-id",
-      "docs_page": "refln",
-      "import_names": [
-        "_refln.phase_id"
-      ],
-      "iucr_name": "_pd_refln.phase_id",
-      "owner_class": "PowderTofRefln",
-      "project_name": "_refln.structure_id",
-      "read_names": [
-        "_refln.structure_id",
-        "_refln.phase_id"
-      ],
-      "unique_name": "refln.0.structure_id"
-    },
-    {
-      "category_code": "refln",
-      "category_entry_name": "0",
-      "context": "experiment.bragg_pd_tof",
-      "current_cif_names": [
-        "_refln.time_of_flight"
-      ],
-      "descriptor_class": "NumericDescriptor",
-      "descriptor_name": "time_of_flight",
-      "descriptor_path": "experiment.bragg_pd_tof.refln[].time_of_flight",
-      "docs_anchor": "refln-time-of-flight",
-      "docs_page": "refln",
-      "import_names": [
-        "_refln.time_of_flight"
-      ],
-      "iucr_name": "_refln.time_of_flight",
-      "owner_class": "PowderTofRefln",
-      "project_name": "_refln.time_of_flight",
-      "read_names": [
-        "_refln.time_of_flight"
-      ],
-      "unique_name": "refln.0.time_of_flight"
-    },
-    {
       "category_code": "calculator",
       "category_entry_name": null,
       "context": "experiment.bragg_sc_cwl",
@@ -15314,12 +15014,12 @@
       "category_entry_name": null,
       "context": "factory.SpaceGroupFactory.default",
       "current_cif_names": [
-        "_space_group.it_coordinate_system_code"
+        "_space_group.coord_system_code"
       ],
       "descriptor_class": "StringDescriptor",
-      "descriptor_name": "it_coordinate_system_code",
-      "descriptor_path": "factory.SpaceGroupFactory.default.it_coordinate_system_code",
-      "docs_anchor": "space-group-it-coordinate-system-code",
+      "descriptor_name": "coord_system_code",
+      "descriptor_path": "factory.SpaceGroupFactory.default.coord_system_code",
+      "docs_anchor": "space-group-coord-system-code",
       "docs_page": "space_group",
       "import_names": [
         "_space_group.IT_coordinate_system_code",
@@ -15329,15 +15029,15 @@
       ],
       "iucr_name": "_space_group.IT_coordinate_system_code",
       "owner_class": "SpaceGroup",
-      "project_name": "_space_group.it_coordinate_system_code",
+      "project_name": "_space_group.coord_system_code",
       "read_names": [
-        "_space_group.it_coordinate_system_code",
+        "_space_group.coord_system_code",
         "_space_group.IT_coordinate_system_code",
         "_space_group_IT_coordinate_system_code",
         "_symmetry.IT_coordinate_system_code",
         "_symmetry_IT_coordinate_system_code"
       ],
-      "unique_name": "space_group.it_coordinate_system_code"
+      "unique_name": "space_group.coord_system_code"
     },
     {
       "category_code": "space_group",
@@ -17031,12 +16731,12 @@
       "category_entry_name": null,
       "context": "structure",
       "current_cif_names": [
-        "_space_group.it_coordinate_system_code"
+        "_space_group.coord_system_code"
       ],
       "descriptor_class": "StringDescriptor",
-      "descriptor_name": "it_coordinate_system_code",
-      "descriptor_path": "structure.space_group.it_coordinate_system_code",
-      "docs_anchor": "space-group-it-coordinate-system-code",
+      "descriptor_name": "coord_system_code",
+      "descriptor_path": "structure.space_group.coord_system_code",
+      "docs_anchor": "space-group-coord-system-code",
       "docs_page": "space_group",
       "import_names": [
         "_space_group.IT_coordinate_system_code",
@@ -17046,15 +16746,15 @@
       ],
       "iucr_name": "_space_group.IT_coordinate_system_code",
       "owner_class": "SpaceGroup",
-      "project_name": "_space_group.it_coordinate_system_code",
+      "project_name": "_space_group.coord_system_code",
       "read_names": [
-        "_space_group.it_coordinate_system_code",
+        "_space_group.coord_system_code",
         "_space_group.IT_coordinate_system_code",
         "_space_group_IT_coordinate_system_code",
         "_symmetry.IT_coordinate_system_code",
         "_symmetry_IT_coordinate_system_code"
       ],
-      "unique_name": "inventory_structure.space_group.it_coordinate_system_code"
+      "unique_name": "inventory_structure.space_group.coord_system_code"
     },
     {
       "category_code": "space_group",

@@ -161,7 +161,7 @@ fallback option if numeric edge cases appear — see _Alternatives_.
 
 **Key normalisation.** `SpaceGroup` represents a group with no
 coordinate-system code as the empty string `''` (its
-`_it_coordinate_system_code_allowed_values` returns `codes or ['']`),
+`_coord_system_code_allowed_values` returns `codes or ['']`),
 but the bundled table stores those groups under a `None` code — the
 triclinic groups are `(1, None)` (P1, Wyckoff `a`, multiplicity 1) and
 `(2, None)` (P-1), and there are no empty-string keys at all. Detection
@@ -201,7 +201,7 @@ group the letter changes in three ways:
   edit is covered.
 - **User edits the space group or setting.** A change to
   `structure.space_group.name_h_m` or
-  `structure.space_group.it_coordinate_system_code` invalidates every
+  `structure.space_group.coord_system_code` invalidates every
   atom site's Wyckoff record even when coordinates are unchanged. For a
   supported new key, all sites re-detect from their current coordinates
   and refresh letter, multiplicity, and selected representative. For an

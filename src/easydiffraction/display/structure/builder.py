@@ -502,7 +502,7 @@ def build_scene(
     cell = structure.cell
     matrix = ecr.orthogonalization_matrix(*_cell_lengths_angles(cell))
     sg = structure.space_group
-    ops = ecr.symmetry_operators(sg.name_h_m.value, sg.it_coordinate_system_code.value)
+    ops = ecr.symmetry_operators(sg.name_h_m.value, sg.coord_system_code.value)
     sites = list(structure.atom_sites)
 
     ctx = _RenderContext(

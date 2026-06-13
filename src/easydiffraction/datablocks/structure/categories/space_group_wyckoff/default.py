@@ -208,7 +208,7 @@ class SpaceGroupWyckoffCollection(CategoryCollection):
             self._adopt_items([])
             return
         name_hm = structure.space_group.name_h_m.value
-        coord_code = structure.space_group.it_coordinate_system_code.value
+        coord_code = structure.space_group.coord_system_code.value
         positions = ecr.space_group_wyckoff_table(name_hm, coord_code)
         if not positions:
             self._adopt_items([])

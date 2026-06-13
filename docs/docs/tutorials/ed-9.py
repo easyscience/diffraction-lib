@@ -30,7 +30,7 @@ structure_1 = StructureFactory.from_scratch(name='lbco')
 
 # %%
 structure_1.space_group.name_h_m = 'P m -3 m'
-structure_1.space_group.it_coordinate_system_code = '1'
+structure_1.space_group.coord_system_code = '1'
 
 # %% [markdown]
 # #### Set Unit Cell
@@ -88,7 +88,7 @@ structure_2 = StructureFactory.from_scratch(name='si')
 
 # %%
 structure_2.space_group.name_h_m = 'F d -3 m'
-structure_2.space_group.it_coordinate_system_code = '2'
+structure_2.space_group.coord_system_code = '2'
 
 # %% [markdown]
 # #### Set Unit Cell

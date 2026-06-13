@@ -31,7 +31,7 @@ from easydiffraction import extract_metadata
 ferrite = StructureFactory.from_scratch(name='ferrite')
 
 ferrite.space_group.name_h_m = 'I m -3 m'
-ferrite.space_group.it_coordinate_system_code = '1'
+ferrite.space_group.coord_system_code = '1'
 
 ferrite.cell.length_a = 2.886
 
@@ -52,7 +52,7 @@ ferrite.atom_sites.create(
 austenite = StructureFactory.from_scratch(name='austenite')
 
 austenite.space_group.name_h_m = 'F m -3 m'
-austenite.space_group.it_coordinate_system_code = '1'
+austenite.space_group.coord_system_code = '1'
 
 austenite.cell.length_a = 3.6468
 

@@ -468,7 +468,7 @@ project_1.structures.create(name='si')
 
 # %%
 project_1.structures['si'].space_group.name_h_m = 'F d -3 m'
-project_1.structures['si'].space_group.it_coordinate_system_code = '1'
+project_1.structures['si'].space_group.coord_system_code = '1'
 
 # %% [markdown]
 # #### Set Unit Cell
@@ -988,7 +988,7 @@ project_2.structures.create(name='lbco')
 
 # %% tags=["solution", "hide-input"]
 project_2.structures['lbco'].space_group.name_h_m = 'P m -3 m'
-project_2.structures['lbco'].space_group.it_coordinate_system_code = '1'
+project_2.structures['lbco'].space_group.coord_system_code = '1'
 
 # %% [markdown]
 # #### Exercise 3.3: Set Unit Cell
@@ -1398,7 +1398,7 @@ project_2.display.pattern(expt_name='sim_lbco', x='d_spacing', x_min=1, x_max=1.
 # Set Space Group
 project_2.structures.create(name='si')
 project_2.structures['si'].space_group.name_h_m = 'F d -3 m'
-project_2.structures['si'].space_group.it_coordinate_system_code = '2'
+project_2.structures['si'].space_group.coord_system_code = '2'
 
 # Set Lattice Parameters
 project_2.structures['si'].cell.length_a = 5.43

@@ -39,7 +39,7 @@ project.structures.create(name='si')
 # %%
 structure = project.structures['si']
 structure.space_group.name_h_m.value = 'F d -3 m'
-structure.space_group.it_coordinate_system_code = '1'
+structure.space_group.coord_system_code = '1'
 structure.cell.length_a = 5.43146
 structure.atom_sites.create(
     id='Si',

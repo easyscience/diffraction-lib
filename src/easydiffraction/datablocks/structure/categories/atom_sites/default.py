@@ -263,7 +263,7 @@ class AtomSite(CategoryItem):
             return []
         positions = ecr.space_group_wyckoff_table(
             space_group.name_h_m.value,
-            space_group.it_coordinate_system_code.value,
+            space_group.coord_system_code.value,
         )
         if positions is None:
             return []
@@ -898,7 +898,7 @@ class AtomSites(CategoryCollection):
         """
         structure = self._parent
         name_hm = structure.space_group.name_h_m.value
-        coord_code = structure.space_group.it_coordinate_system_code.value
+        coord_code = structure.space_group.coord_system_code.value
         supported = ecr.space_group_wyckoff_table(name_hm, coord_code) is not None
         for atom in self._items:
             if atom._wyckoff_letter_needs_validation:
@@ -1046,7 +1046,7 @@ class AtomSites(CategoryCollection):
         structure = self._parent
         aniso_types = {AdpTypeEnum.BANI.value, AdpTypeEnum.UANI.value, AdpTypeEnum.BETA.value}
         space_group_name = structure.space_group.name_h_m.value
-        space_group_coord_code = structure.space_group.it_coordinate_system_code.value
+        space_group_coord_code = structure.space_group.coord_system_code.value
         aniso_collection = structure.atom_site_aniso
 
         for atom in self._items:

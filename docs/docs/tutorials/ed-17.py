@@ -48,7 +48,7 @@ struct = project.structures['cosio']
 
 # %%
 struct.space_group.name_h_m = 'P n m a'
-struct.space_group.it_coordinate_system_code = 'abc'
+struct.space_group.coord_system_code = 'abc'
 
 # %% [markdown]
 # ### Set Unit Cell

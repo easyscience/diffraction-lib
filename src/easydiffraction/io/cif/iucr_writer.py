@@ -209,7 +209,7 @@ def _write_space_group_section(lines: list[str], structure: object) -> None:
     _write_item(
         lines,
         '_space_group.IT_coordinate_system_code',
-        _attribute_value(space_group, 'it_coordinate_system_code'),
+        _attribute_value(space_group, 'coord_system_code'),
     )
     _write_item(lines, '_space_group.crystal_system', '?')
 

@@ -44,7 +44,7 @@ project.structures.create(name='nacl')
 
 # %%
 project.structures['nacl'].space_group.name_h_m = 'F m -3 m'
-project.structures['nacl'].space_group.it_coordinate_system_code = '1'
+project.structures['nacl'].space_group.coord_system_code = '1'
 project.structures['nacl'].cell.length_a = 5.62
 project.structures['nacl'].atom_sites.create(
     id='Na',

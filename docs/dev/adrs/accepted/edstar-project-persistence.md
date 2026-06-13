@@ -637,7 +637,7 @@ descriptor absent from this table is a migration blocker.
 | `structure.atom_site_aniso` | `label`, `adp_11`, `adp_22`, `adp_33`, `adp_12`, `adp_13`, `adp_23` | `_atom_site_aniso.label`, `_atom_site_aniso.B_11`, `_atom_site_aniso.B_22`, `_atom_site_aniso.B_33`, `_atom_site_aniso.B_12`, `_atom_site_aniso.B_13`, `_atom_site_aniso.B_23` | `_atom_site_aniso.{id,adp_11,adp_22,adp_33,adp_12,adp_13,adp_23}` | `_atom_site_aniso.{label,B_*,U_*,beta_*}` by `adp_type` |
 | `structure.cell` | `length_a`, `length_b`, `length_c`, `angle_alpha`, `angle_beta`, `angle_gamma` | `_cell.*` with same item names | same | same |
 | `structure.geom` | `min_bond_distance_cutoff`, `bond_distance_incr` | `_geom.*` with same item names | `_geom.{min_bond_distance_cutoff,bond_distance_inc}` | same |
-| `structure.space_group` | `name_h_m`, `it_coordinate_system_code` | `_space_group.name_H-M_alt`, `_space_group.IT_coordinate_system_code` | `_space_group.{name_h_m,it_coordinate_system_code}` | `_space_group.name_H-M_alt`, `_space_group.IT_coordinate_system_code` |
+| `structure.space_group` | `name_h_m`, `it_coordinate_system_code` | `_space_group.name_H-M_alt`, `_space_group.IT_coordinate_system_code` | `_space_group.{name_h_m,coord_system_code}` | `_space_group.name_H-M_alt`, `_space_group.IT_coordinate_system_code` |
 | `structure.space_group_wyckoff` (derived; **not persisted**) | `id`, `letter`, `multiplicity`, `site_symmetry`, `coords_xyz` | `_space_group_Wyckoff.{id,letter,multiplicity,site_symmetry,coords_xyz}` | — (regenerated from `space_group` on load; never written) | `_space_group_Wyckoff.*` |
 | `project.info` → `metadata` | `name`, `title`, `description`, `created`, `last_modified`; relocated `analysis.software.timestamp` as `timestamp` | `_project.id`, `_project.title`, `_project.description`, `_project.created`, `_project.last_modified`; `_software.timestamp` | `_metadata.{name,title,description,created,last_modified,timestamp}` |  |
 | `project.rendering_plot` | `type` | `_rendering_plot.type` | same |  |
@@ -693,6 +693,13 @@ reviewer does not "correct" them toward a different precedent.
   but the report writer emits IUCr canonical casing: `_refln.F_calc`,
   `_refln.F_squared_calc`, `_space_group.name_H-M_alt`. The uppercase
   forms are also accepted as read aliases.
+- **`coord_system_code` uses existing coordinate wording.** The value is
+  still the International Tables coordinate-system qualifier, and report
+  CIF still writes `_space_group.IT_coordinate_system_code`, but the
+  project-facing API and EdSTAR field use `coord_system_code`. `coord`
+  already appears in CIF/EasyDiffraction names such as `cartn_coord`,
+  `fract_coord`, and `coords_xyz`; `it` is not otherwise used in
+  project-facing parameter names.
 - **`_data` is intentional.** `experiment.data` is already a mass-noun
   owner attribute, so EdSTAR keeps `_data` instead of inventing
   `_data_point`. The row identity is still `_data.id`; the category name
@@ -708,8 +715,9 @@ and singular in the file (`_atom_site`), because the file names the
 per-row item — the universal STAR/CIF convention.
 
 Achieving 1-to-1 at v1.0.0 requires these **public-API renames** (they
-are API changes, not only file-tag changes; old data names stay as
-file-read aliases, and report CIF keeps the official names):
+are API changes, not only file-tag changes; official import aliases stay
+available, report CIF keeps the official names, and pre-release EdSTAR
+names are not preserved as legacy aliases):
 
 | Code today | Code at v1.0.0 | EdSTAR |
 | --- | --- | --- |
@@ -723,6 +731,7 @@ file-read aliases, and report CIF keeps the official names):
 | `preferred_orientation.phase_id` | `preferred_orientation.structure_id` | `_preferred_orientation.structure_id` |
 | `experiment.type` | `experiment.experiment_type` | `_experiment_type` |
 | `project.info` | `project.metadata` | `_metadata` |
+| `structure.space_group.it_coordinate_system_code` | `structure.space_group.coord_system_code` | `_space_group.coord_system_code` |
 
 Plus the Abbreviation Policy renames (§Naming Policy), listed
 per-parameter in the Per-Parameter Map: `bond_distance_incr`→`inc`,
@@ -787,7 +796,7 @@ marks a rename. The **EdSTAR** column is the persisted data name.
 | `structure.cell.angle_beta` | same | `_cell.angle_beta` |
 | `structure.cell.angle_gamma` | same | `_cell.angle_gamma` |
 | `structure.space_group.name_h_m` | same | `_space_group.name_h_m` |
-| `structure.space_group.it_coordinate_system_code` | same | `_space_group.it_coordinate_system_code` |
+| `structure.space_group.it_coordinate_system_code` | `structure.space_group.coord_system_code` | `_space_group.coord_system_code` |
 | `structure.atom_sites['<id>'].label` | `structure.atom_sites['<id>'].id` | `_atom_site.id` |
 | `structure.atom_sites['<id>'].type_symbol` | same | `_atom_site.type_symbol` |
 | `structure.atom_sites['<id>'].fract_x` | same | `_atom_site.fract_x` |

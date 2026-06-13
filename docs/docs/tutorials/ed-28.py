@@ -37,7 +37,7 @@ structure = project.structures['si']
 
 # %%
 structure.space_group.name_h_m = 'F d -3 m'
-structure.space_group.it_coordinate_system_code = '2'
+structure.space_group.coord_system_code = '2'
 
 # %%
 structure.cell.length_a = 5.431

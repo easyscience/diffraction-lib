@@ -44,7 +44,7 @@ structure = project.structures['lbco']
 
 # %%
 structure.space_group.name_h_m = 'P m -3 m'
-structure.space_group.it_coordinate_system_code = '1'
+structure.space_group.coord_system_code = '1'
 
 # %%
 structure.cell.length_a = 3.88

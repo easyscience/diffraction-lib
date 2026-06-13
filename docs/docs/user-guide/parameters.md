@@ -53,7 +53,7 @@ path, such as `space_group.name_h_m`.
     | Category | Parameter | How to access in the code |
     | --- | --- | --- |
     | :material-space-station: [space_group][space_group] | :material-tag: [name_h_m](parameters/space_group.md#space-group-name-h-m) | space_group.name_h_m |
-    |  | :material-numeric: [it_coordinate_system_code](parameters/space_group.md#space-group-it-coordinate-system-code) | space_group.it_coordinate_system_code |
+    |  | :material-numeric: [coord_system_code](parameters/space_group.md#space-group-coord-system-code) | space_group.coord_system_code |
     | :material-cube-outline: [cell][cell] | :material-ruler: [length_a](parameters/cell.md#cell-length-a) | cell.length_a |
     |  | :material-ruler: [length_b](parameters/cell.md#cell-length-b) | cell.length_b |
     |  | :material-ruler: [length_c](parameters/cell.md#cell-length-c) | cell.length_c |
@@ -76,7 +76,7 @@ path, such as `space_group.name_h_m`.
     | Category | Parameter | Key in EdSTAR |
     | --- | --- | --- |
     | :material-space-station: [space_group][space_group] | :material-tag: [name_h_m](parameters/space_group.md#space-group-name-h-m) | `_space_group.name_h_m` |
-    |  | :material-numeric: [it_coordinate_system_code](parameters/space_group.md#space-group-it-coordinate-system-code) | `_space_group.it_coordinate_system_code` |
+    |  | :material-numeric: [coord_system_code](parameters/space_group.md#space-group-coord-system-code) | `_space_group.coord_system_code` |
     | :material-cube-outline: [cell][cell] | :material-ruler: [length_a](parameters/cell.md#cell-length-a) | `_cell.length_a` |
     |  | :material-ruler: [length_b](parameters/cell.md#cell-length-b) | `_cell.length_b` |
     |  | :material-ruler: [length_c](parameters/cell.md#cell-length-c) | `_cell.length_c` |
@@ -99,7 +99,7 @@ path, such as `space_group.name_h_m`.
     | Category | Parameter | Key in CIF | CIF dictionary |
     | --- | --- | --- | --- |
     | :material-space-station: [space_group][space_group] | :material-tag: [name_h_m](parameters/space_group.md#space-group-name-h-m) | `_space_group.name_H-M_alt` | [coreCIF][1]{:.label-cif} |
-    |  | :material-numeric: [it_coordinate_system_code](parameters/space_group.md#space-group-it-coordinate-system-code) | `_space_group.IT_coordinate_system_code` | [coreCIF][1]{:.label-cif} |
+    |  | :material-numeric: [coord_system_code](parameters/space_group.md#space-group-coord-system-code) | `_space_group.IT_coordinate_system_code` | [coreCIF][1]{:.label-cif} |
     | :material-cube-outline: [cell][cell] | :material-ruler: [length_a](parameters/cell.md#cell-length-a) | `_cell.length_a` | [coreCIF][1]{:.label-cif} |
     |  | :material-ruler: [length_b](parameters/cell.md#cell-length-b) | `_cell.length_b` | [coreCIF][1]{:.label-cif} |
     |  | :material-ruler: [length_c](parameters/cell.md#cell-length-c) | `_cell.length_c` | [coreCIF][1]{:.label-cif} |

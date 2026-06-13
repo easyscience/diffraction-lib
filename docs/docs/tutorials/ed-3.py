@@ -90,7 +90,7 @@ project.structures.show_names()
 
 # %%
 project.structures['lbco'].space_group.name_h_m = 'P m -3 m'
-project.structures['lbco'].space_group.it_coordinate_system_code = '1'
+project.structures['lbco'].space_group.coord_system_code = '1'
 
 # %% [markdown]
 # ### Set Unit Cell
