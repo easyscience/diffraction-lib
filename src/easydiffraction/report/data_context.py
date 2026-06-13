@@ -899,7 +899,8 @@ def _adp_label_context(parameter: object) -> dict[str, str] | None:
 
 
 def _active_adp_cif_name(parameter: object) -> str | None:
-    """Return the ADP CIF tag for the descriptor's active B/U family.
+    """
+    Return the ADP CIF tag for the descriptor's active B/U family.
 
     Isotropic ADPs persist under the type-neutral ``_atom_site.adp_iso``
     tag, so the active B/U convention is taken from the owning atom's

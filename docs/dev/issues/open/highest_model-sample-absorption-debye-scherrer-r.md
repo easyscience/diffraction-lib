@@ -64,21 +64,23 @@ preferable. In FullProf `μR` is normally **fixed**, not refined.
 ADR above (supersedes the earlier "add a `μR` instrument parameter"
 sketch).
 
-**Recommended-priority note:** Accounts for the entire intensity residual on the LaB₆ verification
-page; well-specified (Hewat formula). **Tier 1 (do first).**
+**Recommended-priority note:** Accounts for the entire intensity
+residual on the LaB₆ verification page; well-specified (Hewat formula).
+**Tier 1 (do first).**
 
-**Architecture note (absorption correction).** Both backends return only a
-finished, convolved profile to the EasyDiffraction layer
+**Architecture note (absorption correction).** Both backends return only
+a finished, convolved profile to the EasyDiffraction layer
 (`cryspy.calculate_pattern` → `signal_plus + signal_minus`;
 `crysfml.calculate_pattern` → `np.asarray(y)`), and neither exposes a CW
 absorption knob. So:
 
-- An **in-project point-wise** `A(2θ)` correction is feasible now — multiply
-  the summed structure profile by `A` in `bragg_pd.py` *before* adding the
-  background (`_set_intensity_calc(calc + intensity_bkg)`), reusing the
-  per-phase scale-factor precedent. Backend-agnostic, a small change plus a
-  `μR` parameter (follows the `calib_sample_displacement` SyCos precedent).
-- The **physically-exact per-reflection** `A(θ_hkl)`-before-convolution is
-  **not** possible in our layer (both engines convolve internally); it
-  requires owning the engine — the motivation of the
+- An **in-project point-wise** `A(2θ)` correction is feasible now —
+  multiply the summed structure profile by `A` in `bragg_pd.py` _before_
+  adding the background (`_set_intensity_calc(calc + intensity_bkg)`),
+  reusing the per-phase scale-factor precedent. Backend-agnostic, a
+  small change plus a `μR` parameter (follows the
+  `calib_sample_displacement` SyCos precedent).
+- The **physically-exact per-reflection** `A(θ_hkl)`-before-convolution
+  is **not** possible in our layer (both engines convolve internally);
+  it requires owning the engine — the motivation of the
   in-house-calculation-engine ADR.

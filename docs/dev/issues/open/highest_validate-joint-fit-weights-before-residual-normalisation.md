@@ -17,4 +17,7 @@ minimiser.
 
 **Depends on:** related to issue 3, but independent.
 
-**Recommended-priority note:** Joint-fit weight safety (paired with #3): validate weights before residual normalisation so invalid/all-zero sets cannot reach the minimiser as `nan`/division-by-zero. **Tier 1 (do first).**
+**Recommended-priority note:** Joint-fit weight safety (paired with #3):
+validate weights before residual normalisation so invalid/all-zero sets
+cannot reach the minimiser as `nan`/division-by-zero. **Tier 1 (do
+first).**

@@ -20,6 +20,7 @@ EdSTAR key `_structure_style.atom_view`.
 ### `_structure_style.color_scheme` { #structure-style-color-scheme }
 
 EdSTAR key `_structure_style.color_scheme`.
+
 <!-- prettier-ignore-start -->
 [0]: #
 [1]: https://www.iucr.org/resources/cif/dictionaries/browse/cif_core

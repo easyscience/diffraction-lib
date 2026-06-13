@@ -417,9 +417,7 @@ def test_software_fit_datetime_none_and_value():
     empty = SimpleNamespace(metadata=SimpleNamespace(timestamp=''))
     assert _software_fit_datetime(empty) is None
 
-    populated = SimpleNamespace(
-        metadata=SimpleNamespace(timestamp='2026-06-06T00:00:00')
-    )
+    populated = SimpleNamespace(metadata=SimpleNamespace(timestamp='2026-06-06T00:00:00'))
     assert _software_fit_datetime(populated) == '2026-06-06T00:00:00'
 
 

@@ -3,8 +3,7 @@
 # `_pd_background`
 
 `_pd_background` names are pdCIF import/report aliases for background
-parameters whose EdSTAR keys live under
-[`_background`](background.md).
+parameters whose EdSTAR keys live under [`_background`](background.md).
 
 ## `_pd_background.Chebyshev_order` { #pd-background-chebyshev-order }
 

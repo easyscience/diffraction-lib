@@ -68,7 +68,9 @@ class Software(CategoryCollection):
                     setattr(item, attr_name, value)
 
     def _restore_legacy_timestamp(self, block: object) -> None:
-        """Move a legacy analysis software timestamp to project metadata."""
+        """
+        Move a legacy analysis software timestamp to project metadata.
+        """
         value = self._legacy_value(block, '_software.timestamp')
         if value in {None, '?', '.'}:
             return

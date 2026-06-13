@@ -16,4 +16,5 @@ implementation detail.
 
 **Depends on:** nothing.
 
-**Recommended-priority note:** Typos in `create(**kwargs)` are silently dropped today. **Tier 2 (tooling that prevents whole bug classes).**
+**Recommended-priority note:** Typos in `create(**kwargs)` are silently
+dropped today. **Tier 2 (tooling that prevents whole bug classes).**

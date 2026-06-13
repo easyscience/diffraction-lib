@@ -84,8 +84,8 @@ class AtomSiteAniso(CategoryItem):
     """
     Single atom site anisotropic ADP entry.
 
-    Each entry mirrors an :class:`AtomSite` by id and holds six
-    tensor components whose physical meaning (B or U) is determined by
+    Each entry mirrors an :class:`AtomSite` by id and holds six tensor
+    components whose physical meaning (B or U) is determined by
     ``atom_site.adp_type``.
     """
 

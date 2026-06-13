@@ -4,9 +4,10 @@
 
 **Type:** Correctness / Dead code
 
-The pattern `if v: ... elif not v: ... else: raise ValueError('Expected
-boolean')` has an unreachable `else` — every value is truthy or falsy, so
-the validation `raise` never fires. A non-boolean (e.g. the string `'0'`,
+The pattern
+`if v: ... elif not v: ... else: raise ValueError('Expected boolean')`
+has an unreachable `else` — every value is truthy or falsy, so the
+validation `raise` never fires. A non-boolean (e.g. the string `'0'`,
 which is truthy) is silently coerced to `'incl'` rather than rejected.
 Duplicated verbatim in both data classes.
 

@@ -2,8 +2,8 @@
 
 # `_extinction`
 
-EasyDiffraction EdSTAR reference for the `_extinction` category.
-These entries provide stable anchors for runtime parameter links.
+EasyDiffraction EdSTAR reference for the `_extinction` category. These
+entries provide stable anchors for runtime parameter links.
 
 ### `_extinction.model` { #extinction-model }
 
@@ -20,6 +20,7 @@ EdSTAR key `_extinction.radius`.
 ### `_extinction.type` { #extinction-type }
 
 EdSTAR key `_extinction.type`.
+
 <!-- prettier-ignore-start -->
 [0]: #
 [1]: https://www.iucr.org/resources/cif/dictionaries/browse/cif_core

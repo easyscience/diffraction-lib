@@ -2,8 +2,8 @@
 
 # `_minimizer`
 
-EasyDiffraction EdSTAR reference for the `_minimizer` category.
-These entries provide stable anchors for runtime parameter links.
+EasyDiffraction EdSTAR reference for the `_minimizer` category. These
+entries provide stable anchors for runtime parameter links.
 
 ### `_minimizer.burn_in_steps` { #minimizer-burn-in-steps }
 
@@ -44,6 +44,7 @@ EdSTAR key `_minimizer.thinning_interval`.
 ### `_minimizer.type` { #minimizer-type }
 
 EdSTAR key `_minimizer.type`.
+
 <!-- prettier-ignore-start -->
 [0]: #
 [1]: https://www.iucr.org/resources/cif/dictionaries/browse/cif_core

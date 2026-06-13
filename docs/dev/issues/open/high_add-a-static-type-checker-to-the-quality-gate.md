@@ -27,4 +27,7 @@ well-positioned.
 enabling a checker on an existing codebase surfaces a backlog that needs
 a baseline-cleanup plan.
 
-**Recommended-priority note:** A real wrong-arity `TypeError` already shipped because nothing catches it; high leverage — land as its own baseline-cleanup effort. **Tier 2 (tooling that prevents whole bug classes).**
+**Recommended-priority note:** A real wrong-arity `TypeError` already
+shipped because nothing catches it; high leverage — land as its own
+baseline-cleanup effort. **Tier 2 (tooling that prevents whole bug
+classes).**

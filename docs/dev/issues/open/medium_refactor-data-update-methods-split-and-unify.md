@@ -24,4 +24,6 @@ the pattern from `bragg_sc.py`.
 
 **Depends on:** nothing.
 
-**Recommended-priority note:** Part of the data `_update` refactor cluster (with #32 / #33): decompose `_update`. **Tier 4 (maintainability).**
+**Recommended-priority note:** Part of the data `_update` refactor
+cluster (with #32 / #33): decompose `_update`. **Tier 4
+(maintainability).**

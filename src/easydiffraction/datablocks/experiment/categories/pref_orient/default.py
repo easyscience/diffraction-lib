@@ -24,7 +24,9 @@ from easydiffraction.io.cif.handler import CifHandler
 
 
 class PrefOrient(CategoryItem):
-    """March-Dollase preferred-orientation correction for one structure."""
+    """
+    March-Dollase preferred-orientation correction for one structure.
+    """
 
     _category_code = 'preferred_orientation'
     _category_entry_name = 'structure_id'

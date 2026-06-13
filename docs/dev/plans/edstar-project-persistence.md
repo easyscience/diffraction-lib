@@ -5,7 +5,7 @@ This plan follows `AGENTS.md`. There are no deliberate exceptions.
 ## Status
 
 - [x] Draft implementation plan from the accepted local instructions and
-  current repository context.
+      current repository context.
 - [x] Review and accept this plan.
 - [x] Phase 1 - implementation commits complete.
 - [ ] Phase 1 review complete.
@@ -23,12 +23,9 @@ runs the verification commands listed below.
 
 ## Related ADR
 
-- ADR:
-  `docs/dev/adrs/accepted/edstar-project-persistence.md`
-- Implementation branch:
-  `edstar-project-persistence`
-- Pull request target:
-  `develop`
+- ADR: `docs/dev/adrs/accepted/edstar-project-persistence.md`
+- Implementation branch: `edstar-project-persistence`
+- Pull request target: `develop`
 
 This change implements one ADR. As required by `AGENTS.md`, Phase 1 must
 promote the ADR from `suggestions/` to `accepted/` before opening a pull
@@ -37,17 +34,15 @@ to the old suggestions path.
 
 ## Decisions
 
-- EdSTAR becomes the project persistence format:
-  `project.edstar`, `structures/<structure>.edstar`,
-  `experiments/<experiment>.edstar`, and
-  `analysis/analysis.edstar`.
+- EdSTAR becomes the project persistence format: `project.edstar`,
+  `structures/<structure>.edstar`, `experiments/<experiment>.edstar`,
+  and `analysis/analysis.edstar`.
 - `analysis/results.csv`, `analysis/results.h5`, and
   `reports/<project>.cif` keep their current locations and purposes.
 - Report CIF generation stays strict IUCr/pdCIF export. Regular project
   save/load must not treat report CIF as round-trippable project state.
 - Saved EdSTAR files include the schema marker
-  `_edstar.schema_name EasyDiffraction` and
-  `_edstar.schema_version 1`.
+  `_edstar.schema_name EasyDiffraction` and `_edstar.schema_version 1`.
 - Project restore accepts only EdSTAR project files. Legacy beta
   EasyDiffraction CIF project files fail with an explicit migration
   error. Official CIF import names remain supported by explicit CIF
@@ -59,11 +54,10 @@ to the old suggestions path.
   stale CIF files; precedence and clear console output handle stale
   siblings.
 - Public Python names move to the ADR's API-oriented names with no
-  transitional Python properties:
-  `project.metadata`, `experiment.experiment_type`,
-  `linked_structures`, `linked_structure`, `structure_id`,
-  atom/alias `id`, `parameter_unique_name`, and the other explicit field
-  renames from the ADR.
+  transitional Python properties: `project.metadata`,
+  `experiment.experiment_type`, `linked_structures`, `linked_structure`,
+  `structure_id`, atom/alias `id`, `parameter_unique_name`, and the
+  other explicit field renames from the ADR.
 - `analysis.software` becomes a role-keyed loop with
   `software[role].{name, version, url}` and a closed `(str, Enum)` role
   set. Fit timestamp moves to `project.metadata.timestamp`.
@@ -102,16 +96,13 @@ Current persistence is centered in:
 
 The main public-name changes cross these areas:
 
-- Structure categories:
-  `atom_sites`, `atom_site_aniso`, and `geom`.
-- Experiment categories:
-  `experiment_type`, `linked_phases`, `linked_crystal`, `refln`,
-  `pref_orient`, `instrument`, `background`, and `data`.
-- Analysis categories:
-  `aliases`, `fit_parameters`, `fit_parameter_correlations`, and
-  `software`.
-- Project metadata:
-  `project.metadata`, `project.project_metadata`, and
+- Structure categories: `atom_sites`, `atom_site_aniso`, and `geom`.
+- Experiment categories: `experiment_type`, `linked_phases`,
+  `linked_crystal`, `refln`, `pref_orient`, `instrument`, `background`,
+  and `data`.
+- Analysis categories: `aliases`, `fit_parameters`,
+  `fit_parameter_correlations`, and `software`.
+- Project metadata: `project.metadata`, `project.project_metadata`, and
   `project/categories/metadata/`.
 - User-facing docs and generated notebooks under `docs/docs/`.
 
@@ -122,21 +113,17 @@ code/EdSTAR/CIF reference.
 
 ## Concrete Files Likely To Change
 
-- ADRs and plan:
-  `docs/dev/adrs/accepted/edstar-project-persistence.md`,
-  `docs/dev/adrs/index.md`,
-  accepted ADRs that explicitly describe the superseded CIF project
-  layout.
-- Persistence handlers:
-  `src/easydiffraction/io/cif/handler.py`,
+- ADRs and plan: `docs/dev/adrs/accepted/edstar-project-persistence.md`,
+  `docs/dev/adrs/index.md`, accepted ADRs that explicitly describe the
+  superseded CIF project layout.
+- Persistence handlers: `src/easydiffraction/io/cif/handler.py`,
   `src/easydiffraction/io/cif/serialize.py`,
   `src/easydiffraction/io/cif/parse.py`,
   `src/easydiffraction/io/cif/iucr_writer.py`,
-  `src/easydiffraction/io/cif/iucr_transformers.py`,
-  plus a new `src/easydiffraction/io/edstar/` package if the
-  implementation needs a format-specific boundary.
-- Project facade/config:
-  `src/easydiffraction/project/project.py`,
+  `src/easydiffraction/io/cif/iucr_transformers.py`, plus a new
+  `src/easydiffraction/io/edstar/` package if the implementation needs a
+  format-specific boundary.
+- Project facade/config: `src/easydiffraction/project/project.py`,
   `src/easydiffraction/project/project_config.py`,
   `src/easydiffraction/project/project_metadata.py`,
   `src/easydiffraction/project/categories/metadata/`, and matching
@@ -144,40 +131,34 @@ code/EdSTAR/CIF reference.
 - Structure model:
   `src/easydiffraction/datablocks/structure/categories/atom_sites/`,
   `src/easydiffraction/datablocks/structure/categories/atom_site_aniso/`,
-  `src/easydiffraction/datablocks/structure/categories/geom/`,
-  structure factories/collections, and report/data-context callers that
-  read atom-site labels.
-- Experiment model:
-  `src/easydiffraction/datablocks/experiment/item/`,
+  `src/easydiffraction/datablocks/structure/categories/geom/`, structure
+  factories/collections, and report/data-context callers that read
+  atom-site labels.
+- Experiment model: `src/easydiffraction/datablocks/experiment/item/`,
   `src/easydiffraction/datablocks/experiment/categories/experiment_type/`,
   `linked_phases/`, `linked_crystal/`, `refln/`, `pref_orient/`,
   `instrument/`, `background/`, `data/`, and package `__init__.py`
   files.
-- Analysis model:
-  `src/easydiffraction/analysis/analysis.py`,
+- Analysis model: `src/easydiffraction/analysis/analysis.py`,
   `src/easydiffraction/analysis/categories/aliases/`,
   `src/easydiffraction/analysis/categories/fit_parameters/`,
   `src/easydiffraction/analysis/categories/fit_parameter_correlations/`,
   `src/easydiffraction/analysis/categories/software/`,
   `src/easydiffraction/analysis/sequential.py`, and display/plotting
   code that reads persisted parameter-reference names.
-- Documentation and CLI:
-  `docs/docs/user-guide/parameters.md`,
+- Documentation and CLI: `docs/docs/user-guide/parameters.md`,
   `docs/docs/user-guide/parameters/`,
   `docs/docs/user-guide/analysis-workflow/`,
-  `docs/docs/quick-reference/index.md`,
-  `docs/docs/tutorials/*.py`,
-  regenerated `docs/docs/tutorials/*.ipynb`,
-  `docs/mkdocs.yml`, `src/easydiffraction/__main__.py`, and
+  `docs/docs/quick-reference/index.md`, `docs/docs/tutorials/*.py`,
+  regenerated `docs/docs/tutorials/*.ipynb`, `docs/mkdocs.yml`,
+  `src/easydiffraction/__main__.py`, and
   `src/easydiffraction/io/ascii.py`.
-- New or updated tools:
-  an EdSTAR handler inventory/audit tool under `tools/`, and a docs
-  anchor verification tool if it is not folded into an existing docs
-  check.
-- Tests in Phase 2:
-  matching unit test files under `tests/unit/easydiffraction/`,
-  project save/load tests, CLI tests, integration tests, script tests,
-  and notebook regeneration checks.
+- New or updated tools: an EdSTAR handler inventory/audit tool under
+  `tools/`, and a docs anchor verification tool if it is not folded into
+  an existing docs check.
+- Tests in Phase 2: matching unit test files under
+  `tests/unit/easydiffraction/`, project save/load tests, CLI tests,
+  integration tests, script tests, and notebook regeneration checks.
 
 ## Implementation Steps (Phase 1)
 
@@ -197,10 +178,10 @@ code/EdSTAR/CIF reference.
 
 - [x] P1.2 - Make handler names explicit before changing tags.
 
-  Extend `CifHandler` so each descriptor can declare:
-  `project_name` for EdSTAR write tags, `import_names` for accepted read
-  aliases, `iucr_name` for report export, and enough category metadata
-  for inventory/docs URL generation. Preserve current CIF behavior while
+  Extend `CifHandler` so each descriptor can declare: `project_name` for
+  EdSTAR write tags, `import_names` for accepted read aliases,
+  `iucr_name` for report export, and enough category metadata for
+  inventory/docs URL generation. Preserve current CIF behavior while
   this step lands.
 
   Update descriptor construction only where needed to keep current CIF
@@ -217,9 +198,9 @@ code/EdSTAR/CIF reference.
 
   Add a tool that imports the registered concrete categories and emits a
   deterministic inventory of descriptor paths, EdSTAR names, legacy CIF
-  import names, IUCr names, docs anchors, and ownership context. Generate
-  the initial inventory before any write-side tag renames so later
-  commits have a reviewable baseline.
+  import names, IUCr names, docs anchors, and ownership context.
+  Generate the initial inventory before any write-side tag renames so
+  later commits have a reviewable baseline.
 
   Keep this as an audit artifact. Do not use it to generate user docs
   tables in this plan.
@@ -261,10 +242,9 @@ code/EdSTAR/CIF reference.
 
   Move the public facade from `project.info` to `project.metadata`,
   rename the project metadata module/category paths as appropriate, and
-  move the project timestamp field to
-  `project.metadata.timestamp`. Keep runtime saved path state available
-  through the renamed metadata surface. Do not add a `project.info`
-  compatibility property.
+  move the project timestamp field to `project.metadata.timestamp`. Keep
+  runtime saved path state available through the renamed metadata
+  surface. Do not add a `project.info` compatibility property.
 
   Update save/load, CLI dry-run handling, report path helpers, display
   context, and docs snippets that access project info.
@@ -279,9 +259,8 @@ code/EdSTAR/CIF reference.
 
   Replace the wide `_software.framework_name`,
   `_software.calculator_name`, and `_software.minimizer_name` style with
-  a role-keyed collection such as
-  `analysis.software['framework'].name`. Add a closed role enum for
-  framework, calculator, and minimizer.
+  a role-keyed collection such as `analysis.software['framework'].name`.
+  Add a closed role enum for framework, calculator, and minimizer.
 
   Update fit-time provenance stamping, report data context, IUCr report
   rendering, HTML/TeX templates, and restore logic. Move fit timestamp
@@ -329,11 +308,10 @@ code/EdSTAR/CIF reference.
 - [x] P1.9 - Rename experiment data and instrument fields.
 
   Apply the remaining experiment-side API/EdSTAR renames from the ADR:
-  powder `refln.phase_id` to `structure_id`,
-  preferred-orientation `phase_id` to `structure_id`,
-  powder data `point_id` to `id`, TOF calibration `quad`/`recip` to
-  `quadratic`/`reciprocal`, and line-segment background `x`/`y` to
-  `position`/`intensity`.
+  powder `refln.phase_id` to `structure_id`, preferred-orientation
+  `phase_id` to `structure_id`, powder data `point_id` to `id`, TOF
+  calibration `quad`/`recip` to `quadratic`/`reciprocal`, and
+  line-segment background `x`/`y` to `position`/`intensity`.
 
   Update EdSTAR write names, legacy CIF import aliases, calculators,
   report writers, plotting code, docs, and tutorials. Preserve strict
@@ -368,10 +346,10 @@ code/EdSTAR/CIF reference.
 
 - [x] P1.11 - Rework parameter docs and runtime links.
 
-  Update `docs/docs/user-guide/parameters.md` to use three tabs:
-  "How to access in the code", "Keys in EdSTAR", and "Keys in CIF".
-  Rename per-category pages under `docs/docs/user-guide/parameters/` to
-  EdSTAR category names, give them EdSTAR titles and EasyDiffraction
+  Update `docs/docs/user-guide/parameters.md` to use three tabs: "How to
+  access in the code", "Keys in EdSTAR", and "Keys in CIF". Rename
+  per-category pages under `docs/docs/user-guide/parameters/` to EdSTAR
+  category names, give them EdSTAR titles and EasyDiffraction
   descriptions, and keep IUCr icon links for official dictionary tags.
 
   Add stable anchors that match the runtime `param.url` resolver. Static
@@ -510,9 +488,9 @@ code/EdSTAR/CIF reference.
   pixi run integration-tests > /tmp/easydiffraction-integration-tests.log 2>&1; integration_tests_exit_code=$?; tail -n 200 /tmp/easydiffraction-integration-tests.log; exit $integration_tests_exit_code
   ```
 
-  If the failure is a sandbox-only multiprocessing or permission
-  symptom rather than a code assertion, rerun the same command with the
-  approved escalated permission path before changing code.
+  If the failure is a sandbox-only multiprocessing or permission symptom
+  rather than a code assertion, rerun the same command with the approved
+  escalated permission path before changing code.
 
   Commit fixes only if this command identifies integration-level issues.
 

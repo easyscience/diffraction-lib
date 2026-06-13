@@ -2,8 +2,8 @@
 
 # `_refln`
 
-EasyDiffraction EdSTAR reference for the `_refln` category.
-These entries provide stable anchors for runtime parameter links.
+EasyDiffraction EdSTAR reference for the `_refln` category. These
+entries provide stable anchors for runtime parameter links.
 
 ### `_refln.d_spacing` { #refln-d-spacing }
 
@@ -72,6 +72,7 @@ EdSTAR key `_refln.two_theta`.
 ### `_refln.wavelength` { #refln-wavelength }
 
 EdSTAR key `_refln.wavelength`.
+
 <!-- prettier-ignore-start -->
 [0]: #
 [1]: https://www.iucr.org/resources/cif/dictionaries/browse/cif_core

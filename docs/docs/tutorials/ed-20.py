@@ -153,7 +153,9 @@ expt_s2.background.show()
 
 # %%
 for point in expt_s2.background:
-    expt_n2.background.create(id=point.id.value, position=point.position.value, intensity=point.intensity.value)
+    expt_n2.background.create(
+        id=point.id.value, position=point.position.value, intensity=point.intensity.value
+    )
 
 # %% [markdown]
 # ### Set Linked Structures

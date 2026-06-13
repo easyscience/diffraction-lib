@@ -1870,12 +1870,10 @@ class Plotter(RendererBase):
             ]
 
         for row in correlation_rows:
-            parameter_names.extend(
-                [
-                    row.parameter_unique_name_i.value,
-                    row.parameter_unique_name_j.value,
-                ]
-            )
+            parameter_names.extend([
+                row.parameter_unique_name_i.value,
+                row.parameter_unique_name_j.value,
+            ])
         parameter_names = list(dict.fromkeys(parameter_names))
         if len(parameter_names) < MIN_POSTERIOR_PARAMETER_COUNT:
             return None

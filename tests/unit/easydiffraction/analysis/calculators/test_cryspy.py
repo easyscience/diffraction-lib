@@ -226,7 +226,9 @@ def test_last_powder_refln_records_converts_cwl_two_theta_to_degrees():
     structure = SimpleNamespace(name='phase')
     experiment = SimpleNamespace(
         name='exp',
-        experiment_type=SimpleNamespace(beam_mode=SimpleNamespace(value=BeamModeEnum.CONSTANT_WAVELENGTH)),
+        experiment_type=SimpleNamespace(
+            beam_mode=SimpleNamespace(value=BeamModeEnum.CONSTANT_WAVELENGTH)
+        ),
     )
 
     records = calculator.last_powder_refln_records(structure, experiment, structure_id='phase-a')
@@ -256,7 +258,9 @@ def test_last_powder_refln_records_reads_tof_time_and_d_spacing():
     structure = SimpleNamespace(name='phase')
     experiment = SimpleNamespace(
         name='exp',
-        experiment_type=SimpleNamespace(beam_mode=SimpleNamespace(value=BeamModeEnum.TIME_OF_FLIGHT)),
+        experiment_type=SimpleNamespace(
+            beam_mode=SimpleNamespace(value=BeamModeEnum.TIME_OF_FLIGHT)
+        ),
     )
 
     records = calculator.last_powder_refln_records(structure, experiment, structure_id='phase-b')
@@ -285,7 +289,9 @@ def test_last_powder_refln_records_reads_xray_charge_structure_factor():
     structure = SimpleNamespace(name='phase')
     experiment = SimpleNamespace(
         name='exp',
-        experiment_type=SimpleNamespace(beam_mode=SimpleNamespace(value=BeamModeEnum.CONSTANT_WAVELENGTH)),
+        experiment_type=SimpleNamespace(
+            beam_mode=SimpleNamespace(value=BeamModeEnum.CONSTANT_WAVELENGTH)
+        ),
     )
 
     records = calculator.last_powder_refln_records(structure, experiment, structure_id='phase-x')

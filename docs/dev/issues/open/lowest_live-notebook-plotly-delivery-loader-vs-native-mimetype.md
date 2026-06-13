@@ -39,4 +39,6 @@ maintenance cost outweighs the three behaviours.
 
 **Depends on:** nothing.
 
-**Recommended-priority note:** Marked **lowest**: records a settled delivery decision (Option 2); no action required unless the loader proves fragile.
+**Recommended-priority note:** Marked **lowest**: records a settled
+delivery decision (Option 2); no action required unless the loader
+proves fragile.

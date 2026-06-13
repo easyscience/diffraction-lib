@@ -7,16 +7,16 @@ remains isolated under `docs/docs`.
 
 ## Structure
 
-| Path                                                                   | Purpose                                                                                         |
-| ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| [`adrs/index.md`](adrs/index.md)                                       | Architecture and decision navigation, grouped by topic.                                         |
-| [`issues/index.md`](issues/index.md)                                   | Issue index: open issues (ordered by priority) and closed issues, as tables linking to each file.|
-| [`issues/open/`](issues/open/)                                         | Open development issues, one file per issue (`<priority>_<title>.md`).                           |
-| [`issues/closed/`](issues/closed/)                                     | Closed development issues retained for history, one file per issue (`<title>.md`).               |
-| [`package-structure/short.md`](package-structure/short.md)             | Generated compact package tree.                                                                 |
-| [`package-structure/full.md`](package-structure/full.md)               | Generated package tree with top-level classes.                                                  |
-| [`plans/`](plans/)                                                     | Implementation plans for larger migrations.                                                     |
-| [`roadmap/ROADMAP.md`](roadmap/ROADMAP.md)                             | Development roadmap. This may later be copied into `docs/docs` during the published-docs build. |
+| Path                                                       | Purpose                                                                                           |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| [`adrs/index.md`](adrs/index.md)                           | Architecture and decision navigation, grouped by topic.                                           |
+| [`issues/index.md`](issues/index.md)                       | Issue index: open issues (ordered by priority) and closed issues, as tables linking to each file. |
+| [`issues/open/`](issues/open/)                             | Open development issues, one file per issue (`<priority>_<title>.md`).                            |
+| [`issues/closed/`](issues/closed/)                         | Closed development issues retained for history, one file per issue (`<title>.md`).                |
+| [`package-structure/short.md`](package-structure/short.md) | Generated compact package tree.                                                                   |
+| [`package-structure/full.md`](package-structure/full.md)   | Generated package tree with top-level classes.                                                    |
+| [`plans/`](plans/)                                         | Implementation plans for larger migrations.                                                       |
+| [`roadmap/ROADMAP.md`](roadmap/ROADMAP.md)                 | Development roadmap. This may later be copied into `docs/docs` during the published-docs build.   |
 
 ## Rules
 

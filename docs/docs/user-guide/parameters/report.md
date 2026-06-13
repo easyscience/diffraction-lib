@@ -2,8 +2,8 @@
 
 # `_report`
 
-EasyDiffraction EdSTAR reference for the `_report` category.
-These entries provide stable anchors for runtime parameter links.
+EasyDiffraction EdSTAR reference for the `_report` category. These
+entries provide stable anchors for runtime parameter links.
 
 ### `_report.cif` { #report-cif }
 
@@ -24,6 +24,7 @@ EdSTAR key `_report.pdf`.
 ### `_report.tex` { #report-tex }
 
 EdSTAR key `_report.tex`.
+
 <!-- prettier-ignore-start -->
 [0]: #
 [1]: https://www.iucr.org/resources/cif/dictionaries/browse/cif_core

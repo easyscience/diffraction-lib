@@ -9,8 +9,9 @@
 entirely through `getattr(..., None)` plus a `try/except`, which is the
 kind of defensive padding for internal states `AGENTS.md` discourages.
 The docstring justifies it as a display path that can resolve before
-wiring completes, so it is borderline-acceptable, but the broad tolerance
-could mask a genuine wiring bug (silently returning declared units).
+wiring completes, so it is borderline-acceptable, but the broad
+tolerance could mask a genuine wiring bug (silently returning declared
+units).
 
 **Fix:** assert the chain in non-display contexts, or narrow the
 tolerated cases.

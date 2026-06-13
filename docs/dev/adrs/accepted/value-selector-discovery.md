@@ -66,10 +66,10 @@ against **dynamic or external** sets rather than a project-owned closed
 enum: `atom_sites.type_symbol` (CrySPY isotope symbols from
 `DATABASE['Isotopes']`), `atom_sites.wyckoff_letter` (space-group
 dependent), `space_group.name_h_m` (CrySPY H-M symbols), and
-`space_group.coord_system_code` (derived from the current H-M
-symbol). These are boundary-facing CIF/science values, not `(str, Enum)`
-closed sets with a static `.default()`/`.description()`; they are out of
-scope here (see Decision and Deferred Work).
+`space_group.coord_system_code` (derived from the current H-M symbol).
+These are boundary-facing CIF/science values, not `(str, Enum)` closed
+sets with a static `.default()`/`.description()`; they are out of scope
+here (see Decision and Deferred Work).
 
 ## Decision
 
@@ -127,13 +127,12 @@ a discovery surface symmetric with the three category-level families.
      they keep their category-level `show_supported()`.
    - **Dynamic / external / context-dependent** membership validators —
      `atom_sites.type_symbol`, `atom_sites.wyckoff_letter`,
-     `space_group.name_h_m`, `space_group.coord_system_code`,
-     and any field whose allowed values come from a database, another
-     field, or runtime context. These keep their existing
-     `MembershipValidator` and current validation behavior; they do
-     **not** become `EnumDescriptor`s and do **not** gain
-     `show_supported()` under this ADR. A separate dynamic-choice
-     discovery surface is deferred.
+     `space_group.name_h_m`, `space_group.coord_system_code`, and any
+     field whose allowed values come from a database, another field, or
+     runtime context. These keep their existing `MembershipValidator`
+     and current validation behavior; they do **not** become
+     `EnumDescriptor`s and do **not** gain `show_supported()` under this
+     ADR. A separate dynamic-choice discovery surface is deferred.
 
    An implementation audit classifies each `MembershipValidator` field
    as value selector, category-level selector, or dynamic/external
@@ -213,9 +212,9 @@ a discovery surface symmetric with the three category-level families.
   `show_supported()`-style listing) to fields whose allowed set is
   dynamic, external, or context-dependent — `atom_sites.type_symbol`,
   `atom_sites.wyckoff_letter`, `space_group.name_h_m`,
-  `space_group.coord_system_code`, and similar. Out of scope
-  here; these keep their current `MembershipValidator` until such a
-  descriptor exists.
+  `space_group.coord_system_code`, and similar. Out of scope here; these
+  keep their current `MembershipValidator` until such a descriptor
+  exists.
 - An optional, clearly-named grouped overview for tightly-related axis
   bundles (notably `experiment.experiment_type`'s four axes shown
   together). Not part of the initial rollout.

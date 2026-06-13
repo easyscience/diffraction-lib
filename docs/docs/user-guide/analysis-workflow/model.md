@@ -220,8 +220,8 @@ project.structure_style.adp_probability = 0.5  # ADP ellipsoid probability level
 ```
 
 Bonds are generated automatically between atoms whose separation falls
-within the per-structure cutoffs stored on `structure.geom` (the
-EdSTAR `_geom` parameters):
+within the per-structure cutoffs stored on `structure.geom` (the EdSTAR
+`_geom` parameters):
 
 ```python
 # Tune the per-structure bond-generation cutoffs (angstrom)

@@ -23,7 +23,7 @@ the archived planning notes left two follow-up questions open:
 **Note:** the EdSTAR persistence ADR proposes renaming powder
 `refln.phase_id` → `structure_id`
 ([`edstar-project-persistence.md`](../adrs/suggestions/edstar-project-persistence.md)),
-which resolves follow-up question 1; keep this issue scoped to the row-id
-question (2) once that ADR lands.
+which resolves follow-up question 1; keep this issue scoped to the
+row-id question (2) once that ADR lands.
 
 **Depends on:** nothing.

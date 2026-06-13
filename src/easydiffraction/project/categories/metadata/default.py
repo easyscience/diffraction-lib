@@ -198,7 +198,9 @@ class ProjectMetadata(CategoryItem):
         self._timestamp_descriptor.value = value
 
     def _set_last_modified(self, value: datetime.datetime | str) -> None:
-        """Set the last-modified timestamp from runtime or STAR input."""
+        """
+        Set the last-modified timestamp from runtime or STAR input.
+        """
         if isinstance(value, datetime.datetime):
             self._last_modified_descriptor.value = self._format_timestamp(value)
             return

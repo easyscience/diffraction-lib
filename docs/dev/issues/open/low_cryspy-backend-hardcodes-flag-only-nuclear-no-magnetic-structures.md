@@ -10,8 +10,8 @@ backend. This is an undocumented capability gap a user can hit by
 supplying a magnetic model.
 
 **Fix:** thread the nuclear/magnetic flag from the structure model, and
-surface a clear "magnetic structures not yet supported" message until the
-backend path is implemented.
+surface a clear "magnetic structures not yet supported" message until
+the backend path is implemented.
 
 **TODOs / locations:**
 

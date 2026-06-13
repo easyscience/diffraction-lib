@@ -56,9 +56,9 @@ _fit_parameter_correlation.correlation
 ```
 
 Normalize each row to the upper triangle excluding the diagonal.
-`parameter_unique_name_i` and `parameter_unique_name_j` use a stable ordering so
-only one unordered pair is stored. The diagonal is omitted because it is
-always `1.0` and can be rebuilt on load.
+`parameter_unique_name_i` and `parameter_unique_name_j` use a stable
+ordering so only one unordered pair is stored. The diagonal is omitted
+because it is always `1.0` and can be rebuilt on load.
 
 Use the same loop for deterministic and Bayesian projections. The source
 is carried by `source_kind`, currently `deterministic` or `posterior`.

@@ -185,8 +185,8 @@ Manual user edits of `uncertainty` and `posterior` are not supported,
 because both are read-only fit outputs.
 
 Configuration attributes such as `free`, `fit_min`, `fit_max`, units,
-and `bounds_uncertainty_multiplier` are not cleared by this policy.
-They are parameter configuration or user intent, not posterior output.
+and `bounds_uncertainty_multiplier` are not cleared by this policy. They
+are parameter configuration or user intent, not posterior output.
 
 ### 7. Add a dedicated internal fit-application path
 

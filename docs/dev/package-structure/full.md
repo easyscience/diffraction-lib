@@ -190,7 +190,8 @@
 │   ├── 📄 enums.py
 │   │   ├── 🏷️ class FitModeEnum
 │   │   ├── 🏷️ class FitResultKindEnum
-│   │   └── 🏷️ class FitCorrelationSourceEnum
+│   │   ├── 🏷️ class FitCorrelationSourceEnum
+│   │   └── 🏷️ class SoftwareRoleEnum
 │   ├── 📄 fitting.py
 │   │   ├── 🏷️ class FitterFitOptions
 │   │   └── 🏷️ class Fitter
@@ -274,6 +275,7 @@
 ├── 📁 datablocks
 │   ├── 📁 experiment
 │   │   ├── 📁 categories
+│   │   │   ├── 📁 absorption
 │   │   │   ├── 📁 background
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 base.py
@@ -367,18 +369,20 @@
 │   │   │   │       ├── 🏷️ class TofScInstrument
 │   │   │   │       └── 🏷️ class TofPdInstrument
 │   │   │   ├── 📁 linked_crystal
-│   │   │   │   ├── 📄 __init__.py
-│   │   │   │   ├── 📄 default.py
-│   │   │   │   │   └── 🏷️ class LinkedCrystal
-│   │   │   │   └── 📄 factory.py
-│   │   │   │       └── 🏷️ class LinkedCrystalFactory
 │   │   │   ├── 📁 linked_phases
+│   │   │   ├── 📁 linked_structure
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 default.py
-│   │   │   │   │   ├── 🏷️ class LinkedPhase
-│   │   │   │   │   └── 🏷️ class LinkedPhases
+│   │   │   │   │   └── 🏷️ class LinkedStructure
 │   │   │   │   └── 📄 factory.py
-│   │   │   │       └── 🏷️ class LinkedPhasesFactory
+│   │   │   │       └── 🏷️ class LinkedStructureFactory
+│   │   │   ├── 📁 linked_structures
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 default.py
+│   │   │   │   │   ├── 🏷️ class LinkedStructure
+│   │   │   │   │   └── 🏷️ class LinkedStructures
+│   │   │   │   └── 📄 factory.py
+│   │   │   │       └── 🏷️ class LinkedStructuresFactory
 │   │   │   ├── 📁 peak
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 base.py
@@ -628,17 +632,21 @@
 │   │   │   └── 🏷️ class _PowderPattern
 │   │   ├── 📄 parse.py
 │   │   └── 📄 serialize.py
+│   ├── 📁 edstar
+│   │   ├── 📄 __init__.py
+│   │   └── 📄 serialize.py
 │   ├── 📄 __init__.py
 │   ├── 📄 ascii.py
 │   └── 📄 results_sidecar.py
 ├── 📁 project
 │   ├── 📁 categories
 │   │   ├── 📁 info
+│   │   ├── 📁 metadata
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
-│   │   │   │   └── 🏷️ class ProjectInfo
+│   │   │   │   └── 🏷️ class ProjectMetadata
 │   │   │   └── 📄 factory.py
-│   │   │       └── 🏷️ class ProjectInfoFactory
+│   │   │       └── 🏷️ class ProjectMetadataFactory
 │   │   ├── 📁 rendering_plot
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
@@ -693,7 +701,7 @@
 │   │   └── 🏷️ class Project
 │   ├── 📄 project_config.py
 │   │   └── 🏷️ class ProjectConfig
-│   └── 📄 project_info.py
+│   └── 📄 project_metadata.py
 ├── 📁 report
 │   ├── 📁 templates
 │   │   ├── 📁 html

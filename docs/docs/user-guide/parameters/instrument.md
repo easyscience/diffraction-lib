@@ -44,6 +44,7 @@ EdSTAR key `_instrument.calib_sample_displacement`.
 ### `_instrument.calib_sample_transparency` { #instrument-calib-sample-transparency }
 
 EdSTAR key `_instrument.calib_sample_transparency`.
+
 <!-- prettier-ignore-start -->
 [0]: #
 [1]: https://www.iucr.org/resources/cif/dictionaries/browse/cif_core

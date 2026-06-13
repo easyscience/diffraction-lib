@@ -2,12 +2,13 @@
 
 # `_calculator`
 
-EasyDiffraction EdSTAR reference for the `_calculator` category.
-These entries provide stable anchors for runtime parameter links.
+EasyDiffraction EdSTAR reference for the `_calculator` category. These
+entries provide stable anchors for runtime parameter links.
 
 ### `_calculator.type` { #calculator-type }
 
 EdSTAR key `_calculator.type`.
+
 <!-- prettier-ignore-start -->
 [0]: #
 [1]: https://www.iucr.org/resources/cif/dictionaries/browse/cif_core

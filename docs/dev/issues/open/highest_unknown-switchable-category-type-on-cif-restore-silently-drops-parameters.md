@@ -11,8 +11,8 @@ CIF) only logs a suppressible warning and leaves the **default**
 implementation active. The subsequent `category.from_cif(block)` then
 silently drops every parameter belonging to the intended implementation,
 because those descriptors do not exist on the default — yielding a
-quietly-wrong restored model. Persisted-state restore is a boundary input
-per `AGENTS.md` and should fail loudly.
+quietly-wrong restored model. Persisted-state restore is a boundary
+input per `AGENTS.md` and should fail loudly.
 
 **Fix:** reject an unknown persisted type tag with a clear, non-
 suppressible error during restore. This is exactly the contract the
@@ -30,7 +30,9 @@ current code is the concrete pre-ADR behaviour it would correct.
 
 **Depends on:** the EdSTAR persistence ADR
 ([`edstar-project-persistence.md`](../adrs/suggestions/edstar-project-persistence.md)),
-which formalizes the reject-on-disagreement rule. Related to issues 120,
-121.
+which formalizes the reject-on-disagreement rule. Related to issues
+120, 121.
 
-**Recommended-priority note:** Promoted to **highest** by the 2026-06-13 audit: a confirmed robustness defect — an unknown persisted type silently drops parameters on restore (silent wrong-science class).
+**Recommended-priority note:** Promoted to **highest** by the 2026-06-13
+audit: a confirmed robustness defect — an unknown persisted type
+silently drops parameters on restore (silent wrong-science class).

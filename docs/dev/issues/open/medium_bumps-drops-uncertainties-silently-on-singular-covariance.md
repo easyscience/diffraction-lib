@@ -12,7 +12,8 @@ uncertainties and no message explaining why, so a non-programmer
 scientist cannot distinguish "no uncertainty computed" from a bug.
 
 **Fix:** emit a deferred warning (via `_warn_after_tracking`) when
-covariance computation fails, so the missing uncertainties are explained.
+covariance computation fails, so the missing uncertainties are
+explained.
 
 **TODOs / locations:**
 

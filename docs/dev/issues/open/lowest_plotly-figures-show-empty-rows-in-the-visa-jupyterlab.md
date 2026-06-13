@@ -60,4 +60,6 @@ reproduce on a standard JupyterLab.
 **Depends on:** nothing. Lower priority — affects only the VISA
 deployment, and a user-side windowing-mode change may suffice.
 
-**Recommended-priority note:** Marked **lowest**: affects only the VISA-hosted JupyterLab, and a user-side windowing-mode change may suffice.
+**Recommended-priority note:** Marked **lowest**: affects only the
+VISA-hosted JupyterLab, and a user-side windowing-mode change may
+suffice.

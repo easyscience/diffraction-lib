@@ -25,4 +25,6 @@ could live in the base `DatablockCollection`.
 
 **Depends on:** nothing.
 
-**Recommended-priority note:** Part of the data `_update` refactor cluster (with #25 / #33): lift duplicated collection methods to the base. **Tier 4 (maintainability).**
+**Recommended-priority note:** Part of the data `_update` refactor
+cluster (with #25 / #33): lift duplicated collection methods to the
+base. **Tier 4 (maintainability).**

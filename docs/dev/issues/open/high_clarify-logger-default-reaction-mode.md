@@ -13,4 +13,5 @@
 
 **Depends on:** nothing.
 
-**Recommended-priority note:** Logger default reaction mode — pairs with #66's error-handling strategy decision. **Tier 2.**
+**Recommended-priority note:** Logger default reaction mode — pairs with
+#66's error-handling strategy decision. **Tier 2.**

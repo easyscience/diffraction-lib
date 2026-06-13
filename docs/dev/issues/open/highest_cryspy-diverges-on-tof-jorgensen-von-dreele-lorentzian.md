@@ -26,4 +26,6 @@ begins.
 
 **Depends on:** nothing.
 
-**Recommended-priority note:** cryspy TOF Jorgensen–Von Dreele Lorentzian is ~22% off and has a CI-skipped verification page (paired with #134). **Tier 1 (do first).**
+**Recommended-priority note:** cryspy TOF Jorgensen–Von Dreele
+Lorentzian is ~22% off and has a CI-skipped verification page (paired
+with #134). **Tier 1 (do first).**

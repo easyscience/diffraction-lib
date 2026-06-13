@@ -116,7 +116,9 @@ class TofPdDataRange(DataRangeBase):
     # ------------------------------------------------------------------
 
     def _tof_calibration(self) -> tuple[float, float, float] | None:
-        """Return ``(offset, linear, quadratic)`` calibration, or None."""
+        """
+        Return ``(offset, linear, quadratic)`` calibration, or None.
+        """
         instrument = self._instrument()
         if instrument is None:
             return None

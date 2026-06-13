@@ -741,9 +741,7 @@ class CryspyCalculator(CalculatorBase):
                 # Instrument
                 cryspy_expt_dict['zero'][0] = experiment.instrument.calib_d_to_tof_offset.value
                 cryspy_expt_dict['dtt1'][0] = experiment.instrument.calib_d_to_tof_linear.value
-                cryspy_expt_dict['dtt2'][0] = (
-                    experiment.instrument.calib_d_to_tof_quadratic.value
-                )
+                cryspy_expt_dict['dtt2'][0] = experiment.instrument.calib_d_to_tof_quadratic.value
                 cryspy_expt_dict['ttheta_bank'] = np.deg2rad(
                     experiment.instrument.setup_twotheta_bank.value
                 )
@@ -1351,9 +1349,9 @@ def _cif_pref_orient_section(
     Append the cryspy texture (March-Dollase) loop for the phase.
 
     cryspy keys texture to a phase by ``_texture_label``, so only the
-    ``preferred_orientation`` row whose ``structure_id`` matches the phase being
-    calculated is emitted. A row with ``r = 1`` is a mathematical no-op;
-    an empty collection (the default) emits nothing.
+    ``preferred_orientation`` row whose ``structure_id`` matches the
+    phase being calculated is emitted. A row with ``r = 1`` is a
+    mathematical no-op; an empty collection (the default) emits nothing.
     """
     # Initial support is constant-wavelength only (ADR Deferred Work);
     # the TOF pass-through is not wired, so a TOF texture loop would
@@ -1415,10 +1413,10 @@ def _update_texture_in_cryspy_dict(
     """
     Patch cryspy texture g_1/g_2 from preferred-orientation rows.
 
-    Matches each emitted texture row to a preferred-orientation row by phase
-    label and writes the refinable coefficient and random fraction in
-    place. ``index_h``/``index_k``/``index_l`` are fixed descriptors, so
-    ``texture_axis`` is never touched. No-op when no texture loop was
+    Matches each emitted texture row to a preferred-orientation row by
+    phase label and writes the refinable coefficient and random fraction
+    in place. ``index_h``/``index_k``/``index_l`` are fixed descriptors,
+    so ``texture_axis`` is never touched. No-op when no texture loop was
     emitted.
     """
     if 'texture_g1' not in cryspy_expt_dict:

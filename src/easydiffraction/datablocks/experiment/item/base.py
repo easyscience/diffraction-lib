@@ -619,8 +619,7 @@ class PdExperimentBase(ExperimentBase):
 
         if not valid_linked_structures:
             log.warning(
-                'None of the linked structures found in Structures. '
-                'Returning empty pattern.'
+                'None of the linked structures found in Structures. Returning empty pattern.'
             )
 
         return valid_linked_structures

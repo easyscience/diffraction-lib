@@ -263,9 +263,9 @@ they are recorded here for an accurate Phase 2 scope.
   reciprocal-length math. Drawing β ellipsoids would need a β→U
   conversion in the renderer. That is **out of scope**: β atoms render
   as spheres for now (no crash, no wrong ellipsoid), tracked as a
-  follow-up issue in `docs/dev/issues/open/` (step P1.9). The
-  duplicate `_reciprocal_lengths` helper is still consolidated onto the
-  shared helper (step P1.9); only the ellipsoid math is deferred.
+  follow-up issue in `docs/dev/issues/open/` (step P1.9). The duplicate
+  `_reciprocal_lengths` helper is still consolidated onto the shared
+  helper (step P1.9); only the ellipsoid math is deferred.
 
 ## Concrete files likely to change
 
@@ -305,8 +305,8 @@ Docs / ADR:
 
 - `docs/dev/adrs/accepted/type-neutral-adp-parameters.md` — Extension
   section (step P1.1).
-- `docs/dev/issues/open/` — add a follow-up row for the ADP
-  creation-API UX (resolved Q5; step P1.1).
+- `docs/dev/issues/open/` — add a follow-up row for the ADP creation-API
+  UX (resolved Q5; step P1.1).
 
 Tests (Phase 2):
 
@@ -385,9 +385,8 @@ Each step is one atomic commit. Stage only the files the step touches
       call `crystallography.reciprocal_cell_lengths` (remove the
       duplicate math; keep the `np.ndarray` return shape its callers
       expect). β atoms keep rendering as spheres; add a follow-up issue
-      to `docs/dev/issues/open/` for β→U ADP-ellipsoid display
-      (resolved Q6). Commit:
-      `Reuse shared reciprocal helper in structure builder`
+      to `docs/dev/issues/open/` for β→U ADP-ellipsoid display (resolved
+      Q6). Commit: `Reuse shared reciprocal helper in structure builder`
 - [x] **P1.10 — Phase 1 review gate.** No-code step. Mark complete,
       commit the checklist update alone. Commit:
       `Reach Phase 1 review gate`

@@ -12,4 +12,5 @@ relates to the `Reaction` mode setting (issue 61).
 
 **Depends on:** issue 61.
 
-**Recommended-priority note:** Pin the error-handling strategy (paired with #61): when to use `log.error` vs `raise`. **Tier 2.**
+**Recommended-priority note:** Pin the error-handling strategy (paired
+with #61): when to use `log.error` vs `raise`. **Tier 2.**

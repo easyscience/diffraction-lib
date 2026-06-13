@@ -160,6 +160,7 @@ EdSTAR key `_peak.dexp_switch_r_03`.
 ### `_peak.type` { #peak-type }
 
 EdSTAR key `_peak.type`.
+
 <!-- prettier-ignore-start -->
 [0]: #
 [1]: https://www.iucr.org/resources/cif/dictionaries/browse/cif_core

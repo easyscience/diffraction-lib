@@ -118,11 +118,11 @@ Legend:
 
 ### Background
 
-| Feature                                           | LIB | APP |
-| ------------------------------------------------- | --- | --- |
-| Line segments type<br>_x, y_                      | ✅  | ✅  |
-| Chebyshev polynomial type<br>_order, coefficient_ | ✅  | 🗓  |
-| Automatic background estimation<br>_one-call baseline (arpls/fabc), auto method_ | ✅ | 🗓 |
+| Feature                                                                          | LIB | APP |
+| -------------------------------------------------------------------------------- | --- | --- |
+| Line segments type<br>_x, y_                                                     | ✅  | ✅  |
+| Chebyshev polynomial type<br>_order, coefficient_                                | ✅  | 🗓  |
+| Automatic background estimation<br>_one-call baseline (arpls/fabc), auto method_ | ✅  | 🗓  |
 
 ### Preferred Orientation
 

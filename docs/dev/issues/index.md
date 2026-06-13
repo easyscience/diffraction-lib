@@ -1,7 +1,7 @@
 # EasyDiffraction — Issue Index
 
-Index of development issues. Each issue is one Markdown file; this
-page is only a table of contents. **Rationale and details live in the
+Index of development issues. Each issue is one Markdown file; this page
+is only a table of contents. **Rationale and details live in the
 individual issue files** — not here.
 
 - Open issues are in [`open/`](open/), one file per issue named
@@ -12,164 +12,164 @@ individual issue files** — not here.
 
 ## Open Issues
 
-| #   | Issue | Priority | Type |
-| --- | --- | --- | --- |
-| 15 | [Validate Joint-Fit Weights Before Residual Normalisation](open/highest_validate-joint-fit-weights-before-residual-normalisation.md) | `[priority] highest` | Correctness |
-| 85 | [Retain Per-Experiment Fitted Parameters for Plotting](open/highest_retain-per-experiment-fitted-parameters-for-plotting.md) | `[priority] highest` | Correctness / UX |
-| 119 | [Model Sample Absorption (Debye–Scherrer, μR)](open/highest_model-sample-absorption-debye-scherrer-r.md) | `[priority] highest` | Physics / Engine feature |
-| 130 | [cryspy Diverges on TOF Jorgensen–Von Dreele Lorentzian](open/highest_cryspy-diverges-on-tof-jorgensen-von-dreele-lorentzian.md) | `[priority] highest` | Correctness |
-| 134 | [Investigate ed-crysfml TOF Jorgensen Profile Discrepancy](open/highest_investigate-ed-crysfml-tof-jorgensen-profile-discrepancy.md) | `[priority] highest` | Correctness |
-| 138 | [`calculate_structure_factors` Contract Disagrees Across Backends and Caller](open/highest_calculate-structure-factors-contract-disagrees-across-backends-and-caller.md) | `[priority] highest` | Correctness / Maintainability |
-| 139 | [Unknown Switchable-Category Type on CIF Restore Silently Drops Parameters](open/highest_unknown-switchable-category-type-on-cif-restore-silently-drops-parameters.md) | `[priority] highest` | Robustness |
-| 140 | [Unify Uncertainty-Floor Handling Across Bragg PD, Single-Crystal, and PDF Data](open/highest_unify-uncertainty-floor-handling-across-bragg-pd-single-crystal-and-pdf-data.md) | `[priority] highest` | Correctness / Robustness |
-| 8 | [Add Explicit `create()` Signatures on Collections](open/high_add-explicit-create-signatures-on-collections.md) | `[priority] high` | API safety |
-| 61 | [Clarify Logger Default Reaction Mode](open/high_clarify-logger-default-reaction-mode.md) | `[priority] high` | Design |
-| 66 | [Decide Error-Handling Strategy: `log.error` vs `raise`](open/high_decide-error-handling-strategy-log-error-vs-raise.md) | `[priority] high` | Design |
-| 116 | [Add a Static Type Checker to the Quality Gate](open/high_add-a-static-type-checker-to-the-quality-gate.md) | `[priority] high` | Tooling / Correctness |
-| 133 | [Rename `asym_empir_*` and Add the Physical FCJ Asymmetry Model](open/high_rename-asym-empir-and-add-the-physical-fcj-asymmetry-model.md) | `[priority] high` | Experiment model / Peak profile / API naming |
-| 21 | [Clarify CrysPy TOF Background CIF Tag Names](open/medium_clarify-cryspy-tof-background-cif-tag-names.md) | `[priority] medium` | Correctness / Naming |
-| 25 | [Refactor Data `_update` Methods (Split and Unify)](open/medium_refactor-data-update-methods-split-and-unify.md) | `[priority] medium` | Maintainability |
-| 29 | [Standardise CIF ID Validator Pattern Across Categories](open/medium_standardise-cif-id-validator-pattern-across-categories.md) | `[priority] medium` | Consistency |
-| 32 | [Move Common Methods to `DatablockCollection` Base Class](open/medium_move-common-methods-to-datablockcollection-base-class.md) | `[priority] medium` | Maintainability |
-| 33 | [Make `DatablockItem._update_categories` Abstract](open/medium_make-datablockitem-update-categories-abstract.md) | `[priority] medium` | Design |
-| 38 | [Fix `@typechecked` / gemmi Interaction in Factories](open/medium_fix-typechecked-gemmi-interaction-in-factories.md) | `[priority] medium` | Bug |
-| 40 | [Implement Resetting `.user_constrained` to `False`](open/medium_implement-resetting-user-constrained-to-false.md) | `[priority] medium` | Correctness |
-| 65 | [Replace All Bare `print()` Calls with Logging](open/medium_replace-all-bare-print-calls-with-logging.md) | `[priority] medium` | Code quality |
-| 67 | [Custom Validation for Parameter/Descriptor and Category Types](open/medium_custom-validation-for-parameter-descriptor-and-category-types.md) | `[priority] medium` | Design |
-| 70 | [Standardise Class Member Ordering and Visual Section Headers](open/medium_standardise-class-member-ordering-and-visual-section-headers.md) | `[priority] medium` | Code style |
-| 74 | [Sync Property Type Hints with Private Attributes + Custom Lint](open/medium_sync-property-type-hints-with-private-attributes-custom-lint.md) | `[priority] medium` | Tooling / Correctness |
-| 81 | [Enforce Docstrings on All Public Methods](open/medium_enforce-docstrings-on-all-public-methods.md) | `[priority] medium` | Code quality |
-| 89 | [Parallel Independent Fits for Single/Independent Fit Mode](open/medium_parallel-independent-fits-for-single-independent-fit-mode.md) | `[priority] medium` | Performance |
-| 93 | [Eliminate Flicker in Live Progress Tables](open/medium_eliminate-flicker-in-live-progress-tables.md) | `[priority] medium` | UX |
-| 95 | [Re-Enable DREAM Multiprocessing in Direct Python Scripts](open/medium_re-enable-dream-multiprocessing-in-direct-python-scripts.md) | `[priority] medium` | Performance / Script runtime |
-| 107 | [Validate Generated CIF Report Against Official IUCr Dictionaries](open/medium_validate-generated-cif-report-against-official-iucr-dictionaries.md) | `[priority] medium` | Test coverage |
-| 113 | [Cross-Repository Validation Harness (nightly)](open/medium_cross-repository-validation-harness-nightly.md) | `[priority] medium` | Test infrastructure |
-| 120 | [Decide Whether Inactive Fit-Mode Categories Stay Lenient](open/medium_decide-whether-inactive-fit-mode-categories-stay-lenient.md) | `[priority] medium` | API design |
-| 121 | [Clarify `joint_fit` Lifecycle Outside Execution](open/medium_clarify-joint-fit-lifecycle-outside-execution.md) | `[priority] medium` | Fragility |
-| 122 | [Define `joint_fit.weight` Bounds](open/medium_define-joint-fit-weight-bounds.md) | `[priority] medium` | Data model |
-| 123 | [Define `sequential_fit_extract` Target Scope](open/medium_define-sequential-fit-extract-target-scope.md) | `[priority] medium` | Data model |
-| 124 | [Decide Sequential Extraction Failure Policy](open/medium_decide-sequential-extraction-failure-policy.md) | `[priority] medium` | Runtime behaviour |
-| 131 | [Add SyCos/SySin Systematic Peak-Position Corrections](open/medium_add-sycos-sysin-systematic-peak-position-corrections.md) | `[priority] medium` | Feature / Experiment model |
-| 135 | [More Intuitive ADP Creation API (type-aware kwargs)](open/medium_more-intuitive-adp-creation-api-type-aware-kwargs.md) | `[priority] medium` | API design |
-| 141 | [BUMPS Drops Uncertainties Silently on Singular Covariance](open/medium_bumps-drops-uncertainties-silently-on-singular-covariance.md) | `[priority] medium` | Correctness / Silent failure |
-| 142 | [Numeric CIF Parse Failure Silently Stores `None`](open/medium_numeric-cif-parse-failure-silently-stores-none.md) | `[priority] medium` | Robustness |
-| 143 | [Verify String-Field CIF Round-Trip Strips `;` Text Delimiters](open/medium_verify-string-field-cif-round-trip-strips-text-delimiters.md) | `[priority] medium` | Correctness |
-| 144 | [`_find_loop_for_category` Missing None Guard](open/medium_find-loop-for-category-missing-none-guard.md) | `[priority] medium` | Robustness |
-| 145 | [Escape User Names Before Rich Markup Rendering](open/medium_escape-user-names-before-rich-markup-rendering.md) | `[priority] medium` | Robustness |
-| 146 | [Guard Hand-Edited Project Timestamps on Restore](open/medium_guard-hand-edited-project-timestamps-on-restore.md) | `[priority] medium` | Robustness |
-| 147 | [Don't Report a PDF Report as Written When No TeX Engine Exists](open/medium_don-t-report-a-pdf-report-as-written-when-no-tex-engine-exists.md) | `[priority] medium` | UX |
-| 148 | [Atom-Site / Phase-ID Label Regex Rejects Valid CIF Labels](open/medium_atom-site-phase-id-label-regex-rejects-valid-cif-labels.md) | `[priority] medium` | Robustness |
-| 149 | [Validate Inverted Excluded Regions (start > end)](open/medium_validate-inverted-excluded-regions-start-end.md) | `[priority] medium` | API safety |
-| 150 | [Bragg Powder ASCII Loader Returns Zero Points Instead of Raising](open/medium_bragg-powder-ascii-loader-returns-zero-points-instead-of-raising.md) | `[priority] medium` | Robustness |
-| 151 | [Replace Dead `else` Branch in `_set_calc_status` With a Real Boolean Check](open/medium_replace-dead-else-branch-in-set-calc-status-with-a-real-boolean-check.md) | `[priority] medium` | Correctness / Dead code |
-| 162 | [Untrack Generated Tutorial-Benchmark CSVs](open/medium_untrack-generated-tutorial-benchmark-csvs.md) | `[priority] medium` | Hygiene |
-| 9 | [Add Future Enum Extensions](open/low_add-future-enum-extensions.md) | `[priority] low` | Design improvement |
-| 10 | [Unify Project-Level Update Orchestration](open/low_unify-project-level-update-orchestration.md) | `[priority] low` | Maintainability |
-| 11 | [Document Category `_update` Contract](open/low_document-category-update-contract.md) | `[priority] low` | Maintainability |
-| 13 | [Suppress Redundant Dirty-Flag Sets in Symmetry Constraints](open/low_suppress-redundant-dirty-flag-sets-in-symmetry-constraints.md) | `[priority] low` | Performance |
-| 14 | [Finer-Grained Parameter Change Tracking](open/low_finer-grained-parameter-change-tracking.md) | `[priority] low` | Performance |
-| 17 | [Use PDF-Specific CIF Names for Total Scattering](open/low_use-pdf-specific-cif-names-for-total-scattering.md) | `[priority] low` | Naming |
-| 18 | [Move CIF v2→v1 Conversion Out of Calculator](open/low_move-cif-v2-v1-conversion-out-of-calculator.md) | `[priority] low` | Maintainability |
-| 19 | [Add Debug-Mode Logging for Calculator Imports](open/low_add-debug-mode-logging-for-calculator-imports.md) | `[priority] low` | Diagnostics |
-| 20 | [Redirect or Suppress CrysPy stderr Warnings](open/low_redirect-or-suppress-cryspy-stderr-warnings.md) | `[priority] low` | UX |
-| 22 | [Check CrysPy Single-Crystal Instrument Mapping](open/low_check-cryspy-single-crystal-instrument-mapping.md) | `[priority] low` | Correctness |
-| 23 | [Investigate PyCrysFML Pattern Length Discrepancy](open/low_investigate-pycrysfml-pattern-length-discrepancy.md) | `[priority] low` | Correctness |
-| 26 | [Clarify `dtype` Usage in Data Point Arrays](open/low_clarify-dtype-usage-in-data-point-arrays.md) | `[priority] low` | Cleanup |
-| 27 | [Handle Zero Uncertainty in Bragg PD Data](open/low_handle-zero-uncertainty-in-bragg-pd-data.md) | `[priority] low` | Correctness |
-| 28 | [Clarify Bragg PD Data Collection Description](open/low_clarify-bragg-pd-data-collection-description.md) | `[priority] low` | Cleanup |
-| 30 | [Make `refinement_status` Default an Enum](open/low_make-refinement-status-default-an-enum.md) | `[priority] low` | Design |
-| 31 | [Rename PD Data Point Mixins](open/low_rename-pd-data-point-mixins.md) | `[priority] low` | Naming |
-| 34 | [Auto-Extract `PeakProfileTypeEnum` from Peak Classes](open/low_auto-extract-peakprofiletypeenum-from-peak-classes.md) | `[priority] low` | Design |
-| 35 | [Rename `BeamModeEnum` Members to CWL/TOF](open/low_rename-beammodeenum-members-to-cwl-tof.md) | `[priority] low` | Naming |
-| 36 | [Consider a Common `EnumBase` with `default()` / `description()`](open/low_consider-a-common-enumbase-with-default-description.md) | `[priority] low` | Design |
-| 37 | [Rename Experiment `.type` Property](open/low_rename-experiment-type-property.md) | `[priority] low` | Naming |
-| 39 | [Improve `_update_priority` Handling in Categories](open/low_improve-update-priority-handling-in-categories.md) | `[priority] low` | Design |
-| 41 | [Check Whether `_mark_dirty` in `_set_value` is Actually Used](open/low_check-whether-mark-dirty-in-set-value-is-actually-used.md) | `[priority] low` | Cleanup |
-| 42 | [MkDocs Doesn't Unpack Types in Validation Module](open/low_mkdocs-doesn-t-unpack-types-in-validation-module.md) | `[priority] low` | Docs |
-| 44 | [Merge Parameter Record Construction in Analysis](open/low_merge-parameter-record-construction-in-analysis.md) | `[priority] low` | Cleanup |
-| 45 | [Decide Default for Alias/Constraint Descriptors](open/low_decide-default-for-alias-constraint-descriptors.md) | `[priority] low` | Design |
-| 46 | [Improve `JointFitItem` Descriptions](open/low_improve-jointfititem-descriptions.md) | `[priority] low` | Naming |
-| 47 | [Improve Error Handling in Crystallography Utilities](open/low_improve-error-handling-in-crystallography-utilities.md) | `[priority] low` | Diagnostics |
-| 48 | [Fix CrysPy TOF Instrument Default](open/low_fix-cryspy-tof-instrument-default.md) | `[priority] low` | Bug workaround |
-| 49 | [Automate Space Group CIF Name Variants](open/low_automate-space-group-cif-name-variants.md) | `[priority] low` | Maintainability |
-| 50 | [Clarify `Cell._update` Usage of `called_by_minimizer`](open/low_clarify-cell-update-usage-of-called-by-minimizer.md) | `[priority] low` | Cleanup |
-| 52 | [Rename Line-Segment Background `y` to `intensity`](open/low_rename-line-segment-background-y-to-intensity.md) | `[priority] low` | Naming |
-| 53 | [Move `show()` to `CategoryCollection` Base Class](open/low_move-show-to-categorycollection-base-class.md) | `[priority] low` | Maintainability |
-| 54 | [Add `point_id` to Excluded Regions](open/low_add-point-id-to-excluded-regions.md) | `[priority] low` | Completeness |
-| 55 | [Fix Jupyter Scroll Disabling for MkDocs](open/low_fix-jupyter-scroll-disabling-for-mkdocs.md) | `[priority] low` | Docs / UX |
-| 57 | [Clean Up CIF Deserialisation Helpers](open/low_clean-up-cif-deserialisation-helpers.md) | `[priority] low` | Maintainability |
-| 59 | [Add CIF Name Validation or Normalisation in Parse](open/low_add-cif-name-validation-or-normalisation-in-parse.md) | `[priority] low` | Robustness |
-| 60 | [Unify `mkdir` Usage Across the Codebase](open/low_unify-mkdir-usage-across-the-codebase.md) | `[priority] low` | Cleanup |
-| 62 | [Complete Migration from `render_table` to `TableRenderer`](open/low_complete-migration-from-render-table-to-tablerenderer.md) | `[priority] low` | Cleanup |
-| 63 | [Fix Calculator `calculate_pattern` Signature Type](open/low_fix-calculator-calculate-pattern-signature-type.md) | `[priority] low` | Design |
-| 64 | [Check Whether `_not_used_if_loading_from_cif` Code is Needed](open/low_check-whether-not-used-if-loading-from-cif-code-is-needed.md) | `[priority] low` | Cleanup |
-| 68 | [Decide Whether to Apply `@typechecked` to All Public Methods](open/low_decide-whether-to-apply-typechecked-to-all-public-methods.md) | `[priority] low` | Design |
-| 69 | [Shorter Public API Names via `__init__.py` Re-Exports](open/low_shorter-public-api-names-via-init-py-re-exports.md) | `[priority] low` | API ergonomics |
-| 71 | [Create `_update_priority` Reference Table for Categories](open/low_create-update-priority-reference-table-for-categories.md) | `[priority] low` | Documentation |
-| 73 | [Unify Setter Parameter Naming Convention](open/low_unify-setter-parameter-naming-convention.md) | `[priority] low` | Code style |
-| 75 | [Add `show_supported_calculators()` on Analysis or Project](open/low_add-show-supported-calculators-on-analysis-or-project.md) | `[priority] low` | API completeness |
-| 79 | [Verify Completeness of Analysis CIF Serialisation](open/low_verify-completeness-of-analysis-cif-serialisation.md) | `[priority] low` | Correctness |
-| 80 | [Resolve `Any` vs `object` Type Annotation Policy](open/low_resolve-any-vs-object-type-annotation-policy.md) | `[priority] low` | Code style |
-| 82 | [Document `param-docstring-fix` and `notebook-prepare` Workflow](open/low_document-param-docstring-fix-and-notebook-prepare-workflow.md) | `[priority] low` | Documentation |
-| 83 | [Remove Redundant Parameter Listing from Parameter Itself](open/low_remove-redundant-parameter-listing-from-parameter-itself.md) | `[priority] low` | Cleanup |
-| 86 | [Auto-Resolve `plot_param` X-Axis Descriptor and Add Units](open/low_auto-resolve-plot-param-x-axis-descriptor-and-add-units.md) | `[priority] low` | UX |
-| 87 | [Redesign Tutorial Grouping and Categorisation](open/low_redesign-tutorial-grouping-and-categorisation.md) | `[priority] low` | Documentation / UX |
-| 90 | [Show Experiment Number/Total During Sequential Fitting](open/low_show-experiment-number-total-during-sequential-fitting.md) | `[priority] low` | UX |
-| 92 | [Make `save()` Respect Verbosity Settings](open/low_make-save-respect-verbosity-settings.md) | `[priority] low` | UX |
-| 94 | [Revisit Powder `refln` Phase Labels and Row IDs](open/low_revisit-powder-refln-phase-labels-and-row-ids.md) | `[priority] low` | Naming / CIF UX |
-| 102 | [Drop Compute-and-Ignore `result_kind` Validation in CIF Restore](open/low_drop-compute-and-ignore-result-kind-validation-in-cif-restore.md) | `[priority] low` | Dead code / clarity **Source:** Review 8 finding F7. |
-| 104 | [Tighten `FitParameterItem.posterior_summary` NaN Behaviour](open/low_tighten-fitparameteritem-posterior-summary-nan-behaviour.md) | `[priority] low` | Robustness / partial-data edge case **Source:** Review 8 |
-| 106 | [Document `FitResultBase.result_kind` Default Rationale](open/low_document-fitresultbase-result-kind-default-rationale.md) | `[priority] low` | Code readability **Source:** `minimizer-input-output-split` |
-| 108 | [Smarter Automatic Bond Detection (Near-Neighbour Analysis)](open/low_smarter-automatic-bond-detection-near-neighbour-analysis.md) | `[priority] low` | UX / Visualization |
-| 109 | [Let More Tables Adapt to Terminal Width](open/low_let-more-tables-adapt-to-terminal-width.md) | `[priority] low` | UX / Display |
-| 110 | [Render Styled Multi-Line Table Cells in the HTML Backend](open/low_render-styled-multi-line-table-cells-in-the-html-backend.md) | `[priority] low` | Display / Notebook parity |
-| 111 | [Add Test Coverage for `list_tutorials` Two-Line Rendering](open/low_add-test-coverage-for-list-tutorials-two-line-rendering.md) | `[priority] low` | Test coverage |
-| 112 | [Suppress the Redundant Row-Index Column in Tables](open/low_suppress-the-redundant-row-index-column-in-tables.md) | `[priority] low` | Display / UX |
-| 114 | [External Link Checking in the Docs Gate](open/low_external-link-checking-in-the-docs-gate.md) | `[priority] low` | CI / Documentation |
-| 115 | [Expand Cross-Engine Verification Coverage](open/low_expand-cross-engine-verification-coverage.md) | `[priority] low` | Test coverage / Documentation |
-| 125 | [Decide Whether Sequential Extraction Should Be Cached](open/low_decide-whether-sequential-extraction-should-be-cached.md) | `[priority] low` | Performance |
-| 126 | [Decide How Mid-Run Sequential Failures Persist](open/low_decide-how-mid-run-sequential-failures-persist.md) | `[priority] low` | Recovery design |
-| 127 | [Decide Whether CLI Should Override Extract Rules](open/low_decide-whether-cli-should-override-extract-rules.md) | `[priority] low` | CLI design |
-| 128 | [Align `dir()` With Help Filtering](open/low_align-dir-with-help-filtering.md) | `[priority] low` | Discoverability |
-| 129 | [Decide Whether `single_fit` Needs a Future Category](open/low_decide-whether-single-fit-needs-a-future-category.md) | `[priority] low` | Scope planning |
-| 132 | [Decide Future of `show_residual` in `plot_meas_vs_calc`](open/low_decide-future-of-show-residual-in-plot-meas-vs-calc.md) | `[priority] low` | API cleanup |
-| 136 | [Draw ADP Ellipsoids for Beta-Tensor Atoms](open/low_draw-adp-ellipsoids-for-beta-tensor-atoms.md) | `[priority] low` | Display / Visualization |
-| 152 | [`help()` Mislabels Boolean Descriptors as "numeric"](open/low_help-mislabels-boolean-descriptors-as-numeric.md) | `[priority] low` | API safety / UX |
-| 153 | [`value` Setter Re-Validates on Every NaN Assignment](open/low_value-setter-re-validates-on-every-nan-assignment.md) | `[priority] low` | Performance |
-| 154 | [Remove Dead Auto-Populate Branch in `_run_joint`](open/low_remove-dead-auto-populate-branch-in-run-joint.md) | `[priority] low` | Dead code |
-| 155 | [Fix Reversed Abstract `_sync_result_to_parameters` Signature](open/low_fix-reversed-abstract-sync-result-to-parameters-signature.md) | `[priority] low` | Maintainability |
-| 156 | [Size `chapter()` Divider From the Live Console Width](open/low_size-chapter-divider-from-the-live-console-width.md) | `[priority] low` | Robustness / Display |
-| 157 | [Add Public API to Clear a Project Path (CLI `fit --dry`)](open/low_add-public-api-to-clear-a-project-path-cli-fit-dry.md) | `[priority] low` | API safety |
-| 158 | [Remove Stale Commented-Out / Dead Code in `core/` and `io/`](open/low_remove-stale-commented-out-dead-code-in-core-and-io.md) | `[priority] low` | Dead code |
-| 159 | [Narrow Defensive getattr-Chain in Aniso ADP Unit Resolution](open/low_narrow-defensive-getattr-chain-in-aniso-adp-unit-resolution.md) | `[priority] low` | Maintainability |
-| 160 | [Replace No-Op `assert True` in `test_logging.py`](open/low_replace-no-op-assert-true-in-test-logging-py.md) | `[priority] low` | Test coverage |
-| 161 | [Add Boundary Tests for `verification.py` FullProf/IGOR Parsers](open/low_add-boundary-tests-for-verification-py-fullprof-igor-parsers.md) | `[priority] low` | Test coverage |
-| 163 | [Fix `.gitignore` Gaps and Remove the Stale `absorption/` Package](open/low_fix-gitignore-gaps-and-remove-the-stale-absorption-package.md) | `[priority] low` | Hygiene |
-| 165 | [cryspy Backend Hardcodes `flag_only_nuclear` (No Magnetic Structures)](open/low_cryspy-backend-hardcodes-flag-only-nuclear-no-magnetic-structures.md) | `[priority] low` | Engine limitation |
-| 88 | [Fix Dataset 26 Description (47 Files, Not 57)](open/lowest_fix-dataset-26-description-47-files-not-57.md) | `[priority] lowest` | Data |
-| 91 | [Disable TODO Comment Checks in CodeFactor PRs](open/lowest_disable-todo-comment-checks-in-codefactor-prs.md) | `[priority] lowest` | CI / Tooling |
-| 117 | [Live-Notebook Plotly Delivery: Loader vs Native Mimetype](open/lowest_live-notebook-plotly-delivery-loader-vs-native-mimetype.md) | `[priority] lowest` | Display / Architecture |
-| 118 | [Plotly Figures Show Empty Rows in the VISA JupyterLab](open/lowest_plotly-figures-show-empty-rows-in-the-visa-jupyterlab.md) | `[priority] lowest` | Display / Environment |
+| #   | Issue                                                                                                                                                                          | Priority             | Type                                                        |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------- | ----------------------------------------------------------- |
+| 15  | [Validate Joint-Fit Weights Before Residual Normalisation](open/highest_validate-joint-fit-weights-before-residual-normalisation.md)                                           | `[priority] highest` | Correctness                                                 |
+| 85  | [Retain Per-Experiment Fitted Parameters for Plotting](open/highest_retain-per-experiment-fitted-parameters-for-plotting.md)                                                   | `[priority] highest` | Correctness / UX                                            |
+| 119 | [Model Sample Absorption (Debye–Scherrer, μR)](open/highest_model-sample-absorption-debye-scherrer-r.md)                                                                       | `[priority] highest` | Physics / Engine feature                                    |
+| 130 | [cryspy Diverges on TOF Jorgensen–Von Dreele Lorentzian](open/highest_cryspy-diverges-on-tof-jorgensen-von-dreele-lorentzian.md)                                               | `[priority] highest` | Correctness                                                 |
+| 134 | [Investigate ed-crysfml TOF Jorgensen Profile Discrepancy](open/highest_investigate-ed-crysfml-tof-jorgensen-profile-discrepancy.md)                                           | `[priority] highest` | Correctness                                                 |
+| 138 | [`calculate_structure_factors` Contract Disagrees Across Backends and Caller](open/highest_calculate-structure-factors-contract-disagrees-across-backends-and-caller.md)       | `[priority] highest` | Correctness / Maintainability                               |
+| 139 | [Unknown Switchable-Category Type on CIF Restore Silently Drops Parameters](open/highest_unknown-switchable-category-type-on-cif-restore-silently-drops-parameters.md)         | `[priority] highest` | Robustness                                                  |
+| 140 | [Unify Uncertainty-Floor Handling Across Bragg PD, Single-Crystal, and PDF Data](open/highest_unify-uncertainty-floor-handling-across-bragg-pd-single-crystal-and-pdf-data.md) | `[priority] highest` | Correctness / Robustness                                    |
+| 8   | [Add Explicit `create()` Signatures on Collections](open/high_add-explicit-create-signatures-on-collections.md)                                                                | `[priority] high`    | API safety                                                  |
+| 61  | [Clarify Logger Default Reaction Mode](open/high_clarify-logger-default-reaction-mode.md)                                                                                      | `[priority] high`    | Design                                                      |
+| 66  | [Decide Error-Handling Strategy: `log.error` vs `raise`](open/high_decide-error-handling-strategy-log-error-vs-raise.md)                                                       | `[priority] high`    | Design                                                      |
+| 116 | [Add a Static Type Checker to the Quality Gate](open/high_add-a-static-type-checker-to-the-quality-gate.md)                                                                    | `[priority] high`    | Tooling / Correctness                                       |
+| 133 | [Rename `asym_empir_*` and Add the Physical FCJ Asymmetry Model](open/high_rename-asym-empir-and-add-the-physical-fcj-asymmetry-model.md)                                      | `[priority] high`    | Experiment model / Peak profile / API naming                |
+| 21  | [Clarify CrysPy TOF Background CIF Tag Names](open/medium_clarify-cryspy-tof-background-cif-tag-names.md)                                                                      | `[priority] medium`  | Correctness / Naming                                        |
+| 25  | [Refactor Data `_update` Methods (Split and Unify)](open/medium_refactor-data-update-methods-split-and-unify.md)                                                               | `[priority] medium`  | Maintainability                                             |
+| 29  | [Standardise CIF ID Validator Pattern Across Categories](open/medium_standardise-cif-id-validator-pattern-across-categories.md)                                                | `[priority] medium`  | Consistency                                                 |
+| 32  | [Move Common Methods to `DatablockCollection` Base Class](open/medium_move-common-methods-to-datablockcollection-base-class.md)                                                | `[priority] medium`  | Maintainability                                             |
+| 33  | [Make `DatablockItem._update_categories` Abstract](open/medium_make-datablockitem-update-categories-abstract.md)                                                               | `[priority] medium`  | Design                                                      |
+| 38  | [Fix `@typechecked` / gemmi Interaction in Factories](open/medium_fix-typechecked-gemmi-interaction-in-factories.md)                                                           | `[priority] medium`  | Bug                                                         |
+| 40  | [Implement Resetting `.user_constrained` to `False`](open/medium_implement-resetting-user-constrained-to-false.md)                                                             | `[priority] medium`  | Correctness                                                 |
+| 65  | [Replace All Bare `print()` Calls with Logging](open/medium_replace-all-bare-print-calls-with-logging.md)                                                                      | `[priority] medium`  | Code quality                                                |
+| 67  | [Custom Validation for Parameter/Descriptor and Category Types](open/medium_custom-validation-for-parameter-descriptor-and-category-types.md)                                  | `[priority] medium`  | Design                                                      |
+| 70  | [Standardise Class Member Ordering and Visual Section Headers](open/medium_standardise-class-member-ordering-and-visual-section-headers.md)                                    | `[priority] medium`  | Code style                                                  |
+| 74  | [Sync Property Type Hints with Private Attributes + Custom Lint](open/medium_sync-property-type-hints-with-private-attributes-custom-lint.md)                                  | `[priority] medium`  | Tooling / Correctness                                       |
+| 81  | [Enforce Docstrings on All Public Methods](open/medium_enforce-docstrings-on-all-public-methods.md)                                                                            | `[priority] medium`  | Code quality                                                |
+| 89  | [Parallel Independent Fits for Single/Independent Fit Mode](open/medium_parallel-independent-fits-for-single-independent-fit-mode.md)                                          | `[priority] medium`  | Performance                                                 |
+| 93  | [Eliminate Flicker in Live Progress Tables](open/medium_eliminate-flicker-in-live-progress-tables.md)                                                                          | `[priority] medium`  | UX                                                          |
+| 95  | [Re-Enable DREAM Multiprocessing in Direct Python Scripts](open/medium_re-enable-dream-multiprocessing-in-direct-python-scripts.md)                                            | `[priority] medium`  | Performance / Script runtime                                |
+| 107 | [Validate Generated CIF Report Against Official IUCr Dictionaries](open/medium_validate-generated-cif-report-against-official-iucr-dictionaries.md)                            | `[priority] medium`  | Test coverage                                               |
+| 113 | [Cross-Repository Validation Harness (nightly)](open/medium_cross-repository-validation-harness-nightly.md)                                                                    | `[priority] medium`  | Test infrastructure                                         |
+| 120 | [Decide Whether Inactive Fit-Mode Categories Stay Lenient](open/medium_decide-whether-inactive-fit-mode-categories-stay-lenient.md)                                            | `[priority] medium`  | API design                                                  |
+| 121 | [Clarify `joint_fit` Lifecycle Outside Execution](open/medium_clarify-joint-fit-lifecycle-outside-execution.md)                                                                | `[priority] medium`  | Fragility                                                   |
+| 122 | [Define `joint_fit.weight` Bounds](open/medium_define-joint-fit-weight-bounds.md)                                                                                              | `[priority] medium`  | Data model                                                  |
+| 123 | [Define `sequential_fit_extract` Target Scope](open/medium_define-sequential-fit-extract-target-scope.md)                                                                      | `[priority] medium`  | Data model                                                  |
+| 124 | [Decide Sequential Extraction Failure Policy](open/medium_decide-sequential-extraction-failure-policy.md)                                                                      | `[priority] medium`  | Runtime behaviour                                           |
+| 131 | [Add SyCos/SySin Systematic Peak-Position Corrections](open/medium_add-sycos-sysin-systematic-peak-position-corrections.md)                                                    | `[priority] medium`  | Feature / Experiment model                                  |
+| 135 | [More Intuitive ADP Creation API (type-aware kwargs)](open/medium_more-intuitive-adp-creation-api-type-aware-kwargs.md)                                                        | `[priority] medium`  | API design                                                  |
+| 141 | [BUMPS Drops Uncertainties Silently on Singular Covariance](open/medium_bumps-drops-uncertainties-silently-on-singular-covariance.md)                                          | `[priority] medium`  | Correctness / Silent failure                                |
+| 142 | [Numeric CIF Parse Failure Silently Stores `None`](open/medium_numeric-cif-parse-failure-silently-stores-none.md)                                                              | `[priority] medium`  | Robustness                                                  |
+| 143 | [Verify String-Field CIF Round-Trip Strips `;` Text Delimiters](open/medium_verify-string-field-cif-round-trip-strips-text-delimiters.md)                                      | `[priority] medium`  | Correctness                                                 |
+| 144 | [`_find_loop_for_category` Missing None Guard](open/medium_find-loop-for-category-missing-none-guard.md)                                                                       | `[priority] medium`  | Robustness                                                  |
+| 145 | [Escape User Names Before Rich Markup Rendering](open/medium_escape-user-names-before-rich-markup-rendering.md)                                                                | `[priority] medium`  | Robustness                                                  |
+| 146 | [Guard Hand-Edited Project Timestamps on Restore](open/medium_guard-hand-edited-project-timestamps-on-restore.md)                                                              | `[priority] medium`  | Robustness                                                  |
+| 147 | [Don't Report a PDF Report as Written When No TeX Engine Exists](open/medium_don-t-report-a-pdf-report-as-written-when-no-tex-engine-exists.md)                                | `[priority] medium`  | UX                                                          |
+| 148 | [Atom-Site / Phase-ID Label Regex Rejects Valid CIF Labels](open/medium_atom-site-phase-id-label-regex-rejects-valid-cif-labels.md)                                            | `[priority] medium`  | Robustness                                                  |
+| 149 | [Validate Inverted Excluded Regions (start > end)](open/medium_validate-inverted-excluded-regions-start-end.md)                                                                | `[priority] medium`  | API safety                                                  |
+| 150 | [Bragg Powder ASCII Loader Returns Zero Points Instead of Raising](open/medium_bragg-powder-ascii-loader-returns-zero-points-instead-of-raising.md)                            | `[priority] medium`  | Robustness                                                  |
+| 151 | [Replace Dead `else` Branch in `_set_calc_status` With a Real Boolean Check](open/medium_replace-dead-else-branch-in-set-calc-status-with-a-real-boolean-check.md)             | `[priority] medium`  | Correctness / Dead code                                     |
+| 162 | [Untrack Generated Tutorial-Benchmark CSVs](open/medium_untrack-generated-tutorial-benchmark-csvs.md)                                                                          | `[priority] medium`  | Hygiene                                                     |
+| 9   | [Add Future Enum Extensions](open/low_add-future-enum-extensions.md)                                                                                                           | `[priority] low`     | Design improvement                                          |
+| 10  | [Unify Project-Level Update Orchestration](open/low_unify-project-level-update-orchestration.md)                                                                               | `[priority] low`     | Maintainability                                             |
+| 11  | [Document Category `_update` Contract](open/low_document-category-update-contract.md)                                                                                          | `[priority] low`     | Maintainability                                             |
+| 13  | [Suppress Redundant Dirty-Flag Sets in Symmetry Constraints](open/low_suppress-redundant-dirty-flag-sets-in-symmetry-constraints.md)                                           | `[priority] low`     | Performance                                                 |
+| 14  | [Finer-Grained Parameter Change Tracking](open/low_finer-grained-parameter-change-tracking.md)                                                                                 | `[priority] low`     | Performance                                                 |
+| 17  | [Use PDF-Specific CIF Names for Total Scattering](open/low_use-pdf-specific-cif-names-for-total-scattering.md)                                                                 | `[priority] low`     | Naming                                                      |
+| 18  | [Move CIF v2→v1 Conversion Out of Calculator](open/low_move-cif-v2-v1-conversion-out-of-calculator.md)                                                                         | `[priority] low`     | Maintainability                                             |
+| 19  | [Add Debug-Mode Logging for Calculator Imports](open/low_add-debug-mode-logging-for-calculator-imports.md)                                                                     | `[priority] low`     | Diagnostics                                                 |
+| 20  | [Redirect or Suppress CrysPy stderr Warnings](open/low_redirect-or-suppress-cryspy-stderr-warnings.md)                                                                         | `[priority] low`     | UX                                                          |
+| 22  | [Check CrysPy Single-Crystal Instrument Mapping](open/low_check-cryspy-single-crystal-instrument-mapping.md)                                                                   | `[priority] low`     | Correctness                                                 |
+| 23  | [Investigate PyCrysFML Pattern Length Discrepancy](open/low_investigate-pycrysfml-pattern-length-discrepancy.md)                                                               | `[priority] low`     | Correctness                                                 |
+| 26  | [Clarify `dtype` Usage in Data Point Arrays](open/low_clarify-dtype-usage-in-data-point-arrays.md)                                                                             | `[priority] low`     | Cleanup                                                     |
+| 27  | [Handle Zero Uncertainty in Bragg PD Data](open/low_handle-zero-uncertainty-in-bragg-pd-data.md)                                                                               | `[priority] low`     | Correctness                                                 |
+| 28  | [Clarify Bragg PD Data Collection Description](open/low_clarify-bragg-pd-data-collection-description.md)                                                                       | `[priority] low`     | Cleanup                                                     |
+| 30  | [Make `refinement_status` Default an Enum](open/low_make-refinement-status-default-an-enum.md)                                                                                 | `[priority] low`     | Design                                                      |
+| 31  | [Rename PD Data Point Mixins](open/low_rename-pd-data-point-mixins.md)                                                                                                         | `[priority] low`     | Naming                                                      |
+| 34  | [Auto-Extract `PeakProfileTypeEnum` from Peak Classes](open/low_auto-extract-peakprofiletypeenum-from-peak-classes.md)                                                         | `[priority] low`     | Design                                                      |
+| 35  | [Rename `BeamModeEnum` Members to CWL/TOF](open/low_rename-beammodeenum-members-to-cwl-tof.md)                                                                                 | `[priority] low`     | Naming                                                      |
+| 36  | [Consider a Common `EnumBase` with `default()` / `description()`](open/low_consider-a-common-enumbase-with-default-description.md)                                             | `[priority] low`     | Design                                                      |
+| 37  | [Rename Experiment `.type` Property](open/low_rename-experiment-type-property.md)                                                                                              | `[priority] low`     | Naming                                                      |
+| 39  | [Improve `_update_priority` Handling in Categories](open/low_improve-update-priority-handling-in-categories.md)                                                                | `[priority] low`     | Design                                                      |
+| 41  | [Check Whether `_mark_dirty` in `_set_value` is Actually Used](open/low_check-whether-mark-dirty-in-set-value-is-actually-used.md)                                             | `[priority] low`     | Cleanup                                                     |
+| 42  | [MkDocs Doesn't Unpack Types in Validation Module](open/low_mkdocs-doesn-t-unpack-types-in-validation-module.md)                                                               | `[priority] low`     | Docs                                                        |
+| 44  | [Merge Parameter Record Construction in Analysis](open/low_merge-parameter-record-construction-in-analysis.md)                                                                 | `[priority] low`     | Cleanup                                                     |
+| 45  | [Decide Default for Alias/Constraint Descriptors](open/low_decide-default-for-alias-constraint-descriptors.md)                                                                 | `[priority] low`     | Design                                                      |
+| 46  | [Improve `JointFitItem` Descriptions](open/low_improve-jointfititem-descriptions.md)                                                                                           | `[priority] low`     | Naming                                                      |
+| 47  | [Improve Error Handling in Crystallography Utilities](open/low_improve-error-handling-in-crystallography-utilities.md)                                                         | `[priority] low`     | Diagnostics                                                 |
+| 48  | [Fix CrysPy TOF Instrument Default](open/low_fix-cryspy-tof-instrument-default.md)                                                                                             | `[priority] low`     | Bug workaround                                              |
+| 49  | [Automate Space Group CIF Name Variants](open/low_automate-space-group-cif-name-variants.md)                                                                                   | `[priority] low`     | Maintainability                                             |
+| 50  | [Clarify `Cell._update` Usage of `called_by_minimizer`](open/low_clarify-cell-update-usage-of-called-by-minimizer.md)                                                          | `[priority] low`     | Cleanup                                                     |
+| 52  | [Rename Line-Segment Background `y` to `intensity`](open/low_rename-line-segment-background-y-to-intensity.md)                                                                 | `[priority] low`     | Naming                                                      |
+| 53  | [Move `show()` to `CategoryCollection` Base Class](open/low_move-show-to-categorycollection-base-class.md)                                                                     | `[priority] low`     | Maintainability                                             |
+| 54  | [Add `point_id` to Excluded Regions](open/low_add-point-id-to-excluded-regions.md)                                                                                             | `[priority] low`     | Completeness                                                |
+| 55  | [Fix Jupyter Scroll Disabling for MkDocs](open/low_fix-jupyter-scroll-disabling-for-mkdocs.md)                                                                                 | `[priority] low`     | Docs / UX                                                   |
+| 57  | [Clean Up CIF Deserialisation Helpers](open/low_clean-up-cif-deserialisation-helpers.md)                                                                                       | `[priority] low`     | Maintainability                                             |
+| 59  | [Add CIF Name Validation or Normalisation in Parse](open/low_add-cif-name-validation-or-normalisation-in-parse.md)                                                             | `[priority] low`     | Robustness                                                  |
+| 60  | [Unify `mkdir` Usage Across the Codebase](open/low_unify-mkdir-usage-across-the-codebase.md)                                                                                   | `[priority] low`     | Cleanup                                                     |
+| 62  | [Complete Migration from `render_table` to `TableRenderer`](open/low_complete-migration-from-render-table-to-tablerenderer.md)                                                 | `[priority] low`     | Cleanup                                                     |
+| 63  | [Fix Calculator `calculate_pattern` Signature Type](open/low_fix-calculator-calculate-pattern-signature-type.md)                                                               | `[priority] low`     | Design                                                      |
+| 64  | [Check Whether `_not_used_if_loading_from_cif` Code is Needed](open/low_check-whether-not-used-if-loading-from-cif-code-is-needed.md)                                          | `[priority] low`     | Cleanup                                                     |
+| 68  | [Decide Whether to Apply `@typechecked` to All Public Methods](open/low_decide-whether-to-apply-typechecked-to-all-public-methods.md)                                          | `[priority] low`     | Design                                                      |
+| 69  | [Shorter Public API Names via `__init__.py` Re-Exports](open/low_shorter-public-api-names-via-init-py-re-exports.md)                                                           | `[priority] low`     | API ergonomics                                              |
+| 71  | [Create `_update_priority` Reference Table for Categories](open/low_create-update-priority-reference-table-for-categories.md)                                                  | `[priority] low`     | Documentation                                               |
+| 73  | [Unify Setter Parameter Naming Convention](open/low_unify-setter-parameter-naming-convention.md)                                                                               | `[priority] low`     | Code style                                                  |
+| 75  | [Add `show_supported_calculators()` on Analysis or Project](open/low_add-show-supported-calculators-on-analysis-or-project.md)                                                 | `[priority] low`     | API completeness                                            |
+| 79  | [Verify Completeness of Analysis CIF Serialisation](open/low_verify-completeness-of-analysis-cif-serialisation.md)                                                             | `[priority] low`     | Correctness                                                 |
+| 80  | [Resolve `Any` vs `object` Type Annotation Policy](open/low_resolve-any-vs-object-type-annotation-policy.md)                                                                   | `[priority] low`     | Code style                                                  |
+| 82  | [Document `param-docstring-fix` and `notebook-prepare` Workflow](open/low_document-param-docstring-fix-and-notebook-prepare-workflow.md)                                       | `[priority] low`     | Documentation                                               |
+| 83  | [Remove Redundant Parameter Listing from Parameter Itself](open/low_remove-redundant-parameter-listing-from-parameter-itself.md)                                               | `[priority] low`     | Cleanup                                                     |
+| 86  | [Auto-Resolve `plot_param` X-Axis Descriptor and Add Units](open/low_auto-resolve-plot-param-x-axis-descriptor-and-add-units.md)                                               | `[priority] low`     | UX                                                          |
+| 87  | [Redesign Tutorial Grouping and Categorisation](open/low_redesign-tutorial-grouping-and-categorisation.md)                                                                     | `[priority] low`     | Documentation / UX                                          |
+| 90  | [Show Experiment Number/Total During Sequential Fitting](open/low_show-experiment-number-total-during-sequential-fitting.md)                                                   | `[priority] low`     | UX                                                          |
+| 92  | [Make `save()` Respect Verbosity Settings](open/low_make-save-respect-verbosity-settings.md)                                                                                   | `[priority] low`     | UX                                                          |
+| 94  | [Revisit Powder `refln` Phase Labels and Row IDs](open/low_revisit-powder-refln-phase-labels-and-row-ids.md)                                                                   | `[priority] low`     | Naming / CIF UX                                             |
+| 102 | [Drop Compute-and-Ignore `result_kind` Validation in CIF Restore](open/low_drop-compute-and-ignore-result-kind-validation-in-cif-restore.md)                                   | `[priority] low`     | Dead code / clarity **Source:** Review 8 finding F7.        |
+| 104 | [Tighten `FitParameterItem.posterior_summary` NaN Behaviour](open/low_tighten-fitparameteritem-posterior-summary-nan-behaviour.md)                                             | `[priority] low`     | Robustness / partial-data edge case **Source:** Review 8    |
+| 106 | [Document `FitResultBase.result_kind` Default Rationale](open/low_document-fitresultbase-result-kind-default-rationale.md)                                                     | `[priority] low`     | Code readability **Source:** `minimizer-input-output-split` |
+| 108 | [Smarter Automatic Bond Detection (Near-Neighbour Analysis)](open/low_smarter-automatic-bond-detection-near-neighbour-analysis.md)                                             | `[priority] low`     | UX / Visualization                                          |
+| 109 | [Let More Tables Adapt to Terminal Width](open/low_let-more-tables-adapt-to-terminal-width.md)                                                                                 | `[priority] low`     | UX / Display                                                |
+| 110 | [Render Styled Multi-Line Table Cells in the HTML Backend](open/low_render-styled-multi-line-table-cells-in-the-html-backend.md)                                               | `[priority] low`     | Display / Notebook parity                                   |
+| 111 | [Add Test Coverage for `list_tutorials` Two-Line Rendering](open/low_add-test-coverage-for-list-tutorials-two-line-rendering.md)                                               | `[priority] low`     | Test coverage                                               |
+| 112 | [Suppress the Redundant Row-Index Column in Tables](open/low_suppress-the-redundant-row-index-column-in-tables.md)                                                             | `[priority] low`     | Display / UX                                                |
+| 114 | [External Link Checking in the Docs Gate](open/low_external-link-checking-in-the-docs-gate.md)                                                                                 | `[priority] low`     | CI / Documentation                                          |
+| 115 | [Expand Cross-Engine Verification Coverage](open/low_expand-cross-engine-verification-coverage.md)                                                                             | `[priority] low`     | Test coverage / Documentation                               |
+| 125 | [Decide Whether Sequential Extraction Should Be Cached](open/low_decide-whether-sequential-extraction-should-be-cached.md)                                                     | `[priority] low`     | Performance                                                 |
+| 126 | [Decide How Mid-Run Sequential Failures Persist](open/low_decide-how-mid-run-sequential-failures-persist.md)                                                                   | `[priority] low`     | Recovery design                                             |
+| 127 | [Decide Whether CLI Should Override Extract Rules](open/low_decide-whether-cli-should-override-extract-rules.md)                                                               | `[priority] low`     | CLI design                                                  |
+| 128 | [Align `dir()` With Help Filtering](open/low_align-dir-with-help-filtering.md)                                                                                                 | `[priority] low`     | Discoverability                                             |
+| 129 | [Decide Whether `single_fit` Needs a Future Category](open/low_decide-whether-single-fit-needs-a-future-category.md)                                                           | `[priority] low`     | Scope planning                                              |
+| 132 | [Decide Future of `show_residual` in `plot_meas_vs_calc`](open/low_decide-future-of-show-residual-in-plot-meas-vs-calc.md)                                                     | `[priority] low`     | API cleanup                                                 |
+| 136 | [Draw ADP Ellipsoids for Beta-Tensor Atoms](open/low_draw-adp-ellipsoids-for-beta-tensor-atoms.md)                                                                             | `[priority] low`     | Display / Visualization                                     |
+| 152 | [`help()` Mislabels Boolean Descriptors as "numeric"](open/low_help-mislabels-boolean-descriptors-as-numeric.md)                                                               | `[priority] low`     | API safety / UX                                             |
+| 153 | [`value` Setter Re-Validates on Every NaN Assignment](open/low_value-setter-re-validates-on-every-nan-assignment.md)                                                           | `[priority] low`     | Performance                                                 |
+| 154 | [Remove Dead Auto-Populate Branch in `_run_joint`](open/low_remove-dead-auto-populate-branch-in-run-joint.md)                                                                  | `[priority] low`     | Dead code                                                   |
+| 155 | [Fix Reversed Abstract `_sync_result_to_parameters` Signature](open/low_fix-reversed-abstract-sync-result-to-parameters-signature.md)                                          | `[priority] low`     | Maintainability                                             |
+| 156 | [Size `chapter()` Divider From the Live Console Width](open/low_size-chapter-divider-from-the-live-console-width.md)                                                           | `[priority] low`     | Robustness / Display                                        |
+| 157 | [Add Public API to Clear a Project Path (CLI `fit --dry`)](open/low_add-public-api-to-clear-a-project-path-cli-fit-dry.md)                                                     | `[priority] low`     | API safety                                                  |
+| 158 | [Remove Stale Commented-Out / Dead Code in `core/` and `io/`](open/low_remove-stale-commented-out-dead-code-in-core-and-io.md)                                                 | `[priority] low`     | Dead code                                                   |
+| 159 | [Narrow Defensive getattr-Chain in Aniso ADP Unit Resolution](open/low_narrow-defensive-getattr-chain-in-aniso-adp-unit-resolution.md)                                         | `[priority] low`     | Maintainability                                             |
+| 160 | [Replace No-Op `assert True` in `test_logging.py`](open/low_replace-no-op-assert-true-in-test-logging-py.md)                                                                   | `[priority] low`     | Test coverage                                               |
+| 161 | [Add Boundary Tests for `verification.py` FullProf/IGOR Parsers](open/low_add-boundary-tests-for-verification-py-fullprof-igor-parsers.md)                                     | `[priority] low`     | Test coverage                                               |
+| 163 | [Fix `.gitignore` Gaps and Remove the Stale `absorption/` Package](open/low_fix-gitignore-gaps-and-remove-the-stale-absorption-package.md)                                     | `[priority] low`     | Hygiene                                                     |
+| 165 | [cryspy Backend Hardcodes `flag_only_nuclear` (No Magnetic Structures)](open/low_cryspy-backend-hardcodes-flag-only-nuclear-no-magnetic-structures.md)                         | `[priority] low`     | Engine limitation                                           |
+| 88  | [Fix Dataset 26 Description (47 Files, Not 57)](open/lowest_fix-dataset-26-description-47-files-not-57.md)                                                                     | `[priority] lowest`  | Data                                                        |
+| 91  | [Disable TODO Comment Checks in CodeFactor PRs](open/lowest_disable-todo-comment-checks-in-codefactor-prs.md)                                                                  | `[priority] lowest`  | CI / Tooling                                                |
+| 117 | [Live-Notebook Plotly Delivery: Loader vs Native Mimetype](open/lowest_live-notebook-plotly-delivery-loader-vs-native-mimetype.md)                                             | `[priority] lowest`  | Display / Architecture                                      |
+| 118 | [Plotly Figures Show Empty Rows in the VISA JupyterLab](open/lowest_plotly-figures-show-empty-rows-in-the-visa-jupyterlab.md)                                                  | `[priority] lowest`  | Display / Environment                                       |
 
 ## Closed Issues
 
-| #   | Issue |
-| --- | --- |
-| 3 | [Rebuild Joint-Fit Weights on Every Fit](closed/rebuild-joint-fit-weights-on-every-fit.md) |
-| 16 | [Add Serial Pattern-Generation Benchmarks](closed/add-serial-pattern-generation-benchmarks.md) |
-| 24 | [Process Default Values on Experiment Creation](closed/process-default-values-on-experiment-creation.md) |
-| 43 | [Fix Summary Display Inconsistencies](closed/fix-summary-display-inconsistencies.md) |
-| 51 | [Access Space Group from `AtomSites` for Wyckoff Letters](closed/access-space-group-from-atomsites-for-wyckoff-letters.md) |
-| 56 | [Make ASCII Plot Width Configurable](closed/make-ascii-plot-width-configurable.md) |
-| 58 | [Move `as_cif` / `show_as_cif` from `ProjectInfo` to `io.cif.serialize`](closed/move-as-cif-show-as-cif-from-projectinfo-to-io-cif-serialize.md) |
-| 72 | [Warn on All Switchable-Category Type Changes](closed/warn-on-all-switchable-category-type-changes.md) |
-| 76 | [Consistent `_type` Suffix in Switchable-Category API Names](closed/consistent-type-suffix-in-switchable-category-api-names.md) |
-| 77 | [Add Help Methods to Public Discovery Facades](closed/add-help-methods-to-public-discovery-facades.md) |
-| 78 | [Add `SEQUENTIAL` to `FitModeEnum` and Show Methods to Analysis](closed/add-sequential-to-fitmodeenum-and-show-methods-to-analysis.md) |
-| 84 | [Serialise `None` as `.` in CIF Output](closed/serialise-none-as-in-cif-output.md) |
-| 100 | [Collapse Duplicate Predictive-Cache-Key Helpers](closed/collapse-duplicate-predictive-cache-key-helpers.md) |
-| 101 | [Remove Dead Branch in `_fit_state_categories`](closed/remove-dead-branch-in-fit-state-categories.md) |
-| 103 | [Make `_sync_engine_from_minimizer_category` Skip-Keys Declarative](closed/make-sync-engine-from-minimizer-category-skip-keys-declarative.md) |
-| 105 | [Remove Orphaned Fit-Result Reset Helper](closed/remove-orphaned-fit-result-reset-helper.md) |
-| 137 | [CLI `fit` Command Never Saves Results to Disk](closed/cli-fit-command-never-saves-results-to-disk.md) |
+| #   | Issue                                                                                                                                                        |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 3   | [Rebuild Joint-Fit Weights on Every Fit](closed/rebuild-joint-fit-weights-on-every-fit.md)                                                                   |
+| 16  | [Add Serial Pattern-Generation Benchmarks](closed/add-serial-pattern-generation-benchmarks.md)                                                               |
+| 24  | [Process Default Values on Experiment Creation](closed/process-default-values-on-experiment-creation.md)                                                     |
+| 43  | [Fix Summary Display Inconsistencies](closed/fix-summary-display-inconsistencies.md)                                                                         |
+| 51  | [Access Space Group from `AtomSites` for Wyckoff Letters](closed/access-space-group-from-atomsites-for-wyckoff-letters.md)                                   |
+| 56  | [Make ASCII Plot Width Configurable](closed/make-ascii-plot-width-configurable.md)                                                                           |
+| 58  | [Move `as_cif` / `show_as_cif` from `ProjectInfo` to `io.cif.serialize`](closed/move-as-cif-show-as-cif-from-projectinfo-to-io-cif-serialize.md)             |
+| 72  | [Warn on All Switchable-Category Type Changes](closed/warn-on-all-switchable-category-type-changes.md)                                                       |
+| 76  | [Consistent `_type` Suffix in Switchable-Category API Names](closed/consistent-type-suffix-in-switchable-category-api-names.md)                              |
+| 77  | [Add Help Methods to Public Discovery Facades](closed/add-help-methods-to-public-discovery-facades.md)                                                       |
+| 78  | [Add `SEQUENTIAL` to `FitModeEnum` and Show Methods to Analysis](closed/add-sequential-to-fitmodeenum-and-show-methods-to-analysis.md)                       |
+| 84  | [Serialise `None` as `.` in CIF Output](closed/serialise-none-as-in-cif-output.md)                                                                           |
+| 100 | [Collapse Duplicate Predictive-Cache-Key Helpers](closed/collapse-duplicate-predictive-cache-key-helpers.md)                                                 |
+| 101 | [Remove Dead Branch in `_fit_state_categories`](closed/remove-dead-branch-in-fit-state-categories.md)                                                        |
+| 103 | [Make `_sync_engine_from_minimizer_category` Skip-Keys Declarative](closed/make-sync-engine-from-minimizer-category-skip-keys-declarative.md)                |
+| 105 | [Remove Orphaned Fit-Result Reset Helper](closed/remove-orphaned-fit-result-reset-helper.md)                                                                 |
+| 137 | [CLI `fit` Command Never Saves Results to Disk](closed/cli-fit-command-never-saves-results-to-disk.md)                                                       |
 | 164 | [Reconcile Git-Ignored `AGENTS.md` / `CLAUDE.md` With Their Checked-In Role](closed/reconcile-git-ignored-agents-md-claude-md-with-their-checked-in-role.md) |

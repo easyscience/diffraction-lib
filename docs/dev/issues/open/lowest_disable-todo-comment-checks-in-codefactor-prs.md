@@ -11,4 +11,5 @@ comments.
 
 **Depends on:** nothing.
 
-**Recommended-priority note:** Marked **lowest**: CI-tooling noise reduction (CodeFactor TODO rule), not a product defect.
+**Recommended-priority note:** Marked **lowest**: CI-tooling noise
+reduction (CodeFactor TODO rule), not a product defect.

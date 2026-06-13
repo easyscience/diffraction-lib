@@ -30,6 +30,7 @@ _CIF_UNCERTAINTY_SIG_DIGITS = 2
 # Maximum CIF description length before using semicolon-delimited block
 _CIF_DESCRIPTION_WRAP_LEN = 60
 
+
 def format_value(value: object) -> str:
     """
     Format a single CIF value for output.
@@ -159,9 +160,8 @@ def param_to_cif(param: object) -> str:
     Render a single descriptor/parameter to a CIF line.
 
     Expects ``param`` to expose ``_cif_handler.project_name`` and
-    ``value``.
-    Free parameters are written with uncertainty brackets (see
-    :func:`format_param_value`).
+    ``value``. Free parameters are written with uncertainty brackets
+    (see :func:`format_param_value`).
     """
     main_key: str = param._cif_handler.project_name  # type: ignore[attr-defined]
     return f'{main_key} {format_param_value(param)}'
@@ -472,7 +472,9 @@ def experiment_to_cif(experiment: object) -> str:
 
 
 def analysis_to_cif(analysis: object) -> str:
-    """Render analysis metadata, aliases, and constraints as STAR text."""
+    """
+    Render analysis metadata, aliases, and constraints as STAR text.
+    """
     return category_owner_to_cif(analysis)
 
 

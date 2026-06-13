@@ -36,6 +36,7 @@ EdSTAR key `_structure_view.show_labels`.
 ### `_structure_view.show_moments` { #structure-view-show-moments }
 
 EdSTAR key `_structure_view.show_moments`.
+
 <!-- prettier-ignore-start -->
 [0]: #
 [1]: https://www.iucr.org/resources/cif/dictionaries/browse/cif_core

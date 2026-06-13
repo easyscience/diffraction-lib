@@ -6,4 +6,3 @@ from __future__ import annotations
 
 from easydiffraction.io.edstar.serialize import edstar_body_from_text
 from easydiffraction.io.edstar.serialize import section_to_edstar
-

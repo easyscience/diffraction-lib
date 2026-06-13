@@ -17,4 +17,5 @@ import prints are commented out and tracked separately under issue 19.
 
 **Depends on:** nothing.
 
-**Recommended-priority note:** Bare `print()` → logging; now only 3 real call sites. **Tier 4 (maintainability).**
+**Recommended-priority note:** Bare `print()` → logging; now only 3 real
+call sites. **Tier 4 (maintainability).**

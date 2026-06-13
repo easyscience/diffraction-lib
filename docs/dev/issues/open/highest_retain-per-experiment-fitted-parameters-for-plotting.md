@@ -16,4 +16,6 @@ keep the last mutable parameter set after adding a snapshot?
 
 **Depends on:** nothing (issue 78 resolved).
 
-**Recommended-priority note:** In `single` mode only the last experiment's results survive, so earlier experiments plot incorrectly after fitting. **Tier 1 (do first).**
+**Recommended-priority note:** In `single` mode only the last
+experiment's results survive, so earlier experiments plot incorrectly
+after fitting. **Tier 1 (do first).**

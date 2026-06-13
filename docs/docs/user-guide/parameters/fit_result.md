@@ -2,8 +2,8 @@
 
 # `_fit_result`
 
-EasyDiffraction EdSTAR reference for the `_fit_result` category.
-These entries provide stable anchors for runtime parameter links.
+EasyDiffraction EdSTAR reference for the `_fit_result` category. These
+entries provide stable anchors for runtime parameter links.
 
 ### `_fit_result.R_factor_all` { #fit-result-r-factor-all }
 
@@ -164,6 +164,7 @@ EdSTAR key `_fit_result.wR_factor_all`.
 ### `_fit_result.wR_factor_gt` { #fit-result-wr-factor-gt }
 
 EdSTAR key `_fit_result.wR_factor_gt`.
+
 <!-- prettier-ignore-start -->
 [0]: #
 [1]: https://www.iucr.org/resources/cif/dictionaries/browse/cif_core

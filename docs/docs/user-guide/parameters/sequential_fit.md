@@ -24,6 +24,7 @@ EdSTAR key `_sequential_fit.max_workers`.
 ### `_sequential_fit.reverse` { #sequential-fit-reverse }
 
 EdSTAR key `_sequential_fit.reverse`.
+
 <!-- prettier-ignore-start -->
 [0]: #
 [1]: https://www.iucr.org/resources/cif/dictionaries/browse/cif_core

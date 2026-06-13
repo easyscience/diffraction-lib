@@ -10,9 +10,9 @@ Accepted and implemented.
 
 ## Amendment
 
-[`edstar-project-persistence.md`](edstar-project-persistence.md)
-updates the default project file format from CIF files to EdSTAR files.
-This ADR's ownership split still applies: real structure/experiment
+[`edstar-project-persistence.md`](edstar-project-persistence.md) updates
+the default project file format from CIF files to EdSTAR files. This
+ADR's ownership split still applies: real structure/experiment
 datablocks remain distinct from singleton category-owner sections.
 
 ## Context

@@ -75,7 +75,9 @@ def test_tof_double_exponential_mixin():
     names = {param.name for param in p.parameters}
     # Gaussian + Lorentzian broadening from existing mixins
     assert {'broad_gauss_sigma_0', 'broad_gauss_sigma_1', 'broad_gauss_sigma_2'}.issubset(names)
-    assert {'broad_lorentz_gamma_0', 'broad_lorentz_gamma_1', 'broad_lorentz_gamma_2'}.issubset(names)
+    assert {'broad_lorentz_gamma_0', 'broad_lorentz_gamma_1', 'broad_lorentz_gamma_2'}.issubset(
+        names
+    )
     # Double-exp rise
     assert {'dexp_rise_alpha_1', 'dexp_rise_alpha_2'}.issubset(names)
     # Double-exp decay

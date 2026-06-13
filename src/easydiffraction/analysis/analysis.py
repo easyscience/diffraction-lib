@@ -719,9 +719,7 @@ class Analysis(
 
             parameter.fit_min = row.fit_min.value
             parameter.fit_max = row.fit_max.value
-            parameter._set_bounds_uncertainty_multiplier(
-                row.bounds_uncertainty_multiplier.value
-            )
+            parameter._set_bounds_uncertainty_multiplier(row.bounds_uncertainty_multiplier.value)
             parameter._fit_start_value = row.start_value.value
             parameter._fit_start_uncertainty = row.start_uncertainty.value
 

@@ -36,9 +36,10 @@ def extract_project_from_zip(
     """
     Extract a project directory from a ZIP archive.
 
-    The archive must contain a project directory with ``project.edstar``.
-    Files are extracted into *destination* when provided, or into a
-    temporary directory that persists for the lifetime of the process.
+    The archive must contain a project directory with
+    ``project.edstar``. Files are extracted into *destination* when
+    provided, or into a temporary directory that persists for the
+    lifetime of the process.
 
     Parameters
     ----------

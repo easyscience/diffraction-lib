@@ -36,9 +36,9 @@ class SpaceGroup(CategoryItem):
     Space group with H-M symbol and coordinate-system code.
 
     Holds the space-group symbol (``name_h_m``) and the International
-    Tables coordinate-system qualifier (``coord_system_code``).
-    Changing the symbol automatically resets the coordinate-system code
-    to the first allowed value for the new group.
+    Tables coordinate-system qualifier (``coord_system_code``). Changing
+    the symbol automatically resets the coordinate-system code to the
+    first allowed value for the new group.
     """
 
     _category_code = 'space_group'

@@ -2,8 +2,8 @@
 
 # `_alias`
 
-EasyDiffraction EdSTAR reference for the `_alias` category.
-These entries provide stable anchors for runtime parameter links.
+EasyDiffraction EdSTAR reference for the `_alias` category. These
+entries provide stable anchors for runtime parameter links.
 
 ### `_alias.id` { #alias-id }
 
@@ -12,6 +12,7 @@ EdSTAR key `_alias.id`.
 ### `_alias.parameter_unique_name` { #alias-parameter-unique-name }
 
 EdSTAR key `_alias.parameter_unique_name`.
+
 <!-- prettier-ignore-start -->
 [0]: #
 [1]: https://www.iucr.org/resources/cif/dictionaries/browse/cif_core

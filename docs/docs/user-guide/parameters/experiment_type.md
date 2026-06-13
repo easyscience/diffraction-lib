@@ -23,8 +23,8 @@ Radiation probe used by the experiment. Supported values include
 
 ## `_experiment_type.scattering_type` { #experiment-type-scattering-type }
 
-Scattering type used by the experiment. Supported values include
-`bragg` and `total`.
+Scattering type used by the experiment. Supported values include `bragg`
+and `total`.
 
 <!-- prettier-ignore-start -->
 [0]: #

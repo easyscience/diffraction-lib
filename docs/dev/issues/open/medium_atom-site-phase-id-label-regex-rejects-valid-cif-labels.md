@@ -7,8 +7,8 @@
 `_atom_site.label` and `_pd_phase_block.id` use
 `RegexValidator(r'^[A-Za-z_][A-Za-z0-9_]*$')`, which rejects valid CIF
 identifiers that begin with a digit or contain `+`/`-`/`'` (e.g. ion
-labels like `O1-`, `Tb3+`, or block names starting with a digit). Loading
-a real-world third-party CIF with such labels fails at the parse
+labels like `O1-`, `Tb3+`, or block names starting with a digit).
+Loading a real-world third-party CIF with such labels fails at the parse
 boundary. The excluded-regions id regex differs again
 (`^[A-Za-z0-9_]*$`) — an inconsistency among the three.
 

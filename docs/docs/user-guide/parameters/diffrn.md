@@ -2,8 +2,8 @@
 
 # `_diffrn`
 
-EasyDiffraction EdSTAR reference for the `_diffrn` category.
-These entries provide stable anchors for runtime parameter links.
+EasyDiffraction EdSTAR reference for the `_diffrn` category. These
+entries provide stable anchors for runtime parameter links.
 
 ### `_diffrn.ambient_electric_field` { #diffrn-ambient-electric-field }
 
@@ -20,6 +20,7 @@ EdSTAR key `_diffrn.ambient_pressure`.
 ### `_diffrn.ambient_temperature` { #diffrn-ambient-temperature }
 
 EdSTAR key `_diffrn.ambient_temperature`.
+
 <!-- prettier-ignore-start -->
 [0]: #
 [1]: https://www.iucr.org/resources/cif/dictionaries/browse/cif_core

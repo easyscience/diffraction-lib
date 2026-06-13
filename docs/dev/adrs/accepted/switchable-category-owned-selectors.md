@@ -56,7 +56,8 @@ Three problems have accumulated since that ADR landed:
    notes the inconsistency under §"Owner-level switchable selectors" and
    tags it for a future ADR.
 
-3. **Cross-cutting inconsistency.** Issue [#76](../../issues/closed/consistent-type-suffix-in-switchable-category-api-names.md)
+3. **Cross-cutting inconsistency.** Issue
+   [#76](../../issues/closed/consistent-type-suffix-in-switchable-category-api-names.md)
    ("Consistent `_type` suffix in switchable-category API names")
    tracked the inconsistency in the _method names_ on the owner, but
    assumed the owner-level model stayed.

@@ -14,4 +14,6 @@ experiments (calculation updates). Currently it is a concrete no-op.
 
 **Depends on:** related to issue 11.
 
-**Recommended-priority note:** Part of the data `_update` refactor cluster (with #25 / #32): make `_update_categories` abstract. **Tier 4 (maintainability).**
+**Recommended-priority note:** Part of the data `_update` refactor
+cluster (with #25 / #32): make `_update_categories` abstract. **Tier 4
+(maintainability).**

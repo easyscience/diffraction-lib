@@ -299,14 +299,14 @@ project.experiments['hrpt'].preferred_orientation.create(
 This is a constant-wavelength Bragg powder correction, available on the
 `cryspy` engine. The defaults (`march_r=1`, `march_random_fract=0`)
 apply no texture, so it has no effect until you set them. See the
-[preferred-orientation parameters](../parameters/preferred_orientation.md) for
-details.
+[preferred-orientation parameters](../parameters/preferred_orientation.md)
+for details.
 
 ### 7. Measured Data Category { #measured-data-category }
 
 If you do not have a CIF file for your experiment, you can load measured
-data from a file in a supported format. The measured data is added to the
-experiment and saved with the project as EdSTAR. The expected format
+data from a file in a supported format. The measured data is added to
+the experiment and saved with the project as EdSTAR. The expected format
 depends on the experiment type.
 
 #### Supported data file formats:

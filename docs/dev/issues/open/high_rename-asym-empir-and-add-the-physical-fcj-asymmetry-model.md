@@ -40,4 +40,6 @@ instrument-meaningful.
 **Depends on:** calculator-backend support for the FCJ asymmetry
 parameters (cryspy/crysfml) before the second item can be wired through.
 
-**Recommended-priority note:** Physical FCJ asymmetry model plus renaming `asym_empir_*`; unblocks further CI-skipped asymmetry pages. **Tier 3 (user-visible roadmap feature).**
+**Recommended-priority note:** Physical FCJ asymmetry model plus
+renaming `asym_empir_*`; unblocks further CI-skipped asymmetry pages.
+**Tier 3 (user-visible roadmap feature).**

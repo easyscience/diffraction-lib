@@ -201,8 +201,8 @@ loop_
 
 <!-- prettier-ignore-end -->
 
-More details on how to define the experiment are provided
-in the [Experiment](analysis-workflow/experiment.md) section.
+More details on how to define the experiment are provided in the
+[Experiment](analysis-workflow/experiment.md) section.
 
 ## Other Input/Output Blocks
 

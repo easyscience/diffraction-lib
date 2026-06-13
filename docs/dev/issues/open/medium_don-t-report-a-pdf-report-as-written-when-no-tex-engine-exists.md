@@ -6,9 +6,10 @@
 
 `compile_pdf_report` returns the intended `pdf_path` even when
 `_find_engines()` is empty (it only logs a warning). `_save_configured`
-appends that path to `report_paths`, and `project.save()` prints it under
-"reports/" as if the file were created — but the PDF does not exist on
-disk. The scientist sees a PDF listed in the save tree that is not there.
+appends that path to `report_paths`, and `project.save()` prints it
+under "reports/" as if the file were created — but the PDF does not
+exist on disk. The scientist sees a PDF listed in the save tree that is
+not there.
 
 **Fix:** include only report paths that exist in the printed save tree,
 or distinguish "skipped" from "written".

@@ -44,8 +44,8 @@ on that letter:
 - The IUCr writer emits `_atom_site.Wyckoff_symbol`
   ([`iucr_writer.py:876`](../../../../src/easydiffraction/io/cif/iucr_writer.py)).
 
-Two gaps remain, both recorded under issue **#51** (now closed —
-verify these gaps before relying on this paragraph)
+Two gaps remain, both recorded under issue **#51** (now closed — verify
+these gaps before relying on this paragraph)
 ([`#51`](../../../../docs/dev/issues/closed/access-space-group-from-atomsites-for-wyckoff-letters.md)):
 
 1. The set of letters a site may take is a hardcoded placeholder,
@@ -161,11 +161,11 @@ fallback option if numeric edge cases appear — see _Alternatives_.
 
 **Key normalisation.** `SpaceGroup` represents a group with no
 coordinate-system code as the empty string `''` (its
-`_coord_system_code_allowed_values` returns `codes or ['']`),
-but the bundled table stores those groups under a `None` code — the
-triclinic groups are `(1, None)` (P1, Wyckoff `a`, multiplicity 1) and
-`(2, None)` (P-1), and there are no empty-string keys at all. Detection
-and allowed-letter discovery therefore normalise `''` to `None` before
+`_coord_system_code_allowed_values` returns `codes or ['']`), but the
+bundled table stores those groups under a `None` code — the triclinic
+groups are `(1, None)` (P1, Wyckoff `a`, multiplicity 1) and `(2, None)`
+(P-1), and there are no empty-string keys at all. Detection and
+allowed-letter discovery therefore normalise `''` to `None` before
 indexing `SPACE_GROUPS`, so P1 and P-1 resolve to their real Wyckoff
 positions instead of being mistaken for unsupported groups. A shared
 `_normalize_coord_code()` helper owns this mapping; the existing
@@ -201,8 +201,8 @@ group the letter changes in three ways:
   edit is covered.
 - **User edits the space group or setting.** A change to
   `structure.space_group.name_h_m` or
-  `structure.space_group.coord_system_code` invalidates every
-  atom site's Wyckoff record even when coordinates are unchanged. For a
+  `structure.space_group.coord_system_code` invalidates every atom
+  site's Wyckoff record even when coordinates are unchanged. For a
   supported new key, all sites re-detect from their current coordinates
   and refresh letter, multiplicity, and selected representative. For an
   unsupported new key, auto-detection is a no-op: existing letters are

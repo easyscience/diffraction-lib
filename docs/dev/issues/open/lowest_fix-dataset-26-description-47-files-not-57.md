@@ -10,4 +10,5 @@ Dataset 26 description says "57 files" but should say "47 files":
 
 **Depends on:** nothing.
 
-**Recommended-priority note:** Marked **lowest**: a data-description typo (57 vs 47 files) with no functional impact.
+**Recommended-priority note:** Marked **lowest**: a data-description
+typo (57 vs 47 files) with no functional impact.
