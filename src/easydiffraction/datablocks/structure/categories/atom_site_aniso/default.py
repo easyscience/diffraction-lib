@@ -122,6 +122,7 @@ class AtomSiteAniso(CategoryItem):
                 validator=RangeValidator(ge=0.0, le=10.0),
             ),
             cif_handler=CifHandler(
+                project_name='_atom_site_aniso.adp_11',
                 names=['_atom_site_aniso.adp_11'],
                 import_names=[
                     '_atom_site_aniso.B_11',
@@ -146,6 +147,7 @@ class AtomSiteAniso(CategoryItem):
                 validator=RangeValidator(ge=0.0, le=10.0),
             ),
             cif_handler=CifHandler(
+                project_name='_atom_site_aniso.adp_22',
                 names=['_atom_site_aniso.adp_22'],
                 import_names=[
                     '_atom_site_aniso.B_22',
@@ -170,6 +172,7 @@ class AtomSiteAniso(CategoryItem):
                 validator=RangeValidator(ge=0.0, le=10.0),
             ),
             cif_handler=CifHandler(
+                project_name='_atom_site_aniso.adp_33',
                 names=['_atom_site_aniso.adp_33'],
                 import_names=[
                     '_atom_site_aniso.B_33',
@@ -194,6 +197,7 @@ class AtomSiteAniso(CategoryItem):
                 validator=RangeValidator(),
             ),
             cif_handler=CifHandler(
+                project_name='_atom_site_aniso.adp_12',
                 names=['_atom_site_aniso.adp_12'],
                 import_names=[
                     '_atom_site_aniso.B_12',
@@ -218,6 +222,7 @@ class AtomSiteAniso(CategoryItem):
                 validator=RangeValidator(),
             ),
             cif_handler=CifHandler(
+                project_name='_atom_site_aniso.adp_13',
                 names=['_atom_site_aniso.adp_13'],
                 import_names=[
                     '_atom_site_aniso.B_13',
@@ -242,6 +247,7 @@ class AtomSiteAniso(CategoryItem):
                 validator=RangeValidator(),
             ),
             cif_handler=CifHandler(
+                project_name='_atom_site_aniso.adp_23',
                 names=['_atom_site_aniso.adp_23'],
                 import_names=[
                     '_atom_site_aniso.B_23',

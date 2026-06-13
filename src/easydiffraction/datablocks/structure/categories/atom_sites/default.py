@@ -195,6 +195,7 @@ class AtomSite(CategoryItem):
                 validator=RangeValidator(ge=0.0, le=10.0),
             ),
             cif_handler=CifHandler(
+                project_name='_atom_site.adp_iso',
                 names=['_atom_site.adp_iso'],
                 import_names=[
                     '_atom_site.B_iso_or_equiv',

@@ -898,9 +898,27 @@ def _adp_label_context(parameter: object) -> dict[str, str] | None:
     }
 
 
+def _active_adp_cif_name(parameter: object) -> str | None:
+    """Return the ADP CIF tag for the descriptor's active B/U family.
+
+    Isotropic ADPs persist under the type-neutral ``_atom_site.adp_iso``
+    tag, so the active B/U convention is taken from the owning atom's
+    ``adp_type`` rather than the (type-neutral) CIF name.
+    """
+    cif_name = _first_cif_name(parameter)
+    if getattr(parameter, 'name', None) != 'adp_iso':
+        return cif_name
+    parent = getattr(parameter, '_parent', None)
+    adp_type = getattr(getattr(parent, 'adp_type', None), 'value', None)
+    if adp_type is None:
+        return cif_name
+    family = 'U' if str(adp_type).lower().startswith('u') else 'B'
+    return f'_atom_site.{family}_iso_or_equiv'
+
+
 def _adp_display_label(parameter: object, *, context: str) -> str | None:
     """Return a B/U-aware ADP display label when applicable."""
-    cif_name = _first_cif_name(parameter)
+    cif_name = _active_adp_cif_name(parameter)
     if cif_name == '_atom_site.B_iso_or_equiv':
         return _adp_iso_label('B', context=context)
     if cif_name == '_atom_site.U_iso_or_equiv':
