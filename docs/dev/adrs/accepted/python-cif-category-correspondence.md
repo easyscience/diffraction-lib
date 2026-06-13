@@ -130,7 +130,7 @@ to objects reached from the current `Project` root, for example
 | `analysis.sequential_fit_extract[id].pattern`     | `_sequential_fit_extract.pattern`  | Yes    | Direct collection mapping.                                                                          |
 | `analysis.sequential_fit_extract[id].required`    | `_sequential_fit_extract.required` | Yes    | Direct collection mapping.                                                                          |
 | `analysis.aliases[label].label`                   | `_alias.label`                     | Partly | Python collection is plural; CIF row category is singular.                                          |
-| `analysis.aliases[label].param_unique_name`       | `_alias.param_unique_name`         | Partly | Python collection is plural; CIF row category is singular.                                          |
+| `analysis.aliases[label].parameter_unique_name`       | `_alias.parameter_unique_name`         | Partly | Python collection is plural; CIF row category is singular.                                          |
 | `analysis.constraints[id].id`                     | `_constraint.id`                   | Yes    | Direct explicit row-key mapping; older CIFs may backfill the id from the expression left-hand side. |
 | `analysis.constraints[id].expression`             | `_constraint.expression`           | Yes    | Direct row-field mapping; `lhs_alias` and `rhs_expr` are derived Python helpers.                    |
 

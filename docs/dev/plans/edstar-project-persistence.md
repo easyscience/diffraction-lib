@@ -347,7 +347,7 @@ code/EdSTAR/CIF reference.
   Rename experiment EdSTAR fields
   ```
 
-- [ ] P1.10 - Rename analysis parameter-reference fields.
+- [x] P1.10 - Rename analysis parameter-reference fields.
 
   Rename `param_unique_name` to `parameter_unique_name` for aliases and
   fit-parameter state, rename fit-parameter correlation pair fields from

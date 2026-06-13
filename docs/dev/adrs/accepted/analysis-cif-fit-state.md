@@ -61,7 +61,7 @@ Persist these common categories for any saved fit projection:
 `_fit_parameter` stores analysis-owned per-parameter fit controls and
 pre-fit scalar snapshots:
 
-- `param_unique_name`
+- `parameter_unique_name`
 - `fit_min`
 - `fit_max`
 - `start_value`
@@ -70,7 +70,7 @@ pre-fit scalar snapshots:
 When any row has uncertainty-derived bounds, `_fit_parameter` also
 stores the provenance field:
 
-- `fit_bounds_uncertainty_multiplier`
+- `bounds_uncertainty_multiplier`
 
 For Bayesian fit projections, `_fit_parameter` also stores per-parameter
 posterior summaries:

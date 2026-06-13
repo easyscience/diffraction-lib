@@ -57,7 +57,7 @@ After `undo_fit()`:
 - `_fit_parameter_correlations` is cleared — purely fit-derived
 - `_fit_parameter` rows are **preserved**. The collection carries both
   user-owned fit controls (`fit_min`, `fit_max`,
-  `fit_bounds_uncertainty_multiplier`) and the rollback anchors
+  `bounds_uncertainty_multiplier`) and the rollback anchors
   themselves (`start_value`, `start_uncertainty`). Clearing the whole
   collection — which is what `Analysis._clear_persisted_fit_state()`
   does at the start of a new fit — would silently drop the user's bounds

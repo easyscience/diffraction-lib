@@ -428,7 +428,7 @@ Example output:
 │                                                │
 │ loop_                                          │
 │ _alias.label                                   │
-│ _alias.param_unique_name                       │
+│ _alias.parameter_unique_name                   │
 │ biso_La  lbco.atom_site.La.B_iso_or_equiv      │
 │ biso_Ba  lbco.atom_site.Ba.B_iso_or_equiv      │
 │ occ_La   lbco.atom_site.La.occupancy           │

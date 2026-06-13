@@ -26,7 +26,7 @@ class Alias(CategoryItem):
     Single alias entry.
 
     Maps a human-readable ``id`` to a parameter object. The
-    ``param_unique_name`` descriptor stores the parameter's
+    ``parameter_unique_name`` descriptor stores the parameter's
     ``unique_name`` for CIF serialization.
     """
 
@@ -50,16 +50,17 @@ class Alias(CategoryItem):
                 iucr_name='_easydiffraction_alias.id',
             ),
         )
-        self._param_unique_name = StringDescriptor(
-            name='param_unique_name',
+        self._parameter_unique_name = StringDescriptor(
+            name='parameter_unique_name',
             description='Unique name of the referenced parameter.',
             value_spec=AttributeSpec(
                 default='_',
                 validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_.]*$'),
             ),
             cif_handler=CifHandler(
-                names=['_alias.param_unique_name'],
-                iucr_name='_easydiffraction_alias.param_unique_name',
+                names=['_alias.parameter_unique_name'],
+                import_names=['_alias.param_unique_name'],
+                iucr_name='_easydiffraction_alias.parameter_unique_name',
             ),
         )
 
@@ -95,31 +96,31 @@ class Alias(CategoryItem):
         return self._param_ref
 
     @property
-    def param_unique_name(self) -> StringDescriptor:
+    def parameter_unique_name(self) -> StringDescriptor:
         """
         Unique name of the referenced parameter (for CIF).
 
         Reading this property returns the underlying
         ``StringDescriptor`` object.
         """
-        return self._param_unique_name
+        return self._parameter_unique_name
 
     def _set_param(self, param: object) -> None:
         """
         Store a direct reference to the parameter.
 
-        Also updates ``param_unique_name`` from the parameter's
+        Also updates ``parameter_unique_name`` from the parameter's
         ``unique_name`` for CIF round-tripping.
         """
         object.__setattr__(self, '_param_ref', param)  # noqa: PLC2801
-        self._param_unique_name.value = param.unique_name
+        self._parameter_unique_name.value = param.unique_name
 
     @property
     def parameters(self) -> list:
         """
         Descriptors owned by this alias (excludes the param reference).
         """
-        return [self._id, self._param_unique_name]
+        return [self._id, self._parameter_unique_name]
 
 
 @AliasesFactory.register

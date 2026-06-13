@@ -778,7 +778,10 @@ def analysis_from_cif(analysis: object, cif_text: str) -> None:
 
 def _has_fit_parameter_state_sections(block: object) -> bool:
     """Return True when persisted fit-parameter rows are present."""
-    return _has_cif_loop(block, '_fit_parameter.param_unique_name')
+    return _has_cif_loop(
+        block,
+        '_fit_parameter.parameter_unique_name',
+    ) or _has_cif_loop(block, '_fit_parameter.param_unique_name')
 
 
 def _has_persisted_fit_state_sections(block: object) -> bool:

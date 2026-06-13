@@ -25,16 +25,16 @@ class FitParameterItem(CategoryItem):
     """Single persisted fit-parameter control row."""
 
     _category_code = 'fit_parameter'
-    _category_entry_name = 'param_unique_name'
+    _category_entry_name = 'parameter_unique_name'
     _control_descriptor_names: ClassVar[tuple[str, ...]] = (
-        'param_unique_name',
+        'parameter_unique_name',
         'fit_min',
         'fit_max',
         'start_value',
         'start_uncertainty',
     )
     _optional_control_descriptor_names: ClassVar[tuple[str, ...]] = (
-        'fit_bounds_uncertainty_multiplier',
+        'bounds_uncertainty_multiplier',
     )
     _posterior_descriptor_names: ClassVar[tuple[str, ...]] = (
         'posterior_best_sample_value',
@@ -51,14 +51,17 @@ class FitParameterItem(CategoryItem):
     def __init__(self) -> None:
         """Initialize the persisted fit-parameter descriptors."""
         super().__init__()
-        self._param_unique_name = StringDescriptor(
-            name='param_unique_name',
+        self._parameter_unique_name = StringDescriptor(
+            name='parameter_unique_name',
             description='Unique name of the referenced live parameter.',
             value_spec=AttributeSpec(
                 default='_',
                 validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_.]*$'),
             ),
-            cif_handler=CifHandler(names=['_fit_parameter.param_unique_name']),
+            cif_handler=CifHandler(
+                names=['_fit_parameter.parameter_unique_name'],
+                import_names=['_fit_parameter.param_unique_name'],
+            ),
         )
         self._fit_min = NumericDescriptor(
             name='fit_min',
@@ -72,11 +75,14 @@ class FitParameterItem(CategoryItem):
             value_spec=AttributeSpec(default=np.inf),
             cif_handler=CifHandler(names=['_fit_parameter.fit_max']),
         )
-        self._fit_bounds_uncertainty_multiplier = NumericDescriptor(
-            name='fit_bounds_uncertainty_multiplier',
+        self._bounds_uncertainty_multiplier = NumericDescriptor(
+            name='bounds_uncertainty_multiplier',
             description='Multiplier used to derive fit bounds from uncertainty.',
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(names=['_fit_parameter.fit_bounds_uncertainty_multiplier']),
+            cif_handler=CifHandler(
+                names=['_fit_parameter.bounds_uncertainty_multiplier'],
+                import_names=['_fit_parameter.fit_bounds_uncertainty_multiplier'],
+            ),
         )
         self._start_value = NumericDescriptor(
             name='start_value',
@@ -146,15 +152,15 @@ class FitParameterItem(CategoryItem):
         )
 
     @property
-    def param_unique_name(self) -> StringDescriptor:
+    def parameter_unique_name(self) -> StringDescriptor:
         """Unique name of the referenced live parameter."""
-        return self._param_unique_name
+        return self._parameter_unique_name
 
-    def _set_param_unique_name(self, value: str) -> None:
+    def _set_parameter_unique_name(self, value: str) -> None:
         """
         Set the referenced parameter unique name for internal callers.
         """
-        self._param_unique_name.value = value
+        self._parameter_unique_name.value = value
 
     @property
     def fit_min(self) -> NumericDescriptor:
@@ -175,18 +181,18 @@ class FitParameterItem(CategoryItem):
         self._fit_max.value = value
 
     @property
-    def fit_bounds_uncertainty_multiplier(self) -> NumericDescriptor:
+    def bounds_uncertainty_multiplier(self) -> NumericDescriptor:
         """Multiplier used to derive fit bounds from uncertainty."""
-        return self._fit_bounds_uncertainty_multiplier
+        return self._bounds_uncertainty_multiplier
 
-    def _set_fit_bounds_uncertainty_multiplier(
+    def _set_bounds_uncertainty_multiplier(
         self,
         value: float | None,
     ) -> None:
         """
         Set the fit-bounds uncertainty multiplier for internal callers.
         """
-        self._fit_bounds_uncertainty_multiplier.value = value
+        self._bounds_uncertainty_multiplier.value = value
 
     @property
     def start_value(self) -> NumericDescriptor:
@@ -327,7 +333,7 @@ class FitParameterItem(CategoryItem):
             return None
 
         return PosteriorParameterSummary(
-            unique_name=self.param_unique_name.value,
+            unique_name=self.parameter_unique_name.value,
             display_name=display_name,
             best_sample_value=self._posterior_float(self.posterior_best_sample_value.value),
             median=self._posterior_float(self.posterior_median.value),
@@ -369,7 +375,7 @@ class FitParameters(CategoryCollection):
 
     def _include_uncertainty_multiplier_cif_descriptor(self) -> bool:
         """Return whether CIF output includes the bounds multiplier."""
-        return any(item.fit_bounds_uncertainty_multiplier.value is not None for item in self)
+        return any(item.bounds_uncertainty_multiplier.value is not None for item in self)
 
     def _cif_loop_parameters(self, item: FitParameterItem) -> list[object]:
         """Return CIF loop descriptors for the current fit kind."""
@@ -390,10 +396,10 @@ class FitParameters(CategoryCollection):
     def create(
         self,
         *,
-        param_unique_name: str,
+        parameter_unique_name: str,
         fit_min: float,
         fit_max: float,
-        fit_bounds_uncertainty_multiplier: float | None = None,
+        bounds_uncertainty_multiplier: float | None = None,
         start_value: float | None = None,
         start_uncertainty: float | None = None,
     ) -> None:
@@ -402,13 +408,13 @@ class FitParameters(CategoryCollection):
 
         Parameters
         ----------
-        param_unique_name : str
+        parameter_unique_name : str
             Unique name of the referenced live parameter.
         fit_min : float
             Persisted lower fit bound.
         fit_max : float
             Persisted upper fit bound.
-        fit_bounds_uncertainty_multiplier : float | None, default=None
+        bounds_uncertainty_multiplier : float | None, default=None
             Multiplier used to derive fit bounds from uncertainty.
         start_value : float | None, default=None
             Persisted pre-fit value snapshot.
@@ -416,10 +422,10 @@ class FitParameters(CategoryCollection):
             Persisted pre-fit uncertainty snapshot.
         """
         item = FitParameterItem()
-        item._set_param_unique_name(param_unique_name)
+        item._set_parameter_unique_name(parameter_unique_name)
         item._set_fit_min(fit_min)
         item._set_fit_max(fit_max)
-        item._set_fit_bounds_uncertainty_multiplier(fit_bounds_uncertainty_multiplier)
+        item._set_bounds_uncertainty_multiplier(bounds_uncertainty_multiplier)
         item._set_start_value(start_value)
         item._set_start_uncertainty(start_uncertainty)
         self.add(item)

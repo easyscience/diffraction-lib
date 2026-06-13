@@ -39,8 +39,8 @@ Store one row per unique parameter pair with these fields:
 
 - `id`
 - `source_kind`
-- `param_unique_name_i`
-- `param_unique_name_j`
+- `parameter_unique_name_i`
+- `parameter_unique_name_j`
 - `correlation`
 
 Example:
@@ -49,14 +49,14 @@ Example:
 loop_
 _fit_parameter_correlation.id
 _fit_parameter_correlation.source_kind
-_fit_parameter_correlation.param_unique_name_i
-_fit_parameter_correlation.param_unique_name_j
+_fit_parameter_correlation.parameter_unique_name_i
+_fit_parameter_correlation.parameter_unique_name_j
 _fit_parameter_correlation.correlation
 1 posterior cosio.atom_site.Co1.adp_iso cosio.atom_site.Co2.adp_iso 0.87
 ```
 
 Normalize each row to the upper triangle excluding the diagonal.
-`param_unique_name_i` and `param_unique_name_j` use a stable ordering so
+`parameter_unique_name_i` and `parameter_unique_name_j` use a stable ordering so
 only one unordered pair is stored. The diagonal is omitted because it is
 always `1.0` and can be rebuilt on load.
 

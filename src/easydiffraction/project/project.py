@@ -494,10 +494,10 @@ class Project(GuardedBase):  # noqa: PLR0904
 
     def _resolve_alias_references(self) -> None:
         """
-        Resolve alias ``param_unique_name`` strings to live objects.
+        Resolve alias ``parameter_unique_name`` strings to live objects.
 
         After loading structures and experiments from CIF, aliases only
-        contain the ``param_unique_name`` string.  This method builds a
+        contain the ``parameter_unique_name`` string.  This method builds a
         ``{unique_name: param}`` map from all project parameters and
         wires each alias's ``_param_ref``.
         """
@@ -508,7 +508,7 @@ class Project(GuardedBase):  # noqa: PLR0904
         param_map = self._build_parameter_map()
 
         for alias in aliases:
-            uname = alias.param_unique_name.value
+            uname = alias.parameter_unique_name.value
             if uname in param_map:
                 alias._set_param(param_map[uname])
             else:

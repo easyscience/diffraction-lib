@@ -386,7 +386,7 @@ class GenericParameter(GenericNumericDescriptor):
         self._fit_min = self._fit_min_spec.default
         self._fit_max_spec = AttributeSpec(data_type=DataTypes.NUMERIC, default=np.inf)
         self._fit_max = self._fit_max_spec.default
-        self._fit_bounds_uncertainty_multiplier: float | None = None
+        self._bounds_uncertainty_multiplier: float | None = None
         self._start_value_spec = AttributeSpec(data_type=DataTypes.NUMERIC, default=0.0)
         self._start_value = self._start_value_spec.default
         self._user_constrained_spec = self._BOOL_SPEC_TEMPLATE
@@ -532,7 +532,7 @@ class GenericParameter(GenericNumericDescriptor):
         self._fit_min = self._fit_min_spec.validated(
             v, name=f'{self.unique_name}.fit_min', current=self._fit_min
         )
-        self._fit_bounds_uncertainty_multiplier = None
+        self._bounds_uncertainty_multiplier = None
 
     @property
     def fit_max(self) -> float:
@@ -545,18 +545,18 @@ class GenericParameter(GenericNumericDescriptor):
         self._fit_max = self._fit_max_spec.validated(
             v, name=f'{self.unique_name}.fit_max', current=self._fit_max
         )
-        self._fit_bounds_uncertainty_multiplier = None
+        self._bounds_uncertainty_multiplier = None
 
     @property
-    def fit_bounds_uncertainty_multiplier(self) -> float | None:
+    def bounds_uncertainty_multiplier(self) -> float | None:
         """
         Multiplier used for uncertainty-derived fit bounds, if known.
         """
-        return self._fit_bounds_uncertainty_multiplier
+        return self._bounds_uncertainty_multiplier
 
-    def _set_fit_bounds_uncertainty_multiplier(self, value: float | None) -> None:
+    def _set_bounds_uncertainty_multiplier(self, value: float | None) -> None:
         """Set the cached uncertainty-derived fit-bounds multiplier."""
-        self._fit_bounds_uncertainty_multiplier = value
+        self._bounds_uncertainty_multiplier = value
 
     def set_fit_bounds_from_uncertainty(
         self,
@@ -622,7 +622,7 @@ class GenericParameter(GenericNumericDescriptor):
 
         self.fit_min = lower
         self.fit_max = upper
-        self._fit_bounds_uncertainty_multiplier = resolved_multiplier
+        self._bounds_uncertainty_multiplier = resolved_multiplier
 
 
 # ======================================================================

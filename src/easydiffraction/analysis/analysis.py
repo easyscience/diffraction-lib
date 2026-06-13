@@ -701,7 +701,7 @@ class Analysis(
         """
         Return persisted parameter names in display and array order.
         """
-        return [row.param_unique_name.value for row in self.fit_parameters]
+        return [row.parameter_unique_name.value for row in self.fit_parameters]
 
     def _restore_live_parameter_bounds_and_anchors(
         self,
@@ -709,18 +709,18 @@ class Analysis(
     ) -> None:
         """Restore saved fit controls onto live parameter objects."""
         for row in self.fit_parameters:
-            parameter = param_map.get(row.param_unique_name.value)
+            parameter = param_map.get(row.parameter_unique_name.value)
             if parameter is None:
                 log.warning(
                     'Persisted fit-state references unknown parameter '
-                    f'{row.param_unique_name.value!r}.'
+                    f'{row.parameter_unique_name.value!r}.'
                 )
                 continue
 
             parameter.fit_min = row.fit_min.value
             parameter.fit_max = row.fit_max.value
-            parameter._set_fit_bounds_uncertainty_multiplier(
-                row.fit_bounds_uncertainty_multiplier.value
+            parameter._set_bounds_uncertainty_multiplier(
+                row.bounds_uncertainty_multiplier.value
             )
             parameter._fit_start_value = row.start_value.value
             parameter._fit_start_uncertainty = row.start_uncertainty.value
@@ -728,7 +728,7 @@ class Analysis(
     def _restore_live_parameter_posterior(self, param_map: dict[str, Parameter]) -> None:
         """Restore saved posterior summaries onto live parameters."""
         for row in self.fit_parameters:
-            parameter = param_map.get(row.param_unique_name.value)
+            parameter = param_map.get(row.parameter_unique_name.value)
             if parameter is None:
                 continue
 
@@ -759,7 +759,7 @@ class Analysis(
             return None
 
         posterior_rows = [row for row in self.fit_parameters if row.has_posterior_summary()]
-        parameter_names = [row.param_unique_name.value for row in posterior_rows]
+        parameter_names = [row.parameter_unique_name.value for row in posterior_rows]
 
         parameter_sample_array = np.asarray(parameter_samples, dtype=float)
         if parameter_sample_array.ndim != _POSTERIOR_SAMPLE_NDIM:
@@ -787,8 +787,8 @@ class Analysis(
         param_map = self._live_parameter_map()
         summaries: list[PosteriorParameterSummary] = []
         for row in self.fit_parameters:
-            parameter = param_map.get(row.param_unique_name.value)
-            display_name = row.param_unique_name.value if parameter is None else parameter.name
+            parameter = param_map.get(row.parameter_unique_name.value)
+            display_name = row.parameter_unique_name.value if parameter is None else parameter.name
             summary = row.posterior_summary(display_name=display_name)
             if summary is not None:
                 summaries.append(summary)
@@ -1355,7 +1355,7 @@ class Analysis(
         param_map: dict[str, Parameter],
     ) -> bool:
         """Return whether one live parameter is already at start."""
-        parameter = param_map.get(row.param_unique_name.value)
+        parameter = param_map.get(row.parameter_unique_name.value)
         if parameter is None:
             return True
         return isclose(
@@ -1371,11 +1371,11 @@ class Analysis(
         param_map = self._live_parameter_map()
         logged_missing_uncertainty = False
         for row in self._undo_start_rows():
-            parameter = param_map.get(row.param_unique_name.value)
+            parameter = param_map.get(row.parameter_unique_name.value)
             if parameter is None:
                 log.warning(
                     'Persisted fit-state references unknown parameter '
-                    f'{row.param_unique_name.value!r}.'
+                    f'{row.parameter_unique_name.value!r}.'
                 )
                 continue
 
@@ -1391,7 +1391,7 @@ class Analysis(
             else:
                 parameter.uncertainty = row.start_uncertainty.value
             parameter._set_posterior(None)
-            restored_names.append(row.param_unique_name.value)
+            restored_names.append(row.parameter_unique_name.value)
         return tuple(restored_names)
 
     def _undo_clear_per_row_posterior_fields(self) -> None:
@@ -1834,10 +1834,10 @@ class Analysis(
 
         for param in parameters:
             self.fit_parameters.create(
-                param_unique_name=param.unique_name,
+                parameter_unique_name=param.unique_name,
                 fit_min=param.fit_min,
                 fit_max=param.fit_max,
-                fit_bounds_uncertainty_multiplier=param.fit_bounds_uncertainty_multiplier,
+                bounds_uncertainty_multiplier=param.bounds_uncertainty_multiplier,
                 start_value=param.value,
                 start_uncertainty=param.uncertainty,
             )
@@ -2122,8 +2122,8 @@ class Analysis(
                     continue
                 self.fit_parameter_correlations.create(
                     source_kind=source_kind.value,
-                    param_unique_name_i=unique_name_i,
-                    param_unique_name_j=unique_names[column_index],
+                    parameter_unique_name_i=unique_name_i,
+                    parameter_unique_name_j=unique_names[column_index],
                     correlation=float(np.clip(correlation, -1.0, 1.0)),
                 )
 
@@ -2324,8 +2324,8 @@ class Analysis(
         density_array = np.asarray(density_surface[2], dtype=float)
         contour_levels = self._posterior_pair_contour_levels(density_array)
         return pair_id, {
-            'param_unique_name_x': x_name,
-            'param_unique_name_y': y_name,
+            'parameter_unique_name_x': x_name,
+            'parameter_unique_name_y': y_name,
             'x': x_grid_array,
             'y': y_grid_array,
             'density': density_array,

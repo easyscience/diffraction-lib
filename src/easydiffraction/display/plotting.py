@@ -1012,7 +1012,7 @@ class Plotter(RendererBase):
             column is used as the x-axis. When ``None``, the experiment
             sequence number is used instead.
         """
-        unique_names = self._collect_fitted_param_unique_names()
+        unique_names = self._collect_fitted_parameter_unique_names()
         if not unique_names:
             log.warning('No fitted parameters found to plot.')
             return
@@ -1026,7 +1026,7 @@ class Plotter(RendererBase):
                 continue
             self.plot_param_series(param=descriptor, versus=versus)
 
-    def _collect_fitted_param_unique_names(self) -> list[str]:
+    def _collect_fitted_parameter_unique_names(self) -> list[str]:
         """
         Return fitted parameter unique names from CSV or snapshots.
         """
@@ -1294,7 +1294,7 @@ class Plotter(RendererBase):
             if parameter is None:
                 return None
 
-            current = getattr(parameter, 'fit_bounds_uncertainty_multiplier', None)
+            current = getattr(parameter, 'bounds_uncertainty_multiplier', None)
             if current is None or not np.isfinite(float(current)):
                 return None
 
@@ -1870,7 +1870,12 @@ class Plotter(RendererBase):
             ]
 
         for row in correlation_rows:
-            parameter_names.extend([row.param_unique_name_i.value, row.param_unique_name_j.value])
+            parameter_names.extend(
+                [
+                    row.parameter_unique_name_i.value,
+                    row.parameter_unique_name_j.value,
+                ]
+            )
         parameter_names = list(dict.fromkeys(parameter_names))
         if len(parameter_names) < MIN_POSTERIOR_PARAMETER_COUNT:
             return None
@@ -1883,8 +1888,8 @@ class Plotter(RendererBase):
         )
         wrote_any = False
         for row in correlation_rows:
-            i_name = row.param_unique_name_i.value
-            j_name = row.param_unique_name_j.value
+            i_name = row.parameter_unique_name_i.value
+            j_name = row.parameter_unique_name_j.value
             if i_name not in corr_df.index or j_name not in corr_df.index:
                 continue
             corr_df.loc[i_name, j_name] = float(row.correlation.value)
@@ -2839,8 +2844,18 @@ class Plotter(RendererBase):
         sidecar_data = getattr(analysis, '_persisted_fit_state_sidecar', {})
         pair_caches = sidecar_data.get('pair_caches', {})
         for cache_data in pair_caches.values():
-            cache_x = str(cache_data.get('param_unique_name_x', ''))
-            cache_y = str(cache_data.get('param_unique_name_y', ''))
+            cache_x = str(
+                cache_data.get(
+                    'parameter_unique_name_x',
+                    cache_data.get('param_unique_name_x', ''),
+                )
+            )
+            cache_y = str(
+                cache_data.get(
+                    'parameter_unique_name_y',
+                    cache_data.get('param_unique_name_y', ''),
+                )
+            )
             if {cache_x, cache_y} != {x_parameter_name, y_parameter_name}:
                 continue
 

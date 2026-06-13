@@ -29,23 +29,24 @@
       "category_entry_name": "_",
       "context": "analysis",
       "current_cif_names": [
-        "_alias.param_unique_name"
+        "_alias.parameter_unique_name"
       ],
       "descriptor_class": "StringDescriptor",
-      "descriptor_name": "param_unique_name",
-      "descriptor_path": "analysis.aliases[].param_unique_name",
-      "docs_anchor": "alias-param-unique-name",
+      "descriptor_name": "parameter_unique_name",
+      "descriptor_path": "analysis.aliases[].parameter_unique_name",
+      "docs_anchor": "alias-parameter-unique-name",
       "docs_page": "alias",
       "import_names": [
         "_alias.param_unique_name"
       ],
-      "iucr_name": "_easydiffraction_alias.param_unique_name",
+      "iucr_name": "_easydiffraction_alias.parameter_unique_name",
       "owner_class": "Alias",
-      "project_name": "_alias.param_unique_name",
+      "project_name": "_alias.parameter_unique_name",
       "read_names": [
+        "_alias.parameter_unique_name",
         "_alias.param_unique_name"
       ],
-      "unique_name": "alias._.param_unique_name"
+      "unique_name": "alias._.parameter_unique_name"
     },
     {
       "category_code": "constraint",
@@ -144,46 +145,48 @@
       "category_entry_name": "_",
       "context": "analysis",
       "current_cif_names": [
-        "_fit_parameter_correlation.param_unique_name_i"
+        "_fit_parameter_correlation.parameter_unique_name_i"
       ],
       "descriptor_class": "StringDescriptor",
-      "descriptor_name": "param_unique_name_i",
-      "descriptor_path": "analysis.fit_parameter_correlations[].param_unique_name_i",
-      "docs_anchor": "fit-parameter-correlation-param-unique-name-i",
+      "descriptor_name": "parameter_unique_name_i",
+      "descriptor_path": "analysis.fit_parameter_correlations[].parameter_unique_name_i",
+      "docs_anchor": "fit-parameter-correlation-parameter-unique-name-i",
       "docs_page": "fit_parameter_correlation",
       "import_names": [
         "_fit_parameter_correlation.param_unique_name_i"
       ],
-      "iucr_name": "_fit_parameter_correlation.param_unique_name_i",
+      "iucr_name": "_fit_parameter_correlation.parameter_unique_name_i",
       "owner_class": "FitParameterCorrelationItem",
-      "project_name": "_fit_parameter_correlation.param_unique_name_i",
+      "project_name": "_fit_parameter_correlation.parameter_unique_name_i",
       "read_names": [
+        "_fit_parameter_correlation.parameter_unique_name_i",
         "_fit_parameter_correlation.param_unique_name_i"
       ],
-      "unique_name": "fit_parameter_correlation._.param_unique_name_i"
+      "unique_name": "fit_parameter_correlation._.parameter_unique_name_i"
     },
     {
       "category_code": "fit_parameter_correlation",
       "category_entry_name": "_",
       "context": "analysis",
       "current_cif_names": [
-        "_fit_parameter_correlation.param_unique_name_j"
+        "_fit_parameter_correlation.parameter_unique_name_j"
       ],
       "descriptor_class": "StringDescriptor",
-      "descriptor_name": "param_unique_name_j",
-      "descriptor_path": "analysis.fit_parameter_correlations[].param_unique_name_j",
-      "docs_anchor": "fit-parameter-correlation-param-unique-name-j",
+      "descriptor_name": "parameter_unique_name_j",
+      "descriptor_path": "analysis.fit_parameter_correlations[].parameter_unique_name_j",
+      "docs_anchor": "fit-parameter-correlation-parameter-unique-name-j",
       "docs_page": "fit_parameter_correlation",
       "import_names": [
         "_fit_parameter_correlation.param_unique_name_j"
       ],
-      "iucr_name": "_fit_parameter_correlation.param_unique_name_j",
+      "iucr_name": "_fit_parameter_correlation.parameter_unique_name_j",
       "owner_class": "FitParameterCorrelationItem",
-      "project_name": "_fit_parameter_correlation.param_unique_name_j",
+      "project_name": "_fit_parameter_correlation.parameter_unique_name_j",
       "read_names": [
+        "_fit_parameter_correlation.parameter_unique_name_j",
         "_fit_parameter_correlation.param_unique_name_j"
       ],
-      "unique_name": "fit_parameter_correlation._.param_unique_name_j"
+      "unique_name": "fit_parameter_correlation._.parameter_unique_name_j"
     },
     {
       "category_code": "fit_parameter_correlation",
@@ -213,23 +216,24 @@
       "category_entry_name": "_",
       "context": "analysis",
       "current_cif_names": [
-        "_fit_parameter.fit_bounds_uncertainty_multiplier"
+        "_fit_parameter.bounds_uncertainty_multiplier"
       ],
       "descriptor_class": "NumericDescriptor",
-      "descriptor_name": "fit_bounds_uncertainty_multiplier",
-      "descriptor_path": "analysis.fit_parameters[].fit_bounds_uncertainty_multiplier",
-      "docs_anchor": "fit-parameter-fit-bounds-uncertainty-multiplier",
+      "descriptor_name": "bounds_uncertainty_multiplier",
+      "descriptor_path": "analysis.fit_parameters[].bounds_uncertainty_multiplier",
+      "docs_anchor": "fit-parameter-bounds-uncertainty-multiplier",
       "docs_page": "fit_parameter",
       "import_names": [
         "_fit_parameter.fit_bounds_uncertainty_multiplier"
       ],
-      "iucr_name": "_fit_parameter.fit_bounds_uncertainty_multiplier",
+      "iucr_name": "_fit_parameter.bounds_uncertainty_multiplier",
       "owner_class": "FitParameterItem",
-      "project_name": "_fit_parameter.fit_bounds_uncertainty_multiplier",
+      "project_name": "_fit_parameter.bounds_uncertainty_multiplier",
       "read_names": [
+        "_fit_parameter.bounds_uncertainty_multiplier",
         "_fit_parameter.fit_bounds_uncertainty_multiplier"
       ],
-      "unique_name": "fit_parameter._.fit_bounds_uncertainty_multiplier"
+      "unique_name": "fit_parameter._.bounds_uncertainty_multiplier"
     },
     {
       "category_code": "fit_parameter",
@@ -282,23 +286,24 @@
       "category_entry_name": "_",
       "context": "analysis",
       "current_cif_names": [
-        "_fit_parameter.param_unique_name"
+        "_fit_parameter.parameter_unique_name"
       ],
       "descriptor_class": "StringDescriptor",
-      "descriptor_name": "param_unique_name",
-      "descriptor_path": "analysis.fit_parameters[].param_unique_name",
-      "docs_anchor": "fit-parameter-param-unique-name",
+      "descriptor_name": "parameter_unique_name",
+      "descriptor_path": "analysis.fit_parameters[].parameter_unique_name",
+      "docs_anchor": "fit-parameter-parameter-unique-name",
       "docs_page": "fit_parameter",
       "import_names": [
         "_fit_parameter.param_unique_name"
       ],
-      "iucr_name": "_fit_parameter.param_unique_name",
+      "iucr_name": "_fit_parameter.parameter_unique_name",
       "owner_class": "FitParameterItem",
-      "project_name": "_fit_parameter.param_unique_name",
+      "project_name": "_fit_parameter.parameter_unique_name",
       "read_names": [
+        "_fit_parameter.parameter_unique_name",
         "_fit_parameter.param_unique_name"
       ],
-      "unique_name": "fit_parameter._.param_unique_name"
+      "unique_name": "fit_parameter._.parameter_unique_name"
     },
     {
       "category_code": "fit_parameter",
@@ -6352,23 +6357,24 @@
       "category_entry_name": "_",
       "context": "factory.AliasesFactory.default",
       "current_cif_names": [
-        "_alias.param_unique_name"
+        "_alias.parameter_unique_name"
       ],
       "descriptor_class": "StringDescriptor",
-      "descriptor_name": "param_unique_name",
-      "descriptor_path": "factory.AliasesFactory.default[].param_unique_name",
-      "docs_anchor": "alias-param-unique-name",
+      "descriptor_name": "parameter_unique_name",
+      "descriptor_path": "factory.AliasesFactory.default[].parameter_unique_name",
+      "docs_anchor": "alias-parameter-unique-name",
       "docs_page": "alias",
       "import_names": [
         "_alias.param_unique_name"
       ],
-      "iucr_name": "_easydiffraction_alias.param_unique_name",
+      "iucr_name": "_easydiffraction_alias.parameter_unique_name",
       "owner_class": "Alias",
-      "project_name": "_alias.param_unique_name",
+      "project_name": "_alias.parameter_unique_name",
       "read_names": [
+        "_alias.parameter_unique_name",
         "_alias.param_unique_name"
       ],
-      "unique_name": "alias._.param_unique_name"
+      "unique_name": "alias._.parameter_unique_name"
     },
     {
       "category_code": "atom_site_aniso",
@@ -8331,46 +8337,48 @@
       "category_entry_name": "_",
       "context": "factory.FitParameterCorrelationsFactory.default",
       "current_cif_names": [
-        "_fit_parameter_correlation.param_unique_name_i"
+        "_fit_parameter_correlation.parameter_unique_name_i"
       ],
       "descriptor_class": "StringDescriptor",
-      "descriptor_name": "param_unique_name_i",
-      "descriptor_path": "factory.FitParameterCorrelationsFactory.default[].param_unique_name_i",
-      "docs_anchor": "fit-parameter-correlation-param-unique-name-i",
+      "descriptor_name": "parameter_unique_name_i",
+      "descriptor_path": "factory.FitParameterCorrelationsFactory.default[].parameter_unique_name_i",
+      "docs_anchor": "fit-parameter-correlation-parameter-unique-name-i",
       "docs_page": "fit_parameter_correlation",
       "import_names": [
         "_fit_parameter_correlation.param_unique_name_i"
       ],
-      "iucr_name": "_fit_parameter_correlation.param_unique_name_i",
+      "iucr_name": "_fit_parameter_correlation.parameter_unique_name_i",
       "owner_class": "FitParameterCorrelationItem",
-      "project_name": "_fit_parameter_correlation.param_unique_name_i",
+      "project_name": "_fit_parameter_correlation.parameter_unique_name_i",
       "read_names": [
+        "_fit_parameter_correlation.parameter_unique_name_i",
         "_fit_parameter_correlation.param_unique_name_i"
       ],
-      "unique_name": "fit_parameter_correlation._.param_unique_name_i"
+      "unique_name": "fit_parameter_correlation._.parameter_unique_name_i"
     },
     {
       "category_code": "fit_parameter_correlation",
       "category_entry_name": "_",
       "context": "factory.FitParameterCorrelationsFactory.default",
       "current_cif_names": [
-        "_fit_parameter_correlation.param_unique_name_j"
+        "_fit_parameter_correlation.parameter_unique_name_j"
       ],
       "descriptor_class": "StringDescriptor",
-      "descriptor_name": "param_unique_name_j",
-      "descriptor_path": "factory.FitParameterCorrelationsFactory.default[].param_unique_name_j",
-      "docs_anchor": "fit-parameter-correlation-param-unique-name-j",
+      "descriptor_name": "parameter_unique_name_j",
+      "descriptor_path": "factory.FitParameterCorrelationsFactory.default[].parameter_unique_name_j",
+      "docs_anchor": "fit-parameter-correlation-parameter-unique-name-j",
       "docs_page": "fit_parameter_correlation",
       "import_names": [
         "_fit_parameter_correlation.param_unique_name_j"
       ],
-      "iucr_name": "_fit_parameter_correlation.param_unique_name_j",
+      "iucr_name": "_fit_parameter_correlation.parameter_unique_name_j",
       "owner_class": "FitParameterCorrelationItem",
-      "project_name": "_fit_parameter_correlation.param_unique_name_j",
+      "project_name": "_fit_parameter_correlation.parameter_unique_name_j",
       "read_names": [
+        "_fit_parameter_correlation.parameter_unique_name_j",
         "_fit_parameter_correlation.param_unique_name_j"
       ],
-      "unique_name": "fit_parameter_correlation._.param_unique_name_j"
+      "unique_name": "fit_parameter_correlation._.parameter_unique_name_j"
     },
     {
       "category_code": "fit_parameter_correlation",
@@ -8400,23 +8408,24 @@
       "category_entry_name": "_",
       "context": "factory.FitParametersFactory.default",
       "current_cif_names": [
-        "_fit_parameter.fit_bounds_uncertainty_multiplier"
+        "_fit_parameter.bounds_uncertainty_multiplier"
       ],
       "descriptor_class": "NumericDescriptor",
-      "descriptor_name": "fit_bounds_uncertainty_multiplier",
-      "descriptor_path": "factory.FitParametersFactory.default[].fit_bounds_uncertainty_multiplier",
-      "docs_anchor": "fit-parameter-fit-bounds-uncertainty-multiplier",
+      "descriptor_name": "bounds_uncertainty_multiplier",
+      "descriptor_path": "factory.FitParametersFactory.default[].bounds_uncertainty_multiplier",
+      "docs_anchor": "fit-parameter-bounds-uncertainty-multiplier",
       "docs_page": "fit_parameter",
       "import_names": [
         "_fit_parameter.fit_bounds_uncertainty_multiplier"
       ],
-      "iucr_name": "_fit_parameter.fit_bounds_uncertainty_multiplier",
+      "iucr_name": "_fit_parameter.bounds_uncertainty_multiplier",
       "owner_class": "FitParameterItem",
-      "project_name": "_fit_parameter.fit_bounds_uncertainty_multiplier",
+      "project_name": "_fit_parameter.bounds_uncertainty_multiplier",
       "read_names": [
+        "_fit_parameter.bounds_uncertainty_multiplier",
         "_fit_parameter.fit_bounds_uncertainty_multiplier"
       ],
-      "unique_name": "fit_parameter._.fit_bounds_uncertainty_multiplier"
+      "unique_name": "fit_parameter._.bounds_uncertainty_multiplier"
     },
     {
       "category_code": "fit_parameter",
@@ -8469,23 +8478,24 @@
       "category_entry_name": "_",
       "context": "factory.FitParametersFactory.default",
       "current_cif_names": [
-        "_fit_parameter.param_unique_name"
+        "_fit_parameter.parameter_unique_name"
       ],
       "descriptor_class": "StringDescriptor",
-      "descriptor_name": "param_unique_name",
-      "descriptor_path": "factory.FitParametersFactory.default[].param_unique_name",
-      "docs_anchor": "fit-parameter-param-unique-name",
+      "descriptor_name": "parameter_unique_name",
+      "descriptor_path": "factory.FitParametersFactory.default[].parameter_unique_name",
+      "docs_anchor": "fit-parameter-parameter-unique-name",
       "docs_page": "fit_parameter",
       "import_names": [
         "_fit_parameter.param_unique_name"
       ],
-      "iucr_name": "_fit_parameter.param_unique_name",
+      "iucr_name": "_fit_parameter.parameter_unique_name",
       "owner_class": "FitParameterItem",
-      "project_name": "_fit_parameter.param_unique_name",
+      "project_name": "_fit_parameter.parameter_unique_name",
       "read_names": [
+        "_fit_parameter.parameter_unique_name",
         "_fit_parameter.param_unique_name"
       ],
-      "unique_name": "fit_parameter._.param_unique_name"
+      "unique_name": "fit_parameter._.parameter_unique_name"
     },
     {
       "category_code": "fit_parameter",

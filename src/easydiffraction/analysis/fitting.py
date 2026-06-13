@@ -323,7 +323,7 @@ class Fitter:
     ) -> None:
         """Ensure resume uses the same persisted free-parameter set."""
         persisted_names = [
-            item.param_unique_name.value for item in getattr(analysis, 'fit_parameters', [])
+            item.parameter_unique_name.value for item in getattr(analysis, 'fit_parameters', [])
         ]
         if not persisted_names:
             return
