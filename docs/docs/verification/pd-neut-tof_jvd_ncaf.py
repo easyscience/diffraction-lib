@@ -21,7 +21,7 @@ structure = StructureFactory.from_scratch(name='ncaf')
 structure.space_group.name_h_m = 'I 21 3'  # FullProf Space group symbol
 structure.cell.length_a = 10.250256  # FullProf a
 structure.atom_sites.create(
-    label='Ca',  # FullProf Atom
+    id='Ca',  # FullProf Atom
     type_symbol='Ca',  # FullProf Typ
     fract_x=0.46610,  # FullProf X
     fract_y=0.0,  # FullProf Y
@@ -30,7 +30,7 @@ structure.atom_sites.create(
     adp_iso=0.88721,  # FullProf Biso
 )
 structure.atom_sites.create(
-    label='Al',  # FullProf Atom
+    id='Al',  # FullProf Atom
     type_symbol='Al',  # FullProf Typ
     fract_x=0.25163,  # FullProf X
     fract_y=0.25163,  # FullProf Y
@@ -39,7 +39,7 @@ structure.atom_sites.create(
     adp_iso=0.65230,  # FullProf Biso
 )
 structure.atom_sites.create(
-    label='Na',  # FullProf Atom
+    id='Na',  # FullProf Atom
     type_symbol='Na',  # FullProf Typ
     fract_x=0.08472,  # FullProf X
     fract_y=0.08472,  # FullProf Y
@@ -48,7 +48,7 @@ structure.atom_sites.create(
     adp_iso=1.89168,  # FullProf Biso
 )
 structure.atom_sites.create(
-    label='F1',  # FullProf Atom
+    id='F1',  # FullProf Atom
     type_symbol='F',  # FullProf Typ
     fract_x=0.13748,  # FullProf X
     fract_y=0.30533,  # FullProf Y
@@ -57,7 +57,7 @@ structure.atom_sites.create(
     adp_iso=0.89535,  # FullProf Biso
 )
 structure.atom_sites.create(
-    label='F2',  # FullProf Atom
+    id='F2',  # FullProf Atom
     type_symbol='F',  # FullProf Typ
     fract_x=0.36263,  # FullProf X
     fract_y=0.36333,  # FullProf Y
@@ -66,7 +66,7 @@ structure.atom_sites.create(
     adp_iso=1.27175,  # FullProf Biso
 )
 structure.atom_sites.create(
-    label='F3',  # FullProf Atom
+    id='F3',  # FullProf Atom
     type_symbol='F',  # FullProf Typ
     fract_x=0.46120,  # FullProf X
     fract_y=0.46120,  # FullProf Y

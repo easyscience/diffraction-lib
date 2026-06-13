@@ -30,7 +30,7 @@ structure.cell.length_a = 10.130  # FullProf a
 # in the site multiplicity; CIF/EasyDiffraction use 1.0 for a fully
 # occupied site.
 structure.atom_sites.create(
-    label='Tb',  # FullProf Atom
+    id='Tb',  # FullProf Atom
     type_symbol='Tb',  # FullProf Typ
     fract_x=0.5,  # FullProf X
     fract_y=0.5,  # FullProf Y
@@ -42,7 +42,7 @@ aniso.adp_11 = 0.00098991673  # FullProf beta11
 aniso.adp_12 = -0.00047650724  # FullProf beta12
 
 structure.atom_sites.create(
-    label='Ti',  # FullProf Atom
+    id='Ti',  # FullProf Atom
     type_symbol='Ti',  # FullProf Typ
     fract_x=0,  # FullProf X
     fract_y=0,  # FullProf Y
@@ -54,7 +54,7 @@ aniso.adp_11 = 0.00090989727  # FullProf beta11
 aniso.adp_12 = -0.00016990340  # FullProf beta12
 
 structure.atom_sites.create(
-    label='O1',  # FullProf Atom
+    id='O1',  # FullProf Atom
     type_symbol='O',  # FullProf Typ
     fract_x=0.32804,  # FullProf X
     fract_y=0.125,  # FullProf Y
@@ -67,7 +67,7 @@ aniso.adp_22 = 0.00078215479  # FullProf beta22
 aniso.adp_23 = 0.00041246481  # FullProf beta23
 
 structure.atom_sites.create(
-    label='O2',  # FullProf Atom
+    id='O2',  # FullProf Atom
     type_symbol='O',  # FullProf Typ
     fract_x=0.375,  # FullProf X
     fract_y=0.375,  # FullProf Y

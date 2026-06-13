@@ -26,7 +26,7 @@ structure.cell.length_b = 5.397256  # FullProf b
 structure.cell.length_c = 6.958973  # FullProf c
 
 structure.atom_sites.create(
-    label='Pb',  # FullProf Atom
+    id='Pb',  # FullProf Atom
     type_symbol='Pb',  # FullProf Typ
     fract_x=0.18752,  # FullProf X
     fract_y=0.25,  # FullProf Y
@@ -35,7 +35,7 @@ structure.atom_sites.create(
     adp_iso=1.39017,  # FullProf Biso
 )
 structure.atom_sites.create(
-    label='S',  # FullProf Atom
+    id='S',  # FullProf Atom
     type_symbol='S',  # FullProf Typ
     fract_x=0.06549,  # FullProf X
     fract_y=0.25,  # FullProf Y
@@ -44,7 +44,7 @@ structure.atom_sites.create(
     adp_iso=0.39270,  # FullProf Biso
 )
 structure.atom_sites.create(
-    label='O1',  # FullProf Atom
+    id='O1',  # FullProf Atom
     type_symbol='O',  # FullProf Typ
     fract_x=0.90816,  # FullProf X
     fract_y=0.25,  # FullProf Y
@@ -53,7 +53,7 @@ structure.atom_sites.create(
     adp_iso=1.99307,  # FullProf Biso
 )
 structure.atom_sites.create(
-    label='O2',  # FullProf Atom
+    id='O2',  # FullProf Atom
     type_symbol='O',  # FullProf Typ
     fract_x=0.19355,  # FullProf X
     fract_y=0.25,  # FullProf Y
@@ -62,7 +62,7 @@ structure.atom_sites.create(
     adp_iso=1.47771,  # FullProf Biso
 )
 structure.atom_sites.create(
-    label='O3',  # FullProf Atom
+    id='O3',  # FullProf Atom
     type_symbol='O',  # FullProf Typ
     fract_x=0.08109,  # FullProf X
     fract_y=0.02727,  # FullProf Y

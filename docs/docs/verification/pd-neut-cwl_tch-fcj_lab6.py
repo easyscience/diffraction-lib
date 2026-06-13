@@ -21,7 +21,7 @@ structure = StructureFactory.from_scratch(name='lab6')
 structure.space_group.name_h_m = 'P m -3 m'  # FullProf Space group symbol
 structure.cell.length_a = 4.156885  # FullProf a
 structure.atom_sites.create(
-    label='La',  # FullProf Atom
+    id='La',  # FullProf Atom
     type_symbol='La',  # FullProf Typ
     fract_x=0.0,  # FullProf X
     fract_y=0.0,  # FullProf Y
@@ -30,7 +30,7 @@ structure.atom_sites.create(
     adp_iso=0.59951,  # FullProf Biso
 )
 structure.atom_sites.create(
-    label='B',  # FullProf Atom
+    id='B',  # FullProf Atom
     type_symbol='11B',  # FullProf "B11"
     fract_x=0.19978,  # FullProf X
     fract_y=0.5,  # FullProf Y

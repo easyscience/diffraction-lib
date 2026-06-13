@@ -25,7 +25,7 @@ structure.space_group.coord_system_code = '2'
 structure.cell.length_a = 5.431342  # FullProf a
 
 structure.atom_sites.create(
-    label='Si',  # FullProf Atom
+    id='Si',  # FullProf Atom
     type_symbol='Si',  # FullProf Typ
     fract_x=0.125,  # FullProf X
     fract_y=0.125,  # FullProf Y

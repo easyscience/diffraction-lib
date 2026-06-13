@@ -24,7 +24,7 @@ structure.space_group.name_h_m = 'P m -3 m'  # FullProf Space group symbol
 structure.cell.length_a = 3.890790  # FullProf a
 
 structure.atom_sites.create(
-    label='La',  # FullProf Atom
+    id='La',  # FullProf Atom
     type_symbol='La',  # FullProf Typ
     fract_x=0.0,  # FullProf X
     fract_y=0.0,  # FullProf Y
@@ -34,7 +34,7 @@ structure.atom_sites.create(
     adp_iso=0.57511,  # FullProf Biso
 )
 structure.atom_sites.create(
-    label='Ba',  # FullProf Atom
+    id='Ba',  # FullProf Atom
     type_symbol='Ba',  # FullProf Typ
     fract_x=0.0,  # FullProf X
     fract_y=0.0,  # FullProf Y
@@ -44,7 +44,7 @@ structure.atom_sites.create(
     adp_iso=0.57511,  # FullProf Biso
 )
 structure.atom_sites.create(
-    label='Co',  # FullProf Atom
+    id='Co',  # FullProf Atom
     type_symbol='Co',  # FullProf Typ
     fract_x=0.5,  # FullProf X
     fract_y=0.5,  # FullProf Y
@@ -54,7 +54,7 @@ structure.atom_sites.create(
     adp_iso=0.26023,  # FullProf Biso
 )
 structure.atom_sites.create(
-    label='O',  # FullProf Atom
+    id='O',  # FullProf Atom
     type_symbol='O',  # FullProf Typ
     fract_x=0.0,  # FullProf X
     fract_y=0.5,  # FullProf Y
