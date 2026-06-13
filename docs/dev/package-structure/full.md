@@ -588,6 +588,8 @@
 │   ├── 📄 base.py
 │   │   ├── 🏷️ class RendererBase
 │   │   └── 🏷️ class RendererFactoryBase
+│   ├── 📄 links.py
+│   │   └── 🏷️ class TableLink
 │   ├── 📄 plotting.py
 │   │   ├── 🏷️ class PlotterEngineEnum
 │   │   ├── 🏷️ class PosteriorPairPlotStyleEnum
