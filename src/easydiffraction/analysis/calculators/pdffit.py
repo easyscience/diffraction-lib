@@ -32,6 +32,39 @@ def _open_pdffit_devnull() -> object:
         return os.fdopen(os.dup(tmp_devnull.fileno()), 'w')
 
 
+def _structure_cif_for_pdffit(structure: Structure) -> str:
+    """
+    Return structure CIF using legacy IUCr tags diffpy recognizes.
+
+    EdSTAR persistence renamed several CIF tags (``_atom_site.id``,
+    ``_space_group.name_h_m``, type-neutral ``_atom_site.adp_iso``).
+    diffpy's CIF parser only understands the legacy IUCr spellings, so
+    map them back; the isotropic/anisotropic displacement tag uses the
+    structure's active B/U family (values stay in their native
+    convention, which diffpy interprets per tag).
+    """
+    cif = structure.as_cif
+    families = {
+        'U' if str(atom.adp_type.value).lower().startswith('u') else 'B'
+        for atom in structure.atom_sites
+    }
+    family = 'U' if families == {'U'} else 'B'
+    replacements = [
+        ('_atom_site_aniso.id', '_atom_site_aniso.label'),
+        ('_atom_site.id', '_atom_site.label'),
+        ('_space_group.name_h_m', '_space_group.name_H-M_alt'),
+        ('_space_group.coord_system_code', '_space_group.IT_coordinate_system_code'),
+        ('_atom_site.adp_iso', f'_atom_site.{family}_iso_or_equiv'),
+        *(
+            (f'_atom_site_aniso.adp_{suffix}', f'_atom_site_aniso.{family}_{suffix}')
+            for suffix in ('11', '22', '33', '12', '13', '23')
+        ),
+    ]
+    for edstar_tag, iucr_tag in replacements:
+        cif = cif.replace(edstar_tag, iucr_tag)
+    return cif
+
+
 try:
     from diffpy.pdffit2 import PdfFit
     from diffpy.pdffit2 import redirect_stdout
@@ -125,8 +158,9 @@ class PdffitCalculator(CalculatorBase):
         # ---------------------------
 
         # TODO: move CIF v2 -> CIF v1 conversion to a separate module
-        # Convert the structure to CIF supported by PDFfit
-        cif_string_v2 = structure.as_cif
+        # Convert the structure to CIF supported by PDFfit, mapping
+        # EdSTAR tags back to the legacy IUCr spellings diffpy expects.
+        cif_string_v2 = _structure_cif_for_pdffit(structure)
         # convert to version 1 of CIF format
         # this means: replace all dots with underscores for
         # cases where the dot is surrounded by letters on both sides.

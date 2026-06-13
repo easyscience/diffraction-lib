@@ -831,6 +831,32 @@ class CryspyCalculator(CalculatorBase):
         finally:
             self._restore_from_u_notation(structure, saved)
 
+        return self._relabel_cif_tags_for_cryspy(cif)
+
+    # EdSTAR persistence renamed several CIF tags away from the legacy
+    # IUCr spellings that cryspy's CIF parser still requires. The
+    # displacement values are already converted to U notation by
+    # ``_temporarily_convert_to_u_notation``; only the tag names need
+    # mapping back so cryspy recognizes the block as a crystal.
+    _CRYSPY_TAG_REPLACEMENTS = (
+        ('_atom_site_aniso.id', '_atom_site_aniso.label'),
+        ('_atom_site.id', '_atom_site.label'),
+        ('_space_group.name_h_m', '_space_group.name_H-M_alt'),
+        ('_space_group.coord_system_code', '_space_group.IT_coordinate_system_code'),
+        ('_atom_site.adp_iso', '_atom_site.U_iso_or_equiv'),
+        ('_atom_site_aniso.adp_11', '_atom_site_aniso.U_11'),
+        ('_atom_site_aniso.adp_22', '_atom_site_aniso.U_22'),
+        ('_atom_site_aniso.adp_33', '_atom_site_aniso.U_33'),
+        ('_atom_site_aniso.adp_12', '_atom_site_aniso.U_12'),
+        ('_atom_site_aniso.adp_13', '_atom_site_aniso.U_13'),
+        ('_atom_site_aniso.adp_23', '_atom_site_aniso.U_23'),
+    )
+
+    @staticmethod
+    def _relabel_cif_tags_for_cryspy(cif: str) -> str:
+        """Map EdSTAR CIF tags to cryspy-recognized legacy spellings."""
+        for edstar_tag, cryspy_tag in CryspyCalculator._CRYSPY_TAG_REPLACEMENTS:
+            cif = cif.replace(edstar_tag, cryspy_tag)
         return cif
 
     @staticmethod

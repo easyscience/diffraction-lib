@@ -492,3 +492,28 @@ def test_invalidate_stale_cache_drops_dict_on_pref_orient_axis_change():
     experiment.preferred_orientation['lbco'].index_h = 1
     calc._invalidate_stale_cache(combined_name, experiment, None)
     assert combined_name not in calc._cryspy_dicts
+
+
+def test_relabel_cif_tags_for_cryspy_maps_edstar_tags_to_legacy():
+    """EdSTAR tags map to the legacy IUCr spellings cryspy needs."""
+    from easydiffraction.analysis.calculators.cryspy import CryspyCalculator
+
+    cif = (
+        '_space_group.name_h_m "P m -3 m"\n'
+        '_space_group.coord_system_code 1\n'
+        'loop_\n_atom_site.id\n_atom_site.adp_iso\nSi 0.4\n'
+        'loop_\n_atom_site_aniso.id\n_atom_site_aniso.adp_11\nSi 0.01\n'
+    )
+
+    out = CryspyCalculator._relabel_cif_tags_for_cryspy(cif)
+
+    assert '_space_group.name_H-M_alt' in out
+    assert '_space_group.IT_coordinate_system_code' in out
+    assert '_atom_site.label' in out
+    assert '_atom_site.U_iso_or_equiv' in out
+    assert '_atom_site_aniso.label' in out
+    assert '_atom_site_aniso.U_11' in out
+    # The EdSTAR spellings are fully removed.
+    assert '_atom_site.id\n' not in out
+    assert '_atom_site.adp_iso' not in out
+    assert '_space_group.name_h_m' not in out

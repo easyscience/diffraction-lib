@@ -68,6 +68,7 @@ class _DummyExperiment:
 
 class _DummyStructure:
     name = 'PhaseA'
+    atom_sites = ()
 
     @property
     def as_cif(self):
@@ -117,3 +118,32 @@ def test_pdffit_cif_v2_to_v1_regex_behavior(monkeypatch):
     )
     assert isinstance(pattern, np.ndarray)
     assert pattern.shape[0] == 5
+
+
+def test_structure_cif_for_pdffit_uses_legacy_iucr_tags():
+    """EdSTAR structure tags map to the legacy spellings diffpy reads."""
+    from easydiffraction.analysis.calculators.pdffit import _structure_cif_for_pdffit
+    from easydiffraction.datablocks.structure.item.base import Structure
+
+    structure = Structure(name='ni')
+    structure.space_group.name_h_m = 'F m -3 m'
+    structure.cell.length_a = 3.52
+    structure.atom_sites.create(
+        id='Ni',
+        type_symbol='Ni',
+        fract_x=0,
+        fract_y=0,
+        fract_z=0,
+        occupancy=1.0,
+        adp_iso=0.42,
+    )
+
+    cif = _structure_cif_for_pdffit(structure)
+
+    assert '_atom_site.label' in cif
+    assert '_atom_site.id' not in cif
+    assert '_space_group.name_H-M_alt' in cif
+    assert '_space_group.name_h_m' not in cif
+    # The default adp_type is Biso, so the B-family isotropic tag is used.
+    assert '_atom_site.B_iso_or_equiv' in cif
+    assert '_atom_site.adp_iso' not in cif
