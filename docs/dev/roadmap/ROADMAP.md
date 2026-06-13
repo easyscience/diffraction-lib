@@ -53,9 +53,10 @@ Legend:
 | Feature                                             | LIB | APP |
 | --------------------------------------------------- | --- | --- |
 | Isotropic _Biso_                                    | ✅  | 🗓  |
-| Isotropic _Uiso_                                    | 🚧  | ✅  |
-| Anisotropic _Bani_ (_B11, B22, B33, B12, B13, B23_) | 🚧  | 🗓  |
-| Anisotropic _Uani_ (_U11, U22, U33, U12, U13, U23_) | 🚧  | 🗓  |
+| Isotropic _Uiso_                                    | ✅  | ✅  |
+| Anisotropic _Bani_ (_B11, B22, B33, B12, B13, B23_) | ✅  | 🗓  |
+| Anisotropic _Uani_ (_U11, U22, U33, U12, U13, U23_) | ✅  | 🗓  |
+| Anisotropic _β_ (_β11, β22, β33, β12, β13, β23_)    | ✅  | 🗓  |
 
 ---
 
@@ -121,12 +122,13 @@ Legend:
 | ------------------------------------------------- | --- | --- |
 | Line segments type<br>_x, y_                      | ✅  | ✅  |
 | Chebyshev polynomial type<br>_order, coefficient_ | ✅  | 🗓  |
+| Automatic background estimation<br>_one-call baseline (arpls/fabc), auto method_ | ✅ | 🗓 |
 
 ### Preferred Orientation
 
-| Feature                                    | LIB      | APP |
-| ------------------------------------------ | -------- | --- |
-| Basic preferred orientation model (CrysPy) | 🗓`high` | 🗓  |
+| Feature                                           | LIB | APP |
+| ------------------------------------------------- | --- | --- |
+| Basic preferred orientation model (March–Dollase) | ✅  | 🗓  |
 
 ### Instrument — Constant Wavelength
 
