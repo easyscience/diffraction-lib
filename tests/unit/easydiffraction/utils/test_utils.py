@@ -225,6 +225,50 @@ def test_get_version_for_url_released(monkeypatch):
     assert MUT._get_version_for_url() == '0.8.0.post1'
 
 
+def test_parameter_docs_url_uses_grouped_docs_route(monkeypatch):
+    import easydiffraction.utils.utils as MUT
+
+    monkeypatch.setattr(MUT, 'package_version', lambda name: '0.8.0.post1')
+
+    url = MUT.parameter_docs_url('_cell.length_a')
+
+    assert url == (
+        'https://easyscience.github.io/diffraction-lib/0.8.0.post1/'
+        'user-guide/parameters/structure/cell/#cell-length-a'
+    )
+
+
+def test_parameter_docs_url_maps_category_page_alias(monkeypatch):
+    import easydiffraction.utils.utils as MUT
+
+    monkeypatch.setattr(MUT, 'package_version', lambda name: '0.8.0.post1')
+
+    url = MUT.parameter_docs_url('_excluded_regions.start')
+
+    assert url == (
+        'https://easyscience.github.io/diffraction-lib/0.8.0.post1/'
+        'user-guide/parameters/experiment/excluded_region/#excluded-region-start'
+    )
+
+
+def test_parameter_docs_url_maps_data_range_items(monkeypatch):
+    import easydiffraction.utils.utils as MUT
+
+    monkeypatch.setattr(MUT, 'package_version', lambda name: '0.8.0.post1')
+
+    twotheta_url = MUT.parameter_docs_url('_data_range.two_theta_min')
+    sthovl_url = MUT.parameter_docs_url('_data_range.sin_theta_over_lambda_max')
+
+    assert twotheta_url == (
+        'https://easyscience.github.io/diffraction-lib/0.8.0.post1/'
+        'user-guide/parameters/experiment/pd_meas/#pd-meas-2theta-range-min'
+    )
+    assert sthovl_url == (
+        'https://easyscience.github.io/diffraction-lib/0.8.0.post1/'
+        'user-guide/parameters/experiment/refln/#refln-sin-theta-over-lambda-range-max'
+    )
+
+
 @pytest.mark.filterwarnings('ignore:Failed to fetch tutorials index:UserWarning')
 def test_fetch_tutorials_index_returns_empty_on_error(monkeypatch):
     import easydiffraction.utils.utils as MUT

@@ -131,6 +131,84 @@ def format_bulleted_warning(header: str, items: list[str]) -> str:
 _DATA_REPO = 'easyscience/diffraction'
 _DATA_ROOT = 'data'
 _DOCS_BASE_URL = 'https://easyscience.github.io/diffraction-lib'
+_PARAMETER_DOCS_BLOCKS = {
+    'project': frozenset({
+        'alias',
+        'metadata',
+        'rendering_plot',
+        'rendering_structure',
+        'rendering_table',
+        'report',
+        'structure_style',
+        'structure_view',
+        'verbosity',
+    }),
+    'structure': frozenset({
+        'atom_site',
+        'atom_site_aniso',
+        'cell',
+        'geom',
+        'space_group',
+        'space_group_Wyckoff',
+    }),
+    'experiment': frozenset({
+        'background',
+        'calculator',
+        'data',
+        'diffrn',
+        'excluded_region',
+        'excluded_regions',
+        'experiment_type',
+        'extinction',
+        'instrument',
+        'linked_structure',
+        'pd_background',
+        'pd_meas',
+        'peak',
+        'preferred_orientation',
+        'refln',
+    }),
+    'analysis': frozenset({
+        'constraint',
+        'fit_parameter',
+        'fit_parameter_correlation',
+        'fit_result',
+        'fitting_mode',
+        'joint_fit',
+        'minimizer',
+        'sequential_fit',
+        'sequential_fit_extract',
+        'software',
+    }),
+}
+_PARAMETER_DOCS_CATEGORY_PAGES = {
+    'excluded_regions': 'excluded_region',
+}
+_PARAMETER_DOCS_ITEM_ROUTES = {
+    ('data_range', 'two_theta_inc'): ('experiment/pd_meas', 'pd-meas-2theta-range-inc'),
+    ('data_range', 'two_theta_max'): ('experiment/pd_meas', 'pd-meas-2theta-range-max'),
+    ('data_range', 'two_theta_min'): ('experiment/pd_meas', 'pd-meas-2theta-range-min'),
+    (
+        'data_range',
+        'time_of_flight_inc',
+    ): ('experiment/pd_meas', 'pd-meas-time-of-flight-range-inc'),
+    (
+        'data_range',
+        'time_of_flight_max',
+    ): ('experiment/pd_meas', 'pd-meas-time-of-flight-range-max'),
+    (
+        'data_range',
+        'time_of_flight_min',
+    ): ('experiment/pd_meas', 'pd-meas-time-of-flight-range-min'),
+    (
+        'data_range',
+        'sin_theta_over_lambda_max',
+    ): ('experiment/refln', 'refln-sin-theta-over-lambda-range-max'),
+    (
+        'data_range',
+        'sin_theta_over_lambda_min',
+    ): ('experiment/refln', 'refln-sin-theta-over-lambda-range-min'),
+}
 # commit SHA preferred
 _DATA_INDEX_REF = 'fa8466337f6ea793dbeb06161d24d066be91be68'
 # macOS: sha256sum index.json
@@ -562,9 +640,23 @@ def _parameter_docs_route(
 ) -> tuple[str, str]:
     """Resolve the parameter-reference page and anchor."""
     category, item = _split_parameter_data_name(data_name)
-    resolved_page = page or category
-    resolved_anchor = anchor or _parameter_docs_anchor(category, item)
+    if page is None and anchor is None:
+        override = _PARAMETER_DOCS_ITEM_ROUTES.get((category, item))
+        if override is not None:
+            return override
+
+    route_category = _PARAMETER_DOCS_CATEGORY_PAGES.get(category, category)
+    resolved_page = page or _parameter_docs_page(route_category)
+    resolved_anchor = anchor or _parameter_docs_anchor(route_category, item)
     return resolved_page.strip('/'), resolved_anchor
+
+
+def _parameter_docs_page(category: str) -> str:
+    """Return the grouped parameter-reference page for a category."""
+    for block, categories in _PARAMETER_DOCS_BLOCKS.items():
+        if category in categories:
+            return f'{block}/{category}'
+    return category
 
 
 def _split_parameter_data_name(data_name: str) -> tuple[str, str]:

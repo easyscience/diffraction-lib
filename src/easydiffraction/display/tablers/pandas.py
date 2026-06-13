@@ -16,6 +16,7 @@ except ImportError:
     HTML = None
     display = None
 
+from easydiffraction.display.links import TableLink
 from easydiffraction.display.tablers.base import TableBackendBase
 from easydiffraction.utils.environment import can_use_ipython_display
 from easydiffraction.utils.logging import log
@@ -71,6 +72,16 @@ class PandasTableBackend(TableBackendBase):
         tuple[str, str | None]
             HTML-escaped text and a CSS colour (``None`` when absent).
         """
+        if isinstance(value, TableLink):
+            text = html.escape(value.text)
+            url = html.escape(value.url, quote=True)
+            title = ''
+            if value.title is not None:
+                escaped_title = html.escape(value.title, quote=True)
+                title = f' title="{escaped_title}"'
+            link = f'<a href="{url}"{title} target="_blank" rel="noopener noreferrer">{text}</a>'
+            return link, None
+
         text = self._format_value(value)
         match = _RICH_COLOR_RE.fullmatch(text)
         colour = None

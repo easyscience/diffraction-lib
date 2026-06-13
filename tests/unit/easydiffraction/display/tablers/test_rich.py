@@ -22,6 +22,23 @@ class TestRichTableBackend:
         table = backend.build_renderable(['left'], df)
         assert isinstance(table, Table)
 
+    def test_table_link_becomes_rich_link_text(self):
+        from rich.text import Text
+
+        from easydiffraction.display.links import TableLink
+        from easydiffraction.display.tablers.rich import RichTableBackend
+
+        backend = RichTableBackend()
+        df = pd.DataFrame({'parameter': [TableLink('length_a', 'https://example.test/docs')]})
+        df.index += 1
+
+        table = backend.build_renderable(['left'], df)
+        cell = next(iter(table.columns[1].cells))
+
+        assert isinstance(cell, Text)
+        assert str(cell) == 'length_a'
+        assert cell.style == 'link https://example.test/docs'
+
     def test_to_html_returns_string(self):
         from easydiffraction.display.tablers.rich import RichTableBackend
 

@@ -57,6 +57,7 @@ from easydiffraction.core.variable import GenericNumericDescriptor
 from easydiffraction.core.variable import Parameter
 from easydiffraction.datablocks.experiment.item.base import intensity_category_for
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
+from easydiffraction.display.links import parameter_docs_link
 from easydiffraction.display.progress import make_display_handle
 from easydiffraction.display.progress import notebook_fit_stop_control
 from easydiffraction.display.tables import TableRenderer
@@ -347,6 +348,7 @@ class AnalysisDisplay:
                 category_code = param._identity.category_code
                 category_entry_name = param._identity.category_entry_name or ''
                 param_key = param.name
+                param_label = parameter_docs_link(param)
                 code_variable = (
                     f"{project_varname}.{datablock_code}['{datablock_entry_name}'].{category_code}"
                 )
@@ -357,7 +359,7 @@ class AnalysisDisplay:
                     datablock_entry_name,
                     category_code,
                     category_entry_name,
-                    param_key,
+                    param_label,
                     code_variable,
                 ])
 
@@ -403,13 +405,13 @@ class AnalysisDisplay:
                 datablock_entry_name = param._identity.datablock_entry_name
                 category_code = param._identity.category_code
                 category_entry_name = param._identity.category_entry_name or ''
-                param_key = param.name
+                param_label = parameter_docs_link(param)
                 cif_uid = param._cif_handler.uid
                 columns_data.append([
                     datablock_entry_name,
                     category_code,
                     category_entry_name,
-                    param_key,
+                    param_label,
                     cif_uid,
                 ])
 
@@ -1234,7 +1236,7 @@ class Analysis(
                 ('datablock', 'left'): param._identity.datablock_entry_name,
                 ('category', 'left'): param._identity.category_code,
                 ('entry', 'left'): param._identity.category_entry_name or '',
-                ('parameter', 'left'): param.name,
+                ('parameter', 'left'): parameter_docs_link(param),
                 ('value', 'right'): '' if param.value is None else param.value,
             }
             if isinstance(param, GenericNumericDescriptor):

@@ -66,6 +66,7 @@ def _make_int_descriptor(db, cat, entry, name, val):
 def test_how_to_access_parameters_prints_paths_and_uids(capsys, monkeypatch):
     import easydiffraction.analysis.analysis as analysis_mod
     from easydiffraction.analysis.analysis import Analysis
+    from easydiffraction.display.links import TableLink
 
     p1 = _make_param('db1', 'catA', '', 'alpha', 1.0)
     p2 = _make_param('db2', 'catB', 'row1', 'beta', 2.0)
@@ -100,6 +101,9 @@ def test_how_to_access_parameters_prints_paths_and_uids(capsys, monkeypatch):
     data = captured.get('columns_data') or []
 
     assert 'How to Access in Python Code' in headers
+    assert isinstance(data[0][3], TableLink)
+    assert data[0][3] == 'alpha'
+    assert data[0][3].url.endswith('/user-guide/parameters/catA/#cata-alpha')
 
     # Flatten rows to strings for simple membership checks
     flat_rows = [' '.join(map(str, row)) for row in data]
@@ -119,6 +123,9 @@ def test_how_to_access_parameters_prints_paths_and_uids(capsys, monkeypatch):
     headers2 = captured2.get('columns_headers') or []
     data2 = captured2.get('columns_data') or []
     assert 'Unique Identifier for CIF Constraints' in headers2
+    assert isinstance(data2[0][3], TableLink)
+    assert data2[0][3] == 'alpha'
+    assert data2[0][3].url.endswith('/user-guide/parameters/catA/#cata-alpha')
     flat_rows2 = [' '.join(map(str, row)) for row in data2]
     # Unique names are datablock.category[.entry].parameter
     assert any('db1 catA  alpha' in r.replace('.', ' ') for r in flat_rows2)
@@ -272,6 +279,12 @@ def test_all_params_marks_constrained_parameters_not_fittable(monkeypatch):
     Analysis(Project()).display.all_params()
 
     structure_df = rendered[0]
+    from easydiffraction.display.links import TableLink
+
+    parameter_cell = structure_df['parameter', 'left'].iloc[0]
+    assert isinstance(parameter_cell, TableLink)
+    assert str(parameter_cell) == 'length_a'
+    assert parameter_cell.url.endswith('/user-guide/parameters/structure/cell/#cell-length-a')
     assert structure_df['parameter', 'left'].tolist() == ['length_a', 'length_b', 'length_c']
     assert structure_df['fittable', 'left'].tolist() == [True, False, False]
 

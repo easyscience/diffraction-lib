@@ -112,6 +112,23 @@ class TestPandasTableBackend:
         assert '&lt;b&gt;&amp;x' in html
         assert '<b>' not in html
 
+    def test_table_link_becomes_anchor(self):
+        from easydiffraction.display.links import TableLink
+
+        link = TableLink(
+            text='length_a',
+            url='https://example.test/docs?x=1&y=2',
+            title='Docs for length_a',
+        )
+
+        html = _backend().build_renderable(['left'], _indexed({'A': [link]}))
+
+        assert (
+            '<a href="https://example.test/docs?x=1&amp;y=2" '
+            'title="Docs for length_a" target="_blank" rel="noopener noreferrer">'
+            'length_a</a>'
+        ) in html
+
     def test_render_displays_inline_html(self, monkeypatch):
         import easydiffraction.display.tablers.pandas as mod
 
