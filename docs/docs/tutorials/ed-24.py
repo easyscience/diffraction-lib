@@ -18,14 +18,16 @@ import easydiffraction as ed
 # ## 📂 Load Project
 
 # %% [markdown]
-# ### Download Project
+# ### Locate Project
 #
-# The returned path points directly to the saved project directory with
-# the completed Bayesian fit and persisted posterior samples and plot
-# caches.
+# Temporary: load a new-format Bayesian project bundled with the
+# documentation, with the completed fit and persisted posterior samples
+# and plot caches. This will switch back to `ed.download_data(id=39,
+# ...)` once the updated project archives are published to the
+# EasyDiffraction data repository.
 
 # %%
-project_dir = ed.download_data(id=39, destination='projects')
+project_dir = 'docs/docs/tutorials/projects/ed-24'
 
 # %% [markdown]
 # ### Load Project

@@ -16,16 +16,19 @@
 
 # %%
 from easydiffraction import Project
-from easydiffraction import download_data
 
 # %% [markdown]
 # ## 📂 Load Project
 
 # %% [markdown]
-# ### Download Project
+# ### Locate Project
+#
+# Temporary: load a new-format project bundled with the documentation.
+# This will switch back to `download_data(id=36, ...)` once the updated
+# project archives are published to the EasyDiffraction data repository.
 
 # %%
-project_dir = download_data(id=36, destination='projects')
+project_dir = 'docs/docs/tutorials/projects/ed-18'
 
 # %% [markdown]
 # ### Load Project

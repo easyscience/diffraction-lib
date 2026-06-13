@@ -17,14 +17,15 @@ import easydiffraction as ed
 # ## 📂 Load Project
 
 # %% [markdown]
-# ### Download Project
+# ### Locate Project
 #
-# The returned path points directly to the saved project directory with
-# a partially completed sequential fit, including
-# `analysis/results.csv`.
+# Temporary: load a new-format Co2SiO4 scan project bundled with the
+# documentation (with `analysis/results.csv`). This will switch back to
+# `ed.download_data(id=37, ...)` once the updated project archives are
+# published to the EasyDiffraction data repository.
 
 # %%
-project_dir = ed.download_data(id=37, destination='projects')
+project_dir = 'docs/docs/tutorials/projects/ed-23'
 
 # %% [markdown]
 # ### Load Project

@@ -1,0 +1,189 @@
+_edstar.schema_name EasyDiffraction
+_edstar.schema_version 1
+
+_fitting_mode.type single
+
+_minimizer.type lmfit
+_minimizer.max_iterations 1000
+
+_fit_result.result_kind deterministic
+_fit_result.success true
+_fit_result.message "Fit succeeded."
+_fit_result.iterations 88
+_fit_result.fitting_time 7.52982193
+_fit_result.reduced_chi_square 1.26505298
+_fit_result.objective_name chi_square
+_fit_result.objective_value 3900.21393703
+_fit_result.n_data_points 3098
+_fit_result.n_parameters 41
+_fit_result.n_free_parameters 15
+_fit_result.degrees_of_freedom 3083
+_fit_result.covariance_available true
+_fit_result.correlation_available true
+_fit_result.r_factor_all 0.05584614
+_fit_result.wr_factor_all 0.07140009
+_fit_result.r_factor_gt 0.05577101
+_fit_result.wr_factor_gt 0.07138085
+_fit_result.prof_r_factor 0.05584614
+_fit_result.prof_wr_factor 0.07140009
+_fit_result.prof_wr_expected 0.06348064
+_fit_result.number_constraints 1
+_fit_result.profile_function cwl-pseudo-voigt
+_fit_result.background_function line-segment
+_fit_result.threshold_expression I>3\s(I)
+_fit_result.number_reflns_total ?
+_fit_result.number_reflns_gt ?
+
+loop_
+_alias.id
+_alias.parameter_unique_name
+biso_La lbco.atom_site.La.adp_iso
+biso_Ba lbco.atom_site.Ba.adp_iso
+
+loop_
+_constraint.id
+_constraint.expression
+biso_Ba "biso_Ba = biso_La"
+
+loop_
+_fit_parameter.parameter_unique_name
+_fit_parameter.fit_min
+_fit_parameter.fit_max
+_fit_parameter.start_value
+_fit_parameter.start_uncertainty
+lbco.cell.length_a -inf inf 3.890753 0.000035
+lbco.atom_site.La.adp_iso -inf inf 0.469 0.023
+lbco.atom_site.Co.adp_iso -inf inf 0.294 0.053
+lbco.atom_site.O.adp_iso -inf inf 1.41 0.017
+hrpt.linked_structure.lbco.scale -inf inf 9.12 0.053
+hrpt.peak.broad_gauss_u -inf inf 0.0816 0.003
+hrpt.peak.broad_gauss_v -inf inf -0.1153 0.0065
+hrpt.peak.broad_gauss_w -inf inf 0.121 0.0031
+hrpt.peak.broad_lorentz_y -inf inf 0.0829 0.0021
+hrpt.instrument.twotheta_offset -inf inf 0.61936 0.00097
+hrpt.background.1.intensity -inf inf 166.9 0.89
+hrpt.background.2.intensity -inf inf 167.7 0.69
+hrpt.background.3.intensity -inf inf 172.9 0.71
+hrpt.background.4.intensity -inf inf 181. 0.88
+hrpt.background.5.intensity -inf inf 168.6 1.2
+
+loop_
+_fit_parameter_correlation.id
+_fit_parameter_correlation.source_kind
+_fit_parameter_correlation.parameter_unique_name_i
+_fit_parameter_correlation.parameter_unique_name_j
+_fit_parameter_correlation.correlation
+1 deterministic lbco.atom_site.La.adp_iso lbco.cell.length_a 0.00587908
+2 deterministic lbco.atom_site.Co.adp_iso lbco.cell.length_a -0.01564924
+3 deterministic lbco.atom_site.O.adp_iso lbco.cell.length_a -0.01413277
+4 deterministic hrpt.linked_structure.lbco.scale lbco.cell.length_a -0.00793083
+5 deterministic hrpt.peak.broad_gauss_u lbco.cell.length_a 0.02377236
+6 deterministic hrpt.peak.broad_gauss_v lbco.cell.length_a -0.0168825
+7 deterministic hrpt.peak.broad_gauss_w lbco.cell.length_a 0.01206719
+8 deterministic hrpt.peak.broad_lorentz_y lbco.cell.length_a -0.00383287
+9 deterministic hrpt.instrument.twotheta_offset lbco.cell.length_a 0.7385687
+10 deterministic hrpt.background.1.intensity lbco.cell.length_a 0.00071202
+11 deterministic hrpt.background.2.intensity lbco.cell.length_a 0.00021107
+12 deterministic hrpt.background.3.intensity lbco.cell.length_a 0.00231832
+13 deterministic hrpt.background.4.intensity lbco.cell.length_a -0.00808027
+14 deterministic hrpt.background.5.intensity lbco.cell.length_a 0.00811713
+15 deterministic lbco.atom_site.Co.adp_iso lbco.atom_site.La.adp_iso -0.496213
+16 deterministic lbco.atom_site.La.adp_iso lbco.atom_site.O.adp_iso 0.22763854
+17 deterministic hrpt.linked_structure.lbco.scale lbco.atom_site.La.adp_iso 0.53506833
+18 deterministic hrpt.peak.broad_gauss_u lbco.atom_site.La.adp_iso -0.03943099
+19 deterministic hrpt.peak.broad_gauss_v lbco.atom_site.La.adp_iso 0.01480898
+20 deterministic hrpt.peak.broad_gauss_w lbco.atom_site.La.adp_iso 0.03475903
+21 deterministic hrpt.peak.broad_lorentz_y lbco.atom_site.La.adp_iso -0.08081194
+22 deterministic hrpt.instrument.twotheta_offset lbco.atom_site.La.adp_iso 0.01199421
+23 deterministic hrpt.background.1.intensity lbco.atom_site.La.adp_iso -0.00579851
+24 deterministic hrpt.background.2.intensity lbco.atom_site.La.adp_iso -0.04102802
+25 deterministic hrpt.background.3.intensity lbco.atom_site.La.adp_iso 0.09222681
+26 deterministic hrpt.background.4.intensity lbco.atom_site.La.adp_iso 0.04426056
+27 deterministic hrpt.background.5.intensity lbco.atom_site.La.adp_iso 0.16598231
+28 deterministic lbco.atom_site.Co.adp_iso lbco.atom_site.O.adp_iso 0.07933605
+29 deterministic hrpt.linked_structure.lbco.scale lbco.atom_site.Co.adp_iso -0.03957702
+30 deterministic hrpt.peak.broad_gauss_u lbco.atom_site.Co.adp_iso -0.06202711
+31 deterministic hrpt.peak.broad_gauss_v lbco.atom_site.Co.adp_iso 0.05696233
+32 deterministic hrpt.peak.broad_gauss_w lbco.atom_site.Co.adp_iso -0.01969324
+33 deterministic hrpt.peak.broad_lorentz_y lbco.atom_site.Co.adp_iso -0.03942378
+34 deterministic hrpt.instrument.twotheta_offset lbco.atom_site.Co.adp_iso -0.0174708
+35 deterministic hrpt.background.1.intensity lbco.atom_site.Co.adp_iso 0.00304959
+36 deterministic hrpt.background.2.intensity lbco.atom_site.Co.adp_iso 0.01173088
+37 deterministic hrpt.background.3.intensity lbco.atom_site.Co.adp_iso -0.00311476
+38 deterministic hrpt.background.4.intensity lbco.atom_site.Co.adp_iso 0.09645028
+39 deterministic hrpt.background.5.intensity lbco.atom_site.Co.adp_iso 0.00416187
+40 deterministic hrpt.linked_structure.lbco.scale lbco.atom_site.O.adp_iso 0.67297816
+41 deterministic hrpt.peak.broad_gauss_u lbco.atom_site.O.adp_iso 0.02775653
+42 deterministic hrpt.peak.broad_gauss_v lbco.atom_site.O.adp_iso -0.05167288
+43 deterministic hrpt.peak.broad_gauss_w lbco.atom_site.O.adp_iso 0.09287879
+44 deterministic hrpt.peak.broad_lorentz_y lbco.atom_site.O.adp_iso -0.07354416
+45 deterministic hrpt.instrument.twotheta_offset lbco.atom_site.O.adp_iso -0.00505082
+46 deterministic hrpt.background.1.intensity lbco.atom_site.O.adp_iso -0.00858058
+47 deterministic hrpt.background.2.intensity lbco.atom_site.O.adp_iso -0.05703242
+48 deterministic hrpt.background.3.intensity lbco.atom_site.O.adp_iso 0.04212128
+49 deterministic hrpt.background.4.intensity lbco.atom_site.O.adp_iso 0.113642
+50 deterministic hrpt.background.5.intensity lbco.atom_site.O.adp_iso -0.11998283
+51 deterministic hrpt.linked_structure.lbco.scale hrpt.peak.broad_gauss_u -0.08161445
+52 deterministic hrpt.linked_structure.lbco.scale hrpt.peak.broad_gauss_v -0.01117398
+53 deterministic hrpt.linked_structure.lbco.scale hrpt.peak.broad_gauss_w -0.0370235
+54 deterministic hrpt.linked_structure.lbco.scale hrpt.peak.broad_lorentz_y 0.2644938
+55 deterministic hrpt.instrument.twotheta_offset hrpt.linked_structure.lbco.scale 0.00180534
+56 deterministic hrpt.background.1.intensity hrpt.linked_structure.lbco.scale -0.00813324
+57 deterministic hrpt.background.2.intensity hrpt.linked_structure.lbco.scale -0.20070637
+58 deterministic hrpt.background.3.intensity hrpt.linked_structure.lbco.scale -0.02838636
+59 deterministic hrpt.background.4.intensity hrpt.linked_structure.lbco.scale -0.00496121
+60 deterministic hrpt.background.5.intensity hrpt.linked_structure.lbco.scale -0.00467853
+61 deterministic hrpt.peak.broad_gauss_u hrpt.peak.broad_gauss_v -0.90988353
+62 deterministic hrpt.peak.broad_gauss_u hrpt.peak.broad_gauss_w 0.82609613
+63 deterministic hrpt.peak.broad_gauss_u hrpt.peak.broad_lorentz_y -0.32211012
+64 deterministic hrpt.instrument.twotheta_offset hrpt.peak.broad_gauss_u 0.01131056
+65 deterministic hrpt.background.1.intensity hrpt.peak.broad_gauss_u -0.01404732
+66 deterministic hrpt.background.2.intensity hrpt.peak.broad_gauss_u 0.08705741
+67 deterministic hrpt.background.3.intensity hrpt.peak.broad_gauss_u 0.07736727
+68 deterministic hrpt.background.4.intensity hrpt.peak.broad_gauss_u -0.01085326
+69 deterministic hrpt.background.5.intensity hrpt.peak.broad_gauss_u -0.04552421
+70 deterministic hrpt.peak.broad_gauss_v hrpt.peak.broad_gauss_w -0.89513599
+71 deterministic hrpt.peak.broad_gauss_v hrpt.peak.broad_lorentz_y 0.10540047
+72 deterministic hrpt.instrument.twotheta_offset hrpt.peak.broad_gauss_v -0.00895598
+73 deterministic hrpt.background.1.intensity hrpt.peak.broad_gauss_v 0.01594171
+74 deterministic hrpt.background.2.intensity hrpt.peak.broad_gauss_v -0.01390244
+75 deterministic hrpt.background.3.intensity hrpt.peak.broad_gauss_v -0.0662706
+76 deterministic hrpt.background.4.intensity hrpt.peak.broad_gauss_v 0.02809957
+77 deterministic hrpt.background.5.intensity hrpt.peak.broad_gauss_v 0.04418254
+78 deterministic hrpt.peak.broad_gauss_w hrpt.peak.broad_lorentz_y -0.4109374
+79 deterministic hrpt.instrument.twotheta_offset hrpt.peak.broad_gauss_w 0.00127644
+80 deterministic hrpt.background.1.intensity hrpt.peak.broad_gauss_w -0.01463071
+81 deterministic hrpt.background.2.intensity hrpt.peak.broad_gauss_w 0.07861514
+82 deterministic hrpt.background.3.intensity hrpt.peak.broad_gauss_w 0.11410652
+83 deterministic hrpt.background.4.intensity hrpt.peak.broad_gauss_w 0.05057989
+84 deterministic hrpt.background.5.intensity hrpt.peak.broad_gauss_w -0.02450501
+85 deterministic hrpt.instrument.twotheta_offset hrpt.peak.broad_lorentz_y 0.00464638
+86 deterministic hrpt.background.1.intensity hrpt.peak.broad_lorentz_y 0.00263531
+87 deterministic hrpt.background.2.intensity hrpt.peak.broad_lorentz_y -0.2818753
+88 deterministic hrpt.background.3.intensity hrpt.peak.broad_lorentz_y -0.17157055
+89 deterministic hrpt.background.4.intensity hrpt.peak.broad_lorentz_y -0.19597482
+90 deterministic hrpt.background.5.intensity hrpt.peak.broad_lorentz_y -0.02729509
+91 deterministic hrpt.background.1.intensity hrpt.instrument.twotheta_offset 0.00104321
+92 deterministic hrpt.background.2.intensity hrpt.instrument.twotheta_offset -0.00187757
+93 deterministic hrpt.background.3.intensity hrpt.instrument.twotheta_offset -0.0000807
+94 deterministic hrpt.background.4.intensity hrpt.instrument.twotheta_offset -0.00734377
+95 deterministic hrpt.background.5.intensity hrpt.instrument.twotheta_offset 0.00651451
+96 deterministic hrpt.background.1.intensity hrpt.background.2.intensity -0.33105464
+97 deterministic hrpt.background.1.intensity hrpt.background.3.intensity 0.10505262
+98 deterministic hrpt.background.1.intensity hrpt.background.4.intensity -0.02460909
+99 deterministic hrpt.background.1.intensity hrpt.background.5.intensity 0.00969658
+100 deterministic hrpt.background.2.intensity hrpt.background.3.intensity -0.23976445
+101 deterministic hrpt.background.2.intensity hrpt.background.4.intensity 0.1180033
+102 deterministic hrpt.background.2.intensity hrpt.background.5.intensity -0.01593364
+103 deterministic hrpt.background.3.intensity hrpt.background.4.intensity -0.16917552
+104 deterministic hrpt.background.3.intensity hrpt.background.5.intensity 0.10019832
+105 deterministic hrpt.background.4.intensity hrpt.background.5.intensity -0.32545773
+
+loop_
+_software.id
+_software.name
+_software.version
+_software.url
+framework EasyDiffraction 0.18.0+dev6 https://github.com/easyscience/diffraction-lib
+calculator crysfml 0.6.2 https://code.ill.fr/scientific-software/crysfml
+minimizer lmfit 1.3.4 https://lmfit.github.io/lmfit-py

@@ -1,0 +1,35 @@
+data_cosio
+
+_edstar.schema_name EasyDiffraction
+_edstar.schema_version 1
+
+_cell.length_a 10.30708(26)
+_cell.length_b 6.00301(16)
+_cell.length_c 4.78646(12)
+_cell.angle_alpha 90.
+_cell.angle_beta 90.
+_cell.angle_gamma 90.
+
+_space_group.name_h_m "P n m a"
+_space_group.coord_system_code abc
+
+_geom.min_bond_distance_cutoff 0.
+_geom.bond_distance_inc 0.25
+
+loop_
+_atom_site.id
+_atom_site.type_symbol
+_atom_site.fract_x
+_atom_site.fract_y
+_atom_site.fract_z
+_atom_site.wyckoff_letter
+_atom_site.multiplicity
+_atom_site.occupancy
+_atom_site.adp_iso
+_atom_site.adp_type
+Co1 Co 0. 0. 0. a 4 1. 0.163(81) Biso
+Co2 Co 0.27839(70) 0.25 0.9809(15) c 4 1. 0.163 Biso
+Si Si 0.09342(40) 0.25 0.42846(86) c 4 1. 0.385(65) Biso
+O1 O 0.09066(31) 0.25 0.77178(67) c 4 1. 0.649(60) Biso
+O2 O 0.44835(26) 0.25 0.21659(70) c 4 1. 0.478(60) Biso
+O3 O 0.16328(24) 0.03110(34) 0.27957(51) d 8 1. 0.858(50) Biso
