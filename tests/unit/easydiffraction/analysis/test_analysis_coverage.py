@@ -1806,15 +1806,15 @@ class TestDisplayAccessTables:
         # Category-entry name is rendered for looped (collection) categories.
         assert "proj.experiments['hrpt'].atom_site['Ba'].fract_x" in access_codes
 
-    def test_parameter_cif_uids_warns_when_empty(self, capsys):
+    def test_parameter_uids_warns_when_empty(self, capsys):
         from easydiffraction.analysis.analysis import Analysis
 
         a = Analysis(project=_make_project())
-        a.display.parameter_cif_uids()
+        a.display.parameter_uids()
         out = capsys.readouterr().out
         assert 'No parameters found' in out
 
-    def test_parameter_cif_uids_lists_handler_uids(self, capsys, monkeypatch):
+    def test_parameter_uids_lists_handler_uids(self, capsys, monkeypatch):
         import easydiffraction.analysis.analysis as mod
         from easydiffraction.analysis.analysis import Analysis
 
@@ -1826,10 +1826,10 @@ class TestDisplayAccessTables:
 
         captured = {}
         monkeypatch.setattr(mod, 'render_table', lambda **kwargs: captured.update(kwargs))
-        a.display.parameter_cif_uids()
+        a.display.parameter_uids()
 
         out = capsys.readouterr().out
-        assert 'CIF unique identifiers' in out
+        assert 'unique identifiers for constraints' in out
         uids = [row[-1] for row in captured['columns_data']]
         assert 'cell_length_a_uid' in uids
 

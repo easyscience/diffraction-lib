@@ -35,7 +35,9 @@ def _make_project_stub() -> tuple[SimpleNamespace, list[tuple[str, tuple, dict]]
         fittable_params=record('fittable_params'),
         free_params=record('free_params'),
         how_to_access_parameters=record('how_to_access_parameters'),
-        parameter_cif_uids=record('parameter_cif_uids'),
+        parameter_uids=record('parameter_uids'),
+        parameter_edstar_tags=record('parameter_edstar_tags'),
+        parameter_cif_tags=record('parameter_cif_tags'),
         fit_results=record('fit_results'),
     )
     plotter = SimpleNamespace(
@@ -173,14 +175,18 @@ def test_parameter_display_delegates_to_analysis_display():
     display.parameters.fittable()
     display.parameters.free()
     display.parameters.access()
-    display.parameters.cif_uids()
+    display.parameters.uid()
+    display.parameters.edstar()
+    display.parameters.cif()
 
     assert [name for name, _args, _kwargs in calls] == [
         'all_params',
         'fittable_params',
         'free_params',
         'how_to_access_parameters',
-        'parameter_cif_uids',
+        'parameter_uids',
+        'parameter_edstar_tags',
+        'parameter_cif_tags',
     ]
 
 

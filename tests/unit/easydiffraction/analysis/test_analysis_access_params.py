@@ -461,7 +461,7 @@ def test_all_params_renders_integer_descriptors_without_nan(monkeypatch):
     assert int(structure_df.isna().sum().sum()) == 0
 
 
-def test_how_to_access_and_cif_uids_include_integer_descriptors(monkeypatch):
+def test_how_to_access_and_uids_include_integer_descriptors(monkeypatch):
     import easydiffraction.analysis.analysis as analysis_mod
     from easydiffraction.analysis.analysis import Analysis
 
