@@ -74,10 +74,9 @@ class Software(CategoryCollection):
             return
 
         analysis = getattr(self, '_parent', None)
-        project = getattr(analysis, 'project', None)
-        metadata = getattr(project, 'metadata', None)
-        if metadata is not None:
-            metadata.timestamp = value
+        if analysis is None:
+            return
+        analysis.project.metadata.timestamp = value
 
     def _after_from_cif(self) -> None:
         """Normalize restored rows after loop parsing."""
