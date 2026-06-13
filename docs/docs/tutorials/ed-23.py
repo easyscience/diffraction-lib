@@ -11,6 +11,10 @@
 # ## 🛠️ Import Library
 
 # %%
+import os
+import pathlib
+import shutil
+
 import easydiffraction as ed
 
 # %% [markdown]
@@ -25,13 +29,21 @@ import easydiffraction as ed
 # published to the EasyDiffraction data repository.
 
 # %%
-project_dir = 'docs/docs/tutorials/projects/ed-23'
+bundled_project = 'docs/docs/tutorials/projects/ed-23'
+artifact_root = pathlib.Path(os.environ.get('EASYDIFFRACTION_ARTIFACT_ROOT', '.'))
+project_dir = artifact_root / 'projects' / 'ed_23_cosio_d20_scan_input'
+shutil.rmtree(project_dir, ignore_errors=True)
+shutil.copytree(bundled_project, project_dir)
 
 # %% [markdown]
 # ### Load Project
+#
+# The bundled project is copied to a writable working directory first so
+# resuming the sequential fit (which appends to `analysis/results.csv`)
+# writes there, leaving the bundled read-only copy untouched.
 
 # %%
-project = ed.Project.load(project_dir)
+project = ed.Project.load(str(project_dir))
 
 # %% [markdown]
 # ## 🚀 Perform Analysis

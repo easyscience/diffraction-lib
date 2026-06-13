@@ -37,6 +37,13 @@ project_dir = 'docs/docs/tutorials/projects/ed-18'
 project = Project.load(project_dir)
 
 # %% [markdown]
+# Re-save the project to a fresh working directory so fitting below
+# writes there instead of the bundled read-only copy.
+
+# %%
+project.save_as(dir_path='projects/ed_18_lbco_hrpt')
+
+# %% [markdown]
 # ## 🚀 Perform Analysis
 
 # %% [markdown]
