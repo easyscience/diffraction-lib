@@ -23,7 +23,7 @@ import easydiffraction as ed
 # EasyDiffraction data repository.
 
 # %%
-project_dir = ed.download_data(id=41, destination='projects', overwrite=True)
+project_dir = ed.download_data(id=45, destination='projects', overwrite=True)
 
 # %% [markdown]
 # ### Load Project

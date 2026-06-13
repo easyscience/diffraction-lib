@@ -27,7 +27,7 @@ import easydiffraction as ed
 # repository.
 
 # %%
-project_dir = ed.download_data(id=40, destination='projects')
+project_dir = ed.download_data(id=44, destination='projects')
 
 # %% [markdown]
 # ### Load Project

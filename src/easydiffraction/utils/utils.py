@@ -209,9 +209,9 @@ _PARAMETER_DOCS_ITEM_ROUTES = {
     ): ('experiment/refln', 'refln-sin-theta-over-lambda-range-min'),
 }
 # commit SHA preferred
-_DATA_INDEX_REF = 'fa8466337f6ea793dbeb06161d24d066be91be68'
+_DATA_INDEX_REF = 'e1570a3486a2ecc680e322b8b013e1e9d8a1c05c'
 # macOS: sha256sum index.json
-_DATA_INDEX_HASH = 'sha256:623a4b99ee6d5452d4092bd5c08676e6479bb6800baa1644478977e3755cd068'
+_DATA_INDEX_HASH = 'sha256:fead3c3dc9fe01c79fb03452caf9c1d74c0881e7010930ebdd83a4228988ac49'
 
 
 def _build_data_url(path: str) -> str:
