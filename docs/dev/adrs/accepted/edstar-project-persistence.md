@@ -150,6 +150,28 @@ association into the format name: EasyDiffraction-owned STAR.
 suggests CIF dictionary semantics. It is therefore less clear than
 `.edstar`.
 
+**Use `.txt`.** This is rejected. Its one real advantage is that a
+desktop double-click opens it in any text editor with no file
+association — but that is a GUI-only benefit. In a terminal, notebook, or
+CLI workflow (`cat`, `less`, `vim`, `nano`, `code …`) an `.edstar` file
+opens identically regardless of suffix, so CLI users gain nothing from
+`.txt`. Against that, `.txt` loses everything the chosen extension
+provides: the project files get **no identity** (a directory of
+`project.txt`, `<structure>.txt`, `<experiment>.txt` is indistinguishable
+from loose notes or data dumps); they **cannot be globbed** to locate
+EasyDiffraction projects (`*.txt` collides with everything); load-path
+discovery **weakens** (the loader can no longer key on a unique suffix
+and would have to rely on fixed filenames or content sniffing); and the
+suffix signals "scratch file, edit freely" for a format that has
+selector/body consistency rules and a load-time validation boundary —
+the casual hand-editing most likely to corrupt it. `.txt` is the
+opposite extreme from `.cif`: where `.cif` over-claims dictionary
+semantics, `.txt` claims none at all, so the same honesty argument that
+rejects `.cif` also rejects `.txt`. The "I can't open an unknown
+extension" concern that motivates `.txt` is instead addressed by the
+plain-text guarantee in §Naming Policy, which keeps the files openable in
+any editor without sacrificing identity.
+
 ## Naming Policy
 
 EdSTAR data names should follow the public EasyDiffraction model:
@@ -286,9 +308,22 @@ _edstar.schema_version 1
 
 Loaders must require `schema_name == 'EasyDiffraction'` when the marker
 is present. For `schema_version`, the v1 loader accepts `1`, rejects
-newer major versions with a clear error, and may load older or missing
-markers only through the explicit beta `.cif` compatibility path. The
-marker is therefore a validation boundary, not decorative metadata.
+newer major versions with a clear error, and rejects missing markers in
+`.edstar` project files. The marker is therefore a validation boundary,
+not decorative metadata.
+
+**Plain-text guarantee (openability).** EdSTAR files are plain UTF-8
+STAR text with no binary content, so they open and hand-edit in any text
+editor. The `.edstar` suffix is an honest *label*, not a barrier: even
+where the operating system has no default application registered for it,
+a user can always open the file with "Open With → any text editor" (or
+`cat`/`less`/`vim`/`nano`/`code` in a terminal). This is the deliberate
+answer to the "unknown extension" concern that would otherwise argue for
+a generic `.txt` (see §File Extension Alternatives): EdSTAR keeps the
+universal openability of plain text while retaining a distinct,
+greppable identity. Editors may additionally be mapped to treat
+`*.edstar` as CIF/STAR for syntax highlighting — something a generic
+`.txt` cannot provide per-file-type.
 
 ### Selector Validation Contract
 
@@ -337,38 +372,30 @@ contract.
 Project restore should accept:
 
 - the new `.edstar` project layout;
-- the current beta `.cif` project layout as a read-only compatibility
-  input during the beta migration window;
 - official CIF import tags where supported today;
-- known legacy EasyDiffraction project tags in `CifHandler` import
+- known EasyDiffraction data-name read aliases in `CifHandler` import
   aliases.
 
-Project save should write only the new EdSTAR names once the migration
-lands. The project is still in beta, so no deprecation shim is required
-after the accepted migration window.
+Project restore should not load the previous beta `.cif` project layout.
+The project is still in beta, so no project-persistence deprecation shim
+is required.
 
 ### Restore Contract
 
-So that Phase 1 has a testable boundary regardless of when the exact
-removal release is chosen, the loader follows a fixed contract:
+The loader follows a fixed contract:
 
-- **`.cif` project files are read-only.** Restore may read a beta `.cif`
-  layout, but save never writes `.cif` project files again; re-saving a
-  restored `.cif` project produces `.edstar`.
 - **`.edstar` takes precedence.** When a project directory contains both
   `project.edstar` and a legacy `project.cif`, the loader reads
   `project.edstar` and ignores `project.cif`, treating the `.cif` as a
   stale pre-migration copy. It does not merge the two.
-- **Clear error after the window closes.** Once `.cif` compatibility is
-  removed, a directory that contains only `project.cif` fails to load
-  with an explicit migration error that names the file and tells the
-  user to open it in a supporting version and re-save as `.edstar`. The
-  loader never silently produces an empty or partial project.
-- **Window boundary.** `.cif` restore is supported for the remainder of
-  the beta series and is not removed before the first stable (1.0)
-  release. The precise removal release stays open, but none of the
-  behavior above depends on it, so the loader and its tests can be
-  written now.
+- **Clear error for legacy-only projects.** A directory that contains
+  only `project.cif` fails to load with an explicit migration error that
+  names the file and tells the user to open it in a supporting version
+  and re-save as `.edstar`. The loader never silently produces an empty
+  or partial project.
+- **Clear error for missing EdSTAR metadata.** A project directory with
+  neither `project.edstar` nor legacy `project.cif` fails with an
+  explicit message naming the required `project.edstar` marker.
 
 ## Handler Model
 
@@ -1236,8 +1263,9 @@ extension is required.
 
 1. Introduce explicit handler names (`project_name`, `import_names`,
    `iucr_name`) while keeping current behavior.
-2. Teach save/load helpers to prefer `.edstar` while still reading the
-   beta `.cif` layout.
+2. Teach save/load helpers to require `.edstar` project files and to
+   reject legacy-only beta `.cif` project layouts with a clear migration
+   error.
 3. Add schema-marker validation and selector/body consistency checks to
    the EdSTAR load path.
 4. Generate an implementation audit from all `CifHandler`-declared
@@ -1262,10 +1290,6 @@ extension is required.
 
 ## Open Questions
 
-- Exact removal release for beta `.cif` project loading (bounded:
-  supported through beta, removed no earlier than 1.0; the Restore
-  Contract specifies behavior that does not depend on the chosen
-  release).
 - Whether `.edstar` should be exposed as a named public format in CLI
   commands or remain an implementation detail of project directories.
 - Whether parameter-reference fields in the analysis categories

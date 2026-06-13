@@ -98,26 +98,43 @@ def _block_from_body(body: str) -> object:
 def _validate_schema_marker(block: object) -> None:
     """Validate the required EdSTAR schema marker."""
     schema_name = read_cif_str(block, _SCHEMA_NAME_TAG)
+    if schema_name is None:
+        msg = (
+            f'EdSTAR schema name marker {_SCHEMA_NAME_TAG} is required. '
+            'Saved project sections must be EdSTAR files with schema markers.'
+        )
+        raise ValueError(msg)
+
     if schema_name != _SCHEMA_NAME:
         msg = (
-            f"EdSTAR schema name must be '{_SCHEMA_NAME}', "
-            f'got {schema_name!r}.'
+            'This file is not an EasyDiffraction EdSTAR project section: '
+            f"{_SCHEMA_NAME_TAG} must be '{_SCHEMA_NAME}', got {schema_name!r}."
         )
         raise ValueError(msg)
 
     schema_version = read_cif_str(block, _SCHEMA_VERSION_TAG)
     if schema_version is None:
-        msg = f'EdSTAR schema version marker {_SCHEMA_VERSION_TAG} is required.'
+        msg = (
+            f'EdSTAR schema version marker {_SCHEMA_VERSION_TAG} is required. '
+            'Saved project sections must be EdSTAR files with schema markers.'
+        )
         raise ValueError(msg)
 
     try:
         major_version = int(schema_version.split('.', maxsplit=1)[0])
     except ValueError as exc:
-        msg = f'EdSTAR schema version must start with an integer: {schema_version!r}.'
+        msg = (
+            f'EdSTAR schema version must start with an integer, got '
+            f'{schema_version!r}.'
+        )
         raise ValueError(msg) from exc
 
     if major_version != 1:
-        msg = f'Unsupported EdSTAR schema version: {schema_version!r}.'
+        msg = (
+            f'Unsupported EdSTAR schema version {schema_version!r}. '
+            'Open this project with a compatible EasyDiffraction version '
+            'and re-save it as EdSTAR schema_version 1.'
+        )
         raise ValueError(msg)
 
 

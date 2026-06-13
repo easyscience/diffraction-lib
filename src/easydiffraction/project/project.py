@@ -9,6 +9,7 @@ import shutil
 import tempfile
 from typing import TYPE_CHECKING
 from typing import ClassVar
+from typing import NoReturn
 
 from typeguard import typechecked
 from varname import varname
@@ -44,6 +45,20 @@ if TYPE_CHECKING:
     from easydiffraction.project.categories.verbosity import Verbosity
     from easydiffraction.project.project_metadata import ProjectMetadata
     from easydiffraction.report import Report
+
+
+def _raise_legacy_project_cif_error(
+    path: pathlib.Path,
+    *,
+    replacement: str,
+) -> NoReturn:
+    """Raise an explicit migration error for beta project CIF input."""
+    msg = (
+        f"Legacy beta project CIF file '{path}' is no longer supported as "
+        'project persistence. Open it in an EasyDiffraction version that '
+        f'can read beta project CIF, then save it again to create {replacement}.'
+    )
+    raise ValueError(msg)
 
 
 def _apply_csv_row_to_params(
@@ -124,24 +139,13 @@ def _resolve_data_path_from_results_csv(
     return project_path / path
 
 
-def _load_cif_directory(
-    cif_dir: pathlib.Path,
-    add_from_cif_path: Callable[[str], None],
-) -> None:
-    """Load all CIF files from one directory using the given loader."""
-    if not cif_dir.is_dir():
-        return
-
-    for cif_file in sorted(cif_dir.glob('*.cif')):
-        add_from_cif_path(str(cif_file))
-
-
-def _load_edstar_or_cif_directory(
+def _load_edstar_directory(
     section_dir: pathlib.Path,
     add_from_edstar_path: Callable[[str], None],
-    add_from_cif_path: Callable[[str], None],
+    *,
+    replacement: str,
 ) -> None:
-    """Load EdSTAR files, falling back to legacy CIF files."""
+    """Load EdSTAR files and reject legacy-only project CIF files."""
     if not section_dir.is_dir():
         return
 
@@ -151,7 +155,12 @@ def _load_edstar_or_cif_directory(
             add_from_edstar_path(str(edstar_file))
         return
 
-    _load_cif_directory(section_dir, add_from_cif_path)
+    legacy_files = sorted(section_dir.glob('*.cif'))
+    if legacy_files:
+        _raise_legacy_project_cif_error(
+            legacy_files[0],
+            replacement=replacement,
+        )
 
 
 def _create_loading_project(project_cls: type[Project]) -> Project:
@@ -165,7 +174,7 @@ def _create_loading_project(project_cls: type[Project]) -> Project:
 
 def _load_project_metadata(project: Project, project_path: pathlib.Path) -> None:
     """
-    Restore project configuration from EdSTAR or legacy CIF.
+    Restore project configuration from EdSTAR.
     """
     project_edstar_path = project_path / 'project.edstar'
     if project_edstar_path.is_file():
@@ -175,7 +184,13 @@ def _load_project_metadata(project: Project, project_path: pathlib.Path) -> None
 
     project_cif_path = project_path / 'project.cif'
     if project_cif_path.is_file():
-        project_config_from_cif(project, project_cif_path.read_text())
+        _raise_legacy_project_cif_error(
+            project_cif_path,
+            replacement='project.edstar',
+        )
+
+    msg = f"Project directory '{project_path}' must contain project.edstar."
+    raise FileNotFoundError(msg)
 
 
 def _resolved_analysis_path(project_path: pathlib.Path) -> pathlib.Path | None:
@@ -183,20 +198,29 @@ def _resolved_analysis_path(project_path: pathlib.Path) -> pathlib.Path | None:
     for analysis_path in (
         project_path / 'analysis' / 'analysis.edstar',
         project_path / 'analysis.edstar',
+    ):
+        if analysis_path.is_file():
+            return analysis_path
+
+    for analysis_path in (
         project_path / 'analysis' / 'analysis.cif',
         project_path / 'analysis.cif',
     ):
         if analysis_path.is_file():
-            return analysis_path
+            _raise_legacy_project_cif_error(
+                analysis_path,
+                replacement='analysis/analysis.edstar',
+            )
     return None
 
 
 def _persistence_body_from_path(path: pathlib.Path) -> str:
-    """Read EdSTAR or legacy CIF text for a project section."""
-    text = path.read_text()
+    """Read EdSTAR text for a project section."""
     if path.suffix == '.edstar':
+        text = path.read_text()
         return edstar_body_from_text(text)
-    return text
+
+    _raise_legacy_project_cif_error(path, replacement='a .edstar file')
 
 
 def _load_project_analysis(project: Project, project_path: pathlib.Path) -> None:
@@ -408,8 +432,7 @@ class Project(GuardedBase):  # noqa: PLR0904
 
     @property
     def as_cif(self) -> str:
-        """Export whole project as CIF text."""
-        # Concatenate sections using centralized CIF serializers
+        """Serialize the whole project as EasyDiffraction STAR text."""
         return project_to_cif(self)
 
     @property
@@ -441,8 +464,8 @@ class Project(GuardedBase):  # noqa: PLR0904
 
         Reads EdSTAR project files from *dir_path* and reconstructs the
         full project state, including project-level display
-        configuration. Legacy beta CIF project files remain accepted as
-        read-only compatibility input when no EdSTAR sibling exists.
+        configuration. Legacy beta CIF project files are rejected with
+        an explicit migration error.
 
         Parameters
         ----------
@@ -470,15 +493,15 @@ class Project(GuardedBase):  # noqa: PLR0904
 
         _load_project_metadata(project, project_path)
         project.metadata.path = project_path
-        _load_edstar_or_cif_directory(
+        _load_edstar_directory(
             project_path / 'structures',
             project._structures.add_from_edstar_path,
-            project._structures.add_from_cif_path,
+            replacement='structures/<structure>.edstar',
         )
-        _load_edstar_or_cif_directory(
+        _load_edstar_directory(
             project_path / 'experiments',
             project._experiments.add_from_edstar_path,
-            project._experiments.add_from_cif_path,
+            replacement='experiments/<experiment>.edstar',
         )
         _load_project_analysis(project, project_path)
 

@@ -48,15 +48,16 @@ to the old suggestions path.
 - Saved EdSTAR files include the schema marker
   `_edstar.schema_name EasyDiffraction` and
   `_edstar.schema_version 1`.
-- Restore accepts:
-  EdSTAR names, beta-window legacy EasyDiffraction CIF names, official
-  CIF import names where supported, and legacy aliases recorded on
+- Project restore accepts only EdSTAR project files. Legacy beta
+  EasyDiffraction CIF project files fail with an explicit migration
+  error. Official CIF import names remain supported by explicit CIF
+  import paths where supported, and read aliases remain recorded on
   handlers.
 - EdSTAR files take precedence over stale CIF siblings. If both exist,
   load EdSTAR and ignore CIF for the same project section.
-- Re-saving a project loaded from beta-window CIF writes EdSTAR files.
-  It does not need to delete legacy CIF files during ordinary `save()`;
-  precedence and clear console output handle stale siblings.
+- Ordinary `save()` writes EdSTAR files. It does not need to delete
+  stale CIF files; precedence and clear console output handle stale
+  siblings.
 - Public Python names move to the ADR's API-oriented names with no
   transitional Python properties:
   `project.metadata`, `experiment.experiment_type`,
@@ -76,9 +77,6 @@ to the old suggestions path.
 
 ## Open Questions
 
-- Exact release/version that removes beta-window CIF project loading.
-  Phase 1 should centralize the message and policy constant, but must not
-  invent a removal release unless the user accepts one.
 - Whether EdSTAR needs an explicit public CLI format flag. This plan
   assumes no new `--format` flag: `.edstar` is the default project
   persistence format, and CLI help/docs name it because users see the
@@ -249,9 +247,9 @@ code/EdSTAR/CIF reference.
   ```
 
   Update `Project.load()` and structure/experiment/analysis loaders so
-  EdSTAR wins over same-section CIF files, while beta-window CIF loading
-  remains read-only compatibility input. Keep `project.report.save_cif()`
-  and the IUCr writer on the CIF path.
+  EdSTAR wins over same-section CIF files, while legacy-only beta CIF
+  project files fail with explicit migration errors. Keep
+  `project.report.save_cif()` and the IUCr writer on the CIF path.
 
   Commit:
 
@@ -392,18 +390,16 @@ code/EdSTAR/CIF reference.
   Document EdSTAR parameter keys
   ```
 
-- [ ] P1.12 - Refresh report CIF boundaries and stale-name errors.
+- [x] P1.12 - Refresh report CIF boundaries and stale-name errors.
 
   Ensure report CIF generation still emits strict IUCr/pdCIF and does
   not accidentally use EdSTAR project names. Remove or update regular
   project-save CIF assumptions in display/report helpers while keeping
   `reports/<project>.cif` intact.
 
-  Add clear boundary errors for schema marker mismatches, stale
-  beta-window-only CIF after the compatibility window closes, and stale
-  public keyword usage where the public API boundary can produce a
-  better message than Python's default unexpected-keyword error. Do not
-  add compatibility properties for removed public names.
+  Add clear boundary errors for schema marker mismatches and legacy-only
+  beta CIF project directories. Do not add compatibility parameters or
+  properties for removed public names.
 
   Commit:
 
@@ -523,6 +519,6 @@ Description:
 Save EasyDiffraction projects in the new EdSTAR format while keeping
 report CIF output strict for publication and exchange. The change makes
 saved project files easier to read and edit, clarifies project metadata
-and linked-structure names, and keeps legacy CIF projects loadable
-during the beta migration window.
+and linked-structure names, and gives clear migration errors for older
+beta CIF project directories.
 ```

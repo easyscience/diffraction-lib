@@ -91,7 +91,7 @@ class ProjectConfig(CategoryOwner):
 
     @property
     def as_cif(self) -> str:
-        """Serialize singleton project categories to CIF."""
+        """Serialize singleton project categories to STAR text."""
         from easydiffraction.io.cif.serialize import category_owner_to_cif  # noqa: PLC0415
 
         return category_owner_to_cif(self)

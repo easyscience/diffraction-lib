@@ -220,8 +220,6 @@ def _existing_project_dir(extraction_dir: pathlib.Path) -> pathlib.Path | None:
     """Return one extracted project directory from a destination."""
     project_files = sorted(extraction_dir.rglob('project.edstar'))
     if not project_files:
-        project_files = sorted(extraction_dir.rglob('project.cif'))
-    if not project_files:
         return None
     return project_files[0].parent.resolve()
 

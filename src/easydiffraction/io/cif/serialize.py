@@ -568,7 +568,7 @@ def project_metadata_to_cif(metadata: object) -> str:
 
 
 def _as_cif_text(section: object) -> str:
-    """Return CIF text from either an ``as_cif`` property or method."""
+    """Return STAR text from either an ``as_cif`` property or method."""
     cif_value = section.as_cif
     return cif_value() if callable(cif_value) else cif_value
 
@@ -600,7 +600,7 @@ def project_config_to_cif(project: object) -> str:
 
 
 def project_to_cif(project: object) -> str:
-    """Render a whole project by concatenating sections when present."""
+    """Render a whole project EdSTAR body from available sections."""
     parts: list[str] = []
     if hasattr(project, 'metadata'):
         parts.append(project_config_to_cif(project))
@@ -619,7 +619,7 @@ def experiment_to_cif(experiment: object) -> str:
 
 
 def analysis_to_cif(analysis: object) -> str:
-    """Render analysis metadata, aliases, and constraints to CIF."""
+    """Render analysis metadata, aliases, and constraints as STAR text."""
     return category_owner_to_cif(analysis)
 
 
@@ -748,7 +748,7 @@ def analysis_from_cif(analysis: object, cif_text: str) -> None:
     analysis : object
         The ``Analysis`` instance to populate.
     cif_text : str
-        CIF text content of ``analysis.cif``.
+        Analysis EdSTAR body text or explicit CIF import text.
     """
     import gemmi  # noqa: PLC0415
 

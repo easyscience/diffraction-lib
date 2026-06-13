@@ -118,7 +118,7 @@ class ProjectMetadata(CategoryItem):
 
     @staticmethod
     def _parse_timestamp(value: str) -> datetime.datetime:
-        """Parse project timestamp text from CIF storage format."""
+        """Parse project timestamp text from STAR storage format."""
         return datetime.datetime.strptime(value, _PROJECT_TIMESTAMP_FORMAT).replace(
             tzinfo=datetime.UTC,
         )
@@ -132,7 +132,7 @@ class ProjectMetadata(CategoryItem):
 
     @staticmethod
     def _format_timestamp(value: datetime.datetime) -> str:
-        """Format a project timestamp for CIF storage."""
+        """Format a project timestamp for STAR storage."""
         return ProjectMetadata._normalize_timestamp(value).strftime(_PROJECT_TIMESTAMP_FORMAT)
 
     @property
@@ -198,7 +198,7 @@ class ProjectMetadata(CategoryItem):
         self._timestamp_descriptor.value = value
 
     def _set_last_modified(self, value: datetime.datetime | str) -> None:
-        """Set the last-modified timestamp from runtime or CIF input."""
+        """Set the last-modified timestamp from runtime or STAR input."""
         if isinstance(value, datetime.datetime):
             self._last_modified_descriptor.value = self._format_timestamp(value)
             return
@@ -214,7 +214,7 @@ class ProjectMetadata(CategoryItem):
         return project_metadata_to_cif(self)
 
     def show_as_cif(self) -> None:
-        """Pretty-print CIF via shared utilities."""
+        """Pretty-print EdSTAR via shared utilities."""
         paragraph_title = f"Project 📦 '{self.name}' metadata as EdSTAR"
         console.paragraph(paragraph_title)
         render_cif(self.as_cif)
