@@ -33,31 +33,43 @@ Lorentzian broadening coefficient _Y_.
 
 ## Time-Of-Flight Powder Profiles
 
-### `_peak.gauss_sigma_0` { #peak-gauss-sigma-0 }
+### `_peak.broad_gauss_sigma_0` { #peak-broad-gauss-sigma-0 }
 
 Gaussian time-of-flight broadening term.
 
-### `_peak.gauss_sigma_1` { #peak-gauss-sigma-1 }
+### `_peak.broad_gauss_sigma_1` { #peak-broad-gauss-sigma-1 }
 
 Gaussian time-of-flight broadening term.
 
-### `_peak.gauss_sigma_2` { #peak-gauss-sigma-2 }
+### `_peak.broad_gauss_sigma_2` { #peak-broad-gauss-sigma-2 }
 
 Gaussian time-of-flight broadening term.
 
-### `_peak.decay_beta_0` { #peak-decay-beta-0 }
+### `_peak.broad_lorentz_gamma_0` { #peak-broad-lorentz-gamma-0 }
+
+Lorentzian time-of-flight broadening term.
+
+### `_peak.broad_lorentz_gamma_1` { #peak-broad-lorentz-gamma-1 }
+
+Lorentzian time-of-flight broadening term.
+
+### `_peak.broad_lorentz_gamma_2` { #peak-broad-lorentz-gamma-2 }
+
+Lorentzian time-of-flight broadening term.
+
+### `_peak.exp_decay_beta_0` { #peak-exp-decay-beta-0 }
 
 Back-to-back exponential decay term.
 
-### `_peak.decay_beta_1` { #peak-decay-beta-1 }
+### `_peak.exp_decay_beta_1` { #peak-exp-decay-beta-1 }
 
 Back-to-back exponential decay term.
 
-### `_peak.rise_alpha_0` { #peak-rise-alpha-0 }
+### `_peak.exp_rise_alpha_0` { #peak-exp-rise-alpha-0 }
 
 Back-to-back exponential rise term.
 
-### `_peak.rise_alpha_1` { #peak-rise-alpha-1 }
+### `_peak.exp_rise_alpha_1` { #peak-exp-rise-alpha-1 }
 
 Back-to-back exponential rise term.
 
@@ -144,18 +156,6 @@ EdSTAR key `_peak.dexp_switch_r_02`.
 ### `_peak.dexp_switch_r_03` { #peak-dexp-switch-r-03 }
 
 EdSTAR key `_peak.dexp_switch_r_03`.
-
-### `_peak.lorentz_gamma_0` { #peak-lorentz-gamma-0 }
-
-EdSTAR key `_peak.lorentz_gamma_0`.
-
-### `_peak.lorentz_gamma_1` { #peak-lorentz-gamma-1 }
-
-EdSTAR key `_peak.lorentz_gamma_1`.
-
-### `_peak.lorentz_gamma_2` { #peak-lorentz-gamma-2 }
-
-EdSTAR key `_peak.lorentz_gamma_2`.
 
 ### `_peak.type` { #peak-type }
 

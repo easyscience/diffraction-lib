@@ -2,21 +2,21 @@
 
 # `_pd_background`
 
-Some powder-background parameters still use the pdCIF-oriented
-`_pd_background` category in EdSTAR because they represent polynomial
-background terms rather than line-segment points.
+`_pd_background` names are pdCIF import/report aliases for background
+parameters whose EdSTAR keys live under
+[`_background`](background.md).
 
 ## `_pd_background.Chebyshev_order` { #pd-background-chebyshev-order }
 
-Chebyshev polynomial term order.
+pdCIF alias for [`_background.order`](background.md#background-order).
 
 ## `_pd_background.Chebyshev_coef` { #pd-background-chebyshev-coef }
 
-Chebyshev polynomial coefficient.
+pdCIF alias for [`_background.coef`](background.md#background-coef).
 
 ## `_pd_background.id` { #pd-background-id }
 
-Stable row identifier for a polynomial background term.
+pdCIF alias for [`_background.id`](background.md#background-id).
 
 <!-- prettier-ignore-start -->
 [0]: #

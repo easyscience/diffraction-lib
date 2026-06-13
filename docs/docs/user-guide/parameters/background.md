@@ -2,8 +2,9 @@
 
 # `_background`
 
-EdSTAR stores line-segment background points under `_background`.
-Report CIF maps these rows to the corresponding pdCIF background names.
+EdSTAR stores line-segment and polynomial background rows under
+`_background`. Report CIF maps these rows to the corresponding pdCIF
+background names where pdCIF has equivalents.
 
 !!! tip "Automatic background estimation"
 
@@ -21,6 +22,14 @@ X-axis position of the background point.
 ## `_background.intensity` { #background-intensity }
 
 Background intensity at the stored position.
+
+## `_background.order` { #background-order }
+
+Chebyshev polynomial term order.
+
+## `_background.coef` { #background-coef }
+
+Chebyshev polynomial coefficient.
 
 ## `_background.type` { #background-type }
 
