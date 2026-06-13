@@ -8,8 +8,8 @@ This plan follows `AGENTS.md`. There are no deliberate exceptions.
       current repository context.
 - [x] Review and accept this plan.
 - [x] Phase 1 - implementation commits complete.
-- [ ] Phase 1 review complete.
-- [ ] Phase 2 - tests and verification complete.
+- [x] Phase 1 review complete.
+- [x] Phase 2 - tests and verification complete.
 - [ ] Phase 2 review complete.
 
 When an AI agent follows this plan, every completed Phase 1
@@ -425,7 +425,7 @@ code/EdSTAR/CIF reference.
 
 ## Verification Steps (Phase 2)
 
-- [ ] P2.1 - Add and update focused tests.
+- [x] P2.1 - Add and update focused tests.
 
   Add or update unit tests for:
 
@@ -450,7 +450,7 @@ code/EdSTAR/CIF reference.
   Test EdSTAR project persistence
   ```
 
-- [ ] P2.2 - Run structure and formatting checks.
+- [x] P2.2 - Run structure and formatting checks.
 
   ```bash
   pixi run test-structure-check > /tmp/easydiffraction-test-structure-check.log 2>&1; test_structure_check_exit_code=$?; tail -n 200 /tmp/easydiffraction-test-structure-check.log; exit $test_structure_check_exit_code
@@ -466,7 +466,7 @@ code/EdSTAR/CIF reference.
   Apply EdSTAR verification formatting
   ```
 
-- [ ] P2.3 - Run static checks.
+- [x] P2.3 - Run static checks.
 
   ```bash
   pixi run check > /tmp/easydiffraction-check.log 2>&1; check_exit_code=$?; tail -n 200 /tmp/easydiffraction-check.log; exit $check_exit_code
@@ -474,7 +474,7 @@ code/EdSTAR/CIF reference.
 
   Commit fixes only if this command identifies code or docs issues.
 
-- [ ] P2.4 - Run unit tests.
+- [x] P2.4 - Run unit tests.
 
   ```bash
   pixi run unit-tests > /tmp/easydiffraction-unit-tests.log 2>&1; unit_tests_exit_code=$?; tail -n 200 /tmp/easydiffraction-unit-tests.log; exit $unit_tests_exit_code
@@ -482,7 +482,7 @@ code/EdSTAR/CIF reference.
 
   Commit fixes only if this command identifies unit-level issues.
 
-- [ ] P2.5 - Run integration tests.
+- [x] P2.5 - Run integration tests.
 
   ```bash
   pixi run integration-tests > /tmp/easydiffraction-integration-tests.log 2>&1; integration_tests_exit_code=$?; tail -n 200 /tmp/easydiffraction-integration-tests.log; exit $integration_tests_exit_code
@@ -494,7 +494,7 @@ code/EdSTAR/CIF reference.
 
   Commit fixes only if this command identifies integration-level issues.
 
-- [ ] P2.6 - Run script tests.
+- [x] P2.6 - Run script tests.
 
   ```bash
   pixi run script-tests > /tmp/easydiffraction-script-tests.log 2>&1; script_tests_exit_code=$?; tail -n 200 /tmp/easydiffraction-script-tests.log; exit $script_tests_exit_code
