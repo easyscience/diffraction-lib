@@ -1,0 +1,68 @@
+# :material-axis-arrow: atom_site_aniso
+
+## :material-tag: adp_11 { #atom-site-aniso-adp-11 }
+
+| Access | Source |
+| --- | --- |
+| \_atom_site_aniso.adp_11 | [EdSTAR][0]{:.label-cif} |
+| \_atom_site_aniso.B_11 [:material-open-in-new:](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Iatom_site_aniso.B_11.html "IUCr definition") | [coreCIF][0]{:.label-cif} |
+
+EdSTAR key `_atom_site_aniso.adp_11`.
+
+## :material-tag: adp_12 { #atom-site-aniso-adp-12 }
+
+| Access | Source |
+| --- | --- |
+| \_atom_site_aniso.adp_12 | [EdSTAR][0]{:.label-cif} |
+| \_atom_site_aniso.B_12 [:material-open-in-new:](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Iatom_site_aniso.B_12.html "IUCr definition") | [coreCIF][0]{:.label-cif} |
+
+EdSTAR key `_atom_site_aniso.adp_12`.
+
+## :material-tag: adp_13 { #atom-site-aniso-adp-13 }
+
+| Access | Source |
+| --- | --- |
+| \_atom_site_aniso.adp_13 | [EdSTAR][0]{:.label-cif} |
+| \_atom_site_aniso.B_13 [:material-open-in-new:](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Iatom_site_aniso.B_13.html "IUCr definition") | [coreCIF][0]{:.label-cif} |
+
+EdSTAR key `_atom_site_aniso.adp_13`.
+
+## :material-tag: adp_22 { #atom-site-aniso-adp-22 }
+
+| Access | Source |
+| --- | --- |
+| \_atom_site_aniso.adp_22 | [EdSTAR][0]{:.label-cif} |
+| \_atom_site_aniso.B_22 [:material-open-in-new:](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Iatom_site_aniso.B_22.html "IUCr definition") | [coreCIF][0]{:.label-cif} |
+
+EdSTAR key `_atom_site_aniso.adp_22`.
+
+## :material-tag: adp_23 { #atom-site-aniso-adp-23 }
+
+| Access | Source |
+| --- | --- |
+| \_atom_site_aniso.adp_23 | [EdSTAR][0]{:.label-cif} |
+| \_atom_site_aniso.B_23 [:material-open-in-new:](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Iatom_site_aniso.B_23.html "IUCr definition") | [coreCIF][0]{:.label-cif} |
+
+EdSTAR key `_atom_site_aniso.adp_23`.
+
+## :material-tag: adp_33 { #atom-site-aniso-adp-33 }
+
+| Access | Source |
+| --- | --- |
+| \_atom_site_aniso.adp_33 | [EdSTAR][0]{:.label-cif} |
+| \_atom_site_aniso.B_33 [:material-open-in-new:](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Iatom_site_aniso.B_33.html "IUCr definition") | [coreCIF][0]{:.label-cif} |
+
+EdSTAR key `_atom_site_aniso.adp_33`.
+
+## :material-tag: id { #atom-site-aniso-id }
+
+| Access | Source |
+| --- | --- |
+| \_atom_site_aniso.id | [EdSTAR][0]{:.label-cif} |
+| \_atom_site_aniso.label [:material-open-in-new:](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Iatom_site_aniso.label.html "IUCr definition") | [coreCIF][0]{:.label-cif} |
+
+EdSTAR key `_atom_site_aniso.id`.
+
+<!-- prettier-ignore-start -->
+[0]: #
+<!-- prettier-ignore-end -->

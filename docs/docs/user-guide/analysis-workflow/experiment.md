@@ -299,7 +299,7 @@ project.experiments['hrpt'].preferred_orientation.create(
 This is a constant-wavelength Bragg powder correction, available on the
 `cryspy` engine. The defaults (`march_r=1`, `march_random_fract=0`)
 apply no texture, so it has no effect until you set them. See the
-[preferred-orientation parameters](../parameters/preferred_orientation.md)
+[preferred-orientation parameters](../parameters/experiment/preferred_orientation.md)
 for details.
 
 ### 7. Measured Data Category { #measured-data-category }
@@ -312,12 +312,12 @@ depends on the experiment type.
 #### Supported data file formats:
 
 - `.xye` or `.xys` (3 columns, including standard deviations)
-  - [\_data.two_theta](../parameters/data.md#data-two-theta)
-  - [\_data.intensity_meas](../parameters/data.md#data-intensity-meas)
-  - [\_data.intensity_meas_su](../parameters/data.md#data-intensity-meas-su)
+  - [\_data.two_theta](../parameters/experiment/data.md#data-two-theta)
+  - [\_data.intensity_meas](../parameters/experiment/data.md#data-intensity-meas)
+  - [\_data.intensity_meas_su](../parameters/experiment/data.md#data-intensity-meas-su)
 - `.xy` (2 columns, no standard deviations):
-  - [\_data.two_theta](../parameters/data.md#data-two-theta)
-  - [\_data.intensity_meas](../parameters/data.md#data-intensity-meas)
+  - [\_data.two_theta](../parameters/experiment/data.md#data-two-theta)
+  - [\_data.intensity_meas](../parameters/experiment/data.md#data-intensity-meas)
 
 If no **standard deviations** are provided, they are automatically
 calculated as the **square root** of measured intensities.
