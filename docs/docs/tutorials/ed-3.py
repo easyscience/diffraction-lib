@@ -39,8 +39,8 @@ project = ed.Project(name='lbco_hrpt')
 # ### Set Project Metadata
 
 # %%
-project.info.title = 'La0.5Ba0.5CoO3 at HRPT@PSI'
-project.info.description = """This project demonstrates a standard
+project.metadata.title = 'La0.5Ba0.5CoO3 at HRPT@PSI'
+project.metadata.description = """This project demonstrates a standard
 refinement of La0.5Ba0.5CoO3, which crystallizes in a perovskite-type
 structure, using neutron powder diffraction data collected in constant
 wavelength mode at the HRPT diffractometer (PSI)."""
@@ -49,7 +49,7 @@ wavelength mode at the HRPT diffractometer (PSI)."""
 # ### Show Project Metadata as CIF
 
 # %%
-project.info.show_as_cif()
+project.metadata.show_as_cif()
 
 # %% [markdown]
 # ### Save Project

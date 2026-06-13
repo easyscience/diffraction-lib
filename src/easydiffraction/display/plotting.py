@@ -939,8 +939,8 @@ class Plotter(RendererBase):
 
         # Try CSV first (produced by fit_sequential or future fit)
         csv_path = None
-        if self._project.info.path is not None:
-            candidate = pathlib.Path(self._project.info.path) / 'analysis' / 'results.csv'
+        if self._project.metadata.path is not None:
+            candidate = pathlib.Path(self._project.metadata.path) / 'analysis' / 'results.csv'
             if candidate.is_file():
                 csv_path = str(candidate)
 
@@ -1032,8 +1032,8 @@ class Plotter(RendererBase):
         meta = set(_META_COLUMNS)
 
         csv_path = None
-        if self._project.info.path is not None:
-            candidate = pathlib.Path(self._project.info.path) / 'analysis' / 'results.csv'
+        if self._project.metadata.path is not None:
+            candidate = pathlib.Path(self._project.metadata.path) / 'analysis' / 'results.csv'
             if candidate.is_file():
                 csv_path = str(candidate)
 

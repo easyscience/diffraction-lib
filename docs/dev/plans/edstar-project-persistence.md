@@ -113,8 +113,8 @@ The main public-name changes cross these areas:
   `aliases`, `fit_parameters`, `fit_parameter_correlations`, and
   `software`.
 - Project metadata:
-  `project.info`, `project.project_info`, and
-  `project/categories/info/`.
+  `project.metadata`, `project.project_metadata`, and
+  `project/categories/metadata/`.
 - User-facing docs and generated notebooks under `docs/docs/`.
 
 The existing docs reference is a two-tab code/CIF table in
@@ -140,8 +140,8 @@ code/EdSTAR/CIF reference.
 - Project facade/config:
   `src/easydiffraction/project/project.py`,
   `src/easydiffraction/project/project_config.py`,
-  `src/easydiffraction/project/project_info.py`,
-  `src/easydiffraction/project/categories/info/`, and matching
+  `src/easydiffraction/project/project_metadata.py`,
+  `src/easydiffraction/project/categories/metadata/`, and matching
   `__init__.py` files.
 - Structure model:
   `src/easydiffraction/datablocks/structure/categories/atom_sites/`,
@@ -259,7 +259,7 @@ code/EdSTAR/CIF reference.
   Save and load EdSTAR project files
   ```
 
-- [ ] P1.5 - Rename project info to project metadata.
+- [x] P1.5 - Rename project info to project metadata.
 
   Move the public facade from `project.info` to `project.metadata`,
   rename the project metadata module/category paths as appropriate, and

@@ -84,7 +84,7 @@ def _import_registration_modules() -> None:
     import easydiffraction.datablocks.structure.categories.geom  # noqa: F401
     import easydiffraction.datablocks.structure.categories.space_group  # noqa: F401
     import easydiffraction.datablocks.structure.categories.space_group_wyckoff  # noqa: F401
-    import easydiffraction.project.categories.info  # noqa: F401
+    import easydiffraction.project.categories.metadata  # noqa: F401
     import easydiffraction.project.categories.rendering_plot  # noqa: F401
     import easydiffraction.project.categories.rendering_structure  # noqa: F401
     import easydiffraction.project.categories.rendering_table  # noqa: F401

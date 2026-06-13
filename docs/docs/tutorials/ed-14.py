@@ -16,8 +16,8 @@ import easydiffraction as ed
 # %%
 # Create a minimal project with a short name
 project = ed.Project(name='tbti_heidi')
-project.info.title = 'Tb2Ti2O7 at HEiDi@FRMII'
-project.info.description = """This project demonstrates a standard
+project.metadata.title = 'Tb2Ti2O7 at HEiDi@FRMII'
+project.metadata.description = """This project demonstrates a standard
 refinement of the crystal structure of Tb2Ti2O7 using single crystal 
 neutron diffraction data from HEiDi at FRM II."""
 

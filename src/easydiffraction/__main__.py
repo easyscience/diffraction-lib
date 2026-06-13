@@ -240,7 +240,7 @@ def download_all_tutorials(
 def display(
     project_dir: str = typer.Argument(
         ...,
-        help='Path to the project directory (must contain project.cif).',
+        help='Path to the project directory (must contain project.edstar).',
     ),
 ) -> None:
     """Display the typical outputs for a saved project state."""
@@ -252,7 +252,7 @@ def display(
 def fit(
     project_dir: str = typer.Argument(
         ...,
-        help='Path to the project directory (must contain project.cif).',
+        help='Path to the project directory (must contain project.edstar).',
     ),
     dry: bool = typer.Option(  # noqa: FBT001
         False,  # noqa: FBT003
@@ -263,7 +263,7 @@ def fit(
     """Fit a saved project: easydiffraction PROJECT_DIR fit [--dry]."""
     project = _load_project(project_dir)
     if dry:
-        project.info._path = None
+        project.metadata._path = None
     project.analysis.fit()
     _display_fit_outputs(project)
 
@@ -272,7 +272,7 @@ def fit(
 def undo(
     project_dir: str = typer.Argument(
         ...,
-        help='Path to the project directory (must contain project.cif).',
+        help='Path to the project directory (must contain project.edstar).',
     ),
     dry: bool = typer.Option(  # noqa: FBT001
         False,  # noqa: FBT003

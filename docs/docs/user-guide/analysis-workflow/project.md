@@ -29,9 +29,9 @@ You can manually create a new project and specify its short **name**,
 # Create a new project
 project = ed.Project(name='lbco_hrpt')
 
-# Define project info
-project.info.title = 'La0.5Ba0.5CoO3 from neutron diffraction at HRPT@PSI'
-project.info.description = """This project demonstrates a standard refinement
+# Define project metadata
+project.metadata.title = 'La0.5Ba0.5CoO3 from neutron diffraction at HRPT@PSI'
+project.metadata.description = """This project demonstrates a standard refinement
 of La0.5Ba0.5CoO3, which crystallizes in a perovskite-type structure, using
 neutron powder diffraction data collected in constant wavelength mode at the
 HRPT diffractometer (PSI)."""

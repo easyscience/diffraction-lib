@@ -301,8 +301,8 @@ class Fitter:
         if analysis is None or not hasattr(self.minimizer, '_sidecar_path'):
             return
 
-        project_info = getattr(getattr(analysis, 'project', None), 'info', None)
-        project_path = getattr(project_info, 'path', None)
+        project_metadata = getattr(getattr(analysis, 'project', None), 'metadata', None)
+        project_path = getattr(project_metadata, 'path', None)
         sidecar_path = None if project_path is None else project_path / 'analysis' / 'results.h5'
         self.minimizer._sidecar_path = sidecar_path
 

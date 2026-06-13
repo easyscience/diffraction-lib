@@ -15,8 +15,6 @@ from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import str_to_ufloat
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
-
     import gemmi
 
     from easydiffraction.core.category import CategoryCollection
@@ -165,12 +163,12 @@ def param_to_cif(param: object) -> str:
     """
     Render a single descriptor/parameter to a CIF line.
 
-    Expects ``param`` to expose ``_cif_handler.names`` and ``value``.
+    Expects ``param`` to expose ``_cif_handler.project_name`` and
+    ``value``.
     Free parameters are written with uncertainty brackets (see
     :func:`format_param_value`).
     """
-    tags: Sequence[str] = param._cif_handler.names  # type: ignore[attr-defined]
-    main_key: str = tags[0]
+    main_key: str = param._cif_handler.project_name  # type: ignore[attr-defined]
     return f'{main_key} {format_param_value(param)}'
 
 
@@ -179,7 +177,7 @@ def category_item_to_cif(item: object) -> str:
     Render a CategoryItem-like object to CIF text.
 
     Expects ``item.parameters`` iterable of params with
-    ``_cif_handler.names`` and ``value``.
+    ``_cif_handler.project_name`` and ``value``.
     """
     parameters_hook = getattr(item, '_cif_parameters', None)
     parameters = parameters_hook() if parameters_hook is not None else item.parameters
@@ -193,7 +191,7 @@ def _validate_loop_tags(
 ) -> None:
     """Log an error if any row tag disagrees with *header_tags*."""
     for col, p in enumerate(parameters):
-        tag = p._cif_handler.names[0]  # type: ignore[attr-defined]
+        tag = p._cif_handler.project_name  # type: ignore[attr-defined]
         if tag != header_tags[col]:
             log.error(
                 f'CIF tag mismatch in loop column {col}: '
@@ -297,7 +295,7 @@ def _atom_site_tag_for_adp_family(parameter: object, family: str) -> str:
     """Return the atom_site tag for the selected ADP family."""
     if parameter.name == 'adp_iso':
         return f'_atom_site.{family}_iso_or_equiv'
-    return parameter._cif_handler.names[0]
+    return parameter._cif_handler.project_name
 
 
 def _atom_site_aniso_tag_for_adp_family(parameter: object, family: str) -> str:
@@ -305,7 +303,7 @@ def _atom_site_aniso_tag_for_adp_family(parameter: object, family: str) -> str:
     if parameter.name.startswith('adp_'):
         suffix = parameter.name.removeprefix('adp_')
         return f'_atom_site_aniso.{family}_{suffix}'
-    return parameter._cif_handler.names[0]
+    return parameter._cif_handler.project_name
 
 
 def _adp_family_loop_to_cif(
@@ -439,9 +437,9 @@ def _standard_collection_loop_to_cif(
     lines = ['loop_']
     header_tags: list[str] = []
     for p in _loop_parameters(first_item):
-        tags = p._cif_handler.names  # type: ignore[attr-defined]
-        header_tags.append(tags[0])
-        lines.append(tags[0])
+        tag = p._cif_handler.project_name  # type: ignore[attr-defined]
+        header_tags.append(tag)
+        lines.append(tag)
 
     # Allow collections to customise per-item row formatting
     row_hook = getattr(collection, '_format_cif_row', None)
@@ -545,25 +543,27 @@ def _format_project_description(description: str) -> str:
     return format_value(normalized_description)
 
 
-def project_info_to_cif(info: object) -> str:
-    """Render ProjectInfo to CIF text (id, title, description)."""
-    name = f'{info.name}'
+def project_metadata_to_cif(metadata: object) -> str:
+    """Render project metadata to EdSTAR text."""
+    name = f'{metadata.name}'
 
-    title = f'{info.title}'
+    title = f'{metadata.title}'
     if ' ' in title:
-        title = format_value(info.title)
+        title = format_value(metadata.title)
 
-    description = _format_project_description(info.description)
+    description = _format_project_description(metadata.description)
 
-    created = format_value(info.created.strftime('%d %b %Y %H:%M:%S'))
-    last_modified = format_value(info.last_modified.strftime('%d %b %Y %H:%M:%S'))
+    created = format_value(metadata.created.strftime('%d %b %Y %H:%M:%S'))
+    last_modified = format_value(metadata.last_modified.strftime('%d %b %Y %H:%M:%S'))
+    timestamp = format_value(metadata.timestamp)
 
     return (
-        f'_project.id               {name}\n'
-        f'_project.title            {title}\n'
-        f'_project.description      {description}\n'
-        f'_project.created          {created}\n'
-        f'_project.last_modified    {last_modified}'
+        f'_metadata.name             {name}\n'
+        f'_metadata.title            {title}\n'
+        f'_metadata.description      {description}\n'
+        f'_metadata.created          {created}\n'
+        f'_metadata.last_modified    {last_modified}\n'
+        f'_metadata.timestamp        {timestamp}'
     )
 
 
@@ -574,9 +574,9 @@ def _as_cif_text(section: object) -> str:
 
 
 def project_config_to_cif(project: object) -> str:
-    """Render project-level configuration to ``project.cif`` text."""
+    """Render project-level configuration to EdSTAR body text."""
     sections: list[str] = []
-    for attr_name in ('info', 'rendering_plot', 'report'):
+    for attr_name in ('metadata', 'rendering_plot', 'report'):
         section = getattr(project, attr_name, None)
         if section is not None:
             sections.append(_as_cif_text(section))
@@ -602,7 +602,7 @@ def project_config_to_cif(project: object) -> str:
 def project_to_cif(project: object) -> str:
     """Render a whole project by concatenating sections when present."""
     parts: list[str] = []
-    if hasattr(project, 'info'):
+    if hasattr(project, 'metadata'):
         parts.append(project_config_to_cif(project))
     if getattr(project, 'structures', None):
         parts.append(_as_cif_text(project.structures))
@@ -649,56 +649,58 @@ def _project_block_from_cif_text(cif_text: str) -> gemmi.cif.Block:
     return gemmi.cif.read_string(_wrap_in_data_block(cif_text, 'project')).sole_block()
 
 
-def _populate_project_info_from_block(
-    info: object,
+def _populate_project_metadata_from_block(
+    metadata: object,
     block: gemmi.cif.Block,
 ) -> None:
-    """Populate ProjectInfo fields from a parsed CIF block."""
-    from_cif = getattr(info, 'from_cif', None)
+    """Populate ProjectMetadata fields from a parsed block."""
+    from_cif = getattr(metadata, 'from_cif', None)
     if callable(from_cif):
         from_cif(block)
         return
 
     read_cif_string = _make_cif_string_reader(block)
 
-    name = read_cif_string('_project.id')
+    name = read_cif_string('_metadata.name') or read_cif_string('_project.id')
     if name is not None:
-        info.name = name
+        metadata.name = name
 
-    title = read_cif_string('_project.title')
+    title = read_cif_string('_metadata.title') or read_cif_string('_project.title')
     if title is not None:
-        info.title = title
+        metadata.title = title
 
-    description = read_cif_string('_project.description')
+    description = read_cif_string('_metadata.description') or read_cif_string(
+        '_project.description'
+    )
     if description is not None:
-        info.description = description
+        metadata.description = description
 
 
-def project_info_from_cif(info: object, cif_text: str) -> None:
+def project_metadata_from_cif(metadata: object, cif_text: str) -> None:
     """
-    Populate a ProjectInfo instance from CIF text.
+    Populate a ProjectMetadata instance from EdSTAR or CIF text.
 
     Reads the core project metadata fields from CIF text.
 
     Parameters
     ----------
-    info : object
-        The ``ProjectInfo`` instance to populate.
+    metadata : object
+        The ``ProjectMetadata`` instance to populate.
     cif_text : str
-        CIF text content of ``project.cif``.
+        EdSTAR or CIF text content of the project metadata section.
     """
     block = _project_block_from_cif_text(cif_text)
 
-    _populate_project_info_from_block(info, block)
+    _populate_project_metadata_from_block(metadata, block)
 
 
 def project_config_from_cif(project: object, cif_text: str) -> None:
     """
-    Populate project-level configuration from ``project.cif`` text.
+    Populate project-level configuration from EdSTAR or CIF text.
     """
     block = _project_block_from_cif_text(cif_text)
 
-    _populate_project_info_from_block(project.info, block)
+    _populate_project_metadata_from_block(project.metadata, block)
 
     rendering_plot = getattr(project, 'rendering_plot', None)
     if rendering_plot is not None:
@@ -1025,7 +1027,7 @@ def param_from_cif(
 
     # Try to find the value(s) from the CIF block iterating over
     # the possible cif names in order of preference.
-    for tag in self._cif_handler.names:
+    for tag in self._cif_handler.read_names:
         candidates = list(block.find_values(tag))
         if candidates:
             found_values = candidates
@@ -1158,8 +1160,11 @@ def _find_loop_for_category(
         The matching loop, or ``None`` if not found.
     """
     for param in category_item.parameters:
-        for name in param._cif_handler.names:
-            loop = block.find_loop(name).get_loop()
+        for name in param._cif_handler.read_names:
+            loop_ref = block.find_loop(name)
+            if loop_ref is None:
+                continue
+            loop = loop_ref.get_loop() if hasattr(loop_ref, 'get_loop') else loop_ref
             if loop is not None:
                 return loop
     return None
@@ -1220,7 +1225,7 @@ def category_collection_from_cif(
         current_item = self._items[row_idx]
         for param in current_item.parameters:
             tag_found = False
-            for cif_name in param._cif_handler.names:
+            for cif_name in param._cif_handler.read_names:
                 if cif_name in loop.tags:
                     col_idx = loop.tags.index(cif_name)
                     # TODO: The following is duplication of

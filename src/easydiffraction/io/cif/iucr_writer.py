@@ -47,7 +47,7 @@ def write_iucr_cif(
         Project instance to export.
     path : str | pathlib.Path | None, default=None
         Target CIF path. When omitted, the report is written to
-        ``<project.info.path>/reports/<project.name>.cif``.
+        ``<project.metadata.path>/reports/<project.name>.cif``.
 
     Returns
     -------

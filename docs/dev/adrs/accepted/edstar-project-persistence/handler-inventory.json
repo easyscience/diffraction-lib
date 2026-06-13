@@ -13345,119 +13345,148 @@
       "unique_name": "pref_orient.Si.phase_id"
     },
     {
-      "category_code": "project",
+      "category_code": "metadata",
       "category_entry_name": null,
-      "context": "factory.ProjectInfoFactory.default",
+      "context": "factory.ProjectMetadataFactory.default",
       "current_cif_names": [
-        "_project.created"
+        "_metadata.created"
       ],
       "descriptor_class": "StringDescriptor",
       "descriptor_name": "created",
-      "descriptor_path": "factory.ProjectInfoFactory.default.created_descriptor",
-      "docs_anchor": "project-created",
-      "docs_page": "project",
+      "descriptor_path": "factory.ProjectMetadataFactory.default.created_descriptor",
+      "docs_anchor": "metadata-created",
+      "docs_page": "metadata",
       "import_names": [
         "_project.created"
       ],
       "iucr_name": "_project.created",
-      "owner_class": "ProjectInfo",
-      "project_name": "_project.created",
+      "owner_class": "ProjectMetadata",
+      "project_name": "_metadata.created",
       "read_names": [
+        "_metadata.created",
         "_project.created"
       ],
-      "unique_name": "project.created"
+      "unique_name": "metadata.created"
     },
     {
-      "category_code": "project",
+      "category_code": "metadata",
       "category_entry_name": null,
-      "context": "factory.ProjectInfoFactory.default",
+      "context": "factory.ProjectMetadataFactory.default",
       "current_cif_names": [
-        "_project.description"
+        "_metadata.description"
       ],
       "descriptor_class": "StringDescriptor",
       "descriptor_name": "description",
-      "descriptor_path": "factory.ProjectInfoFactory.default.description_descriptor",
-      "docs_anchor": "project-description",
-      "docs_page": "project",
+      "descriptor_path": "factory.ProjectMetadataFactory.default.description_descriptor",
+      "docs_anchor": "metadata-description",
+      "docs_page": "metadata",
       "import_names": [
         "_project.description"
       ],
       "iucr_name": "_project.description",
-      "owner_class": "ProjectInfo",
-      "project_name": "_project.description",
+      "owner_class": "ProjectMetadata",
+      "project_name": "_metadata.description",
       "read_names": [
+        "_metadata.description",
         "_project.description"
       ],
-      "unique_name": "project.description"
+      "unique_name": "metadata.description"
     },
     {
-      "category_code": "project",
+      "category_code": "metadata",
       "category_entry_name": null,
-      "context": "factory.ProjectInfoFactory.default",
+      "context": "factory.ProjectMetadataFactory.default",
       "current_cif_names": [
-        "_project.last_modified"
+        "_metadata.last_modified"
       ],
       "descriptor_class": "StringDescriptor",
       "descriptor_name": "last_modified",
-      "descriptor_path": "factory.ProjectInfoFactory.default.last_modified_descriptor",
-      "docs_anchor": "project-last-modified",
-      "docs_page": "project",
+      "descriptor_path": "factory.ProjectMetadataFactory.default.last_modified_descriptor",
+      "docs_anchor": "metadata-last-modified",
+      "docs_page": "metadata",
       "import_names": [
         "_project.last_modified"
       ],
       "iucr_name": "_project.last_modified",
-      "owner_class": "ProjectInfo",
-      "project_name": "_project.last_modified",
+      "owner_class": "ProjectMetadata",
+      "project_name": "_metadata.last_modified",
       "read_names": [
+        "_metadata.last_modified",
         "_project.last_modified"
       ],
-      "unique_name": "project.last_modified"
+      "unique_name": "metadata.last_modified"
     },
     {
-      "category_code": "project",
+      "category_code": "metadata",
       "category_entry_name": null,
-      "context": "factory.ProjectInfoFactory.default",
+      "context": "factory.ProjectMetadataFactory.default",
       "current_cif_names": [
-        "_project.id"
+        "_metadata.name"
       ],
       "descriptor_class": "StringDescriptor",
-      "descriptor_name": "id",
-      "descriptor_path": "factory.ProjectInfoFactory.default.project_id",
-      "docs_anchor": "project-id",
-      "docs_page": "project",
+      "descriptor_name": "name",
+      "descriptor_path": "factory.ProjectMetadataFactory.default.project_id",
+      "docs_anchor": "metadata-name",
+      "docs_page": "metadata",
       "import_names": [
         "_project.id"
       ],
       "iucr_name": "_project.id",
-      "owner_class": "ProjectInfo",
-      "project_name": "_project.id",
+      "owner_class": "ProjectMetadata",
+      "project_name": "_metadata.name",
       "read_names": [
+        "_metadata.name",
         "_project.id"
       ],
-      "unique_name": "project.id"
+      "unique_name": "metadata.name"
     },
     {
-      "category_code": "project",
+      "category_code": "metadata",
       "category_entry_name": null,
-      "context": "factory.ProjectInfoFactory.default",
+      "context": "factory.ProjectMetadataFactory.default",
       "current_cif_names": [
-        "_project.title"
+        "_metadata.timestamp"
+      ],
+      "descriptor_class": "StringDescriptor",
+      "descriptor_name": "timestamp",
+      "descriptor_path": "factory.ProjectMetadataFactory.default.timestamp_descriptor",
+      "docs_anchor": "metadata-timestamp",
+      "docs_page": "metadata",
+      "import_names": [
+        "_software.timestamp"
+      ],
+      "iucr_name": "_easydiffraction_project.timestamp",
+      "owner_class": "ProjectMetadata",
+      "project_name": "_metadata.timestamp",
+      "read_names": [
+        "_metadata.timestamp",
+        "_software.timestamp"
+      ],
+      "unique_name": "metadata.timestamp"
+    },
+    {
+      "category_code": "metadata",
+      "category_entry_name": null,
+      "context": "factory.ProjectMetadataFactory.default",
+      "current_cif_names": [
+        "_metadata.title"
       ],
       "descriptor_class": "StringDescriptor",
       "descriptor_name": "title",
-      "descriptor_path": "factory.ProjectInfoFactory.default.title_descriptor",
-      "docs_anchor": "project-title",
-      "docs_page": "project",
+      "descriptor_path": "factory.ProjectMetadataFactory.default.title_descriptor",
+      "docs_anchor": "metadata-title",
+      "docs_page": "metadata",
       "import_names": [
         "_project.title"
       ],
       "iucr_name": "_project.title",
-      "owner_class": "ProjectInfo",
-      "project_name": "_project.title",
+      "owner_class": "ProjectMetadata",
+      "project_name": "_metadata.title",
       "read_names": [
+        "_metadata.title",
         "_project.title"
       ],
-      "unique_name": "project.title"
+      "unique_name": "metadata.title"
     },
     {
       "category_code": "refln",
@@ -15600,119 +15629,148 @@
       "unique_name": "verbosity.fit"
     },
     {
-      "category_code": "project",
+      "category_code": "metadata",
       "category_entry_name": null,
       "context": "project",
       "current_cif_names": [
-        "_project.created"
+        "_metadata.created"
       ],
       "descriptor_class": "StringDescriptor",
       "descriptor_name": "created",
-      "descriptor_path": "project.info.created_descriptor",
-      "docs_anchor": "project-created",
-      "docs_page": "project",
+      "descriptor_path": "project.metadata.created_descriptor",
+      "docs_anchor": "metadata-created",
+      "docs_page": "metadata",
       "import_names": [
         "_project.created"
       ],
       "iucr_name": "_project.created",
-      "owner_class": "ProjectInfo",
-      "project_name": "_project.created",
+      "owner_class": "ProjectMetadata",
+      "project_name": "_metadata.created",
       "read_names": [
+        "_metadata.created",
         "_project.created"
       ],
-      "unique_name": "project.created"
+      "unique_name": "metadata.created"
     },
     {
-      "category_code": "project",
+      "category_code": "metadata",
       "category_entry_name": null,
       "context": "project",
       "current_cif_names": [
-        "_project.description"
+        "_metadata.description"
       ],
       "descriptor_class": "StringDescriptor",
       "descriptor_name": "description",
-      "descriptor_path": "project.info.description_descriptor",
-      "docs_anchor": "project-description",
-      "docs_page": "project",
+      "descriptor_path": "project.metadata.description_descriptor",
+      "docs_anchor": "metadata-description",
+      "docs_page": "metadata",
       "import_names": [
         "_project.description"
       ],
       "iucr_name": "_project.description",
-      "owner_class": "ProjectInfo",
-      "project_name": "_project.description",
+      "owner_class": "ProjectMetadata",
+      "project_name": "_metadata.description",
       "read_names": [
+        "_metadata.description",
         "_project.description"
       ],
-      "unique_name": "project.description"
+      "unique_name": "metadata.description"
     },
     {
-      "category_code": "project",
+      "category_code": "metadata",
       "category_entry_name": null,
       "context": "project",
       "current_cif_names": [
-        "_project.last_modified"
+        "_metadata.last_modified"
       ],
       "descriptor_class": "StringDescriptor",
       "descriptor_name": "last_modified",
-      "descriptor_path": "project.info.last_modified_descriptor",
-      "docs_anchor": "project-last-modified",
-      "docs_page": "project",
+      "descriptor_path": "project.metadata.last_modified_descriptor",
+      "docs_anchor": "metadata-last-modified",
+      "docs_page": "metadata",
       "import_names": [
         "_project.last_modified"
       ],
       "iucr_name": "_project.last_modified",
-      "owner_class": "ProjectInfo",
-      "project_name": "_project.last_modified",
+      "owner_class": "ProjectMetadata",
+      "project_name": "_metadata.last_modified",
       "read_names": [
+        "_metadata.last_modified",
         "_project.last_modified"
       ],
-      "unique_name": "project.last_modified"
+      "unique_name": "metadata.last_modified"
     },
     {
-      "category_code": "project",
+      "category_code": "metadata",
       "category_entry_name": null,
       "context": "project",
       "current_cif_names": [
-        "_project.id"
+        "_metadata.name"
       ],
       "descriptor_class": "StringDescriptor",
-      "descriptor_name": "id",
-      "descriptor_path": "project.info.project_id",
-      "docs_anchor": "project-id",
-      "docs_page": "project",
+      "descriptor_name": "name",
+      "descriptor_path": "project.metadata.project_id",
+      "docs_anchor": "metadata-name",
+      "docs_page": "metadata",
       "import_names": [
         "_project.id"
       ],
       "iucr_name": "_project.id",
-      "owner_class": "ProjectInfo",
-      "project_name": "_project.id",
+      "owner_class": "ProjectMetadata",
+      "project_name": "_metadata.name",
       "read_names": [
+        "_metadata.name",
         "_project.id"
       ],
-      "unique_name": "project.id"
+      "unique_name": "metadata.name"
     },
     {
-      "category_code": "project",
+      "category_code": "metadata",
       "category_entry_name": null,
       "context": "project",
       "current_cif_names": [
-        "_project.title"
+        "_metadata.timestamp"
+      ],
+      "descriptor_class": "StringDescriptor",
+      "descriptor_name": "timestamp",
+      "descriptor_path": "project.metadata.timestamp_descriptor",
+      "docs_anchor": "metadata-timestamp",
+      "docs_page": "metadata",
+      "import_names": [
+        "_software.timestamp"
+      ],
+      "iucr_name": "_easydiffraction_project.timestamp",
+      "owner_class": "ProjectMetadata",
+      "project_name": "_metadata.timestamp",
+      "read_names": [
+        "_metadata.timestamp",
+        "_software.timestamp"
+      ],
+      "unique_name": "metadata.timestamp"
+    },
+    {
+      "category_code": "metadata",
+      "category_entry_name": null,
+      "context": "project",
+      "current_cif_names": [
+        "_metadata.title"
       ],
       "descriptor_class": "StringDescriptor",
       "descriptor_name": "title",
-      "descriptor_path": "project.info.title_descriptor",
-      "docs_anchor": "project-title",
-      "docs_page": "project",
+      "descriptor_path": "project.metadata.title_descriptor",
+      "docs_anchor": "metadata-title",
+      "docs_page": "metadata",
       "import_names": [
         "_project.title"
       ],
       "iucr_name": "_project.title",
-      "owner_class": "ProjectInfo",
-      "project_name": "_project.title",
+      "owner_class": "ProjectMetadata",
+      "project_name": "_metadata.title",
       "read_names": [
+        "_metadata.title",
         "_project.title"
       ],
-      "unique_name": "project.title"
+      "unique_name": "metadata.title"
     },
     {
       "category_code": "rendering_plot",

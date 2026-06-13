@@ -42,7 +42,7 @@ if TYPE_CHECKING:
     from easydiffraction.project.categories.structure_style import StructureStyle
     from easydiffraction.project.categories.structure_view import StructureView
     from easydiffraction.project.categories.verbosity import Verbosity
-    from easydiffraction.project.project_info import ProjectInfo
+    from easydiffraction.project.project_metadata import ProjectMetadata
     from easydiffraction.report import Report
 
 
@@ -163,7 +163,7 @@ def _create_loading_project(project_cls: type[Project]) -> Project:
         project_cls._loading = False
 
 
-def _load_project_info(project: Project, project_path: pathlib.Path) -> None:
+def _load_project_metadata(project: Project, project_path: pathlib.Path) -> None:
     """
     Restore project configuration from EdSTAR or legacy CIF.
     """
@@ -240,7 +240,7 @@ class Project(GuardedBase):  # noqa: PLR0904
         super().__init__()
 
         self._config = ProjectConfig(name, title, description)
-        object.__setattr__(self, '_info', self._config.info)
+        object.__setattr__(self, '_metadata', self._config.metadata)
         self._structures = Structures()
         self._experiments = Experiments()
         object.__setattr__(self, '_rendering_plot', self._config.rendering_plot)
@@ -293,7 +293,7 @@ class Project(GuardedBase):  # noqa: PLR0904
         current_project = cls._current_project
         if current_project is None:
             return None
-        return current_project.info.path
+        return current_project.metadata.path
 
     # ------------------------------------------------------------------
     # Dunder methods
@@ -315,14 +315,14 @@ class Project(GuardedBase):  # noqa: PLR0904
     # ------------------------------------------------------------------
 
     @property
-    def info(self) -> ProjectInfo:
+    def metadata(self) -> ProjectMetadata:
         """Project metadata container."""
-        return self._info
+        return self._metadata
 
     @property
     def name(self) -> str:
         """Convenience property for the project name."""
-        return self._info.name
+        return self._metadata.name
 
     @property
     def full_name(self) -> str:
@@ -468,8 +468,8 @@ class Project(GuardedBase):  # noqa: PLR0904
         project = _create_loading_project(cls)
         project._saved = True
 
-        _load_project_info(project, project_path)
-        project.info.path = project_path
+        _load_project_metadata(project, project_path)
+        project.metadata.path = project_path
         _load_edstar_or_cif_directory(
             project_path / 'structures',
             project._structures.add_from_edstar_path,
@@ -537,11 +537,13 @@ class Project(GuardedBase):  # noqa: PLR0904
         """
         Save the project into the existing project directory.
         """
-        if self.info.path is None:
+        if self.metadata.path is None:
             log.error('Project path not specified. Use save_as() to define the path first.')
             return
 
-        console.paragraph(f"Saving project 📦 '{self.name}' to '{display_path(self.info.path)}'")
+        console.paragraph(
+            f"Saving project 📦 '{self.name}' to '{display_path(self.metadata.path)}'"
+        )
 
         # Apply constraints so dependent parameters are flagged
         # before serialization (user-constrained params are written
@@ -549,15 +551,15 @@ class Project(GuardedBase):  # noqa: PLR0904
         self._analysis._update_categories()
 
         # Ensure project directory exists
-        self.info.path.mkdir(parents=True, exist_ok=True)
+        self.metadata.path.mkdir(parents=True, exist_ok=True)
 
         # Save project-level configuration
-        with (self.info.path / 'project.edstar').open('w') as f:
+        with (self.metadata.path / 'project.edstar').open('w') as f:
             f.write(section_to_edstar(project_config_to_cif(self)))
             console.print('├── 📄 project.edstar')
 
         # Save structures
-        sm_dir = self.info.path / 'structures'
+        sm_dir = self.metadata.path / 'structures'
         sm_dir.mkdir(parents=True, exist_ok=True)
         console.print('├── 📁 structures/')
         for structure in self.structures.values():
@@ -568,7 +570,7 @@ class Project(GuardedBase):  # noqa: PLR0904
                 console.print(f'│   └── 📄 {file_name}')
 
         # Save experiments
-        expt_dir = self.info.path / 'experiments'
+        expt_dir = self.metadata.path / 'experiments'
         expt_dir.mkdir(parents=True, exist_ok=True)
         console.print('├── 📁 experiments/')
         for experiment in self.experiments.values():
@@ -579,7 +581,7 @@ class Project(GuardedBase):  # noqa: PLR0904
                 console.print(f'│   └── 📄 {file_name}')
 
         # Save analysis
-        analysis_dir = self.info.path / 'analysis'
+        analysis_dir = self.metadata.path / 'analysis'
         analysis_dir.mkdir(parents=True, exist_ok=True)
         with (analysis_dir / 'analysis.edstar').open('w') as f:
             f.write(section_to_edstar(self.analysis.as_cif))
@@ -600,14 +602,14 @@ class Project(GuardedBase):  # noqa: PLR0904
 
         report_paths = self.report._save_configured()
         if report_paths:
-            reports_dir = self.info.path / 'reports'
+            reports_dir = self.metadata.path / 'reports'
             console.print('└── 📁 reports/')
             for index, report_path in enumerate(report_paths):
                 branch = '└──' if index == len(report_paths) - 1 else '├──'
                 relative_path = report_path.relative_to(reports_dir)
                 console.print(f'    {branch} 📄 {relative_path}')
 
-        self.info.update_last_modified()
+        self.metadata.update_last_modified()
         self._saved = True
 
     def save_as(
@@ -648,7 +650,7 @@ class Project(GuardedBase):  # noqa: PLR0904
             else:
                 shutil.rmtree(project_dir)
 
-        self.info.path = project_dir
+        self.metadata.path = project_dir
         self.save()
 
     def apply_params_from_csv(self, row_index: int) -> None:
@@ -682,11 +684,11 @@ class Project(GuardedBase):  # noqa: PLR0904
         from easydiffraction.analysis.sequential import _META_COLUMNS  # noqa: PLC0415
         from easydiffraction.core.variable import Parameter  # noqa: PLC0415
 
-        if self.info.path is None:
+        if self.metadata.path is None:
             msg = 'Project has no saved path. Save the project first.'
             raise FileNotFoundError(msg)
 
-        csv_path = pathlib.Path(self.info.path) / 'analysis' / 'results.csv'
+        csv_path = pathlib.Path(self.metadata.path) / 'analysis' / 'results.csv'
         if not csv_path.is_file():
             msg = f"Results CSV not found: '{csv_path}'"
             raise FileNotFoundError(msg)
@@ -708,7 +710,7 @@ class Project(GuardedBase):  # noqa: PLR0904
 
         # 1. Reload data if file_path points to a real file
         file_path = row.get('file_path', '')
-        data_path = _resolve_data_path_from_results_csv(self.info.path, file_path)
+        data_path = _resolve_data_path_from_results_csv(self.metadata.path, file_path)
         if data_path is not None and data_path.is_file():
             experiment._load_ascii_data_to_experiment(str(data_path))
 

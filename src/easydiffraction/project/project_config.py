@@ -5,8 +5,8 @@
 from __future__ import annotations
 
 from easydiffraction.core.category_owner import CategoryOwner
-from easydiffraction.project.categories.info import ProjectInfo
-from easydiffraction.project.categories.info import ProjectInfoFactory
+from easydiffraction.project.categories.metadata import ProjectMetadata
+from easydiffraction.project.categories.metadata import ProjectMetadataFactory
 from easydiffraction.project.categories.rendering_plot import RenderingPlot
 from easydiffraction.project.categories.rendering_plot import RenderingPlotFactory
 from easydiffraction.project.categories.rendering_structure import RenderingStructure
@@ -33,8 +33,8 @@ class ProjectConfig(CategoryOwner):
         description: str = '',
     ) -> None:
         super().__init__()
-        self._info = ProjectInfoFactory.create(
-            ProjectInfoFactory.default_tag(),
+        self._metadata = ProjectMetadataFactory.create(
+            ProjectMetadataFactory.default_tag(),
             name=name,
             title=title,
             description=description,
@@ -50,9 +50,9 @@ class ProjectConfig(CategoryOwner):
         self._structure_style = StructureStyleFactory.create(StructureStyleFactory.default_tag())
 
     @property
-    def info(self) -> ProjectInfo:
+    def metadata(self) -> ProjectMetadata:
         """Project metadata category."""
-        return self._info
+        return self._metadata
 
     @property
     def rendering_plot(self) -> RenderingPlot:

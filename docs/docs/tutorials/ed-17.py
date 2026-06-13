@@ -138,7 +138,7 @@ zip_path = ed.download_data(id=25, destination='data')
 scan_data_dir = 'experiments/d20_scan'
 data_paths = ed.extract_data_paths_from_zip(
     zip_path,
-    destination=project.info.path / scan_data_dir,
+    destination=project.metadata.path / scan_data_dir,
 )
 
 # %% [markdown]

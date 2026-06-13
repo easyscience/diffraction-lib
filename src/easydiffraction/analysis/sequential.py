@@ -1053,7 +1053,7 @@ def _check_seq_preconditions(project: object) -> list[str]:
         )
         raise ValueError(msg)
 
-    if project.info.path is None:
+    if project.metadata.path is None:
         msg = 'Project must be saved before sequential fitting. Call save_as() first.'
         raise ValueError(msg)
 
@@ -1091,7 +1091,7 @@ def _setup_csv_and_recovery(
     tuple[Path, list[str], set[str], SequentialFitTemplate]
         CSV path, header, already-fitted set, and updated template.
     """
-    csv_path = project.info.path / 'analysis' / 'results.csv'
+    csv_path = project.metadata.path / 'analysis' / 'results.csv'
     csv_path.parent.mkdir(parents=True, exist_ok=True)
     header = _build_csv_header(template)
 

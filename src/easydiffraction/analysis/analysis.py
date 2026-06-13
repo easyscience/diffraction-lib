@@ -1481,7 +1481,7 @@ class Analysis(
         if resume and not is_emcee:
             msg = "Resume is supported only when analysis.minimizer.type = 'emcee'."
             raise ValueError(msg)
-        if is_emcee and self.project.info.path is None:
+        if is_emcee and self.project.metadata.path is None:
             msg = (
                 'emcee requires a saved project; call project.save_as(<path>) '
                 'before analysis.fit().'
@@ -1515,7 +1515,7 @@ class Analysis(
 
     def _has_resumable_emcee_sidecar(self) -> bool:
         """Return whether the saved project has a resumable chain."""
-        project_path = self.project.info.path
+        project_path = self.project.metadata.path
         if project_path is None:
             return False
 
@@ -1534,7 +1534,7 @@ class Analysis(
 
     def _prepare_results_sidecar_for_new_fit(self) -> None:
         """Remove persisted sidecar arrays before a fresh fit."""
-        project_path = self.project.info.path
+        project_path = self.project.metadata.path
         if project_path is None:
             return
 
@@ -2597,7 +2597,7 @@ class Analysis(
         if data_dir.is_absolute():
             return data_dir
 
-        project_path = self.project.info.path
+        project_path = self.project.metadata.path
         if project_path is None:
             msg = (
                 'Project must be saved before resolving a relative '
@@ -2657,7 +2657,7 @@ class Analysis(
         )
         self._stamp_software_provenance()
 
-        if self.project.info.path is not None:
+        if self.project.metadata.path is not None:
             self.project.save()
 
     def _run_joint(
@@ -2684,7 +2684,7 @@ class Analysis(
         )
         self._stamp_software_provenance()
 
-        if self.project.info.path is not None:
+        if self.project.metadata.path is not None:
             self.project.save()
 
     def _run_sequential(self) -> None:
@@ -2723,7 +2723,7 @@ class Analysis(
 
         self._stamp_software_provenance()
 
-        if self.project.info.path is not None:
+        if self.project.metadata.path is not None:
             self.project.save()
 
     def _fit_joint(

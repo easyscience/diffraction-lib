@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Project info category."""
+"""Project metadata category."""
 
 from __future__ import annotations
 
@@ -12,8 +12,8 @@ from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.io.cif.handler import CifHandler
-from easydiffraction.io.cif.serialize import project_info_to_cif
-from easydiffraction.project.categories.info.factory import ProjectInfoFactory
+from easydiffraction.io.cif.serialize import project_metadata_to_cif
+from easydiffraction.project.categories.metadata.factory import ProjectMetadataFactory
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_cif
@@ -21,11 +21,11 @@ from easydiffraction.utils.utils import render_cif
 _PROJECT_TIMESTAMP_FORMAT = '%d %b %Y %H:%M:%S'
 
 
-@ProjectInfoFactory.register
-class ProjectInfo(CategoryItem):
+@ProjectMetadataFactory.register
+class ProjectMetadata(CategoryItem):
     """Project metadata category."""
 
-    _category_code = 'project'
+    _category_code = 'metadata'
 
     type_info = TypeInfo(
         tag='default',
@@ -46,34 +46,64 @@ class ProjectInfo(CategoryItem):
         last_modified = datetime.datetime.now(tz=datetime.UTC)
 
         self._project_id = StringDescriptor(
-            name='id',
+            name='name',
             description='Project identifier',
             value_spec=AttributeSpec(default=name),
-            cif_handler=CifHandler(names=['_project.id']),
+            cif_handler=CifHandler(
+                names=['_metadata.name'],
+                import_names=['_project.id'],
+                iucr_name='_project.id',
+            ),
         )
         self._title_descriptor = StringDescriptor(
             name='title',
             description='Project title',
             value_spec=AttributeSpec(default=title),
-            cif_handler=CifHandler(names=['_project.title']),
+            cif_handler=CifHandler(
+                names=['_metadata.title'],
+                import_names=['_project.title'],
+                iucr_name='_project.title',
+            ),
         )
         self._description_descriptor = StringDescriptor(
             name='description',
             description='Project description',
             value_spec=AttributeSpec(default=' '.join(description.split())),
-            cif_handler=CifHandler(names=['_project.description']),
+            cif_handler=CifHandler(
+                names=['_metadata.description'],
+                import_names=['_project.description'],
+                iucr_name='_project.description',
+            ),
         )
         self._created_descriptor = StringDescriptor(
             name='created',
             description='Project creation timestamp',
             value_spec=AttributeSpec(default=created.strftime(_PROJECT_TIMESTAMP_FORMAT)),
-            cif_handler=CifHandler(names=['_project.created']),
+            cif_handler=CifHandler(
+                names=['_metadata.created'],
+                import_names=['_project.created'],
+                iucr_name='_project.created',
+            ),
         )
         self._last_modified_descriptor = StringDescriptor(
             name='last_modified',
             description='Project last-modified timestamp',
             value_spec=AttributeSpec(default=last_modified.strftime(_PROJECT_TIMESTAMP_FORMAT)),
-            cif_handler=CifHandler(names=['_project.last_modified']),
+            cif_handler=CifHandler(
+                names=['_metadata.last_modified'],
+                import_names=['_project.last_modified'],
+                iucr_name='_project.last_modified',
+            ),
+        )
+        self._timestamp_descriptor = StringDescriptor(
+            name='timestamp',
+            description='Project fit timestamp',
+            value_spec=AttributeSpec(default=None, allow_none=True),
+            cif_handler=CifHandler(
+                names=['_metadata.timestamp'],
+                import_names=['_software.timestamp'],
+                iucr_name='_easydiffraction_project.timestamp',
+            ),
         )
         self._path: pathlib.Path | None = None
 
@@ -103,7 +133,7 @@ class ProjectInfo(CategoryItem):
     @staticmethod
     def _format_timestamp(value: datetime.datetime) -> str:
         """Format a project timestamp for CIF storage."""
-        return ProjectInfo._normalize_timestamp(value).strftime(_PROJECT_TIMESTAMP_FORMAT)
+        return ProjectMetadata._normalize_timestamp(value).strftime(_PROJECT_TIMESTAMP_FORMAT)
 
     @property
     def unique_name(self) -> str:
@@ -158,6 +188,15 @@ class ProjectInfo(CategoryItem):
         """Return the last modified timestamp."""
         return self._parse_timestamp(self._last_modified_descriptor.value)
 
+    @property
+    def timestamp(self) -> str | None:
+        """Return the latest fit timestamp."""
+        return self._timestamp_descriptor.value
+
+    @timestamp.setter
+    def timestamp(self, value: str | None) -> None:
+        self._timestamp_descriptor.value = value
+
     def _set_last_modified(self, value: datetime.datetime | str) -> None:
         """Set the last-modified timestamp from runtime or CIF input."""
         if isinstance(value, datetime.datetime):
@@ -171,11 +210,11 @@ class ProjectInfo(CategoryItem):
 
     @property
     def as_cif(self) -> str:
-        """Export project metadata to CIF."""
-        return project_info_to_cif(self)
+        """Export project metadata to EdSTAR."""
+        return project_metadata_to_cif(self)
 
     def show_as_cif(self) -> None:
         """Pretty-print CIF via shared utilities."""
-        paragraph_title = f"Project 📦 '{self.name}' info as CIF"
+        paragraph_title = f"Project 📦 '{self.name}' metadata as EdSTAR"
         console.paragraph(paragraph_title)
         render_cif(self.as_cif)

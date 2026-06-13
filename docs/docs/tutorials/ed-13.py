@@ -74,8 +74,8 @@ project_1 = ed.Project(name='reference')
 # future) understand the purpose of the project at a glance.
 
 # %%
-project_1.info.title = 'Reference Silicon Fit'
-project_1.info.description = 'Fitting simulated powder diffraction pattern of Si.'
+project_1.metadata.title = 'Reference Silicon Fit'
+project_1.metadata.description = 'Fitting simulated powder diffraction pattern of Si.'
 
 # %% [markdown]
 # ### 🔬 Create an Experiment
