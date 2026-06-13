@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Generate an EdSTAR persistence-handler inventory."""
+"""Generate an EasyDiff persistence-handler inventory."""
 
 from __future__ import annotations
 
@@ -320,8 +320,8 @@ def _deduplicate_entries(entries: list[InventoryEntry]) -> list[InventoryEntry]:
 def _inventory_payload(entries: list[InventoryEntry]) -> dict[str, Any]:
     """Render the inventory JSON payload."""
     return {
-        'schema': 'edstar-handler-inventory-v1',
-        'generated_by': 'tools/edstar_handler_inventory.py',
+        'schema': 'easydiff-handler-inventory-v1',
+        'generated_by': 'tools/easydiff_handler_inventory.py',
         'entries': [asdict(entry) for entry in entries],
     }
 

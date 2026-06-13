@@ -397,7 +397,7 @@ def _format_project_description(description: str) -> str:
 
 
 def project_metadata_to_cif(metadata: object) -> str:
-    """Render project metadata to EdSTAR text."""
+    """Render project metadata to EasyDiff text."""
     name = f'{metadata.name}'
 
     title = f'{metadata.title}'
@@ -427,7 +427,7 @@ def _as_cif_text(section: object) -> str:
 
 
 def project_config_to_cif(project: object) -> str:
-    """Render project-level configuration to EdSTAR body text."""
+    """Render project-level configuration to EasyDiff body text."""
     sections: list[str] = []
     for attr_name in ('metadata', 'rendering_plot', 'report'):
         section = getattr(project, attr_name, None)
@@ -453,7 +453,7 @@ def project_config_to_cif(project: object) -> str:
 
 
 def project_to_cif(project: object) -> str:
-    """Render a whole project EdSTAR body from available sections."""
+    """Render a whole project EasyDiff body from available sections."""
     parts: list[str] = []
     if hasattr(project, 'metadata'):
         parts.append(project_config_to_cif(project))
@@ -533,7 +533,7 @@ def _populate_project_metadata_from_block(
 
 def project_metadata_from_cif(metadata: object, cif_text: str) -> None:
     """
-    Populate a ProjectMetadata instance from EdSTAR or CIF text.
+    Populate a ProjectMetadata instance from EasyDiff or CIF text.
 
     Reads the core project metadata fields from CIF text.
 
@@ -542,7 +542,7 @@ def project_metadata_from_cif(metadata: object, cif_text: str) -> None:
     metadata : object
         The ``ProjectMetadata`` instance to populate.
     cif_text : str
-        EdSTAR or CIF text content of the project metadata section.
+        EasyDiff or CIF text content of the project metadata section.
     """
     block = _project_block_from_cif_text(cif_text)
 
@@ -551,7 +551,7 @@ def project_metadata_from_cif(metadata: object, cif_text: str) -> None:
 
 def project_config_from_cif(project: object, cif_text: str) -> None:
     """
-    Populate project-level configuration from EdSTAR or CIF text.
+    Populate project-level configuration from EasyDiff or CIF text.
     """
     block = _project_block_from_cif_text(cif_text)
 
@@ -603,7 +603,7 @@ def analysis_from_cif(analysis: object, cif_text: str) -> None:
     analysis : object
         The ``Analysis`` instance to populate.
     cif_text : str
-        Analysis EdSTAR body text or explicit CIF import text.
+        Analysis EasyDiff body text or explicit CIF import text.
     """
     import gemmi  # noqa: PLC0415
 

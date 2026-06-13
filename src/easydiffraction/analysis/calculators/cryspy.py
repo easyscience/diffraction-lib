@@ -833,7 +833,7 @@ class CryspyCalculator(CalculatorBase):
 
         return self._relabel_cif_tags_for_cryspy(cif)
 
-    # EdSTAR persistence renamed several CIF tags away from the legacy
+    # EasyDiff persistence renamed several CIF tags away from the legacy
     # IUCr spellings that cryspy's CIF parser still requires. The
     # displacement values are already converted to U notation by
     # ``_temporarily_convert_to_u_notation``; only the tag names need
@@ -854,9 +854,11 @@ class CryspyCalculator(CalculatorBase):
 
     @staticmethod
     def _relabel_cif_tags_for_cryspy(cif: str) -> str:
-        """Map EdSTAR CIF tags to cryspy-recognized legacy spellings."""
-        for edstar_tag, cryspy_tag in CryspyCalculator._CRYSPY_TAG_REPLACEMENTS:
-            cif = cif.replace(edstar_tag, cryspy_tag)
+        """
+        Map EasyDiff CIF tags to cryspy-recognized legacy spellings.
+        """
+        for easydiff_tag, cryspy_tag in CryspyCalculator._CRYSPY_TAG_REPLACEMENTS:
+            cif = cif.replace(easydiff_tag, cryspy_tag)
         return cif
 
     @staticmethod

@@ -85,7 +85,7 @@ class Software(CategoryCollection):
         self._ensure_role_rows()
 
     def from_cif(self, block: object) -> None:
-        """Populate software provenance from EdSTAR or legacy CIF."""
+        """Populate software provenance from EasyDiff or legacy CIF."""
         super().from_cif(block)
         self._ensure_role_rows()
         self._restore_legacy_role_fields(block)

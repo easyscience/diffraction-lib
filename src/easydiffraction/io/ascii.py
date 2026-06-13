@@ -37,7 +37,7 @@ def extract_project_from_zip(
     Extract a project directory from a ZIP archive.
 
     The archive must contain a project directory with
-    ``project.edstar``. Files are extracted into *destination* when
+    ``project.easydiff``. Files are extracted into *destination* when
     provided, or into a temporary directory that persists for the
     lifetime of the process.
 
@@ -75,9 +75,9 @@ def extract_project_from_zip(
         # *before* extraction, so we are not confused by unrelated
         # project marker files already present in the destination.
         names = zf.namelist()
-        project_entries = [name for name in names if name.endswith('project.edstar')]
+        project_entries = [name for name in names if name.endswith('project.easydiff')]
         if not project_entries:
-            msg = f'No project.edstar found in ZIP archive: {zip_path}'
+            msg = f'No project.easydiff found in ZIP archive: {zip_path}'
             raise ValueError(msg)
 
         zf.extractall(extract_dir)

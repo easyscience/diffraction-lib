@@ -93,9 +93,9 @@ class ParameterDisplay:
         """Show the constraint unique identifier for all parameters."""
         self._project.analysis.display.parameter_uids()
 
-    def edstar(self) -> None:
-        """Show the EdSTAR persistence tag for all parameters."""
-        self._project.analysis.display.parameter_edstar_tags()
+    def easydiff(self) -> None:
+        """Show the EasyDiff persistence tag for all parameters."""
+        self._project.analysis.display.parameter_easydiff_tags()
 
     def cif(self) -> None:
         """Show the report CIF tag for all parameters."""

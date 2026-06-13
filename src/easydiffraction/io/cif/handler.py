@@ -42,7 +42,7 @@ class CifHandler:
 
     @property
     def project_name(self) -> str:
-        """EdSTAR project data name used by project persistence."""
+        """EasyDiff project data name used by project persistence."""
         if self._project_name is not None:
             return self._project_name
         return self._names[0]
@@ -68,12 +68,12 @@ class CifHandler:
 
     @property
     def category_name(self) -> str:
-        """Project data category name derived from the EdSTAR tag."""
+        """Project data category name derived from the EasyDiff tag."""
         return _split_data_name(self.project_name)[0]
 
     @property
     def category_entry_name(self) -> str:
-        """Project data item name derived from the EdSTAR tag."""
+        """Project data item name derived from the EasyDiff tag."""
         return _split_data_name(self.project_name)[1]
 
     @property

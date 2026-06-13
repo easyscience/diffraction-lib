@@ -433,11 +433,11 @@ class AnalysisDisplay:
             value_fn=lambda param: param._cif_handler.uid,
         )
 
-    def parameter_edstar_tags(self) -> None:
-        """Show the EdSTAR persistence tag for every parameter."""
+    def parameter_easydiff_tags(self) -> None:
+        """Show the EasyDiff persistence tag for every parameter."""
         self._show_parameter_names(
-            column_header='EdSTAR Tag',
-            paragraph_title='Show parameter EdSTAR tags',
+            column_header='EasyDiff Tag',
+            paragraph_title='Show parameter EasyDiff tags',
             value_fn=lambda param: param._cif_handler.project_name,
         )
 

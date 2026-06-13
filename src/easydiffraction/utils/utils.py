@@ -295,7 +295,7 @@ def _fetch_data_index() -> dict:
 
 def _existing_project_dir(extraction_dir: pathlib.Path) -> pathlib.Path | None:
     """Return one extracted project directory from a destination."""
-    project_files = sorted(extraction_dir.rglob('project.edstar'))
+    project_files = sorted(extraction_dir.rglob('project.easydiff'))
     if not project_files:
         return None
     return project_files[0].parent.resolve()
@@ -608,7 +608,7 @@ def parameter_docs_url(
     Parameters
     ----------
     data_name : str
-        EdSTAR data name, such as ``'_cell.length_a'``.
+        EasyDiff data name, such as ``'_cell.length_a'``.
     page : str | None, default=None
         Parameter reference page override.
     anchor : str | None, default=None
