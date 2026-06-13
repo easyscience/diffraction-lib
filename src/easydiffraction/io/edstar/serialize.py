@@ -12,12 +12,16 @@ _SCHEMA_NAME = 'EasyDiffraction'
 _SCHEMA_VERSION = '1'
 
 _LINE_SEGMENT_BACKGROUND_TAGS = (
+    '_background.position',
+    '_background.intensity',
     '_pd_background.line_segment_X',
     '_pd_background_line_segment_X',
     '_pd_background.line_segment_intensity',
     '_pd_background_line_segment_intensity',
 )
 _CHEBYSHEV_BACKGROUND_TAGS = (
+    '_background.order',
+    '_background.coef',
     '_pd_background.Chebyshev_order',
     '_pd_background.Chebyshev_coef',
 )
