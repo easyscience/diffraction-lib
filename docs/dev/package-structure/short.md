@@ -297,7 +297,7 @@
 │   │   ├── 📄 iucr_writer.py
 │   │   ├── 📄 parse.py
 │   │   └── 📄 serialize.py
-│   ├── 📁 edstar
+│   ├── 📁 easydiff
 │   │   ├── 📄 __init__.py
 │   │   └── 📄 serialize.py
 │   ├── 📄 __init__.py

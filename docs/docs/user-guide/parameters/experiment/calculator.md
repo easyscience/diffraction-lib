@@ -8,9 +8,9 @@
 
 ## :material-shape: type { #calculator-type }
 
-| Access            | Source                   |
-| ----------------- | ------------------------ |
-| \_calculator.type | [EdSTAR][0]{:.label-cif} |
+| Access            | Source                     |
+| ----------------- | -------------------------- |
+| \_calculator.type | [EasyDiff][0]{:.label-cif} |
 
 Calculator backend type. Supported values include `cryspy`, `crysfml`,
 and `pdffit`. Available choices depend on the experiment type.

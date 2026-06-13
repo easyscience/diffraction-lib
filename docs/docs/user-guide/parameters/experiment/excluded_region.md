@@ -7,25 +7,25 @@
 
 ## :material-stop: end { #excluded-region-end }
 
-| Access                | Source                   |
-| --------------------- | ------------------------ |
-| \_excluded_region.end | [EdSTAR][0]{:.label-cif} |
+| Access                | Source                     |
+| --------------------- | -------------------------- |
+| \_excluded_region.end | [EasyDiff][0]{:.label-cif} |
 
 End of the excluded region.
 
 ## :material-tag: id { #excluded-region-id }
 
-| Access               | Source                   |
-| -------------------- | ------------------------ |
-| \_excluded_region.id | [EdSTAR][0]{:.label-cif} |
+| Access               | Source                     |
+| -------------------- | -------------------------- |
+| \_excluded_region.id | [EasyDiff][0]{:.label-cif} |
 
 Identifier for this excluded region.
 
 ## :material-play: start { #excluded-region-start }
 
-| Access                  | Source                   |
-| ----------------------- | ------------------------ |
-| \_excluded_region.start | [EdSTAR][0]{:.label-cif} |
+| Access                  | Source                     |
+| ----------------------- | -------------------------- |
+| \_excluded_region.start | [EasyDiff][0]{:.label-cif} |
 
 Start of the excluded region.
 

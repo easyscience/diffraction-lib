@@ -7,49 +7,49 @@
 
 ## :material-arrow-left-right: 2theta_range_inc { #pd-meas-2theta-range-inc }
 
-| Access                     | Source                   |
-| -------------------------- | ------------------------ |
-| \_pd_meas.2theta_range_inc | [EdSTAR][0]{:.label-cif} |
+| Access                     | Source                     |
+| -------------------------- | -------------------------- |
+| \_pd_meas.2theta_range_inc | [EasyDiff][0]{:.label-cif} |
 
 2θ step between calculation points.
 
 ## :material-arrow-left-right: 2theta_range_max { #pd-meas-2theta-range-max }
 
-| Access                     | Source                   |
-| -------------------------- | ------------------------ |
-| \_pd_meas.2theta_range_max | [EdSTAR][0]{:.label-cif} |
+| Access                     | Source                     |
+| -------------------------- | -------------------------- |
+| \_pd_meas.2theta_range_max | [EasyDiff][0]{:.label-cif} |
 
 Upper 2θ bound of the calculation range.
 
 ## :material-arrow-left-right: 2theta_range_min { #pd-meas-2theta-range-min }
 
-| Access                     | Source                   |
-| -------------------------- | ------------------------ |
-| \_pd_meas.2theta_range_min | [EdSTAR][0]{:.label-cif} |
+| Access                     | Source                     |
+| -------------------------- | -------------------------- |
+| \_pd_meas.2theta_range_min | [EasyDiff][0]{:.label-cif} |
 
 Lower 2θ bound of the calculation range.
 
 ## :material-timer-outline: time_of_flight_range_inc { #pd-meas-time-of-flight-range-inc }
 
-| Access                             | Source                   |
-| ---------------------------------- | ------------------------ |
-| \_pd_meas.time_of_flight_range_inc | [EdSTAR][0]{:.label-cif} |
+| Access                             | Source                     |
+| ---------------------------------- | -------------------------- |
+| \_pd_meas.time_of_flight_range_inc | [EasyDiff][0]{:.label-cif} |
 
 Time-of-flight step between calculation points.
 
 ## :material-timer-outline: time_of_flight_range_max { #pd-meas-time-of-flight-range-max }
 
-| Access                             | Source                   |
-| ---------------------------------- | ------------------------ |
-| \_pd_meas.time_of_flight_range_max | [EdSTAR][0]{:.label-cif} |
+| Access                             | Source                     |
+| ---------------------------------- | -------------------------- |
+| \_pd_meas.time_of_flight_range_max | [EasyDiff][0]{:.label-cif} |
 
 Upper time-of-flight bound of the calculation range.
 
 ## :material-timer-outline: time_of_flight_range_min { #pd-meas-time-of-flight-range-min }
 
-| Access                             | Source                   |
-| ---------------------------------- | ------------------------ |
-| \_pd_meas.time_of_flight_range_min | [EdSTAR][0]{:.label-cif} |
+| Access                             | Source                     |
+| ---------------------------------- | -------------------------- |
+| \_pd_meas.time_of_flight_range_min | [EasyDiff][0]{:.label-cif} |
 
 Lower time-of-flight bound of the calculation range.
 

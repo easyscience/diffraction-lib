@@ -2,9 +2,9 @@
 
 ## :material-shape: type { #fitting-mode-type }
 
-| Access              | Source                   |
-| ------------------- | ------------------------ |
-| \_fitting_mode.type | [EdSTAR][0]{:.label-cif} |
+| Access              | Source                     |
+| ------------------- | -------------------------- |
+| \_fitting_mode.type | [EasyDiff][0]{:.label-cif} |
 
 Active fitting mode. Supported values include `single`, `joint`, and
 `sequential`.

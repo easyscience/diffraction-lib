@@ -1,4 +1,4 @@
-# ADR: EdSTAR Project Persistence
+# ADR: EasyDiff Project Persistence
 
 **Status:** Accepted  
 **Date:** 2026-06-12
@@ -51,11 +51,11 @@ does not describe conflicting persistence layouts.
 - Amends
   [`python-cif-category-correspondence.md`](python-cif-category-correspondence.md)
   by replacing the scoped Python-to-`project.cif` correspondence with
-  Python-to-EdSTAR correspondence across project files.
+  Python-to-EasyDiff correspondence across project files.
 - Amends
   [`project-facade-and-persistence.md`](project-facade-and-persistence.md)
   by replacing `project.cif`, `structures/*.cif`, `experiments/*.cif`,
-  and `analysis/analysis.cif` with the `.edstar` project layout.
+  and `analysis/analysis.cif` with the `.easydiff` project layout.
 - Amends [`category-owner-sections.md`](category-owner-sections.md) only
   for file-format terminology. The distinction between real data blocks
   and singleton category-owner sections remains.
@@ -70,33 +70,33 @@ listed above.
 
 ## Decision
 
-Adopt **EdSTAR** as the internal EasyDiffraction project persistence
+Adopt **EasyDiff** as the internal EasyDiffraction project persistence
 format:
 
-- EdSTAR uses STAR syntax and leading-underscore data names.
-- EdSTAR is an EasyDiffraction-owned schema, not an IUCr dictionary
+- EasyDiff uses STAR syntax and leading-underscore data names.
+- EasyDiff is an EasyDiffraction-owned schema, not an IUCr dictionary
   claim.
-- EdSTAR project names optimize for Python/API discoverability, readable
-  diffs, and safe hand editing.
+- EasyDiff project names optimize for Python/API discoverability,
+  readable diffs, and safe hand editing.
 - IUCr CIF remains a strict import/export boundary format.
 
-Use **EdSTAR** as the human-facing schema/format name in prose,
+Use **EasyDiff** as the human-facing schema/format name in prose,
 headings, UI labels, and documentation tables. Use lowercase only for
-literal syntax: `.edstar` for the file extension and `_edstar.*` for the
-schema-marker category/items. Do not use `EDSTAR` unless quoting an
-external source that has already standardized that spelling.
+literal syntax: `.easydiff` for the file extension and `_easydiff.*` for
+the schema-marker category/items. Do not use `EASYDIFF` unless quoting
+an external source that has already standardized that spelling.
 
-Persist project state using `.edstar` files:
+Persist project state using `.easydiff` files:
 
 ```text
 project_dir/
-|-- project.edstar
+|-- project.easydiff
 |-- structures/
-|   `-- <structure>.edstar
+|   `-- <structure>.easydiff
 |-- experiments/
-|   `-- <experiment>.edstar
+|   `-- <experiment>.easydiff
 |-- analysis/
-|   |-- analysis.edstar
+|   |-- analysis.easydiff
 |   |-- results.csv
 |   `-- results.h5
 `-- reports/
@@ -108,7 +108,7 @@ IUCr/pdCIF as far as the project can make it. Nonstandard report values
 continue to use `_easydiffraction_*` extension categories inside report
 CIF.
 
-EdSTAR governs the `*.edstar` files only. Existing non-STAR analysis
+EasyDiff governs the `*.easydiff` files only. Existing non-STAR analysis
 artifacts keep their current formats: `analysis/results.h5` remains the
 binary fit-result sidecar, and `analysis/results.csv` remains the
 tabular sequential-fit output used by plotting and user inspection.
@@ -131,26 +131,34 @@ strict CIF dictionary compatibility for files that intentionally use
 EasyDiffraction-owned names such as `_atom_site.adp_iso` and
 `_instrument.setup_wavelength`.
 
-**Use `.edstar` for project persistence.** This is the selected option.
-It makes the file type honest: STAR syntax, EasyDiffraction schema. The
-cost is a beta layout migration and documentation churn, but it prevents
-scientists and external tools from mistaking project state files for
-submission/interchange CIFs.
+**Use `.easydiff` for project persistence.** This is the selected
+option. It makes the file type honest: STAR syntax, EasyDiffraction
+schema. The cost is a beta layout migration and documentation churn, but
+it prevents scientists and external tools from mistaking project state
+files for submission/interchange CIFs.
+
+**Use `.edstar`.** This is rejected. STAR is the syntax layer, while the
+saved files are EasyDiffraction application artifacts with an
+EasyDiffraction-owned schema. The name over-emphasizes the syntax and
+can sound like a new generic STAR dialect. It also keeps the `ed`
+prefix, which crystallographers may read as electron diffraction.
 
 **Use `.easydiffraction`.** This is rejected. It identifies the product
 but not the syntax, is long for files scientists may inspect and share,
 and would be awkward if EasyDiffraction later owns non-STAR project
-artifacts with the same brand name. `EdSTAR` already expands the product
-association into the format name: EasyDiffraction-owned STAR.
+artifacts with the same brand name. `EasyDiff` already expands the
+product association into the format name: EasyDiffraction-owned STAR.
 
 **Use `.edcif`.** This advertises EasyDiffraction ownership but still
 suggests CIF dictionary semantics. It is therefore less clear than
-`.edstar`.
+`.easydiff`. It is also too easy to read as electron-diffraction CIF,
+matching the existing `cif_ed` naming convention in the COMCIFS
+electron-diffraction dictionary work.
 
 **Use `.txt`.** This is rejected. Its one real advantage is that a
 desktop double-click opens it in any text editor with no file
 association — but that is a GUI-only benefit. In a terminal, notebook,
-or CLI workflow (`cat`, `less`, `vim`, `nano`, `code …`) an `.edstar`
+or CLI workflow (`cat`, `less`, `vim`, `nano`, `code …`) an `.easydiff`
 file opens identically regardless of suffix, so CLI users gain nothing
 from `.txt`. Against that, `.txt` loses everything the chosen extension
 provides: the project files get **no identity** (a directory of
@@ -171,7 +179,7 @@ openable in any editor without sacrificing identity.
 
 ## Naming Policy
 
-EdSTAR data names should follow the public EasyDiffraction model:
+EasyDiff data names should follow the public EasyDiffraction model:
 
 ```text
 _<category>.<field>
@@ -199,7 +207,7 @@ Three rules make these names deterministic across the inventory:
   `lorentz_gamma_0`, `rise_alpha_0`, `decay_beta_0`) while the public
   properties carry grouping prefixes (`broad_gauss_sigma_0`,
   `broad_lorentz_gamma_0`, `exp_rise_alpha_0`, `exp_decay_beta_0`) —
-  EdSTAR writes the public-property name. This is the point of the
+  EasyDiff writes the public-property name. This is the point of the
   format: a saved field matches the Python path a scientist types. The
   current bare CIF stem is preserved as a read alias.
 - **Loop (collection) categories use the singular row-category form of
@@ -285,42 +293,42 @@ Si Biso 0.5
 O  Uiso 0.0063
 ```
 
-Do not prefix internal EdSTAR categories with `_easydiffraction_` or
-`_edstar_`. The `.edstar` suffix and schema marker already identify the
-dialect.
+Do not prefix internal EasyDiff categories with `_easydiffraction_` or
+`_easydiff_`. The `.easydiff` suffix and schema marker already identify
+the dialect.
 
 Use `_easydiffraction_*` for custom keys serialized into strict report
 CIF when a nonstandard extension must coexist with official IUCr tags.
-Do not use `_edstar_*` in report CIFs. `_edstar.*` is reserved for the
-EdSTAR schema marker in project files, while report CIF is an
+Do not use `_easydiff_*` in report CIFs. `_easydiff.*` is reserved for
+the EasyDiff schema marker in project files, while report CIF is an
 IUCr-facing export with EasyDiffraction extension categories. Keeping
 the prefixes separate means report-CIF extensions can remain stable even
-if the internal EdSTAR project schema changes.
+if the internal EasyDiff project schema changes.
 
-Each EdSTAR file should include a schema marker near the top:
+Each EasyDiff file should include a schema marker near the top:
 
 ```text
-_edstar.schema_name EasyDiffraction
-_edstar.schema_version 1
+_easydiff.schema_name EasyDiffraction
+_easydiff.schema_version 1
 ```
 
 Loaders must require `schema_name == 'EasyDiffraction'` when the marker
 is present. For `schema_version`, the v1 loader accepts `1`, rejects
 newer major versions with a clear error, and rejects missing markers in
-`.edstar` project files. The marker is therefore a validation boundary,
-not decorative metadata.
+`.easydiff` project files. The marker is therefore a validation
+boundary, not decorative metadata.
 
-**Plain-text guarantee (openability).** EdSTAR files are plain UTF-8
+**Plain-text guarantee (openability).** EasyDiff files are plain UTF-8
 STAR text with no binary content, so they open and hand-edit in any text
-editor. The `.edstar` suffix is an honest _label_, not a barrier: even
+editor. The `.easydiff` suffix is an honest _label_, not a barrier: even
 where the operating system has no default application registered for it,
 a user can always open the file with "Open With → any text editor" (or
 `cat`/`less`/`vim`/`nano`/`code` in a terminal). This is the deliberate
 answer to the "unknown extension" concern that would otherwise argue for
-a generic `.txt` (see §File Extension Alternatives): EdSTAR keeps the
+a generic `.txt` (see §File Extension Alternatives): EasyDiff keeps the
 universal openability of plain text while retaining a distinct,
 greppable identity. Editors may additionally be mapped to treat
-`*.edstar` as CIF/STAR for syntax highlighting — something a generic
+`*.easydiff` as CIF/STAR for syntax highlighting — something a generic
 `.txt` cannot provide per-file-type.
 
 ### Selector Validation Contract
@@ -339,7 +347,7 @@ selector, or let one side win. Examples:
 - `_background.type line_segment` with Chebyshev-only fields is invalid.
 - unknown selector values are invalid.
 
-EdSTAR v1 does not rename selector values, so it has no selector-value
+EasyDiff v1 does not rename selector values, so it has no selector-value
 legacy aliases. The `import_names`/read-alias mechanism covers data-name
 aliases only. If a future ADR renames a selector value, that ADR must
 also define where the value alias map lives, for example on the
@@ -353,7 +361,7 @@ cannot be resolved unambiguously, load rejects with a clear error.
 
 ### Free/Fixed Fit Flags
 
-EdSTAR keeps the accepted free/fixed parameter encoding from
+EasyDiff keeps the accepted free/fixed parameter encoding from
 [`free-flag-cif-encoding.md`](free-flag-cif-encoding.md):
 
 - fixed or constrained numeric parameters write as plain values;
@@ -361,7 +369,7 @@ EdSTAR keeps the accepted free/fixed parameter encoding from
   example `3.8909()` or `3.89(20)`;
 - user-constrained dependent parameters write without brackets.
 
-This remains valid because EdSTAR uses STAR value syntax. The schema
+This remains valid because EasyDiff uses STAR value syntax. The schema
 marker and renamed data names do not change the value-level round-trip
 contract.
 
@@ -369,7 +377,7 @@ contract.
 
 Project restore should accept:
 
-- the new `.edstar` project layout;
+- the new `.easydiff` project layout;
 - official CIF import tags where supported today;
 - known EasyDiffraction data-name read aliases in `CifHandler` import
   aliases.
@@ -382,24 +390,24 @@ is required.
 
 The loader follows a fixed contract:
 
-- **`.edstar` takes precedence.** When a project directory contains both
-  `project.edstar` and a legacy `project.cif`, the loader reads
-  `project.edstar` and ignores `project.cif`, treating the `.cif` as a
+- **`.easydiff` takes precedence.** When a project directory contains
+  both `project.easydiff` and a legacy `project.cif`, the loader reads
+  `project.easydiff` and ignores `project.cif`, treating the `.cif` as a
   stale pre-migration copy. It does not merge the two.
 - **Clear error for legacy-only projects.** A directory that contains
   only `project.cif` fails to load with an explicit migration error that
   names the file and tells the user to open it in a supporting version
-  and re-save as `.edstar`. The loader never silently produces an empty
-  or partial project.
-- **Clear error for missing EdSTAR metadata.** A project directory with
-  neither `project.edstar` nor legacy `project.cif` fails with an
-  explicit message naming the required `project.edstar` marker.
+  and re-save as `.easydiff`. The loader never silently produces an
+  empty or partial project.
+- **Clear error for missing EasyDiff metadata.** A project directory
+  with neither `project.easydiff` nor legacy `project.cif` fails with an
+  explicit message naming the required `project.easydiff` marker.
 
 ## Handler Model
 
 The current `CifHandler.names` list is overloaded: the first entry is
 the default write tag, and the full list is also an import alias list.
-EdSTAR should make this explicit.
+EasyDiff should make this explicit.
 
 Proposed concept:
 
@@ -418,8 +426,8 @@ StarHandler(
 The exact class name can remain `CifHandler` during migration, but the
 responsibilities should be explicit:
 
-- `project_name`: EdSTAR write name.
-- `import_names`: accepted EdSTAR/CIF/legacy read aliases.
+- `project_name`: EasyDiff write name.
+- `import_names`: accepted EasyDiff/CIF/legacy read aliases.
 - `iucr_name`: single-field report-CIF name when a simple mapping
   exists.
 - category transformers: report-CIF reshaping when a field cannot map
@@ -441,7 +449,7 @@ responsibilities should be explicit:
 
 ### Trade-Offs
 
-- The saved project layout changes from `*.cif` to `*.edstar`.
+- The saved project layout changes from `*.cif` to `*.easydiff`.
 - Existing docs, tutorials, tests, ZIP project detection, and loaders
   need an explicit migration.
 - External tools that previously tried to read project `*.cif` files
@@ -495,7 +503,7 @@ Disadvantages:
 
 ### Option B: Selector Plus Generic Names
 
-This is the selected EdSTAR policy.
+This is the selected EasyDiff policy.
 
 ```text
 _background.type line_segment
@@ -564,9 +572,9 @@ Disadvantages:
 - It creates consistency rules between selector and body category.
 - It adds loader complexity and still harms API-to-file predictability.
 
-EdSTAR therefore uses Option B by default. Option C is allowed only when
-selected implementations have genuinely different data shapes and the
-type-specific body names improve hand editing more than they harm
+EasyDiff therefore uses Option B by default. Option C is allowed only
+when selected implementations have genuinely different data shapes and
+the type-specific body names improve hand editing more than they harm
 consistency. ADPs are not such a case: `adp_iso` and `adp_ij` remain
 generic values interpreted through `adp_type`.
 
@@ -585,7 +593,7 @@ descriptor in `src/easydiffraction`. Implementation must verify that
 claim with a generated inventory before changing write tags; any
 descriptor absent from this table is a migration blocker.
 
-| Area                                                              | Current EasyDiffraction names                                                                                                                                                                                                                                                                                                                                                          | Current project tags                                                                                                                                                                                                                                                                                    | Suggested EdSTAR tags                                                                                                                                                                                                                                                                                                                                         | Official/report CIF names                                                                                                    |
+| Area                                                              | Current EasyDiffraction names                                                                                                                                                                                                                                                                                                                                                          | Current project tags                                                                                                                                                                                                                                                                                    | Suggested EasyDiff tags                                                                                                                                                                                                                                                                                                                                       | Official/report CIF names                                                                                                    |
 | ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
 | `analysis.aliases`                                                | `label`, `param_unique_name`                                                                                                                                                                                                                                                                                                                                                           | `_alias.{label,param_unique_name}`                                                                                                                                                                                                                                                                      | `_alias.{id,parameter_unique_name}`                                                                                                                                                                                                                                                                                                                           |                                                                                                                              |
 | `analysis.constraints`                                            | `id`, `expression`                                                                                                                                                                                                                                                                                                                                                                     | `_constraint.{id,expression}`                                                                                                                                                                                                                                                                           | `_constraint.{id,expression}`                                                                                                                                                                                                                                                                                                                                 |                                                                                                                              |
@@ -667,7 +675,7 @@ reviewer does not "correct" them toward a different precedent.
   ignoring user input.
 - **`id` is the universal own-key.** `_atom_site.id` and `_alias.id`
   replace CIF's `label` so the rule "every row has an `id`; `_id`
-  columns point elsewhere" has no exceptions. EdSTAR already departs
+  columns point elsewhere" has no exceptions. EasyDiff already departs
   from strict CIF (e.g. `adp_iso` for `B_iso_or_equiv`), and report CIF
   still writes the official `_atom_site.label`, so compatibility is
   unaffected.
@@ -681,43 +689,44 @@ reviewer does not "correct" them toward a different precedent.
   (`_pd_meas_2theta_range_inc`); `step` is FullProf-internal only.
 - **`march_random_fract` is not IUCr `fract`.** IUCr
   `_pd_pref_orient_March_Dollase.fract` is the multi-direction
-  fractional contribution; EdSTAR's field is the random/untextured
+  fractional contribution; EasyDiff's field is the random/untextured
   fraction (cryspy `_texture_g_2`). Do not collapse them.
 - **Type-neutral ADPs are deliberate.** `adp_iso` / `adp_type` /
   `adp_11` stay generic because `adp_type` is co-persisted and
   load-validated, making the B↔U distinction lossless while keeping
   parameter identity stable across a type switch.
-- **Report-CIF casing.** EdSTAR lowercases for Python/STAR friendliness,
-  but the report writer emits IUCr canonical casing: `_refln.F_calc`,
-  `_refln.F_squared_calc`, `_space_group.name_H-M_alt`. The uppercase
-  forms are also accepted as read aliases.
+- **Report-CIF casing.** EasyDiff lowercases for Python/STAR
+  friendliness, but the report writer emits IUCr canonical casing:
+  `_refln.F_calc`, `_refln.F_squared_calc`, `_space_group.name_H-M_alt`.
+  The uppercase forms are also accepted as read aliases.
 - **`coord_system_code` uses existing coordinate wording.** The value is
   still the International Tables coordinate-system qualifier, and report
   CIF still writes `_space_group.IT_coordinate_system_code`, but the
-  project-facing API and EdSTAR field use `coord_system_code`. `coord`
+  project-facing API and EasyDiff field use `coord_system_code`. `coord`
   is already used in EasyDiffraction's Wyckoff-coordinate vocabulary
   (`coord_code`, `coords_xyz`), while `it` is not otherwise used in
   project-facing parameter names.
 - **`_data` is intentional.** `experiment.data` is already a mass-noun
-  owner attribute, so EdSTAR keeps `_data` instead of inventing
+  owner attribute, so EasyDiff keeps `_data` instead of inventing
   `_data_point`. The row identity is still `_data.id`; the category name
   follows the public owner attribute when the owner is not plural.
 
-## Code/EdSTAR 1-to-1 Correspondence
+## Code/EasyDiff 1-to-1 Correspondence
 
-EdSTAR targets a strict 1-to-1 correspondence between the public Python
-API path and the persisted data name: a saved `_category.field` equals
-`object.category.field` in code. The **only** systematic divergence is
-that a collection category is plural in the API (`structure.atom_sites`)
-and singular in the file (`_atom_site`), because the file names the
-per-row item — the universal STAR/CIF convention.
+EasyDiff targets a strict 1-to-1 correspondence between the public
+Python API path and the persisted data name: a saved `_category.field`
+equals `object.category.field` in code. The **only** systematic
+divergence is that a collection category is plural in the API
+(`structure.atom_sites`) and singular in the file (`_atom_site`),
+because the file names the per-row item — the universal STAR/CIF
+convention.
 
 Achieving 1-to-1 at v1.0.0 requires these **public-API renames** (they
 are API changes, not only file-tag changes; official import aliases stay
-available, report CIF keeps the official names, and pre-release EdSTAR
+available, report CIF keeps the official names, and pre-release EasyDiff
 names are not preserved as legacy aliases):
 
-| Code today                                        | Code at v1.0.0                            | EdSTAR                                |
+| Code today                                        | Code at v1.0.0                            | EasyDiff                              |
 | ------------------------------------------------- | ----------------------------------------- | ------------------------------------- |
 | `atom_sites[*].label`                             | `atom_sites[*].id`                        | `_atom_site.id`                       |
 | `atom_site_aniso[*].label`                        | `atom_site_aniso[*].id`                   | `_atom_site_aniso.id`                 |
@@ -782,12 +791,12 @@ inventory above. Shorthands: `structure` =
 `project.experiments['<name>']`, `analysis` = `project.analysis`,
 `project` = the project facade. `['<id>']` marks a loop (collection)
 row. In the **v1.0.0 API** column, `same` means the public name is
-unchanged from today; an explicit path marks a rename. The **EdSTAR**
+unchanged from today; an explicit path marks a rename. The **EasyDiff**
 column is the persisted data name.
 
 ### Structure
 
-| Current API                                       | v1.0.0 API                                | EdSTAR                           |
+| Current API                                       | v1.0.0 API                                | EasyDiff                         |
 | ------------------------------------------------- | ----------------------------------------- | -------------------------------- |
 | `structure.cell.length_a`                         | same                                      | `_cell.length_a`                 |
 | `structure.cell.length_b`                         | same                                      | `_cell.length_b`                 |
@@ -820,7 +829,7 @@ column is the persisted data name.
 
 ### Experiment
 
-| Current API                                           | v1.0.0 API                                          | EdSTAR                                      |
+| Current API                                           | v1.0.0 API                                          | EasyDiff                                    |
 | ----------------------------------------------------- | --------------------------------------------------- | ------------------------------------------- |
 | `experiment.type.sample_form`                         | `experiment.experiment_type.sample_form`            | `_experiment_type.sample_form`              |
 | `experiment.type.beam_mode`                           | `experiment.experiment_type.beam_mode`              | `_experiment_type.beam_mode`                |
@@ -937,7 +946,7 @@ column is the persisted data name.
 
 ### Analysis
 
-| Current API                                                            | v1.0.0 API                                                      | EdSTAR                                                |
+| Current API                                                            | v1.0.0 API                                                      | EasyDiff                                              |
 | ---------------------------------------------------------------------- | --------------------------------------------------------------- | ----------------------------------------------------- |
 | `analysis.aliases['<id>'].label`                                       | `analysis.aliases['<id>'].id`                                   | `_alias.id`                                           |
 | `analysis.aliases['<id>'].param_unique_name`                           | `analysis.aliases['<id>'].parameter_unique_name`                | `_alias.parameter_unique_name`                        |
@@ -1034,7 +1043,7 @@ column is the persisted data name.
 
 ### Project
 
-| Current API                               | v1.0.0 API                       | EdSTAR                             |
+| Current API                               | v1.0.0 API                       | EasyDiff                           |
 | ----------------------------------------- | -------------------------------- | ---------------------------------- |
 | `project.info.name`                       | `project.metadata.name`          | `_metadata.name`                   |
 | `project.info.title`                      | `project.metadata.title`         | `_metadata.title`                  |
@@ -1067,7 +1076,7 @@ column is the persisted data name.
 ## Documentation: Parameter-Reference Pages
 
 The user-guide parameter reference must be reworked to reflect the
-EdSTAR split between the friendly project format and the strict report
+EasyDiff split between the friendly project format and the strict report
 CIF. Two documentation surfaces are in scope:
 
 - The index page
@@ -1100,13 +1109,14 @@ the right-hand column(s) differ:
    `atom_sites['ID'].id` (not `.label`), `linked_structures['ID'].scale`
    (not `linked_phases`), `experiment_type.beam_mode` (not `expt_type`),
    `instrument.calib_d_to_tof_quadratic` (not `_quad`), and so on.
-2. **"Keys in EdSTAR"** (new) — the persisted `.edstar` data name taken
-   from this ADR's Parameter Inventory and Per-Parameter Map, for
+2. **"Keys in EasyDiff"** (new) — the persisted `.easydiff` data name
+   taken from this ADR's Parameter Inventory and Per-Parameter Map, for
    example `_atom_site.id`, `_atom_site.adp_iso`, `_cell.length_a`,
    `_instrument.setup_wavelength`, `_peak.broad_gauss_sigma_0`,
    `_background.position`. This tab has **no** "CIF dictionary" column:
-   EdSTAR is an EasyDiffraction-owned schema, and the `.edstar` suffix
-   plus the `_edstar.schema_*` marker already identify the dialect.
+   EasyDiff is an EasyDiffraction-owned schema, and the `.easydiff`
+   suffix plus the `_easydiff.schema_*` marker already identify the
+   dialect.
 3. **"Keys in CIF"** (new; replaces the old "CIF name for
    serialization") — the strict name emitted by
    `project.report.save_cif()` into `reports/<project>.cif`, with a "CIF
@@ -1115,18 +1125,18 @@ the right-hand column(s) differ:
      `[coreCIF]` or `[pdCIF]` (for example `_atom_site.B_iso_or_equiv` →
      coreCIF, `_pd_phase_block.scale` → pdCIF);
    - where no official name exists, list the EasyDiffraction extension
-     name and tag it `[easydiffractionCIF]` (for example the parametric
+     name and tag it `[easydiffCIF]` (for example the parametric
      `_peak.*` profile coefficients and
      `_pref_orient.march_random_fract`). Only parameters the report
      writer actually emits appear in this tab; derived/never-persisted
      entries (for example `space_group_wyckoff`) are omitted.
 
 The crucial change from today is the separation of concerns: the
-**project-save** names now live in tab 2 (EdSTAR), and the
+**project-save** names now live in tab 2 (EasyDiff), and the
 **official-CIF** names live in tab 3, explicitly labelled as the
 _report_ boundary. This matches the ADR's thesis that project files are
-EdSTAR and only `reports/<project>.cif` is strict IUCr. The current page
-conflates the two by labelling the old project write tags
+EasyDiff and only `reports/<project>.cif` is strict IUCr. The current
+page conflates the two by labelling the old project write tags
 (`_pd_background.line_segment_X`, `_instr.wavelength`,
 `_atom_site.B_iso_or_equiv`) as "CIF name for serialization".
 
@@ -1140,9 +1150,9 @@ to reproduce (note the four-space body indent each tab requires):
     |--------------------------------------|-----------------------------------|---------------------------|
     | :material-cube-outline: [cell][cell] | :material-ruler: [length_a][cell] | cell.length_a             |
 
-=== "Keys in EdSTAR"
+=== "Keys in EasyDiff"
 
-    | Category                             | Parameter                         | EdSTAR key      |
+    | Category                             | Parameter                         | EasyDiff key      |
     |--------------------------------------|-----------------------------------|-----------------|
     | :material-cube-outline: [cell][cell] | :material-ruler: [length_a][cell] | \_cell.length_a |
 
@@ -1159,13 +1169,13 @@ Every category row and every parameter row must carry a `:material-*:`
 icon. Fill in icons for any rows that lack one today, and reuse the same
 icon for the same concept across the three tabs (the Category and
 Parameter columns are shared, so each row's icon is chosen once). New
-EdSTAR categories/parameters introduced by the renames — for example
+EasyDiff categories/parameters introduced by the renames — for example
 `experiment_type`, `linked_structure(s)`, `preferred_orientation`,
 `metadata` — get icons consistent with their nearest existing sibling.
 
 ### Tables Must Track the Code
 
-The access paths (tab 1) and the EdSTAR keys (tab 2) must equal the
+The access paths (tab 1) and the EasyDiff keys (tab 2) must equal the
 implemented v1.0.0 API and this ADR's Parameter Inventory exactly. The
 same generated `CifHandler` inventory used as the migration audit
 (Migration Sketch step 4) is the audit source for these hand-maintained
@@ -1173,51 +1183,51 @@ tables: implementation must compare the generated inventory with the
 documentation rows before completing the migration, and any mismatch is
 a migration blocker. Automatic generation of the docs tables or detail
 pages is out of scope for this ADR and may be proposed separately.
-Renamed names appear only in their post-migration form; pre-EdSTAR names
-survive only as loader read aliases, never in the docs.
+Renamed names appear only in their post-migration form; pre-EasyDiff
+names survive only as loader read aliases, never in the docs.
 
-### Per-Parameter Detail Pages Own EdSTAR Names and Descriptions
+### Per-Parameter Detail Pages Own EasyDiff Names and Descriptions
 
 The detail pages become EasyDiffraction-owned:
 
-- **Page and section names use EdSTAR, not CIF.** Each section title is
-  the EdSTAR data name — `## _atom_site.id`, `## _atom_site.adp_iso`,
-  `## _instrument.setup_wavelength` — and the body is EasyDiffraction's
-  own description of that parameter, not a verbatim copy of the IUCr
-  definition. Pages currently named for CIF categories
-  (`_exptl_crystal.md`, `_pd_calib.md`, `_diffrn_radiation*.md`,
-  `_extinction.md`) and for soon-to-be-renamed owners
-  (`linked_phases.md` → `linked_structure.md`, `pref_orient.md` →
+- **Page and section names use EasyDiff, not CIF.** Each section title
+  is the EasyDiff data name — `## _atom_site.id`,
+  `## _atom_site.adp_iso`, `## _instrument.setup_wavelength` — and the
+  body is EasyDiffraction's own description of that parameter, not a
+  verbatim copy of the IUCr definition. Pages currently named for CIF
+  categories (`_exptl_crystal.md`, `_pd_calib.md`,
+  `_diffrn_radiation*.md`, `_extinction.md`) and for soon-to-be-renamed
+  owners (`linked_phases.md` → `linked_structure.md`, `pref_orient.md` →
   `preferred_orientation.md`, `expt_type.md` → `experiment_type.md`) are
-  renamed to their EdSTAR category and have their reference links
+  renamed to their EasyDiff category and have their reference links
   updated.
 - **Every category and parameter in the tables links to its detail
   section.** Add the pages/anchors that are missing today and update the
-  existing reference-link definitions to the EdSTAR names. Inter-page
+  existing reference-link definitions to the EasyDiff names. Inter-page
   cross-references (for example `_atom_site.fract` pointing at
-  `_cell_length`) move to the EdSTAR names as well.
+  `_cell_length`) move to the EasyDiff names as well.
 
 ### Versioned Parameter Documentation URLs
 
 Every persisted descriptor/parameter must expose a read-only `url`
 attribute that points to the online documentation page for that specific
 parameter. This URL is display metadata only: it is not written into
-EdSTAR, and loaders do not trust persisted URLs from project files.
+EasyDiff, and loaders do not trust persisted URLs from project files.
 
-The simplest long-term rule is to derive URLs from the EdSTAR data name,
-not to hand-maintain a separate absolute URL on every descriptor. The
-implementation should add a small documentation-url resolver that:
+The simplest long-term rule is to derive URLs from the EasyDiff data
+name, not to hand-maintain a separate absolute URL on every descriptor.
+The implementation should add a small documentation-url resolver that:
 
 - uses the same installed-version resolution already used for tutorial
   downloads: released packages resolve to their public version folder,
   development/local builds resolve to `dev`;
 - uses the versioned documentation base published by `mike`, for example
   `https://easyscience.github.io/diffraction-lib/{version}/`;
-- maps an EdSTAR name to the parameter-reference route, for example
+- maps an EasyDiff name to the parameter-reference route, for example
   `_cell.length_a` ->
   `user-guide/parameters/structure/cell/#cell-length-a`;
 - falls back to a descriptor-specific override only for rare cases where
-  a page or anchor cannot be derived from the EdSTAR name.
+  a page or anchor cannot be derived from the EasyDiff name.
 
 The shared resolver should be the only code that knows the absolute site
 base and version folder. `CifHandler.project_name` (introduced by
@@ -1251,9 +1261,9 @@ static anchors match the resolver's derived page/anchor contract.
 
 Today the link to the official IUCr definition is placed on the
 section-title text itself (`## [\_atom_site.label](IUCr URL)`) and on a
-prose "see the IUCr page" sentence. Under EdSTAR the title is the plain
-EdSTAR name, and an explicit external-resource icon follows it, linking
-to the official IUCr description **only where one exists**:
+prose "see the IUCr page" sentence. Under EasyDiff the title is the
+plain EasyDiff name, and an explicit external-resource icon follows it,
+linking to the official IUCr description **only where one exists**:
 
 ```text
 ## _atom_site.adp_iso [:material-open-in-new:](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Iatom_site.B_iso_or_equiv.html "IUCr definition")
@@ -1271,34 +1281,34 @@ new extension is required.
 
 1. Introduce explicit handler names (`project_name`, `import_names`,
    `iucr_name`) while keeping current behavior.
-2. Teach save/load helpers to require `.edstar` project files and to
+2. Teach save/load helpers to require `.easydiff` project files and to
    reject legacy-only beta `.cif` project layouts with a clear migration
    error.
 3. Add schema-marker validation and selector/body consistency checks to
-   the EdSTAR load path.
+   the EasyDiff load path.
 4. Generate an implementation audit from all `CifHandler`-declared
    descriptors and compare it with the inventory in this ADR before
    changing write tags.
-5. Rename project write tags to the suggested EdSTAR names category by
+5. Rename project write tags to the suggested EasyDiff names category by
    category, preserving current and official tags as read aliases.
 6. Add the shared versioned documentation-url resolver and descriptor
    `url` property, deriving ordinary parameter URLs from
    `CifHandler.project_name`.
 7. Rework the user-guide parameter reference per §Documentation:
    Parameter-Reference Pages — three-tab tables ("How to access in the
-   code", "Keys in EdSTAR", "Keys in CIF"), EdSTAR-named and
+   code", "Keys in EasyDiff", "Keys in CIF"), EasyDiff-named and
    EasyDiffraction-described detail pages, stable parameter anchors,
    relative links in static docs tables, icons on every
    category/parameter row, descriptor `url` links in runtime parameter
    tables/application displays, and the IUCr external-link icon — then
-   update tutorials, ZIP project detection, and CLI help to say EdSTAR
+   update tutorials, ZIP project detection, and CLI help to say EasyDiff
    project files and report CIF exports.
 8. Keep `project.report.save_cif()` as the only strict report-CIF
    writer.
 
 ## Open Questions
 
-- Whether `.edstar` should be exposed as a named public format in CLI
+- Whether `.easydiff` should be exposed as a named public format in CLI
   commands or remain an implementation detail of project directories.
 - Whether parameter-reference fields in the analysis categories
   (`_alias.parameter_unique_name`,
@@ -1311,7 +1321,7 @@ new extension is required.
 
 ## Suggested Pull Request
 
-Title: Define EdSTAR project persistence
+Title: Define EasyDiff project persistence
 
 Description: Clarifies that saved EasyDiffraction projects use a
 readable STAR-based schema, while generated report CIFs remain the

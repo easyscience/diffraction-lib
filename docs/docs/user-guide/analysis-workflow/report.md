@@ -34,7 +34,7 @@ project.report.save_html()
 ## Configuring Saved Reports
 
 Report output is controlled by `project.report`, a project-level
-configuration category that is saved in `project.edstar`. Regular
+configuration category that is saved in `project.easydiff`. Regular
 `project.save()` calls read this configuration and write the selected
 report formats.
 
@@ -91,10 +91,10 @@ when a fit writes the project back to disk:
 python -m easydiffraction path/to/project fit
 ```
 
-If `project.edstar` contains `_report.html true`, `_report.tex true`, or
-another enabled report flag, `fit` writes those reports as part of the
-normal project save. Use the Python per-format methods above for one-off
-exports without changing the saved configuration.
+If `project.easydiff` contains `_report.html true`, `_report.tex true`,
+or another enabled report flag, `fit` writes those reports as part of
+the normal project save. Use the Python per-format methods above for
+one-off exports without changing the saved configuration.
 
 <!--
 ## Exporting the Report

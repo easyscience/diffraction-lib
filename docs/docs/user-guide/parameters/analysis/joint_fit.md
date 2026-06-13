@@ -2,17 +2,17 @@
 
 ## :material-tag: experiment_id { #joint-fit-experiment-id }
 
-| Access                    | Source                   |
-| ------------------------- | ------------------------ |
-| \_joint_fit.experiment_id | [EdSTAR][0]{:.label-cif} |
+| Access                    | Source                     |
+| ------------------------- | -------------------------- |
+| \_joint_fit.experiment_id | [EasyDiff][0]{:.label-cif} |
 
 Experiment identifier.
 
 ## :material-tag: weight { #joint-fit-weight }
 
-| Access             | Source                   |
-| ------------------ | ------------------------ |
-| \_joint_fit.weight | [EdSTAR][0]{:.label-cif} |
+| Access             | Source                     |
+| ------------------ | -------------------------- |
+| \_joint_fit.weight | [EasyDiff][0]{:.label-cif} |
 
 Weight factor.
 

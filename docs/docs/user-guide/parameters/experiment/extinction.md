@@ -4,34 +4,34 @@
 
 ## :material-tag: model { #extinction-model }
 
-| Access             | Source                   |
-| ------------------ | ------------------------ |
-| \_extinction.model | [EdSTAR][0]{:.label-cif} |
+| Access             | Source                     |
+| ------------------ | -------------------------- |
+| \_extinction.model | [EasyDiff][0]{:.label-cif} |
 
 Mosaicity distribution model (gauss or lorentz). Supported values
 include `gauss` and `lorentz`.
 
 ## :material-tag: mosaicity { #extinction-mosaicity }
 
-| Access                 | Source                   |
-| ---------------------- | ------------------------ |
-| \_extinction.mosaicity | [EdSTAR][0]{:.label-cif} |
+| Access                 | Source                     |
+| ---------------------- | -------------------------- |
+| \_extinction.mosaicity | [EasyDiff][0]{:.label-cif} |
 
 Mosaicity of the crystal.
 
 ## :material-tag: radius { #extinction-radius }
 
-| Access              | Source                   |
-| ------------------- | ------------------------ |
-| \_extinction.radius | [EdSTAR][0]{:.label-cif} |
+| Access              | Source                     |
+| ------------------- | -------------------------- |
+| \_extinction.radius | [EasyDiff][0]{:.label-cif} |
 
 Mean radius of the crystal.
 
 ## :material-shape: type { #extinction-type }
 
-| Access            | Source                   |
-| ----------------- | ------------------------ |
-| \_extinction.type | [EdSTAR][0]{:.label-cif} |
+| Access            | Source                     |
+| ----------------- | -------------------------- |
+| \_extinction.type | [EasyDiff][0]{:.label-cif} |
 
 Active extinction type tag. Supported values include `becker-coppens`.
 This type is available for single-crystal experiments.

@@ -6,41 +6,41 @@
 
 ## :material-tag: coords_xyz { #space-group-wyckoff-coords-xyz }
 
-| Access                           | Source                   |
-| -------------------------------- | ------------------------ |
-| \_space_group_Wyckoff.coords_xyz | [EdSTAR][0]{:.label-cif} |
+| Access                           | Source                     |
+| -------------------------------- | -------------------------- |
+| \_space_group_Wyckoff.coords_xyz | [EasyDiff][0]{:.label-cif} |
 
 Coordinates of the Wyckoff orbit.
 
 ## :material-tag: id { #space-group-wyckoff-id }
 
-| Access                   | Source                   |
-| ------------------------ | ------------------------ |
-| \_space_group_Wyckoff.id | [EdSTAR][0]{:.label-cif} |
+| Access                   | Source                     |
+| ------------------------ | -------------------------- |
+| \_space_group_Wyckoff.id | [EasyDiff][0]{:.label-cif} |
 
 Identifier of the Wyckoff position.
 
 ## :material-tag: letter { #space-group-wyckoff-letter }
 
-| Access                       | Source                   |
-| ---------------------------- | ------------------------ |
-| \_space_group_Wyckoff.letter | [EdSTAR][0]{:.label-cif} |
+| Access                       | Source                     |
+| ---------------------------- | -------------------------- |
+| \_space_group_Wyckoff.letter | [EasyDiff][0]{:.label-cif} |
 
 Wyckoff letter of the position.
 
 ## :material-tag: multiplicity { #space-group-wyckoff-multiplicity }
 
-| Access                             | Source                   |
-| ---------------------------------- | ------------------------ |
-| \_space_group_Wyckoff.multiplicity | [EdSTAR][0]{:.label-cif} |
+| Access                             | Source                     |
+| ---------------------------------- | -------------------------- |
+| \_space_group_Wyckoff.multiplicity | [EasyDiff][0]{:.label-cif} |
 
 Multiplicity of the Wyckoff position.
 
 ## :material-tag: site_symmetry { #space-group-wyckoff-site-symmetry }
 
-| Access                              | Source                   |
-| ----------------------------------- | ------------------------ |
-| \_space_group_Wyckoff.site_symmetry | [EdSTAR][0]{:.label-cif} |
+| Access                              | Source                     |
+| ----------------------------------- | -------------------------- |
+| \_space_group_Wyckoff.site_symmetry | [EasyDiff][0]{:.label-cif} |
 
 Site-symmetry symbol of the Wyckoff position.
 

@@ -2,9 +2,9 @@
 
 ## :material-shape: type { #rendering-plot-type }
 
-| Access                | Source                   |
-| --------------------- | ------------------------ |
-| \_rendering_plot.type | [EdSTAR][0]{:.label-cif} |
+| Access                | Source                     |
+| --------------------- | -------------------------- |
+| \_rendering_plot.type | [EasyDiff][0]{:.label-cif} |
 
 RenderingPlot renderer backend type. Supported values include `auto`,
 `asciichartpy`, and `plotly`.

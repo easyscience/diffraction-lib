@@ -7,7 +7,7 @@
 
 [`edstar-project-persistence.md`](edstar-project-persistence.md)
 replaces this ADR's scoped Python-to-`project.cif` correspondence with
-Python-to-EdSTAR correspondence for regular project persistence. This
+Python-to-EasyDiff correspondence for regular project persistence. This
 ADR remains historical context for the old CIF layout and for the
 reasoning behind previous Python/CIF naming exceptions.
 

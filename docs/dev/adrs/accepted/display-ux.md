@@ -74,7 +74,7 @@ project.display.parameters.fittable()
 project.display.parameters.all()
 project.display.parameters.access()
 project.display.parameters.uid()
-project.display.parameters.edstar()
+project.display.parameters.easydiff()
 project.display.parameters.cif()
 
 project.display.fit.results()
@@ -97,7 +97,7 @@ may keep the existing helpers as internal delegation targets:
 | `free_params()`              | `project.display.parameters.free()`                            |
 | `how_to_access_parameters()` | `project.display.parameters.access()`                          |
 | `parameter_uids()`           | `project.display.parameters.uid()`                             |
-| `parameter_edstar_tags()`    | `project.display.parameters.edstar()`                          |
+| `parameter_easydiff_tags()`  | `project.display.parameters.easydiff()`                        |
 | `parameter_cif_tags()`       | `project.display.parameters.cif()`                             |
 | `fit_results()`              | `project.display.fit.results()`                                |
 | `constraints()`              | `project.analysis.constraints.show()`                          |

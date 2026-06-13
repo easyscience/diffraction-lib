@@ -2,9 +2,9 @@
 
 ## :material-shape: type { #rendering-structure-type }
 
-| Access                     | Source                   |
-| -------------------------- | ------------------------ |
-| \_rendering_structure.type | [EdSTAR][0]{:.label-cif} |
+| Access                     | Source                     |
+| -------------------------- | -------------------------- |
+| \_rendering_structure.type | [EasyDiff][0]{:.label-cif} |
 
 Structure-view renderer backend type. Supported values include `auto`,
 `ascii`, and `threejs`.

@@ -2,41 +2,41 @@
 
 ## :material-tag: chunk_size { #sequential-fit-chunk-size }
 
-| Access                      | Source                   |
-| --------------------------- | ------------------------ |
-| \_sequential_fit.chunk_size | [EdSTAR][0]{:.label-cif} |
+| Access                      | Source                     |
+| --------------------------- | -------------------------- |
+| \_sequential_fit.chunk_size | [EasyDiff][0]{:.label-cif} |
 
 Chunk-size token for sequential fitting.
 
 ## :material-tag: data_dir { #sequential-fit-data-dir }
 
-| Access                    | Source                   |
-| ------------------------- | ------------------------ |
-| \_sequential_fit.data_dir | [EdSTAR][0]{:.label-cif} |
+| Access                    | Source                     |
+| ------------------------- | -------------------------- |
+| \_sequential_fit.data_dir | [EasyDiff][0]{:.label-cif} |
 
 Directory containing sequential-fit data files.
 
 ## :material-tag: file_pattern { #sequential-fit-file-pattern }
 
-| Access                        | Source                   |
-| ----------------------------- | ------------------------ |
-| \_sequential_fit.file_pattern | [EdSTAR][0]{:.label-cif} |
+| Access                        | Source                     |
+| ----------------------------- | -------------------------- |
+| \_sequential_fit.file_pattern | [EasyDiff][0]{:.label-cif} |
 
 Glob pattern selecting sequential-fit files.
 
 ## :material-arrow-collapse-right: max_workers { #sequential-fit-max-workers }
 
-| Access                       | Source                   |
-| ---------------------------- | ------------------------ |
-| \_sequential_fit.max_workers | [EdSTAR][0]{:.label-cif} |
+| Access                       | Source                     |
+| ---------------------------- | -------------------------- |
+| \_sequential_fit.max_workers | [EasyDiff][0]{:.label-cif} |
 
 Worker-count token for sequential fitting.
 
 ## :material-tag: reverse { #sequential-fit-reverse }
 
-| Access                   | Source                   |
-| ------------------------ | ------------------------ |
-| \_sequential_fit.reverse | [EdSTAR][0]{:.label-cif} |
+| Access                   | Source                     |
+| ------------------------ | -------------------------- |
+| \_sequential_fit.reverse | [EasyDiff][0]{:.label-cif} |
 
 Whether to process sequential-fit files in reverse.
 
