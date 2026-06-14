@@ -342,7 +342,7 @@ def test_list_tutorials_with_data(monkeypatch, capsys):
         },
     }
     monkeypatch.setattr(MUT, '_fetch_tutorials_index', lambda: fake_index)
-    monkeypatch.setattr(MUT, '_get_version_for_url', lambda: '0.8.0')
+    monkeypatch.setattr(MUT, 'package_version', lambda name: '0.8.0')
     MUT.list_tutorials()
     out = capsys.readouterr().out
     assert 'Tutorials available for easydiffraction v0.8.0' in out

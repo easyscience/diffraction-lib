@@ -904,14 +904,19 @@ def test_list_tutorials_terminal_markup_branch(monkeypatch):
     monkeypatch.setattr(MUT, 'render_table', lambda **kwargs: captured.update(kwargs))
     MUT.list_tutorials()
 
-    rows = captured['columns_data']
-    by_id = {row[0]: row for row in rows}
-    # Row with a description carries the dimmed second line ('tutorial' column).
-    assert '[dim]' in by_id['quick-start'][1]
-    assert 'Quick Start' in by_id['quick-start'][1]
-    # Row without a description has only the styled title (no [dim]).
-    assert '[dim]' not in by_id['no-description'][1]
-    assert 'No Description' in by_id['no-description'][1]
+    # One column; each cell stacks name / title / (dimmed) description.
+    assert captured['columns_headers'] == ['tutorial']
+    cells = [row[0] for row in captured['columns_data']]
+    quick = next(c for c in cells if c.startswith('quick-start'))
+    nodesc = next(c for c in cells if c.startswith('no-description'))
+    # First line is the name in default color (no markup).
+    assert quick.splitlines()[0] == 'quick-start'
+    assert 'Quick Start' in quick
+    assert '[dim]' in quick  # description rendered dim
+    # Row without a description has only name + styled title (no [dim]).
+    assert nodesc.splitlines()[0] == 'no-description'
+    assert 'No Description' in nodesc
+    assert '[dim]' not in nodesc
 
 
 def test_list_tutorials_jupyter_plain_title_branch(monkeypatch):
@@ -933,10 +938,13 @@ def test_list_tutorials_jupyter_plain_title_branch(monkeypatch):
     monkeypatch.setattr(MUT, 'render_table', lambda **kwargs: captured.update(kwargs))
     MUT.list_tutorials()
 
-    rows = captured['columns_data']
-    # Jupyter shows the plain title with no Rich markup (in the 'tutorial' column).
-    assert rows[0][1] == 'Quick Start'
-    assert '[dim]' not in rows[0][1]
+    # Jupyter cell uses plain lines: name, title, description (no markup).
+    cell = captured['columns_data'][0][0]
+    lines = cell.split('\n')
+    assert lines[0] == 'quick-start'
+    assert lines[1] == 'Quick Start'
+    assert lines[2] == 'A quick start tutorial'
+    assert '[dim]' not in cell
 
 
 # --- download_tutorial title-less message branch ------------------------------

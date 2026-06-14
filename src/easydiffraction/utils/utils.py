@@ -908,23 +908,25 @@ def list_tutorials() -> None:
     """
     Display a table of available tutorial notebooks.
 
-    In the terminal each row shows the tutorial name and a combined
-    entry with the title on the first line and a dimmed description on
-    the second. In Jupyter the table shows the plain title only, since
-    the HTML backend cannot render the terminal styling.
+    Each tutorial occupies one multi-line cell: the name on the first
+    line (default color), the title on the second, and a dimmed
+    description on the third. This keeps long descriptions readable. In
+    Jupyter the cell uses plain lines, since the HTML backend cannot
+    render the terminal styling.
     """
     index = _fetch_tutorials_index()
     if not index:
         console.print('❌ No tutorials available.')
         return
 
-    version = _get_version_for_url()
+    version = package_version('easydiffraction') or _get_version_for_url()
     console.paragraph(f'Tutorials available for easydiffraction v{version}:')
 
-    # The renderer adds its own leading row number; every tutorial is a
-    # notebook, so the name alone identifies it (no file column).
-    columns_headers = ['name', 'tutorial']
-    columns_alignment = ['left', 'left']
+    # One column: each tutorial is a name/title/description stack. The
+    # renderer adds its own leading row number, so the name lives in the
+    # cell rather than a separate column.
+    columns_headers = ['tutorial']
+    columns_alignment = ['left']
     columns_data = []
 
     use_markup = not in_jupyter()
@@ -933,16 +935,14 @@ def list_tutorials() -> None:
         title = record.get('title', '')
         description = record.get('description', '')
         if not use_markup:
-            # Jupyter uses the HTML table backend, which would show Rich
-            # markup as literal text; keep the plain title there.
-            details = title
+            # Jupyter renders Rich markup as literal text; emit plain
+            # lines instead.
+            lines = [line for line in (tutorial_id, title, description) if line]
         else:
-            styled_title = f'[{CONSOLE_PARAGRAPH_STYLE}]{escape(title)}[/]'
+            lines = [escape(tutorial_id), f'[{CONSOLE_PARAGRAPH_STYLE}]{escape(title)}[/]']
             if description:
-                details = f'{styled_title}\n[dim]{escape(description)}[/dim]'
-            else:
-                details = styled_title
-        columns_data.append([tutorial_id, details])
+                lines.append(f'[dim]{escape(description)}[/dim]')
+        columns_data.append(['\n'.join(lines)])
 
     render_table(
         columns_headers=columns_headers,
@@ -1068,7 +1068,7 @@ def download_all_tutorials(
         console.print('❌ No tutorials available to download.')
         return []
 
-    version = _get_version_for_url()
+    version = package_version('easydiffraction') or _get_version_for_url()
     console.print(f'📥 Downloading all tutorials for easydiffraction v{version}...')
 
     downloaded_paths = []
