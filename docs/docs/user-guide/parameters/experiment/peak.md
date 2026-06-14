@@ -231,9 +231,6 @@ Particle diameter for spherical envelope damping correction.
 
 [pd-neut-cwl][3]{:.label-experiment}
 [pd-neut-tof][3]{:.label-experiment} [pd-xray][3]{:.label-experiment}
-[sc-neut-cwl][3]{:.label-experiment}
-[pd-neut-total][3]{:.label-experiment}
-[pd-xray-total][3]{:.label-experiment}
 
 ### :material-tag: asym_empir_1 { #peak-asym-empir-1 }
 
