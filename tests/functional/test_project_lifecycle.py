@@ -60,7 +60,7 @@ class TestProjectSaveLoad:
             Project._loading = False
         project.save_as(str(tmp_path / 'proj'))
 
-        assert (tmp_path / 'proj' / 'project.cif').is_file()
+        assert (tmp_path / 'proj' / 'project.edifa').is_file()
         assert (tmp_path / 'proj' / 'structures').is_dir()
         assert (tmp_path / 'proj' / 'experiments').is_dir()
         assert (tmp_path / 'proj' / 'analysis').is_dir()
