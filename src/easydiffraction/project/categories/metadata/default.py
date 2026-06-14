@@ -215,8 +215,8 @@ class ProjectMetadata(CategoryItem):
         """Export project metadata to Edifa."""
         return project_metadata_to_cif(self)
 
-    def show_as_cif(self) -> None:
-        """Pretty-print Edifa via shared utilities."""
-        paragraph_title = f"Project 📦 '{self.name}' metadata as Edifa"
+    def show_as_text(self) -> None:
+        """Pretty-print the project metadata as text."""
+        paragraph_title = f"Project 📦 '{self.name}' metadata as text"
         console.paragraph(paragraph_title)
         render_cif(self.as_cif)

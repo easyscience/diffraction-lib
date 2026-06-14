@@ -50,9 +50,9 @@ def test_display_fit_results(lbco_fitted_project):
     project.display.fit.results()
 
 
-def test_display_as_cif(lbco_fitted_project):
+def test_display_as_text(lbco_fitted_project):
     project = lbco_fitted_project
-    project.analysis.show_as_cif()
+    project.analysis.show_as_text()
 
 
 def test_analysis_as_cif(lbco_fitted_project):

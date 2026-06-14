@@ -356,9 +356,9 @@ class ExperimentBase(DatablockItem):
         """Serialize this experiment to a CIF fragment."""
         return experiment_to_cif(self)
 
-    def show_as_cif(self) -> None:
-        """Pretty-print the experiment as CIF text."""
-        paragraph_title: str = f"Experiment 🔬 '{self.name}' as cif"
+    def show_as_text(self) -> None:
+        """Pretty-print the experiment as text."""
+        paragraph_title: str = f"Experiment 🔬 '{self.name}' as text"
         console.paragraph(paragraph_title)
         render_cif(self._cif_for_display())
 

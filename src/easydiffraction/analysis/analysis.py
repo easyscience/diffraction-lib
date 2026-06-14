@@ -476,8 +476,8 @@ class AnalysisDisplay:
         analysis.fitter._process_fit_results(structures, experiments)
 
     def as_cif(self) -> None:
-        """Render the analysis section as CIF in console."""
-        self._analysis.show_as_cif()
+        """Render the analysis section as text in console."""
+        self._analysis.show_as_text()
 
 
 class _AnalysisOwnerAccessorsMixin:
@@ -3045,7 +3045,7 @@ class Analysis(
         self._update_categories()
         return analysis_to_cif(self)
 
-    def show_as_cif(self) -> None:
-        """Pretty-print the analysis section as CIF text."""
-        console.paragraph('Analysis info as CIF')
+    def show_as_text(self) -> None:
+        """Pretty-print the analysis section as text."""
+        console.paragraph('Analysis info as text')
         render_cif(self.as_cif)

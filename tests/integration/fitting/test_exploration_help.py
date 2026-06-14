@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
-"""Integration tests for help(), show_as_cif(), and switchable-category show methods."""
+"""Integration tests for help(), show_as_text(), and switchable-category show methods."""
 
 
 def test_project_str(lbco_fitted_project):
@@ -28,10 +28,10 @@ def test_structure_help(lbco_fitted_project):
     model.help()
 
 
-def test_structure_show_as_cif(lbco_fitted_project):
+def test_structure_show_as_text(lbco_fitted_project):
     project = lbco_fitted_project
     model = project.structures['lbco']
-    model.show_as_cif()
+    model.show_as_text()
 
 
 def test_structure_as_cif(lbco_fitted_project):
@@ -59,13 +59,13 @@ def test_experiment_help(lbco_fitted_project):
     expt.help()
 
 
-def test_experiment_show_as_cif(lbco_fitted_project):
+def test_experiment_show_as_text(lbco_fitted_project):
     project = lbco_fitted_project
     expt = project.experiments['hrpt']
-    expt.show_as_cif()
+    expt.show_as_text()
 
 
-def test_experiment_show_as_cif_omits_empty_category_gaps(lbco_fitted_project, monkeypatch):
+def test_experiment_show_as_text_omits_empty_category_gaps(lbco_fitted_project, monkeypatch):
     import re
 
     import easydiffraction.datablocks.experiment.item.base as experiment_base
@@ -79,7 +79,7 @@ def test_experiment_show_as_cif_omits_empty_category_gaps(lbco_fitted_project, m
 
     project = lbco_fitted_project
     expt = project.experiments['hrpt']
-    expt.show_as_cif()
+    expt.show_as_text()
 
     cif_text = captured['cif_text']
     assert (

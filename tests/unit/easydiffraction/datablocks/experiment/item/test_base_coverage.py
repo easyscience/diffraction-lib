@@ -103,9 +103,9 @@ class TestExperimentBaseAsCif:
         cif = ex.as_cif
         assert isinstance(cif, str)
 
-    def test_show_as_cif(self, capsys):
+    def test_show_as_text(self, capsys):
         ex = ConcreteBase(name='ex1', experiment_type=_mk_type_powder_cwl_bragg())
-        ex.show_as_cif()
+        ex.show_as_text()
         out = capsys.readouterr().out
         assert 'ex1' in out
 
