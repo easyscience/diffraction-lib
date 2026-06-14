@@ -494,8 +494,8 @@ def test_invalidate_stale_cache_drops_dict_on_pref_orient_axis_change():
     assert combined_name not in calc._cryspy_dicts
 
 
-def test_relabel_cif_tags_for_cryspy_maps_easydiff_tags_to_legacy():
-    """EasyDiff tags map to the legacy IUCr spellings cryspy needs."""
+def test_relabel_cif_tags_for_cryspy_maps_edifa_tags_to_legacy():
+    """Edifa tags map to the legacy IUCr spellings cryspy needs."""
     from easydiffraction.analysis.calculators.cryspy import CryspyCalculator
 
     cif = (
@@ -513,7 +513,7 @@ def test_relabel_cif_tags_for_cryspy_maps_easydiff_tags_to_legacy():
     assert '_atom_site.U_iso_or_equiv' in out
     assert '_atom_site_aniso.label' in out
     assert '_atom_site_aniso.U_11' in out
-    # The EasyDiff spellings are fully removed.
+    # The Edifa spellings are fully removed.
     assert '_atom_site.id\n' not in out
     assert '_atom_site.adp_iso' not in out
     assert '_space_group.name_h_m' not in out

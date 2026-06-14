@@ -656,7 +656,7 @@ def test_existing_project_dir_returns_parent(tmp_path):
 
     project_dir = tmp_path / 'myproject'
     project_dir.mkdir()
-    (project_dir / 'project.easydiff').write_text('data_block')
+    (project_dir / 'project.edifa').write_text('data_block')
     result = MUT._existing_project_dir(tmp_path)
     assert result == project_dir.resolve()
 
@@ -726,7 +726,7 @@ def test_download_data_project_archive_already_extracted(monkeypatch, tmp_path, 
     extraction_dir = tmp_path / 'lbco-hrpt'
     project_dir = extraction_dir / 'inner'
     project_dir.mkdir(parents=True)
-    (project_dir / 'project.easydiff').write_text('data_block')
+    (project_dir / 'project.edifa').write_text('data_block')
 
     result = MUT.download_data('projects/lbco-hrpt', destination=str(tmp_path))
     assert result == str(project_dir.resolve())
@@ -1186,7 +1186,7 @@ def test_validate_dataset_id_accepts_valid_slugs(slug):
     'slug',
     [
         'structures/LBCO',  # uppercase
-        'experiments/lbco-hrpt.easydiff',  # extension in id
+        'experiments/lbco-hrpt.edifa',  # extension in id
         'nope/lbco',  # unknown namespace
         'lbco',  # missing namespace
         'structures/lbco/extra',  # extra slash

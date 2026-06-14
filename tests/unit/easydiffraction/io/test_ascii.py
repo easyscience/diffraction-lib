@@ -77,27 +77,27 @@ class TestExtractProjectFromZip:
     """Tests for extract_project_from_zip."""
 
     def test_extracts_project_dir(self, tmp_path):
-        """Returns path to the directory containing project.easydiff."""
+        """Returns path to the directory containing project.edifa."""
         zip_path = tmp_path / 'proj.zip'
         with zipfile.ZipFile(zip_path, 'w') as zf:
-            zf.writestr('my_project/project.easydiff', 'data_project\n')
+            zf.writestr('my_project/project.edifa', 'data_project\n')
             zf.writestr('my_project/structures/struct.cif', 'data_struct\n')
 
         result = extract_project_from_zip(zip_path, destination=tmp_path / 'out')
 
         assert result.endswith('my_project')
-        assert (tmp_path / 'out' / 'my_project' / 'project.easydiff').is_file()
+        assert (tmp_path / 'out' / 'my_project' / 'project.edifa').is_file()
 
     def test_extracts_to_temp_dir_by_default(self, tmp_path):
         """Without destination, files go to a temp directory."""
         zip_path = tmp_path / 'proj.zip'
         with zipfile.ZipFile(zip_path, 'w') as zf:
-            zf.writestr('myproj/project.easydiff', 'data_project\n')
+            zf.writestr('myproj/project.edifa', 'data_project\n')
 
         result = extract_project_from_zip(zip_path)
 
         assert 'myproj' in result
-        assert 'project.easydiff' not in result  # returns parent dir, not file
+        assert 'project.edifa' not in result  # returns parent dir, not file
 
     def test_raises_file_not_found(self, tmp_path):
         """Raises FileNotFoundError for missing ZIP path."""
@@ -105,12 +105,12 @@ class TestExtractProjectFromZip:
             extract_project_from_zip(tmp_path / 'missing.zip')
 
     def test_raises_value_error_no_project_cif(self, tmp_path):
-        """Raises ValueError when ZIP has no project.easydiff."""
+        """Raises ValueError when ZIP has no project.edifa."""
         zip_path = tmp_path / 'bad.zip'
         with zipfile.ZipFile(zip_path, 'w') as zf:
             zf.writestr('data.dat', '1 2 3\n')
 
-        with pytest.raises(ValueError, match=r'No project\.easydiff found'):
+        with pytest.raises(ValueError, match=r'No project\.edifa found'):
             extract_project_from_zip(zip_path)
 
     def test_destination_creates_directory(self, tmp_path):
@@ -118,7 +118,7 @@ class TestExtractProjectFromZip:
         zip_path = tmp_path / 'proj.zip'
         dest = tmp_path / 'nested' / 'output'
         with zipfile.ZipFile(zip_path, 'w') as zf:
-            zf.writestr('proj/project.easydiff', 'data\n')
+            zf.writestr('proj/project.edifa', 'data\n')
 
         result = extract_project_from_zip(zip_path, destination=dest)
 
@@ -126,16 +126,16 @@ class TestExtractProjectFromZip:
         assert 'proj' in result
 
     def test_ignores_other_project_cif_in_destination(self, tmp_path):
-        """Only finds project.easydiff from the zip, not pre-existing ones."""
+        """Only finds project.edifa from the zip, not pre-existing ones."""
         dest = tmp_path / 'data'
         # Pre-create another project directory in the destination
-        other_project = dest / 'aaa_other' / 'project.easydiff'
+        other_project = dest / 'aaa_other' / 'project.edifa'
         other_project.parent.mkdir(parents=True)
         other_project.write_text('other\n')
 
         zip_path = tmp_path / 'proj.zip'
         with zipfile.ZipFile(zip_path, 'w') as zf:
-            zf.writestr('target_project/project.easydiff', 'correct\n')
+            zf.writestr('target_project/project.edifa', 'correct\n')
 
         result = extract_project_from_zip(zip_path, destination=dest)
 

@@ -301,7 +301,7 @@ class TestLoadAnalysisCifFallback:
         original.save_as(str(tmp_path / 'proj'))
 
         # Verify analysis.cif is in analysis/ subdirectory (current save layout)
-        assert (tmp_path / 'proj' / 'analysis' / 'analysis.easydiff').is_file()
+        assert (tmp_path / 'proj' / 'analysis' / 'analysis.edifa').is_file()
 
         loaded = Project.load(str(tmp_path / 'proj'))
         assert loaded.analysis.minimizer.type == 'lmfit (leastsq)'
@@ -314,7 +314,7 @@ class TestLoadAnalysisCifFallback:
         # Move analysis.cif from analysis/ subdirectory to project root
         proj_dir = tmp_path / 'proj'
         analysis_dir = proj_dir / 'analysis'
-        (analysis_dir / 'analysis.easydiff').rename(proj_dir / 'analysis.easydiff')
+        (analysis_dir / 'analysis.edifa').rename(proj_dir / 'analysis.edifa')
         analysis_dir.rmdir()
 
         loaded = Project.load(str(proj_dir))

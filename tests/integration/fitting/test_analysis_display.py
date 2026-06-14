@@ -29,9 +29,9 @@ def test_display_parameter_uids(lbco_fitted_project):
     project.display.parameters.uid()
 
 
-def test_display_parameter_easydiff_tags(lbco_fitted_project):
+def test_display_parameter_edifa_tags(lbco_fitted_project):
     project = lbco_fitted_project
-    project.display.parameters.easydiff()
+    project.display.parameters.edifa()
 
 
 def test_display_parameter_cif_tags(lbco_fitted_project):

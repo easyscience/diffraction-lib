@@ -219,7 +219,7 @@ def test_atom_site_cif_emits_type_neutral_iso_adp_for_mixed_families():
 
     cif = structure.atom_sites.as_cif
 
-    # EasyDiff persistence is type-neutral: a single loop carries both
+    # Edifa persistence is type-neutral: a single loop carries both
     # atoms under _atom_site.adp_iso, with the family recorded in the
     # co-persisted _atom_site.adp_type column (no per-family split, and
     # no strict B_iso_or_equiv/U_iso_or_equiv report names).

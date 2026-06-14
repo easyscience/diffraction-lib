@@ -22,7 +22,7 @@ import easydiffraction.project.project as project_module
 from easydiffraction.project.project import Project
 from easydiffraction.project.project import _apply_csv_row_to_diffrn
 from easydiffraction.project.project import _apply_csv_row_to_params
-from easydiffraction.project.project import _load_easydiff_directory
+from easydiffraction.project.project import _load_edifa_directory
 from easydiffraction.project.project import _load_project_analysis
 from easydiffraction.project.project import _load_project_metadata
 from easydiffraction.project.project import _resolve_data_path_from_results_csv
@@ -163,56 +163,56 @@ def test_resolve_data_path_joins_relative_to_project():
 
 
 # ----------------------------------------------------------------------
-# _load_easydiff_directory / _load_project_metadata / _resolved_analysis_path
+# _load_edifa_directory / _load_project_metadata / _resolved_analysis_path
 # ----------------------------------------------------------------------
 
 
-def test_load_easydiff_directory_skips_missing_directory(tmp_path):
+def test_load_edifa_directory_skips_missing_directory(tmp_path):
     calls: list[str] = []
 
-    _load_easydiff_directory(
+    _load_edifa_directory(
         tmp_path / 'absent',
         calls.append,
-        replacement='structures/<structure>.easydiff',
+        replacement='structures/<structure>.edifa',
     )
 
     assert calls == []
 
 
-def test_load_easydiff_directory_loads_sorted_easydiff_files(tmp_path):
-    easydiff_dir = tmp_path / 'structures'
-    easydiff_dir.mkdir()
-    (easydiff_dir / 'b.easydiff').write_text('b')
-    (easydiff_dir / 'a.easydiff').write_text('a')
-    (easydiff_dir / 'note.txt').write_text('ignored')
+def test_load_edifa_directory_loads_sorted_edifa_files(tmp_path):
+    edifa_dir = tmp_path / 'structures'
+    edifa_dir.mkdir()
+    (edifa_dir / 'b.edifa').write_text('b')
+    (edifa_dir / 'a.edifa').write_text('a')
+    (edifa_dir / 'note.txt').write_text('ignored')
 
     calls: list[str] = []
-    _load_easydiff_directory(
-        easydiff_dir,
+    _load_edifa_directory(
+        edifa_dir,
         calls.append,
-        replacement='structures/<structure>.easydiff',
+        replacement='structures/<structure>.edifa',
     )
 
-    assert calls == [str(easydiff_dir / 'a.easydiff'), str(easydiff_dir / 'b.easydiff')]
+    assert calls == [str(edifa_dir / 'a.edifa'), str(edifa_dir / 'b.edifa')]
 
 
-def test_load_easydiff_directory_rejects_legacy_cif(tmp_path):
-    easydiff_dir = tmp_path / 'structures'
-    easydiff_dir.mkdir()
-    (easydiff_dir / 'lbco.cif').write_text('legacy')
+def test_load_edifa_directory_rejects_legacy_cif(tmp_path):
+    edifa_dir = tmp_path / 'structures'
+    edifa_dir.mkdir()
+    (edifa_dir / 'lbco.cif').write_text('legacy')
 
-    with pytest.raises(ValueError, match=r'structures/<structure>\.easydiff'):
-        _load_easydiff_directory(
-            easydiff_dir,
+    with pytest.raises(ValueError, match=r'structures/<structure>\.edifa'):
+        _load_edifa_directory(
+            edifa_dir,
             lambda _path: None,
-            replacement='structures/<structure>.easydiff',
+            replacement='structures/<structure>.edifa',
         )
 
 
-def test_load_project_metadata_no_easydiff_raises(tmp_path):
+def test_load_project_metadata_no_edifa_raises(tmp_path):
     project = Project(name='unchanged_info')
 
-    with pytest.raises(FileNotFoundError, match=r'project\.easydiff'):
+    with pytest.raises(FileNotFoundError, match=r'project\.edifa'):
         _load_project_metadata(project, tmp_path)
 
 
@@ -221,10 +221,10 @@ def test_resolved_analysis_path_returns_none_when_absent(tmp_path):
 
 
 def test_resolved_analysis_path_uses_root_fallback(tmp_path):
-    root_easydiff = tmp_path / 'analysis.easydiff'
-    root_easydiff.write_text('analysis')
+    root_edifa = tmp_path / 'analysis.edifa'
+    root_edifa.write_text('analysis')
 
-    assert _resolved_analysis_path(tmp_path) == root_easydiff
+    assert _resolved_analysis_path(tmp_path) == root_edifa
 
 
 def test_load_project_analysis_no_cif_is_noop(tmp_path):
@@ -400,7 +400,7 @@ def test_save_without_path_logs_error_and_returns(monkeypatch):
     assert any('save_as()' in message for message in errors)
 
 
-def test_save_writes_experiment_easydiff_files(tmp_path, monkeypatch):
+def test_save_writes_experiment_edifa_files(tmp_path, monkeypatch):
     from easydiffraction.analysis.analysis import Analysis
     from easydiffraction.project.project_metadata import ProjectMetadata
 
@@ -420,11 +420,11 @@ def test_save_writes_experiment_easydiff_files(tmp_path, monkeypatch):
     project._experiments = _Experiments(parameters=[])
     project.save_as(str(tmp_path / 'proj'))
 
-    # Experiments are persisted as EasyDiff files carrying the schema
+    # Experiments are persisted as Edifa files carrying the schema
     # marker; the original section header is preserved.
-    written = (tmp_path / 'proj' / 'experiments' / 'scan1.easydiff').read_text()
+    written = (tmp_path / 'proj' / 'experiments' / 'scan1.edifa').read_text()
     assert written.startswith('data_scan1')
-    assert '_easydiff.schema_name EasyDiffraction' in written
+    assert '_edifa.schema_name EasyDiffraction' in written
 
 
 def test_save_as_temporary_writes_under_system_tempdir(monkeypatch):
@@ -441,7 +441,7 @@ def test_save_as_temporary_writes_under_system_tempdir(monkeypatch):
     try:
         project.save_as(unique_dir, temporary=True)
         expected = pathlib.Path(tempfile.gettempdir()) / unique_dir
-        assert (expected / 'project.easydiff').is_file()
+        assert (expected / 'project.edifa').is_file()
         assert project.metadata.path == expected
     finally:
         import shutil
@@ -476,7 +476,7 @@ def test_save_as_overwrite_clears_children_when_target_is_cwd(tmp_path, monkeypa
     # children are removed before the fresh project is written.
     assert not stale_file.exists()
     assert not stale_dir.exists()
-    assert (target / 'project.easydiff').is_file()
+    assert (target / 'project.edifa').is_file()
 
 
 # ----------------------------------------------------------------------
