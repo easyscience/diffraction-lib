@@ -6,7 +6,7 @@
 
 | Access             | Source                     |
 | ------------------ | -------------------------- |
-| \_extinction.model | [EasyDiff][0]{:.label-cif} |
+| \_extinction.model | [Edifa][0]{:.label-cif} |
 
 Mosaicity distribution model (gauss or lorentz). Supported values
 include `gauss` and `lorentz`.
@@ -15,7 +15,7 @@ include `gauss` and `lorentz`.
 
 | Access                 | Source                     |
 | ---------------------- | -------------------------- |
-| \_extinction.mosaicity | [EasyDiff][0]{:.label-cif} |
+| \_extinction.mosaicity | [Edifa][0]{:.label-cif} |
 
 Mosaicity of the crystal.
 
@@ -23,7 +23,7 @@ Mosaicity of the crystal.
 
 | Access              | Source                     |
 | ------------------- | -------------------------- |
-| \_extinction.radius | [EasyDiff][0]{:.label-cif} |
+| \_extinction.radius | [Edifa][0]{:.label-cif} |
 
 Mean radius of the crystal.
 
@@ -31,7 +31,7 @@ Mean radius of the crystal.
 
 | Access            | Source                     |
 | ----------------- | -------------------------- |
-| \_extinction.type | [EasyDiff][0]{:.label-cif} |
+| \_extinction.type | [Edifa][0]{:.label-cif} |
 
 Active extinction type tag. Supported values include `becker-coppens`.
 This type is available for single-crystal experiments.

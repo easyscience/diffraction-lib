@@ -4,7 +4,7 @@
 
 | Access                 | Source                     |
 | ---------------------- | -------------------------- |
-| \_rendering_table.type | [EasyDiff][0]{:.label-cif} |
+| \_rendering_table.type | [Edifa][0]{:.label-cif} |
 
 Table renderer backend type. Supported values include `auto`, `rich`,
 and `pandas`.

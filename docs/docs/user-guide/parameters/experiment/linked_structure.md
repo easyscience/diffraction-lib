@@ -8,7 +8,7 @@
 | Access                               | Source                     |
 | ------------------------------------ | -------------------------- |
 | linked_structures['ID'].structure_id | [code][0]{:.label-cif}     |
-| \_linked_structure.structure_id      | [EasyDiff][0]{:.label-cif} |
+| \_linked_structure.structure_id      | [Edifa][0]{:.label-cif} |
 | \_pd_phase_block.id                  | [pdCIF][0]{:.label-cif}    |
 
 Identifier of the linked structure.
@@ -18,7 +18,7 @@ Identifier of the linked structure.
 | Access                        | Source                     |
 | ----------------------------- | -------------------------- |
 | linked_structures['ID'].scale | [code][0]{:.label-cif}     |
-| \_linked_structure.scale      | [EasyDiff][0]{:.label-cif} |
+| \_linked_structure.scale      | [Edifa][0]{:.label-cif} |
 | \_pd_phase_block.scale        | [pdCIF][0]{:.label-cif}    |
 
 Scale factor of the linked structure.

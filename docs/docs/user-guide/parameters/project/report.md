@@ -4,7 +4,7 @@
 
 | Access       | Source                     |
 | ------------ | -------------------------- |
-| \_report.cif | [EasyDiff][0]{:.label-cif} |
+| \_report.cif | [Edifa][0]{:.label-cif} |
 
 Whether to write CIF reports when saving.
 
@@ -12,7 +12,7 @@ Whether to write CIF reports when saving.
 
 | Access        | Source                     |
 | ------------- | -------------------------- |
-| \_report.html | [EasyDiff][0]{:.label-cif} |
+| \_report.html | [Edifa][0]{:.label-cif} |
 
 Whether to write HTML reports when saving.
 
@@ -20,7 +20,7 @@ Whether to write HTML reports when saving.
 
 | Access                | Source                     |
 | --------------------- | -------------------------- |
-| \_report.html_offline | [EasyDiff][0]{:.label-cif} |
+| \_report.html_offline | [Edifa][0]{:.label-cif} |
 
 Whether HTML reports should embed assets.
 
@@ -28,7 +28,7 @@ Whether HTML reports should embed assets.
 
 | Access       | Source                     |
 | ------------ | -------------------------- |
-| \_report.pdf | [EasyDiff][0]{:.label-cif} |
+| \_report.pdf | [Edifa][0]{:.label-cif} |
 
 Whether to write PDF reports when saving.
 
@@ -36,7 +36,7 @@ Whether to write PDF reports when saving.
 
 | Access       | Source                     |
 | ------------ | -------------------------- |
-| \_report.tex | [EasyDiff][0]{:.label-cif} |
+| \_report.tex | [Edifa][0]{:.label-cif} |
 
 Whether to write TeX reports when saving.
 

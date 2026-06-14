@@ -137,24 +137,24 @@ Defined structures 🧩
 ['lbco', 'nacl']
 ```
 
-## Viewing a Structure as EasyDiff
+## Viewing a Structure as Edifa
 
 To inspect a structure in the project persistence format, use:
 
 ```python
-# Show structure as EasyDiff text
+# Show structure as Edifa text
 project.structures['lbco'].show_as_cif()
 ```
 
 Example output:
 
 ```
-Structure 🧩 'lbco' as EasyDiff
+Structure 🧩 'lbco' as Edifa
 ╒═══════════════════════════════════════════╕
 │ data_lbco                                 │
 │                                           │
-│ _easydiff.schema_name EasyDiffraction       │
-│ _easydiff.schema_version 1                  │
+│ _edifa.schema_name EasyDiffraction       │
+│ _edifa.schema_version 1                  │
 │                                           │
 │ _space_group.coord_system_code  1          │
 │ _space_group.name_h_m  "P m -3 m"         │
@@ -221,7 +221,7 @@ project.structure_style.adp_probability = 0.5  # ADP ellipsoid probability level
 
 Bonds are generated automatically between atoms whose separation falls
 within the per-structure cutoffs stored on `structure.geom` (the
-EasyDiff `_geom` parameters):
+Edifa `_geom` parameters):
 
 ```python
 # Tune the per-structure bond-generation cutoffs (angstrom)
@@ -255,10 +255,10 @@ section).
 
 Saving the project, as described in the [Project](project.md) section,
 will also save the structure. Each structure is saved as a separate
-`.easydiff` file in the `structures` subdirectory of the project
+`.edifa` file in the `structures` subdirectory of the project
 directory. The project file contains references to these files.
 
-Below is an example of the saved EasyDiff file for the `lbco` structure:
+Below is an example of the saved Edifa file for the `lbco` structure:
 
 <!-- prettier-ignore-start -->
 

@@ -16,7 +16,7 @@ input per `AGENTS.md` and should fail loudly.
 
 **Fix:** reject an unknown persisted type tag with a clear, non-
 suppressible error during restore. This is exactly the contract the
-EasyDiff persistence ADR's **Selector Validation Contract** proposes;
+Edifa persistence ADR's **Selector Validation Contract** proposes;
 the current code is the concrete pre-ADR behaviour it would correct.
 
 **TODOs / locations:**
@@ -28,7 +28,7 @@ the current code is the concrete pre-ADR behaviour it would correct.
 - [bragg_pd.py](src/easydiffraction/datablocks/experiment/categories/data/bragg_pd.py#L206)
   — background swap
 
-**Depends on:** the EasyDiff persistence ADR
+**Depends on:** the Edifa persistence ADR
 ([`edstar-project-persistence.md`](../../adrs/accepted/edstar-project-persistence.md)),
 which formalizes the reject-on-disagreement rule. Related to issues
 120, 121.

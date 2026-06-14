@@ -1,4 +1,4 @@
-# EasyDiff Project Persistence Plan
+# Edifa Project Persistence Plan
 
 This plan follows `AGENTS.md`. There are no deliberate exceptions.
 
@@ -34,24 +34,24 @@ to the old suggestions path.
 
 ## Decisions
 
-- EasyDiff becomes the project persistence format: `project.easydiff`,
-  `structures/<structure>.easydiff`,
-  `experiments/<experiment>.easydiff`, and `analysis/analysis.easydiff`.
+- Edifa becomes the project persistence format: `project.edifa`,
+  `structures/<structure>.edifa`,
+  `experiments/<experiment>.edifa`, and `analysis/analysis.edifa`.
 - `analysis/results.csv`, `analysis/results.h5`, and
   `reports/<project>.cif` keep their current locations and purposes.
 - Report CIF generation stays strict IUCr/pdCIF export. Regular project
   save/load must not treat report CIF as round-trippable project state.
-- Saved EasyDiff files include the schema marker
-  `_easydiff.schema_name EasyDiffraction` and
-  `_easydiff.schema_version 1`.
-- Project restore accepts only EasyDiff project files. Legacy beta
+- Saved Edifa files include the schema marker
+  `_edifa.schema_name EasyDiffraction` and
+  `_edifa.schema_version 1`.
+- Project restore accepts only Edifa project files. Legacy beta
   EasyDiffraction CIF project files fail with an explicit migration
   error. Official CIF import names remain supported by explicit CIF
   import paths where supported, and read aliases remain recorded on
   handlers.
-- EasyDiff files take precedence over stale CIF siblings. If both exist,
-  load EasyDiff and ignore CIF for the same project section.
-- Ordinary `save()` writes EasyDiff files. It does not need to delete
+- Edifa files take precedence over stale CIF siblings. If both exist,
+  load Edifa and ignore CIF for the same project section.
+- Ordinary `save()` writes Edifa files. It does not need to delete
   stale CIF files; precedence and clear console output handle stale
   siblings.
 - Public Python names move to the ADR's API-oriented names with no
@@ -62,18 +62,18 @@ to the old suggestions path.
 - `analysis.software` becomes a role-keyed loop with
   `software[role].{name, version, url}` and a closed `(str, Enum)` role
   set. Fit timestamp moves to `project.metadata.timestamp`.
-- Runtime descriptors expose a read-only `url` derived from EasyDiff
+- Runtime descriptors expose a read-only `url` derived from Edifa
   names and docs version. Static docs tables use stable relative
   anchors, not runtime `param.url`.
-- Parameter docs remain hand-maintained. A generated CifHandler/EasyDiff
+- Parameter docs remain hand-maintained. A generated CifHandler/Edifa
   inventory is an audit artifact, not the source used to generate docs
   tables.
 - No new dependency is planned.
 
 ## Open Questions
 
-- Whether EasyDiff needs an explicit public CLI format flag. This plan
-  assumes no new `--format` flag: `.easydiff` is the default project
+- Whether Edifa needs an explicit public CLI format flag. This plan
+  assumes no new `--format` flag: `.edifa` is the default project
   persistence format, and CLI help/docs name it because users see the
   files.
 - Whether future analysis-reference fields should adopt a broader
@@ -110,7 +110,7 @@ The main public-name changes cross these areas:
 The existing docs reference is a two-tab code/CIF table in
 `docs/docs/user-guide/parameters.md` with per-category pages under
 `docs/docs/user-guide/parameters/`. It must become the ADR's three-tab
-code/EasyDiff/CIF reference.
+code/Edifa/CIF reference.
 
 ## Concrete Files Likely To Change
 
@@ -122,7 +122,7 @@ code/EasyDiff/CIF reference.
   `src/easydiffraction/io/cif/parse.py`,
   `src/easydiffraction/io/cif/iucr_writer.py`,
   `src/easydiffraction/io/cif/iucr_transformers.py`, plus a new
-  `src/easydiffraction/io/easydiff/` package if the implementation needs
+  `src/easydiffraction/io/edifa/` package if the implementation needs
   a format-specific boundary.
 - Project facade/config: `src/easydiffraction/project/project.py`,
   `src/easydiffraction/project/project_config.py`,
@@ -154,7 +154,7 @@ code/EasyDiff/CIF reference.
   regenerated `docs/docs/tutorials/*.ipynb`, `docs/mkdocs.yml`,
   `src/easydiffraction/__main__.py`, and
   `src/easydiffraction/io/ascii.py`.
-- New or updated tools: an EasyDiff handler inventory/audit tool under
+- New or updated tools: an Edifa handler inventory/audit tool under
   `tools/`, and a docs anchor verification tool if it is not folded into
   an existing docs check.
 - Tests in Phase 2: matching unit test files under
@@ -174,13 +174,13 @@ code/EasyDiff/CIF reference.
   Commit:
 
   ```text
-  Accept EasyDiff project persistence ADR
+  Accept Edifa project persistence ADR
   ```
 
 - [x] P1.2 - Make handler names explicit before changing tags.
 
   Extend `CifHandler` so each descriptor can declare: `project_name` for
-  EasyDiff write tags, `import_names` for accepted read aliases,
+  Edifa write tags, `import_names` for accepted read aliases,
   `iucr_name` for report export, and enough category metadata for
   inventory/docs URL generation. Preserve current CIF behavior while
   this step lands.
@@ -198,7 +198,7 @@ code/EasyDiff/CIF reference.
 - [x] P1.3 - Add the generated handler inventory audit.
 
   Add a tool that imports the registered concrete categories and emits a
-  deterministic inventory of descriptor paths, EasyDiff names, legacy
+  deterministic inventory of descriptor paths, Edifa names, legacy
   CIF import names, IUCr names, docs anchors, and ownership context.
   Generate the initial inventory before any write-side tag renames so
   later commits have a reviewable baseline.
@@ -209,34 +209,34 @@ code/EasyDiff/CIF reference.
   Commit:
 
   ```text
-  Add EasyDiff persistence inventory audit
+  Add Edifa persistence inventory audit
   ```
 
-- [x] P1.4 - Introduce EasyDiff project file save/load.
+- [x] P1.4 - Introduce Edifa project file save/load.
 
-  Add EasyDiff serialization and parsing boundaries, including schema
+  Add Edifa serialization and parsing boundaries, including schema
   marker writing/validation and selector/body consistency checks. Update
   `Project.save()` to write:
 
   ```text
-  project.easydiff
-  structures/<structure>.easydiff
-  experiments/<experiment>.easydiff
-  analysis/analysis.easydiff
+  project.edifa
+  structures/<structure>.edifa
+  experiments/<experiment>.edifa
+  analysis/analysis.edifa
   analysis/results.csv
   analysis/results.h5
   reports/<project>.cif
   ```
 
   Update `Project.load()` and structure/experiment/analysis loaders so
-  EasyDiff wins over same-section CIF files, while legacy-only beta CIF
+  Edifa wins over same-section CIF files, while legacy-only beta CIF
   project files fail with explicit migration errors. Keep
   `project.report.save_cif()` and the IUCr writer on the CIF path.
 
   Commit:
 
   ```text
-  Save and load EasyDiff project files
+  Save and load Edifa project files
   ```
 
 - [x] P1.5 - Rename project info to project metadata.
@@ -280,7 +280,7 @@ code/EasyDiff/CIF reference.
   belongs with analysis aliases. Update collection key declarations,
   constructors, display/report code, symmetry/ADP lookup code, and
   examples. Keep official CIF import aliases for `_atom_site.label` and
-  `_atom_site_aniso.label`; write EasyDiff with the new `id` names.
+  `_atom_site_aniso.label`; write Edifa with the new `id` names.
 
   Commit:
 
@@ -308,20 +308,20 @@ code/EasyDiff/CIF reference.
 
 - [x] P1.9 - Rename experiment data and instrument fields.
 
-  Apply the remaining experiment-side API/EasyDiff renames from the ADR:
+  Apply the remaining experiment-side API/Edifa renames from the ADR:
   powder `refln.phase_id` to `structure_id`, preferred-orientation
   `phase_id` to `structure_id`, powder data `point_id` to `id`, TOF
   calibration `quad`/`recip` to `quadratic`/`reciprocal`, and
   line-segment background `x`/`y` to `position`/`intensity`.
 
-  Update EasyDiff write names, legacy CIF import aliases, calculators,
+  Update Edifa write names, legacy CIF import aliases, calculators,
   report writers, plotting code, docs, and tutorials. Preserve strict
   report CIF output names through `iucr_name`/transformers.
 
   Commit:
 
   ```text
-  Rename experiment EasyDiff fields
+  Rename experiment Edifa fields
   ```
 
 - [x] P1.10 - Rename analysis parameter-reference fields.
@@ -348,9 +348,9 @@ code/EasyDiff/CIF reference.
 - [x] P1.11 - Rework parameter docs and runtime links.
 
   Update `docs/docs/user-guide/parameters.md` to use three tabs: "How to
-  access in the code", "Keys in EasyDiff", and "Keys in CIF". Rename
+  access in the code", "Keys in Edifa", and "Keys in CIF". Rename
   per-category pages under `docs/docs/user-guide/parameters/` to
-  EasyDiff category names, give them EasyDiff titles and EasyDiffraction
+  Edifa category names, give them Edifa titles and EasyDiffraction
   descriptions, and keep IUCr icon links for official dictionary tags.
 
   Add stable anchors that match the runtime `param.url` resolver. Static
@@ -359,20 +359,20 @@ code/EasyDiff/CIF reference.
 
   Update `docs/mkdocs.yml`, quick reference, workflow docs, tutorials,
   ZIP/project docs, and CLI help text from CIF project persistence to
-  EasyDiff project persistence. Regenerate notebooks only from edited
+  Edifa project persistence. Regenerate notebooks only from edited
   tutorial `.py` files during the implementation step that changes
   tutorials.
 
   Commit:
 
   ```text
-  Document EasyDiff parameter keys
+  Document Edifa parameter keys
   ```
 
 - [x] P1.12 - Refresh report CIF boundaries and stale-name errors.
 
   Ensure report CIF generation still emits strict IUCr/pdCIF and does
-  not accidentally use EasyDiff project names. Remove or update regular
+  not accidentally use Edifa project names. Remove or update regular
   project-save CIF assumptions in display/report helpers while keeping
   `reports/<project>.cif` intact.
 
@@ -383,7 +383,7 @@ code/EasyDiff/CIF reference.
   Commit:
 
   ```text
-  Keep report CIF separate from EasyDiff persistence
+  Keep report CIF separate from Edifa persistence
   ```
 
 - [x] P1.13 - Phase 1 review gate.
@@ -399,7 +399,7 @@ code/EasyDiff/CIF reference.
   Commit:
 
   ```text
-  Reach EasyDiff Phase 1 review gate
+  Reach Edifa Phase 1 review gate
   ```
 
 - [x] P1.14 - Rename the space-group coordinate-system parameter.
@@ -407,10 +407,10 @@ code/EasyDiff/CIF reference.
   Record the post-review Phase 1 scope addition requested after the
   original review gate: rename
   `structure.space_group.it_coordinate_system_code` to
-  `structure.space_group.coord_system_code` and write EasyDiff with
+  `structure.space_group.coord_system_code` and write Edifa with
   `_space_group.coord_system_code`. Keep official CIF import/report
   names as `_space_group.IT_coordinate_system_code`, and do not preserve
-  the pre-release lowercase EasyDiff spelling as a legacy alias.
+  the pre-release lowercase Edifa spelling as a legacy alias.
 
   Update the accepted ADR, live ADR references, handler inventory,
   source call sites, user docs, tutorials, and regenerated notebooks.
@@ -430,8 +430,8 @@ code/EasyDiff/CIF reference.
 
   Add or update unit tests for:
 
-  - EasyDiff schema marker write/read validation.
-  - EasyDiff-over-CIF precedence for project, structures, experiments,
+  - Edifa schema marker write/read validation.
+  - Edifa-over-CIF precedence for project, structures, experiments,
     and analysis.
   - Beta-window CIF import aliases for each renamed field.
   - Public stale-name failures for removed Python names.
@@ -439,7 +439,7 @@ code/EasyDiff/CIF reference.
   - Fit-parameter and fit-parameter-correlation reference-field renames.
   - `param.url` generation and docs-anchor validation.
   - Report CIF continuing to use strict IUCr/pdCIF names.
-  - ZIP extraction and CLI help accepting EasyDiff project archives.
+  - ZIP extraction and CLI help accepting Edifa project archives.
 
   Add integration/script coverage for save/load round trips, tutorial
   projects, report export, and sequential/Bayesian sidecars where those
@@ -448,7 +448,7 @@ code/EasyDiff/CIF reference.
   Commit:
 
   ```text
-  Test EasyDiff project persistence
+  Test Edifa project persistence
   ```
 
 - [x] P2.2 - Run structure and formatting checks.
@@ -464,7 +464,7 @@ code/EasyDiff/CIF reference.
   Commit:
 
   ```text
-  Apply EasyDiff verification formatting
+  Apply Edifa verification formatting
   ```
 
 - [x] P2.3 - Run static checks.
@@ -515,13 +515,13 @@ code/EasyDiff/CIF reference.
 Title:
 
 ```text
-Add EasyDiff project persistence
+Add Edifa project persistence
 ```
 
 Description:
 
 ```text
-Save EasyDiffraction projects in the new EasyDiff format while keeping
+Save EasyDiffraction projects in the new Edifa format while keeping
 report CIF output strict for publication and exchange. The change makes
 saved project files easier to read and edit, clarifies project metadata
 and linked-structure names, and gives clear migration errors for older

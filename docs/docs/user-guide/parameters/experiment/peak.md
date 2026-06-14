@@ -9,8 +9,8 @@
 | Access                               | Source                        |
 | ------------------------------------ | ----------------------------- |
 | peak.broad_gauss_u                   | [code][0]{:.label-cif}        |
-| \_peak.broad_gauss_u                 | [EasyDiff][0]{:.label-cif}    |
-| \_easydiffraction_peak.broad_gauss_u | [easydiffCIF][0]{:.label-cif} |
+| \_peak.broad_gauss_u                 | [Edifa][0]{:.label-cif}    |
+| \_easydiffraction_peak.broad_gauss_u | [edifaCIF][0]{:.label-cif} |
 
 Gaussian broadening from sample size and resolution.
 
@@ -19,8 +19,8 @@ Gaussian broadening from sample size and resolution.
 | Access                               | Source                        |
 | ------------------------------------ | ----------------------------- |
 | peak.broad_gauss_v                   | [code][0]{:.label-cif}        |
-| \_peak.broad_gauss_v                 | [EasyDiff][0]{:.label-cif}    |
-| \_easydiffraction_peak.broad_gauss_v | [easydiffCIF][0]{:.label-cif} |
+| \_peak.broad_gauss_v                 | [Edifa][0]{:.label-cif}    |
+| \_easydiffraction_peak.broad_gauss_v | [edifaCIF][0]{:.label-cif} |
 
 Gaussian broadening instrumental contribution.
 
@@ -29,8 +29,8 @@ Gaussian broadening instrumental contribution.
 | Access                               | Source                        |
 | ------------------------------------ | ----------------------------- |
 | peak.broad_gauss_w                   | [code][0]{:.label-cif}        |
-| \_peak.broad_gauss_w                 | [EasyDiff][0]{:.label-cif}    |
-| \_easydiffraction_peak.broad_gauss_w | [easydiffCIF][0]{:.label-cif} |
+| \_peak.broad_gauss_w                 | [Edifa][0]{:.label-cif}    |
+| \_easydiffraction_peak.broad_gauss_w | [edifaCIF][0]{:.label-cif} |
 
 Gaussian broadening instrumental contribution.
 
@@ -39,8 +39,8 @@ Gaussian broadening instrumental contribution.
 | Access                                 | Source                        |
 | -------------------------------------- | ----------------------------- |
 | peak.broad_lorentz_x                   | [code][0]{:.label-cif}        |
-| \_peak.broad_lorentz_x                 | [EasyDiff][0]{:.label-cif}    |
-| \_easydiffraction_peak.broad_lorentz_x | [easydiffCIF][0]{:.label-cif} |
+| \_peak.broad_lorentz_x                 | [Edifa][0]{:.label-cif}    |
+| \_easydiffraction_peak.broad_lorentz_x | [edifaCIF][0]{:.label-cif} |
 
 Lorentzian broadening from sample strain effects.
 
@@ -49,8 +49,8 @@ Lorentzian broadening from sample strain effects.
 | Access                                 | Source                        |
 | -------------------------------------- | ----------------------------- |
 | peak.broad_lorentz_y                   | [code][0]{:.label-cif}        |
-| \_peak.broad_lorentz_y                 | [EasyDiff][0]{:.label-cif}    |
-| \_easydiffraction_peak.broad_lorentz_y | [easydiffCIF][0]{:.label-cif} |
+| \_peak.broad_lorentz_y                 | [Edifa][0]{:.label-cif}    |
+| \_easydiffraction_peak.broad_lorentz_y | [edifaCIF][0]{:.label-cif} |
 
 Lorentzian broadening from microstructural defects.
 
@@ -63,8 +63,8 @@ Lorentzian broadening from microstructural defects.
 | Access                               | Source                        |
 | ------------------------------------ | ----------------------------- |
 | peak.broad_gauss_sigma_0             | [code][0]{:.label-cif}        |
-| \_peak.broad_gauss_sigma_0           | [EasyDiff][0]{:.label-cif}    |
-| \_easydiffraction_peak.gauss_sigma_0 | [easydiffCIF][0]{:.label-cif} |
+| \_peak.broad_gauss_sigma_0           | [Edifa][0]{:.label-cif}    |
+| \_easydiffraction_peak.gauss_sigma_0 | [edifaCIF][0]{:.label-cif} |
 
 Gaussian broadening (instrumental resolution).
 
@@ -73,8 +73,8 @@ Gaussian broadening (instrumental resolution).
 | Access                               | Source                        |
 | ------------------------------------ | ----------------------------- |
 | peak.broad_gauss_sigma_1             | [code][0]{:.label-cif}        |
-| \_peak.broad_gauss_sigma_1           | [EasyDiff][0]{:.label-cif}    |
-| \_easydiffraction_peak.gauss_sigma_1 | [easydiffCIF][0]{:.label-cif} |
+| \_peak.broad_gauss_sigma_1           | [Edifa][0]{:.label-cif}    |
+| \_easydiffraction_peak.gauss_sigma_1 | [edifaCIF][0]{:.label-cif} |
 
 Gaussian broadening (dependent on d-spacing).
 
@@ -83,8 +83,8 @@ Gaussian broadening (dependent on d-spacing).
 | Access                               | Source                        |
 | ------------------------------------ | ----------------------------- |
 | peak.broad_gauss_sigma_2             | [code][0]{:.label-cif}        |
-| \_peak.broad_gauss_sigma_2           | [EasyDiff][0]{:.label-cif}    |
-| \_easydiffraction_peak.gauss_sigma_2 | [easydiffCIF][0]{:.label-cif} |
+| \_peak.broad_gauss_sigma_2           | [Edifa][0]{:.label-cif}    |
+| \_easydiffraction_peak.gauss_sigma_2 | [edifaCIF][0]{:.label-cif} |
 
 Gaussian broadening (instrument-dependent term).
 
@@ -93,8 +93,8 @@ Gaussian broadening (instrument-dependent term).
 | Access                                 | Source                        |
 | -------------------------------------- | ----------------------------- |
 | peak.broad_lorentz_gamma_0             | [code][0]{:.label-cif}        |
-| \_peak.broad_lorentz_gamma_0           | [EasyDiff][0]{:.label-cif}    |
-| \_easydiffraction_peak.lorentz_gamma_0 | [easydiffCIF][0]{:.label-cif} |
+| \_peak.broad_lorentz_gamma_0           | [Edifa][0]{:.label-cif}    |
+| \_easydiffraction_peak.lorentz_gamma_0 | [edifaCIF][0]{:.label-cif} |
 
 Lorentzian broadening (microstrain effects).
 
@@ -103,8 +103,8 @@ Lorentzian broadening (microstrain effects).
 | Access                                 | Source                        |
 | -------------------------------------- | ----------------------------- |
 | peak.broad_lorentz_gamma_1             | [code][0]{:.label-cif}        |
-| \_peak.broad_lorentz_gamma_1           | [EasyDiff][0]{:.label-cif}    |
-| \_easydiffraction_peak.lorentz_gamma_1 | [easydiffCIF][0]{:.label-cif} |
+| \_peak.broad_lorentz_gamma_1           | [Edifa][0]{:.label-cif}    |
+| \_easydiffraction_peak.lorentz_gamma_1 | [edifaCIF][0]{:.label-cif} |
 
 Lorentzian broadening (dependent on d-spacing).
 
@@ -113,8 +113,8 @@ Lorentzian broadening (dependent on d-spacing).
 | Access                                 | Source                        |
 | -------------------------------------- | ----------------------------- |
 | peak.broad_lorentz_gamma_2             | [code][0]{:.label-cif}        |
-| \_peak.broad_lorentz_gamma_2           | [EasyDiff][0]{:.label-cif}    |
-| \_easydiffraction_peak.lorentz_gamma_2 | [easydiffCIF][0]{:.label-cif} |
+| \_peak.broad_lorentz_gamma_2           | [Edifa][0]{:.label-cif}    |
+| \_easydiffraction_peak.lorentz_gamma_2 | [edifaCIF][0]{:.label-cif} |
 
 Lorentzian broadening (instrument-dependent term).
 
@@ -123,8 +123,8 @@ Lorentzian broadening (instrument-dependent term).
 | Access                              | Source                        |
 | ----------------------------------- | ----------------------------- |
 | peak.exp_decay_beta_0               | [code][0]{:.label-cif}        |
-| \_peak.exp_decay_beta_0             | [EasyDiff][0]{:.label-cif}    |
-| \_easydiffraction_peak.decay_beta_0 | [easydiffCIF][0]{:.label-cif} |
+| \_peak.exp_decay_beta_0             | [Edifa][0]{:.label-cif}    |
+| \_easydiffraction_peak.decay_beta_0 | [edifaCIF][0]{:.label-cif} |
 
 Back-to-back exponential decay β₀.
 
@@ -133,8 +133,8 @@ Back-to-back exponential decay β₀.
 | Access                              | Source                        |
 | ----------------------------------- | ----------------------------- |
 | peak.exp_decay_beta_1               | [code][0]{:.label-cif}        |
-| \_peak.exp_decay_beta_1             | [EasyDiff][0]{:.label-cif}    |
-| \_easydiffraction_peak.decay_beta_1 | [easydiffCIF][0]{:.label-cif} |
+| \_peak.exp_decay_beta_1             | [Edifa][0]{:.label-cif}    |
+| \_easydiffraction_peak.decay_beta_1 | [edifaCIF][0]{:.label-cif} |
 
 Back-to-back exponential decay β₁.
 
@@ -143,8 +143,8 @@ Back-to-back exponential decay β₁.
 | Access                              | Source                        |
 | ----------------------------------- | ----------------------------- |
 | peak.exp_rise_alpha_0               | [code][0]{:.label-cif}        |
-| \_peak.exp_rise_alpha_0             | [EasyDiff][0]{:.label-cif}    |
-| \_easydiffraction_peak.rise_alpha_0 | [easydiffCIF][0]{:.label-cif} |
+| \_peak.exp_rise_alpha_0             | [Edifa][0]{:.label-cif}    |
+| \_easydiffraction_peak.rise_alpha_0 | [edifaCIF][0]{:.label-cif} |
 
 Back-to-back exponential rise α₀.
 
@@ -153,8 +153,8 @@ Back-to-back exponential rise α₀.
 | Access                              | Source                        |
 | ----------------------------------- | ----------------------------- |
 | peak.exp_rise_alpha_1               | [code][0]{:.label-cif}        |
-| \_peak.exp_rise_alpha_1             | [EasyDiff][0]{:.label-cif}    |
-| \_easydiffraction_peak.rise_alpha_1 | [easydiffCIF][0]{:.label-cif} |
+| \_peak.exp_rise_alpha_1             | [Edifa][0]{:.label-cif}    |
+| \_easydiffraction_peak.rise_alpha_1 | [edifaCIF][0]{:.label-cif} |
 
 Back-to-back exponential rise α₁.
 
@@ -168,8 +168,8 @@ Back-to-back exponential rise α₁.
 | Access                          | Source                        |
 | ------------------------------- | ----------------------------- |
 | peak.cutoff_q                   | [code][0]{:.label-cif}        |
-| \_peak.cutoff_q                 | [EasyDiff][0]{:.label-cif}    |
-| \_easydiffraction_peak.cutoff_q | [easydiffCIF][0]{:.label-cif} |
+| \_peak.cutoff_q                 | [Edifa][0]{:.label-cif}    |
+| \_easydiffraction_peak.cutoff_q | [edifaCIF][0]{:.label-cif} |
 
 Q-value cutoff for Fourier transform.
 
@@ -178,8 +178,8 @@ Q-value cutoff for Fourier transform.
 | Access                         | Source                        |
 | ------------------------------ | ----------------------------- |
 | peak.broad_q                   | [code][0]{:.label-cif}        |
-| \_peak.broad_q                 | [EasyDiff][0]{:.label-cif}    |
-| \_easydiffraction_peak.broad_q | [easydiffCIF][0]{:.label-cif} |
+| \_peak.broad_q                 | [Edifa][0]{:.label-cif}    |
+| \_easydiffraction_peak.broad_q | [edifaCIF][0]{:.label-cif} |
 
 Quadratic peak broadening from thermal uncertainty.
 
@@ -188,8 +188,8 @@ Quadratic peak broadening from thermal uncertainty.
 | Access                               | Source                        |
 | ------------------------------------ | ----------------------------- |
 | peak.sharp_delta_1                   | [code][0]{:.label-cif}        |
-| \_peak.sharp_delta_1                 | [EasyDiff][0]{:.label-cif}    |
-| \_easydiffraction_peak.sharp_delta_1 | [easydiffCIF][0]{:.label-cif} |
+| \_peak.sharp_delta_1                 | [Edifa][0]{:.label-cif}    |
+| \_easydiffraction_peak.sharp_delta_1 | [edifaCIF][0]{:.label-cif} |
 
 Peak sharpening coefficient (1/r dependence).
 
@@ -198,8 +198,8 @@ Peak sharpening coefficient (1/r dependence).
 | Access                               | Source                        |
 | ------------------------------------ | ----------------------------- |
 | peak.sharp_delta_2                   | [code][0]{:.label-cif}        |
-| \_peak.sharp_delta_2                 | [EasyDiff][0]{:.label-cif}    |
-| \_easydiffraction_peak.sharp_delta_2 | [easydiffCIF][0]{:.label-cif} |
+| \_peak.sharp_delta_2                 | [Edifa][0]{:.label-cif}    |
+| \_easydiffraction_peak.sharp_delta_2 | [edifaCIF][0]{:.label-cif} |
 
 Peak sharpening coefficient (1/r² dependence).
 
@@ -208,8 +208,8 @@ Peak sharpening coefficient (1/r² dependence).
 | Access                        | Source                        |
 | ----------------------------- | ----------------------------- |
 | peak.damp_q                   | [code][0]{:.label-cif}        |
-| \_peak.damp_q                 | [EasyDiff][0]{:.label-cif}    |
-| \_easydiffraction_peak.damp_q | [easydiffCIF][0]{:.label-cif} |
+| \_peak.damp_q                 | [Edifa][0]{:.label-cif}    |
+| \_easydiffraction_peak.damp_q | [edifaCIF][0]{:.label-cif} |
 
 Q-resolution damping for high-r PDF peak amplitude.
 
@@ -218,12 +218,12 @@ Q-resolution damping for high-r PDF peak amplitude.
 | Access                                        | Source                        |
 | --------------------------------------------- | ----------------------------- |
 | peak.damp_particle_diameter                   | [code][0]{:.label-cif}        |
-| \_peak.damp_particle_diameter                 | [EasyDiff][0]{:.label-cif}    |
-| \_easydiffraction_peak.damp_particle_diameter | [easydiffCIF][0]{:.label-cif} |
+| \_peak.damp_particle_diameter                 | [Edifa][0]{:.label-cif}    |
+| \_easydiffraction_peak.damp_particle_diameter | [edifaCIF][0]{:.label-cif} |
 
 Particle diameter for spherical envelope damping correction.
 
-## Additional EasyDiff Keys
+## Additional Edifa Keys
 
 [pd-neut-cwl][3]{:.label-experiment}
 [pd-neut-tof][3]{:.label-experiment} [pd-xray][3]{:.label-experiment}
@@ -235,7 +235,7 @@ Particle diameter for spherical envelope damping correction.
 
 | Access              | Source                     |
 | ------------------- | -------------------------- |
-| \_peak.asym_empir_1 | [EasyDiff][0]{:.label-cif} |
+| \_peak.asym_empir_1 | [Edifa][0]{:.label-cif} |
 
 Empirical asymmetry coefficient p1.
 
@@ -243,7 +243,7 @@ Empirical asymmetry coefficient p1.
 
 | Access              | Source                     |
 | ------------------- | -------------------------- |
-| \_peak.asym_empir_2 | [EasyDiff][0]{:.label-cif} |
+| \_peak.asym_empir_2 | [Edifa][0]{:.label-cif} |
 
 Empirical asymmetry coefficient p2.
 
@@ -251,7 +251,7 @@ Empirical asymmetry coefficient p2.
 
 | Access              | Source                     |
 | ------------------- | -------------------------- |
-| \_peak.asym_empir_3 | [EasyDiff][0]{:.label-cif} |
+| \_peak.asym_empir_3 | [Edifa][0]{:.label-cif} |
 
 Empirical asymmetry coefficient p3.
 
@@ -259,7 +259,7 @@ Empirical asymmetry coefficient p3.
 
 | Access              | Source                     |
 | ------------------- | -------------------------- |
-| \_peak.asym_empir_4 | [EasyDiff][0]{:.label-cif} |
+| \_peak.asym_empir_4 | [Edifa][0]{:.label-cif} |
 
 Empirical asymmetry coefficient p4.
 
@@ -267,7 +267,7 @@ Empirical asymmetry coefficient p4.
 
 | Access            | Source                     |
 | ----------------- | -------------------------- |
-| \_peak.asym_fcj_1 | [EasyDiff][0]{:.label-cif} |
+| \_peak.asym_fcj_1 | [Edifa][0]{:.label-cif} |
 
 Finger-Cox-Jephcoat asymmetry parameter 1.
 
@@ -275,7 +275,7 @@ Finger-Cox-Jephcoat asymmetry parameter 1.
 
 | Access            | Source                     |
 | ----------------- | -------------------------- |
-| \_peak.asym_fcj_2 | [EasyDiff][0]{:.label-cif} |
+| \_peak.asym_fcj_2 | [Edifa][0]{:.label-cif} |
 
 Finger-Cox-Jephcoat asymmetry parameter 2.
 
@@ -283,7 +283,7 @@ Finger-Cox-Jephcoat asymmetry parameter 2.
 
 | Access                    | Source                     |
 | ------------------------- | -------------------------- |
-| \_peak.dexp_decay_beta_00 | [EasyDiff][0]{:.label-cif} |
+| \_peak.dexp_decay_beta_00 | [Edifa][0]{:.label-cif} |
 
 Double-exp first-regime decay β₀₀.
 
@@ -291,7 +291,7 @@ Double-exp first-regime decay β₀₀.
 
 | Access                    | Source                     |
 | ------------------------- | -------------------------- |
-| \_peak.dexp_decay_beta_01 | [EasyDiff][0]{:.label-cif} |
+| \_peak.dexp_decay_beta_01 | [Edifa][0]{:.label-cif} |
 
 Double-exp first-regime decay β₀₁.
 
@@ -299,7 +299,7 @@ Double-exp first-regime decay β₀₁.
 
 | Access                    | Source                     |
 | ------------------------- | -------------------------- |
-| \_peak.dexp_decay_beta_10 | [EasyDiff][0]{:.label-cif} |
+| \_peak.dexp_decay_beta_10 | [Edifa][0]{:.label-cif} |
 
 Double-exp second-regime decay β₁₀.
 
@@ -307,7 +307,7 @@ Double-exp second-regime decay β₁₀.
 
 | Access                   | Source                     |
 | ------------------------ | -------------------------- |
-| \_peak.dexp_rise_alpha_1 | [EasyDiff][0]{:.label-cif} |
+| \_peak.dexp_rise_alpha_1 | [Edifa][0]{:.label-cif} |
 
 Double-exp rise parameter α₁.
 
@@ -315,7 +315,7 @@ Double-exp rise parameter α₁.
 
 | Access                   | Source                     |
 | ------------------------ | -------------------------- |
-| \_peak.dexp_rise_alpha_2 | [EasyDiff][0]{:.label-cif} |
+| \_peak.dexp_rise_alpha_2 | [Edifa][0]{:.label-cif} |
 
 Double-exp rise parameter α₂.
 
@@ -323,7 +323,7 @@ Double-exp rise parameter α₂.
 
 | Access                  | Source                     |
 | ----------------------- | -------------------------- |
-| \_peak.dexp_switch_r_01 | [EasyDiff][0]{:.label-cif} |
+| \_peak.dexp_switch_r_01 | [Edifa][0]{:.label-cif} |
 
 Double-exp switching function r₀₁.
 
@@ -331,7 +331,7 @@ Double-exp switching function r₀₁.
 
 | Access                  | Source                     |
 | ----------------------- | -------------------------- |
-| \_peak.dexp_switch_r_02 | [EasyDiff][0]{:.label-cif} |
+| \_peak.dexp_switch_r_02 | [Edifa][0]{:.label-cif} |
 
 Double-exp switching function r₀₂.
 
@@ -339,7 +339,7 @@ Double-exp switching function r₀₂.
 
 | Access                  | Source                     |
 | ----------------------- | -------------------------- |
-| \_peak.dexp_switch_r_03 | [EasyDiff][0]{:.label-cif} |
+| \_peak.dexp_switch_r_03 | [Edifa][0]{:.label-cif} |
 
 Double-exp switching function r₀₃.
 
@@ -347,7 +347,7 @@ Double-exp switching function r₀₃.
 
 | Access      | Source                     |
 | ----------- | -------------------------- |
-| \_peak.type | [EasyDiff][0]{:.label-cif} |
+| \_peak.type | [Edifa][0]{:.label-cif} |
 
 Active peak profile type tag. Supported values include
 `cwl-pseudo-voigt`, `cwl-pseudo-voigt-empirical-asymmetry`,

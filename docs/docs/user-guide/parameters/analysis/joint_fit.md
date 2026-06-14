@@ -4,7 +4,7 @@
 
 | Access                    | Source                     |
 | ------------------------- | -------------------------- |
-| \_joint_fit.experiment_id | [EasyDiff][0]{:.label-cif} |
+| \_joint_fit.experiment_id | [Edifa][0]{:.label-cif} |
 
 Experiment identifier.
 
@@ -12,7 +12,7 @@ Experiment identifier.
 
 | Access             | Source                     |
 | ------------------ | -------------------------- |
-| \_joint_fit.weight | [EasyDiff][0]{:.label-cif} |
+| \_joint_fit.weight | [Edifa][0]{:.label-cif} |
 
 Weight factor.
 

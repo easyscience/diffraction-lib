@@ -4,7 +4,7 @@
 
 | Access                    | Source                     |
 | ------------------------- | -------------------------- |
-| \_fit_result.R_factor_all | [EasyDiff][0]{:.label-cif} |
+| \_fit_result.R_factor_all | [Edifa][0]{:.label-cif} |
 
 R factor for all observed data in the deterministic fit.
 
@@ -12,7 +12,7 @@ R factor for all observed data in the deterministic fit.
 
 | Access                   | Source                     |
 | ------------------------ | -------------------------- |
-| \_fit_result.R_factor_gt | [EasyDiff][0]{:.label-cif} |
+| \_fit_result.R_factor_gt | [Edifa][0]{:.label-cif} |
 
 R factor for observations above the threshold.
 
@@ -20,7 +20,7 @@ R factor for observations above the threshold.
 
 | Access                            | Source                     |
 | --------------------------------- | -------------------------- |
-| \_fit_result.acceptance_rate_mean | [EasyDiff][0]{:.label-cif} |
+| \_fit_result.acceptance_rate_mean | [Edifa][0]{:.label-cif} |
 
 Mean sampler acceptance rate.
 
@@ -28,7 +28,7 @@ Mean sampler acceptance rate.
 
 | Access                           | Source                     |
 | -------------------------------- | -------------------------- |
-| \_fit_result.background_function | [EasyDiff][0]{:.label-cif} |
+| \_fit_result.background_function | [Edifa][0]{:.label-cif} |
 
 Active background function names for the deterministic fit.
 
@@ -36,7 +36,7 @@ Active background function names for the deterministic fit.
 
 | Access                          | Source                     |
 | ------------------------------- | -------------------------- |
-| \_fit_result.best_log_posterior | [EasyDiff][0]{:.label-cif} |
+| \_fit_result.best_log_posterior | [Edifa][0]{:.label-cif} |
 
 Best log-posterior value found.
 
@@ -44,7 +44,7 @@ Best log-posterior value found.
 
 | Access                             | Source                     |
 | ---------------------------------- | -------------------------- |
-| \_fit_result.correlation_available | [EasyDiff][0]{:.label-cif} |
+| \_fit_result.correlation_available | [Edifa][0]{:.label-cif} |
 
 Whether correlations were available for the persisted deterministic fit.
 
@@ -52,7 +52,7 @@ Whether correlations were available for the persisted deterministic fit.
 
 | Access                            | Source                     |
 | --------------------------------- | -------------------------- |
-| \_fit_result.covariance_available | [EasyDiff][0]{:.label-cif} |
+| \_fit_result.covariance_available | [Edifa][0]{:.label-cif} |
 
 Whether covariance was available for the persisted deterministic fit.
 
@@ -60,7 +60,7 @@ Whether covariance was available for the persisted deterministic fit.
 
 | Access                               | Source                     |
 | ------------------------------------ | -------------------------- |
-| \_fit_result.credible_interval_inner | [EasyDiff][0]{:.label-cif} |
+| \_fit_result.credible_interval_inner | [Edifa][0]{:.label-cif} |
 
 Inner credible-interval level used in summaries.
 
@@ -68,7 +68,7 @@ Inner credible-interval level used in summaries.
 
 | Access                               | Source                     |
 | ------------------------------------ | -------------------------- |
-| \_fit_result.credible_interval_outer | [EasyDiff][0]{:.label-cif} |
+| \_fit_result.credible_interval_outer | [Edifa][0]{:.label-cif} |
 
 Outer credible-interval level used in summaries.
 
@@ -76,7 +76,7 @@ Outer credible-interval level used in summaries.
 
 | Access                          | Source                     |
 | ------------------------------- | -------------------------- |
-| \_fit_result.degrees_of_freedom | [EasyDiff][0]{:.label-cif} |
+| \_fit_result.degrees_of_freedom | [Edifa][0]{:.label-cif} |
 
 Degrees of freedom for the persisted deterministic fit.
 
@@ -84,7 +84,7 @@ Degrees of freedom for the persisted deterministic fit.
 
 | Access                                 | Source                     |
 | -------------------------------------- | -------------------------- |
-| \_fit_result.effective_sample_size_min | [EasyDiff][0]{:.label-cif} |
+| \_fit_result.effective_sample_size_min | [Edifa][0]{:.label-cif} |
 
 Minimum bulk effective sample size.
 
@@ -92,7 +92,7 @@ Minimum bulk effective sample size.
 
 | Access                   | Source                     |
 | ------------------------ | -------------------------- |
-| \_fit_result.exit_reason | [EasyDiff][0]{:.label-cif} |
+| \_fit_result.exit_reason | [Edifa][0]{:.label-cif} |
 
 Backend exit reason for the persisted deterministic fit.
 
@@ -100,7 +100,7 @@ Backend exit reason for the persisted deterministic fit.
 
 | Access                    | Source                     |
 | ------------------------- | -------------------------- |
-| \_fit_result.fitting_time | [EasyDiff][0]{:.label-cif} |
+| \_fit_result.fitting_time | [Edifa][0]{:.label-cif} |
 
 Fitting time in seconds for the latest persisted projection.
 
@@ -108,7 +108,7 @@ Fitting time in seconds for the latest persisted projection.
 
 | Access                        | Source                     |
 | ----------------------------- | -------------------------- |
-| \_fit_result.gelman_rubin_max | [EasyDiff][0]{:.label-cif} |
+| \_fit_result.gelman_rubin_max | [Edifa][0]{:.label-cif} |
 
 Maximum rank-normalized split R-hat.
 
@@ -116,7 +116,7 @@ Maximum rank-normalized split R-hat.
 
 | Access                  | Source                     |
 | ----------------------- | -------------------------- |
-| \_fit_result.iterations | [EasyDiff][0]{:.label-cif} |
+| \_fit_result.iterations | [Edifa][0]{:.label-cif} |
 
 Iteration count for the latest persisted fit-result projection.
 
@@ -124,7 +124,7 @@ Iteration count for the latest persisted fit-result projection.
 
 | Access               | Source                     |
 | -------------------- | -------------------------- |
-| \_fit_result.message | [EasyDiff][0]{:.label-cif} |
+| \_fit_result.message | [Edifa][0]{:.label-cif} |
 
 Status message for the latest persisted fit-result projection.
 
@@ -132,7 +132,7 @@ Status message for the latest persisted fit-result projection.
 
 | Access                     | Source                     |
 | -------------------------- | -------------------------- |
-| \_fit_result.n_data_points | [EasyDiff][0]{:.label-cif} |
+| \_fit_result.n_data_points | [Edifa][0]{:.label-cif} |
 
 Number of data points used in the persisted deterministic fit.
 
@@ -140,7 +140,7 @@ Number of data points used in the persisted deterministic fit.
 
 | Access                         | Source                     |
 | ------------------------------ | -------------------------- |
-| \_fit_result.n_free_parameters | [EasyDiff][0]{:.label-cif} |
+| \_fit_result.n_free_parameters | [Edifa][0]{:.label-cif} |
 
 Number of free parameters in the persisted deterministic fit.
 
@@ -148,7 +148,7 @@ Number of free parameters in the persisted deterministic fit.
 
 | Access                    | Source                     |
 | ------------------------- | -------------------------- |
-| \_fit_result.n_parameters | [EasyDiff][0]{:.label-cif} |
+| \_fit_result.n_parameters | [Edifa][0]{:.label-cif} |
 
 Number of parameters considered in the persisted deterministic fit.
 
@@ -156,7 +156,7 @@ Number of parameters considered in the persisted deterministic fit.
 
 | Access                          | Source                     |
 | ------------------------------- | -------------------------- |
-| \_fit_result.number_constraints | [EasyDiff][0]{:.label-cif} |
+| \_fit_result.number_constraints | [Edifa][0]{:.label-cif} |
 
 Number of constraints used in the deterministic fit.
 
@@ -164,7 +164,7 @@ Number of constraints used in the deterministic fit.
 
 | Access                        | Source                     |
 | ----------------------------- | -------------------------- |
-| \_fit_result.number_reflns_gt | [EasyDiff][0]{:.label-cif} |
+| \_fit_result.number_reflns_gt | [Edifa][0]{:.label-cif} |
 
 Number of reflections above the observed threshold.
 
@@ -172,7 +172,7 @@ Number of reflections above the observed threshold.
 
 | Access                           | Source                     |
 | -------------------------------- | -------------------------- |
-| \_fit_result.number_reflns_total | [EasyDiff][0]{:.label-cif} |
+| \_fit_result.number_reflns_total | [Edifa][0]{:.label-cif} |
 
 Total number of reflections represented in the fit.
 
@@ -180,7 +180,7 @@ Total number of reflections represented in the fit.
 
 | Access                         | Source                     |
 | ------------------------------ | -------------------------- |
-| \_fit_result.number_restraints | [EasyDiff][0]{:.label-cif} |
+| \_fit_result.number_restraints | [Edifa][0]{:.label-cif} |
 
 Number of restraints used in the deterministic fit.
 
@@ -188,7 +188,7 @@ Number of restraints used in the deterministic fit.
 
 | Access                      | Source                     |
 | --------------------------- | -------------------------- |
-| \_fit_result.objective_name | [EasyDiff][0]{:.label-cif} |
+| \_fit_result.objective_name | [Edifa][0]{:.label-cif} |
 
 Objective function name for the persisted deterministic fit.
 
@@ -196,7 +196,7 @@ Objective function name for the persisted deterministic fit.
 
 | Access                       | Source                     |
 | ---------------------------- | -------------------------- |
-| \_fit_result.objective_value | [EasyDiff][0]{:.label-cif} |
+| \_fit_result.objective_value | [Edifa][0]{:.label-cif} |
 
 Objective value for the persisted deterministic fit.
 
@@ -204,7 +204,7 @@ Objective value for the persisted deterministic fit.
 
 | Access                           | Source                     |
 | -------------------------------- | -------------------------- |
-| \_fit_result.point_estimate_name | [EasyDiff][0]{:.label-cif} |
+| \_fit_result.point_estimate_name | [Edifa][0]{:.label-cif} |
 
 Committed sampled point estimate name.
 
@@ -212,7 +212,7 @@ Committed sampled point estimate name.
 
 | Access                     | Source                     |
 | -------------------------- | -------------------------- |
-| \_fit_result.prof_R_factor | [EasyDiff][0]{:.label-cif} |
+| \_fit_result.prof_R_factor | [Edifa][0]{:.label-cif} |
 
 Profile R factor for powder deterministic fits.
 
@@ -220,7 +220,7 @@ Profile R factor for powder deterministic fits.
 
 | Access                        | Source                     |
 | ----------------------------- | -------------------------- |
-| \_fit_result.prof_wR_expected | [EasyDiff][0]{:.label-cif} |
+| \_fit_result.prof_wR_expected | [Edifa][0]{:.label-cif} |
 
 Expected weighted profile R factor for powder fits.
 
@@ -228,7 +228,7 @@ Expected weighted profile R factor for powder fits.
 
 | Access                      | Source                     |
 | --------------------------- | -------------------------- |
-| \_fit_result.prof_wR_factor | [EasyDiff][0]{:.label-cif} |
+| \_fit_result.prof_wR_factor | [Edifa][0]{:.label-cif} |
 
 Weighted profile R factor for powder deterministic fits.
 
@@ -236,7 +236,7 @@ Weighted profile R factor for powder deterministic fits.
 
 | Access                        | Source                     |
 | ----------------------------- | -------------------------- |
-| \_fit_result.profile_function | [EasyDiff][0]{:.label-cif} |
+| \_fit_result.profile_function | [Edifa][0]{:.label-cif} |
 
 Active profile function names for the deterministic fit.
 
@@ -244,7 +244,7 @@ Active profile function names for the deterministic fit.
 
 | Access                          | Source                     |
 | ------------------------------- | -------------------------- |
-| \_fit_result.reduced_chi_square | [EasyDiff][0]{:.label-cif} |
+| \_fit_result.reduced_chi_square | [Edifa][0]{:.label-cif} |
 
 Reduced chi-square for the latest persisted projection.
 
@@ -252,7 +252,7 @@ Reduced chi-square for the latest persisted projection.
 
 | Access                            | Source                     |
 | --------------------------------- | -------------------------- |
-| \_fit_result.resolved_random_seed | [EasyDiff][0]{:.label-cif} |
+| \_fit_result.resolved_random_seed | [Edifa][0]{:.label-cif} |
 
 Runtime random seed used by the sampler.
 
@@ -260,7 +260,7 @@ Runtime random seed used by the sampler.
 
 | Access                   | Source                     |
 | ------------------------ | -------------------------- |
-| \_fit_result.result_kind | [EasyDiff][0]{:.label-cif} |
+| \_fit_result.result_kind | [Edifa][0]{:.label-cif} |
 
 Kind of the latest persisted fit-result projection. Supported values
 include `deterministic` and `bayesian`.
@@ -269,7 +269,7 @@ include `deterministic` and `bayesian`.
 
 | Access                         | Source                     |
 | ------------------------------ | -------------------------- |
-| \_fit_result.sampler_completed | [EasyDiff][0]{:.label-cif} |
+| \_fit_result.sampler_completed | [Edifa][0]{:.label-cif} |
 
 Whether the sampler completed and returned posterior data.
 
@@ -277,7 +277,7 @@ Whether the sampler completed and returned posterior data.
 
 | Access                         | Source                     |
 | ------------------------------ | -------------------------- |
-| \_fit_result.shift_over_su_max | [EasyDiff][0]{:.label-cif} |
+| \_fit_result.shift_over_su_max | [Edifa][0]{:.label-cif} |
 
 Maximum absolute parameter shift divided by s.u.
 
@@ -285,7 +285,7 @@ Maximum absolute parameter shift divided by s.u.
 
 | Access                          | Source                     |
 | ------------------------------- | -------------------------- |
-| \_fit_result.shift_over_su_mean | [EasyDiff][0]{:.label-cif} |
+| \_fit_result.shift_over_su_mean | [Edifa][0]{:.label-cif} |
 
 Mean absolute parameter shift divided by s.u.
 
@@ -293,7 +293,7 @@ Mean absolute parameter shift divided by s.u.
 
 | Access               | Source                     |
 | -------------------- | -------------------------- |
-| \_fit_result.success | [EasyDiff][0]{:.label-cif} |
+| \_fit_result.success | [Edifa][0]{:.label-cif} |
 
 Whether the latest persisted fit-result projection succeeded.
 
@@ -301,7 +301,7 @@ Whether the latest persisted fit-result projection succeeded.
 
 | Access                            | Source                     |
 | --------------------------------- | -------------------------- |
-| \_fit_result.threshold_expression | [EasyDiff][0]{:.label-cif} |
+| \_fit_result.threshold_expression | [Edifa][0]{:.label-cif} |
 
 Expression defining the observed-reflection threshold.
 
@@ -309,7 +309,7 @@ Expression defining the observed-reflection threshold.
 
 | Access                     | Source                     |
 | -------------------------- | -------------------------- |
-| \_fit_result.wR_factor_all | [EasyDiff][0]{:.label-cif} |
+| \_fit_result.wR_factor_all | [Edifa][0]{:.label-cif} |
 
 Weighted R factor for all observed data in the fit.
 
@@ -317,7 +317,7 @@ Weighted R factor for all observed data in the fit.
 
 | Access                    | Source                     |
 | ------------------------- | -------------------------- |
-| \_fit_result.wR_factor_gt | [EasyDiff][0]{:.label-cif} |
+| \_fit_result.wR_factor_gt | [Edifa][0]{:.label-cif} |
 
 Weighted R factor for observations above the threshold.
 

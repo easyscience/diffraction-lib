@@ -4,7 +4,7 @@
 
 | Access                       | Source                     |
 | ---------------------------- | -------------------------- |
-| \_structure_view.range_a_max | [EasyDiff][0]{:.label-cif} |
+| \_structure_view.range_a_max | [Edifa][0]{:.label-cif} |
 
 Upper fractional bound along the unit-cell a axis.
 
@@ -12,7 +12,7 @@ Upper fractional bound along the unit-cell a axis.
 
 | Access                       | Source                     |
 | ---------------------------- | -------------------------- |
-| \_structure_view.range_a_min | [EasyDiff][0]{:.label-cif} |
+| \_structure_view.range_a_min | [Edifa][0]{:.label-cif} |
 
 Lower fractional bound along the unit-cell a axis.
 
@@ -20,7 +20,7 @@ Lower fractional bound along the unit-cell a axis.
 
 | Access                       | Source                     |
 | ---------------------------- | -------------------------- |
-| \_structure_view.range_b_max | [EasyDiff][0]{:.label-cif} |
+| \_structure_view.range_b_max | [Edifa][0]{:.label-cif} |
 
 Upper fractional bound along the unit-cell b axis.
 
@@ -28,7 +28,7 @@ Upper fractional bound along the unit-cell b axis.
 
 | Access                       | Source                     |
 | ---------------------------- | -------------------------- |
-| \_structure_view.range_b_min | [EasyDiff][0]{:.label-cif} |
+| \_structure_view.range_b_min | [Edifa][0]{:.label-cif} |
 
 Lower fractional bound along the unit-cell b axis.
 
@@ -36,7 +36,7 @@ Lower fractional bound along the unit-cell b axis.
 
 | Access                       | Source                     |
 | ---------------------------- | -------------------------- |
-| \_structure_view.range_c_max | [EasyDiff][0]{:.label-cif} |
+| \_structure_view.range_c_max | [Edifa][0]{:.label-cif} |
 
 Upper fractional bound along the unit-cell c axis.
 
@@ -44,7 +44,7 @@ Upper fractional bound along the unit-cell c axis.
 
 | Access                       | Source                     |
 | ---------------------------- | -------------------------- |
-| \_structure_view.range_c_min | [EasyDiff][0]{:.label-cif} |
+| \_structure_view.range_c_min | [Edifa][0]{:.label-cif} |
 
 Lower fractional bound along the unit-cell c axis.
 
@@ -52,7 +52,7 @@ Lower fractional bound along the unit-cell c axis.
 
 | Access                       | Source                     |
 | ---------------------------- | -------------------------- |
-| \_structure_view.show_labels | [EasyDiff][0]{:.label-cif} |
+| \_structure_view.show_labels | [Edifa][0]{:.label-cif} |
 
 Show atom labels when the view opens.
 
@@ -60,7 +60,7 @@ Show atom labels when the view opens.
 
 | Access                        | Source                     |
 | ----------------------------- | -------------------------- |
-| \_structure_view.show_moments | [EasyDiff][0]{:.label-cif} |
+| \_structure_view.show_moments | [Edifa][0]{:.label-cif} |
 
 Show magnetic-moment arrows where the data exists.
 

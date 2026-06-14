@@ -9,7 +9,7 @@
 | Access                                                                                                                                  | Source                     |
 | --------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
 | cell.length_a                                                                                                                           | [code][0]{:.label-cif}     |
-| \_cell.length_a                                                                                                                         | [EasyDiff][0]{:.label-cif} |
+| \_cell.length_a                                                                                                                         | [Edifa][0]{:.label-cif} |
 | \_cell.length_a [:material-open-in-new:](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Icell.length_a.html 'IUCr definition') | [coreCIF][0]{:.label-cif}  |
 
 Length of the a axis of the unit cell.
@@ -19,7 +19,7 @@ Length of the a axis of the unit cell.
 | Access                                                                                                                                  | Source                     |
 | --------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
 | cell.length_b                                                                                                                           | [code][0]{:.label-cif}     |
-| \_cell.length_b                                                                                                                         | [EasyDiff][0]{:.label-cif} |
+| \_cell.length_b                                                                                                                         | [Edifa][0]{:.label-cif} |
 | \_cell.length_b [:material-open-in-new:](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Icell.length_b.html 'IUCr definition') | [coreCIF][0]{:.label-cif}  |
 
 Length of the b axis of the unit cell.
@@ -29,7 +29,7 @@ Length of the b axis of the unit cell.
 | Access                                                                                                                                  | Source                     |
 | --------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
 | cell.length_c                                                                                                                           | [code][0]{:.label-cif}     |
-| \_cell.length_c                                                                                                                         | [EasyDiff][0]{:.label-cif} |
+| \_cell.length_c                                                                                                                         | [Edifa][0]{:.label-cif} |
 | \_cell.length_c [:material-open-in-new:](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Icell.length_c.html 'IUCr definition') | [coreCIF][0]{:.label-cif}  |
 
 Length of the c axis of the unit cell.
@@ -39,7 +39,7 @@ Length of the c axis of the unit cell.
 | Access                                                                                                                                        | Source                     |
 | --------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
 | cell.angle_alpha                                                                                                                              | [code][0]{:.label-cif}     |
-| \_cell.angle_alpha                                                                                                                            | [EasyDiff][0]{:.label-cif} |
+| \_cell.angle_alpha                                                                                                                            | [Edifa][0]{:.label-cif} |
 | \_cell.angle_alpha [:material-open-in-new:](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Icell.angle_alpha.html 'IUCr definition') | [coreCIF][0]{:.label-cif}  |
 
 Angle between edges b and c.
@@ -49,7 +49,7 @@ Angle between edges b and c.
 | Access                                                                                                                                      | Source                     |
 | ------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
 | cell.angle_beta                                                                                                                             | [code][0]{:.label-cif}     |
-| \_cell.angle_beta                                                                                                                           | [EasyDiff][0]{:.label-cif} |
+| \_cell.angle_beta                                                                                                                           | [Edifa][0]{:.label-cif} |
 | \_cell.angle_beta [:material-open-in-new:](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Icell.angle_beta.html 'IUCr definition') | [coreCIF][0]{:.label-cif}  |
 
 Angle between edges a and c.
@@ -59,7 +59,7 @@ Angle between edges a and c.
 | Access                                                                                                                                        | Source                     |
 | --------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
 | cell.angle_gamma                                                                                                                              | [code][0]{:.label-cif}     |
-| \_cell.angle_gamma                                                                                                                            | [EasyDiff][0]{:.label-cif} |
+| \_cell.angle_gamma                                                                                                                            | [Edifa][0]{:.label-cif} |
 | \_cell.angle_gamma [:material-open-in-new:](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Icell.angle_gamma.html 'IUCr definition') | [coreCIF][0]{:.label-cif}  |
 
 Angle between edges a and b.

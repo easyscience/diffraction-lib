@@ -10,7 +10,7 @@
 
 | Access            | Source                     |
 | ----------------- | -------------------------- |
-| \_calculator.type | [EasyDiff][0]{:.label-cif} |
+| \_calculator.type | [Edifa][0]{:.label-cif} |
 
 Calculator backend type. Supported values include `cryspy`, `crysfml`,
 and `pdffit`. Available choices depend on the experiment type.

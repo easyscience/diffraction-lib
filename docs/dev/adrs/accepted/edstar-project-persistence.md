@@ -1,4 +1,4 @@
-# ADR: EasyDiff Project Persistence
+# ADR: Edifa Project Persistence
 
 **Status:** Accepted  
 **Date:** 2026-06-12
@@ -51,11 +51,11 @@ does not describe conflicting persistence layouts.
 - Amends
   [`python-cif-category-correspondence.md`](python-cif-category-correspondence.md)
   by replacing the scoped Python-to-`project.cif` correspondence with
-  Python-to-EasyDiff correspondence across project files.
+  Python-to-Edifa correspondence across project files.
 - Amends
   [`project-facade-and-persistence.md`](project-facade-and-persistence.md)
   by replacing `project.cif`, `structures/*.cif`, `experiments/*.cif`,
-  and `analysis/analysis.cif` with the `.easydiff` project layout.
+  and `analysis/analysis.cif` with the `.edifa` project layout.
 - Amends [`category-owner-sections.md`](category-owner-sections.md) only
   for file-format terminology. The distinction between real data blocks
   and singleton category-owner sections remains.
@@ -70,33 +70,33 @@ listed above.
 
 ## Decision
 
-Adopt **EasyDiff** as the internal EasyDiffraction project persistence
+Adopt **Edifa** as the internal EasyDiffraction project persistence
 format:
 
-- EasyDiff uses STAR syntax and leading-underscore data names.
-- EasyDiff is an EasyDiffraction-owned schema, not an IUCr dictionary
+- Edifa uses STAR syntax and leading-underscore data names.
+- Edifa is an EasyDiffraction-owned schema, not an IUCr dictionary
   claim.
-- EasyDiff project names optimize for Python/API discoverability,
+- Edifa project names optimize for Python/API discoverability,
   readable diffs, and safe hand editing.
 - IUCr CIF remains a strict import/export boundary format.
 
-Use **EasyDiff** as the human-facing schema/format name in prose,
+Use **Edifa** as the human-facing schema/format name in prose,
 headings, UI labels, and documentation tables. Use lowercase only for
-literal syntax: `.easydiff` for the file extension and `_easydiff.*` for
-the schema-marker category/items. Do not use `EASYDIFF` unless quoting
+literal syntax: `.edifa` for the file extension and `_edifa.*` for
+the schema-marker category/items. Do not use `EDIFA` unless quoting
 an external source that has already standardized that spelling.
 
-Persist project state using `.easydiff` files:
+Persist project state using `.edifa` files:
 
 ```text
 project_dir/
-|-- project.easydiff
+|-- project.edifa
 |-- structures/
-|   `-- <structure>.easydiff
+|   `-- <structure>.edifa
 |-- experiments/
-|   `-- <experiment>.easydiff
+|   `-- <experiment>.edifa
 |-- analysis/
-|   |-- analysis.easydiff
+|   |-- analysis.edifa
 |   |-- results.csv
 |   `-- results.h5
 `-- reports/
@@ -108,7 +108,7 @@ IUCr/pdCIF as far as the project can make it. Nonstandard report values
 continue to use `_easydiffraction_*` extension categories inside report
 CIF.
 
-EasyDiff governs the `*.easydiff` files only. Existing non-STAR analysis
+Edifa governs the `*.edifa` files only. Existing non-STAR analysis
 artifacts keep their current formats: `analysis/results.h5` remains the
 binary fit-result sidecar, and `analysis/results.csv` remains the
 tabular sequential-fit output used by plotting and user inspection.
@@ -131,7 +131,7 @@ strict CIF dictionary compatibility for files that intentionally use
 EasyDiffraction-owned names such as `_atom_site.adp_iso` and
 `_instrument.setup_wavelength`.
 
-**Use `.easydiff` for project persistence.** This is the selected
+**Use `.edifa` for project persistence.** This is the selected
 option. It makes the file type honest: STAR syntax, EasyDiffraction
 schema. The cost is a beta layout migration and documentation churn, but
 it prevents scientists and external tools from mistaking project state
@@ -146,19 +146,19 @@ prefix, which crystallographers may read as electron diffraction.
 **Use `.easydiffraction`.** This is rejected. It identifies the product
 but not the syntax, is long for files scientists may inspect and share,
 and would be awkward if EasyDiffraction later owns non-STAR project
-artifacts with the same brand name. `EasyDiff` already expands the
+artifacts with the same brand name. `Edifa` already expands the
 product association into the format name: EasyDiffraction-owned STAR.
 
 **Use `.edcif`.** This advertises EasyDiffraction ownership but still
 suggests CIF dictionary semantics. It is therefore less clear than
-`.easydiff`. It is also too easy to read as electron-diffraction CIF,
+`.edifa`. It is also too easy to read as electron-diffraction CIF,
 matching the existing `cif_ed` naming convention in the COMCIFS
 electron-diffraction dictionary work.
 
 **Use `.txt`.** This is rejected. Its one real advantage is that a
 desktop double-click opens it in any text editor with no file
 association — but that is a GUI-only benefit. In a terminal, notebook,
-or CLI workflow (`cat`, `less`, `vim`, `nano`, `code …`) an `.easydiff`
+or CLI workflow (`cat`, `less`, `vim`, `nano`, `code …`) an `.edifa`
 file opens identically regardless of suffix, so CLI users gain nothing
 from `.txt`. Against that, `.txt` loses everything the chosen extension
 provides: the project files get **no identity** (a directory of
@@ -179,7 +179,7 @@ openable in any editor without sacrificing identity.
 
 ## Naming Policy
 
-EasyDiff data names should follow the public EasyDiffraction model:
+Edifa data names should follow the public EasyDiffraction model:
 
 ```text
 _<category>.<field>
@@ -207,7 +207,7 @@ Three rules make these names deterministic across the inventory:
   `lorentz_gamma_0`, `rise_alpha_0`, `decay_beta_0`) while the public
   properties carry grouping prefixes (`broad_gauss_sigma_0`,
   `broad_lorentz_gamma_0`, `exp_rise_alpha_0`, `exp_decay_beta_0`) —
-  EasyDiff writes the public-property name. This is the point of the
+  Edifa writes the public-property name. This is the point of the
   format: a saved field matches the Python path a scientist types. The
   current bare CIF stem is preserved as a read alias.
 - **Loop (collection) categories use the singular row-category form of
@@ -293,42 +293,42 @@ Si Biso 0.5
 O  Uiso 0.0063
 ```
 
-Do not prefix internal EasyDiff categories with `_easydiffraction_` or
-`_easydiff_`. The `.easydiff` suffix and schema marker already identify
+Do not prefix internal Edifa categories with `_easydiffraction_` or
+`_edifa_`. The `.edifa` suffix and schema marker already identify
 the dialect.
 
 Use `_easydiffraction_*` for custom keys serialized into strict report
 CIF when a nonstandard extension must coexist with official IUCr tags.
-Do not use `_easydiff_*` in report CIFs. `_easydiff.*` is reserved for
-the EasyDiff schema marker in project files, while report CIF is an
+Do not use `_edifa_*` in report CIFs. `_edifa.*` is reserved for
+the Edifa schema marker in project files, while report CIF is an
 IUCr-facing export with EasyDiffraction extension categories. Keeping
 the prefixes separate means report-CIF extensions can remain stable even
-if the internal EasyDiff project schema changes.
+if the internal Edifa project schema changes.
 
-Each EasyDiff file should include a schema marker near the top:
+Each Edifa file should include a schema marker near the top:
 
 ```text
-_easydiff.schema_name EasyDiffraction
-_easydiff.schema_version 1
+_edifa.schema_name EasyDiffraction
+_edifa.schema_version 1
 ```
 
 Loaders must require `schema_name == 'EasyDiffraction'` when the marker
 is present. For `schema_version`, the v1 loader accepts `1`, rejects
 newer major versions with a clear error, and rejects missing markers in
-`.easydiff` project files. The marker is therefore a validation
+`.edifa` project files. The marker is therefore a validation
 boundary, not decorative metadata.
 
-**Plain-text guarantee (openability).** EasyDiff files are plain UTF-8
+**Plain-text guarantee (openability).** Edifa files are plain UTF-8
 STAR text with no binary content, so they open and hand-edit in any text
-editor. The `.easydiff` suffix is an honest _label_, not a barrier: even
+editor. The `.edifa` suffix is an honest _label_, not a barrier: even
 where the operating system has no default application registered for it,
 a user can always open the file with "Open With → any text editor" (or
 `cat`/`less`/`vim`/`nano`/`code` in a terminal). This is the deliberate
 answer to the "unknown extension" concern that would otherwise argue for
-a generic `.txt` (see §File Extension Alternatives): EasyDiff keeps the
+a generic `.txt` (see §File Extension Alternatives): Edifa keeps the
 universal openability of plain text while retaining a distinct,
 greppable identity. Editors may additionally be mapped to treat
-`*.easydiff` as CIF/STAR for syntax highlighting — something a generic
+`*.edifa` as CIF/STAR for syntax highlighting — something a generic
 `.txt` cannot provide per-file-type.
 
 ### Selector Validation Contract
@@ -347,7 +347,7 @@ selector, or let one side win. Examples:
 - `_background.type line_segment` with Chebyshev-only fields is invalid.
 - unknown selector values are invalid.
 
-EasyDiff v1 does not rename selector values, so it has no selector-value
+Edifa v1 does not rename selector values, so it has no selector-value
 legacy aliases. The `import_names`/read-alias mechanism covers data-name
 aliases only. If a future ADR renames a selector value, that ADR must
 also define where the value alias map lives, for example on the
@@ -361,7 +361,7 @@ cannot be resolved unambiguously, load rejects with a clear error.
 
 ### Free/Fixed Fit Flags
 
-EasyDiff keeps the accepted free/fixed parameter encoding from
+Edifa keeps the accepted free/fixed parameter encoding from
 [`free-flag-cif-encoding.md`](free-flag-cif-encoding.md):
 
 - fixed or constrained numeric parameters write as plain values;
@@ -369,7 +369,7 @@ EasyDiff keeps the accepted free/fixed parameter encoding from
   example `3.8909()` or `3.89(20)`;
 - user-constrained dependent parameters write without brackets.
 
-This remains valid because EasyDiff uses STAR value syntax. The schema
+This remains valid because Edifa uses STAR value syntax. The schema
 marker and renamed data names do not change the value-level round-trip
 contract.
 
@@ -377,7 +377,7 @@ contract.
 
 Project restore should accept:
 
-- the new `.easydiff` project layout;
+- the new `.edifa` project layout;
 - official CIF import tags where supported today;
 - known EasyDiffraction data-name read aliases in `CifHandler` import
   aliases.
@@ -390,24 +390,24 @@ is required.
 
 The loader follows a fixed contract:
 
-- **`.easydiff` takes precedence.** When a project directory contains
-  both `project.easydiff` and a legacy `project.cif`, the loader reads
-  `project.easydiff` and ignores `project.cif`, treating the `.cif` as a
+- **`.edifa` takes precedence.** When a project directory contains
+  both `project.edifa` and a legacy `project.cif`, the loader reads
+  `project.edifa` and ignores `project.cif`, treating the `.cif` as a
   stale pre-migration copy. It does not merge the two.
 - **Clear error for legacy-only projects.** A directory that contains
   only `project.cif` fails to load with an explicit migration error that
   names the file and tells the user to open it in a supporting version
-  and re-save as `.easydiff`. The loader never silently produces an
+  and re-save as `.edifa`. The loader never silently produces an
   empty or partial project.
-- **Clear error for missing EasyDiff metadata.** A project directory
-  with neither `project.easydiff` nor legacy `project.cif` fails with an
-  explicit message naming the required `project.easydiff` marker.
+- **Clear error for missing Edifa metadata.** A project directory
+  with neither `project.edifa` nor legacy `project.cif` fails with an
+  explicit message naming the required `project.edifa` marker.
 
 ## Handler Model
 
 The current `CifHandler.names` list is overloaded: the first entry is
 the default write tag, and the full list is also an import alias list.
-EasyDiff should make this explicit.
+Edifa should make this explicit.
 
 Proposed concept:
 
@@ -426,8 +426,8 @@ StarHandler(
 The exact class name can remain `CifHandler` during migration, but the
 responsibilities should be explicit:
 
-- `project_name`: EasyDiff write name.
-- `import_names`: accepted EasyDiff/CIF/legacy read aliases.
+- `project_name`: Edifa write name.
+- `import_names`: accepted Edifa/CIF/legacy read aliases.
 - `iucr_name`: single-field report-CIF name when a simple mapping
   exists.
 - category transformers: report-CIF reshaping when a field cannot map
@@ -449,7 +449,7 @@ responsibilities should be explicit:
 
 ### Trade-Offs
 
-- The saved project layout changes from `*.cif` to `*.easydiff`.
+- The saved project layout changes from `*.cif` to `*.edifa`.
 - Existing docs, tutorials, tests, ZIP project detection, and loaders
   need an explicit migration.
 - External tools that previously tried to read project `*.cif` files
@@ -503,7 +503,7 @@ Disadvantages:
 
 ### Option B: Selector Plus Generic Names
 
-This is the selected EasyDiff policy.
+This is the selected Edifa policy.
 
 ```text
 _background.type line_segment
@@ -572,7 +572,7 @@ Disadvantages:
 - It creates consistency rules between selector and body category.
 - It adds loader complexity and still harms API-to-file predictability.
 
-EasyDiff therefore uses Option B by default. Option C is allowed only
+Edifa therefore uses Option B by default. Option C is allowed only
 when selected implementations have genuinely different data shapes and
 the type-specific body names improve hand editing more than they harm
 consistency. ADPs are not such a case: `adp_iso` and `adp_ij` remain
@@ -593,7 +593,7 @@ descriptor in `src/easydiffraction`. Implementation must verify that
 claim with a generated inventory before changing write tags; any
 descriptor absent from this table is a migration blocker.
 
-| Area                                                              | Current EasyDiffraction names                                                                                                                                                                                                                                                                                                                                                          | Current project tags                                                                                                                                                                                                                                                                                    | Suggested EasyDiff tags                                                                                                                                                                                                                                                                                                                                       | Official/report CIF names                                                                                                    |
+| Area                                                              | Current EasyDiffraction names                                                                                                                                                                                                                                                                                                                                                          | Current project tags                                                                                                                                                                                                                                                                                    | Suggested Edifa tags                                                                                                                                                                                                                                                                                                                                       | Official/report CIF names                                                                                                    |
 | ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
 | `analysis.aliases`                                                | `label`, `param_unique_name`                                                                                                                                                                                                                                                                                                                                                           | `_alias.{label,param_unique_name}`                                                                                                                                                                                                                                                                      | `_alias.{id,parameter_unique_name}`                                                                                                                                                                                                                                                                                                                           |                                                                                                                              |
 | `analysis.constraints`                                            | `id`, `expression`                                                                                                                                                                                                                                                                                                                                                                     | `_constraint.{id,expression}`                                                                                                                                                                                                                                                                           | `_constraint.{id,expression}`                                                                                                                                                                                                                                                                                                                                 |                                                                                                                              |
@@ -675,7 +675,7 @@ reviewer does not "correct" them toward a different precedent.
   ignoring user input.
 - **`id` is the universal own-key.** `_atom_site.id` and `_alias.id`
   replace CIF's `label` so the rule "every row has an `id`; `_id`
-  columns point elsewhere" has no exceptions. EasyDiff already departs
+  columns point elsewhere" has no exceptions. Edifa already departs
   from strict CIF (e.g. `adp_iso` for `B_iso_or_equiv`), and report CIF
   still writes the official `_atom_site.label`, so compatibility is
   unaffected.
@@ -689,31 +689,31 @@ reviewer does not "correct" them toward a different precedent.
   (`_pd_meas_2theta_range_inc`); `step` is FullProf-internal only.
 - **`march_random_fract` is not IUCr `fract`.** IUCr
   `_pd_pref_orient_March_Dollase.fract` is the multi-direction
-  fractional contribution; EasyDiff's field is the random/untextured
+  fractional contribution; Edifa's field is the random/untextured
   fraction (cryspy `_texture_g_2`). Do not collapse them.
 - **Type-neutral ADPs are deliberate.** `adp_iso` / `adp_type` /
   `adp_11` stay generic because `adp_type` is co-persisted and
   load-validated, making the B↔U distinction lossless while keeping
   parameter identity stable across a type switch.
-- **Report-CIF casing.** EasyDiff lowercases for Python/STAR
+- **Report-CIF casing.** Edifa lowercases for Python/STAR
   friendliness, but the report writer emits IUCr canonical casing:
   `_refln.F_calc`, `_refln.F_squared_calc`, `_space_group.name_H-M_alt`.
   The uppercase forms are also accepted as read aliases.
 - **`coord_system_code` uses existing coordinate wording.** The value is
   still the International Tables coordinate-system qualifier, and report
   CIF still writes `_space_group.IT_coordinate_system_code`, but the
-  project-facing API and EasyDiff field use `coord_system_code`. `coord`
+  project-facing API and Edifa field use `coord_system_code`. `coord`
   is already used in EasyDiffraction's Wyckoff-coordinate vocabulary
   (`coord_code`, `coords_xyz`), while `it` is not otherwise used in
   project-facing parameter names.
 - **`_data` is intentional.** `experiment.data` is already a mass-noun
-  owner attribute, so EasyDiff keeps `_data` instead of inventing
+  owner attribute, so Edifa keeps `_data` instead of inventing
   `_data_point`. The row identity is still `_data.id`; the category name
   follows the public owner attribute when the owner is not plural.
 
-## Code/EasyDiff 1-to-1 Correspondence
+## Code/Edifa 1-to-1 Correspondence
 
-EasyDiff targets a strict 1-to-1 correspondence between the public
+Edifa targets a strict 1-to-1 correspondence between the public
 Python API path and the persisted data name: a saved `_category.field`
 equals `object.category.field` in code. The **only** systematic
 divergence is that a collection category is plural in the API
@@ -723,10 +723,10 @@ convention.
 
 Achieving 1-to-1 at v1.0.0 requires these **public-API renames** (they
 are API changes, not only file-tag changes; official import aliases stay
-available, report CIF keeps the official names, and pre-release EasyDiff
+available, report CIF keeps the official names, and pre-release Edifa
 names are not preserved as legacy aliases):
 
-| Code today                                        | Code at v1.0.0                            | EasyDiff                              |
+| Code today                                        | Code at v1.0.0                            | Edifa                              |
 | ------------------------------------------------- | ----------------------------------------- | ------------------------------------- |
 | `atom_sites[*].label`                             | `atom_sites[*].id`                        | `_atom_site.id`                       |
 | `atom_site_aniso[*].label`                        | `atom_site_aniso[*].id`                   | `_atom_site_aniso.id`                 |
@@ -791,12 +791,12 @@ inventory above. Shorthands: `structure` =
 `project.experiments['<name>']`, `analysis` = `project.analysis`,
 `project` = the project facade. `['<id>']` marks a loop (collection)
 row. In the **v1.0.0 API** column, `same` means the public name is
-unchanged from today; an explicit path marks a rename. The **EasyDiff**
+unchanged from today; an explicit path marks a rename. The **Edifa**
 column is the persisted data name.
 
 ### Structure
 
-| Current API                                       | v1.0.0 API                                | EasyDiff                         |
+| Current API                                       | v1.0.0 API                                | Edifa                         |
 | ------------------------------------------------- | ----------------------------------------- | -------------------------------- |
 | `structure.cell.length_a`                         | same                                      | `_cell.length_a`                 |
 | `structure.cell.length_b`                         | same                                      | `_cell.length_b`                 |
@@ -829,7 +829,7 @@ column is the persisted data name.
 
 ### Experiment
 
-| Current API                                           | v1.0.0 API                                          | EasyDiff                                    |
+| Current API                                           | v1.0.0 API                                          | Edifa                                    |
 | ----------------------------------------------------- | --------------------------------------------------- | ------------------------------------------- |
 | `experiment.type.sample_form`                         | `experiment.experiment_type.sample_form`            | `_experiment_type.sample_form`              |
 | `experiment.type.beam_mode`                           | `experiment.experiment_type.beam_mode`              | `_experiment_type.beam_mode`                |
@@ -946,7 +946,7 @@ column is the persisted data name.
 
 ### Analysis
 
-| Current API                                                            | v1.0.0 API                                                      | EasyDiff                                              |
+| Current API                                                            | v1.0.0 API                                                      | Edifa                                              |
 | ---------------------------------------------------------------------- | --------------------------------------------------------------- | ----------------------------------------------------- |
 | `analysis.aliases['<id>'].label`                                       | `analysis.aliases['<id>'].id`                                   | `_alias.id`                                           |
 | `analysis.aliases['<id>'].param_unique_name`                           | `analysis.aliases['<id>'].parameter_unique_name`                | `_alias.parameter_unique_name`                        |
@@ -1043,7 +1043,7 @@ column is the persisted data name.
 
 ### Project
 
-| Current API                               | v1.0.0 API                       | EasyDiff                           |
+| Current API                               | v1.0.0 API                       | Edifa                           |
 | ----------------------------------------- | -------------------------------- | ---------------------------------- |
 | `project.info.name`                       | `project.metadata.name`          | `_metadata.name`                   |
 | `project.info.title`                      | `project.metadata.title`         | `_metadata.title`                  |
@@ -1076,7 +1076,7 @@ column is the persisted data name.
 ## Documentation: Parameter-Reference Pages
 
 The user-guide parameter reference must be reworked to reflect the
-EasyDiff split between the friendly project format and the strict report
+Edifa split between the friendly project format and the strict report
 CIF. Two documentation surfaces are in scope:
 
 - The index page
@@ -1109,13 +1109,13 @@ the right-hand column(s) differ:
    `atom_sites['ID'].id` (not `.label`), `linked_structures['ID'].scale`
    (not `linked_phases`), `experiment_type.beam_mode` (not `expt_type`),
    `instrument.calib_d_to_tof_quadratic` (not `_quad`), and so on.
-2. **"Keys in EasyDiff"** (new) — the persisted `.easydiff` data name
+2. **"Keys in Edifa"** (new) — the persisted `.edifa` data name
    taken from this ADR's Parameter Inventory and Per-Parameter Map, for
    example `_atom_site.id`, `_atom_site.adp_iso`, `_cell.length_a`,
    `_instrument.setup_wavelength`, `_peak.broad_gauss_sigma_0`,
    `_background.position`. This tab has **no** "CIF dictionary" column:
-   EasyDiff is an EasyDiffraction-owned schema, and the `.easydiff`
-   suffix plus the `_easydiff.schema_*` marker already identify the
+   Edifa is an EasyDiffraction-owned schema, and the `.edifa`
+   suffix plus the `_edifa.schema_*` marker already identify the
    dialect.
 3. **"Keys in CIF"** (new; replaces the old "CIF name for
    serialization") — the strict name emitted by
@@ -1125,17 +1125,17 @@ the right-hand column(s) differ:
      `[coreCIF]` or `[pdCIF]` (for example `_atom_site.B_iso_or_equiv` →
      coreCIF, `_pd_phase_block.scale` → pdCIF);
    - where no official name exists, list the EasyDiffraction extension
-     name and tag it `[easydiffCIF]` (for example the parametric
+     name and tag it `[edifaCIF]` (for example the parametric
      `_peak.*` profile coefficients and
      `_pref_orient.march_random_fract`). Only parameters the report
      writer actually emits appear in this tab; derived/never-persisted
      entries (for example `space_group_wyckoff`) are omitted.
 
 The crucial change from today is the separation of concerns: the
-**project-save** names now live in tab 2 (EasyDiff), and the
+**project-save** names now live in tab 2 (Edifa), and the
 **official-CIF** names live in tab 3, explicitly labelled as the
 _report_ boundary. This matches the ADR's thesis that project files are
-EasyDiff and only `reports/<project>.cif` is strict IUCr. The current
+Edifa and only `reports/<project>.cif` is strict IUCr. The current
 page conflates the two by labelling the old project write tags
 (`_pd_background.line_segment_X`, `_instr.wavelength`,
 `_atom_site.B_iso_or_equiv`) as "CIF name for serialization".
@@ -1150,9 +1150,9 @@ to reproduce (note the four-space body indent each tab requires):
     |--------------------------------------|-----------------------------------|---------------------------|
     | :material-cube-outline: [cell][cell] | :material-ruler: [length_a][cell] | cell.length_a             |
 
-=== "Keys in EasyDiff"
+=== "Keys in Edifa"
 
-    | Category                             | Parameter                         | EasyDiff key      |
+    | Category                             | Parameter                         | Edifa key      |
     |--------------------------------------|-----------------------------------|-----------------|
     | :material-cube-outline: [cell][cell] | :material-ruler: [length_a][cell] | \_cell.length_a |
 
@@ -1169,13 +1169,13 @@ Every category row and every parameter row must carry a `:material-*:`
 icon. Fill in icons for any rows that lack one today, and reuse the same
 icon for the same concept across the three tabs (the Category and
 Parameter columns are shared, so each row's icon is chosen once). New
-EasyDiff categories/parameters introduced by the renames — for example
+Edifa categories/parameters introduced by the renames — for example
 `experiment_type`, `linked_structure(s)`, `preferred_orientation`,
 `metadata` — get icons consistent with their nearest existing sibling.
 
 ### Tables Must Track the Code
 
-The access paths (tab 1) and the EasyDiff keys (tab 2) must equal the
+The access paths (tab 1) and the Edifa keys (tab 2) must equal the
 implemented v1.0.0 API and this ADR's Parameter Inventory exactly. The
 same generated `CifHandler` inventory used as the migration audit
 (Migration Sketch step 4) is the audit source for these hand-maintained
@@ -1183,15 +1183,15 @@ tables: implementation must compare the generated inventory with the
 documentation rows before completing the migration, and any mismatch is
 a migration blocker. Automatic generation of the docs tables or detail
 pages is out of scope for this ADR and may be proposed separately.
-Renamed names appear only in their post-migration form; pre-EasyDiff
+Renamed names appear only in their post-migration form; pre-Edifa
 names survive only as loader read aliases, never in the docs.
 
-### Per-Parameter Detail Pages Own EasyDiff Names and Descriptions
+### Per-Parameter Detail Pages Own Edifa Names and Descriptions
 
 The detail pages become EasyDiffraction-owned:
 
-- **Page and section names use EasyDiff, not CIF.** Each section title
-  is the EasyDiff data name — `## _atom_site.id`,
+- **Page and section names use Edifa, not CIF.** Each section title
+  is the Edifa data name — `## _atom_site.id`,
   `## _atom_site.adp_iso`, `## _instrument.setup_wavelength` — and the
   body is EasyDiffraction's own description of that parameter, not a
   verbatim copy of the IUCr definition. Pages currently named for CIF
@@ -1199,22 +1199,22 @@ The detail pages become EasyDiffraction-owned:
   `_diffrn_radiation*.md`, `_extinction.md`) and for soon-to-be-renamed
   owners (`linked_phases.md` → `linked_structure.md`, `pref_orient.md` →
   `preferred_orientation.md`, `expt_type.md` → `experiment_type.md`) are
-  renamed to their EasyDiff category and have their reference links
+  renamed to their Edifa category and have their reference links
   updated.
 - **Every category and parameter in the tables links to its detail
   section.** Add the pages/anchors that are missing today and update the
-  existing reference-link definitions to the EasyDiff names. Inter-page
+  existing reference-link definitions to the Edifa names. Inter-page
   cross-references (for example `_atom_site.fract` pointing at
-  `_cell_length`) move to the EasyDiff names as well.
+  `_cell_length`) move to the Edifa names as well.
 
 ### Versioned Parameter Documentation URLs
 
 Every persisted descriptor/parameter must expose a read-only `url`
 attribute that points to the online documentation page for that specific
 parameter. This URL is display metadata only: it is not written into
-EasyDiff, and loaders do not trust persisted URLs from project files.
+Edifa, and loaders do not trust persisted URLs from project files.
 
-The simplest long-term rule is to derive URLs from the EasyDiff data
+The simplest long-term rule is to derive URLs from the Edifa data
 name, not to hand-maintain a separate absolute URL on every descriptor.
 The implementation should add a small documentation-url resolver that:
 
@@ -1223,11 +1223,11 @@ The implementation should add a small documentation-url resolver that:
   development/local builds resolve to `dev`;
 - uses the versioned documentation base published by `mike`, for example
   `https://easyscience.github.io/diffraction-lib/{version}/`;
-- maps an EasyDiff name to the parameter-reference route, for example
+- maps an Edifa name to the parameter-reference route, for example
   `_cell.length_a` ->
   `user-guide/parameters/structure/cell/#cell-length-a`;
 - falls back to a descriptor-specific override only for rare cases where
-  a page or anchor cannot be derived from the EasyDiff name.
+  a page or anchor cannot be derived from the Edifa name.
 
 The shared resolver should be the only code that knows the absolute site
 base and version folder. `CifHandler.project_name` (introduced by
@@ -1261,8 +1261,8 @@ static anchors match the resolver's derived page/anchor contract.
 
 Today the link to the official IUCr definition is placed on the
 section-title text itself (`## [\_atom_site.label](IUCr URL)`) and on a
-prose "see the IUCr page" sentence. Under EasyDiff the title is the
-plain EasyDiff name, and an explicit external-resource icon follows it,
+prose "see the IUCr page" sentence. Under Edifa the title is the
+plain Edifa name, and an explicit external-resource icon follows it,
 linking to the official IUCr description **only where one exists**:
 
 ```text
@@ -1281,34 +1281,34 @@ new extension is required.
 
 1. Introduce explicit handler names (`project_name`, `import_names`,
    `iucr_name`) while keeping current behavior.
-2. Teach save/load helpers to require `.easydiff` project files and to
+2. Teach save/load helpers to require `.edifa` project files and to
    reject legacy-only beta `.cif` project layouts with a clear migration
    error.
 3. Add schema-marker validation and selector/body consistency checks to
-   the EasyDiff load path.
+   the Edifa load path.
 4. Generate an implementation audit from all `CifHandler`-declared
    descriptors and compare it with the inventory in this ADR before
    changing write tags.
-5. Rename project write tags to the suggested EasyDiff names category by
+5. Rename project write tags to the suggested Edifa names category by
    category, preserving current and official tags as read aliases.
 6. Add the shared versioned documentation-url resolver and descriptor
    `url` property, deriving ordinary parameter URLs from
    `CifHandler.project_name`.
 7. Rework the user-guide parameter reference per §Documentation:
    Parameter-Reference Pages — three-tab tables ("How to access in the
-   code", "Keys in EasyDiff", "Keys in CIF"), EasyDiff-named and
+   code", "Keys in Edifa", "Keys in CIF"), Edifa-named and
    EasyDiffraction-described detail pages, stable parameter anchors,
    relative links in static docs tables, icons on every
    category/parameter row, descriptor `url` links in runtime parameter
    tables/application displays, and the IUCr external-link icon — then
-   update tutorials, ZIP project detection, and CLI help to say EasyDiff
+   update tutorials, ZIP project detection, and CLI help to say Edifa
    project files and report CIF exports.
 8. Keep `project.report.save_cif()` as the only strict report-CIF
    writer.
 
 ## Open Questions
 
-- Whether `.easydiff` should be exposed as a named public format in CLI
+- Whether `.edifa` should be exposed as a named public format in CLI
   commands or remain an implementation detail of project directories.
 - Whether parameter-reference fields in the analysis categories
   (`_alias.parameter_unique_name`,
@@ -1321,7 +1321,7 @@ new extension is required.
 
 ## Suggested Pull Request
 
-Title: Define EasyDiff project persistence
+Title: Define Edifa project persistence
 
 Description: Clarifies that saved EasyDiffraction projects use a
 readable STAR-based schema, while generated report CIFs remain the

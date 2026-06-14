@@ -4,7 +4,7 @@
 
 | Access                                  | Source                     |
 | --------------------------------------- | -------------------------- |
-| \_fit_parameter_correlation.correlation | [EasyDiff][0]{:.label-cif} |
+| \_fit_parameter_correlation.correlation | [Edifa][0]{:.label-cif} |
 
 Persisted correlation coefficient for the parameter pair.
 
@@ -12,7 +12,7 @@ Persisted correlation coefficient for the parameter pair.
 
 | Access                         | Source                     |
 | ------------------------------ | -------------------------- |
-| \_fit_parameter_correlation.id | [EasyDiff][0]{:.label-cif} |
+| \_fit_parameter_correlation.id | [Edifa][0]{:.label-cif} |
 
 Stable identifier for the persisted correlation row.
 
@@ -20,7 +20,7 @@ Stable identifier for the persisted correlation row.
 
 | Access                                              | Source                     |
 | --------------------------------------------------- | -------------------------- |
-| \_fit_parameter_correlation.parameter_unique_name_i | [EasyDiff][0]{:.label-cif} |
+| \_fit_parameter_correlation.parameter_unique_name_i | [Edifa][0]{:.label-cif} |
 
 First unique parameter name in the persisted pair.
 
@@ -28,7 +28,7 @@ First unique parameter name in the persisted pair.
 
 | Access                                              | Source                     |
 | --------------------------------------------------- | -------------------------- |
-| \_fit_parameter_correlation.parameter_unique_name_j | [EasyDiff][0]{:.label-cif} |
+| \_fit_parameter_correlation.parameter_unique_name_j | [Edifa][0]{:.label-cif} |
 
 Second unique parameter name in the persisted pair.
 
@@ -36,7 +36,7 @@ Second unique parameter name in the persisted pair.
 
 | Access                                  | Source                     |
 | --------------------------------------- | -------------------------- |
-| \_fit_parameter_correlation.source_kind | [EasyDiff][0]{:.label-cif} |
+| \_fit_parameter_correlation.source_kind | [Edifa][0]{:.label-cif} |
 
 Origin of the persisted correlation summary. Supported values include
 `deterministic` and `posterior`.

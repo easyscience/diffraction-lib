@@ -4,7 +4,7 @@
 
 | Access             | Source                     |
 | ------------------ | -------------------------- |
-| \_metadata.created | [EasyDiff][0]{:.label-cif} |
+| \_metadata.created | [Edifa][0]{:.label-cif} |
 
 Project creation timestamp.
 
@@ -12,7 +12,7 @@ Project creation timestamp.
 
 | Access                 | Source                     |
 | ---------------------- | -------------------------- |
-| \_metadata.description | [EasyDiff][0]{:.label-cif} |
+| \_metadata.description | [Edifa][0]{:.label-cif} |
 
 Project description.
 
@@ -20,7 +20,7 @@ Project description.
 
 | Access                   | Source                     |
 | ------------------------ | -------------------------- |
-| \_metadata.last_modified | [EasyDiff][0]{:.label-cif} |
+| \_metadata.last_modified | [Edifa][0]{:.label-cif} |
 
 Project last-modified timestamp.
 
@@ -28,7 +28,7 @@ Project last-modified timestamp.
 
 | Access          | Source                     |
 | --------------- | -------------------------- |
-| \_metadata.name | [EasyDiff][0]{:.label-cif} |
+| \_metadata.name | [Edifa][0]{:.label-cif} |
 
 Project identifier.
 
@@ -36,7 +36,7 @@ Project identifier.
 
 | Access               | Source                     |
 | -------------------- | -------------------------- |
-| \_metadata.timestamp | [EasyDiff][0]{:.label-cif} |
+| \_metadata.timestamp | [Edifa][0]{:.label-cif} |
 
 Project fit timestamp.
 
@@ -44,7 +44,7 @@ Project fit timestamp.
 
 | Access           | Source                     |
 | ---------------- | -------------------------- |
-| \_metadata.title | [EasyDiff][0]{:.label-cif} |
+| \_metadata.title | [Edifa][0]{:.label-cif} |
 
 Project title.
 

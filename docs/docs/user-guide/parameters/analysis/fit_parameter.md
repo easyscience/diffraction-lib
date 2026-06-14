@@ -4,7 +4,7 @@
 
 | Access                                        | Source                     |
 | --------------------------------------------- | -------------------------- |
-| \_fit_parameter.bounds_uncertainty_multiplier | [EasyDiff][0]{:.label-cif} |
+| \_fit_parameter.bounds_uncertainty_multiplier | [Edifa][0]{:.label-cif} |
 
 Multiplier used to derive fit bounds from uncertainty.
 
@@ -12,7 +12,7 @@ Multiplier used to derive fit bounds from uncertainty.
 
 | Access                  | Source                     |
 | ----------------------- | -------------------------- |
-| \_fit_parameter.fit_max | [EasyDiff][0]{:.label-cif} |
+| \_fit_parameter.fit_max | [Edifa][0]{:.label-cif} |
 
 Persisted upper fit bound.
 
@@ -20,7 +20,7 @@ Persisted upper fit bound.
 
 | Access                  | Source                     |
 | ----------------------- | -------------------------- |
-| \_fit_parameter.fit_min | [EasyDiff][0]{:.label-cif} |
+| \_fit_parameter.fit_min | [Edifa][0]{:.label-cif} |
 
 Persisted lower fit bound.
 
@@ -28,7 +28,7 @@ Persisted lower fit bound.
 
 | Access                                | Source                     |
 | ------------------------------------- | -------------------------- |
-| \_fit_parameter.parameter_unique_name | [EasyDiff][0]{:.label-cif} |
+| \_fit_parameter.parameter_unique_name | [Edifa][0]{:.label-cif} |
 
 Unique name of the referenced live parameter.
 
@@ -36,7 +36,7 @@ Unique name of the referenced live parameter.
 
 | Access                                      | Source                     |
 | ------------------------------------------- | -------------------------- |
-| \_fit_parameter.posterior_best_sample_value | [EasyDiff][0]{:.label-cif} |
+| \_fit_parameter.posterior_best_sample_value | [Edifa][0]{:.label-cif} |
 
 Highest-posterior sampled parameter value.
 
@@ -44,7 +44,7 @@ Highest-posterior sampled parameter value.
 
 | Access                                               | Source                     |
 | ---------------------------------------------------- | -------------------------- |
-| \_fit_parameter.posterior_effective_sample_size_bulk | [EasyDiff][0]{:.label-cif} |
+| \_fit_parameter.posterior_effective_sample_size_bulk | [Edifa][0]{:.label-cif} |
 
 Bulk effective sample size when available.
 
@@ -52,7 +52,7 @@ Bulk effective sample size when available.
 
 | Access                                 | Source                     |
 | -------------------------------------- | -------------------------- |
-| \_fit_parameter.posterior_gelman_rubin | [EasyDiff][0]{:.label-cif} |
+| \_fit_parameter.posterior_gelman_rubin | [Edifa][0]{:.label-cif} |
 
 Rank-normalized split-R-hat when available.
 
@@ -60,7 +60,7 @@ Rank-normalized split-R-hat when available.
 
 | Access                                     | Source                     |
 | ------------------------------------------ | -------------------------- |
-| \_fit_parameter.posterior_interval_68_high | [EasyDiff][0]{:.label-cif} |
+| \_fit_parameter.posterior_interval_68_high | [Edifa][0]{:.label-cif} |
 
 Upper bound of the 68% credible interval.
 
@@ -68,7 +68,7 @@ Upper bound of the 68% credible interval.
 
 | Access                                    | Source                     |
 | ----------------------------------------- | -------------------------- |
-| \_fit_parameter.posterior_interval_68_low | [EasyDiff][0]{:.label-cif} |
+| \_fit_parameter.posterior_interval_68_low | [Edifa][0]{:.label-cif} |
 
 Lower bound of the 68% credible interval.
 
@@ -76,7 +76,7 @@ Lower bound of the 68% credible interval.
 
 | Access                                     | Source                     |
 | ------------------------------------------ | -------------------------- |
-| \_fit_parameter.posterior_interval_95_high | [EasyDiff][0]{:.label-cif} |
+| \_fit_parameter.posterior_interval_95_high | [Edifa][0]{:.label-cif} |
 
 Upper bound of the 95% credible interval.
 
@@ -84,7 +84,7 @@ Upper bound of the 95% credible interval.
 
 | Access                                    | Source                     |
 | ----------------------------------------- | -------------------------- |
-| \_fit_parameter.posterior_interval_95_low | [EasyDiff][0]{:.label-cif} |
+| \_fit_parameter.posterior_interval_95_low | [Edifa][0]{:.label-cif} |
 
 Lower bound of the 95% credible interval.
 
@@ -92,7 +92,7 @@ Lower bound of the 95% credible interval.
 
 | Access                           | Source                     |
 | -------------------------------- | -------------------------- |
-| \_fit_parameter.posterior_median | [EasyDiff][0]{:.label-cif} |
+| \_fit_parameter.posterior_median | [Edifa][0]{:.label-cif} |
 
 Posterior median value.
 
@@ -100,7 +100,7 @@ Posterior median value.
 
 | Access                                | Source                     |
 | ------------------------------------- | -------------------------- |
-| \_fit_parameter.posterior_uncertainty | [EasyDiff][0]{:.label-cif} |
+| \_fit_parameter.posterior_uncertainty | [Edifa][0]{:.label-cif} |
 
 Posterior standard deviation.
 
@@ -108,7 +108,7 @@ Posterior standard deviation.
 
 | Access                            | Source                     |
 | --------------------------------- | -------------------------- |
-| \_fit_parameter.start_uncertainty | [EasyDiff][0]{:.label-cif} |
+| \_fit_parameter.start_uncertainty | [Edifa][0]{:.label-cif} |
 
 Persisted pre-fit uncertainty snapshot.
 
@@ -116,7 +116,7 @@ Persisted pre-fit uncertainty snapshot.
 
 | Access                      | Source                     |
 | --------------------------- | -------------------------- |
-| \_fit_parameter.start_value | [EasyDiff][0]{:.label-cif} |
+| \_fit_parameter.start_value | [Edifa][0]{:.label-cif} |
 
 Persisted pre-fit value snapshot.
 

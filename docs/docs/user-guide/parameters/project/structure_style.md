@@ -4,7 +4,7 @@
 
 | Access                            | Source                     |
 | --------------------------------- | -------------------------- |
-| \_structure_style.adp_probability | [EasyDiff][0]{:.label-cif} |
+| \_structure_style.adp_probability | [Edifa][0]{:.label-cif} |
 
 ORTEP probability level, a fraction in (0, 1).
 
@@ -12,7 +12,7 @@ ORTEP probability level, a fraction in (0, 1).
 
 | Access                       | Source                     |
 | ---------------------------- | -------------------------- |
-| \_structure_style.atom_scale | [EasyDiff][0]{:.label-cif} |
+| \_structure_style.atom_scale | [Edifa][0]{:.label-cif} |
 
 Overall ball-atom size factor (square-root compressed).
 
@@ -20,7 +20,7 @@ Overall ball-atom size factor (square-root compressed).
 
 | Access                      | Source                     |
 | --------------------------- | -------------------------- |
-| \_structure_style.atom_view | [EasyDiff][0]{:.label-cif} |
+| \_structure_style.atom_view | [Edifa][0]{:.label-cif} |
 
 How atoms are sized and shaped in the structure view. Supported values
 include `vdw`, `covalent`, `ionic`, and `adp`.
@@ -29,7 +29,7 @@ include `vdw`, `covalent`, `ionic`, and `adp`.
 
 | Access                         | Source                     |
 | ------------------------------ | -------------------------- |
-| \_structure_style.color_scheme | [EasyDiff][0]{:.label-cif} |
+| \_structure_style.color_scheme | [Edifa][0]{:.label-cif} |
 
 Standard element colour scheme. Supported values include `jmol` and
 `vesta`.

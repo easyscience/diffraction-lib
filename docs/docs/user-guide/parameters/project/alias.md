@@ -4,7 +4,7 @@
 
 | Access     | Source                     |
 | ---------- | -------------------------- |
-| \_alias.id | [EasyDiff][0]{:.label-cif} |
+| \_alias.id | [Edifa][0]{:.label-cif} |
 
 Human-readable alias id for a parameter.
 
@@ -12,7 +12,7 @@ Human-readable alias id for a parameter.
 
 | Access                        | Source                     |
 | ----------------------------- | -------------------------- |
-| \_alias.parameter_unique_name | [EasyDiff][0]{:.label-cif} |
+| \_alias.parameter_unique_name | [Edifa][0]{:.label-cif} |
 
 Unique name of the referenced parameter.
 

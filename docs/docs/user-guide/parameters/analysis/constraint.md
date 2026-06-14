@@ -4,7 +4,7 @@
 
 | Access                  | Source                     |
 | ----------------------- | -------------------------- |
-| \_constraint.expression | [EasyDiff][0]{:.label-cif} |
+| \_constraint.expression | [Edifa][0]{:.label-cif} |
 
 Constraint equation, e.g. "occ_Ba = 1 - occ_La".
 
@@ -12,7 +12,7 @@ Constraint equation, e.g. "occ_Ba = 1 - occ_La".
 
 | Access          | Source                     |
 | --------------- | -------------------------- |
-| \_constraint.id | [EasyDiff][0]{:.label-cif} |
+| \_constraint.id | [Edifa][0]{:.label-cif} |
 
 Explicit identifier for this constraint row.
 

@@ -12688,6 +12688,6 @@
       "unique_name": "space_group_Wyckoff.site_symmetry"
     }
   ],
-  "generated_by": "tools/easydiff_handler_inventory.py",
-  "schema": "easydiff-handler-inventory-v1"
+  "generated_by": "tools/edifa_handler_inventory.py",
+  "schema": "edifa-handler-inventory-v1"
 }

@@ -3,14 +3,14 @@
 Before starting the data analysis workflow, it is important to define
 the **data formats** used in EasyDiffraction.
 
-## EasyDiff Projects And CIF Data
+## Edifa Projects And CIF Data
 
 Each software package typically uses its own **data format** and
 **parameter names** for storing and sharing data. EasyDiffraction uses
-**EasyDiff** for saved project state and **Crystallographic Information
+**Edifa** for saved project state and **Crystallographic Information
 File (CIF)** for crystallographic input and strict report export.
 
-EasyDiff uses CIF-like syntax, but its keys are chosen for
+Edifa uses CIF-like syntax, but its keys are chosen for
 EasyDiffraction's Python-facing project model. CIF remains the standard
 exchange format used by crystallography and materials science. It
 provides both a human-readable syntax and dictionaries that define the
@@ -24,17 +24,17 @@ powder diffraction, **magCIF** is used for magnetic structure analysis.
 
 As most crystallographic parameters needed for diffraction data analysis
 are already covered by IUCr dictionaries, EasyDiffraction follows those
-dictionaries for CIF import and report output where they fit. EasyDiff
+dictionaries for CIF import and report output where they fit. Edifa
 uses the same names when they are already clear, and uses
 EasyDiffraction-owned names where the project API is clearer.
 
 The key advantage of CIF is standardized naming for scientific exchange.
-The key advantage of EasyDiff is that saved projects round-trip the
+The key advantage of Edifa is that saved projects round-trip the
 EasyDiffraction project model without overloading report CIF as project
 state.
 
 The [Parameters](parameters.md) section lists Python access paths,
-EasyDiff keys, and CIF keys side by side.
+Edifa keys, and CIF keys side by side.
 
 ## Format Comparison
 
@@ -181,7 +181,7 @@ better suited for human-readable crystallographic data.
 The previous example described the **structure** (crystallographic
 model), but how is the **experiment** itself represented?
 
-The experiment is saved in EasyDiff. For example, line-segment
+The experiment is saved in Edifa. For example, line-segment
 background intensity in a powder diffraction experiment is represented
 as:
 
@@ -207,13 +207,13 @@ More details on how to define the experiment are provided in the
 
 ## Other Input/Output Blocks
 
-EasyDiffraction saves projects as a directory of EasyDiff files and
+EasyDiffraction saves projects as a directory of Edifa files and
 sidecars:
 
-- `project.easydiff`: project metadata and display/report configuration
-- `structures/<structure>.easydiff`: structure models
-- `experiments/<experiment>.easydiff`: experiment setup and data
-- `analysis/analysis.easydiff`: fitting and analysis settings
+- `project.edifa`: project metadata and display/report configuration
+- `structures/<structure>.edifa`: structure models
+- `experiments/<experiment>.edifa`: experiment setup and data
+- `analysis/analysis.edifa`: fitting and analysis settings
 - `analysis/results.csv` and `analysis/results.h5`: fit result sidecars
 - `reports/<project>.*`: generated reports when enabled through
   `project.report`

@@ -4,7 +4,7 @@
 
 | Access          | Source                     |
 | --------------- | -------------------------- |
-| \_verbosity.fit | [EasyDiff][0]{:.label-cif} |
+| \_verbosity.fit | [Edifa][0]{:.label-cif} |
 
 Fitting process output verbosity. Supported values include `full`,
 `short`, and `silent`.

@@ -306,7 +306,7 @@ for details.
 
 If you do not have a CIF file for your experiment, you can load measured
 data from a file in a supported format. The measured data is added to
-the experiment and saved with the project as EasyDiff. The expected
+the experiment and saved with the project as Edifa. The expected
 format depends on the experiment type.
 
 #### Supported data file formats:
@@ -404,24 +404,24 @@ Defined experiments 🔬
 ['hrpt']
 ```
 
-## Viewing an Experiment as EasyDiff
+## Viewing an Experiment as Edifa
 
 To inspect an experiment in the project persistence format, use:
 
 ```python
-# Show experiment as EasyDiff text
+# Show experiment as Edifa text
 project.experiments['hrpt'].show_as_cif()
 ```
 
 Example output:
 
 ```
-Experiment 🔬 'hrpt' as EasyDiff
+Experiment 🔬 'hrpt' as Edifa
 ╒═════════════════════════════════════════════╕
 │ data_hrpt                                   │
 │                                             │
-│ _easydiff.schema_name EasyDiffraction         │
-│ _easydiff.schema_version 1                    │
+│ _edifa.schema_name EasyDiffraction         │
+│ _edifa.schema_version 1                    │
 │                                             │
 │ _experiment_type.beam_mode  "constant wavelength" │
 │ _experiment_type.radiation_probe  neutron   │
@@ -477,14 +477,14 @@ Experiment 🔬 'hrpt' as EasyDiff
 
 Saving the project, as described in the [Project](project.md) section, will
 also save the experiment. Each experiment is saved as a separate
-`.easydiff` file in the `experiments` subdirectory of the project
+`.edifa` file in the `experiments` subdirectory of the project
 directory. The project file contains references to these files.
 
 EasyDiffraction supports different types of experiments, and each
-experiment is saved in a dedicated EasyDiff file with experiment-specific
+experiment is saved in a dedicated Edifa file with experiment-specific
 parameters.
 
-Below are examples of how different experiments are saved in EasyDiff
+Below are examples of how different experiments are saved in Edifa
 format.
 
 ### [pd-neut-cwl][3]{:.label-experiment}

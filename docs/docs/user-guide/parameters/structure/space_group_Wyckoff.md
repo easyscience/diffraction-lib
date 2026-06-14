@@ -8,7 +8,7 @@
 
 | Access                           | Source                     |
 | -------------------------------- | -------------------------- |
-| \_space_group_Wyckoff.coords_xyz | [EasyDiff][0]{:.label-cif} |
+| \_space_group_Wyckoff.coords_xyz | [Edifa][0]{:.label-cif} |
 
 Coordinates of the Wyckoff orbit.
 
@@ -16,7 +16,7 @@ Coordinates of the Wyckoff orbit.
 
 | Access                   | Source                     |
 | ------------------------ | -------------------------- |
-| \_space_group_Wyckoff.id | [EasyDiff][0]{:.label-cif} |
+| \_space_group_Wyckoff.id | [Edifa][0]{:.label-cif} |
 
 Identifier of the Wyckoff position.
 
@@ -24,7 +24,7 @@ Identifier of the Wyckoff position.
 
 | Access                       | Source                     |
 | ---------------------------- | -------------------------- |
-| \_space_group_Wyckoff.letter | [EasyDiff][0]{:.label-cif} |
+| \_space_group_Wyckoff.letter | [Edifa][0]{:.label-cif} |
 
 Wyckoff letter of the position.
 
@@ -32,7 +32,7 @@ Wyckoff letter of the position.
 
 | Access                             | Source                     |
 | ---------------------------------- | -------------------------- |
-| \_space_group_Wyckoff.multiplicity | [EasyDiff][0]{:.label-cif} |
+| \_space_group_Wyckoff.multiplicity | [Edifa][0]{:.label-cif} |
 
 Multiplicity of the Wyckoff position.
 
@@ -40,7 +40,7 @@ Multiplicity of the Wyckoff position.
 
 | Access                              | Source                     |
 | ----------------------------------- | -------------------------- |
-| \_space_group_Wyckoff.site_symmetry | [EasyDiff][0]{:.label-cif} |
+| \_space_group_Wyckoff.site_symmetry | [Edifa][0]{:.label-cif} |
 
 Site-symmetry symbol of the Wyckoff position.
 

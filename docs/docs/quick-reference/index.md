@@ -155,7 +155,7 @@ project.display.parameters.fittable()
 project.display.parameters.free()
 project.display.parameters.access()
 project.display.parameters.uid()
-project.display.parameters.easydiff()
+project.display.parameters.edifa()
 project.display.parameters.cif()
 ```
 
@@ -415,7 +415,7 @@ python -m easydiffraction lbco_hrpt undo
 python -m easydiffraction lbco_hrpt undo --dry
 ```
 
-When `project.easydiff` enables `_report.cif`, `_report.html`,
+When `project.edifa` enables `_report.cif`, `_report.html`,
 `_report.tex`, or `_report.pdf`, the `fit` command writes those reports
 during the normal project save.
 

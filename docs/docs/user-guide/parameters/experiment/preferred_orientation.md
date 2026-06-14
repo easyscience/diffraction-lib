@@ -8,7 +8,7 @@
 | Access                                   | Source                     |
 | ---------------------------------------- | -------------------------- |
 | preferred_orientation['ID'].structure_id | [code][0]{:.label-cif}     |
-| \_preferred_orientation.structure_id     | [EasyDiff][0]{:.label-cif} |
+| \_preferred_orientation.structure_id     | [Edifa][0]{:.label-cif} |
 | \_pd_pref_orient_March_Dollase.phase_id  | [pdCIF][0]{:.label-cif}    |
 
 Identifier of the corrected structure.
@@ -18,7 +18,7 @@ Identifier of the corrected structure.
 | Access                              | Source                     |
 | ----------------------------------- | -------------------------- |
 | preferred_orientation['ID'].march_r | [code][0]{:.label-cif}     |
-| \_preferred_orientation.march_r     | [EasyDiff][0]{:.label-cif} |
+| \_preferred_orientation.march_r     | [Edifa][0]{:.label-cif} |
 | \_pd_pref_orient_March_Dollase.r    | [pdCIF][0]{:.label-cif}    |
 
 March coefficient (1 = no preferred orientation).
@@ -28,7 +28,7 @@ March coefficient (1 = no preferred orientation).
 | Access                                 | Source                     |
 | -------------------------------------- | -------------------------- |
 | preferred_orientation['ID'].index_h    | [code][0]{:.label-cif}     |
-| \_preferred_orientation.index_h        | [EasyDiff][0]{:.label-cif} |
+| \_preferred_orientation.index_h        | [Edifa][0]{:.label-cif} |
 | \_pd_pref_orient_March_Dollase.index_h | [pdCIF][0]{:.label-cif}    |
 
 Texture-axis Miller index h.
@@ -38,7 +38,7 @@ Texture-axis Miller index h.
 | Access                                 | Source                     |
 | -------------------------------------- | -------------------------- |
 | preferred_orientation['ID'].index_k    | [code][0]{:.label-cif}     |
-| \_preferred_orientation.index_k        | [EasyDiff][0]{:.label-cif} |
+| \_preferred_orientation.index_k        | [Edifa][0]{:.label-cif} |
 | \_pd_pref_orient_March_Dollase.index_k | [pdCIF][0]{:.label-cif}    |
 
 Texture-axis Miller index k.
@@ -48,7 +48,7 @@ Texture-axis Miller index k.
 | Access                                 | Source                     |
 | -------------------------------------- | -------------------------- |
 | preferred_orientation['ID'].index_l    | [code][0]{:.label-cif}     |
-| \_preferred_orientation.index_l        | [EasyDiff][0]{:.label-cif} |
+| \_preferred_orientation.index_l        | [Edifa][0]{:.label-cif} |
 | \_pd_pref_orient_March_Dollase.index_l | [pdCIF][0]{:.label-cif}    |
 
 Texture-axis Miller index l.
@@ -58,8 +58,8 @@ Texture-axis Miller index l.
 | Access                                           | Source                        |
 | ------------------------------------------------ | ----------------------------- |
 | preferred_orientation['ID'].march_random_fract   | [code][0]{:.label-cif}        |
-| \_preferred_orientation.march_random_fract       | [EasyDiff][0]{:.label-cif}    |
-| \_easydiffraction_pref_orient.march_random_fract | [easydiffCIF][0]{:.label-cif} |
+| \_preferred_orientation.march_random_fract       | [Edifa][0]{:.label-cif}    |
+| \_easydiffraction_pref_orient.march_random_fract | [edifaCIF][0]{:.label-cif} |
 
 Random (untextured) fraction; 0 = pure March-Dollase.
 

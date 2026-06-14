@@ -8,7 +8,7 @@
 
 | Access            | Source                     |
 | ----------------- | -------------------------- |
-| \_refln.d_spacing | [EasyDiff][0]{:.label-cif} |
+| \_refln.d_spacing | [Edifa][0]{:.label-cif} |
 
 Distance between lattice planes for this reflection.
 
@@ -16,7 +16,7 @@ Distance between lattice planes for this reflection.
 
 | Access         | Source                     |
 | -------------- | -------------------------- |
-| \_refln.f_calc | [EasyDiff][0]{:.label-cif} |
+| \_refln.f_calc | [Edifa][0]{:.label-cif} |
 
 Calculated structure-factor amplitude for this reflection.
 
@@ -24,7 +24,7 @@ Calculated structure-factor amplitude for this reflection.
 
 | Access                 | Source                     |
 | ---------------------- | -------------------------- |
-| \_refln.f_squared_calc | [EasyDiff][0]{:.label-cif} |
+| \_refln.f_squared_calc | [Edifa][0]{:.label-cif} |
 
 Calculated structure-factor amplitude squared for this reflection.
 
@@ -32,7 +32,7 @@ Calculated structure-factor amplitude squared for this reflection.
 
 | Access     | Source                     |
 | ---------- | -------------------------- |
-| \_refln.id | [EasyDiff][0]{:.label-cif} |
+| \_refln.id | [Edifa][0]{:.label-cif} |
 
 Identifier of the reflection.
 
@@ -40,7 +40,7 @@ Identifier of the reflection.
 
 | Access          | Source                     |
 | --------------- | -------------------------- |
-| \_refln.index_h | [EasyDiff][0]{:.label-cif} |
+| \_refln.index_h | [Edifa][0]{:.label-cif} |
 
 Miller index h of a measured reflection.
 
@@ -48,7 +48,7 @@ Miller index h of a measured reflection.
 
 | Access          | Source                     |
 | --------------- | -------------------------- |
-| \_refln.index_k | [EasyDiff][0]{:.label-cif} |
+| \_refln.index_k | [Edifa][0]{:.label-cif} |
 
 Miller index k of a measured reflection.
 
@@ -56,7 +56,7 @@ Miller index k of a measured reflection.
 
 | Access          | Source                     |
 | --------------- | -------------------------- |
-| \_refln.index_l | [EasyDiff][0]{:.label-cif} |
+| \_refln.index_l | [Edifa][0]{:.label-cif} |
 
 Miller index l of a measured reflection.
 
@@ -64,7 +64,7 @@ Miller index l of a measured reflection.
 
 | Access                 | Source                     |
 | ---------------------- | -------------------------- |
-| \_refln.intensity_calc | [EasyDiff][0]{:.label-cif} |
+| \_refln.intensity_calc | [Edifa][0]{:.label-cif} |
 
 Intensity of the reflection calculated from atom site data.
 
@@ -72,7 +72,7 @@ Intensity of the reflection calculated from atom site data.
 
 | Access                 | Source                     |
 | ---------------------- | -------------------------- |
-| \_refln.intensity_meas | [EasyDiff][0]{:.label-cif} |
+| \_refln.intensity_meas | [Edifa][0]{:.label-cif} |
 
 The intensity of the reflection derived from the measurements.
 
@@ -80,7 +80,7 @@ The intensity of the reflection derived from the measurements.
 
 | Access                    | Source                     |
 | ------------------------- | -------------------------- |
-| \_refln.intensity_meas_su | [EasyDiff][0]{:.label-cif} |
+| \_refln.intensity_meas_su | [Edifa][0]{:.label-cif} |
 
 Standard uncertainty of the measured intensity.
 
@@ -88,7 +88,7 @@ Standard uncertainty of the measured intensity.
 
 | Access                        | Source                     |
 | ----------------------------- | -------------------------- |
-| \_refln.sin_theta_over_lambda | [EasyDiff][0]{:.label-cif} |
+| \_refln.sin_theta_over_lambda | [Edifa][0]{:.label-cif} |
 
 The sin(θ)/λ value for this reflection.
 
@@ -96,7 +96,7 @@ The sin(θ)/λ value for this reflection.
 
 | Access                                  | Source                     |
 | --------------------------------------- | -------------------------- |
-| \_refln.sin_theta_over_lambda_range_max | [EasyDiff][0]{:.label-cif} |
+| \_refln.sin_theta_over_lambda_range_max | [Edifa][0]{:.label-cif} |
 
 Upper sinθ/λ bound of the calculation range.
 
@@ -104,7 +104,7 @@ Upper sinθ/λ bound of the calculation range.
 
 | Access                                  | Source                     |
 | --------------------------------------- | -------------------------- |
-| \_refln.sin_theta_over_lambda_range_min | [EasyDiff][0]{:.label-cif} |
+| \_refln.sin_theta_over_lambda_range_min | [Edifa][0]{:.label-cif} |
 
 Lower sinθ/λ bound of the calculation range.
 
@@ -112,7 +112,7 @@ Lower sinθ/λ bound of the calculation range.
 
 | Access               | Source                     |
 | -------------------- | -------------------------- |
-| \_refln.structure_id | [EasyDiff][0]{:.label-cif} |
+| \_refln.structure_id | [Edifa][0]{:.label-cif} |
 
 Identifier of the linked structure for this reflection.
 
@@ -120,7 +120,7 @@ Identifier of the linked structure for this reflection.
 
 | Access                 | Source                     |
 | ---------------------- | -------------------------- |
-| \_refln.time_of_flight | [EasyDiff][0]{:.label-cif} |
+| \_refln.time_of_flight | [Edifa][0]{:.label-cif} |
 
 Calculated time-of-flight position for this reflection.
 
@@ -128,7 +128,7 @@ Calculated time-of-flight position for this reflection.
 
 | Access            | Source                     |
 | ----------------- | -------------------------- |
-| \_refln.two_theta | [EasyDiff][0]{:.label-cif} |
+| \_refln.two_theta | [Edifa][0]{:.label-cif} |
 
 Calculated 2theta position for this reflection.
 
@@ -136,7 +136,7 @@ Calculated 2theta position for this reflection.
 
 | Access             | Source                     |
 | ------------------ | -------------------------- |
-| \_refln.wavelength | [EasyDiff][0]{:.label-cif} |
+| \_refln.wavelength | [Edifa][0]{:.label-cif} |
 
 Mean wavelength of radiation for this reflection.
 
