@@ -1264,3 +1264,49 @@ def test_data_index_ref_accepts_full_sha(monkeypatch):
     monkeypatch.setattr(MUT.importlib.resources, 'files', lambda _pkg: _Res())
     assert MUT._data_index_ref() == sha
     MUT._data_index_ref.cache_clear()
+
+
+def test_download_data_project_archive_stale_zip_revalidated(monkeypatch, tmp_path):
+    """A stale local project ZIP is re-downloaded, never extracted as-is."""
+    import pathlib
+
+    import easydiffraction.utils.utils as MUT
+
+    fake_index = {
+        'projects/lbco-hrpt': {
+            'path': 'projects/lbco-hrpt.zip',
+            'hash': 'sha256:' + 'a' * 64,  # will not match the stale local zip
+            'description': 'Project archive',
+        }
+    }
+    monkeypatch.setattr(MUT, '_fetch_data_index', lambda: fake_index)
+
+    # A stale project ZIP from an older pinned commit is already present.
+    zip_path = tmp_path / 'lbco-hrpt.zip'
+    zip_path.write_text('stale zip bytes')
+
+    calls = {'retrieve': 0}
+
+    def fake_retrieve(url, known_hash, fname, path):
+        calls['retrieve'] += 1
+        target = pathlib.Path(path, fname)
+        target.write_text('fresh zip bytes', encoding='utf-8')
+        return str(target)
+
+    monkeypatch.setattr(MUT.pooch, 'retrieve', fake_retrieve)
+
+    extracted = tmp_path / 'fresh' / 'project'
+    extracted.mkdir(parents=True)
+    seen = {}
+
+    def fake_extract(file_path, destination):
+        seen['bytes'] = pathlib.Path(file_path).read_text()
+        return extracted
+
+    monkeypatch.setattr(MUT, 'extract_project_from_zip', fake_extract)
+
+    result = MUT.download_data('projects/lbco-hrpt', destination=str(tmp_path))
+    assert result == str(extracted)
+    # The stale ZIP was re-downloaded before extraction, not served as-is.
+    assert calls['retrieve'] == 1
+    assert seen['bytes'] == 'fresh zip bytes'

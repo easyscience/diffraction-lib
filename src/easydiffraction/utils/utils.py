@@ -593,17 +593,18 @@ def download_data(
     known_hash = _record_hash(record)
 
     if file_path.exists():
-        if is_project_archive and not overwrite:
+        # Reuse a local file only when its bytes match the pinned index;
+        # a content mismatch means the dataset was replaced upstream, so
+        # re-download instead of serving stale data — including a stale
+        # project ZIP, which must be verified before it is extracted
+        # (data-source-pinning ADR, Decision 7).
+        stale = known_hash is not None and _sha256_of_file(file_path) != known_hash
+        if is_project_archive and not overwrite and not stale:
             project_dir = extract_project_from_zip(file_path, destination=extraction_dir)
             file_path.unlink()
             console.print(f"✅ Data '{resource_id}' extracted to '{display_path(project_dir)}'")
             return str(project_dir)
-        # Reuse a local file only when its bytes match the pinned index;
-        # a content mismatch means the dataset was replaced upstream, so
-        # re-download instead of serving stale data (data-source-pinning
-        # ADR, Decision 7).
-        stale = known_hash is not None and _sha256_of_file(file_path) != known_hash
-        if not overwrite and not stale:
+        if not is_project_archive and not overwrite and not stale:
             console.print(
                 f"✅ Data '{resource_id}' already present at "
                 f"'{display_path(file_path)}'. Keeping existing."
