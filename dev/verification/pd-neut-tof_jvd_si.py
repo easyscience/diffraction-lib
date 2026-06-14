@@ -95,10 +95,10 @@ experiment.peak.broad_gauss_sigma_2 = FULLPROF_SIGMA_2
 experiment.peak.broad_lorentz_gamma_0 = FULLPROF_GAMMA_0
 experiment.peak.broad_lorentz_gamma_1 = FULLPROF_GAMMA_1
 experiment.peak.broad_lorentz_gamma_2 = FULLPROF_GAMMA_2
-experiment.peak.exp_rise_alpha_0 = FULLPROF_ALPHA_0
-experiment.peak.exp_rise_alpha_1 = FULLPROF_ALPHA_1
-experiment.peak.exp_decay_beta_0 = FULLPROF_BETA_0
-experiment.peak.exp_decay_beta_1 = FULLPROF_BETA_1
+experiment.peak.rise_alpha_0 = FULLPROF_ALPHA_0
+experiment.peak.rise_alpha_1 = FULLPROF_ALPHA_1
+experiment.peak.decay_beta_0 = FULLPROF_BETA_0
+experiment.peak.decay_beta_1 = FULLPROF_BETA_1
 
 experiment.excluded_regions.create(id='1', start=0, end=5000)
 experiment.excluded_regions.create(id='2', start=10000, end=100000)

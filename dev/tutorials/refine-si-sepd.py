@@ -89,10 +89,10 @@ expt.peak.show_supported()
 expt.peak.broad_gauss_sigma_0 = 3.0
 expt.peak.broad_gauss_sigma_1 = 40.0
 expt.peak.broad_gauss_sigma_2 = 2.0
-expt.peak.exp_decay_beta_0 = 0.04221
-expt.peak.exp_decay_beta_1 = 0.00946
-expt.peak.exp_rise_alpha_0 = 0.0
-expt.peak.exp_rise_alpha_1 = 0.5971
+expt.peak.decay_beta_0 = 0.04221
+expt.peak.decay_beta_1 = 0.00946
+expt.peak.rise_alpha_0 = 0.0
+expt.peak.rise_alpha_1 = 0.5971
 
 # %% [markdown]
 # ### Set Background
@@ -260,9 +260,9 @@ project.display.pattern(expt_name='sepd', x_min=23200, x_max=23700)
 # %%
 structure.atom_sites['Si'].adp_iso.free = True
 
-expt.peak.exp_decay_beta_0.free = True
-expt.peak.exp_decay_beta_1.free = True
-expt.peak.exp_rise_alpha_1.free = True
+expt.peak.decay_beta_0.free = True
+expt.peak.decay_beta_1.free = True
+expt.peak.rise_alpha_1.free = True
 
 # %% [markdown]
 # Show free parameters after selection.
@@ -320,9 +320,9 @@ expt.peak.type = 'jorgensen-von-dreele'
 expt.peak.broad_gauss_sigma_0 = 3.0148
 expt.peak.broad_gauss_sigma_1 = 33.3451
 expt.peak.broad_lorentz_gamma_1 = 2.5489
-expt.peak.exp_decay_beta_0 = 0.04221
-expt.peak.exp_decay_beta_1 = 0.00946
-expt.peak.exp_rise_alpha_1 = 0.5971
+expt.peak.decay_beta_0 = 0.04221
+expt.peak.decay_beta_1 = 0.00946
+expt.peak.rise_alpha_1 = 0.5971
 
 # %% [markdown]
 # #### Add new free parameters
@@ -331,9 +331,9 @@ expt.peak.exp_rise_alpha_1 = 0.5971
 expt.peak.broad_gauss_sigma_0.free = True
 expt.peak.broad_gauss_sigma_1.free = True
 expt.peak.broad_lorentz_gamma_1.free = True
-expt.peak.exp_decay_beta_0.free = True
-expt.peak.exp_decay_beta_1.free = True
-expt.peak.exp_rise_alpha_1.free = True
+expt.peak.decay_beta_0.free = True
+expt.peak.decay_beta_1.free = True
+expt.peak.rise_alpha_1.free = True
 
 # %% [markdown]
 # #### Run Fitting

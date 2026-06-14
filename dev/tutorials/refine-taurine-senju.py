@@ -34,7 +34,7 @@ project.structures.show_names()
 structure = project.structures['taurine']
 
 # %%
-structure.show_as_cif()
+structure.show_as_text()
 
 # %%
 project.display.structure(struct_name='taurine')
@@ -99,7 +99,7 @@ project.analysis.fit()
 project.display.fit.results()
 
 # %%
-structure.show_as_cif()
+structure.show_as_text()
 
 # %%
 project.experiments.show_names()
@@ -121,7 +121,7 @@ for atom_site in structure.atom_site_aniso:
         getattr(atom_site, component).free = True
 
 # %%
-structure.show_as_cif()
+structure.show_as_text()
 
 # %%
 project.display.parameters.free()
@@ -139,7 +139,7 @@ project.display.fit.correlations()
 project.display.pattern(expt_name='senju')
 
 # %%
-structure.show_as_cif()
+structure.show_as_text()
 
 # %% [markdown]
 # ## 💾 Save Project

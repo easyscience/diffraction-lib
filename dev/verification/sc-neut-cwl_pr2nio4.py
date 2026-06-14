@@ -115,7 +115,7 @@ structure.atom_sites.create(
 project.structures.add(structure)
 
 # %%
-structure.show_as_cif()
+structure.show_as_text()
 
 # %% [markdown]
 # ## Load the FullProf reference

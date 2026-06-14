@@ -90,10 +90,10 @@ experiment.instrument.calib_d_to_tof_quadratic = -1.54
 experiment.peak.broad_gauss_sigma_0 = 3.0
 experiment.peak.broad_gauss_sigma_1 = 40.0
 experiment.peak.broad_gauss_sigma_2 = 2.0
-experiment.peak.exp_decay_beta_0 = 0.04221
-experiment.peak.exp_decay_beta_1 = 0.00946
-experiment.peak.exp_rise_alpha_0 = 0.0
-experiment.peak.exp_rise_alpha_1 = 0.5971
+experiment.peak.decay_beta_0 = 0.04221
+experiment.peak.decay_beta_1 = 0.00946
+experiment.peak.rise_alpha_0 = 0.0
+experiment.peak.rise_alpha_1 = 0.5971
 
 # %% [markdown]
 # ### Set Background
@@ -129,10 +129,10 @@ project.display.pattern(expt_name='sim')
 project.display.pattern(expt_name='sim', x_min=5000, x_max=6000)
 
 # %% [markdown]
-# ### Inspect as CIF
+# ### Inspect as Text
 
 # %%
-project.experiments['sim'].show_as_cif()
+project.experiments['sim'].show_as_text()
 
 # %% [markdown]
 # ## 💾 Save Project

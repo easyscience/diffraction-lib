@@ -1106,10 +1106,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#analysis-as-cif" class="md-nav__link">
+  <a href="#analysis-as-text" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Analysis as CIF
+        Analysis as Text
       
     </span>
   </a>
@@ -4136,10 +4136,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#analysis-as-cif" class="md-nav__link">
+  <a href="#analysis-as-text" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Analysis as CIF
+        Analysis as Text
       
     </span>
   </a>
@@ -4569,30 +4569,36 @@ for Ba will be equal to that of La during the refinement process.</p>
 </tbody>
 </table>
 <p>Constraints enabled: True</p>
-<h2 id="analysis-as-cif">Analysis as <abbr title="Crystallographic Information File.">CIF</abbr></h2>
-<p>To inspect an analysis configuration in <abbr title="Crystallographic Information File.">CIF</abbr> format, use:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="c1"># Show analysis as CIF</span>
-<span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">show_as_cif</span><span class="p">()</span>
+<h2 id="analysis-as-text">Analysis as Text</h2>
+<p>To inspect an analysis configuration as text, use:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="c1"># Show analysis as text</span>
+<span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">show_as_text</span><span class="p">()</span>
 </code></pre></div>
-<p>Example output:</p>
-<div class="language-text highlight"><pre><span></span><code>╒════════════════════════════════════════════════╕
-│ _fitting_mode.type           single            │
-│ _minimizer.type              &quot;lmfit (leastsq)&quot; │
-│                                                │
-│ loop_                                          │
-│ _alias.id                                      │
-│ _alias.parameter_unique_name                   │
-│ biso_La  lbco.atom_site.La.B_iso_or_equiv      │
-│ biso_Ba  lbco.atom_site.Ba.B_iso_or_equiv      │
-│ occ_La   lbco.atom_site.La.occupancy           │
-│ occ_Ba   lbco.atom_site.Ba.occupancy           │
-│                                                │
-│ loop_                                          │
-│ _constraint.id                                 │
-│ _constraint.expression                         │
-│ biso_Ba  &quot;biso_Ba = biso_La&quot;                   │
-│ occ_Ba   &quot;occ_Ba = 1 - occ_La&quot;                 │
-╘════════════════════════════════════════════════╛
+<p>Once a fit has run, the output also includes a <code>_fit_result.*</code> block.
+Example output (configuration before fitting):</p>
+<div class="language-text highlight"><pre><span></span><code>Analysis info as text
+┌────────────────────────────────────────────────────┐
+│       CIF                                            │
+├────────────────────────────────────────────────────┤
+│   1   _fitting_mode.type single                      │
+│   2                                                  │
+│   3   _minimizer.type &quot;lmfit (leastsq)&quot;              │
+│   4   _minimizer.max_iterations 1000                 │
+│   5                                                  │
+│   6   loop_                                          │
+│   7   _alias.id                                      │
+│   8   _alias.parameter_unique_name                   │
+│   9   biso_La lbco.atom_site.La.adp_iso              │
+│  10   biso_Ba lbco.atom_site.Ba.adp_iso              │
+│  11   occ_La lbco.atom_site.La.occupancy             │
+│  12   occ_Ba lbco.atom_site.Ba.occupancy             │
+│  13                                                  │
+│  14   loop_                                          │
+│  15   _constraint.id                                 │
+│  16   _constraint.expression                         │
+│  17   biso_Ba &quot;biso_Ba = biso_La&quot;                    │
+│  18   occ_Ba &quot;occ_Ba = 1 - occ_La&quot;                   │
+└────────────────────────────────────────────────────┘
 </code></pre></div>
 <h2 id="saving-an-analysis">Saving an Analysis</h2>
 <p>Saving the project, as described in the <a href="../project/">Project</a> section,
