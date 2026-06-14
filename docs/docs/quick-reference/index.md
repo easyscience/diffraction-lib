@@ -36,13 +36,13 @@ ed.show_version()
 
 ## Get Example Data
 
-Download a dataset by ID into a local directory:
+Download a dataset by its slug into a local directory:
 
 ```python
 ed.list_data()
 
-structure_path = ed.download_data(id=1, destination='data')
-data_path = ed.download_data(id=3, destination='data')
+structure_path = ed.download_data('structures/lbco', destination='data')
+data_path = ed.download_data('measured/lbco-hrpt', destination='data')
 ```
 
 Project archives are extracted automatically, and `download_data()`
@@ -52,7 +52,7 @@ For tutorial notebooks:
 
 ```python
 ed.list_tutorials()
-ed.download_tutorial(id=1, destination='tutorials')
+ed.download_tutorial('refine-lbco-hrpt-from-cif', destination='tutorials')
 ed.download_all_tutorials(destination='tutorials')
 ```
 
@@ -422,7 +422,7 @@ during the normal project save.
 Load a saved example project straight from `download_data()`:
 
 ```python
-saved_project_dir = ed.download_data(id=30, destination='projects')
+saved_project_dir = ed.download_data('projects/lbco-hrpt', destination='projects')
 project = ed.Project.load(saved_project_dir)
 ```
 
