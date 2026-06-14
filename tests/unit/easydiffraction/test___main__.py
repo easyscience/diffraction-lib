@@ -170,7 +170,7 @@ def test_cli_fit_loads_and_fits(monkeypatch, tmp_path):
     # Create a minimal project directory so load doesn't fail on path check
     proj_dir = tmp_path / 'proj'
     proj_dir.mkdir()
-    (proj_dir / 'project.edifa').write_text('_project.id test\n')
+    (proj_dir / 'project.edi').write_text('_project.id test\n')
 
     monkeypatch.setattr(Project, 'load', staticmethod(lambda dir_path: fake_project))
 
@@ -230,7 +230,7 @@ def test_cli_fit_skips_fit_reports_for_sequential_mode(monkeypatch, tmp_path):
 
     proj_dir = tmp_path / 'proj'
     proj_dir.mkdir()
-    (proj_dir / 'project.edifa').write_text('_project.id test\n')
+    (proj_dir / 'project.edi').write_text('_project.id test\n')
 
     monkeypatch.setattr(Project, 'load', staticmethod(lambda dir_path: fake_project))
 
@@ -287,7 +287,7 @@ def test_cli_fit_dry_clears_path(monkeypatch, tmp_path):
 
     proj_dir = tmp_path / 'proj'
     proj_dir.mkdir()
-    (proj_dir / 'project.edifa').write_text('_project.id test\n')
+    (proj_dir / 'project.edi').write_text('_project.id test\n')
 
     monkeypatch.setattr(Project, 'load', staticmethod(lambda dir_path: fake_project))
 

@@ -656,7 +656,7 @@ def test_existing_project_dir_returns_parent(tmp_path):
 
     project_dir = tmp_path / 'myproject'
     project_dir.mkdir()
-    (project_dir / 'project.edifa').write_text('data_block')
+    (project_dir / 'project.edi').write_text('data_block')
     result = MUT._existing_project_dir(tmp_path)
     assert result == project_dir.resolve()
 
@@ -725,7 +725,7 @@ def test_download_data_project_archive_already_extracted(monkeypatch, tmp_path, 
     extraction_dir = tmp_path / 'proj-lbco-hrpt'
     project_dir = extraction_dir / 'inner'
     project_dir.mkdir(parents=True)
-    (project_dir / 'project.edifa').write_text('data_block')
+    (project_dir / 'project.edi').write_text('data_block')
 
     result = MUT.download_data('proj-lbco-hrpt', destination=str(tmp_path))
     assert result == str(project_dir.resolve())
@@ -1191,7 +1191,7 @@ def test_validate_dataset_id_accepts_valid_names(name):
     'name',
     [
         'struct-LBCO',  # uppercase
-        'expt-lbco-hrpt.edifa',  # extension in name
+        'expt-lbco-hrpt.edi',  # extension in name
         'nope-lbco',  # unknown category prefix
         'lbco',  # missing category prefix
         'meas/lbco',  # path form with slash

@@ -88,7 +88,7 @@ def test_project_save_and_load_use_auto_display_defaults_when_unset(tmp_path):
     project = Project(name='beer', title='Beer title', description='Some description')
     project.save_as(str(tmp_path / 'proj'))
 
-    project_cif = (tmp_path / 'proj' / 'project.edifa').read_text()
+    project_cif = (tmp_path / 'proj' / 'project.edi').read_text()
 
     assert not project_cif.startswith('data_')
     assert '_rendering_plot.type auto' in project_cif
@@ -113,7 +113,7 @@ def test_project_save_and_load_keep_project_config_section_format(tmp_path):
     project.rendering_table.type = 'rich'
     project.save_as(str(tmp_path / 'proj'))
 
-    project_cif = (tmp_path / 'proj' / 'project.edifa').read_text()
+    project_cif = (tmp_path / 'proj' / 'project.edi').read_text()
     assert not project_cif.startswith('data_')
     assert '_metadata.name             beer' in project_cif
     assert '_rendering_plot.type asciichartpy' in project_cif
@@ -143,7 +143,7 @@ def test_project_save_wraps_long_description_as_cif_text_field(tmp_path):
     project = Project(name='beer', title='Beer title', description=description)
     project.save_as(str(tmp_path / 'proj'))
 
-    project_cif = (tmp_path / 'proj' / 'project.edifa').read_text()
+    project_cif = (tmp_path / 'proj' / 'project.edi').read_text()
 
     assert '_metadata.description' in project_cif
     description_tail = project_cif.split('_metadata.description', maxsplit=1)[1].lstrip(' ')

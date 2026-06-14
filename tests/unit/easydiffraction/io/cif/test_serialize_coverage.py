@@ -157,7 +157,7 @@ def test_adp_atom_site_loop_truncates_to_max_display():
     out = MUT.category_collection_to_cif(structure.atom_sites, max_display=4)
 
     assert '...' in out.splitlines()
-    # Edifa persistence uses the type-neutral isotropic ADP tag.
+    # Edi persistence uses the type-neutral isotropic ADP tag.
     assert '_atom_site.adp_iso' in out
 
 

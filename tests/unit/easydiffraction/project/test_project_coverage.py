@@ -22,7 +22,7 @@ import easydiffraction.project.project as project_module
 from easydiffraction.project.project import Project
 from easydiffraction.project.project import _apply_csv_row_to_diffrn
 from easydiffraction.project.project import _apply_csv_row_to_params
-from easydiffraction.project.project import _load_edifa_directory
+from easydiffraction.project.project import _load_edi_directory
 from easydiffraction.project.project import _load_project_analysis
 from easydiffraction.project.project import _load_project_metadata
 from easydiffraction.project.project import _resolve_data_path_from_results_csv
@@ -163,56 +163,56 @@ def test_resolve_data_path_joins_relative_to_project():
 
 
 # ----------------------------------------------------------------------
-# _load_edifa_directory / _load_project_metadata / _resolved_analysis_path
+# _load_edi_directory / _load_project_metadata / _resolved_analysis_path
 # ----------------------------------------------------------------------
 
 
-def test_load_edifa_directory_skips_missing_directory(tmp_path):
+def test_load_edi_directory_skips_missing_directory(tmp_path):
     calls: list[str] = []
 
-    _load_edifa_directory(
+    _load_edi_directory(
         tmp_path / 'absent',
         calls.append,
-        replacement='structures/<structure>.edifa',
+        replacement='structures/<structure>.edi',
     )
 
     assert calls == []
 
 
-def test_load_edifa_directory_loads_sorted_edifa_files(tmp_path):
-    edifa_dir = tmp_path / 'structures'
-    edifa_dir.mkdir()
-    (edifa_dir / 'b.edifa').write_text('b')
-    (edifa_dir / 'a.edifa').write_text('a')
-    (edifa_dir / 'note.txt').write_text('ignored')
+def test_load_edi_directory_loads_sorted_edi_files(tmp_path):
+    edi_dir = tmp_path / 'structures'
+    edi_dir.mkdir()
+    (edi_dir / 'b.edi').write_text('b')
+    (edi_dir / 'a.edi').write_text('a')
+    (edi_dir / 'note.txt').write_text('ignored')
 
     calls: list[str] = []
-    _load_edifa_directory(
-        edifa_dir,
+    _load_edi_directory(
+        edi_dir,
         calls.append,
-        replacement='structures/<structure>.edifa',
+        replacement='structures/<structure>.edi',
     )
 
-    assert calls == [str(edifa_dir / 'a.edifa'), str(edifa_dir / 'b.edifa')]
+    assert calls == [str(edi_dir / 'a.edi'), str(edi_dir / 'b.edi')]
 
 
-def test_load_edifa_directory_rejects_legacy_cif(tmp_path):
-    edifa_dir = tmp_path / 'structures'
-    edifa_dir.mkdir()
-    (edifa_dir / 'lbco.cif').write_text('legacy')
+def test_load_edi_directory_rejects_legacy_cif(tmp_path):
+    edi_dir = tmp_path / 'structures'
+    edi_dir.mkdir()
+    (edi_dir / 'lbco.cif').write_text('legacy')
 
-    with pytest.raises(ValueError, match=r'structures/<structure>\.edifa'):
-        _load_edifa_directory(
-            edifa_dir,
+    with pytest.raises(ValueError, match=r'structures/<structure>\.edi'):
+        _load_edi_directory(
+            edi_dir,
             lambda _path: None,
-            replacement='structures/<structure>.edifa',
+            replacement='structures/<structure>.edi',
         )
 
 
-def test_load_project_metadata_no_edifa_raises(tmp_path):
+def test_load_project_metadata_no_edi_raises(tmp_path):
     project = Project(name='unchanged_info')
 
-    with pytest.raises(FileNotFoundError, match=r'project\.edifa'):
+    with pytest.raises(FileNotFoundError, match=r'project\.edi'):
         _load_project_metadata(project, tmp_path)
 
 
@@ -221,10 +221,10 @@ def test_resolved_analysis_path_returns_none_when_absent(tmp_path):
 
 
 def test_resolved_analysis_path_uses_root_fallback(tmp_path):
-    root_edifa = tmp_path / 'analysis.edifa'
-    root_edifa.write_text('analysis')
+    root_edi = tmp_path / 'analysis.edi'
+    root_edi.write_text('analysis')
 
-    assert _resolved_analysis_path(tmp_path) == root_edifa
+    assert _resolved_analysis_path(tmp_path) == root_edi
 
 
 def test_load_project_analysis_no_cif_is_noop(tmp_path):
@@ -400,7 +400,7 @@ def test_save_without_path_logs_error_and_returns(monkeypatch):
     assert any('save_as()' in message for message in errors)
 
 
-def test_save_writes_experiment_edifa_files(tmp_path, monkeypatch):
+def test_save_writes_experiment_edi_files(tmp_path, monkeypatch):
     from easydiffraction.analysis.analysis import Analysis
     from easydiffraction.project.project_metadata import ProjectMetadata
 
@@ -420,11 +420,11 @@ def test_save_writes_experiment_edifa_files(tmp_path, monkeypatch):
     project._experiments = _Experiments(parameters=[])
     project.save_as(str(tmp_path / 'proj'))
 
-    # Experiments are persisted as Edifa files carrying the schema
+    # Experiments are persisted as Edi files carrying the schema
     # marker; the original section header is preserved.
-    written = (tmp_path / 'proj' / 'experiments' / 'scan1.edifa').read_text()
+    written = (tmp_path / 'proj' / 'experiments' / 'scan1.edi').read_text()
     assert written.startswith('data_scan1')
-    assert '_edifa.schema_name EasyDiffraction' in written
+    assert '_edi.schema_name EasyDiffraction' in written
 
 
 def test_save_as_temporary_writes_under_system_tempdir(monkeypatch):
@@ -441,7 +441,7 @@ def test_save_as_temporary_writes_under_system_tempdir(monkeypatch):
     try:
         project.save_as(unique_dir, temporary=True)
         expected = pathlib.Path(tempfile.gettempdir()) / unique_dir
-        assert (expected / 'project.edifa').is_file()
+        assert (expected / 'project.edi').is_file()
         assert project.metadata.path == expected
     finally:
         import shutil
@@ -476,7 +476,7 @@ def test_save_as_overwrite_clears_children_when_target_is_cwd(tmp_path, monkeypa
     # children are removed before the fresh project is written.
     assert not stale_file.exists()
     assert not stale_dir.exists()
-    assert (target / 'project.edifa').is_file()
+    assert (target / 'project.edi').is_file()
 
 
 # ----------------------------------------------------------------------

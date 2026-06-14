@@ -114,7 +114,7 @@ def test_cli_fit_loads_and_fits(monkeypatch, tmp_path):
 
     project_dir = tmp_path / 'proj'
     project_dir.mkdir()
-    (project_dir / 'project.edifa').write_text('_metadata.name test\n')
+    (project_dir / 'project.edi').write_text('_metadata.name test\n')
 
     monkeypatch.setattr(Project, 'load', staticmethod(lambda path: fake_project))
 
@@ -172,7 +172,7 @@ def test_cli_fit_dry_clears_path(monkeypatch, tmp_path):
 
     project_dir = tmp_path / 'proj'
     project_dir.mkdir()
-    (project_dir / 'project.edifa').write_text('_metadata.name test\n')
+    (project_dir / 'project.edi').write_text('_metadata.name test\n')
 
     monkeypatch.setattr(Project, 'load', staticmethod(lambda path: fake_project))
 

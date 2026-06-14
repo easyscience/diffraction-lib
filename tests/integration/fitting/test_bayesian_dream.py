@@ -185,9 +185,9 @@ def test_bayesian_fit_results_reload_from_persisted_fit_state(tmp_path):
     proj_dir = tmp_path / 'dream_project'
     project.save_as(str(proj_dir))
 
-    analysis_edifa = proj_dir / 'analysis' / 'analysis.edifa'
+    analysis_edi = proj_dir / 'analysis' / 'analysis.edi'
     results_sidecar = proj_dir / 'analysis' / 'results.h5'
-    assert analysis_edifa.is_file()
+    assert analysis_edi.is_file()
     assert results_sidecar.is_file()
 
     loaded = Project.load(str(proj_dir))

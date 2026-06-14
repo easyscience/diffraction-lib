@@ -33,7 +33,7 @@ def test_calculate_pattern_benchmark(benchmark, label, structure_id, experiment_
 
     project = ed.Project()
     project.structures.add_from_cif_path(ed.download_data(structure_id, destination='data'))
-    project.experiments.add_from_edifa_path(ed.download_data(experiment_id, destination='data'))
+    project.experiments.add_from_edi_path(ed.download_data(experiment_id, destination='data'))
 
     experiment = project.experiments['hrpt']
     experiment.calculator.type = engine

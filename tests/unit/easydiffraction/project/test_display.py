@@ -36,7 +36,7 @@ def _make_project_stub() -> tuple[SimpleNamespace, list[tuple[str, tuple, dict]]
         free_params=record('free_params'),
         how_to_access_parameters=record('how_to_access_parameters'),
         parameter_uids=record('parameter_uids'),
-        parameter_edifa_tags=record('parameter_edifa_tags'),
+        parameter_edi_tags=record('parameter_edi_tags'),
         parameter_cif_tags=record('parameter_cif_tags'),
         fit_results=record('fit_results'),
     )
@@ -176,7 +176,7 @@ def test_parameter_display_delegates_to_analysis_display():
     display.parameters.free()
     display.parameters.access()
     display.parameters.uid()
-    display.parameters.edifa()
+    display.parameters.edi()
     display.parameters.cif()
 
     assert [name for name, _args, _kwargs in calls] == [
@@ -185,7 +185,7 @@ def test_parameter_display_delegates_to_analysis_display():
         'free_params',
         'how_to_access_parameters',
         'parameter_uids',
-        'parameter_edifa_tags',
+        'parameter_edi_tags',
         'parameter_cif_tags',
     ]
 
