@@ -260,18 +260,18 @@ def _build_data_url(path: str) -> str:
     )
 
 
-class DataNamespaceEnum(StrEnum):
-    """The fixed namespaces a downloadable dataset id can carry."""
+class DataCategoryEnum(StrEnum):
+    """The fixed category prefixes a downloadable dataset name carries."""
 
-    STRUCTURES = 'structures'
-    EXPERIMENTS = 'experiments'
-    MEASURED = 'measured'
-    PROJECTS = 'projects'
+    STRUCTURE = 'struct'
+    EXPERIMENT = 'expt'
+    MEASURED = 'meas'
+    PROJECT = 'proj'
 
 
-_DATA_NAMESPACES = frozenset(member.value for member in DataNamespaceEnum)
-# One slug segment: lowercase ASCII letters/digits in dash-separated
-# groups, no leading/trailing/doubled dashes (resource-naming ADR).
+_DATA_CATEGORIES = frozenset(member.value for member in DataCategoryEnum)
+# One slug: lowercase ASCII letters/digits in dash-separated groups, no
+# leading/trailing/doubled dashes (resource-naming ADR).
 _SLUG_SEGMENT_RE = re.compile(r'[a-z0-9]+(?:-[a-z0-9]+)*')
 
 
@@ -287,29 +287,29 @@ def _validate_slug_segment(segment: str, *, kind: str) -> None:
 
 
 def _validate_dataset_id(name: str) -> None:
-    """Validate a dataset id of the form ``<namespace>/<slug>``."""
-    if name.count('/') != 1:
+    """Validate a dataset name of the form ``<category>-<slug>``."""
+    if '/' in name:
         msg = (
-            f"Invalid dataset id '{name}': expected '<namespace>/<slug>' with a "
-            f'single namespace from {sorted(_DATA_NAMESPACES)}.'
+            f"Invalid dataset name '{name}': use a single dash-joined name such as "
+            "'meas-lbco-hrpt', not a path with '/'."
         )
         raise ValueError(msg)
-    namespace, slug = name.split('/', 1)
-    if namespace not in _DATA_NAMESPACES:
+    _validate_slug_segment(name, kind='dataset name')
+    category = name.split('-', 1)[0]
+    if category == name or category not in _DATA_CATEGORIES:
         msg = (
-            f"Invalid dataset namespace '{namespace}' in '{name}': expected one "
-            f'of {sorted(_DATA_NAMESPACES)}.'
+            f"Invalid dataset category in '{name}': expected a '<category>-<name>' "
+            f'name with a category prefix from {sorted(_DATA_CATEGORIES)}.'
         )
         raise ValueError(msg)
-    _validate_slug_segment(slug, kind='dataset slug')
 
 
 def _validate_tutorial_id(name: str) -> None:
-    """Validate a tutorial id (a single slug segment, no namespace)."""
+    """Validate a tutorial name (a single slug segment, no '/')."""
     if '/' in name:
-        msg = f"Invalid tutorial id '{name}': tutorials use a bare slug with no '/'."
+        msg = f"Invalid tutorial name '{name}': tutorials use a bare name with no '/'."
         raise ValueError(msg)
-    _validate_slug_segment(name, kind='tutorial id')
+    _validate_slug_segment(name, kind='tutorial name')
 
 
 _DEFAULT_LISTING_ORDER = 1_000_000
@@ -322,7 +322,7 @@ def _ordered_keys(index: dict) -> list[str]:
     Records may carry an explicit ``order`` field (e.g. the tutorial
     learning order from the MkDocs nav, per resource-naming ADR Decision
     4); those sort first by that order. Records without one (e.g.
-    datasets) fall back to alphabetical by slug.
+    datasets) fall back to alphabetical by name.
     """
     return sorted(index, key=lambda key: (index[key].get('order', _DEFAULT_LISTING_ORDER), key))
 
@@ -344,7 +344,7 @@ def _resolve_positional(position: int, keys: list[str], *, kind: str) -> str:
     if not 1 <= position <= len(keys):
         msg = (
             f'Invalid {kind} number {position}: expected 1..{len(keys)} as shown '
-            f'by the listing. Use the slug for saved code.'
+            f'by the listing. Use the name for saved code.'
         )
         raise IndexError(msg)
     return keys[position - 1]
@@ -378,14 +378,15 @@ def _validate_url(url: str) -> None:
         raise ValueError(msg)
 
 
-def _filename_from_path(record_path: str) -> str:
+def _local_filename(resource_id: str, record_path: str) -> str:
     """
-    Return the local filename for a record (slug leaf plus extension).
+    Return the local download filename, ``<name>.<ext>``.
 
-    The id already mirrors the file path (resource-naming ADR, Decision
-    5), so the saved file keeps the slug name, e.g. ``lbco-hrpt.edifa``.
+    The repository path may live under a category folder, but the saved
+    file is named after the dataset name so it matches the id the user
+    typed (e.g. ``meas-lbco-hrpt.xye``).
     """
-    return pathlib.PurePosixPath(record_path).name
+    return f'{resource_id}{pathlib.PurePosixPath(record_path).suffix}'
 
 
 def _normalize_known_hash(value: str | None) -> str | None:
@@ -471,8 +472,8 @@ def _download_data_message(name: str, record: dict) -> str:
 
 
 def _is_project_id(resource_id: str) -> bool:
-    """Return True for ids in the ``projects/`` namespace."""
-    return resource_id.startswith(f'{DataNamespaceEnum.PROJECTS.value}/')
+    """Return True for project-archive names (the ``proj-`` category)."""
+    return resource_id.startswith(f'{DataCategoryEnum.PROJECT.value}-')
 
 
 def _download_data_targets(
@@ -485,9 +486,9 @@ def _download_data_targets(
     url = _build_data_url(record_path)
     _validate_url(url)
 
-    fname = _filename_from_path(record_path)
-    # The namespace carries the kind, so a project archive is any
-    # ``projects/`` id delivered as a ZIP (resource-naming ADR).
+    fname = _local_filename(resource_id, record_path)
+    # The category prefix carries the kind, so a project archive is any
+    # ``proj-`` name delivered as a ZIP (resource-naming ADR).
     is_project_archive = _is_project_id(resource_id) and fname.endswith('.zip')
     dest_path = resolve_artifact_path(destination)
     dest_path.mkdir(parents=True, exist_ok=True)
@@ -535,7 +536,7 @@ def _fetch_tutorials_index() -> dict:
 
 def _resolve_data_id(name: int | str, index: dict) -> str:
     """
-    Resolve a dataset slug or interactive row number to an index key.
+    Resolve a dataset name or interactive row number to an index key.
     """
     if _is_positional(name):
         return _resolve_positional(int(name), _ordered_keys(index), kind='dataset')
@@ -554,16 +555,16 @@ def download_data(
     overwrite: bool = False,
 ) -> str:
     """
-    Download a dataset by its slug id from the diffraction data index.
+    Download a dataset by its name from the diffraction data index.
 
-    Example: path = download_data('experiments/lbco-hrpt')
+    Example: path = download_data('expt-lbco-hrpt')
 
     Parameters
     ----------
     name : int | str
-        Dataset slug id ``<namespace>/<slug>`` (e.g.
-        ``'structures/lbco'``). Interactively, the row number shown by
-        :func:`list_data` is also accepted; use the slug in saved code.
+        Dataset name ``<category>-<name>`` (e.g. ``'struct-lbco'``,
+        ``'meas-lbco-hrpt'``). Interactively, the row number shown by
+        :func:`list_data` is also accepted; use the name in saved code.
     destination : str, default='data'
         Directory to save the downloaded file or extracted project into
         (created if missing). Relative destinations are resolved against
@@ -576,8 +577,8 @@ def download_data(
     -------
     str
         Full path to the downloaded file, or to the extracted project
-        directory for project ZIP archives, as string. A malformed slug
-        raises ``ValueError`` and an unknown slug raises ``KeyError``.
+        directory for project ZIP archives, as string. A malformed name
+        raises ``ValueError`` and an unknown name raises ``KeyError``.
     """
     index = _fetch_data_index()
     resource_id = _resolve_data_id(name, index)
@@ -649,27 +650,27 @@ def download_data(
 
 
 def list_data() -> None:
-    """Display a table of available example data records."""
+    """Display a table of available downloadable datasets."""
     index = _fetch_data_index()
     if not index:
-        console.print('❌ No example data available.')
+        console.print('❌ No datasets available.')
         return
 
-    console.paragraph('Example data available for download:')
+    console.paragraph('Datasets available for download:')
 
-    # The id already carries the kind via its namespace, so no separate
-    # kind column. The leading '#' is a transient row number for
-    # interactive download; the slug is the canonical handle.
-    columns_headers = ['#', 'id', 'file', 'description']
-    columns_alignment = ['right', 'left', 'left', 'left']
+    # The table renderer adds its own leading row number. The category
+    # prefix carries the kind, so only the name, format, and description
+    # are shown; the name is the canonical download handle.
+    columns_headers = ['name', 'format', 'description']
+    columns_alignment = ['left', 'left', 'left']
     columns_data = []
 
-    for position, resource_id in enumerate(_ordered_keys(index), start=1):
+    for resource_id in _ordered_keys(index):
         record = index[resource_id]
+        suffix = pathlib.PurePosixPath(_record_path(record)).suffix.lstrip('.')
         columns_data.append([
-            position,
             resource_id,
-            pathlib.PurePosixPath(_record_path(record)).name,
+            suffix,
             record.get('description', ''),
         ])
 
@@ -903,11 +904,10 @@ def list_tutorials() -> None:
     """
     Display a table of available tutorial notebooks.
 
-    In the terminal each row shows the tutorial ID, filename, and a
-    combined entry with the title on the first line and a dimmed
-    description on the second. In Jupyter the table shows the plain
-    title only, since the HTML backend cannot render the terminal
-    styling.
+    In the terminal each row shows the tutorial name and a combined entry
+    with the title on the first line and a dimmed description on the
+    second. In Jupyter the table shows the plain title only, since the
+    HTML backend cannot render the terminal styling.
     """
     index = _fetch_tutorials_index()
     if not index:
@@ -917,14 +917,15 @@ def list_tutorials() -> None:
     version = _get_version_for_url()
     console.paragraph(f'Tutorials available for easydiffraction v{version}:')
 
-    columns_headers = ['#', 'id', 'file', 'tutorial']
-    columns_alignment = ['right', 'left', 'left', 'left']
+    # The renderer adds its own leading row number; every tutorial is a
+    # notebook, so the name alone identifies it (no file column).
+    columns_headers = ['name', 'tutorial']
+    columns_alignment = ['left', 'left']
     columns_data = []
 
     use_markup = not in_jupyter()
-    for position, tutorial_id in enumerate(_ordered_keys(index), start=1):
+    for tutorial_id in _ordered_keys(index):
         record = index[tutorial_id]
-        filename = f'{tutorial_id}.ipynb'
         title = record.get('title', '')
         description = record.get('description', '')
         if not use_markup:
@@ -937,7 +938,7 @@ def list_tutorials() -> None:
                 details = f'{styled_title}\n[dim]{escape(description)}[/dim]'
             else:
                 details = styled_title
-        columns_data.append([position, tutorial_id, filename, details])
+        columns_data.append([tutorial_id, details])
 
     render_table(
         columns_headers=columns_headers,
@@ -949,7 +950,7 @@ def list_tutorials() -> None:
 
 def _resolve_tutorial_id(name: int | str, index: dict) -> str:
     """
-    Resolve a tutorial slug or interactive row number to an index key.
+    Resolve a tutorial name or interactive row number to an index key.
     """
     if _is_positional(name):
         return _resolve_positional(int(name), _ordered_keys(index), kind='tutorial')
@@ -968,16 +969,16 @@ def download_tutorial(
     overwrite: bool = False,
 ) -> str:
     """
-    Download a tutorial notebook by its slug id.
+    Download a tutorial notebook by its name.
 
     Example: path = download_tutorial('refine-lbco-hrpt-from-cif')
 
     Parameters
     ----------
     name : int | str
-        Tutorial slug id (e.g. ``'refine-lbco-hrpt-from-cif'``).
+        Tutorial name (e.g. ``'refine-lbco-hrpt-from-cif'``).
         Interactively, the row number shown by :func:`list_tutorials` is
-        also accepted; use the slug in saved code.
+        also accepted; use the name in saved code.
     destination : str, default='tutorials'
         Directory to save the file into (created if missing). Relative
         destinations are resolved against the configured artifact root
@@ -988,8 +989,8 @@ def download_tutorial(
     Returns
     -------
     str
-        Full path to the downloaded file as string. A malformed slug
-        raises ``ValueError`` and an unknown slug raises ``KeyError``.
+        Full path to the downloaded file as string. A malformed name
+        raises ``ValueError`` and an unknown name raises ``KeyError``.
     """
     index = _fetch_tutorials_index()
     resource_id = _resolve_tutorial_id(name, index)
