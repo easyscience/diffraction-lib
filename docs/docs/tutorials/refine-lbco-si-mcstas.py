@@ -251,10 +251,10 @@ experiment.excluded_regions.show()
 project.display.pattern(expt_name='mcstas')
 
 # %% [markdown]
-# Show experiment as CIF.
+# Show experiment as text.
 
 # %%
-project.experiments['mcstas'].show_as_cif()
+project.experiments['mcstas'].show_as_text()
 
 # %% [markdown]
 # ## 🚀 Perform Analysis

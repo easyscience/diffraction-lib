@@ -137,51 +137,51 @@ Defined structures 🧩
 ['lbco', 'nacl']
 ```
 
-## Viewing a Structure as Edifa
+## Viewing a Structure as Text
 
-To inspect a structure in the project persistence format, use:
+To inspect a structure's serialized text (the same content the project
+persists into its Edifa files), use:
 
 ```python
-# Show structure as Edifa text
-project.structures['lbco'].show_as_cif()
+# Show structure as text
+project.structures['lbco'].show_as_text()
 ```
 
 Example output:
 
 ```
-Structure 🧩 'lbco' as Edifa
-╒═══════════════════════════════════════════╕
-│ data_lbco                                 │
-│                                           │
-│ _edifa.schema_name EasyDiffraction       │
-│ _edifa.schema_version 1                  │
-│                                           │
-│ _space_group.coord_system_code  1          │
-│ _space_group.name_h_m  "P m -3 m"         │
-│                                           │
-│ _cell.angle_alpha  90                     │
-│ _cell.angle_beta  90                      │
-│ _cell.angle_gamma  90                     │
-│ _cell.length_a  3.88                      │
-│ _cell.length_b  3.88                      │
-│ _cell.length_c  3.88                      │
-│                                           │
-│ loop_                                     │
-│ _atom_site.adp_iso                        │
-│ _atom_site.adp_type                       │
-│ _atom_site.fract_x                        │
-│ _atom_site.fract_y                        │
-│ _atom_site.fract_z                        │
-│ _atom_site.id                             │
-│ _atom_site.multiplicity                   │
-│ _atom_site.occupancy                      │
-│ _atom_site.type_symbol                    │
-│ _atom_site.wyckoff_letter                 │
-│ 0.5 Biso 0.0 0.0 0.0 La . 0.5 La a        │
-│ 0.5 Biso 0.0 0.0 0.0 Ba . 0.5 Ba a        │
-│ 0.5 Biso 0.5 0.5 0.5 Co . 1.0 Co b        │
-│ 0.5 Biso 0.0 0.5 0.5 O  . 1.0 O  c        │
-╘═══════════════════════════════════════════╛
+Structure 🧩 'lbco' as text
+┌──────────────────────────────────────────────┐
+│      CIF                                       │
+├──────────────────────────────────────────────┤
+│  1   data_lbco                                 │
+│  2                                             │
+│  3   _cell.length_a 3.890868(38)               │
+│  4   _cell.length_b 3.890868                    │
+│  5   _cell.length_c 3.890868                    │
+│  6   _cell.angle_alpha 90.                      │
+│  7   _cell.angle_beta 90.                       │
+│  8   _cell.angle_gamma 90.                      │
+│  9                                             │
+│ 10   _space_group.name_h_m "P m -3 m"           │
+│ 11   _space_group.coord_system_code 1           │
+│ 12                                             │
+│ 13   loop_                                      │
+│ 14   _atom_site.id                              │
+│ 15   _atom_site.type_symbol                     │
+│ 16   _atom_site.fract_x                         │
+│ 17   _atom_site.fract_y                         │
+│ 18   _atom_site.fract_z                         │
+│ 19   _atom_site.wyckoff_letter                  │
+│ 20   _atom_site.multiplicity                    │
+│ 21   _atom_site.occupancy                       │
+│ 22   _atom_site.adp_iso                         │
+│ 23   _atom_site.adp_type                        │
+│ 24   La La 0. 0. 0. a 1 0.5 0.505(28) Biso      │
+│ 25   Ba Ba 0. 0. 0. a 1 0.5 0.50514168 Biso     │
+│ 26   Co Co 0.5 0.5 0.5 b 1 1. 0.237(56) Biso    │
+│ 27   O O 0. 0.5 0.5 c 3 1. 1.394(16) Biso       │
+└──────────────────────────────────────────────┘
 ```
 
 ## Viewing a Structure in 3D

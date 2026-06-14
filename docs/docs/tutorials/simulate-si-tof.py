@@ -129,10 +129,10 @@ project.display.pattern(expt_name='sim')
 project.display.pattern(expt_name='sim', x_min=5000, x_max=6000)
 
 # %% [markdown]
-# ### Inspect as CIF
+# ### Inspect as Text
 
 # %%
-project.experiments['sim'].show_as_cif()
+project.experiments['sim'].show_as_text()
 
 # %% [markdown]
 # ## 💾 Save Project

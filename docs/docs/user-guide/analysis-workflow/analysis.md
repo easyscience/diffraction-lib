@@ -410,36 +410,42 @@ User defined constraints
 
 Constraints enabled: True
 
-## Analysis as CIF
+## Analysis as Text
 
-To inspect an analysis configuration in CIF format, use:
+To inspect an analysis configuration as text, use:
 
 ```python
-# Show analysis as CIF
-project.analysis.show_as_cif()
+# Show analysis as text
+project.analysis.show_as_text()
 ```
 
-Example output:
+Once a fit has run, the output also includes a `_fit_result.*` block.
+Example output (configuration before fitting):
 
 ```
-╒════════════════════════════════════════════════╕
-│ _fitting_mode.type           single            │
-│ _minimizer.type              "lmfit (leastsq)" │
-│                                                │
-│ loop_                                          │
-│ _alias.id                                      │
-│ _alias.parameter_unique_name                   │
-│ biso_La  lbco.atom_site.La.B_iso_or_equiv      │
-│ biso_Ba  lbco.atom_site.Ba.B_iso_or_equiv      │
-│ occ_La   lbco.atom_site.La.occupancy           │
-│ occ_Ba   lbco.atom_site.Ba.occupancy           │
-│                                                │
-│ loop_                                          │
-│ _constraint.id                                 │
-│ _constraint.expression                         │
-│ biso_Ba  "biso_Ba = biso_La"                   │
-│ occ_Ba   "occ_Ba = 1 - occ_La"                 │
-╘════════════════════════════════════════════════╛
+Analysis info as text
+┌────────────────────────────────────────────────────┐
+│       CIF                                            │
+├────────────────────────────────────────────────────┤
+│   1   _fitting_mode.type single                      │
+│   2                                                  │
+│   3   _minimizer.type "lmfit (leastsq)"              │
+│   4   _minimizer.max_iterations 1000                 │
+│   5                                                  │
+│   6   loop_                                          │
+│   7   _alias.id                                      │
+│   8   _alias.parameter_unique_name                   │
+│   9   biso_La lbco.atom_site.La.adp_iso              │
+│  10   biso_Ba lbco.atom_site.Ba.adp_iso              │
+│  11   occ_La lbco.atom_site.La.occupancy             │
+│  12   occ_Ba lbco.atom_site.Ba.occupancy             │
+│  13                                                  │
+│  14   loop_                                          │
+│  15   _constraint.id                                 │
+│  16   _constraint.expression                         │
+│  17   biso_Ba "biso_Ba = biso_La"                    │
+│  18   occ_Ba "occ_Ba = 1 - occ_La"                   │
+└────────────────────────────────────────────────────┘
 ```
 
 ## Saving an Analysis

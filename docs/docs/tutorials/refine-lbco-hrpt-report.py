@@ -46,10 +46,10 @@ structure, using neutron powder diffraction data collected in constant
 wavelength mode at the HRPT diffractometer (PSI)."""
 
 # %% [markdown]
-# ### Show Project Metadata as CIF
+# ### Show Project Metadata as Text
 
 # %%
-project.metadata.show_as_cif()
+project.metadata.show_as_text()
 
 # %% [markdown]
 # ### Save Project
@@ -142,10 +142,10 @@ project.structures['lbco'].atom_sites.create(
 )
 
 # %% [markdown]
-# ### Show Structure as CIF
+# ### Show Structure as Text
 
 # %%
-project.structures['lbco'].show_as_cif()
+project.structures['lbco'].show_as_text()
 
 # %% [markdown]
 # ### Display Structure
@@ -332,10 +332,10 @@ project.experiments['hrpt'].background.show()
 project.experiments['hrpt'].linked_structures.create(structure_id='lbco', scale=10.0)
 
 # %% [markdown]
-# ### Show Experiment as CIF
+# ### Show Experiment as Text
 
 # %%
-project.experiments['hrpt'].show_as_cif()
+project.experiments['hrpt'].show_as_text()
 
 # %% [markdown]
 # ### Save Project State

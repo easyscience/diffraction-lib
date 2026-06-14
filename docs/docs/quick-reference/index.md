@@ -136,14 +136,14 @@ experiment.linked_structures.create(structure_id='lbco', scale=10.0)
 
 ## Inspect the Project
 
-Show names and CIF text:
+Show names and serialized text:
 
 ```python
 project.structures.show_names()
 project.experiments.show_names()
 
-structure.show_as_cif()
-experiment.show_as_cif()
+structure.show_as_text()
+experiment.show_as_text()
 ```
 
 Open the main display views:

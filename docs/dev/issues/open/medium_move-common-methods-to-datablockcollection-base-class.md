@@ -5,7 +5,7 @@
 **Type:** Maintainability
 
 Both `Experiments` and `Structures` collections duplicate methods
-(`from_cif_str`, `from_cif_file`, `show`, `show_as_cif`, etc.) that
+(`from_cif_str`, `from_cif_file`, `show`, `show_as_text`, etc.) that
 could live in the base `DatablockCollection`.
 
 **TODOs:**

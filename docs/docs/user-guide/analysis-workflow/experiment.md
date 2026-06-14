@@ -404,73 +404,65 @@ Defined experiments 🔬
 ['hrpt']
 ```
 
-## Viewing an Experiment as Edifa
+## Viewing an Experiment as Text
 
-To inspect an experiment in the project persistence format, use:
+To inspect an experiment's serialized text (the same content the project
+persists into its Edifa files), use:
 
 ```python
-# Show experiment as Edifa text
-project.experiments['hrpt'].show_as_cif()
+# Show experiment as text
+project.experiments['hrpt'].show_as_text()
 ```
 
-Example output:
+Long loops (measured data, reflections) are truncated with `...` for
+display. Example output:
 
 ```
-Experiment 🔬 'hrpt' as Edifa
-╒═════════════════════════════════════════════╕
-│ data_hrpt                                   │
-│                                             │
-│ _edifa.schema_name EasyDiffraction         │
-│ _edifa.schema_version 1                    │
-│                                             │
-│ _experiment_type.beam_mode  "constant wavelength" │
-│ _experiment_type.radiation_probe  neutron   │
-│ _experiment_type.sample_form  powder        │
-│ _experiment_type.scattering_type  bragg     │
-│                                             │
-│ _calculator.type  cryspy                    │
-│                                             │
-│ _instrument.calib_twotheta_offset  0.6      │
-│ _instrument.setup_wavelength  1.494         │
-│                                             │
-│ _peak.broad_gauss_u  0.1                    │
-│ _peak.broad_gauss_v  -0.1                   │
-│ _peak.broad_gauss_w  0.1                    │
-│ _peak.broad_lorentz_x  0                    │
-│ _peak.broad_lorentz_y  0.1                  │
-│                                             │
-│ loop_                                       │
-│ _linked_structure.structure_id              │
-│ _linked_structure.scale                     │
-│ lbco 10.0                                   │
-│                                             │
-│ loop_                                       │
-│ _background.id                              │
-│ _background.position                        │
-│ _background.intensity                       │
-│ 1 10 170                                    │
-│ 2 30 170                                    │
-│ 3 50 170                                    │
-│ 4 110 170                                   │
-│ 5 165 170                                   │
-│                                             │
-│ loop_                                       │
-│ _data.id                                    │
-│ _data.two_theta                             │
-│ _data.intensity_meas                        │
-│ _data.intensity_meas_su                     │
-│ 1 10.0 167.0 12.6                           │
-│ 2 10.05 157.0 12.5                          │
-│ 3 10.1 187.0 13.3                           │
-│ 4 10.15 197.0 14.0                          │
-│ 5 10.2 164.0 12.5                           │
-│ ...                                         │
-│ 164.65 173.0 30.1                           │
-│ 164.7 187.0 27.9                            │
-│ 164.75 175.0 38.2                           │
-│ 164.8 168.0 30.9                            │
-│ 164.85 109.0 41.2                           │
-╘═════════════════════════════════════════════╛
+Experiment 🔬 'hrpt' as text
+┌────────────────────────────────────────────────────┐
+│       CIF                                            │
+├────────────────────────────────────────────────────┤
+│   1   data_hrpt                                      │
+│   2                                                  │
+│   3   _experiment_type.sample_form powder            │
+│   4   _experiment_type.beam_mode "constant wavelength" │
+│   5   _experiment_type.radiation_probe neutron       │
+│   6   _experiment_type.scattering_type bragg         │
+│   7                                                  │
+│   8   _calculator.type cryspy                        │
+│   9                                                  │
+│  10   _peak.broad_gauss_u 0.0816(31)                 │
+│  11   _peak.broad_gauss_v -0.1159(66)                │
+│  12   _peak.broad_gauss_w 0.1204(32)                 │
+│  13   _peak.broad_lorentz_x 0.                       │
+│  14   _peak.broad_lorentz_y 0.0844(21)               │
+│  15   _peak.type cwl-pseudo-voigt                    │
+│  16                                                  │
+│  17   _instrument.setup_wavelength 1.494             │
+│  18   _instrument.calib_twotheta_offset 0.6226(10)   │
+│  19                                                  │
+│  20   loop_                                          │
+│  21   _linked_structure.structure_id                 │
+│  22   _linked_structure.scale                        │
+│  23   lbco 9.135(54)                                 │
+│  24                                                  │
+│  25   _background.type line-segment                  │
+│  26                                                  │
+│  27   loop_                                          │
+│  28   _background.id                                 │
+│  29   _background.position                           │
+│  30   _background.intensity                          │
+│  31   1 10. 168.4(1.4)                               │
+│  32   ...                                            │
+│  33                                                  │
+│  34   loop_                                          │
+│  35   _data.two_theta                                │
+│  36   _data.id                                       │
+│  37   _data.intensity_meas                           │
+│  38   _data.intensity_meas_su                        │
+│  39   10. 1 167. 12.6                                │
+│  40   ...                                            │
+└────────────────────────────────────────────────────┘
 ```
 
 ## Saving an Experiment

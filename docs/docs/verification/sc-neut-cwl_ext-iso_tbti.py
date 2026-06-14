@@ -80,7 +80,7 @@ aniso.adp_11 = 0.00060762477  # FullProf beta11
 project.structures.add(structure)
 
 # %%
-structure.show_as_cif()
+structure.show_as_text()
 
 # %% [markdown]
 # ## Load the FullProf reference

@@ -40,7 +40,7 @@ project.structures.show_names()
 structure = project.structures['tbti']
 
 # %%
-structure.show_as_cif()
+structure.show_as_text()
 
 # %%
 structure.atom_sites['Tb'].adp_type = 'Uiso'
@@ -135,7 +135,7 @@ project.analysis.fit()
 project.display.fit.results()
 
 # %%
-structure.show_as_cif()
+structure.show_as_text()
 
 # %%
 project.display.structure(struct_name='tbti')
@@ -181,7 +181,7 @@ project.display.fit.correlations()
 project.display.pattern(expt_name='heidi')
 
 # %%
-structure.show_as_cif()
+structure.show_as_text()
 
 # %% [markdown]
 # ### Display Structure (final)
