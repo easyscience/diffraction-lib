@@ -15,8 +15,8 @@ import pytest
 
 # (id, structure download slug, experiment download slug, engine)
 SCENARIOS = [
-    ('neut-cwl-pd-cryspy', 'structures/lbco', 'experiments/lbco-hrpt', 'cryspy'),
-    ('neut-cwl-pd-crysfml', 'structures/lbco', 'experiments/lbco-hrpt', 'crysfml'),
+    ('neut-cwl-pd-cryspy', 'struct-lbco', 'expt-lbco-hrpt', 'cryspy'),
+    ('neut-cwl-pd-crysfml', 'struct-lbco', 'expt-lbco-hrpt', 'crysfml'),
 ]
 
 

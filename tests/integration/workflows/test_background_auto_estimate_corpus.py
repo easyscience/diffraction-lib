@@ -82,7 +82,7 @@ def test_auto_estimate_tracks_cwl_tutorial_background(tmp_path):
     _assert_tracks_reference(
         tmp_path,
         'hrpt',
-        'measured/lbco-hrpt',
+        'meas-lbco-hrpt',
         'constant wavelength',
         'neutron',
         [(0, 5), (165, 180)],
@@ -95,7 +95,7 @@ def test_auto_estimate_tracks_tof_tutorial_background(tmp_path):
     _assert_tracks_reference(
         tmp_path,
         'sim_si',
-        'measured/si-mcstas-dmsc2025',
+        'meas-si-mcstas-dmsc2025',
         'time-of-flight',
         'neutron',
         [(0, 55000), (105500, 200000)],

@@ -39,7 +39,7 @@ def test_single_fit_pdf_xray_pd_cw_nacl() -> None:
     )
 
     # Set experiment
-    data_path = ed.download_data('measured/nacl-pdf', destination=TEMP_DIR)
+    data_path = ed.download_data('meas-nacl-pdf', destination=TEMP_DIR)
     project.experiments.add_from_data_path(
         name='xray_pdf',
         data_path=data_path,
@@ -94,7 +94,7 @@ def test_single_fit_pdf_neutron_pd_cw_ni():
     )
 
     # Set experiment
-    data_path = ed.download_data('measured/ni-pdf', destination=TEMP_DIR)
+    data_path = ed.download_data('meas-ni-pdf', destination=TEMP_DIR)
     project.experiments.add_from_data_path(
         name='pdf',
         data_path=data_path,
@@ -147,7 +147,7 @@ def test_single_fit_pdf_neutron_pd_tof_si():
     )
 
     # Set experiment
-    data_path = ed.download_data('measured/si-pdf-nomad', destination=TEMP_DIR)
+    data_path = ed.download_data('meas-si-pdf-nomad', destination=TEMP_DIR)
     project.experiments.add_from_data_path(
         name='nomad',
         data_path=data_path,

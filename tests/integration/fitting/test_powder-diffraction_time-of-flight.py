@@ -30,7 +30,7 @@ def test_single_fit_neutron_pd_tof_si() -> None:
     )
 
     # Set experiment
-    data_path = download_data('measured/si-sepd', destination=TEMP_DIR)
+    data_path = download_data('meas-si-sepd', destination=TEMP_DIR)
     expt = ExperimentFactory.from_data_path(
         name='sepd',
         data_path=data_path,
@@ -141,7 +141,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
     )
 
     # Set experiment
-    data_path = download_data('measured/ncaf-wish-b56', destination=TEMP_DIR)
+    data_path = download_data('meas-ncaf-wish-b56', destination=TEMP_DIR)
     expt = ExperimentFactory.from_data_path(
         name='wish',
         data_path=data_path,

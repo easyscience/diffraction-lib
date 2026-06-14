@@ -20,7 +20,7 @@ def _make_project_with_experiment():
         Project._loading = False
 
     project.structures.create(name='s')
-    data_path = download_data('measured/lbco-hrpt', destination=TEMP_DIR)
+    data_path = download_data('meas-lbco-hrpt', destination=TEMP_DIR)
     project.experiments.add_from_data_path(name='e', data_path=data_path)
     return project
 

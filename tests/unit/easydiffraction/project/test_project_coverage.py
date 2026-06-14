@@ -570,7 +570,7 @@ def test_apply_params_from_csv_negative_index_skips_absent_data_file(tmp_path, m
         project.metadata.path / 'analysis',
         [
             {'file_path': 'first.dat'},
-            {'file_path': 'experiments/missing.dat'},
+            {'file_path': 'expt-missing.dat'},
         ],
     )
     fakes = _stub_project_collections(project)

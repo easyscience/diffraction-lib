@@ -58,7 +58,7 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
     )
 
     # Set experiment
-    data_path = download_data('measured/lbco-hrpt', destination=TEMP_DIR)
+    data_path = download_data('meas-lbco-hrpt', destination=TEMP_DIR)
 
     expt = ExperimentFactory.from_data_path(
         name='hrpt',
@@ -194,7 +194,7 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
     )
 
     # Set experiment
-    data_path = download_data('measured/lbco-hrpt', destination=TEMP_DIR)
+    data_path = download_data('meas-lbco-hrpt', destination=TEMP_DIR)
 
     expt = ExperimentFactory.from_data_path(
         name='hrpt',
@@ -367,7 +367,7 @@ def test_fit_neutron_pd_cwl_hs() -> None:
     )
 
     # Set experiment
-    data_path = download_data('measured/hs-hrpt', destination=TEMP_DIR)
+    data_path = download_data('meas-hs-hrpt', destination=TEMP_DIR)
 
     expt = ExperimentFactory.from_data_path(name='hrpt', data_path=data_path)
 
@@ -496,9 +496,9 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints_from_project(tmp_path) 
 
     # Create a project from CIF files
     project = ed.Project()
-    project.structures.add_from_cif_path(ed.download_data('structures/lbco', destination='data'))
+    project.structures.add_from_cif_path(ed.download_data('struct-lbco', destination='data'))
     project.experiments.add_from_edifa_path(
-        ed.download_data('experiments/lbco-hrpt', destination='data')
+        ed.download_data('expt-lbco-hrpt', destination='data')
     )
 
     # Set constraints

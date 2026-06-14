@@ -73,7 +73,7 @@ def _create_sequential_project(
     )
 
     # Experiment (template)
-    data_path = download_data('measured/lbco-hrpt', destination=TEMP_DIR)
+    data_path = download_data('meas-lbco-hrpt', destination=TEMP_DIR)
     expt = ExperimentFactory.from_data_path(
         name='template',
         data_path=data_path,
@@ -268,7 +268,7 @@ def test_fit_sequential_with_diffrn_extract_rules(tmp_path) -> None:
 
 def test_fit_sequential_requires_saved_project(tmp_path) -> None:
     """fit_sequential raises if project hasn't been saved."""
-    data_path = download_data('measured/lbco-hrpt', destination=TEMP_DIR)
+    data_path = download_data('meas-lbco-hrpt', destination=TEMP_DIR)
     model = StructureFactory.from_scratch(name='s')
     expt = ExperimentFactory.from_data_path(
         name='e',

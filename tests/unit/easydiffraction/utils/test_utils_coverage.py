@@ -25,28 +25,28 @@ def test_validate_url_accepts_https():
     MUT._validate_url('https://example.com/file.cif')
 
 
-# --- _filename_from_path ------------------------------------------------------
+# --- _local_filename ----------------------------------------------------------
 
 
-def test_filename_from_path_with_extension():
+def test_local_filename_with_extension():
     import easydiffraction.utils.utils as MUT
 
-    result = MUT._filename_from_path('measured/lbco-hrpt.xye')
-    assert result == 'lbco-hrpt.xye'
+    result = MUT._local_filename('meas-lbco-hrpt', 'measured/lbco-hrpt.xye')
+    assert result == 'meas-lbco-hrpt.xye'
 
 
-def test_filename_from_path_cif_extension():
+def test_local_filename_cif_extension():
     import easydiffraction.utils.utils as MUT
 
-    result = MUT._filename_from_path('structures/lbco.cif')
-    assert result == 'lbco.cif'
+    result = MUT._local_filename('struct-lbco', 'structures/lbco.cif')
+    assert result == 'struct-lbco.cif'
 
 
-def test_filename_from_path_no_extension():
+def test_local_filename_no_extension():
     import easydiffraction.utils.utils as MUT
 
-    result = MUT._filename_from_path('projects/noext')
-    assert result == 'noext'
+    result = MUT._local_filename('proj-x', 'projects/x')
+    assert result == 'proj-x'
 
 
 def test_record_path_raises_for_missing_path_key():
@@ -333,40 +333,40 @@ def test_tof_to_d_linear_negative_tof_minus_offset_gives_nan():
 def test_download_data_unknown_id(monkeypatch):
     import easydiffraction.utils.utils as MUT
 
-    fake_index = {'structures/lbco': {'path': 'structures/lbco.cif', 'hash': None}}
+    fake_index = {'struct-lbco': {'path': 'struct-lbco.cif', 'hash': None}}
     monkeypatch.setattr(MUT, '_fetch_data_index', lambda: fake_index)
-    with pytest.raises(KeyError, match="Unknown dataset 'structures/missing'"):
-        MUT.download_data('structures/missing')
+    with pytest.raises(KeyError, match="Unknown dataset 'struct-missing'"):
+        MUT.download_data('struct-missing')
 
 
 def test_download_data_already_exists_no_overwrite(monkeypatch, tmp_path, capsys):
     import easydiffraction.utils.utils as MUT
 
     fake_index = {
-        'measured/lbco-hrpt': {
-            'path': 'measured/lbco-hrpt.xye',
+        'meas-lbco-hrpt': {
+            'path': 'meas-lbco-hrpt.xye',
             'hash': None,
             'description': 'Test data',
         }
     }
     monkeypatch.setattr(MUT, '_fetch_data_index', lambda: fake_index)
 
-    # Create existing file
-    (tmp_path / 'lbco-hrpt.xye').write_text('existing data')
+    # Create existing file (named after the dataset id, not the slug).
+    (tmp_path / 'meas-lbco-hrpt.xye').write_text('existing data')
 
-    result = MUT.download_data('measured/lbco-hrpt', destination=str(tmp_path), overwrite=False)
-    assert result == str(tmp_path / 'lbco-hrpt.xye')
+    result = MUT.download_data('meas-lbco-hrpt', destination=str(tmp_path), overwrite=False)
+    assert result == str(tmp_path / 'meas-lbco-hrpt.xye')
     out = capsys.readouterr().out
     assert 'already present' in out
-    assert (tmp_path / 'lbco-hrpt.xye').read_text() == 'existing data'
+    assert (tmp_path / 'meas-lbco-hrpt.xye').read_text() == 'existing data'
 
 
 def test_download_data_success(monkeypatch, tmp_path, capsys):
     import easydiffraction.utils.utils as MUT
 
     fake_index = {
-        'measured/lbco-hrpt': {
-            'path': 'measured/lbco-hrpt.xye',
+        'meas-lbco-hrpt': {
+            'path': 'meas-lbco-hrpt.xye',
             'hash': None,
             'description': 'Test data',
         }
@@ -382,9 +382,9 @@ def test_download_data_success(monkeypatch, tmp_path, capsys):
 
     monkeypatch.setattr(MUT.pooch, 'retrieve', fake_retrieve)
 
-    result = MUT.download_data('measured/lbco-hrpt', destination=str(tmp_path))
-    assert result == str(tmp_path / 'lbco-hrpt.xye')
-    assert (tmp_path / 'lbco-hrpt.xye').exists()
+    result = MUT.download_data('meas-lbco-hrpt', destination=str(tmp_path))
+    assert result == str(tmp_path / 'meas-lbco-hrpt.xye')
+    assert (tmp_path / 'meas-lbco-hrpt.xye').exists()
     out = capsys.readouterr().out
     assert 'downloaded' in out
 
@@ -393,16 +393,16 @@ def test_download_data_overwrite_existing(monkeypatch, tmp_path, capsys):
     import easydiffraction.utils.utils as MUT
 
     fake_index = {
-        'measured/lbco-hrpt': {
-            'path': 'measured/lbco-hrpt.xye',
+        'meas-lbco-hrpt': {
+            'path': 'meas-lbco-hrpt.xye',
             'hash': None,
             'description': 'Test data',
         }
     }
     monkeypatch.setattr(MUT, '_fetch_data_index', lambda: fake_index)
 
-    # Create existing file
-    (tmp_path / 'lbco-hrpt.xye').write_text('old data')
+    # Create existing file (named after the dataset id).
+    (tmp_path / 'meas-lbco-hrpt.xye').write_text('old data')
 
     def fake_retrieve(url, known_hash, fname, path):
         import pathlib
@@ -412,29 +412,29 @@ def test_download_data_overwrite_existing(monkeypatch, tmp_path, capsys):
 
     monkeypatch.setattr(MUT.pooch, 'retrieve', fake_retrieve)
 
-    result = MUT.download_data('measured/lbco-hrpt', destination=str(tmp_path), overwrite=True)
-    assert result == str(tmp_path / 'lbco-hrpt.xye')
-    assert (tmp_path / 'lbco-hrpt.xye').read_text() == 'new data'
+    result = MUT.download_data('meas-lbco-hrpt', destination=str(tmp_path), overwrite=True)
+    assert result == str(tmp_path / 'meas-lbco-hrpt.xye')
+    assert (tmp_path / 'meas-lbco-hrpt.xye').read_text() == 'new data'
 
 
 def test_download_data_no_description(monkeypatch, tmp_path, capsys):
     import easydiffraction.utils.utils as MUT
 
     fake_index = {
-        'structures/lbco': {
-            'path': 'structures/lbco.cif',
+        'struct-lbco': {
+            'path': 'struct-lbco.cif',
             'hash': 'sha256:...',
         }
     }
     monkeypatch.setattr(MUT, '_fetch_data_index', lambda: fake_index)
 
     # Create existing file so we hit the no-overwrite short-circuit
-    (tmp_path / 'lbco.cif').write_text('existing')
+    (tmp_path / 'struct-lbco.cif').write_text('existing')
 
-    result = MUT.download_data('structures/lbco', destination=str(tmp_path))
-    assert result == str(tmp_path / 'lbco.cif')
+    result = MUT.download_data('struct-lbco', destination=str(tmp_path))
+    assert result == str(tmp_path / 'struct-lbco.cif')
     out = capsys.readouterr().out
-    assert "Data 'structures/lbco'" in out
+    assert "Data 'struct-lbco'" in out
 
 
 def test_download_data_uses_tutorial_artifact_root_fallback(monkeypatch, tmp_path):
@@ -446,8 +446,8 @@ def test_download_data_uses_tutorial_artifact_root_fallback(monkeypatch, tmp_pat
     tutorials_dir.mkdir(parents=True)
 
     fake_index = {
-        'measured/lbco-hrpt': {
-            'path': 'measured/lbco-hrpt.xye',
+        'meas-lbco-hrpt': {
+            'path': 'meas-lbco-hrpt.xye',
             'hash': None,
             'description': 'Test data',
         }
@@ -466,9 +466,9 @@ def test_download_data_uses_tutorial_artifact_root_fallback(monkeypatch, tmp_pat
 
     monkeypatch.setattr(MUT.pooch, 'retrieve', fake_retrieve)
 
-    result = MUT.download_data('measured/lbco-hrpt', destination='data')
+    result = MUT.download_data('meas-lbco-hrpt', destination='data')
 
-    expected_path = repo_root / 'tmp' / 'tutorials' / 'data' / 'lbco-hrpt.xye'
+    expected_path = repo_root / 'tmp' / 'tutorials' / 'data' / 'meas-lbco-hrpt.xye'
     assert result == str(expected_path)
     assert expected_path.exists()
 
@@ -670,16 +670,16 @@ def test_list_data_empty_index(monkeypatch, capsys):
     monkeypatch.setattr(MUT, '_fetch_data_index', dict)
     MUT.list_data()
     out = capsys.readouterr().out
-    assert 'No example data available' in out
+    assert 'No datasets available' in out
 
 
 def test_list_data_renders_rows(monkeypatch):
     import easydiffraction.utils.utils as MUT
 
     fake_index = {
-        'structures/lbco': {'path': 'structures/lbco.cif', 'description': 'Structure'},
-        'measured/lbco-hrpt': {'path': 'measured/lbco-hrpt.xye', 'description': 'Pattern'},
-        'experiments/lbco-hrpt': {'path': 'experiments/lbco-hrpt.cif'},
+        'struct-lbco': {'path': 'struct-lbco.cif', 'description': 'Structure'},
+        'meas-lbco-hrpt': {'path': 'meas-lbco-hrpt.xye', 'description': 'Pattern'},
+        'expt-lbco-hrpt': {'path': 'expt-lbco-hrpt.cif'},
     }
     monkeypatch.setattr(MUT, '_fetch_data_index', lambda: fake_index)
 
@@ -687,23 +687,22 @@ def test_list_data_renders_rows(monkeypatch):
     monkeypatch.setattr(MUT, 'render_table', lambda **kwargs: captured.update(kwargs))
     MUT.list_data()
 
-    # Columns are a transient row number, the slug id, the filename, and
-    # the description; the removed 'kind' column is no longer present.
-    assert captured['columns_headers'] == ['#', 'id', 'file', 'description']
+    # Columns are the dataset name, the file format (bare extension), and
+    # the description; the renderer adds its own row number, and the
+    # removed 'kind'/'#' columns are no longer present.
+    assert captured['columns_headers'] == ['name', 'format', 'description']
 
     rows = captured['columns_data']
-    # Slugs sort alphabetically: experiments/…, measured/…, structures/….
-    assert [row[1] for row in rows] == [
-        'experiments/lbco-hrpt',
-        'measured/lbco-hrpt',
-        'structures/lbco',
+    # Names sort alphabetically: expt-…, meas-…, struct-….
+    assert [row[0] for row in rows] == [
+        'expt-lbco-hrpt',
+        'meas-lbco-hrpt',
+        'struct-lbco',
     ]
-    # The leading column is a 1-based row number.
-    assert [row[0] for row in rows] == [1, 2, 3]
-    # File column uses the basename of the record path.
-    assert rows[2][2] == 'lbco.cif'
+    # Format column is the record-path extension without the leading dot.
+    assert rows[2][1] == 'cif'
     # Missing description defaults to an empty string.
-    assert rows[0][3] == ''
+    assert rows[0][2] == ''
 
 
 # --- download_data project-archive branches -----------------------------------
@@ -713,8 +712,8 @@ def test_download_data_project_archive_already_extracted(monkeypatch, tmp_path, 
     import easydiffraction.utils.utils as MUT
 
     fake_index = {
-        'projects/lbco-hrpt': {
-            'path': 'projects/lbco-hrpt.zip',
+        'proj-lbco-hrpt': {
+            'path': 'proj-lbco-hrpt.zip',
             'hash': None,
             'description': 'Project archive',
         }
@@ -722,13 +721,13 @@ def test_download_data_project_archive_already_extracted(monkeypatch, tmp_path, 
     monkeypatch.setattr(MUT, '_fetch_data_index', lambda: fake_index)
 
     # Pre-create an extracted project directory matching the fname stem.
-    # With no record hash the extraction dir is the bare stem (no tag).
-    extraction_dir = tmp_path / 'lbco-hrpt'
+    # With no record hash the extraction dir is the bare id stem (no tag).
+    extraction_dir = tmp_path / 'proj-lbco-hrpt'
     project_dir = extraction_dir / 'inner'
     project_dir.mkdir(parents=True)
     (project_dir / 'project.edifa').write_text('data_block')
 
-    result = MUT.download_data('projects/lbco-hrpt', destination=str(tmp_path))
+    result = MUT.download_data('proj-lbco-hrpt', destination=str(tmp_path))
     assert result == str(project_dir.resolve())
     out = capsys.readouterr().out
     assert 'already extracted' in out
@@ -738,8 +737,8 @@ def test_download_data_project_archive_zip_present_extracts(monkeypatch, tmp_pat
     import easydiffraction.utils.utils as MUT
 
     fake_index = {
-        'projects/lbco-hrpt': {
-            'path': 'projects/lbco-hrpt.zip',
+        'proj-lbco-hrpt': {
+            'path': 'proj-lbco-hrpt.zip',
             'hash': None,
             'description': 'Project archive',
         }
@@ -747,10 +746,10 @@ def test_download_data_project_archive_zip_present_extracts(monkeypatch, tmp_pat
     monkeypatch.setattr(MUT, '_fetch_data_index', lambda: fake_index)
 
     # The zip file exists but no extraction dir yet.
-    zip_path = tmp_path / 'lbco-hrpt.zip'
+    zip_path = tmp_path / 'proj-lbco-hrpt.zip'
     zip_path.write_text('zip bytes')
 
-    extracted = tmp_path / 'lbco-hrpt' / 'project'
+    extracted = tmp_path / 'proj-lbco-hrpt' / 'project'
     extracted.mkdir(parents=True)
 
     def fake_extract(file_path, destination):
@@ -759,7 +758,7 @@ def test_download_data_project_archive_zip_present_extracts(monkeypatch, tmp_pat
 
     monkeypatch.setattr(MUT, 'extract_project_from_zip', fake_extract)
 
-    result = MUT.download_data('projects/lbco-hrpt', destination=str(tmp_path))
+    result = MUT.download_data('proj-lbco-hrpt', destination=str(tmp_path))
     assert result == str(extracted)
     # The zip is removed after extraction.
     assert not zip_path.exists()
@@ -771,15 +770,15 @@ def test_download_data_project_archive_downloads_and_extracts(monkeypatch, tmp_p
     import easydiffraction.utils.utils as MUT
 
     fake_index = {
-        'projects/lbco-hrpt': {
-            'path': 'projects/lbco-hrpt.zip',
+        'proj-lbco-hrpt': {
+            'path': 'proj-lbco-hrpt.zip',
             'hash': None,
             'description': 'Project archive',
         }
     }
     monkeypatch.setattr(MUT, '_fetch_data_index', lambda: fake_index)
 
-    zip_path = tmp_path / 'lbco-hrpt.zip'
+    zip_path = tmp_path / 'proj-lbco-hrpt.zip'
 
     def fake_retrieve(url, known_hash, fname, path):
         import pathlib
@@ -790,7 +789,7 @@ def test_download_data_project_archive_downloads_and_extracts(monkeypatch, tmp_p
 
     monkeypatch.setattr(MUT.pooch, 'retrieve', fake_retrieve)
 
-    extracted = tmp_path / 'lbco-hrpt' / 'project'
+    extracted = tmp_path / 'proj-lbco-hrpt' / 'project'
     extracted.mkdir(parents=True)
 
     def fake_extract(file_path, destination):
@@ -798,7 +797,7 @@ def test_download_data_project_archive_downloads_and_extracts(monkeypatch, tmp_p
 
     monkeypatch.setattr(MUT, 'extract_project_from_zip', fake_extract)
 
-    result = MUT.download_data('projects/lbco-hrpt', destination=str(tmp_path))
+    result = MUT.download_data('proj-lbco-hrpt', destination=str(tmp_path))
     assert result == str(extracted)
     # Downloaded zip is cleaned up after extraction.
     assert not zip_path.exists()
@@ -810,15 +809,15 @@ def test_download_data_overwrite_logs_debug_and_redownloads(monkeypatch, tmp_pat
     import easydiffraction.utils.utils as MUT
 
     fake_index = {
-        'measured/lbco-hrpt': {
-            'path': 'measured/lbco-hrpt.xye',
+        'meas-lbco-hrpt': {
+            'path': 'meas-lbco-hrpt.xye',
             'hash': None,
             'description': 'Test data',
         }
     }
     monkeypatch.setattr(MUT, '_fetch_data_index', lambda: fake_index)
 
-    existing = tmp_path / 'lbco-hrpt.xye'
+    existing = tmp_path / 'meas-lbco-hrpt.xye'
     existing.write_text('old')
 
     debug_messages = []
@@ -832,7 +831,7 @@ def test_download_data_overwrite_logs_debug_and_redownloads(monkeypatch, tmp_pat
 
     monkeypatch.setattr(MUT.pooch, 'retrieve', fake_retrieve)
 
-    result = MUT.download_data('measured/lbco-hrpt', destination=str(tmp_path), overwrite=True)
+    result = MUT.download_data('meas-lbco-hrpt', destination=str(tmp_path), overwrite=True)
     assert result == str(existing)
     assert existing.read_text() == 'fresh'
     # The overwrite path emits a debug log before unlinking.
@@ -843,8 +842,8 @@ def test_download_data_project_archive_overwrite_removes_extraction(monkeypatch,
     import easydiffraction.utils.utils as MUT
 
     fake_index = {
-        'projects/lbco-hrpt': {
-            'path': 'projects/lbco-hrpt.zip',
+        'proj-lbco-hrpt': {
+            'path': 'proj-lbco-hrpt.zip',
             'hash': None,
             'description': 'Project archive',
         }
@@ -852,7 +851,7 @@ def test_download_data_project_archive_overwrite_removes_extraction(monkeypatch,
     monkeypatch.setattr(MUT, '_fetch_data_index', lambda: fake_index)
 
     # Pre-existing extraction dir that should be wiped on overwrite.
-    extraction_dir = tmp_path / 'lbco-hrpt'
+    extraction_dir = tmp_path / 'proj-lbco-hrpt'
     stale = extraction_dir / 'stale'
     stale.mkdir(parents=True)
     (stale / 'old.cif').write_text('old')
@@ -865,7 +864,7 @@ def test_download_data_project_archive_overwrite_removes_extraction(monkeypatch,
 
     monkeypatch.setattr(MUT.pooch, 'retrieve', fake_retrieve)
 
-    extracted = tmp_path / 'lbco-hrpt' / 'project'
+    extracted = tmp_path / 'proj-lbco-hrpt' / 'project'
 
     def fake_extract(file_path, destination):
         extracted.mkdir(parents=True, exist_ok=True)
@@ -873,7 +872,7 @@ def test_download_data_project_archive_overwrite_removes_extraction(monkeypatch,
 
     monkeypatch.setattr(MUT, 'extract_project_from_zip', fake_extract)
 
-    result = MUT.download_data('projects/lbco-hrpt', destination=str(tmp_path), overwrite=True)
+    result = MUT.download_data('proj-lbco-hrpt', destination=str(tmp_path), overwrite=True)
     assert result == str(extracted)
     # The stale extracted content was removed before re-extraction.
     assert not (extraction_dir / 'stale').exists()
@@ -906,15 +905,13 @@ def test_list_tutorials_terminal_markup_branch(monkeypatch):
     MUT.list_tutorials()
 
     rows = captured['columns_data']
-    by_id = {row[1]: row for row in rows}
-    # Each row uses the slug-based filename in the 'file' column.
-    assert by_id['quick-start'][2] == 'quick-start.ipynb'
+    by_id = {row[0]: row for row in rows}
     # Row with a description carries the dimmed second line ('tutorial' column).
-    assert '[dim]' in by_id['quick-start'][3]
-    assert 'Quick Start' in by_id['quick-start'][3]
+    assert '[dim]' in by_id['quick-start'][1]
+    assert 'Quick Start' in by_id['quick-start'][1]
     # Row without a description has only the styled title (no [dim]).
-    assert '[dim]' not in by_id['no-description'][3]
-    assert 'No Description' in by_id['no-description'][3]
+    assert '[dim]' not in by_id['no-description'][1]
+    assert 'No Description' in by_id['no-description'][1]
 
 
 def test_list_tutorials_jupyter_plain_title_branch(monkeypatch):
@@ -938,8 +935,8 @@ def test_list_tutorials_jupyter_plain_title_branch(monkeypatch):
 
     rows = captured['columns_data']
     # Jupyter shows the plain title with no Rich markup (in the 'tutorial' column).
-    assert rows[0][3] == 'Quick Start'
-    assert '[dim]' not in rows[0][3]
+    assert rows[0][1] == 'Quick Start'
+    assert '[dim]' not in rows[0][1]
 
 
 # --- download_tutorial title-less message branch ------------------------------
@@ -1169,59 +1166,59 @@ def test_render_object_help_properties_only(monkeypatch):
     assert headings == ['Properties']
 
 
-# --- slug validation, resolution, and ref pinning ----------------------------
+# --- name validation, resolution, and ref pinning ----------------------------
 
 
 @pytest.mark.parametrize(
-    'slug',
-    ['structures/lbco', 'measured/lbco-hrpt', 'projects/lbco-hrpt', 'experiments/lbco-hrpt'],
+    'name',
+    ['struct-lbco', 'meas-lbco-hrpt', 'proj-lbco-hrpt', 'expt-lbco-hrpt'],
 )
-def test_validate_dataset_id_accepts_valid_slugs(slug):
+def test_validate_dataset_id_accepts_valid_names(name):
     import easydiffraction.utils.utils as MUT
 
-    MUT._validate_dataset_id(slug)  # must not raise
+    MUT._validate_dataset_id(name)  # must not raise
 
 
 @pytest.mark.parametrize(
-    'slug',
+    'name',
     [
-        'structures/LBCO',  # uppercase
-        'experiments/lbco-hrpt.edifa',  # extension in id
-        'nope/lbco',  # unknown namespace
-        'lbco',  # missing namespace
-        'structures/lbco/extra',  # extra slash
-        'measured/-lbco',  # leading dash
-        'measured/lbco--hrpt',  # doubled dash
+        'struct-LBCO',  # uppercase
+        'expt-lbco-hrpt.edifa',  # extension in name
+        'nope-lbco',  # unknown category prefix
+        'lbco',  # missing category prefix
+        'meas/lbco',  # path form with slash
+        'meas--lbco',  # doubled dash
+        'meas-',  # empty name after prefix
     ],
 )
-def test_validate_dataset_id_rejects_invalid_slugs(slug):
+def test_validate_dataset_id_rejects_invalid_names(name):
     import easydiffraction.utils.utils as MUT
 
     with pytest.raises(ValueError, match='Invalid'):
-        MUT._validate_dataset_id(slug)
+        MUT._validate_dataset_id(name)
 
 
-def test_validate_tutorial_id_rejects_namespace():
+def test_validate_tutorial_id_rejects_slash():
     import easydiffraction.utils.utils as MUT
 
     MUT._validate_tutorial_id('refine-lbco-hrpt-from-cif')  # must not raise
-    with pytest.raises(ValueError, match='Invalid tutorial id'):
-        MUT._validate_tutorial_id('structures/lbco')
+    with pytest.raises(ValueError, match='Invalid tutorial name'):
+        MUT._validate_tutorial_id('meas/lbco')
 
 
 def test_is_project_id_only_projects_namespace():
     import easydiffraction.utils.utils as MUT
 
-    assert MUT._is_project_id('projects/lbco-hrpt') is True
-    assert MUT._is_project_id('measured/lbco-hrpt') is False
+    assert MUT._is_project_id('proj-lbco-hrpt') is True
+    assert MUT._is_project_id('meas-lbco-hrpt') is False
 
 
 def test_resolve_positional_one_based_against_listing_order():
     import easydiffraction.utils.utils as MUT
 
-    keys = ['structures/lbco', 'measured/lbco-hrpt', 'projects/lbco-hrpt']
-    assert MUT._resolve_positional(1, keys, kind='dataset') == 'structures/lbco'
-    assert MUT._resolve_positional(3, keys, kind='dataset') == 'projects/lbco-hrpt'
+    keys = ['struct-lbco', 'meas-lbco-hrpt', 'proj-lbco-hrpt']
+    assert MUT._resolve_positional(1, keys, kind='dataset') == 'struct-lbco'
+    assert MUT._resolve_positional(3, keys, kind='dataset') == 'proj-lbco-hrpt'
     with pytest.raises(IndexError):
         MUT._resolve_positional(0, keys, kind='dataset')
     with pytest.raises(IndexError):
@@ -1273,8 +1270,8 @@ def test_download_data_project_archive_stale_zip_revalidated(monkeypatch, tmp_pa
     import easydiffraction.utils.utils as MUT
 
     fake_index = {
-        'projects/lbco-hrpt': {
-            'path': 'projects/lbco-hrpt.zip',
+        'proj-lbco-hrpt': {
+            'path': 'proj-lbco-hrpt.zip',
             'hash': 'sha256:' + 'a' * 64,  # will not match the stale local zip
             'description': 'Project archive',
         }
@@ -1282,7 +1279,7 @@ def test_download_data_project_archive_stale_zip_revalidated(monkeypatch, tmp_pa
     monkeypatch.setattr(MUT, '_fetch_data_index', lambda: fake_index)
 
     # A stale project ZIP from an older pinned commit is already present.
-    zip_path = tmp_path / 'lbco-hrpt.zip'
+    zip_path = tmp_path / 'proj-lbco-hrpt.zip'
     zip_path.write_text('stale zip bytes')
 
     calls = {'retrieve': 0}
@@ -1305,7 +1302,7 @@ def test_download_data_project_archive_stale_zip_revalidated(monkeypatch, tmp_pa
 
     monkeypatch.setattr(MUT, 'extract_project_from_zip', fake_extract)
 
-    result = MUT.download_data('projects/lbco-hrpt', destination=str(tmp_path))
+    result = MUT.download_data('proj-lbco-hrpt', destination=str(tmp_path))
     assert result == str(extracted)
     # The stale ZIP was re-downloaded before extraction, not served as-is.
     assert calls['retrieve'] == 1
@@ -1324,11 +1321,11 @@ def test_ordered_keys_honors_explicit_order_field():
     assert MUT._ordered_keys(tutorials) == ['zzz-intro', 'aaa-advanced']
 
     datasets = {
-        'structures/lbco': {'path': 'structures/lbco.cif'},
-        'measured/lbco-hrpt': {'path': 'measured/lbco-hrpt.xye'},
+        'struct-lbco': {'path': 'struct-lbco.cif'},
+        'meas-lbco-hrpt': {'path': 'meas-lbco-hrpt.xye'},
     }
     # No order field -> alphabetical by slug.
-    assert MUT._ordered_keys(datasets) == ['measured/lbco-hrpt', 'structures/lbco']
+    assert MUT._ordered_keys(datasets) == ['meas-lbco-hrpt', 'struct-lbco']
 
 
 def test_resolve_tutorial_positional_follows_learning_order(monkeypatch):

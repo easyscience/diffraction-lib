@@ -67,7 +67,7 @@ def test_cli_subcommands_call_utils(monkeypatch):
     res0 = runner.invoke(main_mod.app, ['list-data'])
     res1 = runner.invoke(
         main_mod.app,
-        ['download-data', 'projects/lbco-hrpt', '--destination', 'projects'],
+        ['download-data', 'proj-lbco-hrpt', '--destination', 'projects'],
     )
     res2 = runner.invoke(main_mod.app, ['list-tutorials'])
     res3 = runner.invoke(main_mod.app, ['download-all-tutorials'])
@@ -80,7 +80,7 @@ def test_cli_subcommands_call_utils(monkeypatch):
     assert res4.exit_code == 0
     assert logs == [
         'LIST_DATA',
-        'DATA_projects/lbco-hrpt_projects_False',
+        'DATA_proj-lbco-hrpt_projects_False',
         'LIST',
         'DOWNLOAD_ALL',
         'DOWNLOAD_refine-lbco-hrpt-from-cif',
