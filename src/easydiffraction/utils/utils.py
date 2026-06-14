@@ -312,9 +312,19 @@ def _validate_tutorial_id(name: str) -> None:
     _validate_slug_segment(name, kind='tutorial id')
 
 
+_DEFAULT_LISTING_ORDER = 1_000_000
+
+
 def _ordered_keys(index: dict) -> list[str]:
-    """Return index keys in the deterministic order listings show."""
-    return sorted(index)
+    """
+    Return index keys in the deterministic order listings show.
+
+    Records may carry an explicit ``order`` field (e.g. the tutorial
+    learning order from the MkDocs nav, per resource-naming ADR
+    Decision 4); those sort first by that order. Records without one
+    (e.g. datasets) fall back to alphabetical by slug.
+    """
+    return sorted(index, key=lambda key: (index[key].get('order', _DEFAULT_LISTING_ORDER), key))
 
 
 def _is_positional(name: int | str) -> bool:

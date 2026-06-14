@@ -1310,3 +1310,35 @@ def test_download_data_project_archive_stale_zip_revalidated(monkeypatch, tmp_pa
     # The stale ZIP was re-downloaded before extraction, not served as-is.
     assert calls['retrieve'] == 1
     assert seen['bytes'] == 'fresh zip bytes'
+
+
+def test_ordered_keys_honors_explicit_order_field():
+    """Records with an `order` field sort by it; others stay alphabetical."""
+    import easydiffraction.utils.utils as MUT
+
+    tutorials = {
+        'zzz-intro': {'order': 1, 'title': 'Intro'},
+        'aaa-advanced': {'order': 2, 'title': 'Advanced'},
+    }
+    # Learning order wins over lexicographic slug order.
+    assert MUT._ordered_keys(tutorials) == ['zzz-intro', 'aaa-advanced']
+
+    datasets = {
+        'structures/lbco': {'path': 'structures/lbco.cif'},
+        'measured/lbco-hrpt': {'path': 'measured/lbco-hrpt.xye'},
+    }
+    # No order field -> alphabetical by slug.
+    assert MUT._ordered_keys(datasets) == ['measured/lbco-hrpt', 'structures/lbco']
+
+
+def test_resolve_tutorial_positional_follows_learning_order(monkeypatch):
+    """Row number 1 resolves to the first learning-order tutorial."""
+    import easydiffraction.utils.utils as MUT
+
+    index = {
+        'second': {'order': 2, 'title': 'Second'},
+        'first': {'order': 1, 'title': 'First'},
+    }
+    monkeypatch.setattr(MUT, '_fetch_tutorials_index', lambda: index)
+    assert MUT._resolve_tutorial_id(1, index) == 'first'
+    assert MUT._resolve_tutorial_id(2, index) == 'second'
