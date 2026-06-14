@@ -13,7 +13,7 @@
 # `march_r` automatically, and the constant non-normalisation factor is
 # absorbed by the scale (so the as-calculated pattern below shows an
 # overall offset before fitting). After refining the two March–Dollase
-# parameters and the scale, ed-cryspy recovers `march_r ≈ 1.2` and
+# parameters and the scale, edi-cryspy recovers `march_r ≈ 1.2` and
 # `march_random_fract ≈ 0.3` and the patterns agree.
 
 # %%
@@ -146,7 +146,7 @@ experiment.preferred_orientation.create(
 project.experiments.add(experiment)
 
 # %% [markdown]
-# ## ed-cryspy VS FullProf
+# ## edi-cryspy VS FullProf
 
 # %%
 experiment.calculator.type = 'cryspy'
@@ -159,15 +159,15 @@ project.display.pattern_comparison(
     reference=calc_fullprof,
     candidate=calc_ed_cryspy,
     reference_label='FullProf',
-    candidate_label='ed-cryspy',
+    candidate_label='edi-cryspy',
 )
 
 # %% [markdown]
-# ## Fit ed-cryspy to FullProf
+# ## Fit edi-cryspy to FullProf
 #
 # Free the two March–Dollase parameters (`march_r`, `march_random_fract`)
 # and the scale, then refine. Starting from the FullProf values,
-# ed-cryspy converges back to `march_r ≈ Pref1` and
+# edi-cryspy converges back to `march_r ≈ Pref1` and
 # `march_random_fract ≈ Pref2`, and the patterns agree.
 
 # %%
@@ -186,7 +186,7 @@ project.display.pattern_comparison(
     reference=calc_fullprof,
     candidate=calc_ed_cryspy_refined,
     reference_label='FullProf',
-    candidate_label='ed-cryspy (refined)',
+    candidate_label='edi-cryspy (refined)',
 )
 
 # %% [markdown]
@@ -204,6 +204,6 @@ verify.assert_patterns_agree(
 # `march_random_fract` to `Pref2 = 0.3` (the latter only approximately,
 # because CrysPy's non-normalised factor makes the random-fraction
 # correspondence slightly non-linear), with all closeness metrics within
-# tolerance. ed-cryspy therefore reproduces the FullProf two-parameter
+# tolerance. edi-cryspy therefore reproduces the FullProf two-parameter
 # March–Dollase correction once its reciprocal/unnormalised convention is
 # accounted for by the backend mapping and the scale.

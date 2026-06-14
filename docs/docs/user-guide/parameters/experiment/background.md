@@ -9,8 +9,8 @@ title: background
 
 ## :material-tag: id { #background-id }
 
-| Access          | Source                  |
-| --------------- | ----------------------- |
+| Access          | Source                |
+| --------------- | --------------------- |
 | \_background.id | [Edi][0]{:.label-cif} |
 
 Identifier for this background line segment.
@@ -20,7 +20,7 @@ Identifier for this background line segment.
 | Access                         | Source                  |
 | ------------------------------ | ----------------------- |
 | background.position            | [code][0]{:.label-cif}  |
-| \_background.position          | [Edi][0]{:.label-cif} |
+| \_background.position          | [Edi][0]{:.label-cif}   |
 | \_pd_background.line_segment_X | [pdCIF][0]{:.label-cif} |
 
 Position used to create many straight-line segments.
@@ -30,7 +30,7 @@ Position used to create many straight-line segments.
 | Access                                 | Source                  |
 | -------------------------------------- | ----------------------- |
 | background.intensity                   | [code][0]{:.label-cif}  |
-| \_background.intensity                 | [Edi][0]{:.label-cif} |
+| \_background.intensity                 | [Edi][0]{:.label-cif}   |
 | \_pd_background.line_segment_intensity | [pdCIF][0]{:.label-cif} |
 
 Intensity used to create many straight-line segments.
@@ -40,7 +40,7 @@ Intensity used to create many straight-line segments.
 | Access                          | Source                  |
 | ------------------------------- | ----------------------- |
 | background.order                | [code][0]{:.label-cif}  |
-| \_background.order              | [Edi][0]{:.label-cif} |
+| \_background.order              | [Edi][0]{:.label-cif}   |
 | \_pd_background.Chebyshev_order | [pdCIF][0]{:.label-cif} |
 
 Order used in a Chebyshev polynomial background term.
@@ -50,15 +50,15 @@ Order used in a Chebyshev polynomial background term.
 | Access                         | Source                  |
 | ------------------------------ | ----------------------- |
 | background.coef                | [code][0]{:.label-cif}  |
-| \_background.coef              | [Edi][0]{:.label-cif} |
+| \_background.coef              | [Edi][0]{:.label-cif}   |
 | \_pd_background.Chebyshev_coef | [pdCIF][0]{:.label-cif} |
 
 Coefficient used in a Chebyshev polynomial background term.
 
 ## :material-shape: type { #background-type }
 
-| Access            | Source                  |
-| ----------------- | ----------------------- |
+| Access            | Source                |
+| ----------------- | --------------------- |
 | \_background.type | [Edi][0]{:.label-cif} |
 
 Active background type tag. Supported values include `line-segment` and

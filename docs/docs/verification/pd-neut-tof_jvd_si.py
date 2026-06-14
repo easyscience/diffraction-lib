@@ -106,7 +106,7 @@ experiment.excluded_regions.create(id='2', start=10000, end=100000)
 project.experiments.add(experiment)
 
 # %% [markdown]
-# ## ed-cryspy VS FullProf
+# ## edi-cryspy VS FullProf
 
 # %%
 experiment.calculator.type = 'cryspy'
@@ -121,11 +121,11 @@ project.display.pattern_comparison(
     reference=calc_fullprof,
     candidate=calc_ed_cryspy,
     reference_label=FULLPROF_LABEL,
-    candidate_label='ed-cryspy',
+    candidate_label='edi-cryspy',
 )
 
 # %% [markdown]
-# ## Fit ed-cryspy to FullProf
+# ## Fit edi-cryspy to FullProf
 
 # %%
 # experiment.linked_structures['si'].scale = 16.558439186694915
@@ -144,7 +144,7 @@ project.display.pattern_comparison(
     reference=calc_fullprof,
     candidate=calc_ed_cryspy_refined,
     reference_label=FULLPROF_LABEL,
-    candidate_label='ed-cryspy (refined)',
+    candidate_label='edi-cryspy (refined)',
 )
 
 # %%
@@ -154,7 +154,7 @@ experiment.linked_structures['si'].scale
 experiment.peak.broad_lorentz_gamma_1
 
 # %% [markdown]
-# ## ed-crysfml VS FullProf
+# ## edi-crysfml VS FullProf
 
 # %%
 experiment.calculator.type = 'crysfml'
@@ -170,11 +170,11 @@ project.display.pattern_comparison(
     reference=calc_fullprof,
     candidate=calc_ed_crysfml,
     reference_label=FULLPROF_LABEL,
-    candidate_label='ed-crysfml',
+    candidate_label='edi-crysfml',
 )
 
 # %% [markdown]
-# ## Fit ed-crysfml to FullProf
+# ## Fit edi-crysfml to FullProf
 
 # %%
 # experiment.linked_structures['si'].scale = 1275.028259237954
@@ -192,7 +192,7 @@ project.display.pattern_comparison(
     reference=calc_fullprof,
     candidate=calc_ed_crysfml_refined,
     reference_label=FULLPROF_LABEL,
-    candidate_label='ed-crysfml (refined)',
+    candidate_label='edi-crysfml (refined)',
 )
 
 # %%

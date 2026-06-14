@@ -13,8 +13,8 @@ Each parameter has:
 
 Edi is the regular EasyDiffraction project persistence format. CIF
 remains important for crystallographic input and for strict report
-exports. The tables below therefore separate code access, Edi keys,
-and CIF keys instead of treating one name as universal.
+exports. The tables below therefore separate code access, Edi keys, and
+CIF keys instead of treating one name as universal.
 
 ## Parameter Attributes
 

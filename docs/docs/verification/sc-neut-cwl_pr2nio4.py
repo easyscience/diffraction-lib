@@ -149,7 +149,7 @@ verify.set_reference_reflections(experiment, f2calc)
 project.experiments.add(experiment)
 
 # %% [markdown]
-# ## ed-cryspy VS FullProf
+# ## edi-cryspy VS FullProf
 
 # %%
 calc_ed_cryspy = verify.calculate_reflections(project, experiment, 'cryspy')
@@ -160,11 +160,11 @@ project.display.reflection_comparison(
     reference=reference,
     candidate=candidate,
     reference_label='FullProf',
-    candidate_label='ed-cryspy',
+    candidate_label='edi-cryspy',
 )
 
 # %% [markdown]
-# ## Fit ed-cryspy to FullProf
+# ## Fit edi-cryspy to FullProf
 
 # %%
 experiment.calculator.type = 'cryspy'
@@ -182,7 +182,7 @@ project.display.reflection_comparison(
     reference=reference_refined,
     candidate=candidate_refined,
     reference_label='FullProf',
-    candidate_label='ed-cryspy (scale only)',
+    candidate_label='edi-cryspy (scale only)',
 )
 
 verify.report_refinement_closeness(

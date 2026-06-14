@@ -204,10 +204,10 @@ chain collapses to one stable slug overwritten in place.
 
 > Id 2 is a full experiment-definition file: its id is the
 > extension-free `expt-lbco-hrpt` (per Decisions 1 and 5), and the
-> stored file migrates from `.cif` to the new `.edi` format, so its
-> path is `data/experiments/lbco-hrpt.edi`. Id 3, which previously
-> shared the "LBCO HRPT" description, is the _raw measured pattern_ and
-> moves to `meas-` below.
+> stored file migrates from `.cif` to the new `.edi` format, so its path
+> is `data/experiments/lbco-hrpt.edi`. Id 3, which previously shared the
+> "LBCO HRPT" description, is the _raw measured pattern_ and moves to
+> `meas-` below.
 
 **`meas-` — raw measured or simulated data**
 

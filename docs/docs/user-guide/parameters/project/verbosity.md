@@ -6,8 +6,8 @@ title: verbosity
 
 ## :material-tag: fit { #verbosity-fit }
 
-| Access          | Source                  |
-| --------------- | ----------------------- |
+| Access          | Source                |
+| --------------- | --------------------- |
 | \_verbosity.fit | [Edi][0]{:.label-cif} |
 
 Fitting process output verbosity. Supported values include `full`,

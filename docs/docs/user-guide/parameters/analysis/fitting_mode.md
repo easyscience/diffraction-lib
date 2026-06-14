@@ -6,8 +6,8 @@ title: fitting_mode
 
 ## :material-shape: type { #fitting-mode-type }
 
-| Access              | Source                  |
-| ------------------- | ----------------------- |
+| Access              | Source                |
+| ------------------- | --------------------- |
 | \_fitting_mode.type | [Edi][0]{:.label-cif} |
 
 Active fitting mode. Supported values include `single`, `joint`, and

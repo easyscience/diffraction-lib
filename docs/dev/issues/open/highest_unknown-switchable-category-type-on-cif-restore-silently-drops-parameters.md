@@ -15,9 +15,9 @@ quietly-wrong restored model. Persisted-state restore is a boundary
 input per `AGENTS.md` and should fail loudly.
 
 **Fix:** reject an unknown persisted type tag with a clear, non-
-suppressible error during restore. This is exactly the contract the
-Edi persistence ADR's **Selector Validation Contract** proposes; the
-current code is the concrete pre-ADR behaviour it would correct.
+suppressible error during restore. This is exactly the contract the Edi
+persistence ADR's **Selector Validation Contract** proposes; the current
+code is the concrete pre-ADR behaviour it would correct.
 
 **TODOs / locations:**
 

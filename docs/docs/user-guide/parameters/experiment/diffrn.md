@@ -12,32 +12,32 @@ title: diffrn
 
 ## :material-flash: ambient_electric_field { #diffrn-ambient-electric-field }
 
-| Access                          | Source                  |
-| ------------------------------- | ----------------------- |
+| Access                          | Source                |
+| ------------------------------- | --------------------- |
 | \_diffrn.ambient_electric_field | [Edi][0]{:.label-cif} |
 
 Mean electric field during measurement.
 
 ## :material-magnet: ambient_magnetic_field { #diffrn-ambient-magnetic-field }
 
-| Access                          | Source                  |
-| ------------------------------- | ----------------------- |
+| Access                          | Source                |
+| ------------------------------- | --------------------- |
 | \_diffrn.ambient_magnetic_field | [Edi][0]{:.label-cif} |
 
 Mean magnetic field during measurement.
 
 ## :material-gauge: ambient_pressure { #diffrn-ambient-pressure }
 
-| Access                    | Source                  |
-| ------------------------- | ----------------------- |
+| Access                    | Source                |
+| ------------------------- | --------------------- |
 | \_diffrn.ambient_pressure | [Edi][0]{:.label-cif} |
 
 Mean hydrostatic pressure during measurement.
 
 ## :material-thermometer: ambient_temperature { #diffrn-ambient-temperature }
 
-| Access                       | Source                  |
-| ---------------------------- | ----------------------- |
+| Access                       | Source                |
+| ---------------------------- | --------------------- |
 | \_diffrn.ambient_temperature | [Edi][0]{:.label-cif} |
 
 Mean temperature during measurement.

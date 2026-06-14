@@ -24,7 +24,7 @@ import easydiffraction as edi
 ```
 
 The latter syntax allows you to access all the modules and classes
-within the package using the `ed` prefix. For example, you can create a
+within the package using the `edi` prefix. For example, you can create a
 project instance like this:
 
 ```python

@@ -6,8 +6,8 @@ title: rendering_plot
 
 ## :material-shape: type { #rendering-plot-type }
 
-| Access                | Source                  |
-| --------------------- | ----------------------- |
+| Access                | Source                |
+| --------------------- | --------------------- |
 | \_rendering_plot.type | [Edi][0]{:.label-cif} |
 
 RenderingPlot renderer backend type. Supported values include `auto`,

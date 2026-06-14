@@ -124,7 +124,7 @@ experiment.peak.broad_lorentz_y = FULLPROF_Y
 project.experiments.add(experiment)
 
 # %% [markdown]
-# ## ed-cryspy VS FullProf
+# ## edi-cryspy VS FullProf
 
 # %%
 experiment.calculator.type = 'cryspy'
@@ -137,11 +137,11 @@ project.display.pattern_comparison(
     reference=calc_fullprof,
     candidate=calc_ed_cryspy,
     reference_label='FullProf',
-    candidate_label='ed-cryspy',
+    candidate_label='edi-cryspy',
 )
 
 # %% [markdown]
-# ## ed-crysfml VS FullProf
+# ## edi-crysfml VS FullProf
 
 # %%
 experiment.calculator.type = 'crysfml'
@@ -154,7 +154,7 @@ project.display.pattern_comparison(
     reference=calc_fullprof,
     candidate=calc_ed_crysfml,
     reference_label='FullProf',
-    candidate_label='ed-crysfml',
+    candidate_label='edi-crysfml',
 )
 
 # %% [markdown]

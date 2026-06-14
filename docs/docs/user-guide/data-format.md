@@ -7,8 +7,8 @@ the **data formats** used in EasyDiffraction.
 
 Each software package typically uses its own **data format** and
 **parameter names** for storing and sharing data. EasyDiffraction uses
-**Edi** for saved project state and **Crystallographic Information
-File (CIF)** for crystallographic input and strict report export.
+**Edi** for saved project state and **Crystallographic Information File
+(CIF)** for crystallographic input and strict report export.
 
 !!! note "Pronunciation"
 
@@ -19,11 +19,11 @@ File (CIF)** for crystallographic input and strict report export.
     `_edi.*` keys, capitalised `Edi` at the start of a sentence — not as
     an all-caps acronym.
 
-Edi uses CIF-like syntax, but its keys are chosen for
-EasyDiffraction's Python-facing project model. CIF remains the standard
-exchange format used by crystallography and materials science. It
-provides both a human-readable syntax and dictionaries that define the
-meaning of each parameter.
+Edi uses CIF-like syntax, but its keys are chosen for EasyDiffraction's
+Python-facing project model. CIF remains the standard exchange format
+used by crystallography and materials science. It provides both a
+human-readable syntax and dictionaries that define the meaning of each
+parameter.
 
 These dictionaries are maintained by the
 [International Union of Crystallography (IUCr)](https://www.iucr.org).  
@@ -215,8 +215,7 @@ More details on how to define the experiment are provided in the
 
 ## Other Input/Output Blocks
 
-EasyDiffraction saves projects as a directory of Edi files and
-sidecars:
+EasyDiffraction saves projects as a directory of Edi files and sidecars:
 
 - `project.edi`: project metadata and display/report configuration
 - `structures/<structure>.edi`: structure models

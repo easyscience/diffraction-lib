@@ -14,7 +14,7 @@ title: linked_structure
 | ------------------------------------ | ----------------------- |
 | linked_structures['ID'].structure_id | [code][0]{:.label-cif}  |
 | linked_structure.structure_id        | [code][0]{:.label-cif}  |
-| \_linked_structure.structure_id      | [Edi][0]{:.label-cif} |
+| \_linked_structure.structure_id      | [Edi][0]{:.label-cif}   |
 | \_pd_phase_block.id                  | [pdCIF][0]{:.label-cif} |
 
 Identifier of the linked structure. The plural `linked_structures['ID']`
@@ -27,7 +27,7 @@ scalar `linked_structure` form is used for single-crystal experiments.
 | ----------------------------- | ----------------------- |
 | linked_structures['ID'].scale | [code][0]{:.label-cif}  |
 | linked_structure.scale        | [code][0]{:.label-cif}  |
-| \_linked_structure.scale      | [Edi][0]{:.label-cif} |
+| \_linked_structure.scale      | [Edi][0]{:.label-cif}   |
 | \_pd_phase_block.scale        | [pdCIF][0]{:.label-cif} |
 
 Scale factor of the linked structure.

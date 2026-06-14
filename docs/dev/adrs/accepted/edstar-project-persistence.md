@@ -74,17 +74,16 @@ Adopt **Edi** as the internal EasyDiffraction project persistence
 format:
 
 - Edi uses STAR syntax and leading-underscore data names.
-- Edi is an EasyDiffraction-owned schema, not an IUCr dictionary
-  claim.
+- Edi is an EasyDiffraction-owned schema, not an IUCr dictionary claim.
 - Edi project names optimize for Python/API discoverability, readable
   diffs, and safe hand editing.
 - IUCr CIF remains a strict import/export boundary format.
 
 Use **Edi** as the human-facing schema/format name in prose, headings,
 UI labels, and documentation tables. Use lowercase only for literal
-syntax: `.edi` for the file extension and `_edi.*` for the
-schema-marker category/items. Do not use `EDI` unless quoting an
-external source that has already standardized that spelling.
+syntax: `.edi` for the file extension and `_edi.*` for the schema-marker
+category/items. Do not use `EDI` unless quoting an external source that
+has already standardized that spelling.
 
 Persist project state using `.edi` files:
 
@@ -108,10 +107,10 @@ IUCr/pdCIF as far as the project can make it. Nonstandard report values
 continue to use `_easydiffraction_*` extension categories inside report
 CIF.
 
-Edi governs the `*.edi` files only. Existing non-STAR analysis
-artifacts keep their current formats: `analysis/results.h5` remains the
-binary fit-result sidecar, and `analysis/results.csv` remains the
-tabular sequential-fit output used by plotting and user inspection.
+Edi governs the `*.edi` files only. Existing non-STAR analysis artifacts
+keep their current formats: `analysis/results.h5` remains the binary
+fit-result sidecar, and `analysis/results.csv` remains the tabular
+sequential-fit output used by plotting and user inspection.
 
 The existing gemmi-based parser reads STAR/CIF content rather than
 relying on the file extension, so no new low-level parser is required.
@@ -131,8 +130,8 @@ strict CIF dictionary compatibility for files that intentionally use
 EasyDiffraction-owned names such as `_atom_site.adp_iso` and
 `_instrument.setup_wavelength`.
 
-**Use `.edi` for project persistence.** This is the selected option.
-It makes the file type honest: STAR syntax, EasyDiffraction schema. The
+**Use `.edi` for project persistence.** This is the selected option. It
+makes the file type honest: STAR syntax, EasyDiffraction schema. The
 cost is a beta layout migration and documentation churn, but it prevents
 scientists and external tools from mistaking project state files for
 submission/interchange CIFs.
@@ -158,9 +157,9 @@ electron-diffraction dictionary work.
 **Use `.txt`.** This is rejected. Its one real advantage is that a
 desktop double-click opens it in any text editor with no file
 association — but that is a GUI-only benefit. In a terminal, notebook,
-or CLI workflow (`cat`, `less`, `vim`, `nano`, `code …`) an `.edi`
-file opens identically regardless of suffix, so CLI users gain nothing
-from `.txt`. Against that, `.txt` loses everything the chosen extension
+or CLI workflow (`cat`, `less`, `vim`, `nano`, `code …`) an `.edi` file
+opens identically regardless of suffix, so CLI users gain nothing from
+`.txt`. Against that, `.txt` loses everything the chosen extension
 provides: the project files get **no identity** (a directory of
 `project.txt`, `<structure>.txt`, `<experiment>.txt` is
 indistinguishable from loose notes or data dumps); they **cannot be
@@ -206,10 +205,10 @@ Three rules make these names deterministic across the inventory:
   profile, whose descriptors are stored as bare stems (`gauss_sigma_0`,
   `lorentz_gamma_0`, `rise_alpha_0`, `decay_beta_0`) while the public
   properties carry grouping prefixes (`broad_gauss_sigma_0`,
-  `broad_lorentz_gamma_0`, `rise_alpha_0`, `decay_beta_0`) — Edi
-  writes the public-property name. This is the point of the format: a
-  saved field matches the Python path a scientist types. The current
-  bare CIF stem is preserved as a read alias.
+  `broad_lorentz_gamma_0`, `rise_alpha_0`, `decay_beta_0`) — Edi writes
+  the public-property name. This is the point of the format: a saved
+  field matches the Python path a scientist types. The current bare CIF
+  stem is preserved as a read alias.
 - **Loop (collection) categories use the singular row-category form of
   the public owner attribute**, following the CIF convention that a loop
   of many rows is named in the singular (`_atom_site` for many atom
@@ -299,8 +298,8 @@ dialect.
 
 Use `_easydiffraction_*` for custom keys serialized into strict report
 CIF when a nonstandard extension must coexist with official IUCr tags.
-Do not use `_edi_*` in report CIFs. `_edi.*` is reserved for the
-Edi schema marker in project files, while report CIF is an IUCr-facing
+Do not use `_edi_*` in report CIFs. `_edi.*` is reserved for the Edi
+schema marker in project files, while report CIF is an IUCr-facing
 export with EasyDiffraction extension categories. Keeping the prefixes
 separate means report-CIF extensions can remain stable even if the
 internal Edi project schema changes.
@@ -312,10 +311,10 @@ _edi.schema_version 1
 ```
 
 The `_edi.` namespace already identifies the dialect, so the marker
-carries only the version. The v1 loader accepts `1`, rejects newer
-major versions with a clear error, and rejects missing markers in
-`.edi` project files. The marker is therefore a validation boundary,
-not decorative metadata.
+carries only the version. The v1 loader accepts `1`, rejects newer major
+versions with a clear error, and rejects missing markers in `.edi`
+project files. The marker is therefore a validation boundary, not
+decorative metadata.
 
 **Plain-text guarantee (openability).** Edi files are plain UTF-8 STAR
 text with no binary content, so they open and hand-edit in any text
@@ -326,9 +325,9 @@ a user can always open the file with "Open With → any text editor" (or
 answer to the "unknown extension" concern that would otherwise argue for
 a generic `.txt` (see §File Extension Alternatives): Edi keeps the
 universal openability of plain text while retaining a distinct,
-greppable identity. Editors may additionally be mapped to treat
-`*.edi` as CIF/STAR for syntax highlighting — something a generic
-`.txt` cannot provide per-file-type.
+greppable identity. Editors may additionally be mapped to treat `*.edi`
+as CIF/STAR for syntax highlighting — something a generic `.txt` cannot
+provide per-file-type.
 
 ### Selector Validation Contract
 
@@ -368,8 +367,8 @@ Edi keeps the accepted free/fixed parameter encoding from
   example `3.8909()` or `3.89(20)`;
 - user-constrained dependent parameters write without brackets.
 
-This remains valid because Edi uses STAR value syntax. The schema
-marker and renamed data names do not change the value-level round-trip
+This remains valid because Edi uses STAR value syntax. The schema marker
+and renamed data names do not change the value-level round-trip
 contract.
 
 ## Compatibility
@@ -396,11 +395,11 @@ The loader follows a fixed contract:
 - **Clear error for legacy-only projects.** A directory that contains
   only `project.cif` fails to load with an explicit migration error that
   names the file and tells the user to open it in a supporting version
-  and re-save as `.edi`. The loader never silently produces an empty
-  or partial project.
+  and re-save as `.edi`. The loader never silently produces an empty or
+  partial project.
 - **Clear error for missing Edi metadata.** A project directory with
-  neither `project.edi` nor legacy `project.cif` fails with an
-  explicit message naming the required `project.edi` marker.
+  neither `project.edi` nor legacy `project.cif` fails with an explicit
+  message naming the required `project.edi` marker.
 
 ## Handler Model
 
@@ -592,7 +591,7 @@ descriptor in `src/easydiffraction`. Implementation must verify that
 claim with a generated inventory before changing write tags; any
 descriptor absent from this table is a migration blocker.
 
-| Area                                                              | Current EasyDiffraction names                                                                                                                                                                                                                                                                                                                                                          | Current project tags                                                                                                                                                                                                                                                                                    | Suggested Edi tags                                                                                                                                                                                                                                                                                                                                          | Official/report CIF names                                                                                                    |
+| Area                                                              | Current EasyDiffraction names                                                                                                                                                                                                                                                                                                                                                          | Current project tags                                                                                                                                                                                                                                                                                    | Suggested Edi tags                                                                                                                                                                                                                                                                                                                                            | Official/report CIF names                                                                                                    |
 | ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
 | `analysis.aliases`                                                | `label`, `param_unique_name`                                                                                                                                                                                                                                                                                                                                                           | `_alias.{label,param_unique_name}`                                                                                                                                                                                                                                                                      | `_alias.{id,parameter_unique_name}`                                                                                                                                                                                                                                                                                                                           |                                                                                                                              |
 | `analysis.constraints`                                            | `id`, `expression`                                                                                                                                                                                                                                                                                                                                                                     | `_constraint.{id,expression}`                                                                                                                                                                                                                                                                           | `_constraint.{id,expression}`                                                                                                                                                                                                                                                                                                                                 |                                                                                                                              |
@@ -688,8 +687,8 @@ reviewer does not "correct" them toward a different precedent.
   (`_pd_meas_2theta_range_inc`); `step` is FullProf-internal only.
 - **`march_random_fract` is not IUCr `fract`.** IUCr
   `_pd_pref_orient_March_Dollase.fract` is the multi-direction
-  fractional contribution; Edi's field is the random/untextured
-  fraction (cryspy `_texture_g_2`). Do not collapse them.
+  fractional contribution; Edi's field is the random/untextured fraction
+  (cryspy `_texture_g_2`). Do not collapse them.
 - **Type-neutral ADPs are deliberate.** `adp_iso` / `adp_type` /
   `adp_11` stay generic because `adp_type` is co-persisted and
   load-validated, making the B↔U distinction lossless while keeping
@@ -712,8 +711,8 @@ reviewer does not "correct" them toward a different precedent.
 
 ## Code/Edi 1-to-1 Correspondence
 
-Edi targets a strict 1-to-1 correspondence between the public Python
-API path and the persisted data name: a saved `_category.field` equals
+Edi targets a strict 1-to-1 correspondence between the public Python API
+path and the persisted data name: a saved `_category.field` equals
 `object.category.field` in code. The **only** systematic divergence is
 that a collection category is plural in the API (`structure.atom_sites`)
 and singular in the file (`_atom_site`), because the file names the
@@ -724,7 +723,7 @@ are API changes, not only file-tag changes; official import aliases stay
 available, report CIF keeps the official names, and pre-release Edi
 names are not preserved as legacy aliases):
 
-| Code today                                        | Code at v1.0.0                            | Edi                                 |
+| Code today                                        | Code at v1.0.0                            | Edi                                   |
 | ------------------------------------------------- | ----------------------------------------- | ------------------------------------- |
 | `atom_sites[*].label`                             | `atom_sites[*].id`                        | `_atom_site.id`                       |
 | `atom_site_aniso[*].label`                        | `atom_site_aniso[*].id`                   | `_atom_site_aniso.id`                 |
@@ -794,7 +793,7 @@ column is the persisted data name.
 
 ### Structure
 
-| Current API                                       | v1.0.0 API                                | Edi                            |
+| Current API                                       | v1.0.0 API                                | Edi                              |
 | ------------------------------------------------- | ----------------------------------------- | -------------------------------- |
 | `structure.cell.length_a`                         | same                                      | `_cell.length_a`                 |
 | `structure.cell.length_b`                         | same                                      | `_cell.length_b`                 |
@@ -827,7 +826,7 @@ column is the persisted data name.
 
 ### Experiment
 
-| Current API                                           | v1.0.0 API                                          | Edi                                       |
+| Current API                                           | v1.0.0 API                                          | Edi                                         |
 | ----------------------------------------------------- | --------------------------------------------------- | ------------------------------------------- |
 | `experiment.type.sample_form`                         | `experiment.experiment_type.sample_form`            | `_experiment_type.sample_form`              |
 | `experiment.type.beam_mode`                           | `experiment.experiment_type.beam_mode`              | `_experiment_type.beam_mode`                |
@@ -944,7 +943,7 @@ column is the persisted data name.
 
 ### Analysis
 
-| Current API                                                            | v1.0.0 API                                                      | Edi                                                 |
+| Current API                                                            | v1.0.0 API                                                      | Edi                                                   |
 | ---------------------------------------------------------------------- | --------------------------------------------------------------- | ----------------------------------------------------- |
 | `analysis.aliases['<id>'].label`                                       | `analysis.aliases['<id>'].id`                                   | `_alias.id`                                           |
 | `analysis.aliases['<id>'].param_unique_name`                           | `analysis.aliases['<id>'].parameter_unique_name`                | `_alias.parameter_unique_name`                        |
@@ -1041,7 +1040,7 @@ column is the persisted data name.
 
 ### Project
 
-| Current API                               | v1.0.0 API                       | Edi                              |
+| Current API                               | v1.0.0 API                       | Edi                                |
 | ----------------------------------------- | -------------------------------- | ---------------------------------- |
 | `project.info.name`                       | `project.metadata.name`          | `_metadata.name`                   |
 | `project.info.title`                      | `project.metadata.title`         | `_metadata.title`                  |
@@ -1107,13 +1106,13 @@ the right-hand column(s) differ:
    `atom_sites['ID'].id` (not `.label`), `linked_structures['ID'].scale`
    (not `linked_phases`), `experiment_type.beam_mode` (not `expt_type`),
    `instrument.calib_d_to_tof_quadratic` (not `_quad`), and so on.
-2. **"Keys in Edi"** (new) — the persisted `.edi` data name taken
-   from this ADR's Parameter Inventory and Per-Parameter Map, for
-   example `_atom_site.id`, `_atom_site.adp_iso`, `_cell.length_a`,
+2. **"Keys in Edi"** (new) — the persisted `.edi` data name taken from
+   this ADR's Parameter Inventory and Per-Parameter Map, for example
+   `_atom_site.id`, `_atom_site.adp_iso`, `_cell.length_a`,
    `_instrument.setup_wavelength`, `_peak.broad_gauss_sigma_0`,
    `_background.position`. This tab has **no** "CIF dictionary" column:
-   Edi is an EasyDiffraction-owned schema, and the `.edi` suffix
-   plus the `_edi.schema_*` marker already identify the dialect.
+   Edi is an EasyDiffraction-owned schema, and the `.edi` suffix plus
+   the `_edi.schema_*` marker already identify the dialect.
 3. **"Keys in CIF"** (new; replaces the old "CIF name for
    serialization") — the strict name emitted by
    `project.report.save_cif()` into `reports/<project>.cif`, with a "CIF
@@ -1129,11 +1128,11 @@ the right-hand column(s) differ:
      are omitted.
 
 The crucial change from today is the separation of concerns: the
-**project-save** names now live in tab 2 (Edi), and the
-**official-CIF** names live in tab 3, explicitly labelled as the
-_report_ boundary. This matches the ADR's thesis that project files are
-Edi and only `reports/<project>.cif` is strict IUCr. The current page
-conflates the two by labelling the old project write tags
+**project-save** names now live in tab 2 (Edi), and the **official-CIF**
+names live in tab 3, explicitly labelled as the _report_ boundary. This
+matches the ADR's thesis that project files are Edi and only
+`reports/<project>.cif` is strict IUCr. The current page conflates the
+two by labelling the old project write tags
 (`_pd_background.line_segment_X`, `_instr.wavelength`,
 `_atom_site.B_iso_or_equiv`) as "CIF name for serialization".
 
@@ -1187,8 +1186,8 @@ survive only as loader read aliases, never in the docs.
 
 The detail pages become EasyDiffraction-owned:
 
-- **Page and section names use Edi, not CIF.** Each section title is
-  the Edi data name — `## _atom_site.id`, `## _atom_site.adp_iso`,
+- **Page and section names use Edi, not CIF.** Each section title is the
+  Edi data name — `## _atom_site.id`, `## _atom_site.adp_iso`,
   `## _instrument.setup_wavelength` — and the body is EasyDiffraction's
   own description of that parameter, not a verbatim copy of the IUCr
   definition. Pages currently named for CIF categories
@@ -1196,8 +1195,7 @@ The detail pages become EasyDiffraction-owned:
   `_extinction.md`) and for soon-to-be-renamed owners
   (`linked_phases.md` → `linked_structure.md`, `pref_orient.md` →
   `preferred_orientation.md`, `expt_type.md` → `experiment_type.md`) are
-  renamed to their Edi category and have their reference links
-  updated.
+  renamed to their Edi category and have their reference links updated.
 - **Every category and parameter in the tables links to its detail
   section.** Add the pages/anchors that are missing today and update the
   existing reference-link definitions to the Edi names. Inter-page
@@ -1258,9 +1256,9 @@ static anchors match the resolver's derived page/anchor contract.
 
 Today the link to the official IUCr definition is placed on the
 section-title text itself (`## [\_atom_site.label](IUCr URL)`) and on a
-prose "see the IUCr page" sentence. Under Edi the title is the plain
-Edi name, and an explicit external-resource icon follows it, linking
-to the official IUCr description **only where one exists**:
+prose "see the IUCr page" sentence. Under Edi the title is the plain Edi
+name, and an explicit external-resource icon follows it, linking to the
+official IUCr description **only where one exists**:
 
 ```text
 ## _atom_site.adp_iso [:material-open-in-new:](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Iatom_site.B_iso_or_equiv.html "IUCr definition")
@@ -1278,9 +1276,8 @@ new extension is required.
 
 1. Introduce explicit handler names (`project_name`, `import_names`,
    `iucr_name`) while keeping current behavior.
-2. Teach save/load helpers to require `.edi` project files and to
-   reject legacy-only beta `.cif` project layouts with a clear migration
-   error.
+2. Teach save/load helpers to require `.edi` project files and to reject
+   legacy-only beta `.cif` project layouts with a clear migration error.
 3. Add schema-marker validation and selector/body consistency checks to
    the Edi load path.
 4. Generate an implementation audit from all `CifHandler`-declared

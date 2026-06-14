@@ -47,8 +47,8 @@ to the old suggestions path.
   error. Official CIF import names remain supported by explicit CIF
   import paths where supported, and read aliases remain recorded on
   handlers.
-- Edi files take precedence over stale CIF siblings. If both exist,
-  load Edi and ignore CIF for the same project section.
+- Edi files take precedence over stale CIF siblings. If both exist, load
+  Edi and ignore CIF for the same project section.
 - Ordinary `save()` writes Edi files. It does not need to delete stale
   CIF files; precedence and clear console output handle stale siblings.
 - Public Python names move to the ADR's API-oriented names with no
@@ -177,10 +177,9 @@ code/Edi/CIF reference.
 - [x] P1.2 - Make handler names explicit before changing tags.
 
   Extend `CifHandler` so each descriptor can declare: `project_name` for
-  Edi write tags, `import_names` for accepted read aliases,
-  `iucr_name` for report export, and enough category metadata for
-  inventory/docs URL generation. Preserve current CIF behavior while
-  this step lands.
+  Edi write tags, `import_names` for accepted read aliases, `iucr_name`
+  for report export, and enough category metadata for inventory/docs URL
+  generation. Preserve current CIF behavior while this step lands.
 
   Update descriptor construction only where needed to keep current CIF
   output unchanged. Add the versioned docs URL resolver and a read-only
@@ -211,8 +210,8 @@ code/Edi/CIF reference.
 
 - [x] P1.4 - Introduce Edi project file save/load.
 
-  Add Edi serialization and parsing boundaries, including schema
-  marker writing/validation and selector/body consistency checks. Update
+  Add Edi serialization and parsing boundaries, including schema marker
+  writing/validation and selector/body consistency checks. Update
   `Project.save()` to write:
 
   ```text
@@ -311,9 +310,9 @@ code/Edi/CIF reference.
   calibration `quad`/`recip` to `quadratic`/`reciprocal`, and
   line-segment background `x`/`y` to `position`/`intensity`.
 
-  Update Edi write names, legacy CIF import aliases, calculators,
-  report writers, plotting code, docs, and tutorials. Preserve strict
-  report CIF output names through `iucr_name`/transformers.
+  Update Edi write names, legacy CIF import aliases, calculators, report
+  writers, plotting code, docs, and tutorials. Preserve strict report
+  CIF output names through `iucr_name`/transformers.
 
   Commit:
 
@@ -347,8 +346,8 @@ code/Edi/CIF reference.
   Update `docs/docs/user-guide/parameters.md` to use three tabs: "How to
   access in the code", "Keys in Edi", and "Keys in CIF". Rename
   per-category pages under `docs/docs/user-guide/parameters/` to Edi
-  category names, give them Edi titles and EasyDiffraction
-  descriptions, and keep IUCr icon links for official dictionary tags.
+  category names, give them Edi titles and EasyDiffraction descriptions,
+  and keep IUCr icon links for official dictionary tags.
 
   Add stable anchors that match the runtime `param.url` resolver. Static
   docs tables should use relative links to the same anchors rather than

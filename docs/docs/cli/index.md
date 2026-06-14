@@ -115,8 +115,8 @@ python -m easydiffraction PROJECT_DIR fit
 ```
 
 `PROJECT_DIR` is the path to a project directory previously created by
-`project.save_as()`. It must contain a `project.edi` file along with
-the `structures/`, `experiments/`, and `analysis/` subdirectories.
+`project.save_as()`. It must contain a `project.edi` file along with the
+`structures/`, `experiments/`, and `analysis/` subdirectories.
 
 After fitting, the command displays the fit results and a project
 summary. By default, updated parameter values are **saved back** to the

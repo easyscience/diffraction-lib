@@ -6,16 +6,16 @@ title: minimizer
 
 ## :material-tag: burn_in_steps { #minimizer-burn-in-steps }
 
-| Access                    | Source                  |
-| ------------------------- | ----------------------- |
+| Access                    | Source                |
+| ------------------------- | --------------------- |
 | \_minimizer.burn_in_steps | [Edi][0]{:.label-cif} |
 
 Sampler iterations discarded as warm-up.
 
 ## :material-tag: initialization_method { #minimizer-initialization-method }
 
-| Access                            | Source                  |
-| --------------------------------- | ----------------------- |
+| Access                            | Source                |
+| --------------------------------- | --------------------- |
 | \_minimizer.initialization_method | [Edi][0]{:.label-cif} |
 
 Sampler initialization method. Supported values depend on the minimizer;
@@ -24,64 +24,64 @@ available values include `latin_hypercube`, `ball`, `uniform`, and
 
 ## :material-arrow-collapse-right: max_iterations { #minimizer-max-iterations }
 
-| Access                     | Source                  |
-| -------------------------- | ----------------------- |
+| Access                     | Source                |
+| -------------------------- | --------------------- |
 | \_minimizer.max_iterations | [Edi][0]{:.label-cif} |
 
 Maximum solver iterations.
 
 ## :material-tag: parallel_workers { #minimizer-parallel-workers }
 
-| Access                       | Source                  |
-| ---------------------------- | ----------------------- |
+| Access                       | Source                |
+| ---------------------------- | --------------------- |
 | \_minimizer.parallel_workers | [Edi][0]{:.label-cif} |
 
 Worker count; 0 uses all available CPUs.
 
 ## :material-tag: population_size { #minimizer-population-size }
 
-| Access                      | Source                  |
-| --------------------------- | ----------------------- |
+| Access                      | Source                |
+| --------------------------- | --------------------- |
 | \_minimizer.population_size | [Edi][0]{:.label-cif} |
 
 Number of chains or walkers.
 
 ## :material-tag: proposal_moves { #minimizer-proposal-moves }
 
-| Access                     | Source                  |
-| -------------------------- | ----------------------- |
+| Access                     | Source                |
+| -------------------------- | --------------------- |
 | \_minimizer.proposal_moves | [Edi][0]{:.label-cif} |
 
 Single emcee proposal move; move mixtures are not persisted in v1.
 
 ## :material-tag: random_seed { #minimizer-random-seed }
 
-| Access                  | Source                  |
-| ----------------------- | ----------------------- |
+| Access                  | Source                |
+| ----------------------- | --------------------- |
 | \_minimizer.random_seed | [Edi][0]{:.label-cif} |
 
 Random seed; None uses a system-derived seed.
 
 ## :material-tag: sampling_steps { #minimizer-sampling-steps }
 
-| Access                     | Source                  |
-| -------------------------- | ----------------------- |
+| Access                     | Source                |
+| -------------------------- | --------------------- |
 | \_minimizer.sampling_steps | [Edi][0]{:.label-cif} |
 
 Total sampler iterations per chain.
 
 ## :material-tag: thinning_interval { #minimizer-thinning-interval }
 
-| Access                        | Source                  |
-| ----------------------------- | ----------------------- |
+| Access                        | Source                |
+| ----------------------------- | --------------------- |
 | \_minimizer.thinning_interval | [Edi][0]{:.label-cif} |
 
 Sampler thinning interval.
 
 ## :material-shape: type { #minimizer-type }
 
-| Access           | Source                  |
-| ---------------- | ----------------------- |
+| Access           | Source                |
+| ---------------- | --------------------- |
 | \_minimizer.type | [Edi][0]{:.label-cif} |
 
 Minimizer category type. Supported values include `lmfit`,
