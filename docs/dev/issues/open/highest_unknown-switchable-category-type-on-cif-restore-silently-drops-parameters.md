@@ -29,7 +29,7 @@ the current code is the concrete pre-ADR behaviour it would correct.
   — background swap
 
 **Depends on:** the EasyDiff persistence ADR
-([`edstar-project-persistence.md`](../adrs/suggestions/edstar-project-persistence.md)),
+([`edstar-project-persistence.md`](../../adrs/accepted/edstar-project-persistence.md)),
 which formalizes the reject-on-disagreement rule. Related to issues
 120, 121.
 
