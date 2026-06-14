@@ -80,10 +80,12 @@ class RichTableBackend(TableBackendBase):
         tmp = Console(force_jupyter=False, record=True, file=io.StringIO())
         tmp.print(table)
         html = tmp.export_html(inline_styles=True)
-        # Remove margins inside pre blocks and adjust font size
+        # Remove margins inside pre blocks, shrink the font, and tighten
+        # the line spacing so notebook/HTML tables stay compact (the box
+        # rows otherwise inherit the page's tall code line-height).
         return html.replace(
             '<pre ',
-            "<pre style='margin:0; font-size: 0.9em !important; ' ",
+            "<pre style='margin:0; font-size: 0.9em !important; line-height: 1.2 !important; ' ",
         )
 
     def build_renderable(

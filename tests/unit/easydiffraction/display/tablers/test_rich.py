@@ -49,6 +49,8 @@ class TestRichTableBackend:
         html = backend._to_html(table)
         assert isinstance(html, str)
         assert '<pre' in html
+        # Compact line spacing for notebook/HTML tables.
+        assert 'line-height: 1.2 !important' in html
 
     def test_render_prints_to_console(self, capsys):
         from easydiffraction.display.tablers.rich import RichTableBackend
