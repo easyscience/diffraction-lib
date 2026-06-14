@@ -20,12 +20,12 @@ project = ed.Project()
 structure = StructureFactory.from_scratch(name='si')
 
 structure.space_group.name_h_m = 'F d -3 m'  # FullProf Space group symbol
-structure.space_group.it_coordinate_system_code = '2'
+structure.space_group.coord_system_code = '2'
 
 structure.cell.length_a = 5.431342  # FullProf a
 
 structure.atom_sites.create(
-    label='Si',  # FullProf Atom
+    id='Si',  # FullProf Atom
     type_symbol='Si',  # FullProf Typ
     fract_x=0.125,  # FullProf X
     fract_y=0.125,  # FullProf Y
@@ -81,12 +81,12 @@ experiment = ExperimentFactory.from_scratch(
 )
 verify.set_reference_as_measured(experiment, x, calc_fullprof)
 
-experiment.linked_phases.create(id='si', scale=FULLPROF_SCALE)
+experiment.linked_structures.create(structure_id='si', scale=FULLPROF_SCALE)
 
 experiment.instrument.setup_twotheta_bank = FULLPROF_TWOTHETA_BANK
 experiment.instrument.calib_d_to_tof_offset = FULLPROF_ZERO
 experiment.instrument.calib_d_to_tof_linear = FULLPROF_DTT1
-experiment.instrument.calib_d_to_tof_quad = FULLPROF_DTT2
+experiment.instrument.calib_d_to_tof_quadratic = FULLPROF_DTT2
 
 experiment.peak.type = 'jorgensen-von-dreele'
 experiment.peak.broad_gauss_sigma_0 = FULLPROF_SIGMA_0
@@ -111,7 +111,7 @@ project.experiments.add(experiment)
 # %%
 experiment.calculator.type = 'cryspy'
 
-experiment.linked_phases['si'].scale = FULLPROF_SCALE
+experiment.linked_structures['si'].scale = FULLPROF_SCALE
 
 project.analysis.calculate()
 calc_ed_cryspy = experiment.data.intensity_calc
@@ -128,9 +128,9 @@ project.display.pattern_comparison(
 # ## Fit ed-cryspy to FullProf
 
 # %%
-# experiment.linked_phases['si'].scale = 16.558439186694915
+# experiment.linked_structures['si'].scale = 16.558439186694915
 # experiment.peak.broad_lorentz_gamma_1 = 9.998261092381231
-experiment.linked_phases['si'].scale.free = True
+experiment.linked_structures['si'].scale.free = True
 experiment.peak.broad_lorentz_gamma_1.free = True
 
 project.analysis.fit()
@@ -148,7 +148,7 @@ project.display.pattern_comparison(
 )
 
 # %%
-experiment.linked_phases['si'].scale
+experiment.linked_structures['si'].scale
 
 # %%
 experiment.peak.broad_lorentz_gamma_1
@@ -159,7 +159,7 @@ experiment.peak.broad_lorentz_gamma_1
 # %%
 experiment.calculator.type = 'crysfml'
 
-experiment.linked_phases['si'].scale = FULLPROF_SCALE
+experiment.linked_structures['si'].scale = FULLPROF_SCALE
 experiment.peak.broad_lorentz_gamma_1 = FULLPROF_GAMMA_1
 
 project.analysis.calculate()
@@ -177,8 +177,8 @@ project.display.pattern_comparison(
 # ## Fit ed-crysfml to FullProf
 
 # %%
-# experiment.linked_phases['si'].scale = 1275.028259237954
-experiment.linked_phases['si'].scale.free = True
+# experiment.linked_structures['si'].scale = 1275.028259237954
+experiment.linked_structures['si'].scale.free = True
 experiment.peak.broad_lorentz_gamma_1.free = False
 
 project.analysis.fit()
@@ -196,7 +196,7 @@ project.display.pattern_comparison(
 )
 
 # %%
-experiment.linked_phases['si'].scale
+experiment.linked_structures['si'].scale
 
 # %%
 experiment.peak.broad_lorentz_gamma_1

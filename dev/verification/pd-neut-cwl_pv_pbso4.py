@@ -26,7 +26,7 @@ structure.cell.length_b = 5.396482  # FullProf b
 structure.cell.length_c = 6.957715  # FullProf c
 
 structure.atom_sites.create(
-    label='Pb',  # FullProf Atom
+    id='Pb',  # FullProf Atom
     type_symbol='Pb',  # FullProf Typ
     fract_x=0.18754,  # FullProf X
     fract_y=0.25,  # FullProf Y
@@ -35,7 +35,7 @@ structure.atom_sites.create(
     adp_iso=1.38058,  # FullProf Biso
 )
 structure.atom_sites.create(
-    label='S',  # FullProf Atom
+    id='S',  # FullProf Atom
     type_symbol='S',  # FullProf Typ
     fract_x=0.06532,  # FullProf X
     fract_y=0.25,  # FullProf Y
@@ -44,7 +44,7 @@ structure.atom_sites.create(
     adp_iso=0.36192,  # FullProf Biso
 )
 structure.atom_sites.create(
-    label='O1',  # FullProf Atom
+    id='O1',  # FullProf Atom
     type_symbol='O',  # FullProf Typ
     fract_x=0.90822,  # FullProf X
     fract_y=0.25,  # FullProf Y
@@ -53,7 +53,7 @@ structure.atom_sites.create(
     adp_iso=2.03661,  # FullProf Biso
 )
 structure.atom_sites.create(
-    label='O2',  # FullProf Atom
+    id='O2',  # FullProf Atom
     type_symbol='O',  # FullProf Typ
     fract_x=0.19390,  # FullProf X
     fract_y=0.25,  # FullProf Y
@@ -62,7 +62,7 @@ structure.atom_sites.create(
     adp_iso=1.50417,  # FullProf Biso
 )
 structure.atom_sites.create(
-    label='O3',  # FullProf Atom
+    id='O3',  # FullProf Atom
     type_symbol='O',  # FullProf Typ
     fract_x=0.08114,  # FullProf X
     fract_y=0.02713,  # FullProf Y
@@ -109,7 +109,7 @@ experiment = ExperimentFactory.from_scratch(
 )
 verify.set_reference_as_measured(experiment, x, calc_fullprof)
 
-experiment.linked_phases.create(id='pbso4', scale=FULLPROF_SCALE)
+experiment.linked_structures.create(structure_id='pbso4', scale=FULLPROF_SCALE)
 
 experiment.instrument.setup_wavelength = FULLPROF_WAVELENGTH
 experiment.instrument.calib_twotheta_offset = FULLPROF_ZERO

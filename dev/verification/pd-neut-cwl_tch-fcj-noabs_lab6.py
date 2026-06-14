@@ -21,7 +21,7 @@ structure = StructureFactory.from_scratch(name='lab6')
 structure.space_group.name_h_m = 'P m -3 m'  # FullProf Space group symbol
 structure.cell.length_a = 4.156885  # FullProf a
 structure.atom_sites.create(
-    label='La',  # FullProf Atom
+    id='La',  # FullProf Atom
     type_symbol='La',  # FullProf Typ
     fract_x=0.0,  # FullProf X
     fract_y=0.0,  # FullProf Y
@@ -30,7 +30,7 @@ structure.atom_sites.create(
     adp_iso=0.32249,  # FullProf Biso
 )
 structure.atom_sites.create(
-    label='B',  # FullProf Atom
+    id='B',  # FullProf Atom
     type_symbol='11B',  # FullProf "B11"
     fract_x=0.19978,  # FullProf X
     fract_y=0.5,  # FullProf Y
@@ -81,7 +81,7 @@ experiment = ExperimentFactory.from_scratch(
 )
 verify.set_reference_as_measured(experiment, x, calc_fullprof)
 
-experiment.linked_phases.create(id='lab6', scale=FULLPROF_SCALE)
+experiment.linked_structures.create(structure_id='lab6', scale=FULLPROF_SCALE)
 
 experiment.instrument.setup_wavelength = FULLPROF_WAVELENGTH
 experiment.instrument.calib_twotheta_offset = FULLPROF_ZERO
@@ -120,7 +120,7 @@ project.display.pattern_comparison(
 # ## Fit ed-cryspy to FullProf
 
 # %%
-experiment.linked_phases['lab6'].scale.free = True
+experiment.linked_structures['lab6'].scale.free = True
 experiment.instrument.calib_twotheta_offset.free = True
 experiment.instrument.calib_sample_displacement.free = True
 experiment.instrument.calib_sample_transparency.free = True
@@ -145,7 +145,7 @@ project.display.pattern_comparison(
 # %%
 experiment.calculator.type = 'crysfml'
 
-experiment.linked_phases['lab6'].scale = FULLPROF_SCALE
+experiment.linked_structures['lab6'].scale = FULLPROF_SCALE
 
 experiment.peak.type = 'thompson-cox-hastings'
 experiment.instrument.calib_twotheta_offset = FULLPROF_ZERO
@@ -172,7 +172,7 @@ project.display.pattern_comparison(
 # ## Fit ed-crysfml to FullProf
 
 # %%
-experiment.linked_phases['lab6'].scale.free = True
+experiment.linked_structures['lab6'].scale.free = True
 experiment.instrument.calib_twotheta_offset.free = True
 
 experiment.instrument.calib_sample_displacement.free = False

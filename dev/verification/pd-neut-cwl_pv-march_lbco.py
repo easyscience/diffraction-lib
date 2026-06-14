@@ -39,7 +39,7 @@ structure.space_group.name_h_m = 'P m -3 m'  # FullProf Space group symbol
 structure.cell.length_a = 3.890790  # FullProf a
 
 structure.atom_sites.create(
-    label='La',  # FullProf Atom
+    id='La',  # FullProf Atom
     type_symbol='La',  # FullProf Typ
     fract_x=0.0,  # FullProf X
     fract_y=0.0,  # FullProf Y
@@ -49,7 +49,7 @@ structure.atom_sites.create(
     adp_iso=0.57511,  # FullProf Biso
 )
 structure.atom_sites.create(
-    label='Ba',  # FullProf Atom
+    id='Ba',  # FullProf Atom
     type_symbol='Ba',  # FullProf Typ
     fract_x=0.0,  # FullProf X
     fract_y=0.0,  # FullProf Y
@@ -59,7 +59,7 @@ structure.atom_sites.create(
     adp_iso=0.57511,  # FullProf Biso
 )
 structure.atom_sites.create(
-    label='Co',  # FullProf Atom
+    id='Co',  # FullProf Atom
     type_symbol='Co',  # FullProf Typ
     fract_x=0.5,  # FullProf X
     fract_y=0.5,  # FullProf Y
@@ -69,7 +69,7 @@ structure.atom_sites.create(
     adp_iso=0.26023,  # FullProf Biso
 )
 structure.atom_sites.create(
-    label='O',  # FullProf Atom
+    id='O',  # FullProf Atom
     type_symbol='O',  # FullProf Typ
     fract_x=0.0,  # FullProf X
     fract_y=0.5,  # FullProf Y
@@ -122,7 +122,7 @@ experiment = ExperimentFactory.from_scratch(
 )
 verify.set_reference_as_measured(experiment, x, calc_fullprof)
 
-experiment.linked_phases.create(id='lbco', scale=FULLPROF_SCALE)
+experiment.linked_structures.create(structure_id='lbco', scale=FULLPROF_SCALE)
 
 experiment.instrument.setup_wavelength = FULLPROF_WAVELENGTH
 experiment.instrument.calib_twotheta_offset = FULLPROF_ZERO
@@ -135,7 +135,7 @@ experiment.peak.broad_lorentz_x = FULLPROF_X
 experiment.peak.broad_lorentz_y = FULLPROF_Y
 
 experiment.preferred_orientation.create(
-    phase_id='lbco',
+    structure_id='lbco',
     march_r=FULLPROF_PREF_1,
     march_random_fract=FULLPROF_PREF_2,
     index_h=FULLPROF_PR_1,
@@ -171,7 +171,7 @@ project.display.pattern_comparison(
 # `march_random_fract ≈ Pref2`, and the patterns agree.
 
 # %%
-experiment.linked_phases['lbco'].scale.free = True
+experiment.linked_structures['lbco'].scale.free = True
 experiment.preferred_orientation['lbco'].march_r.free = True
 experiment.preferred_orientation['lbco'].march_random_fract.free = True
 

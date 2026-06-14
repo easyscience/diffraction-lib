@@ -21,7 +21,7 @@ structure = StructureFactory.from_scratch(name='ncaf')
 structure.space_group.name_h_m = 'I 21 3'  # FullProf Space group symbol
 structure.cell.length_a = 10.250256  # FullProf a
 structure.atom_sites.create(
-    label='Ca',  # FullProf Atom
+    id='Ca',  # FullProf Atom
     type_symbol='Ca',  # FullProf Typ
     fract_x=0.46610,  # FullProf X
     fract_y=0.0,  # FullProf Y
@@ -30,7 +30,7 @@ structure.atom_sites.create(
     adp_iso=0.88721,  # FullProf Biso
 )
 structure.atom_sites.create(
-    label='Al',  # FullProf Atom
+    id='Al',  # FullProf Atom
     type_symbol='Al',  # FullProf Typ
     fract_x=0.25163,  # FullProf X
     fract_y=0.25163,  # FullProf Y
@@ -39,7 +39,7 @@ structure.atom_sites.create(
     adp_iso=0.65230,  # FullProf Biso
 )
 structure.atom_sites.create(
-    label='Na',  # FullProf Atom
+    id='Na',  # FullProf Atom
     type_symbol='Na',  # FullProf Typ
     fract_x=0.08472,  # FullProf X
     fract_y=0.08472,  # FullProf Y
@@ -48,7 +48,7 @@ structure.atom_sites.create(
     adp_iso=1.89168,  # FullProf Biso
 )
 structure.atom_sites.create(
-    label='F1',  # FullProf Atom
+    id='F1',  # FullProf Atom
     type_symbol='F',  # FullProf Typ
     fract_x=0.13748,  # FullProf X
     fract_y=0.30533,  # FullProf Y
@@ -57,7 +57,7 @@ structure.atom_sites.create(
     adp_iso=0.89535,  # FullProf Biso
 )
 structure.atom_sites.create(
-    label='F2',  # FullProf Atom
+    id='F2',  # FullProf Atom
     type_symbol='F',  # FullProf Typ
     fract_x=0.36263,  # FullProf X
     fract_y=0.36333,  # FullProf Y
@@ -66,7 +66,7 @@ structure.atom_sites.create(
     adp_iso=1.27175,  # FullProf Biso
 )
 structure.atom_sites.create(
-    label='F3',  # FullProf Atom
+    id='F3',  # FullProf Atom
     type_symbol='F',  # FullProf Typ
     fract_x=0.46120,  # FullProf X
     fract_y=0.46120,  # FullProf Y
@@ -122,12 +122,12 @@ experiment = ExperimentFactory.from_scratch(
 )
 verify.set_reference_as_measured(experiment, x, calc_fullprof)
 
-experiment.linked_phases.create(id='ncaf', scale=FULLPROF_SCALE)
+experiment.linked_structures.create(structure_id='ncaf', scale=FULLPROF_SCALE)
 
 experiment.instrument.setup_twotheta_bank = FULLPROF_TWOTHETA_BANK
 experiment.instrument.calib_d_to_tof_offset = FULLPROF_ZERO
 experiment.instrument.calib_d_to_tof_linear = FULLPROF_DTT1
-experiment.instrument.calib_d_to_tof_quad = FULLPROF_DTT2
+experiment.instrument.calib_d_to_tof_quadratic = FULLPROF_DTT2
 
 experiment.peak.type = 'jorgensen-von-dreele'
 experiment.peak.broad_gauss_sigma_0 = FULLPROF_SIGMA_0
@@ -152,7 +152,7 @@ project.experiments.add(experiment)
 # %%
 experiment.calculator.type = 'cryspy'
 
-experiment.linked_phases['ncaf'].scale = FULLPROF_SCALE
+experiment.linked_structures['ncaf'].scale = FULLPROF_SCALE
 
 project.analysis.calculate()
 calc_ed_cryspy = experiment.data.intensity_calc
@@ -169,8 +169,8 @@ project.display.pattern_comparison(
 # ## Fit ed-cryspy to FullProf
 
 # %%
-# experiment.linked_phases['ncaf'].scale = 1.0927822317965166
-experiment.linked_phases['ncaf'].scale.free = True
+# experiment.linked_structures['ncaf'].scale = 1.0927822317965166
+experiment.linked_structures['ncaf'].scale.free = True
 
 project.analysis.fit()
 project.display.fit.results()
@@ -187,7 +187,7 @@ project.display.pattern_comparison(
 )
 
 # %%
-experiment.linked_phases['ncaf'].scale
+experiment.linked_structures['ncaf'].scale
 
 # %% [markdown]
 # ## ed-crysfml VS FullProf
@@ -195,7 +195,7 @@ experiment.linked_phases['ncaf'].scale
 # %%
 experiment.calculator.type = 'crysfml'
 
-experiment.linked_phases['ncaf'].scale = FULLPROF_SCALE
+experiment.linked_structures['ncaf'].scale = FULLPROF_SCALE
 
 project.analysis.calculate()
 calc_ed_crysfml = experiment.data.intensity_calc
@@ -212,8 +212,8 @@ project.display.pattern_comparison(
 # ## Fit ed-crysfml to FullProf
 
 # %%
-# experiment.linked_phases['ncaf'].scale = 307.9429
-experiment.linked_phases['ncaf'].scale.free = True
+# experiment.linked_structures['ncaf'].scale = 307.9429
+experiment.linked_structures['ncaf'].scale.free = True
 
 project.analysis.fit()
 project.display.fit.results()
@@ -230,7 +230,7 @@ project.display.pattern_comparison(
 )
 
 # %%
-experiment.linked_phases['ncaf'].scale
+experiment.linked_structures['ncaf'].scale
 
 # %% [markdown]
 # ## Agreement check
