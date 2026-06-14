@@ -15,9 +15,9 @@ Documentation.
 > mechanism is reused by the public `download_data()` API.
 
 > Sibling of [`resource-naming.md`](resource-naming.md): this ADR pins
-> *which snapshot* of the data repository to fetch and decides
+> _which snapshot_ of the data repository to fetch and decides
 > replace-in-place under stable identifiers; that ADR decides what those
-> identifiers *are* (the `<namespace>/<slug>` scheme that replaces the
+> identifiers _are_ (the `<namespace>/<slug>` scheme that replaces the
 > integer ids).
 
 ## Context
@@ -126,23 +126,23 @@ Constraints established for this decision:
    extraction directory are keyed by that dataset's `sha256` from the
    index — the value of the existing `hash` field per the §Context note,
    not a renamed schema key (for example the cached filename and the
-   extraction directory carry a short content hash). A dataset whose bytes changed therefore
-   resolves to a new local path and is re-fetched/re-extracted, while
-   unchanged datasets are reused — so only what actually changed is
-   re-downloaded, and an existing stale file or extracted directory is
-   never served. Equivalently, an existing payload may be verified
-   against the current index `sha256` before reuse; either way the rule
-   covers extraction directories, not only direct downloads. (The index
-   itself is keyed by the commit per Decision 4, so it always refreshes
-   on a ref bump.)
+   extraction directory carry a short content hash). A dataset whose
+   bytes changed therefore resolves to a new local path and is
+   re-fetched/re-extracted, while unchanged datasets are reused — so
+   only what actually changed is re-downloaded, and an existing stale
+   file or extracted directory is never served. Equivalently, an
+   existing payload may be verified against the current index `sha256`
+   before reuse; either way the rule covers extraction directories, not
+   only direct downloads. (The index itself is keyed by the commit per
+   Decision 4, so it always refreshes on a ref bump.)
 
 8. **Validate the pinned ref before use.** On read, the contents of
    `_data_index_ref.txt` are stripped of surrounding whitespace and must
    be a full 40-character hexadecimal commit SHA. Any other value —
    empty, a branch name, a short SHA, or path-like text — raises a clear
-   error before any URL or cache filename is built. This turns the
-   "must be a full commit SHA" requirement into an enforced contract, so
-   a malformed edit fails fast instead of silently breaking
+   error before any URL or cache filename is built. This turns the "must
+   be a full commit SHA" requirement into an enforced contract, so a
+   malformed edit fails fast instead of silently breaking
    reproducibility or the cache-busting invariant.
 
 ## Consequences
@@ -162,17 +162,17 @@ Constraints established for this decision:
   cache-busting filename trick only works for immutable refs (a moving
   branch keeps the same `index.json` content address in its name). This
   is enforced at read time (Decision 8), so a bad edit fails fast.
-- Retaining content-keyed local copies of superseded datasets uses
-  some extra disk in the cache; this is accepted (and prunable) in
-  exchange for never serving stale bytes.
+- Retaining content-keyed local copies of superseded datasets uses some
+  extra disk in the cache; this is accepted (and prunable) in exchange
+  for never serving stale bytes.
 - Dropping the index checksum slightly reduces index-level
   defense-in-depth; this is accepted because the commit already fixes
   the bytes and transport is HTTPS.
 
 ## Alternatives Considered
 
-- **Keep both constants in code.** Status quo; rejected for the two-value
-  coupling, opacity, and cache coupling above.
+- **Keep both constants in code.** Status quo; rejected for the
+  two-value coupling, opacity, and cache coupling above.
 - **Version the data with git tags** (`data-vN` or per-release tags).
   Rejected: the repository is multi-purpose, so data-driven tags pollute
   its tag namespace and conflate data with site/metadata changes.
@@ -191,14 +191,15 @@ Constraints established for this decision:
 ## Deferred Work
 
 - **Development data channel and override.** A future change may let
-  unreleased/dev builds resolve a live channel automatically and/or honor
-  an `EASYDIFFRACTION_DATA_REF` environment variable to point a build at
-  a branch or commit for testing data before it is finalized. This ADR
-  only fixes the released-build pin; the dev workflow today is to set the
-  commit (or the override, once added) to the data snapshot under test.
-- **Automated bump.** Optionally, release CI could write the current data
-  commit into `_data_index_ref.txt` so the value is never hand-edited.
-  Out of scope here; manual editing remains the baseline.
+  unreleased/dev builds resolve a live channel automatically and/or
+  honor an `EASYDIFFRACTION_DATA_REF` environment variable to point a
+  build at a branch or commit for testing data before it is finalized.
+  This ADR only fixes the released-build pin; the dev workflow today is
+  to set the commit (or the override, once added) to the data snapshot
+  under test.
+- **Automated bump.** Optionally, release CI could write the current
+  data commit into `_data_index_ref.txt` so the value is never
+  hand-edited. Out of scope here; manual editing remains the baseline.
 - **Dedicated data home.** If the umbrella repository grows, moving the
   data to its own released artifact could fully decouple its lifecycle.
   Out of scope: the project does not want additional repositories now.

@@ -12,7 +12,7 @@ import pathlib
 import re
 import shutil
 import urllib.request
-from enum import Enum
+from enum import StrEnum
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version
 from urllib.parse import urlparse
@@ -238,7 +238,8 @@ def _data_index_ref() -> str:
         If the stored value is not a full 40-character hex commit SHA.
     """
     raw = (
-        importlib.resources.files('easydiffraction')
+        importlib.resources
+        .files('easydiffraction')
         .joinpath(_DATA_INDEX_REF_RESOURCE)
         .read_text(encoding='utf-8')
     )
@@ -254,10 +255,12 @@ def _data_index_ref() -> str:
 
 def _build_data_url(path: str) -> str:
     path = path.lstrip('/')
-    return f'https://raw.githubusercontent.com/{_DATA_REPO}/{_data_index_ref()}/{_DATA_ROOT}/{path}'
+    return (
+        f'https://raw.githubusercontent.com/{_DATA_REPO}/{_data_index_ref()}/{_DATA_ROOT}/{path}'
+    )
 
 
-class DataNamespace(str, Enum):
+class DataNamespaceEnum(StrEnum):
     """The fixed namespaces a downloadable dataset id can carry."""
 
     STRUCTURES = 'structures'
@@ -266,7 +269,7 @@ class DataNamespace(str, Enum):
     PROJECTS = 'projects'
 
 
-_DATA_NAMESPACES = frozenset(member.value for member in DataNamespace)
+_DATA_NAMESPACES = frozenset(member.value for member in DataNamespaceEnum)
 # One slug segment: lowercase ASCII letters/digits in dash-separated
 # groups, no leading/trailing/doubled dashes (resource-naming ADR).
 _SLUG_SEGMENT_RE = re.compile(r'[a-z0-9]+(?:-[a-z0-9]+)*')
@@ -315,13 +318,15 @@ def _ordered_keys(index: dict) -> list[str]:
 
 
 def _is_positional(name: int | str) -> bool:
-    """Return True when ``name`` is an interactive positional shortcut."""
+    """
+    Return True when ``name`` is an interactive positional shortcut.
+    """
     return isinstance(name, int) or (isinstance(name, str) and name.isdigit())
 
 
 def _resolve_positional(position: int, keys: list[str], *, kind: str) -> str:
     """
-    Resolve a 1-based row number against the deterministic listing order.
+    Resolve a 1-based listing row number to an index key.
 
     The number is a transient row index, never a stored identity
     (resource-naming ADR, Decision 6).
@@ -367,8 +372,8 @@ def _filename_from_path(record_path: str) -> str:
     """
     Return the local filename for a record (slug leaf plus extension).
 
-    The id already mirrors the file path (resource-naming ADR,
-    Decision 5), so the saved file keeps the slug name, e.g.
+    The id already mirrors the file path (resource-naming ADR, Decision
+    5), so the saved file keeps the slug name, e.g.
     ``lbco-hrpt.easydiff``.
     """
     return pathlib.PurePosixPath(record_path).name
@@ -458,7 +463,7 @@ def _download_data_message(name: str, record: dict) -> str:
 
 def _is_project_id(resource_id: str) -> bool:
     """Return True for ids in the ``projects/`` namespace."""
-    return resource_id.startswith(f'{DataNamespace.PROJECTS.value}/')
+    return resource_id.startswith(f'{DataNamespaceEnum.PROJECTS.value}/')
 
 
 def _download_data_targets(
@@ -520,7 +525,9 @@ def _fetch_tutorials_index() -> dict:
 
 
 def _resolve_data_id(name: int | str, index: dict) -> str:
-    """Resolve a dataset slug or interactive row number to an index key."""
+    """
+    Resolve a dataset slug or interactive row number to an index key.
+    """
     if _is_positional(name):
         return _resolve_positional(int(name), _ordered_keys(index), kind='dataset')
     name = str(name)
@@ -560,14 +567,8 @@ def download_data(
     -------
     str
         Full path to the downloaded file, or to the extracted project
-        directory for project ZIP archives, as string.
-
-    Raises
-    ------
-    ValueError
-        If ``name`` is not a valid dataset slug id.
-    KeyError
-        If the slug is not found in the index.
+        directory for project ZIP archives, as string. A malformed slug
+        raises ``ValueError`` and an unknown slug raises ``KeyError``.
     """
     index = _fetch_data_index()
     resource_id = _resolve_data_id(name, index)
@@ -937,7 +938,9 @@ def list_tutorials() -> None:
 
 
 def _resolve_tutorial_id(name: int | str, index: dict) -> str:
-    """Resolve a tutorial slug or interactive row number to an index key."""
+    """
+    Resolve a tutorial slug or interactive row number to an index key.
+    """
     if _is_positional(name):
         return _resolve_positional(int(name), _ordered_keys(index), kind='tutorial')
     name = str(name)
@@ -975,14 +978,8 @@ def download_tutorial(
     Returns
     -------
     str
-        Full path to the downloaded file as string.
-
-    Raises
-    ------
-    ValueError
-        If ``name`` is not a valid tutorial slug id.
-    KeyError
-        If the slug is not found in the index.
+        Full path to the downloaded file as string. A malformed slug
+        raises ``ValueError`` and an unknown slug raises ``KeyError``.
     """
     index = _fetch_tutorials_index()
     resource_id = _resolve_tutorial_id(name, index)

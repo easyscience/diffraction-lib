@@ -1197,7 +1197,7 @@ def test_validate_dataset_id_accepts_valid_slugs(slug):
 def test_validate_dataset_id_rejects_invalid_slugs(slug):
     import easydiffraction.utils.utils as MUT
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match='Invalid'):
         MUT._validate_dataset_id(slug)
 
 
@@ -1205,7 +1205,7 @@ def test_validate_tutorial_id_rejects_namespace():
     import easydiffraction.utils.utils as MUT
 
     MUT._validate_tutorial_id('refine-lbco-hrpt-from-cif')  # must not raise
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match='Invalid tutorial id'):
         MUT._validate_tutorial_id('structures/lbco')
 
 
@@ -1243,7 +1243,7 @@ def test_data_index_ref_rejects_malformed(monkeypatch):
 
     MUT._data_index_ref.cache_clear()
     monkeypatch.setattr(MUT.importlib.resources, 'files', lambda _pkg: _Res('not-a-sha'))
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match='Invalid data index ref'):
         MUT._data_index_ref()
     MUT._data_index_ref.cache_clear()
 

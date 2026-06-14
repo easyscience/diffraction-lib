@@ -204,7 +204,7 @@ def download_data(
 def download_tutorial(
     name: str = typer.Argument(
         ...,
-        help="Tutorial slug, e.g. 'refine-lbco-hrpt-from-cif', or the row number from list-tutorials.",
+        help="Tutorial slug (e.g. 'refine-lbco-hrpt-from-cif') or a list-tutorials row number.",
     ),
     destination: str = typer.Option(
         'tutorials',
