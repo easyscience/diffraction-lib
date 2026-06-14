@@ -384,7 +384,7 @@ def _filename_from_path(record_path: str) -> str:
 
     The id already mirrors the file path (resource-naming ADR, Decision
     5), so the saved file keeps the slug name, e.g.
-    ``lbco-hrpt.easydiff``.
+    ``lbco-hrpt.edifa``.
     """
     return pathlib.PurePosixPath(record_path).name
 
@@ -456,7 +456,7 @@ def _fetch_data_index() -> dict:
 
 def _existing_project_dir(extraction_dir: pathlib.Path) -> pathlib.Path | None:
     """Return one extracted project directory from a destination."""
-    project_files = sorted(extraction_dir.rglob('project.easydiff'))
+    project_files = sorted(extraction_dir.rglob('project.edifa'))
     if not project_files:
         return None
     return project_files[0].parent.resolve()
@@ -797,7 +797,7 @@ def parameter_docs_url(
     Parameters
     ----------
     data_name : str
-        EasyDiff data name, such as ``'_cell.length_a'``.
+        Edifa data name, such as ``'_cell.length_a'``.
     page : str | None, default=None
         Parameter reference page override.
     anchor : str | None, default=None

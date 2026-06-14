@@ -212,11 +212,11 @@ class ProjectMetadata(CategoryItem):
 
     @property
     def as_cif(self) -> str:
-        """Export project metadata to EasyDiff."""
+        """Export project metadata to Edifa."""
         return project_metadata_to_cif(self)
 
     def show_as_cif(self) -> None:
-        """Pretty-print EasyDiff via shared utilities."""
-        paragraph_title = f"Project 📦 '{self.name}' metadata as EasyDiff"
+        """Pretty-print Edifa via shared utilities."""
+        paragraph_title = f"Project 📦 '{self.name}' metadata as Edifa"
         console.paragraph(paragraph_title)
         render_cif(self.as_cif)

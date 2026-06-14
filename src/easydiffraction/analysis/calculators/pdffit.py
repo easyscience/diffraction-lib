@@ -73,7 +73,7 @@ def _structure_cif_for_pdffit(structure: Structure) -> str:
     """
     Return structure CIF using legacy IUCr tags diffpy recognizes.
 
-    EasyDiff persistence renamed several CIF tags (``_atom_site.id``,
+    Edifa persistence renamed several CIF tags (``_atom_site.id``,
     ``_space_group.name_h_m``, type-neutral ``_atom_site.adp_iso``).
     diffpy's CIF parser only understands the legacy IUCr spellings, so
     map them back. All ADP values are normalized to the U convention
@@ -97,8 +97,8 @@ def _structure_cif_for_pdffit(structure: Structure) -> str:
             for suffix in _ANISO_SUFFIXES
         ),
     ]
-    for easydiff_tag, iucr_tag in replacements:
-        cif = cif.replace(easydiff_tag, iucr_tag)
+    for edifa_tag, iucr_tag in replacements:
+        cif = cif.replace(edifa_tag, iucr_tag)
     return cif
 
 
@@ -196,7 +196,7 @@ class PdffitCalculator(CalculatorBase):
 
         # TODO: move CIF v2 -> CIF v1 conversion to a separate module
         # Convert the structure to CIF supported by PDFfit, mapping
-        # EasyDiff tags back to the legacy IUCr spellings diffpy needs.
+        # Edifa tags back to the legacy IUCr spellings diffpy needs.
         cif_string_v2 = _structure_cif_for_pdffit(structure)
         # convert to version 1 of CIF format
         # this means: replace all dots with underscores for

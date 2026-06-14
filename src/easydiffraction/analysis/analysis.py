@@ -433,11 +433,11 @@ class AnalysisDisplay:
             value_fn=lambda param: param._cif_handler.uid,
         )
 
-    def parameter_easydiff_tags(self) -> None:
-        """Show the EasyDiff persistence tag for every parameter."""
+    def parameter_edifa_tags(self) -> None:
+        """Show the Edifa persistence tag for every parameter."""
         self._show_parameter_names(
-            column_header='EasyDiff Tag',
-            paragraph_title='Show parameter EasyDiff tags',
+            column_header='Edifa Tag',
+            paragraph_title='Show parameter Edifa tags',
             value_fn=lambda param: param._cif_handler.project_name,
         )
 

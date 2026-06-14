@@ -22,8 +22,8 @@ from easydiffraction.io.cif.serialize import analysis_from_cif
 from easydiffraction.io.cif.serialize import project_config_from_cif
 from easydiffraction.io.cif.serialize import project_config_to_cif
 from easydiffraction.io.cif.serialize import project_to_cif
-from easydiffraction.io.easydiff import easydiff_body_from_text
-from easydiffraction.io.easydiff import section_to_easydiff
+from easydiffraction.io.edifa import edifa_body_from_text
+from easydiffraction.io.edifa import section_to_edifa
 from easydiffraction.io.results_sidecar import read_analysis_results_sidecar
 from easydiffraction.io.results_sidecar import write_analysis_results_sidecar
 from easydiffraction.project.display import ProjectDisplay
@@ -139,20 +139,20 @@ def _resolve_data_path_from_results_csv(
     return project_path / path
 
 
-def _load_easydiff_directory(
+def _load_edifa_directory(
     section_dir: pathlib.Path,
-    add_from_easydiff_path: Callable[[str], None],
+    add_from_edifa_path: Callable[[str], None],
     *,
     replacement: str,
 ) -> None:
-    """Load EasyDiff files and reject legacy-only project CIF files."""
+    """Load Edifa files and reject legacy-only project CIF files."""
     if not section_dir.is_dir():
         return
 
-    easydiff_files = sorted(section_dir.glob('*.easydiff'))
-    if easydiff_files:
-        for easydiff_file in easydiff_files:
-            add_from_easydiff_path(str(easydiff_file))
+    edifa_files = sorted(section_dir.glob('*.edifa'))
+    if edifa_files:
+        for edifa_file in edifa_files:
+            add_from_edifa_path(str(edifa_file))
         return
 
     legacy_files = sorted(section_dir.glob('*.cif'))
@@ -174,11 +174,11 @@ def _create_loading_project(project_cls: type[Project]) -> Project:
 
 def _load_project_metadata(project: Project, project_path: pathlib.Path) -> None:
     """
-    Restore project configuration from EasyDiff.
+    Restore project configuration from Edifa.
     """
-    project_easydiff_path = project_path / 'project.easydiff'
-    if project_easydiff_path.is_file():
-        body = easydiff_body_from_text(project_easydiff_path.read_text())
+    project_edifa_path = project_path / 'project.edifa'
+    if project_edifa_path.is_file():
+        body = edifa_body_from_text(project_edifa_path.read_text())
         project_config_from_cif(project, body)
         return
 
@@ -186,18 +186,18 @@ def _load_project_metadata(project: Project, project_path: pathlib.Path) -> None
     if project_cif_path.is_file():
         _raise_legacy_project_cif_error(
             project_cif_path,
-            replacement='project.easydiff',
+            replacement='project.edifa',
         )
 
-    msg = f"Project directory '{project_path}' must contain project.easydiff."
+    msg = f"Project directory '{project_path}' must contain project.edifa."
     raise FileNotFoundError(msg)
 
 
 def _resolved_analysis_path(project_path: pathlib.Path) -> pathlib.Path | None:
     """Return the preferred analysis path for a saved project."""
     for analysis_path in (
-        project_path / 'analysis' / 'analysis.easydiff',
-        project_path / 'analysis.easydiff',
+        project_path / 'analysis' / 'analysis.edifa',
+        project_path / 'analysis.edifa',
     ):
         if analysis_path.is_file():
             return analysis_path
@@ -209,18 +209,18 @@ def _resolved_analysis_path(project_path: pathlib.Path) -> pathlib.Path | None:
         if analysis_path.is_file():
             _raise_legacy_project_cif_error(
                 analysis_path,
-                replacement='analysis/analysis.easydiff',
+                replacement='analysis/analysis.edifa',
             )
     return None
 
 
 def _persistence_body_from_path(path: pathlib.Path) -> str:
-    """Read EasyDiff text for a project section."""
-    if path.suffix == '.easydiff':
+    """Read Edifa text for a project section."""
+    if path.suffix == '.edifa':
         text = path.read_text(encoding='utf-8')
-        return easydiff_body_from_text(text)
+        return edifa_body_from_text(text)
 
-    _raise_legacy_project_cif_error(path, replacement='a .easydiff file')
+    _raise_legacy_project_cif_error(path, replacement='a .edifa file')
 
 
 def _load_project_analysis(project: Project, project_path: pathlib.Path) -> None:
@@ -462,7 +462,7 @@ class Project(GuardedBase):  # noqa: PLR0904
         """
         Load a project from a saved directory.
 
-        Reads EasyDiff project files from *dir_path* and reconstructs
+        Reads Edifa project files from *dir_path* and reconstructs
         the full project state, including project-level display
         configuration. Legacy beta CIF project files are rejected with
         an explicit migration error.
@@ -493,15 +493,15 @@ class Project(GuardedBase):  # noqa: PLR0904
 
         _load_project_metadata(project, project_path)
         project.metadata.path = project_path
-        _load_easydiff_directory(
+        _load_edifa_directory(
             project_path / 'structures',
-            project._structures.add_from_easydiff_path,
-            replacement='structures/<structure>.easydiff',
+            project._structures.add_from_edifa_path,
+            replacement='structures/<structure>.edifa',
         )
-        _load_easydiff_directory(
+        _load_edifa_directory(
             project_path / 'experiments',
-            project._experiments.add_from_easydiff_path,
-            replacement='experiments/<experiment>.easydiff',
+            project._experiments.add_from_edifa_path,
+            replacement='experiments/<experiment>.edifa',
         )
         _load_project_analysis(project, project_path)
 
@@ -577,19 +577,19 @@ class Project(GuardedBase):  # noqa: PLR0904
         self.metadata.path.mkdir(parents=True, exist_ok=True)
 
         # Save project-level configuration
-        with (self.metadata.path / 'project.easydiff').open('w') as f:
-            f.write(section_to_easydiff(project_config_to_cif(self)))
-            console.print('├── 📄 project.easydiff')
+        with (self.metadata.path / 'project.edifa').open('w') as f:
+            f.write(section_to_edifa(project_config_to_cif(self)))
+            console.print('├── 📄 project.edifa')
 
         # Save structures
         sm_dir = self.metadata.path / 'structures'
         sm_dir.mkdir(parents=True, exist_ok=True)
         console.print('├── 📁 structures/')
         for structure in self.structures.values():
-            file_name: str = f'{structure.name}.easydiff'
+            file_name: str = f'{structure.name}.edifa'
             file_path = sm_dir / file_name
             with file_path.open('w') as f:
-                f.write(section_to_easydiff(structure.as_cif))
+                f.write(section_to_edifa(structure.as_cif))
                 console.print(f'│   └── 📄 {file_name}')
 
         # Save experiments
@@ -597,17 +597,17 @@ class Project(GuardedBase):  # noqa: PLR0904
         expt_dir.mkdir(parents=True, exist_ok=True)
         console.print('├── 📁 experiments/')
         for experiment in self.experiments.values():
-            file_name: str = f'{experiment.name}.easydiff'
+            file_name: str = f'{experiment.name}.edifa'
             file_path = expt_dir / file_name
             with file_path.open('w') as f:
-                f.write(section_to_easydiff(experiment.as_cif))
+                f.write(section_to_edifa(experiment.as_cif))
                 console.print(f'│   └── 📄 {file_name}')
 
         # Save analysis
         analysis_dir = self.metadata.path / 'analysis'
         analysis_dir.mkdir(parents=True, exist_ok=True)
-        with (analysis_dir / 'analysis.easydiff').open('w') as f:
-            f.write(section_to_easydiff(self.analysis.as_cif))
+        with (analysis_dir / 'analysis.edifa').open('w') as f:
+            f.write(section_to_edifa(self.analysis.as_cif))
             console.print('├── 📁 analysis/')
         write_analysis_results_sidecar(
             analysis=self.analysis,
@@ -617,7 +617,7 @@ class Project(GuardedBase):  # noqa: PLR0904
         analysis_file_names = sorted(
             path.name
             for path in analysis_dir.iterdir()
-            if path.is_file() and path.suffix in {'.easydiff', '.csv', '.h5'}
+            if path.is_file() and path.suffix in {'.edifa', '.csv', '.h5'}
         )
         for index, file_name in enumerate(analysis_file_names):
             branch = '└──' if index == len(analysis_file_names) - 1 else '├──'

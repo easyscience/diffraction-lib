@@ -9,7 +9,7 @@ from typeguard import typechecked
 from easydiffraction.core.datablock import DatablockCollection
 from easydiffraction.datablocks.experiment.item.base import ExperimentBase
 from easydiffraction.datablocks.experiment.item.factory import ExperimentFactory
-from easydiffraction.io.easydiff import easydiff_body_from_text
+from easydiffraction.io.edifa import edifa_body_from_text
 from easydiffraction.utils.enums import VerbosityEnum
 from easydiffraction.utils.logging import console
 
@@ -100,19 +100,19 @@ class Experiments(DatablockCollection):
         self.add(experiment)
 
     @typechecked
-    def add_from_easydiff_path(
+    def add_from_edifa_path(
         self,
-        easydiff_path: str,
+        edifa_path: str,
     ) -> None:
         """
-        Add an experiment from an EasyDiff file.
+        Add an experiment from an Edifa file.
 
         Parameters
         ----------
-        easydiff_path : str
-            Path to an EasyDiff experiment file.
+        edifa_path : str
+            Path to an Edifa experiment file.
         """
-        body = easydiff_body_from_text(pathlib.Path(easydiff_path).read_text(encoding='utf-8'))
+        body = edifa_body_from_text(pathlib.Path(edifa_path).read_text(encoding='utf-8'))
         experiment = ExperimentFactory.from_cif_str(body)
         self.add(experiment)
 

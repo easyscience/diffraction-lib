@@ -246,7 +246,7 @@ def download_all_tutorials(
 def display(
     project_dir: str = typer.Argument(
         ...,
-        help='Path to the project directory (must contain project.easydiff).',
+        help='Path to the project directory (must contain project.edifa).',
     ),
 ) -> None:
     """Display the typical outputs for a saved project state."""
@@ -258,7 +258,7 @@ def display(
 def fit(
     project_dir: str = typer.Argument(
         ...,
-        help='Path to the project directory (must contain project.easydiff).',
+        help='Path to the project directory (must contain project.edifa).',
     ),
     dry: bool = typer.Option(  # noqa: FBT001
         False,  # noqa: FBT003
@@ -278,7 +278,7 @@ def fit(
 def undo(
     project_dir: str = typer.Argument(
         ...,
-        help='Path to the project directory (must contain project.easydiff).',
+        help='Path to the project directory (must contain project.edifa).',
     ),
     dry: bool = typer.Option(  # noqa: FBT001
         False,  # noqa: FBT003
