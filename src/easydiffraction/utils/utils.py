@@ -456,7 +456,13 @@ def _download_data_message(name: str, record: dict) -> str:
     return message
 
 
+def _is_project_id(resource_id: str) -> bool:
+    """Return True for ids in the ``projects/`` namespace."""
+    return resource_id.startswith(f'{DataNamespace.PROJECTS.value}/')
+
+
 def _download_data_targets(
+    resource_id: str,
     destination: str,
     record: dict,
 ) -> tuple[str, bool, pathlib.Path, pathlib.Path, pathlib.Path, str]:
@@ -466,7 +472,9 @@ def _download_data_targets(
     _validate_url(url)
 
     fname = _filename_from_path(record_path)
-    is_project_archive = record.get('kind') == 'project' and fname.endswith('.zip')
+    # The namespace carries the kind, so a project archive is any
+    # ``projects/`` id delivered as a ZIP (resource-naming ADR).
+    is_project_archive = _is_project_id(resource_id) and fname.endswith('.zip')
     dest_path = resolve_artifact_path(destination)
     dest_path.mkdir(parents=True, exist_ok=True)
     file_path = dest_path / fname
@@ -565,7 +573,7 @@ def download_data(
     resource_id = _resolve_data_id(name, index)
     record = index[resource_id]
     url, is_project_archive, dest_path, file_path, extraction_dir, fname = _download_data_targets(
-        destination, record
+        resource_id, destination, record
     )
     message = _download_data_message(resource_id, record)
 
