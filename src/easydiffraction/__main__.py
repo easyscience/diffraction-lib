@@ -13,7 +13,7 @@ if hasattr(sys.stdout, 'reconfigure'):
 
 import typer
 
-import easydiffraction as ed
+import easydiffraction as edi
 
 app = typer.Typer(add_completion=False)
 
@@ -46,7 +46,7 @@ def _normalized_cli_args(args: list[str]) -> list[str]:
 
 def _load_project(project_dir: str) -> object:
     """Load one saved project directory."""
-    return ed.Project.load(project_dir)
+    return edi.Project.load(project_dir)
 
 
 def _display_project_patterns(project: object) -> None:
@@ -156,7 +156,7 @@ def main(
 ) -> None:
     """EasyDiffraction command-line interface."""
     if version:
-        ed.show_version()
+        edi.show_version()
         raise typer.Exit(code=0)
     # If no subcommand and no option provided, show help and exit 0.
     if ctx.invoked_subcommand is None:
@@ -168,13 +168,13 @@ def main(
 @app.command('list-data')
 def list_data() -> None:
     """List available example data and project archives."""
-    ed.list_data()
+    edi.list_data()
 
 
 @app.command('list-tutorials')
 def list_tutorials() -> None:
     """List available tutorial notebooks."""
-    ed.list_tutorials()
+    edi.list_tutorials()
 
 
 @app.command('download-data')
@@ -197,7 +197,7 @@ def download_data(
     ),
 ) -> None:
     """Download one dataset by its name."""
-    ed.download_data(name, destination=destination, overwrite=overwrite)
+    edi.download_data(name, destination=destination, overwrite=overwrite)
 
 
 @app.command('download-tutorial')
@@ -220,7 +220,7 @@ def download_tutorial(
     ),
 ) -> None:
     """Download a specific tutorial notebook by its name."""
-    ed.download_tutorial(name, destination=destination, overwrite=overwrite)
+    edi.download_tutorial(name, destination=destination, overwrite=overwrite)
 
 
 @app.command('download-all-tutorials')
@@ -239,7 +239,7 @@ def download_all_tutorials(
     ),
 ) -> None:
     """Download all available tutorial notebooks."""
-    ed.download_all_tutorials(destination=destination, overwrite=overwrite)
+    edi.download_all_tutorials(destination=destination, overwrite=overwrite)
 
 
 @app.command('display')
