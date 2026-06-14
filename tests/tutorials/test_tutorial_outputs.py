@@ -6,7 +6,7 @@ This module runs *after* the tutorials have been executed (as scripts
 via ``pixi run script-tests`` or as notebooks via
 ``pixi run notebook-tests``). Each tutorial saves its project under
 ``<artifact-root>/projects/ed_<n>_<name>/``; here we parse every
-``analysis/analysis.cif`` and compare its fit-quality metrics and a few
+``analysis/analysis.edifa`` and compare its fit-quality metrics and a few
 refined parameter values against the committed ``baseline.json``.
 
 If no tutorial artifacts are present the whole module is skipped, so the
@@ -21,7 +21,7 @@ import math
 from pathlib import Path
 
 import pytest
-from analysis_cif_reader import read_analysis_cif
+from analysis_edifa_reader import read_analysis_edifa
 from generate_baseline import PLATFORM_SENSITIVE
 from generate_baseline import artifact_root
 
@@ -32,14 +32,14 @@ ABS_TOL = 1e-8
 
 
 def _analysis_cif_path(name: str) -> Path:
-    """Return the ``analysis.cif`` path for a saved tutorial project."""
-    return artifact_root() / 'projects' / name / 'analysis' / 'analysis.cif'
+    """Return the ``analysis.edifa`` path for a saved tutorial project."""
+    return artifact_root() / 'projects' / name / 'analysis' / 'analysis.edifa'
 
 
 def _artifacts_present() -> bool:
     """Return whether any tutorial project has been saved."""
     projects_dir = artifact_root() / 'projects'
-    return projects_dir.is_dir() and any(projects_dir.glob('ed_*/analysis/analysis.cif'))
+    return projects_dir.is_dir() and any(projects_dir.glob('ed_*/analysis/analysis.edifa'))
 
 
 pytestmark = pytest.mark.skipif(
@@ -50,7 +50,7 @@ pytestmark = pytest.mark.skipif(
 
 def _assert_close(actual: float | None, expected: float, rtol: float, label: str) -> None:
     """Assert *actual* matches *expected* within a relative tolerance."""
-    assert actual is not None, f'{label}: value missing from analysis.cif'
+    assert actual is not None, f'{label}: value missing from analysis.edifa'
     assert math.isclose(actual, expected, rel_tol=rtol, abs_tol=ABS_TOL), (
         f'{label}: {actual} != {expected} (rel_tol={rtol})'
     )
@@ -58,12 +58,12 @@ def _assert_close(actual: float | None, expected: float, rtol: float, label: str
 
 @pytest.mark.parametrize('name', sorted(BASELINE))
 def test_tutorial_output(name: str) -> None:
-    """Check one tutorial's saved analysis.cif against the baseline."""
+    """Check one tutorial's saved analysis.edifa against the baseline."""
     expected = BASELINE[name]
     cif_path = _analysis_cif_path(name)
     assert cif_path.is_file(), f"Missing {cif_path}; tutorial '{name}' did not save its project."
 
-    cif = read_analysis_cif(cif_path)
+    cif = read_analysis_edifa(cif_path)
 
     # result_kind reflects the minimizer type; it is reproducible
     # across platforms, so it is always checked.
@@ -96,7 +96,7 @@ def test_tutorial_output(name: str) -> None:
 
     for param_name, exp_value in expected['parameters'].items():
         assert param_name in cif.fit_parameters, (
-            f"{name}: parameter '{param_name}' missing from analysis.cif"
+            f"{name}: parameter '{param_name}' missing from analysis.edifa"
         )
         _assert_close(
             cif.parameter_value(param_name),

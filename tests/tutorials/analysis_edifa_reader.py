@@ -8,12 +8,12 @@ baseline.
 
 Two sources are parsed:
 
-* ``analysis/analysis.cif`` for the scalar ``_fit_result.*`` metrics and
+* ``analysis/analysis.edifa`` for the scalar ``_fit_result.*`` metrics and
   the ``_fit_parameter`` loop. The loop's ``start_value`` column is a
   *pre-fit* snapshot, so it is **not** used for deterministic parameter
   values; it only tells us which parameters were refined (and, for
   Bayesian fits, carries the post-fit ``posterior_median``).
-* ``structures/*.cif`` and ``experiments/*.cif`` for the *refined*
+* ``structures/*.edifa`` and ``experiments/*.edifa`` for the *refined*
   parameter values of deterministic fits, which the library persists as
   the live ``param.value`` (e.g. ``si 1.4525(73)``).
 """
@@ -66,7 +66,7 @@ class _CifBlock:
 
 
 @dataclass(frozen=True)
-class AnalysisCif:
+class AnalysisEdifa:
     """Parsed fit results for one saved tutorial project."""
 
     fit_result: dict[str, str]
@@ -92,8 +92,8 @@ class AnalysisCif:
         """Return the refined value of a named parameter.
 
         Bayesian fits use the post-fit ``posterior_median`` recorded in
-        ``analysis.cif``. Deterministic fits read the refined value from
-        the model/experiment CIFs, because ``analysis.cif`` only keeps a
+        ``analysis.edifa``. Deterministic fits read the refined value from
+        the model/experiment Edifa files, because ``analysis.edifa`` only keeps a
         pre-fit snapshot of each parameter.
         """
         columns = self.fit_parameters.get(name, {})
@@ -209,7 +209,7 @@ def _load_model_blocks(project_dir: Path) -> dict[str, _CifBlock]:
         directory = project_dir / subdir
         if not directory.is_dir():
             continue
-        for cif_path in sorted(directory.glob('*.cif')):
+        for cif_path in sorted(directory.glob('*.edifa')):
             text = cif_path.read_text(encoding='utf-8')
             name = next(
                 (
@@ -224,7 +224,7 @@ def _load_model_blocks(project_dir: Path) -> dict[str, _CifBlock]:
     return blocks
 
 
-def parse_analysis_cif(text: str, model_blocks: dict[str, _CifBlock] | None = None) -> AnalysisCif:
+def parse_analysis_edifa(text: str, model_blocks: dict[str, _CifBlock] | None = None) -> AnalysisEdifa:
     """Parse ``_fit_result`` scalars and the ``_fit_parameter`` loop."""
     fit_result: dict[str, str] = {}
     fit_parameters: dict[str, dict[str, str]] = {}
@@ -247,19 +247,19 @@ def parse_analysis_cif(text: str, model_blocks: dict[str, _CifBlock] | None = No
             fit_result[key.removeprefix(_FIT_RESULT_PREFIX)] = _unquote(value.strip())
         index += 1
 
-    return AnalysisCif(
+    return AnalysisEdifa(
         fit_result=fit_result,
         fit_parameters=fit_parameters,
         model_blocks=model_blocks or {},
     )
 
 
-def read_analysis_cif(path: Path) -> AnalysisCif:
-    """Parse ``analysis.cif`` at *path* plus its sibling model CIFs.
+def read_analysis_edifa(path: Path) -> AnalysisEdifa:
+    """Parse ``analysis.edifa`` at *path* plus its sibling model Edifa files.
 
     Deterministic refined parameter values are read from the
     ``structures/`` and ``experiments/`` CIFs of the same project
-    directory (``<project>/analysis/analysis.cif`` → ``<project>``).
+    directory (``<project>/analysis/analysis.edifa`` → ``<project>``).
     """
     model_blocks = _load_model_blocks(path.parents[1])
-    return parse_analysis_cif(path.read_text(encoding='utf-8'), model_blocks)
+    return parse_analysis_edifa(path.read_text(encoding='utf-8'), model_blocks)

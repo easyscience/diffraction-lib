@@ -5,7 +5,7 @@
 Run the tutorials first (``pixi run script-tests`` or
 ``pixi run notebook-tests``) so each saved project exists under
 ``<artifact-root>/projects/``. Then run this script to (re)write
-``baseline.json`` from the freshly produced ``analysis.cif`` files::
+``baseline.json`` from the freshly produced ``analysis.edifa`` files::
 
     pixi run python tests/tutorials/generate_baseline.py
 
@@ -19,8 +19,8 @@ import json
 import os
 from pathlib import Path
 
-from analysis_cif_reader import AnalysisCif
-from analysis_cif_reader import read_analysis_cif
+from analysis_edifa_reader import AnalysisEdifa
+from analysis_edifa_reader import read_analysis_edifa
 
 # Relative tolerances used when comparing against the baseline. Bayesian
 # (MCMC) fits are seeded but still vary slightly more than deterministic
@@ -61,7 +61,7 @@ def _is_key_parameter(name: str) -> bool:
     return '.cell.length_' in name or name.endswith('.scale')
 
 
-def select_key_parameters(cif: AnalysisCif) -> dict[str, float]:
+def select_key_parameters(cif: AnalysisEdifa) -> dict[str, float]:
     """Return the tracked refined parameter values for one project."""
     names = list(cif.fit_parameters)
     selected = [name for name in names if _is_key_parameter(name)]
@@ -74,7 +74,7 @@ def select_key_parameters(cif: AnalysisCif) -> dict[str, float]:
     return {name: round(cif.parameter_value(name), ROUND_DIGITS) for name in ordered}
 
 
-def build_entry(name: str, cif: AnalysisCif) -> dict | None:
+def build_entry(name: str, cif: AnalysisEdifa) -> dict | None:
     """Build a baseline entry, or ``None`` if the project has no fit."""
     reduced_chi_square = cif.scalar('reduced_chi_square')
     if reduced_chi_square is None or reduced_chi_square <= 0:
@@ -100,11 +100,11 @@ def collect_baseline(root: Path) -> dict[str, dict]:
     """Build baseline entries for every saved project under *root*."""
     projects_dir = root / 'projects'
     baseline: dict[str, dict] = {}
-    for cif_path in sorted(projects_dir.glob('*/analysis/analysis.cif')):
+    for cif_path in sorted(projects_dir.glob('*/analysis/analysis.edifa')):
         name = cif_path.parents[1].name
         if not name.startswith('ed_'):
             continue
-        entry = build_entry(name, read_analysis_cif(cif_path))
+        entry = build_entry(name, read_analysis_edifa(cif_path))
         if entry is not None:
             baseline[name] = entry
     return baseline
