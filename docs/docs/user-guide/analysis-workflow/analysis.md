@@ -445,8 +445,8 @@ Example output:
 ## Saving an Analysis
 
 Saving the project, as described in the [Project](project.md) section,
-will also save the analysis settings to `analysis/analysis.edifa`
-inside the project directory.
+will also save the analysis settings to `analysis/analysis.edifa` inside
+the project directory.
 
 <br>
 

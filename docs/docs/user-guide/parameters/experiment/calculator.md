@@ -8,8 +8,8 @@
 
 ## :material-shape: type { #calculator-type }
 
-| Access            | Source                     |
-| ----------------- | -------------------------- |
+| Access            | Source                  |
+| ----------------- | ----------------------- |
 | \_calculator.type | [Edifa][0]{:.label-cif} |
 
 Calculator backend type. Supported values include `cryspy`, `crysfml`,

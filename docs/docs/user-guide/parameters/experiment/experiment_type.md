@@ -8,9 +8,9 @@
 
 ## :material-diamond-stone: sample_form { #experiment-type-sample-form }
 
-| Access                                        | Source                        |
-| --------------------------------------------- | ----------------------------- |
-| experiment_type.sample_form                   | [code][0]{:.label-cif}        |
+| Access                                        | Source                     |
+| --------------------------------------------- | -------------------------- |
+| experiment_type.sample_form                   | [code][0]{:.label-cif}     |
 | \_experiment_type.sample_form                 | [Edifa][0]{:.label-cif}    |
 | \_easydiffraction_experiment_type.sample_form | [edifaCIF][0]{:.label-cif} |
 
@@ -19,9 +19,9 @@ include `powder` and `single crystal`.
 
 ## :material-sawtooth-wave: beam_mode { #experiment-type-beam-mode }
 
-| Access                                      | Source                        |
-| ------------------------------------------- | ----------------------------- |
-| experiment_type.beam_mode                   | [code][0]{:.label-cif}        |
+| Access                                      | Source                     |
+| ------------------------------------------- | -------------------------- |
+| experiment_type.beam_mode                   | [code][0]{:.label-cif}     |
 | \_experiment_type.beam_mode                 | [Edifa][0]{:.label-cif}    |
 | \_easydiffraction_experiment_type.beam_mode | [edifaCIF][0]{:.label-cif} |
 
@@ -30,9 +30,9 @@ values include `constant wavelength` and `time-of-flight`.
 
 ## :material-radiology-box-outline: radiation_probe { #experiment-type-radiation-probe }
 
-| Access                                            | Source                        |
-| ------------------------------------------------- | ----------------------------- |
-| experiment_type.radiation_probe                   | [code][0]{:.label-cif}        |
+| Access                                            | Source                     |
+| ------------------------------------------------- | -------------------------- |
+| experiment_type.radiation_probe                   | [code][0]{:.label-cif}     |
 | \_experiment_type.radiation_probe                 | [Edifa][0]{:.label-cif}    |
 | \_easydiffraction_experiment_type.radiation_probe | [edifaCIF][0]{:.label-cif} |
 
@@ -41,9 +41,9 @@ Neutron or X-ray diffraction measurement. Supported values include
 
 ## :material-chart-bell-curve: scattering_type { #experiment-type-scattering-type }
 
-| Access                                            | Source                        |
-| ------------------------------------------------- | ----------------------------- |
-| experiment_type.scattering_type                   | [code][0]{:.label-cif}        |
+| Access                                            | Source                     |
+| ------------------------------------------------- | -------------------------- |
+| experiment_type.scattering_type                   | [code][0]{:.label-cif}     |
 | \_experiment_type.scattering_type                 | [Edifa][0]{:.label-cif}    |
 | \_easydiffraction_experiment_type.scattering_type | [edifaCIF][0]{:.label-cif} |
 

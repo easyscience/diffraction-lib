@@ -7,24 +7,24 @@
 
 ## :material-stop: end { #excluded-region-end }
 
-| Access                | Source                     |
-| --------------------- | -------------------------- |
+| Access                | Source                  |
+| --------------------- | ----------------------- |
 | \_excluded_region.end | [Edifa][0]{:.label-cif} |
 
 End of the excluded region.
 
 ## :material-tag: id { #excluded-region-id }
 
-| Access               | Source                     |
-| -------------------- | -------------------------- |
+| Access               | Source                  |
+| -------------------- | ----------------------- |
 | \_excluded_region.id | [Edifa][0]{:.label-cif} |
 
 Identifier for this excluded region.
 
 ## :material-play: start { #excluded-region-start }
 
-| Access                  | Source                     |
-| ----------------------- | -------------------------- |
+| Access                  | Source                  |
+| ----------------------- | ----------------------- |
 | \_excluded_region.start | [Edifa][0]{:.label-cif} |
 
 Start of the excluded region.

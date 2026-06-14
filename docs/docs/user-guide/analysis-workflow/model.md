@@ -220,8 +220,8 @@ project.structure_style.adp_probability = 0.5  # ADP ellipsoid probability level
 ```
 
 Bonds are generated automatically between atoms whose separation falls
-within the per-structure cutoffs stored on `structure.geom` (the
-Edifa `_geom` parameters):
+within the per-structure cutoffs stored on `structure.geom` (the Edifa
+`_geom` parameters):
 
 ```python
 # Tune the per-structure bond-generation cutoffs (angstrom)
@@ -255,8 +255,8 @@ section).
 
 Saving the project, as described in the [Project](project.md) section,
 will also save the structure. Each structure is saved as a separate
-`.edifa` file in the `structures` subdirectory of the project
-directory. The project file contains references to these files.
+`.edifa` file in the `structures` subdirectory of the project directory.
+The project file contains references to these files.
 
 Below is an example of the saved Edifa file for the `lbco` structure:
 

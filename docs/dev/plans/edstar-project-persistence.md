@@ -35,15 +35,14 @@ to the old suggestions path.
 ## Decisions
 
 - Edifa becomes the project persistence format: `project.edifa`,
-  `structures/<structure>.edifa`,
-  `experiments/<experiment>.edifa`, and `analysis/analysis.edifa`.
+  `structures/<structure>.edifa`, `experiments/<experiment>.edifa`, and
+  `analysis/analysis.edifa`.
 - `analysis/results.csv`, `analysis/results.h5`, and
   `reports/<project>.cif` keep their current locations and purposes.
 - Report CIF generation stays strict IUCr/pdCIF export. Regular project
   save/load must not treat report CIF as round-trippable project state.
 - Saved Edifa files include the schema marker
-  `_edifa.schema_name EasyDiffraction` and
-  `_edifa.schema_version 1`.
+  `_edifa.schema_name EasyDiffraction` and `_edifa.schema_version 1`.
 - Project restore accepts only Edifa project files. Legacy beta
   EasyDiffraction CIF project files fail with an explicit migration
   error. Official CIF import names remain supported by explicit CIF
@@ -51,9 +50,8 @@ to the old suggestions path.
   handlers.
 - Edifa files take precedence over stale CIF siblings. If both exist,
   load Edifa and ignore CIF for the same project section.
-- Ordinary `save()` writes Edifa files. It does not need to delete
-  stale CIF files; precedence and clear console output handle stale
-  siblings.
+- Ordinary `save()` writes Edifa files. It does not need to delete stale
+  CIF files; precedence and clear console output handle stale siblings.
 - Public Python names move to the ADR's API-oriented names with no
   transitional Python properties: `project.metadata`,
   `experiment.experiment_type`, `linked_structures`, `linked_structure`,
@@ -62,9 +60,9 @@ to the old suggestions path.
 - `analysis.software` becomes a role-keyed loop with
   `software[role].{name, version, url}` and a closed `(str, Enum)` role
   set. Fit timestamp moves to `project.metadata.timestamp`.
-- Runtime descriptors expose a read-only `url` derived from Edifa
-  names and docs version. Static docs tables use stable relative
-  anchors, not runtime `param.url`.
+- Runtime descriptors expose a read-only `url` derived from Edifa names
+  and docs version. Static docs tables use stable relative anchors, not
+  runtime `param.url`.
 - Parameter docs remain hand-maintained. A generated CifHandler/Edifa
   inventory is an audit artifact, not the source used to generate docs
   tables.
@@ -122,8 +120,8 @@ code/Edifa/CIF reference.
   `src/easydiffraction/io/cif/parse.py`,
   `src/easydiffraction/io/cif/iucr_writer.py`,
   `src/easydiffraction/io/cif/iucr_transformers.py`, plus a new
-  `src/easydiffraction/io/edifa/` package if the implementation needs
-  a format-specific boundary.
+  `src/easydiffraction/io/edifa/` package if the implementation needs a
+  format-specific boundary.
 - Project facade/config: `src/easydiffraction/project/project.py`,
   `src/easydiffraction/project/project_config.py`,
   `src/easydiffraction/project/project_metadata.py`,
@@ -198,8 +196,8 @@ code/Edifa/CIF reference.
 - [x] P1.3 - Add the generated handler inventory audit.
 
   Add a tool that imports the registered concrete categories and emits a
-  deterministic inventory of descriptor paths, Edifa names, legacy
-  CIF import names, IUCr names, docs anchors, and ownership context.
+  deterministic inventory of descriptor paths, Edifa names, legacy CIF
+  import names, IUCr names, docs anchors, and ownership context.
   Generate the initial inventory before any write-side tag renames so
   later commits have a reviewable baseline.
 
@@ -349,8 +347,8 @@ code/Edifa/CIF reference.
 
   Update `docs/docs/user-guide/parameters.md` to use three tabs: "How to
   access in the code", "Keys in Edifa", and "Keys in CIF". Rename
-  per-category pages under `docs/docs/user-guide/parameters/` to
-  Edifa category names, give them Edifa titles and EasyDiffraction
+  per-category pages under `docs/docs/user-guide/parameters/` to Edifa
+  category names, give them Edifa titles and EasyDiffraction
   descriptions, and keep IUCr icon links for official dictionary tags.
 
   Add stable anchors that match the runtime `param.url` resolver. Static
@@ -431,8 +429,8 @@ code/Edifa/CIF reference.
   Add or update unit tests for:
 
   - Edifa schema marker write/read validation.
-  - Edifa-over-CIF precedence for project, structures, experiments,
-    and analysis.
+  - Edifa-over-CIF precedence for project, structures, experiments, and
+    analysis.
   - Beta-window CIF import aliases for each renamed field.
   - Public stale-name failures for removed Python names.
   - Role-keyed `analysis.software` persistence and timestamp relocation.

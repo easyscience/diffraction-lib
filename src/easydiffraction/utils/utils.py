@@ -383,8 +383,7 @@ def _filename_from_path(record_path: str) -> str:
     Return the local filename for a record (slug leaf plus extension).
 
     The id already mirrors the file path (resource-naming ADR, Decision
-    5), so the saved file keeps the slug name, e.g.
-    ``lbco-hrpt.edifa``.
+    5), so the saved file keeps the slug name, e.g. ``lbco-hrpt.edifa``.
     """
     return pathlib.PurePosixPath(record_path).name
 

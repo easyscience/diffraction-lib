@@ -306,8 +306,8 @@ for details.
 
 If you do not have a CIF file for your experiment, you can load measured
 data from a file in a supported format. The measured data is added to
-the experiment and saved with the project as Edifa. The expected
-format depends on the experiment type.
+the experiment and saved with the project as Edifa. The expected format
+depends on the experiment type.
 
 #### Supported data file formats:
 

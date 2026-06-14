@@ -2,8 +2,8 @@
 
 ## :material-shape: type { #rendering-structure-type }
 
-| Access                     | Source                     |
-| -------------------------- | -------------------------- |
+| Access                     | Source                  |
+| -------------------------- | ----------------------- |
 | \_rendering_structure.type | [Edifa][0]{:.label-cif} |
 
 Structure-view renderer backend type. Supported values include `auto`,

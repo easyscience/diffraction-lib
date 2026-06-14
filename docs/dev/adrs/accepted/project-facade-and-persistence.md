@@ -15,8 +15,8 @@ Persistence.
 ## Amendment
 
 [`edstar-project-persistence.md`](edstar-project-persistence.md)
-replaces the default project-save file layout with `.edifa` files.
-This ADR remains historical context for the `Project` facade, singleton
+replaces the default project-save file layout with `.edifa` files. This
+ADR remains historical context for the `Project` facade, singleton
 sections versus real datablocks, and report artifact placement.
 
 ## Context

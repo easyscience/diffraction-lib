@@ -7,72 +7,72 @@
 
 ## :material-tag: id { #data-id }
 
-| Access    | Source                     |
-| --------- | -------------------------- |
+| Access    | Source                  |
+| --------- | ----------------------- |
 | \_data.id | [Edifa][0]{:.label-cif} |
 
 Identifier for this data point in the dataset.
 
 ## :material-angle-acute: two_theta { #data-two-theta }
 
-| Access           | Source                     |
-| ---------------- | -------------------------- |
+| Access           | Source                  |
+| ---------------- | ----------------------- |
 | \_data.two_theta | [Edifa][0]{:.label-cif} |
 
 Measured 2θ diffraction angle.
 
 ## :material-timer-outline: time_of_flight { #data-time-of-flight }
 
-| Access                | Source                     |
-| --------------------- | -------------------------- |
+| Access                | Source                  |
+| --------------------- | ----------------------- |
 | \_data.time_of_flight | [Edifa][0]{:.label-cif} |
 
 Measured time for time-of-flight neutron measurement.
 
 ## :material-tag: d_spacing { #data-d-spacing }
 
-| Access           | Source                     |
-| ---------------- | -------------------------- |
+| Access           | Source                  |
+| ---------------- | ----------------------- |
 | \_data.d_spacing | [Edifa][0]{:.label-cif} |
 
 d-spacing value corresponding to this data point.
 
 ## :material-arrow-collapse-up: intensity_meas { #data-intensity-meas }
 
-| Access                | Source                     |
-| --------------------- | -------------------------- |
+| Access                | Source                  |
+| --------------------- | ----------------------- |
 | \_data.intensity_meas | [Edifa][0]{:.label-cif} |
 
 Intensity recorded at each measurement point (angle/time).
 
 ## :material-arrow-collapse-up: intensity_meas_su { #data-intensity-meas-su }
 
-| Access                   | Source                     |
-| ------------------------ | -------------------------- |
+| Access                   | Source                  |
+| ------------------------ | ----------------------- |
 | \_data.intensity_meas_su | [Edifa][0]{:.label-cif} |
 
 Standard uncertainty of the measured intensity at this point.
 
 ## :material-arrow-collapse-up: intensity_calc { #data-intensity-calc }
 
-| Access                | Source                     |
-| --------------------- | -------------------------- |
+| Access                | Source                  |
+| --------------------- | ----------------------- |
 | \_data.intensity_calc | [Edifa][0]{:.label-cif} |
 
 Intensity of a computed diffractogram at this point.
 
 ## :material-arrow-collapse-up: intensity_bkg { #data-intensity-bkg }
 
-| Access               | Source                     |
-| -------------------- | -------------------------- |
+| Access               | Source                  |
+| -------------------- | ----------------------- |
 | \_data.intensity_bkg | [Edifa][0]{:.label-cif} |
 
 Intensity of a computed background at this point.
 
 ## :material-tag: calc_status { #data-calc-status }
 
-| Access             | Source                     |
-| ------------------ | -------------------------- |
+| Access             | Source                  |
+| ------------------ | ----------------------- |
 | \_data.calc_status | [Edifa][0]{:.label-cif} |
 
 Status code of the data point in calculation. Supported values include
@@ -80,32 +80,32 @@ Status code of the data point in calculation. Supported values include
 
 ## :material-tag: r { #data-r }
 
-| Access   | Source                     |
-| -------- | -------------------------- |
+| Access   | Source                  |
+| -------- | ----------------------- |
 | \_data.r | [Edifa][0]{:.label-cif} |
 
 Interatomic distance in real space.
 
 ## :material-tag: g_r_meas { #data-g-r-meas }
 
-| Access          | Source                     |
-| --------------- | -------------------------- |
+| Access          | Source                  |
+| --------------- | ----------------------- |
 | \_data.g_r_meas | [Edifa][0]{:.label-cif} |
 
 Measured pair distribution function G(r).
 
 ## :material-tag: g_r_meas_su { #data-g-r-meas-su }
 
-| Access             | Source                     |
-| ------------------ | -------------------------- |
+| Access             | Source                  |
+| ------------------ | ----------------------- |
 | \_data.g_r_meas_su | [Edifa][0]{:.label-cif} |
 
 Standard uncertainty of measured G(r).
 
 ## :material-tag: g_r_calc { #data-g-r-calc }
 
-| Access          | Source                     |
-| --------------- | -------------------------- |
+| Access          | Source                  |
+| --------------- | ----------------------- |
 | \_data.g_r_calc | [Edifa][0]{:.label-cif} |
 
 Calculated pair distribution function G(r).

@@ -462,8 +462,8 @@ class Project(GuardedBase):  # noqa: PLR0904
         """
         Load a project from a saved directory.
 
-        Reads Edifa project files from *dir_path* and reconstructs
-        the full project state, including project-level display
+        Reads Edifa project files from *dir_path* and reconstructs the
+        full project state, including project-level display
         configuration. Legacy beta CIF project files are rejected with
         an explicit migration error.
 

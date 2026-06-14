@@ -91,10 +91,10 @@ when a fit writes the project back to disk:
 python -m easydiffraction path/to/project fit
 ```
 
-If `project.edifa` contains `_report.html true`, `_report.tex true`,
-or another enabled report flag, `fit` writes those reports as part of
-the normal project save. Use the Python per-format methods above for
-one-off exports without changing the saved configuration.
+If `project.edifa` contains `_report.html true`, `_report.tex true`, or
+another enabled report flag, `fit` writes those reports as part of the
+normal project save. Use the Python per-format methods above for one-off
+exports without changing the saved configuration.
 
 <!--
 ## Exporting the Report

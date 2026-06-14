@@ -79,9 +79,9 @@ undecided. This ADR fixes that form, for datasets and tutorials alike.
 5. **File paths mirror the id.** The repository path is
    `data/<namespace>/<slug>.<ext>`, and the extension follows the
    format: generic IUCr structures `.cif`; EasyDiffraction
-   experiment-definition files `.edifa`; raw measured data in its
-   native extension (`.xye`/`.gr`/`.dat`/`.xys`); multi-file scans and
-   project archives `.zip`.
+   experiment-definition files `.edifa`; raw measured data in its native
+   extension (`.xye`/`.gr`/`.dat`/`.xys`); multi-file scans and project
+   archives `.zip`.
 
 6. **Listings show a positional `#`; the slug is the only persisted
    handle.** `list_data()` and `list_tutorials()` print a leading `#`
@@ -192,9 +192,9 @@ chain collapses to one stable slug overwritten in place.
 > Id 2 is a full experiment-definition file: its id is the
 > extension-free `experiments/lbco-hrpt` (per Decisions 1 and 5), and
 > the stored file migrates from `.cif` to the new `.edifa` format, so
-> its path is `data/experiments/lbco-hrpt.edifa`. Id 3, which
-> previously shared the "LBCO HRPT" description, is the _raw measured
-> pattern_ and moves to `measured/` below.
+> its path is `data/experiments/lbco-hrpt.edifa`. Id 3, which previously
+> shared the "LBCO HRPT" description, is the _raw measured pattern_ and
+> moves to `measured/` below.
 
 **`measured/` — raw measured or simulated data**
 

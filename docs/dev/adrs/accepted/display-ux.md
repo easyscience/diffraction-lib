@@ -97,7 +97,7 @@ may keep the existing helpers as internal delegation targets:
 | `free_params()`              | `project.display.parameters.free()`                            |
 | `how_to_access_parameters()` | `project.display.parameters.access()`                          |
 | `parameter_uids()`           | `project.display.parameters.uid()`                             |
-| `parameter_edifa_tags()`  | `project.display.parameters.edifa()`                        |
+| `parameter_edifa_tags()`     | `project.display.parameters.edifa()`                           |
 | `parameter_cif_tags()`       | `project.display.parameters.cif()`                             |
 | `fit_results()`              | `project.display.fit.results()`                                |
 | `constraints()`              | `project.analysis.constraints.show()`                          |

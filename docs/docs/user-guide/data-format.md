@@ -24,8 +24,8 @@ powder diffraction, **magCIF** is used for magnetic structure analysis.
 
 As most crystallographic parameters needed for diffraction data analysis
 are already covered by IUCr dictionaries, EasyDiffraction follows those
-dictionaries for CIF import and report output where they fit. Edifa
-uses the same names when they are already clear, and uses
+dictionaries for CIF import and report output where they fit. Edifa uses
+the same names when they are already clear, and uses
 EasyDiffraction-owned names where the project API is clearer.
 
 The key advantage of CIF is standardized naming for scientific exchange.
@@ -33,8 +33,8 @@ The key advantage of Edifa is that saved projects round-trip the
 EasyDiffraction project model without overloading report CIF as project
 state.
 
-The [Parameters](parameters.md) section lists Python access paths,
-Edifa keys, and CIF keys side by side.
+The [Parameters](parameters.md) section lists Python access paths, Edifa
+keys, and CIF keys side by side.
 
 ## Format Comparison
 
@@ -181,9 +181,8 @@ better suited for human-readable crystallographic data.
 The previous example described the **structure** (crystallographic
 model), but how is the **experiment** itself represented?
 
-The experiment is saved in Edifa. For example, line-segment
-background intensity in a powder diffraction experiment is represented
-as:
+The experiment is saved in Edifa. For example, line-segment background
+intensity in a powder diffraction experiment is represented as:
 
 <!-- prettier-ignore-start -->
 
