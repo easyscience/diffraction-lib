@@ -2,7 +2,7 @@
 # # Bayesian Analysis Display (`bumps-dream`): LBCO, HRPT
 #
 # This tutorial shows how to reopen the Bayesian project created in
-# `ed-21.py` and inspect the saved fit results without rerunning DREAM.
+# `bayesian-dream-lbco-hrpt.py` and inspect the saved fit results without rerunning DREAM.
 #
 # The project already contains posterior samples together with cached
 # posterior density, pair, and predictive data, so the plots below are
