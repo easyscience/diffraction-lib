@@ -8,7 +8,7 @@ title: rendering_plot
 
 | Access                | Source                  |
 | --------------------- | ----------------------- |
-| \_rendering_plot.type | [Edifa][0]{:.label-cif} |
+| \_rendering_plot.type | [Edi][0]{:.label-cif} |
 
 RenderingPlot renderer backend type. Supported values include `auto`,
 `asciichartpy`, and `plotly`.

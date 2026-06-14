@@ -8,21 +8,21 @@
 # ## 🛠️ Import Library
 
 # %%
-import easydiffraction as ed
+import easydiffraction as edi
 
 # %% [markdown]
 # ## 📦 Define Project
 
 # %%
 # Create a minimal project with a short name
-project = ed.Project(name='taurine_senju')
+project = edi.Project(name='taurine_senju')
 
 # %% [markdown]
 # ## 🧩 Define Structure
 
 # %%
 # Download CIF file from repository
-structure_path = ed.download_data('struct-taurine', destination='data')
+structure_path = edi.download_data('struct-taurine', destination='data')
 
 # %%
 project.structures.add_from_cif_path(structure_path)
@@ -44,7 +44,7 @@ project.display.structure(struct_name='taurine')
 
 # %%
 # Download data file from repository
-data_path = ed.download_data('meas-taurine-senju', destination='data')
+data_path = edi.download_data('meas-taurine-senju', destination='data')
 
 # %%
 project.experiments.add_from_data_path(

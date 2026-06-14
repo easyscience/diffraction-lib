@@ -14,7 +14,7 @@ title: calculator
 
 | Access            | Source                  |
 | ----------------- | ----------------------- |
-| \_calculator.type | [Edifa][0]{:.label-cif} |
+| \_calculator.type | [Edi][0]{:.label-cif} |
 
 Calculator backend type. Supported values include `cryspy`, `crysfml`,
 and `pdffit`. Available choices depend on the experiment type.

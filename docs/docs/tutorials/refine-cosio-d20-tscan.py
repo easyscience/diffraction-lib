@@ -11,7 +11,7 @@
 # ## 🛠️ Import Library
 
 # %%
-import easydiffraction as ed
+import easydiffraction as edi
 
 # %% [markdown]
 # ## 📦 Define Project
@@ -20,7 +20,7 @@ import easydiffraction as ed
 # and other related components.
 
 # %%
-project = ed.Project(name='cosio_d20_scan')
+project = edi.Project(name='cosio_d20_scan')
 analysis = project.analysis
 display = project.display
 
@@ -129,14 +129,14 @@ project.display.structure(struct_name='cosio')
 # ### Download Data
 
 # %%
-zip_path = ed.download_data('meas-cosio-d20-scan-3f', destination='data')
+zip_path = edi.download_data('meas-cosio-d20-scan-3f', destination='data')
 
 # %% [markdown]
 # ### Extract Data Files
 
 # %%
 scan_data_dir = 'experiments/d20_scan'
-data_paths = ed.extract_data_paths_from_zip(
+data_paths = edi.extract_data_paths_from_zip(
     zip_path,
     destination=project.metadata.path / scan_data_dir,
 )

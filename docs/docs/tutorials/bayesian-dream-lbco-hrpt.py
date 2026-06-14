@@ -25,7 +25,7 @@
 # ## 🛠️ Import Library
 
 # %%
-import easydiffraction as ed
+import easydiffraction as edi
 
 # %% [markdown]
 # ## 📦 Define Project
@@ -38,7 +38,7 @@ import easydiffraction as ed
 # it later if needed.
 
 # %%
-project = ed.Project(name='lbco_hrpt_bumps_dream')
+project = edi.Project(name='lbco_hrpt_bumps_dream')
 
 # %%
 project.save_as(dir_path='projects/bayesian-dream-lbco-hrpt')
@@ -132,7 +132,7 @@ project.display.structure(struct_name='lbco')
 # downloading from the repository.
 
 # %%
-data_path = ed.download_data('meas-lbco-hrpt', destination='data')
+data_path = edi.download_data('meas-lbco-hrpt', destination='data')
 
 # %% [markdown]
 # Create the experiment object and specify the sample form, beam mode,

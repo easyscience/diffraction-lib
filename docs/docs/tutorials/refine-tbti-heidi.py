@@ -8,14 +8,14 @@
 # ## 🛠️ Import Library
 
 # %%
-import easydiffraction as ed
+import easydiffraction as edi
 
 # %% [markdown]
 # ## 📦 Define Project
 
 # %%
 # Create a minimal project with a short name
-project = ed.Project(name='tbti_heidi')
+project = edi.Project(name='tbti_heidi')
 project.metadata.title = 'Tb2Ti2O7 at HEiDi@FRMII'
 project.metadata.description = """This project demonstrates a standard
 refinement of the crystal structure of Tb2Ti2O7 using single crystal 
@@ -28,7 +28,7 @@ project.save_as(dir_path='projects/refine-tbti-heidi')
 
 # %%
 # Download CIF file from repository
-structure_path = ed.download_data('struct-tbti', destination='data')
+structure_path = edi.download_data('struct-tbti', destination='data')
 
 # %%
 project.structures.add_from_cif_path(structure_path)
@@ -75,7 +75,7 @@ project.display.structure(struct_name='tbti')
 
 # %%
 # Download data file from repository
-data_path = ed.download_data('meas-tbti-heidi', destination='data')
+data_path = edi.download_data('meas-tbti-heidi', destination='data')
 
 # %%
 project.experiments.add_from_data_path(

@@ -225,9 +225,9 @@ always either a rollback or a no-op, never an error.
 ### Python API
 
 ```python
-import easydiffraction as ed
+import easydiffraction as edi
 
-project = ed.Project.load('projects/lbco_hrpt')
+project = edi.Project.load('projects/lbco_hrpt')
 
 # After a fit has been committed, the project carries refined state:
 project.analysis.fit_results               # FitResults(success=True, ...)

@@ -18,9 +18,9 @@ and [Tutorials](../tutorials/index.md).
 Import the package and create or load a project:
 
 ```python
-import easydiffraction as ed
+import easydiffraction as edi
 
-project = ed.Project(name='lbco_hrpt')
+project = edi.Project(name='lbco_hrpt')
 ```
 
 ```python
@@ -32,7 +32,7 @@ project = Project.load('lbco_hrpt')
 Check the installed version:
 
 ```python
-ed.show_version()
+edi.show_version()
 ```
 
 ## Get Example Data
@@ -40,10 +40,10 @@ ed.show_version()
 Download a dataset by its slug into a local directory:
 
 ```python
-ed.list_data()
+edi.list_data()
 
-structure_path = ed.download_data('struct-lbco', destination='data')
-data_path = ed.download_data('meas-lbco-hrpt', destination='data')
+structure_path = edi.download_data('struct-lbco', destination='data')
+data_path = edi.download_data('meas-lbco-hrpt', destination='data')
 ```
 
 Project archives are extracted automatically, and `download_data()`
@@ -52,9 +52,9 @@ returns the extracted project directory path.
 For tutorial notebooks:
 
 ```python
-ed.list_tutorials()
-ed.download_tutorial('refine-lbco-hrpt-from-cif', destination='tutorials')
-ed.download_all_tutorials(destination='tutorials')
+edi.list_tutorials()
+edi.download_tutorial('refine-lbco-hrpt-from-cif', destination='tutorials')
+edi.download_all_tutorials(destination='tutorials')
 ```
 
 ## Build a Project
@@ -156,7 +156,7 @@ project.display.parameters.fittable()
 project.display.parameters.free()
 project.display.parameters.access()
 project.display.parameters.uid()
-project.display.parameters.edifa()
+project.display.parameters.edi()
 project.display.parameters.cif()
 ```
 
@@ -403,7 +403,7 @@ project.save()
 Load it again:
 
 ```python
-project = ed.Project.load('lbco_hrpt')
+project = edi.Project.load('lbco_hrpt')
 ```
 
 Run a saved project from the command line:
@@ -416,15 +416,15 @@ python -m easydiffraction lbco_hrpt undo
 python -m easydiffraction lbco_hrpt undo --dry
 ```
 
-When `project.edifa` enables `_report.cif`, `_report.html`,
+When `project.edi` enables `_report.cif`, `_report.html`,
 `_report.tex`, or `_report.pdf`, the `fit` command writes those reports
 during the normal project save.
 
 Load a saved example project straight from `download_data()`:
 
 ```python
-saved_project_dir = ed.download_data('proj-lbco-hrpt', destination='projects')
-project = ed.Project.load(saved_project_dir)
+saved_project_dir = edi.download_data('proj-lbco-hrpt', destination='projects')
+project = edi.Project.load(saved_project_dir)
 ```
 
 ## Command-Line Reminders

@@ -74,7 +74,7 @@ project.display.parameters.fittable()
 project.display.parameters.all()
 project.display.parameters.access()
 project.display.parameters.uid()
-project.display.parameters.edifa()
+project.display.parameters.edi()
 project.display.parameters.cif()
 
 project.display.fit.results()
@@ -97,7 +97,7 @@ may keep the existing helpers as internal delegation targets:
 | `free_params()`              | `project.display.parameters.free()`                             |
 | `how_to_access_parameters()` | `project.display.parameters.access()`                           |
 | `parameter_uids()`           | `project.display.parameters.uid()`                              |
-| `parameter_edifa_tags()`     | `project.display.parameters.edifa()`                            |
+| `parameter_edi_tags()`     | `project.display.parameters.edi()`                            |
 | `parameter_cif_tags()`       | `project.display.parameters.cif()`                              |
 | `fit_results()`              | `project.display.fit.results()`                                 |
 | `constraints()`              | `project.analysis.constraints.show()`                           |
@@ -107,7 +107,7 @@ may keep the existing helpers as internal delegation targets:
 structures and experiments:
 
 - `as_cif` is a read-only property returning the serialized CIF text as
-  a string (the block body that is persisted into the project's Edifa
+  a string (the block body that is persisted into the project's Edi
   files).
 - `show_as_text()` pretty-prints that text with a header.
 

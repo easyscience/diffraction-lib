@@ -307,7 +307,7 @@ for details.
 
 If you do not have a CIF file for your experiment, you can load measured
 data from a file in a supported format. The measured data is added to
-the experiment and saved with the project as Edifa. The expected format
+the experiment and saved with the project as Edi. The expected format
 depends on the experiment type.
 
 #### Supported data file formats:
@@ -408,7 +408,7 @@ Defined experiments 🔬
 ## Viewing an Experiment as Text
 
 To inspect an experiment's serialized text (the same content the project
-persists into its Edifa files), use:
+persists into its Edi files), use:
 
 ```python
 # Show experiment as text
@@ -470,14 +470,14 @@ Experiment 🔬 'hrpt' as text
 
 Saving the project, as described in the [Project](project.md) section, will
 also save the experiment. Each experiment is saved as a separate
-`.edifa` file in the `experiments` subdirectory of the project
+`.edi` file in the `experiments` subdirectory of the project
 directory. The project file contains references to these files.
 
 EasyDiffraction supports different types of experiments, and each
-experiment is saved in a dedicated Edifa file with experiment-specific
+experiment is saved in a dedicated Edi file with experiment-specific
 parameters.
 
-Below are examples of how different experiments are saved in Edifa
+Below are examples of how different experiments are saved in Edi
 format.
 
 ### [pd-neut-cwl][3]{:.label-experiment}

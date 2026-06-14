@@ -330,7 +330,7 @@ project.display.posterior.predictive(expt_name='hrpt')
 
 When posterior or posterior-predictive arrays are persisted, they are
 stored in `analysis/results.h5`. Scalar summaries remain in
-`analysis/analysis.edifa`.
+`analysis/analysis.edi`.
 
 ## Constraints
 
@@ -452,7 +452,7 @@ Analysis info as text
 ## Saving an Analysis
 
 Saving the project, as described in the [Project](project.md) section,
-will also save the analysis settings to `analysis/analysis.edifa` inside
+will also save the analysis settings to `analysis/analysis.edi` inside
 the project directory.
 
 <br>

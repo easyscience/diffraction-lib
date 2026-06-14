@@ -20,7 +20,7 @@ Alternatively, you can import it with an alias to avoid naming conflicts
 and for convenience:
 
 ```python
-import easydiffraction as ed
+import easydiffraction as edi
 ```
 
 The latter syntax allows you to access all the modules and classes
@@ -28,7 +28,7 @@ within the package using the `ed` prefix. For example, you can create a
 project instance like this:
 
 ```python
-project = ed.Project()
+project = edi.Project()
 ```
 
 A complete tutorial using the `import` syntax can be found
@@ -71,11 +71,11 @@ You can list the available datasets and their slugs with `list_data()`,
 then download one like this:
 
 ```python
-import easydiffraction as ed
+import easydiffraction as edi
 
-ed.list_data()
+edi.list_data()
 
-data_path = ed.download_data('meas-lbco-hrpt', destination='data')
+data_path = edi.download_data('meas-lbco-hrpt', destination='data')
 ```
 
 This command downloads the `measured/lbco-hrpt` dataset and saves it in

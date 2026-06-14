@@ -18,13 +18,13 @@
 # ## 🛠️ Import Library
 
 # %%
-import easydiffraction as ed
+import easydiffraction as edi
 
 # %% [markdown]
 # ## 📦 Define Project
 
 # %%
-project = ed.Project(name='lbco_simulation')
+project = edi.Project(name='lbco_simulation')
 
 # %% [markdown]
 # ## 🧩 Define Structure
@@ -33,7 +33,7 @@ project = ed.Project(name='lbco_simulation')
 # ### Download CIF file
 
 # %%
-structure_path = ed.download_data('struct-lbco', destination='data')
+structure_path = edi.download_data('struct-lbco', destination='data')
 
 # %% [markdown]
 # ### Add Structure from CIF

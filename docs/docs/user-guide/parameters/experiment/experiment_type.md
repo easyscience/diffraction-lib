@@ -15,8 +15,8 @@ title: experiment_type
 | Access                                        | Source                     |
 | --------------------------------------------- | -------------------------- |
 | experiment_type.sample_form                   | [code][0]{:.label-cif}     |
-| \_experiment_type.sample_form                 | [Edifa][0]{:.label-cif}    |
-| \_easydiffraction_experiment_type.sample_form | [edifaCIF][0]{:.label-cif} |
+| \_experiment_type.sample_form                 | [Edi][0]{:.label-cif}    |
+| \_easydiffraction_experiment_type.sample_form | [coreCIF][0]{:.label-cif} |
 
 Powder diffraction or single crystal diffraction. Supported values
 include `powder` and `single crystal`.
@@ -26,8 +26,8 @@ include `powder` and `single crystal`.
 | Access                                      | Source                     |
 | ------------------------------------------- | -------------------------- |
 | experiment_type.beam_mode                   | [code][0]{:.label-cif}     |
-| \_experiment_type.beam_mode                 | [Edifa][0]{:.label-cif}    |
-| \_easydiffraction_experiment_type.beam_mode | [edifaCIF][0]{:.label-cif} |
+| \_experiment_type.beam_mode                 | [Edi][0]{:.label-cif}    |
+| \_easydiffraction_experiment_type.beam_mode | [coreCIF][0]{:.label-cif} |
 
 Constant wavelength (CW) or time-of-flight (TOF) measurement. Supported
 values include `constant wavelength` and `time-of-flight`.
@@ -37,8 +37,8 @@ values include `constant wavelength` and `time-of-flight`.
 | Access                                            | Source                     |
 | ------------------------------------------------- | -------------------------- |
 | experiment_type.radiation_probe                   | [code][0]{:.label-cif}     |
-| \_experiment_type.radiation_probe                 | [Edifa][0]{:.label-cif}    |
-| \_easydiffraction_experiment_type.radiation_probe | [edifaCIF][0]{:.label-cif} |
+| \_experiment_type.radiation_probe                 | [Edi][0]{:.label-cif}    |
+| \_easydiffraction_experiment_type.radiation_probe | [coreCIF][0]{:.label-cif} |
 
 Neutron or X-ray diffraction measurement. Supported values include
 `neutron` and `xray`.
@@ -48,8 +48,8 @@ Neutron or X-ray diffraction measurement. Supported values include
 | Access                                            | Source                     |
 | ------------------------------------------------- | -------------------------- |
 | experiment_type.scattering_type                   | [code][0]{:.label-cif}     |
-| \_experiment_type.scattering_type                 | [Edifa][0]{:.label-cif}    |
-| \_easydiffraction_experiment_type.scattering_type | [edifaCIF][0]{:.label-cif} |
+| \_experiment_type.scattering_type                 | [Edi][0]{:.label-cif}    |
+| \_easydiffraction_experiment_type.scattering_type | [coreCIF][0]{:.label-cif} |
 
 Conventional Bragg diffraction or total scattering (PDF). Supported
 values include `bragg` and `total`.

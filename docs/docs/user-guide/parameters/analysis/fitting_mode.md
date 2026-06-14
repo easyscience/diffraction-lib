@@ -8,7 +8,7 @@ title: fitting_mode
 
 | Access              | Source                  |
 | ------------------- | ----------------------- |
-| \_fitting_mode.type | [Edifa][0]{:.label-cif} |
+| \_fitting_mode.type | [Edi][0]{:.label-cif} |
 
 Active fitting mode. Supported values include `single`, `joint`, and
 `sequential`.

@@ -17,7 +17,7 @@
 # `march_random_fract ≈ 0.3` and the patterns agree.
 
 # %%
-import easydiffraction as ed
+import easydiffraction as edi
 from easydiffraction import ExperimentFactory
 from easydiffraction import StructureFactory
 from easydiffraction.analysis import verification as verify
@@ -26,7 +26,7 @@ from easydiffraction.analysis import verification as verify
 # ## Build the project
 
 # %%
-project = ed.Project()
+project = edi.Project()
 
 # %% [markdown]
 # ## Define the structure

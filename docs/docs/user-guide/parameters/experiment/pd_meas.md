@@ -13,7 +13,7 @@ title: pd_meas
 
 | Access                     | Source                  |
 | -------------------------- | ----------------------- |
-| \_pd_meas.2theta_range_inc | [Edifa][0]{:.label-cif} |
+| \_pd_meas.2theta_range_inc | [Edi][0]{:.label-cif} |
 
 2θ step between calculation points.
 
@@ -21,7 +21,7 @@ title: pd_meas
 
 | Access                     | Source                  |
 | -------------------------- | ----------------------- |
-| \_pd_meas.2theta_range_max | [Edifa][0]{:.label-cif} |
+| \_pd_meas.2theta_range_max | [Edi][0]{:.label-cif} |
 
 Upper 2θ bound of the calculation range.
 
@@ -29,7 +29,7 @@ Upper 2θ bound of the calculation range.
 
 | Access                     | Source                  |
 | -------------------------- | ----------------------- |
-| \_pd_meas.2theta_range_min | [Edifa][0]{:.label-cif} |
+| \_pd_meas.2theta_range_min | [Edi][0]{:.label-cif} |
 
 Lower 2θ bound of the calculation range.
 
@@ -37,7 +37,7 @@ Lower 2θ bound of the calculation range.
 
 | Access                             | Source                  |
 | ---------------------------------- | ----------------------- |
-| \_pd_meas.time_of_flight_range_inc | [Edifa][0]{:.label-cif} |
+| \_pd_meas.time_of_flight_range_inc | [Edi][0]{:.label-cif} |
 
 Time-of-flight step between calculation points.
 
@@ -45,7 +45,7 @@ Time-of-flight step between calculation points.
 
 | Access                             | Source                  |
 | ---------------------------------- | ----------------------- |
-| \_pd_meas.time_of_flight_range_max | [Edifa][0]{:.label-cif} |
+| \_pd_meas.time_of_flight_range_max | [Edi][0]{:.label-cif} |
 
 Upper time-of-flight bound of the calculation range.
 
@@ -53,7 +53,7 @@ Upper time-of-flight bound of the calculation range.
 
 | Access                             | Source                  |
 | ---------------------------------- | ----------------------- |
-| \_pd_meas.time_of_flight_range_min | [Edifa][0]{:.label-cif} |
+| \_pd_meas.time_of_flight_range_min | [Edi][0]{:.label-cif} |
 
 Lower time-of-flight bound of the calculation range.
 

@@ -115,14 +115,14 @@ python -m easydiffraction PROJECT_DIR fit
 ```
 
 `PROJECT_DIR` is the path to a project directory previously created by
-`project.save_as()`. It must contain a `project.edifa` file along with
+`project.save_as()`. It must contain a `project.edi` file along with
 the `structures/`, `experiments/`, and `analysis/` subdirectories.
 
 After fitting, the command displays the fit results and a project
 summary. By default, updated parameter values are **saved back** to the
 project directory.
 
-If `project.edifa` enables any `_report.*` output flags, the same save
+If `project.edi` enables any `_report.*` output flags, the same save
 also writes those reports. For example, `_report.html true` writes the
 HTML report after the fit, and `_report.tex true` plus
 `_report.pdf true` writes the TeX bundle and PDF when a TeX engine is

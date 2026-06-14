@@ -9,7 +9,7 @@
 # ## 🛠️ Import Library
 
 # %%
-import easydiffraction as ed
+import easydiffraction as edi
 
 # %% [markdown]
 # ## 📦 Define Project
@@ -18,7 +18,7 @@ import easydiffraction as ed
 # ### Create Project
 
 # %%
-project = ed.Project(name='si_nomad_pdf')
+project = edi.Project(name='si_nomad_pdf')
 
 # %% [markdown]
 # ### Set Plotting Engine
@@ -60,7 +60,7 @@ project.display.structure(struct_name='si')
 # ### Add Experiment
 
 # %%
-data_path = ed.download_data('meas-si-pdf-nomad', destination='data')
+data_path = edi.download_data('meas-si-pdf-nomad', destination='data')
 
 # %%
 project.experiments.add_from_data_path(

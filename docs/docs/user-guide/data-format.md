@@ -3,14 +3,23 @@
 Before starting the data analysis workflow, it is important to define
 the **data formats** used in EasyDiffraction.
 
-## Edifa Projects And CIF Data
+## Edi Projects And CIF Data
 
 Each software package typically uses its own **data format** and
 **parameter names** for storing and sharing data. EasyDiffraction uses
-**Edifa** for saved project state and **Crystallographic Information
+**Edi** for saved project state and **Crystallographic Information
 File (CIF)** for crystallographic input and strict report export.
 
-Edifa uses CIF-like syntax, but its keys are chosen for
+!!! note "Pronunciation"
+
+    **Edi** is the short name for EasyDiffraction, pronounced **"eddie"**
+    (/ˈɛdi/). It is the same short form you use in code
+    (`import easydiffraction as edi`) and the suffix on saved files
+    (`.edi`). Write it as a word — lowercase `edi` for the extension and
+    `_edi.*` keys, capitalised `Edi` at the start of a sentence — not as
+    an all-caps acronym.
+
+Edi uses CIF-like syntax, but its keys are chosen for
 EasyDiffraction's Python-facing project model. CIF remains the standard
 exchange format used by crystallography and materials science. It
 provides both a human-readable syntax and dictionaries that define the
@@ -24,16 +33,16 @@ powder diffraction, **magCIF** is used for magnetic structure analysis.
 
 As most crystallographic parameters needed for diffraction data analysis
 are already covered by IUCr dictionaries, EasyDiffraction follows those
-dictionaries for CIF import and report output where they fit. Edifa uses
+dictionaries for CIF import and report output where they fit. Edi uses
 the same names when they are already clear, and uses
 EasyDiffraction-owned names where the project API is clearer.
 
 The key advantage of CIF is standardized naming for scientific exchange.
-The key advantage of Edifa is that saved projects round-trip the
+The key advantage of Edi is that saved projects round-trip the
 EasyDiffraction project model without overloading report CIF as project
 state.
 
-The [Parameters](parameters.md) section lists Python access paths, Edifa
+The [Parameters](parameters.md) section lists Python access paths, Edi
 keys, and CIF keys side by side.
 
 ## Format Comparison
@@ -181,7 +190,7 @@ better suited for human-readable crystallographic data.
 The previous example described the **structure** (crystallographic
 model), but how is the **experiment** itself represented?
 
-The experiment is saved in Edifa. For example, line-segment background
+The experiment is saved in Edi. For example, line-segment background
 intensity in a powder diffraction experiment is represented as:
 
 <!-- prettier-ignore-start -->
@@ -206,13 +215,13 @@ More details on how to define the experiment are provided in the
 
 ## Other Input/Output Blocks
 
-EasyDiffraction saves projects as a directory of Edifa files and
+EasyDiffraction saves projects as a directory of Edi files and
 sidecars:
 
-- `project.edifa`: project metadata and display/report configuration
-- `structures/<structure>.edifa`: structure models
-- `experiments/<experiment>.edifa`: experiment setup and data
-- `analysis/analysis.edifa`: fitting and analysis settings
+- `project.edi`: project metadata and display/report configuration
+- `structures/<structure>.edi`: structure models
+- `experiments/<experiment>.edi`: experiment setup and data
+- `analysis/analysis.edi`: fitting and analysis settings
 - `analysis/results.csv` and `analysis/results.h5`: fit result sidecars
 - `reports/<project>.*`: generated reports when enabled through
   `project.report`

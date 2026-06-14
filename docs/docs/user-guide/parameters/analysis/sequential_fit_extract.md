@@ -8,7 +8,7 @@ title: sequential_fit_extract
 
 | Access                      | Source                  |
 | --------------------------- | ----------------------- |
-| \_sequential_fit_extract.id | [Edifa][0]{:.label-cif} |
+| \_sequential_fit_extract.id | [Edi][0]{:.label-cif} |
 
 Identifier for this extract rule.
 
@@ -16,7 +16,7 @@ Identifier for this extract rule.
 
 | Access                           | Source                  |
 | -------------------------------- | ----------------------- |
-| \_sequential_fit_extract.pattern | [Edifa][0]{:.label-cif} |
+| \_sequential_fit_extract.pattern | [Edi][0]{:.label-cif} |
 
 Regex used to extract one numeric capture group.
 
@@ -24,7 +24,7 @@ Regex used to extract one numeric capture group.
 
 | Access                            | Source                  |
 | --------------------------------- | ----------------------- |
-| \_sequential_fit_extract.required | [Edifa][0]{:.label-cif} |
+| \_sequential_fit_extract.required | [Edi][0]{:.label-cif} |
 
 Whether this extract rule must match every file.
 
@@ -32,7 +32,7 @@ Whether this extract rule must match every file.
 
 | Access                          | Source                  |
 | ------------------------------- | ----------------------- |
-| \_sequential_fit_extract.target | [Edifa][0]{:.label-cif} |
+| \_sequential_fit_extract.target | [Edi][0]{:.label-cif} |
 
 diffrn attribute updated by this extract rule.
 

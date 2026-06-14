@@ -13,7 +13,7 @@ title: data
 
 | Access    | Source                  |
 | --------- | ----------------------- |
-| \_data.id | [Edifa][0]{:.label-cif} |
+| \_data.id | [Edi][0]{:.label-cif} |
 
 Identifier for this data point in the dataset.
 
@@ -21,7 +21,7 @@ Identifier for this data point in the dataset.
 
 | Access           | Source                  |
 | ---------------- | ----------------------- |
-| \_data.two_theta | [Edifa][0]{:.label-cif} |
+| \_data.two_theta | [Edi][0]{:.label-cif} |
 
 Measured 2θ diffraction angle.
 
@@ -29,7 +29,7 @@ Measured 2θ diffraction angle.
 
 | Access                | Source                  |
 | --------------------- | ----------------------- |
-| \_data.time_of_flight | [Edifa][0]{:.label-cif} |
+| \_data.time_of_flight | [Edi][0]{:.label-cif} |
 
 Measured time for time-of-flight neutron measurement.
 
@@ -37,7 +37,7 @@ Measured time for time-of-flight neutron measurement.
 
 | Access           | Source                  |
 | ---------------- | ----------------------- |
-| \_data.d_spacing | [Edifa][0]{:.label-cif} |
+| \_data.d_spacing | [Edi][0]{:.label-cif} |
 
 d-spacing value corresponding to this data point.
 
@@ -45,7 +45,7 @@ d-spacing value corresponding to this data point.
 
 | Access                | Source                  |
 | --------------------- | ----------------------- |
-| \_data.intensity_meas | [Edifa][0]{:.label-cif} |
+| \_data.intensity_meas | [Edi][0]{:.label-cif} |
 
 Intensity recorded at each measurement point (angle/time).
 
@@ -53,7 +53,7 @@ Intensity recorded at each measurement point (angle/time).
 
 | Access                   | Source                  |
 | ------------------------ | ----------------------- |
-| \_data.intensity_meas_su | [Edifa][0]{:.label-cif} |
+| \_data.intensity_meas_su | [Edi][0]{:.label-cif} |
 
 Standard uncertainty of the measured intensity at this point.
 
@@ -61,7 +61,7 @@ Standard uncertainty of the measured intensity at this point.
 
 | Access                | Source                  |
 | --------------------- | ----------------------- |
-| \_data.intensity_calc | [Edifa][0]{:.label-cif} |
+| \_data.intensity_calc | [Edi][0]{:.label-cif} |
 
 Intensity of a computed diffractogram at this point.
 
@@ -69,7 +69,7 @@ Intensity of a computed diffractogram at this point.
 
 | Access               | Source                  |
 | -------------------- | ----------------------- |
-| \_data.intensity_bkg | [Edifa][0]{:.label-cif} |
+| \_data.intensity_bkg | [Edi][0]{:.label-cif} |
 
 Intensity of a computed background at this point.
 
@@ -77,7 +77,7 @@ Intensity of a computed background at this point.
 
 | Access             | Source                  |
 | ------------------ | ----------------------- |
-| \_data.calc_status | [Edifa][0]{:.label-cif} |
+| \_data.calc_status | [Edi][0]{:.label-cif} |
 
 Status code of the data point in calculation. Supported values include
 `incl` and `excl`.
@@ -86,7 +86,7 @@ Status code of the data point in calculation. Supported values include
 
 | Access   | Source                  |
 | -------- | ----------------------- |
-| \_data.r | [Edifa][0]{:.label-cif} |
+| \_data.r | [Edi][0]{:.label-cif} |
 
 Interatomic distance in real space.
 
@@ -94,7 +94,7 @@ Interatomic distance in real space.
 
 | Access          | Source                  |
 | --------------- | ----------------------- |
-| \_data.g_r_meas | [Edifa][0]{:.label-cif} |
+| \_data.g_r_meas | [Edi][0]{:.label-cif} |
 
 Measured pair distribution function G(r).
 
@@ -102,7 +102,7 @@ Measured pair distribution function G(r).
 
 | Access             | Source                  |
 | ------------------ | ----------------------- |
-| \_data.g_r_meas_su | [Edifa][0]{:.label-cif} |
+| \_data.g_r_meas_su | [Edi][0]{:.label-cif} |
 
 Standard uncertainty of measured G(r).
 
@@ -110,7 +110,7 @@ Standard uncertainty of measured G(r).
 
 | Access          | Source                  |
 | --------------- | ----------------------- |
-| \_data.g_r_calc | [Edifa][0]{:.label-cif} |
+| \_data.g_r_calc | [Edi][0]{:.label-cif} |
 
 Calculated pair distribution function G(r).
 

@@ -8,7 +8,7 @@ title: sequential_fit
 
 | Access                      | Source                  |
 | --------------------------- | ----------------------- |
-| \_sequential_fit.chunk_size | [Edifa][0]{:.label-cif} |
+| \_sequential_fit.chunk_size | [Edi][0]{:.label-cif} |
 
 Chunk-size token for sequential fitting.
 
@@ -16,7 +16,7 @@ Chunk-size token for sequential fitting.
 
 | Access                    | Source                  |
 | ------------------------- | ----------------------- |
-| \_sequential_fit.data_dir | [Edifa][0]{:.label-cif} |
+| \_sequential_fit.data_dir | [Edi][0]{:.label-cif} |
 
 Directory containing sequential-fit data files.
 
@@ -24,7 +24,7 @@ Directory containing sequential-fit data files.
 
 | Access                        | Source                  |
 | ----------------------------- | ----------------------- |
-| \_sequential_fit.file_pattern | [Edifa][0]{:.label-cif} |
+| \_sequential_fit.file_pattern | [Edi][0]{:.label-cif} |
 
 Glob pattern selecting sequential-fit files.
 
@@ -32,7 +32,7 @@ Glob pattern selecting sequential-fit files.
 
 | Access                       | Source                  |
 | ---------------------------- | ----------------------- |
-| \_sequential_fit.max_workers | [Edifa][0]{:.label-cif} |
+| \_sequential_fit.max_workers | [Edi][0]{:.label-cif} |
 
 Worker-count token for sequential fitting.
 
@@ -40,7 +40,7 @@ Worker-count token for sequential fitting.
 
 | Access                   | Source                  |
 | ------------------------ | ----------------------- |
-| \_sequential_fit.reverse | [Edifa][0]{:.label-cif} |
+| \_sequential_fit.reverse | [Edi][0]{:.label-cif} |
 
 Whether to process sequential-fit files in reverse.
 

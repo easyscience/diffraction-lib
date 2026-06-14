@@ -8,7 +8,7 @@ title: rendering_table
 
 | Access                 | Source                  |
 | ---------------------- | ----------------------- |
-| \_rendering_table.type | [Edifa][0]{:.label-cif} |
+| \_rendering_table.type | [Edi][0]{:.label-cif} |
 
 Table renderer backend type. Supported values include `auto`, `rich`,
 and `pandas`.

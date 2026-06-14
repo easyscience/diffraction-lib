@@ -20,21 +20,21 @@
 # ## 🛠️ Import Library
 
 # %%
-import easydiffraction as ed
+import easydiffraction as edi
 
 # %% [markdown]
 # ## 📦 Define Project
 
 # %%
 # Create a minimal project with a short name
-project = ed.Project(name='lbco_hrpt')
+project = edi.Project(name='lbco_hrpt')
 
 # %% [markdown]
 # ## 🧩 Define Structure
 
 # %%
 # Download CIF file from repository
-structure_path = ed.download_data('struct-lbco', destination='data')
+structure_path = edi.download_data('struct-lbco', destination='data')
 
 # %%
 # Add structure from downloaded CIF
@@ -49,7 +49,7 @@ project.display.structure(struct_name='lbco')
 
 # %%
 # Download CIF file from repository
-expt_path = ed.download_data('expt-lbco-hrpt', destination='data')
+expt_path = edi.download_data('expt-lbco-hrpt', destination='data')
 
 # %%
 # Add experiment from downloaded CIF

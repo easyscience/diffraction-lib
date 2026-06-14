@@ -20,7 +20,7 @@ the archived planning notes left two follow-up questions open:
 - [bragg_pd.py](src/easydiffraction/datablocks/experiment/categories/refln/bragg_pd.py)
 - [base.py](src/easydiffraction/display/plotters/base.py#L24)
 
-**Note:** the Edifa persistence ADR proposes renaming powder
+**Note:** the Edi persistence ADR proposes renaming powder
 `refln.phase_id` → `structure_id`
 ([`edstar-project-persistence.md`](../../adrs/accepted/edstar-project-persistence.md)),
 which resolves follow-up question 1; keep this issue scoped to the

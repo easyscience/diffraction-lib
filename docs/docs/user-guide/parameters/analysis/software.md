@@ -8,7 +8,7 @@ title: software
 
 | Access        | Source                  |
 | ------------- | ----------------------- |
-| \_software.id | [Edifa][0]{:.label-cif} |
+| \_software.id | [Edi][0]{:.label-cif} |
 
 Software role. Supported values include `framework`, `calculator`, and
 `minimizer`.
@@ -17,7 +17,7 @@ Software role. Supported values include `framework`, `calculator`, and
 
 | Access          | Source                  |
 | --------------- | ----------------------- |
-| \_software.name | [Edifa][0]{:.label-cif} |
+| \_software.name | [Edi][0]{:.label-cif} |
 
 Software package name.
 
@@ -25,7 +25,7 @@ Software package name.
 
 | Access         | Source                  |
 | -------------- | ----------------------- |
-| \_software.url | [Edifa][0]{:.label-cif} |
+| \_software.url | [Edi][0]{:.label-cif} |
 
 Software project URL.
 
@@ -33,7 +33,7 @@ Software project URL.
 
 | Access             | Source                  |
 | ------------------ | ----------------------- |
-| \_software.version | [Edifa][0]{:.label-cif} |
+| \_software.version | [Edi][0]{:.label-cif} |
 
 Software package version.
 

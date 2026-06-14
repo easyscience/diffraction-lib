@@ -13,7 +13,7 @@ title: excluded_region
 
 | Access                | Source                  |
 | --------------------- | ----------------------- |
-| \_excluded_region.end | [Edifa][0]{:.label-cif} |
+| \_excluded_region.end | [Edi][0]{:.label-cif} |
 
 End of the excluded region.
 
@@ -21,7 +21,7 @@ End of the excluded region.
 
 | Access               | Source                  |
 | -------------------- | ----------------------- |
-| \_excluded_region.id | [Edifa][0]{:.label-cif} |
+| \_excluded_region.id | [Edi][0]{:.label-cif} |
 
 Identifier for this excluded region.
 
@@ -29,7 +29,7 @@ Identifier for this excluded region.
 
 | Access                  | Source                  |
 | ----------------------- | ----------------------- |
-| \_excluded_region.start | [Edifa][0]{:.label-cif} |
+| \_excluded_region.start | [Edi][0]{:.label-cif} |
 
 Start of the excluded region.
 

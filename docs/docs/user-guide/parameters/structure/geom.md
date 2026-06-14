@@ -12,7 +12,7 @@ title: geom
 
 | Access                                                                                                                                                      | Source                    |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
-| \_geom.bond_distance_inc                                                                                                                                    | [Edifa][0]{:.label-cif}   |
+| \_geom.bond_distance_inc                                                                                                                                    | [Edi][0]{:.label-cif}   |
 | \_geom.bond_distance_incr [:material-open-in-new:](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Igeom.bond_distance_incr.html 'IUCr definition') | [coreCIF][0]{:.label-cif} |
 
 Increment added to the summed bonding radii (angstrom).
@@ -21,7 +21,7 @@ Increment added to the summed bonding radii (angstrom).
 
 | Access                                                                                                                                                                  | Source                    |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
-| \_geom.min_bond_distance_cutoff                                                                                                                                         | [Edifa][0]{:.label-cif}   |
+| \_geom.min_bond_distance_cutoff                                                                                                                                         | [Edi][0]{:.label-cif}   |
 | \_geom.min_bond_distance_cutoff [:material-open-in-new:](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Igeom.min_bond_distance_cutoff.html 'IUCr definition') | [coreCIF][0]{:.label-cif} |
 
 Minimum permitted bonded distance (angstrom).

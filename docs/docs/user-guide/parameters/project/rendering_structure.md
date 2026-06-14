@@ -8,7 +8,7 @@ title: rendering_structure
 
 | Access                     | Source                  |
 | -------------------------- | ----------------------- |
-| \_rendering_structure.type | [Edifa][0]{:.label-cif} |
+| \_rendering_structure.type | [Edi][0]{:.label-cif} |
 
 Structure-view renderer backend type. Supported values include `auto`,
 `ascii`, and `threejs`.

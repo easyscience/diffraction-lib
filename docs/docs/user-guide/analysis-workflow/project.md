@@ -28,7 +28,7 @@ You can manually create a new project and specify its short **name**,
 
 ```py
 # Create a new project
-project = ed.Project(name='lbco_hrpt')
+project = edi.Project(name='lbco_hrpt')
 
 # Define project metadata
 project.metadata.title = 'La0.5Ba0.5CoO3 from neutron diffraction at HRPT@PSI'
@@ -64,7 +64,7 @@ useful for continuing a previous session or reusing a downloaded saved
 project.
 
 ```python
-project = ed.Project.load('lbco_hrpt')
+project = edi.Project.load('lbco_hrpt')
 ```
 
 ## Project Structure
@@ -77,15 +77,15 @@ The example below illustrates a typical **project structure** for a
 <div class="cif">
 <pre>
 📁 <span class="red"><b>La0.5Ba0.5CoO3</b></span>     - project root
-├── 📄 <span class="orange"><b>project.edifa</b></span> - project configuration
+├── 📄 <span class="orange"><b>project.edi</b></span> - project configuration
 ├── 📁 structures  - structures
-│   ├── 📄 <span class="orange"><b>lbco.edifa</b></span> - LBCO
+│   ├── 📄 <span class="orange"><b>lbco.edi</b></span> - LBCO
 │   └── ...
 ├── 📁 experiments - experiments
-│   ├── 📄 <span class="orange"><b>hrpt.edifa</b></span> - HRPT pattern
+│   ├── 📄 <span class="orange"><b>hrpt.edi</b></span> - HRPT pattern
 │   └── ...
 ├── 📁 analysis    - analysis
-│   ├── 📄 <span class="orange"><b>analysis.edifa</b></span> - fit state
+│   ├── 📄 <span class="orange"><b>analysis.edi</b></span> - fit state
 │   └── 📄 <span class="orange"><b>results.h5</b></span>   - Bayesian arrays
 └── 📁 reports     - reports
     ├── 📄 <span class="orange"><b>La0.5Ba0.5CoO3.cif</b></span>  - IUCr
@@ -103,13 +103,13 @@ directory, showing the main files created by a typical workflow.
 !!! warning "Important"
 
     If you save the project right after creating it, the project directory will
-    only contain the `project.edifa` file. The other folders and files will be
+    only contain the `project.edi` file. The other folders and files will be
     created as you add structures, experiments, and set up the analysis. The
     reports folder is created only when at least one of
     `project.report.cif`, `project.report.html`, `project.report.tex`,
     or `project.report.pdf` is set to `True` before `project.save()`.
 
-### 1. <span class="orange">project.edifa</span>
+### 1. <span class="orange">project.edi</span>
 
 This file stores project-level metadata and display configuration.
 
@@ -117,8 +117,8 @@ This file stores project-level metadata and display configuration.
 
 <div class="cif">
 <pre>
-<span class="blue"><b>_edifa</b>.schema_name</span>    EasyDiffraction
-<span class="blue"><b>_edifa</b>.schema_version</span> 1
+<span class="blue"><b>_edi</b>.schema_name</span>    EasyDiffraction
+<span class="blue"><b>_edi</b>.schema_version</span> 1
 
 <span class="blue"><b>_metadata</b>.name</span>          lbco_hrpt
 <span class="blue"><b>_metadata</b>.title</span>         "La0.5Ba0.5CoO3 from neutron diffraction at HRPT@PSI"
@@ -143,7 +143,7 @@ This file stores project-level metadata and display configuration.
 
 <!-- prettier-ignore-end -->
 
-### 2. structures / <span class="orange">lbco.edifa</span>
+### 2. structures / <span class="orange">lbco.edi</span>
 
 This file contains crystallographic information associated with the
 structure model, including **space group**, **unit cell parameters**,
@@ -184,7 +184,7 @@ O  O    0   0.5 0.5   c   1    Biso 1.4041
 
 <!-- prettier-ignore-end -->
 
-### 3. experiments / <span class="orange">hrpt.edifa</span>
+### 3. experiments / <span class="orange">hrpt.edi</span>
 
 This file contains the **experiment type**, **calculation engine**,
 **instrumental parameters**, **peak parameters**, **associated phases**,
@@ -251,7 +251,7 @@ loop_
 
 <!-- prettier-ignore-end -->
 
-### 4. analysis / <span class="orange">analysis.edifa</span>
+### 4. analysis / <span class="orange">analysis.edi</span>
 
 This file contains settings used for data analysis, including the choice
 of **calculation** and **fitting** engines, as well as user defined

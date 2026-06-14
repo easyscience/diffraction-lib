@@ -11,7 +11,7 @@
 # ## 🛠️ Import Library
 
 # %%
-import easydiffraction as ed
+import easydiffraction as edi
 
 # %% [markdown]
 # ## 📂 Load Project
@@ -23,7 +23,7 @@ import easydiffraction as ed
 # EasyDiffraction data repository.
 
 # %%
-project_dir = ed.download_data('proj-cosio-d20-scan', destination='projects', overwrite=True)
+project_dir = edi.download_data('proj-cosio-d20-scan', destination='projects', overwrite=True)
 
 # %% [markdown]
 # ### Load Project
@@ -32,7 +32,7 @@ project_dir = ed.download_data('proj-cosio-d20-scan', destination='projects', ov
 # resuming the sequential fit appends to its `analysis/results.csv`.
 
 # %%
-project = ed.Project.load(project_dir)
+project = edi.Project.load(project_dir)
 
 # %% [markdown]
 # ## 🚀 Perform Analysis

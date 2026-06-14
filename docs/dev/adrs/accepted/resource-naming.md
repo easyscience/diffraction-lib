@@ -92,7 +92,7 @@ undecided. This ADR fixes that form, for datasets and tutorials alike.
    named after the id (`<name>.<ext>`, e.g. `meas-lbco-hrpt.xye`) so the
    saved file matches the name the user typed. The extension follows the
    format: generic IUCr structures `.cif`; EasyDiffraction
-   experiment-definition files `.edifa`; raw measured data in its native
+   experiment-definition files `.edi`; raw measured data in its native
    extension (`.xye`/`.gr`/`.dat`/`.xys`); multi-file scans and project
    archives `.zip`.
 
@@ -204,8 +204,8 @@ chain collapses to one stable slug overwritten in place.
 
 > Id 2 is a full experiment-definition file: its id is the
 > extension-free `expt-lbco-hrpt` (per Decisions 1 and 5), and the
-> stored file migrates from `.cif` to the new `.edifa` format, so its
-> path is `data/experiments/lbco-hrpt.edifa`. Id 3, which previously
+> stored file migrates from `.cif` to the new `.edi` format, so its
+> path is `data/experiments/lbco-hrpt.edi`. Id 3, which previously
 > shared the "LBCO HRPT" description, is the _raw measured pattern_ and
 > moves to `meas-` below.
 

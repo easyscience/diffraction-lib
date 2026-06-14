@@ -1,4 +1,4 @@
-# Edifa Project Persistence Plan
+# Edi Project Persistence Plan
 
 This plan follows `AGENTS.md`. There are no deliberate exceptions.
 
@@ -34,23 +34,22 @@ to the old suggestions path.
 
 ## Decisions
 
-- Edifa becomes the project persistence format: `project.edifa`,
-  `structures/<structure>.edifa`, `experiments/<experiment>.edifa`, and
-  `analysis/analysis.edifa`.
+- Edi becomes the project persistence format: `project.edi`,
+  `structures/<structure>.edi`, `experiments/<experiment>.edi`, and
+  `analysis/analysis.edi`.
 - `analysis/results.csv`, `analysis/results.h5`, and
   `reports/<project>.cif` keep their current locations and purposes.
 - Report CIF generation stays strict IUCr/pdCIF export. Regular project
   save/load must not treat report CIF as round-trippable project state.
-- Saved Edifa files include the schema marker
-  `_edifa.schema_name EasyDiffraction` and `_edifa.schema_version 1`.
-- Project restore accepts only Edifa project files. Legacy beta
+- Saved Edi files include the schema marker `_edi.schema_version 1`.
+- Project restore accepts only Edi project files. Legacy beta
   EasyDiffraction CIF project files fail with an explicit migration
   error. Official CIF import names remain supported by explicit CIF
   import paths where supported, and read aliases remain recorded on
   handlers.
-- Edifa files take precedence over stale CIF siblings. If both exist,
-  load Edifa and ignore CIF for the same project section.
-- Ordinary `save()` writes Edifa files. It does not need to delete stale
+- Edi files take precedence over stale CIF siblings. If both exist,
+  load Edi and ignore CIF for the same project section.
+- Ordinary `save()` writes Edi files. It does not need to delete stale
   CIF files; precedence and clear console output handle stale siblings.
 - Public Python names move to the ADR's API-oriented names with no
   transitional Python properties: `project.metadata`,
@@ -60,18 +59,18 @@ to the old suggestions path.
 - `analysis.software` becomes a role-keyed loop with
   `software[role].{name, version, url}` and a closed `(str, Enum)` role
   set. Fit timestamp moves to `project.metadata.timestamp`.
-- Runtime descriptors expose a read-only `url` derived from Edifa names
+- Runtime descriptors expose a read-only `url` derived from Edi names
   and docs version. Static docs tables use stable relative anchors, not
   runtime `param.url`.
-- Parameter docs remain hand-maintained. A generated CifHandler/Edifa
+- Parameter docs remain hand-maintained. A generated CifHandler/Edi
   inventory is an audit artifact, not the source used to generate docs
   tables.
 - No new dependency is planned.
 
 ## Open Questions
 
-- Whether Edifa needs an explicit public CLI format flag. This plan
-  assumes no new `--format` flag: `.edifa` is the default project
+- Whether Edi needs an explicit public CLI format flag. This plan
+  assumes no new `--format` flag: `.edi` is the default project
   persistence format, and CLI help/docs name it because users see the
   files.
 - Whether future analysis-reference fields should adopt a broader
@@ -108,7 +107,7 @@ The main public-name changes cross these areas:
 The existing docs reference is a two-tab code/CIF table in
 `docs/docs/user-guide/parameters.md` with per-category pages under
 `docs/docs/user-guide/parameters/`. It must become the ADR's three-tab
-code/Edifa/CIF reference.
+code/Edi/CIF reference.
 
 ## Concrete Files Likely To Change
 
@@ -120,7 +119,7 @@ code/Edifa/CIF reference.
   `src/easydiffraction/io/cif/parse.py`,
   `src/easydiffraction/io/cif/iucr_writer.py`,
   `src/easydiffraction/io/cif/iucr_transformers.py`, plus a new
-  `src/easydiffraction/io/edifa/` package if the implementation needs a
+  `src/easydiffraction/io/edi/` package if the implementation needs a
   format-specific boundary.
 - Project facade/config: `src/easydiffraction/project/project.py`,
   `src/easydiffraction/project/project_config.py`,
@@ -152,7 +151,7 @@ code/Edifa/CIF reference.
   regenerated `docs/docs/tutorials/*.ipynb`, `docs/mkdocs.yml`,
   `src/easydiffraction/__main__.py`, and
   `src/easydiffraction/io/ascii.py`.
-- New or updated tools: an Edifa handler inventory/audit tool under
+- New or updated tools: an Edi handler inventory/audit tool under
   `tools/`, and a docs anchor verification tool if it is not folded into
   an existing docs check.
 - Tests in Phase 2: matching unit test files under
@@ -172,13 +171,13 @@ code/Edifa/CIF reference.
   Commit:
 
   ```text
-  Accept Edifa project persistence ADR
+  Accept Edi project persistence ADR
   ```
 
 - [x] P1.2 - Make handler names explicit before changing tags.
 
   Extend `CifHandler` so each descriptor can declare: `project_name` for
-  Edifa write tags, `import_names` for accepted read aliases,
+  Edi write tags, `import_names` for accepted read aliases,
   `iucr_name` for report export, and enough category metadata for
   inventory/docs URL generation. Preserve current CIF behavior while
   this step lands.
@@ -196,7 +195,7 @@ code/Edifa/CIF reference.
 - [x] P1.3 - Add the generated handler inventory audit.
 
   Add a tool that imports the registered concrete categories and emits a
-  deterministic inventory of descriptor paths, Edifa names, legacy CIF
+  deterministic inventory of descriptor paths, Edi names, legacy CIF
   import names, IUCr names, docs anchors, and ownership context.
   Generate the initial inventory before any write-side tag renames so
   later commits have a reviewable baseline.
@@ -207,34 +206,34 @@ code/Edifa/CIF reference.
   Commit:
 
   ```text
-  Add Edifa persistence inventory audit
+  Add Edi persistence inventory audit
   ```
 
-- [x] P1.4 - Introduce Edifa project file save/load.
+- [x] P1.4 - Introduce Edi project file save/load.
 
-  Add Edifa serialization and parsing boundaries, including schema
+  Add Edi serialization and parsing boundaries, including schema
   marker writing/validation and selector/body consistency checks. Update
   `Project.save()` to write:
 
   ```text
-  project.edifa
-  structures/<structure>.edifa
-  experiments/<experiment>.edifa
-  analysis/analysis.edifa
+  project.edi
+  structures/<structure>.edi
+  experiments/<experiment>.edi
+  analysis/analysis.edi
   analysis/results.csv
   analysis/results.h5
   reports/<project>.cif
   ```
 
   Update `Project.load()` and structure/experiment/analysis loaders so
-  Edifa wins over same-section CIF files, while legacy-only beta CIF
+  Edi wins over same-section CIF files, while legacy-only beta CIF
   project files fail with explicit migration errors. Keep
   `project.report.save_cif()` and the IUCr writer on the CIF path.
 
   Commit:
 
   ```text
-  Save and load Edifa project files
+  Save and load Edi project files
   ```
 
 - [x] P1.5 - Rename project info to project metadata.
@@ -278,7 +277,7 @@ code/Edifa/CIF reference.
   belongs with analysis aliases. Update collection key declarations,
   constructors, display/report code, symmetry/ADP lookup code, and
   examples. Keep official CIF import aliases for `_atom_site.label` and
-  `_atom_site_aniso.label`; write Edifa with the new `id` names.
+  `_atom_site_aniso.label`; write Edi with the new `id` names.
 
   Commit:
 
@@ -306,20 +305,20 @@ code/Edifa/CIF reference.
 
 - [x] P1.9 - Rename experiment data and instrument fields.
 
-  Apply the remaining experiment-side API/Edifa renames from the ADR:
+  Apply the remaining experiment-side API/Edi renames from the ADR:
   powder `refln.phase_id` to `structure_id`, preferred-orientation
   `phase_id` to `structure_id`, powder data `point_id` to `id`, TOF
   calibration `quad`/`recip` to `quadratic`/`reciprocal`, and
   line-segment background `x`/`y` to `position`/`intensity`.
 
-  Update Edifa write names, legacy CIF import aliases, calculators,
+  Update Edi write names, legacy CIF import aliases, calculators,
   report writers, plotting code, docs, and tutorials. Preserve strict
   report CIF output names through `iucr_name`/transformers.
 
   Commit:
 
   ```text
-  Rename experiment Edifa fields
+  Rename experiment Edi fields
   ```
 
 - [x] P1.10 - Rename analysis parameter-reference fields.
@@ -346,9 +345,9 @@ code/Edifa/CIF reference.
 - [x] P1.11 - Rework parameter docs and runtime links.
 
   Update `docs/docs/user-guide/parameters.md` to use three tabs: "How to
-  access in the code", "Keys in Edifa", and "Keys in CIF". Rename
-  per-category pages under `docs/docs/user-guide/parameters/` to Edifa
-  category names, give them Edifa titles and EasyDiffraction
+  access in the code", "Keys in Edi", and "Keys in CIF". Rename
+  per-category pages under `docs/docs/user-guide/parameters/` to Edi
+  category names, give them Edi titles and EasyDiffraction
   descriptions, and keep IUCr icon links for official dictionary tags.
 
   Add stable anchors that match the runtime `param.url` resolver. Static
@@ -357,20 +356,20 @@ code/Edifa/CIF reference.
 
   Update `docs/mkdocs.yml`, quick reference, workflow docs, tutorials,
   ZIP/project docs, and CLI help text from CIF project persistence to
-  Edifa project persistence. Regenerate notebooks only from edited
+  Edi project persistence. Regenerate notebooks only from edited
   tutorial `.py` files during the implementation step that changes
   tutorials.
 
   Commit:
 
   ```text
-  Document Edifa parameter keys
+  Document Edi parameter keys
   ```
 
 - [x] P1.12 - Refresh report CIF boundaries and stale-name errors.
 
   Ensure report CIF generation still emits strict IUCr/pdCIF and does
-  not accidentally use Edifa project names. Remove or update regular
+  not accidentally use Edi project names. Remove or update regular
   project-save CIF assumptions in display/report helpers while keeping
   `reports/<project>.cif` intact.
 
@@ -381,7 +380,7 @@ code/Edifa/CIF reference.
   Commit:
 
   ```text
-  Keep report CIF separate from Edifa persistence
+  Keep report CIF separate from Edi persistence
   ```
 
 - [x] P1.13 - Phase 1 review gate.
@@ -397,7 +396,7 @@ code/Edifa/CIF reference.
   Commit:
 
   ```text
-  Reach Edifa Phase 1 review gate
+  Reach Edi Phase 1 review gate
   ```
 
 - [x] P1.14 - Rename the space-group coordinate-system parameter.
@@ -405,10 +404,10 @@ code/Edifa/CIF reference.
   Record the post-review Phase 1 scope addition requested after the
   original review gate: rename
   `structure.space_group.it_coordinate_system_code` to
-  `structure.space_group.coord_system_code` and write Edifa with
+  `structure.space_group.coord_system_code` and write Edi with
   `_space_group.coord_system_code`. Keep official CIF import/report
   names as `_space_group.IT_coordinate_system_code`, and do not preserve
-  the pre-release lowercase Edifa spelling as a legacy alias.
+  the pre-release lowercase Edi spelling as a legacy alias.
 
   Update the accepted ADR, live ADR references, handler inventory,
   source call sites, user docs, tutorials, and regenerated notebooks.
@@ -428,8 +427,8 @@ code/Edifa/CIF reference.
 
   Add or update unit tests for:
 
-  - Edifa schema marker write/read validation.
-  - Edifa-over-CIF precedence for project, structures, experiments, and
+  - Edi schema marker write/read validation.
+  - Edi-over-CIF precedence for project, structures, experiments, and
     analysis.
   - Beta-window CIF import aliases for each renamed field.
   - Public stale-name failures for removed Python names.
@@ -437,7 +436,7 @@ code/Edifa/CIF reference.
   - Fit-parameter and fit-parameter-correlation reference-field renames.
   - `param.url` generation and docs-anchor validation.
   - Report CIF continuing to use strict IUCr/pdCIF names.
-  - ZIP extraction and CLI help accepting Edifa project archives.
+  - ZIP extraction and CLI help accepting Edi project archives.
 
   Add integration/script coverage for save/load round trips, tutorial
   projects, report export, and sequential/Bayesian sidecars where those
@@ -446,7 +445,7 @@ code/Edifa/CIF reference.
   Commit:
 
   ```text
-  Test Edifa project persistence
+  Test Edi project persistence
   ```
 
 - [x] P2.2 - Run structure and formatting checks.
@@ -462,7 +461,7 @@ code/Edifa/CIF reference.
   Commit:
 
   ```text
-  Apply Edifa verification formatting
+  Apply Edi verification formatting
   ```
 
 - [x] P2.3 - Run static checks.
@@ -513,13 +512,13 @@ code/Edifa/CIF reference.
 Title:
 
 ```text
-Add Edifa project persistence
+Add Edi project persistence
 ```
 
 Description:
 
 ```text
-Save EasyDiffraction projects in the new Edifa format while keeping
+Save EasyDiffraction projects in the new Edi format while keeping
 report CIF output strict for publication and exchange. The change makes
 saved project files easier to read and edit, clarifies project metadata
 and linked-structure names, and gives clear migration errors for older

@@ -12,7 +12,7 @@
 # ## 🛠️ Import Library
 
 # %%
-import easydiffraction as ed
+import easydiffraction as edi
 
 # %% [markdown]
 # ## 📦 Define Project
@@ -21,7 +21,7 @@ import easydiffraction as ed
 # ### Create Project
 
 # %%
-project = ed.Project(name='nacl_xray_pdf')
+project = edi.Project(name='nacl_xray_pdf')
 
 # %% [markdown]
 # ### Set Plotting Engine
@@ -73,7 +73,7 @@ project.display.structure(struct_name='nacl')
 # ### Add Experiment
 
 # %%
-data_path = ed.download_data('meas-nacl-pdf', destination='data')
+data_path = edi.download_data('meas-nacl-pdf', destination='data')
 
 # %%
 project.experiments.add_from_data_path(

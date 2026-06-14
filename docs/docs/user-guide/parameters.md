@@ -7,13 +7,13 @@ analysis state.
 Each parameter has:
 
 - a Python access path used in notebooks and scripts,
-- an Edifa key used when EasyDiffraction saves a project, and
+- an Edi key used when EasyDiffraction saves a project, and
 - where applicable, a CIF key used for importing crystallographic data
   or writing IUCr/pdCIF reports.
 
-Edifa is the regular EasyDiffraction project persistence format. CIF
+Edi is the regular EasyDiffraction project persistence format. CIF
 remains important for crystallographic input and for strict report
-exports. The tables below therefore separate code access, Edifa keys,
+exports. The tables below therefore separate code access, Edi keys,
 and CIF keys instead of treating one name as universal.
 
 ## Parameter Attributes
@@ -71,9 +71,9 @@ path, such as `space_group.name_h_m`.
     |  | :material-reflect-horizontal: [multiplicity](parameters/structure/atom_site.md#atom-site-multiplicity) | atom_sites['ID'].multiplicity |
     |  | :material-reflect-horizontal: [wyckoff_letter](parameters/structure/atom_site.md#atom-site-wyckoff-letter) | atom_sites['ID'].wyckoff_letter |
 
-=== "Keys in Edifa"
+=== "Keys in Edi"
 
-    | Category | Parameter | Key in Edifa |
+    | Category | Parameter | Key in Edi |
     | --- | --- | --- |
     | :material-space-station: [space_group][space_group] | :material-tag: [name_h_m](parameters/structure/space_group.md#space-group-name-h-m) | `_space_group.name_h_m` |
     |  | :material-numeric: [coord_system_code](parameters/structure/space_group.md#space-group-coord-system-code) | `_space_group.coord_system_code` |
@@ -134,9 +134,9 @@ path, such as `space_group.name_h_m`.
     |  | :material-diamond-stone: [sample_form](parameters/experiment/experiment_type.md#experiment-type-sample-form) | experiment_type.sample_form |
     |  | :material-chart-bell-curve: [scattering_type](parameters/experiment/experiment_type.md#experiment-type-scattering-type) | experiment_type.scattering_type |
 
-=== "Keys in Edifa"
+=== "Keys in Edi"
 
-    | Category | Parameter | Key in Edifa |
+    | Category | Parameter | Key in Edi |
     | --- | --- | --- |
     | :material-flask: [experiment_type][experiment_type] | :material-sawtooth-wave: [beam_mode](parameters/experiment/experiment_type.md#experiment-type-beam-mode) | `_experiment_type.beam_mode` |
     |  | :material-radiology-box-outline: [radiation_probe](parameters/experiment/experiment_type.md#experiment-type-radiation-probe) | `_experiment_type.radiation_probe` |
@@ -147,10 +147,10 @@ path, such as `space_group.name_h_m`.
 
     | Category | Parameter | Key in CIF | CIF dictionary |
     | --- | --- | --- | --- |
-    | :material-flask: [experiment_type][experiment_type] | :material-sawtooth-wave: [beam_mode](parameters/experiment/experiment_type.md#experiment-type-beam-mode) | `_easydiffraction_experiment_type.beam_mode` | [edifaCIF][0]{:.label-cif} |
-    |  | :material-radiology-box-outline: [radiation_probe](parameters/experiment/experiment_type.md#experiment-type-radiation-probe) | `_easydiffraction_experiment_type.radiation_probe` | [edifaCIF][0]{:.label-cif} |
-    |  | :material-diamond-stone: [sample_form](parameters/experiment/experiment_type.md#experiment-type-sample-form) | `_easydiffraction_experiment_type.sample_form` | [edifaCIF][0]{:.label-cif} |
-    |  | :material-chart-bell-curve: [scattering_type](parameters/experiment/experiment_type.md#experiment-type-scattering-type) | `_easydiffraction_experiment_type.scattering_type` | [edifaCIF][0]{:.label-cif} |
+    | :material-flask: [experiment_type][experiment_type] | :material-sawtooth-wave: [beam_mode](parameters/experiment/experiment_type.md#experiment-type-beam-mode) | `_easydiffraction_experiment_type.beam_mode` | [coreCIF][0]{:.label-cif} |
+    |  | :material-radiology-box-outline: [radiation_probe](parameters/experiment/experiment_type.md#experiment-type-radiation-probe) | `_easydiffraction_experiment_type.radiation_probe` | [coreCIF][0]{:.label-cif} |
+    |  | :material-diamond-stone: [sample_form](parameters/experiment/experiment_type.md#experiment-type-sample-form) | `_easydiffraction_experiment_type.sample_form` | [coreCIF][0]{:.label-cif} |
+    |  | :material-chart-bell-curve: [scattering_type](parameters/experiment/experiment_type.md#experiment-type-scattering-type) | `_easydiffraction_experiment_type.scattering_type` | [coreCIF][0]{:.label-cif} |
 
 ### Standard Powder Diffraction
 
@@ -174,9 +174,9 @@ path, such as `space_group.name_h_m`.
     |  | :material-axis-arrow: [index_k](parameters/experiment/preferred_orientation.md#preferred-orientation-index-k) | preferred_orientation['ID'].index_k |
     |  | :material-axis-arrow: [index_l](parameters/experiment/preferred_orientation.md#preferred-orientation-index-l) | preferred_orientation['ID'].index_l |
 
-=== "Keys in Edifa"
+=== "Keys in Edi"
 
-    | Category | Parameter | Key in Edifa |
+    | Category | Parameter | Key in Edi |
     | --- | --- | --- |
     | :material-waveform: [background][background] | :material-arrow-collapse-right: [position](parameters/experiment/background.md#background-position) | `_background.position` |
     |  | :material-arrow-collapse-up: [intensity](parameters/experiment/background.md#background-intensity) | `_background.intensity` |
@@ -203,7 +203,7 @@ path, such as `space_group.name_h_m`.
     |  | :material-scale: [scale](parameters/experiment/linked_structure.md#linked-structure-scale) | `_pd_phase_block.scale` | [pdCIF][2]{:.label-cif} |
     | :material-compass-outline: [preferred_orientation][preferred_orientation] | :material-identifier: [structure_id](parameters/experiment/preferred_orientation.md#preferred-orientation-structure-id) | `_pd_pref_orient_March_Dollase.phase_id` | [pdCIF][2]{:.label-cif} |
     |  | :material-chart-bell-curve-cumulative: [march_r](parameters/experiment/preferred_orientation.md#preferred-orientation-march-r) | `_pd_pref_orient_March_Dollase.r` | [pdCIF][2]{:.label-cif} |
-    |  | :material-shuffle-variant: [march_random_fract](parameters/experiment/preferred_orientation.md#preferred-orientation-march-random-fract) | `_easydiffraction_pref_orient.march_random_fract` | [edifaCIF][0]{:.label-cif} |
+    |  | :material-shuffle-variant: [march_random_fract](parameters/experiment/preferred_orientation.md#preferred-orientation-march-random-fract) | `_easydiffraction_pref_orient.march_random_fract` | [coreCIF][0]{:.label-cif} |
     |  | :material-axis-arrow: [index_h](parameters/experiment/preferred_orientation.md#preferred-orientation-index-h) | `_pd_pref_orient_March_Dollase.index_h` | [pdCIF][2]{:.label-cif} |
     |  | :material-axis-arrow: [index_k](parameters/experiment/preferred_orientation.md#preferred-orientation-index-k) | `_pd_pref_orient_March_Dollase.index_k` | [pdCIF][2]{:.label-cif} |
     |  | :material-axis-arrow: [index_l](parameters/experiment/preferred_orientation.md#preferred-orientation-index-l) | `_pd_pref_orient_March_Dollase.index_l` | [pdCIF][2]{:.label-cif} |
@@ -222,9 +222,9 @@ path, such as `space_group.name_h_m`.
     |  | :material-arrow-expand-horizontal: [broad_lorentz_x](parameters/experiment/peak.md#peak-broad-lorentz-x) | peak.broad_lorentz_x |
     |  | :material-arrow-expand-horizontal: [broad_lorentz_y](parameters/experiment/peak.md#peak-broad-lorentz-y) | peak.broad_lorentz_y |
 
-=== "Keys in Edifa"
+=== "Keys in Edi"
 
-    | Category | Parameter | Key in Edifa |
+    | Category | Parameter | Key in Edi |
     | --- | --- | --- |
     | :material-microscope: [instrument][instrument] | :material-wrench: [setup_wavelength](parameters/experiment/instrument.md#instrument-setup-wavelength) | `_instrument.setup_wavelength` |
     |  | :material-tune: [calib_twotheta_offset](parameters/experiment/instrument.md#instrument-calib-twotheta-offset) | `_instrument.calib_twotheta_offset` |
@@ -240,11 +240,11 @@ path, such as `space_group.name_h_m`.
     | --- | --- | --- | --- |
     | :material-microscope: [instrument][instrument] | :material-wrench: [setup_wavelength](parameters/experiment/instrument.md#instrument-setup-wavelength) | `_diffrn_radiation_wavelength.value` | [coreCIF][1]{:.label-cif} |
     |  | :material-tune: [calib_twotheta_offset](parameters/experiment/instrument.md#instrument-calib-twotheta-offset) | `_pd_calib.2theta_offset` | [pdCIF][2]{:.label-cif} |
-    | :material-shape: [peak][peak] | :material-arrow-expand-horizontal: [broad_gauss_u](parameters/experiment/peak.md#peak-broad-gauss-u) | `_easydiffraction_peak.broad_gauss_u` | [edifaCIF][0]{:.label-cif} |
-    |  | :material-arrow-expand-horizontal: [broad_gauss_v](parameters/experiment/peak.md#peak-broad-gauss-v) | `_easydiffraction_peak.broad_gauss_v` | [edifaCIF][0]{:.label-cif} |
-    |  | :material-arrow-expand-horizontal: [broad_gauss_w](parameters/experiment/peak.md#peak-broad-gauss-w) | `_easydiffraction_peak.broad_gauss_w` | [edifaCIF][0]{:.label-cif} |
-    |  | :material-arrow-expand-horizontal: [broad_lorentz_x](parameters/experiment/peak.md#peak-broad-lorentz-x) | `_easydiffraction_peak.broad_lorentz_x` | [edifaCIF][0]{:.label-cif} |
-    |  | :material-arrow-expand-horizontal: [broad_lorentz_y](parameters/experiment/peak.md#peak-broad-lorentz-y) | `_easydiffraction_peak.broad_lorentz_y` | [edifaCIF][0]{:.label-cif} |
+    | :material-shape: [peak][peak] | :material-arrow-expand-horizontal: [broad_gauss_u](parameters/experiment/peak.md#peak-broad-gauss-u) | `_easydiffraction_peak.broad_gauss_u` | [coreCIF][0]{:.label-cif} |
+    |  | :material-arrow-expand-horizontal: [broad_gauss_v](parameters/experiment/peak.md#peak-broad-gauss-v) | `_easydiffraction_peak.broad_gauss_v` | [coreCIF][0]{:.label-cif} |
+    |  | :material-arrow-expand-horizontal: [broad_gauss_w](parameters/experiment/peak.md#peak-broad-gauss-w) | `_easydiffraction_peak.broad_gauss_w` | [coreCIF][0]{:.label-cif} |
+    |  | :material-arrow-expand-horizontal: [broad_lorentz_x](parameters/experiment/peak.md#peak-broad-lorentz-x) | `_easydiffraction_peak.broad_lorentz_x` | [coreCIF][0]{:.label-cif} |
+    |  | :material-arrow-expand-horizontal: [broad_lorentz_y](parameters/experiment/peak.md#peak-broad-lorentz-y) | `_easydiffraction_peak.broad_lorentz_y` | [coreCIF][0]{:.label-cif} |
 
 [pd-neut-tof][3]{:.label-experiment}
 
@@ -268,9 +268,9 @@ path, such as `space_group.name_h_m`.
     |  | :material-scale-unbalanced: [rise_alpha_0](parameters/experiment/peak.md#peak-exp-rise-alpha-0) | peak.rise_alpha_0 |
     |  | :material-scale-unbalanced: [rise_alpha_1](parameters/experiment/peak.md#peak-exp-rise-alpha-1) | peak.rise_alpha_1 |
 
-=== "Keys in Edifa"
+=== "Keys in Edi"
 
-    | Category | Parameter | Key in Edifa |
+    | Category | Parameter | Key in Edi |
     | --- | --- | --- |
     | :material-microscope: [instrument][instrument] | :material-wrench: [setup_twotheta_bank](parameters/experiment/instrument.md#instrument-setup-twotheta-bank) | `_instrument.setup_twotheta_bank` |
     |  | :material-tune: [calib_d_to_tof_reciprocal](parameters/experiment/instrument.md#instrument-calib-d-to-tof-reciprocal) | `_instrument.calib_d_to_tof_reciprocal` |
@@ -292,21 +292,21 @@ path, such as `space_group.name_h_m`.
 
     | Category | Parameter | Key in CIF | CIF dictionary |
     | --- | --- | --- | --- |
-    | :material-microscope: [instrument][instrument] | :material-wrench: [setup_twotheta_bank](parameters/experiment/instrument.md#instrument-setup-twotheta-bank) | `_instr.2theta_bank` | [edifaCIF][0]{:.label-cif} |
-    |  | :material-tune: [calib_d_to_tof_reciprocal](parameters/experiment/instrument.md#instrument-calib-d-to-tof-reciprocal) | `_instr.d_to_tof_recip` | [edifaCIF][0]{:.label-cif} |
-    |  | :material-tune: [calib_d_to_tof_offset](parameters/experiment/instrument.md#instrument-calib-d-to-tof-offset) | `_instr.d_to_tof_offset` | [edifaCIF][0]{:.label-cif} |
-    |  | :material-tune: [calib_d_to_tof_linear](parameters/experiment/instrument.md#instrument-calib-d-to-tof-linear) | `_instr.d_to_tof_linear` | [edifaCIF][0]{:.label-cif} |
-    |  | :material-tune: [calib_d_to_tof_quadratic](parameters/experiment/instrument.md#instrument-calib-d-to-tof-quadratic) | `_instr.d_to_tof_quad` | [edifaCIF][0]{:.label-cif} |
-    | :material-shape: [peak][peak] | :material-arrow-expand-horizontal: [broad_gauss_sigma_0](parameters/experiment/peak.md#peak-broad-gauss-sigma-0) | `_easydiffraction_peak.gauss_sigma_0` | [edifaCIF][0]{:.label-cif} |
-    |  | :material-arrow-expand-horizontal: [broad_gauss_sigma_1](parameters/experiment/peak.md#peak-broad-gauss-sigma-1) | `_easydiffraction_peak.gauss_sigma_1` | [edifaCIF][0]{:.label-cif} |
-    |  | :material-arrow-expand-horizontal: [broad_gauss_sigma_2](parameters/experiment/peak.md#peak-broad-gauss-sigma-2) | `_easydiffraction_peak.gauss_sigma_2` | [edifaCIF][0]{:.label-cif} |
-    |  | :material-arrow-expand-horizontal: [broad_lorentz_gamma_0](parameters/experiment/peak.md#peak-broad-lorentz-gamma-0) | `_easydiffraction_peak.lorentz_gamma_0` | [edifaCIF][0]{:.label-cif} |
-    |  | :material-arrow-expand-horizontal: [broad_lorentz_gamma_1](parameters/experiment/peak.md#peak-broad-lorentz-gamma-1) | `_easydiffraction_peak.lorentz_gamma_1` | [edifaCIF][0]{:.label-cif} |
-    |  | :material-arrow-expand-horizontal: [broad_lorentz_gamma_2](parameters/experiment/peak.md#peak-broad-lorentz-gamma-2) | `_easydiffraction_peak.lorentz_gamma_2` | [edifaCIF][0]{:.label-cif} |
-    |  | :material-arrow-bottom-right: [decay_beta_0](parameters/experiment/peak.md#peak-exp-decay-beta-0) | `_easydiffraction_peak.decay_beta_0` | [edifaCIF][0]{:.label-cif} |
-    |  | :material-arrow-bottom-right: [decay_beta_1](parameters/experiment/peak.md#peak-exp-decay-beta-1) | `_easydiffraction_peak.decay_beta_1` | [edifaCIF][0]{:.label-cif} |
-    |  | :material-scale-unbalanced: [rise_alpha_0](parameters/experiment/peak.md#peak-exp-rise-alpha-0) | `_easydiffraction_peak.rise_alpha_0` | [edifaCIF][0]{:.label-cif} |
-    |  | :material-scale-unbalanced: [rise_alpha_1](parameters/experiment/peak.md#peak-exp-rise-alpha-1) | `_easydiffraction_peak.rise_alpha_1` | [edifaCIF][0]{:.label-cif} |
+    | :material-microscope: [instrument][instrument] | :material-wrench: [setup_twotheta_bank](parameters/experiment/instrument.md#instrument-setup-twotheta-bank) | `_instr.2theta_bank` | [coreCIF][0]{:.label-cif} |
+    |  | :material-tune: [calib_d_to_tof_reciprocal](parameters/experiment/instrument.md#instrument-calib-d-to-tof-reciprocal) | `_instr.d_to_tof_recip` | [coreCIF][0]{:.label-cif} |
+    |  | :material-tune: [calib_d_to_tof_offset](parameters/experiment/instrument.md#instrument-calib-d-to-tof-offset) | `_instr.d_to_tof_offset` | [coreCIF][0]{:.label-cif} |
+    |  | :material-tune: [calib_d_to_tof_linear](parameters/experiment/instrument.md#instrument-calib-d-to-tof-linear) | `_instr.d_to_tof_linear` | [coreCIF][0]{:.label-cif} |
+    |  | :material-tune: [calib_d_to_tof_quadratic](parameters/experiment/instrument.md#instrument-calib-d-to-tof-quadratic) | `_instr.d_to_tof_quad` | [coreCIF][0]{:.label-cif} |
+    | :material-shape: [peak][peak] | :material-arrow-expand-horizontal: [broad_gauss_sigma_0](parameters/experiment/peak.md#peak-broad-gauss-sigma-0) | `_easydiffraction_peak.gauss_sigma_0` | [coreCIF][0]{:.label-cif} |
+    |  | :material-arrow-expand-horizontal: [broad_gauss_sigma_1](parameters/experiment/peak.md#peak-broad-gauss-sigma-1) | `_easydiffraction_peak.gauss_sigma_1` | [coreCIF][0]{:.label-cif} |
+    |  | :material-arrow-expand-horizontal: [broad_gauss_sigma_2](parameters/experiment/peak.md#peak-broad-gauss-sigma-2) | `_easydiffraction_peak.gauss_sigma_2` | [coreCIF][0]{:.label-cif} |
+    |  | :material-arrow-expand-horizontal: [broad_lorentz_gamma_0](parameters/experiment/peak.md#peak-broad-lorentz-gamma-0) | `_easydiffraction_peak.lorentz_gamma_0` | [coreCIF][0]{:.label-cif} |
+    |  | :material-arrow-expand-horizontal: [broad_lorentz_gamma_1](parameters/experiment/peak.md#peak-broad-lorentz-gamma-1) | `_easydiffraction_peak.lorentz_gamma_1` | [coreCIF][0]{:.label-cif} |
+    |  | :material-arrow-expand-horizontal: [broad_lorentz_gamma_2](parameters/experiment/peak.md#peak-broad-lorentz-gamma-2) | `_easydiffraction_peak.lorentz_gamma_2` | [coreCIF][0]{:.label-cif} |
+    |  | :material-arrow-bottom-right: [decay_beta_0](parameters/experiment/peak.md#peak-exp-decay-beta-0) | `_easydiffraction_peak.decay_beta_0` | [coreCIF][0]{:.label-cif} |
+    |  | :material-arrow-bottom-right: [decay_beta_1](parameters/experiment/peak.md#peak-exp-decay-beta-1) | `_easydiffraction_peak.decay_beta_1` | [coreCIF][0]{:.label-cif} |
+    |  | :material-scale-unbalanced: [rise_alpha_0](parameters/experiment/peak.md#peak-exp-rise-alpha-0) | `_easydiffraction_peak.rise_alpha_0` | [coreCIF][0]{:.label-cif} |
+    |  | :material-scale-unbalanced: [rise_alpha_1](parameters/experiment/peak.md#peak-exp-rise-alpha-1) | `_easydiffraction_peak.rise_alpha_1` | [coreCIF][0]{:.label-cif} |
 
 ### Total Scattering
 
@@ -324,9 +324,9 @@ path, such as `space_group.name_h_m`.
     |  | :material-arrow-bottom-right: [damp_q](parameters/experiment/peak.md#peak-damp-q) | peak.damp_q |
     |  | :material-arrow-bottom-right: [damp_particle_diameter](parameters/experiment/peak.md#peak-damp-particle-diameter) | peak.damp_particle_diameter |
 
-=== "Keys in Edifa"
+=== "Keys in Edi"
 
-    | Category | Parameter | Key in Edifa |
+    | Category | Parameter | Key in Edi |
     | --- | --- | --- |
     | :material-shape: [peak][peak] | :material-content-cut: [cutoff_q](parameters/experiment/peak.md#peak-cutoff-q) | `_peak.cutoff_q` |
     |  | :material-arrow-expand-horizontal: [broad_q](parameters/experiment/peak.md#peak-broad-q) | `_peak.broad_q` |
@@ -339,12 +339,12 @@ path, such as `space_group.name_h_m`.
 
     | Category | Parameter | Key in CIF | CIF dictionary |
     | --- | --- | --- | --- |
-    | :material-shape: [peak][peak] | :material-content-cut: [cutoff_q](parameters/experiment/peak.md#peak-cutoff-q) | `_easydiffraction_peak.cutoff_q` | [edifaCIF][0]{:.label-cif} |
-    |  | :material-arrow-expand-horizontal: [broad_q](parameters/experiment/peak.md#peak-broad-q) | `_easydiffraction_peak.broad_q` | [edifaCIF][0]{:.label-cif} |
-    |  | :material-knife: [sharp_delta_1](parameters/experiment/peak.md#peak-sharp-delta-1) | `_easydiffraction_peak.sharp_delta_1` | [edifaCIF][0]{:.label-cif} |
-    |  | :material-knife: [sharp_delta_2](parameters/experiment/peak.md#peak-sharp-delta-2) | `_easydiffraction_peak.sharp_delta_2` | [edifaCIF][0]{:.label-cif} |
-    |  | :material-arrow-bottom-right: [damp_q](parameters/experiment/peak.md#peak-damp-q) | `_easydiffraction_peak.damp_q` | [edifaCIF][0]{:.label-cif} |
-    |  | :material-arrow-bottom-right: [damp_particle_diameter](parameters/experiment/peak.md#peak-damp-particle-diameter) | `_easydiffraction_peak.damp_particle_diameter` | [edifaCIF][0]{:.label-cif} |
+    | :material-shape: [peak][peak] | :material-content-cut: [cutoff_q](parameters/experiment/peak.md#peak-cutoff-q) | `_easydiffraction_peak.cutoff_q` | [coreCIF][0]{:.label-cif} |
+    |  | :material-arrow-expand-horizontal: [broad_q](parameters/experiment/peak.md#peak-broad-q) | `_easydiffraction_peak.broad_q` | [coreCIF][0]{:.label-cif} |
+    |  | :material-knife: [sharp_delta_1](parameters/experiment/peak.md#peak-sharp-delta-1) | `_easydiffraction_peak.sharp_delta_1` | [coreCIF][0]{:.label-cif} |
+    |  | :material-knife: [sharp_delta_2](parameters/experiment/peak.md#peak-sharp-delta-2) | `_easydiffraction_peak.sharp_delta_2` | [coreCIF][0]{:.label-cif} |
+    |  | :material-arrow-bottom-right: [damp_q](parameters/experiment/peak.md#peak-damp-q) | `_easydiffraction_peak.damp_q` | [coreCIF][0]{:.label-cif} |
+    |  | :material-arrow-bottom-right: [damp_particle_diameter](parameters/experiment/peak.md#peak-damp-particle-diameter) | `_easydiffraction_peak.damp_particle_diameter` | [coreCIF][0]{:.label-cif} |
 
 <!-- prettier-ignore-start -->
 [0]: #

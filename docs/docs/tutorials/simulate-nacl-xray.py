@@ -14,13 +14,13 @@
 # ## 🛠️ Import Library
 
 # %%
-import easydiffraction as ed
+import easydiffraction as edi
 
 # %% [markdown]
 # ## 📦 Define Project
 
 # %%
-project = ed.Project(name='nacl_simulation')
+project = edi.Project(name='nacl_simulation')
 
 # %% [markdown]
 # ## 🧩 Define Structure

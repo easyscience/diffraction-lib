@@ -202,9 +202,9 @@ backward-compatible change.
 ### 3. User-facing API (Jupyter)
 
 ```python
-import easydiffraction as ed
+import easydiffraction as edi
 
-project = ed.Project()
+project = edi.Project()
 project.experiments.add(name='hrpt', ...)   # CW powder, neutron
 expt = project.experiments['hrpt']
 

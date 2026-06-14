@@ -634,7 +634,7 @@
 │   │   │   └── 🏷️ class _PowderPattern
 │   │   ├── 📄 parse.py
 │   │   └── 📄 serialize.py
-│   ├── 📁 edifa
+│   ├── 📁 edi
 │   │   ├── 📄 __init__.py
 │   │   └── 📄 serialize.py
 │   ├── 📄 __init__.py

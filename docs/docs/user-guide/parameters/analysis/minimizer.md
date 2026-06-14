@@ -8,7 +8,7 @@ title: minimizer
 
 | Access                    | Source                  |
 | ------------------------- | ----------------------- |
-| \_minimizer.burn_in_steps | [Edifa][0]{:.label-cif} |
+| \_minimizer.burn_in_steps | [Edi][0]{:.label-cif} |
 
 Sampler iterations discarded as warm-up.
 
@@ -16,7 +16,7 @@ Sampler iterations discarded as warm-up.
 
 | Access                            | Source                  |
 | --------------------------------- | ----------------------- |
-| \_minimizer.initialization_method | [Edifa][0]{:.label-cif} |
+| \_minimizer.initialization_method | [Edi][0]{:.label-cif} |
 
 Sampler initialization method. Supported values depend on the minimizer;
 available values include `latin_hypercube`, `ball`, `uniform`, and
@@ -26,7 +26,7 @@ available values include `latin_hypercube`, `ball`, `uniform`, and
 
 | Access                     | Source                  |
 | -------------------------- | ----------------------- |
-| \_minimizer.max_iterations | [Edifa][0]{:.label-cif} |
+| \_minimizer.max_iterations | [Edi][0]{:.label-cif} |
 
 Maximum solver iterations.
 
@@ -34,7 +34,7 @@ Maximum solver iterations.
 
 | Access                       | Source                  |
 | ---------------------------- | ----------------------- |
-| \_minimizer.parallel_workers | [Edifa][0]{:.label-cif} |
+| \_minimizer.parallel_workers | [Edi][0]{:.label-cif} |
 
 Worker count; 0 uses all available CPUs.
 
@@ -42,7 +42,7 @@ Worker count; 0 uses all available CPUs.
 
 | Access                      | Source                  |
 | --------------------------- | ----------------------- |
-| \_minimizer.population_size | [Edifa][0]{:.label-cif} |
+| \_minimizer.population_size | [Edi][0]{:.label-cif} |
 
 Number of chains or walkers.
 
@@ -50,7 +50,7 @@ Number of chains or walkers.
 
 | Access                     | Source                  |
 | -------------------------- | ----------------------- |
-| \_minimizer.proposal_moves | [Edifa][0]{:.label-cif} |
+| \_minimizer.proposal_moves | [Edi][0]{:.label-cif} |
 
 Single emcee proposal move; move mixtures are not persisted in v1.
 
@@ -58,7 +58,7 @@ Single emcee proposal move; move mixtures are not persisted in v1.
 
 | Access                  | Source                  |
 | ----------------------- | ----------------------- |
-| \_minimizer.random_seed | [Edifa][0]{:.label-cif} |
+| \_minimizer.random_seed | [Edi][0]{:.label-cif} |
 
 Random seed; None uses a system-derived seed.
 
@@ -66,7 +66,7 @@ Random seed; None uses a system-derived seed.
 
 | Access                     | Source                  |
 | -------------------------- | ----------------------- |
-| \_minimizer.sampling_steps | [Edifa][0]{:.label-cif} |
+| \_minimizer.sampling_steps | [Edi][0]{:.label-cif} |
 
 Total sampler iterations per chain.
 
@@ -74,7 +74,7 @@ Total sampler iterations per chain.
 
 | Access                        | Source                  |
 | ----------------------------- | ----------------------- |
-| \_minimizer.thinning_interval | [Edifa][0]{:.label-cif} |
+| \_minimizer.thinning_interval | [Edi][0]{:.label-cif} |
 
 Sampler thinning interval.
 
@@ -82,7 +82,7 @@ Sampler thinning interval.
 
 | Access           | Source                  |
 | ---------------- | ----------------------- |
-| \_minimizer.type | [Edifa][0]{:.label-cif} |
+| \_minimizer.type | [Edi][0]{:.label-cif} |
 
 Minimizer category type. Supported values include `lmfit`,
 `lmfit (leastsq)`, `lmfit (least_squares)`, `dfols`, `bumps`,

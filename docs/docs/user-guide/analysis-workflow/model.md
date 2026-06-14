@@ -141,7 +141,7 @@ Defined structures 🧩
 ## Viewing a Structure as Text
 
 To inspect a structure's serialized text (the same content the project
-persists into its Edifa files), use:
+persists into its Edi files), use:
 
 ```python
 # Show structure as text
@@ -221,7 +221,7 @@ project.structure_style.adp_probability = 0.5  # ADP ellipsoid probability level
 ```
 
 Bonds are generated automatically between atoms whose separation falls
-within the per-structure cutoffs stored on `structure.geom` (the Edifa
+within the per-structure cutoffs stored on `structure.geom` (the Edi
 `_geom` parameters):
 
 ```python
@@ -256,10 +256,10 @@ section).
 
 Saving the project, as described in the [Project](project.md) section,
 will also save the structure. Each structure is saved as a separate
-`.edifa` file in the `structures` subdirectory of the project directory.
+`.edi` file in the `structures` subdirectory of the project directory.
 The project file contains references to these files.
 
-Below is an example of the saved Edifa file for the `lbco` structure:
+Below is an example of the saved Edi file for the `lbco` structure:
 
 <!-- prettier-ignore-start -->
 
