@@ -397,7 +397,7 @@ def _format_project_description(description: str) -> str:
 
 
 def project_metadata_to_cif(metadata: object) -> str:
-    """Render project metadata to Edifa text."""
+    """Render project metadata to Edi text."""
     name = f'{metadata.name}'
 
     title = f'{metadata.title}'
@@ -427,7 +427,7 @@ def _as_cif_text(section: object) -> str:
 
 
 def project_config_to_cif(project: object) -> str:
-    """Render project-level configuration to Edifa body text."""
+    """Render project-level configuration to Edi body text."""
     sections: list[str] = []
     for attr_name in ('metadata', 'rendering_plot', 'report'):
         section = getattr(project, attr_name, None)
@@ -453,7 +453,7 @@ def project_config_to_cif(project: object) -> str:
 
 
 def project_to_cif(project: object) -> str:
-    """Render a whole project Edifa body from available sections."""
+    """Render a whole project Edi body from available sections."""
     parts: list[str] = []
     if hasattr(project, 'metadata'):
         parts.append(project_config_to_cif(project))
@@ -533,7 +533,7 @@ def _populate_project_metadata_from_block(
 
 def project_metadata_from_cif(metadata: object, cif_text: str) -> None:
     """
-    Populate a ProjectMetadata instance from Edifa or CIF text.
+    Populate a ProjectMetadata instance from Edi or CIF text.
 
     Reads the core project metadata fields from CIF text.
 
@@ -542,7 +542,7 @@ def project_metadata_from_cif(metadata: object, cif_text: str) -> None:
     metadata : object
         The ``ProjectMetadata`` instance to populate.
     cif_text : str
-        Edifa or CIF text content of the project metadata section.
+        Edi or CIF text content of the project metadata section.
     """
     block = _project_block_from_cif_text(cif_text)
 
@@ -551,7 +551,7 @@ def project_metadata_from_cif(metadata: object, cif_text: str) -> None:
 
 def project_config_from_cif(project: object, cif_text: str) -> None:
     """
-    Populate project-level configuration from Edifa or CIF text.
+    Populate project-level configuration from Edi or CIF text.
     """
     block = _project_block_from_cif_text(cif_text)
 
@@ -603,7 +603,7 @@ def analysis_from_cif(analysis: object, cif_text: str) -> None:
     analysis : object
         The ``Analysis`` instance to populate.
     cif_text : str
-        Analysis Edifa body text or explicit CIF import text.
+        Analysis Edi body text or explicit CIF import text.
     """
     import gemmi  # noqa: PLC0415
 

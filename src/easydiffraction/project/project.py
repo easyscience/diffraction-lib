@@ -22,8 +22,8 @@ from easydiffraction.io.cif.serialize import analysis_from_cif
 from easydiffraction.io.cif.serialize import project_config_from_cif
 from easydiffraction.io.cif.serialize import project_config_to_cif
 from easydiffraction.io.cif.serialize import project_to_cif
-from easydiffraction.io.edifa import edifa_body_from_text
-from easydiffraction.io.edifa import section_to_edifa
+from easydiffraction.io.edi import edi_body_from_text
+from easydiffraction.io.edi import section_to_edi
 from easydiffraction.io.results_sidecar import read_analysis_results_sidecar
 from easydiffraction.io.results_sidecar import write_analysis_results_sidecar
 from easydiffraction.project.display import ProjectDisplay
@@ -139,20 +139,20 @@ def _resolve_data_path_from_results_csv(
     return project_path / path
 
 
-def _load_edifa_directory(
+def _load_edi_directory(
     section_dir: pathlib.Path,
-    add_from_edifa_path: Callable[[str], None],
+    add_from_edi_path: Callable[[str], None],
     *,
     replacement: str,
 ) -> None:
-    """Load Edifa files and reject legacy-only project CIF files."""
+    """Load Edi files and reject legacy-only project CIF files."""
     if not section_dir.is_dir():
         return
 
-    edifa_files = sorted(section_dir.glob('*.edifa'))
-    if edifa_files:
-        for edifa_file in edifa_files:
-            add_from_edifa_path(str(edifa_file))
+    edi_files = sorted(section_dir.glob('*.edi'))
+    if edi_files:
+        for edi_file in edi_files:
+            add_from_edi_path(str(edi_file))
         return
 
     legacy_files = sorted(section_dir.glob('*.cif'))
@@ -174,11 +174,11 @@ def _create_loading_project(project_cls: type[Project]) -> Project:
 
 def _load_project_metadata(project: Project, project_path: pathlib.Path) -> None:
     """
-    Restore project configuration from Edifa.
+    Restore project configuration from Edi.
     """
-    project_edifa_path = project_path / 'project.edifa'
-    if project_edifa_path.is_file():
-        body = edifa_body_from_text(project_edifa_path.read_text())
+    project_edi_path = project_path / 'project.edi'
+    if project_edi_path.is_file():
+        body = edi_body_from_text(project_edi_path.read_text())
         project_config_from_cif(project, body)
         return
 
@@ -186,18 +186,18 @@ def _load_project_metadata(project: Project, project_path: pathlib.Path) -> None
     if project_cif_path.is_file():
         _raise_legacy_project_cif_error(
             project_cif_path,
-            replacement='project.edifa',
+            replacement='project.edi',
         )
 
-    msg = f"Project directory '{project_path}' must contain project.edifa."
+    msg = f"Project directory '{project_path}' must contain project.edi."
     raise FileNotFoundError(msg)
 
 
 def _resolved_analysis_path(project_path: pathlib.Path) -> pathlib.Path | None:
     """Return the preferred analysis path for a saved project."""
     for analysis_path in (
-        project_path / 'analysis' / 'analysis.edifa',
-        project_path / 'analysis.edifa',
+        project_path / 'analysis' / 'analysis.edi',
+        project_path / 'analysis.edi',
     ):
         if analysis_path.is_file():
             return analysis_path
@@ -209,18 +209,18 @@ def _resolved_analysis_path(project_path: pathlib.Path) -> pathlib.Path | None:
         if analysis_path.is_file():
             _raise_legacy_project_cif_error(
                 analysis_path,
-                replacement='analysis/analysis.edifa',
+                replacement='analysis/analysis.edi',
             )
     return None
 
 
 def _persistence_body_from_path(path: pathlib.Path) -> str:
-    """Read Edifa text for a project section."""
-    if path.suffix == '.edifa':
+    """Read Edi text for a project section."""
+    if path.suffix == '.edi':
         text = path.read_text(encoding='utf-8')
-        return edifa_body_from_text(text)
+        return edi_body_from_text(text)
 
-    _raise_legacy_project_cif_error(path, replacement='a .edifa file')
+    _raise_legacy_project_cif_error(path, replacement='a .edi file')
 
 
 def _load_project_analysis(project: Project, project_path: pathlib.Path) -> None:
@@ -462,7 +462,7 @@ class Project(GuardedBase):  # noqa: PLR0904
         """
         Load a project from a saved directory.
 
-        Reads Edifa project files from *dir_path* and reconstructs the
+        Reads Edi project files from *dir_path* and reconstructs the
         full project state, including project-level display
         configuration. Legacy beta CIF project files are rejected with
         an explicit migration error.
@@ -493,15 +493,15 @@ class Project(GuardedBase):  # noqa: PLR0904
 
         _load_project_metadata(project, project_path)
         project.metadata.path = project_path
-        _load_edifa_directory(
+        _load_edi_directory(
             project_path / 'structures',
-            project._structures.add_from_edifa_path,
-            replacement='structures/<structure>.edifa',
+            project._structures.add_from_edi_path,
+            replacement='structures/<structure>.edi',
         )
-        _load_edifa_directory(
+        _load_edi_directory(
             project_path / 'experiments',
-            project._experiments.add_from_edifa_path,
-            replacement='experiments/<experiment>.edifa',
+            project._experiments.add_from_edi_path,
+            replacement='experiments/<experiment>.edi',
         )
         _load_project_analysis(project, project_path)
 
@@ -577,19 +577,19 @@ class Project(GuardedBase):  # noqa: PLR0904
         self.metadata.path.mkdir(parents=True, exist_ok=True)
 
         # Save project-level configuration
-        with (self.metadata.path / 'project.edifa').open('w') as f:
-            f.write(section_to_edifa(project_config_to_cif(self)))
-            console.print('├── 📄 project.edifa')
+        with (self.metadata.path / 'project.edi').open('w') as f:
+            f.write(section_to_edi(project_config_to_cif(self)))
+            console.print('├── 📄 project.edi')
 
         # Save structures
         sm_dir = self.metadata.path / 'structures'
         sm_dir.mkdir(parents=True, exist_ok=True)
         console.print('├── 📁 structures/')
         for structure in self.structures.values():
-            file_name: str = f'{structure.name}.edifa'
+            file_name: str = f'{structure.name}.edi'
             file_path = sm_dir / file_name
             with file_path.open('w') as f:
-                f.write(section_to_edifa(structure.as_cif))
+                f.write(section_to_edi(structure.as_cif))
                 console.print(f'│   └── 📄 {file_name}')
 
         # Save experiments
@@ -597,17 +597,17 @@ class Project(GuardedBase):  # noqa: PLR0904
         expt_dir.mkdir(parents=True, exist_ok=True)
         console.print('├── 📁 experiments/')
         for experiment in self.experiments.values():
-            file_name: str = f'{experiment.name}.edifa'
+            file_name: str = f'{experiment.name}.edi'
             file_path = expt_dir / file_name
             with file_path.open('w') as f:
-                f.write(section_to_edifa(experiment.as_cif))
+                f.write(section_to_edi(experiment.as_cif))
                 console.print(f'│   └── 📄 {file_name}')
 
         # Save analysis
         analysis_dir = self.metadata.path / 'analysis'
         analysis_dir.mkdir(parents=True, exist_ok=True)
-        with (analysis_dir / 'analysis.edifa').open('w') as f:
-            f.write(section_to_edifa(self.analysis.as_cif))
+        with (analysis_dir / 'analysis.edi').open('w') as f:
+            f.write(section_to_edi(self.analysis.as_cif))
             console.print('├── 📁 analysis/')
         write_analysis_results_sidecar(
             analysis=self.analysis,
@@ -617,7 +617,7 @@ class Project(GuardedBase):  # noqa: PLR0904
         analysis_file_names = sorted(
             path.name
             for path in analysis_dir.iterdir()
-            if path.is_file() and path.suffix in {'.edifa', '.csv', '.h5'}
+            if path.is_file() and path.suffix in {'.edi', '.csv', '.h5'}
         )
         for index, file_name in enumerate(analysis_file_names):
             branch = '└──' if index == len(analysis_file_names) - 1 else '├──'

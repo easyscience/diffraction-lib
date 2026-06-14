@@ -833,7 +833,7 @@ class CryspyCalculator(CalculatorBase):
 
         return self._relabel_cif_tags_for_cryspy(cif)
 
-    # Edifa persistence renamed several CIF tags away from the legacy
+    # Edi persistence renamed several CIF tags away from the legacy
     # IUCr spellings that cryspy's CIF parser still requires. The
     # displacement values are already converted to U notation by
     # ``_temporarily_convert_to_u_notation``; only the tag names need
@@ -855,10 +855,10 @@ class CryspyCalculator(CalculatorBase):
     @staticmethod
     def _relabel_cif_tags_for_cryspy(cif: str) -> str:
         """
-        Map Edifa CIF tags to cryspy-recognized legacy spellings.
+        Map Edi CIF tags to cryspy-recognized legacy spellings.
         """
-        for edifa_tag, cryspy_tag in CryspyCalculator._CRYSPY_TAG_REPLACEMENTS:
-            cif = cif.replace(edifa_tag, cryspy_tag)
+        for edi_tag, cryspy_tag in CryspyCalculator._CRYSPY_TAG_REPLACEMENTS:
+            cif = cif.replace(edi_tag, cryspy_tag)
         return cif
 
     @staticmethod

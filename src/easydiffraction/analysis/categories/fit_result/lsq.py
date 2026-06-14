@@ -19,7 +19,7 @@ from easydiffraction.io.cif.handler import CifHandler
 
 def _fit_result_cif_handler(name: str, cif_name: str | None = None) -> CifHandler:
     """
-    Return an Edifa-first handler for one fit-result descriptor.
+    Return an Edi-first handler for one fit-result descriptor.
     """
     names = [f'_fit_result.{name}']
     if cif_name is None:

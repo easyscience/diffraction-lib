@@ -212,7 +212,7 @@ class ProjectMetadata(CategoryItem):
 
     @property
     def as_cif(self) -> str:
-        """Export project metadata to Edifa."""
+        """Export project metadata to Edi."""
         return project_metadata_to_cif(self)
 
     def show_as_text(self) -> None:

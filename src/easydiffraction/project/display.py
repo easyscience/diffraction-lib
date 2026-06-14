@@ -93,9 +93,9 @@ class ParameterDisplay:
         """Show the constraint unique identifier for all parameters."""
         self._project.analysis.display.parameter_uids()
 
-    def edifa(self) -> None:
-        """Show the Edifa persistence tag for all parameters."""
-        self._project.analysis.display.parameter_edifa_tags()
+    def edi(self) -> None:
+        """Show the Edi persistence tag for all parameters."""
+        self._project.analysis.display.parameter_edi_tags()
 
     def cif(self) -> None:
         """Show the report CIF tag for all parameters."""

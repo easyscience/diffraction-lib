@@ -9,7 +9,7 @@ from typeguard import typechecked
 from easydiffraction.core.datablock import DatablockCollection
 from easydiffraction.datablocks.structure.item.base import Structure
 from easydiffraction.datablocks.structure.item.factory import StructureFactory
-from easydiffraction.io.edifa import edifa_body_from_text
+from easydiffraction.io.edi import edi_body_from_text
 from easydiffraction.utils.logging import console
 
 
@@ -83,19 +83,19 @@ class Structures(DatablockCollection):
         self.add(structure)
 
     @typechecked
-    def add_from_edifa_path(
+    def add_from_edi_path(
         self,
-        edifa_path: str,
+        edi_path: str,
     ) -> None:
         """
-        Create a structure from an Edifa file and add it.
+        Create a structure from an Edi file and add it.
 
         Parameters
         ----------
-        edifa_path : str
-            Filesystem path to an Edifa structure file.
+        edi_path : str
+            Filesystem path to an Edi structure file.
         """
-        body = edifa_body_from_text(pathlib.Path(edifa_path).read_text(encoding='utf-8'))
+        body = edi_body_from_text(pathlib.Path(edi_path).read_text(encoding='utf-8'))
         structure = StructureFactory.from_cif_str(body)
         self.add(structure)
 
