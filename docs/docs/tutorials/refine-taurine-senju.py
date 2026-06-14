@@ -145,4 +145,4 @@ structure.show_as_cif()
 # ## 💾 Save Project
 
 # %%
-project.save_as(dir_path='projects/ed_15_taurine_senju')
+project.save_as(dir_path='projects/refine-taurine-senju')

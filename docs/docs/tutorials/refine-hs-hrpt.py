@@ -341,4 +341,4 @@ project.display.pattern(expt_name='hrpt', x_min=48, x_max=51)
 # ## 💾 Save Project
 
 # %%
-project.save_as(dir_path='projects/ed_6_hs_hrpt')
+project.save_as(dir_path='projects/refine-hs-hrpt')

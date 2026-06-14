@@ -37,7 +37,7 @@ OPTIONAL_SCALARS = ('R_factor_all', 'wR_factor_all')
 # differs between arm64 macOS and x86-64 Linux/Windows. They still
 # run in script-/notebook-tests and are checked for result_kind;
 # only their numeric metrics are skipped. Add a name here to exempt.
-PLATFORM_SENSITIVE = frozenset({'ed_7_si_sepd'})
+PLATFORM_SENSITIVE = frozenset({'refine-si-sepd'})
 
 # Number of refined parameters to track per tutorial (cell lengths and
 # phase scales preferred, topped up from the front of the loop).
@@ -102,7 +102,9 @@ def collect_baseline(root: Path) -> dict[str, dict]:
     baseline: dict[str, dict] = {}
     for cif_path in sorted(projects_dir.glob('*/analysis/analysis.edifa')):
         name = cif_path.parents[1].name
-        if not name.startswith('ed_'):
+        # Skip downloaded project archives (the ``proj-`` data category);
+        # only tutorial-saved projects are baselined.
+        if name.startswith('proj-'):
             continue
         entry = build_entry(name, read_analysis_edifa(cif_path))
         if entry is not None:

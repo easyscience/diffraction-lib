@@ -309,4 +309,4 @@ project.display.pattern(expt_name='mcstas')
 # ## 💾 Save Project
 
 # %%
-project.save_as(dir_path='projects/ed_9_lbco_si_mcstas')
+project.save_as(dir_path='projects/refine-lbco-si-mcstas')

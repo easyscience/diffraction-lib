@@ -136,4 +136,4 @@ project.display.pattern(expt_name='xray_pdf')
 # ## 💾 Save Project
 
 # %%
-project.save_as(dir_path='projects/ed_12_nacl_xray_pdf')
+project.save_as(dir_path='projects/pdf-nacl-xrd')

@@ -40,7 +40,7 @@ project = ed.Project.load(project_dir)
 # writes there instead of the bundled read-only copy.
 
 # %%
-project.save_as(dir_path='projects/ed_18_lbco_hrpt')
+project.save_as(dir_path='projects/load-and-fit-lbco-hrpt')
 
 # %% [markdown]
 # ## 🚀 Perform Analysis
@@ -73,4 +73,4 @@ project.display.pattern(expt_name='hrpt')
 # ## 💾 Save Project
 
 # %%
-project.save_as(dir_path='projects/ed_18_lbco_hrpt')
+project.save_as(dir_path='projects/load-and-fit-lbco-hrpt')

@@ -145,4 +145,4 @@ project.display.pattern(expt_name='sim', x_min=30, x_max=60)
 # ## 💾 Save Project
 
 # %%
-project.save_as(dir_path='projects/ed_27_lbco_simulation')
+project.save_as(dir_path='projects/simulate-lbco-cwl')

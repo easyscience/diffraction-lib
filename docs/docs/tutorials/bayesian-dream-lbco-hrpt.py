@@ -41,7 +41,7 @@ import easydiffraction as ed
 project = ed.Project(name='lbco_hrpt_bumps_dream')
 
 # %%
-project.save_as(dir_path='projects/ed_21_lbco_hrpt_bumps_dream')
+project.save_as(dir_path='projects/bayesian-dream-lbco-hrpt')
 
 # %% [markdown]
 # ## 🧩 Define Structure

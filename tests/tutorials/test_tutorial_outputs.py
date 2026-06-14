@@ -5,7 +5,7 @@
 This module runs *after* the tutorials have been executed (as scripts
 via ``pixi run script-tests`` or as notebooks via
 ``pixi run notebook-tests``). Each tutorial saves its project under
-``<artifact-root>/projects/ed_<n>_<name>/``; here we parse every
+``<artifact-root>/projects/<tutorial-name>/``; here we parse every
 ``analysis/analysis.edifa`` and compare its fit-quality metrics and a few
 refined parameter values against the committed ``baseline.json``.
 
@@ -39,7 +39,13 @@ def _analysis_cif_path(name: str) -> Path:
 def _artifacts_present() -> bool:
     """Return whether any tutorial project has been saved."""
     projects_dir = artifact_root() / 'projects'
-    return projects_dir.is_dir() and any(projects_dir.glob('ed_*/analysis/analysis.edifa'))
+    if not projects_dir.is_dir():
+        return False
+    # Tutorial-saved projects only; downloaded ``proj-`` archives don't count.
+    return any(
+        not path.parents[1].name.startswith('proj-')
+        for path in projects_dir.glob('*/analysis/analysis.edifa')
+    )
 
 
 pytestmark = pytest.mark.skipif(

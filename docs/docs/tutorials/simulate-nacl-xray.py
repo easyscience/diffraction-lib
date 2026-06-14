@@ -115,4 +115,4 @@ project.display.pattern(expt_name='sim')
 # ## 💾 Save Project
 
 # %%
-project.save_as(dir_path='projects/ed_29_nacl_simulation')
+project.save_as(dir_path='projects/simulate-nacl-xray')

@@ -117,4 +117,4 @@ project.display.pattern(expt_name='nomad')
 # ## 💾 Save Project
 
 # %%
-project.save_as(dir_path='projects/ed_11_si_nomad_pdf')
+project.save_as(dir_path='projects/pdf-si-nomad')

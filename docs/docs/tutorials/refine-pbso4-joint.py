@@ -325,4 +325,4 @@ project.display.pattern(expt_name='xrd', x_min=29.0, x_max=30.4)
 # ## 💾 Save Project
 
 # %%
-project.save_as(dir_path='projects/ed_4_pbso4_joint')
+project.save_as(dir_path='projects/refine-pbso4-joint')

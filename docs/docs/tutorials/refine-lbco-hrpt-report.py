@@ -58,7 +58,7 @@ project.metadata.show_as_cif()
 # directory path.
 
 # %%
-project.save_as(dir_path='projects/ed_3_lbco_hrpt')
+project.save_as(dir_path='projects/refine-lbco-hrpt-report')
 
 # %% [markdown]
 # ## 🧩 Define Structure

@@ -361,4 +361,4 @@ project.display.pattern(expt_name='sepd', x='d_spacing')
 # ## 💾 Save Project
 
 # %%
-project.save_as(dir_path='projects/ed_7_si_sepd')
+project.save_as(dir_path='projects/refine-si-sepd')

@@ -174,7 +174,7 @@ expt.linked_structures.create(structure_id='cosio', scale=1.0)
 project = Project(name='cosio_d20')
 
 # %%
-project.save_as(dir_path='projects/ed_5_cosio_d20')
+project.save_as(dir_path='projects/refine-cosio-d20')
 
 # %% [markdown]
 # ### Add Structure

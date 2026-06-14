@@ -227,4 +227,4 @@ project.display.pattern(expt_name='hrpt')
 # ## 💾 Save Project
 
 # %%
-project.save_as(dir_path='projects/ed_2_lbco_hrpt')
+project.save_as(dir_path='projects/refine-lbco-hrpt-from-data')

@@ -21,7 +21,7 @@ project.metadata.description = """This project demonstrates a standard
 refinement of the crystal structure of Tb2Ti2O7 using single crystal 
 neutron diffraction data from HEiDi at FRM II."""
 
-project.save_as(dir_path='projects/ed_14_tbti_heidi')
+project.save_as(dir_path='projects/refine-tbti-heidi')
 
 # %% [markdown]
 # ## 🧩 Define Structure

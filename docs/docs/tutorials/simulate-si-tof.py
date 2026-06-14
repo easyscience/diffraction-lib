@@ -138,4 +138,4 @@ project.experiments['sim'].show_as_cif()
 # ## 💾 Save Project
 
 # %%
-project.save_as(dir_path='projects/ed_28_si_simulation')
+project.save_as(dir_path='projects/simulate-si-tof')

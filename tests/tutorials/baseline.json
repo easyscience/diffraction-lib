@@ -1,266 +1,266 @@
 {
-  "ed_10_ni_pdf": {
-    "result_kind": "deterministic",
-    "rtol": 0.02,
-    "reduced_chi_square": 207.102333,
-    "R_factor_all": 0.098321,
-    "wR_factor_all": 0.09479,
+  "bayesian-dream-display-lbco-hrpt": {
     "parameters": {
-      "ni.cell.length_a": 3.526009,
-      "pdf.linked_phases.ni.scale": 0.98919
-    }
+      "hrpt.linked_phases.lbco.scale": 9.132917,
+      "lbco.cell.length_a": 3.891321
+    },
+    "reduced_chi_square": 1.289855,
+    "result_kind": "bayesian",
+    "rtol": 0.1
   },
-  "ed_11_si_nomad_pdf": {
-    "result_kind": "deterministic",
-    "rtol": 0.02,
-    "reduced_chi_square": 170.543161,
-    "R_factor_all": 0.084011,
-    "wR_factor_all": 0.082977,
+  "bayesian-dream-lbco-hrpt": {
     "parameters": {
-      "si.cell.length_a": 5.430592,
-      "nomad.linked_phases.si.scale": 1.2728
-    }
+      "hrpt.linked_phases.lbco.scale": 9.134207,
+      "lbco.cell.length_a": 3.891316
+    },
+    "reduced_chi_square": 1.289863,
+    "result_kind": "bayesian",
+    "rtol": 0.1
   },
-  "ed_12_nacl_xray_pdf": {
-    "result_kind": "deterministic",
-    "rtol": 0.02,
-    "reduced_chi_square": 1.476045,
-    "R_factor_all": 0.110217,
-    "wR_factor_all": 0.113817,
+  "bayesian-emcee-lbco-hrpt": {
     "parameters": {
-      "nacl.cell.length_a": 5.6018,
-      "xray_pdf.linked_phases.nacl.scale": 0.42537
-    }
+      "hrpt.linked_phases.lbco.scale": 9.133284,
+      "lbco.cell.length_a": 3.891321
+    },
+    "reduced_chi_square": 1.289868,
+    "result_kind": "bayesian",
+    "rtol": 0.1
   },
-  "ed_13_main": {
+  "bayesian-emcee-resume-lbco-hrpt": {
+    "parameters": {
+      "hrpt.linked_phases.lbco.scale": 9.131956,
+      "lbco.cell.length_a": 3.891322
+    },
+    "reduced_chi_square": 1.289881,
+    "result_kind": "bayesian",
+    "rtol": 0.1
+  },
+  "bayesian-emcee-tbti-heidi": {
+    "parameters": {
+      "heidi.linked_crystal.scale": 2.923727,
+      "tbti.atom_site.Tb.adp_iso": 0.532057
+    },
+    "reduced_chi_square": 12.717513,
+    "result_kind": "bayesian",
+    "rtol": 0.1
+  },
+  "calibrate-beer-ess": {
+    "R_factor_all": 0.049714,
+    "parameters": {
+      "expt_s2.linked_phases.austenite.scale": 12.005,
+      "expt_s2.linked_phases.ferrite.scale": 50.33
+    },
+    "reduced_chi_square": 12.756675,
     "result_kind": "deterministic",
     "rtol": 0.02,
-    "reduced_chi_square": 1.537656,
+    "wR_factor_all": 0.068833
+  },
+  "fitting-exercise-si-lbco-main": {
     "R_factor_all": 0.046203,
-    "wR_factor_all": 0.05534,
     "parameters": {
       "lbco.cell.length_a": 3.89125,
       "sim_lbco.linked_phases.lbco.scale": 4.855,
       "sim_lbco.linked_phases.si.scale": 0.0373
-    }
-  },
-  "ed_13_reference": {
+    },
+    "reduced_chi_square": 1.537656,
     "result_kind": "deterministic",
     "rtol": 0.02,
-    "reduced_chi_square": 2.30651,
+    "wR_factor_all": 0.05534
+  },
+  "fitting-exercise-si-lbco-reference": {
     "R_factor_all": 0.068706,
-    "wR_factor_all": 0.091774,
     "parameters": {
       "sim_si.linked_phases.si.scale": 1.454,
       "sim_si.peak.rise_alpha_0": -0.00662
-    }
-  },
-  "ed_14_tbti_heidi": {
+    },
+    "reduced_chi_square": 2.30651,
     "result_kind": "deterministic",
     "rtol": 0.02,
-    "reduced_chi_square": 2.944513,
-    "R_factor_all": 0.042052,
-    "wR_factor_all": 0.042544,
-    "parameters": {
-      "tbti.atom_site.Ti.occupancy": 0.9661,
-      "heidi.linked_crystal.scale": 2.874
-    }
+    "wR_factor_all": 0.091774
   },
-  "ed_15_taurine_senju": {
-    "result_kind": "deterministic",
-    "rtol": 0.02,
-    "reduced_chi_square": 12.192189,
-    "R_factor_all": 0.133438,
-    "wR_factor_all": 0.084877,
-    "parameters": {
-      "taurine.atom_site.S1.fract_x": 0.203646,
-      "senju.linked_crystal.scale": 1.358181
-    }
-  },
-  "ed_16_si_bragg_pdf": {
-    "result_kind": "deterministic",
-    "rtol": 0.02,
-    "reduced_chi_square": 51.874887,
+  "joint-si-bragg-pdf": {
     "R_factor_all": 0.104937,
-    "wR_factor_all": 0.082874,
     "parameters": {
-      "si.cell.length_a": 5.430637,
+      "nomad.linked_phases.si.scale": 1.2713,
       "sepd.linked_phases.si.scale": 16.06,
-      "nomad.linked_phases.si.scale": 1.2713
-    }
-  },
-  "ed_18_lbco_hrpt": {
+      "si.cell.length_a": 5.430637
+    },
+    "reduced_chi_square": 51.874887,
     "result_kind": "deterministic",
     "rtol": 0.02,
-    "reduced_chi_square": 1.289805,
+    "wR_factor_all": 0.082874
+  },
+  "load-and-fit-lbco-hrpt": {
     "R_factor_all": 0.056345,
-    "wR_factor_all": 0.072095,
     "parameters": {
-      "lbco.cell.length_a": 3.890868,
-      "hrpt.linked_phases.lbco.scale": 9.135
-    }
-  },
-  "ed_1_lbco_hrpt": {
+      "hrpt.linked_phases.lbco.scale": 9.135,
+      "lbco.cell.length_a": 3.890868
+    },
+    "reduced_chi_square": 1.289805,
     "result_kind": "deterministic",
     "rtol": 0.02,
-    "reduced_chi_square": 1.290457,
-    "R_factor_all": 0.056249,
-    "wR_factor_all": 0.072055,
-    "parameters": {
-      "lbco.cell.length_a": 3.890868,
-      "hrpt.linked_phases.lbco.scale": 9.135
-    }
+    "wR_factor_all": 0.072095
   },
-  "ed_20_beer_mcstas": {
+  "pdf-nacl-xrd": {
+    "R_factor_all": 0.110217,
+    "parameters": {
+      "nacl.cell.length_a": 5.6018,
+      "xray_pdf.linked_phases.nacl.scale": 0.42537
+    },
+    "reduced_chi_square": 1.476045,
     "result_kind": "deterministic",
     "rtol": 0.02,
-    "reduced_chi_square": 12.756675,
-    "R_factor_all": 0.049714,
-    "wR_factor_all": 0.068833,
-    "parameters": {
-      "expt_s2.linked_phases.ferrite.scale": 50.33,
-      "expt_s2.linked_phases.austenite.scale": 12.005
-    }
+    "wR_factor_all": 0.113817
   },
-  "ed_21_lbco_hrpt_bumps_dream": {
-    "result_kind": "bayesian",
-    "rtol": 0.1,
-    "reduced_chi_square": 1.289863,
+  "pdf-ni-npd": {
+    "R_factor_all": 0.098321,
     "parameters": {
-      "lbco.cell.length_a": 3.891316,
-      "hrpt.linked_phases.lbco.scale": 9.134207
-    }
-  },
-  "ed_22_tbti_heidi_emcee": {
-    "result_kind": "bayesian",
-    "rtol": 0.1,
-    "reduced_chi_square": 12.717513,
-    "parameters": {
-      "tbti.atom_site.Tb.adp_iso": 0.532057,
-      "heidi.linked_crystal.scale": 2.923727
-    }
-  },
-  "ed_23_cosio_d20_scan": {
+      "ni.cell.length_a": 3.526009,
+      "pdf.linked_phases.ni.scale": 0.98919
+    },
+    "reduced_chi_square": 207.102333,
     "result_kind": "deterministic",
     "rtol": 0.02,
-    "reduced_chi_square": 53.079845,
-    "R_factor_all": 0.078802,
-    "wR_factor_all": 0.137043,
-    "parameters": {
-      "cosio.cell.length_a": 10.30635,
-      "cosio.cell.length_b": 6.00149,
-      "cosio.cell.length_c": 4.787,
-      "d20.linked_phases.cosio.scale": 1.357
-    }
+    "wR_factor_all": 0.09479
   },
-  "ed_24_lbco_hrpt_bumps_dream": {
-    "result_kind": "bayesian",
-    "rtol": 0.1,
-    "reduced_chi_square": 1.289855,
+  "pdf-si-nomad": {
+    "R_factor_all": 0.084011,
     "parameters": {
-      "lbco.cell.length_a": 3.891321,
-      "hrpt.linked_phases.lbco.scale": 9.132917
-    }
-  },
-  "ed_25_lbco_hrpt_emcee": {
-    "result_kind": "bayesian",
-    "rtol": 0.1,
-    "reduced_chi_square": 1.289868,
-    "parameters": {
-      "lbco.cell.length_a": 3.891321,
-      "hrpt.linked_phases.lbco.scale": 9.133284
-    }
-  },
-  "ed_26_lbco_hrpt_emcee": {
-    "result_kind": "bayesian",
-    "rtol": 0.1,
-    "reduced_chi_square": 1.289881,
-    "parameters": {
-      "lbco.cell.length_a": 3.891322,
-      "hrpt.linked_phases.lbco.scale": 9.131956
-    }
-  },
-  "ed_2_lbco_hrpt": {
+      "nomad.linked_phases.si.scale": 1.2728,
+      "si.cell.length_a": 5.430592
+    },
+    "reduced_chi_square": 170.543161,
     "result_kind": "deterministic",
     "rtol": 0.02,
-    "reduced_chi_square": 1.265395,
-    "R_factor_all": 0.055898,
-    "wR_factor_all": 0.071409,
-    "parameters": {
-      "lbco.cell.length_a": 3.890758,
-      "hrpt.linked_phases.lbco.scale": 9.145
-    }
+    "wR_factor_all": 0.082977
   },
-  "ed_3_lbco_hrpt": {
-    "result_kind": "deterministic",
-    "rtol": 0.02,
-    "reduced_chi_square": 1.28275,
-    "R_factor_all": 0.056132,
-    "wR_factor_all": 0.071886,
-    "parameters": {
-      "lbco.cell.length_a": 3.890869,
-      "hrpt.linked_phases.lbco.scale": 8.906
-    }
-  },
-  "ed_5_cosio_d20": {
-    "result_kind": "deterministic",
-    "rtol": 0.02,
-    "reduced_chi_square": 4.380305,
+  "refine-cosio-d20": {
     "R_factor_all": 0.029898,
-    "wR_factor_all": 0.03934,
     "parameters": {
       "cosio.cell.length_a": 10.30837,
       "cosio.cell.length_b": 6.00362,
       "cosio.cell.length_c": 4.78644,
       "d20.linked_phases.cosio.scale": 1.331
-    }
-  },
-  "ed_6_hs_hrpt": {
+    },
+    "reduced_chi_square": 4.380305,
     "result_kind": "deterministic",
     "rtol": 0.02,
-    "reduced_chi_square": 1.929924,
+    "wR_factor_all": 0.03934
+  },
+  "refine-cosio-d20-tscan-resumed": {
+    "R_factor_all": 0.078802,
+    "parameters": {
+      "cosio.cell.length_a": 10.30635,
+      "cosio.cell.length_b": 6.00149,
+      "cosio.cell.length_c": 4.787,
+      "d20.linked_phases.cosio.scale": 1.357
+    },
+    "reduced_chi_square": 53.079845,
+    "result_kind": "deterministic",
+    "rtol": 0.02,
+    "wR_factor_all": 0.137043
+  },
+  "refine-hs-hrpt": {
     "R_factor_all": 0.03972,
-    "wR_factor_all": 0.050183,
     "parameters": {
+      "hrpt.linked_phases.hs.scale": 0.5132,
       "hs.cell.length_a": 6.864,
-      "hs.cell.length_c": 14.1418,
-      "hrpt.linked_phases.hs.scale": 0.5132
-    }
-  },
-  "ed_7_si_sepd": {
+      "hs.cell.length_c": 14.1418
+    },
+    "reduced_chi_square": 1.929924,
     "result_kind": "deterministic",
     "rtol": 0.02,
-    "reduced_chi_square": 2.970886,
-    "platform_sensitive": true,
-    "R_factor_all": 0.086528,
-    "wR_factor_all": 0.063032,
+    "wR_factor_all": 0.050183
+  },
+  "refine-lbco-hrpt-from-cif": {
+    "R_factor_all": 0.056249,
     "parameters": {
-      "si.cell.length_a": 5.432487,
-      "sepd.linked_phases.si.scale": 1113.7
-    }
-  },
-  "ed_8_ncaf_wish": {
+      "hrpt.linked_phases.lbco.scale": 9.135,
+      "lbco.cell.length_a": 3.890868
+    },
+    "reduced_chi_square": 1.290457,
     "result_kind": "deterministic",
     "rtol": 0.02,
-    "reduced_chi_square": 15.486737,
-    "R_factor_all": 0.069775,
-    "wR_factor_all": 0.081356,
+    "wR_factor_all": 0.072055
+  },
+  "refine-lbco-hrpt-from-data": {
+    "R_factor_all": 0.055898,
     "parameters": {
-      "wish_5_6.linked_phases.ncaf.scale": 1.1029,
-      "wish_4_7.linked_phases.ncaf.scale": 2.5216
-    }
-  },
-  "ed_9_lbco_si_mcstas": {
+      "hrpt.linked_phases.lbco.scale": 9.145,
+      "lbco.cell.length_a": 3.890758
+    },
+    "reduced_chi_square": 1.265395,
     "result_kind": "deterministic",
     "rtol": 0.02,
-    "reduced_chi_square": 9.532167,
+    "wR_factor_all": 0.071409
+  },
+  "refine-lbco-hrpt-report": {
+    "R_factor_all": 0.056132,
+    "parameters": {
+      "hrpt.linked_phases.lbco.scale": 8.906,
+      "lbco.cell.length_a": 3.890869
+    },
+    "reduced_chi_square": 1.28275,
+    "result_kind": "deterministic",
+    "rtol": 0.02,
+    "wR_factor_all": 0.071886
+  },
+  "refine-lbco-si-mcstas": {
     "R_factor_all": 0.058084,
-    "wR_factor_all": 0.076338,
     "parameters": {
       "lbco.cell.length_a": 3.89046,
-      "si.cell.length_a": 5.4358,
       "mcstas.linked_phases.lbco.scale": 4.491,
-      "mcstas.linked_phases.si.scale": 0.00473
-    }
+      "mcstas.linked_phases.si.scale": 0.00473,
+      "si.cell.length_a": 5.4358
+    },
+    "reduced_chi_square": 9.532167,
+    "result_kind": "deterministic",
+    "rtol": 0.02,
+    "wR_factor_all": 0.076338
+  },
+  "refine-ncaf-wish": {
+    "R_factor_all": 0.069775,
+    "parameters": {
+      "wish_4_7.linked_phases.ncaf.scale": 2.5216,
+      "wish_5_6.linked_phases.ncaf.scale": 1.1029
+    },
+    "reduced_chi_square": 15.486737,
+    "result_kind": "deterministic",
+    "rtol": 0.02,
+    "wR_factor_all": 0.081356
+  },
+  "refine-si-sepd": {
+    "R_factor_all": 0.086528,
+    "parameters": {
+      "sepd.linked_phases.si.scale": 1113.7,
+      "si.cell.length_a": 5.432487
+    },
+    "platform_sensitive": true,
+    "reduced_chi_square": 2.970886,
+    "result_kind": "deterministic",
+    "rtol": 0.02,
+    "wR_factor_all": 0.063032
+  },
+  "refine-taurine-senju": {
+    "R_factor_all": 0.133438,
+    "parameters": {
+      "senju.linked_crystal.scale": 1.358181,
+      "taurine.atom_site.S1.fract_x": 0.203646
+    },
+    "reduced_chi_square": 12.192189,
+    "result_kind": "deterministic",
+    "rtol": 0.02,
+    "wR_factor_all": 0.084877
+  },
+  "refine-tbti-heidi": {
+    "R_factor_all": 0.042052,
+    "parameters": {
+      "heidi.linked_crystal.scale": 2.874,
+      "tbti.atom_site.Ti.occupancy": 0.9661
+    },
+    "reduced_chi_square": 2.944513,
+    "result_kind": "deterministic",
+    "rtol": 0.02,
+    "wR_factor_all": 0.042544
   }
 }

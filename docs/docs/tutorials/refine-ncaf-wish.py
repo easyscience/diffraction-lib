@@ -365,4 +365,4 @@ project.display.pattern(expt_name='wish_4_7')
 # ## 💾 Save Project
 
 # %%
-project.save_as(dir_path='projects/ed_8_ncaf_wish')
+project.save_as(dir_path='projects/refine-ncaf-wish')

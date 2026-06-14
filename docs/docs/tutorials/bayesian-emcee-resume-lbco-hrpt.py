@@ -57,7 +57,7 @@ project = ed.Project.load(project_dir)
 # chain below writes there instead of the bundled read-only copy.
 
 # %%
-project.save_as(dir_path='projects/ed_26_lbco_hrpt_emcee')
+project.save_as(dir_path='projects/bayesian-emcee-resume-lbco-hrpt')
 
 # %% [markdown]
 # ## 📊 Inspect Results
@@ -154,4 +154,4 @@ project.display.posterior.predictive(expt_name='hrpt', x_min=92, x_max=93)
 # ## 💾 Save Project
 
 # %%
-project.save_as(dir_path='projects/ed_26_lbco_hrpt_emcee')
+project.save_as(dir_path='projects/bayesian-emcee-resume-lbco-hrpt')

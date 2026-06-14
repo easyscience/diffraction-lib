@@ -29,7 +29,7 @@ display = project.display
 # results can be written to `analysis/results.csv`.
 
 # %%
-project.save_as(dir_path='projects/ed_17_cosio_d20_scan')
+project.save_as(dir_path='projects/refine-cosio-d20-tscan')
 
 # %% [markdown]
 # ## 🧩 Define Structure
