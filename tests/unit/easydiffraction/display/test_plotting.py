@@ -2273,7 +2273,7 @@ def test_plot_param_correlations_plotly_labels_respect_threshold(monkeypatch):
     assert len(fig.layout.shapes) == 15
 
 
-def test_plot_param_correlations_limits_default_table_to_six_parameters(monkeypatch):
+def test_plot_param_correlations_limits_default_table_to_five_parameters(monkeypatch):
     from easydiffraction.display.plotting import Plotter
     from easydiffraction.display.tables import TableRenderer
 
@@ -2329,6 +2329,9 @@ def test_plot_param_correlations_limits_default_table_to_six_parameters(monkeypa
     p._set_project(Project())
     p.plot_param_correlations()
 
+    # The default cap is DEFAULT_CORRELATION_MAX_PARAMETERS (5), so the
+    # weakest-correlated parameter (p6, |corr| 0.91) is trimmed and the
+    # auto threshold settles at 0.92.
     df = captured['df']
     assert [column.strip() for column in df.columns.get_level_values(0)] == [
         'parameter',
@@ -2337,24 +2340,20 @@ def test_plot_param_correlations_limits_default_table_to_six_parameters(monkeypa
         '3',
         '4',
         '5',
-        '6',
     ]
-    assert list(df.index) == [0, 1, 2, 3, 4, 5]
+    assert list(df.index) == [0, 1, 2, 3, 4]
     assert list(df.iloc[:, 0]) == [
         'phase.scale',
         'phase.cell.length_a',
         'phase.background',
         'phase.profile.u',
         'phase.profile.v',
-        'phase.profile.w',
     ]
     assert df.iloc[0, 1] == ''
     assert _strip_markup(df.iloc[1, 1]).strip() == '0.95'
     assert _strip_markup(df.iloc[2, 2]).strip() == '0.94'
     assert _strip_markup(df.iloc[3, 3]).strip() == '0.93'
     assert _strip_markup(df.iloc[4, 4]).strip() == '0.92'
-    assert _strip_markup(df.iloc[5, 5]).strip() == '0.91'
-    assert df.iloc[5, 6] == ''
 
 
 def test_plot_posterior_pairs_uses_default_max_parameter_limit(monkeypatch):

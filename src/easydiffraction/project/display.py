@@ -153,7 +153,7 @@ class FitDisplay:
         threshold: float | None = None,
         precision: int = 2,
         *,
-        max_parameters: int = 6,
+        max_parameters: int = 5,
         show_diagonal: bool = True,
     ) -> None:
         """Show parameter correlations from the latest fit."""
