@@ -216,43 +216,43 @@ nav:
   - Tutorials:
       - Tutorials: tutorials/index.md
       - Getting Started:
-          - LBCO quick code: tutorials/ed-2.ipynb
-          - LBCO basic load: tutorials/ed-1.ipynb
-          - LBCO complete: tutorials/ed-3.ipynb
+          - LBCO quick code: tutorials/refine-lbco-hrpt-from-data.ipynb
+          - LBCO basic load: tutorials/refine-lbco-hrpt-from-cif.ipynb
+          - LBCO complete: tutorials/refine-lbco-hrpt-report.ipynb
       - Load Project:
-          - LBCO Single: tutorials/ed-18.ipynb
-          - Co2SiO4 Sequential: tutorials/ed-23.ipynb
+          - LBCO Single: tutorials/load-and-fit-lbco-hrpt.ipynb
+          - Co2SiO4 Sequential: tutorials/refine-cosio-d20-tscan-resumed.ipynb
       - Powder Diffraction:
-          - Co2SiO4 pd-neut-cwl: tutorials/ed-5.ipynb
-          - HS pd-neut-cwl: tutorials/ed-6.ipynb
-          - Si pd-neut-tof: tutorials/ed-7.ipynb
-          - NCAF pd-neut-tof: tutorials/ed-8.ipynb
+          - Co2SiO4 pd-neut-cwl: tutorials/refine-cosio-d20.ipynb
+          - HS pd-neut-cwl: tutorials/refine-hs-hrpt.ipynb
+          - Si pd-neut-tof: tutorials/refine-si-sepd.ipynb
+          - NCAF pd-neut-tof: tutorials/refine-ncaf-wish.ipynb
       - Without Measured Data:
-          - LBCO pd-neut-cwl: tutorials/ed-27.ipynb
-          - Si pd-neut-tof: tutorials/ed-28.ipynb
-          - NaCl pd-xray: tutorials/ed-29.ipynb
+          - LBCO pd-neut-cwl: tutorials/simulate-lbco-cwl.ipynb
+          - Si pd-neut-tof: tutorials/simulate-si-tof.ipynb
+          - NaCl pd-xray: tutorials/simulate-nacl-xray.ipynb
       - Single Crystal Diffraction:
-          - Tb2TiO7 sc-neut-cwl: tutorials/ed-14.ipynb
-          - Taurine sc-neut-tof: tutorials/ed-15.ipynb
+          - Tb2TiO7 sc-neut-cwl: tutorials/refine-tbti-heidi.ipynb
+          - Taurine sc-neut-tof: tutorials/refine-taurine-senju.ipynb
       - Pair Distribution Function:
-          - Ni pd-neut-cwl: tutorials/ed-10.ipynb
-          - Si pd-neut-tof: tutorials/ed-11.ipynb
-          - NaCl pd-xray: tutorials/ed-12.ipynb
+          - Ni pd-neut-cwl: tutorials/pdf-ni-npd.ipynb
+          - Si pd-neut-tof: tutorials/pdf-si-nomad.ipynb
+          - NaCl pd-xray: tutorials/pdf-nacl-xrd.ipynb
       - Multiple Data Blocks:
-          - PbSO4 NPD+XRD: tutorials/ed-4.ipynb
-          - Si Bragg+PDF: tutorials/ed-16.ipynb
-          - Co2SiO4 T-scan: tutorials/ed-17.ipynb
+          - PbSO4 NPD+XRD: tutorials/refine-pbso4-joint.ipynb
+          - Si Bragg+PDF: tutorials/joint-si-bragg-pdf.ipynb
+          - Co2SiO4 T-scan: tutorials/refine-cosio-d20-tscan.ipynb
       - Simulated Data:
-          - LBCO+Si McStas: tutorials/ed-9.ipynb
-          - BEER McStas: tutorials/ed-20.ipynb
+          - LBCO+Si McStas: tutorials/refine-lbco-si-mcstas.ipynb
+          - BEER McStas: tutorials/calibrate-beer-ess.ipynb
       - Bayesian Analysis:
-          - LBCO pd bumps-dream: tutorials/ed-21.ipynb
-          - LBCO pd bumps-dream Display: tutorials/ed-24.ipynb
-          - LBCO pd emcee: tutorials/ed-25.ipynb
-          - LBCO pd emcee Resume: tutorials/ed-26.ipynb
-          - Tb2TiO7 sg bumps-dream: tutorials/ed-22.ipynb
+          - LBCO pd bumps-dream: tutorials/bayesian-dream-lbco-hrpt.ipynb
+          - LBCO pd bumps-dream Display: tutorials/bayesian-dream-display-lbco-hrpt.ipynb
+          - LBCO pd emcee: tutorials/bayesian-emcee-lbco-hrpt.ipynb
+          - LBCO pd emcee Resume: tutorials/bayesian-emcee-resume-lbco-hrpt.ipynb
+          - Tb2TiO7 sg bumps-dream: tutorials/bayesian-emcee-tbti-heidi.ipynb
       - Workshops & Schools:
-          - DMSC Summer School: tutorials/ed-13.ipynb
+          - DMSC Summer School: tutorials/fitting-exercise-si-lbco.ipynb
   - Verification:
       - Verification: verification/index.md
       - Powder, neutron, constant wavelength:
