@@ -23,6 +23,7 @@ from pathlib import Path
 import pytest
 from analysis_edifa_reader import read_analysis_edifa
 from generate_baseline import PLATFORM_SENSITIVE
+from generate_baseline import SEQUENTIAL_TUTORIALS
 from generate_baseline import artifact_root
 
 BASELINE = json.loads((Path(__file__).parent / 'baseline.json').read_text(encoding='utf-8'))
@@ -110,3 +111,22 @@ def test_tutorial_output(name: str) -> None:
             rtol,
             f'{name}: {param_name}',
         )
+
+
+@pytest.mark.parametrize('name', sorted(SEQUENTIAL_TUTORIALS))
+def test_sequential_tutorial_saved(name: str) -> None:
+    """Check a sequential-fit tutorial saved a sequential analysis.edifa.
+
+    Sequential fits run one refinement per measured point and write no
+    single ``_fit_result`` block, so they cannot go through the scalar
+    baseline in ``test_tutorial_output``. This guards the persistence of
+    that workflow instead: the project must save, and its analysis must
+    record ``_fitting_mode.type sequential``.
+    """
+    cif_path = _analysis_cif_path(name)
+    assert cif_path.is_file(), f"Missing {cif_path}; tutorial '{name}' did not save its project."
+
+    text = cif_path.read_text(encoding='utf-8')
+    assert '_fitting_mode.type sequential' in text, (
+        f'{name}: analysis.edifa is not a sequential fit'
+    )

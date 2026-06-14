@@ -39,6 +39,14 @@ OPTIONAL_SCALARS = ('r_factor_all', 'wr_factor_all')
 # only their numeric metrics are skipped. Add a name here to exempt.
 PLATFORM_SENSITIVE = frozenset({'refine-si-sepd'})
 
+# Sequential-fitting tutorials run one fit per measured point and write
+# ``_fitting_mode.type sequential`` with no single ``_fit_result`` block,
+# so there is no scalar reduced_chi_square / r-factor to baseline. They
+# are excluded from the numeric baseline here and covered separately by
+# ``test_sequential_tutorial_saved`` (which asserts each one saved a
+# sequential analysis.edifa). Add a name here to exclude another.
+SEQUENTIAL_TUTORIALS = frozenset({'refine-cosio-d20-tscan', 'refine-cosio-d20-tscan-resumed'})
+
 # Number of refined parameters to track per tutorial (cell lengths and
 # phase scales preferred, topped up from the front of the loop).
 KEY_PARAMETER_COUNT = 2
@@ -105,6 +113,10 @@ def collect_baseline(root: Path) -> dict[str, dict]:
         # Skip downloaded project archives (the ``proj-`` data category);
         # only tutorial-saved projects are baselined.
         if name.startswith('proj-'):
+            continue
+        # Sequential fits have no scalar fit result to compare; they are
+        # covered by ``test_sequential_tutorial_saved`` instead.
+        if name in SEQUENTIAL_TUTORIALS:
             continue
         entry = build_entry(name, read_analysis_edifa(cif_path))
         if entry is not None:
