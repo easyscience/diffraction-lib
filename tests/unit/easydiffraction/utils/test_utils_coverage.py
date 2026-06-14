@@ -1300,7 +1300,7 @@ def test_download_data_project_archive_stale_zip_revalidated(monkeypatch, tmp_pa
     seen = {}
 
     def fake_extract(file_path, destination):
-        seen['bytes'] = pathlib.Path(file_path).read_text()
+        seen['bytes'] = pathlib.Path(file_path).read_text(encoding='utf-8')
         return extracted
 
     monkeypatch.setattr(MUT, 'extract_project_from_zip', fake_extract)

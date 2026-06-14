@@ -320,9 +320,9 @@ def _ordered_keys(index: dict) -> list[str]:
     Return index keys in the deterministic order listings show.
 
     Records may carry an explicit ``order`` field (e.g. the tutorial
-    learning order from the MkDocs nav, per resource-naming ADR
-    Decision 4); those sort first by that order. Records without one
-    (e.g. datasets) fall back to alphabetical by slug.
+    learning order from the MkDocs nav, per resource-naming ADR Decision
+    4); those sort first by that order. Records without one (e.g.
+    datasets) fall back to alphabetical by slug.
     """
     return sorted(index, key=lambda key: (index[key].get('order', _DEFAULT_LISTING_ORDER), key))
 

@@ -63,8 +63,8 @@ A complete tutorial using the `from` syntax can be found
 
 EasyDiffraction also provides several utility functions that can
 simplify your workflow. One of them is the `download_data` function,
-which allows you to download example datasets by their slug from
-our remote repository, making it easy to access and use them while
+which allows you to download example datasets by their slug from our
+remote repository, making it easy to access and use them while
 experimenting with EasyDiffraction.
 
 You can list the available datasets and their slugs with `list_data()`,
@@ -79,9 +79,10 @@ data_path = ed.download_data('measured/lbco-hrpt', destination='data')
 ```
 
 This command downloads the `measured/lbco-hrpt` dataset and saves it in
-the `data` directory of your current working directory, returning the full
-path to the downloaded file. This is particularly useful for quickly
-accessing example datasets without having to manually download them.
+the `data` directory of your current working directory, returning the
+full path to the downloaded file. This is particularly useful for
+quickly accessing example datasets without having to manually download
+them.
 
 ## Help methods
 
