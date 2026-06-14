@@ -91,7 +91,7 @@ def test_tutorial_output(name: str) -> None:
         f'{name}: reduced_chi_square',
     )
 
-    for scalar_name in ('R_factor_all', 'wR_factor_all'):
+    for scalar_name in ('r_factor_all', 'wr_factor_all'):
         if scalar_name in expected:
             _assert_close(
                 cif.scalar(scalar_name),

@@ -29,7 +29,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 _FIT_RESULT_PREFIX = '_fit_result.'
-_FIT_PARAMETER_NAME_TAG = '_fit_parameter.param_unique_name'
+_FIT_PARAMETER_NAME_TAG = '_fit_parameter.parameter_unique_name'
 _BAYESIAN_VALUE_COLUMN = 'posterior_median'
 
 # Parameter attribute names that differ from their CIF data-name tail.

@@ -29,7 +29,7 @@ DETERMINISTIC_RTOL = 0.02
 BAYESIAN_RTOL = 0.10
 
 # Optional deterministic fit-quality scalars to track when present.
-OPTIONAL_SCALARS = ('R_factor_all', 'wR_factor_all')
+OPTIONAL_SCALARS = ('r_factor_all', 'wr_factor_all')
 
 # Tutorials whose fit metrics are not reproducible across platforms,
 # so they are exempted from the numeric baseline comparison. ed-7
