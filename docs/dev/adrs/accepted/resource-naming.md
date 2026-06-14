@@ -42,19 +42,26 @@ undecided. This ADR fixes that form, for datasets and tutorials alike.
 
 ## Decision
 
-1. **Descriptive slug ids, not integers.** Every downloadable resource
-   is identified by a stable, lowercase-dash slug. Datasets are
-   namespaced by kind as `<namespace>/<slug>`:
-   - `structures/` — crystal-structure import CIFs,
-   - `experiments/` — EasyDiffraction experiment-definition files,
-   - `measured/` — raw measured or simulated data files,
-   - `projects/` — saved EasyDiffraction project archives.
+1. **Descriptive dash-prefixed names, not integers.** Every downloadable
+   resource is identified by a stable, lowercase-dash name. Datasets
+   carry their kind as a short **category prefix** joined by a dash —
+   `<category>-<slug>` — so the whole id reads as one name, not a path:
+   - `struct-` — crystal-structure import CIFs,
+   - `expt-` — EasyDiffraction experiment-definition files,
+   - `meas-` — raw measured or simulated data files,
+   - `proj-` — saved EasyDiffraction project archives.
 
-   Tutorials use a bare descriptive slug (e.g.
+   So `struct-lbco`, `meas-cosio-d20`, `proj-lbco-hrpt-dream`. A slash
+   form (`measured/cosio-d20`) was rejected because it reads as a
+   filesystem path ("put `cosio-d20` into folder `measured`"); the
+   dash-prefix keeps the category visible while staying a single,
+   copy-pasteable token. Tutorials use a bare descriptive slug (e.g.
    `refine-lbco-hrpt-from-cif`, `pdf-si-nomad`,
-   `bayesian-emcee-resume-lbco-hrpt`). The slug encodes the sample,
-   technique, and instrument/qualifier needed to keep it unique and
-   self-explanatory, and it carries no volatile facts that would force a
+   `bayesian-emcee-resume-lbco-hrpt`); their leading verb already conveys
+   the activity, and they have no cross-category name collision to
+   disambiguate, so they take no category prefix. The name encodes the
+   sample, technique, and instrument/qualifier needed to keep it unique
+   and self-explanatory, and carries no volatile facts that would force a
    rename on unrelated changes.
 
 2. **The slug is the stable identity.** Updating a resource overwrites
@@ -76,54 +83,60 @@ undecided. This ADR fixes that form, for datasets and tutorials alike.
    the slug. Inserting, removing, or reordering resources touches that
    metadata only, with no renames.
 
-5. **File paths mirror the id.** The repository path is
-   `data/<namespace>/<slug>.<ext>`, and the extension follows the
+5. **Files stay in category folders; the index maps name to path.** The
+   repository keeps full-word category folders for tidiness —
+   `data/structures/`, `data/experiments/`, `data/measured/`,
+   `data/projects/` — so the repository path is
+   `data/<category-folder>/<slug>.<ext>`, and `index.json` maps each
+   dash-prefixed name to that path. The locally **downloaded** file is
+   named after the id (`<name>.<ext>`, e.g. `meas-lbco-hrpt.xye`) so the
+   saved file matches the name the user typed. The extension follows the
    format: generic IUCr structures `.cif`; EasyDiffraction
    experiment-definition files `.edifa`; raw measured data in its native
    extension (`.xye`/`.gr`/`.dat`/`.xys`); multi-file scans and project
    archives `.zip`.
 
-6. **Listings show a positional `#`; the slug is the only persisted
-   handle.** `list_data()` and `list_tutorials()` print a leading `#`
-   row counter (consistent with the project's other tables) over a
-   deterministic listing order, alongside the slug. The slug is the
+6. **Listings are compact; the name is the only persisted handle.**
+   `list_data()` shows `name`, `format` (the bare extension), and
+   `description`; `list_tutorials()` shows `name` and the tutorial
+   title/description. The table renderer already prepends a row number,
+   so no separate `#` column is added, and no redundant `file` column is
+   shown (it only repeats the name plus extension). The name is the
    canonical argument everywhere:
-   - **The slug is the canonical argument.** `download_data(name)` and
-     `download_tutorial(name)` take the slug string as their first
-     positional argument, named `name`; the old integer `id=` argument
-     is removed, not retyped, and there is no `id=` keyword.
+   - **The name is the canonical argument.** `download_data(name)` and
+     `download_tutorial(name)` take the name string as their first
+     positional argument, named `name`; there is no `id=` keyword.
    - **The integer shorthand is an interactive convenience on both
      surfaces.** Both the Python functions and the CLI download command
      **may** additionally accept a positional integer that selects a row
-     by position. The shorthand is stateless: the integer is resolved
-     against the same deterministic catalog order that `list_*` prints,
-     recomputed fresh at call time — there is no persisted "last
-     display" state to consult. This number is a transient row index
-     tied to that order, never an identity, and there is no `--id` flag.
-   - **Saved artifacts are slug-only.** Tutorials, documentation, tests,
-     and any other saved code use slugs exclusively; the positional
+     by the renderer's number. The shorthand is stateless: the integer
+     is resolved against the same deterministic catalog order that
+     `list_*` prints, recomputed fresh at call time. This number is a
+     transient row index tied to that order, never an identity, and
+     there is no `--id` flag.
+   - **Saved artifacts are name-only.** Tutorials, documentation, tests,
+     and any other saved code use names exclusively; the positional
      integer is for live exploration only and must never be written into
      a persisted artifact, or it reintroduces the order-dependent churn
      this ADR removes.
 
-7. **Slug grammar and boundary validation.** Because `download_data()`,
-   `download_tutorial()`, and the CLI accept these ids from public
-   users, the id is validated at that boundary _before_ any catalog
+7. **Name grammar and boundary validation.** Because `download_data()`,
+   `download_tutorial()`, and the CLI accept these names from public
+   users, the name is validated at that boundary _before_ any catalog
    lookup, path, or URL is built:
-   - A **slug segment** matches `[a-z0-9]+(-[a-z0-9]+)*` — lowercase
-     ASCII letters and digits in dash-separated groups, with no leading,
-     trailing, or doubled dashes and no other characters.
-   - A **tutorial id** is exactly one slug segment.
-   - A **dataset id** is `<namespace>/<slug>` with exactly one slash,
-     where `<namespace>` is one of the four fixed values (`structures`,
-     `experiments`, `measured`, `projects`) — a closed set, so it is an
-     enum per `AGENTS.md` — and `<slug>` is one slug segment.
-   - An id never contains a file extension, an empty segment, a `.` or
-     `..` segment, extra slashes, or any other path/URL separator beyond
-     the single namespace slash.
+   - A **slug** matches `[a-z0-9]+(-[a-z0-9]+)*` — lowercase ASCII
+     letters and digits in dash-separated groups, with no leading,
+     trailing, or doubled dashes, no slash, and no other characters.
+   - A **tutorial name** is one slug.
+   - A **dataset name** is one slug whose first dash-separated segment is
+     one of the four fixed category prefixes (`struct`, `expt`, `meas`,
+     `proj`) — a closed set, so it is an enum per `AGENTS.md` — followed
+     by at least one more segment (i.e. `<category>-<rest>`).
+   - A name never contains a file extension, an empty segment, a `.` or
+     `..` segment, or any slash or other path/URL separator.
    - A value that violates this grammar raises a clear validation error
-     naming the offending input. A well-formed id that is simply absent
-     from the index is a distinct "unknown resource" error, not a
+     naming the offending input. A well-formed name that is simply
+     absent from the index is a distinct "unknown resource" error, not a
      validation error.
 
 ## Consequences
@@ -132,8 +145,8 @@ undecided. This ADR fixes that form, for datasets and tutorials alike.
   insertion, removal, and replacement; the `replaces` churn disappears.
 - One consistent identifier scheme spans datasets and tutorials and the
   `download_*`/`list_*` API.
-- The kind namespace doubles as the on-disk folder, so id and path stay
-  in sync and the kind is visible without a separate column.
+- The category prefix names the kind and matches its on-disk folder, so
+  the kind is visible in the name without a separate column.
 - A one-time migration is required: rename every dataset id and file,
   rewrite `index.json`, rename the tutorial sources and their generated
   notebooks, update the MkDocs nav and the `download_*`/`list_*` calls
@@ -175,58 +188,58 @@ The superseded integer ids from the `replaces` chains
 (`28, 30, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43`) disappear — each
 chain collapses to one stable slug overwritten in place.
 
-**`structures/` — crystal-structure import CIFs**
+**`struct-` — crystal-structure import CIFs**
 
 | Old id / file                 | New id               |
 | ----------------------------- | -------------------- |
-| 1 `ed-1.cif` (La0.5Ba0.5CoO3) | `structures/lbco`    |
-| 20 `ed-20.cif` (Tb2Ti2O7)     | `structures/tbti`    |
-| 21 `ed-21.cif` (Taurine)      | `structures/taurine` |
+| 1 `ed-1.cif` (La0.5Ba0.5CoO3) | `struct-lbco`    |
+| 20 `ed-20.cif` (Tb2Ti2O7)     | `struct-tbti`    |
+| 21 `ed-21.cif` (Taurine)      | `struct-taurine` |
 
-**`experiments/` — EasyDiffraction experiment-definition files**
+**`expt-` — EasyDiffraction experiment-definition files**
 
 | Old id / file                                   | New id                  |
 | ----------------------------------------------- | ----------------------- |
-| 2 `ed-2.cif` (LBCO HRPT, experiment definition) | `experiments/lbco-hrpt` |
+| 2 `ed-2.cif` (LBCO HRPT, experiment definition) | `expt-lbco-hrpt` |
 
 > Id 2 is a full experiment-definition file: its id is the
-> extension-free `experiments/lbco-hrpt` (per Decisions 1 and 5), and
+> extension-free `expt-lbco-hrpt` (per Decisions 1 and 5), and
 > the stored file migrates from `.cif` to the new `.edifa` format, so
 > its path is `data/experiments/lbco-hrpt.edifa`. Id 3, which previously
 > shared the "LBCO HRPT" description, is the _raw measured pattern_ and
-> moves to `measured/` below.
+> moves to `meas-` below.
 
-**`measured/` — raw measured or simulated data**
+**`meas-` — raw measured or simulated data**
 
 | Old id / file                                              | New id                             |
 | ---------------------------------------------------------- | ---------------------------------- |
-| 3 `ed-3.xye` (LBCO HRPT, 300 K pattern)                    | `measured/lbco-hrpt`               |
-| 4 `ed-4.gr` (NaCl)                                         | `measured/nacl-pdf`                |
-| 5 `ed-5.gr` (Si, NOMAD)                                    | `measured/si-pdf-nomad`            |
-| 6 `ed-6.gr` (Ni)                                           | `measured/ni-pdf`                  |
-| 7 `ed-7.xye` (Si, SEPD)                                    | `measured/si-sepd`                 |
-| 8 `ed-8.xye` (LBCO+Si, McStas)                             | `measured/lbco-si-mcstas`          |
-| 9 `ed-9.xys` (NCAF, WISH banks 5&6)                        | `measured/ncaf-wish-b56`           |
-| 10 `ed-10.xys` (NCAF, WISH banks 4&7)                      | `measured/ncaf-wish-b47`           |
-| 11 `ed-11.xye` (HS, HRPT)                                  | `measured/hs-hrpt`                 |
-| 12 `ed-12.xye` (Co2SiO4, D20)                              | `measured/cosio-d20`               |
-| 13 `ed-13.dat` (PbSO4, D1A)                                | `measured/pbso4-d1a`               |
-| 14 `ed-14.dat` (PbSO4, D1A 1st half)                       | `measured/pbso4-d1a-part1`         |
-| 15 `ed-15.dat` (PbSO4, D1A 2nd half)                       | `measured/pbso4-d1a-part2`         |
-| 16 `ed-16.dat` (PbSO4, lab X-ray)                          | `measured/pbso4-xray`              |
-| 17 `ed-17.xye` (Si, McStas DMSC2025)                       | `measured/si-mcstas-dmsc2025`      |
-| 18 `ed-18.xye` (LBCO+Si, McStas DMSC2025)                  | `measured/lbco-si-mcstas-dmsc2025` |
-| 19 `ed-19.xye` (Tb2Ti2O7, HEiDi)                           | `measured/tbti-heidi`              |
-| 22 `ed-22.xye` (Taurine, SENJU)                            | `measured/taurine-senju`           |
-| 23 `ed-23.zip` (Co2SiO4 D20 T-scan, 20 files)              | `measured/cosio-d20-scan-20f`      |
-| 24 `ed-24.zip` (... 156 files)                             | `measured/cosio-d20-scan-156f`     |
-| 25 `ed-25.zip` (... 3 files)                               | `measured/cosio-d20-scan-3f`       |
-| 26 `ed-26.zip` (... 46 files)                              | `measured/cosio-d20-scan-46f`      |
-| 27 `ed-27.zip` (... 23 files)                              | `measured/cosio-d20-scan-23f`      |
-| 29 `ed-29.zip` (... 213 files)                             | `measured/cosio-d20-scan-213f`     |
-| 31 `ed-31.dat` (La 7-cation perovskite, synchrotron X-ray) | `measured/hep7c-xray-synchrotron`  |
-| 32 `ed-32.dat` (La 7-cation perovskite, lab Cu Ka)         | `measured/hep7c-xray-cuka`         |
-| 33 `ed-33.zip` (ferrite+austenite, BEER)                   | `measured/ferrite-austenite-beer`  |
+| 3 `ed-3.xye` (LBCO HRPT, 300 K pattern)                    | `meas-lbco-hrpt`               |
+| 4 `ed-4.gr` (NaCl)                                         | `meas-nacl-pdf`                |
+| 5 `ed-5.gr` (Si, NOMAD)                                    | `meas-si-pdf-nomad`            |
+| 6 `ed-6.gr` (Ni)                                           | `meas-ni-pdf`                  |
+| 7 `ed-7.xye` (Si, SEPD)                                    | `meas-si-sepd`                 |
+| 8 `ed-8.xye` (LBCO+Si, McStas)                             | `meas-lbco-si-mcstas`          |
+| 9 `ed-9.xys` (NCAF, WISH banks 5&6)                        | `meas-ncaf-wish-b56`           |
+| 10 `ed-10.xys` (NCAF, WISH banks 4&7)                      | `meas-ncaf-wish-b47`           |
+| 11 `ed-11.xye` (HS, HRPT)                                  | `meas-hs-hrpt`                 |
+| 12 `ed-12.xye` (Co2SiO4, D20)                              | `meas-cosio-d20`               |
+| 13 `ed-13.dat` (PbSO4, D1A)                                | `meas-pbso4-d1a`               |
+| 14 `ed-14.dat` (PbSO4, D1A 1st half)                       | `meas-pbso4-d1a-part1`         |
+| 15 `ed-15.dat` (PbSO4, D1A 2nd half)                       | `meas-pbso4-d1a-part2`         |
+| 16 `ed-16.dat` (PbSO4, lab X-ray)                          | `meas-pbso4-xray`              |
+| 17 `ed-17.xye` (Si, McStas DMSC2025)                       | `meas-si-mcstas-dmsc2025`      |
+| 18 `ed-18.xye` (LBCO+Si, McStas DMSC2025)                  | `meas-lbco-si-mcstas-dmsc2025` |
+| 19 `ed-19.xye` (Tb2Ti2O7, HEiDi)                           | `meas-tbti-heidi`              |
+| 22 `ed-22.xye` (Taurine, SENJU)                            | `meas-taurine-senju`           |
+| 23 `ed-23.zip` (Co2SiO4 D20 T-scan, 20 files)              | `meas-cosio-d20-scan-20f`      |
+| 24 `ed-24.zip` (... 156 files)                             | `meas-cosio-d20-scan-156f`     |
+| 25 `ed-25.zip` (... 3 files)                               | `meas-cosio-d20-scan-3f`       |
+| 26 `ed-26.zip` (... 46 files)                              | `meas-cosio-d20-scan-46f`      |
+| 27 `ed-27.zip` (... 23 files)                              | `meas-cosio-d20-scan-23f`      |
+| 29 `ed-29.zip` (... 213 files)                             | `meas-cosio-d20-scan-213f`     |
+| 31 `ed-31.dat` (La 7-cation perovskite, synchrotron X-ray) | `meas-hep7c-xray-synchrotron`  |
+| 32 `ed-32.dat` (La 7-cation perovskite, lab Cu Ka)         | `meas-hep7c-xray-cuka`         |
+| 33 `ed-33.zip` (ferrite+austenite, BEER)                   | `meas-ferrite-austenite-beer`  |
 
 > Ids 31 and 32 previously shared the description "LaM7O3, X-ray". Their
 > `.pcr` sources show both are the same La/7-cation high-entropy
@@ -235,15 +248,15 @@ chain collapses to one stable slug overwritten in place.
 > sample's own `hep7c` code disambiguates them, and their index
 > descriptions are made distinct to match.
 
-**`projects/` — saved EasyDiffraction project archives (chains
+**`proj-` — saved EasyDiffraction project archives (chains
 collapse)**
 
 | Old ids / files                       | New id                     |
 | ------------------------------------- | -------------------------- |
-| 28, 30, 36, 40, 44 (LBCO HRPT, 300 K) | `projects/lbco-hrpt`       |
-| 34, 37, 41, 45 (Co2SiO4 D20 T-scan)   | `projects/cosio-d20-scan`  |
-| 35, 38, 42, 46 (emcee, LBCO HRPT)     | `projects/lbco-hrpt-emcee` |
-| 39, 43, 47 (bumps-dream, LBCO HRPT)   | `projects/lbco-hrpt-dream` |
+| 28, 30, 36, 40, 44 (LBCO HRPT, 300 K) | `proj-lbco-hrpt`       |
+| 34, 37, 41, 45 (Co2SiO4 D20 T-scan)   | `proj-cosio-d20-scan`  |
+| 35, 38, 42, 46 (emcee, LBCO HRPT)     | `proj-lbco-hrpt-emcee` |
+| 39, 43, 47 (bumps-dream, LBCO HRPT)   | `proj-lbco-hrpt-dream` |
 
 ### Tutorials
 
