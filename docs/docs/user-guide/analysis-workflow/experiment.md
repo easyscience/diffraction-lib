@@ -568,10 +568,10 @@ data_<span class="red"><b>wish</b></span>
 <span class="blue"><b>_instrument</b>.calib_d_to_tof_quadratic</span> -1.08308
 <span class="blue"><b>_instrument</b>.calib_d_to_tof_offset</span>    -13.7(5)
 
-<span class="blue"><b>_peak</b>.exp_rise_alpha_0</span>    -0.009(1)
-<span class="blue"><b>_peak</b>.exp_rise_alpha_1</span>     0.109(2)
-<span class="blue"><b>_peak</b>.exp_decay_beta_0</span>     0.00670(3)
-<span class="blue"><b>_peak</b>.exp_decay_beta_1</span>     0.0100(3)
+<span class="blue"><b>_peak</b>.rise_alpha_0</span>    -0.009(1)
+<span class="blue"><b>_peak</b>.rise_alpha_1</span>     0.109(2)
+<span class="blue"><b>_peak</b>.decay_beta_0</span>     0.00670(3)
+<span class="blue"><b>_peak</b>.decay_beta_1</span>     0.0100(3)
 <span class="blue"><b>_peak</b>.broad_gauss_sigma_0</span> 0
 <span class="blue"><b>_peak</b>.broad_gauss_sigma_1</span> 0
 <span class="blue"><b>_peak</b>.broad_gauss_sigma_2</span> 15.7(8)

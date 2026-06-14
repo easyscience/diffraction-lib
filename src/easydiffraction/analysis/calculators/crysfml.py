@@ -65,10 +65,10 @@ _PEAK_ATTRIBUTE_MAP: tuple[tuple[str, str], ...] = (
     ('broad_lorentz_gamma_0', '_pd_jorg_vondreele_gamma0'),
     ('broad_lorentz_gamma_1', '_pd_jorg_vondreele_gamma1'),
     ('broad_lorentz_gamma_2', '_pd_jorg_vondreele_gamma2'),
-    ('exp_decay_beta_0', '_pd_jorg_vondreele_beta0'),
-    ('exp_decay_beta_1', '_pd_jorg_vondreele_beta1'),
-    ('exp_rise_alpha_0', '_pd_jorg_vondreele_alpha0'),
-    ('exp_rise_alpha_1', '_pd_jorg_vondreele_alpha1'),
+    ('decay_beta_0', '_pd_jorg_vondreele_beta0'),
+    ('decay_beta_1', '_pd_jorg_vondreele_beta1'),
+    ('rise_alpha_0', '_pd_jorg_vondreele_alpha0'),
+    ('rise_alpha_1', '_pd_jorg_vondreele_alpha1'),
 )
 
 

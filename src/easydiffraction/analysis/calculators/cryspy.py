@@ -1166,7 +1166,7 @@ def _update_tof_peak_in_cryspy_dict(
     peak_tag = peak.type_info.tag
     # TODO: Need to improve this logic to be more robust and extensible
     #  for future profiles
-    if not hasattr(peak, 'exp_decay_beta_0') and not hasattr(peak, 'dexp_decay_beta_00'):
+    if not hasattr(peak, 'decay_beta_0') and not hasattr(peak, 'dexp_decay_beta_00'):
         cryspy_expt_dict['profile_gammas'][0] = peak.broad_lorentz_gamma_0.value
         cryspy_expt_dict['profile_gammas'][1] = peak.broad_lorentz_gamma_1.value
         cryspy_expt_dict['profile_gammas'][2] = peak.broad_lorentz_gamma_2.value
@@ -1186,11 +1186,11 @@ def _update_tof_peak_in_cryspy_dict(
         cryspy_expt_dict['profile_gammas'][1] = peak.broad_lorentz_gamma_1.value
         cryspy_expt_dict['profile_gammas'][2] = peak.broad_lorentz_gamma_2.value
     else:
-        cryspy_expt_dict['profile_betas'][0] = peak.exp_decay_beta_0.value
-        cryspy_expt_dict['profile_betas'][1] = peak.exp_decay_beta_1.value
+        cryspy_expt_dict['profile_betas'][0] = peak.decay_beta_0.value
+        cryspy_expt_dict['profile_betas'][1] = peak.decay_beta_1.value
 
-        cryspy_expt_dict['profile_alphas'][0] = peak.exp_rise_alpha_0.value
-        cryspy_expt_dict['profile_alphas'][1] = peak.exp_rise_alpha_1.value
+        cryspy_expt_dict['profile_alphas'][0] = peak.rise_alpha_0.value
+        cryspy_expt_dict['profile_alphas'][1] = peak.rise_alpha_1.value
 
         if peak_tag == PeakProfileTypeEnum.TOF_JORGENSEN_VON_DREELE:
             cryspy_expt_dict['profile_gammas'][0] = peak.broad_lorentz_gamma_0.value
@@ -1242,12 +1242,12 @@ def _cif_peak_section(
                 'dexp_switch_r_02': '_tof_profile_r02',
                 'dexp_switch_r_03': '_tof_profile_r03',
             })
-        elif hasattr(peak, 'exp_decay_beta_0') and hasattr(peak, 'exp_rise_alpha_0'):
+        elif hasattr(peak, 'decay_beta_0') and hasattr(peak, 'rise_alpha_0'):
             peak_mapping.update({
-                'exp_decay_beta_0': '_tof_profile_beta0',
-                'exp_decay_beta_1': '_tof_profile_beta1',
-                'exp_rise_alpha_0': '_tof_profile_alpha0',
-                'exp_rise_alpha_1': '_tof_profile_alpha1',
+                'decay_beta_0': '_tof_profile_beta0',
+                'decay_beta_1': '_tof_profile_beta1',
+                'rise_alpha_0': '_tof_profile_alpha0',
+                'rise_alpha_1': '_tof_profile_alpha1',
             })
             if peak.type_info.tag == PeakProfileTypeEnum.TOF_JORGENSEN_VON_DREELE:
                 cif_lines.append('_tof_profile_peak_shape pseudo-Voigt')

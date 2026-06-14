@@ -93,10 +93,10 @@ bragg_expt.peak.type = 'jorgensen'
 bragg_expt.peak.broad_gauss_sigma_0 = 5.0
 bragg_expt.peak.broad_gauss_sigma_1 = 45.0
 bragg_expt.peak.broad_gauss_sigma_2 = 1.0
-bragg_expt.peak.exp_decay_beta_0 = 0.04221
-bragg_expt.peak.exp_decay_beta_1 = 0.00946
-bragg_expt.peak.exp_rise_alpha_0 = 0.0
-bragg_expt.peak.exp_rise_alpha_1 = 0.5971
+bragg_expt.peak.decay_beta_0 = 0.04221
+bragg_expt.peak.decay_beta_1 = 0.00946
+bragg_expt.peak.rise_alpha_0 = 0.0
+bragg_expt.peak.rise_alpha_1 = 0.5971
 
 # %% [markdown]
 # #### Set Background

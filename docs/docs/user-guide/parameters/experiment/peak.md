@@ -118,42 +118,42 @@ Lorentzian broadening (dependent on d-spacing).
 
 Lorentzian broadening (instrument-dependent term).
 
-### :material-arrow-bottom-right: exp_decay_beta_0 { #peak-exp-decay-beta-0 }
+### :material-arrow-bottom-right: decay_beta_0 { #peak-exp-decay-beta-0 }
 
 | Access                              | Source                     |
 | ----------------------------------- | -------------------------- |
-| peak.exp_decay_beta_0               | [code][0]{:.label-cif}     |
-| \_peak.exp_decay_beta_0             | [Edifa][0]{:.label-cif}    |
+| peak.decay_beta_0                   | [code][0]{:.label-cif}     |
+| \_peak.decay_beta_0                 | [Edifa][0]{:.label-cif}    |
 | \_easydiffraction_peak.decay_beta_0 | [edifaCIF][0]{:.label-cif} |
 
 Back-to-back exponential decay β₀.
 
-### :material-arrow-bottom-right: exp_decay_beta_1 { #peak-exp-decay-beta-1 }
+### :material-arrow-bottom-right: decay_beta_1 { #peak-exp-decay-beta-1 }
 
 | Access                              | Source                     |
 | ----------------------------------- | -------------------------- |
-| peak.exp_decay_beta_1               | [code][0]{:.label-cif}     |
-| \_peak.exp_decay_beta_1             | [Edifa][0]{:.label-cif}    |
+| peak.decay_beta_1                   | [code][0]{:.label-cif}     |
+| \_peak.decay_beta_1                 | [Edifa][0]{:.label-cif}    |
 | \_easydiffraction_peak.decay_beta_1 | [edifaCIF][0]{:.label-cif} |
 
 Back-to-back exponential decay β₁.
 
-### :material-scale-unbalanced: exp_rise_alpha_0 { #peak-exp-rise-alpha-0 }
+### :material-scale-unbalanced: rise_alpha_0 { #peak-exp-rise-alpha-0 }
 
 | Access                              | Source                     |
 | ----------------------------------- | -------------------------- |
-| peak.exp_rise_alpha_0               | [code][0]{:.label-cif}     |
-| \_peak.exp_rise_alpha_0             | [Edifa][0]{:.label-cif}    |
+| peak.rise_alpha_0                   | [code][0]{:.label-cif}     |
+| \_peak.rise_alpha_0                 | [Edifa][0]{:.label-cif}    |
 | \_easydiffraction_peak.rise_alpha_0 | [edifaCIF][0]{:.label-cif} |
 
 Back-to-back exponential rise α₀.
 
-### :material-scale-unbalanced: exp_rise_alpha_1 { #peak-exp-rise-alpha-1 }
+### :material-scale-unbalanced: rise_alpha_1 { #peak-exp-rise-alpha-1 }
 
 | Access                              | Source                     |
 | ----------------------------------- | -------------------------- |
-| peak.exp_rise_alpha_1               | [code][0]{:.label-cif}     |
-| \_peak.exp_rise_alpha_1             | [Edifa][0]{:.label-cif}    |
+| peak.rise_alpha_1                   | [code][0]{:.label-cif}     |
+| \_peak.rise_alpha_1                 | [Edifa][0]{:.label-cif}    |
 | \_easydiffraction_peak.rise_alpha_1 | [edifaCIF][0]{:.label-cif} |
 
 Back-to-back exponential rise α₁.

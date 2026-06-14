@@ -262,8 +262,8 @@ class TofBackToBackExponentialMixin:
         """Initialize the back-to-back exponential parameters."""
         super().__init__()
 
-        self._exp_rise_alpha_0 = Parameter(
-            name='exp_rise_alpha_0',
+        self._rise_alpha_0 = Parameter(
+            name='rise_alpha_0',
             description='Back-to-back exponential rise α₀',
             units='microseconds',
             display_handler=DisplayHandler(
@@ -275,13 +275,13 @@ class TofBackToBackExponentialMixin:
                 validator=RangeValidator(),
             ),
             cif_handler=CifHandler(
-                names=['_peak.exp_rise_alpha_0'],
-                import_names=['_peak.rise_alpha_0'],
+                names=['_peak.rise_alpha_0'],
+                import_names=['_peak.exp_rise_alpha_0'],
                 iucr_name='_easydiffraction_peak.rise_alpha_0',
             ),
         )
-        self._exp_rise_alpha_1 = Parameter(
-            name='exp_rise_alpha_1',
+        self._rise_alpha_1 = Parameter(
+            name='rise_alpha_1',
             description='Back-to-back exponential rise α₁',
             units='microseconds_per_angstrom',
             display_handler=DisplayHandler(
@@ -293,13 +293,13 @@ class TofBackToBackExponentialMixin:
                 validator=RangeValidator(),
             ),
             cif_handler=CifHandler(
-                names=['_peak.exp_rise_alpha_1'],
-                import_names=['_peak.rise_alpha_1'],
+                names=['_peak.rise_alpha_1'],
+                import_names=['_peak.exp_rise_alpha_1'],
                 iucr_name='_easydiffraction_peak.rise_alpha_1',
             ),
         )
-        self._exp_decay_beta_0 = Parameter(
-            name='exp_decay_beta_0',
+        self._decay_beta_0 = Parameter(
+            name='decay_beta_0',
             description='Back-to-back exponential decay β₀',
             units='microseconds',
             display_handler=DisplayHandler(
@@ -311,13 +311,13 @@ class TofBackToBackExponentialMixin:
                 validator=RangeValidator(),
             ),
             cif_handler=CifHandler(
-                names=['_peak.exp_decay_beta_0'],
-                import_names=['_peak.decay_beta_0'],
+                names=['_peak.decay_beta_0'],
+                import_names=['_peak.exp_decay_beta_0'],
                 iucr_name='_easydiffraction_peak.decay_beta_0',
             ),
         )
-        self._exp_decay_beta_1 = Parameter(
-            name='exp_decay_beta_1',
+        self._decay_beta_1 = Parameter(
+            name='decay_beta_1',
             description='Back-to-back exponential decay β₁',
             units='microseconds_per_angstrom',
             display_handler=DisplayHandler(
@@ -329,71 +329,71 @@ class TofBackToBackExponentialMixin:
                 validator=RangeValidator(),
             ),
             cif_handler=CifHandler(
-                names=['_peak.exp_decay_beta_1'],
-                import_names=['_peak.decay_beta_1'],
+                names=['_peak.decay_beta_1'],
+                import_names=['_peak.exp_decay_beta_1'],
                 iucr_name='_easydiffraction_peak.decay_beta_1',
             ),
         )
 
     @property
-    def exp_rise_alpha_0(self) -> Parameter:
+    def rise_alpha_0(self) -> Parameter:
         """
         Back-to-back exponential rise α₀ (μs).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
         """
-        return self._exp_rise_alpha_0
+        return self._rise_alpha_0
 
-    @exp_rise_alpha_0.setter
-    def exp_rise_alpha_0(self, value: float) -> None:
+    @rise_alpha_0.setter
+    def rise_alpha_0(self, value: float) -> None:
         """Set the back-to-back exponential rise α₀ (μs)."""
-        self._exp_rise_alpha_0.value = value
+        self._rise_alpha_0.value = value
 
     @property
-    def exp_rise_alpha_1(self) -> Parameter:
+    def rise_alpha_1(self) -> Parameter:
         """
         Back-to-back exponential rise α₁ (μs/Å).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
         """
-        return self._exp_rise_alpha_1
+        return self._rise_alpha_1
 
-    @exp_rise_alpha_1.setter
-    def exp_rise_alpha_1(self, value: float) -> None:
+    @rise_alpha_1.setter
+    def rise_alpha_1(self, value: float) -> None:
         """Set the back-to-back exponential rise α₁ (μs/Å)."""
-        self._exp_rise_alpha_1.value = value
+        self._rise_alpha_1.value = value
 
     @property
-    def exp_decay_beta_0(self) -> Parameter:
+    def decay_beta_0(self) -> Parameter:
         """
         Back-to-back exponential decay β₀ (μs).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
         """
-        return self._exp_decay_beta_0
+        return self._decay_beta_0
 
-    @exp_decay_beta_0.setter
-    def exp_decay_beta_0(self, value: float) -> None:
+    @decay_beta_0.setter
+    def decay_beta_0(self, value: float) -> None:
         """Set the back-to-back exponential decay β₀ (μs)."""
-        self._exp_decay_beta_0.value = value
+        self._decay_beta_0.value = value
 
     @property
-    def exp_decay_beta_1(self) -> Parameter:
+    def decay_beta_1(self) -> Parameter:
         """
         Back-to-back exponential decay β₁ (μs/Å).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
         """
-        return self._exp_decay_beta_1
+        return self._decay_beta_1
 
-    @exp_decay_beta_1.setter
-    def exp_decay_beta_1(self, value: float) -> None:
+    @decay_beta_1.setter
+    def decay_beta_1(self, value: float) -> None:
         """Set the back-to-back exponential decay β₁ (μs/Å)."""
-        self._exp_decay_beta_1.value = value
+        self._decay_beta_1.value = value
 
 
 class TofDoubleExponentialMixin:

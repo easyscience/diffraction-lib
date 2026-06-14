@@ -88,10 +88,10 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
     expt.peak.broad_gauss_sigma_0 = 45137
     expt.peak.broad_gauss_sigma_1 = -52394
     expt.peak.broad_gauss_sigma_2 = 22998
-    expt.peak.exp_decay_beta_0 = 0.0055
-    expt.peak.exp_decay_beta_1 = 0.0041
-    expt.peak.exp_rise_alpha_0 = 0.0
-    expt.peak.exp_rise_alpha_1 = 0.0097
+    expt.peak.decay_beta_0 = 0.0055
+    expt.peak.decay_beta_1 = 0.0041
+    expt.peak.rise_alpha_0 = 0.0
+    expt.peak.rise_alpha_1 = 0.0097
     expt.linked_structures.create(structure_id='lbco', scale=4.0)
     expt.linked_structures.create(structure_id='si', scale=0.2)
     for x in range(45000, 115000, 5000):
@@ -122,9 +122,9 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
     expt.peak.broad_gauss_sigma_0.free = True
     expt.peak.broad_gauss_sigma_1.free = True
     expt.peak.broad_gauss_sigma_2.free = True
-    expt.peak.exp_rise_alpha_1.free = True
-    expt.peak.exp_decay_beta_0.free = True
-    expt.peak.exp_decay_beta_1.free = True
+    expt.peak.rise_alpha_1.free = True
+    expt.peak.decay_beta_0.free = True
+    expt.peak.decay_beta_1.free = True
     for point in expt.background:
         point.intensity.free = True
 
@@ -169,10 +169,10 @@ def _test_joint_fit_bragg_pdf_neutron_pd_tof_si() -> None:
     bragg_expt.peak.broad_gauss_sigma_0 = 3.0
     bragg_expt.peak.broad_gauss_sigma_1 = 40.0
     bragg_expt.peak.broad_gauss_sigma_2 = 2.0
-    bragg_expt.peak.exp_decay_beta_0 = 0.04221
-    bragg_expt.peak.exp_decay_beta_1 = 0.00946
-    bragg_expt.peak.exp_rise_alpha_0 = 0.0
-    bragg_expt.peak.exp_rise_alpha_1 = 0.5971
+    bragg_expt.peak.decay_beta_0 = 0.04221
+    bragg_expt.peak.decay_beta_1 = 0.00946
+    bragg_expt.peak.rise_alpha_0 = 0.0
+    bragg_expt.peak.rise_alpha_1 = 0.5971
     bragg_expt.linked_structures.create(structure_id='si', scale=10.0)
     for x in range(0, 35000, 5000):
         bragg_expt.background.create(id=str(x), position=x, intensity=200)

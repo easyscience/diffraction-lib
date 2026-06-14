@@ -75,7 +75,7 @@
     "wr_factor_all": 0.091774,
     "parameters": {
       "sim_si.linked_structure.si.scale": 1.454,
-      "sim_si.peak.exp_rise_alpha_0": -0.00662
+      "sim_si.peak.rise_alpha_0": -0.00662
     }
   },
   "joint-si-bragg-pdf": {

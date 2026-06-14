@@ -40,14 +40,14 @@ def test_tof_gaussian_lorentzian_and_bbe_mixins():
         'broad_lorentz_gamma_2',
     }.issubset(names)
     # BBE rise and decay
-    assert {'exp_rise_alpha_0', 'exp_rise_alpha_1'}.issubset(names)
-    assert {'exp_decay_beta_0', 'exp_decay_beta_1'}.issubset(names)
+    assert {'rise_alpha_0', 'rise_alpha_1'}.issubset(names)
+    assert {'decay_beta_0', 'decay_beta_1'}.issubset(names)
 
     # Verify setters update values
     p.broad_gauss_sigma_0 = 1.0
-    p.exp_rise_alpha_1 = 0.5
+    p.rise_alpha_1 = 0.5
     assert np.isclose(p.broad_gauss_sigma_0.value, 1.0)
-    assert np.isclose(p.exp_rise_alpha_1.value, 0.5)
+    assert np.isclose(p.rise_alpha_1.value, 0.5)
 
 
 def test_tof_double_exponential_mixin():

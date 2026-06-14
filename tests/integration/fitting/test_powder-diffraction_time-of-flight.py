@@ -44,10 +44,10 @@ def test_single_fit_neutron_pd_tof_si() -> None:
     expt.peak.broad_gauss_sigma_0 = 4.2
     expt.peak.broad_gauss_sigma_1 = 45.8
     expt.peak.broad_gauss_sigma_2 = 1.1
-    expt.peak.exp_decay_beta_0 = 0.04221
-    expt.peak.exp_decay_beta_1 = 0.00946
-    expt.peak.exp_rise_alpha_0 = 0.0
-    expt.peak.exp_rise_alpha_1 = 0.5971
+    expt.peak.decay_beta_0 = 0.04221
+    expt.peak.decay_beta_1 = 0.00946
+    expt.peak.rise_alpha_0 = 0.0
+    expt.peak.rise_alpha_1 = 0.5971
     expt.linked_structures.create(structure_id='si', scale=14.92)
     for x in range(0, 35000, 5000):
         expt.background.create(id=str(x), position=x, intensity=200)
@@ -157,10 +157,10 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
     expt.peak.broad_gauss_sigma_0 = 0.0
     expt.peak.broad_gauss_sigma_1 = 0.0
     expt.peak.broad_gauss_sigma_2 = 15.7
-    expt.peak.exp_decay_beta_0 = 0.00670
-    expt.peak.exp_decay_beta_1 = 0.0099
-    expt.peak.exp_rise_alpha_0 = -0.009
-    expt.peak.exp_rise_alpha_1 = 0.1085
+    expt.peak.decay_beta_0 = 0.00670
+    expt.peak.decay_beta_1 = 0.0099
+    expt.peak.rise_alpha_0 = -0.009
+    expt.peak.rise_alpha_1 = 0.1085
     expt.linked_structures.create(structure_id='ncaf', scale=1.0928)
     for x, y in [
         (9162, 465),
@@ -206,8 +206,8 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
     expt.linked_structures['ncaf'].scale.free = True
     expt.instrument.calib_d_to_tof_offset.free = True
     expt.peak.broad_gauss_sigma_2.free = True
-    expt.peak.exp_decay_beta_1.free = True
-    expt.peak.exp_rise_alpha_1.free = True
+    expt.peak.decay_beta_1.free = True
+    expt.peak.rise_alpha_1.free = True
 
     # Perform fit
     project.analysis.fit()

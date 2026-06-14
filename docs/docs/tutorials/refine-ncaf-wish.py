@@ -148,19 +148,19 @@ expt56.peak.show_supported()
 expt56.peak.broad_gauss_sigma_0 = 0.0
 expt56.peak.broad_gauss_sigma_1 = 0.0
 expt56.peak.broad_gauss_sigma_2 = 15.5
-expt56.peak.exp_decay_beta_0 = 0.007
-expt56.peak.exp_decay_beta_1 = 0.01
-expt56.peak.exp_rise_alpha_0 = -0.0094
-expt56.peak.exp_rise_alpha_1 = 0.1
+expt56.peak.decay_beta_0 = 0.007
+expt56.peak.decay_beta_1 = 0.01
+expt56.peak.rise_alpha_0 = -0.0094
+expt56.peak.rise_alpha_1 = 0.1
 
 # %%
 expt47.peak.broad_gauss_sigma_0 = 0.0
 expt47.peak.broad_gauss_sigma_1 = 29.8
 expt47.peak.broad_gauss_sigma_2 = 18.0
-expt47.peak.exp_decay_beta_0 = 0.006
-expt47.peak.exp_decay_beta_1 = 0.015
-expt47.peak.exp_rise_alpha_0 = -0.0115
-expt47.peak.exp_rise_alpha_1 = 0.1
+expt47.peak.decay_beta_0 = 0.006
+expt47.peak.decay_beta_1 = 0.015
+expt47.peak.rise_alpha_0 = -0.0115
+expt47.peak.rise_alpha_1 = 0.1
 
 # %% [markdown]
 # ### Set Background
@@ -311,17 +311,17 @@ expt56.linked_structures['ncaf'].scale.free = True
 expt56.instrument.calib_d_to_tof_offset.free = True
 expt56.instrument.calib_d_to_tof_linear.free = True
 expt56.peak.broad_gauss_sigma_2.free = True
-expt56.peak.exp_decay_beta_0.free = True
-expt56.peak.exp_decay_beta_1.free = True
-expt56.peak.exp_rise_alpha_1.free = True
+expt56.peak.decay_beta_0.free = True
+expt56.peak.decay_beta_1.free = True
+expt56.peak.rise_alpha_1.free = True
 
 expt47.linked_structures['ncaf'].scale.free = True
 expt47.instrument.calib_d_to_tof_linear.free = True
 expt47.instrument.calib_d_to_tof_offset.free = True
 expt47.peak.broad_gauss_sigma_2.free = True
-expt47.peak.exp_decay_beta_0.free = True
-expt47.peak.exp_decay_beta_1.free = True
-expt47.peak.exp_rise_alpha_1.free = True
+expt47.peak.decay_beta_0.free = True
+expt47.peak.decay_beta_1.free = True
+expt47.peak.rise_alpha_1.free = True
 
 # %% [markdown]
 # ### Display Structure

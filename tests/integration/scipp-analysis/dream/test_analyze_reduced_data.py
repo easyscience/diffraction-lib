@@ -96,10 +96,10 @@ def project_with_data(
     experiment.peak.broad_gauss_sigma_0 = 48500.0
     experiment.peak.broad_gauss_sigma_1 = 3000.0
     experiment.peak.broad_gauss_sigma_2 = 0.0
-    experiment.peak.exp_decay_beta_0 = 0.05
-    experiment.peak.exp_decay_beta_1 = 0.0
-    experiment.peak.exp_rise_alpha_0 = 0.0
-    experiment.peak.exp_rise_alpha_1 = 0.26
+    experiment.peak.decay_beta_0 = 0.05
+    experiment.peak.decay_beta_1 = 0.0
+    experiment.peak.rise_alpha_0 = 0.0
+    experiment.peak.rise_alpha_1 = 0.26
 
     # Excluded regions
     experiment.excluded_regions.create(id='1', start=0, end=10000)
@@ -141,7 +141,7 @@ def fitted_project(
 
     experiment.peak.broad_gauss_sigma_0.free = True
     experiment.peak.broad_gauss_sigma_1.free = True
-    experiment.peak.exp_decay_beta_0.free = True
+    experiment.peak.decay_beta_0.free = True
 
     for point in experiment.background:
         point.intensity.free = True

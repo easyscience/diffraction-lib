@@ -318,10 +318,10 @@ project_1.experiments['sim_si'].peak.show_supported()
 project_1.experiments['sim_si'].peak.broad_gauss_sigma_0 = 69498
 project_1.experiments['sim_si'].peak.broad_gauss_sigma_1 = -55578
 project_1.experiments['sim_si'].peak.broad_gauss_sigma_2 = 14560
-project_1.experiments['sim_si'].peak.exp_decay_beta_0 = 0.0019
-project_1.experiments['sim_si'].peak.exp_decay_beta_1 = 0.0137
-project_1.experiments['sim_si'].peak.exp_rise_alpha_0 = -0.0055
-project_1.experiments['sim_si'].peak.exp_rise_alpha_1 = 0.0147
+project_1.experiments['sim_si'].peak.decay_beta_0 = 0.0019
+project_1.experiments['sim_si'].peak.decay_beta_1 = 0.0137
+project_1.experiments['sim_si'].peak.rise_alpha_0 = -0.0055
+project_1.experiments['sim_si'].peak.rise_alpha_1 = 0.0147
 
 # %% [markdown]
 # #### Set Background
@@ -583,10 +583,10 @@ for line_segment in project_1.experiments['sim_si'].background:
 project_1.experiments['sim_si'].peak.broad_gauss_sigma_0.free = True
 project_1.experiments['sim_si'].peak.broad_gauss_sigma_1.free = True
 project_1.experiments['sim_si'].peak.broad_gauss_sigma_2.free = True
-project_1.experiments['sim_si'].peak.exp_decay_beta_0.free = True
-project_1.experiments['sim_si'].peak.exp_decay_beta_1.free = True
-project_1.experiments['sim_si'].peak.exp_rise_alpha_0.free = True
-project_1.experiments['sim_si'].peak.exp_rise_alpha_1.free = True
+project_1.experiments['sim_si'].peak.decay_beta_0.free = True
+project_1.experiments['sim_si'].peak.decay_beta_1.free = True
+project_1.experiments['sim_si'].peak.rise_alpha_0.free = True
+project_1.experiments['sim_si'].peak.rise_alpha_1.free = True
 
 # %% [markdown]
 # #### Display Free Parameters
@@ -854,10 +854,10 @@ sim_si_peak = project_1.experiments['sim_si'].peak
 project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_0 = sim_si_peak.broad_gauss_sigma_0.value
 project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_1 = sim_si_peak.broad_gauss_sigma_1.value
 project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_2 = sim_si_peak.broad_gauss_sigma_2.value
-project_2.experiments['sim_lbco'].peak.exp_decay_beta_0 = sim_si_peak.exp_decay_beta_0.value
-project_2.experiments['sim_lbco'].peak.exp_decay_beta_1 = sim_si_peak.exp_decay_beta_1.value
-project_2.experiments['sim_lbco'].peak.exp_rise_alpha_0 = sim_si_peak.exp_rise_alpha_0.value
-project_2.experiments['sim_lbco'].peak.exp_rise_alpha_1 = sim_si_peak.exp_rise_alpha_1.value
+project_2.experiments['sim_lbco'].peak.decay_beta_0 = sim_si_peak.decay_beta_0.value
+project_2.experiments['sim_lbco'].peak.decay_beta_1 = sim_si_peak.decay_beta_1.value
+project_2.experiments['sim_lbco'].peak.rise_alpha_0 = sim_si_peak.rise_alpha_0.value
+project_2.experiments['sim_lbco'].peak.rise_alpha_1 = sim_si_peak.rise_alpha_1.value
 
 # %% [markdown]
 # #### Exercise 2.4: Set Background
@@ -1277,10 +1277,10 @@ project_2.display.pattern(expt_name='sim_lbco', x='d_spacing', x_min=1.35, x_max
 project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_0.free = True
 project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_1.free = True
 project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_2.free = True
-project_2.experiments['sim_lbco'].peak.exp_decay_beta_0.free = True
-project_2.experiments['sim_lbco'].peak.exp_decay_beta_1.free = True
-project_2.experiments['sim_lbco'].peak.exp_rise_alpha_0.free = True
-project_2.experiments['sim_lbco'].peak.exp_rise_alpha_1.free = True
+project_2.experiments['sim_lbco'].peak.decay_beta_0.free = True
+project_2.experiments['sim_lbco'].peak.decay_beta_1.free = True
+project_2.experiments['sim_lbco'].peak.rise_alpha_0.free = True
+project_2.experiments['sim_lbco'].peak.rise_alpha_1.free = True
 
 project_2.analysis.fit()
 project_2.display.fit.results()
