@@ -9,8 +9,10 @@ import hashlib
 import importlib.resources
 import json
 import pathlib
+import re
 import shutil
 import urllib.request
+from enum import Enum
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version
 from urllib.parse import urlparse
@@ -255,6 +257,84 @@ def _build_data_url(path: str) -> str:
     return f'https://raw.githubusercontent.com/{_DATA_REPO}/{_data_index_ref()}/{_DATA_ROOT}/{path}'
 
 
+class DataNamespace(str, Enum):
+    """The fixed namespaces a downloadable dataset id can carry."""
+
+    STRUCTURES = 'structures'
+    EXPERIMENTS = 'experiments'
+    MEASURED = 'measured'
+    PROJECTS = 'projects'
+
+
+_DATA_NAMESPACES = frozenset(member.value for member in DataNamespace)
+# One slug segment: lowercase ASCII letters/digits in dash-separated
+# groups, no leading/trailing/doubled dashes (resource-naming ADR).
+_SLUG_SEGMENT_RE = re.compile(r'[a-z0-9]+(?:-[a-z0-9]+)*')
+
+
+def _validate_slug_segment(segment: str, *, kind: str) -> None:
+    """Raise ValueError unless ``segment`` is a valid slug segment."""
+    if not _SLUG_SEGMENT_RE.fullmatch(segment):
+        msg = (
+            f"Invalid {kind} '{segment}': expected lowercase ASCII letters and "
+            'digits in dash-separated groups (e.g. lbco-hrpt), with no file '
+            'extension, empty segments, or other characters.'
+        )
+        raise ValueError(msg)
+
+
+def _validate_dataset_id(name: str) -> None:
+    """Validate a dataset id of the form ``<namespace>/<slug>``."""
+    if name.count('/') != 1:
+        msg = (
+            f"Invalid dataset id '{name}': expected '<namespace>/<slug>' with a "
+            f'single namespace from {sorted(_DATA_NAMESPACES)}.'
+        )
+        raise ValueError(msg)
+    namespace, slug = name.split('/', 1)
+    if namespace not in _DATA_NAMESPACES:
+        msg = (
+            f"Invalid dataset namespace '{namespace}' in '{name}': expected one "
+            f'of {sorted(_DATA_NAMESPACES)}.'
+        )
+        raise ValueError(msg)
+    _validate_slug_segment(slug, kind='dataset slug')
+
+
+def _validate_tutorial_id(name: str) -> None:
+    """Validate a tutorial id (a single slug segment, no namespace)."""
+    if '/' in name:
+        msg = f"Invalid tutorial id '{name}': tutorials use a bare slug with no '/'."
+        raise ValueError(msg)
+    _validate_slug_segment(name, kind='tutorial id')
+
+
+def _ordered_keys(index: dict) -> list[str]:
+    """Return index keys in the deterministic order listings show."""
+    return sorted(index)
+
+
+def _is_positional(name: int | str) -> bool:
+    """Return True when ``name`` is an interactive positional shortcut."""
+    return isinstance(name, int) or (isinstance(name, str) and name.isdigit())
+
+
+def _resolve_positional(position: int, keys: list[str], *, kind: str) -> str:
+    """
+    Resolve a 1-based row number against the deterministic listing order.
+
+    The number is a transient row index, never a stored identity
+    (resource-naming ADR, Decision 6).
+    """
+    if not 1 <= position <= len(keys):
+        msg = (
+            f'Invalid {kind} number {position}: expected 1..{len(keys)} as shown '
+            f'by the listing. Use the slug for saved code.'
+        )
+        raise IndexError(msg)
+    return keys[position - 1]
+
+
 def _record_path(record: dict) -> str:
     if 'path' in record:
         return record['path']
@@ -283,15 +363,15 @@ def _validate_url(url: str) -> None:
         raise ValueError(msg)
 
 
-def _filename_for_id_from_path(data_id: int | str, record_path: str) -> str:
+def _filename_from_path(record_path: str) -> str:
     """
-    Return local filename using the extension from the record path.
+    Return the local filename for a record (slug leaf plus extension).
+
+    The id already mirrors the file path (resource-naming ADR,
+    Decision 5), so the saved file keeps the slug name, e.g.
+    ``lbco-hrpt.easydiff``.
     """
-    suffix = pathlib.PurePosixPath(
-        record_path
-    ).suffix  # includes leading dot ('.cif', '.xye', ...)
-    # If URL has no suffix, fall back to no extension.
-    return f'ed-{data_id}{suffix}'
+    return pathlib.PurePosixPath(record_path).name
 
 
 def _normalize_known_hash(value: str | None) -> str | None:
@@ -367,17 +447,16 @@ def _existing_project_dir(extraction_dir: pathlib.Path) -> pathlib.Path | None:
     return project_files[0].parent.resolve()
 
 
-def _download_data_message(data_id: int | str, record: dict) -> str:
+def _download_data_message(name: str, record: dict) -> str:
     """Return the console message for one downloadable data record."""
     description = record.get('description', '')
-    message = f'Data #{data_id}'
+    message = f"Data '{name}'"
     if description:
         message += f': {description}'
     return message
 
 
 def _download_data_targets(
-    data_id: int | str,
     destination: str,
     record: dict,
 ) -> tuple[str, bool, pathlib.Path, pathlib.Path, pathlib.Path, str]:
@@ -386,7 +465,7 @@ def _download_data_targets(
     url = _build_data_url(record_path)
     _validate_url(url)
 
-    fname = _filename_for_id_from_path(data_id, record_path)
+    fname = _filename_from_path(record_path)
     is_project_archive = record.get('kind') == 'project' and fname.endswith('.zip')
     dest_path = resolve_artifact_path(destination)
     dest_path.mkdir(parents=True, exist_ok=True)
@@ -432,21 +511,35 @@ def _fetch_tutorials_index() -> dict:
         return {}
 
 
+def _resolve_data_id(name: int | str, index: dict) -> str:
+    """Resolve a dataset slug or interactive row number to an index key."""
+    if _is_positional(name):
+        return _resolve_positional(int(name), _ordered_keys(index), kind='dataset')
+    name = str(name)
+    _validate_dataset_id(name)
+    if name not in index:
+        msg = f"Unknown dataset '{name}'. Run list_data() to see available datasets."
+        raise KeyError(msg)
+    return name
+
+
 def download_data(
-    id: int | str,
+    name: int | str,
     destination: str = 'data',
     *,
     overwrite: bool = False,
 ) -> str:
     """
-    Download a dataset by numeric ID using the remote diffraction index.
+    Download a dataset by its slug id from the diffraction data index.
 
-    Example: path = download_data(id=12, destination="data")
+    Example: path = download_data('experiments/lbco-hrpt')
 
     Parameters
     ----------
-    id : int | str
-        Numeric dataset id (e.g. 12).
+    name : int | str
+        Dataset slug id ``<namespace>/<slug>`` (e.g.
+        ``'structures/lbco'``). Interactively, the row number shown by
+        :func:`list_data` is also accepted; use the slug in saved code.
     destination : str, default='data'
         Directory to save the downloaded file or extracted project into
         (created if missing). Relative destinations are resolved against
@@ -463,25 +556,18 @@ def download_data(
 
     Raises
     ------
+    ValueError
+        If ``name`` is not a valid dataset slug id.
     KeyError
-        If the id is not found in the index.
+        If the slug is not found in the index.
     """
     index = _fetch_data_index()
-    key = str(id)
-
-    if key not in index:
-        # Provide a helpful message (and keep KeyError semantics)
-        available = ', '.join(
-            sorted(index.keys(), key=lambda s: int(s) if s.isdigit() else s)[:20]
-        )
-        msg = f'Unknown dataset id={id}. Example available ids: {available} ...'
-        raise KeyError(msg)
-
-    record = index[key]
+    resource_id = _resolve_data_id(name, index)
+    record = index[resource_id]
     url, is_project_archive, dest_path, file_path, extraction_dir, fname = _download_data_targets(
-        id, destination, record
+        destination, record
     )
-    message = _download_data_message(id, record)
+    message = _download_data_message(resource_id, record)
 
     console.paragraph('Getting data...')
     console.print(f'{message}')
@@ -490,8 +576,8 @@ def download_data(
         existing_project_dir = _existing_project_dir(extraction_dir)
         if existing_project_dir is not None:
             console.print(
-                f"✅ Data #{id} already extracted at '{display_path(existing_project_dir)}'. "
-                'Keeping existing.'
+                f"✅ Data '{resource_id}' already extracted at "
+                f"'{display_path(existing_project_dir)}'. Keeping existing."
             )
             return str(existing_project_dir)
 
@@ -501,7 +587,7 @@ def download_data(
         if is_project_archive and not overwrite:
             project_dir = extract_project_from_zip(file_path, destination=extraction_dir)
             file_path.unlink()
-            console.print(f"✅ Data #{id} extracted to '{display_path(project_dir)}'")
+            console.print(f"✅ Data '{resource_id}' extracted to '{display_path(project_dir)}'")
             return str(project_dir)
         # Reuse a local file only when its bytes match the pinned index;
         # a content mismatch means the dataset was replaced upstream, so
@@ -510,11 +596,14 @@ def download_data(
         stale = known_hash is not None and _sha256_of_file(file_path) != known_hash
         if not overwrite and not stale:
             console.print(
-                f"✅ Data #{id} already present at '{display_path(file_path)}'. Keeping existing."
+                f"✅ Data '{resource_id}' already present at "
+                f"'{display_path(file_path)}'. Keeping existing."
             )
             return str(file_path)
         reason = 'is stale' if stale and not overwrite else 'will be overwritten'
-        log.debug(f"Data #{id} already present at '{display_path(file_path)}', but {reason}.")
+        log.debug(
+            f"Data '{resource_id}' already present at '{display_path(file_path)}', but {reason}."
+        )
         file_path.unlink()
 
     if is_project_archive and extraction_dir.exists() and overwrite:
@@ -531,10 +620,12 @@ def download_data(
     if is_project_archive:
         project_dir = extract_project_from_zip(file_path, destination=extraction_dir)
         file_path.unlink()
-        console.print(f"✅ Data #{id} downloaded and extracted to '{display_path(project_dir)}'")
+        console.print(
+            f"✅ Data '{resource_id}' downloaded and extracted to '{display_path(project_dir)}'"
+        )
         return str(project_dir)
 
-    console.print(f"✅ Data #{id} downloaded to '{display_path(file_path)}'")
+    console.print(f"✅ Data '{resource_id}' downloaded to '{display_path(file_path)}'")
     return str(file_path)
 
 
@@ -547,16 +638,19 @@ def list_data() -> None:
 
     console.paragraph('Example data available for download:')
 
-    columns_headers = ['id', 'file', 'kind', 'description']
+    # The id already carries the kind via its namespace, so no separate
+    # kind column. The leading '#' is a transient row number for
+    # interactive download; the slug is the canonical handle.
+    columns_headers = ['#', 'id', 'file', 'description']
     columns_alignment = ['right', 'left', 'left', 'left']
     columns_data = []
 
-    for data_id in sorted(index, key=lambda value: int(value) if value.isdigit() else value):
-        record = index[data_id]
+    for position, resource_id in enumerate(_ordered_keys(index), start=1):
+        record = index[resource_id]
         columns_data.append([
-            data_id,
+            position,
+            resource_id,
             pathlib.PurePosixPath(_record_path(record)).name,
-            record.get('kind', ''),
             record.get('description', ''),
         ])
 
@@ -804,14 +898,14 @@ def list_tutorials() -> None:
     version = _get_version_for_url()
     console.paragraph(f'Tutorials available for easydiffraction v{version}:')
 
-    columns_headers = ['id', 'file', 'tutorial']
-    columns_alignment = ['right', 'left', 'left']
+    columns_headers = ['#', 'id', 'file', 'tutorial']
+    columns_alignment = ['right', 'left', 'left', 'left']
     columns_data = []
 
     use_markup = not in_jupyter()
-    for tutorial_id in index:
+    for position, tutorial_id in enumerate(_ordered_keys(index), start=1):
         record = index[tutorial_id]
-        filename = f'ed-{tutorial_id}.ipynb'
+        filename = f'{tutorial_id}.ipynb'
         title = record.get('title', '')
         description = record.get('description', '')
         if not use_markup:
@@ -824,7 +918,7 @@ def list_tutorials() -> None:
                 details = f'{styled_title}\n[dim]{escape(description)}[/dim]'
             else:
                 details = styled_title
-        columns_data.append([tutorial_id, filename, details])
+        columns_data.append([position, tutorial_id, filename, details])
 
     render_table(
         columns_headers=columns_headers,
@@ -834,21 +928,35 @@ def list_tutorials() -> None:
     )
 
 
+def _resolve_tutorial_id(name: int | str, index: dict) -> str:
+    """Resolve a tutorial slug or interactive row number to an index key."""
+    if _is_positional(name):
+        return _resolve_positional(int(name), _ordered_keys(index), kind='tutorial')
+    name = str(name)
+    _validate_tutorial_id(name)
+    if name not in index:
+        msg = f"Unknown tutorial '{name}'. Run list_tutorials() to see available tutorials."
+        raise KeyError(msg)
+    return name
+
+
 def download_tutorial(
-    id: int | str,
+    name: int | str,
     destination: str = 'tutorials',
     *,
     overwrite: bool = False,
 ) -> str:
     """
-    Download a tutorial notebook by numeric ID.
+    Download a tutorial notebook by its slug id.
 
-    Example: path = download_tutorial(id=1, destination="tutorials")
+    Example: path = download_tutorial('refine-lbco-hrpt-from-cif')
 
     Parameters
     ----------
-    id : int | str
-        Numeric tutorial id (e.g. 1).
+    name : int | str
+        Tutorial slug id (e.g. ``'refine-lbco-hrpt-from-cif'``).
+        Interactively, the row number shown by :func:`list_tutorials` is
+        also accepted; use the slug in saved code.
     destination : str, default='tutorials'
         Directory to save the file into (created if missing). Relative
         destinations are resolved against the configured artifact root
@@ -863,32 +971,27 @@ def download_tutorial(
 
     Raises
     ------
+    ValueError
+        If ``name`` is not a valid tutorial slug id.
     KeyError
-        If the id is not found in the index.
+        If the slug is not found in the index.
     """
     index = _fetch_tutorials_index()
-    key = str(id)
+    resource_id = _resolve_tutorial_id(name, index)
 
-    if key not in index:
-        available = ', '.join(
-            sorted(index.keys(), key=lambda s: int(s) if s.isdigit() else s)[:20]
-        )
-        msg = f'Unknown tutorial id={id}. Available ids: {available}'
-        raise KeyError(msg)
-
-    record = index[key]
+    record = index[resource_id]
     url_template = record['url']
     url = _resolve_tutorial_url(url_template)
     _validate_url(url)
 
-    fname = f'ed-{id}.ipynb'
+    fname = f'{resource_id}.ipynb'
 
     dest_path = resolve_artifact_path(destination)
     dest_path.mkdir(parents=True, exist_ok=True)
     file_path = dest_path / fname
 
     title = record.get('title', '')
-    message = f'Tutorial #{id}'
+    message = f"Tutorial '{resource_id}'"
     if title:
         message += f': {title}'
 
@@ -898,13 +1001,13 @@ def download_tutorial(
     if file_path.exists():
         if not overwrite:
             console.print(
-                f"✅ Tutorial #{id} already present at '{display_path(file_path)}'. "
-                'Keeping existing.'
+                f"✅ Tutorial '{resource_id}' already present at "
+                f"'{display_path(file_path)}'. Keeping existing."
             )
             return str(file_path)
         log.debug(
-            f"Tutorial #{id} already present at '{display_path(file_path)}', "
-            'but will be overwritten.'
+            f"Tutorial '{resource_id}' already present at "
+            f"'{display_path(file_path)}', but will be overwritten."
         )
         file_path.unlink()
 
@@ -912,7 +1015,7 @@ def download_tutorial(
     with _safe_urlopen(url) as resp:
         file_path.write_bytes(resp.read())
 
-    console.print(f"✅ Tutorial #{id} downloaded to '{display_path(file_path)}'")
+    console.print(f"✅ Tutorial '{resource_id}' downloaded to '{display_path(file_path)}'")
     return str(file_path)
 
 
@@ -949,16 +1052,16 @@ def download_all_tutorials(
     console.print(f'📥 Downloading all tutorials for easydiffraction v{version}...')
 
     downloaded_paths = []
-    for tutorial_id in sorted(index.keys(), key=lambda x: int(x) if x.isdigit() else x):
+    for tutorial_id in _ordered_keys(index):
         try:
             path = download_tutorial(
-                id=tutorial_id,
+                tutorial_id,
                 destination=destination,
                 overwrite=overwrite,
             )
             downloaded_paths.append(path)
         except (OSError, ValueError) as e:
-            log.warning(f'Failed to download tutorial #{tutorial_id}: {e}')
+            log.warning(f"Failed to download tutorial '{tutorial_id}': {e}")
 
     resolved_destination = resolve_artifact_path(destination)
     console.print(

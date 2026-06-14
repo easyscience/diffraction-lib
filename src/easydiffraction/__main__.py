@@ -179,7 +179,10 @@ def list_tutorials() -> None:
 
 @app.command('download-data')
 def download_data(
-    id: int = typer.Argument(..., help='Data ID to download.'),
+    name: str = typer.Argument(
+        ...,
+        help="Dataset slug, e.g. 'experiments/lbco-hrpt', or the row number from list-data.",
+    ),
     destination: str = typer.Option(
         'data',
         '--destination',
@@ -193,13 +196,16 @@ def download_data(
         help='Overwrite an existing file or extracted project if present.',
     ),
 ) -> None:
-    """Download one example data record by ID."""
-    ed.download_data(id=id, destination=destination, overwrite=overwrite)
+    """Download one example dataset by its slug."""
+    ed.download_data(name, destination=destination, overwrite=overwrite)
 
 
 @app.command('download-tutorial')
 def download_tutorial(
-    id: int = typer.Argument(..., help='Tutorial ID to download.'),
+    name: str = typer.Argument(
+        ...,
+        help="Tutorial slug, e.g. 'refine-lbco-hrpt-from-cif', or the row number from list-tutorials.",
+    ),
     destination: str = typer.Option(
         'tutorials',
         '--destination',
@@ -213,8 +219,8 @@ def download_tutorial(
         help='Overwrite existing file if present.',
     ),
 ) -> None:
-    """Download a specific tutorial notebook by ID."""
-    ed.download_tutorial(id=id, destination=destination, overwrite=overwrite)
+    """Download a specific tutorial notebook by its slug."""
+    ed.download_tutorial(name, destination=destination, overwrite=overwrite)
 
 
 @app.command('download-all-tutorials')
