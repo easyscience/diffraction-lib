@@ -5,6 +5,8 @@
 from __future__ import annotations
 
 import functools
+import hashlib
+import importlib.resources
 import json
 import pathlib
 import shutil
@@ -208,15 +210,49 @@ _PARAMETER_DOCS_ITEM_ROUTES = {
         'sin_theta_over_lambda_min',
     ): ('experiment/refln', 'refln-sin-theta-over-lambda-range-min'),
 }
-# commit SHA preferred
-_DATA_INDEX_REF = 'e1570a3486a2ecc680e322b8b013e1e9d8a1c05c'
-# macOS: sha256sum index.json
-_DATA_INDEX_HASH = 'sha256:fead3c3dc9fe01c79fb03452caf9c1d74c0881e7010930ebdd83a4228988ac49'
+# The downloadable data is pinned to one git commit of the data
+# repository, stored in this packaged file and read at runtime (see the
+# data-source-pinning ADR). It is the single source of truth for which
+# data snapshot a build uses; edit the file to bump the data.
+_DATA_INDEX_REF_RESOURCE = '_data_index_ref.txt'
+_FULL_SHA_LENGTH = 40
+_HEX_DIGITS = frozenset('0123456789abcdef')
+
+
+@functools.lru_cache(maxsize=1)
+def _data_index_ref() -> str:
+    """
+    Return the validated commit pinning the downloadable data.
+
+    Returns
+    -------
+    str
+        The full 40-character hexadecimal commit SHA read from the
+        packaged ``_data_index_ref.txt`` file.
+
+    Raises
+    ------
+    ValueError
+        If the stored value is not a full 40-character hex commit SHA.
+    """
+    raw = (
+        importlib.resources.files('easydiffraction')
+        .joinpath(_DATA_INDEX_REF_RESOURCE)
+        .read_text(encoding='utf-8')
+    )
+    ref = raw.strip()
+    if len(ref) != _FULL_SHA_LENGTH or not set(ref.lower()) <= _HEX_DIGITS:
+        msg = (
+            f"Invalid data index ref '{ref}' in {_DATA_INDEX_REF_RESOURCE}: "
+            'expected a full 40-character hexadecimal git commit SHA.'
+        )
+        raise ValueError(msg)
+    return ref
 
 
 def _build_data_url(path: str) -> str:
     path = path.lstrip('/')
-    return f'https://raw.githubusercontent.com/{_DATA_REPO}/{_DATA_INDEX_REF}/{_DATA_ROOT}/{path}'
+    return f'https://raw.githubusercontent.com/{_DATA_REPO}/{_data_index_ref()}/{_DATA_ROOT}/{path}'
 
 
 def _record_path(record: dict) -> str:
@@ -272,18 +308,48 @@ def _normalize_known_hash(value: str | None) -> str | None:
     return value
 
 
+def _record_hash(record: dict) -> str | None:
+    """Return the normalized ``sha256:`` content hash for a record."""
+    return _normalize_known_hash(record.get('hash'))
+
+
+def _sha256_of_file(path: pathlib.Path) -> str:
+    """Return the ``sha256:<hex>`` digest of a file's contents."""
+    digest = hashlib.sha256()
+    with path.open('rb') as handle:
+        for chunk in iter(lambda: handle.read(65536), b''):
+            digest.update(chunk)
+    return f'sha256:{digest.hexdigest()}'
+
+
+def _content_tag(record: dict) -> str:
+    """
+    Return a short content tag for keying extracted project directories.
+
+    Derived from the record's ``sha256`` so that a replaced archive
+    extracts to a fresh directory instead of reusing a stale one
+    (data-source-pinning ADR, Decision 7). Returns an empty string when
+    the record carries no usable hash.
+    """
+    known = _record_hash(record)
+    if known is None:
+        return ''
+    return known.split(':', 1)[-1][:12]
+
+
 def _fetch_data_index() -> dict:
     """Fetch and cache the diffraction data index.json."""
     index_url = _build_data_url('index.json')
     _validate_url(index_url)
 
-    destination_dirname = 'easydiffraction'
-    destination_fname = 'data-index.json'
-    cache_dir = pooch.os_cache(destination_dirname)
+    cache_dir = pooch.os_cache('easydiffraction')
+    # Cache under a commit-named file so a ref bump downloads a fresh
+    # index instead of reusing a stale one (data-source-pinning ADR).
+    destination_fname = f'data-index-{_data_index_ref()}.json'
 
     index_path = pooch.retrieve(
         url=index_url,
-        known_hash=_DATA_INDEX_HASH,
+        known_hash=None,
         fname=destination_fname,
         path=cache_dir,
         progressbar=False,
@@ -325,7 +391,12 @@ def _download_data_targets(
     dest_path = resolve_artifact_path(destination)
     dest_path.mkdir(parents=True, exist_ok=True)
     file_path = dest_path / fname
-    extraction_dir = dest_path / pathlib.Path(fname).stem
+    # Key the extraction directory by content so a replaced project
+    # archive extracts to a fresh directory instead of reusing a stale
+    # one (data-source-pinning ADR, Decision 7).
+    stem = pathlib.Path(fname).stem
+    tag = _content_tag(record)
+    extraction_dir = dest_path / (f'{stem}-{tag}' if tag else stem)
     return url, is_project_archive, dest_path, file_path, extraction_dir, fname
 
 
@@ -424,23 +495,27 @@ def download_data(
             )
             return str(existing_project_dir)
 
+    known_hash = _record_hash(record)
+
     if file_path.exists():
         if is_project_archive and not overwrite:
             project_dir = extract_project_from_zip(file_path, destination=extraction_dir)
             file_path.unlink()
             console.print(f"✅ Data #{id} extracted to '{display_path(project_dir)}'")
             return str(project_dir)
-        if not overwrite:
+        # Reuse a local file only when its bytes match the pinned index;
+        # a content mismatch means the dataset was replaced upstream, so
+        # re-download instead of serving stale data (data-source-pinning
+        # ADR, Decision 7).
+        stale = known_hash is not None and _sha256_of_file(file_path) != known_hash
+        if not overwrite and not stale:
             console.print(
                 f"✅ Data #{id} already present at '{display_path(file_path)}'. Keeping existing."
             )
             return str(file_path)
-        log.debug(
-            f"Data #{id} already present at '{display_path(file_path)}', but will be overwritten."
-        )
+        reason = 'is stale' if stale and not overwrite else 'will be overwritten'
+        log.debug(f"Data #{id} already present at '{display_path(file_path)}', but {reason}.")
         file_path.unlink()
-
-    known_hash = _normalize_known_hash(record.get('hash'))
 
     if is_project_archive and extraction_dir.exists() and overwrite:
         shutil.rmtree(extraction_dir)
