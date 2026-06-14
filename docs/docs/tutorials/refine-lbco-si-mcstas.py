@@ -118,7 +118,7 @@ structure_2.atom_sites.create(
 # ### Download Data
 
 # %%
-data_path = download_data('measured/lbco-si-mcstas', destination='data')
+data_path = download_data('meas-lbco-si-mcstas', destination='data')
 
 # %% [markdown]
 # ### Create Experiment

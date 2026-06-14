@@ -66,7 +66,7 @@ structure.atom_sites.create(
 # #### Download Data
 
 # %%
-bragg_data_path = download_data('measured/si-sepd', destination='data')
+bragg_data_path = download_data('meas-si-sepd', destination='data')
 
 # %% [markdown]
 # #### Create Experiment
@@ -118,7 +118,7 @@ bragg_expt.linked_structures.create(structure_id='si', scale=13.0)
 # #### Download Data
 
 # %%
-pdf_data_path = download_data('measured/si-pdf-nomad', destination='data')
+pdf_data_path = download_data('meas-si-pdf-nomad', destination='data')
 
 # %% [markdown]
 # #### Create Experiment

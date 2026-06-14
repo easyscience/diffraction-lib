@@ -129,7 +129,7 @@ project.display.structure(struct_name='cosio')
 # ### Download Data
 
 # %%
-zip_path = ed.download_data('measured/cosio-d20-scan-3f', destination='data')
+zip_path = ed.download_data('meas-cosio-d20-scan-3f', destination='data')
 
 # %% [markdown]
 # ### Extract Data Files

@@ -73,7 +73,7 @@ project.display.structure(struct_name='nacl')
 # ### Add Experiment
 
 # %%
-data_path = ed.download_data('measured/nacl-pdf', destination='data')
+data_path = ed.download_data('meas-nacl-pdf', destination='data')
 
 # %%
 project.experiments.add_from_data_path(

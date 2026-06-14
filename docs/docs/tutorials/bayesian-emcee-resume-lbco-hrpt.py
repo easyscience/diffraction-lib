@@ -41,7 +41,7 @@ import easydiffraction as ed
 # and posterior caches, from the EasyDiffraction data repository.
 
 # %%
-project_dir = ed.download_data('projects/lbco-hrpt-emcee', destination='projects')
+project_dir = ed.download_data('proj-lbco-hrpt-emcee', destination='projects')
 
 # %% [markdown]
 # ### Load Project

@@ -49,7 +49,7 @@ project.save_as(dir_path='projects/ed_22_tbti_heidi_emcee')
 # model without rebuilding the full structure by hand.
 
 # %%
-structure_path = ed.download_data('structures/tbti', destination='data')
+structure_path = ed.download_data('struct-tbti', destination='data')
 
 # %%
 project.structures.add_from_cif_path(structure_path)
@@ -72,7 +72,7 @@ project.display.structure(struct_name='tbti')
 # wavelength, and extinction model.
 
 # %%
-data_path = ed.download_data('measured/tbti-heidi', destination='data')
+data_path = ed.download_data('meas-tbti-heidi', destination='data')
 
 # %%
 project.experiments.add_from_data_path(

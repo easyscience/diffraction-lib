@@ -62,7 +62,7 @@ structure.atom_sites.create(
 # ### Download Data
 
 # %%
-data_path = download_data('measured/si-sepd', destination='data')
+data_path = download_data('meas-si-sepd', destination='data')
 
 # %% [markdown]
 # ### Create Experiment

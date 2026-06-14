@@ -60,7 +60,7 @@ project.display.structure(struct_name='si')
 # ### Add Experiment
 
 # %%
-data_path = ed.download_data('measured/si-pdf-nomad', destination='data')
+data_path = ed.download_data('meas-si-pdf-nomad', destination='data')
 
 # %%
 project.experiments.add_from_data_path(

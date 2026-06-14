@@ -23,7 +23,7 @@ import easydiffraction as ed
 # EasyDiffraction data repository.
 
 # %%
-project_dir = ed.download_data('projects/cosio-d20-scan', destination='projects', overwrite=True)
+project_dir = ed.download_data('proj-cosio-d20-scan', destination='projects', overwrite=True)
 
 # %% [markdown]
 # ### Load Project

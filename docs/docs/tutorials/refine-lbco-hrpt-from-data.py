@@ -92,7 +92,7 @@ project.display.structure(struct_name='lbco')
 # ## 🔬 Define Experiment
 
 # %%
-data_path = ed.download_data('measured/lbco-hrpt', destination='data')
+data_path = ed.download_data('meas-lbco-hrpt', destination='data')
 
 # %%
 project.experiments.add_from_data_path(

@@ -33,7 +33,7 @@ project = ed.Project(name='lbco_simulation')
 # ### Download CIF file
 
 # %%
-structure_path = ed.download_data('structures/lbco', destination='data')
+structure_path = ed.download_data('struct-lbco', destination='data')
 
 # %% [markdown]
 # ### Add Structure from CIF

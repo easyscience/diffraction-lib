@@ -75,7 +75,7 @@ import easydiffraction as ed
 
 ed.list_data()
 
-data_path = ed.download_data('measured/lbco-hrpt', destination='data')
+data_path = ed.download_data('meas-lbco-hrpt', destination='data')
 ```
 
 This command downloads the `measured/lbco-hrpt` dataset and saves it in

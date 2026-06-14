@@ -105,7 +105,7 @@ structure.atom_sites.create(
 # ### Download Data
 
 # %%
-data_path = download_data('measured/cosio-d20', destination='data')
+data_path = download_data('meas-cosio-d20', destination='data')
 
 # %% [markdown]
 # ### Create Experiment

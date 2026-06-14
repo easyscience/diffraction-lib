@@ -22,7 +22,7 @@ project = ed.Project(name='taurine_senju')
 
 # %%
 # Download CIF file from repository
-structure_path = ed.download_data('structures/taurine', destination='data')
+structure_path = ed.download_data('struct-taurine', destination='data')
 
 # %%
 project.structures.add_from_cif_path(structure_path)
@@ -44,7 +44,7 @@ project.display.structure(struct_name='taurine')
 
 # %%
 # Download data file from repository
-data_path = ed.download_data('measured/taurine-senju', destination='data')
+data_path = ed.download_data('meas-taurine-senju', destination='data')
 
 # %%
 project.experiments.add_from_data_path(

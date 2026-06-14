@@ -233,7 +233,7 @@ project.save()
 # Download the data file from the EasyDiffraction repository on GitHub.
 
 # %%
-data_path = ed.download_data('measured/lbco-hrpt', destination='data')
+data_path = ed.download_data('meas-lbco-hrpt', destination='data')
 
 # %% [markdown]
 # ### Create Experiment

@@ -132,7 +132,7 @@ project.display.structure(struct_name='lbco')
 # downloading from the repository.
 
 # %%
-data_path = ed.download_data('measured/lbco-hrpt', destination='data')
+data_path = ed.download_data('meas-lbco-hrpt', destination='data')
 
 # %% [markdown]
 # Create the experiment object and specify the sample form, beam mode,

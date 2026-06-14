@@ -41,8 +41,8 @@ Download a dataset by its slug into a local directory:
 ```python
 ed.list_data()
 
-structure_path = ed.download_data('structures/lbco', destination='data')
-data_path = ed.download_data('measured/lbco-hrpt', destination='data')
+structure_path = ed.download_data('struct-lbco', destination='data')
+data_path = ed.download_data('meas-lbco-hrpt', destination='data')
 ```
 
 Project archives are extracted automatically, and `download_data()`
@@ -422,7 +422,7 @@ during the normal project save.
 Load a saved example project straight from `download_data()`:
 
 ```python
-saved_project_dir = ed.download_data('projects/lbco-hrpt', destination='projects')
+saved_project_dir = ed.download_data('proj-lbco-hrpt', destination='projects')
 project = ed.Project.load(saved_project_dir)
 ```
 

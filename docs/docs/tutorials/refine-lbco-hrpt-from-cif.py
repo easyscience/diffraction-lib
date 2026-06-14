@@ -34,7 +34,7 @@ project = ed.Project(name='lbco_hrpt')
 
 # %%
 # Download CIF file from repository
-structure_path = ed.download_data('structures/lbco', destination='data')
+structure_path = ed.download_data('struct-lbco', destination='data')
 
 # %%
 # Add structure from downloaded CIF
@@ -49,7 +49,7 @@ project.display.structure(struct_name='lbco')
 
 # %%
 # Download CIF file from repository
-expt_path = ed.download_data('experiments/lbco-hrpt', destination='data')
+expt_path = ed.download_data('expt-lbco-hrpt', destination='data')
 
 # %%
 # Add experiment from downloaded CIF

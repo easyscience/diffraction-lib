@@ -75,7 +75,7 @@ austenite.atom_sites.create(
 # ### Download Data
 
 # %%
-zip_path = download_data('measured/ferrite-austenite-beer', destination='data')
+zip_path = download_data('meas-ferrite-austenite-beer', destination='data')
 data_paths = extract_data_paths_from_zip(zip_path, destination='data/ed-20')
 
 data_path_s2 = data_paths[1]  # 'Duplex_in_HR_for_IRF_S2.dat'

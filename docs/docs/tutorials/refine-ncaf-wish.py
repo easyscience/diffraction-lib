@@ -103,10 +103,10 @@ structure.atom_sites.create(
 # ### Download Data
 
 # %%
-data_path56 = download_data('measured/ncaf-wish-b56', destination='data')
+data_path56 = download_data('meas-ncaf-wish-b56', destination='data')
 
 # %%
-data_path47 = download_data('measured/ncaf-wish-b47', destination='data')
+data_path47 = download_data('meas-ncaf-wish-b47', destination='data')
 
 # %% [markdown]
 # ### Create Experiment

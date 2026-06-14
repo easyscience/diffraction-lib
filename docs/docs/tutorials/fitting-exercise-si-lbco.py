@@ -105,7 +105,7 @@ si_xye_path = f'{data_dir}/{file_name}'
 # file is already present.
 
 # %%
-si_xye_path = ed.download_data('measured/si-mcstas-dmsc2025', destination=data_dir)
+si_xye_path = ed.download_data('meas-si-mcstas-dmsc2025', destination=data_dir)
 
 # %% [markdown]
 # Now we can create the experiment and load the measured data. In this
@@ -768,7 +768,7 @@ lbco_xye_path = f'{data_dir}/{file_name}'
 
 # Uncomment the following line if your data reduction failed and the
 # reduced data file is missing.
-lbco_xye_path = ed.download_data('measured/lbco-si-mcstas-dmsc2025', destination=data_dir)
+lbco_xye_path = ed.download_data('meas-lbco-si-mcstas-dmsc2025', destination=data_dir)
 
 project_2.experiments.add_from_data_path(
     name='sim_lbco',

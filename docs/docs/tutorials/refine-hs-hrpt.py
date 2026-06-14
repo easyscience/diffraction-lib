@@ -94,7 +94,7 @@ structure.atom_sites.create(
 # ### Download Data
 
 # %%
-data_path = download_data('measured/hs-hrpt', destination='data')
+data_path = download_data('meas-hs-hrpt', destination='data')
 
 # %% [markdown]
 # ### Create Experiment

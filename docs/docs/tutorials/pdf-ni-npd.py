@@ -52,7 +52,7 @@ project.display.structure(struct_name='ni')
 # ### Add Experiment
 
 # %%
-data_path = ed.download_data('measured/ni-pdf', destination='data')
+data_path = ed.download_data('meas-ni-pdf', destination='data')
 
 # %%
 project.experiments.add_from_data_path(

@@ -102,7 +102,7 @@ structure.atom_sites.create(
 # #### Download Data
 
 # %%
-data_path1 = download_data('measured/pbso4-d1a', destination='data')
+data_path1 = download_data('meas-pbso4-d1a', destination='data')
 
 # %% [markdown]
 # #### Create Experiment
@@ -168,7 +168,7 @@ expt1.linked_structures.create(structure_id='pbso4', scale=1.5)
 # #### Download Data
 
 # %%
-data_path2 = download_data('measured/pbso4-xray', destination='data')
+data_path2 = download_data('meas-pbso4-xray', destination='data')
 
 # %% [markdown]
 # #### Create Experiment

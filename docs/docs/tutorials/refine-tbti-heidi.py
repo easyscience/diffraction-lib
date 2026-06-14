@@ -28,7 +28,7 @@ project.save_as(dir_path='projects/ed_14_tbti_heidi')
 
 # %%
 # Download CIF file from repository
-structure_path = ed.download_data('structures/tbti', destination='data')
+structure_path = ed.download_data('struct-tbti', destination='data')
 
 # %%
 project.structures.add_from_cif_path(structure_path)
@@ -75,7 +75,7 @@ project.display.structure(struct_name='tbti')
 
 # %%
 # Download data file from repository
-data_path = ed.download_data('measured/tbti-heidi', destination='data')
+data_path = ed.download_data('meas-tbti-heidi', destination='data')
 
 # %%
 project.experiments.add_from_data_path(
