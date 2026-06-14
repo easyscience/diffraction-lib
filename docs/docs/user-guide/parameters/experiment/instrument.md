@@ -1,3 +1,7 @@
+---
+title: instrument
+---
+
 # :material-microscope: instrument
 
 [pd-neut-cwl][3]{:.label-experiment}

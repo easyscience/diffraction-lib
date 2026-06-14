@@ -1,3 +1,7 @@
+---
+title: peak
+---
+
 # :material-shape: peak
 
 ## Constant-Wavelength Powder Profiles

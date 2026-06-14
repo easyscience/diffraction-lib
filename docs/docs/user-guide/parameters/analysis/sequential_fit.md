@@ -1,3 +1,7 @@
+---
+title: sequential_fit
+---
+
 # :material-skip-next-circle: sequential_fit
 
 ## :material-tag: chunk_size { #sequential-fit-chunk-size }

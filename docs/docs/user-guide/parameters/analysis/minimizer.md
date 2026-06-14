@@ -1,3 +1,7 @@
+---
+title: minimizer
+---
+
 # :material-graph-outline: minimizer
 
 ## :material-tag: burn_in_steps { #minimizer-burn-in-steps }

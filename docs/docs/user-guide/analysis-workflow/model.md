@@ -1,4 +1,5 @@
 ---
+title: Structure
 icon: material/puzzle
 ---
 

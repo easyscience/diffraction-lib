@@ -1,3 +1,7 @@
+---
+title: calculator
+---
+
 # :material-calculator: calculator
 
 [pd-neut-cwl][3]{:.label-experiment}

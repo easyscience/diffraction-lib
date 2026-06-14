@@ -1,3 +1,7 @@
+---
+title: structure_style
+---
+
 # :material-palette: structure_style
 
 ## :material-tag: adp_probability { #structure-style-adp-probability }

@@ -1,3 +1,7 @@
+---
+title: constraint
+---
+
 # :material-function-variant: constraint
 
 ## :material-tag: expression { #constraint-expression }

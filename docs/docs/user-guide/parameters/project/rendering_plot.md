@@ -1,3 +1,7 @@
+---
+title: rendering_plot
+---
+
 # :material-chart-areaspline: rendering_plot
 
 ## :material-shape: type { #rendering-plot-type }

@@ -1,4 +1,5 @@
 ---
+title: Experiment
 icon: material/microscope
 ---
 

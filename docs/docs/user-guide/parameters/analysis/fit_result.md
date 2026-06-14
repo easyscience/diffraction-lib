@@ -1,3 +1,7 @@
+---
+title: fit_result
+---
+
 # :material-check-decagram: fit_result
 
 ## :material-tag: R_factor_all { #fit-result-r-factor-all }

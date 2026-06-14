@@ -1,3 +1,7 @@
+---
+title: pd_meas
+---
+
 # :material-chart-scatter-plot: pd_meas
 
 [pd-neut-cwl][3]{:.label-experiment}

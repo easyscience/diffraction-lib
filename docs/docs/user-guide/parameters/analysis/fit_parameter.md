@@ -1,3 +1,7 @@
+---
+title: fit_parameter
+---
+
 # :material-tune-variant: fit_parameter
 
 ## :material-tag: bounds_uncertainty_multiplier { #fit-parameter-bounds-uncertainty-multiplier }

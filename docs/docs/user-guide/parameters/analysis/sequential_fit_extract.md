@@ -1,3 +1,7 @@
+---
+title: sequential_fit_extract
+---
+
 # :material-text-search: sequential_fit_extract
 
 ## :material-tag: id { #sequential-fit-extract-id }

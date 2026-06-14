@@ -1,4 +1,5 @@
 ---
+title: Analysis
 icon: material/calculator
 ---
 

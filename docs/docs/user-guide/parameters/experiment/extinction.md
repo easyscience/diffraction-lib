@@ -1,3 +1,7 @@
+---
+title: extinction
+---
+
 # :material-lightbulb-off-outline: extinction
 
 [sc-neut-cwl][3]{:.label-experiment}

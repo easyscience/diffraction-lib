@@ -1,3 +1,7 @@
+---
+title: alias
+---
+
 # :material-link-variant: alias
 
 ## :material-tag: id { #alias-id }

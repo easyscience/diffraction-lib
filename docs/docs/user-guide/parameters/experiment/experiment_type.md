@@ -1,3 +1,7 @@
+---
+title: experiment_type
+---
+
 # :material-flask: experiment_type
 
 [pd-neut-cwl][3]{:.label-experiment}

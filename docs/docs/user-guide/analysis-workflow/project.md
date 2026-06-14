@@ -1,4 +1,5 @@
 ---
+title: Project
 icon: material/archive
 ---
 

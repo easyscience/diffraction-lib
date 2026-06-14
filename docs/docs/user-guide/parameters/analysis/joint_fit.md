@@ -1,3 +1,7 @@
+---
+title: joint_fit
+---
+
 # :material-link-box: joint_fit
 
 ## :material-tag: experiment_id { #joint-fit-experiment-id }

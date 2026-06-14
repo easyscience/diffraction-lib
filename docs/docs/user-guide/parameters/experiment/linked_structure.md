@@ -1,3 +1,7 @@
+---
+title: linked_structure
+---
+
 # :material-puzzle: linked_structure
 
 [pd-neut-cwl][3]{:.label-experiment}

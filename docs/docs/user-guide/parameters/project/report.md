@@ -1,3 +1,7 @@
+---
+title: report
+---
+
 # :material-file-chart: report
 
 ## :material-tag: cif { #report-cif }

@@ -1,3 +1,7 @@
+---
+title: verbosity
+---
+
 # :material-message-alert-outline: verbosity
 
 ## :material-tag: fit { #verbosity-fit }

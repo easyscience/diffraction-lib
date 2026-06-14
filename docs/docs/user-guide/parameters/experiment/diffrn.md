@@ -1,3 +1,7 @@
+---
+title: diffrn
+---
+
 # :material-telescope: diffrn
 
 [pd-neut-cwl][3]{:.label-experiment}

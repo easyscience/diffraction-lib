@@ -1,4 +1,5 @@
 ---
+title: Report
 icon: material/clipboard-text
 ---
 

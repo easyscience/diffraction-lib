@@ -1,4 +1,5 @@
 ---
+title: Command-Line Interface
 icon: material/console
 ---
 

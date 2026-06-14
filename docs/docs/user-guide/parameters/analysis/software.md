@@ -1,3 +1,7 @@
+---
+title: software
+---
+
 # :material-application-cog: software
 
 ## :material-tag: id { #software-id }

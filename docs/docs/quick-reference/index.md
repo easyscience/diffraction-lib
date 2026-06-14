@@ -1,4 +1,5 @@
 ---
+title: Quick Reference
 icon: material/clipboard-text-outline
 ---
 

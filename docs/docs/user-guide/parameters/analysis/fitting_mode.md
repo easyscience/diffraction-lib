@@ -1,3 +1,7 @@
+---
+title: fitting_mode
+---
+
 # :material-playlist-check: fitting_mode
 
 ## :material-shape: type { #fitting-mode-type }

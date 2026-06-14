@@ -1,4 +1,5 @@
 ---
+title: Tutorials
 icon: material/school
 ---
 

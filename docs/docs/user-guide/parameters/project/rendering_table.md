@@ -1,3 +1,7 @@
+---
+title: rendering_table
+---
+
 # :material-table: rendering_table
 
 ## :material-shape: type { #rendering-table-type }

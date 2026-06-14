@@ -1,3 +1,7 @@
+---
+title: structure_view
+---
+
 # :material-cube-scan: structure_view
 
 ## :material-arrow-left-right: range_a_max { #structure-view-range-a-max }

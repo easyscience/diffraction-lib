@@ -1,3 +1,7 @@
+---
+title: space_group_Wyckoff
+---
+
 # :material-grid: space_group_Wyckoff
 
 [pd-neut-cwl][3]{:.label-experiment}

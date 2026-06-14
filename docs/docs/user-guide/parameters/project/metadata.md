@@ -1,3 +1,7 @@
+---
+title: metadata
+---
+
 # :material-card-text-outline: metadata
 
 ## :material-tag: created { #metadata-created }

@@ -1,3 +1,7 @@
+---
+title: rendering_structure
+---
+
 # :material-molecule: rendering_structure
 
 ## :material-shape: type { #rendering-structure-type }

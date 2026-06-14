@@ -1,3 +1,7 @@
+---
+title: preferred_orientation
+---
+
 # :material-compass-outline: preferred_orientation
 
 [pd-neut-cwl][3]{:.label-experiment}

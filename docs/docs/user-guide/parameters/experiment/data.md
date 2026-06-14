@@ -1,3 +1,7 @@
+---
+title: data
+---
+
 # :material-chart-line: data
 
 [pd-neut-cwl][3]{:.label-experiment}
