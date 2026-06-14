@@ -224,9 +224,7 @@ def _load_model_blocks(project_dir: Path) -> dict[str, _CifBlock]:
     return blocks
 
 
-def parse_analysis_edi(
-    text: str, model_blocks: dict[str, _CifBlock] | None = None
-) -> AnalysisEdi:
+def parse_analysis_edi(text: str, model_blocks: dict[str, _CifBlock] | None = None) -> AnalysisEdi:
     """Parse ``_fit_result`` scalars and the ``_fit_parameter`` loop."""
     fit_result: dict[str, str] = {}
     fit_parameters: dict[str, dict[str, str]] = {}

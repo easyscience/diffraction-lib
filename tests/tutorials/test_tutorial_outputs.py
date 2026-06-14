@@ -127,6 +127,4 @@ def test_sequential_tutorial_saved(name: str) -> None:
     assert cif_path.is_file(), f"Missing {cif_path}; tutorial '{name}' did not save its project."
 
     text = cif_path.read_text(encoding='utf-8')
-    assert '_fitting_mode.type sequential' in text, (
-        f'{name}: analysis.edi is not a sequential fit'
-    )
+    assert '_fitting_mode.type sequential' in text, f'{name}: analysis.edi is not a sequential fit'

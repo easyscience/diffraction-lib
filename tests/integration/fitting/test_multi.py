@@ -5,7 +5,7 @@ import tempfile
 
 from numpy.testing import assert_almost_equal
 
-import easydiffraction as ed
+import easydiffraction as edi
 from easydiffraction import ExperimentFactory
 from easydiffraction import Project
 from easydiffraction import StructureFactory
@@ -178,7 +178,7 @@ def _test_joint_fit_bragg_pdf_neutron_pd_tof_si() -> None:
         bragg_expt.background.create(id=str(x), position=x, intensity=200)
 
     # Set PDF experiment (NOMAD, TOF)
-    pdf_data_path = ed.download_data('meas-si-pdf-nomad', destination=TEMP_DIR)
+    pdf_data_path = edi.download_data('meas-si-pdf-nomad', destination=TEMP_DIR)
     pdf_expt = ExperimentFactory.from_data_path(
         name='nomad',
         data_path=pdf_data_path,

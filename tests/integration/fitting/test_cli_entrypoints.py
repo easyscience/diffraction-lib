@@ -5,11 +5,12 @@ from __future__ import annotations
 
 from typer.testing import CliRunner
 
+import easydiffraction as edi
+
 runner = CliRunner()
 
 
 def test_cli_version_invokes_show_version(monkeypatch):
-    import easydiffraction as ed
     import easydiffraction.__main__ as main_mod
 
     called = {'ok': False}
@@ -18,7 +19,7 @@ def test_cli_version_invokes_show_version(monkeypatch):
         print('VERSION_OK')
         called['ok'] = True
 
-    monkeypatch.setattr(ed, 'show_version', fake_show_version)
+    monkeypatch.setattr(edi, 'show_version', fake_show_version)
 
     result = runner.invoke(main_mod.app, ['--version'])
 
@@ -37,18 +38,17 @@ def test_cli_help_shows_and_exits_zero():
 
 
 def test_cli_subcommands_call_utils(monkeypatch):
-    import easydiffraction as ed
     import easydiffraction.__main__ as main_mod
 
     calls: list[str] = []
-    monkeypatch.setattr(ed, 'list_tutorials', lambda: calls.append('LIST'))
+    monkeypatch.setattr(edi, 'list_tutorials', lambda: calls.append('LIST'))
     monkeypatch.setattr(
-        ed,
+        edi,
         'download_all_tutorials',
         lambda destination='tutorials', overwrite=False: calls.append('DOWNLOAD_ALL'),
     )
     monkeypatch.setattr(
-        ed,
+        edi,
         'download_tutorial',
         lambda id, destination='tutorials', overwrite=False: calls.append(f'DOWNLOAD_{id}'),
     )

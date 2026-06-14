@@ -8,30 +8,30 @@ import pytest
 
 
 def test_lazy_attributes_resolve_and_are_accessible():
-    import easydiffraction as ed
+    import easydiffraction as edi
 
     # Access a few lazy attributes; just ensure they exist and are callable/class-like
-    assert hasattr(ed, 'Project')
-    assert hasattr(ed, 'ExperimentFactory')
-    assert hasattr(ed, 'StructureFactory')
+    assert hasattr(edi, 'Project')
+    assert hasattr(edi, 'ExperimentFactory')
+    assert hasattr(edi, 'StructureFactory')
 
     # Access utility functions from utils via lazy getattr
-    assert callable(ed.show_version)
-    assert callable(ed.extract_metadata)
+    assert callable(edi.show_version)
+    assert callable(edi.extract_metadata)
 
     # Import once to exercise __getattr__; subsequent access should be cached by Python
-    _ = ed.Project
-    _ = ed.ExperimentFactory
+    _ = edi.Project
+    _ = edi.ExperimentFactory
 
 
 def test___getattr__unknown_raises_attribute_error():
-    ed = importlib.import_module('easydiffraction')
+    edi = importlib.import_module('easydiffraction')
     with pytest.raises(AttributeError):
-        ed.DefinitelyUnknownAttribute
+        edi.DefinitelyUnknownAttribute
 
 
 def test_lazy_functions_execute_with_monkeypatch(monkeypatch, capsys, tmp_path):
-    import easydiffraction as ed
+    import easydiffraction as edi
     from easydiffraction.utils import utils
 
     # 1) list_tutorials uses _fetch_tutorials_index → monkeypatch there
@@ -44,7 +44,7 @@ def test_lazy_functions_execute_with_monkeypatch(monkeypatch, capsys, tmp_path):
     }
     monkeypatch.setattr(utils, '_fetch_tutorials_index', lambda: fake_tutorial_index)
     monkeypatch.setattr(utils, '_get_version_for_url', lambda: '0.8.0')
-    ed.list_tutorials()  # calls into utils.list_tutorials
+    edi.list_tutorials()  # calls into utils.list_tutorials
     out = capsys.readouterr().out
     assert 'Tutorials available for easydiffraction' in out
 

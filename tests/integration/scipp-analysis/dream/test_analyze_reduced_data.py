@@ -17,7 +17,7 @@ from pathlib import Path
 
 import pytest
 
-import easydiffraction as ed
+import easydiffraction as edi
 
 # CIF experiment type tags required by easydiffraction to identify
 # the experiment configuration (powder TOF neutron diffraction)
@@ -55,11 +55,11 @@ def prepared_cif_path(
 @pytest.fixture(scope='module')
 def project_with_data(
     prepared_cif_path: str,
-) -> ed.Project:
+) -> edi.Project:
     """Create project with structure, experiment data, and
     configuration."""
     # Step 1: Define Project
-    project = ed.Project()
+    project = edi.Project()
 
     # Step 2: Define Structure manually
     project.structures.create(name='diamond')
@@ -124,8 +124,8 @@ def project_with_data(
 
 @pytest.fixture(scope='module')
 def fitted_project(
-    project_with_data: ed.Project,
-) -> ed.Project:
+    project_with_data: edi.Project,
+) -> edi.Project:
     """Perform fit and return project with results."""
     project = project_with_data
     structure = project.structures['diamond']
@@ -156,14 +156,14 @@ def fitted_project(
 
 
 def test_analyze_reduced_data__load_cif(
-    project_with_data: ed.Project,
+    project_with_data: edi.Project,
 ) -> None:
     """Verify CIF data loads into project correctly."""
     assert 'reduced_tof' in project_with_data.experiments.names
 
 
 def test_analyze_reduced_data__data_size(
-    project_with_data: ed.Project,
+    project_with_data: edi.Project,
 ) -> None:
     """Verify loaded data has expected size."""
     experiment = project_with_data.experiments['reduced_tof']
@@ -175,7 +175,7 @@ def test_analyze_reduced_data__data_size(
 
 
 def test_analyze_reduced_data__phase_linked(
-    project_with_data: ed.Project,
+    project_with_data: edi.Project,
 ) -> None:
     """Verify phase is correctly linked to experiment."""
     experiment = project_with_data.experiments['reduced_tof']
@@ -183,7 +183,7 @@ def test_analyze_reduced_data__phase_linked(
 
 
 def test_analyze_reduced_data__background_set(
-    project_with_data: ed.Project,
+    project_with_data: edi.Project,
 ) -> None:
     """Verify background points are configured."""
     experiment = project_with_data.experiments['reduced_tof']
@@ -194,7 +194,7 @@ def test_analyze_reduced_data__background_set(
 
 
 def test_analyze_reduced_data__fit_quality(
-    fitted_project: ed.Project,
+    fitted_project: edi.Project,
 ) -> None:
     """Verify fit quality is reasonable (chi-square value)."""
     chi_square = fitted_project.analysis.fit_results.reduced_chi_square

@@ -5,13 +5,13 @@ import tempfile
 
 from numpy.testing import assert_almost_equal
 
-import easydiffraction as ed
+import easydiffraction as edi
 
 TEMP_DIR = tempfile.gettempdir()
 
 
 def test_single_fit_pdf_xray_pd_cw_nacl() -> None:
-    project = ed.Project()
+    project = edi.Project()
 
     # Set structure
     project.structures.create(name='nacl')
@@ -39,7 +39,7 @@ def test_single_fit_pdf_xray_pd_cw_nacl() -> None:
     )
 
     # Set experiment
-    data_path = ed.download_data('meas-nacl-pdf', destination=TEMP_DIR)
+    data_path = edi.download_data('meas-nacl-pdf', destination=TEMP_DIR)
     project.experiments.add_from_data_path(
         name='xray_pdf',
         data_path=data_path,
@@ -75,7 +75,7 @@ def test_single_fit_pdf_xray_pd_cw_nacl() -> None:
 
 
 def test_single_fit_pdf_neutron_pd_cw_ni():
-    project = ed.Project()
+    project = edi.Project()
 
     # Set structure
     project.structures.create(name='ni')
@@ -94,7 +94,7 @@ def test_single_fit_pdf_neutron_pd_cw_ni():
     )
 
     # Set experiment
-    data_path = ed.download_data('meas-ni-pdf', destination=TEMP_DIR)
+    data_path = edi.download_data('meas-ni-pdf', destination=TEMP_DIR)
     project.experiments.add_from_data_path(
         name='pdf',
         data_path=data_path,
@@ -128,7 +128,7 @@ def test_single_fit_pdf_neutron_pd_cw_ni():
 
 
 def test_single_fit_pdf_neutron_pd_tof_si():
-    project = ed.Project()
+    project = edi.Project()
 
     # Set structure
     project.structures.create(name='si')
@@ -147,7 +147,7 @@ def test_single_fit_pdf_neutron_pd_tof_si():
     )
 
     # Set experiment
-    data_path = ed.download_data('meas-si-pdf-nomad', destination=TEMP_DIR)
+    data_path = edi.download_data('meas-si-pdf-nomad', destination=TEMP_DIR)
     project.experiments.add_from_data_path(
         name='nomad',
         data_path=data_path,

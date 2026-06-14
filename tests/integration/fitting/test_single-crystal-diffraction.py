@@ -5,20 +5,20 @@ import tempfile
 
 import pytest
 
-import easydiffraction as ed
+import easydiffraction as edi
 
 TEMP_DIR = tempfile.gettempdir()
 
 
 def test_single_fit_neut_sc_cwl_tbti() -> None:
-    project = ed.Project()
+    project = edi.Project()
 
     # Set structure
-    model_path = ed.download_data('struct-tbti', destination=TEMP_DIR)
+    model_path = edi.download_data('struct-tbti', destination=TEMP_DIR)
     project.structures.add_from_cif_path(model_path)
 
     # Set experiment
-    data_path = ed.download_data('meas-tbti-heidi', destination=TEMP_DIR)
+    data_path = edi.download_data('meas-tbti-heidi', destination=TEMP_DIR)
     project.experiments.add_from_data_path(
         name='heidi',
         data_path=data_path,
@@ -48,14 +48,14 @@ def test_single_fit_neut_sc_cwl_tbti() -> None:
 
 
 def test_single_fit_neut_sc_tof_taurine() -> None:
-    project = ed.Project()
+    project = edi.Project()
 
     # Set structure
-    model_path = ed.download_data('struct-taurine', destination=TEMP_DIR)
+    model_path = edi.download_data('struct-taurine', destination=TEMP_DIR)
     project.structures.add_from_cif_path(model_path)
 
     # Set experiment
-    data_path = ed.download_data('meas-taurine-senju', destination=TEMP_DIR)
+    data_path = edi.download_data('meas-taurine-senju', destination=TEMP_DIR)
     project.experiments.add_from_data_path(
         name='senju',
         data_path=data_path,

@@ -21,7 +21,7 @@ by the unit tests in
 
 import numpy as np
 
-import easydiffraction as ed
+import easydiffraction as edi
 
 # The estimated background may differ from the coarse hand-placed
 # reference by at most these fractions of the measured signal scale
@@ -33,8 +33,8 @@ _MAX_TOL = 0.45
 
 
 def _assert_tracks_reference(tmp_path, name, data_id, beam_mode, probe, excluded, ref_points):
-    project = ed.Project()
-    data_path = ed.download_data(data_id, destination=str(tmp_path))
+    project = edi.Project()
+    data_path = edi.download_data(data_id, destination=str(tmp_path))
     project.experiments.add_from_data_path(
         name=name,
         data_path=data_path,

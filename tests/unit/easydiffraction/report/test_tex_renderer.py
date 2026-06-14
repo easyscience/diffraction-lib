@@ -444,10 +444,10 @@ def test_save_tex_report_removes_stale_managed_bundle_dirs(tmp_path):
 
 
 def test_save_tex_report_writes_structure_figure_png(tmp_path):
-    import easydiffraction as ed
+    import easydiffraction as edi
     from easydiffraction.report.tex_renderer import save_tex_report
 
-    project = ed.Project(name='struct_fig')
+    project = edi.Project(name='struct_fig')
     project.structures.create(name='nacl')
     structure = project.structures['nacl']
     structure.cell.length_a = 5.64

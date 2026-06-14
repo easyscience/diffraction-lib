@@ -28,12 +28,12 @@ SCENARIOS = [
 )
 def test_calculate_pattern_benchmark(benchmark, label, structure_id, experiment_id, engine):
     """Benchmark a single pattern calculation for one experiment x engine."""
-    import easydiffraction as ed
+    import easydiffraction as edi
     from easydiffraction.analysis.fit_helpers.metrics import get_reliability_inputs
 
-    project = ed.Project()
-    project.structures.add_from_cif_path(ed.download_data(structure_id, destination='data'))
-    project.experiments.add_from_edi_path(ed.download_data(experiment_id, destination='data'))
+    project = edi.Project()
+    project.structures.add_from_cif_path(edi.download_data(structure_id, destination='data'))
+    project.experiments.add_from_edi_path(edi.download_data(experiment_id, destination='data'))
 
     experiment = project.experiments['hrpt']
     experiment.calculator.type = engine

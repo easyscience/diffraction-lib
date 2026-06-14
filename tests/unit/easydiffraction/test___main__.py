@@ -3,6 +3,8 @@
 
 from typer.testing import CliRunner
 
+import easydiffraction as edi
+
 runner = CliRunner()
 
 
@@ -15,7 +17,6 @@ def test_module_import():
 
 
 def test_cli_version_invokes_show_version(monkeypatch, capsys):
-    import easydiffraction as ed
     import easydiffraction.__main__ as main_mod
 
     called = {'ok': False}
@@ -24,7 +25,7 @@ def test_cli_version_invokes_show_version(monkeypatch, capsys):
         print('VERSION_OK')
         called['ok'] = True
 
-    monkeypatch.setattr(ed, 'show_version', fake_show_version)
+    monkeypatch.setattr(edi, 'show_version', fake_show_version)
     result = runner.invoke(main_mod.app, ['--version'])
     assert result.exit_code == 0
     assert called['ok']
@@ -40,26 +41,25 @@ def test_cli_help_shows_and_exits_zero():
 
 
 def test_cli_subcommands_call_utils(monkeypatch):
-    import easydiffraction as ed
     import easydiffraction.__main__ as main_mod
 
     logs = []
-    monkeypatch.setattr(ed, 'list_data', lambda: logs.append('LIST_DATA'))
+    monkeypatch.setattr(edi, 'list_data', lambda: logs.append('LIST_DATA'))
     monkeypatch.setattr(
-        ed,
+        edi,
         'download_data',
         lambda name, destination='data', overwrite=False: logs.append(
             f'DATA_{name}_{destination}_{overwrite}'
         ),
     )
-    monkeypatch.setattr(ed, 'list_tutorials', lambda: logs.append('LIST'))
+    monkeypatch.setattr(edi, 'list_tutorials', lambda: logs.append('LIST'))
     monkeypatch.setattr(
-        ed,
+        edi,
         'download_all_tutorials',
         lambda destination='tutorials', overwrite=False: logs.append('DOWNLOAD_ALL'),
     )
     monkeypatch.setattr(
-        ed,
+        edi,
         'download_tutorial',
         lambda name, destination='tutorials', overwrite=False: logs.append(f'DOWNLOAD_{name}'),
     )

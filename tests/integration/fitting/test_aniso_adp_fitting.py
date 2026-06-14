@@ -4,19 +4,19 @@
 
 import tempfile
 
-import easydiffraction as ed
+import easydiffraction as edi
 
 TEMP_DIR = tempfile.gettempdir()
 
 
 def _setup_tbti_project():
     """Create a Tb2Ti2O7 single-crystal project ready for fitting."""
-    project = ed.Project()
+    project = edi.Project()
 
-    model_path = ed.download_data('struct-tbti', destination=TEMP_DIR)
+    model_path = edi.download_data('struct-tbti', destination=TEMP_DIR)
     project.structures.add_from_cif_path(model_path)
 
-    data_path = ed.download_data('meas-tbti-heidi', destination=TEMP_DIR)
+    data_path = edi.download_data('meas-tbti-heidi', destination=TEMP_DIR)
     project.experiments.add_from_data_path(
         name='heidi',
         data_path=data_path,
