@@ -36,8 +36,8 @@ def test_lazy_functions_execute_with_monkeypatch(monkeypatch, capsys, tmp_path):
 
     # 1) list_tutorials uses _fetch_tutorials_index → monkeypatch there
     fake_tutorial_index = {
-        '1': {
-            'url': 'https://example.com/{version}/tutorials/ed-1/ed-1.ipynb',
+        'quick-start': {
+            'url': 'https://example.com/{version}/tutorials/quick-start.ipynb',
             'title': 'Quick Start',
             'description': 'A quick start tutorial',
         },
@@ -52,8 +52,8 @@ def test_lazy_functions_execute_with_monkeypatch(monkeypatch, capsys, tmp_path):
     from easydiffraction.utils import utils
 
     fake_index = {
-        '12': {
-            'path': 'data.xye',
+        'measured/lbco-hrpt': {
+            'path': 'measured/lbco-hrpt.xye',
             'hash': 'sha256:...',
             'description': 'Demo dataset',
         }
@@ -70,6 +70,6 @@ def test_lazy_functions_execute_with_monkeypatch(monkeypatch, capsys, tmp_path):
 
     monkeypatch.setattr(utils.pooch, 'retrieve', fake_retrieve)
 
-    result = utils.download_data(id=12, destination=str(tmp_path), overwrite=True)
+    result = utils.download_data('measured/lbco-hrpt', destination=str(tmp_path), overwrite=True)
     assert Path(result).exists()
-    assert calls['kwargs']['url'] == utils._build_data_url('data.xye')
+    assert calls['kwargs']['url'] == utils._build_data_url('measured/lbco-hrpt.xye')

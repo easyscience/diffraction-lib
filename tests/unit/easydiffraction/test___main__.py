@@ -48,8 +48,8 @@ def test_cli_subcommands_call_utils(monkeypatch):
     monkeypatch.setattr(
         ed,
         'download_data',
-        lambda id, destination='data', overwrite=False: logs.append(
-            f'DATA_{id}_{destination}_{overwrite}'
+        lambda name, destination='data', overwrite=False: logs.append(
+            f'DATA_{name}_{destination}_{overwrite}'
         ),
     )
     monkeypatch.setattr(ed, 'list_tutorials', lambda: logs.append('LIST'))
@@ -61,21 +61,30 @@ def test_cli_subcommands_call_utils(monkeypatch):
     monkeypatch.setattr(
         ed,
         'download_tutorial',
-        lambda id, destination='tutorials', overwrite=False: logs.append(f'DOWNLOAD_{id}'),
+        lambda name, destination='tutorials', overwrite=False: logs.append(f'DOWNLOAD_{name}'),
     )
 
     res0 = runner.invoke(main_mod.app, ['list-data'])
-    res1 = runner.invoke(main_mod.app, ['download-data', '30', '--destination', 'projects'])
+    res1 = runner.invoke(
+        main_mod.app,
+        ['download-data', 'projects/lbco-hrpt', '--destination', 'projects'],
+    )
     res2 = runner.invoke(main_mod.app, ['list-tutorials'])
     res3 = runner.invoke(main_mod.app, ['download-all-tutorials'])
-    res4 = runner.invoke(main_mod.app, ['download-tutorial', '1'])
+    res4 = runner.invoke(main_mod.app, ['download-tutorial', 'refine-lbco-hrpt-from-cif'])
 
     assert res0.exit_code == 0
     assert res1.exit_code == 0
     assert res2.exit_code == 0
     assert res3.exit_code == 0
     assert res4.exit_code == 0
-    assert logs == ['LIST_DATA', 'DATA_30_projects_False', 'LIST', 'DOWNLOAD_ALL', 'DOWNLOAD_1']
+    assert logs == [
+        'LIST_DATA',
+        'DATA_projects/lbco-hrpt_projects_False',
+        'LIST',
+        'DOWNLOAD_ALL',
+        'DOWNLOAD_refine-lbco-hrpt-from-cif',
+    ]
 
 
 def test_cli_removed_report_commands_are_unknown(tmp_path):
