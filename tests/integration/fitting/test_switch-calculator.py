@@ -18,8 +18,10 @@ def test_neutron_pd_cwl_lbco_crysfml(tmp_path) -> None:
 
     # Create a project from CIF files
     project = ed.Project()
-    project.structures.add_from_cif_path(ed.download_data(id=1, destination='data'))
-    project.experiments.add_from_cif_path(ed.download_data(id=2, destination='data'))
+    project.structures.add_from_cif_path(ed.download_data('structures/lbco', destination='data'))
+    project.experiments.add_from_easydiff_path(
+        ed.download_data('experiments/lbco-hrpt', destination='data')
+    )
 
     # Set constraints
     project.analysis.aliases.create(

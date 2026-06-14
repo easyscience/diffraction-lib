@@ -74,7 +74,7 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
     )
 
     # Set experiment
-    data_path = download_data(id=8, destination=TEMP_DIR)
+    data_path = download_data('measured/lbco-si-mcstas', destination=TEMP_DIR)
     expt = ExperimentFactory.from_data_path(
         name='mcstas',
         data_path=data_path,
@@ -155,7 +155,7 @@ def _test_joint_fit_bragg_pdf_neutron_pd_tof_si() -> None:
     )
 
     # Set Bragg experiment (SEPD, TOF)
-    bragg_data_path = download_data(id=7, destination=TEMP_DIR)
+    bragg_data_path = download_data('measured/si-sepd', destination=TEMP_DIR)
     bragg_expt = ExperimentFactory.from_data_path(
         name='sepd',
         data_path=bragg_data_path,
@@ -178,7 +178,7 @@ def _test_joint_fit_bragg_pdf_neutron_pd_tof_si() -> None:
         bragg_expt.background.create(id=str(x), position=x, intensity=200)
 
     # Set PDF experiment (NOMAD, TOF)
-    pdf_data_path = ed.download_data(id=5, destination=TEMP_DIR)
+    pdf_data_path = ed.download_data('measured/si-pdf-nomad', destination=TEMP_DIR)
     pdf_expt = ExperimentFactory.from_data_path(
         name='nomad',
         data_path=pdf_data_path,

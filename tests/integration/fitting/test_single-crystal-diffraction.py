@@ -14,11 +14,11 @@ def test_single_fit_neut_sc_cwl_tbti() -> None:
     project = ed.Project()
 
     # Set structure
-    model_path = ed.download_data(id=20, destination=TEMP_DIR)
+    model_path = ed.download_data('structures/tbti', destination=TEMP_DIR)
     project.structures.add_from_cif_path(model_path)
 
     # Set experiment
-    data_path = ed.download_data(id=19, destination=TEMP_DIR)
+    data_path = ed.download_data('measured/tbti-heidi', destination=TEMP_DIR)
     project.experiments.add_from_data_path(
         name='heidi',
         data_path=data_path,
@@ -51,11 +51,11 @@ def test_single_fit_neut_sc_tof_taurine() -> None:
     project = ed.Project()
 
     # Set structure
-    model_path = ed.download_data(id=21, destination=TEMP_DIR)
+    model_path = ed.download_data('structures/taurine', destination=TEMP_DIR)
     project.structures.add_from_cif_path(model_path)
 
     # Set experiment
-    data_path = ed.download_data(id=22, destination=TEMP_DIR)
+    data_path = ed.download_data('measured/taurine-senju', destination=TEMP_DIR)
     project.experiments.add_from_data_path(
         name='senju',
         data_path=data_path,

@@ -34,7 +34,7 @@ _MAX_TOL = 0.45
 
 def _assert_tracks_reference(tmp_path, name, data_id, beam_mode, probe, excluded, ref_points):
     project = ed.Project()
-    data_path = ed.download_data(id=data_id, destination=str(tmp_path))
+    data_path = ed.download_data(data_id, destination=str(tmp_path))
     project.experiments.add_from_data_path(
         name=name,
         data_path=data_path,
@@ -82,7 +82,7 @@ def test_auto_estimate_tracks_cwl_tutorial_background(tmp_path):
     _assert_tracks_reference(
         tmp_path,
         'hrpt',
-        3,
+        'measured/lbco-hrpt',
         'constant wavelength',
         'neutron',
         [(0, 5), (165, 180)],
@@ -95,7 +95,7 @@ def test_auto_estimate_tracks_tof_tutorial_background(tmp_path):
     _assert_tracks_reference(
         tmp_path,
         'sim_si',
-        17,
+        'measured/si-mcstas-dmsc2025',
         'time-of-flight',
         'neutron',
         [(0, 55000), (105500, 200000)],

@@ -67,7 +67,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     )
 
     # Set experiments
-    data_path = download_data(id=14, destination=TEMP_DIR)
+    data_path = download_data('measured/pbso4-d1a-part1', destination=TEMP_DIR)
     expt1 = ExperimentFactory.from_data_path(name='npd1', data_path=data_path)
     expt1.instrument.setup_wavelength = 1.91
     expt1.instrument.calib_twotheta_offset = -0.1406
@@ -90,7 +90,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     ]:
         expt1.background.create(id=id, position=x, intensity=y)
 
-    data_path = download_data(id=15, destination=TEMP_DIR)
+    data_path = download_data('measured/pbso4-d1a-part2', destination=TEMP_DIR)
     expt2 = ExperimentFactory.from_data_path(name='npd2', data_path=data_path)
     expt2.instrument.setup_wavelength = 1.91
     expt2.instrument.calib_twotheta_offset = -0.1406
@@ -193,7 +193,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     )
 
     # Set experiments
-    data_path = download_data(id=13, destination=TEMP_DIR)
+    data_path = download_data('measured/pbso4-d1a', destination=TEMP_DIR)
     expt1 = ExperimentFactory.from_data_path(
         name='npd',
         data_path=data_path,
@@ -219,7 +219,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     ]:
         expt1.background.create(id=id, position=x, intensity=y)
 
-    data_path = download_data(id=16, destination=TEMP_DIR)
+    data_path = download_data('measured/pbso4-xray', destination=TEMP_DIR)
     expt2 = ExperimentFactory.from_data_path(
         name='xrd',
         data_path=data_path,

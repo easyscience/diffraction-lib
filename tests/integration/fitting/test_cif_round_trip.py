@@ -28,7 +28,7 @@ def _build_fully_configured_experiment() -> ExperimentFactory:
     ExperimentBase
         A complete experiment ready for CIF round-trip testing.
     """
-    data_path = download_data(id=3, destination=TEMP_DIR)
+    data_path = download_data('measured/lbco-hrpt', destination=TEMP_DIR)
     expt = ExperimentFactory.from_data_path(
         name='hrpt',
         data_path=data_path,

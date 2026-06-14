@@ -13,10 +13,10 @@ from __future__ import annotations
 
 import pytest
 
-# (id, structure download id, experiment download id, engine)
+# (id, structure download slug, experiment download slug, engine)
 SCENARIOS = [
-    ('neut-cwl-pd-cryspy', 1, 2, 'cryspy'),
-    ('neut-cwl-pd-crysfml', 1, 2, 'crysfml'),
+    ('neut-cwl-pd-cryspy', 'structures/lbco', 'experiments/lbco-hrpt', 'cryspy'),
+    ('neut-cwl-pd-crysfml', 'structures/lbco', 'experiments/lbco-hrpt', 'crysfml'),
 ]
 
 
@@ -32,8 +32,10 @@ def test_calculate_pattern_benchmark(benchmark, label, structure_id, experiment_
     from easydiffraction.analysis.fit_helpers.metrics import get_reliability_inputs
 
     project = ed.Project()
-    project.structures.add_from_cif_path(ed.download_data(id=structure_id, destination='data'))
-    project.experiments.add_from_cif_path(ed.download_data(id=experiment_id, destination='data'))
+    project.structures.add_from_cif_path(ed.download_data(structure_id, destination='data'))
+    project.experiments.add_from_easydiff_path(
+        ed.download_data(experiment_id, destination='data')
+    )
 
     experiment = project.experiments['hrpt']
     experiment.calculator.type = engine

@@ -38,7 +38,7 @@ def _make_project_with_experiment():
     )
 
     # Add experiment from data file
-    data_path = download_data(id=3, destination=TEMP_DIR)
+    data_path = download_data('measured/lbco-hrpt', destination=TEMP_DIR)
     project.experiments.add_from_data_path(
         name='hrpt',
         data_path=data_path,

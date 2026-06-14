@@ -59,7 +59,7 @@ def _create_lbco_project() -> Project:
         adp_iso=0.1,
     )
 
-    data_path = download_data(id=3, destination=TEMP_DIR)
+    data_path = download_data('measured/lbco-hrpt', destination=TEMP_DIR)
     experiment = ExperimentFactory.from_data_path(name='hrpt', data_path=data_path)
     experiment.instrument.setup_wavelength = 1.494
     experiment.instrument.calib_twotheta_offset = 0.0

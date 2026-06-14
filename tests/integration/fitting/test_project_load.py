@@ -73,7 +73,7 @@ def _create_lbco_project() -> Project:
     )
 
     # Experiment
-    data_path = download_data(id=3, destination=TEMP_DIR)
+    data_path = download_data('measured/lbco-hrpt', destination=TEMP_DIR)
     expt = ExperimentFactory.from_data_path(
         name='hrpt',
         data_path=data_path,
