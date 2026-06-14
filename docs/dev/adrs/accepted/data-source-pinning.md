@@ -17,8 +17,8 @@ Documentation.
 > Sibling of [`resource-naming.md`](resource-naming.md): this ADR pins
 > _which snapshot_ of the data repository to fetch and decides
 > replace-in-place under stable identifiers; that ADR decides what those
-> identifiers _are_ (the dash-prefixed `<category>-<slug>` scheme that replaces the
-> integer ids).
+> identifiers _are_ (the dash-prefixed `<category>-<slug>` scheme that
+> replaces the integer ids).
 
 ## Context
 
@@ -105,12 +105,13 @@ Constraints established for this decision:
    the cache-busting mechanism while keeping a single source of truth.
 
 5. **Update data by replacing files in place.** Datasets keep stable
-   paths/identifiers (their form — the dash-prefixed `<category>-<slug>` scheme — is
-   fixed by the sibling [`resource-naming.md`](resource-naming.md));
-   updating a dataset overwrites the existing file and refreshes its
-   `sha256` in `index.json`. Git history records the replacement and the
-   pinned commit selects the snapshot. No new dataset ids are minted for
-   what is conceptually the same dataset.
+   paths/identifiers (their form — the dash-prefixed `<category>-<slug>`
+   scheme — is fixed by the sibling
+   [`resource-naming.md`](resource-naming.md)); updating a dataset
+   overwrites the existing file and refreshes its `sha256` in
+   `index.json`. Git history records the replacement and the pinned
+   commit selects the snapshot. No new dataset ids are minted for what
+   is conceptually the same dataset.
 
 6. **Version tracking and reproducibility come from the release.** The
    committed `_data_index_ref.txt` is part of the library source, so it

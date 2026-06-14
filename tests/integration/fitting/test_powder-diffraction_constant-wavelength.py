@@ -497,9 +497,7 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints_from_project(tmp_path) 
     # Create a project from CIF files
     project = ed.Project()
     project.structures.add_from_cif_path(ed.download_data('struct-lbco', destination='data'))
-    project.experiments.add_from_edifa_path(
-        ed.download_data('expt-lbco-hrpt', destination='data')
-    )
+    project.experiments.add_from_edifa_path(ed.download_data('expt-lbco-hrpt', destination='data'))
 
     # Set constraints
     project.analysis.aliases.create(

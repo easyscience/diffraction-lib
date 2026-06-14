@@ -57,12 +57,12 @@ undecided. This ADR fixes that form, for datasets and tutorials alike.
    dash-prefix keeps the category visible while staying a single,
    copy-pasteable token. Tutorials use a bare descriptive slug (e.g.
    `refine-lbco-hrpt-from-cif`, `pdf-si-nomad`,
-   `bayesian-emcee-resume-lbco-hrpt`); their leading verb already conveys
-   the activity, and they have no cross-category name collision to
-   disambiguate, so they take no category prefix. The name encodes the
-   sample, technique, and instrument/qualifier needed to keep it unique
-   and self-explanatory, and carries no volatile facts that would force a
-   rename on unrelated changes.
+   `bayesian-emcee-resume-lbco-hrpt`); their leading verb already
+   conveys the activity, and they have no cross-category name collision
+   to disambiguate, so they take no category prefix. The name encodes
+   the sample, technique, and instrument/qualifier needed to keep it
+   unique and self-explanatory, and carries no volatile facts that would
+   force a rename on unrelated changes.
 
 2. **The slug is the stable identity.** Updating a resource overwrites
    the file under the same slug (per `data-source-pinning`); a genuinely
@@ -128,10 +128,10 @@ undecided. This ADR fixes that form, for datasets and tutorials alike.
      letters and digits in dash-separated groups, with no leading,
      trailing, or doubled dashes, no slash, and no other characters.
    - A **tutorial name** is one slug.
-   - A **dataset name** is one slug whose first dash-separated segment is
-     one of the four fixed category prefixes (`struct`, `expt`, `meas`,
-     `proj`) — a closed set, so it is an enum per `AGENTS.md` — followed
-     by at least one more segment (i.e. `<category>-<rest>`).
+   - A **dataset name** is one slug whose first dash-separated segment
+     is one of the four fixed category prefixes (`struct`, `expt`,
+     `meas`, `proj`) — a closed set, so it is an enum per `AGENTS.md` —
+     followed by at least one more segment (i.e. `<category>-<rest>`).
    - A name never contains a file extension, an empty segment, a `.` or
      `..` segment, or any slash or other path/URL separator.
    - A value that violates this grammar raises a clear validation error
@@ -190,29 +190,29 @@ chain collapses to one stable slug overwritten in place.
 
 **`struct-` — crystal-structure import CIFs**
 
-| Old id / file                 | New id               |
-| ----------------------------- | -------------------- |
+| Old id / file                 | New id           |
+| ----------------------------- | ---------------- |
 | 1 `ed-1.cif` (La0.5Ba0.5CoO3) | `struct-lbco`    |
 | 20 `ed-20.cif` (Tb2Ti2O7)     | `struct-tbti`    |
 | 21 `ed-21.cif` (Taurine)      | `struct-taurine` |
 
 **`expt-` — EasyDiffraction experiment-definition files**
 
-| Old id / file                                   | New id                  |
-| ----------------------------------------------- | ----------------------- |
+| Old id / file                                   | New id           |
+| ----------------------------------------------- | ---------------- |
 | 2 `ed-2.cif` (LBCO HRPT, experiment definition) | `expt-lbco-hrpt` |
 
 > Id 2 is a full experiment-definition file: its id is the
-> extension-free `expt-lbco-hrpt` (per Decisions 1 and 5), and
-> the stored file migrates from `.cif` to the new `.edifa` format, so
-> its path is `data/experiments/lbco-hrpt.edifa`. Id 3, which previously
+> extension-free `expt-lbco-hrpt` (per Decisions 1 and 5), and the
+> stored file migrates from `.cif` to the new `.edifa` format, so its
+> path is `data/experiments/lbco-hrpt.edifa`. Id 3, which previously
 > shared the "LBCO HRPT" description, is the _raw measured pattern_ and
 > moves to `meas-` below.
 
 **`meas-` — raw measured or simulated data**
 
-| Old id / file                                              | New id                             |
-| ---------------------------------------------------------- | ---------------------------------- |
+| Old id / file                                              | New id                         |
+| ---------------------------------------------------------- | ------------------------------ |
 | 3 `ed-3.xye` (LBCO HRPT, 300 K pattern)                    | `meas-lbco-hrpt`               |
 | 4 `ed-4.gr` (NaCl)                                         | `meas-nacl-pdf`                |
 | 5 `ed-5.gr` (Si, NOMAD)                                    | `meas-si-pdf-nomad`            |
@@ -248,11 +248,10 @@ chain collapses to one stable slug overwritten in place.
 > sample's own `hep7c` code disambiguates them, and their index
 > descriptions are made distinct to match.
 
-**`proj-` — saved EasyDiffraction project archives (chains
-collapse)**
+**`proj-` — saved EasyDiffraction project archives (chains collapse)**
 
-| Old ids / files                       | New id                     |
-| ------------------------------------- | -------------------------- |
+| Old ids / files                       | New id                 |
+| ------------------------------------- | ---------------------- |
 | 28, 30, 36, 40, 44 (LBCO HRPT, 300 K) | `proj-lbco-hrpt`       |
 | 34, 37, 41, 45 (Co2SiO4 D20 T-scan)   | `proj-cosio-d20-scan`  |
 | 35, 38, 42, 46 (emcee, LBCO HRPT)     | `proj-lbco-hrpt-emcee` |

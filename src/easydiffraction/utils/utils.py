@@ -261,7 +261,9 @@ def _build_data_url(path: str) -> str:
 
 
 class DataCategoryEnum(StrEnum):
-    """The fixed category prefixes a downloadable dataset name carries."""
+    """
+    The fixed category prefixes a downloadable dataset name carries.
+    """
 
     STRUCTURE = 'struct'
     EXPERIMENT = 'expt'
@@ -472,7 +474,9 @@ def _download_data_message(name: str, record: dict) -> str:
 
 
 def _is_project_id(resource_id: str) -> bool:
-    """Return True for project-archive names (the ``proj-`` category)."""
+    """
+    Return True for project-archive names (the ``proj-`` category).
+    """
     return resource_id.startswith(f'{DataCategoryEnum.PROJECT.value}-')
 
 
@@ -904,10 +908,10 @@ def list_tutorials() -> None:
     """
     Display a table of available tutorial notebooks.
 
-    In the terminal each row shows the tutorial name and a combined entry
-    with the title on the first line and a dimmed description on the
-    second. In Jupyter the table shows the plain title only, since the
-    HTML backend cannot render the terminal styling.
+    In the terminal each row shows the tutorial name and a combined
+    entry with the title on the first line and a dimmed description on
+    the second. In Jupyter the table shows the plain title only, since
+    the HTML backend cannot render the terminal styling.
     """
     index = _fetch_tutorials_index()
     if not index:
