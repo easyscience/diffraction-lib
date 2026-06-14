@@ -226,7 +226,6 @@ nav:
           - Co2SiO4 pd-neut-cwl: tutorials/refine-cosio-d20.ipynb
           - HS pd-neut-cwl: tutorials/refine-hs-hrpt.ipynb
           - Si pd-neut-tof: tutorials/refine-si-sepd.ipynb
-          - NCAF pd-neut-tof: tutorials/refine-ncaf-wish.ipynb
       - Without Measured Data:
           - LBCO pd-neut-cwl: tutorials/simulate-lbco-cwl.ipynb
           - Si pd-neut-tof: tutorials/simulate-si-tof.ipynb
@@ -240,6 +239,7 @@ nav:
           - NaCl pd-xray: tutorials/pdf-nacl-xrd.ipynb
       - Multiple Data Blocks:
           - PbSO4 NPD+XRD: tutorials/refine-pbso4-joint.ipynb
+          - NCAF pd-neut-tof: tutorials/refine-ncaf-wish.ipynb
           - Si Bragg+PDF: tutorials/joint-si-bragg-pdf.ipynb
           - Co2SiO4 T-scan: tutorials/refine-cosio-d20-tscan.ipynb
       - Simulated Data:
