@@ -25,7 +25,7 @@ def _make_project_with_structure():
     s.space_group.name_h_m = 'P m -3 m'
     s.cell.length_a = 3.89
     s.atom_sites.create(
-        label='A',
+        id='A',
         type_symbol='La',
         fract_x=0,
         fract_y=0,
@@ -34,7 +34,7 @@ def _make_project_with_structure():
         adp_iso=0.5,
     )
     s.atom_sites.create(
-        label='B',
+        id='B',
         type_symbol='Co',
         fract_x=0.5,
         fract_y=0.5,
@@ -217,6 +217,10 @@ class TestCifNamesByAdpType:
     def test_biso_uses_b_names(self):
         project = _make_project_with_structure()
         s = project.structures['cubic']
+        # A freshly created site is type-neutral (``_atom_site.adp_iso``);
+        # committing the (default) Biso type resolves the strict IUCr name.
+        s.atom_sites['A'].adp_type = 'Biso'
+        s._update_categories()
         site = s.atom_sites['A']
         assert '_atom_site.B_iso_or_equiv' in site._adp_iso._cif_handler.names[0]
 
