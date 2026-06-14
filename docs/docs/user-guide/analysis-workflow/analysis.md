@@ -427,7 +427,7 @@ Example output:
 │ _minimizer.type              "lmfit (leastsq)" │
 │                                                │
 │ loop_                                          │
-│ _alias.label                                   │
+│ _alias.id                                      │
 │ _alias.parameter_unique_name                   │
 │ biso_La  lbco.atom_site.La.B_iso_or_equiv      │
 │ biso_Ba  lbco.atom_site.Ba.B_iso_or_equiv      │

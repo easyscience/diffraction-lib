@@ -82,7 +82,7 @@ Add an atom site:
 
 ```python
 structure.atom_sites.create(
-    label='O',
+    id='O',
     type_symbol='O',
     fract_x=0,
     fract_y=0.5,
@@ -366,11 +366,11 @@ expression using those aliases:
 
 ```python
 project.analysis.aliases.create(
-    label='biso_la',
+    id='biso_la',
     param=project.structures['lbco'].atom_sites['La'].adp_iso,
 )
 project.analysis.aliases.create(
-    label='biso_ba',
+    id='biso_ba',
     param=project.structures['lbco'].atom_sites['Ba'].adp_iso,
 )
 

@@ -264,7 +264,7 @@ of **calculation** and **fitting** engines, as well as user defined
 <span class="blue"><b>_minimizer</b>.type</span>                 lmfit
 
 loop_
-<span class="green"><b>_alias</b>.label</span>
+<span class="green"><b>_alias</b>.id</span>
 <span class="green"><b>_alias</b>.parameter_unique_name</span>
 biso_La  lbco.atom_site.La.B_iso_or_equiv
 biso_Ba  lbco.atom_site.Ba.B_iso_or_equiv
