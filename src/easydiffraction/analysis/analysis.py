@@ -1481,11 +1481,12 @@ class Analysis(
             return False, extra_steps
 
         if not self._has_resumable_sidecar():
-            log.warning(
-                'resume=True requested, but no saved chain was found for the active '
-                'minimizer; starting a fresh fit instead.'
+            msg = (
+                'resume=True was requested, but the active minimizer has no saved '
+                'resumable chain in mcmc.h5 (it is missing or malformed). Run a '
+                'fresh fit first, or omit resume=True to start a new fit.'
             )
-            return False, None
+            raise ValueError(msg)
 
         return True, self._resolved_resume_extra_steps(extra_steps)
 
