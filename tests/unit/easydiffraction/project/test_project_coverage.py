@@ -617,3 +617,19 @@ def test_load_rejects_legacy_edifa_analysis_file(tmp_path):
 
     with pytest.raises(ValueError, match=r'\.edifa'):
         Project.load(str(tmp_path / 'proj'))
+
+
+def test_load_rejects_legacy_project_edifa_metadata(tmp_path):
+    """A stale ``project.edifa`` must fail loudly, not be skipped."""
+    from easydiffraction.project.project import Project
+
+    project = Project(name='legacy_project_edifa')
+    project.report.html = False
+    project.save_as(str(tmp_path / 'proj'))
+
+    (tmp_path / 'proj' / 'project.edifa').write_text(
+        '_edi.schema_version 1\n\n_metadata.name legacy_project_edifa\n'
+    )
+
+    with pytest.raises(ValueError, match=r'\.edifa'):
+        Project.load(str(tmp_path / 'proj'))
