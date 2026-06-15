@@ -403,33 +403,39 @@ The loader follows a fixed contract:
 
 ## Handler Model
 
-The current `CifHandler.names` list is overloaded: the first entry is
-the default write tag, and the full list is also an import alias list.
-Edi should make this explicit.
-
-Proposed concept:
+The original `CifHandler.names` list was overloaded: the first entry was
+the default write tag, and the full list doubled as the import-alias
+list, with a separate `iucr_name` for report export. The accepted model
+makes the two formats explicit with one list per format, in a class
+renamed `TagSpec`:
 
 ```python
-StarHandler(
-    project_name='_atom_site.adp_iso',
-    import_names=[
-        '_atom_site.adp_iso',
+TagSpec(
+    edi_names=['_atom_site.adp_iso'],
+    cif_names=[
         '_atom_site.B_iso_or_equiv',
         '_atom_site.U_iso_or_equiv',
     ],
-    iucr_name=None,
 )
 ```
 
-The exact class name can remain `CifHandler` during migration, but the
-responsibilities should be explicit:
+Responsibilities:
 
-- `project_name`: Edi write name.
-- `import_names`: accepted Edi/CIF/legacy read aliases.
-- `iucr_name`: single-field report-CIF name when a simple mapping
-  exists.
+- `edi_names`: names for the **Edi** format. `edi_name` (`edi_names[0]`)
+  is the canonical write tag; the whole list is accepted on `.edi` read.
+- `cif_names`: names for strict **CIF** import/export. `cif_name`
+  (`cif_names[0]`) is the canonical name written by the
+  report/strict-CIF export — an IUCr/pdCIF dictionary name where one
+  exists, an `_easydiffraction_*` extension otherwise — and the whole
+  list is accepted on `.cif` import. Defaults to `edi_names` when
+  omitted. There is no separate `iucr_name` field; export reads
+  `cif_names[0]`.
 - category transformers: report-CIF reshaping when a field cannot map
   one-to-one.
+
+For type-neutral ADPs, `edi_names` stays the neutral
+`_atom_site.adp_iso` (so the Edi save is always type-neutral) while the
+type-specific B/U order is applied to `cif_names` for export.
 
 ## Consequences
 

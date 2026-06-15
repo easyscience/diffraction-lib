@@ -618,7 +618,7 @@
 │   ├── 📁 cif
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 handler.py
-│   │   │   └── 🏷️ class CifHandler
+│   │   │   └── 🏷️ class TagSpec
 │   │   ├── 📄 iucr_transformers.py
 │   │   │   ├── 🏷️ class IucrItem
 │   │   │   ├── 🏷️ class IucrLoop

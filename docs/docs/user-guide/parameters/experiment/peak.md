@@ -64,61 +64,61 @@ Lorentzian broadening from microstructural defects.
 
 ### :material-arrow-expand-horizontal: broad_gauss_sigma_0 { #peak-broad-gauss-sigma-0 }
 
-| Access                               | Source                    |
-| ------------------------------------ | ------------------------- |
-| peak.broad_gauss_sigma_0             | [code][0]{:.label-cif}    |
-| \_peak.broad_gauss_sigma_0           | [Edi][0]{:.label-cif}     |
-| \_easydiffraction_peak.gauss_sigma_0 | [coreCIF][0]{:.label-cif} |
+| Access                                     | Source                    |
+| ------------------------------------------ | ------------------------- |
+| peak.broad_gauss_sigma_0                   | [code][0]{:.label-cif}    |
+| \_peak.broad_gauss_sigma_0                 | [Edi][0]{:.label-cif}     |
+| \_easydiffraction_peak.broad_gauss_sigma_0 | [coreCIF][0]{:.label-cif} |
 
 Gaussian broadening (instrumental resolution).
 
 ### :material-arrow-expand-horizontal: broad_gauss_sigma_1 { #peak-broad-gauss-sigma-1 }
 
-| Access                               | Source                    |
-| ------------------------------------ | ------------------------- |
-| peak.broad_gauss_sigma_1             | [code][0]{:.label-cif}    |
-| \_peak.broad_gauss_sigma_1           | [Edi][0]{:.label-cif}     |
-| \_easydiffraction_peak.gauss_sigma_1 | [coreCIF][0]{:.label-cif} |
+| Access                                     | Source                    |
+| ------------------------------------------ | ------------------------- |
+| peak.broad_gauss_sigma_1                   | [code][0]{:.label-cif}    |
+| \_peak.broad_gauss_sigma_1                 | [Edi][0]{:.label-cif}     |
+| \_easydiffraction_peak.broad_gauss_sigma_1 | [coreCIF][0]{:.label-cif} |
 
 Gaussian broadening (dependent on d-spacing).
 
 ### :material-arrow-expand-horizontal: broad_gauss_sigma_2 { #peak-broad-gauss-sigma-2 }
 
-| Access                               | Source                    |
-| ------------------------------------ | ------------------------- |
-| peak.broad_gauss_sigma_2             | [code][0]{:.label-cif}    |
-| \_peak.broad_gauss_sigma_2           | [Edi][0]{:.label-cif}     |
-| \_easydiffraction_peak.gauss_sigma_2 | [coreCIF][0]{:.label-cif} |
+| Access                                     | Source                    |
+| ------------------------------------------ | ------------------------- |
+| peak.broad_gauss_sigma_2                   | [code][0]{:.label-cif}    |
+| \_peak.broad_gauss_sigma_2                 | [Edi][0]{:.label-cif}     |
+| \_easydiffraction_peak.broad_gauss_sigma_2 | [coreCIF][0]{:.label-cif} |
 
 Gaussian broadening (instrument-dependent term).
 
 ### :material-arrow-expand-horizontal: broad_lorentz_gamma_0 { #peak-broad-lorentz-gamma-0 }
 
-| Access                                 | Source                    |
-| -------------------------------------- | ------------------------- |
-| peak.broad_lorentz_gamma_0             | [code][0]{:.label-cif}    |
-| \_peak.broad_lorentz_gamma_0           | [Edi][0]{:.label-cif}     |
-| \_easydiffraction_peak.lorentz_gamma_0 | [coreCIF][0]{:.label-cif} |
+| Access                                       | Source                    |
+| -------------------------------------------- | ------------------------- |
+| peak.broad_lorentz_gamma_0                   | [code][0]{:.label-cif}    |
+| \_peak.broad_lorentz_gamma_0                 | [Edi][0]{:.label-cif}     |
+| \_easydiffraction_peak.broad_lorentz_gamma_0 | [coreCIF][0]{:.label-cif} |
 
 Lorentzian broadening (microstrain effects).
 
 ### :material-arrow-expand-horizontal: broad_lorentz_gamma_1 { #peak-broad-lorentz-gamma-1 }
 
-| Access                                 | Source                    |
-| -------------------------------------- | ------------------------- |
-| peak.broad_lorentz_gamma_1             | [code][0]{:.label-cif}    |
-| \_peak.broad_lorentz_gamma_1           | [Edi][0]{:.label-cif}     |
-| \_easydiffraction_peak.lorentz_gamma_1 | [coreCIF][0]{:.label-cif} |
+| Access                                       | Source                    |
+| -------------------------------------------- | ------------------------- |
+| peak.broad_lorentz_gamma_1                   | [code][0]{:.label-cif}    |
+| \_peak.broad_lorentz_gamma_1                 | [Edi][0]{:.label-cif}     |
+| \_easydiffraction_peak.broad_lorentz_gamma_1 | [coreCIF][0]{:.label-cif} |
 
 Lorentzian broadening (dependent on d-spacing).
 
 ### :material-arrow-expand-horizontal: broad_lorentz_gamma_2 { #peak-broad-lorentz-gamma-2 }
 
-| Access                                 | Source                    |
-| -------------------------------------- | ------------------------- |
-| peak.broad_lorentz_gamma_2             | [code][0]{:.label-cif}    |
-| \_peak.broad_lorentz_gamma_2           | [Edi][0]{:.label-cif}     |
-| \_easydiffraction_peak.lorentz_gamma_2 | [coreCIF][0]{:.label-cif} |
+| Access                                       | Source                    |
+| -------------------------------------------- | ------------------------- |
+| peak.broad_lorentz_gamma_2                   | [code][0]{:.label-cif}    |
+| \_peak.broad_lorentz_gamma_2                 | [Edi][0]{:.label-cif}     |
+| \_easydiffraction_peak.broad_lorentz_gamma_2 | [coreCIF][0]{:.label-cif} |
 
 Lorentzian broadening (instrument-dependent term).
 
