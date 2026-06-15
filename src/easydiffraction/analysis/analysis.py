@@ -1556,8 +1556,9 @@ class Analysis(
 
     def _default_resume_extra_steps(self) -> int:
         """Return the active MCMC minimizer's default resume step count."""
-        if self.minimizer.type == MinimizerTypeEnum.BUMPS_DREAM.value:
-            return int(self.minimizer.steps)
+        # Both Bayesian categories (emcee and bumps-dream) expose the
+        # ``sampling_steps`` descriptor; the runtime-only ``steps`` attr
+        # is not on the persisted minimizer category.
         return int(self.minimizer.sampling_steps.value)
 
     def _has_resumable_emcee_sidecar(self) -> bool:
