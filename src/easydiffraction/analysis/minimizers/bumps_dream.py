@@ -864,10 +864,15 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         state, saved_names = loaded
 
         parameter_names = [str(name) for name in kwargs.get('parameter_names')]
-        self._validate_dream_resume(state=state, saved_names=saved_names, names=parameter_names)
-
         n_parameters = len(parameter_names)
-        pop_scale = self._recovered_population_scale(state=state, n_parameters=n_parameters)
+        pop_scale = int(self.pop)
+        self._validate_dream_resume(
+            state=state,
+            saved_names=saved_names,
+            names=parameter_names,
+            pop_scale=pop_scale,
+            n_parameters=n_parameters,
+        )
         current_steps = self._state_generations(
             state=state, pop_scale=pop_scale, n_parameters=n_parameters
         )
@@ -881,8 +886,20 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         return overrides, copy.deepcopy(state)
 
     @staticmethod
-    def _validate_dream_resume(*, state: object, saved_names: list[str], names: list[str]) -> None:
-        """Reject a resume whose model does not match the saved chain."""
+    def _validate_dream_resume(
+        *,
+        state: object,
+        saved_names: list[str],
+        names: list[str],
+        pop_scale: int,
+        n_parameters: int,
+    ) -> None:
+        """Reject a resume whose model does not match the saved chain.
+
+        Mismatched free-parameter count, names/order, or population are
+        all rejected — the population, in particular, cannot change on
+        resume (bumps resumes positionally into a fixed chain count).
+        """
         if int(state.Nvar) != len(names):
             msg = (
                 f'Saved bumps-dream chain has {int(state.Nvar)} parameters but the current '
@@ -895,15 +912,15 @@ class BumpsDreamMinimizer(BumpsMinimizer):
                 f'bumps-dream chain.\n  current: {names}\n  saved:   {list(saved_names)}'
             )
             raise ValueError(msg)
-
-    @staticmethod
-    def _recovered_population_scale(*, state: object, n_parameters: int) -> int:
-        """Recover the DREAM population scale factor from a saved state."""
-        npop = int(state.Npop)
-        recovered = math.ceil(npop / n_parameters)
-        if math.ceil(recovered * n_parameters) != npop:
-            recovered = npop // n_parameters
-        return max(int(recovered), 1)
+        expected_npop = math.ceil(pop_scale * n_parameters)
+        if expected_npop != int(state.Npop):
+            msg = (
+                f'Requested population (chains={pop_scale}) would produce {expected_npop} '
+                f'chains, but the saved bumps-dream chain has {int(state.Npop)}. The '
+                'population cannot change on resume; reset chains/population_size to match '
+                'the saved chain.'
+            )
+            raise ValueError(msg)
 
     @staticmethod
     def _state_generations(*, state: object, pop_scale: int, n_parameters: int) -> int:
