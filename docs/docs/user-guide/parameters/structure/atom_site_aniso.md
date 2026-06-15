@@ -12,6 +12,7 @@ title: atom_site_aniso
 
 | Access                                                                                                                                                | Source                    |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
+| atom_site_aniso['ID'].adp_11                                                                                                                          | [code][0]{:.label-cif}    |
 | \_atom_site_aniso.adp_11                                                                                                                              | [Edi][0]{:.label-cif}     |
 | \_atom_site_aniso.B_11 [:material-open-in-new:](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Iatom_site_aniso.B_11.html 'IUCr definition') | [coreCIF][0]{:.label-cif} |
 
@@ -21,6 +22,7 @@ Anisotropic ADP tensor component (1,1).
 
 | Access                                                                                                                                                | Source                    |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
+| atom_site_aniso['ID'].adp_12                                                                                                                          | [code][0]{:.label-cif}    |
 | \_atom_site_aniso.adp_12                                                                                                                              | [Edi][0]{:.label-cif}     |
 | \_atom_site_aniso.B_12 [:material-open-in-new:](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Iatom_site_aniso.B_12.html 'IUCr definition') | [coreCIF][0]{:.label-cif} |
 
@@ -30,6 +32,7 @@ Anisotropic ADP tensor component (1,2).
 
 | Access                                                                                                                                                | Source                    |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
+| atom_site_aniso['ID'].adp_13                                                                                                                          | [code][0]{:.label-cif}    |
 | \_atom_site_aniso.adp_13                                                                                                                              | [Edi][0]{:.label-cif}     |
 | \_atom_site_aniso.B_13 [:material-open-in-new:](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Iatom_site_aniso.B_13.html 'IUCr definition') | [coreCIF][0]{:.label-cif} |
 
@@ -39,6 +42,7 @@ Anisotropic ADP tensor component (1,3).
 
 | Access                                                                                                                                                | Source                    |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
+| atom_site_aniso['ID'].adp_22                                                                                                                          | [code][0]{:.label-cif}    |
 | \_atom_site_aniso.adp_22                                                                                                                              | [Edi][0]{:.label-cif}     |
 | \_atom_site_aniso.B_22 [:material-open-in-new:](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Iatom_site_aniso.B_22.html 'IUCr definition') | [coreCIF][0]{:.label-cif} |
 
@@ -48,6 +52,7 @@ Anisotropic ADP tensor component (2,2).
 
 | Access                                                                                                                                                | Source                    |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
+| atom_site_aniso['ID'].adp_23                                                                                                                          | [code][0]{:.label-cif}    |
 | \_atom_site_aniso.adp_23                                                                                                                              | [Edi][0]{:.label-cif}     |
 | \_atom_site_aniso.B_23 [:material-open-in-new:](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Iatom_site_aniso.B_23.html 'IUCr definition') | [coreCIF][0]{:.label-cif} |
 
@@ -57,6 +62,7 @@ Anisotropic ADP tensor component (2,3).
 
 | Access                                                                                                                                                | Source                    |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
+| atom_site_aniso['ID'].adp_33                                                                                                                          | [code][0]{:.label-cif}    |
 | \_atom_site_aniso.adp_33                                                                                                                              | [Edi][0]{:.label-cif}     |
 | \_atom_site_aniso.B_33 [:material-open-in-new:](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Iatom_site_aniso.B_33.html 'IUCr definition') | [coreCIF][0]{:.label-cif} |
 
@@ -66,6 +72,7 @@ Anisotropic ADP tensor component (3,3).
 
 | Access                                                                                                                                                  | Source                    |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
+| atom_site_aniso['ID'].id                                                                                                                                | [code][0]{:.label-cif}    |
 | \_atom_site_aniso.id                                                                                                                                    | [Edi][0]{:.label-cif}     |
 | \_atom_site_aniso.label [:material-open-in-new:](https://www.iucr.org/__data/iucr/cifdic_html/3/CORE_DIC/Iatom_site_aniso.label.html 'IUCr definition') | [coreCIF][0]{:.label-cif} |
 

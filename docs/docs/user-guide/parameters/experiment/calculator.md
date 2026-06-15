@@ -12,9 +12,11 @@ title: calculator
 
 ## :material-shape: type { #calculator-type }
 
-| Access            | Source                |
-| ----------------- | --------------------- |
-| \_calculator.type | [Edi][0]{:.label-cif} |
+| Access                            | Source                    |
+| --------------------------------- | ------------------------- |
+| calculator.type                   | [code][0]{:.label-cif}    |
+| \_calculator.type                 | [Edi][0]{:.label-cif}     |
+| \_easydiffraction_calculator.type | [coreCIF][0]{:.label-cif} |
 
 Calculator backend type. Supported values include `cryspy`, `crysfml`,
 and `pdffit`. Available choices depend on the experiment type.

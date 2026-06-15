@@ -6,9 +6,10 @@ title: rendering_structure
 
 ## :material-shape: type { #rendering-structure-type }
 
-| Access                     | Source                |
-| -------------------------- | --------------------- |
-| \_rendering_structure.type | [Edi][0]{:.label-cif} |
+| Access                     | Source                 |
+| -------------------------- | ---------------------- |
+| rendering_structure.type   | [code][0]{:.label-cif} |
+| \_rendering_structure.type | [Edi][0]{:.label-cif}  |
 
 Structure-view renderer backend type. Supported values include `auto`,
 `ascii`, and `threejs`.

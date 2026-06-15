@@ -6,17 +6,21 @@ title: alias
 
 ## :material-tag: id { #alias-id }
 
-| Access     | Source                |
-| ---------- | --------------------- |
-| \_alias.id | [Edi][0]{:.label-cif} |
+| Access                     | Source                    |
+| -------------------------- | ------------------------- |
+| aliases['ID'].id           | [code][0]{:.label-cif}    |
+| \_alias.id                 | [Edi][0]{:.label-cif}     |
+| \_easydiffraction_alias.id | [coreCIF][0]{:.label-cif} |
 
 Human-readable alias id for a parameter.
 
 ## :material-form-textbox: parameter_unique_name { #alias-parameter-unique-name }
 
-| Access                        | Source                |
-| ----------------------------- | --------------------- |
-| \_alias.parameter_unique_name | [Edi][0]{:.label-cif} |
+| Access                                        | Source                    |
+| --------------------------------------------- | ------------------------- |
+| aliases['ID'].parameter_unique_name           | [code][0]{:.label-cif}    |
+| \_alias.parameter_unique_name                 | [Edi][0]{:.label-cif}     |
+| \_easydiffraction_alias.parameter_unique_name | [coreCIF][0]{:.label-cif} |
 
 Unique name of the referenced parameter.
 

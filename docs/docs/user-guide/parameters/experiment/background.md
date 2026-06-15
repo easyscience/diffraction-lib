@@ -9,9 +9,10 @@ title: background
 
 ## :material-tag: id { #background-id }
 
-| Access          | Source                |
-| --------------- | --------------------- |
-| \_background.id | [Edi][0]{:.label-cif} |
+| Access              | Source                 |
+| ------------------- | ---------------------- |
+| background['ID'].id | [code][0]{:.label-cif} |
+| \_background.id     | [Edi][0]{:.label-cif}  |
 
 Identifier for this background line segment.
 
@@ -57,9 +58,11 @@ Coefficient used in a Chebyshev polynomial background term.
 
 ## :material-shape: type { #background-type }
 
-| Access            | Source                |
-| ----------------- | --------------------- |
-| \_background.type | [Edi][0]{:.label-cif} |
+| Access                            | Source                    |
+| --------------------------------- | ------------------------- |
+| background.type                   | [code][0]{:.label-cif}    |
+| \_background.type                 | [Edi][0]{:.label-cif}     |
+| \_easydiffraction_background.type | [coreCIF][0]{:.label-cif} |
 
 Active background type tag. Supported values include `line-segment` and
 `chebyshev`.
