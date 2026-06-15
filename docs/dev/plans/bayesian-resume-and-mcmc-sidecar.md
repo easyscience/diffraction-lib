@@ -202,14 +202,30 @@ New tests required:
 - Confirm `pixi run check` (link-check) passes after the tutorial/nav
   and ADR edits.
 
-DREAM resume tutorial (authored in Phase 2, deferred from P1.6):
-- Add a **self-contained** `bayesian-dream-resume-lbco-hrpt.py` (fresh
-  short DREAM fit → `save_as` → `fit(resume=True, extra_steps=N)` →
-  posterior displays), `pixi run notebook-prepare`, and register it in
-  `docs/mkdocs.yml` nav, `docs/docs/tutorials/index.md`,
-  `docs/docs/tutorials/index.json`, and `tests/tutorials/baseline.json`
-  (baseline values taken from the executed run); add to `ci_skip.txt`
-  if it is too slow for CI. No new external dataset is required.
+DREAM resume tutorial + external-project regeneration (Phase 2,
+deferred from P1.6 — supersedes the earlier self-contained note):
+
+The dream tutorial mirrors the emcee one (load a published project, then
+resume), not a self-contained fresh fit. This requires regenerating the
+published Bayesian projects so the saved DREAM project carries a
+`dream_state` group (it was saved before P1.2 and has none today):
+
+1. **Regenerate both saved projects at 10000 steps** with the current
+   code: `proj-lbco-hrpt-emcee` (emcee, persists `emcee_chain`) and
+   `proj-lbco-hrpt-dream` (bumps-DREAM, now persists `dream_state` via
+   P1.2). Use a fixed seed for reproducible baselines.
+2. **Publish to the external data repo**: zip each saved project and push
+   to `easyscience/diffraction`, then bump the pinned commit in
+   `src/easydiffraction/_data_index_ref.txt` (current `11bb1e4…`) so the
+   tutorials download the new projects. *(Outward-facing: confirm before
+   pushing; needs write access to that repo.)*
+3. **Adapt `bayesian-dream-display-lbco-hrpt.py`** to load **and**
+   `fit(resume=True, extra_steps=N)` — parallel to
+   `bayesian-emcee-resume-lbco-hrpt.py` — and rename to
+   `bayesian-dream-resume-lbco-hrpt` to match the emcee naming, updating
+   nav, `index.md`, `index.json`, and `baseline.json` (baselines from
+   the regenerated run). `notebook-prepare` to regenerate the notebook.
+4. Verify both resume tutorials execute against the new pinned data.
 
 ## Suggested Pull Request
 
