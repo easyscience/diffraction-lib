@@ -4724,7 +4724,7 @@ footers, comment lines) is silently discarded.</p>
             <td><code><a class="autorefs autorefs-internal" title="&lt;code&gt;handler&lt;/code&gt; (&lt;code&gt;easydiffraction.io.cif.handler&lt;/code&gt;)" href="#easydiffraction.io.cif.handler">handler</a></code></td>
             <td>
               <div class="doc-md-description">
-                <p>Minimal <abbr title="Crystallographic Information File.">CIF</abbr> tag handler used by descriptors/parameters.</p>
+                <p>Tag specification used by descriptors/parameters.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -4812,7 +4812,24 @@ footers, comment lines) is silently discarded.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Minimal <abbr title="Crystallographic Information File.">CIF</abbr> tag handler used by descriptors/parameters.</p>
+        <p>Tag specification used by descriptors/parameters.</p>
+<p>A :class:<code>TagSpec</code> records the names a single descriptor/parameter uses
+across the two persistence/exchange formats, plus its documentation
+location:</p>
+<ul>
+<li><code>edi_names</code> — names searched and written for the <strong>Edi</strong> project
+  format (<code>.edi</code> files). <code>edi_name</code> (<code>edi_names[0]</code>) is the
+  canonical name used when writing.</li>
+<li><code>cif_names</code> — names searched and written for strict <strong><abbr title="Crystallographic Information File.">CIF</abbr></strong>
+  import/export (<code>.cif</code> files, including the report). <code>cif_name</code>
+  (<code>cif_names[0]</code>) is the canonical name used when exporting; it is
+  an <abbr title="International Union of Crystallography.">IUCr</abbr>/pdCIF dictionary name where one exists and an
+  <code>_easydiffraction_*</code> extension otherwise. Remaining entries are
+  additional spellings accepted on <abbr title="Crystallographic Information File.">CIF</abbr> import. Defaults to <code>edi_names</code>
+  when not given.</li>
+</ul>
+<p>Both lists are ordered by priority: the first entry is canonical for
+writing, and the whole list is accepted on read.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -4836,10 +4853,10 @@ footers, comment lines) is silently discarded.</p>
       </thead>
       <tbody>
           <tr class="doc-section-item">
-            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;CifHandler&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;names&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;project_name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;import_names&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;iucr_name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;docs_page&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;docs_anchor&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.io.cif.handler.CifHandler&lt;/code&gt;)" href="#easydiffraction.io.cif.handler.CifHandler">CifHandler</a></code></td>
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;TagSpec&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;edi_names&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;edi_name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cif_names&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;docs_page&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;docs_anchor&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.io.cif.handler.TagSpec&lt;/code&gt;)" href="#easydiffraction.io.cif.handler.TagSpec">TagSpec</a></code></td>
             <td>
               <div class="doc-md-description">
-                <p>Canonical <abbr title="Crystallographic Information File.">CIF</abbr> handler used by descriptors/parameters.</p>
+                <p>Per-descriptor tag specification across Edi and <abbr title="Crystallographic Information File.">CIF</abbr> formats.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -4869,8 +4886,8 @@ footers, comment lines) is silently discarded.</p>
 
 
 
-<h7 id="easydiffraction.io.cif.handler.CifHandler" class="doc doc-heading">
-              <code class="highlight language-python"><span class="n">CifHandler</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">project_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">import_names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">iucr_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">docs_page</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">docs_anchor</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<h7 id="easydiffraction.io.cif.handler.TagSpec" class="doc doc-heading">
+              <code class="highlight language-python"><span class="n">TagSpec</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">edi_names</span><span class="p">,</span> <span class="n">edi_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cif_names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">docs_page</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">docs_anchor</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h7>
 
@@ -4879,9 +4896,7 @@ footers, comment lines) is silently discarded.</p>
 
 
 
-        <p>Canonical <abbr title="Crystallographic Information File.">CIF</abbr> handler used by descriptors/parameters.</p>
-<p>Holds persistence/import/export tags and attaches to an owning
-descriptor so it can derive a stable uid if needed.</p>
+        <p>Per-descriptor tag specification across Edi and <abbr title="Crystallographic Information File.">CIF</abbr> formats.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -4907,7 +4922,7 @@ descriptor so it can derive a stable uid if needed.</p>
       </thead>
       <tbody>
             <tr class="doc-section-item">
-              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;attach&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;owner&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.io.cif.handler.CifHandler.attach&lt;/code&gt;)" href="#easydiffraction.io.cif.handler.CifHandler.attach">attach</a></code></td>
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;attach&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;owner&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.io.cif.handler.TagSpec.attach&lt;/code&gt;)" href="#easydiffraction.io.cif.handler.TagSpec.attach">attach</a></code></td>
               <td>
                 <div class="doc-md-description">
                   <p>Attach to a descriptor or parameter instance.</p>
@@ -4934,17 +4949,17 @@ descriptor so it can derive a stable uid if needed.</p>
       </thead>
       <tbody>
           <tr class="doc-section-item">
-            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;names&lt;/span&gt;&lt;/code&gt;
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;edi_names&lt;/span&gt;&lt;/code&gt;
 
   &lt;span class=&quot;doc doc-labels&quot;&gt;
       &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt; (&lt;code&gt;easydiffraction.io.cif.handler.CifHandler.names&lt;/code&gt;)" href="#easydiffraction.io.cif.handler.CifHandler.names">names</a></code></td>
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.io.cif.handler.TagSpec.edi_names&lt;/code&gt;)" href="#easydiffraction.io.cif.handler.TagSpec.edi_names">edi_names</a></code></td>
             <td>
                   <code><span title="list">list</span>[<span title="str">str</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>List of <abbr title="Crystallographic Information File.">CIF</abbr> tag names associated with the owner.</p>
+                <p>Edi tag names accepted on read; first is canonical.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -4952,17 +4967,17 @@ descriptor so it can derive a stable uid if needed.</p>
             </td>
           </tr>
           <tr class="doc-section-item">
-            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;project_name&lt;/span&gt;&lt;/code&gt;
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;edi_name&lt;/span&gt;&lt;/code&gt;
 
   &lt;span class=&quot;doc doc-labels&quot;&gt;
       &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt; (&lt;code&gt;easydiffraction.io.cif.handler.CifHandler.project_name&lt;/code&gt;)" href="#easydiffraction.io.cif.handler.CifHandler.project_name">project_name</a></code></td>
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.io.cif.handler.TagSpec.edi_name&lt;/code&gt;)" href="#easydiffraction.io.cif.handler.TagSpec.edi_name">edi_name</a></code></td>
             <td>
                   <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Edi project data name used by project persistence.</p>
+                <p>Canonical Edi tag used when writing <code>.edi</code> files.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -4970,17 +4985,71 @@ descriptor so it can derive a stable uid if needed.</p>
             </td>
           </tr>
           <tr class="doc-section-item">
-            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;import_names&lt;/span&gt;&lt;/code&gt;
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;edi_read_names&lt;/span&gt;&lt;/code&gt;
 
   &lt;span class=&quot;doc doc-labels&quot;&gt;
       &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt; (&lt;code&gt;easydiffraction.io.cif.handler.CifHandler.import_names&lt;/code&gt;)" href="#easydiffraction.io.cif.handler.CifHandler.import_names">import_names</a></code></td>
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.io.cif.handler.TagSpec.edi_read_names&lt;/code&gt;)" href="#easydiffraction.io.cif.handler.TagSpec.edi_read_names">edi_read_names</a></code></td>
             <td>
                   <code><span title="list">list</span>[<span title="str">str</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Accepted legacy or external names used by project import.</p>
+                <p>Accepted <code>.edi</code> load names, in lookup order.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;cif_names&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.io.cif.handler.TagSpec.cif_names&lt;/code&gt;)" href="#easydiffraction.io.cif.handler.TagSpec.cif_names">cif_names</a></code></td>
+            <td>
+                  <code><span title="list">list</span>[<span title="str">str</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><abbr title="Crystallographic Information File.">CIF</abbr> tag names; first is canonical for export.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;cif_name&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.io.cif.handler.TagSpec.cif_name&lt;/code&gt;)" href="#easydiffraction.io.cif.handler.TagSpec.cif_name">cif_name</a></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Canonical <abbr title="Crystallographic Information File.">CIF</abbr> tag used by report/strict-<abbr title="Crystallographic Information File.">CIF</abbr> export.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;cif_read_names&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.io.cif.handler.TagSpec.cif_read_names&lt;/code&gt;)" href="#easydiffraction.io.cif.handler.TagSpec.cif_read_names">cif_read_names</a></code></td>
+            <td>
+                  <code><span title="list">list</span>[<span title="str">str</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Accepted <code>.cif</code> import names, in lookup order.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -4992,31 +5061,13 @@ descriptor so it can derive a stable uid if needed.</p>
 
   &lt;span class=&quot;doc doc-labels&quot;&gt;
       &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt; (&lt;code&gt;easydiffraction.io.cif.handler.CifHandler.read_names&lt;/code&gt;)" href="#easydiffraction.io.cif.handler.CifHandler.read_names">read_names</a></code></td>
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.io.cif.handler.TagSpec.read_names&lt;/code&gt;)" href="#easydiffraction.io.cif.handler.TagSpec.read_names">read_names</a></code></td>
             <td>
                   <code><span title="list">list</span>[<span title="str">str</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Accepted project-load names in lookup order.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;iucr_name&lt;/span&gt;&lt;/code&gt;
-
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt; (&lt;code&gt;easydiffraction.io.cif.handler.CifHandler.iucr_name&lt;/code&gt;)" href="#easydiffraction.io.cif.handler.CifHandler.iucr_name">iucr_name</a></code></td>
-            <td>
-                  <code><span title="str">str</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p><abbr title="International Union of Crystallography.">IUCr</abbr>-side <abbr title="Crystallographic Information File.">CIF</abbr> tag name for export writers.</p>
+                <p>Names accepted on read across both formats (union).</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -5028,7 +5079,7 @@ descriptor so it can derive a stable uid if needed.</p>
 
   &lt;span class=&quot;doc doc-labels&quot;&gt;
       &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt; (&lt;code&gt;easydiffraction.io.cif.handler.CifHandler.category_name&lt;/code&gt;)" href="#easydiffraction.io.cif.handler.CifHandler.category_name">category_name</a></code></td>
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.io.cif.handler.TagSpec.category_name&lt;/code&gt;)" href="#easydiffraction.io.cif.handler.TagSpec.category_name">category_name</a></code></td>
             <td>
                   <code><span title="str">str</span></code>
             </td>
@@ -5046,7 +5097,7 @@ descriptor so it can derive a stable uid if needed.</p>
 
   &lt;span class=&quot;doc doc-labels&quot;&gt;
       &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt; (&lt;code&gt;easydiffraction.io.cif.handler.CifHandler.category_entry_name&lt;/code&gt;)" href="#easydiffraction.io.cif.handler.CifHandler.category_entry_name">category_entry_name</a></code></td>
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.io.cif.handler.TagSpec.category_entry_name&lt;/code&gt;)" href="#easydiffraction.io.cif.handler.TagSpec.category_entry_name">category_entry_name</a></code></td>
             <td>
                   <code><span title="str">str</span></code>
             </td>
@@ -5064,7 +5115,7 @@ descriptor so it can derive a stable uid if needed.</p>
 
   &lt;span class=&quot;doc doc-labels&quot;&gt;
       &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt; (&lt;code&gt;easydiffraction.io.cif.handler.CifHandler.docs_page&lt;/code&gt;)" href="#easydiffraction.io.cif.handler.CifHandler.docs_page">docs_page</a></code></td>
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.io.cif.handler.TagSpec.docs_page&lt;/code&gt;)" href="#easydiffraction.io.cif.handler.TagSpec.docs_page">docs_page</a></code></td>
             <td>
                   <code><span title="str">str</span></code>
             </td>
@@ -5082,7 +5133,7 @@ descriptor so it can derive a stable uid if needed.</p>
 
   &lt;span class=&quot;doc doc-labels&quot;&gt;
       &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt; (&lt;code&gt;easydiffraction.io.cif.handler.CifHandler.docs_anchor&lt;/code&gt;)" href="#easydiffraction.io.cif.handler.CifHandler.docs_anchor">docs_anchor</a></code></td>
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.io.cif.handler.TagSpec.docs_anchor&lt;/code&gt;)" href="#easydiffraction.io.cif.handler.TagSpec.docs_anchor">docs_anchor</a></code></td>
             <td>
                   <code><span title="str">str</span></code>
             </td>
@@ -5100,13 +5151,13 @@ descriptor so it can derive a stable uid if needed.</p>
 
   &lt;span class=&quot;doc doc-labels&quot;&gt;
       &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt; (&lt;code&gt;easydiffraction.io.cif.handler.CifHandler.url&lt;/code&gt;)" href="#easydiffraction.io.cif.handler.CifHandler.url">url</a></code></td>
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.io.cif.handler.TagSpec.url&lt;/code&gt;)" href="#easydiffraction.io.cif.handler.TagSpec.url">url</a></code></td>
             <td>
                   <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Versioned online documentation URL for this handler.</p>
+                <p>Versioned online documentation URL for this descriptor.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -5118,7 +5169,7 @@ descriptor so it can derive a stable uid if needed.</p>
 
   &lt;span class=&quot;doc doc-labels&quot;&gt;
       &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt; (&lt;code&gt;easydiffraction.io.cif.handler.CifHandler.uid&lt;/code&gt;)" href="#easydiffraction.io.cif.handler.CifHandler.uid">uid</a></code></td>
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.io.cif.handler.TagSpec.uid&lt;/code&gt;)" href="#easydiffraction.io.cif.handler.TagSpec.uid">uid</a></code></td>
             <td>
                   <code><span title="str">str</span> | None</code>
             </td>
@@ -5143,14 +5194,14 @@ descriptor so it can derive a stable uid if needed.</p>
 
 
 
-<h8 id="easydiffraction.io.cif.handler.CifHandler-attributes">Attributes</h8>
+<h8 id="easydiffraction.io.cif.handler.TagSpec-attributes">Attributes</h8>
 
 <div class="doc doc-object doc-attribute">
 
 
 
-<h9 id="easydiffraction.io.cif.handler.CifHandler.names" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">names</span></code>
+<h9 id="easydiffraction.io.cif.handler.TagSpec.edi_names" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">edi_names</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
@@ -5161,7 +5212,7 @@ descriptor so it can derive a stable uid if needed.</p>
 
     <div class="doc doc-contents ">
 
-        <p>List of <abbr title="Crystallographic Information File.">CIF</abbr> tag names associated with the owner.</p>
+        <p>Edi tag names accepted on read; first is canonical.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -5174,8 +5225,8 @@ descriptor so it can derive a stable uid if needed.</p>
 
 
 
-<h9 id="easydiffraction.io.cif.handler.CifHandler.project_name" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">project_name</span></code>
+<h9 id="easydiffraction.io.cif.handler.TagSpec.edi_name" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">edi_name</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
@@ -5186,7 +5237,7 @@ descriptor so it can derive a stable uid if needed.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Edi project data name used by project persistence.</p>
+        <p>Canonical Edi tag used when writing <code>.edi</code> files.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -5199,8 +5250,8 @@ descriptor so it can derive a stable uid if needed.</p>
 
 
 
-<h9 id="easydiffraction.io.cif.handler.CifHandler.import_names" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">import_names</span></code>
+<h9 id="easydiffraction.io.cif.handler.TagSpec.edi_read_names" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">edi_read_names</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
@@ -5211,7 +5262,7 @@ descriptor so it can derive a stable uid if needed.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Accepted legacy or external names used by project import.</p>
+        <p>Accepted <code>.edi</code> load names, in lookup order.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -5224,7 +5275,82 @@ descriptor so it can derive a stable uid if needed.</p>
 
 
 
-<h9 id="easydiffraction.io.cif.handler.CifHandler.read_names" class="doc doc-heading">
+<h9 id="easydiffraction.io.cif.handler.TagSpec.cif_names" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">cif_names</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h9>
+
+
+    <div class="doc doc-contents ">
+
+        <p><abbr title="Crystallographic Information File.">CIF</abbr> tag names; first is canonical for export.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h9 id="easydiffraction.io.cif.handler.TagSpec.cif_name" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">cif_name</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h9>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Canonical <abbr title="Crystallographic Information File.">CIF</abbr> tag used by report/strict-<abbr title="Crystallographic Information File.">CIF</abbr> export.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h9 id="easydiffraction.io.cif.handler.TagSpec.cif_read_names" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">cif_read_names</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h9>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Accepted <code>.cif</code> import names, in lookup order.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h9 id="easydiffraction.io.cif.handler.TagSpec.read_names" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">read_names</span></code>
 
   <span class="doc doc-labels">
@@ -5236,7 +5362,7 @@ descriptor so it can derive a stable uid if needed.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Accepted project-load names in lookup order.</p>
+        <p>Names accepted on read across both formats (union).</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -5249,32 +5375,7 @@ descriptor so it can derive a stable uid if needed.</p>
 
 
 
-<h9 id="easydiffraction.io.cif.handler.CifHandler.iucr_name" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">iucr_name</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-  </span>
-
-</h9>
-
-
-    <div class="doc doc-contents ">
-
-        <p><abbr title="International Union of Crystallography.">IUCr</abbr>-side <abbr title="Crystallographic Information File.">CIF</abbr> tag name for export writers.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h9 id="easydiffraction.io.cif.handler.CifHandler.category_name" class="doc doc-heading">
+<h9 id="easydiffraction.io.cif.handler.TagSpec.category_name" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">category_name</span></code>
 
   <span class="doc doc-labels">
@@ -5299,7 +5400,7 @@ descriptor so it can derive a stable uid if needed.</p>
 
 
 
-<h9 id="easydiffraction.io.cif.handler.CifHandler.category_entry_name" class="doc doc-heading">
+<h9 id="easydiffraction.io.cif.handler.TagSpec.category_entry_name" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">category_entry_name</span></code>
 
   <span class="doc doc-labels">
@@ -5324,7 +5425,7 @@ descriptor so it can derive a stable uid if needed.</p>
 
 
 
-<h9 id="easydiffraction.io.cif.handler.CifHandler.docs_page" class="doc doc-heading">
+<h9 id="easydiffraction.io.cif.handler.TagSpec.docs_page" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">docs_page</span></code>
 
   <span class="doc doc-labels">
@@ -5349,7 +5450,7 @@ descriptor so it can derive a stable uid if needed.</p>
 
 
 
-<h9 id="easydiffraction.io.cif.handler.CifHandler.docs_anchor" class="doc doc-heading">
+<h9 id="easydiffraction.io.cif.handler.TagSpec.docs_anchor" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">docs_anchor</span></code>
 
   <span class="doc doc-labels">
@@ -5374,7 +5475,7 @@ descriptor so it can derive a stable uid if needed.</p>
 
 
 
-<h9 id="easydiffraction.io.cif.handler.CifHandler.url" class="doc doc-heading">
+<h9 id="easydiffraction.io.cif.handler.TagSpec.url" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">url</span></code>
 
   <span class="doc doc-labels">
@@ -5386,7 +5487,7 @@ descriptor so it can derive a stable uid if needed.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Versioned online documentation URL for this handler.</p>
+        <p>Versioned online documentation URL for this descriptor.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -5399,7 +5500,7 @@ descriptor so it can derive a stable uid if needed.</p>
 
 
 
-<h9 id="easydiffraction.io.cif.handler.CifHandler.uid" class="doc doc-heading">
+<h9 id="easydiffraction.io.cif.handler.TagSpec.uid" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">uid</span></code>
 
   <span class="doc doc-labels">
@@ -5421,12 +5522,12 @@ descriptor so it can derive a stable uid if needed.</p>
 </div>
 
 
-<h8 id="easydiffraction.io.cif.handler.CifHandler-functions">Functions</h8>
+<h8 id="easydiffraction.io.cif.handler.TagSpec-functions">Functions</h8>
 
 <div class="doc doc-object doc-function">
 
 
-<h9 id="easydiffraction.io.cif.handler.CifHandler.attach" class="doc doc-heading">
+<h9 id="easydiffraction.io.cif.handler.TagSpec.attach" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">attach</span><span class="p">(</span><span class="n">owner</span><span class="p">)</span></code>
 
 </h9>
@@ -8949,9 +9050,9 @@ are formatted with :func:<code>format_value</code>.</p>
     <div class="doc doc-contents ">
 
         <p>Render a single descriptor/parameter to a <abbr title="Crystallographic Information File.">CIF</abbr> line.</p>
-<p>Expects <code>param</code> to expose <code>_cif_handler.project_name</code> and
-<code>value</code>. Free parameters are written with uncertainty brackets
-(see :func:<code>format_param_value</code>).</p>
+<p>Expects <code>param</code> to expose <code>_tags.edi_name</code> and <code>value</code>. Free
+parameters are written with uncertainty brackets (see
+:func:<code>format_param_value</code>).</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -8974,7 +9075,7 @@ are formatted with :func:<code>format_value</code>.</p>
 
         <p>Render a CategoryItem-like object to <abbr title="Crystallographic Information File.">CIF</abbr> text.</p>
 <p>Expects <code>item.parameters</code> iterable of params with
-<code>_cif_handler.project_name</code> and <code>value</code>.</p>
+<code>_tags.edi_name</code> and <code>value</code>.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
