@@ -263,10 +263,10 @@ path, such as `space_group.name_h_m`.
     |  | :material-arrow-expand-horizontal: [broad_lorentz_gamma_0](parameters/experiment/peak.md#peak-broad-lorentz-gamma-0) | peak.broad_lorentz_gamma_0 |
     |  | :material-arrow-expand-horizontal: [broad_lorentz_gamma_1](parameters/experiment/peak.md#peak-broad-lorentz-gamma-1) | peak.broad_lorentz_gamma_1 |
     |  | :material-arrow-expand-horizontal: [broad_lorentz_gamma_2](parameters/experiment/peak.md#peak-broad-lorentz-gamma-2) | peak.broad_lorentz_gamma_2 |
-    |  | :material-arrow-bottom-right: [decay_beta_0](parameters/experiment/peak.md#peak-exp-decay-beta-0) | peak.decay_beta_0 |
-    |  | :material-arrow-bottom-right: [decay_beta_1](parameters/experiment/peak.md#peak-exp-decay-beta-1) | peak.decay_beta_1 |
-    |  | :material-scale-unbalanced: [rise_alpha_0](parameters/experiment/peak.md#peak-exp-rise-alpha-0) | peak.rise_alpha_0 |
-    |  | :material-scale-unbalanced: [rise_alpha_1](parameters/experiment/peak.md#peak-exp-rise-alpha-1) | peak.rise_alpha_1 |
+    |  | :material-arrow-bottom-right: [decay_beta_0](parameters/experiment/peak.md#peak-decay-beta-0) | peak.decay_beta_0 |
+    |  | :material-arrow-bottom-right: [decay_beta_1](parameters/experiment/peak.md#peak-decay-beta-1) | peak.decay_beta_1 |
+    |  | :material-scale-unbalanced: [rise_alpha_0](parameters/experiment/peak.md#peak-rise-alpha-0) | peak.rise_alpha_0 |
+    |  | :material-scale-unbalanced: [rise_alpha_1](parameters/experiment/peak.md#peak-rise-alpha-1) | peak.rise_alpha_1 |
 
 === "Keys in Edi"
 
@@ -283,10 +283,10 @@ path, such as `space_group.name_h_m`.
     |  | :material-arrow-expand-horizontal: [broad_lorentz_gamma_0](parameters/experiment/peak.md#peak-broad-lorentz-gamma-0) | `_peak.broad_lorentz_gamma_0` |
     |  | :material-arrow-expand-horizontal: [broad_lorentz_gamma_1](parameters/experiment/peak.md#peak-broad-lorentz-gamma-1) | `_peak.broad_lorentz_gamma_1` |
     |  | :material-arrow-expand-horizontal: [broad_lorentz_gamma_2](parameters/experiment/peak.md#peak-broad-lorentz-gamma-2) | `_peak.broad_lorentz_gamma_2` |
-    |  | :material-arrow-bottom-right: [decay_beta_0](parameters/experiment/peak.md#peak-exp-decay-beta-0) | `_peak.decay_beta_0` |
-    |  | :material-arrow-bottom-right: [decay_beta_1](parameters/experiment/peak.md#peak-exp-decay-beta-1) | `_peak.decay_beta_1` |
-    |  | :material-scale-unbalanced: [rise_alpha_0](parameters/experiment/peak.md#peak-exp-rise-alpha-0) | `_peak.rise_alpha_0` |
-    |  | :material-scale-unbalanced: [rise_alpha_1](parameters/experiment/peak.md#peak-exp-rise-alpha-1) | `_peak.rise_alpha_1` |
+    |  | :material-arrow-bottom-right: [decay_beta_0](parameters/experiment/peak.md#peak-decay-beta-0) | `_peak.decay_beta_0` |
+    |  | :material-arrow-bottom-right: [decay_beta_1](parameters/experiment/peak.md#peak-decay-beta-1) | `_peak.decay_beta_1` |
+    |  | :material-scale-unbalanced: [rise_alpha_0](parameters/experiment/peak.md#peak-rise-alpha-0) | `_peak.rise_alpha_0` |
+    |  | :material-scale-unbalanced: [rise_alpha_1](parameters/experiment/peak.md#peak-rise-alpha-1) | `_peak.rise_alpha_1` |
 
 === "Keys in CIF"
 
@@ -303,10 +303,10 @@ path, such as `space_group.name_h_m`.
     |  | :material-arrow-expand-horizontal: [broad_lorentz_gamma_0](parameters/experiment/peak.md#peak-broad-lorentz-gamma-0) | `_easydiffraction_peak.lorentz_gamma_0` | [coreCIF][0]{:.label-cif} |
     |  | :material-arrow-expand-horizontal: [broad_lorentz_gamma_1](parameters/experiment/peak.md#peak-broad-lorentz-gamma-1) | `_easydiffraction_peak.lorentz_gamma_1` | [coreCIF][0]{:.label-cif} |
     |  | :material-arrow-expand-horizontal: [broad_lorentz_gamma_2](parameters/experiment/peak.md#peak-broad-lorentz-gamma-2) | `_easydiffraction_peak.lorentz_gamma_2` | [coreCIF][0]{:.label-cif} |
-    |  | :material-arrow-bottom-right: [decay_beta_0](parameters/experiment/peak.md#peak-exp-decay-beta-0) | `_easydiffraction_peak.decay_beta_0` | [coreCIF][0]{:.label-cif} |
-    |  | :material-arrow-bottom-right: [decay_beta_1](parameters/experiment/peak.md#peak-exp-decay-beta-1) | `_easydiffraction_peak.decay_beta_1` | [coreCIF][0]{:.label-cif} |
-    |  | :material-scale-unbalanced: [rise_alpha_0](parameters/experiment/peak.md#peak-exp-rise-alpha-0) | `_easydiffraction_peak.rise_alpha_0` | [coreCIF][0]{:.label-cif} |
-    |  | :material-scale-unbalanced: [rise_alpha_1](parameters/experiment/peak.md#peak-exp-rise-alpha-1) | `_easydiffraction_peak.rise_alpha_1` | [coreCIF][0]{:.label-cif} |
+    |  | :material-arrow-bottom-right: [decay_beta_0](parameters/experiment/peak.md#peak-decay-beta-0) | `_easydiffraction_peak.decay_beta_0` | [coreCIF][0]{:.label-cif} |
+    |  | :material-arrow-bottom-right: [decay_beta_1](parameters/experiment/peak.md#peak-decay-beta-1) | `_easydiffraction_peak.decay_beta_1` | [coreCIF][0]{:.label-cif} |
+    |  | :material-scale-unbalanced: [rise_alpha_0](parameters/experiment/peak.md#peak-rise-alpha-0) | `_easydiffraction_peak.rise_alpha_0` | [coreCIF][0]{:.label-cif} |
+    |  | :material-scale-unbalanced: [rise_alpha_1](parameters/experiment/peak.md#peak-rise-alpha-1) | `_easydiffraction_peak.rise_alpha_1` | [coreCIF][0]{:.label-cif} |
 
 ### Total Scattering
 

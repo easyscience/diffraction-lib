@@ -122,7 +122,7 @@ Lorentzian broadening (dependent on d-spacing).
 
 Lorentzian broadening (instrument-dependent term).
 
-### :material-arrow-bottom-right: decay_beta_0 { #peak-exp-decay-beta-0 }
+### :material-arrow-bottom-right: decay_beta_0 { #peak-decay-beta-0 }
 
 | Access                              | Source                    |
 | ----------------------------------- | ------------------------- |
@@ -132,7 +132,7 @@ Lorentzian broadening (instrument-dependent term).
 
 Back-to-back exponential decay β₀.
 
-### :material-arrow-bottom-right: decay_beta_1 { #peak-exp-decay-beta-1 }
+### :material-arrow-bottom-right: decay_beta_1 { #peak-decay-beta-1 }
 
 | Access                              | Source                    |
 | ----------------------------------- | ------------------------- |
@@ -142,7 +142,7 @@ Back-to-back exponential decay β₀.
 
 Back-to-back exponential decay β₁.
 
-### :material-scale-unbalanced: rise_alpha_0 { #peak-exp-rise-alpha-0 }
+### :material-scale-unbalanced: rise_alpha_0 { #peak-rise-alpha-0 }
 
 | Access                              | Source                    |
 | ----------------------------------- | ------------------------- |
@@ -152,7 +152,7 @@ Back-to-back exponential decay β₁.
 
 Back-to-back exponential rise α₀.
 
-### :material-scale-unbalanced: rise_alpha_1 { #peak-exp-rise-alpha-1 }
+### :material-scale-unbalanced: rise_alpha_1 { #peak-rise-alpha-1 }
 
 | Access                              | Source                    |
 | ----------------------------------- | ------------------------- |
