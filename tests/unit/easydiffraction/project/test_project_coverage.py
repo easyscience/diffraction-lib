@@ -424,7 +424,7 @@ def test_save_writes_experiment_edi_files(tmp_path, monkeypatch):
     # marker; the original section header is preserved.
     written = (tmp_path / 'proj' / 'experiments' / 'scan1.edi').read_text()
     assert written.startswith('data_scan1')
-    assert '_edi.schema_name EasyDiffraction' in written
+    assert '_edi.schema_version 1' in written
 
 
 def test_save_as_temporary_writes_under_system_tempdir(monkeypatch):
