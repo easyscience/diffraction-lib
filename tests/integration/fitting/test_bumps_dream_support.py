@@ -547,7 +547,7 @@ def test_build_driver_stops_mapper_when_driver_clip_fails():
                 steps=10,
                 burn=2,
                 init=minimizer.init,
-                sampler_settings={'samples': 40},
+                sampler_settings={'samples': 40, 'pop': 4},
                 n_parameters=1,
             )
 
@@ -588,12 +588,12 @@ def test_run_solver_failure_paths_return_failure_results(monkeypatch):
     monkeypatch.setattr(
         minimizer,
         '_prepare_run_context',
-        lambda *, objective_function, kwargs: context,
+        lambda *, objective_function, kwargs, **overrides: context,
     )
     monkeypatch.setattr(
         minimizer,
         '_execute_driver',
-        lambda *, driver, random_seed: _DreamDriverResult(
+        lambda *, driver, random_seed, fit_state=None: _DreamDriverResult(
             best_values=None,
             best_nllf=None,
             raw_state='state',
@@ -610,7 +610,7 @@ def test_run_solver_failure_paths_return_failure_results(monkeypatch):
     monkeypatch.setattr(
         minimizer,
         '_execute_driver',
-        lambda *, driver, random_seed: _DreamDriverResult(
+        lambda *, driver, random_seed, fit_state=None: _DreamDriverResult(
             best_values=np.array([1.0]),
             best_nllf=0.5,
             raw_state=None,
