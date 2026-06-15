@@ -41,11 +41,11 @@ class InventoryEntry:
     unique_name: str
     category_code: str | None
     category_entry_name: str | None
-    project_name: str
-    current_cif_names: list[str]
-    import_names: list[str]
+    edi_name: str
+    edi_names: list[str]
+    cif_names: list[str]
     read_names: list[str]
-    iucr_name: str
+    cif_name: str
     docs_page: str
     docs_anchor: str
 
@@ -208,8 +208,8 @@ def collect_inventory() -> list[InventoryEntry]:
         key=lambda entry: (
             entry.context,
             entry.descriptor_path,
-            entry.project_name,
-            entry.iucr_name,
+            entry.edi_name,
+            entry.cif_name,
         ),
     )
 
@@ -282,7 +282,7 @@ def _entry_for_descriptor(
     descriptor: object,
 ) -> InventoryEntry:
     """Build one inventory entry from a descriptor."""
-    handler = descriptor._cif_handler
+    handler = descriptor._tags
     identity = descriptor._identity
     return InventoryEntry(
         context=context,
@@ -293,11 +293,11 @@ def _entry_for_descriptor(
         unique_name=descriptor.unique_name,
         category_code=identity.category_code,
         category_entry_name=identity.category_entry_name,
-        project_name=handler.project_name,
-        current_cif_names=list(handler.names),
-        import_names=list(handler.import_names),
+        edi_name=handler.edi_name,
+        edi_names=list(handler.edi_names),
+        cif_names=list(handler.cif_names),
         read_names=list(handler.read_names),
-        iucr_name=handler.iucr_name,
+        cif_name=handler.cif_name,
         docs_page=handler.docs_page,
         docs_anchor=handler.docs_anchor,
     )
@@ -310,8 +310,8 @@ def _deduplicate_entries(entries: list[InventoryEntry]) -> list[InventoryEntry]:
         key = (
             entry.context,
             entry.descriptor_path,
-            entry.project_name,
-            entry.iucr_name,
+            entry.edi_name,
+            entry.cif_name,
         )
         unique_entries[key] = entry
     return list(unique_entries.values())
@@ -320,7 +320,7 @@ def _deduplicate_entries(entries: list[InventoryEntry]) -> list[InventoryEntry]:
 def _inventory_payload(entries: list[InventoryEntry]) -> dict[str, Any]:
     """Render the inventory JSON payload."""
     return {
-        'schema': 'edi-handler-inventory-v1',
+        'schema': 'edi-handler-inventory-v2',
         'generated_by': 'tools/edi_handler_inventory.py',
         'entries': [asdict(entry) for entry in entries],
     }
