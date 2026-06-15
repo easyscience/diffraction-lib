@@ -563,7 +563,7 @@ def test_fit_resume_missing_sidecar_raises(
         lambda **kwargs: None,
     )
 
-    with pytest.raises(ValueError, match='no saved.*resumable chain'):
+    with pytest.raises(ValueError, match=r'no saved.*resumable chain'):
         analysis.fit(resume=True)
 
 
@@ -602,7 +602,7 @@ def test_dream_fit_resume_missing_sidecar_raises(monkeypatch, tmp_path):
     monkeypatch.setattr(analysis, '_has_resumable_dream_sidecar', lambda: False)
     monkeypatch.setattr(analysis, '_run_single', lambda **kwargs: None)
 
-    with pytest.raises(ValueError, match='no saved.*resumable chain'):
+    with pytest.raises(ValueError, match=r'no saved.*resumable chain'):
         analysis.fit(resume=True)
 
 
