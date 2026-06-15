@@ -209,7 +209,7 @@ label.md-nav__title[for="__drawer"] {
 
 /* Keep prose line length stable when sidebars are hidden at narrower widths */
 .md-main .md-content > .md-content__inner {
-  width: min(100%, 45em);
+  width: min(100%, 47em);
   margin-left: auto !important;
   margin-right: auto !important;
 }
@@ -296,6 +296,22 @@ body[data-md-color-scheme="slate"] .jupyter-wrapper {
 /* Removes jupyter output cell padding to align with input cell text */
 .jp-RenderedText {
   padding-left: 0.85em !important;
+}
+
+/* Force the docs site to honour the compact table spacing the tablers
+   set inline (see TABLE_CELL_* in display/tablers/base.py). The values
+   here MUST mirror those constants. This rule exists only because
+   mkdocs-Material's `.md-typeset table` base typography (line-height
+   inherited from `.md-typeset { line-height: 1.6 }` and Material's tall
+   default cell padding) otherwise inflates these rows on the site,
+   whereas JupyterLab renders the same inline markup compactly. Scoped
+   to rendered HTML *outputs* (.jp-RenderedHTML), so markdown prose
+   tables (.jp-RenderedMarkdown) and code-input cells are untouched. */
+.jp-RenderedHTML td,
+.jp-RenderedHTML th {
+  padding-top: 0.15em !important;
+  padding-bottom: 0.15em !important;
+  line-height: 1.2 !important;
 }
 
 /* Keep inline Three.js structure outputs inside the notebook stacking context.
