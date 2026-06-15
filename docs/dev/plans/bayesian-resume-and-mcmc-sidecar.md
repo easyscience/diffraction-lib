@@ -147,9 +147,11 @@ Phase 1 review gate. Do not batch multiple steps into one commit.
   `resume=True, extra_steps=N` behaves consistently for emcee and DREAM
   at the `Fitter`/`analysis.fit` layer; share validation/detection
   helpers where clean. Commit: `Unify emcee and dream resume semantics`.
-- [x] **P1.5 — Add `chains` alias for DREAM `population`.** User-facing
-  `chains` alias with conflict detection and "population = scale factor"
-  documentation. Commit: `Add chains alias for bumps-dream population`.
+- [x] **P1.5 — Add `chains` alias for DREAM `population_size`.**
+  User-facing `chains` alias on the persisted category, sharing the
+  `population_size` descriptor (always value-consistent; no separate
+  `population` field), with "population = scale factor" documentation.
+  Commit: `Add chains alias for bumps-dream population`.
 - [x] **P1.6 — DREAM resume tutorial — deferred to Phase 2.** The
   tutorial must be **executed** on real LBCO/HRPT data to validate it
   and to fill its `tests/tutorials/baseline.json` entry
@@ -182,8 +184,8 @@ pixi run script-tests > /tmp/ed-script.log 2>&1; script_exit_code=$?; tail -n 40
 New tests required:
 - Unit: DREAM state round-trips through the `mcmc.h5` `dream_state`
   group; resume validation rejects mismatched count/population/names;
-  `extra_steps` → `samples=current+N` translation; `chains`/`population`
-  alias conflict.
+  `extra_steps` → `samples=current+N` translation; `chains` ⇄
+  `population_size` value-consistency (shared descriptor).
 - Unit — raw-state lifecycle (one sidecar, several engines):
   - a fresh (non-resume) fit clears **all** raw sampler-state groups
     (every engine), so no prior chain survives — including the

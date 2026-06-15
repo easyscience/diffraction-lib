@@ -92,11 +92,12 @@ parameter names alongside the state, avoiding core's positional-only
 fallback).
 
 The DREAM minimizer also gains a user-facing **`chains` alias** for the
-bumps `population` setting (an approved API addition): `chains` is the
-discoverable name, `population` is accepted for parity with bumps, and
-supplying both with different values raises. The documentation states
-that `population` is a *scale factor* — bumps creates
-`ceil(population · n_parameters)` chains.
+existing `population_size` setting (an approved API addition): `chains`
+is the discoverable name for the population *scale factor* — bumps
+creates `ceil(chains · n_parameters)` parallel chains. `chains` and
+`population_size` are two names for **one** descriptor (shared storage),
+so they are always value-consistent and cannot disagree; no separate
+`population` field is added (avoiding a third name for the same value).
 
 ### 2. Persist resumable raw sampler state per engine, in one sidecar
 
