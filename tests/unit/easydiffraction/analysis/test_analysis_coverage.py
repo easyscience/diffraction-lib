@@ -1062,7 +1062,7 @@ class TestFitRequestValidation:
         a = Analysis(project=_make_project())  # default lmfit minimizer
         with pytest.raises(
             ValueError,
-            match=r"Resume is supported only for MCMC minimizers",
+            match=r'Resume is supported only for MCMC minimizers',
         ):
             a._validate_fit_request(mode=FitModeEnum.SINGLE, resume=True, extra_steps=None)
 

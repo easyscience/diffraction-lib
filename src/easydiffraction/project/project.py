@@ -24,7 +24,6 @@ from easydiffraction.io.cif.serialize import project_config_to_cif
 from easydiffraction.io.cif.serialize import project_to_cif
 from easydiffraction.io.edi import edi_body_from_text
 from easydiffraction.io.edi import section_to_edi
-from easydiffraction.io.results_sidecar import SIDECAR_FILE_NAME
 from easydiffraction.io.results_sidecar import carry_over_raw_sampler_state
 from easydiffraction.io.results_sidecar import read_analysis_results_sidecar
 from easydiffraction.io.results_sidecar import write_analysis_results_sidecar
@@ -680,8 +679,8 @@ class Project(GuardedBase):  # noqa: PLR0904
         self.metadata.path = project_dir
         # Relocating a saved Bayesian project must preserve the raw,
         # resumable sampler-state groups (emcee_chain / dream_state).
-        # save() rewrites only the derived sidecar arrays from memory, so
-        # copy the raw groups across before they are rebuilt; otherwise
+        # save() rebuilds only the derived sidecar arrays from memory,
+        # so copy the raw groups across before they are rebuilt; else
         # resume after load + save_as would have no chain to extend.
         if previous_path is not None and project_dir.resolve() != previous_path.resolve():
             carry_over_raw_sampler_state(

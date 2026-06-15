@@ -108,9 +108,7 @@ def carry_over_raw_sampler_state(
 
     with h5py.File(source_path, 'r') as source_handle:
         present_groups = [
-            group_name
-            for group_name in _RAW_SAMPLER_STATE_GROUPS
-            if group_name in source_handle
+            group_name for group_name in _RAW_SAMPLER_STATE_GROUPS if group_name in source_handle
         ]
         if not present_groups:
             return

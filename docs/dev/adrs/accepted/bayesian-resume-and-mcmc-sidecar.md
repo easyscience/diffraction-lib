@@ -133,10 +133,10 @@ the derived sidecar arrays from memory but cannot reconstruct the raw
 sampler state, which only ever exists on disk. Relocating a project with
 `save_as` therefore copies the raw-state groups (`emcee_chain`,
 `dream_state`) from the source sidecar into the destination before the
-derived arrays are rewritten. Without this, a resume after
-`load` + `save_as` — the flow both Bayesian resume tutorials use — would
-find no chain to extend. This makes resume genuinely survive a
-load/relocate round-trip for both engines, as required above.
+derived arrays are rewritten. Without this, a resume after `load` +
+`save_as` — the flow both Bayesian resume tutorials use — would find no
+chain to extend. This makes resume genuinely survive a load/relocate
+round-trip for both engines, as required above.
 
 ### 3. Rename the sidecar `results.h5` → `mcmc.h5`
 
