@@ -7,14 +7,16 @@ from __future__ import annotations
 from collections import UserDict
 from types import SimpleNamespace
 
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 
 class _Descriptor:
-    def __init__(self, value, tag='_x.value', iucr_name=None):
+    def __init__(self, value, tag='_x.value', cif_name=None):
         self.name = tag.rsplit('.', maxsplit=1)[-1]
         self.value = value
-        self._cif_handler = CifHandler(names=[tag], iucr_name=iucr_name)
+        self._tags = TagSpec(
+            edi_names=[tag], cif_names=[cif_name] if cif_name is not None else None
+        )
 
 
 class _SwitchableCategory:
@@ -56,8 +58,8 @@ def _collection(*items):
     return _Collection({item.name: item for item in items})
 
 
-def _descriptor(value, tag='_x.value', iucr_name=None):
-    return _Descriptor(value, tag=tag, iucr_name=iucr_name)
+def _descriptor(value, tag='_x.value', cif_name=None):
+    return _Descriptor(value, tag=tag, cif_name=cif_name)
 
 
 def _experiment_type(*, sample_form, beam_mode='constant wavelength'):
@@ -113,7 +115,7 @@ def _structure(name='phase1'):
     structure.cell.length_b = 5.43
     structure.cell.length_c = 5.43
     structure.atom_sites.create(
-        label='Si1',
+        id='Si1',
         type_symbol='Si',
         fract_x=0.0,
         fract_y=0.0,
@@ -127,7 +129,7 @@ def _structure(name='phase1'):
 def _project(name, tmp_path, structures, experiments):
     return SimpleNamespace(
         name=name,
-        info=SimpleNamespace(path=tmp_path),
+        metadata=SimpleNamespace(path=tmp_path),
         structures=structures,
         experiments=experiments,
         analysis=SimpleNamespace(
@@ -140,9 +142,9 @@ def _project(name, tmp_path, structures, experiments):
 def _single_crystal_experiment(name='sc1'):
     return SimpleNamespace(
         name=name,
-        type=_experiment_type(sample_form='single crystal'),
-        linked_crystal=SimpleNamespace(
-            id=_descriptor(
+        experiment_type=_experiment_type(sample_form='single crystal'),
+        linked_structure=SimpleNamespace(
+            structure_id=_descriptor(
                 'phase1',
                 '_sc_crystal_block.id',
                 '_easydiffraction_sc_crystal_block.id',
@@ -189,7 +191,7 @@ def _single_crystal_experiment(name='sc1'):
 
 def _linked_phase():
     return SimpleNamespace(
-        id=_descriptor('phase1'),
+        structure_id=_descriptor('phase1'),
         scale=_descriptor(1.0),
     )
 
@@ -214,8 +216,8 @@ def _powder_experiment(name, *, beam_mode='constant wavelength'):
     )
     return SimpleNamespace(
         name=name,
-        type=_experiment_type(sample_form='powder', beam_mode=beam_mode),
-        linked_phases=[_linked_phase()],
+        experiment_type=_experiment_type(sample_form='powder', beam_mode=beam_mode),
+        linked_structures=[_linked_phase()],
         diffrn=SimpleNamespace(
             ambient_temperature=_descriptor(295.0),
             ambient_pressure=_descriptor(101.3),
@@ -224,8 +226,8 @@ def _powder_experiment(name, *, beam_mode='constant wavelength'):
             setup_wavelength=_descriptor(1.5406 if beam_mode == 'constant wavelength' else None),
             calib_d_to_tof_offset=_descriptor(1.0),
             calib_d_to_tof_linear=_descriptor(2.0),
-            calib_d_to_tof_quad=_descriptor(3.0),
-            calib_d_to_tof_recip=_descriptor(4.0),
+            calib_d_to_tof_quadratic=_descriptor(3.0),
+            calib_d_to_tof_reciprocal=_descriptor(4.0),
         ),
         calculator=_SwitchableCategory(
             'cryspy',
@@ -254,7 +256,7 @@ def _powder_experiment(name, *, beam_mode='constant wavelength'):
                 index_k=_descriptor(0),
                 index_l=_descriptor(0),
                 f_squared_calc=_descriptor(25.0),
-                phase_id=_descriptor('phase1'),
+                structure_id=_descriptor('phase1'),
                 d_spacing=_descriptor(2.5),
             )
         ],
@@ -443,7 +445,7 @@ def test_iucr_atom_site_rows_preserve_parameter_uncertainties():
     from easydiffraction.io.cif.serialize import format_param_value
 
     atom_site = AtomSite()
-    atom_site.label = 'Si1'
+    atom_site.id = 'Si1'
     atom_site.type_symbol = 'Si'
     atom_site.fract_x = 11.98509310
     atom_site.fract_x.free = True
@@ -465,7 +467,7 @@ def test_iucr_atom_site_aniso_rows_preserve_parameter_uncertainties():
     from easydiffraction.io.cif.serialize import format_param_value
 
     aniso_site = AtomSiteAniso()
-    aniso_site.label = 'Si1'
+    aniso_site.id = 'Si1'
     aniso_site.adp_11 = 0.00658189
     aniso_site.adp_11.free = True
     aniso_site.adp_11.uncertainty = 0.00014
@@ -486,9 +488,9 @@ def test_iucr_extension_items_preserve_parameter_uncertainties():
     scale = Parameter(
         name='scale',
         value_spec=AttributeSpec(default=1.0),
-        cif_handler=CifHandler(
-            names=['_sc_crystal_block.scale'],
-            iucr_name='_easydiffraction_sc_crystal_block.scale',
+        tags=TagSpec(
+            edi_names=['_sc_crystal_block.scale'],
+            cif_names=['_easydiffraction_sc_crystal_block.scale'],
         ),
     )
     scale.value = 2.87438284
@@ -562,7 +564,7 @@ def test_atom_site_aniso_section_renders_beta_header_and_tags():
     structure.cell.length_a = 5.0
     structure.cell.length_b = 6.0
     structure.cell.length_c = 8.0
-    structure.atom_sites.create(label='Fe', type_symbol='Fe', adp_type='beta')
+    structure.atom_sites.create(id='Fe', type_symbol='Fe', adp_type='beta')
     structure.atom_site_aniso['Fe'].adp_11 = 0.001
     structure._update_categories()
 
@@ -579,7 +581,7 @@ def test_write_pref_orient_loop_standard_and_fraction():
     from easydiffraction.io.cif import iucr_writer as W
 
     coll = PrefOrients()
-    coll.create(phase_id='lbco', march_r=0.75, index_h=0, index_k=0, index_l=1)  # fraction=0
+    coll.create(structure_id='lbco', march_r=0.75, index_h=0, index_k=0, index_l=1)  # fraction=0
     experiment = SimpleNamespace(preferred_orientation=coll)
 
     lines: list[str] = []

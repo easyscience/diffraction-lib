@@ -82,7 +82,7 @@ class PosteriorPairPlotStyleEnum(StrEnum):
 
 
 DEFAULT_CORRELATION_THRESHOLD: float | None = None
-DEFAULT_CORRELATION_MAX_PARAMETERS = 6
+DEFAULT_CORRELATION_MAX_PARAMETERS = 5
 EXPECTED_COVAR_NDIM = 2
 DEFAULT_BRAGG_PEAKS_HEIGHT_FRACTION = 0.10
 DEFAULT_RESID_HEIGHT = DEFAULT_RESIDUAL_HEIGHT_FRACTION
@@ -637,7 +637,7 @@ class Plotter(RendererBase):
             experiment,
             intensity_category_for(experiment),
             expt_name,
-            experiment.type,
+            experiment.experiment_type,
             plot_options,
         )
 
@@ -688,7 +688,7 @@ class Plotter(RendererBase):
             experiment,
             intensity_category_for(experiment),
             expt_name,
-            experiment.type,
+            experiment.experiment_type,
             plot_options,
         )
 
@@ -776,7 +776,10 @@ class Plotter(RendererBase):
         """
         self._update_project_categories(expt_name)
         experiment = self._project.experiments[expt_name]
-        x_axis, _, sample_form, scattering_type, _ = self._resolve_x_axis(experiment.type, None)
+        x_axis, _, sample_form, scattering_type, _ = self._resolve_x_axis(
+            experiment.experiment_type,
+            None,
+        )
         axes_labels = self._get_axes_labels(sample_form, scattering_type, x_axis)
         x = np.asarray(intensity_category_for(experiment).x, dtype=float)
         reference = np.asarray(reference, dtype=float)
@@ -939,8 +942,8 @@ class Plotter(RendererBase):
 
         # Try CSV first (produced by fit_sequential or future fit)
         csv_path = None
-        if self._project.info.path is not None:
-            candidate = pathlib.Path(self._project.info.path) / 'analysis' / 'results.csv'
+        if self._project.metadata.path is not None:
+            candidate = pathlib.Path(self._project.metadata.path) / 'analysis' / 'results.csv'
             if candidate.is_file():
                 csv_path = str(candidate)
 
@@ -1009,7 +1012,7 @@ class Plotter(RendererBase):
             column is used as the x-axis. When ``None``, the experiment
             sequence number is used instead.
         """
-        unique_names = self._collect_fitted_param_unique_names()
+        unique_names = self._collect_fitted_parameter_unique_names()
         if not unique_names:
             log.warning('No fitted parameters found to plot.')
             return
@@ -1023,7 +1026,7 @@ class Plotter(RendererBase):
                 continue
             self.plot_param_series(param=descriptor, versus=versus)
 
-    def _collect_fitted_param_unique_names(self) -> list[str]:
+    def _collect_fitted_parameter_unique_names(self) -> list[str]:
         """
         Return fitted parameter unique names from CSV or snapshots.
         """
@@ -1032,8 +1035,8 @@ class Plotter(RendererBase):
         meta = set(_META_COLUMNS)
 
         csv_path = None
-        if self._project.info.path is not None:
-            candidate = pathlib.Path(self._project.info.path) / 'analysis' / 'results.csv'
+        if self._project.metadata.path is not None:
+            candidate = pathlib.Path(self._project.metadata.path) / 'analysis' / 'results.csv'
             if candidate.is_file():
                 csv_path = str(candidate)
 
@@ -1291,7 +1294,7 @@ class Plotter(RendererBase):
             if parameter is None:
                 return None
 
-            current = getattr(parameter, 'fit_bounds_uncertainty_multiplier', None)
+            current = getattr(parameter, 'bounds_uncertainty_multiplier', None)
             if current is None or not np.isfinite(float(current)):
                 return None
 
@@ -1448,7 +1451,7 @@ class Plotter(RendererBase):
         self._update_project_categories(expt_name)
         experiment = self._project.experiments[expt_name]
         x_axis, _, sample_form, scattering_type, _ = self._resolve_x_axis(
-            experiment.type,
+            experiment.experiment_type,
             plot_options.x,
         )
 
@@ -1598,7 +1601,7 @@ class Plotter(RendererBase):
         ctx = self._prepare_powder_context(
             pattern,
             expt_name,
-            experiment.type,
+            experiment.experiment_type,
             plot_options.x_min,
             plot_options.x_max,
             plot_options.x,
@@ -1867,7 +1870,10 @@ class Plotter(RendererBase):
             ]
 
         for row in correlation_rows:
-            parameter_names.extend([row.param_unique_name_i.value, row.param_unique_name_j.value])
+            parameter_names.extend([
+                row.parameter_unique_name_i.value,
+                row.parameter_unique_name_j.value,
+            ])
         parameter_names = list(dict.fromkeys(parameter_names))
         if len(parameter_names) < MIN_POSTERIOR_PARAMETER_COUNT:
             return None
@@ -1880,8 +1886,8 @@ class Plotter(RendererBase):
         )
         wrote_any = False
         for row in correlation_rows:
-            i_name = row.param_unique_name_i.value
-            j_name = row.param_unique_name_j.value
+            i_name = row.parameter_unique_name_i.value
+            j_name = row.parameter_unique_name_j.value
             if i_name not in corr_df.index or j_name not in corr_df.index:
                 continue
             corr_df.loc[i_name, j_name] = float(row.correlation.value)
@@ -2836,8 +2842,18 @@ class Plotter(RendererBase):
         sidecar_data = getattr(analysis, '_persisted_fit_state_sidecar', {})
         pair_caches = sidecar_data.get('pair_caches', {})
         for cache_data in pair_caches.values():
-            cache_x = str(cache_data.get('param_unique_name_x', ''))
-            cache_y = str(cache_data.get('param_unique_name_y', ''))
+            cache_x = str(
+                cache_data.get(
+                    'parameter_unique_name_x',
+                    cache_data.get('param_unique_name_x', ''),
+                )
+            )
+            cache_y = str(
+                cache_data.get(
+                    'parameter_unique_name_y',
+                    cache_data.get('param_unique_name_y', ''),
+                )
+            )
             if {cache_x, cache_y} != {x_parameter_name, y_parameter_name}:
                 continue
 
@@ -4331,7 +4347,7 @@ class Plotter(RendererBase):
         ctx = self._prepare_powder_context(
             pattern,
             expt_name,
-            experiment.type,
+            experiment.experiment_type,
             plot_options.x_min,
             plot_options.x_max,
             plot_options.x,
@@ -5663,7 +5679,7 @@ class Plotter(RendererBase):
             X-range, residual, and x-axis selection options.
         """
         pattern = intensity_category_for(experiment)
-        expt_type = experiment.type
+        expt_type = experiment.experiment_type
 
         x_axis, _, sample_form, scattering_type, _ = self._resolve_x_axis(
             expt_type,
@@ -5976,7 +5992,7 @@ class Plotter(RendererBase):
         """
         arrays: dict[str, np.ndarray] = {}
         for name in (
-            'phase_id',
+            'structure_id',
             'index_h',
             'index_k',
             'index_l',
@@ -6014,29 +6030,29 @@ class Plotter(RendererBase):
         mask: np.ndarray,
     ) -> tuple[BraggTickSet, ...]:
         """
-        Group masked reflection arrays into per-phase tick sets.
+        Group masked reflection arrays into per-structure tick sets.
         """
-        phase_ids = arrays['phase_id'][mask]
-        unique_phase_ids = []
-        for raw_phase_id in phase_ids:
+        structure_ids = arrays['structure_id'][mask]
+        unique_structure_ids = []
+        for raw_structure_id in structure_ids:
             if not any(
-                np.array_equal(raw_phase_id, existing_phase_id)
-                for existing_phase_id in unique_phase_ids
+                np.array_equal(raw_structure_id, existing_structure_id)
+                for existing_structure_id in unique_structure_ids
             ):
-                unique_phase_ids.append(raw_phase_id)
+                unique_structure_ids.append(raw_structure_id)
 
         tick_sets = []
-        for raw_phase_id in unique_phase_ids:
-            phase_mask = mask & (arrays['phase_id'] == raw_phase_id)
+        for raw_structure_id in unique_structure_ids:
+            structure_mask = mask & (arrays['structure_id'] == raw_structure_id)
             tick_sets.append(
                 BraggTickSet(
-                    phase_id=str(raw_phase_id),
-                    x=arrays['x'][phase_mask],
-                    h=arrays['index_h'][phase_mask],
-                    k=arrays['index_k'][phase_mask],
-                    ell=arrays['index_l'][phase_mask],
-                    f_squared_calc=arrays['f_squared_calc'][phase_mask],
-                    f_calc=arrays['f_calc'][phase_mask],
+                    structure_id=str(raw_structure_id),
+                    x=arrays['x'][structure_mask],
+                    h=arrays['index_h'][structure_mask],
+                    k=arrays['index_k'][structure_mask],
+                    ell=arrays['index_l'][structure_mask],
+                    f_squared_calc=arrays['f_squared_calc'][structure_mask],
+                    f_calc=arrays['f_calc'][structure_mask],
                 )
             )
 
@@ -6061,7 +6077,7 @@ class Plotter(RendererBase):
                 refln.time_of_flight,
                 experiment.instrument.calib_d_to_tof_offset.value,
                 experiment.instrument.calib_d_to_tof_linear.value,
-                experiment.instrument.calib_d_to_tof_quad.value,
+                experiment.instrument.calib_d_to_tof_quadratic.value,
             )
         return refln.d_spacing
 

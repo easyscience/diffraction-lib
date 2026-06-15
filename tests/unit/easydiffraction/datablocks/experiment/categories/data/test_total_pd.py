@@ -20,13 +20,13 @@ def test_total_data_point_defaults():
     from easydiffraction.datablocks.experiment.categories.data.total_pd import TotalDataPoint
 
     pt = TotalDataPoint()
-    assert pt.point_id.value == '0'
+    assert pt.id.value == '0'
     assert pt.r.value == 0.0
     assert pt.g_r_meas.value == 0.0
     assert pt.g_r_meas_su.value == 0.0
     assert pt.g_r_calc.value == 0.0
     assert pt.calc_status.value == 'incl'
-    assert pt._identity.category_code == 'total_data'
+    assert pt._identity.category_code == 'data'
 
 
 def test_total_data_collection_create_and_properties():
@@ -57,8 +57,8 @@ def test_total_data_collection_create_and_properties():
     np.testing.assert_array_almost_equal(coll.intensity_meas_su, g_su)
 
     # Point IDs
-    assert coll._items[0].point_id.value == '1'
-    assert coll._items[3].point_id.value == '4'
+    assert coll._items[0].id.value == '1'
+    assert coll._items[3].id.value == '4'
 
 
 def test_total_data_calc_status_and_exclusion():
@@ -113,4 +113,4 @@ def test_total_data_items_resolve_experiment_datablock_name():
 
     param = coll._items[0].g_r_meas
     assert param._identity.datablock_entry_name == 'pdf-exp'
-    assert param.unique_name == 'pdf-exp.total_data.1.g_r_meas'
+    assert param.unique_name == 'pdf-exp.data.1.g_r_meas'

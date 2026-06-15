@@ -15,8 +15,6 @@ from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import str_to_ufloat
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
-
     import gemmi
 
     from easydiffraction.core.category import CategoryCollection
@@ -31,10 +29,6 @@ _CIF_UNCERTAINTY_SIG_DIGITS = 2
 
 # Maximum CIF description length before using semicolon-delimited block
 _CIF_DESCRIPTION_WRAP_LEN = 60
-
-_ADP_FAMILY_B = 'B'
-_ADP_FAMILY_U = 'U'
-_ADP_FAMILY_BETA = 'beta'
 
 
 def format_value(value: object) -> str:
@@ -165,12 +159,11 @@ def param_to_cif(param: object) -> str:
     """
     Render a single descriptor/parameter to a CIF line.
 
-    Expects ``param`` to expose ``_cif_handler.names`` and ``value``.
-    Free parameters are written with uncertainty brackets (see
+    Expects ``param`` to expose ``_tags.edi_name`` and ``value``. Free
+    parameters are written with uncertainty brackets (see
     :func:`format_param_value`).
     """
-    tags: Sequence[str] = param._cif_handler.names  # type: ignore[attr-defined]
-    main_key: str = tags[0]
+    main_key: str = param._tags.edi_name  # type: ignore[attr-defined]
     return f'{main_key} {format_param_value(param)}'
 
 
@@ -179,7 +172,7 @@ def category_item_to_cif(item: object) -> str:
     Render a CategoryItem-like object to CIF text.
 
     Expects ``item.parameters`` iterable of params with
-    ``_cif_handler.names`` and ``value``.
+    ``_tags.edi_name`` and ``value``.
     """
     parameters_hook = getattr(item, '_cif_parameters', None)
     parameters = parameters_hook() if parameters_hook is not None else item.parameters
@@ -193,7 +186,7 @@ def _validate_loop_tags(
 ) -> None:
     """Log an error if any row tag disagrees with *header_tags*."""
     for col, p in enumerate(parameters):
-        tag = p._cif_handler.names[0]  # type: ignore[attr-defined]
+        tag = p._tags.edi_name  # type: ignore[attr-defined]
         if tag != header_tags[col]:
             log.error(
                 f'CIF tag mismatch in loop column {col}: '
@@ -228,144 +221,6 @@ def _emit_loop_rows(
     return lines
 
 
-def _emit_rows_without_tag_validation(
-    items: list,
-    row_fn: object,
-    max_display: int | None,
-) -> list[str]:
-    """Build rows for loops whose tag family is chosen externally."""
-    if max_display is not None and len(items) > max_display:
-        half = max_display // 2
-        return [
-            *_rows_without_tag_validation(items[:half], row_fn),
-            '...',
-            *_rows_without_tag_validation(items[-half:], row_fn),
-        ]
-    return _rows_without_tag_validation(items, row_fn)
-
-
-def _rows_without_tag_validation(items: list, row_fn: object) -> list[str]:
-    """Return formatted row strings without header-tag validation."""
-    return [' '.join(row_fn(item)) for item in items]
-
-
-def _adp_family_from_type(adp_type: str) -> str:
-    """Return the CIF ADP tag family for an atom-site ADP type."""
-    from easydiffraction.datablocks.structure.categories.atom_sites.enums import (  # noqa: PLC0415
-        AdpTypeEnum,
-    )
-
-    adp_type_enum = AdpTypeEnum(adp_type)
-    if adp_type_enum is AdpTypeEnum.BETA:
-        return _ADP_FAMILY_BETA
-    if adp_type_enum in {AdpTypeEnum.UISO, AdpTypeEnum.UANI}:
-        return _ADP_FAMILY_U
-    return _ADP_FAMILY_B
-
-
-def _adp_family_for_atom_site(item: object) -> str:
-    """Return the ADP tag family for an atom-site (isotropic) row."""
-    family = _adp_family_from_type(item.adp_type.value)
-    # beta has no _atom_site.beta_iso_or_equiv tag; emit a beta atom's
-    # equivalent isotropic value in the B_iso_or_equiv column instead.
-    return _ADP_FAMILY_B if family == _ADP_FAMILY_BETA else family
-
-
-def _adp_family_for_atom_site_aniso(collection: object, item: object) -> str:
-    """Return the ADP tag family for an atom-site-aniso row."""
-    structure = collection._parent
-    atom_site = structure.atom_sites[item.label.value]
-    return _adp_family_from_type(atom_site.adp_type.value)
-
-
-def _group_items_by_adp_family(
-    items: list,
-    family_fn: object,
-) -> list[tuple[str, list]]:
-    """Group items by B/U ADP tag family in deterministic order."""
-    groups = {
-        _ADP_FAMILY_B: [],
-        _ADP_FAMILY_U: [],
-        _ADP_FAMILY_BETA: [],
-    }
-    for item in items:
-        groups[family_fn(item)].append(item)
-    return [(family, group) for family, group in groups.items() if group]
-
-
-def _atom_site_tag_for_adp_family(parameter: object, family: str) -> str:
-    """Return the atom_site tag for the selected ADP family."""
-    if parameter.name == 'adp_iso':
-        return f'_atom_site.{family}_iso_or_equiv'
-    return parameter._cif_handler.names[0]
-
-
-def _atom_site_aniso_tag_for_adp_family(parameter: object, family: str) -> str:
-    """Return the atom_site_aniso tag for the selected ADP family."""
-    if parameter.name.startswith('adp_'):
-        suffix = parameter.name.removeprefix('adp_')
-        return f'_atom_site_aniso.{family}_{suffix}'
-    return parameter._cif_handler.names[0]
-
-
-def _adp_family_loop_to_cif(
-    items: list,
-    family: str,
-    tag_fn: object,
-    max_display: int | None,
-) -> str:
-    """Render one B-family or U-family ADP loop."""
-    first_item = items[0]
-    parameters = list(first_item.parameters)
-    lines: list[str] = ['loop_']
-    lines.extend(tag_fn(parameter, family) for parameter in parameters)
-
-    def _row(item: object) -> list[str]:
-        return [format_param_value(parameter) for parameter in item.parameters]
-
-    lines.extend(_emit_rows_without_tag_validation(items, _row, max_display))
-    return '\n'.join(lines)
-
-
-def _adp_collection_to_cif(
-    collection: object,
-    max_display: int | None,
-) -> str | None:
-    """
-    Render ADP-sensitive structure loops with one tag family per row.
-    """
-    items = list(collection.values())
-    category_code = collection._item_type._category_code
-    if category_code == 'atom_site':
-        groups = _group_items_by_adp_family(items, _adp_family_for_atom_site)
-        loops = [
-            _adp_family_loop_to_cif(
-                group,
-                family,
-                _atom_site_tag_for_adp_family,
-                max_display,
-            )
-            for family, group in groups
-        ]
-        return '\n\n'.join(loops)
-    if category_code == 'atom_site_aniso':
-        groups = _group_items_by_adp_family(
-            items,
-            lambda item: _adp_family_for_atom_site_aniso(collection, item),
-        )
-        loops = [
-            _adp_family_loop_to_cif(
-                group,
-                family,
-                _atom_site_aniso_tag_for_adp_family,
-                max_display,
-            )
-            for family, group in groups
-        ]
-        return '\n\n'.join(loops)
-    return None
-
-
 def category_collection_to_cif(
     collection: object,
     max_display: int | None = None,
@@ -398,10 +253,6 @@ def category_collection_to_cif(
 
     if not len(collection):
         return '\n'.join(lines)
-
-    adp_cif = _adp_collection_to_cif(collection, max_display)
-    if adp_cif is not None:
-        return _join_scalar_and_loop_lines(lines, adp_cif)
 
     loop_cif = _standard_collection_loop_to_cif(collection, max_display)
     return _join_scalar_and_loop_lines(lines, loop_cif)
@@ -439,9 +290,9 @@ def _standard_collection_loop_to_cif(
     lines = ['loop_']
     header_tags: list[str] = []
     for p in _loop_parameters(first_item):
-        tags = p._cif_handler.names  # type: ignore[attr-defined]
-        header_tags.append(tags[0])
-        lines.append(tags[0])
+        tag = p._tags.edi_name  # type: ignore[attr-defined]
+        header_tags.append(tag)
+        lines.append(tag)
 
     # Allow collections to customise per-item row formatting
     row_hook = getattr(collection, '_format_cif_row', None)
@@ -545,38 +396,40 @@ def _format_project_description(description: str) -> str:
     return format_value(normalized_description)
 
 
-def project_info_to_cif(info: object) -> str:
-    """Render ProjectInfo to CIF text (id, title, description)."""
-    name = f'{info.name}'
+def project_metadata_to_cif(metadata: object) -> str:
+    """Render project metadata to Edi text."""
+    name = f'{metadata.name}'
 
-    title = f'{info.title}'
+    title = f'{metadata.title}'
     if ' ' in title:
-        title = format_value(info.title)
+        title = format_value(metadata.title)
 
-    description = _format_project_description(info.description)
+    description = _format_project_description(metadata.description)
 
-    created = format_value(info.created.strftime('%d %b %Y %H:%M:%S'))
-    last_modified = format_value(info.last_modified.strftime('%d %b %Y %H:%M:%S'))
+    created = format_value(metadata.created.strftime('%d %b %Y %H:%M:%S'))
+    last_modified = format_value(metadata.last_modified.strftime('%d %b %Y %H:%M:%S'))
+    timestamp = format_value(metadata.timestamp)
 
     return (
-        f'_project.id               {name}\n'
-        f'_project.title            {title}\n'
-        f'_project.description      {description}\n'
-        f'_project.created          {created}\n'
-        f'_project.last_modified    {last_modified}'
+        f'_metadata.name             {name}\n'
+        f'_metadata.title            {title}\n'
+        f'_metadata.description      {description}\n'
+        f'_metadata.created          {created}\n'
+        f'_metadata.last_modified    {last_modified}\n'
+        f'_metadata.timestamp        {timestamp}'
     )
 
 
 def _as_cif_text(section: object) -> str:
-    """Return CIF text from either an ``as_cif`` property or method."""
+    """Return STAR text from either an ``as_cif`` property or method."""
     cif_value = section.as_cif
     return cif_value() if callable(cif_value) else cif_value
 
 
 def project_config_to_cif(project: object) -> str:
-    """Render project-level configuration to ``project.cif`` text."""
+    """Render project-level configuration to Edi body text."""
     sections: list[str] = []
-    for attr_name in ('info', 'rendering_plot', 'report'):
+    for attr_name in ('metadata', 'rendering_plot', 'report'):
         section = getattr(project, attr_name, None)
         if section is not None:
             sections.append(_as_cif_text(section))
@@ -600,9 +453,9 @@ def project_config_to_cif(project: object) -> str:
 
 
 def project_to_cif(project: object) -> str:
-    """Render a whole project by concatenating sections when present."""
+    """Render a whole project Edi body from available sections."""
     parts: list[str] = []
-    if hasattr(project, 'info'):
+    if hasattr(project, 'metadata'):
         parts.append(project_config_to_cif(project))
     if getattr(project, 'structures', None):
         parts.append(_as_cif_text(project.structures))
@@ -619,7 +472,9 @@ def experiment_to_cif(experiment: object) -> str:
 
 
 def analysis_to_cif(analysis: object) -> str:
-    """Render analysis metadata, aliases, and constraints to CIF."""
+    """
+    Render analysis metadata, aliases, and constraints as STAR text.
+    """
     return category_owner_to_cif(analysis)
 
 
@@ -649,56 +504,58 @@ def _project_block_from_cif_text(cif_text: str) -> gemmi.cif.Block:
     return gemmi.cif.read_string(_wrap_in_data_block(cif_text, 'project')).sole_block()
 
 
-def _populate_project_info_from_block(
-    info: object,
+def _populate_project_metadata_from_block(
+    metadata: object,
     block: gemmi.cif.Block,
 ) -> None:
-    """Populate ProjectInfo fields from a parsed CIF block."""
-    from_cif = getattr(info, 'from_cif', None)
+    """Populate ProjectMetadata fields from a parsed block."""
+    from_cif = getattr(metadata, 'from_cif', None)
     if callable(from_cif):
         from_cif(block)
         return
 
     read_cif_string = _make_cif_string_reader(block)
 
-    name = read_cif_string('_project.id')
+    name = read_cif_string('_metadata.name') or read_cif_string('_project.id')
     if name is not None:
-        info.name = name
+        metadata.name = name
 
-    title = read_cif_string('_project.title')
+    title = read_cif_string('_metadata.title') or read_cif_string('_project.title')
     if title is not None:
-        info.title = title
+        metadata.title = title
 
-    description = read_cif_string('_project.description')
+    description = read_cif_string('_metadata.description') or read_cif_string(
+        '_project.description'
+    )
     if description is not None:
-        info.description = description
+        metadata.description = description
 
 
-def project_info_from_cif(info: object, cif_text: str) -> None:
+def project_metadata_from_cif(metadata: object, cif_text: str) -> None:
     """
-    Populate a ProjectInfo instance from CIF text.
+    Populate a ProjectMetadata instance from Edi or CIF text.
 
     Reads the core project metadata fields from CIF text.
 
     Parameters
     ----------
-    info : object
-        The ``ProjectInfo`` instance to populate.
+    metadata : object
+        The ``ProjectMetadata`` instance to populate.
     cif_text : str
-        CIF text content of ``project.cif``.
+        Edi or CIF text content of the project metadata section.
     """
     block = _project_block_from_cif_text(cif_text)
 
-    _populate_project_info_from_block(info, block)
+    _populate_project_metadata_from_block(metadata, block)
 
 
 def project_config_from_cif(project: object, cif_text: str) -> None:
     """
-    Populate project-level configuration from ``project.cif`` text.
+    Populate project-level configuration from Edi or CIF text.
     """
     block = _project_block_from_cif_text(cif_text)
 
-    _populate_project_info_from_block(project.info, block)
+    _populate_project_metadata_from_block(project.metadata, block)
 
     rendering_plot = getattr(project, 'rendering_plot', None)
     if rendering_plot is not None:
@@ -746,7 +603,7 @@ def analysis_from_cif(analysis: object, cif_text: str) -> None:
     analysis : object
         The ``Analysis`` instance to populate.
     cif_text : str
-        CIF text content of ``analysis.cif``.
+        Analysis Edi body text or explicit CIF import text.
     """
     import gemmi  # noqa: PLC0415
 
@@ -776,7 +633,10 @@ def analysis_from_cif(analysis: object, cif_text: str) -> None:
 
 def _has_fit_parameter_state_sections(block: object) -> bool:
     """Return True when persisted fit-parameter rows are present."""
-    return _has_cif_loop(block, '_fit_parameter.param_unique_name')
+    return _has_cif_loop(
+        block,
+        '_fit_parameter.parameter_unique_name',
+    ) or _has_cif_loop(block, '_fit_parameter.param_unique_name')
 
 
 def _has_persisted_fit_state_sections(block: object) -> bool:
@@ -1025,7 +885,7 @@ def param_from_cif(
 
     # Try to find the value(s) from the CIF block iterating over
     # the possible cif names in order of preference.
-    for tag in self._cif_handler.names:
+    for tag in self._tags.read_names:
         candidates = list(block.find_values(tag))
         if candidates:
             found_values = candidates
@@ -1158,8 +1018,11 @@ def _find_loop_for_category(
         The matching loop, or ``None`` if not found.
     """
     for param in category_item.parameters:
-        for name in param._cif_handler.names:
-            loop = block.find_loop(name).get_loop()
+        for name in param._tags.read_names:
+            loop_ref = block.find_loop(name)
+            if loop_ref is None:
+                continue
+            loop = loop_ref.get_loop() if hasattr(loop_ref, 'get_loop') else loop_ref
             if loop is not None:
                 return loop
     return None
@@ -1220,7 +1083,7 @@ def category_collection_from_cif(
         current_item = self._items[row_idx]
         for param in current_item.parameters:
             tag_found = False
-            for cif_name in param._cif_handler.names:
+            for cif_name in param._tags.read_names:
                 if cif_name in loop.tags:
                     col_idx = loop.tags.index(cif_name)
                     # TODO: The following is duplication of

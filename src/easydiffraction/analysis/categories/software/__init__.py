@@ -7,3 +7,4 @@ from __future__ import annotations
 from easydiffraction.analysis.categories.software.base import SoftwareRole
 from easydiffraction.analysis.categories.software.default import Software
 from easydiffraction.analysis.categories.software.factory import SoftwareFactory
+from easydiffraction.analysis.enums import SoftwareRoleEnum

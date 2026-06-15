@@ -4,19 +4,19 @@
 
 import tempfile
 
-import easydiffraction as ed
+import easydiffraction as edi
 
 TEMP_DIR = tempfile.gettempdir()
 
 
 def _setup_tbti_project():
     """Create a Tb2Ti2O7 single-crystal project ready for fitting."""
-    project = ed.Project()
+    project = edi.Project()
 
-    model_path = ed.download_data(id=20, destination=TEMP_DIR)
+    model_path = edi.download_data('struct-tbti', destination=TEMP_DIR)
     project.structures.add_from_cif_path(model_path)
 
-    data_path = ed.download_data(id=19, destination=TEMP_DIR)
+    data_path = edi.download_data('meas-tbti-heidi', destination=TEMP_DIR)
     project.experiments.add_from_data_path(
         name='heidi',
         data_path=data_path,
@@ -25,8 +25,8 @@ def _setup_tbti_project():
         radiation_probe='neutron',
     )
     experiment = project.experiments['heidi']
-    experiment.linked_crystal.id = 'tbti'
-    experiment.linked_crystal.scale = 1.0
+    experiment.linked_structure.structure_id = 'tbti'
+    experiment.linked_structure.scale = 1.0
     experiment.instrument.setup_wavelength = 0.793
     experiment.extinction.mosaicity = 35000
     experiment.extinction.radius = 10
@@ -52,7 +52,7 @@ def test_iso_then_aniso_fit() -> None:
     s.atom_sites['O2'].occupancy.free = True
     for name in ('Tb', 'Ti', 'O1', 'O2'):
         s.atom_sites[name].adp_iso.free = True
-    e.linked_crystal.scale.free = True
+    e.linked_structure.scale.free = True
     e.extinction.radius.free = True
 
     # Fit isotropic

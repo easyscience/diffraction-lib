@@ -40,8 +40,8 @@ def test_tex_report_path_returns_explicit_path(tmp_path):
 def test_tex_report_path_builds_from_project_info(tmp_path):
     from easydiffraction.report.tex_renderer import tex_report_path
 
-    info = types.SimpleNamespace(path=str(tmp_path))
-    project = types.SimpleNamespace(info=info, name='myproj')
+    metadata = types.SimpleNamespace(path=str(tmp_path))
+    project = types.SimpleNamespace(metadata=metadata, name='myproj')
 
     result = tex_report_path(project)
 
@@ -51,8 +51,8 @@ def test_tex_report_path_builds_from_project_info(tmp_path):
 def test_tex_report_path_uses_default_name_when_missing(tmp_path):
     from easydiffraction.report.tex_renderer import tex_report_path
 
-    info = types.SimpleNamespace(path=str(tmp_path))
-    project = types.SimpleNamespace(info=info)
+    metadata = types.SimpleNamespace(path=str(tmp_path))
+    project = types.SimpleNamespace(metadata=metadata)
 
     result = tex_report_path(project)
 
@@ -62,7 +62,7 @@ def test_tex_report_path_uses_default_name_when_missing(tmp_path):
 def test_tex_report_path_raises_when_project_unsaved():
     from easydiffraction.report.tex_renderer import tex_report_path
 
-    project = types.SimpleNamespace(info=types.SimpleNamespace(path=None))
+    project = types.SimpleNamespace(metadata=types.SimpleNamespace(path=None))
 
     with pytest.raises(FileNotFoundError, match='Save the project first'):
         tex_report_path(project)
@@ -475,21 +475,21 @@ def _refln_source_experiment():
     """Return a live experiment exposing a refln loop category."""
     items = [
         _FakeItem([
-            _FakeParameter('phase_id', 'phase-a'),
+            _FakeParameter('structure_id', 'phase-a'),
             _FakeParameter('two_theta', 12.0),
             _FakeParameter('index_h', 1),
             _FakeParameter('index_k', 0),
             _FakeParameter('index_l', 0),
         ]),
         _FakeItem([
-            _FakeParameter('phase_id', ''),  # empty -> skipped
+            _FakeParameter('structure_id', ''),  # empty -> skipped
             _FakeParameter('two_theta', 13.0),
             _FakeParameter('index_h', 1),
             _FakeParameter('index_k', 1),
             _FakeParameter('index_l', 0),
         ]),
         _FakeItem([
-            _FakeParameter('phase_id', 'phase-b'),
+            _FakeParameter('structure_id', 'phase-b'),
             _FakeParameter('two_theta', 14.0),
             _FakeParameter('index_h', 2),
             _FakeParameter('index_k', 0),
@@ -517,17 +517,17 @@ def test_write_bragg_csvs_from_refln_category_splits_by_phase(tmp_path):
     phase_a_path = tmp_path / 'data' / csvs['phase-a']['filename']
     rows = _read_csv(phase_a_path)
     header = rows[0]
-    assert '_refln.phase_id' in header
+    assert '_pd_refln.phase_id' in header
     assert '_refln.two_theta' in header
     # Only the single phase-a row is written.
     assert len(rows) == 2
     assert rows[1][header.index('_refln.two_theta')] == '12.0'
 
 
-def test_write_refln_category_csvs_empty_without_phase_id(tmp_path):
+def test_write_refln_category_csvs_empty_without_structure_id(tmp_path):
     from easydiffraction.report.tex_renderer import _write_refln_category_csvs
 
-    values = {'two_theta': [10.0, 20.0]}  # no phase_id
+    values = {'two_theta': [10.0, 20.0]}  # no structure_id
 
     assert _write_refln_category_csvs('hrpt', values, tmp_path) == {}
 
@@ -547,7 +547,7 @@ def test_write_bragg_csvs_falls_back_to_tick_sets(tmp_path):
     from easydiffraction.report.tex_renderer import _write_bragg_csvs
 
     tick_set = BraggTickSet(
-        phase_id='phase-a',
+        structure_id='phase-a',
         x=np.array([1.5, 2.5]),
         h=np.array([1, 2]),
         k=np.array([0, 0]),
@@ -584,7 +584,7 @@ def test_bragg_tick_sources_skips_phases_without_csv():
     from easydiffraction.report.tex_renderer import _bragg_tick_sources
 
     tick_set = BraggTickSet(
-        phase_id='phase-a',
+        structure_id='phase-a',
         x=np.array([1.0]),
         h=np.array([1]),
         k=np.array([0]),
@@ -603,7 +603,7 @@ def test_bragg_tick_sources_skips_phases_without_csv():
     )
     assert sources == [
         {
-            'phase_id': 'phase-a',
+            'structure_id': 'phase-a',
             'csv_filename': 'f.csv',
             'x_column': '_refln.two_theta',
         }

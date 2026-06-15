@@ -14,7 +14,7 @@ from easydiffraction.core.variable import EnumDescriptor
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.display.structure.enums import AtomViewEnum
 from easydiffraction.display.structure.enums import ColorSchemeEnum
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 from easydiffraction.project.categories.structure_style.factory import StructureStyleFactory
 
 
@@ -36,13 +36,13 @@ class StructureStyle(CategoryItem):
             name='atom_view',
             enum=AtomViewEnum,
             description='How atoms are sized and shaped in the structure view.',
-            cif_handler=CifHandler(names=['_structure_style.atom_view']),
+            tags=TagSpec(edi_names=['_structure_style.atom_view']),
         )
         self._color_scheme = EnumDescriptor(
             name='color_scheme',
             enum=ColorSchemeEnum,
             description='Standard element colour scheme.',
-            cif_handler=CifHandler(names=['_structure_style.color_scheme']),
+            tags=TagSpec(edi_names=['_structure_style.color_scheme']),
         )
         self._adp_probability = NumericDescriptor(
             name='adp_probability',
@@ -51,7 +51,7 @@ class StructureStyle(CategoryItem):
                 default=0.99,
                 validator=RangeValidator(gt=0.0, lt=1.0),
             ),
-            cif_handler=CifHandler(names=['_structure_style.adp_probability']),
+            tags=TagSpec(edi_names=['_structure_style.adp_probability']),
         )
         self._atom_scale = NumericDescriptor(
             name='atom_scale',
@@ -60,7 +60,7 @@ class StructureStyle(CategoryItem):
                 default=0.3,
                 validator=RangeValidator(gt=0.0, le=1.0),
             ),
-            cif_handler=CifHandler(names=['_structure_style.atom_scale']),
+            tags=TagSpec(edi_names=['_structure_style.atom_scale']),
         )
 
     @property

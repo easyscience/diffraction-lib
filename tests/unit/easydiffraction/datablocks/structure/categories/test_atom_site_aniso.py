@@ -80,7 +80,7 @@ class TestAtomSiteAniso:
         )
 
         entry = AtomSiteAniso()
-        assert entry.label.value == ''
+        assert entry.id.value == ''
         assert entry.adp_11.value == 0.0
         assert entry.adp_22.value == 0.0
         assert entry.adp_33.value == 0.0
@@ -88,14 +88,14 @@ class TestAtomSiteAniso:
         assert entry.adp_13.value == 0.0
         assert entry.adp_23.value == 0.0
 
-    def test_label_setter(self):
+    def test_id_setter(self):
         from easydiffraction.datablocks.structure.categories.atom_site_aniso.default import (
             AtomSiteAniso,
         )
 
         entry = AtomSiteAniso()
-        entry.label = 'Si'
-        assert entry.label.value == 'Si'
+        entry.id = 'Si'
+        assert entry.id.value == 'Si'
 
     def test_tensor_setters(self):
         from easydiffraction.datablocks.structure.categories.atom_site_aniso.default import (
@@ -122,17 +122,23 @@ class TestAtomSiteAniso:
         )
 
         entry = AtomSiteAniso()
-        # Default order: B first
-        assert entry._adp_11._cif_handler.names[0] == '_atom_site_aniso.B_11'
-        assert entry._adp_11._cif_handler.names[1] == '_atom_site_aniso.U_11'
+        # Canonical persistence name plus the B/U/beta import aliases,
+        # with the IUCr export convention defaulting to B first.
+        assert entry._adp_11._tags.edi_names == ['_atom_site_aniso.adp_11']
+        assert entry._adp_11._tags.cif_names == [
+            '_atom_site_aniso.B_11',
+            '_atom_site_aniso.U_11',
+            '_atom_site_aniso.beta_11',
+        ]
+        assert entry._adp_11._tags.cif_name == '_atom_site_aniso.B_11'
 
-    def test_identity_entry_name_follows_label(self):
+    def test_identity_entry_name_follows_id(self):
         from easydiffraction.datablocks.structure.categories.atom_site_aniso.default import (
             AtomSiteAniso,
         )
 
         entry = AtomSiteAniso()
-        entry.label = 'Fe1'
+        entry.id = 'Fe1'
         assert entry._identity.category_entry_name == 'Fe1'
 
 
@@ -171,7 +177,7 @@ class TestAtomSiteAnisoCollection:
         from easydiffraction.datablocks.structure.item.base import Structure
 
         structure = Structure(name='test')
-        structure.atom_sites.create(label='Si', type_symbol='Si', adp_type='Biso', adp_iso=0.5)
+        structure.atom_sites.create(id='Si', type_symbol='Si', adp_type='Biso', adp_iso=0.5)
         structure._sync_atom_site_aniso()
         assert structure.atom_site_aniso._skip_cif_serialization() is True
 
@@ -179,7 +185,7 @@ class TestAtomSiteAnisoCollection:
         from easydiffraction.datablocks.structure.item.base import Structure
 
         structure = Structure(name='test')
-        structure.atom_sites.create(label='Si', type_symbol='Si', adp_type='Biso', adp_iso=0.5)
+        structure.atom_sites.create(id='Si', type_symbol='Si', adp_type='Biso', adp_iso=0.5)
         structure._sync_atom_site_aniso()
         structure.atom_sites['Si'].adp_type = 'Bani'
         assert structure.atom_site_aniso._skip_cif_serialization() is False
@@ -195,7 +201,7 @@ class TestStructureAnisoSync:
         from easydiffraction.datablocks.structure.item.base import Structure
 
         structure = Structure(name='test')
-        structure.atom_sites.create(label='Si', type_symbol='Si', adp_type='Biso', adp_iso=0.5)
+        structure.atom_sites.create(id='Si', type_symbol='Si', adp_type='Biso', adp_iso=0.5)
         structure._sync_atom_site_aniso()
         assert 'Si' not in structure.atom_site_aniso
         assert len(structure.atom_site_aniso) == 0
@@ -204,18 +210,18 @@ class TestStructureAnisoSync:
         from easydiffraction.datablocks.structure.item.base import Structure
 
         structure = Structure(name='test')
-        structure.atom_sites.create(label='Si', type_symbol='Si', adp_type='Biso', adp_iso=0.5)
+        structure.atom_sites.create(id='Si', type_symbol='Si', adp_type='Biso', adp_iso=0.5)
         structure.atom_sites['Si'].adp_type = 'Bani'
         # adp_type setter triggers sync internally; verify idempotent on explicit call
         structure._sync_atom_site_aniso()
         assert 'Si' in structure.atom_site_aniso
-        assert structure.atom_site_aniso['Si'].label.value == 'Si'
+        assert structure.atom_site_aniso['Si'].id.value == 'Si'
 
     def test_sync_removes_entry_when_atom_switches_to_iso(self):
         from easydiffraction.datablocks.structure.item.base import Structure
 
         structure = Structure(name='test')
-        structure.atom_sites.create(label='Si', type_symbol='Si', adp_type='Biso', adp_iso=0.5)
+        structure.atom_sites.create(id='Si', type_symbol='Si', adp_type='Biso', adp_iso=0.5)
         structure.atom_sites['Si'].adp_type = 'Bani'
         assert 'Si' in structure.atom_site_aniso
         structure.atom_sites['Si'].adp_type = 'Biso'
@@ -225,8 +231,8 @@ class TestStructureAnisoSync:
         from easydiffraction.datablocks.structure.item.base import Structure
 
         structure = Structure(name='test')
-        structure.atom_sites.create(label='Si', type_symbol='Si', adp_type='Biso', adp_iso=0.5)
-        structure.atom_sites.create(label='O', type_symbol='O', adp_type='Biso', adp_iso=0.3)
+        structure.atom_sites.create(id='Si', type_symbol='Si', adp_type='Biso', adp_iso=0.5)
+        structure.atom_sites.create(id='O', type_symbol='O', adp_type='Biso', adp_iso=0.3)
         structure.atom_sites['Si'].adp_type = 'Bani'
         structure.atom_sites['O'].adp_type = 'Bani'
         assert len(structure.atom_site_aniso) == 2
@@ -240,9 +246,9 @@ class TestStructureAnisoSync:
         from easydiffraction.datablocks.structure.item.base import Structure
 
         structure = Structure(name='test')
-        structure.atom_sites.create(label='La', type_symbol='La', adp_type='Biso', adp_iso=0.5)
-        structure.atom_sites.create(label='Ba', type_symbol='Ba', adp_type='Biso', adp_iso=0.5)
-        structure.atom_sites.create(label='Co', type_symbol='Co', adp_type='Biso', adp_iso=0.5)
+        structure.atom_sites.create(id='La', type_symbol='La', adp_type='Biso', adp_iso=0.5)
+        structure.atom_sites.create(id='Ba', type_symbol='Ba', adp_type='Biso', adp_iso=0.5)
+        structure.atom_sites.create(id='Co', type_symbol='Co', adp_type='Biso', adp_iso=0.5)
         for lbl in ('La', 'Ba', 'Co'):
             structure.atom_sites[lbl].adp_type = 'Bani'
         structure._sync_atom_site_aniso()
@@ -262,7 +268,7 @@ class TestAdpTypeConversion:
 
         structure = Structure(name='test')
         structure.atom_sites.create(
-            label='Si',
+            id='Si',
             type_symbol='Si',
             adp_type=adp_type,
             adp_iso=adp_iso,
@@ -336,39 +342,45 @@ class TestCifNameReordering:
         from easydiffraction.datablocks.structure.categories.atom_sites.default import AtomSite
 
         site = AtomSite()
-        assert site._adp_iso._cif_handler.names[0] == '_atom_site.B_iso_or_equiv'
+        # Canonical persistence name plus the B/U import aliases, with the
+        # IUCr export convention defaulting to B first.
+        assert site._adp_iso._tags.edi_names == ['_atom_site.adp_iso']
+        assert site._adp_iso._tags.cif_names == [
+            '_atom_site.B_iso_or_equiv',
+            '_atom_site.U_iso_or_equiv',
+        ]
+        assert site._adp_iso._tags.cif_name == '_atom_site.B_iso_or_equiv'
 
     def test_uiso_reorders_iso_cif_names(self):
         from easydiffraction.datablocks.structure.item.base import Structure
 
         structure = Structure(name='test')
-        structure.atom_sites.create(label='Si', type_symbol='Si', adp_type='Biso', adp_iso=0.5)
+        structure.atom_sites.create(id='Si', type_symbol='Si', adp_type='Biso', adp_iso=0.5)
         structure._sync_atom_site_aniso()
         structure.atom_sites['Si'].adp_type = 'Uiso'
         assert (
-            structure.atom_sites['Si']._adp_iso._cif_handler.names[0]
-            == '_atom_site.U_iso_or_equiv'
+            structure.atom_sites['Si']._adp_iso._tags.cif_names[0] == '_atom_site.U_iso_or_equiv'
         )
 
     def test_bani_reorders_aniso_cif_names(self):
         from easydiffraction.datablocks.structure.item.base import Structure
 
         structure = Structure(name='test')
-        structure.atom_sites.create(label='Si', type_symbol='Si', adp_type='Biso', adp_iso=0.5)
+        structure.atom_sites.create(id='Si', type_symbol='Si', adp_type='Biso', adp_iso=0.5)
         structure._sync_atom_site_aniso()
         structure.atom_sites['Si'].adp_type = 'Bani'
         aniso = structure.atom_site_aniso['Si']
-        assert aniso._adp_11._cif_handler.names[0] == '_atom_site_aniso.B_11'
+        assert aniso._adp_11._tags.cif_names[0] == '_atom_site_aniso.B_11'
 
     def test_uani_reorders_aniso_cif_names(self):
         from easydiffraction.datablocks.structure.item.base import Structure
 
         structure = Structure(name='test')
-        structure.atom_sites.create(label='Si', type_symbol='Si', adp_type='Biso', adp_iso=0.5)
+        structure.atom_sites.create(id='Si', type_symbol='Si', adp_type='Biso', adp_iso=0.5)
         structure._sync_atom_site_aniso()
         structure.atom_sites['Si'].adp_type = 'Uani'
         aniso = structure.atom_site_aniso['Si']
-        assert aniso._adp_11._cif_handler.names[0] == '_atom_site_aniso.U_11'
+        assert aniso._adp_11._tags.cif_names[0] == '_atom_site_aniso.U_11'
 
 
 # ------------------------------------------------------------------
@@ -381,8 +393,8 @@ class TestAnisoCollectionCif:
         from easydiffraction.datablocks.structure.item.base import Structure
 
         structure = Structure(name='test')
-        structure.atom_sites.create(label='A', type_symbol='Si', adp_type='Biso', adp_iso=0.5)
-        structure.atom_sites.create(label='B', type_symbol='O', adp_type='Biso', adp_iso=0.3)
+        structure.atom_sites.create(id='A', type_symbol='Si', adp_type='Biso', adp_iso=0.5)
+        structure.atom_sites.create(id='B', type_symbol='O', adp_type='Biso', adp_iso=0.3)
         return structure
 
     def test_iso_atom_absent_from_collection(self):
@@ -423,7 +435,7 @@ class TestAdpTypeSwitchingPaths:
 
         structure = Structure(name='test')
         structure.atom_sites.create(
-            label='Si',
+            id='Si',
             type_symbol='Si',
             adp_type=adp_type,
             adp_iso=adp_iso,
@@ -508,7 +520,7 @@ class TestBetaDisplayAndTags:
         structure.cell.length_a = 5.0
         structure.cell.length_b = 6.0
         structure.cell.length_c = 8.0
-        structure.atom_sites.create(label='Fe', type_symbol='Fe', adp_iso=0.0)
+        structure.atom_sites.create(id='Fe', type_symbol='Fe', adp_iso=0.0)
         structure.atom_sites['Fe'].adp_type = 'beta'
         structure._sync_atom_site_aniso()
         return structure
@@ -531,8 +543,8 @@ class TestBetaDisplayAndTags:
         )
 
         entry = AtomSiteAniso()
-        assert '_atom_site_aniso.beta_11' in entry.adp_11._cif_handler.names
-        assert '_atom_site_aniso.beta_23' in entry.adp_23._cif_handler.names
+        assert '_atom_site_aniso.beta_11' in entry.adp_11._tags.cif_names
+        assert '_atom_site_aniso.beta_23' in entry.adp_23._tags.cif_names
 
     def test_off_diagonal_accepts_negative_value(self):
         from easydiffraction.datablocks.structure.categories.atom_site_aniso.default import (

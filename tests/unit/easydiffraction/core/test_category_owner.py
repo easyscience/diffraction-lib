@@ -7,7 +7,7 @@ from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.category_owner import CategoryOwner
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.variable import Parameter
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 from easydiffraction.io.cif.serialize import category_owner_to_cif
 
 
@@ -23,7 +23,7 @@ class _FastCategory(CategoryItem):
             description='Fast category parameter',
             value_spec=AttributeSpec(default=0.0),
             units='',
-            cif_handler=CifHandler(names=['_fast.param']),
+            tags=TagSpec(edi_names=['_fast.param']),
         )
 
     @property
@@ -47,7 +47,7 @@ class _SlowCategory(CategoryItem):
             description='Slow category parameter',
             value_spec=AttributeSpec(default=0.0),
             units='',
-            cif_handler=CifHandler(names=['_slow.param']),
+            tags=TagSpec(edi_names=['_slow.param']),
         )
 
     @property

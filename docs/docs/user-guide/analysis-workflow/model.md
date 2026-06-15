@@ -1,4 +1,5 @@
 ---
+title: Structure
 icon: material/puzzle
 ---
 
@@ -102,7 +103,7 @@ project.structures['nacl'].cell.length_a = 5.691694
 ```python
 # Add atomic sites
 project.structures['nacl'].atom_sites.create(
-    label='Na',
+    id='Na',
     type_symbol='Na',
     fract_x=0,
     fract_y=0,
@@ -111,7 +112,7 @@ project.structures['nacl'].atom_sites.create(
     adp_iso=0.5,
 )
 project.structures['nacl'].atom_sites.create(
-    label='Cl',
+    id='Cl',
     type_symbol='Cl',
     fract_x=0,
     fract_y=0,
@@ -137,47 +138,51 @@ Defined structures 🧩
 ['lbco', 'nacl']
 ```
 
-## Viewing a Structure as CIF
+## Viewing a Structure as Text
 
-To inspect a structure in CIF format, use:
+To inspect a structure's serialized text (the same content the project
+persists into its Edi files), use:
 
 ```python
-# Show structure as CIF
-project.structures['lbco'].show_as_cif()
+# Show structure as text
+project.structures['lbco'].show_as_text()
 ```
 
 Example output:
 
 ```
-Structure 🧩 'lbco' as cif
-╒═══════════════════════════════════════════╕
-│ data_lbco                                 │
-│                                           │
-│ _space_group.IT_coordinate_system_code  1 │
-│ _space_group.name_H-M_alt  "P m -3 m"     │
-│                                           │
-│ _cell.angle_alpha  90                     │
-│ _cell.angle_beta  90                      │
-│ _cell.angle_gamma  90                     │
-│ _cell.length_a  3.88                      │
-│ _cell.length_b  3.88                      │
-│ _cell.length_c  3.88                      │
-│                                           │
-│ loop_                                     │
-│ _atom_site.ADP_type                       │
-│ _atom_site.B_iso_or_equiv                 │
-│ _atom_site.fract_x                        │
-│ _atom_site.fract_y                        │
-│ _atom_site.fract_z                        │
-│ _atom_site.label                          │
-│ _atom_site.occupancy                      │
-│ _atom_site.type_symbol                    │
-│ _atom_site.Wyckoff_symbol                 │
-│ Biso 0.5 0.0 0.0 0.0 La 0.5 La a          │
-│ Biso 0.5 0.0 0.0 0.0 Ba 0.5 Ba a          │
-│ Biso 0.5 0.5 0.5 0.5 Co 1.0 Co b          │
-│ Biso 0.5 0.0 0.5 0.5 O 1.0 O c            │
-╘═══════════════════════════════════════════╛
+Structure 🧩 'lbco' as text
+┌──────────────────────────────────────────────┐
+│      CIF                                       │
+├──────────────────────────────────────────────┤
+│  1   data_lbco                                 │
+│  2                                             │
+│  3   _cell.length_a 3.890868(38)               │
+│  4   _cell.length_b 3.890868                    │
+│  5   _cell.length_c 3.890868                    │
+│  6   _cell.angle_alpha 90.                      │
+│  7   _cell.angle_beta 90.                       │
+│  8   _cell.angle_gamma 90.                      │
+│  9                                             │
+│ 10   _space_group.name_h_m "P m -3 m"           │
+│ 11   _space_group.coord_system_code 1           │
+│ 12                                             │
+│ 13   loop_                                      │
+│ 14   _atom_site.id                              │
+│ 15   _atom_site.type_symbol                     │
+│ 16   _atom_site.fract_x                         │
+│ 17   _atom_site.fract_y                         │
+│ 18   _atom_site.fract_z                         │
+│ 19   _atom_site.wyckoff_letter                  │
+│ 20   _atom_site.multiplicity                    │
+│ 21   _atom_site.occupancy                       │
+│ 22   _atom_site.adp_iso                         │
+│ 23   _atom_site.adp_type                        │
+│ 24   La La 0. 0. 0. a 1 0.5 0.505(28) Biso      │
+│ 25   Ba Ba 0. 0. 0. a 1 0.5 0.50514168 Biso     │
+│ 26   Co Co 0.5 0.5 0.5 b 1 1. 0.237(56) Biso    │
+│ 27   O O 0. 0.5 0.5 c 3 1. 1.394(16) Biso       │
+└──────────────────────────────────────────────┘
 ```
 
 ## Viewing a Structure in 3D
@@ -216,13 +221,13 @@ project.structure_style.adp_probability = 0.5  # ADP ellipsoid probability level
 ```
 
 Bonds are generated automatically between atoms whose separation falls
-within the per-structure cutoffs stored on `structure.geom` (the
-standard cif_core `_geom` parameters):
+within the per-structure cutoffs stored on `structure.geom` (the Edi
+`_geom` parameters):
 
 ```python
 # Tune the per-structure bond-generation cutoffs (angstrom)
 project.structures['lbco'].geom.min_bond_distance_cutoff = 0.5
-project.structures['lbco'].geom.bond_distance_incr = 0.25
+project.structures['lbco'].geom.bond_distance_inc = 0.25
 ```
 
 Draw the structure through `project.display`, mirroring
@@ -250,11 +255,11 @@ section).
 ## Saving a Structure
 
 Saving the project, as described in the [Project](project.md) section,
-will also save the structure. Each structure is saved as a separate CIF
-file in the `structures` subdirectory of the project directory. The
-project file contains references to these files.
+will also save the structure. Each structure is saved as a separate
+`.edi` file in the `structures` subdirectory of the project directory.
+The project file contains references to these files.
 
-Below is an example of the saved CIF file for the `lbco` structure:
+Below is an example of the saved Edi file for the `lbco` structure:
 
 <!-- prettier-ignore-start -->
 
@@ -262,8 +267,8 @@ Below is an example of the saved CIF file for the `lbco` structure:
 <pre>
 data_<span class="red"><b>lbco</b></span>
 
-<span class="blue"><b>_space_group</b>.name_H-M_alt</span>              "P m -3 m"
-<span class="blue"><b>_space_group</b>.IT_coordinate_system_code</span> 1
+<span class="blue"><b>_space_group</b>.name_h_m</span>                    "P m -3 m"
+<span class="blue"><b>_space_group</b>.coord_system_code</span>  1
 
 <span class="blue"><b>_cell</b>.length_a</span>      3.8909
 <span class="blue"><b>_cell</b>.length_b</span>      3.8909
@@ -273,15 +278,15 @@ data_<span class="red"><b>lbco</b></span>
 <span class="blue"><b>_cell</b>.angle_gamma</span>  90
 
 loop_
-<span class="green"><b>_atom_site</b>.label</span>
+<span class="green"><b>_atom_site</b>.id</span>
 <span class="green"><b>_atom_site</b>.type_symbol</span>
 <span class="green"><b>_atom_site</b>.fract_x</span>
 <span class="green"><b>_atom_site</b>.fract_y</span>
 <span class="green"><b>_atom_site</b>.fract_z</span>
-<span class="green"><b>_atom_site</b>.Wyckoff_symbol</span>
+<span class="green"><b>_atom_site</b>.wyckoff_letter</span>
 <span class="green"><b>_atom_site</b>.occupancy</span>
-<span class="green"><b>_atom_site</b>.ADP_type</span>
-<span class="green"><b>_atom_site</b>.B_iso_or_equiv</span>
+<span class="green"><b>_atom_site</b>.adp_type</span>
+<span class="green"><b>_atom_site</b>.adp_iso</span>
 La La   0   0   0     a   0.5  Biso 0.4958
 Ba Ba   0   0   0     a   0.5  Biso 0.4943
 Co Co   0.5 0.5 0.5   b   1    Biso 0.2567

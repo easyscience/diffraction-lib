@@ -17,7 +17,7 @@ from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.datablocks.structure.categories.space_group.factory import SpaceGroupFactory
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 _CRYSTAL_SYSTEM_RANGES = (
     (1, 2, 'triclinic'),
@@ -33,12 +33,12 @@ _CRYSTAL_SYSTEM_RANGES = (
 @SpaceGroupFactory.register
 class SpaceGroup(CategoryItem):
     """
-    Space group with H-M symbol and IT coordinate system code.
+    Space group with H-M symbol and coordinate-system code.
 
     Holds the space-group symbol (``name_h_m``) and the International
-    Tables coordinate-system qualifier (``it_coordinate_system_code``).
-    Changing the symbol automatically resets the coordinate-system code
-    to the first allowed value for the new group.
+    Tables coordinate-system qualifier (``coord_system_code``). Changing
+    the symbol automatically resets the coordinate-system code to the
+    first allowed value for the new group.
     """
 
     _category_code = 'space_group'
@@ -65,38 +65,37 @@ class SpaceGroup(CategoryItem):
                     allowed=lambda: self._name_h_m_allowed_values,
                 ),
             ),
-            cif_handler=CifHandler(
-                # TODO: Keep only version with "." and automate ...
-                names=[
+            tags=TagSpec(
+                edi_names=['_space_group.name_h_m'],
+                cif_names=[
                     '_space_group.name_H-M_alt',
-                    '_space_group.name_h_m',
                     '_space_group_name_H-M_alt',
                     '_symmetry.space_group_name_H-M',
                     '_symmetry_space_group_name_H-M',
-                ]
+                ],
             ),
         )
-        self._it_coordinate_system_code = StringDescriptor(
-            name='it_coordinate_system_code',
+        self._coord_system_code = StringDescriptor(
+            name='coord_system_code',
             description='A qualifier identifying which setting in IT is used.',
             display_handler=DisplayHandler(
                 display_name='IT code',
                 latex_name='IT code',
             ),
             value_spec=AttributeSpec(
-                default=lambda: self._it_coordinate_system_code_default_value,
+                default=lambda: self._coord_system_code_default_value,
                 validator=MembershipValidator(
-                    allowed=lambda: self._it_coordinate_system_code_allowed_values
+                    allowed=lambda: self._coord_system_code_allowed_values
                 ),
             ),
-            cif_handler=CifHandler(
-                names=[
+            tags=TagSpec(
+                edi_names=['_space_group.coord_system_code'],
+                cif_names=[
                     '_space_group.IT_coordinate_system_code',
-                    '_space_group.it_coordinate_system_code',
                     '_space_group_IT_coordinate_system_code',
                     '_symmetry.IT_coordinate_system_code',
                     '_symmetry_IT_coordinate_system_code',
-                ]
+                ],
             ),
         )
 
@@ -104,9 +103,9 @@ class SpaceGroup(CategoryItem):
     #  Private helper methods
     # ------------------------------------------------------------------
 
-    def _reset_it_coordinate_system_code(self) -> None:
+    def _reset_coord_system_code(self) -> None:
         """Reset IT coordinate system code to default for this group."""
-        self._it_coordinate_system_code.value = self._it_coordinate_system_code_default_value
+        self._coord_system_code.value = self._coord_system_code_default_value
 
     @property
     def _name_h_m_allowed_values(self) -> list[str]:
@@ -121,7 +120,7 @@ class SpaceGroup(CategoryItem):
         return ACCESIBLE_NAME_HM_SHORT
 
     @property
-    def _it_coordinate_system_code_allowed_values(self) -> list[str]:
+    def _coord_system_code_allowed_values(self) -> list[str]:
         """
         Return allowed IT coordinate system codes for the current group.
 
@@ -137,7 +136,7 @@ class SpaceGroup(CategoryItem):
         return codes or ['']
 
     @property
-    def _it_coordinate_system_code_default_value(self) -> str:
+    def _coord_system_code_default_value(self) -> str:
         """
         Return the default IT coordinate system code.
 
@@ -146,7 +145,7 @@ class SpaceGroup(CategoryItem):
         str
             First element of the allowed codes list.
         """
-        return self._it_coordinate_system_code_allowed_values[0]
+        return self._coord_system_code_allowed_values[0]
 
     # ------------------------------------------------------------------
     #  Public properties
@@ -166,10 +165,10 @@ class SpaceGroup(CategoryItem):
     @name_h_m.setter
     def name_h_m(self, value: str) -> None:
         self._name_h_m.value = value
-        self._reset_it_coordinate_system_code()
+        self._reset_coord_system_code()
 
     @property
-    def it_coordinate_system_code(self) -> StringDescriptor:
+    def coord_system_code(self) -> StringDescriptor:
         """
         A qualifier identifying which setting in IT is used.
 
@@ -177,11 +176,11 @@ class SpaceGroup(CategoryItem):
         ``StringDescriptor`` object. Assigning to it updates the
         parameter value.
         """
-        return self._it_coordinate_system_code
+        return self._coord_system_code
 
-    @it_coordinate_system_code.setter
-    def it_coordinate_system_code(self, value: str) -> None:
-        self._it_coordinate_system_code.value = value
+    @coord_system_code.setter
+    def coord_system_code(self, value: str) -> None:
+        self._coord_system_code.value = value
 
     @property
     def crystal_system(self) -> str:

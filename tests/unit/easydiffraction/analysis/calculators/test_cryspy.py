@@ -14,7 +14,7 @@ def _cwl_experiment_stub():
 
     return SimpleNamespace(
         name='exp',
-        type=SimpleNamespace(
+        experiment_type=SimpleNamespace(
             sample_form=SimpleNamespace(value=SampleFormEnum.POWDER),
             beam_mode=SimpleNamespace(value=BeamModeEnum.CONSTANT_WAVELENGTH),
         ),
@@ -157,7 +157,7 @@ def test_update_structure_zeroes_biso_for_anisotropic_atoms():
     from easydiffraction.datablocks.structure.item.base import Structure
 
     structure = Structure(name='test')
-    structure.atom_sites.create(label='Si', type_symbol='Si', adp_type='Biso', adp_iso=0.5)
+    structure.atom_sites.create(id='Si', type_symbol='Si', adp_type='Biso', adp_iso=0.5)
     structure.atom_sites['Si'].adp_type = 'Bani'
 
     cryspy_model_dict = {
@@ -180,9 +180,9 @@ def test_update_structure_restores_wyckoff_multiplicity_after_coordinate_wrappin
 
     structure = Structure(name='hs')
     structure.space_group.name_h_m = 'R -3 m'
-    structure.space_group.it_coordinate_system_code = 'h'
+    structure.space_group.coord_system_code = 'h'
     structure.atom_sites.create(
-        label='O',
+        id='O',
         type_symbol='O',
         fract_x=0.20587714,
         fract_y=-0.20587714,
@@ -226,13 +226,15 @@ def test_last_powder_refln_records_converts_cwl_two_theta_to_degrees():
     structure = SimpleNamespace(name='phase')
     experiment = SimpleNamespace(
         name='exp',
-        type=SimpleNamespace(beam_mode=SimpleNamespace(value=BeamModeEnum.CONSTANT_WAVELENGTH)),
+        experiment_type=SimpleNamespace(
+            beam_mode=SimpleNamespace(value=BeamModeEnum.CONSTANT_WAVELENGTH)
+        ),
     )
 
-    records = calculator.last_powder_refln_records(structure, experiment, phase_id='phase-a')
+    records = calculator.last_powder_refln_records(structure, experiment, structure_id='phase-a')
 
     assert len(records) == 1
-    assert records[0].phase_id == 'phase-a'
+    assert records[0].structure_id == 'phase-a'
     assert records[0].two_theta == pytest.approx(90.0)
     assert records[0].d_spacing == pytest.approx(2.0)
     assert records[0].f_calc == pytest.approx(5.0)
@@ -256,13 +258,15 @@ def test_last_powder_refln_records_reads_tof_time_and_d_spacing():
     structure = SimpleNamespace(name='phase')
     experiment = SimpleNamespace(
         name='exp',
-        type=SimpleNamespace(beam_mode=SimpleNamespace(value=BeamModeEnum.TIME_OF_FLIGHT)),
+        experiment_type=SimpleNamespace(
+            beam_mode=SimpleNamespace(value=BeamModeEnum.TIME_OF_FLIGHT)
+        ),
     )
 
-    records = calculator.last_powder_refln_records(structure, experiment, phase_id='phase-b')
+    records = calculator.last_powder_refln_records(structure, experiment, structure_id='phase-b')
 
     assert len(records) == 1
-    assert records[0].phase_id == 'phase-b'
+    assert records[0].structure_id == 'phase-b'
     assert records[0].time_of_flight == pytest.approx(1234.0)
     assert records[0].d_spacing == pytest.approx(3.21)
     assert records[0].f_calc == pytest.approx(6.0)
@@ -285,13 +289,15 @@ def test_last_powder_refln_records_reads_xray_charge_structure_factor():
     structure = SimpleNamespace(name='phase')
     experiment = SimpleNamespace(
         name='exp',
-        type=SimpleNamespace(beam_mode=SimpleNamespace(value=BeamModeEnum.CONSTANT_WAVELENGTH)),
+        experiment_type=SimpleNamespace(
+            beam_mode=SimpleNamespace(value=BeamModeEnum.CONSTANT_WAVELENGTH)
+        ),
     )
 
-    records = calculator.last_powder_refln_records(structure, experiment, phase_id='phase-x')
+    records = calculator.last_powder_refln_records(structure, experiment, structure_id='phase-x')
 
     assert len(records) == 1
-    assert records[0].phase_id == 'phase-x'
+    assert records[0].structure_id == 'phase-x'
     assert records[0].two_theta == pytest.approx(60.0)
     assert records[0].d_spacing == pytest.approx(2.5)
     assert records[0].f_calc == pytest.approx(10.0)
@@ -306,7 +312,7 @@ def _make_beta_structure():
     structure.cell.length_a = 10.0
     structure.cell.length_b = 10.0
     structure.cell.length_c = 10.0
-    structure.atom_sites.create(label='Fe', type_symbol='Fe', adp_iso=0.0)
+    structure.atom_sites.create(id='Fe', type_symbol='Fe', adp_iso=0.0)
     structure.atom_sites['Fe'].adp_type = 'beta'
     structure._sync_atom_site_aniso()
     aniso = structure.atom_site_aniso['Fe']
@@ -375,14 +381,14 @@ def test_temporarily_convert_to_u_notation_stashes_and_restores_beta():
     aniso = structure.atom_site_aniso['Fe']
     assert atom.adp_type.value == AdpTypeEnum.UANI.value
     assert aniso.adp_11.value == pytest.approx(expected_u11)
-    assert '_atom_site_aniso.U_11' in aniso.adp_11._cif_handler.names
+    assert '_atom_site_aniso.U_11' in aniso.adp_11._tags.edi_names
 
     CryspyCalculator._restore_from_u_notation(structure, saved)
 
     assert atom.adp_type.value == AdpTypeEnum.BETA.value
     assert aniso.adp_11.value == pytest.approx(0.001)
     assert aniso.adp_23.value == pytest.approx(-0.0002)
-    assert '_atom_site_aniso.beta_11' in aniso.adp_11._cif_handler.names
+    assert '_atom_site_aniso.beta_11' in aniso.adp_11._tags.cif_names
 
 
 def _bragg_powder_experiment(beam_mode):
@@ -397,7 +403,7 @@ def _bragg_powder_experiment(beam_mode):
         scattering_type='bragg',
     )
     experiment.preferred_orientation.create(
-        phase_id='lbco', march_r=0.5, index_h=0, index_k=0, index_l=1
+        structure_id='lbco', march_r=0.5, index_h=0, index_k=0, index_l=1
     )
     return experiment
 
@@ -408,7 +414,7 @@ def test_cif_pref_orient_section_emits_for_constant_wavelength():
     experiment = _bragg_powder_experiment('constant wavelength')
     structure = SimpleNamespace(name='lbco')
     cif_lines: list[str] = []
-    MUT._cif_pref_orient_section(cif_lines, experiment.type, experiment, structure)
+    MUT._cif_pref_orient_section(cif_lines, experiment.experiment_type, experiment, structure)
     text = '\n'.join(cif_lines)
 
     assert '_texture_g_1' in text
@@ -426,7 +432,7 @@ def test_cif_pref_orient_section_skips_time_of_flight():
     experiment = _bragg_powder_experiment('time-of-flight')
     structure = SimpleNamespace(name='lbco')
     cif_lines: list[str] = []
-    MUT._cif_pref_orient_section(cif_lines, experiment.type, experiment, structure)
+    MUT._cif_pref_orient_section(cif_lines, experiment.experiment_type, experiment, structure)
 
     assert not any('_texture_g_1' in line for line in cif_lines)
 
@@ -488,6 +494,31 @@ def test_invalidate_stale_cache_drops_dict_on_pref_orient_axis_change():
     assert combined_name not in calc._cryspy_dicts
 
 
+def test_relabel_cif_tags_for_cryspy_maps_edi_tags_to_legacy():
+    """Edi tags map to the legacy IUCr spellings cryspy needs."""
+    from easydiffraction.analysis.calculators.cryspy import CryspyCalculator
+
+    cif = (
+        '_space_group.name_h_m "P m -3 m"\n'
+        '_space_group.coord_system_code 1\n'
+        'loop_\n_atom_site.id\n_atom_site.adp_iso\nSi 0.4\n'
+        'loop_\n_atom_site_aniso.id\n_atom_site_aniso.adp_11\nSi 0.01\n'
+    )
+
+    out = CryspyCalculator._relabel_cif_tags_for_cryspy(cif)
+
+    assert '_space_group.name_H-M_alt' in out
+    assert '_space_group.IT_coordinate_system_code' in out
+    assert '_atom_site.label' in out
+    assert '_atom_site.U_iso_or_equiv' in out
+    assert '_atom_site_aniso.label' in out
+    assert '_atom_site_aniso.U_11' in out
+    # The Edi spellings are fully removed.
+    assert '_atom_site.id\n' not in out
+    assert '_atom_site.adp_iso' not in out
+    assert '_space_group.name_h_m' not in out
+
+
 def _absorption_cwl_experiment_stub(x, mu_r):
     """Minimal CWL experiment stub carrying a cylindrical absorption."""
     from easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat import (
@@ -499,7 +530,9 @@ def _absorption_cwl_experiment_stub(x, mu_r):
     absorption.mu_r = mu_r
     return SimpleNamespace(
         name='exp',
-        type=SimpleNamespace(beam_mode=SimpleNamespace(value=BeamModeEnum.CONSTANT_WAVELENGTH)),
+        experiment_type=SimpleNamespace(
+            beam_mode=SimpleNamespace(value=BeamModeEnum.CONSTANT_WAVELENGTH)
+        ),
         absorption=absorption,
         data=SimpleNamespace(x=np.asarray(x, dtype=float)),
     )

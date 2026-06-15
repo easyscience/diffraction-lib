@@ -99,21 +99,13 @@
           </tr>
         </thead>
         <tbody>
+          {% for role in analysis.software.roles %}
           <tr>
-            <td>Framework</td>
-            <td>{{ software_name(analysis.software.framework) }}</td>
-            <td>{{ analysis.software.framework.version or "" }}</td>
+            <td>{{ role.id | title }}</td>
+            <td>{{ software_name(role) }}</td>
+            <td>{{ role.version or "" }}</td>
           </tr>
-          <tr>
-            <td>Calculator</td>
-            <td>{{ software_name(analysis.software.calculator) }}</td>
-            <td>{{ analysis.software.calculator.version or "" }}</td>
-          </tr>
-          <tr>
-            <td>Minimizer</td>
-            <td>{{ software_name(analysis.software.minimizer) }}</td>
-            <td>{{ analysis.software.minimizer.version or "" }}</td>
-          </tr>
+          {% endfor %}
         </tbody>
       </table>
 

@@ -9,6 +9,7 @@ import io
 from rich.box import Box
 from rich.console import Console
 from rich.table import Table
+from rich.text import Text
 
 try:
     from IPython.display import HTML
@@ -17,6 +18,8 @@ except ImportError:
     HTML = None
     display = None
 
+from easydiffraction.display.links import TableLink
+from easydiffraction.display.tablers.base import TABLE_CELL_LINE_HEIGHT
 from easydiffraction.display.tablers.base import TableBackendBase
 from easydiffraction.utils.environment import can_use_ipython_display
 from easydiffraction.utils.logging import ConsoleManager
@@ -39,6 +42,24 @@ RICH_TABLE_BOX: Box = Box(CUSTOM_BOX, ascii=False)
 class RichTableBackend(TableBackendBase):
     """Render tables to terminal or Jupyter using the Rich library."""
 
+    def _format_cell(self, value: object) -> object:
+        """
+        Return one Rich-compatible table cell.
+
+        Parameters
+        ----------
+        value : object
+            Raw cell value.
+
+        Returns
+        -------
+        object
+            Renderable table cell.
+        """
+        if isinstance(value, TableLink):
+            return Text(value.text, style=f'link {value.url}')
+        return self._format_value(value)
+
     @staticmethod
     def _to_html(table: Table) -> str:
         """
@@ -60,10 +81,15 @@ class RichTableBackend(TableBackendBase):
         tmp = Console(force_jupyter=False, record=True, file=io.StringIO())
         tmp.print(table)
         html = tmp.export_html(inline_styles=True)
-        # Remove margins inside pre blocks and adjust font size
+        # Merge the compact spacing into Rich's own ``<pre>`` style
+        # attribute (rather than prepending a second, conflicting one)
+        # so the font-family Rich emits is preserved. Line height comes
+        # from the shared constant, keeping this in sync with the pandas
+        # table backend.
         return html.replace(
-            '<pre ',
-            "<pre style='margin:0; font-size: 0.9em !important; ' ",
+            '<pre style="font-family:',
+            f'<pre style="margin:0; font-size:0.9em !important; '
+            f'line-height:{TABLE_CELL_LINE_HEIGHT} !important; font-family:',
         )
 
     def build_renderable(
@@ -104,7 +130,7 @@ class RichTableBackend(TableBackendBase):
 
         # Rows
         for idx, row_values in df.iterrows():
-            formatted_row = [self._format_value(v) for v in row_values]
+            formatted_row = [self._format_cell(v) for v in row_values]
             table.add_row(str(idx), *formatted_row)
 
         return table

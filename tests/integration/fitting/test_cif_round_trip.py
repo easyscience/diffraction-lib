@@ -28,7 +28,7 @@ def _build_fully_configured_experiment() -> ExperimentFactory:
     ExperimentBase
         A complete experiment ready for CIF round-trip testing.
     """
-    data_path = download_data(id=3, destination=TEMP_DIR)
+    data_path = download_data('meas-lbco-hrpt', destination=TEMP_DIR)
     expt = ExperimentFactory.from_data_path(
         name='hrpt',
         data_path=data_path,
@@ -45,23 +45,23 @@ def _build_fully_configured_experiment() -> ExperimentFactory:
     expt.peak.broad_lorentz_y = 0.0797
 
     # Background
-    expt.background.create(id='1', x=10, y=170)
-    expt.background.create(id='2', x=80, y=160)
-    expt.background.create(id='3', x=165, y=170)
+    expt.background.create(id='1', position=10, intensity=170)
+    expt.background.create(id='2', position=80, intensity=160)
+    expt.background.create(id='3', position=165, intensity=170)
 
     # Excluded regions
     expt.excluded_regions.create(id='1', start=0, end=5)
     expt.excluded_regions.create(id='2', start=165, end=180)
 
-    # Linked phases
-    expt.linked_phases.create(id='lbco', scale=9.0)
+    # Linked structures
+    expt.linked_structures.create(structure_id='lbco', scale=9.0)
 
     # Free parameters
     expt.instrument.calib_twotheta_offset.free = True
-    expt.linked_phases['lbco'].scale.free = True
-    expt.background['1'].y.free = True
-    expt.background['2'].y.free = True
-    expt.background['3'].y.free = True
+    expt.linked_structures['lbco'].scale.free = True
+    expt.background['1'].intensity.free = True
+    expt.background['2'].intensity.free = True
+    expt.background['3'].intensity.free = True
 
     return expt
 
@@ -71,7 +71,7 @@ def _collect_param_values(expt: object) -> dict[str, object]:
     Collect all parameter values from an experiment.
 
     Returns a dict keyed by unique_name with the parameter value.
-    Skips raw data parameters (pd_data.*) since those are large arrays.
+    Skips raw data parameters (data.*) since those are large arrays.
     """
     result = {}
     for p in expt.parameters:
@@ -79,7 +79,7 @@ def _collect_param_values(expt: object) -> dict[str, object]:
         if uname is None:
             continue
         # Skip raw data arrays
-        if 'pd_data.' in uname:
+        if '.data.' in uname:
             continue
         result[uname] = p.value
     return result
@@ -90,7 +90,7 @@ def _collect_free_flags(expt: object) -> dict[str, bool]:
     return {
         p.unique_name: p.free
         for p in expt.parameters
-        if isinstance(p, Parameter) and not p.unique_name.startswith('pd_data.')
+        if isinstance(p, Parameter) and '.data.' not in p.unique_name
     }
 
 
@@ -189,11 +189,11 @@ def test_experiment_cif_round_trip_preserves_categories() -> None:
         f'got {len(loaded.excluded_regions)}'
     )
 
-    # Linked phases
-    assert len(loaded.linked_phases) == len(original.linked_phases), (
-        f'Linked phases count mismatch: '
-        f'expected {len(original.linked_phases)}, '
-        f'got {len(loaded.linked_phases)}'
+    # Linked structures
+    assert len(loaded.linked_structures) == len(original.linked_structures), (
+        f'Linked structures count mismatch: '
+        f'expected {len(original.linked_structures)}, '
+        f'got {len(loaded.linked_structures)}'
     )
 
 
@@ -258,7 +258,7 @@ def test_structure_cif_round_trip_preserves_parameters() -> None:
     original.space_group.name_h_m = 'P m -3 m'
     original.cell.length_a = 3.8909
     original.atom_sites.create(
-        label='La',
+        id='La',
         type_symbol='La',
         fract_x=0,
         fract_y=0,
@@ -268,7 +268,7 @@ def test_structure_cif_round_trip_preserves_parameters() -> None:
         adp_iso=0.5,
     )
     original.atom_sites.create(
-        label='Co',
+        id='Co',
         type_symbol='Co',
         fract_x=0.5,
         fract_y=0.5,
@@ -277,7 +277,7 @@ def test_structure_cif_round_trip_preserves_parameters() -> None:
         adp_iso=0.5,
     )
     original.atom_sites.create(
-        label='O',
+        id='O',
         type_symbol='O',
         fract_x=0,
         fract_y=0.5,

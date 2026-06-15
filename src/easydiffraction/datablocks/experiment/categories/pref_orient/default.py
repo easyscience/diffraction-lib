@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Per-phase March-Dollase preferred-orientation corrections."""
+"""Per-structure March-Dollase preferred-orientation corrections."""
 
 from __future__ import annotations
 
@@ -20,32 +20,34 @@ from easydiffraction.datablocks.experiment.categories.pref_orient.factory import
 from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 
 class PrefOrient(CategoryItem):
-    """March-Dollase preferred-orientation correction for one phase."""
+    """
+    March-Dollase preferred-orientation correction for one structure.
+    """
 
-    _category_code = 'pref_orient'
-    _category_entry_name = 'phase_id'
+    _category_code = 'preferred_orientation'
+    _category_entry_name = 'structure_id'
 
     def __init__(self) -> None:
         super().__init__()
 
-        self._phase_id = StringDescriptor(
-            name='phase_id',
-            description='Identifier of the corrected phase',
+        self._structure_id = StringDescriptor(
+            name='structure_id',
+            description='Identifier of the corrected structure',
             value_spec=AttributeSpec(
                 default='Si',
                 validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
             ),
-            cif_handler=CifHandler(
-                names=['_pref_orient.phase_id'],
-                iucr_name='_pd_pref_orient_March_Dollase.phase_id',
+            tags=TagSpec(
+                edi_names=['_preferred_orientation.structure_id'],
+                cif_names=['_pd_pref_orient_March_Dollase.phase_id', '_pref_orient.phase_id'],
             ),
             display_handler=DisplayHandler(
-                display_name='Phase',
-                latex_name='Phase',
+                display_name='Structure',
+                latex_name='Structure',
             ),
         )
         self._march_r = Parameter(
@@ -55,9 +57,9 @@ class PrefOrient(CategoryItem):
                 default=1.0,
                 validator=RangeValidator(gt=0.0),
             ),
-            cif_handler=CifHandler(
-                names=['_pref_orient.march_r'],
-                iucr_name='_pd_pref_orient_March_Dollase.r',
+            tags=TagSpec(
+                edi_names=['_preferred_orientation.march_r'],
+                cif_names=['_pd_pref_orient_March_Dollase.r', '_pref_orient.march_r'],
             ),
             display_handler=DisplayHandler(
                 display_name='March coefficient',
@@ -68,9 +70,9 @@ class PrefOrient(CategoryItem):
             name='index_h',
             description='Texture-axis Miller index h',
             value_spec=AttributeSpec(default=0),
-            cif_handler=CifHandler(
-                names=['_pref_orient.index_h'],
-                iucr_name='_pd_pref_orient_March_Dollase.index_h',
+            tags=TagSpec(
+                edi_names=['_preferred_orientation.index_h'],
+                cif_names=['_pd_pref_orient_March_Dollase.index_h', '_pref_orient.index_h'],
             ),
             display_handler=DisplayHandler(
                 display_name='h',
@@ -81,9 +83,9 @@ class PrefOrient(CategoryItem):
             name='index_k',
             description='Texture-axis Miller index k',
             value_spec=AttributeSpec(default=0),
-            cif_handler=CifHandler(
-                names=['_pref_orient.index_k'],
-                iucr_name='_pd_pref_orient_March_Dollase.index_k',
+            tags=TagSpec(
+                edi_names=['_preferred_orientation.index_k'],
+                cif_names=['_pd_pref_orient_March_Dollase.index_k', '_pref_orient.index_k'],
             ),
             display_handler=DisplayHandler(
                 display_name='k',
@@ -94,9 +96,9 @@ class PrefOrient(CategoryItem):
             name='index_l',
             description='Texture-axis Miller index l',
             value_spec=AttributeSpec(default=1),
-            cif_handler=CifHandler(
-                names=['_pref_orient.index_l'],
-                iucr_name='_pd_pref_orient_March_Dollase.index_l',
+            tags=TagSpec(
+                edi_names=['_preferred_orientation.index_l'],
+                cif_names=['_pd_pref_orient_March_Dollase.index_l', '_pref_orient.index_l'],
             ),
             display_handler=DisplayHandler(
                 display_name='l',
@@ -110,9 +112,12 @@ class PrefOrient(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(ge=0.0, le=1.0),
             ),
-            cif_handler=CifHandler(
-                names=['_pref_orient.march_random_fract'],
-                iucr_name='_easydiffraction_pref_orient.march_random_fract',
+            tags=TagSpec(
+                edi_names=['_preferred_orientation.march_random_fract'],
+                cif_names=[
+                    '_easydiffraction_pref_orient.march_random_fract',
+                    '_pref_orient.march_random_fract',
+                ],
             ),
             display_handler=DisplayHandler(
                 display_name='Random fraction',
@@ -125,13 +130,13 @@ class PrefOrient(CategoryItem):
     # ------------------------------------------------------------------
 
     @property
-    def phase_id(self) -> StringDescriptor:
-        """Identifier of the corrected phase."""
-        return self._phase_id
+    def structure_id(self) -> StringDescriptor:
+        """Identifier of the corrected structure."""
+        return self._structure_id
 
-    @phase_id.setter
-    def phase_id(self, value: str) -> None:
-        self._phase_id.value = value
+    @structure_id.setter
+    def structure_id(self, value: str) -> None:
+        self._structure_id.value = value
 
     @property
     def march_r(self) -> Parameter:
@@ -185,11 +190,11 @@ class PrefOrient(CategoryItem):
 
 @PrefOrientFactory.register
 class PrefOrients(CategoryCollection):
-    """Collection of per-phase preferred-orientation corrections."""
+    """Collection of per-structure preferred-orientation corrections."""
 
     type_info = TypeInfo(
         tag='default',
-        description='Per-phase March-Dollase preferred orientation',
+        description='Per-structure March-Dollase preferred orientation',
     )
     compatibility = Compatibility(
         sample_form=frozenset({SampleFormEnum.POWDER}),

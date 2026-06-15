@@ -24,9 +24,9 @@ class TestLoadMinimal:
         loaded = Project.load(str(tmp_path / 'proj'))
 
         assert loaded.name == 'empty'
-        assert loaded.info.title == 'Empty'
-        assert loaded.info.description == 'nothing'
-        assert loaded.info.path is not None
+        assert loaded.metadata.title == 'Empty'
+        assert loaded.metadata.description == 'nothing'
+        assert loaded.metadata.path is not None
         assert len(loaded.structures) == 0
         assert len(loaded.experiments) == 0
 
@@ -41,7 +41,7 @@ class TestLoadStructures:
         s.space_group.name_h_m = 'P m -3 m'
         s.cell.length_a = 3.88
         s.atom_sites.create(
-            label='Co',
+            id='Co',
             type_symbol='Co',
             fract_x=0.0,
             fract_y=0.0,
@@ -104,11 +104,11 @@ class TestLoadAnalysis:
         s.cell.length_b = 5.0
 
         original.analysis.aliases.create(
-            label='a_param',
+            id='a_param',
             param=s.cell.length_a,
         )
         original.analysis.aliases.create(
-            label='b_param',
+            id='b_param',
             param=s.cell.length_b,
         )
         original.analysis.constraints.create(expression='b_param = a_param')
@@ -117,8 +117,8 @@ class TestLoadAnalysis:
         loaded = Project.load(str(tmp_path / 'proj'))
 
         assert len(loaded.analysis.aliases) == 2
-        assert loaded.analysis.aliases['a_param'].label.value == 'a_param'
-        assert loaded.analysis.aliases['b_param'].label.value == 'b_param'
+        assert loaded.analysis.aliases['a_param'].id.value == 'a_param'
+        assert loaded.analysis.aliases['b_param'].id.value == 'b_param'
         # Verify alias param references are resolved
         assert loaded.analysis.aliases['a_param'].param is not None
         assert loaded.analysis.aliases['b_param'].param is not None
@@ -140,15 +140,15 @@ class TestLoadAnalysis:
         parameter.uncertainty = 0.07
         parameter.fit_min = 3.8
         parameter.fit_max = 3.9
-        parameter._set_fit_bounds_uncertainty_multiplier(4.0)
+        parameter._set_bounds_uncertainty_multiplier(4.0)
         parameter._fit_start_value = 3.87
         parameter._fit_start_uncertainty = 0.02
 
         original.analysis.fit_parameters.create(
-            param_unique_name=parameter.unique_name,
+            parameter_unique_name=parameter.unique_name,
             fit_min=parameter.fit_min,
             fit_max=parameter.fit_max,
-            fit_bounds_uncertainty_multiplier=4.0,
+            bounds_uncertainty_multiplier=4.0,
             start_value=3.87,
             start_uncertainty=0.02,
         )
@@ -169,7 +169,7 @@ class TestLoadAnalysis:
         assert loaded_parameter.value == 3.88
         assert loaded_parameter.fit_min == 3.8
         assert loaded_parameter.fit_max == 3.9
-        assert loaded_parameter.fit_bounds_uncertainty_multiplier == 4.0
+        assert loaded_parameter.bounds_uncertainty_multiplier == 4.0
         assert loaded_parameter._fit_start_value == 3.87
         assert loaded_parameter._fit_start_uncertainty == 0.02
         assert loaded_parameter.uncertainty == 0.07
@@ -197,14 +197,14 @@ class TestLoadAnalysis:
             parameter.uncertainty = 0.05
             parameter.fit_min = 3.8
             parameter.fit_max = 3.9
-            parameter._set_fit_bounds_uncertainty_multiplier(4.0)
+            parameter._set_bounds_uncertainty_multiplier(4.0)
             parameter._fit_start_value = start_value
             parameter._fit_start_uncertainty = 0.02
             original.analysis.fit_parameters.create(
-                param_unique_name=parameter.unique_name,
+                parameter_unique_name=parameter.unique_name,
                 fit_min=parameter.fit_min,
                 fit_max=parameter.fit_max,
-                fit_bounds_uncertainty_multiplier=4.0,
+                bounds_uncertainty_multiplier=4.0,
                 start_value=start_value,
                 start_uncertainty=0.02,
             )
@@ -225,8 +225,8 @@ class TestLoadAnalysis:
         original.analysis.fit_result._set_correlation_available(value=True)
         original.analysis.fit_parameter_correlations.create(
             source_kind='deterministic',
-            param_unique_name_i=parameter_b.unique_name,
-            param_unique_name_j=parameter_a.unique_name,
+            parameter_unique_name_i=parameter_b.unique_name,
+            parameter_unique_name_j=parameter_a.unique_name,
             correlation=0.42,
         )
         original.analysis._set_has_persisted_fit_state(value=True)
@@ -301,7 +301,7 @@ class TestLoadAnalysisCifFallback:
         original.save_as(str(tmp_path / 'proj'))
 
         # Verify analysis.cif is in analysis/ subdirectory (current save layout)
-        assert (tmp_path / 'proj' / 'analysis' / 'analysis.cif').is_file()
+        assert (tmp_path / 'proj' / 'analysis' / 'analysis.edi').is_file()
 
         loaded = Project.load(str(tmp_path / 'proj'))
         assert loaded.analysis.minimizer.type == 'lmfit (leastsq)'
@@ -314,7 +314,7 @@ class TestLoadAnalysisCifFallback:
         # Move analysis.cif from analysis/ subdirectory to project root
         proj_dir = tmp_path / 'proj'
         analysis_dir = proj_dir / 'analysis'
-        (analysis_dir / 'analysis.cif').rename(proj_dir / 'analysis.cif')
+        (analysis_dir / 'analysis.edi').rename(proj_dir / 'analysis.edi')
         analysis_dir.rmdir()
 
         loaded = Project.load(str(proj_dir))

@@ -369,7 +369,7 @@ def test_save_tex_report_uses_composite_pgfplots_with_error_bars(tmp_path):
                 },
                 'bragg_tick_sets': (
                     BraggTickSet(
-                        phase_id='phase-a',
+                        structure_id='phase-a',
                         x=np.array([1.5]),
                         h=np.array([1]),
                         k=np.array([0]),
@@ -421,7 +421,7 @@ def test_save_tex_report_uses_composite_pgfplots_with_error_bars(tmp_path):
         '_pd_data.refinement_status'
     )
     assert bragg_csv_header == (
-        '_refln.id,_refln.phase_id,_refln.index_h,_refln.index_k,'
+        '_refln.id,_pd_refln.phase_id,_refln.index_h,_refln.index_k,'
         '_refln.index_l,_refln.f_calc,_refln.f_squared_calc,_refln.two_theta'
     )
 
@@ -444,20 +444,20 @@ def test_save_tex_report_removes_stale_managed_bundle_dirs(tmp_path):
 
 
 def test_save_tex_report_writes_structure_figure_png(tmp_path):
-    import easydiffraction as ed
+    import easydiffraction as edi
     from easydiffraction.report.tex_renderer import save_tex_report
 
-    project = ed.Project(name='struct_fig')
+    project = edi.Project(name='struct_fig')
     project.structures.create(name='nacl')
     structure = project.structures['nacl']
     structure.cell.length_a = 5.64
     structure.cell.length_b = 5.64
     structure.cell.length_c = 5.64
     structure.atom_sites.create(
-        label='Na', type_symbol='Na', fract_x=0, fract_y=0, fract_z=0, adp_iso=0.5, occupancy=1
+        id='Na', type_symbol='Na', fract_x=0, fract_y=0, fract_z=0, adp_iso=0.5, occupancy=1
     )
     structure.atom_sites.create(
-        label='Cl',
+        id='Cl',
         type_symbol='Cl',
         fract_x=0.5,
         fract_y=0.5,

@@ -151,8 +151,8 @@ class TofCalibrationTransformer(IucrCategoryTransformer):
         for row_id, power, attr_name in (
             ('offset', 0, 'calib_d_to_tof_offset'),
             ('linear', 1, 'calib_d_to_tof_linear'),
-            ('quad', 2, 'calib_d_to_tof_quad'),
-            ('recip', -1, 'calib_d_to_tof_recip'),
+            ('quad', 2, 'calib_d_to_tof_quadratic'),
+            ('recip', -1, 'calib_d_to_tof_reciprocal'),
         ):
             coeff = _attribute_value(instrument, attr_name)
             if _finite_number(coeff) == 0:
@@ -413,18 +413,18 @@ def _iucr_items(
 def _iucr_descriptor(owner: object, attr_name: str) -> object | None:
     """Return the descriptor carrying IUCr metadata for *attr_name*."""
     descriptor = getattr(owner, attr_name, None)
-    if getattr(descriptor, '_cif_handler', None) is not None:
+    if getattr(descriptor, '_tags', None) is not None:
         return descriptor
     if attr_name == 'type':
         private_descriptor = getattr(owner, '_type', None)
-        if getattr(private_descriptor, '_cif_handler', None) is not None:
+        if getattr(private_descriptor, '_tags', None) is not None:
             return private_descriptor
     return None
 
 
 def _iucr_item(descriptor: object, value: object) -> IucrItem:
     """Return one IUCr-tagged item for a descriptor."""
-    return IucrItem(descriptor._cif_handler.iucr_name, value)
+    return IucrItem(descriptor._tags.cif_name, value)
 
 
 def _collection_values(collection: object) -> Iterable[object]:

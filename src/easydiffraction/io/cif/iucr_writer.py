@@ -47,7 +47,7 @@ def write_iucr_cif(
         Project instance to export.
     path : str | pathlib.Path | None, default=None
         Target CIF path. When omitted, the report is written to
-        ``<project.info.path>/reports/<project.name>.cif``.
+        ``<project.metadata.path>/reports/<project.name>.cif``.
 
     Returns
     -------
@@ -209,7 +209,7 @@ def _write_space_group_section(lines: list[str], structure: object) -> None:
     _write_item(
         lines,
         '_space_group.IT_coordinate_system_code',
-        _attribute_value(space_group, 'it_coordinate_system_code'),
+        _attribute_value(space_group, 'coord_system_code'),
     )
     _write_item(lines, '_space_group.crystal_system', '?')
 
@@ -225,7 +225,7 @@ def _write_symmetry_operations_section(lines: list[str], structure: object) -> N
 def _write_diffrn_section(lines: list[str], experiment: object) -> None:
     """Append diffraction metadata."""
     diffrn = getattr(experiment, 'diffrn', None)
-    expt_type = getattr(experiment, 'type', None)
+    expt_type = getattr(experiment, 'experiment_type', None)
     _section(lines, 'Diffraction')
     _write_item(
         lines,
@@ -287,15 +287,15 @@ def _write_atom_site_sections(lines: list[str], structure: object) -> None:
 def _write_atom_site_aniso_sections(lines: list[str], structure: object) -> None:
     """Append anisotropic ADP loops grouped by ADP convention."""
     aniso_sites = list(_collection_values(getattr(structure, 'atom_site_aniso', None)))
-    atom_site_by_label = {
-        str(_attribute_value(atom_site, 'label')): atom_site
+    atom_site_by_id = {
+        str(_attribute_value(atom_site, 'id')): atom_site
         for atom_site in _collection_values(getattr(structure, 'atom_sites', None))
     }
     for family in ('B', 'U', 'beta'):
         rows = [
             _atom_site_aniso_row(aniso_site)
             for aniso_site in aniso_sites
-            if _adp_family(_atom_site_for_aniso(atom_site_by_label, aniso_site)) == family
+            if _adp_family(_atom_site_for_aniso(atom_site_by_id, aniso_site)) == family
         ]
         if not rows:
             continue
@@ -465,7 +465,7 @@ def _write_powder_phase_reference_section(
     _write_item(
         lines,
         '_pd_phase_block.scale',
-        _attribute_value(phase.linked_phase, 'scale'),
+        _attribute_value(phase.linked_structure, 'scale'),
     )
 
 
@@ -513,7 +513,7 @@ def _write_powder_measurement_section(
 ) -> None:
     """Append powder measurement metadata."""
     data_items = list(_collection_values(getattr(experiment, 'data', None)))
-    expt_type = getattr(experiment, 'type', None)
+    expt_type = getattr(experiment, 'experiment_type', None)
     _section(lines, 'Powder measurement')
     _write_item(lines, '_pd_meas.scan_method', _attribute_value(expt_type, 'beam_mode'))
     _write_item(lines, '_pd_meas.number_of_points', len(data_items))
@@ -624,7 +624,7 @@ def _write_pref_orient_loop(lines: list[str], experiment: object) -> None:
         [
             (
                 str(index),
-                _attribute_value(row, 'phase_id'),
+                _attribute_value(row, 'structure_id'),
                 _attribute_value(row, 'index_h'),
                 _attribute_value(row, 'index_k'),
                 _attribute_value(row, 'index_l'),
@@ -773,7 +773,7 @@ def _report_path(
     if path is not None:
         return pathlib.Path(path)
 
-    project_path = getattr(getattr(project, 'info', None), 'path', None)
+    project_path = getattr(getattr(project, 'metadata', None), 'path', None)
     if project_path is None:
         msg = 'Project has no saved path. Save the project first.'
         raise FileNotFoundError(msg)
@@ -809,7 +809,13 @@ def _role_descriptor_value(role: object, attr_name: str) -> object:
 def _software_role_label(project: object, role_name: str) -> str:
     """Return a persisted software role label or CIF unknown."""
     software = _analysis_software(project)
-    role = getattr(software, role_name, None)
+    if software is None:
+        role = None
+    else:
+        try:
+            role = software[role_name]
+        except (KeyError, TypeError):
+            role = None
     name = _role_descriptor_value(role, 'name')
     if name in {None, ''}:
         return '?'
@@ -822,8 +828,7 @@ def _software_role_label(project: object, role_name: str) -> str:
 
 def _software_fit_datetime(project: object) -> object | None:
     """Return the persisted fit timestamp, if available."""
-    software = _analysis_software(project)
-    timestamp = _descriptor_value(getattr(software, 'timestamp', None))
+    timestamp = getattr(getattr(project, 'metadata', None), 'timestamp', None)
     if timestamp in {None, ''}:
         return None
     return timestamp
@@ -860,9 +865,13 @@ def _single_crystal_experiments(project: object) -> list[object]:
         experiment
         for experiment in experiments
         if (
-            _attribute_value(getattr(experiment, 'type', None), 'sample_form') == 'single crystal'
+            _attribute_value(
+                getattr(experiment, 'experiment_type', None),
+                'sample_form',
+            )
+            == 'single crystal'
             and _attribute_value(
-                getattr(experiment, 'type', None),
+                getattr(experiment, 'experiment_type', None),
                 'scattering_type',
             )
             == 'bragg'
@@ -874,7 +883,7 @@ def _linked_structure(project: object, experiment: object) -> object:
     """Return the structure linked to a single-crystal experiment."""
     structures = getattr(project, 'structures', None)
     names = getattr(structures, 'names', ())
-    linked_id = _attribute_value(getattr(experiment, 'linked_crystal', None), 'id')
+    linked_id = _attribute_value(getattr(experiment, 'linked_structure', None), 'structure_id')
     if linked_id in names:
         return structures[linked_id]
 
@@ -940,7 +949,7 @@ def _atom_site_tags(family: str) -> tuple[str, ...]:
 def _atom_site_row(atom_site: object) -> tuple[object, ...]:
     """Return one atom-site loop row."""
     return (
-        _attribute_descriptor(atom_site, 'label'),
+        _attribute_descriptor(atom_site, 'id'),
         _attribute_descriptor(atom_site, 'type_symbol'),
         _attribute_descriptor(atom_site, 'fract_x'),
         _attribute_descriptor(atom_site, 'fract_y'),
@@ -969,7 +978,7 @@ def _atom_site_aniso_tags(family: str) -> tuple[str, ...]:
 def _atom_site_aniso_row(aniso_site: object) -> tuple[object, ...]:
     """Return one anisotropic-ADP loop row."""
     return (
-        _attribute_descriptor(aniso_site, 'label'),
+        _attribute_descriptor(aniso_site, 'id'),
         _attribute_descriptor(aniso_site, 'adp_11'),
         _attribute_descriptor(aniso_site, 'adp_22'),
         _attribute_descriptor(aniso_site, 'adp_33'),
@@ -980,12 +989,12 @@ def _atom_site_aniso_row(aniso_site: object) -> tuple[object, ...]:
 
 
 def _atom_site_for_aniso(
-    atom_site_by_label: dict[str, object],
+    atom_site_by_id: dict[str, object],
     aniso_site: object,
 ) -> object | None:
     """Return the atom-site row that owns an anisotropic-ADP row."""
-    label = str(_attribute_value(aniso_site, 'label'))
-    return atom_site_by_label.get(label)
+    atom_id = str(_attribute_value(aniso_site, 'id'))
+    return atom_site_by_id.get(atom_id)
 
 
 def _adp_family(atom_site: object) -> str:
@@ -1041,12 +1050,12 @@ def _finite_number(value: object) -> float | None:
 
 def _sc_extension_items(experiment: object) -> list[tuple[str, object]]:
     """Return EasyDiffraction extension items for a SC block."""
-    linked_crystal = getattr(experiment, 'linked_crystal', None)
+    linked_structure = getattr(experiment, 'linked_structure', None)
     diffrn = getattr(experiment, 'diffrn', None)
-    expt_type = getattr(experiment, 'type', None)
+    expt_type = getattr(experiment, 'experiment_type', None)
     calculator = getattr(experiment, 'calculator', None)
     items: list[tuple[str, object]] = []
-    items.extend(_iucr_items(linked_crystal, ('id', 'scale')))
+    items.extend(_iucr_items(linked_structure, ('structure_id', 'scale')))
     items.extend(
         _iucr_items(
             diffrn,
@@ -1092,9 +1101,13 @@ def _powder_rietveld_experiments(project: object) -> list[object]:
         experiment
         for experiment in experiments
         if (
-            _attribute_value(getattr(experiment, 'type', None), 'sample_form') == 'powder'
+            _attribute_value(
+                getattr(experiment, 'experiment_type', None),
+                'sample_form',
+            )
+            == 'powder'
             and _attribute_value(
-                getattr(experiment, 'type', None),
+                getattr(experiment, 'experiment_type', None),
                 'scattering_type',
             )
             == 'bragg'
@@ -1111,7 +1124,7 @@ def _powder_phases(
     phases: list[_PowderPhase] = []
     seen_structure_names: set[str] = set()
     for experiment in experiments:
-        for structure, linked_phase in _linked_powder_structures(project, experiment):
+        for structure, linked_structure in _linked_powder_structures(project, experiment):
             structure_name = str(getattr(structure, 'name', len(phases) + 1))
             if structure_name in seen_structure_names:
                 continue
@@ -1120,7 +1133,7 @@ def _powder_phases(
                 _PowderPhase(
                     block_name=_unique_block_name(structure_name, used_block_names),
                     structure=structure,
-                    linked_phase=linked_phase,
+                    linked_structure=linked_structure,
                 )
             )
     return phases
@@ -1150,25 +1163,31 @@ def _linked_powder_structures(
     """Return structures linked to a powder experiment."""
     structures = getattr(project, 'structures', None)
     names = getattr(structures, 'names', ())
-    linked_phases = list(_collection_values(getattr(experiment, 'linked_phases', None)))
-    linked_structures: list[tuple[object, object | None]] = []
+    linked_structure_rows = list(
+        _collection_values(getattr(experiment, 'linked_structures', None))
+    )
+    linked_pairs: list[tuple[object, object | None]] = []
 
-    for linked_phase in linked_phases:
-        phase_id = _attribute_value(linked_phase, 'id')
-        if phase_id in names:
-            linked_structures.append((structures[phase_id], linked_phase))
+    for linked_structure in linked_structure_rows:
+        structure_id = _attribute_value(linked_structure, 'structure_id')
+        if structure_id in names:
+            linked_pairs.append((structures[structure_id], linked_structure))
 
-    if linked_structures:
-        return linked_structures
+    if linked_pairs:
+        return linked_pairs
 
     structure_values = list(_collection_values(structures))
     if len(structure_values) == 1:
-        return [(structure_values[0], linked_phases[0] if linked_phases else None)]
+        linked_structure = linked_structure_rows[0] if linked_structure_rows else None
+        return [(structure_values[0], linked_structure)]
 
     experiment_name = getattr(experiment, 'name', type(experiment).__name__)
-    linked_ids = [_attribute_value(linked_phase, 'id') for linked_phase in linked_phases]
+    linked_ids = [
+        _attribute_value(linked_structure, 'structure_id')
+        for linked_structure in linked_structure_rows
+    ]
     msg = (
-        f"Experiment '{experiment_name}' links phases {linked_ids}, "
+        f"Experiment '{experiment_name}' links structures {linked_ids}, "
         f'but project structures are {list(names)}.'
     )
     raise ValueError(msg)
@@ -1205,7 +1224,7 @@ def _phase_block_names_for_experiment(
     """Return phase block names linked to one powder pattern."""
     linked_structures = _linked_powder_structures(project, experiment)
     linked_names = {
-        getattr(structure, 'name', None) for structure, _linked_phase in linked_structures
+        getattr(structure, 'name', None) for structure, _linked_structure in linked_structures
     }
     return [
         phase.block_name
@@ -1216,7 +1235,10 @@ def _phase_block_names_for_experiment(
 
 def _is_tof_experiment(experiment: object) -> bool:
     """Return whether a pattern uses time-of-flight x coordinates."""
-    return _attribute_value(getattr(experiment, 'type', None), 'beam_mode') == 'time-of-flight'
+    return (
+        _attribute_value(getattr(experiment, 'experiment_type', None), 'beam_mode')
+        == 'time-of-flight'
+    )
 
 
 def _powder_x_tag(experiment: object) -> str:
@@ -1265,14 +1287,14 @@ def _powder_refln_row(refln: object) -> tuple[object, ...]:
         _attribute_value(refln, 'index_l'),
         '?',
         _attribute_value(refln, 'f_squared_calc'),
-        _attribute_value(refln, 'phase_id'),
+        _attribute_value(refln, 'structure_id'),
         _attribute_value(refln, 'd_spacing'),
     )
 
 
 def _powder_extension_items(experiment: object) -> list[tuple[str, object]]:
     """Return EasyDiffraction extension items for a powder block."""
-    expt_type = getattr(experiment, 'type', None)
+    expt_type = getattr(experiment, 'experiment_type', None)
     calculator = getattr(experiment, 'calculator', None)
     peak = getattr(experiment, 'peak', None)
     background = getattr(experiment, 'background', None)
@@ -1310,7 +1332,7 @@ class _PowderPhase:
 
     block_name: str
     structure: object
-    linked_phase: object | None
+    linked_structure: object | None
 
 
 @dataclass(frozen=True)
@@ -1402,7 +1424,7 @@ def _descriptor_value(value: object) -> object:
 
 def _is_cif_descriptor(value: object) -> bool:
     """Return whether value is a CIF descriptor or parameter."""
-    return hasattr(value, 'value') and hasattr(value, '_cif_handler')
+    return hasattr(value, 'value') and hasattr(value, '_tags')
 
 
 def _iucr_items(owner: object, attr_names: tuple[str, ...]) -> list[tuple[str, object]]:
@@ -1413,15 +1435,15 @@ def _iucr_items(owner: object, attr_names: tuple[str, ...]) -> list[tuple[str, o
 
 
 def _iucr_item(owner: object, attr_name: str) -> tuple[str, object]:
-    """Return one ``(iucr_name, value)`` pair for a descriptor."""
+    """Return one ``(cif_name, value)`` pair for a descriptor."""
     descriptor = _iucr_descriptor(owner, attr_name)
-    return descriptor._cif_handler.iucr_name, descriptor
+    return descriptor._tags.cif_name, descriptor
 
 
 def _iucr_descriptor(owner: object, attr_name: str) -> object:
     """Return the descriptor carrying CIF metadata for *attr_name*."""
     descriptor = getattr(owner, attr_name)
-    if hasattr(descriptor, '_cif_handler'):
+    if hasattr(descriptor, '_tags'):
         return descriptor
 
     for descriptor in _owner_descriptors(owner):
@@ -1438,21 +1460,21 @@ def _iucr_descriptor_for_tag(owner: object, tag: str) -> object | None:
         return None
 
     private_type = getattr(owner, '_type', None)
-    if _descriptor_iucr_name(private_type) == tag:
+    if _descriptor_cif_name(private_type) == tag:
         return private_type
 
     for descriptor in _owner_descriptors(owner):
-        if _descriptor_iucr_name(descriptor) == tag:
+        if _descriptor_cif_name(descriptor) == tag:
             return descriptor
     return None
 
 
-def _descriptor_iucr_name(descriptor: object) -> str | None:
+def _descriptor_cif_name(descriptor: object) -> str | None:
     """Return a descriptor's IUCr tag name, if present."""
-    handler = getattr(descriptor, '_cif_handler', None)
+    handler = getattr(descriptor, '_tags', None)
     if handler is None:
         return None
-    return handler.iucr_name
+    return handler.cif_name
 
 
 def _owner_descriptors(owner: object) -> Iterable[object]:

@@ -34,7 +34,7 @@ def _create_lbco_project() -> Project:
     model.space_group.name_h_m = 'P m -3 m'
     model.cell.length_a = 3.8909
     model.atom_sites.create(
-        label='La',
+        id='La',
         type_symbol='La',
         fract_x=0,
         fract_y=0,
@@ -44,7 +44,7 @@ def _create_lbco_project() -> Project:
         adp_iso=0.5,
     )
     model.atom_sites.create(
-        label='Ba',
+        id='Ba',
         type_symbol='Ba',
         fract_x=0,
         fract_y=0,
@@ -54,7 +54,7 @@ def _create_lbco_project() -> Project:
         adp_iso=0.5,
     )
     model.atom_sites.create(
-        label='Co',
+        id='Co',
         type_symbol='Co',
         fract_x=0.5,
         fract_y=0.5,
@@ -63,7 +63,7 @@ def _create_lbco_project() -> Project:
         adp_iso=0.5,
     )
     model.atom_sites.create(
-        label='O',
+        id='O',
         type_symbol='O',
         fract_x=0,
         fract_y=0.5,
@@ -73,7 +73,7 @@ def _create_lbco_project() -> Project:
     )
 
     # Experiment
-    data_path = download_data(id=3, destination=TEMP_DIR)
+    data_path = download_data('meas-lbco-hrpt', destination=TEMP_DIR)
     expt = ExperimentFactory.from_data_path(
         name='hrpt',
         data_path=data_path,
@@ -85,9 +85,9 @@ def _create_lbco_project() -> Project:
     expt.peak.broad_gauss_w = 0.123
     expt.peak.broad_lorentz_x = 0
     expt.peak.broad_lorentz_y = 0.0797
-    expt.background.create(id='1', x=10, y=170)
-    expt.background.create(id='2', x=165, y=170)
-    expt.linked_phases.create(id='lbco', scale=9.0)
+    expt.background.create(id='1', position=10, intensity=170)
+    expt.background.create(id='2', position=165, intensity=170)
+    expt.linked_structures.create(structure_id='lbco', scale=9.0)
 
     # Project assembly
     project = Project(name='lbco_project')
@@ -96,18 +96,18 @@ def _create_lbco_project() -> Project:
 
     # Free parameters
     model.cell.length_a.free = True
-    expt.linked_phases['lbco'].scale.free = True
+    expt.linked_structures['lbco'].scale.free = True
     expt.instrument.calib_twotheta_offset.free = True
-    expt.background['1'].y.free = True
-    expt.background['2'].y.free = True
+    expt.background['1'].intensity.free = True
+    expt.background['2'].intensity.free = True
 
     # Aliases and constraints
     project.analysis.aliases.create(
-        label='biso_La',
+        id='biso_La',
         param=model.atom_sites['La'].adp_iso,
     )
     project.analysis.aliases.create(
-        label='biso_Ba',
+        id='biso_Ba',
         param=model.atom_sites['Ba'].adp_iso,
     )
     project.analysis.constraints.create(expression='biso_Ba = biso_La')
@@ -117,11 +117,7 @@ def _create_lbco_project() -> Project:
 
 def _collect_param_snapshot(project: Project) -> dict[str, float]:
     """Return ``{unique_name: value}`` for model parameters (excluding raw data)."""
-    return {
-        p.unique_name: p.value
-        for p in project.parameters
-        if not p.unique_name.startswith('pd_data.')
-    }
+    return {p.unique_name: p.value for p in project.parameters if '.data.' not in p.unique_name}
 
 
 def _collect_free_flags(project: Project) -> dict[str, bool]:
@@ -157,9 +153,9 @@ def test_save_load_round_trip_preserves_parameters(tmp_path) -> None:
     # Load
     loaded = Project.load(proj_dir)
 
-    # Compare project info
+    # Compare project metadata
     assert loaded.name == original.name
-    assert loaded.info.title == original.info.title
+    assert loaded.metadata.title == original.metadata.title
 
     # Compare structures
     assert loaded.structures.names == original.structures.names
@@ -197,10 +193,10 @@ def test_save_load_round_trip_preserves_parameters(tmp_path) -> None:
     # Compare aliases
     assert len(loaded.analysis.aliases) == len(original.analysis.aliases)
     for orig_alias in original.analysis.aliases:
-        label = orig_alias.label.value
-        loaded_alias = loaded.analysis.aliases[label]
-        assert loaded_alias.param_unique_name.value == orig_alias.param_unique_name.value
-        assert loaded_alias.param is not None, f"Alias '{label}' param reference not resolved"
+        alias_id = orig_alias.id.value
+        loaded_alias = loaded.analysis.aliases[alias_id]
+        assert loaded_alias.parameter_unique_name.value == orig_alias.parameter_unique_name.value
+        assert loaded_alias.param is not None, f"Alias '{alias_id}' param reference not resolved"
 
     # Compare constraints
     assert len(loaded.analysis.constraints) == len(original.analysis.constraints)

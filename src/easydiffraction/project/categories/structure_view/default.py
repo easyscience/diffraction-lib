@@ -11,7 +11,7 @@ from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.variable import BoolDescriptor
 from easydiffraction.core.variable import NumericDescriptor
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 from easydiffraction.project.categories.structure_view.factory import StructureViewFactory
 from easydiffraction.utils.logging import log
 
@@ -21,7 +21,7 @@ def _range_descriptor(name: str, default: float) -> NumericDescriptor:
         name=name,
         description='Per-axis fractional view-range bound.',
         value_spec=AttributeSpec(default=default),
-        cif_handler=CifHandler(names=[f'_structure_view.{name}']),
+        tags=TagSpec(edi_names=[f'_structure_view.{name}']),
     )
 
 
@@ -43,13 +43,13 @@ class StructureView(CategoryItem):
             name='show_labels',
             description='Show atom labels when the view opens.',
             value_spec=AttributeSpec(default=False),
-            cif_handler=CifHandler(names=['_structure_view.show_labels']),
+            tags=TagSpec(edi_names=['_structure_view.show_labels']),
         )
         self._show_moments = BoolDescriptor(
             name='show_moments',
             description='Show magnetic-moment arrows where the data exists.',
             value_spec=AttributeSpec(default=True),
-            cif_handler=CifHandler(names=['_structure_view.show_moments']),
+            tags=TagSpec(edi_names=['_structure_view.show_moments']),
         )
         self._range_a_min = _range_descriptor('range_a_min', 0.0)
         self._range_a_max = _range_descriptor('range_a_max', 1.0)

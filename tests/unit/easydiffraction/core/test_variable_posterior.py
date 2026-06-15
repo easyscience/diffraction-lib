@@ -9,12 +9,12 @@ def test_parameter_posterior_summary_is_set_internally():
     from easydiffraction.core.posterior import PosteriorParameterSummary
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     parameter = Parameter(
         name='length_a',
         value_spec=AttributeSpec(default=3.88),
-        cif_handler=CifHandler(names=['_cell.length_a']),
+        tags=TagSpec(edi_names=['_cell.length_a']),
     )
     summary = PosteriorParameterSummary(
         unique_name=parameter.unique_name,

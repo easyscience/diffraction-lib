@@ -24,14 +24,14 @@ from easydiffraction.core.variable import IntegerDescriptor
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import Parameter
 from easydiffraction.core.variable import StringDescriptor
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 from easydiffraction.utils.logging import Logger
 
 
 def _bare_param(name: str, value: object) -> object:
     """Return a minimal serialize-only param exposing handler + value."""
     param = type('P', (), {})()
-    param._cif_handler = CifHandler(names=[name])
+    param._tags = TagSpec(edi_names=[name])
     param.value = value
     return param
 
@@ -93,7 +93,7 @@ def test_format_param_value_free_without_uncertainty_uses_empty_brackets():
     param = Parameter(
         name='p',
         value_spec=AttributeSpec(default=0.0),
-        cif_handler=CifHandler(names=['_x.p']),
+        tags=TagSpec(edi_names=['_x.p']),
     )
     param.value = 3.5
     param.free = True
@@ -105,7 +105,7 @@ def test_format_param_value_user_constrained_free_param_has_no_brackets():
     param = Parameter(
         name='p',
         value_spec=AttributeSpec(default=0.0),
-        cif_handler=CifHandler(names=['_x.p']),
+        tags=TagSpec(edi_names=['_x.p']),
     )
     param.value = 2.0
     param._set_value_user_constrained(2.0)
@@ -148,7 +148,7 @@ def test_adp_atom_site_loop_truncates_to_max_display():
     structure = Structure(name='many')
     for i in range(6):
         structure.atom_sites.create(
-            label=f'U{i}',
+            id=f'U{i}',
             type_symbol='O',
             adp_type='Uiso',
             adp_iso=0.01,
@@ -157,7 +157,8 @@ def test_adp_atom_site_loop_truncates_to_max_display():
     out = MUT.category_collection_to_cif(structure.atom_sites, max_display=4)
 
     assert '...' in out.splitlines()
-    assert '_atom_site.U_iso_or_equiv' in out
+    # Edi persistence uses the type-neutral isotropic ADP tag.
+    assert '_atom_site.adp_iso' in out
 
 
 # ----------------------------------------------------------------------
@@ -256,14 +257,14 @@ def test_format_project_description_blank_is_unknown_marker():
 
 
 def test_project_info_to_cif_title_without_space_is_unquoted():
-    from easydiffraction.project.project_info import ProjectInfo
+    from easydiffraction.project.project_metadata import ProjectMetadata
 
-    info = ProjectInfo(name='p1', title='NoSpaces', description='short')
+    metadata = ProjectMetadata(name='p1', title='NoSpaces', description='short')
 
-    out = MUT.project_info_to_cif(info)
+    out = MUT.project_metadata_to_cif(metadata)
 
-    assert '_project.title            NoSpaces' in out
-    assert '_project.title            "' not in out
+    assert '_metadata.title            NoSpaces' in out
+    assert '_metadata.title            "' not in out
 
 
 # ----------------------------------------------------------------------
@@ -289,7 +290,7 @@ def test_project_config_to_cif_includes_publication_and_method_sections(monkeypa
     monkeypatch.setattr(MUT, 'category_owner_to_cif', lambda owner: 'PUBLICATION')
 
     class Project:
-        info = _Section('INFO')
+        metadata = _Section('INFO')
         rendering_plot = _Section('PLOT')
         report = _Section('REPORT')
         publication = object()
@@ -305,7 +306,7 @@ def test_project_to_cif_assembles_structures_experiments_and_analysis(monkeypatc
     monkeypatch.setattr(MUT, 'project_config_to_cif', lambda project: 'CONFIG')
 
     class Project:
-        info = _Section('CFG')
+        metadata = _Section('CFG')
         structures = _Section('STRUCT')
         experiments = _Section('EXP')
         analysis = _Section('ANALYSIS')
@@ -331,7 +332,7 @@ def test_populate_project_info_uses_manual_reader_when_no_from_cif():
     ).sole_block()
     info = PlainInfo()
 
-    MUT._populate_project_info_from_block(info, block)
+    MUT._populate_project_metadata_from_block(info, block)
 
     assert info.name == 'MYID'
     assert info.title == 'My Title'
@@ -348,7 +349,7 @@ def test_populate_project_info_manual_reader_skips_absent_fields():
     block = gemmi.cif.read_string('data_p\n_project.id ONLYID\n').sole_block()
     info = PlainInfo()
 
-    MUT._populate_project_info_from_block(info, block)
+    MUT._populate_project_metadata_from_block(info, block)
 
     assert info.name == 'ONLYID'
     assert info.title == 'unchanged'
@@ -356,18 +357,18 @@ def test_populate_project_info_manual_reader_skips_absent_fields():
 
 
 def test_project_info_from_cif_populates_real_project_info():
-    from easydiffraction.project.project_info import ProjectInfo
+    from easydiffraction.project.project_metadata import ProjectMetadata
 
-    info = ProjectInfo(name='orig', title='Orig', description='orig desc')
+    metadata = ProjectMetadata(name='orig', title='Orig', description='orig desc')
 
-    MUT.project_info_from_cif(
-        info,
+    MUT.project_metadata_from_cif(
+        metadata,
         "_project.id restored\n_project.title 'New Title'\n_project.description Desc\n",
     )
 
-    assert info.name == 'restored'
-    assert info.title == 'New Title'
-    assert info.description == 'Desc'
+    assert metadata.name == 'restored'
+    assert metadata.title == 'New Title'
+    assert metadata.description == 'Desc'
 
 
 def test_make_cif_string_reader_handles_unknown_and_text_fields():
@@ -392,7 +393,7 @@ def test_project_config_from_cif_dispatches_to_every_section():
 
     class FakeProject:
         def __init__(self) -> None:
-            self.info = FakeSection()
+            self.metadata = FakeSection()
             self.rendering_plot = FakeSection()
             self.report = FakeSection()
             self.publication = FakeSection()
@@ -407,7 +408,7 @@ def test_project_config_from_cif_dispatches_to_every_section():
     MUT.project_config_from_cif(project, '_project.id foo\n')
 
     sections = (
-        project.info,
+        project.metadata,
         project.rendering_plot,
         project.report,
         project.publication,
@@ -552,7 +553,7 @@ def test_set_param_from_raw_integer_value():
     param = IntegerDescriptor(
         name='n',
         value_spec=AttributeSpec(data_type=DataTypes.INTEGER, default=0),
-        cif_handler=CifHandler(names=['_x.n']),
+        tags=TagSpec(edi_names=['_x.n']),
     )
 
     MUT._set_param_from_raw_cif_value(param, '7')
@@ -565,7 +566,7 @@ def test_set_param_from_raw_non_integer_is_ignored_with_warning(monkeypatch):
     param = IntegerDescriptor(
         name='n',
         value_spec=AttributeSpec(data_type=DataTypes.INTEGER, default=0),
-        cif_handler=CifHandler(names=['_x.n']),
+        tags=TagSpec(edi_names=['_x.n']),
     )
     param.value = 5
 
@@ -579,7 +580,7 @@ def test_set_param_from_raw_numeric_with_brackets_marks_free_and_uncertainty():
     param = Parameter(
         name='p',
         value_spec=AttributeSpec(default=0.0),
-        cif_handler=CifHandler(names=['_x.p']),
+        tags=TagSpec(edi_names=['_x.p']),
     )
 
     MUT._set_param_from_raw_cif_value(param, '1.23(45)')
@@ -593,7 +594,7 @@ def test_set_param_from_raw_string_strips_quotes():
     param = StringDescriptor(
         name='s',
         value_spec=AttributeSpec(default='x'),
-        cif_handler=CifHandler(names=['_x.s']),
+        tags=TagSpec(edi_names=['_x.s']),
     )
 
     MUT._set_param_from_raw_cif_value(param, "'hello'")
@@ -602,7 +603,7 @@ def test_set_param_from_raw_string_strips_quotes():
 
 
 def test_set_param_from_raw_bool_value():
-    param = BoolDescriptor(name='b', cif_handler=CifHandler(names=['_x.b']))
+    param = BoolDescriptor(name='b', tags=TagSpec(edi_names=['_x.b']))
 
     MUT._set_param_from_raw_cif_value(param, 'true')
 
@@ -613,7 +614,7 @@ def test_set_param_from_raw_unknown_marker_resets_to_default():
     param = StringDescriptor(
         name='s',
         value_spec=AttributeSpec(default='def'),
-        cif_handler=CifHandler(names=['_x.s']),
+        tags=TagSpec(edi_names=['_x.s']),
     )
     param.value = 'changed'
 
@@ -626,7 +627,7 @@ def test_set_param_to_default_restores_descriptor_default():
     param = StringDescriptor(
         name='s',
         value_spec=AttributeSpec(default='dd'),
-        cif_handler=CifHandler(names=['_x.s']),
+        tags=TagSpec(edi_names=['_x.s']),
     )
     param.value = 'changed'
 
@@ -640,7 +641,7 @@ def test_set_param_to_default_raises_for_required_field_without_default(monkeypa
     param = StringDescriptor(
         name='nd',
         value_spec=AttributeSpec(),
-        cif_handler=CifHandler(names=['_x.nd']),
+        tags=TagSpec(edi_names=['_x.nd']),
     )
 
     with pytest.raises(ValueError, match='Cannot load required CIF field'):
@@ -656,7 +657,7 @@ def test_param_from_cif_missing_tag_uses_default():
     param = Parameter(
         name='p',
         value_spec=AttributeSpec(default=9.0),
-        cif_handler=CifHandler(names=['_x.absent']),
+        tags=TagSpec(edi_names=['_x.absent']),
     )
     param.value = 3.0
     block = gemmi.cif.read_string('data_t\n_x.other 1\n').sole_block()
@@ -670,7 +671,7 @@ def test_param_from_cif_selects_value_at_loop_index():
     param = NumericDescriptor(
         name='a',
         value_spec=AttributeSpec(default=0.0),
-        cif_handler=CifHandler(names=['_loop.a']),
+        tags=TagSpec(edi_names=['_loop.a']),
     )
     block = gemmi.cif.read_string('data_t\nloop_\n_loop.a\n10\n20\n30\n').sole_block()
 
@@ -697,12 +698,12 @@ class _PairItem(CategoryItem):
         self._a = NumericDescriptor(
             name='a',
             value_spec=AttributeSpec(default=0.0),
-            cif_handler=CifHandler(names=['_pc.a']),
+            tags=TagSpec(edi_names=['_pc.a']),
         )
         self._b = NumericDescriptor(
             name='b',
             value_spec=AttributeSpec(default=99.0),
-            cif_handler=CifHandler(names=['_pc.b']),
+            tags=TagSpec(edi_names=['_pc.b']),
         )
 
     @property
@@ -747,7 +748,7 @@ def test_category_collection_from_cif_reads_scalar_descriptors():
             self._count = NumericDescriptor(
                 name='count',
                 value_spec=AttributeSpec(default=0.0),
-                cif_handler=CifHandler(names=['_pc.count']),
+                tags=TagSpec(edi_names=['_pc.count']),
             )
 
     coll = ScalarCollection()

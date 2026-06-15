@@ -15,7 +15,7 @@ from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RegexValidator
 from easydiffraction.core.variable import BoolDescriptor
 from easydiffraction.core.variable import StringDescriptor
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 
 @SequentialFitFactory.register
@@ -37,18 +37,18 @@ class SequentialFit(CategoryItem):
             name='data_dir',
             description='Directory containing sequential-fit data files.',
             value_spec=AttributeSpec(default=''),
-            cif_handler=CifHandler(
-                names=['_sequential_fit.data_dir'],
-                iucr_name='_easydiffraction_sequential_fit.data_dir',
+            tags=TagSpec(
+                edi_names=['_sequential_fit.data_dir'],
+                cif_names=['_easydiffraction_sequential_fit.data_dir'],
             ),
         )
         self._file_pattern = StringDescriptor(
             name='file_pattern',
             description='Glob pattern selecting sequential-fit files.',
             value_spec=AttributeSpec(default='*'),
-            cif_handler=CifHandler(
-                names=['_sequential_fit.file_pattern'],
-                iucr_name='_easydiffraction_sequential_fit.file_pattern',
+            tags=TagSpec(
+                edi_names=['_sequential_fit.file_pattern'],
+                cif_names=['_easydiffraction_sequential_fit.file_pattern'],
             ),
         )
         self._max_workers = StringDescriptor(
@@ -58,9 +58,9 @@ class SequentialFit(CategoryItem):
                 default='1',
                 validator=RegexValidator(pattern=r'^(auto|[1-9]\d*)$'),
             ),
-            cif_handler=CifHandler(
-                names=['_sequential_fit.max_workers'],
-                iucr_name='_easydiffraction_sequential_fit.max_workers',
+            tags=TagSpec(
+                edi_names=['_sequential_fit.max_workers'],
+                cif_names=['_easydiffraction_sequential_fit.max_workers'],
             ),
         )
         self._chunk_size = StringDescriptor(
@@ -70,18 +70,18 @@ class SequentialFit(CategoryItem):
                 default='.',
                 validator=RegexValidator(pattern=r'^([1-9]\d*|\.)$'),
             ),
-            cif_handler=CifHandler(
-                names=['_sequential_fit.chunk_size'],
-                iucr_name='_easydiffraction_sequential_fit.chunk_size',
+            tags=TagSpec(
+                edi_names=['_sequential_fit.chunk_size'],
+                cif_names=['_easydiffraction_sequential_fit.chunk_size'],
             ),
         )
         self._reverse = BoolDescriptor(
             name='reverse',
             description='Whether to process sequential-fit files in reverse.',
             value_spec=AttributeSpec(default=False),
-            cif_handler=CifHandler(
-                names=['_sequential_fit.reverse'],
-                iucr_name='_easydiffraction_sequential_fit.reverse',
+            tags=TagSpec(
+                edi_names=['_sequential_fit.reverse'],
+                cif_names=['_easydiffraction_sequential_fit.reverse'],
             ),
         )
 

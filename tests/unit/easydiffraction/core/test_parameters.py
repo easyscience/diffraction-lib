@@ -16,27 +16,27 @@ def test_string_descriptor_type_override_raises_type_error():
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.validation import DataTypes
     from easydiffraction.core.variable import StringDescriptor
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     with pytest.raises(TypeError):
         StringDescriptor(
             name='title',
             value_spec=AttributeSpec(data_type=DataTypes.NUMERIC, default='x'),
             description='Title text',
-            cif_handler=CifHandler(names=['_proj.title']),
+            tags=TagSpec(edi_names=['_proj.title']),
         )
 
 
 def test_numeric_descriptor_str_includes_units():
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import NumericDescriptor
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     d = NumericDescriptor(
         name='w',
         value_spec=AttributeSpec(default=1.23),
         units='degrees',
-        cif_handler=CifHandler(names=['_x.w']),
+        tags=TagSpec(edi_names=['_x.w']),
     )
     s = str(d)
     assert s.startswith('<')
@@ -49,13 +49,13 @@ def test_numeric_descriptor_str_uses_pretty_display_units():
     from easydiffraction.core.display_handler import DisplayHandler
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import NumericDescriptor
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     d = NumericDescriptor(
         name='a',
         value_spec=AttributeSpec(default=5.43),
         units='angstroms',
-        cif_handler=CifHandler(names=['_cell.a']),
+        tags=TagSpec(edi_names=['_cell.a']),
         display_handler=DisplayHandler(display_units='Å'),
     )
     s = str(d)
@@ -66,13 +66,13 @@ def test_numeric_descriptor_str_uses_pretty_display_units():
 def test_parameter_string_repr_and_as_cif_and_flags():
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     p = Parameter(
         name='a',
         value_spec=AttributeSpec(default=0.0),
         units='angstroms',
-        cif_handler=CifHandler(names=['_param.a']),
+        tags=TagSpec(edi_names=['_param.a']),
     )
     p.value = 2.5
     # Update extra attributes
@@ -87,21 +87,21 @@ def test_parameter_string_repr_and_as_cif_and_flags():
     # CIF line: free param with uncertainty uses 2-sig-digit esd brackets
     assert p.as_cif == '_param.a 2.50(10)'
 
-    # CifHandler uid is owner's unique_name (parameter name here)
-    assert p._cif_handler.uid == p.unique_name == 'a'
+    # TagSpec uid is owner's unique_name (parameter name here)
+    assert p._tags.uid == p.unique_name == 'a'
 
 
 def test_parameter_str_uses_pretty_display_units():
     from easydiffraction.core.display_handler import DisplayHandler
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     p = Parameter(
         name='a',
         value_spec=AttributeSpec(default=0.0),
         units='angstroms',
-        cif_handler=CifHandler(names=['_cell.a']),
+        tags=TagSpec(edi_names=['_cell.a']),
         display_handler=DisplayHandler(display_units='Å'),
     )
     p.value = 5.43
@@ -118,12 +118,12 @@ def test_parameter_str_uses_pretty_display_units():
 def test_parameter_uncertainty_must_be_non_negative():
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     p = Parameter(
         name='b',
         value_spec=AttributeSpec(default=1.0),
-        cif_handler=CifHandler(names=['_param.b']),
+        tags=TagSpec(edi_names=['_param.b']),
     )
     with pytest.raises(TypeError):
         p.uncertainty = -0.5
@@ -132,12 +132,12 @@ def test_parameter_uncertainty_must_be_non_negative():
 def test_parameter_fit_bounds_assign_and_read():
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     p = Parameter(
         name='c',
         value_spec=AttributeSpec(default=0.0),
-        cif_handler=CifHandler(names=['_param.c']),
+        tags=TagSpec(edi_names=['_param.c']),
     )
     p.fit_min = -1.0
     p.fit_max = 10.0
@@ -148,12 +148,12 @@ def test_parameter_fit_bounds_assign_and_read():
 def test_parameter_set_fit_bounds_from_uncertainty_sets_bounds_and_returns_none():
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     p = Parameter(
         name='d',
         value_spec=AttributeSpec(default=0.0),
-        cif_handler=CifHandler(names=['_param.d']),
+        tags=TagSpec(edi_names=['_param.d']),
     )
     p.value = 2.0
     p.uncertainty = 0.25
@@ -168,12 +168,12 @@ def test_parameter_set_fit_bounds_from_uncertainty_sets_bounds_and_returns_none(
 def test_parameter_set_fit_bounds_from_uncertainty_uses_default_multiplier():
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     p = Parameter(
         name='default_multiplier',
         value_spec=AttributeSpec(default=0.0),
-        cif_handler=CifHandler(names=['_param.default_multiplier']),
+        tags=TagSpec(edi_names=['_param.default_multiplier']),
     )
     p.value = 2.0
     p.uncertainty = 0.25
@@ -189,7 +189,7 @@ def test_parameter_set_fit_bounds_from_uncertainty_clips_to_physical_limits():
     from easydiffraction.core.validation import DataTypes
     from easydiffraction.core.validation import RangeValidator
     from easydiffraction.core.variable import Parameter
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     p = Parameter(
         name='bounded',
@@ -198,7 +198,7 @@ def test_parameter_set_fit_bounds_from_uncertainty_clips_to_physical_limits():
             default=1.0,
             validator=RangeValidator(ge=0.5, le=1.5),
         ),
-        cif_handler=CifHandler(names=['_param.bounded']),
+        tags=TagSpec(edi_names=['_param.bounded']),
     )
     p.value = 1.0
     p.uncertainty = 0.3
@@ -212,12 +212,12 @@ def test_parameter_set_fit_bounds_from_uncertainty_clips_to_physical_limits():
 def test_parameter_set_fit_bounds_from_uncertainty_requires_valid_uncertainty():
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     p = Parameter(
         name='invalid',
         value_spec=AttributeSpec(default=0.0),
-        cif_handler=CifHandler(names=['_param.invalid']),
+        tags=TagSpec(edi_names=['_param.invalid']),
     )
     p.value = 2.0
     p.uncertainty = None
@@ -232,12 +232,12 @@ def test_parameter_set_fit_bounds_from_uncertainty_requires_valid_uncertainty():
 def _make_param() -> object:
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     return Parameter(
         name='p',
         value_spec=AttributeSpec(default=0.0),
-        cif_handler=CifHandler(names=['_param.p']),
+        tags=TagSpec(edi_names=['_param.p']),
     )
 
 

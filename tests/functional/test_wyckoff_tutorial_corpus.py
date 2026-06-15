@@ -99,7 +99,7 @@ def _string_assignment(tree, attr_name):
 
 
 def _wyckoff_declarations(tree):
-    """Yield ``(label, letter, (x, y, z))`` for create() calls with a letter."""
+    """Yield ``(atom_id, letter, (x, y, z))`` for create() calls with a letter."""
     for node in ast.walk(tree):
         if not (isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)):
             continue
@@ -117,11 +117,11 @@ def _wyckoff_declarations(tree):
             float(kwargs.get('fract_y', 0.0)),
             float(kwargs.get('fract_z', 0.0)),
         )
-        yield kwargs.get('label', '?'), kwargs['wyckoff_letter'], coords
+        yield kwargs.get('id', '?'), kwargs['wyckoff_letter'], coords
 
 
 def _corpus():
-    """Collect ``(tutorial, name_hm, code, label, letter, coords)`` rows."""
+    """Collect ``(tutorial, name_hm, code, atom_id, letter, coords)`` rows."""
     rows = []
     for path in sorted(_TUTORIALS_DIR.glob('*.py')):
         tree = ast.parse(path.read_text(encoding='utf-8'))
@@ -130,9 +130,9 @@ def _corpus():
             # No structure, or several structures we cannot unambiguously
             # associate with create() calls: skip this tutorial.
             continue
-        code = _string_assignment(tree, 'it_coordinate_system_code')
-        for label, letter, coords in _wyckoff_declarations(tree):
-            rows.append((path.name, name_hm, code, label, letter, coords))
+        code = _string_assignment(tree, 'coord_system_code')
+        for atom_id, letter, coords in _wyckoff_declarations(tree):
+            rows.append((path.name, name_hm, code, atom_id, letter, coords))
     return rows
 
 
@@ -143,11 +143,11 @@ def test_tutorial_declared_letters_are_reproduced_by_detection():
     assert rows, 'no tutorial Wyckoff-letter declarations were found'
 
     mismatches = []
-    for tutorial, name_hm, code, label, letter, coords in rows:
+    for tutorial, name_hm, code, atom_id, letter, coords in rows:
         detected = ecr.detect_wyckoff_position(name_hm, code, coords)
         if detected is None or detected.letter != letter:
             found = None if detected is None else detected.letter
-            mismatches.append((tutorial, label, name_hm, coords, letter, found))
+            mismatches.append((tutorial, atom_id, name_hm, coords, letter, found))
 
     assert not mismatches, mismatches
 

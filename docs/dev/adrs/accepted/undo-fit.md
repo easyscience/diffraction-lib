@@ -57,12 +57,12 @@ After `undo_fit()`:
 - `_fit_parameter_correlations` is cleared — purely fit-derived
 - `_fit_parameter` rows are **preserved**. The collection carries both
   user-owned fit controls (`fit_min`, `fit_max`,
-  `fit_bounds_uncertainty_multiplier`) and the rollback anchors
-  themselves (`start_value`, `start_uncertainty`). Clearing the whole
-  collection — which is what `Analysis._clear_persisted_fit_state()`
-  does at the start of a new fit — would silently drop the user's bounds
-  and erase the anchors needed for idempotence (§6). Undo therefore
-  leaves these rows in place; the next fit rewrites them via
+  `bounds_uncertainty_multiplier`) and the rollback anchors themselves
+  (`start_value`, `start_uncertainty`). Clearing the whole collection —
+  which is what `Analysis._clear_persisted_fit_state()` does at the
+  start of a new fit — would silently drop the user's bounds and erase
+  the anchors needed for idempotence (§6). Undo therefore leaves these
+  rows in place; the next fit rewrites them via
   `_capture_fit_parameter_state()`.
 - `analysis/results.h5` is cleared in memory only: the
   `Analysis._persisted_fit_state_sidecar` dict is reset to empty. All
@@ -225,9 +225,9 @@ always either a rollback or a no-op, never an error.
 ### Python API
 
 ```python
-import easydiffraction as ed
+import easydiffraction as edi
 
-project = ed.Project.load('projects/lbco_hrpt')
+project = edi.Project.load('projects/lbco_hrpt')
 
 # After a fit has been committed, the project carries refined state:
 project.analysis.fit_results               # FitResults(success=True, ...)

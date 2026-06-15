@@ -56,7 +56,8 @@ Three problems have accumulated since that ADR landed:
    notes the inconsistency under §"Owner-level switchable selectors" and
    tags it for a future ADR.
 
-3. **Cross-cutting inconsistency.** Issue [#76](../../issues/open.md)
+3. **Cross-cutting inconsistency.** Issue
+   [#76](../../issues/closed/consistent-type-suffix-in-switchable-category-api-names.md)
    ("Consistent `_type` suffix in switchable-category API names")
    tracked the inconsistency in the _method names_ on the owner, but
    assumed the owner-level model stayed.
@@ -860,10 +861,10 @@ full grep results.)
 
 ### Issues that this ADR closes
 
-- [#72 "Warn on All Switchable-Category Type Changes"](../../issues/open.md)
+- [#72 "Warn on All Switchable-Category Type Changes"](../../issues/closed/warn-on-all-switchable-category-type-changes.md)
   — the warning logic moves into each owner's `_swap_<name>` method;
   uniform by construction.
-- [#76 "Consistent `_type` suffix in switchable-category API names"](../../issues/open.md)
+- [#76 "Consistent `_type` suffix in switchable-category API names"](../../issues/closed/consistent-type-suffix-in-switchable-category-api-names.md)
   — superseded; the new convention drops the suffix entirely.
 
 ## Alternatives Considered

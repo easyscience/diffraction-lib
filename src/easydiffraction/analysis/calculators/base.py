@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 class PowderReflnRecord:
     """Calculated powder reflection metadata for one reflection row."""
 
-    phase_id: str
+    structure_id: str
     d_spacing: float
     sin_theta_over_lambda: float
     index_h: int
@@ -88,13 +88,13 @@ class CalculatorBase(ABC):
         structure: Structure,
         experiment: ExperimentBase,
         *,
-        phase_id: str,
+        structure_id: str,
     ) -> list[PowderReflnRecord] | None:
         """
-        Return the last powder reflection records for one phase.
+        Return the last powder reflection records for one structure.
 
         Backends that do not expose powder reflection metadata return
         ``None`` so callers can clear stale reflection rows and warn.
         """
-        del self, structure, experiment, phase_id
+        del self, structure, experiment, structure_id
         return None

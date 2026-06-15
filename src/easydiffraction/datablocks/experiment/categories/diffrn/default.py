@@ -11,7 +11,7 @@ from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.datablocks.experiment.categories.diffrn.factory import DiffrnFactory
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 
 @DiffrnFactory.register
@@ -43,7 +43,7 @@ class DefaultDiffrn(CategoryItem):
                 allow_none=True,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_diffrn.ambient_temperature']),
+            tags=TagSpec(edi_names=['_diffrn.ambient_temperature']),
         )
 
         self._ambient_pressure = NumericDescriptor(
@@ -61,7 +61,7 @@ class DefaultDiffrn(CategoryItem):
                 allow_none=True,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_diffrn.ambient_pressure']),
+            tags=TagSpec(edi_names=['_diffrn.ambient_pressure']),
         )
 
         self._ambient_magnetic_field = NumericDescriptor(
@@ -79,9 +79,9 @@ class DefaultDiffrn(CategoryItem):
                 allow_none=True,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_diffrn.ambient_magnetic_field'],
-                iucr_name='_easydiffraction_diffrn.ambient_magnetic_field',
+            tags=TagSpec(
+                edi_names=['_diffrn.ambient_magnetic_field'],
+                cif_names=['_easydiffraction_diffrn.ambient_magnetic_field'],
             ),
         )
 
@@ -100,9 +100,9 @@ class DefaultDiffrn(CategoryItem):
                 allow_none=True,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_diffrn.ambient_electric_field'],
-                iucr_name='_easydiffraction_diffrn.ambient_electric_field',
+            tags=TagSpec(
+                edi_names=['_diffrn.ambient_electric_field'],
+                cif_names=['_easydiffraction_diffrn.ambient_electric_field'],
             ),
         )
 

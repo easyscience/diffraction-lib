@@ -17,13 +17,13 @@ class _Descriptor:
 def _make_parameter(name, *, display_handler=None, cif_names=None):
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     return Parameter(
         name=name,
         value_spec=AttributeSpec(default=0.0),
         display_handler=display_handler,
-        cif_handler=CifHandler(names=cif_names or [f'_{name}']),
+        tags=TagSpec(edi_names=cif_names or [f'_{name}']),
     )
 
 
@@ -89,7 +89,7 @@ def test_first_cif_name_returns_none_without_handler():
 def test_first_cif_name_returns_none_for_empty_names():
     from easydiffraction.report.data_context import _first_cif_name
 
-    parameter = SimpleNamespace(_cif_handler=SimpleNamespace(names=()))
+    parameter = SimpleNamespace(_tags=SimpleNamespace(edi_names=()))
     assert _first_cif_name(parameter) is None
 
 
@@ -116,24 +116,24 @@ def test_descriptor_is_numeric_classifies_descriptor_types():
     from easydiffraction.core.variable import IntegerDescriptor
     from easydiffraction.core.variable import NumericDescriptor
     from easydiffraction.core.variable import StringDescriptor
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
     from easydiffraction.report.data_context import _descriptor_is_numeric
 
-    cif_handler = CifHandler(names=['_x.y'])
+    tags = TagSpec(edi_names=['_x.y'])
     integer = IntegerDescriptor(
         name='n',
         value_spec=AttributeSpec(default=0),
-        cif_handler=cif_handler,
+        tags=tags,
     )
     numeric = NumericDescriptor(
         name='m',
         value_spec=AttributeSpec(default=0.0),
-        cif_handler=cif_handler,
+        tags=tags,
     )
     string = StringDescriptor(
         name='s',
         value_spec=AttributeSpec(default=''),
-        cif_handler=cif_handler,
+        tags=tags,
     )
 
     assert _descriptor_is_numeric(integer) is True
@@ -424,7 +424,7 @@ def test_fit_data_axes_labels_falls_back_on_unknown_combination():
 def _single_crystal_experiment():
     return SimpleNamespace(
         name='heidi',
-        type=SimpleNamespace(
+        experiment_type=SimpleNamespace(
             sample_form=_Descriptor('single crystal'),
             scattering_type=_Descriptor('bragg'),
         ),
@@ -543,7 +543,7 @@ def test_collection_category_context_truncates_long_loops():
 
     category = LineSegmentBackground()
     for index in range(_REPORT_LOOP_DISPLAY_LIMIT + 6):
-        category.create(id=str(index), x=float(index), y=float(index) + 0.5)
+        category.create(id=str(index), position=float(index), intensity=float(index) + 0.5)
 
     context = _collection_category_context(category, truncate=True)
 
@@ -559,8 +559,8 @@ def test_collection_category_context_keeps_short_loops_untruncated():
     from easydiffraction.report.data_context import _collection_category_context
 
     category = LineSegmentBackground()
-    category.create(id='1', x=1.0, y=2.0)
-    category.create(id='2', x=2.0, y=3.0)
+    category.create(id='1', position=1.0, intensity=2.0)
+    category.create(id='2', position=2.0, intensity=3.0)
 
     context = _collection_category_context(category, truncate=True)
 

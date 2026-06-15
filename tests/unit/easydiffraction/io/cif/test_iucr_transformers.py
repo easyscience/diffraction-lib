@@ -6,13 +6,14 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 
 class _Descriptor:
-    def __init__(self, value, tag='_x.value', iucr_name=None):
+    def __init__(self, value, tag='_x.value', cif_name=None):
         self.value = value
-        self._cif_handler = CifHandler(names=[tag], iucr_name=iucr_name)
+        cif_names = [cif_name] if cif_name is not None else None
+        self._tags = TagSpec(edi_names=[tag], cif_names=cif_names)
 
 
 def _items_by_tag(items):
@@ -39,8 +40,8 @@ def test_tof_calibration_transformer_emits_powers_and_ids():
     instrument = SimpleNamespace(
         calib_d_to_tof_offset=_Descriptor(1.0),
         calib_d_to_tof_linear=_Descriptor(2.0),
-        calib_d_to_tof_quad=_Descriptor(3.0),
-        calib_d_to_tof_recip=_Descriptor(4.0),
+        calib_d_to_tof_quadratic=_Descriptor(3.0),
+        calib_d_to_tof_reciprocal=_Descriptor(4.0),
     )
     experiment = SimpleNamespace(name='bank1', instrument=instrument)
 
@@ -93,15 +94,15 @@ def test_extinction_transformer_emits_becker_coppens_type_1():
     extinction = SimpleNamespace(
         type=_Descriptor(
             'becker-coppens',
-            iucr_name='_easydiffraction_extinction.type',
+            cif_name='_easydiffraction_extinction.type',
         ),
         model=_Descriptor(
             'gaussian_isotropic_type1',
-            iucr_name='_easydiffraction_extinction.model',
+            cif_name='_easydiffraction_extinction.model',
         ),
         mosaicity=_Descriptor(
             0.12,
-            iucr_name='_easydiffraction_extinction.mosaicity',
+            cif_name='_easydiffraction_extinction.mosaicity',
         ),
     )
     items = _items_by_tag(ExtinctionTransformer().items(SimpleNamespace(extinction=extinction)))
@@ -133,15 +134,15 @@ def test_extinction_transformer_emits_becker_coppens_type_2():
     extinction = SimpleNamespace(
         type=_Descriptor(
             'becker-coppens',
-            iucr_name='_easydiffraction_extinction.type',
+            cif_name='_easydiffraction_extinction.type',
         ),
         model=_Descriptor(
             'lorentzian_anisotropic_type2',
-            iucr_name='_easydiffraction_extinction.model',
+            cif_name='_easydiffraction_extinction.model',
         ),
         radius=_Descriptor(
             2.5,
-            iucr_name='_easydiffraction_extinction.radius',
+            cif_name='_easydiffraction_extinction.radius',
         ),
     )
     items = _items_by_tag(ExtinctionTransformer().items(SimpleNamespace(extinction=extinction)))
@@ -159,19 +160,19 @@ def test_extinction_transformer_emits_mixed_becker_coppens_details():
     extinction = SimpleNamespace(
         type=_Descriptor(
             'becker-coppens',
-            iucr_name='_easydiffraction_extinction.type',
+            cif_name='_easydiffraction_extinction.type',
         ),
         model=_Descriptor(
             'mixed_gaussian',
-            iucr_name='_easydiffraction_extinction.model',
+            cif_name='_easydiffraction_extinction.model',
         ),
         mosaicity=_Descriptor(
             0.12,
-            iucr_name='_easydiffraction_extinction.mosaicity',
+            cif_name='_easydiffraction_extinction.mosaicity',
         ),
         radius=_Descriptor(
             2.5,
-            iucr_name='_easydiffraction_extinction.radius',
+            cif_name='_easydiffraction_extinction.radius',
         ),
     )
     items = _items_by_tag(ExtinctionTransformer().items(SimpleNamespace(extinction=extinction)))
@@ -189,11 +190,11 @@ def test_extinction_transformer_emits_zachariasen_method():
     extinction = SimpleNamespace(
         type=_Descriptor(
             'zachariasen',
-            iucr_name='_easydiffraction_extinction.type',
+            cif_name='_easydiffraction_extinction.type',
         ),
         mosaicity=_Descriptor(
             0.05,
-            iucr_name='_easydiffraction_extinction.mosaicity',
+            cif_name='_easydiffraction_extinction.mosaicity',
         ),
     )
     items = _items_by_tag(ExtinctionTransformer().items(SimpleNamespace(extinction=extinction)))

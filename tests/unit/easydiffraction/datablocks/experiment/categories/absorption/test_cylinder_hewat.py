@@ -43,14 +43,14 @@ def test_cylinder_hewat_mu_r_must_be_non_negative(monkeypatch):
     assert absorption.mu_r.value == 0.7
 
 
-def test_cylinder_hewat_mu_r_cif_handler_names():
+def test_cylinder_hewat_mu_r_tag_names():
     from easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat import (
         CylinderHewatAbsorption,
     )
 
     absorption = CylinderHewatAbsorption()
-    assert '_absorption.mu_r' in absorption._mu_r._cif_handler.names
-    assert absorption._mu_r._cif_handler.iucr_name == '_easydiffraction_absorption.mu_r'
+    assert '_absorption.mu_r' in absorption._mu_r._tags.edi_names
+    assert absorption._mu_r._tags.cif_name == '_easydiffraction_absorption.mu_r'
 
 
 def test_cylinder_hewat_is_constant_wavelength_only():

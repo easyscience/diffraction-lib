@@ -72,3 +72,26 @@ class FitCorrelationSourceEnum(StrEnum):
         if self is FitCorrelationSourceEnum.POSTERIOR:
             return 'Correlations from posterior samples.'
         return ''
+
+
+class SoftwareRoleEnum(StrEnum):
+    """Role of a software package in the latest fit."""
+
+    FRAMEWORK = 'framework'
+    CALCULATOR = 'calculator'
+    MINIMIZER = 'minimizer'
+
+    @classmethod
+    def default(cls) -> SoftwareRoleEnum:
+        """Return the default software role."""
+        return cls.FRAMEWORK
+
+    def description(self) -> str:
+        """Return a human-readable description of this role."""
+        if self is SoftwareRoleEnum.FRAMEWORK:
+            return 'EasyDiffraction framework.'
+        if self is SoftwareRoleEnum.CALCULATOR:
+            return 'Calculation engine.'
+        if self is SoftwareRoleEnum.MINIMIZER:
+            return 'Minimization engine.'
+        return ''

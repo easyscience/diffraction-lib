@@ -191,7 +191,8 @@
 │   ├── 📄 enums.py
 │   │   ├── 🏷️ class FitModeEnum
 │   │   ├── 🏷️ class FitResultKindEnum
-│   │   └── 🏷️ class FitCorrelationSourceEnum
+│   │   ├── 🏷️ class FitCorrelationSourceEnum
+│   │   └── 🏷️ class SoftwareRoleEnum
 │   ├── 📄 fitting.py
 │   │   ├── 🏷️ class FitterFitOptions
 │   │   └── 🏷️ class Fitter
@@ -378,18 +379,20 @@
 │   │   │   │       ├── 🏷️ class TofScInstrument
 │   │   │   │       └── 🏷️ class TofPdInstrument
 │   │   │   ├── 📁 linked_crystal
-│   │   │   │   ├── 📄 __init__.py
-│   │   │   │   ├── 📄 default.py
-│   │   │   │   │   └── 🏷️ class LinkedCrystal
-│   │   │   │   └── 📄 factory.py
-│   │   │   │       └── 🏷️ class LinkedCrystalFactory
 │   │   │   ├── 📁 linked_phases
+│   │   │   ├── 📁 linked_structure
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 default.py
-│   │   │   │   │   ├── 🏷️ class LinkedPhase
-│   │   │   │   │   └── 🏷️ class LinkedPhases
+│   │   │   │   │   └── 🏷️ class LinkedStructure
 │   │   │   │   └── 📄 factory.py
-│   │   │   │       └── 🏷️ class LinkedPhasesFactory
+│   │   │   │       └── 🏷️ class LinkedStructureFactory
+│   │   │   ├── 📁 linked_structures
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 default.py
+│   │   │   │   │   ├── 🏷️ class LinkedStructure
+│   │   │   │   │   └── 🏷️ class LinkedStructures
+│   │   │   │   └── 📄 factory.py
+│   │   │   │       └── 🏷️ class LinkedStructuresFactory
 │   │   │   ├── 📁 peak
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 base.py
@@ -596,6 +599,8 @@
 │   ├── 📄 base.py
 │   │   ├── 🏷️ class RendererBase
 │   │   └── 🏷️ class RendererFactoryBase
+│   ├── 📄 links.py
+│   │   └── 🏷️ class TableLink
 │   ├── 📄 plotting.py
 │   │   ├── 🏷️ class PlotterEngineEnum
 │   │   ├── 🏷️ class PosteriorPairPlotStyleEnum
@@ -624,7 +629,7 @@
 │   ├── 📁 cif
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 handler.py
-│   │   │   └── 🏷️ class CifHandler
+│   │   │   └── 🏷️ class TagSpec
 │   │   ├── 📄 iucr_transformers.py
 │   │   │   ├── 🏷️ class IucrItem
 │   │   │   ├── 🏷️ class IucrLoop
@@ -640,17 +645,21 @@
 │   │   │   └── 🏷️ class _PowderPattern
 │   │   ├── 📄 parse.py
 │   │   └── 📄 serialize.py
+│   ├── 📁 edi
+│   │   ├── 📄 __init__.py
+│   │   └── 📄 serialize.py
 │   ├── 📄 __init__.py
 │   ├── 📄 ascii.py
 │   └── 📄 results_sidecar.py
 ├── 📁 project
 │   ├── 📁 categories
 │   │   ├── 📁 info
+│   │   ├── 📁 metadata
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
-│   │   │   │   └── 🏷️ class ProjectInfo
+│   │   │   │   └── 🏷️ class ProjectMetadata
 │   │   │   └── 📄 factory.py
-│   │   │       └── 🏷️ class ProjectInfoFactory
+│   │   │       └── 🏷️ class ProjectMetadataFactory
 │   │   ├── 📁 rendering_plot
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
@@ -705,7 +714,7 @@
 │   │   └── 🏷️ class Project
 │   ├── 📄 project_config.py
 │   │   └── 🏷️ class ProjectConfig
-│   └── 📄 project_info.py
+│   └── 📄 project_metadata.py
 ├── 📁 report
 │   ├── 📁 templates
 │   │   ├── 📁 html
@@ -735,6 +744,8 @@
 │   │   └── 🏷️ class ConsolePrinter
 │   ├── 📄 matplotlib_config.py
 │   └── 📄 utils.py
+│       ├── 🏷️ class DataCategoryEnum
+│       └── 🏷️ class TutorialFormat
 ├── 📄 __init__.py
 └── 📄 __main__.py
 ```

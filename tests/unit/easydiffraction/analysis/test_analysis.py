@@ -24,7 +24,7 @@ def _make_project_with_names(names):
     class P:
         experiments = ExpCol(names)
         structures = object()
-        info = SimpleNamespace(path=None)
+        metadata = SimpleNamespace(path=None)
         _varname = 'proj'
 
     return P()
@@ -33,12 +33,12 @@ def _make_project_with_names(names):
 def _make_parameter(name, value):
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     return Parameter(
         name=name,
         value_spec=AttributeSpec(default=value),
-        cif_handler=CifHandler(names=[f'_{name}.value']),
+        tags=TagSpec(edi_names=[f'_{name}.value']),
     )
 
 
@@ -56,7 +56,7 @@ def _make_project_with_parameters(parameters):
     return SimpleNamespace(
         structures=ParamContainer(parameters),
         experiments=Experiments([]),
-        info=SimpleNamespace(path=None),
+        metadata=SimpleNamespace(path=None),
         _varname='proj',
     )
 
@@ -92,14 +92,12 @@ def test_analysis_extension_descriptors_keep_save_tags_and_iucr_names():
     analysis = Analysis(project=_make_project_with_names([]))
     calculator = Calculator(type='cryspy')
 
-    assert analysis.minimizer._type._cif_handler.names == ['_minimizer.type']
-    assert analysis.minimizer._type._cif_handler.iucr_name == '_easydiffraction_minimizer.type'
-    assert analysis.fitting_mode._type._cif_handler.names == ['_fitting_mode.type']
-    assert (
-        analysis.fitting_mode._type._cif_handler.iucr_name == '_easydiffraction_fitting_mode.type'
-    )
-    assert calculator._type._cif_handler.names == ['_calculator.type']
-    assert calculator._type._cif_handler.iucr_name == '_easydiffraction_calculator.type'
+    assert analysis.minimizer._type._tags.edi_names == ['_minimizer.type']
+    assert analysis.minimizer._type._tags.cif_name == '_easydiffraction_minimizer.type'
+    assert analysis.fitting_mode._type._tags.edi_names == ['_fitting_mode.type']
+    assert analysis.fitting_mode._type._tags.cif_name == '_easydiffraction_fitting_mode.type'
+    assert calculator._type._tags.edi_names == ['_calculator.type']
+    assert calculator._type._tags.cif_name == '_easydiffraction_calculator.type'
 
 
 def test_fit_mode_category_and_joint_fit(monkeypatch, capsys):
@@ -200,7 +198,7 @@ def test_undo_fit_restores_scalars_and_clears_fit_outputs():
     ):
         parameter.fit_min = 3.5
         parameter.fit_max = 4.5
-        parameter._set_fit_bounds_uncertainty_multiplier(4.0)
+        parameter._set_bounds_uncertainty_multiplier(4.0)
         summary = PosteriorParameterSummary(
             unique_name=parameter.unique_name,
             display_name=parameter.name,
@@ -214,10 +212,10 @@ def test_undo_fit_restores_scalars_and_clears_fit_outputs():
         )
         parameter._set_posterior(summary)
         analysis.fit_parameters.create(
-            param_unique_name=parameter.unique_name,
+            parameter_unique_name=parameter.unique_name,
             fit_min=parameter.fit_min,
             fit_max=parameter.fit_max,
-            fit_bounds_uncertainty_multiplier=4.0,
+            bounds_uncertainty_multiplier=4.0,
             start_value=start_value,
             start_uncertainty=start_uncertainty,
         )
@@ -227,8 +225,8 @@ def test_undo_fit_restores_scalars_and_clears_fit_outputs():
     analysis.fit_result._set_success(value=True)
     analysis.fit_parameter_correlations.create(
         source_kind='deterministic',
-        param_unique_name_i=length_a.unique_name,
-        param_unique_name_j=length_b.unique_name,
+        parameter_unique_name_i=length_a.unique_name,
+        parameter_unique_name_j=length_b.unique_name,
         correlation=0.25,
     )
     analysis._persisted_fit_state_sidecar = {'posterior': {'draws': object()}}
@@ -266,7 +264,7 @@ def test_undo_fit_second_call_is_noop(monkeypatch):
     analysis = Analysis(project=project)
     parameter.value = 1.5
     analysis.fit_parameters.create(
-        param_unique_name=parameter.unique_name,
+        parameter_unique_name=parameter.unique_name,
         fit_min=0.0,
         fit_max=2.0,
         start_value=1.0,
@@ -310,7 +308,7 @@ def test_undo_fit_loaded_no_movement_fit_is_not_noop():
     project = _make_project_with_parameters([parameter])
     analysis = Analysis(project=project)
     analysis.fit_parameters.create(
-        param_unique_name=parameter.unique_name,
+        parameter_unique_name=parameter.unique_name,
         fit_min=0.0,
         fit_max=2.0,
         start_value=1.0,
@@ -507,7 +505,7 @@ def test_fit_resume_defaults_extra_steps_to_sampling_steps(monkeypatch, tmp_path
 
     analysis = Analysis(project=_make_project_with_names(['e1']))
     analysis.project.verbosity = SimpleNamespace(fit=SimpleNamespace(value='silent'))
-    analysis.project.info = SimpleNamespace(path=tmp_path)
+    analysis.project.metadata = SimpleNamespace(path=tmp_path)
     analysis.minimizer.type = 'emcee'
     analysis.minimizer.sampling_steps = 123
     captured: dict[str, object] = {}
@@ -529,7 +527,7 @@ def test_fit_resume_preserves_explicit_extra_steps(monkeypatch, tmp_path):
 
     analysis = Analysis(project=_make_project_with_names(['e1']))
     analysis.project.verbosity = SimpleNamespace(fit=SimpleNamespace(value='silent'))
-    analysis.project.info = SimpleNamespace(path=tmp_path)
+    analysis.project.metadata = SimpleNamespace(path=tmp_path)
     analysis.minimizer.type = 'emcee'
     analysis.minimizer.sampling_steps = 123
     captured: dict[str, object] = {}
@@ -555,7 +553,7 @@ def test_fit_resume_missing_sidecar_warns_and_starts_fresh(
 
     analysis = Analysis(project=_make_project_with_names(['e1']))
     analysis.project.verbosity = SimpleNamespace(fit=SimpleNamespace(value='silent'))
-    analysis.project.info = SimpleNamespace(path=tmp_path)
+    analysis.project.metadata = SimpleNamespace(path=tmp_path)
     analysis.minimizer.type = 'emcee'
     captured: dict[str, object] = {}
     warnings: list[str] = []
@@ -786,7 +784,7 @@ def test_run_sequential_sets_mode_and_saves_project(monkeypatch, tmp_path):
     from easydiffraction.analysis.analysis import Analysis
 
     project = SimpleNamespace(
-        info=SimpleNamespace(path=tmp_path),
+        metadata=SimpleNamespace(path=tmp_path),
         experiments=SimpleNamespace(values=list),
         save_calls=0,
         _varname='proj',
@@ -872,7 +870,7 @@ def test_calculate_forces_structure_and_experiment_updates():
     class _Project:
         structures = [_stub('structure')]
         experiments = [_stub('experiment')]
-        info = SimpleNamespace(path=None)
+        metadata = SimpleNamespace(path=None)
         _varname = 'proj'
 
     Analysis.calculate(SimpleNamespace(project=_Project()))

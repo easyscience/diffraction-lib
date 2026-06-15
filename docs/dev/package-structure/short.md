@@ -183,10 +183,12 @@
 │   │   │   │   ├── 📄 factory.py
 │   │   │   │   └── 📄 tof.py
 │   │   │   ├── 📁 linked_crystal
+│   │   │   ├── 📁 linked_phases
+│   │   │   ├── 📁 linked_structure
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 default.py
 │   │   │   │   └── 📄 factory.py
-│   │   │   ├── 📁 linked_phases
+│   │   │   ├── 📁 linked_structures
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 default.py
 │   │   │   │   └── 📄 factory.py
@@ -287,6 +289,7 @@
 │   │   └── 📄 rich.py
 │   ├── 📄 __init__.py
 │   ├── 📄 base.py
+│   ├── 📄 links.py
 │   ├── 📄 plotting.py
 │   ├── 📄 progress.py
 │   ├── 📄 tables.py
@@ -300,12 +303,16 @@
 │   │   ├── 📄 iucr_writer.py
 │   │   ├── 📄 parse.py
 │   │   └── 📄 serialize.py
+│   ├── 📁 edi
+│   │   ├── 📄 __init__.py
+│   │   └── 📄 serialize.py
 │   ├── 📄 __init__.py
 │   ├── 📄 ascii.py
 │   └── 📄 results_sidecar.py
 ├── 📁 project
 │   ├── 📁 categories
 │   │   ├── 📁 info
+│   │   ├── 📁 metadata
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
 │   │   │   └── 📄 factory.py
@@ -342,7 +349,7 @@
 │   ├── 📄 display.py
 │   ├── 📄 project.py
 │   ├── 📄 project_config.py
-│   └── 📄 project_info.py
+│   └── 📄 project_metadata.py
 ├── 📁 report
 │   ├── 📁 templates
 │   │   ├── 📁 html

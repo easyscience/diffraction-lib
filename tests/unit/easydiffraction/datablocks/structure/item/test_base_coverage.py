@@ -92,7 +92,7 @@ class TestStructureAtomSites:
 
 
 class TestStructureDisplay:
-    def test_show_as_cif(self, structure, capsys):
-        structure.show_as_cif()
+    def test_show_as_text(self, structure, capsys):
+        structure.show_as_text()
         out = capsys.readouterr().out
         assert 'test_struct' in out

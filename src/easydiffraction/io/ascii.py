@@ -36,10 +36,9 @@ def extract_project_from_zip(
     """
     Extract a project directory from a ZIP archive.
 
-    The archive must contain exactly one directory with a
-    ``project.cif`` file.  Files are extracted into *destination* when
-    provided, or into a temporary directory that persists for the
-    lifetime of the process.
+    The archive must contain a project directory with ``project.edi``.
+    Files are extracted into *destination* when provided, or into a
+    temporary directory that persists for the lifetime of the process.
 
     Parameters
     ----------
@@ -54,15 +53,14 @@ def extract_project_from_zip(
     Returns
     -------
     str
-        Absolute path to the extracted project directory (the directory
-        that contains ``project.cif``).
+        Absolute path to the extracted project directory.
 
     Raises
     ------
     FileNotFoundError
         If *zip_path* does not exist.
     ValueError
-        If the archive does not contain a ``project.cif`` file.
+        If the archive does not contain a project marker file.
     """
     zip_path = Path(zip_path)
     if not zip_path.exists():
@@ -74,16 +72,17 @@ def extract_project_from_zip(
     with zipfile.ZipFile(zip_path, 'r') as zf:
         # Determine the project directory from the archive contents
         # *before* extraction, so we are not confused by unrelated
-        # project.cif files already present in the destination.
-        project_cif_entries = [name for name in zf.namelist() if name.endswith('project.cif')]
-        if not project_cif_entries:
-            msg = f'No project.cif found in ZIP archive: {zip_path}'
+        # project marker files already present in the destination.
+        names = zf.namelist()
+        project_entries = [name for name in names if name.endswith('project.edi')]
+        if not project_entries:
+            msg = f'No project.edi found in ZIP archive: {zip_path}'
             raise ValueError(msg)
 
         zf.extractall(extract_dir)
 
-    project_cif_path = extract_dir / project_cif_entries[0]
-    return str(project_cif_path.parent.resolve())
+    project_marker_path = extract_dir / project_entries[0]
+    return str(project_marker_path.parent.resolve())
 
 
 def extract_data_paths_from_zip(

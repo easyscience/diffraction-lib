@@ -253,9 +253,9 @@ configuration categories: each persisted scalar descriptor is set
 directly.
 
 ```python
-import easydiffraction as ed
+import easydiffraction as edi
 
-project = ed.Project()
+project = edi.Project()
 # … set up structures, experiments, run fit …
 
 # Configure once — persisted in project.cif (see §1.3 below).

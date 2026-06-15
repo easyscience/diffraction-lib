@@ -26,7 +26,7 @@ from easydiffraction.crystallography import crystallography as ecr
 from easydiffraction.datablocks.structure.categories.space_group_wyckoff.factory import (
     SpaceGroupWyckoffFactory,
 )
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 _READ_ONLY_MESSAGE = (
     'space_group_wyckoff is derived from the space group and is read-only; '
@@ -51,21 +51,21 @@ class SpaceGroupWyckoff(CategoryItem):
             description='Identifier of the Wyckoff position.',
             display_handler=DisplayHandler(display_name='ID', latex_name='ID'),
             value_spec=AttributeSpec(default=''),
-            cif_handler=CifHandler(names=['_space_group_Wyckoff.id']),
+            tags=TagSpec(edi_names=['_space_group_Wyckoff.id']),
         )
         self._letter = StringDescriptor(
             name='letter',
             description='Wyckoff letter of the position.',
             display_handler=DisplayHandler(display_name='Letter', latex_name='Letter'),
             value_spec=AttributeSpec(default=''),
-            cif_handler=CifHandler(names=['_space_group_Wyckoff.letter']),
+            tags=TagSpec(edi_names=['_space_group_Wyckoff.letter']),
         )
         self._multiplicity = IntegerDescriptor(
             name='multiplicity',
             description='Multiplicity of the Wyckoff position.',
             display_handler=DisplayHandler(display_name='Multiplicity', latex_name='Multiplicity'),
             value_spec=AttributeSpec(default=0),
-            cif_handler=CifHandler(names=['_space_group_Wyckoff.multiplicity']),
+            tags=TagSpec(edi_names=['_space_group_Wyckoff.multiplicity']),
         )
         self._site_symmetry = StringDescriptor(
             name='site_symmetry',
@@ -74,14 +74,14 @@ class SpaceGroupWyckoff(CategoryItem):
                 display_name='Site symmetry', latex_name='Site symmetry'
             ),
             value_spec=AttributeSpec(default=''),
-            cif_handler=CifHandler(names=['_space_group_Wyckoff.site_symmetry']),
+            tags=TagSpec(edi_names=['_space_group_Wyckoff.site_symmetry']),
         )
         self._coords_xyz = StringDescriptor(
             name='coords_xyz',
             description='Coordinates of the Wyckoff orbit.',
             display_handler=DisplayHandler(display_name='Coordinates', latex_name='Coordinates'),
             value_spec=AttributeSpec(default=''),
-            cif_handler=CifHandler(names=['_space_group_Wyckoff.coords_xyz']),
+            tags=TagSpec(edi_names=['_space_group_Wyckoff.coords_xyz']),
         )
 
     @property
@@ -208,7 +208,7 @@ class SpaceGroupWyckoffCollection(CategoryCollection):
             self._adopt_items([])
             return
         name_hm = structure.space_group.name_h_m.value
-        coord_code = structure.space_group.it_coordinate_system_code.value
+        coord_code = structure.space_group.coord_system_code.value
         positions = ecr.space_group_wyckoff_table(name_hm, coord_code)
         if not positions:
             self._adopt_items([])

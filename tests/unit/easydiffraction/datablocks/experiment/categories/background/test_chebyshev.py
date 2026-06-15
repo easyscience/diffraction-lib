@@ -28,5 +28,5 @@ def test_chebyshev_background_calculate_and_cif():
     cb.create(order=0, coef=1.0)
     cb.create(order=1, coef=0.5)
     cif = cb.as_cif
-    assert '_pd_background.Chebyshev_order' in cif
-    assert '_pd_background.Chebyshev_coef' in cif
+    assert '_background.order' in cif
+    assert '_background.coef' in cif

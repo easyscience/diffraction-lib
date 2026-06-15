@@ -10,12 +10,12 @@ import numpy as np
 def _make_parameter(name, value):
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     return Parameter(
         name=name,
         value_spec=AttributeSpec(default=value),
-        cif_handler=CifHandler(names=[f'_{name}.value']),
+        tags=TagSpec(edi_names=[f'_{name}.value']),
     )
 
 
@@ -37,7 +37,7 @@ def _make_project_with_parameters(structure_params, experiment_params=None):
     return SimpleNamespace(
         structures=StructureColl(structure_params),
         experiments=ExperimentColl(experiment_params),
-        info=SimpleNamespace(path=None),
+        metadata=SimpleNamespace(path=None),
         _varname='proj',
     )
 
@@ -296,7 +296,7 @@ class TestBayesianProjection:
 
             def __getitem__(self, name):
                 del name
-                return SimpleNamespace(type='powder')
+                return SimpleNamespace(experiment_type='powder')
 
         project = SimpleNamespace(
             experiments=Experiments(),
@@ -522,17 +522,17 @@ class TestSoftwareValues:
         from easydiffraction.analysis.analysis import Analysis
 
         a = Analysis(project=_make_project())
-        Analysis._set_software_role(a.software.framework, ('EasyDiffraction', '9.9', 'url'))
-        assert a.software.framework.name.value == 'EasyDiffraction'
-        assert a.software.framework.version.value == '9.9'
-        assert a.software.framework.url.value == 'url'
+        Analysis._set_software_role(a.software['framework'], ('EasyDiffraction', '9.9', 'url'))
+        assert a.software['framework'].name.value == 'EasyDiffraction'
+        assert a.software['framework'].version.value == '9.9'
+        assert a.software['framework'].url.value == 'url'
 
     def test_has_software_provenance_tracks_stamping(self):
         from easydiffraction.analysis.analysis import Analysis
 
         a = Analysis(project=_make_project())
         assert a._has_software_provenance() is False
-        a.software.framework.name = 'EasyDiffraction'
+        a.software['framework'].name = 'EasyDiffraction'
         assert a._has_software_provenance() is True
 
 
@@ -642,10 +642,12 @@ class TestExperimentClassificationHelpers:
         from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 
         powder = SimpleNamespace(
-            type=SimpleNamespace(sample_form=SimpleNamespace(value=SampleFormEnum.POWDER.value))
+            experiment_type=SimpleNamespace(
+                sample_form=SimpleNamespace(value=SampleFormEnum.POWDER.value)
+            )
         )
         single = SimpleNamespace(
-            type=SimpleNamespace(
+            experiment_type=SimpleNamespace(
                 sample_form=SimpleNamespace(value=SampleFormEnum.SINGLE_CRYSTAL.value)
             )
         )
@@ -1074,7 +1076,7 @@ class TestSequentialDataDir:
         project = SimpleNamespace(
             experiments=SimpleNamespace(values=list),
             structures=object(),
-            info=SimpleNamespace(path=None),
+            metadata=SimpleNamespace(path=None),
             _varname='proj',
         )
         a = Analysis(project=project)
@@ -1089,7 +1091,7 @@ class TestSequentialDataDir:
         project = SimpleNamespace(
             experiments=SimpleNamespace(values=list),
             structures=object(),
-            info=SimpleNamespace(path=None),
+            metadata=SimpleNamespace(path=None),
             _varname='proj',
         )
         a = Analysis(project=project)
@@ -1103,7 +1105,7 @@ class TestSequentialDataDir:
         project = SimpleNamespace(
             experiments=SimpleNamespace(values=list),
             structures=object(),
-            info=SimpleNamespace(path=tmp_path),
+            metadata=SimpleNamespace(path=tmp_path),
             _varname='proj',
         )
         a = Analysis(project=project)
@@ -1123,7 +1125,7 @@ class TestResumableEmceeSidecar:
         project = SimpleNamespace(
             experiments=SimpleNamespace(values=list),
             structures=object(),
-            info=SimpleNamespace(path=None),
+            metadata=SimpleNamespace(path=None),
             _varname='proj',
         )
         a = Analysis(project=project)
@@ -1135,7 +1137,7 @@ class TestResumableEmceeSidecar:
         project = SimpleNamespace(
             experiments=SimpleNamespace(values=list),
             structures=object(),
-            info=SimpleNamespace(path=tmp_path),
+            metadata=SimpleNamespace(path=tmp_path),
             _varname='proj',
         )
         a = Analysis(project=project)
@@ -1157,7 +1159,7 @@ class TestResumableEmceeSidecar:
         project = SimpleNamespace(
             experiments=SimpleNamespace(values=list),
             structures=object(),
-            info=SimpleNamespace(path=tmp_path),
+            metadata=SimpleNamespace(path=tmp_path),
             _varname='proj',
         )
         a = Analysis(project=project)
@@ -1179,7 +1181,7 @@ class TestResumableEmceeSidecar:
         project = SimpleNamespace(
             experiments=SimpleNamespace(values=list),
             structures=object(),
-            info=SimpleNamespace(path=tmp_path),
+            metadata=SimpleNamespace(path=tmp_path),
             _varname='proj',
         )
         a = Analysis(project=project)
@@ -1199,7 +1201,7 @@ class TestResumableEmceeSidecar:
         project = SimpleNamespace(
             experiments=SimpleNamespace(values=list),
             structures=object(),
-            info=SimpleNamespace(path=tmp_path),
+            metadata=SimpleNamespace(path=tmp_path),
             _varname='proj',
         )
         a = Analysis(project=project)
@@ -1227,7 +1229,7 @@ class TestPrepareJointFit:
         return SimpleNamespace(
             experiments=Experiments(names),
             structures=object(),
-            info=SimpleNamespace(path=None),
+            metadata=SimpleNamespace(path=None),
             _varname='proj',
         )
 
@@ -1589,7 +1591,7 @@ class TestRestoredPosteriorSummariesAndPredictive:
 
         a = Analysis(project=_make_project())
         a.fit_parameters.create(
-            param_unique_name='alpha',
+            parameter_unique_name='alpha',
             fit_min=0.0,
             fit_max=2.0,
             start_value=1.0,
@@ -1671,7 +1673,9 @@ class TestLeastSquaresResultProjection:
 
         return SimpleNamespace(
             data=data,
-            type=SimpleNamespace(sample_form=SimpleNamespace(value=SampleFormEnum.POWDER.value)),
+            experiment_type=SimpleNamespace(
+                sample_form=SimpleNamespace(value=SampleFormEnum.POWDER.value)
+            ),
             peak=SimpleNamespace(type=SimpleNamespace(value='gaussian')),
             background=SimpleNamespace(type=SimpleNamespace(value='chebyshev')),
             parameters=[],
@@ -1765,7 +1769,7 @@ def _identity_param(*, datablock, category, entry, name):
             category_code=category,
             category_entry_name=entry,
         ),
-        _cif_handler=SimpleNamespace(uid=f'{category}_{name}_uid'),
+        _tags=SimpleNamespace(uid=f'{category}_{name}_uid'),
     )
 
 
@@ -1802,15 +1806,15 @@ class TestDisplayAccessTables:
         # Category-entry name is rendered for looped (collection) categories.
         assert "proj.experiments['hrpt'].atom_site['Ba'].fract_x" in access_codes
 
-    def test_parameter_cif_uids_warns_when_empty(self, capsys):
+    def test_parameter_uids_warns_when_empty(self, capsys):
         from easydiffraction.analysis.analysis import Analysis
 
         a = Analysis(project=_make_project())
-        a.display.parameter_cif_uids()
+        a.display.parameter_uids()
         out = capsys.readouterr().out
         assert 'No parameters found' in out
 
-    def test_parameter_cif_uids_lists_handler_uids(self, capsys, monkeypatch):
+    def test_parameter_uids_lists_handler_uids(self, capsys, monkeypatch):
         import easydiffraction.analysis.analysis as mod
         from easydiffraction.analysis.analysis import Analysis
 
@@ -1822,10 +1826,10 @@ class TestDisplayAccessTables:
 
         captured = {}
         monkeypatch.setattr(mod, 'render_table', lambda **kwargs: captured.update(kwargs))
-        a.display.parameter_cif_uids()
+        a.display.parameter_uids()
 
         out = capsys.readouterr().out
-        assert 'CIF unique identifiers' in out
+        assert 'unique identifiers for constraints' in out
         uids = [row[-1] for row in captured['columns_data']]
         assert 'cell_length_a_uid' in uids
 
@@ -1843,10 +1847,10 @@ class TestRestoreLiveParameterState:
         project = _make_project_with_parameters([parameter])
         a = Analysis(project=project)
         a.fit_parameters.create(
-            param_unique_name=parameter.unique_name,
+            parameter_unique_name=parameter.unique_name,
             fit_min=3.5,
             fit_max=4.5,
-            fit_bounds_uncertainty_multiplier=4.0,
+            bounds_uncertainty_multiplier=4.0,
             start_value=3.90,
             start_uncertainty=0.02,
         )
@@ -1885,7 +1889,7 @@ class TestRestoreLiveParameterState:
 
         a = Analysis(project=_make_project_with_parameters([]))
         a.fit_parameters.create(
-            param_unique_name='ghost',
+            parameter_unique_name='ghost',
             fit_min=0.0,
             fit_max=1.0,
             start_value=0.5,
@@ -1910,7 +1914,7 @@ class TestRestoreLiveParameterState:
         a = Analysis(project=_make_project_with_parameters([]))
         for name in ('beta', 'alpha'):
             a.fit_parameters.create(
-                param_unique_name=name,
+                parameter_unique_name=name,
                 fit_min=0.0,
                 fit_max=1.0,
                 start_value=0.5,
@@ -1922,7 +1926,7 @@ class TestRestoreLiveParameterState:
         a = self._analysis_with_persisted_param(parameter)
         # Add a persisted row with no matching live parameter.
         a.fit_parameters.create(
-            param_unique_name='ghost',
+            parameter_unique_name='ghost',
             fit_min=0.0,
             fit_max=1.0,
             start_value=0.5,
@@ -1951,7 +1955,7 @@ class TestDeterministicRestoreFromProjection:
         parameter = _make_parameter('length_a', 3.90)
         a = Analysis(project=_make_project_with_parameters([parameter]))
         a.fit_parameters.create(
-            param_unique_name=parameter.unique_name,
+            parameter_unique_name=parameter.unique_name,
             fit_min=3.5,
             fit_max=4.5,
             start_value=3.90,
@@ -1998,7 +2002,7 @@ class TestDeterministicRestoreFromProjection:
         parameter = _make_parameter('length_a', 3.90)
         a = Analysis(project=_make_project_with_parameters([parameter]))
         a.fit_parameters.create(
-            param_unique_name=parameter.unique_name,
+            parameter_unique_name=parameter.unique_name,
             fit_min=3.5,
             fit_max=4.5,
             start_value=3.90,
@@ -2027,7 +2031,7 @@ class TestBayesianRestoreFromProjection:
         a.minimizer.type = 'bumps (dream)'
 
         a.fit_parameters.create(
-            param_unique_name=parameter.unique_name,
+            parameter_unique_name=parameter.unique_name,
             fit_min=0.0,
             fit_max=2.0,
             start_value=1.0,
@@ -2261,8 +2265,8 @@ class TestPosteriorPairCacheProjection:
         assert payload
         pair = payload['1']
         # Names are ordered alphabetically for the pair (alpha before beta).
-        assert pair['param_unique_name_x'] == 'alpha'
-        assert pair['param_unique_name_y'] == 'beta'
+        assert pair['parameter_unique_name_x'] == 'alpha'
+        assert pair['parameter_unique_name_y'] == 'beta'
         assert pair['contour_levels'].size > 0
 
     def test_pair_cache_single_parameter_is_empty(self):
@@ -2422,7 +2426,7 @@ class TestPosteriorFitProjectionWiring:
 
         for name in (alpha.unique_name, beta.unique_name):
             a.fit_parameters.create(
-                param_unique_name=name,
+                parameter_unique_name=name,
                 fit_min=0.0,
                 fit_max=3.0,
                 start_value=1.0,
@@ -2482,7 +2486,7 @@ def _fit_project(*, structures, experiments, path=None, verbosity_value='silent'
     return SimpleNamespace(
         structures=structures,
         experiments=experiments,
-        info=SimpleNamespace(path=path),
+        metadata=SimpleNamespace(path=path),
         verbosity=SimpleNamespace(fit=SimpleNamespace(value=verbosity_value)),
         _varname='proj',
     )

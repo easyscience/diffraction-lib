@@ -9,7 +9,7 @@ TEMP_DIR = tempfile.gettempdir()
 
 
 def test_neutron_pd_cwl_lbco_crysfml(tmp_path) -> None:
-    import easydiffraction as ed
+    import easydiffraction as edi
     from easydiffraction.analysis.calculators.crysfml import CrysfmlCalculator
 
     # Fail clearly if the crysfml backend is not importable, rather than
@@ -17,26 +17,26 @@ def test_neutron_pd_cwl_lbco_crysfml(tmp_path) -> None:
     assert CrysfmlCalculator.engine_imported is True
 
     # Create a project from CIF files
-    project = ed.Project()
-    project.structures.add_from_cif_path(ed.download_data(id=1, destination='data'))
-    project.experiments.add_from_cif_path(ed.download_data(id=2, destination='data'))
+    project = edi.Project()
+    project.structures.add_from_cif_path(edi.download_data('struct-lbco', destination='data'))
+    project.experiments.add_from_edi_path(edi.download_data('expt-lbco-hrpt', destination='data'))
 
     # Set constraints
     project.analysis.aliases.create(
-        label='biso_La',
+        id='biso_La',
         param=project.structures['lbco'].atom_sites['La'].adp_iso,
     )
     project.analysis.aliases.create(
-        label='biso_Ba',
+        id='biso_Ba',
         param=project.structures['lbco'].atom_sites['Ba'].adp_iso,
     )
 
     project.analysis.aliases.create(
-        label='occ_La',
+        id='occ_La',
         param=project.structures['lbco'].atom_sites['La'].occupancy,
     )
     project.analysis.aliases.create(
-        label='occ_Ba',
+        id='occ_Ba',
         param=project.structures['lbco'].atom_sites['Ba'].occupancy,
     )
 
@@ -51,7 +51,7 @@ def test_neutron_pd_cwl_lbco_crysfml(tmp_path) -> None:
     project.save_as(proj_dir)
 
     # Load Project from Directory
-    project = ed.Project.load(proj_dir)
+    project = edi.Project.load(proj_dir)
 
     # Change calculator
     project.experiments['hrpt'].calculator.type = 'crysfml'

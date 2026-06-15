@@ -15,21 +15,21 @@ def test_pref_orient_defaults_are_noop():
     assert po.march_r.value == 1.0  # March coefficient: no texture
     assert po.march_random_fract.value == 0.0  # pure March-Dollase
     assert (po.index_h.value, po.index_k.value, po.index_l.value) == (0, 0, 1)
-    assert po.phase_id.value == 'Si'
+    assert po.structure_id.value == 'Si'
 
 
 def test_pref_orient_property_setters():
     from easydiffraction.datablocks.experiment.categories.pref_orient import PrefOrient
 
     po = PrefOrient()
-    po.phase_id = 'lbco'
+    po.structure_id = 'lbco'
     po.march_r = 0.75
     po.march_random_fract = 0.2
     po.index_h = 1
     po.index_k = 0
     po.index_l = 2
 
-    assert po.phase_id.value == 'lbco'
+    assert po.structure_id.value == 'lbco'
     assert po.march_r.value == 0.75
     assert po.march_random_fract.value == 0.2
     assert (po.index_h.value, po.index_k.value, po.index_l.value) == (1, 0, 2)
@@ -67,17 +67,17 @@ def test_pref_orients_create_and_default_cif():
     from easydiffraction.datablocks.experiment.categories.pref_orient import PrefOrients
 
     coll = PrefOrients()
-    coll.create(phase_id='lbco', march_r=0.8, index_h=0, index_k=0, index_l=1)
+    coll.create(structure_id='lbco', march_r=0.8, index_h=0, index_k=0, index_l=1)
 
     cif = coll.as_cif
     assert 'loop_' in cif
     for tag in (
-        '_pref_orient.phase_id',
-        '_pref_orient.march_r',
-        '_pref_orient.index_h',
-        '_pref_orient.index_k',
-        '_pref_orient.index_l',
-        '_pref_orient.march_random_fract',
+        '_preferred_orientation.structure_id',
+        '_preferred_orientation.march_r',
+        '_preferred_orientation.index_h',
+        '_preferred_orientation.index_k',
+        '_preferred_orientation.index_l',
+        '_preferred_orientation.march_random_fract',
     ):
         assert tag in cif
 
@@ -112,7 +112,7 @@ def test_preferred_orientation_exposed_on_bragg_powder_only():
     )
     assert hasattr(bragg, 'preferred_orientation')
     bragg.preferred_orientation.create(
-        phase_id='bragg', march_r=0.5, index_h=0, index_k=0, index_l=1
+        structure_id='bragg', march_r=0.5, index_h=0, index_k=0, index_l=1
     )
     # The collection is parent-linked to the experiment, enabling dirty
     # tracking on row changes.
@@ -139,7 +139,7 @@ def test_pref_orient_cif_round_trip():
         scattering_type='bragg',
     )
     experiment.preferred_orientation.create(
-        phase_id='lbco',
+        structure_id='lbco',
         march_r=0.75,
         march_random_fract=0.2,
         index_h=1,

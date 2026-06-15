@@ -109,15 +109,15 @@ class TestStructureStyleIdentityAndDefaults:
 # ----------------------------------------------------------------------
 
 
-class TestStructureStyleCifHandlerNames:
-    def test_cif_handler_names(self):
+class TestStructureStyleTagSpecNames:
+    def test_tags_names(self):
         from easydiffraction.project.categories.structure_style.default import StructureStyle
 
         style = StructureStyle()
-        assert style.atom_view._cif_handler.names == ['_structure_style.atom_view']
-        assert style.color_scheme._cif_handler.names == ['_structure_style.color_scheme']
-        assert style.adp_probability._cif_handler.names == ['_structure_style.adp_probability']
-        assert style.atom_scale._cif_handler.names == ['_structure_style.atom_scale']
+        assert style.atom_view._tags.edi_names == ['_structure_style.atom_view']
+        assert style.color_scheme._tags.edi_names == ['_structure_style.color_scheme']
+        assert style.adp_probability._tags.edi_names == ['_structure_style.adp_probability']
+        assert style.atom_scale._tags.edi_names == ['_structure_style.atom_scale']
 
 
 # ----------------------------------------------------------------------

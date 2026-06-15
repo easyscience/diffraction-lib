@@ -1,4 +1,5 @@
 ---
+title: Quick Reference
 icon: material/clipboard-text-outline
 ---
 
@@ -17,9 +18,9 @@ and [Tutorials](../tutorials/index.md).
 Import the package and create or load a project:
 
 ```python
-import easydiffraction as ed
+import easydiffraction as edi
 
-project = ed.Project(name='lbco_hrpt')
+project = edi.Project(name='lbco_hrpt')
 ```
 
 ```python
@@ -31,18 +32,18 @@ project = Project.load('lbco_hrpt')
 Check the installed version:
 
 ```python
-ed.show_version()
+edi.show_version()
 ```
 
 ## Get Example Data
 
-Download a dataset by ID into a local directory:
+Download a dataset by its slug into a local directory:
 
 ```python
-ed.list_data()
+edi.list_data()
 
-structure_path = ed.download_data(id=1, destination='data')
-data_path = ed.download_data(id=3, destination='data')
+structure_path = edi.download_data('struct-lbco', destination='data')
+data_path = edi.download_data('meas-lbco-hrpt', destination='data')
 ```
 
 Project archives are extracted automatically, and `download_data()`
@@ -51,9 +52,9 @@ returns the extracted project directory path.
 For tutorial notebooks:
 
 ```python
-ed.list_tutorials()
-ed.download_tutorial(id=1, destination='tutorials')
-ed.download_all_tutorials(destination='tutorials')
+edi.list_tutorials()
+edi.download_tutorial('refine-lbco-hrpt-from-cif', destination='tutorials')
+edi.download_all_tutorials(destination='tutorials')
 ```
 
 ## Build a Project
@@ -74,7 +75,7 @@ project.structures.create(name='lbco')
 structure = project.structures['lbco']
 
 structure.space_group.name_h_m = 'P m -3 m'
-structure.space_group.it_coordinate_system_code = '1'
+structure.space_group.coord_system_code = '1'
 structure.cell.length_a = 3.88
 ```
 
@@ -82,7 +83,7 @@ Add an atom site:
 
 ```python
 structure.atom_sites.create(
-    label='O',
+    id='O',
     type_symbol='O',
     fract_x=0,
     fract_y=0.5,
@@ -121,8 +122,8 @@ experiment.peak.broad_lorentz_y = 0.1
 Add background points and excluded regions:
 
 ```python
-experiment.background.create(id='1', x=10, y=170)
-experiment.background.create(id='2', x=30, y=170)
+experiment.background.create(id='1', position=10, intensity=170)
+experiment.background.create(id='2', position=30, intensity=170)
 
 experiment.excluded_regions.create(id='1', start=0, end=5)
 experiment.excluded_regions.create(id='2', start=165, end=180)
@@ -131,19 +132,19 @@ experiment.excluded_regions.create(id='2', start=165, end=180)
 Link a structure to an experiment:
 
 ```python
-experiment.linked_phases.create(id='lbco', scale=10.0)
+experiment.linked_structures.create(structure_id='lbco', scale=10.0)
 ```
 
 ## Inspect the Project
 
-Show names and CIF text:
+Show names and serialized text:
 
 ```python
 project.structures.show_names()
 project.experiments.show_names()
 
-structure.show_as_cif()
-experiment.show_as_cif()
+structure.show_as_text()
+experiment.show_as_text()
 ```
 
 Open the main display views:
@@ -154,7 +155,9 @@ project.display.parameters.all()
 project.display.parameters.fittable()
 project.display.parameters.free()
 project.display.parameters.access()
-project.display.parameters.cif_uids()
+project.display.parameters.uid()
+project.display.parameters.edi()
+project.display.parameters.cif()
 ```
 
 ## Show Tables and Select Types
@@ -268,7 +271,7 @@ structure.cell.length_a.help()
 structure.atom_sites['O'].adp_iso.help()
 
 experiment.instrument.calib_twotheta_offset.help()
-experiment.linked_phases['lbco'].scale.help()
+experiment.linked_structures['lbco'].scale.help()
 ```
 
 The usual navigation pattern is:
@@ -287,8 +290,8 @@ structure.atom_sites['O'].adp_iso.free = True
 
 experiment.instrument.calib_twotheta_offset.free = True
 experiment.peak.broad_gauss_u.free = True
-experiment.background['1'].y.free = True
-experiment.linked_phases['lbco'].scale.free = True
+experiment.background['1'].intensity.free = True
+experiment.linked_structures['lbco'].scale.free = True
 ```
 
 Choose calculators and minimizers:
@@ -364,11 +367,11 @@ expression using those aliases:
 
 ```python
 project.analysis.aliases.create(
-    label='biso_la',
+    id='biso_la',
     param=project.structures['lbco'].atom_sites['La'].adp_iso,
 )
 project.analysis.aliases.create(
-    label='biso_ba',
+    id='biso_ba',
     param=project.structures['lbco'].atom_sites['Ba'].adp_iso,
 )
 
@@ -400,7 +403,7 @@ project.save()
 Load it again:
 
 ```python
-project = ed.Project.load('lbco_hrpt')
+project = edi.Project.load('lbco_hrpt')
 ```
 
 Run a saved project from the command line:
@@ -413,15 +416,15 @@ python -m easydiffraction lbco_hrpt undo
 python -m easydiffraction lbco_hrpt undo --dry
 ```
 
-When `project.cif` enables `_report.cif`, `_report.html`, `_report.tex`,
+When `project.edi` enables `_report.cif`, `_report.html`, `_report.tex`,
 or `_report.pdf`, the `fit` command writes those reports during the
 normal project save.
 
 Load a saved example project straight from `download_data()`:
 
 ```python
-saved_project_dir = ed.download_data(id=30, destination='projects')
-project = ed.Project.load(saved_project_dir)
+saved_project_dir = edi.download_data('proj-lbco-hrpt', destination='projects')
+project = edi.Project.load(saved_project_dir)
 ```
 
 ## Command-Line Reminders

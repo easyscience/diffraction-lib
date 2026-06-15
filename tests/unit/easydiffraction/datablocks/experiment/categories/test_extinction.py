@@ -67,20 +67,20 @@ def test_extinction_property_setters():
     assert ext.radius.value == 10.0
 
 
-def test_extinction_cif_handler_names():
+def test_extinction_tags_names():
     from easydiffraction.datablocks.experiment.categories.extinction.becker_coppens import (
         BeckerCoppensExtinction,
     )
 
     ext = BeckerCoppensExtinction()
 
-    model_cif_names = ext._model._cif_handler.names
+    model_cif_names = ext._model._tags.edi_names
     assert '_extinction.model' in model_cif_names
 
-    mosaicity_cif_names = ext._mosaicity._cif_handler.names
+    mosaicity_cif_names = ext._mosaicity._tags.edi_names
     assert '_extinction.mosaicity' in mosaicity_cif_names
 
-    radius_cif_names = ext._radius._cif_handler.names
+    radius_cif_names = ext._radius._tags.edi_names
     assert '_extinction.radius' in radius_cif_names
 
 

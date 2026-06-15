@@ -17,7 +17,7 @@ from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RegexValidator
 from easydiffraction.core.variable import StringDescriptor
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_table
@@ -40,9 +40,8 @@ class Constraint(CategoryItem):
                 default='_',
                 validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
             ),
-            cif_handler=CifHandler(
-                names=['_constraint.id'],
-                iucr_name='_easydiffraction_constraint.id',
+            tags=TagSpec(
+                edi_names=['_constraint.id'], cif_names=['_easydiffraction_constraint.id']
             ),
         )
         self._expression = StringDescriptor(
@@ -52,9 +51,9 @@ class Constraint(CategoryItem):
                 default='_',  # TODO: Maybe None?
                 validator=RegexValidator(pattern=r'.*'),
             ),
-            cif_handler=CifHandler(
-                names=['_constraint.expression'],
-                iucr_name='_easydiffraction_constraint.expression',
+            tags=TagSpec(
+                edi_names=['_constraint.expression'],
+                cif_names=['_easydiffraction_constraint.expression'],
             ),
         )
 

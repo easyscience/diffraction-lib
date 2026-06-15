@@ -21,11 +21,11 @@ def test_format_value_quotes_whitespace_strings():
 
 def test_param_to_cif_minimal():
     import easydiffraction.io.cif.serialize as MUT
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     class P:
         def __init__(self):
-            self._cif_handler = CifHandler(names=['_x.y'])
+            self._tags = TagSpec(edi_names=['_x.y'])
             self.value = 3
 
     p = P()
@@ -36,12 +36,12 @@ def test_format_param_value_with_uncertainty_uses_two_sig_digits():
     import easydiffraction.io.cif.serialize as MUT
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     p = Parameter(
         name='p',
         value_spec=AttributeSpec(default=0.0),
-        cif_handler=CifHandler(names=['_x.p']),
+        tags=TagSpec(edi_names=['_x.p']),
     )
     p.value = 11.98509310
     p.free = True
@@ -54,12 +54,12 @@ def test_format_param_value_with_large_uncertainty_is_readable():
     import easydiffraction.io.cif.serialize as MUT
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     p = Parameter(
         name='p',
         value_spec=AttributeSpec(default=0.0),
-        cif_handler=CifHandler(names=['_x.p']),
+        tags=TagSpec(edi_names=['_x.p']),
     )
     p.value = 882.16515040
     p.free = True
@@ -75,12 +75,12 @@ def test_param_from_cif_empty_brackets_marks_free_without_uncertainty():
 
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     p = Parameter(
         name='2theta_offset',
         value_spec=AttributeSpec(default=0.0),
-        cif_handler=CifHandler(names=['_instr.2theta_offset']),
+        tags=TagSpec(edi_names=['_instr.2theta_offset']),
     )
     doc = gemmi.cif.read_string('data_test\n_instr.2theta_offset 0.5()\n')
 
@@ -107,7 +107,7 @@ def test_param_from_cif_missing_tag_keeps_sentinel_default_without_validating():
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.validation import RangeValidator
     from easydiffraction.core.variable import Parameter
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     p = Parameter(
         name='two_theta_min',
@@ -115,7 +115,7 @@ def test_param_from_cif_missing_tag_keeps_sentinel_default_without_validating():
             default=float('nan'),
             validator=RangeValidator(ge=0, le=180),
         ),
-        cif_handler=CifHandler(names=['_data_range.2theta_min']),
+        tags=TagSpec(edi_names=['_data_range.2theta_min']),
     )
     # Block without the tag: the absent value falls back to the default.
     doc = gemmi.cif.read_string('data_test\n_instr.2theta_offset 0.5\n')
@@ -129,14 +129,14 @@ def test_category_collection_to_cif_empty_and_one_row():
     import easydiffraction.io.cif.serialize as MUT
     from easydiffraction.core.category import CategoryCollection
     from easydiffraction.core.category import CategoryItem
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     class Item(CategoryItem):
         def __init__(self, name, value):
             super().__init__()
             self._identity.category_entry_name = name
             self._p = type('P', (), {})()
-            self._p._cif_handler = CifHandler(names=['_x'])
+            self._p._tags = TagSpec(edi_names=['_x'])
             self._p.value = value
 
         @property
@@ -170,7 +170,7 @@ def test_project_to_cif_assembles_present_sections():
 
     class Project:
         def __init__(self):
-            self.info = Obj('I')
+            self.metadata = Obj('I')
             self.structures = None
             self.experiments = Obj('E')
             self.analysis = None
@@ -210,44 +210,47 @@ scale 0.0 2.0 1.0 0.1
     assert analysis.fit_parameters['scale'].start_value.value == 1.0
 
 
-def test_atom_site_cif_emits_one_adp_family_per_row():
+def test_atom_site_cif_emits_type_neutral_iso_adp_for_mixed_families():
     from easydiffraction.datablocks.structure.item.base import Structure
 
     structure = Structure(name='mixed')
-    structure.atom_sites.create(label='B1', type_symbol='Si', adp_type='Biso', adp_iso=0.4)
-    structure.atom_sites.create(label='U1', type_symbol='O', adp_type='Uiso', adp_iso=0.01)
+    structure.atom_sites.create(id='B1', type_symbol='Si', adp_type='Biso', adp_iso=0.4)
+    structure.atom_sites.create(id='U1', type_symbol='O', adp_type='Uiso', adp_iso=0.01)
 
-    b_loop, u_loop = structure.atom_sites.as_cif.split('\n\n')
+    cif = structure.atom_sites.as_cif
 
-    assert '_atom_site.B_iso_or_equiv' in b_loop
-    assert '_atom_site.U_iso_or_equiv' not in b_loop
-    assert 'B1' in b_loop
-    assert 'U1' not in b_loop
-    assert '_atom_site.U_iso_or_equiv' in u_loop
-    assert '_atom_site.B_iso_or_equiv' not in u_loop
-    assert 'U1' in u_loop
-    assert 'B1' not in u_loop
+    # Edi persistence is type-neutral: a single loop carries both
+    # atoms under _atom_site.adp_iso, with the family recorded in the
+    # co-persisted _atom_site.adp_type column (no per-family split, and
+    # no strict B_iso_or_equiv/U_iso_or_equiv report names).
+    assert cif.count('loop_') == 1
+    assert '_atom_site.adp_iso' in cif
+    assert '_atom_site.adp_type' in cif
+    assert '_atom_site.B_iso_or_equiv' not in cif
+    assert '_atom_site.U_iso_or_equiv' not in cif
+    assert 'B1 Si 0. 0. 0. ? ? 1. 0.4 Biso' in cif
+    assert 'U1 O 0. 0. 0. ? ? 1. 0.01 Uiso' in cif
 
 
-def test_atom_site_aniso_cif_emits_one_adp_family_per_row():
+def test_atom_site_aniso_cif_emits_type_neutral_adp_for_mixed_families():
     from easydiffraction.datablocks.structure.item.base import Structure
 
     structure = Structure(name='mixed')
-    structure.atom_sites.create(label='B1', type_symbol='Si', adp_iso=0.4)
-    structure.atom_sites.create(label='U1', type_symbol='O', adp_iso=0.01)
+    structure.atom_sites.create(id='B1', type_symbol='Si', adp_iso=0.4)
+    structure.atom_sites.create(id='U1', type_symbol='O', adp_iso=0.01)
     structure.atom_sites['B1'].adp_type = 'Bani'
     structure.atom_sites['U1'].adp_type = 'Uani'
 
-    b_loop, u_loop = structure.atom_site_aniso.as_cif.split('\n\n')
+    cif = structure.atom_site_aniso.as_cif
 
-    assert '_atom_site_aniso.B_11' in b_loop
-    assert '_atom_site_aniso.U_11' not in b_loop
-    assert 'B1' in b_loop
-    assert 'U1' not in b_loop
-    assert '_atom_site_aniso.U_11' in u_loop
-    assert '_atom_site_aniso.B_11' not in u_loop
-    assert 'U1' in u_loop
-    assert 'B1' not in u_loop
+    # Anisotropic ADPs are likewise type-neutral: one loop, both atoms,
+    # under _atom_site_aniso.adp_11.. with no B_NN/U_NN family split.
+    assert cif.count('loop_') == 1
+    assert '_atom_site_aniso.adp_11' in cif
+    assert '_atom_site_aniso.B_11' not in cif
+    assert '_atom_site_aniso.U_11' not in cif
+    assert 'B1' in cif
+    assert 'U1' in cif
 
 
 def _make_beta_structure():
@@ -258,7 +261,7 @@ def _make_beta_structure():
     structure.cell.length_a = 5.0
     structure.cell.length_b = 6.0
     structure.cell.length_c = 8.0
-    structure.atom_sites.create(label='Fe', type_symbol='Fe', adp_iso=0.0)
+    structure.atom_sites.create(id='Fe', type_symbol='Fe', adp_iso=0.0)
     structure.atom_sites['Fe'].adp_type = 'beta'
     structure._sync_atom_site_aniso()
     aniso = structure.atom_site_aniso['Fe']
@@ -269,13 +272,17 @@ def _make_beta_structure():
     return structure
 
 
-def test_atom_site_aniso_cif_emits_beta_family():
+def test_atom_site_aniso_cif_emits_type_neutral_adp_for_beta_family():
     structure = _make_beta_structure()
 
     cif = structure.atom_site_aniso.as_cif
 
-    assert '_atom_site_aniso.beta_11' in cif
-    assert '_atom_site_aniso.beta_23' in cif
+    # Beta-convention atoms persist under the same type-neutral
+    # _atom_site_aniso.adp_NN tags; the beta family is recorded via the
+    # atom site's adp_type, not a beta_NN tag in the aniso loop.
+    assert '_atom_site_aniso.adp_11' in cif
+    assert '_atom_site_aniso.adp_23' in cif
+    assert '_atom_site_aniso.beta_11' not in cif
     assert '_atom_site_aniso.U_11' not in cif
     assert '_atom_site_aniso.B_11' not in cif
 

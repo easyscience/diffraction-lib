@@ -1,0 +1,47 @@
+---
+title: structure_style
+---
+
+# :material-palette: structure_style
+
+## :material-tag: adp_probability { #structure-style-adp-probability }
+
+| Access                            | Source                 |
+| --------------------------------- | ---------------------- |
+| structure_style.adp_probability   | [code][0]{:.label-cif} |
+| \_structure_style.adp_probability | [Edi][0]{:.label-cif}  |
+
+ORTEP probability level, a fraction in (0, 1).
+
+## :material-scale: atom_scale { #structure-style-atom-scale }
+
+| Access                       | Source                 |
+| ---------------------------- | ---------------------- |
+| structure_style.atom_scale   | [code][0]{:.label-cif} |
+| \_structure_style.atom_scale | [Edi][0]{:.label-cif}  |
+
+Overall ball-atom size factor (square-root compressed).
+
+## :material-tag: atom_view { #structure-style-atom-view }
+
+| Access                      | Source                 |
+| --------------------------- | ---------------------- |
+| structure_style.atom_view   | [code][0]{:.label-cif} |
+| \_structure_style.atom_view | [Edi][0]{:.label-cif}  |
+
+How atoms are sized and shaped in the structure view. Supported values
+include `vdw`, `covalent`, `ionic`, and `adp`.
+
+## :material-tag: color_scheme { #structure-style-color-scheme }
+
+| Access                         | Source                 |
+| ------------------------------ | ---------------------- |
+| structure_style.color_scheme   | [code][0]{:.label-cif} |
+| \_structure_style.color_scheme | [Edi][0]{:.label-cif}  |
+
+Standard element colour scheme. Supported values include `jmol` and
+`vesta`.
+
+<!-- prettier-ignore-start -->
+[0]: #
+<!-- prettier-ignore-end -->

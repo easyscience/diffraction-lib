@@ -58,7 +58,7 @@ shape would catch it before merge.
   unaffected.
 - **One always-on shape check, independent of markers.** In addition to
   marked-snippet execution, a parametrised test scans the doc set for
-  `from easydiffraction import <name>` and `ed.<name>` references and
+  `from easydiffraction import <name>` and `edi.<name>` references and
   asserts each resolves against the installed package. This alone would
   have caught the `first-steps.md` regression and needs no per-snippet
   curation.
@@ -113,7 +113,7 @@ verification.
 - [ ] **P1.1 — Add the import-shape test (always-on).** Create
       `tests/functional/test_docs_snippets.py` with the doc-page list
       and a parametrised test that extracts every
-      `from easydiffraction import <name>` and `ed.<name>` reference
+      `from easydiffraction import <name>` and `edi.<name>` reference
       from the listed pages and asserts each name resolves on the
       installed `easydiffraction` package. Files:
       `tests/functional/test_docs_snippets.py`. Commit:

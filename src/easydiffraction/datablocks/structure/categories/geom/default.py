@@ -12,7 +12,7 @@ from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.datablocks.structure.categories.geom.factory import GeomFactory
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 
 @GeomFactory.register
@@ -36,16 +36,18 @@ class Geom(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(ge=0.0),
             ),
-            cif_handler=CifHandler(names=['_geom.min_bond_distance_cutoff']),
+            tags=TagSpec(edi_names=['_geom.min_bond_distance_cutoff']),
         )
-        self._bond_distance_incr = NumericDescriptor(
-            name='bond_distance_incr',
+        self._bond_distance_inc = NumericDescriptor(
+            name='bond_distance_inc',
             description='Increment added to the summed bonding radii (angstrom).',
             value_spec=AttributeSpec(
                 default=0.25,
                 validator=RangeValidator(ge=0.0),
             ),
-            cif_handler=CifHandler(names=['_geom.bond_distance_incr']),
+            tags=TagSpec(
+                edi_names=['_geom.bond_distance_inc'], cif_names=['_geom.bond_distance_incr']
+            ),
         )
 
     @property
@@ -58,13 +60,13 @@ class Geom(CategoryItem):
         self._min_bond_distance_cutoff.value = value
 
     @property
-    def bond_distance_incr(self) -> NumericDescriptor:
+    def bond_distance_inc(self) -> NumericDescriptor:
         """Increment added to the summed bonding radii (angstrom)."""
-        return self._bond_distance_incr
+        return self._bond_distance_inc
 
-    @bond_distance_incr.setter
-    def bond_distance_incr(self, value: float) -> None:
-        self._bond_distance_incr.value = value
+    @bond_distance_inc.setter
+    def bond_distance_inc(self, value: float) -> None:
+        self._bond_distance_inc.value = value
 
     @property
     def as_cif(self) -> str:

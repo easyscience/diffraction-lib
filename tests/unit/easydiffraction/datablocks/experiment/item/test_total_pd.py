@@ -22,7 +22,7 @@ def _mk_type_powder_total():
 
 
 def test_load_ascii_data_pdf(tmp_path: pytest.TempPathFactory):
-    expt = TotalPdExperiment(name='pdf1', type=_mk_type_powder_total())
+    expt = TotalPdExperiment(name='pdf1', experiment_type=_mk_type_powder_total())
 
     # Mock diffpy.utils.parsers.loaddata.loadData by creating a small parser module on sys.path
     data = np.column_stack([

@@ -13,7 +13,7 @@ from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.display.plotting import Plotter
 from easydiffraction.display.plotting import PlotterEngineEnum
 from easydiffraction.display.plotting import PlotterFactory
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 from easydiffraction.io.cif.parse import read_cif_str
 from easydiffraction.project.categories.rendering_plot.factory import RenderingPlotFactory
 from easydiffraction.utils.logging import log
@@ -49,7 +49,7 @@ class RenderingPlot(CategoryItem, SwitchableCategoryBase):
                     allowed=CHART_ENGINE_OPTIONS,
                 ),
             ),
-            cif_handler=CifHandler(names=['_rendering_plot.type']),
+            tags=TagSpec(edi_names=['_rendering_plot.type']),
         )
 
     @staticmethod

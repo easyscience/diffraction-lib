@@ -2,7 +2,7 @@
 # # Si — neutron powder, time-of-flight, Jorgensen–Von Dreele
 
 # %%
-import easydiffraction as ed
+import easydiffraction as edi
 from easydiffraction import ExperimentFactory
 from easydiffraction import StructureFactory
 from easydiffraction.analysis import verification as verify
@@ -11,7 +11,7 @@ from easydiffraction.analysis import verification as verify
 # ## Build the project
 
 # %%
-project = ed.Project()
+project = edi.Project()
 
 # %% [markdown]
 # ## Define the structure
@@ -20,12 +20,12 @@ project = ed.Project()
 structure = StructureFactory.from_scratch(name='si')
 
 structure.space_group.name_h_m = 'F d -3 m'  # FullProf Space group symbol
-structure.space_group.it_coordinate_system_code = '2'
+structure.space_group.coord_system_code = '2'
 
 structure.cell.length_a = 5.431342  # FullProf a
 
 structure.atom_sites.create(
-    label='Si',  # FullProf Atom
+    id='Si',  # FullProf Atom
     type_symbol='Si',  # FullProf Typ
     fract_x=0.125,  # FullProf X
     fract_y=0.125,  # FullProf Y
@@ -81,12 +81,12 @@ experiment = ExperimentFactory.from_scratch(
 )
 verify.set_reference_as_measured(experiment, x, calc_fullprof)
 
-experiment.linked_phases.create(id='si', scale=FULLPROF_SCALE)
+experiment.linked_structures.create(structure_id='si', scale=FULLPROF_SCALE)
 
 experiment.instrument.setup_twotheta_bank = FULLPROF_TWOTHETA_BANK
 experiment.instrument.calib_d_to_tof_offset = FULLPROF_ZERO
 experiment.instrument.calib_d_to_tof_linear = FULLPROF_DTT1
-experiment.instrument.calib_d_to_tof_quad = FULLPROF_DTT2
+experiment.instrument.calib_d_to_tof_quadratic = FULLPROF_DTT2
 
 experiment.peak.type = 'jorgensen-von-dreele'
 experiment.peak.broad_gauss_sigma_0 = FULLPROF_SIGMA_0
@@ -95,10 +95,10 @@ experiment.peak.broad_gauss_sigma_2 = FULLPROF_SIGMA_2
 experiment.peak.broad_lorentz_gamma_0 = FULLPROF_GAMMA_0
 experiment.peak.broad_lorentz_gamma_1 = FULLPROF_GAMMA_1
 experiment.peak.broad_lorentz_gamma_2 = FULLPROF_GAMMA_2
-experiment.peak.exp_rise_alpha_0 = FULLPROF_ALPHA_0
-experiment.peak.exp_rise_alpha_1 = FULLPROF_ALPHA_1
-experiment.peak.exp_decay_beta_0 = FULLPROF_BETA_0
-experiment.peak.exp_decay_beta_1 = FULLPROF_BETA_1
+experiment.peak.rise_alpha_0 = FULLPROF_ALPHA_0
+experiment.peak.rise_alpha_1 = FULLPROF_ALPHA_1
+experiment.peak.decay_beta_0 = FULLPROF_BETA_0
+experiment.peak.decay_beta_1 = FULLPROF_BETA_1
 
 experiment.excluded_regions.create(id='1', start=0, end=5000)
 experiment.excluded_regions.create(id='2', start=10000, end=100000)
@@ -106,12 +106,12 @@ experiment.excluded_regions.create(id='2', start=10000, end=100000)
 project.experiments.add(experiment)
 
 # %% [markdown]
-# ## ed-cryspy VS FullProf
+# ## edi-cryspy VS FullProf
 
 # %%
 experiment.calculator.type = 'cryspy'
 
-experiment.linked_phases['si'].scale = FULLPROF_SCALE
+experiment.linked_structures['si'].scale = FULLPROF_SCALE
 
 project.analysis.calculate()
 calc_ed_cryspy = experiment.data.intensity_calc
@@ -121,16 +121,16 @@ project.display.pattern_comparison(
     reference=calc_fullprof,
     candidate=calc_ed_cryspy,
     reference_label=FULLPROF_LABEL,
-    candidate_label='ed-cryspy',
+    candidate_label='edi-cryspy',
 )
 
 # %% [markdown]
-# ## Fit ed-cryspy to FullProf
+# ## Fit edi-cryspy to FullProf
 
 # %%
-# experiment.linked_phases['si'].scale = 16.558439186694915
+# experiment.linked_structures['si'].scale = 16.558439186694915
 # experiment.peak.broad_lorentz_gamma_1 = 9.998261092381231
-experiment.linked_phases['si'].scale.free = True
+experiment.linked_structures['si'].scale.free = True
 experiment.peak.broad_lorentz_gamma_1.free = True
 
 project.analysis.fit()
@@ -144,22 +144,22 @@ project.display.pattern_comparison(
     reference=calc_fullprof,
     candidate=calc_ed_cryspy_refined,
     reference_label=FULLPROF_LABEL,
-    candidate_label='ed-cryspy (refined)',
+    candidate_label='edi-cryspy (refined)',
 )
 
 # %%
-experiment.linked_phases['si'].scale
+experiment.linked_structures['si'].scale
 
 # %%
 experiment.peak.broad_lorentz_gamma_1
 
 # %% [markdown]
-# ## ed-crysfml VS FullProf
+# ## edi-crysfml VS FullProf
 
 # %%
 experiment.calculator.type = 'crysfml'
 
-experiment.linked_phases['si'].scale = FULLPROF_SCALE
+experiment.linked_structures['si'].scale = FULLPROF_SCALE
 experiment.peak.broad_lorentz_gamma_1 = FULLPROF_GAMMA_1
 
 project.analysis.calculate()
@@ -170,15 +170,15 @@ project.display.pattern_comparison(
     reference=calc_fullprof,
     candidate=calc_ed_crysfml,
     reference_label=FULLPROF_LABEL,
-    candidate_label='ed-crysfml',
+    candidate_label='edi-crysfml',
 )
 
 # %% [markdown]
-# ## Fit ed-crysfml to FullProf
+# ## Fit edi-crysfml to FullProf
 
 # %%
-# experiment.linked_phases['si'].scale = 1275.028259237954
-experiment.linked_phases['si'].scale.free = True
+# experiment.linked_structures['si'].scale = 1275.028259237954
+experiment.linked_structures['si'].scale.free = True
 experiment.peak.broad_lorentz_gamma_1.free = False
 
 project.analysis.fit()
@@ -192,11 +192,11 @@ project.display.pattern_comparison(
     reference=calc_fullprof,
     candidate=calc_ed_crysfml_refined,
     reference_label=FULLPROF_LABEL,
-    candidate_label='ed-crysfml (refined)',
+    candidate_label='edi-crysfml (refined)',
 )
 
 # %%
-experiment.linked_phases['si'].scale
+experiment.linked_structures['si'].scale
 
 # %%
 experiment.peak.broad_lorentz_gamma_1

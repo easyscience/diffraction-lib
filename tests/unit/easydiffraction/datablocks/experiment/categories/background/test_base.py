@@ -11,7 +11,7 @@ def test_background_base_minimal_impl_and_collection_cif():
     from easydiffraction.core.validation import DataTypes
     from easydiffraction.core.variable import Parameter
     from easydiffraction.datablocks.experiment.categories.background.base import BackgroundBase
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     class ConstantBackground(CategoryItem):
         def __init__(self):
@@ -20,7 +20,7 @@ def test_background_base_minimal_impl_and_collection_cif():
             self._level = Parameter(
                 name='level',
                 value_spec=AttributeSpec(data_type=DataTypes.NUMERIC, default=0.0),
-                cif_handler=CifHandler(names=['_bkg.level']),
+                tags=TagSpec(edi_names=['_bkg.level']),
             )
             self._identity.category_entry_name = lambda: str(self._level.value)
 

@@ -65,36 +65,36 @@ class TestGeomConstruction:
         geom = Geom()
         assert isinstance(geom.min_bond_distance_cutoff, NumericDescriptor)
 
-    def test_bond_distance_incr_is_numeric_descriptor(self):
+    def test_bond_distance_inc_is_numeric_descriptor(self):
         geom = Geom()
-        assert isinstance(geom.bond_distance_incr, NumericDescriptor)
+        assert isinstance(geom.bond_distance_inc, NumericDescriptor)
 
     def test_default_min_bond_distance_cutoff(self):
         geom = Geom()
         assert geom.min_bond_distance_cutoff.value == 0.0
 
-    def test_default_bond_distance_incr(self):
+    def test_default_bond_distance_inc(self):
         geom = Geom()
-        assert geom.bond_distance_incr.value == 0.25
+        assert geom.bond_distance_inc.value == 0.25
 
     def test_descriptor_names(self):
         geom = Geom()
         assert geom.min_bond_distance_cutoff.name == 'min_bond_distance_cutoff'
-        assert geom.bond_distance_incr.name == 'bond_distance_incr'
+        assert geom.bond_distance_inc.name == 'bond_distance_inc'
 
     def test_descriptor_descriptions(self):
         geom = Geom()
         assert geom.min_bond_distance_cutoff.description == (
             'Minimum permitted bonded distance (angstrom).'
         )
-        assert geom.bond_distance_incr.description == (
+        assert geom.bond_distance_inc.description == (
             'Increment added to the summed bonding radii (angstrom).'
         )
 
     def test_parameters_lists_both_descriptors(self):
         geom = Geom()
         names = {p.name for p in geom.parameters}
-        assert names == {'min_bond_distance_cutoff', 'bond_distance_incr'}
+        assert names == {'min_bond_distance_cutoff', 'bond_distance_inc'}
 
 
 # ----------------------------------------------------------------------
@@ -102,17 +102,17 @@ class TestGeomConstruction:
 # ----------------------------------------------------------------------
 
 
-class TestGeomCifHandlers:
+class TestGeomTagSpecs:
     def test_min_bond_distance_cutoff_cif_name(self):
         geom = Geom()
-        assert geom.min_bond_distance_cutoff._cif_handler.names == [
+        assert geom.min_bond_distance_cutoff._tags.edi_names == [
             '_geom.min_bond_distance_cutoff',
         ]
 
-    def test_bond_distance_incr_cif_name(self):
+    def test_bond_distance_inc_cif_name(self):
         geom = Geom()
-        assert geom.bond_distance_incr._cif_handler.names == [
-            '_geom.bond_distance_incr',
+        assert geom.bond_distance_inc._tags.edi_names == [
+            '_geom.bond_distance_inc',
         ]
 
 
@@ -127,10 +127,10 @@ class TestGeomSettersValid:
         geom.min_bond_distance_cutoff = 0.5
         assert geom.min_bond_distance_cutoff.value == 0.5
 
-    def test_set_bond_distance_incr(self):
+    def test_set_bond_distance_inc(self):
         geom = Geom()
-        geom.bond_distance_incr = 0.4
-        assert geom.bond_distance_incr.value == 0.4
+        geom.bond_distance_inc = 0.4
+        assert geom.bond_distance_inc.value == 0.4
 
     def test_set_min_bond_distance_cutoff_to_zero_boundary(self):
         # The validator allows ge=0.0, so the lower boundary is valid.
@@ -139,10 +139,10 @@ class TestGeomSettersValid:
         geom.min_bond_distance_cutoff = 0.0
         assert geom.min_bond_distance_cutoff.value == 0.0
 
-    def test_set_bond_distance_incr_to_zero_boundary(self):
+    def test_set_bond_distance_inc_to_zero_boundary(self):
         geom = Geom()
-        geom.bond_distance_incr = 0.0
-        assert geom.bond_distance_incr.value == 0.0
+        geom.bond_distance_inc = 0.0
+        assert geom.bond_distance_inc.value == 0.0
 
     def test_set_min_bond_distance_cutoff_accepts_int(self):
         geom = Geom()
@@ -168,11 +168,11 @@ class TestGeomSettersInvalid:
         with pytest.raises(TypeError):
             geom.min_bond_distance_cutoff = -1.0
 
-    def test_negative_bond_distance_incr_raises_in_raise_mode(self, monkeypatch):
+    def test_negative_bond_distance_inc_raises_in_raise_mode(self, monkeypatch):
         monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.RAISE, raising=True)
         geom = Geom()
         with pytest.raises(TypeError):
-            geom.bond_distance_incr = -0.5
+            geom.bond_distance_inc = -0.5
 
     def test_negative_min_bond_distance_cutoff_kept_in_warn_mode(self, monkeypatch):
         monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.WARN, raising=True)
@@ -181,11 +181,11 @@ class TestGeomSettersInvalid:
         # The out-of-range write is rejected; the default is retained.
         assert geom.min_bond_distance_cutoff.value == 0.0
 
-    def test_negative_bond_distance_incr_kept_in_warn_mode(self, monkeypatch):
+    def test_negative_bond_distance_inc_kept_in_warn_mode(self, monkeypatch):
         monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.WARN, raising=True)
         geom = Geom()
-        geom.bond_distance_incr = -0.5
-        assert geom.bond_distance_incr.value == 0.25
+        geom.bond_distance_inc = -0.5
+        assert geom.bond_distance_inc.value == 0.25
 
     def test_wrong_type_min_bond_distance_cutoff_kept_in_warn_mode(self, monkeypatch):
         monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.WARN, raising=True)
@@ -193,11 +193,11 @@ class TestGeomSettersInvalid:
         geom.min_bond_distance_cutoff = 'not-a-number'
         assert geom.min_bond_distance_cutoff.value == 0.0
 
-    def test_wrong_type_bond_distance_incr_raises_in_raise_mode(self, monkeypatch):
+    def test_wrong_type_bond_distance_inc_raises_in_raise_mode(self, monkeypatch):
         monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.RAISE, raising=True)
         geom = Geom()
         with pytest.raises(TypeError):
-            geom.bond_distance_incr = 'not-a-number'
+            geom.bond_distance_inc = 'not-a-number'
 
 
 # ----------------------------------------------------------------------
@@ -214,23 +214,23 @@ class TestGeomAsCif:
         geom = Geom()
         cif = geom.as_cif
         assert '_geom.min_bond_distance_cutoff' in cif
-        assert '_geom.bond_distance_incr' in cif
+        assert '_geom.bond_distance_inc' in cif
 
     def test_as_cif_default_lines(self):
         geom = Geom()
         lines = geom.as_cif.splitlines()
         assert lines == [
             '_geom.min_bond_distance_cutoff 0.',
-            '_geom.bond_distance_incr 0.25',
+            '_geom.bond_distance_inc 0.25',
         ]
 
     def test_as_cif_reflects_updated_values(self):
         geom = Geom()
         geom.min_bond_distance_cutoff = 0.8
-        geom.bond_distance_incr = 0.3
+        geom.bond_distance_inc = 0.3
         cif = geom.as_cif
         assert '_geom.min_bond_distance_cutoff 0.8' in cif
-        assert '_geom.bond_distance_incr 0.3' in cif
+        assert '_geom.bond_distance_inc 0.3' in cif
 
     def test_from_cif_round_trip(self):
         import gemmi
@@ -239,7 +239,7 @@ class TestGeomAsCif:
         # the round-trip is independent of the global Logger reaction.
         source = Geom()
         source.min_bond_distance_cutoff = 0.6
-        source.bond_distance_incr = 0.45
+        source.bond_distance_inc = 0.45
 
         block = gemmi.cif.read_string(f'data_test\n\n{source.as_cif}\n').sole_block()
 
@@ -247,4 +247,4 @@ class TestGeomAsCif:
         restored.from_cif(block)
 
         assert restored.min_bond_distance_cutoff.value == 0.6
-        assert restored.bond_distance_incr.value == 0.45
+        assert restored.bond_distance_inc.value == 0.45

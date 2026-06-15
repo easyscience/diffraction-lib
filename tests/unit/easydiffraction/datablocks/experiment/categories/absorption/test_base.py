@@ -11,12 +11,12 @@ def test_module_import():
     assert MUT.__name__.endswith('absorption.base')
 
 
-def test_type_descriptor_cif_handler_names():
+def test_type_descriptor_tag_names():
     from easydiffraction.datablocks.experiment.categories.absorption.none import NoAbsorption
 
     absorption = NoAbsorption()
-    assert '_absorption.type' in absorption._type._cif_handler.names
-    assert absorption._type._cif_handler.iucr_name == '_easydiffraction_absorption.type'
+    assert '_absorption.type' in absorption._type._tags.edi_names
+    assert absorption._type._tags.cif_name == '_easydiffraction_absorption.type'
 
 
 def test_absorption_exposed_on_bragg_powder_only():

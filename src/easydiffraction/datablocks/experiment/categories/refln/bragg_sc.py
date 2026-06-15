@@ -22,7 +22,7 @@ from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import sin_theta_over_lambda_to_d_spacing
 
@@ -50,7 +50,7 @@ class Refln(CategoryItem):
                 #  Do we need conversion between CIF and internal label?
                 validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
             ),
-            cif_handler=CifHandler(names=['_refln.id']),
+            tags=TagSpec(edi_names=['_refln.id']),
         )
         self._d_spacing = NumericDescriptor(
             name='d_spacing',
@@ -66,7 +66,7 @@ class Refln(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(names=['_refln.d_spacing']),
+            tags=TagSpec(edi_names=['_refln.d_spacing']),
         )
         self._sin_theta_over_lambda = NumericDescriptor(
             name='sin_theta_over_lambda',
@@ -82,7 +82,7 @@ class Refln(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(names=['_refln.sin_theta_over_lambda']),
+            tags=TagSpec(edi_names=['_refln.sin_theta_over_lambda']),
         )
         self._index_h = NumericDescriptor(
             name='index_h',
@@ -95,7 +95,7 @@ class Refln(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_refln.index_h']),
+            tags=TagSpec(edi_names=['_refln.index_h']),
         )
         self._index_k = NumericDescriptor(
             name='index_k',
@@ -108,7 +108,7 @@ class Refln(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_refln.index_k']),
+            tags=TagSpec(edi_names=['_refln.index_k']),
         )
         self._index_l = NumericDescriptor(
             name='index_l',
@@ -121,7 +121,7 @@ class Refln(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_refln.index_l']),
+            tags=TagSpec(edi_names=['_refln.index_l']),
         )
         self._intensity_meas = NumericDescriptor(
             name='intensity_meas',
@@ -134,7 +134,7 @@ class Refln(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(names=['_refln.intensity_meas']),
+            tags=TagSpec(edi_names=['_refln.intensity_meas']),
         )
         self._intensity_meas_su = NumericDescriptor(
             name='intensity_meas_su',
@@ -147,7 +147,7 @@ class Refln(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(names=['_refln.intensity_meas_su']),
+            tags=TagSpec(edi_names=['_refln.intensity_meas_su']),
         )
         self._intensity_calc = NumericDescriptor(
             name='intensity_calc',
@@ -160,7 +160,7 @@ class Refln(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(names=['_refln.intensity_calc']),
+            tags=TagSpec(edi_names=['_refln.intensity_calc']),
         )
 
     # ------------------------------------------------------------------
@@ -280,7 +280,7 @@ class TofRefln(Refln):
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(names=['_refln.wavelength']),
+            tags=TagSpec(edi_names=['_refln.wavelength']),
         )
 
     @property
@@ -383,18 +383,18 @@ class ReflnDataBase(CategoryCollection):
         structures = project.structures
         calculator = experiment.calculator.calculator
 
-        linked_crystal = experiment.linked_crystal
-        linked_crystal_id = experiment.linked_crystal.id.value
+        linked_structure = experiment.linked_structure
+        linked_structure_id = experiment.linked_structure.structure_id.value
 
-        if linked_crystal_id not in structures.names:
+        if linked_structure_id not in structures.names:
             log.error(
-                f"Linked crystal ID '{linked_crystal_id}' not found in "
+                f"Linked structure ID '{linked_structure_id}' not found in "
                 f'structure IDs {structures.names}.'
             )
             return
 
-        structure_id = linked_crystal_id
-        structure_scale = linked_crystal.scale.value
+        structure_id = linked_structure_id
+        structure_scale = linked_structure.scale.value
         structure = structures[structure_id]
 
         stol, raw_calc = calculator.calculate_structure_factors(

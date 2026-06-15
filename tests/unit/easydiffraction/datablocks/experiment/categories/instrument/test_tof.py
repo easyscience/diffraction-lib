@@ -13,21 +13,21 @@ def test_tof_instrument_defaults_and_setters_and_parameters_and_cif():
     assert np.isclose(inst.setup_twotheta_bank.value, 150.0)
     assert np.isclose(inst.calib_d_to_tof_offset.value, 0.0)
     assert np.isclose(inst.calib_d_to_tof_linear.value, 10000.0)
-    assert np.isclose(inst.calib_d_to_tof_quad.value, 0.0)
-    assert np.isclose(inst.calib_d_to_tof_recip.value, 0.0)
+    assert np.isclose(inst.calib_d_to_tof_quadratic.value, 0.0)
+    assert np.isclose(inst.calib_d_to_tof_reciprocal.value, 0.0)
 
     # Setters
     inst.setup_twotheta_bank = 160.0
     inst.calib_d_to_tof_offset = 1.0
     inst.calib_d_to_tof_linear = 9000.0
-    inst.calib_d_to_tof_quad = -2e-5
-    inst.calib_d_to_tof_recip = 0.5
+    inst.calib_d_to_tof_quadratic = -2e-5
+    inst.calib_d_to_tof_reciprocal = 0.5
 
     assert np.isclose(inst.setup_twotheta_bank.value, 160.0)
     assert np.isclose(inst.calib_d_to_tof_offset.value, 1.0)
     assert np.isclose(inst.calib_d_to_tof_linear.value, 9000.0)
-    assert np.isclose(inst.calib_d_to_tof_quad.value, -2e-5)
-    assert np.isclose(inst.calib_d_to_tof_recip.value, 0.5)
+    assert np.isclose(inst.calib_d_to_tof_quadratic.value, -2e-5)
+    assert np.isclose(inst.calib_d_to_tof_reciprocal.value, 0.5)
 
     # Parameters exposure via CategoryItem.parameters
     names = {p.name for p in inst.parameters}
@@ -35,11 +35,11 @@ def test_tof_instrument_defaults_and_setters_and_parameters_and_cif():
         'twotheta_bank',
         'd_to_tof_offset',
         'd_to_tof_linear',
-        'd_to_tof_quad',
-        'd_to_tof_recip',
+        'd_to_tof_quadratic',
+        'd_to_tof_reciprocal',
     }.issubset(names)
 
     # CIF representation of the item should include tags in separate lines
     cif = inst.as_cif
-    assert '_instr.2theta_bank' in cif
-    assert '_instr.d_to_tof_linear' in cif
+    assert '_instrument.setup_twotheta_bank' in cif
+    assert '_instrument.calib_d_to_tof_linear' in cif

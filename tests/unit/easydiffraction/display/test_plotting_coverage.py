@@ -511,7 +511,7 @@ class TestPlotterPublicMethods:
 
         class Expt:
             data = Data()
-            type = ExptType()
+            experiment_type = ExptType()
 
             def _update_categories(self):
                 pass
@@ -691,7 +691,7 @@ class TestPlotParamSeriesRouting:
             _parameter_snapshots = {'expt1': {'param_a': {}}}
 
         class FakeProject:
-            info = SimpleNamespace(path=None)
+            metadata = SimpleNamespace(path=None)
             experiments = {'expt1': object()}
             analysis = FakeAnalysis()
 
@@ -722,7 +722,7 @@ class TestPlotParamSeriesRouting:
         captured = {}
 
         class FakeProject:
-            info = SimpleNamespace(path=str(tmp_path))
+            metadata = SimpleNamespace(path=str(tmp_path))
             experiments = {}
             analysis = SimpleNamespace(_parameter_snapshots={})
 
@@ -755,7 +755,7 @@ class TestPlotAllParamSeries:
         monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.WARN, raising=True)
 
         class FakeProject:
-            info = SimpleNamespace(path=None)
+            metadata = SimpleNamespace(path=None)
             analysis = SimpleNamespace(_parameter_snapshots={})
 
         p = Plotter()
@@ -776,7 +776,7 @@ class TestPlotAllParamSeries:
         # Two fitted names; only one has a descriptor in the project.
         monkeypatch.setattr(
             Plotter,
-            '_collect_fitted_param_unique_names',
+            '_collect_fitted_parameter_unique_names',
             lambda self: ['present', 'missing'],
         )
         descriptor = SimpleNamespace(unique_name='present')
@@ -797,7 +797,7 @@ class TestPlotAllParamSeries:
 
 
 # ------------------------------------------------------------------
-# Plotter._collect_fitted_param_unique_names
+# Plotter._collect_fitted_parameter_unique_names
 # ------------------------------------------------------------------
 
 
@@ -815,12 +815,12 @@ class TestCollectFittedParamUniqueNames:
         (analysis_dir / 'results.csv').write_text(header + '1,2,0.1,300\n')
 
         class FakeProject:
-            info = SimpleNamespace(path=str(tmp_path))
+            metadata = SimpleNamespace(path=str(tmp_path))
             analysis = SimpleNamespace(_parameter_snapshots={})
 
         p = Plotter()
         p._set_project(FakeProject())
-        assert p._collect_fitted_param_unique_names() == ['param_a']
+        assert p._collect_fitted_parameter_unique_names() == ['param_a']
 
     def test_from_snapshots_when_no_csv(self):
         from types import SimpleNamespace
@@ -828,12 +828,12 @@ class TestCollectFittedParamUniqueNames:
         from easydiffraction.display.plotting import Plotter
 
         class FakeProject:
-            info = SimpleNamespace(path=None)
+            metadata = SimpleNamespace(path=None)
             analysis = SimpleNamespace(_parameter_snapshots={'e1': {'param_a': {}, 'param_b': {}}})
 
         p = Plotter()
         p._set_project(FakeProject())
-        assert p._collect_fitted_param_unique_names() == ['param_a', 'param_b']
+        assert p._collect_fitted_parameter_unique_names() == ['param_a', 'param_b']
 
     def test_empty_when_no_csv_and_no_snapshots(self):
         from types import SimpleNamespace
@@ -841,12 +841,12 @@ class TestCollectFittedParamUniqueNames:
         from easydiffraction.display.plotting import Plotter
 
         class FakeProject:
-            info = SimpleNamespace(path=None)
+            metadata = SimpleNamespace(path=None)
             analysis = SimpleNamespace(_parameter_snapshots={})
 
         p = Plotter()
         p._set_project(FakeProject())
-        assert p._collect_fitted_param_unique_names() == []
+        assert p._collect_fitted_parameter_unique_names() == []
 
 
 # ------------------------------------------------------------------
@@ -1096,7 +1096,7 @@ class TestPosteriorPairUncertaintyMultiplier:
         from types import SimpleNamespace
 
         parameters = [
-            SimpleNamespace(unique_name=f'p{i}', fit_bounds_uncertainty_multiplier=mult)
+            SimpleNamespace(unique_name=f'p{i}', bounds_uncertainty_multiplier=mult)
             for i, mult in enumerate(multipliers)
         ]
         return SimpleNamespace(parameters=parameters)
@@ -1358,7 +1358,7 @@ class TestBraggTickDSpacing:
         instrument = SimpleNamespace(
             calib_d_to_tof_offset=SimpleNamespace(value=0.0),
             calib_d_to_tof_linear=SimpleNamespace(value=1.0),
-            calib_d_to_tof_quad=SimpleNamespace(value=0.0),
+            calib_d_to_tof_quadratic=SimpleNamespace(value=0.0),
         )
         experiment = SimpleNamespace(instrument=instrument)
         result = Plotter._bragg_tick_d_spacing(refln=refln, experiment=experiment)
@@ -1421,9 +1421,9 @@ class TestBraggTickResolution:
 
         monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.WARN, raising=True)
 
-        # phase_id present but f_calc missing -> returns None.
+        # structure_id present but f_calc missing -> returns None.
         refln = SimpleNamespace(
-            phase_id=np.array(['a']),
+            structure_id=np.array(['a']),
             index_h=np.array([1]),
             index_k=np.array([0]),
             index_l=np.array([1]),
@@ -3367,7 +3367,7 @@ class TestPlotPosteriorPredictiveRouting:
             scattering_type = type('S', (), {'value': ScatteringTypeEnum.BRAGG})()
             beam_mode = type('B', (), {'value': BeamModeEnum.CONSTANT_WAVELENGTH})()
 
-        experiment = SimpleNamespace(type=ExptType())
+        experiment = SimpleNamespace(experiment_type=ExptType())
         project = SimpleNamespace(experiments={'E1': experiment})
 
         p = Plotter()
@@ -3599,7 +3599,7 @@ class TestBraggTickMaskAndGrouping:
         from easydiffraction.display.plotting import Plotter
 
         arrays = {
-            'phase_id': np.array(['a', 'a', 'b']),
+            'structure_id': np.array(['a', 'a', 'b']),
             'index_h': np.array([1, 2, 3]),
             'index_k': np.array([0, 0, 0]),
             'index_l': np.array([1, 1, 1]),
@@ -3609,7 +3609,7 @@ class TestBraggTickMaskAndGrouping:
         }
         mask = np.array([True, True, True])
         tick_sets = Plotter._group_bragg_tick_sets(arrays=arrays, mask=mask)
-        assert [ts.phase_id for ts in tick_sets] == ['a', 'b']
+        assert [ts.structure_id for ts in tick_sets] == ['a', 'b']
         np.testing.assert_allclose(tick_sets[0].x, [0.5, 1.5])
         np.testing.assert_allclose(tick_sets[1].f_calc, [5.0])
 
@@ -3627,7 +3627,7 @@ class TestExtractBraggTickSetsEmptyMask:
         from easydiffraction.display.plotting import XAxisType
 
         class Refln:
-            phase_id = np.array(['phase-a'])
+            structure_id = np.array(['phase-a'])
             two_theta = np.array([5.0])
             index_h = np.array([1])
             index_k = np.array([0])
@@ -3972,8 +3972,8 @@ def _corr_row(i_name, j_name, value, source_kind):
     from types import SimpleNamespace
 
     return SimpleNamespace(
-        param_unique_name_i=SimpleNamespace(value=i_name),
-        param_unique_name_j=SimpleNamespace(value=j_name),
+        parameter_unique_name_i=SimpleNamespace(value=i_name),
+        parameter_unique_name_j=SimpleNamespace(value=j_name),
         correlation=SimpleNamespace(value=value),
         source_kind=SimpleNamespace(value=source_kind),
     )
@@ -4234,7 +4234,7 @@ class TestPlotPosteriorPredictiveDataPlotly:
             intensity_meas=np.array([10.0, 12.0, 11.0]),
             intensity_bkg=np.array([1.0, 1.0, 1.0]),
         )
-        return SimpleNamespace(type=expt_type, data=pattern)
+        return SimpleNamespace(experiment_type=expt_type, data=pattern)
 
     def test_plotly_band_draws_builds_composite_spec(self, monkeypatch):
         from types import SimpleNamespace
@@ -4344,7 +4344,7 @@ class TestPlotPosteriorPredictiveRequestRouting:
             scattering_type=SimpleNamespace(value=scattering_type),
             beam_mode=SimpleNamespace(value=BeamModeEnum.CONSTANT_WAVELENGTH),
         )
-        experiment = SimpleNamespace(type=expt_type)
+        experiment = SimpleNamespace(experiment_type=expt_type)
         return SimpleNamespace(experiments={'E1': experiment}), experiment
 
     def test_unsupported_sample_form_warns(self, monkeypatch, capsys):

@@ -18,7 +18,7 @@ from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 
 @AbsorptionFactory.register
@@ -64,9 +64,9 @@ class CylinderHewatAbsorption(AbsorptionBase):
                 default=0.0,
                 validator=RangeValidator(ge=0.0),
             ),
-            cif_handler=CifHandler(
-                names=['_absorption.mu_r'],
-                iucr_name='_easydiffraction_absorption.mu_r',
+            tags=TagSpec(
+                edi_names=['_absorption.mu_r'],
+                cif_names=['_easydiffraction_absorption.mu_r'],
             ),
         )
 

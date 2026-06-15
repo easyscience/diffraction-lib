@@ -18,7 +18,7 @@ from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import RegexValidator
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import StringDescriptor
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 
 class JointFitItem(CategoryItem):
@@ -38,9 +38,9 @@ class JointFitItem(CategoryItem):
                 default='_',
                 validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
             ),
-            cif_handler=CifHandler(
-                names=['_joint_fit.experiment_id'],
-                iucr_name='_easydiffraction_joint_fit.experiment_id',
+            tags=TagSpec(
+                edi_names=['_joint_fit.experiment_id'],
+                cif_names=['_easydiffraction_joint_fit.experiment_id'],
             ),
         )
         self._weight: NumericDescriptor = NumericDescriptor(
@@ -50,9 +50,8 @@ class JointFitItem(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_joint_fit.weight'],
-                iucr_name='_easydiffraction_joint_fit.weight',
+            tags=TagSpec(
+                edi_names=['_joint_fit.weight'], cif_names=['_easydiffraction_joint_fit.weight']
             ),
         )
 

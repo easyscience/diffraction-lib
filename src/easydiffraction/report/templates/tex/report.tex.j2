@@ -160,9 +160,9 @@ Generated & {{ metadata.generated_at | tex }} \\
 \hline
 Role & Name & Version \\
 \hline
-Framework & {{ tex_software_name(analysis.software.framework) }} & {{ analysis.software.framework.version | tex }} \\
-Calculator & {{ tex_software_name(analysis.software.calculator) }} & {{ analysis.software.calculator.version | tex }} \\
-Minimizer & {{ tex_software_name(analysis.software.minimizer) }} & {{ analysis.software.minimizer.version | tex }} \\
+{% for role in analysis.software.roles -%}
+{{ role.id | title | tex }} & {{ tex_software_name(role) }} & {{ role.version | tex }} \\
+{% endfor -%}
 \hline
 \end{tabular}
 \end{table}

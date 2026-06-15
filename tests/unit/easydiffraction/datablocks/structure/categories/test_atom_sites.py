@@ -54,7 +54,7 @@ class TestAtomSite:
         from easydiffraction.datablocks.structure.categories.atom_sites.default import AtomSite
 
         site = AtomSite()
-        assert site.label.value == 'Si'
+        assert site.id.value == 'Si'
         assert site.type_symbol.value == 'Tb'
         assert site.fract_x.value == 0.0
         assert site.fract_y.value == 0.0
@@ -63,12 +63,12 @@ class TestAtomSite:
         assert site.adp_iso.value == 0.0
         assert site.adp_type.value == 'Biso'
 
-    def test_label_setter(self):
+    def test_id_setter(self):
         from easydiffraction.datablocks.structure.categories.atom_sites.default import AtomSite
 
         site = AtomSite()
-        site.label = 'Fe1'
-        assert site.label.value == 'Fe1'
+        site.id = 'Fe1'
+        assert site.id.value == 'Fe1'
 
     def test_type_symbol_setter(self):
         from easydiffraction.datablocks.structure.categories.atom_sites.default import AtomSite
@@ -120,7 +120,7 @@ class TestAtomSite:
         # letters.
         structure = Structure(name='s')
         structure.space_group.name_h_m = 'P m -3 m'
-        structure.atom_sites.create(label='X', type_symbol='O', adp_iso=0.5)
+        structure.atom_sites.create(id='X', type_symbol='O', adp_iso=0.5)
         allowed = structure.atom_sites['X']._wyckoff_letter_allowed_values
         assert 'a' in allowed
 
@@ -129,14 +129,12 @@ class TestAtomSite:
 
         site = AtomSite()
 
-        assert site.adp_type._cif_handler.names == [
-            '_atom_site.ADP_type',
-            '_atom_site.adp_type',
-        ]
-        assert site.wyckoff_letter._cif_handler.names == [
+        assert site.adp_type._tags.edi_names == ['_atom_site.adp_type']
+        assert site.adp_type._tags.cif_names == ['_atom_site.ADP_type']
+        assert site.wyckoff_letter._tags.edi_names == ['_atom_site.wyckoff_letter']
+        assert site.wyckoff_letter._tags.cif_names == [
             '_atom_site.Wyckoff_symbol',
             '_atom_site.Wyckoff_letter',
-            '_atom_site.wyckoff_letter',
         ]
 
 
@@ -164,7 +162,7 @@ class TestSyncIsoFromAniso:
 
         structure = Structure(name='test')
         structure.atom_sites.create(
-            label='Si',
+            id='Si',
             type_symbol='Si',
             adp_type=adp_type,
             adp_iso=adp_iso,
@@ -235,7 +233,7 @@ class TestAdpIsoAsB:
 
         structure = Structure(name='test')
         structure.atom_sites.create(
-            label='Si',
+            id='Si',
             type_symbol='Si',
             adp_type=adp_type,
             adp_iso=adp_iso,
@@ -286,7 +284,7 @@ class TestAtomSiteWyckoffDetection:
 
     def test_fill_if_empty_on_update(self):
         structure = self._structure()
-        structure.atom_sites.create(label='A', type_symbol='O', adp_iso=0.5)
+        structure.atom_sites.create(id='A', type_symbol='O', adp_iso=0.5)
         structure._update_categories()
         atom = structure.atom_sites['A']
         assert atom.wyckoff_letter.value == 'a'
@@ -294,7 +292,7 @@ class TestAtomSiteWyckoffDetection:
 
     def test_redetect_via_property_setter(self):
         structure = self._structure()
-        structure.atom_sites.create(label='A', type_symbol='O', adp_iso=0.5)
+        structure.atom_sites.create(id='A', type_symbol='O', adp_iso=0.5)
         structure._update_categories()
         structure.atom_sites['A'].fract_x = 0.3
         structure._update_categories()
@@ -302,7 +300,7 @@ class TestAtomSiteWyckoffDetection:
 
     def test_redetect_via_descriptor_value(self):
         structure = self._structure()
-        structure.atom_sites.create(label='A', type_symbol='O', adp_iso=0.5)
+        structure.atom_sites.create(id='A', type_symbol='O', adp_iso=0.5)
         structure._update_categories()
         structure.atom_sites['A'].fract_x.value = 0.3
         structure._update_categories()
@@ -313,7 +311,7 @@ class TestAtomSiteWyckoffDetection:
         # 'd' = (1/2,0,0); an explicit 'e' must be kept, not detected 'd'.
         structure = self._structure()
         structure.atom_sites.create(
-            label='E',
+            id='E',
             type_symbol='O',
             fract_x=0.5,
             fract_y=0.0,
@@ -330,7 +328,7 @@ class TestAtomSiteWyckoffDetection:
         import pytest
 
         structure = self._structure()
-        structure.atom_sites.create(label='Z', type_symbol='O', adp_iso=0.5, wyckoff_letter='z')
+        structure.atom_sites.create(id='Z', type_symbol='O', adp_iso=0.5, wyckoff_letter='z')
         with pytest.raises(ValueError, match='Invalid Wyckoff letter'):
             structure._update_categories()
 
@@ -340,7 +338,7 @@ class TestAtomSiteWyckoffDetection:
         # to 0 while fract_x stays free.
         structure = self._structure()
         structure.atom_sites.create(
-            label='E',
+            id='E',
             type_symbol='O',
             fract_x=0.3,
             fract_y=0.0,
@@ -359,7 +357,7 @@ class TestAtomSiteWyckoffDetection:
 
     def test_space_group_change_redetects(self):
         structure = self._structure()
-        structure.atom_sites.create(label='A', type_symbol='O', adp_iso=0.5)
+        structure.atom_sites.create(id='A', type_symbol='O', adp_iso=0.5)
         structure._update_categories()
         assert structure.atom_sites['A'].multiplicity.value == 1  # Pm-3m 'a'
         structure.space_group.name_h_m = 'F m -3 m'
@@ -371,7 +369,7 @@ class TestAtomSiteWyckoffDetection:
     def test_minimizer_path_keeps_letter_fixed(self):
         structure = self._structure()
         structure.atom_sites.create(
-            label='E',
+            id='E',
             type_symbol='O',
             fract_x=0.3,
             fract_y=0.0,
@@ -391,7 +389,7 @@ class TestAtomSiteWyckoffDetection:
 
         monkeypatch.setattr(ecr, 'space_group_wyckoff_table', lambda *a, **k: None)
         structure = self._structure()
-        structure.atom_sites.create(label='X', type_symbol='O', adp_iso=0.5, wyckoff_letter='a')
+        structure.atom_sites.create(id='X', type_symbol='O', adp_iso=0.5, wyckoff_letter='a')
         structure._update_categories()
         atom = structure.atom_sites['X']
         assert atom.wyckoff_letter.value == 'a'
@@ -402,16 +400,16 @@ class TestAtomSiteWyckoffDetection:
 
         monkeypatch.setattr(ecr, 'space_group_wyckoff_table', lambda *a, **k: None)
         structure = self._structure()
-        structure.atom_sites.create(label='X', type_symbol='O', adp_iso=0.5)
+        structure.atom_sites.create(id='X', type_symbol='O', adp_iso=0.5)
         structure._update_categories()
         assert structure.atom_sites['X'].multiplicity.value is None
-        assert '_atom_site.site_symmetry_multiplicity' in structure.as_cif
+        assert '_atom_site.multiplicity' in structure.as_cif
 
     def test_cif_round_trip_redrives_letter(self):
         from easydiffraction.datablocks.structure.item.factory import StructureFactory
 
         structure = self._structure()
-        structure.atom_sites.create(label='A', type_symbol='O', adp_iso=0.5)
+        structure.atom_sites.create(id='A', type_symbol='O', adp_iso=0.5)
         structure._update_categories()
         reloaded = StructureFactory.from_cif_str(structure.as_cif)
         reloaded._update_categories()
@@ -433,7 +431,7 @@ class TestBetaConversion:
         structure.cell.length_a = 5.0
         structure.cell.length_b = 6.0
         structure.cell.length_c = 8.0
-        structure.atom_sites.create(label='Fe', type_symbol='Fe', adp_iso=0.0)
+        structure.atom_sites.create(id='Fe', type_symbol='Fe', adp_iso=0.0)
         structure.atom_sites['Fe'].adp_type = 'Uani'
         structure._sync_atom_site_aniso()
         return structure
@@ -528,7 +526,7 @@ class TestBetaConversion:
         # adp_type='beta' passed inline to create(): the atom is created
         # with a zero-filled aniso row, ready for direct assignment.
         structure.atom_sites.create(
-            label='Fe',
+            id='Fe',
             type_symbol='Fe',
             fract_x=0.1,
             fract_y=0.2,
@@ -578,7 +576,7 @@ class TestBetaConversion:
         structure.cell.length_a = 5.0
         structure.cell.length_b = 6.0
         structure.cell.length_c = 8.0
-        structure.atom_sites.create(label='Fe', type_symbol='Fe', adp_type='Uiso', adp_iso=0.01)
+        structure.atom_sites.create(id='Fe', type_symbol='Fe', adp_type='Uiso', adp_iso=0.01)
         structure.atom_sites['Fe'].adp_type = 'beta'
         aniso = structure.atom_site_aniso['Fe']
         assert math.isclose(aniso.adp_11.value, 2.0 * math.pi**2 * 0.01 * (1.0 / 5.0) ** 2)
@@ -609,7 +607,7 @@ class TestAdpSymmetryConstraintMinimizerBypass:
         # P m -3 m Wyckoff a forces β11=β22=β33 and zero off-diagonals.
         structure.space_group.name_h_m = 'P m -3 m'
         structure.atom_sites.create(
-            label='Si',
+            id='Si',
             type_symbol='Si',
             adp_type='Bani',
             adp_iso=0.3,

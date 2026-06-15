@@ -33,16 +33,16 @@ def test_line_segment_background_calculate_and_cif():
     assert np.allclose(mock_data._bkg, [0.0, 0.0, 0.0])
 
     # Add two points -> linear interpolation
-    bkg.create(id='1', x=0.0, y=0.0)
-    bkg.create(id='2', x=2.0, y=4.0)
+    bkg.create(id='1', position=0.0, intensity=0.0)
+    bkg.create(id='2', position=2.0, intensity=4.0)
     bkg._update()
     assert np.allclose(mock_data._bkg, [0.0, 2.0, 4.0])
 
     # CIF loop has correct header and rows
     cif = bkg.as_cif
     assert 'loop_' in cif
-    assert '_pd_background.line_segment_X' in cif
-    assert '_pd_background.line_segment_intensity' in cif
+    assert '_background.position' in cif
+    assert '_background.intensity' in cif
 
 
 def _make_background(x, intensity_meas, intensity_calc=None, intensity_bkg=None):
@@ -83,19 +83,19 @@ def test_auto_estimate_creates_sequential_fixed_points():
     assert len(bkg) >= 2
     ids = [p.id.value for p in bkg._items]
     assert ids == [str(i) for i in range(1, len(bkg) + 1)]
-    assert all(p.y.free is False for p in bkg._items)
+    assert all(p.intensity.free is False for p in bkg._items)
 
 
 def test_auto_estimate_overwrites_and_refixes():
     x, y = _synthetic(seed=2)
     bkg = _make_background(x, y)
-    bkg.create(id='99', x=1.0, y=1.0)
-    bkg._items[0].y.free = True  # user freed a hand-added point
+    bkg.create(id='99', position=1.0, intensity=1.0)
+    bkg._items[0].intensity.free = True  # user freed a hand-added point
     bkg.auto_estimate()
     ids = [p.id.value for p in bkg._items]
     assert '99' not in ids
     assert ids[0] == '1'
-    assert all(p.y.free is False for p in bkg._items)
+    assert all(p.intensity.free is False for p in bkg._items)
 
 
 def test_auto_estimate_replace_notice(monkeypatch):
@@ -116,7 +116,7 @@ def test_auto_estimate_model_guided_path():
     bkg = _make_background(x, y, intensity_calc=calc, intensity_bkg=np.full_like(x, 6.0))
     bkg.auto_estimate(use_model=True)
     assert len(bkg) >= 2
-    assert all(p.y.free is False for p in bkg._items)
+    assert all(p.intensity.free is False for p in bkg._items)
 
 
 def test_auto_estimate_accepts_each_method():
@@ -220,6 +220,6 @@ def test_auto_estimate_clips_heights_to_measured(monkeypatch):
     _patch_helper(monkeypatch, captured, anchors=anchors)
     obj = _make_background(x, meas)
     obj.auto_estimate()
-    heights = [p.y.value for p in obj._items]
+    heights = [p.intensity.value for p in obj._items]
     # Absolute anchor heights clipped to [0, measured(=50)] -- no residual add-back.
     assert heights == [50.0, 0.0, 30.0]

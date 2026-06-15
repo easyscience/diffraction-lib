@@ -20,19 +20,19 @@ Alternatively, you can import it with an alias to avoid naming conflicts
 and for convenience:
 
 ```python
-import easydiffraction as ed
+import easydiffraction as edi
 ```
 
 The latter syntax allows you to access all the modules and classes
-within the package using the `ed` prefix. For example, you can create a
+within the package using the `edi` prefix. For example, you can create a
 project instance like this:
 
 ```python
-project = ed.Project()
+project = edi.Project()
 ```
 
 A complete tutorial using the `import` syntax can be found
-[here](../tutorials/ed-3.ipynb).
+[here](../tutorials/refine-lbco-hrpt-report.ipynb).
 
 ### Importing specific parts
 
@@ -57,31 +57,32 @@ project = Project()
 ```
 
 A complete tutorial using the `from` syntax can be found
-[here](../tutorials/ed-4.ipynb).
+[here](../tutorials/refine-pbso4-joint.ipynb).
 
 ## Utility functions
 
 EasyDiffraction also provides several utility functions that can
 simplify your workflow. One of them is the `download_data` function,
-which allows you to download example datasets by their numeric ID from
-our remote repository, making it easy to access and use them while
+which allows you to download example datasets by their slug from our
+remote repository, making it easy to access and use them while
 experimenting with EasyDiffraction.
 
-You can list the available datasets and their IDs with `list_data()`,
+You can list the available datasets and their slugs with `list_data()`,
 then download one like this:
 
 ```python
-import easydiffraction as ed
+import easydiffraction as edi
 
-ed.list_data()
+edi.list_data()
 
-data_path = ed.download_data(id=3, destination='data')
+data_path = edi.download_data('meas-lbco-hrpt', destination='data')
 ```
 
-This command downloads the dataset with ID `3` and saves it in the
-`data` directory of your current working directory, returning the full
-path to the downloaded file. This is particularly useful for quickly
-accessing example datasets without having to manually download them.
+This command downloads the `measured/lbco-hrpt` dataset and saves it in
+the `data` directory of your current working directory, returning the
+full path to the downloaded file. This is particularly useful for
+quickly accessing example datasets without having to manually download
+them.
 
 ## Help methods
 

@@ -29,7 +29,7 @@ class _DummyExp(ExperimentBase):
     """Lightweight experiment that records data-load calls."""
 
     def __init__(self, name='e1', *, num_points=7):
-        super().__init__(name=name, type=_DummyType())
+        super().__init__(name=name, experiment_type=_DummyType())
         self._num_points = num_points
         self._loaded_paths = []
         self._show_params_calls = 0

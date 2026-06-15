@@ -14,7 +14,20 @@ from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.variable import BoolDescriptor
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import StringDescriptor
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
+
+
+def _fit_result_tags(name: str, cif_name: str | None = None) -> TagSpec:
+    """
+    Return an Edi-first handler for one fit-result descriptor.
+    """
+    names = [f'_fit_result.{name}']
+    if cif_name is None:
+        return TagSpec(edi_names=names)
+    return TagSpec(
+        edi_names=names,
+        cif_names=[f'_fit_result.{cif_name}'],
+    )
 
 
 class _LeastSquaresCoreProperties:
@@ -489,7 +502,7 @@ class LeastSquaresFitResult(
             name=name,
             description=description,
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(names=[f'_fit_result.{cif_name or name}']),
+            tags=_fit_result_tags(name, cif_name),
             display_handler=_result_display_handler(display_name),
         )
 
@@ -508,7 +521,7 @@ class LeastSquaresFitResult(
             name=name,
             description=description,
             value_spec=AttributeSpec(default=default, allow_none=allow_none),
-            cif_handler=CifHandler(names=[f'_fit_result.{cif_name or name}']),
+            tags=_fit_result_tags(name, cif_name),
             display_handler=_result_display_handler(display_name),
         )
 
@@ -529,7 +542,7 @@ class LeastSquaresFitResult(
             name=name,
             description=description,
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(names=[f'_fit_result.{name}']),
+            tags=TagSpec(edi_names=[f'_fit_result.{name}']),
             display_handler=_result_display_handler(display_name),
         )
 
@@ -550,7 +563,7 @@ class LeastSquaresFitResult(
             name=name,
             description=description,
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(names=[f'_fit_result.{name}']),
+            tags=TagSpec(edi_names=[f'_fit_result.{name}']),
             display_handler=_result_display_handler(display_name),
         )
 

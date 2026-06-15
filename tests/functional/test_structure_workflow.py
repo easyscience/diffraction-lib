@@ -71,7 +71,7 @@ class TestAtomSites:
         project.structures.create(name='test')
         s = project.structures['test']
         s.atom_sites.create(
-            label='La',
+            id='La',
             type_symbol='La',
             fract_x=0,
             fract_y=0,
@@ -81,12 +81,12 @@ class TestAtomSites:
         )
         assert len(s.atom_sites) == 1
 
-    def test_access_atom_site_by_label(self):
+    def test_access_atom_site_by_id(self):
         project = _make_project()
         project.structures.create(name='test')
         s = project.structures['test']
         s.atom_sites.create(
-            label='La',
+            id='La',
             type_symbol='La',
             fract_x=0,
             fract_y=0,
@@ -103,7 +103,7 @@ class TestAtomSites:
         project.structures.create(name='test')
         s = project.structures['test']
         s.atom_sites.create(
-            label='La',
+            id='La',
             type_symbol='La',
             fract_x=0.1,
             fract_y=0.2,
@@ -119,7 +119,7 @@ class TestAtomSites:
         project.structures.create(name='test')
         s = project.structures['test']
         s.atom_sites.create(
-            label='La',
+            id='La',
             type_symbol='La',
             fract_x=0,
             fract_y=0,
@@ -128,7 +128,7 @@ class TestAtomSites:
             adp_iso=0.5,
         )
         s.atom_sites.create(
-            label='O',
+            id='O',
             type_symbol='O',
             fract_x=0.5,
             fract_y=0.5,
@@ -148,7 +148,7 @@ class TestSymmetryFixedParameters:
         s = project.structures['test']
         s.space_group.name_h_m = 'P m -3 m'
         s.atom_sites.create(
-            label='La',
+            id='La',
             type_symbol='La',
             fract_x=0,
             fract_y=0,
@@ -196,7 +196,7 @@ class TestSymmetryFixedParameters:
         s = project.structures['test']
         # Default space group is P 1 -- general position 'a'
         s.atom_sites.create(
-            label='La',
+            id='La',
             type_symbol='La',
             fract_x=0.1,
             fract_y=0.2,

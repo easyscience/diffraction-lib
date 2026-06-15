@@ -5,10 +5,14 @@
 from __future__ import annotations
 
 import functools
+import hashlib
+import importlib.resources
 import json
 import pathlib
+import re
 import shutil
 import urllib.request
+from enum import StrEnum
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version
 from urllib.parse import urlparse
@@ -130,15 +134,223 @@ def format_bulleted_warning(header: str, items: list[str]) -> str:
 
 _DATA_REPO = 'easyscience/diffraction'
 _DATA_ROOT = 'data'
-# commit SHA preferred
-_DATA_INDEX_REF = '83657ee120fc6a30fda231649692930eaa038758'
-# macOS: sha256sum index.json
-_DATA_INDEX_HASH = 'sha256:e7685d7c81c3b3559a7f630178f4d1b7f441fb1ed14388c10ab9f6aeb93927a7'
+_DOCS_BASE_URL = 'https://easyscience.github.io/diffraction-lib'
+_PARAMETER_DOCS_BLOCKS = {
+    'project': frozenset({
+        'alias',
+        'metadata',
+        'rendering_plot',
+        'rendering_structure',
+        'rendering_table',
+        'report',
+        'structure_style',
+        'structure_view',
+        'verbosity',
+    }),
+    'structure': frozenset({
+        'atom_site',
+        'atom_site_aniso',
+        'cell',
+        'geom',
+        'space_group',
+        'space_group_Wyckoff',
+    }),
+    'experiment': frozenset({
+        'absorption',
+        'background',
+        'calculator',
+        'data',
+        'diffrn',
+        'excluded_region',
+        'experiment_type',
+        'extinction',
+        'instrument',
+        'linked_structure',
+        'pd_background',
+        'pd_meas',
+        'peak',
+        'preferred_orientation',
+        'refln',
+    }),
+    'analysis': frozenset({
+        'constraint',
+        'fit_parameter',
+        'fit_parameter_correlation',
+        'fit_result',
+        'fitting_mode',
+        'joint_fit',
+        'minimizer',
+        'sequential_fit',
+        'sequential_fit_extract',
+        'software',
+    }),
+}
+_PARAMETER_DOCS_CATEGORY_PAGES = {
+    'excluded_regions': 'excluded_region',
+}
+_PARAMETER_DOCS_ITEM_ROUTES = {
+    ('data_range', 'two_theta_inc'): ('experiment/pd_meas', 'pd-meas-2theta-range-inc'),
+    ('data_range', 'two_theta_max'): ('experiment/pd_meas', 'pd-meas-2theta-range-max'),
+    ('data_range', 'two_theta_min'): ('experiment/pd_meas', 'pd-meas-2theta-range-min'),
+    (
+        'data_range',
+        'time_of_flight_inc',
+    ): ('experiment/pd_meas', 'pd-meas-time-of-flight-range-inc'),
+    (
+        'data_range',
+        'time_of_flight_max',
+    ): ('experiment/pd_meas', 'pd-meas-time-of-flight-range-max'),
+    (
+        'data_range',
+        'time_of_flight_min',
+    ): ('experiment/pd_meas', 'pd-meas-time-of-flight-range-min'),
+    (
+        'data_range',
+        'sin_theta_over_lambda_max',
+    ): ('experiment/refln', 'refln-sin-theta-over-lambda-range-max'),
+    (
+        'data_range',
+        'sin_theta_over_lambda_min',
+    ): ('experiment/refln', 'refln-sin-theta-over-lambda-range-min'),
+}
+# The downloadable data is pinned to one git commit of the data
+# repository, stored in this packaged file and read at runtime (see the
+# data-source-pinning ADR). It is the single source of truth for which
+# data snapshot a build uses; edit the file to bump the data.
+_DATA_INDEX_REF_RESOURCE = '_data_index_ref.txt'
+_FULL_SHA_LENGTH = 40
+_HEX_DIGITS = frozenset('0123456789abcdef')
+
+
+@functools.lru_cache(maxsize=1)
+def _data_index_ref() -> str:
+    """
+    Return the validated commit pinning the downloadable data.
+
+    Returns
+    -------
+    str
+        The full 40-character hexadecimal commit SHA read from the
+        packaged ``_data_index_ref.txt`` file.
+
+    Raises
+    ------
+    ValueError
+        If the stored value is not a full 40-character hex commit SHA.
+    """
+    raw = (
+        importlib.resources
+        .files('easydiffraction')
+        .joinpath(_DATA_INDEX_REF_RESOURCE)
+        .read_text(encoding='utf-8')
+    )
+    ref = raw.strip()
+    if len(ref) != _FULL_SHA_LENGTH or not set(ref.lower()) <= _HEX_DIGITS:
+        msg = (
+            f"Invalid data index ref '{ref}' in {_DATA_INDEX_REF_RESOURCE}: "
+            'expected a full 40-character hexadecimal git commit SHA.'
+        )
+        raise ValueError(msg)
+    return ref
 
 
 def _build_data_url(path: str) -> str:
     path = path.lstrip('/')
-    return f'https://raw.githubusercontent.com/{_DATA_REPO}/{_DATA_INDEX_REF}/{_DATA_ROOT}/{path}'
+    return (
+        f'https://raw.githubusercontent.com/{_DATA_REPO}/{_data_index_ref()}/{_DATA_ROOT}/{path}'
+    )
+
+
+class DataCategoryEnum(StrEnum):
+    """
+    The fixed category prefixes a downloadable dataset name carries.
+    """
+
+    STRUCTURE = 'struct'
+    EXPERIMENT = 'expt'
+    MEASURED = 'meas'
+    PROJECT = 'proj'
+
+
+_DATA_CATEGORIES = frozenset(member.value for member in DataCategoryEnum)
+# One slug: lowercase ASCII letters/digits in dash-separated groups, no
+# leading/trailing/doubled dashes (resource-naming ADR).
+_SLUG_SEGMENT_RE = re.compile(r'[a-z0-9]+(?:-[a-z0-9]+)*')
+
+
+def _validate_slug_segment(segment: str, *, kind: str) -> None:
+    """Raise ValueError unless ``segment`` is a valid slug segment."""
+    if not _SLUG_SEGMENT_RE.fullmatch(segment):
+        msg = (
+            f"Invalid {kind} '{segment}': expected lowercase ASCII letters and "
+            'digits in dash-separated groups (e.g. lbco-hrpt), with no file '
+            'extension, empty segments, or other characters.'
+        )
+        raise ValueError(msg)
+
+
+def _validate_dataset_id(name: str) -> None:
+    """Validate a dataset name of the form ``<category>-<slug>``."""
+    if '/' in name:
+        msg = (
+            f"Invalid dataset name '{name}': use a single dash-joined name such as "
+            "'meas-lbco-hrpt', not a path with '/'."
+        )
+        raise ValueError(msg)
+    _validate_slug_segment(name, kind='dataset name')
+    category = name.split('-', 1)[0]
+    if category == name or category not in _DATA_CATEGORIES:
+        msg = (
+            f"Invalid dataset category in '{name}': expected a '<category>-<name>' "
+            f'name with a category prefix from {sorted(_DATA_CATEGORIES)}.'
+        )
+        raise ValueError(msg)
+
+
+def _validate_tutorial_id(name: str) -> None:
+    """Validate a tutorial name (a single slug segment, no '/')."""
+    if '/' in name:
+        msg = f"Invalid tutorial name '{name}': tutorials use a bare name with no '/'."
+        raise ValueError(msg)
+    _validate_slug_segment(name, kind='tutorial name')
+
+
+_DEFAULT_LISTING_ORDER = 1_000_000
+
+
+def _ordered_keys(index: dict) -> list[str]:
+    """
+    Return index keys in the deterministic order listings show.
+
+    Records may carry an explicit ``order`` field (e.g. the tutorial
+    learning order from the MkDocs nav, per resource-naming ADR Decision
+    4); those sort first by that order. Records without one (e.g.
+    datasets) fall back to alphabetical by name.
+    """
+    return sorted(index, key=lambda key: (index[key].get('order', _DEFAULT_LISTING_ORDER), key))
+
+
+def _is_positional(name: int | str) -> bool:
+    """
+    Return True when ``name`` is an interactive positional shortcut.
+    """
+    return isinstance(name, int) or (isinstance(name, str) and name.isdigit())
+
+
+def _resolve_positional(position: int, keys: list[str], *, kind: str) -> str:
+    """
+    Resolve a 1-based listing row number to an index key.
+
+    The number is a transient row index, never a stored identity
+    (resource-naming ADR, Decision 6).
+    """
+    if not 1 <= position <= len(keys):
+        msg = (
+            f'Invalid {kind} number {position}: expected 1..{len(keys)} as shown '
+            f'by the listing. Use the name for saved code.'
+        )
+        raise IndexError(msg)
+    return keys[position - 1]
 
 
 def _record_path(record: dict) -> str:
@@ -169,15 +381,15 @@ def _validate_url(url: str) -> None:
         raise ValueError(msg)
 
 
-def _filename_for_id_from_path(data_id: int | str, record_path: str) -> str:
+def _local_filename(resource_id: str, record_path: str) -> str:
     """
-    Return local filename using the extension from the record path.
+    Return the local download filename, ``<name>.<ext>``.
+
+    The repository path may live under a category folder, but the saved
+    file is named after the dataset name so it matches the id the user
+    typed (e.g. ``meas-lbco-hrpt.xye``).
     """
-    suffix = pathlib.PurePosixPath(
-        record_path
-    ).suffix  # includes leading dot ('.cif', '.xye', ...)
-    # If URL has no suffix, fall back to no extension.
-    return f'ed-{data_id}{suffix}'
+    return f'{resource_id}{pathlib.PurePosixPath(record_path).suffix}'
 
 
 def _normalize_known_hash(value: str | None) -> str | None:
@@ -194,18 +406,48 @@ def _normalize_known_hash(value: str | None) -> str | None:
     return value
 
 
+def _record_hash(record: dict) -> str | None:
+    """Return the normalized ``sha256:`` content hash for a record."""
+    return _normalize_known_hash(record.get('hash'))
+
+
+def _sha256_of_file(path: pathlib.Path) -> str:
+    """Return the ``sha256:<hex>`` digest of a file's contents."""
+    digest = hashlib.sha256()
+    with path.open('rb') as handle:
+        for chunk in iter(lambda: handle.read(65536), b''):
+            digest.update(chunk)
+    return f'sha256:{digest.hexdigest()}'
+
+
+def _content_tag(record: dict) -> str:
+    """
+    Return a short content tag for keying extracted project directories.
+
+    Derived from the record's ``sha256`` so that a replaced archive
+    extracts to a fresh directory instead of reusing a stale one
+    (data-source-pinning ADR, Decision 7). Returns an empty string when
+    the record carries no usable hash.
+    """
+    known = _record_hash(record)
+    if known is None:
+        return ''
+    return known.split(':', 1)[-1][:12]
+
+
 def _fetch_data_index() -> dict:
     """Fetch and cache the diffraction data index.json."""
     index_url = _build_data_url('index.json')
     _validate_url(index_url)
 
-    destination_dirname = 'easydiffraction'
-    destination_fname = 'data-index.json'
-    cache_dir = pooch.os_cache(destination_dirname)
+    cache_dir = pooch.os_cache('easydiffraction')
+    # Cache under a commit-named file so a ref bump downloads a fresh
+    # index instead of reusing a stale one (data-source-pinning ADR).
+    destination_fname = f'data-index-{_data_index_ref()}.json'
 
     index_path = pooch.retrieve(
         url=index_url,
-        known_hash=_DATA_INDEX_HASH,
+        known_hash=None,
         fname=destination_fname,
         path=cache_dir,
         progressbar=False,
@@ -217,23 +459,30 @@ def _fetch_data_index() -> dict:
 
 def _existing_project_dir(extraction_dir: pathlib.Path) -> pathlib.Path | None:
     """Return one extracted project directory from a destination."""
-    project_files = sorted(extraction_dir.rglob('project.cif'))
+    project_files = sorted(extraction_dir.rglob('project.edi'))
     if not project_files:
         return None
     return project_files[0].parent.resolve()
 
 
-def _download_data_message(data_id: int | str, record: dict) -> str:
+def _download_data_message(name: str, record: dict) -> str:
     """Return the console message for one downloadable data record."""
     description = record.get('description', '')
-    message = f'Data #{data_id}'
+    message = f"Data '{name}'"
     if description:
         message += f': {description}'
     return message
 
 
+def _is_project_id(resource_id: str) -> bool:
+    """
+    Return True for project-archive names (the ``proj-`` category).
+    """
+    return resource_id.startswith(f'{DataCategoryEnum.PROJECT.value}-')
+
+
 def _download_data_targets(
-    data_id: int | str,
+    resource_id: str,
     destination: str,
     record: dict,
 ) -> tuple[str, bool, pathlib.Path, pathlib.Path, pathlib.Path, str]:
@@ -242,12 +491,19 @@ def _download_data_targets(
     url = _build_data_url(record_path)
     _validate_url(url)
 
-    fname = _filename_for_id_from_path(data_id, record_path)
-    is_project_archive = record.get('kind') == 'project' and fname.endswith('.zip')
+    fname = _local_filename(resource_id, record_path)
+    # The category prefix carries the kind, so a project archive is any
+    # ``proj-`` name delivered as a ZIP (resource-naming ADR).
+    is_project_archive = _is_project_id(resource_id) and fname.endswith('.zip')
     dest_path = resolve_artifact_path(destination)
     dest_path.mkdir(parents=True, exist_ok=True)
     file_path = dest_path / fname
-    extraction_dir = dest_path / pathlib.Path(fname).stem
+    # Key the extraction directory by content so a replaced project
+    # archive extracts to a fresh directory instead of reusing a stale
+    # one (data-source-pinning ADR, Decision 7).
+    stem = pathlib.Path(fname).stem
+    tag = _content_tag(record)
+    extraction_dir = dest_path / (f'{stem}-{tag}' if tag else stem)
     return url, is_project_archive, dest_path, file_path, extraction_dir, fname
 
 
@@ -283,21 +539,37 @@ def _fetch_tutorials_index() -> dict:
         return {}
 
 
+def _resolve_data_id(name: int | str, index: dict) -> str:
+    """
+    Resolve a dataset name or interactive row number to an index key.
+    """
+    if _is_positional(name):
+        return _resolve_positional(int(name), _ordered_keys(index), kind='dataset')
+    name = str(name)
+    _validate_dataset_id(name)
+    if name not in index:
+        msg = f"Unknown dataset '{name}'. Run list_data() to see available datasets."
+        raise KeyError(msg)
+    return name
+
+
 def download_data(
-    id: int | str,
+    name: int | str,
     destination: str = 'data',
     *,
     overwrite: bool = False,
 ) -> str:
     """
-    Download a dataset by numeric ID using the remote diffraction index.
+    Download a dataset by its name from the diffraction data index.
 
-    Example: path = download_data(id=12, destination="data")
+    Example: path = download_data('expt-lbco-hrpt')
 
     Parameters
     ----------
-    id : int | str
-        Numeric dataset id (e.g. 12).
+    name : int | str
+        Dataset name ``<category>-<name>`` (e.g. ``'struct-lbco'``,
+        ``'meas-lbco-hrpt'``). Interactively, the row number shown by
+        :func:`list_data` is also accepted; use the name in saved code.
     destination : str, default='data'
         Directory to save the downloaded file or extracted project into
         (created if missing). Relative destinations are resolved against
@@ -310,29 +582,16 @@ def download_data(
     -------
     str
         Full path to the downloaded file, or to the extracted project
-        directory for project ZIP archives, as string.
-
-    Raises
-    ------
-    KeyError
-        If the id is not found in the index.
+        directory for project ZIP archives, as string. A malformed name
+        raises ``ValueError`` and an unknown name raises ``KeyError``.
     """
     index = _fetch_data_index()
-    key = str(id)
-
-    if key not in index:
-        # Provide a helpful message (and keep KeyError semantics)
-        available = ', '.join(
-            sorted(index.keys(), key=lambda s: int(s) if s.isdigit() else s)[:20]
-        )
-        msg = f'Unknown dataset id={id}. Example available ids: {available} ...'
-        raise KeyError(msg)
-
-    record = index[key]
+    resource_id = _resolve_data_id(name, index)
+    record = index[resource_id]
     url, is_project_archive, dest_path, file_path, extraction_dir, fname = _download_data_targets(
-        id, destination, record
+        resource_id, destination, record
     )
-    message = _download_data_message(id, record)
+    message = _download_data_message(resource_id, record)
 
     console.paragraph('Getting data...')
     console.print(f'{message}')
@@ -341,28 +600,36 @@ def download_data(
         existing_project_dir = _existing_project_dir(extraction_dir)
         if existing_project_dir is not None:
             console.print(
-                f"✅ Data #{id} already extracted at '{display_path(existing_project_dir)}'. "
-                'Keeping existing.'
+                f"✅ Data '{resource_id}' already extracted at "
+                f"'{display_path(existing_project_dir)}'. Keeping existing."
             )
             return str(existing_project_dir)
 
+    known_hash = _record_hash(record)
+
     if file_path.exists():
-        if is_project_archive and not overwrite:
+        # Reuse a local file only when its bytes match the pinned index;
+        # a content mismatch means the dataset was replaced upstream, so
+        # re-download instead of serving stale data — including a stale
+        # project ZIP, which must be verified before it is extracted
+        # (data-source-pinning ADR, Decision 7).
+        stale = known_hash is not None and _sha256_of_file(file_path) != known_hash
+        if is_project_archive and not overwrite and not stale:
             project_dir = extract_project_from_zip(file_path, destination=extraction_dir)
             file_path.unlink()
-            console.print(f"✅ Data #{id} extracted to '{display_path(project_dir)}'")
+            console.print(f"✅ Data '{resource_id}' extracted to '{display_path(project_dir)}'")
             return str(project_dir)
-        if not overwrite:
+        if not is_project_archive and not overwrite and not stale:
             console.print(
-                f"✅ Data #{id} already present at '{display_path(file_path)}'. Keeping existing."
+                f"✅ Data '{resource_id}' already present at "
+                f"'{display_path(file_path)}'. Keeping existing."
             )
             return str(file_path)
+        reason = 'is stale' if stale and not overwrite else 'will be overwritten'
         log.debug(
-            f"Data #{id} already present at '{display_path(file_path)}', but will be overwritten."
+            f"Data '{resource_id}' already present at '{display_path(file_path)}', but {reason}."
         )
         file_path.unlink()
-
-    known_hash = _normalize_known_hash(record.get('hash'))
 
     if is_project_archive and extraction_dir.exists() and overwrite:
         shutil.rmtree(extraction_dir)
@@ -378,32 +645,37 @@ def download_data(
     if is_project_archive:
         project_dir = extract_project_from_zip(file_path, destination=extraction_dir)
         file_path.unlink()
-        console.print(f"✅ Data #{id} downloaded and extracted to '{display_path(project_dir)}'")
+        console.print(
+            f"✅ Data '{resource_id}' downloaded and extracted to '{display_path(project_dir)}'"
+        )
         return str(project_dir)
 
-    console.print(f"✅ Data #{id} downloaded to '{display_path(file_path)}'")
+    console.print(f"✅ Data '{resource_id}' downloaded to '{display_path(file_path)}'")
     return str(file_path)
 
 
 def list_data() -> None:
-    """Display a table of available example data records."""
+    """Display a table of available downloadable datasets."""
     index = _fetch_data_index()
     if not index:
-        console.print('❌ No example data available.')
+        console.print('❌ No datasets available.')
         return
 
-    console.paragraph('Example data available for download:')
+    console.paragraph('Datasets available for download:')
 
-    columns_headers = ['id', 'file', 'kind', 'description']
-    columns_alignment = ['right', 'left', 'left', 'left']
+    # The table renderer adds its own leading row number. The category
+    # prefix carries the kind, so only the name, format, and description
+    # are shown; the name is the canonical download handle.
+    columns_headers = ['name', 'format', 'description']
+    columns_alignment = ['left', 'left', 'left']
     columns_data = []
 
-    for data_id in sorted(index, key=lambda value: int(value) if value.isdigit() else value):
-        record = index[data_id]
+    for resource_id in _ordered_keys(index):
+        record = index[resource_id]
+        suffix = pathlib.PurePosixPath(_record_path(record)).suffix.lstrip('.')
         columns_data.append([
-            data_id,
-            pathlib.PurePosixPath(_record_path(record)).name,
-            record.get('kind', ''),
+            resource_id,
+            suffix,
             record.get('description', ''),
         ])
 
@@ -517,6 +789,81 @@ def _get_version_for_url(package_name: str = 'easydiffraction') -> str:
     return stripped_package_version(package_name) or 'dev'
 
 
+def parameter_docs_url(
+    data_name: str,
+    *,
+    page: str | None = None,
+    anchor: str | None = None,
+    package_name: str = 'easydiffraction',
+) -> str:
+    """
+    Return a versioned parameter documentation URL.
+
+    Parameters
+    ----------
+    data_name : str
+        Edi data name, such as ``'_cell.length_a'``.
+    page : str | None, default=None
+        Parameter reference page override.
+    anchor : str | None, default=None
+        Parameter anchor override.
+    package_name : str, default='easydiffraction'
+        Package used to resolve the documentation version.
+
+    Returns
+    -------
+    str
+        Absolute URL for the parameter reference entry.
+    """
+    resolved_page, resolved_anchor = _parameter_docs_route(
+        data_name,
+        page=page,
+        anchor=anchor,
+    )
+    version = _get_version_for_url(package_name)
+    base_url = f'{_DOCS_BASE_URL}/{version}/user-guide/parameters/{resolved_page}/'
+    return f'{base_url}#{resolved_anchor}'
+
+
+def _parameter_docs_route(
+    data_name: str,
+    *,
+    page: str | None,
+    anchor: str | None,
+) -> tuple[str, str]:
+    """Resolve the parameter-reference page and anchor."""
+    category, item = _split_parameter_data_name(data_name)
+    if page is None and anchor is None:
+        override = _PARAMETER_DOCS_ITEM_ROUTES.get((category, item))
+        if override is not None:
+            return override
+
+    route_category = _PARAMETER_DOCS_CATEGORY_PAGES.get(category, category)
+    resolved_page = page or _parameter_docs_page(route_category)
+    resolved_anchor = anchor or _parameter_docs_anchor(route_category, item)
+    return resolved_page.strip('/'), resolved_anchor
+
+
+def _parameter_docs_page(category: str) -> str:
+    """Return the grouped parameter-reference page for a category."""
+    for block, categories in _PARAMETER_DOCS_BLOCKS.items():
+        if category in categories:
+            return f'{block}/{category}'
+    return category
+
+
+def _split_parameter_data_name(data_name: str) -> tuple[str, str]:
+    """Split a data name into category and item components."""
+    category, _, item = data_name.strip().lstrip('_').partition('.')
+    return category, item
+
+
+def _parameter_docs_anchor(category: str, item: str) -> str:
+    """Return the stable docs anchor for a category item."""
+    parts = [part for part in (category, item) if part]
+    return '-'.join(parts).replace('_', '-').lower()
+
+
 def _safe_urlopen(request_or_url: object) -> object:  # type: ignore[no-untyped-def]
     """
     Open a URL with prior validation.
@@ -558,109 +905,166 @@ def _resolve_tutorial_url(url_template: str) -> str:
     return url_template.replace('{version}', version)
 
 
+class TutorialFormat(StrEnum):
+    """The file formats a tutorial can be downloaded in."""
+
+    IPYNB = 'ipynb'
+    PY = 'py'
+
+
+def _resolve_tutorial_format(file_format: str) -> TutorialFormat:
+    """Return the validated tutorial format, or raise ValueError."""
+    try:
+        return TutorialFormat(file_format)
+    except ValueError:
+        allowed = ', '.join(repr(member.value) for member in TutorialFormat)
+        msg = f"Unknown tutorial format '{file_format}'. Choose one of: {allowed}."
+        raise ValueError(msg) from None
+
+
+def _tutorial_url_for_format(url: str, fmt: TutorialFormat) -> str:
+    """Return the published URL for the requested tutorial format."""
+    if fmt is TutorialFormat.IPYNB:
+        return url
+    if not url.endswith('.ipynb'):
+        msg = f'Tutorial URL does not point to a notebook: {url}'
+        raise ValueError(msg)
+    # The notebook is published nested at
+    # ``tutorials/<name>/<name>.ipynb`` (mkdocs-jupyter include_source),
+    # whereas the .py source is a flat static copy at
+    # ``tutorials/<name>.py``. Map the former to the latter, falling
+    # back to a same-directory swap for a flat layout.
+    name = pathlib.PurePosixPath(urlparse(url).path).name[: -len('.ipynb')]
+    nested_suffix = f'{name}/{name}.ipynb'
+    if url.endswith(nested_suffix):
+        return f'{url[: -len(nested_suffix)]}{name}.py'
+    return f'{url[: -len(".ipynb")]}.py'
+
+
+# Cap the listing table so it stays readable on very wide terminals
+# while still shrinking to fit narrower ones.
+_LIST_TABLE_MAX_WIDTH = 100
+
+
+def _list_table_width() -> int:
+    """Return the listing-table width, capped at the maximum."""
+    return min(shutil.get_terminal_size().columns, _LIST_TABLE_MAX_WIDTH)
+
+
 def list_tutorials() -> None:
     """
     Display a table of available tutorial notebooks.
 
-    In the terminal each row shows the tutorial ID, filename, and a
-    combined entry with the title on the first line and a dimmed
-    description on the second. In Jupyter the table shows the plain
-    title only, since the HTML backend cannot render the terminal
-    styling.
+    Each tutorial occupies one multi-line cell: the name on the first
+    line (default color), the title on the second, and a dimmed
+    description on the third. This keeps long descriptions readable. In
+    Jupyter the cell uses plain lines, since the HTML backend cannot
+    render the terminal styling.
     """
     index = _fetch_tutorials_index()
     if not index:
         console.print('❌ No tutorials available.')
         return
 
-    version = _get_version_for_url()
+    version = package_version('easydiffraction') or _get_version_for_url()
     console.paragraph(f'Tutorials available for easydiffraction v{version}:')
 
-    columns_headers = ['id', 'file', 'tutorial']
-    columns_alignment = ['right', 'left', 'left']
+    # One column: each tutorial is a name/title/description stack. The
+    # renderer adds its own leading row number, so the name lives in the
+    # cell rather than a separate column.
+    columns_headers = ['tutorial']
+    columns_alignment = ['left']
     columns_data = []
 
     use_markup = not in_jupyter()
-    for tutorial_id in index:
+    for tutorial_id in _ordered_keys(index):
         record = index[tutorial_id]
-        filename = f'ed-{tutorial_id}.ipynb'
         title = record.get('title', '')
         description = record.get('description', '')
         if not use_markup:
-            # Jupyter uses the HTML table backend, which would show Rich
-            # markup as literal text; keep the plain title there.
-            details = title
+            # Jupyter renders Rich markup as literal text; emit plain
+            # lines instead.
+            lines = [line for line in (tutorial_id, title, description) if line]
         else:
-            styled_title = f'[{CONSOLE_PARAGRAPH_STYLE}]{escape(title)}[/]'
+            lines = [escape(tutorial_id), f'[{CONSOLE_PARAGRAPH_STYLE}]{escape(title)}[/]']
             if description:
-                details = f'{styled_title}\n[dim]{escape(description)}[/dim]'
-            else:
-                details = styled_title
-        columns_data.append([tutorial_id, filename, details])
+                lines.append(f'[dim]{escape(description)}[/dim]')
+        columns_data.append(['\n'.join(lines)])
 
     render_table(
         columns_headers=columns_headers,
         columns_data=columns_data,
         columns_alignment=columns_alignment,
-        width=shutil.get_terminal_size().columns,
+        width=_list_table_width(),
     )
 
 
+def _resolve_tutorial_id(name: int | str, index: dict) -> str:
+    """
+    Resolve a tutorial name or interactive row number to an index key.
+    """
+    if _is_positional(name):
+        return _resolve_positional(int(name), _ordered_keys(index), kind='tutorial')
+    name = str(name)
+    _validate_tutorial_id(name)
+    if name not in index:
+        msg = f"Unknown tutorial '{name}'. Run list_tutorials() to see available tutorials."
+        raise KeyError(msg)
+    return name
+
+
 def download_tutorial(
-    id: int | str,
+    name: int | str,
     destination: str = 'tutorials',
     *,
+    file_format: str = 'ipynb',
     overwrite: bool = False,
 ) -> str:
     """
-    Download a tutorial notebook by numeric ID.
+    Download a tutorial by its name in one file format.
 
-    Example: path = download_tutorial(id=1, destination="tutorials")
+    Example: path = download_tutorial('refine-lbco-hrpt-from-cif')
 
     Parameters
     ----------
-    id : int | str
-        Numeric tutorial id (e.g. 1).
+    name : int | str
+        Tutorial name (e.g. ``'refine-lbco-hrpt-from-cif'``).
+        Interactively, the row number shown by :func:`list_tutorials` is
+        also accepted; use the name in saved code.
     destination : str, default='tutorials'
         Directory to save the file into (created if missing). Relative
         destinations are resolved against the configured artifact root
         when ``EASYDIFFRACTION_ARTIFACT_ROOT`` is set.
+    file_format : str, default='ipynb'
+        File format to download: ``'ipynb'`` for the Jupyter notebook or
+        ``'py'`` for the plain-Python script.
     overwrite : bool, default=False
         Whether to overwrite the file if it already exists.
 
     Returns
     -------
     str
-        Full path to the downloaded file as string.
-
-    Raises
-    ------
-    KeyError
-        If the id is not found in the index.
+        Full path to the downloaded file as string. A malformed name or
+        format raises ``ValueError`` and an unknown name raises
+        ``KeyError``.
     """
+    fmt = _resolve_tutorial_format(file_format)
     index = _fetch_tutorials_index()
-    key = str(id)
+    resource_id = _resolve_tutorial_id(name, index)
 
-    if key not in index:
-        available = ', '.join(
-            sorted(index.keys(), key=lambda s: int(s) if s.isdigit() else s)[:20]
-        )
-        msg = f'Unknown tutorial id={id}. Available ids: {available}'
-        raise KeyError(msg)
-
-    record = index[key]
+    record = index[resource_id]
     url_template = record['url']
-    url = _resolve_tutorial_url(url_template)
+    url = _tutorial_url_for_format(_resolve_tutorial_url(url_template), fmt)
     _validate_url(url)
 
-    fname = f'ed-{id}.ipynb'
+    fname = f'{resource_id}.{fmt.value}'
 
     dest_path = resolve_artifact_path(destination)
     dest_path.mkdir(parents=True, exist_ok=True)
     file_path = dest_path / fname
 
     title = record.get('title', '')
-    message = f'Tutorial #{id}'
+    message = f"Tutorial '{resource_id}'"
     if title:
         message += f': {title}'
 
@@ -670,13 +1074,13 @@ def download_tutorial(
     if file_path.exists():
         if not overwrite:
             console.print(
-                f"✅ Tutorial #{id} already present at '{display_path(file_path)}'. "
-                'Keeping existing.'
+                f"✅ Tutorial '{resource_id}' already present at "
+                f"'{display_path(file_path)}'. Keeping existing."
             )
             return str(file_path)
         log.debug(
-            f"Tutorial #{id} already present at '{display_path(file_path)}', "
-            'but will be overwritten.'
+            f"Tutorial '{resource_id}' already present at "
+            f"'{display_path(file_path)}', but will be overwritten."
         )
         file_path.unlink()
 
@@ -684,7 +1088,7 @@ def download_tutorial(
     with _safe_urlopen(url) as resp:
         file_path.write_bytes(resp.read())
 
-    console.print(f"✅ Tutorial #{id} downloaded to '{display_path(file_path)}'")
+    console.print(f"✅ Tutorial '{resource_id}' downloaded to '{display_path(file_path)}'")
     return str(file_path)
 
 
@@ -717,20 +1121,20 @@ def download_all_tutorials(
         console.print('❌ No tutorials available to download.')
         return []
 
-    version = _get_version_for_url()
+    version = package_version('easydiffraction') or _get_version_for_url()
     console.print(f'📥 Downloading all tutorials for easydiffraction v{version}...')
 
     downloaded_paths = []
-    for tutorial_id in sorted(index.keys(), key=lambda x: int(x) if x.isdigit() else x):
+    for tutorial_id in _ordered_keys(index):
         try:
             path = download_tutorial(
-                id=tutorial_id,
+                tutorial_id,
                 destination=destination,
                 overwrite=overwrite,
             )
             downloaded_paths.append(path)
         except (OSError, ValueError) as e:
-            log.warning(f'Failed to download tutorial #{tutorial_id}: {e}')
+            log.warning(f"Failed to download tutorial '{tutorial_id}': {e}")
 
     resolved_destination = resolve_artifact_path(destination)
     console.print(
@@ -898,12 +1302,12 @@ def render_object_help(obj: object) -> None:
 
 def render_cif(cif_text: str) -> None:
     """
-    Display CIF text as a formatted table in Jupyter or terminal.
+    Display Edi-format text as a formatted table in Jupyter or terminal.
 
     Parameters
     ----------
     cif_text : str
-        The CIF text to display.
+        The Edi-format text to display.
     """
     # Split into lines
     lines: list[str] = list(cif_text.splitlines())
@@ -911,9 +1315,9 @@ def render_cif(cif_text: str) -> None:
     # Convert each line into a single-column format for table rendering
     columns: list[list[str]] = [[line] for line in lines]
 
-    # Render the table using left alignment and no headers
+    # Render the table; the single column is the Edi-format text.
     render_table(
-        columns_headers=['CIF'],
+        columns_headers=['Edi'],
         columns_alignment=['left'],
         columns_data=columns,
     )

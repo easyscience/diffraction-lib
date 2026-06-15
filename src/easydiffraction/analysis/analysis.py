@@ -37,6 +37,7 @@ from easydiffraction.analysis.categories.software import SoftwareFactory
 from easydiffraction.analysis.enums import FitCorrelationSourceEnum
 from easydiffraction.analysis.enums import FitModeEnum
 from easydiffraction.analysis.enums import FitResultKindEnum
+from easydiffraction.analysis.enums import SoftwareRoleEnum
 from easydiffraction.analysis.fit_helpers.bayesian import ESS_BULK_CONVERGENCE_THRESHOLD
 from easydiffraction.analysis.fit_helpers.bayesian import R_HAT_CONVERGENCE_THRESHOLD
 from easydiffraction.analysis.fit_helpers.bayesian import BayesianFitResults
@@ -56,6 +57,7 @@ from easydiffraction.core.variable import GenericNumericDescriptor
 from easydiffraction.core.variable import Parameter
 from easydiffraction.datablocks.experiment.item.base import intensity_category_for
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
+from easydiffraction.display.links import parameter_docs_link
 from easydiffraction.display.progress import make_display_handle
 from easydiffraction.display.progress import notebook_fit_stop_control
 from easydiffraction.display.tables import TableRenderer
@@ -72,6 +74,8 @@ from easydiffraction.utils.utils import render_object_help
 from easydiffraction.utils.utils import render_table
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from easydiffraction.analysis.categories.fit_result import FitResultBase
     from easydiffraction.analysis.categories.minimizer.base import MinimizerCategoryBase
     from easydiffraction.core.posterior import PosteriorParameterSummary
@@ -81,8 +85,7 @@ if TYPE_CHECKING:
 # data and derived, read-only tables that would only add noise. The
 # space_group_Wyckoff table also carries unreadably long coords_xyz.
 _SUMMARY_HIDDEN_PARAMETER_CATEGORIES = frozenset({
-    'pd_data',
-    'total_data',
+    'data',
     'refln',
     'space_group_Wyckoff',
 })
@@ -347,6 +350,7 @@ class AnalysisDisplay:
                 category_code = param._identity.category_code
                 category_entry_name = param._identity.category_entry_name or ''
                 param_key = param.name
+                param_label = parameter_docs_link(param)
                 code_variable = (
                     f"{project_varname}.{datablock_code}['{datablock_entry_name}'].{category_code}"
                 )
@@ -357,7 +361,7 @@ class AnalysisDisplay:
                     datablock_entry_name,
                     category_code,
                     category_entry_name,
-                    param_key,
+                    param_label,
                     code_variable,
                 ])
 
@@ -368,12 +372,24 @@ class AnalysisDisplay:
             columns_data=columns_data,
         )
 
-    def parameter_cif_uids(self) -> None:
+    def _show_parameter_names(
+        self,
+        *,
+        column_header: str,
+        paragraph_title: str,
+        value_fn: Callable[[object], object],
+    ) -> None:
         """
-        Show CIF unique IDs for all parameters.
+        Render one name column for every summary parameter.
 
-        The output explains which unique identifiers are used when
-        creating CIF-based constraints.
+        Parameters
+        ----------
+        column_header : str
+            Header for the per-parameter name column.
+        paragraph_title : str
+            Console paragraph title shown above the table.
+        value_fn : Callable[[object], object]
+            Returns the value to show for a parameter.
         """
         all_params = self._summary_parameters_by_datablock()
 
@@ -386,38 +402,51 @@ class AnalysisDisplay:
             'category',
             'entry',
             'parameter',
-            'Unique Identifier for CIF Constraints',
+            column_header,
+        ]
+        columns_alignment = ['left', 'left', 'left', 'left', 'left']
+
+        columns_data = [
+            [
+                param._identity.datablock_entry_name,
+                param._identity.category_code,
+                param._identity.category_entry_name or '',
+                parameter_docs_link(param),
+                value_fn(param),
+            ]
+            for params in all_params.values()
+            for param in params
         ]
 
-        columns_alignment = [
-            'left',
-            'left',
-            'left',
-            'left',
-            'left',
-        ]
-
-        columns_data = []
-        for params in all_params.values():
-            for param in params:
-                datablock_entry_name = param._identity.datablock_entry_name
-                category_code = param._identity.category_code
-                category_entry_name = param._identity.category_entry_name or ''
-                param_key = param.name
-                cif_uid = param._cif_handler.uid
-                columns_data.append([
-                    datablock_entry_name,
-                    category_code,
-                    category_entry_name,
-                    param_key,
-                    cif_uid,
-                ])
-
-        console.paragraph('Show parameter CIF unique identifiers')
+        console.paragraph(paragraph_title)
         render_table(
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,
             columns_data=columns_data,
+        )
+
+    def parameter_uids(self) -> None:
+        """Show the constraint unique identifier per parameter."""
+        self._show_parameter_names(
+            column_header='Unique Identifier for Constraints',
+            paragraph_title='Show parameter unique identifiers for constraints',
+            value_fn=lambda param: param._tags.uid,
+        )
+
+    def parameter_edi_tags(self) -> None:
+        """Show the Edi persistence tag for every parameter."""
+        self._show_parameter_names(
+            column_header='Edi Tag',
+            paragraph_title='Show parameter Edi tags',
+            value_fn=lambda param: param._tags.edi_name,
+        )
+
+    def parameter_cif_tags(self) -> None:
+        """Show the report CIF tag for every parameter."""
+        self._show_parameter_names(
+            column_header='CIF Tag',
+            paragraph_title='Show parameter CIF tags',
+            value_fn=lambda param: param._tags.cif_name,
         )
 
     def constraints(self) -> None:
@@ -447,8 +476,8 @@ class AnalysisDisplay:
         analysis.fitter._process_fit_results(structures, experiments)
 
     def as_cif(self) -> None:
-        """Render the analysis section as CIF in console."""
-        self._analysis.show_as_cif()
+        """Render the analysis section as text in console."""
+        self._analysis.show_as_text()
 
 
 class _AnalysisOwnerAccessorsMixin:
@@ -663,7 +692,7 @@ class Analysis(
     def _stamp_software_provenance(self) -> None:
         """Record software identities for the latest successful fit."""
         self._set_software_role(
-            self.software.framework,
+            self.software[SoftwareRoleEnum.FRAMEWORK.value],
             (
                 'EasyDiffraction',
                 package_version('easydiffraction'),
@@ -671,14 +700,14 @@ class Analysis(
             ),
         )
         self._set_software_role(
-            self.software.calculator,
+            self.software[SoftwareRoleEnum.CALCULATOR.value],
             self._calculator_software_values(),
         )
         self._set_software_role(
-            self.software.minimizer,
+            self.software[SoftwareRoleEnum.MINIMIZER.value],
             self._software_values(self.minimizer),
         )
-        self.software.timestamp = datetime.now(tz=UTC).isoformat(timespec='seconds')
+        self.project.metadata.timestamp = datetime.now(tz=UTC).isoformat(timespec='seconds')
 
     def _swap_minimizer(self, new_type: str) -> None:
         """Switch the active minimizer category."""
@@ -701,7 +730,7 @@ class Analysis(
         """
         Return persisted parameter names in display and array order.
         """
-        return [row.param_unique_name.value for row in self.fit_parameters]
+        return [row.parameter_unique_name.value for row in self.fit_parameters]
 
     def _restore_live_parameter_bounds_and_anchors(
         self,
@@ -709,26 +738,24 @@ class Analysis(
     ) -> None:
         """Restore saved fit controls onto live parameter objects."""
         for row in self.fit_parameters:
-            parameter = param_map.get(row.param_unique_name.value)
+            parameter = param_map.get(row.parameter_unique_name.value)
             if parameter is None:
                 log.warning(
                     'Persisted fit-state references unknown parameter '
-                    f'{row.param_unique_name.value!r}.'
+                    f'{row.parameter_unique_name.value!r}.'
                 )
                 continue
 
             parameter.fit_min = row.fit_min.value
             parameter.fit_max = row.fit_max.value
-            parameter._set_fit_bounds_uncertainty_multiplier(
-                row.fit_bounds_uncertainty_multiplier.value
-            )
+            parameter._set_bounds_uncertainty_multiplier(row.bounds_uncertainty_multiplier.value)
             parameter._fit_start_value = row.start_value.value
             parameter._fit_start_uncertainty = row.start_uncertainty.value
 
     def _restore_live_parameter_posterior(self, param_map: dict[str, Parameter]) -> None:
         """Restore saved posterior summaries onto live parameters."""
         for row in self.fit_parameters:
-            parameter = param_map.get(row.param_unique_name.value)
+            parameter = param_map.get(row.parameter_unique_name.value)
             if parameter is None:
                 continue
 
@@ -759,7 +786,7 @@ class Analysis(
             return None
 
         posterior_rows = [row for row in self.fit_parameters if row.has_posterior_summary()]
-        parameter_names = [row.param_unique_name.value for row in posterior_rows]
+        parameter_names = [row.parameter_unique_name.value for row in posterior_rows]
 
         parameter_sample_array = np.asarray(parameter_samples, dtype=float)
         if parameter_sample_array.ndim != _POSTERIOR_SAMPLE_NDIM:
@@ -787,8 +814,8 @@ class Analysis(
         param_map = self._live_parameter_map()
         summaries: list[PosteriorParameterSummary] = []
         for row in self.fit_parameters:
-            parameter = param_map.get(row.param_unique_name.value)
-            display_name = row.param_unique_name.value if parameter is None else parameter.name
+            parameter = param_map.get(row.parameter_unique_name.value)
+            display_name = row.parameter_unique_name.value if parameter is None else parameter.name
             summary = row.posterior_summary(display_name=display_name)
             if summary is not None:
                 summaries.append(summary)
@@ -1204,7 +1231,7 @@ class Analysis(
 
     def _has_software_provenance(self) -> bool:
         """Return True when software provenance has been stamped."""
-        return any(parameter.value is not None for parameter in self.software.parameters)
+        return self.software.has_provenance()
 
     # ------------------------------------------------------------------
     #  Parameter helpers
@@ -1236,7 +1263,7 @@ class Analysis(
                 ('datablock', 'left'): param._identity.datablock_entry_name,
                 ('category', 'left'): param._identity.category_code,
                 ('entry', 'left'): param._identity.category_entry_name or '',
-                ('parameter', 'left'): param.name,
+                ('parameter', 'left'): parameter_docs_link(param),
                 ('value', 'right'): '' if param.value is None else param.value,
             }
             if isinstance(param, GenericNumericDescriptor):
@@ -1355,7 +1382,7 @@ class Analysis(
         param_map: dict[str, Parameter],
     ) -> bool:
         """Return whether one live parameter is already at start."""
-        parameter = param_map.get(row.param_unique_name.value)
+        parameter = param_map.get(row.parameter_unique_name.value)
         if parameter is None:
             return True
         return isclose(
@@ -1371,11 +1398,11 @@ class Analysis(
         param_map = self._live_parameter_map()
         logged_missing_uncertainty = False
         for row in self._undo_start_rows():
-            parameter = param_map.get(row.param_unique_name.value)
+            parameter = param_map.get(row.parameter_unique_name.value)
             if parameter is None:
                 log.warning(
                     'Persisted fit-state references unknown parameter '
-                    f'{row.param_unique_name.value!r}.'
+                    f'{row.parameter_unique_name.value!r}.'
                 )
                 continue
 
@@ -1391,7 +1418,7 @@ class Analysis(
             else:
                 parameter.uncertainty = row.start_uncertainty.value
             parameter._set_posterior(None)
-            restored_names.append(row.param_unique_name.value)
+            restored_names.append(row.parameter_unique_name.value)
         return tuple(restored_names)
 
     def _undo_clear_per_row_posterior_fields(self) -> None:
@@ -1481,7 +1508,7 @@ class Analysis(
         if resume and not is_emcee:
             msg = "Resume is supported only when analysis.minimizer.type = 'emcee'."
             raise ValueError(msg)
-        if is_emcee and self.project.info.path is None:
+        if is_emcee and self.project.metadata.path is None:
             msg = (
                 'emcee requires a saved project; call project.save_as(<path>) '
                 'before analysis.fit().'
@@ -1515,7 +1542,7 @@ class Analysis(
 
     def _has_resumable_emcee_sidecar(self) -> bool:
         """Return whether the saved project has a resumable chain."""
-        project_path = self.project.info.path
+        project_path = self.project.metadata.path
         if project_path is None:
             return False
 
@@ -1534,7 +1561,7 @@ class Analysis(
 
     def _prepare_results_sidecar_for_new_fit(self) -> None:
         """Remove persisted sidecar arrays before a fresh fit."""
-        project_path = self.project.info.path
+        project_path = self.project.metadata.path
         if project_path is None:
             return
 
@@ -1834,10 +1861,10 @@ class Analysis(
 
         for param in parameters:
             self.fit_parameters.create(
-                param_unique_name=param.unique_name,
+                parameter_unique_name=param.unique_name,
                 fit_min=param.fit_min,
                 fit_max=param.fit_max,
-                fit_bounds_uncertainty_multiplier=param.fit_bounds_uncertainty_multiplier,
+                bounds_uncertainty_multiplier=param.bounds_uncertainty_multiplier,
                 start_value=param.value,
                 start_uncertainty=param.uncertainty,
             )
@@ -1966,7 +1993,7 @@ class Analysis(
     def _is_powder_fit(experiments: list[object]) -> bool:
         """Return whether any experiment in the fit is powder data."""
         return any(
-            experiment.type.sample_form.value == SampleFormEnum.POWDER.value
+            experiment.experiment_type.sample_form.value == SampleFormEnum.POWDER.value
             for experiment in experiments
         )
 
@@ -2122,8 +2149,8 @@ class Analysis(
                     continue
                 self.fit_parameter_correlations.create(
                     source_kind=source_kind.value,
-                    param_unique_name_i=unique_name_i,
-                    param_unique_name_j=unique_names[column_index],
+                    parameter_unique_name_i=unique_name_i,
+                    parameter_unique_name_j=unique_names[column_index],
                     correlation=float(np.clip(correlation, -1.0, 1.0)),
                 )
 
@@ -2324,8 +2351,8 @@ class Analysis(
         density_array = np.asarray(density_surface[2], dtype=float)
         contour_levels = self._posterior_pair_contour_levels(density_array)
         return pair_id, {
-            'param_unique_name_x': x_name,
-            'param_unique_name_y': y_name,
+            'parameter_unique_name_x': x_name,
+            'parameter_unique_name_y': y_name,
             'x': x_grid_array,
             'y': y_grid_array,
             'density': density_array,
@@ -2406,7 +2433,10 @@ class Analysis(
         predictive_payload: dict[str, dict[str, object]] = {}
         for experiment_name in self.project.experiments.names:
             experiment = self.project.experiments[experiment_name]
-            x_axis, x_axis_name, _, _, _ = plotter._resolve_x_axis(experiment.type, None)
+            x_axis, x_axis_name, _, _, _ = plotter._resolve_x_axis(
+                experiment.experiment_type,
+                None,
+            )
             summary = plotter._build_posterior_predictive_summary(
                 fit_results=results,
                 experiment=experiment,
@@ -2597,7 +2627,7 @@ class Analysis(
         if data_dir.is_absolute():
             return data_dir
 
-        project_path = self.project.info.path
+        project_path = self.project.metadata.path
         if project_path is None:
             msg = (
                 'Project must be saved before resolving a relative '
@@ -2657,7 +2687,7 @@ class Analysis(
         )
         self._stamp_software_provenance()
 
-        if self.project.info.path is not None:
+        if self.project.metadata.path is not None:
             self.project.save()
 
     def _run_joint(
@@ -2684,7 +2714,7 @@ class Analysis(
         )
         self._stamp_software_provenance()
 
-        if self.project.info.path is not None:
+        if self.project.metadata.path is not None:
             self.project.save()
 
     def _run_sequential(self) -> None:
@@ -2723,7 +2753,7 @@ class Analysis(
 
         self._stamp_software_provenance()
 
-        if self.project.info.path is not None:
+        if self.project.metadata.path is not None:
             self.project.save()
 
     def _fit_joint(
@@ -3015,7 +3045,7 @@ class Analysis(
         self._update_categories()
         return analysis_to_cif(self)
 
-    def show_as_cif(self) -> None:
-        """Pretty-print the analysis section as CIF text."""
-        console.paragraph('Analysis info as CIF')
+    def show_as_text(self) -> None:
+        """Pretty-print the analysis section as text."""
+        console.paragraph('Analysis info as text')
         render_cif(self.as_cif)

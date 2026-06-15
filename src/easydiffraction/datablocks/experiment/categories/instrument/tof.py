@@ -15,7 +15,7 @@ from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 
 @InstrumentFactory.register
@@ -75,7 +75,9 @@ class TofPdInstrument(InstrumentBase):
                 default=150.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_instr.2theta_bank']),
+            tags=TagSpec(
+                edi_names=['_instrument.setup_twotheta_bank'], cif_names=['_instr.2theta_bank']
+            ),
         )
         self._calib_d_to_tof_offset: Parameter = Parameter(
             name='d_to_tof_offset',
@@ -91,7 +93,10 @@ class TofPdInstrument(InstrumentBase):
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_instr.d_to_tof_offset']),
+            tags=TagSpec(
+                edi_names=['_instrument.calib_d_to_tof_offset'],
+                cif_names=['_instr.d_to_tof_offset'],
+            ),
         )
         self._calib_d_to_tof_linear: Parameter = Parameter(
             name='d_to_tof_linear',
@@ -107,10 +112,13 @@ class TofPdInstrument(InstrumentBase):
                 default=10000.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_instr.d_to_tof_linear']),
+            tags=TagSpec(
+                edi_names=['_instrument.calib_d_to_tof_linear'],
+                cif_names=['_instr.d_to_tof_linear'],
+            ),
         )
-        self._calib_d_to_tof_quad: Parameter = Parameter(
-            name='d_to_tof_quad',
+        self._calib_d_to_tof_quadratic: Parameter = Parameter(
+            name='d_to_tof_quadratic',
             description='TOF quadratic correction',
             units='microseconds_per_angstrom_squared',
             display_handler=DisplayHandler(
@@ -123,10 +131,13 @@ class TofPdInstrument(InstrumentBase):
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_instr.d_to_tof_quad']),
+            tags=TagSpec(
+                edi_names=['_instrument.calib_d_to_tof_quadratic'],
+                cif_names=['_instr.d_to_tof_quad'],
+            ),
         )
-        self._calib_d_to_tof_recip: Parameter = Parameter(
-            name='d_to_tof_recip',
+        self._calib_d_to_tof_reciprocal: Parameter = Parameter(
+            name='d_to_tof_reciprocal',
             description='TOF reciprocal velocity correction',
             units='microsecond_angstroms',
             display_handler=DisplayHandler(
@@ -139,7 +150,10 @@ class TofPdInstrument(InstrumentBase):
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_instr.d_to_tof_recip']),
+            tags=TagSpec(
+                edi_names=['_instrument.calib_d_to_tof_reciprocal'],
+                cif_names=['_instr.d_to_tof_recip'],
+            ),
         )
 
     @property
@@ -188,31 +202,31 @@ class TofPdInstrument(InstrumentBase):
         self._calib_d_to_tof_linear.value = value
 
     @property
-    def calib_d_to_tof_quad(self) -> Parameter:
+    def calib_d_to_tof_quadratic(self) -> Parameter:
         """
         TOF quadratic correction (μs/Å²).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
         """
-        return self._calib_d_to_tof_quad
+        return self._calib_d_to_tof_quadratic
 
-    @calib_d_to_tof_quad.setter
-    def calib_d_to_tof_quad(self, value: float) -> None:
+    @calib_d_to_tof_quadratic.setter
+    def calib_d_to_tof_quadratic(self, value: float) -> None:
         """Set the TOF quadratic correction (μs/Å²)."""
-        self._calib_d_to_tof_quad.value = value
+        self._calib_d_to_tof_quadratic.value = value
 
     @property
-    def calib_d_to_tof_recip(self) -> Parameter:
+    def calib_d_to_tof_reciprocal(self) -> Parameter:
         """
         TOF reciprocal velocity correction (μs·Å).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
         """
-        return self._calib_d_to_tof_recip
+        return self._calib_d_to_tof_reciprocal
 
-    @calib_d_to_tof_recip.setter
-    def calib_d_to_tof_recip(self, value: float) -> None:
+    @calib_d_to_tof_reciprocal.setter
+    def calib_d_to_tof_reciprocal(self, value: float) -> None:
         """Set the TOF reciprocal velocity correction (μs·Å)."""
-        self._calib_d_to_tof_recip.value = value
+        self._calib_d_to_tof_reciprocal.value = value

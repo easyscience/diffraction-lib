@@ -42,7 +42,7 @@ def _minimal_template(
         structure_cif='',
         experiment_cif='',
         initial_params={},
-        free_param_unique_names=free_names,
+        free_parameter_unique_names=free_names,
         alias_defs=[],
         constraint_defs=[],
         constraints_enabled=False,
@@ -489,7 +489,7 @@ class TestSequentialFitTemplate:
             free_names=['cell.a'],
             diffrn_fields=['temp'],
         )
-        assert template.free_param_unique_names == ['cell.a']
+        assert template.free_parameter_unique_names == ['cell.a']
         assert template.diffrn_field_names == ['temp']
         assert template.minimizer_tag == 'lmfit'
         assert template.calculator_tag == 'cryspy'

@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
-"""Integration tests for help(), show_as_cif(), and switchable-category show methods."""
+"""Integration tests for help(), show_as_text(), and switchable-category show methods."""
 
 
 def test_project_str(lbco_fitted_project):
@@ -28,10 +28,10 @@ def test_structure_help(lbco_fitted_project):
     model.help()
 
 
-def test_structure_show_as_cif(lbco_fitted_project):
+def test_structure_show_as_text(lbco_fitted_project):
     project = lbco_fitted_project
     model = project.structures['lbco']
-    model.show_as_cif()
+    model.show_as_text()
 
 
 def test_structure_as_cif(lbco_fitted_project):
@@ -59,13 +59,13 @@ def test_experiment_help(lbco_fitted_project):
     expt.help()
 
 
-def test_experiment_show_as_cif(lbco_fitted_project):
+def test_experiment_show_as_text(lbco_fitted_project):
     project = lbco_fitted_project
     expt = project.experiments['hrpt']
-    expt.show_as_cif()
+    expt.show_as_text()
 
 
-def test_experiment_show_as_cif_omits_empty_category_gaps(lbco_fitted_project, monkeypatch):
+def test_experiment_show_as_text_omits_empty_category_gaps(lbco_fitted_project, monkeypatch):
     import re
 
     import easydiffraction.datablocks.experiment.item.base as experiment_base
@@ -79,10 +79,12 @@ def test_experiment_show_as_cif_omits_empty_category_gaps(lbco_fitted_project, m
 
     project = lbco_fitted_project
     expt = project.experiments['hrpt']
-    expt.show_as_cif()
+    expt.show_as_text()
 
     cif_text = captured['cif_text']
-    assert re.search(r'_pd_phase_block\.scale\n[^\n]+\n\n_background\.type', cif_text) is not None
+    assert (
+        re.search(r'_linked_structure\.scale\n[^\n]+\n\n_background\.type', cif_text) is not None
+    )
     assert re.search(r'_background\.type [^\n]+\n\nloop_', cif_text) is not None
     assert '\n\n\n' not in cif_text
 
@@ -106,8 +108,8 @@ def test_experiment_switchable_category_types(lbco_fitted_project):
     # Peak profile
     expt.peak.show_supported()
     assert isinstance(expt.peak.type, str)
-    # Linked phases
-    assert expt.linked_phases is not None
+    # Linked structures
+    assert expt.linked_structures is not None
     # Calculator
     expt.calculator.show_supported()
     assert isinstance(expt.calculator.type, str)
@@ -139,7 +141,7 @@ def test_structure_atom_sites_iteration(lbco_fitted_project):
     model = project.structures['lbco']
     count = 0
     for site in model.atom_sites:
-        assert site.label.value is not None
+        assert site.id.value is not None
         assert site.type_symbol.value is not None
         count += 1
     assert count == 4

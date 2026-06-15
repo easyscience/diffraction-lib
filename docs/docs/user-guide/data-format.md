@@ -3,14 +3,27 @@
 Before starting the data analysis workflow, it is important to define
 the **data formats** used in EasyDiffraction.
 
-## Crystallographic Information File
+## Edi Projects And CIF Data
 
 Each software package typically uses its own **data format** and
-**parameter names** for storing and sharing data. In EasyDiffraction, we
-use the **Crystallographic Information File (CIF)** format, which is
-widely used in crystallography and materials science. It provides both a
-human-readable syntax and a set of dictionaries that define the meaning
-of each parameter.
+**parameter names** for storing and sharing data. EasyDiffraction uses
+**Edi** for saved project state and **Crystallographic Information File
+(CIF)** for crystallographic input and strict report export.
+
+!!! note "Pronunciation"
+
+    **Edi** is the short name for EasyDiffraction, pronounced **"eddie"**
+    (/ˈɛdi/). It is the same short form you use in code
+    (`import easydiffraction as edi`) and the suffix on saved files
+    (`.edi`). Write it as a word — lowercase `edi` for the extension and
+    `_edi.*` keys, capitalised `Edi` at the start of a sentence — not as
+    an all-caps acronym.
+
+Edi uses CIF-like syntax, but its keys are chosen for EasyDiffraction's
+Python-facing project model. CIF remains the standard exchange format
+used by crystallography and materials science. It provides both a
+human-readable syntax and dictionaries that define the meaning of each
+parameter.
 
 These dictionaries are maintained by the
 [International Union of Crystallography (IUCr)](https://www.iucr.org).  
@@ -18,21 +31,19 @@ The base dictionary, **coreCIF**, contains the most common parameters in
 crystallography. The **pdCIF** dictionary covers parameters specific to
 powder diffraction, **magCIF** is used for magnetic structure analysis.
 
-As most parameters needed for diffraction data analysis are already
-covered by IUCr dictionaries, EasyDiffraction uses **CIF** as its
-project persistence format and follows these dictionaries where they fit
-the day-to-day project files. Some EasyDiffraction-owned settings, such
-as minimizer choices and report configuration, use project-specific CIF
-categories.
+As most crystallographic parameters needed for diffraction data analysis
+are already covered by IUCr dictionaries, EasyDiffraction follows those
+dictionaries for CIF import and report output where they fit. Edi uses
+the same names when they are already clear, and uses
+EasyDiffraction-owned names where the project API is clearer.
 
-The key advantage of CIF is the standardized naming of parameters and
-categories, which promotes interoperability and familiarity among
-researchers.
+The key advantage of CIF is standardized naming for scientific exchange.
+The key advantage of Edi is that saved projects round-trip the
+EasyDiffraction project model without overloading report CIF as project
+state.
 
-If a required parameter is not defined in the standard dictionaries,
-EasyDiffraction introduces **custom CIF keywords**, documented in the
-[Parameters](parameters.md) section under the **CIF name for
-serialization** columns.
+The [Parameters](parameters.md) section lists Python access paths, Edi
+keys, and CIF keys side by side.
 
 ## Format Comparison
 
@@ -179,52 +190,49 @@ better suited for human-readable crystallographic data.
 The previous example described the **structure** (crystallographic
 model), but how is the **experiment** itself represented?
 
-The experiment is also saved as a CIF file. For example, background
-intensity in a powder diffraction experiment might be represented as:
+The experiment is saved in Edi. For example, line-segment background
+intensity in a powder diffraction experiment is represented as:
 
 <!-- prettier-ignore-start -->
 
 <div class="cif">
 <pre>
 loop_
-<span class="green"><b>_pd_background</b>.line_segment_X</span>
-<span class="green"><b>_pd_background</b>.line_segment_intensity</span>
-<span class="green"><b>_pd_background</b>.X_coordinate</span>
+<span class="green"><b>_background</b>.position</span>
+<span class="green"><b>_background</b>.intensity</span>
 
- 10.0  174.3  2theta
- 20.0  159.8  2theta
- 30.0  167.9  2theta
+ 10.0  174.3
+ 20.0  159.8
+ 30.0  167.9
  ...
 </pre>
 </div>
 
 <!-- prettier-ignore-end -->
 
-More details on how to define the experiment in CIF format are provided
-in the [Experiment](analysis-workflow/experiment.md) section.
+More details on how to define the experiment are provided in the
+[Experiment](analysis-workflow/experiment.md) section.
 
 ## Other Input/Output Blocks
 
-EasyDiffraction uses CIF consistently throughout its workflow, including
-in the following blocks:
+EasyDiffraction saves projects as a directory of Edi files and sidecars:
 
-- **project**: contains the project information
-- **structure**: defines the structure
-- **experiment**: contains the experiment setup and measured data
-- **analysis**: stores fitting and analysis parameters
-- **reports**: stores generated HTML, CIF, TeX, and PDF reports when
-  enabled through `project.report`
+- `project.edi`: project metadata and display/report configuration
+- `structures/<structure>.edi`: structure models
+- `experiments/<experiment>.edi`: experiment setup and data
+- `analysis/analysis.edi`: fitting and analysis settings
+- `analysis/results.csv` and `analysis/results.h5`: fit result sidecars
+- `reports/<project>.*`: generated reports when enabled through
+  `project.report`
 
-Example CIF files for each block are provided in the
+Examples for each block are provided in the
 [Analysis Workflow](analysis-workflow/index.md) and
 [Tutorials](../tutorials/index.md).
 
 ## Other Data Formats
 
-While CIF is the primary format in EasyDiffraction, we also support
-other formats for importing measured data. These include plain text
-files with multiple columns. The meaning of the columns depends on the
-experiment type.
+EasyDiffraction also supports plain text files for importing measured
+data. The meaning of the columns depends on the experiment type.
 
 For example, in a standard constant-wavelength powder diffraction
 experiment:

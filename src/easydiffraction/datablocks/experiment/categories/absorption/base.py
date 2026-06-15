@@ -11,7 +11,7 @@ from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.datablocks.experiment.categories.absorption.factory import AbsorptionFactory
 from easydiffraction.datablocks.experiment.item.enums import AbsorptionTypeEnum
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 
 class AbsorptionBase(CategoryItem, SwitchableCategoryBase):
@@ -35,9 +35,9 @@ class AbsorptionBase(CategoryItem, SwitchableCategoryBase):
                     allowed=[member.value for member in AbsorptionTypeEnum],
                 ),
             ),
-            cif_handler=CifHandler(
-                names=['_absorption.type'],
-                iucr_name='_easydiffraction_absorption.type',
+            tags=TagSpec(
+                edi_names=['_absorption.type'],
+                cif_names=['_easydiffraction_absorption.type'],
             ),
         )
 

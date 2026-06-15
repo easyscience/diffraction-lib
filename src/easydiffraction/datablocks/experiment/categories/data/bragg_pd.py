@@ -25,7 +25,7 @@ from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import tof_to_d
 from easydiffraction.utils.utils import twotheta_to_d
@@ -47,8 +47,8 @@ class PdDataPointBaseMixin:
     def __init__(self) -> None:
         super().__init__()
 
-        self._point_id = StringDescriptor(
-            name='point_id',
+        self._id = StringDescriptor(
+            name='id',
             description='Identifier for this data point in the dataset',
             display_handler=DisplayHandler(
                 display_name='ID',
@@ -61,11 +61,7 @@ class PdDataPointBaseMixin:
                 #  Do we need conversion between CIF and internal label?
                 validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_pd_data.point_id',
-                ]
-            ),
+            tags=TagSpec(edi_names=['_data.id'], cif_names=['_pd_data.point_id']),
         )
         self._d_spacing = NumericDescriptor(
             name='d_spacing',
@@ -81,7 +77,7 @@ class PdDataPointBaseMixin:
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(names=['_pd_proc.d_spacing']),
+            tags=TagSpec(edi_names=['_data.d_spacing'], cif_names=['_pd_proc.d_spacing']),
         )
         self._intensity_meas = NumericDescriptor(
             name='intensity_meas',
@@ -94,11 +90,9 @@ class PdDataPointBaseMixin:
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_pd_meas.intensity_total',
-                    '_pd_proc.intensity_norm',
-                ]
+            tags=TagSpec(
+                edi_names=['_data.intensity_meas'],
+                cif_names=['_pd_meas.intensity_total', '_pd_proc.intensity_norm'],
             ),
         )
         self._intensity_meas_su = NumericDescriptor(
@@ -112,11 +106,9 @@ class PdDataPointBaseMixin:
                 default=1.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_pd_meas.intensity_total_su',
-                    '_pd_proc.intensity_norm_su',
-                ]
+            tags=TagSpec(
+                edi_names=['_data.intensity_meas_su'],
+                cif_names=['_pd_meas.intensity_total_su', '_pd_proc.intensity_norm_su'],
             ),
         )
         self._intensity_calc = NumericDescriptor(
@@ -130,7 +122,9 @@ class PdDataPointBaseMixin:
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(names=['_pd_calc.intensity_total']),
+            tags=TagSpec(
+                edi_names=['_data.intensity_calc'], cif_names=['_pd_calc.intensity_total']
+            ),
         )
         self._intensity_bkg = NumericDescriptor(
             name='intensity_bkg',
@@ -143,7 +137,7 @@ class PdDataPointBaseMixin:
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(names=['_pd_calc.intensity_bkg']),
+            tags=TagSpec(edi_names=['_data.intensity_bkg'], cif_names=['_pd_calc.intensity_bkg']),
         )
         self._calc_status = StringDescriptor(
             name='calc_status',
@@ -156,10 +150,8 @@ class PdDataPointBaseMixin:
                 default='incl',  # TODO: Make Enum
                 validator=MembershipValidator(allowed=['incl', 'excl']),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_pd_data.refinement_status',  # TODO: rename to calc_status
-                ]
+            tags=TagSpec(
+                edi_names=['_data.calc_status'], cif_names=['_pd_data.refinement_status']
             ),
         )
 
@@ -168,14 +160,14 @@ class PdDataPointBaseMixin:
     # ------------------------------------------------------------------
 
     @property
-    def point_id(self) -> StringDescriptor:
+    def id(self) -> StringDescriptor:
         """
         Identifier for this data point in the dataset.
 
         Reading this property returns the underlying
         ``StringDescriptor`` object.
         """
-        return self._point_id
+        return self._id
 
     @property
     def d_spacing(self) -> NumericDescriptor:
@@ -258,11 +250,9 @@ class PdCwlDataPointMixin:
                 default=0.0,
                 validator=RangeValidator(ge=0, le=180),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_pd_proc.2theta_scan',
-                    '_pd_meas.2theta_scan',
-                ]
+            tags=TagSpec(
+                edi_names=['_data.two_theta'],
+                cif_names=['_pd_proc.2theta_scan', '_pd_meas.2theta_scan'],
             ),
         )
 
@@ -301,7 +291,9 @@ class PdTofDataPointMixin:
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(names=['_pd_meas.time_of_flight']),
+            tags=TagSpec(
+                edi_names=['_data.time_of_flight'], cif_names=['_pd_meas.time_of_flight']
+            ),
         )
 
     # ------------------------------------------------------------------
@@ -334,8 +326,8 @@ class PdCwlDataPoint(
 ):
     """Powder diffraction data point for CWL experiments."""
 
-    _category_code = 'pd_data'
-    _category_entry_name = 'point_id'
+    _category_code = 'data'
+    _category_entry_name = 'id'
 
     def __init__(self) -> None:
         super().__init__()
@@ -348,8 +340,8 @@ class PdTofDataPoint(
 ):
     """Powder diffraction data point for time-of-flight experiments."""
 
-    _category_code = 'pd_data'
-    _category_entry_name = 'point_id'
+    _category_code = 'data'
+    _category_entry_name = 'id'
 
     def __init__(self) -> None:
         super().__init__()
@@ -372,10 +364,10 @@ class PdDataBase(CategoryCollection):
 
     # Should be set only once
 
-    def _set_point_id(self, values: object) -> None:
-        """Set point IDs."""
+    def _set_id(self, values: object) -> None:
+        """Set data-point IDs."""
         for p, v in zip(self._items, values, strict=True):
-            p.point_id._value = v
+            p.id._value = v
 
     def _set_intensity_meas(self, values: object) -> None:
         """Set measured intensity."""
@@ -570,14 +562,14 @@ class PdDataBase(CategoryCollection):
         refln_records: list[PowderReflnRecord] = []
         missing_refln_records = False
 
-        for linked_phase in experiment._get_valid_linked_phases(structures):
-            structure_id = linked_phase._identity.category_entry_name
+        for linked_structure in experiment._get_valid_linked_structures(structures):
+            structure_id = linked_structure._identity.category_entry_name
             structure = structures[structure_id]
             structure_scaled_calc, structure_refln_records = self._phase_result(
                 structure=structure,
                 experiment=experiment,
                 calculator=calculator,
-                linked_phase=linked_phase,
+                linked_structure=linked_structure,
                 called_by_minimizer=called_by_minimizer,
                 collect_refln_records=collect_refln_records,
             )
@@ -597,7 +589,7 @@ class PdDataBase(CategoryCollection):
         structure: object,
         experiment: object,
         calculator: object,
-        linked_phase: object,
+        linked_structure: object,
         called_by_minimizer: bool,
         collect_refln_records: bool,
     ) -> tuple[np.ndarray, list[PowderReflnRecord] | None]:
@@ -606,14 +598,14 @@ class PdDataBase(CategoryCollection):
             experiment,
             called_by_minimizer=called_by_minimizer,
         )
-        structure_scaled_calc = linked_phase.scale.value * structure_calc
+        structure_scaled_calc = linked_structure.scale.value * structure_calc
         if not collect_refln_records:
             return structure_scaled_calc, []
 
         structure_refln_records = calculator.last_powder_refln_records(
             structure,
             experiment,
-            phase_id=linked_phase.id.value,
+            structure_id=linked_structure.structure_id.value,
         )
         return structure_scaled_calc, structure_refln_records
 
@@ -740,7 +732,7 @@ class PdCwlData(PdDataBase):
             p.two_theta._value = v
 
         # Set point IDs
-        self._set_point_id([str(i + 1) for i in range(values.size)])
+        self._set_id([str(i + 1) for i in range(values.size)])
 
     # Misc
 
@@ -826,7 +818,7 @@ class PdTofData(PdDataBase):
             p.time_of_flight._value = v
 
         # Set point IDs
-        self._set_point_id([str(i + 1) for i in range(values.size)])
+        self._set_id([str(i + 1) for i in range(values.size)])
 
     # Misc
 
@@ -842,7 +834,7 @@ class PdTofData(PdDataBase):
             self.x,
             experiment.instrument.calib_d_to_tof_offset.value,
             experiment.instrument.calib_d_to_tof_linear.value,
-            experiment.instrument.calib_d_to_tof_quad.value,
+            experiment.instrument.calib_d_to_tof_quadratic.value,
         )
         self._set_d_spacing(d_spacing)
 

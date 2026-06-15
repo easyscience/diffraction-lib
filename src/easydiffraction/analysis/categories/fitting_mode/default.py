@@ -13,7 +13,7 @@ from easydiffraction.core.switchable import SwitchableCategoryBase
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.variable import StringDescriptor
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 
 @FittingModeFactory.register
@@ -42,9 +42,8 @@ class FittingMode(CategoryItem, SwitchableCategoryBase):
                     allowed=[mode.value for mode in FitModeEnum],
                 ),
             ),
-            cif_handler=CifHandler(
-                names=['_fitting_mode.type'],
-                iucr_name='_easydiffraction_fitting_mode.type',
+            tags=TagSpec(
+                edi_names=['_fitting_mode.type'], cif_names=['_easydiffraction_fitting_mode.type']
             ),
             display_handler=DisplayHandler(display_name='Type', latex_name='Type'),
         )

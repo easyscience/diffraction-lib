@@ -42,34 +42,34 @@ class ConcreteBase(ExperimentBase):
 
 class TestExperimentBaseName:
     def test_name_getter(self):
-        ex = ConcreteBase(name='ex1', type=_mk_type_powder_cwl_bragg())
+        ex = ConcreteBase(name='ex1', experiment_type=_mk_type_powder_cwl_bragg())
         assert ex.name == 'ex1'
 
     def test_name_setter(self):
-        ex = ConcreteBase(name='ex1', type=_mk_type_powder_cwl_bragg())
+        ex = ConcreteBase(name='ex1', experiment_type=_mk_type_powder_cwl_bragg())
         ex.name = 'ex2'
         assert ex.name == 'ex2'
 
     def test_type_property(self):
         et = _mk_type_powder_cwl_bragg()
-        ex = ConcreteBase(name='ex1', type=et)
-        assert ex.type is et
+        ex = ConcreteBase(name='ex1', experiment_type=et)
+        assert ex.experiment_type is et
 
 
 class TestExperimentBaseDiffrn:
     def test_diffrn_defaults(self):
-        ex = ConcreteBase(name='ex1', type=_mk_type_powder_cwl_bragg())
+        ex = ConcreteBase(name='ex1', experiment_type=_mk_type_powder_cwl_bragg())
         assert ex.diffrn is not None
 
 
 class TestExperimentBaseCalculator:
     def test_calculator_auto_resolves(self):
-        ex = ConcreteBase(name='ex1', type=_mk_type_powder_cwl_bragg())
+        ex = ConcreteBase(name='ex1', experiment_type=_mk_type_powder_cwl_bragg())
         # calculator should auto-resolve on first access
         assert ex.calculator.calculator is not None
 
     def test_calculator_type_auto_resolves(self):
-        ex = ConcreteBase(name='ex1', type=_mk_type_powder_cwl_bragg())
+        ex = ConcreteBase(name='ex1', experiment_type=_mk_type_powder_cwl_bragg())
         ct = ex.calculator.type
         assert isinstance(ct, str)
         assert len(ct) > 0
@@ -77,7 +77,7 @@ class TestExperimentBaseCalculator:
     def test_calculator_type_invalid(self):
         import pytest
 
-        ex = ConcreteBase(name='ex1', type=_mk_type_powder_cwl_bragg())
+        ex = ConcreteBase(name='ex1', experiment_type=_mk_type_powder_cwl_bragg())
         _ = ex.calculator.calculator  # trigger resolve
         old = ex.calculator.type
         with pytest.raises(ValueError, match='Unsupported calculator'):
@@ -85,13 +85,13 @@ class TestExperimentBaseCalculator:
         assert ex.calculator.type == old
 
     def test_show_calculator_types(self, capsys):
-        ex = ConcreteBase(name='ex1', type=_mk_type_powder_cwl_bragg())
+        ex = ConcreteBase(name='ex1', experiment_type=_mk_type_powder_cwl_bragg())
         ex.calculator.show_supported()
         out = capsys.readouterr().out
         assert len(out) > 0
 
     def test_show_calculator_types_includes_current(self, capsys):
-        ex = ConcreteBase(name='ex1', type=_mk_type_powder_cwl_bragg())
+        ex = ConcreteBase(name='ex1', experiment_type=_mk_type_powder_cwl_bragg())
         ex.calculator.show_supported()
         out = capsys.readouterr().out
         assert ex.calculator.type in out
@@ -99,13 +99,13 @@ class TestExperimentBaseCalculator:
 
 class TestExperimentBaseAsCif:
     def test_as_cif_returns_str(self):
-        ex = ConcreteBase(name='ex1', type=_mk_type_powder_cwl_bragg())
+        ex = ConcreteBase(name='ex1', experiment_type=_mk_type_powder_cwl_bragg())
         cif = ex.as_cif
         assert isinstance(cif, str)
 
-    def test_show_as_cif(self, capsys):
-        ex = ConcreteBase(name='ex1', type=_mk_type_powder_cwl_bragg())
-        ex.show_as_cif()
+    def test_show_as_text(self, capsys):
+        ex = ConcreteBase(name='ex1', experiment_type=_mk_type_powder_cwl_bragg())
+        ex.show_as_text()
         out = capsys.readouterr().out
         assert 'ex1' in out
 
@@ -115,38 +115,38 @@ class TestExperimentBaseAsCif:
 # ------------------------------------------------------------------
 
 
-class TestPdExperimentLinkedPhases:
-    def test_linked_phases_defaults(self):
-        ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
-        assert ex.linked_phases is not None
+class TestPdExperimentLinkedStructures:
+    def test_linked_structures_defaults(self):
+        ex = ConcretePd(name='pd1', experiment_type=_mk_type_powder_cwl_bragg())
+        assert ex.linked_structures is not None
 
 
 class TestPdExperimentExcludedRegions:
     def test_excluded_regions_defaults(self):
-        ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
+        ex = ConcretePd(name='pd1', experiment_type=_mk_type_powder_cwl_bragg())
         assert ex.excluded_regions is not None
 
 
 class TestPdExperimentData:
     def test_data_defaults(self):
-        ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
+        ex = ConcretePd(name='pd1', experiment_type=_mk_type_powder_cwl_bragg())
         assert ex.data is not None
 
 
 class TestPdExperimentPeak:
     def test_peak_defaults(self):
-        ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
+        ex = ConcretePd(name='pd1', experiment_type=_mk_type_powder_cwl_bragg())
         assert ex.peak is not None
         assert ex.peak.type is not None
 
     def test_show_peak_profile_types(self, capsys):
-        ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
+        ex = ConcretePd(name='pd1', experiment_type=_mk_type_powder_cwl_bragg())
         ex.peak.show_supported()
         out = capsys.readouterr().out
         assert len(out) > 0
 
     def test_show_peak_profile_types_uses_context_aliases(self, capsys):
-        ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
+        ex = ConcretePd(name='pd1', experiment_type=_mk_type_powder_cwl_bragg())
         ex.peak.show_supported()
         out = capsys.readouterr().out
         assert 'Alias' not in out
@@ -179,7 +179,7 @@ def _mk_bragg_pd(name='bpd1'):
     # whose replacement logic lives on ExperimentBase.
     from easydiffraction.datablocks.experiment.item.bragg_pd import BraggPdExperiment
 
-    return BraggPdExperiment(name=name, type=_mk_type_powder_cwl_bragg())
+    return BraggPdExperiment(name=name, experiment_type=_mk_type_powder_cwl_bragg())
 
 
 # ------------------------------------------------------------------
@@ -259,7 +259,7 @@ class TestMeasuredRange:
         # the data_range category; see its own unit tests.)
         import math
 
-        ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
+        ex = ConcretePd(name='pd1', experiment_type=_mk_type_powder_cwl_bragg())
         range_min, range_max, increment = ex.measured_range
         assert math.isnan(range_min)
         assert math.isnan(range_max)
@@ -268,7 +268,7 @@ class TestMeasuredRange:
     def test_uniform_grid_reports_increment(self):
         import numpy as np
 
-        ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
+        ex = ConcretePd(name='pd1', experiment_type=_mk_type_powder_cwl_bragg())
         ex.data._create_items_set_xcoord_and_id(np.array([10.0, 20.0, 30.0, 40.0]))
 
         range_min, range_max, increment = ex.measured_range
@@ -279,7 +279,7 @@ class TestMeasuredRange:
     def test_single_point_has_no_increment(self):
         import numpy as np
 
-        ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
+        ex = ConcretePd(name='pd1', experiment_type=_mk_type_powder_cwl_bragg())
         ex.data._create_items_set_xcoord_and_id(np.array([15.0]))
 
         assert ex.measured_range == (15.0, 15.0, None)
@@ -287,7 +287,7 @@ class TestMeasuredRange:
     def test_non_uniform_grid_drops_increment(self):
         import numpy as np
 
-        ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
+        ex = ConcretePd(name='pd1', experiment_type=_mk_type_powder_cwl_bragg())
         ex.data._create_items_set_xcoord_and_id(np.array([0.0, 1.0, 9.0, 10.0]))
 
         range_min, range_max, increment = ex.measured_range
@@ -305,7 +305,7 @@ class TestExperimentBaseIntensityCategory:
     def test_base_intensity_category_raises(self):
         import pytest
 
-        ex = ConcreteBase(name='ex1', type=_mk_type_powder_cwl_bragg())
+        ex = ConcreteBase(name='ex1', experiment_type=_mk_type_powder_cwl_bragg())
         with pytest.raises(AttributeError, match="'ex1' has no intensity category"):
             ex._intensity_category()
 
@@ -314,7 +314,7 @@ class TestExperimentBaseIntensityCategory:
 
         from easydiffraction.datablocks.experiment.item.base import ExperimentBase
 
-        ex = ConcreteBase(name='ex1', type=_mk_type_powder_cwl_bragg())
+        ex = ConcreteBase(name='ex1', experiment_type=_mk_type_powder_cwl_bragg())
         with pytest.raises(NotImplementedError):
             ExperimentBase._load_ascii_data_to_experiment(ex, 'some/path')
 
@@ -328,7 +328,7 @@ class TestSwapCalculator:
     def test_unsupported_strict_false_warns_and_keeps(self, monkeypatch):
         from easydiffraction.datablocks.experiment.item import base as item_base
 
-        ex = ConcreteBase(name='ex1', type=_mk_type_powder_cwl_bragg())
+        ex = ConcreteBase(name='ex1', experiment_type=_mk_type_powder_cwl_bragg())
         _ = ex.calculator.calculator  # resolve
         current = ex.calculator.type
 
@@ -341,7 +341,7 @@ class TestSwapCalculator:
         assert ex.calculator.type == current
 
     def test_already_set_announces(self, capsys):
-        ex = ConcreteBase(name='ex1', type=_mk_type_powder_cwl_bragg())
+        ex = ConcreteBase(name='ex1', experiment_type=_mk_type_powder_cwl_bragg())
         _ = ex.calculator.calculator  # resolve
         current = ex.calculator.type
         capsys.readouterr()
@@ -353,7 +353,7 @@ class TestSwapCalculator:
         assert ex.calculator.type == current
 
     def test_already_set_silent_when_announce_false(self, capsys):
-        ex = ConcreteBase(name='ex1', type=_mk_type_powder_cwl_bragg())
+        ex = ConcreteBase(name='ex1', experiment_type=_mk_type_powder_cwl_bragg())
         _ = ex.calculator.calculator  # resolve
         current = ex.calculator.type
         capsys.readouterr()
@@ -370,7 +370,7 @@ class TestSwapCalculator:
 
 class TestResolveCalculatorFallback:
     def test_falls_back_to_first_supported_when_default_unsupported(self, monkeypatch):
-        ex = ConcreteBase(name='ex1', type=_mk_type_powder_cwl_bragg())
+        ex = ConcreteBase(name='ex1', experiment_type=_mk_type_powder_cwl_bragg())
 
         # Force the default tag to be unsupported so the fallback to the
         # first supported tag is exercised.
@@ -386,7 +386,7 @@ class TestResolveCalculatorFallback:
     def test_supported_tags_returns_all_when_no_support_constraint(self, monkeypatch):
         from easydiffraction.analysis.calculators.factory import CalculatorFactory
 
-        ex = ConcreteBase(name='ex1', type=_mk_type_powder_cwl_bragg())
+        ex = ConcreteBase(name='ex1', experiment_type=_mk_type_powder_cwl_bragg())
         # ConcreteBase has neither _data nor _refln, so support category
         # is None and all importable tags are returned unfiltered.
         assert ex._calculator_support_category() is None
@@ -395,7 +395,7 @@ class TestResolveCalculatorFallback:
     def test_supported_tags_returns_all_when_support_lacks_calculators(self, monkeypatch):
         from easydiffraction.analysis.calculators.factory import CalculatorFactory
 
-        ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
+        ex = ConcretePd(name='pd1', experiment_type=_mk_type_powder_cwl_bragg())
 
         class NoSupport:
             calculator_support = None
@@ -459,7 +459,7 @@ class TestReplaceBackground:
         other = next(t for t in tags if t != ex.background.type)
 
         # Put an existing background point in so the discard branch runs.
-        ex.background.create(id='1', x=10.0, y=1.0)
+        ex.background.create(id='1', position=10.0, intensity=1.0)
         assert len(ex.background) > 0
 
         warnings: list[str] = []
@@ -484,7 +484,7 @@ class TestReplaceBackground:
         ]
         other = next(t for t in tags if t != ex.background.type)
 
-        ex.background.create(id='1', x=10.0, y=1.0)
+        ex.background.create(id='1', position=10.0, intensity=1.0)
         capsys.readouterr()
 
         warnings: list[str] = []
@@ -503,7 +503,7 @@ class TestReplaceBackground:
 
 class TestReplaceExtinction:
     def test_replace_extinction_same_type_succeeds(self, capsys):
-        ex = ConcreteSc(name='sc1', type=_mk_type_sc_cwl_bragg())
+        ex = ConcreteSc(name='sc1', experiment_type=_mk_type_sc_cwl_bragg())
         current = ex.extinction.type
 
         ex._replace_extinction(current, announce=True)
@@ -516,7 +516,7 @@ class TestReplaceExtinction:
     def test_replace_extinction_unsupported_strict_false_warns(self, monkeypatch):
         from easydiffraction.datablocks.experiment.item import base as item_base
 
-        ex = ConcreteSc(name='sc1', type=_mk_type_sc_cwl_bragg())
+        ex = ConcreteSc(name='sc1', experiment_type=_mk_type_sc_cwl_bragg())
         original = ex.extinction.type
 
         warnings: list[str] = []
@@ -529,14 +529,14 @@ class TestReplaceExtinction:
     def test_replace_extinction_unsupported_strict_raises(self):
         import pytest
 
-        ex = ConcreteSc(name='sc1', type=_mk_type_sc_cwl_bragg())
+        ex = ConcreteSc(name='sc1', experiment_type=_mk_type_sc_cwl_bragg())
         with pytest.raises(ValueError, match='Unsupported extinction type'):
             ex._replace_extinction('bogus-extinction', announce=False, strict=True)
 
     def test_restore_switchable_types_reads_extinction(self):
         import gemmi
 
-        ex = ConcreteSc(name='sc1', type=_mk_type_sc_cwl_bragg())
+        ex = ConcreteSc(name='sc1', experiment_type=_mk_type_sc_cwl_bragg())
 
         cif = 'data_sc1\n_extinction.type becker-coppens\n'
         block = gemmi.cif.read_string(cif).sole_block()
@@ -548,7 +548,7 @@ class TestReplaceExtinction:
     def test_restore_switchable_types_without_extinction_tag_is_noop(self):
         import gemmi
 
-        ex = ConcreteSc(name='sc1', type=_mk_type_sc_cwl_bragg())
+        ex = ConcreteSc(name='sc1', experiment_type=_mk_type_sc_cwl_bragg())
         original = ex.extinction.type
 
         # Block has no _extinction.type; restore leaves extinction as-is.
@@ -563,26 +563,26 @@ class TestReplaceExtinction:
 
 
 class TestScExperimentAccessors:
-    def test_linked_crystal_instrument_refln(self):
-        ex = ConcreteSc(name='sc1', type=_mk_type_sc_cwl_bragg())
-        assert ex.linked_crystal is not None
+    def test_linked_structure_instrument_refln(self):
+        ex = ConcreteSc(name='sc1', experiment_type=_mk_type_sc_cwl_bragg())
+        assert ex.linked_structure is not None
         assert ex.instrument is not None
         assert ex.refln is not None
 
     def test_x_descriptor_is_none(self):
-        ex = ConcreteSc(name='sc1', type=_mk_type_sc_cwl_bragg())
+        ex = ConcreteSc(name='sc1', experiment_type=_mk_type_sc_cwl_bragg())
         assert ex.x_descriptor is None
 
     def test_fit_data_arrays_empty(self):
-        ex = ConcreteSc(name='sc1', type=_mk_type_sc_cwl_bragg())
+        ex = ConcreteSc(name='sc1', experiment_type=_mk_type_sc_cwl_bragg())
         assert ex.fit_data_arrays() == {}
 
     def test_intensity_category_is_refln(self):
-        ex = ConcreteSc(name='sc1', type=_mk_type_sc_cwl_bragg())
+        ex = ConcreteSc(name='sc1', experiment_type=_mk_type_sc_cwl_bragg())
         assert ex._intensity_category() is ex.refln
 
     def test_calculator_support_category_is_refln(self):
-        ex = ConcreteSc(name='sc1', type=_mk_type_sc_cwl_bragg())
+        ex = ConcreteSc(name='sc1', experiment_type=_mk_type_sc_cwl_bragg())
         assert ex._calculator_support_category() is ex.refln
 
 
@@ -593,27 +593,27 @@ class TestScExperimentAccessors:
 
 class TestPdExperimentAccessors:
     def test_x_descriptor_delegates_to_data(self):
-        ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
+        ex = ConcretePd(name='pd1', experiment_type=_mk_type_powder_cwl_bragg())
         # x_descriptor forwards to data.x_descriptor; both reference the
         # same underlying 2θ metadata name.
         assert ex.x_descriptor.name == ex.data.x_descriptor.name
 
     def test_fit_data_arrays_delegates_to_data(self):
-        ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
+        ex = ConcretePd(name='pd1', experiment_type=_mk_type_powder_cwl_bragg())
         assert ex.fit_data_arrays().keys() == ex.data.fit_data_arrays().keys()
 
     def test_intensity_category_is_data(self):
-        ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
+        ex = ConcretePd(name='pd1', experiment_type=_mk_type_powder_cwl_bragg())
         assert ex._intensity_category() is ex.data
 
     def test_calculator_support_category_is_data(self):
-        ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
+        ex = ConcretePd(name='pd1', experiment_type=_mk_type_powder_cwl_bragg())
         assert ex._calculator_support_category() is ex.data
 
     def test_restore_switchable_types_without_peak_tag_keeps_default(self):
         import gemmi
 
-        ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
+        ex = ConcretePd(name='pd1', experiment_type=_mk_type_powder_cwl_bragg())
         original = ex.peak.type
 
         # No _peak.type in the block; the peak profile is left unchanged.
@@ -623,7 +623,7 @@ class TestPdExperimentAccessors:
 
 
 # ------------------------------------------------------------------
-# _get_valid_linked_phases
+# _get_valid_linked_structures
 # ------------------------------------------------------------------
 
 
@@ -632,45 +632,45 @@ class _FakeStructures:
         self.names = list(names)
 
 
-class TestGetValidLinkedPhases:
-    def test_no_linked_phases_warns_and_returns_empty(self, monkeypatch):
+class TestGetValidLinkedStructures:
+    def test_no_linked_structures_warns_and_returns_empty(self, monkeypatch):
         from easydiffraction.datablocks.experiment.item import base as item_base
 
-        ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
+        ex = ConcretePd(name='pd1', experiment_type=_mk_type_powder_cwl_bragg())
         warnings: list[str] = []
         monkeypatch.setattr(item_base.log, 'warning', warnings.append)
 
-        result = ex._get_valid_linked_phases(_FakeStructures([]))
+        result = ex._get_valid_linked_structures(_FakeStructures([]))
 
         assert result == []
-        assert any('No linked phases defined' in w for w in warnings)
+        assert any('No linked structures defined' in w for w in warnings)
 
     def test_skips_phases_absent_from_structures(self, monkeypatch):
         from easydiffraction.datablocks.experiment.item import base as item_base
 
-        ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
-        ex.linked_phases.create(id='present', scale=1.0)
-        ex.linked_phases.create(id='absent', scale=1.0)
+        ex = ConcretePd(name='pd1', experiment_type=_mk_type_powder_cwl_bragg())
+        ex.linked_structures.create(structure_id='present', scale=1.0)
+        ex.linked_structures.create(structure_id='absent', scale=1.0)
 
         warnings: list[str] = []
         monkeypatch.setattr(item_base.log, 'warning', warnings.append)
 
-        result = ex._get_valid_linked_phases(_FakeStructures(['present']))
+        result = ex._get_valid_linked_structures(_FakeStructures(['present']))
 
         assert len(result) == 1
-        assert result[0].id.value == 'present'
+        assert result[0].structure_id.value == 'present'
         assert any("'absent' not" in w for w in warnings)
 
     def test_all_phases_missing_warns_returns_empty(self, monkeypatch):
         from easydiffraction.datablocks.experiment.item import base as item_base
 
-        ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
-        ex.linked_phases.create(id='absent', scale=1.0)
+        ex = ConcretePd(name='pd1', experiment_type=_mk_type_powder_cwl_bragg())
+        ex.linked_structures.create(structure_id='absent', scale=1.0)
 
         warnings: list[str] = []
         monkeypatch.setattr(item_base.log, 'warning', warnings.append)
 
-        result = ex._get_valid_linked_phases(_FakeStructures(['other']))
+        result = ex._get_valid_linked_structures(_FakeStructures(['other']))
 
         assert result == []
-        assert any('None of the linked phases' in w for w in warnings)
+        assert any('None of the linked structures' in w for w in warnings)

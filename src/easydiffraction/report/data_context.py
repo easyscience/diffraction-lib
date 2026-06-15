@@ -59,7 +59,7 @@ _EXPERIMENT_DIFFRN_FIELDS = (
 )
 _REPORT_LOOP_DISPLAY_LIMIT = DEFAULT_LOOP_DISPLAY_LIMIT
 _FULL_WIDTH_TABLE_CHAR_LIMIT = 40
-_TRUNCATED_DATA_CATEGORY_CODES = frozenset({'pd_data', 'total_data'})
+_TRUNCATED_DATA_CATEGORY_CODES = frozenset({'data'})
 _NUMERIC_TEXT_RE = re.compile(r'^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:\(\d+\))?(?:[eE][+-]?\d+)?$')
 _ADP_ANISO_CIF_RE = re.compile(r'^_atom_site_aniso\.([BU])_(\d{2})$')
 _NUMBER_PARTS_RE = re.compile(
@@ -184,7 +184,7 @@ class ReportDataContext:
     def _atom_site_context(atom_site: object) -> dict[str, object]:
         """Return one atom-site row."""
         return {
-            'label': _attr_value(atom_site, 'label'),
+            'label': _attr_value(atom_site, 'id'),
             'type_symbol': _attr_value(atom_site, 'type_symbol'),
             'fract_x': _attr_display_value(atom_site, 'fract_x'),
             'fract_y': _attr_display_value(atom_site, 'fract_y'),
@@ -198,7 +198,7 @@ class ReportDataContext:
     def _atom_site_aniso_context(aniso_site: object) -> dict[str, object]:
         """Return one atom-site-aniso row."""
         return {
-            'label': _attr_value(aniso_site, 'label'),
+            'label': _attr_value(aniso_site, 'id'),
             'adp_11': _attr_display_value(aniso_site, 'adp_11'),
             'adp_22': _attr_display_value(aniso_site, 'adp_22'),
             'adp_33': _attr_display_value(aniso_site, 'adp_33'),
@@ -215,7 +215,7 @@ class ReportDataContext:
         return {
             'id': _safe_attr(experiment, 'name'),
             'type': _field_values(
-                _safe_attr(experiment, 'type'),
+                _safe_attr(experiment, 'experiment_type'),
                 _EXPERIMENT_TYPE_FIELDS,
             ),
             'calculator': {
@@ -262,10 +262,8 @@ class ReportDataContext:
         analysis = _safe_attr(self._project, 'analysis')
         software = _safe_attr(analysis, 'software')
         return {
-            'framework': _software_role_context(_safe_attr(software, 'framework')),
-            'calculator': _software_role_context(_safe_attr(software, 'calculator')),
-            'minimizer': _software_role_context(_safe_attr(software, 'minimizer')),
-            'fit_datetime': _attr_value(software, 'timestamp'),
+            'roles': _software_roles_context(software),
+            'fit_datetime': _safe_attr(_safe_attr(self._project, 'metadata'), 'timestamp'),
         }
 
 
@@ -900,9 +898,28 @@ def _adp_label_context(parameter: object) -> dict[str, str] | None:
     }
 
 
+def _active_adp_cif_name(parameter: object) -> str | None:
+    """
+    Return the ADP CIF tag for the descriptor's active B/U family.
+
+    Isotropic ADPs persist under the type-neutral ``_atom_site.adp_iso``
+    tag, so the active B/U convention is taken from the owning atom's
+    ``adp_type`` rather than the (type-neutral) CIF name.
+    """
+    cif_name = _first_cif_name(parameter)
+    if getattr(parameter, 'name', None) != 'adp_iso':
+        return cif_name
+    parent = getattr(parameter, '_parent', None)
+    adp_type = getattr(getattr(parent, 'adp_type', None), 'value', None)
+    if adp_type is None:
+        return cif_name
+    family = 'U' if str(adp_type).lower().startswith('u') else 'B'
+    return f'_atom_site.{family}_iso_or_equiv'
+
+
 def _adp_display_label(parameter: object, *, context: str) -> str | None:
     """Return a B/U-aware ADP display label when applicable."""
-    cif_name = _first_cif_name(parameter)
+    cif_name = _active_adp_cif_name(parameter)
     if cif_name == '_atom_site.B_iso_or_equiv':
         return _adp_iso_label('B', context=context)
     if cif_name == '_atom_site.U_iso_or_equiv':
@@ -926,12 +943,12 @@ def _adp_iso_label(family: str, *, context: str) -> str:
 
 
 def _first_cif_name(parameter: object) -> str | None:
-    """Return the first CIF tag for a descriptor."""
-    cif_handler = getattr(parameter, '_cif_handler', None)
-    names = getattr(cif_handler, 'names', ())
-    if not names:
+    """Return the active (canonical) CIF export tag for a descriptor."""
+    tags = getattr(parameter, '_tags', None)
+    cif_names = getattr(tags, 'cif_names', ())
+    if not cif_names:
         return None
-    return str(names[0])
+    return str(cif_names[0])
 
 
 def _display_units(units: object) -> str:
@@ -1068,13 +1085,29 @@ def _category_code(category: object) -> str | None:
     return getattr(item_type, '_category_code', None)
 
 
-def _software_role_context(role: object) -> dict[str, object]:
+def _software_role_context(
+    role: object,
+    role_id: str | None = None,
+) -> dict[str, object]:
     """Return one software role context."""
     return {
+        'id': _attr_value(role, 'id') or role_id,
         'name': _attr_value(role, 'name'),
         'version': _attr_value(role, 'version'),
         'url': _attr_value(role, 'url'),
     }
+
+
+def _software_roles_context(software: object) -> list[dict[str, object]]:
+    """Return report contexts for the canonical software roles."""
+    roles: list[dict[str, object]] = []
+    for role_id in ('framework', 'calculator', 'minimizer'):
+        try:
+            role = software[role_id] if software is not None else None
+        except (KeyError, TypeError):
+            role = None
+        roles.append(_software_role_context(role, role_id))
+    return roles
 
 
 def _fit_data_context(experiment: object) -> dict[str, object] | None:
@@ -1117,7 +1150,7 @@ def _fit_data_context(experiment: object) -> dict[str, object] | None:
 
 def _fit_data_axes_labels(experiment: object, x_descriptor: object) -> list[str]:
     """Return Plotly display-axis labels for a report fit figure."""
-    experiment_type = _safe_attr(experiment, 'type')
+    experiment_type = _safe_attr(experiment, 'experiment_type')
     try:
         sample_form = experiment_type.sample_form.value
         scattering_type = experiment_type.scattering_type.value
@@ -1156,7 +1189,7 @@ def _fit_data_bragg_tick_sets(
 
 def _is_powder_bragg_experiment(experiment: object) -> bool:
     """Return whether an experiment can use powder Bragg plot panels."""
-    experiment_type = _safe_attr(experiment, 'type')
+    experiment_type = _safe_attr(experiment, 'experiment_type')
     sample_form = _value(_safe_attr(experiment_type, 'sample_form'))
     scattering_type = _value(_safe_attr(experiment_type, 'scattering_type'))
     return sample_form == 'powder' and scattering_type == 'bragg'
@@ -1164,7 +1197,7 @@ def _is_powder_bragg_experiment(experiment: object) -> bool:
 
 def _is_single_crystal_bragg_experiment(experiment: object) -> bool:
     """Return whether an experiment is single-crystal Bragg."""
-    experiment_type = _safe_attr(experiment, 'type')
+    experiment_type = _safe_attr(experiment, 'experiment_type')
     sample_form = _value(_safe_attr(experiment_type, 'sample_form'))
     scattering_type = _value(_safe_attr(experiment_type, 'scattering_type'))
     return sample_form == 'single crystal' and scattering_type == 'bragg'

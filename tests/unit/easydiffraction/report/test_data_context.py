@@ -47,12 +47,12 @@ class _TwoThetaDescriptor:
 def _parameter(name, value, uncertainty):
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     parameter = Parameter(
         name=name,
         value_spec=AttributeSpec(default=0.0),
-        cif_handler=CifHandler(names=[f'_{name}']),
+        tags=TagSpec(edi_names=[f'_{name}']),
     )
     parameter.value = value
     parameter.free = True
@@ -77,7 +77,7 @@ def _structure() -> SimpleNamespace:
         ),
         atom_sites=[
             SimpleNamespace(
-                label=_Descriptor('Si1'),
+                id=_Descriptor('Si1'),
                 type_symbol=_Descriptor('Si'),
                 fract_x=_parameter('fract_x', 11.98509310, 0.03069505),
                 fract_y=_parameter('fract_y', 0.0, None),
@@ -89,7 +89,7 @@ def _structure() -> SimpleNamespace:
         ],
         atom_site_aniso=[
             SimpleNamespace(
-                label=_Descriptor('Si1'),
+                id=_Descriptor('Si1'),
                 adp_11=_parameter('adp_11', 0.00658189, 0.00014),
                 adp_22=_parameter('adp_22', 0.00488144, 0.00029),
                 adp_33=_parameter('adp_33', 0.00488144, None),
@@ -104,7 +104,7 @@ def _structure() -> SimpleNamespace:
 def _experiment() -> SimpleNamespace:
     return SimpleNamespace(
         name='heidi',
-        type=SimpleNamespace(
+        experiment_type=SimpleNamespace(
             sample_form=_Descriptor('single crystal'),
             beam_mode=_Descriptor('constant wavelength'),
             radiation_probe=_Descriptor('neutron'),
@@ -133,7 +133,11 @@ def _experiment() -> SimpleNamespace:
 def _project() -> SimpleNamespace:
     return SimpleNamespace(
         name='demo',
-        info=SimpleNamespace(title=_Descriptor('Demo'), description=_Descriptor(None)),
+        metadata=SimpleNamespace(
+            title=_Descriptor('Demo'),
+            description=_Descriptor(None),
+            timestamp=None,
+        ),
         structures={'phase': _structure()},
         experiments={'heidi': _experiment()},
         analysis=SimpleNamespace(
@@ -162,7 +166,7 @@ def test_report_data_context_builds_powder_bragg_tick_sets():
     from easydiffraction.report.data_context import build_report_data_context
 
     experiment = _experiment()
-    experiment.type.sample_form = _Descriptor('powder')
+    experiment.experiment_type.sample_form = _Descriptor('powder')
     experiment.x_descriptor = _TwoThetaDescriptor()
     experiment.fit_data_arrays = lambda: {
         'x': np.array([1.0, 2.0]),
@@ -173,7 +177,7 @@ def test_report_data_context_builds_powder_bragg_tick_sets():
         'bkg': np.array([2.0, 2.5]),
     }
     experiment.refln = SimpleNamespace(
-        phase_id=np.array(['phase-a']),
+        structure_id=np.array(['phase-a']),
         two_theta=np.array([1.5]),
         index_h=np.array([1]),
         index_k=np.array([0]),
@@ -187,7 +191,7 @@ def test_report_data_context_builds_powder_bragg_tick_sets():
     context = build_report_data_context(project)
 
     tick_sets = context['experiments'][0]['fit_data']['bragg_tick_sets']
-    assert [tick_set.phase_id for tick_set in tick_sets] == ['phase-a']
+    assert [tick_set.structure_id for tick_set in tick_sets] == ['phase-a']
     assert list(tick_sets[0].x) == [1.5]
 
 
@@ -210,8 +214,8 @@ def test_report_category_context_keeps_numeric_string_ids_as_text():
     from easydiffraction.report.data_context import _collection_category_context
 
     category = LineSegmentBackground()
-    category.create(id='10', x=10.0, y=2.0)
-    category.create(id='30', x=30.0, y=3.0)
+    category.create(id='10', position=10.0, intensity=2.0)
+    category.create(id='30', position=30.0, intensity=3.0)
 
     context = _collection_category_context(category)
 
@@ -328,7 +332,7 @@ def test_report_powder_refln_columns_use_compact_labels():
     category = PowderCwlReflnData()
     category._replace_from_records([
         PowderReflnRecord(
-            phase_id='phase',
+            structure_id='phase',
             d_spacing=1.0,
             sin_theta_over_lambda=0.5,
             index_h=1,
@@ -344,7 +348,7 @@ def test_report_powder_refln_columns_use_compact_labels():
 
     assert [(column['latex_label'], column['html_label']) for column in context['columns']] == [
         ('ID', 'ID'),
-        ('Phase', 'Phase'),
+        ('Structure', 'Structure'),
         (r'$d$', r'\(d\)'),
         (r'$\sin\theta/\lambda$', r'\(\sin\theta/\lambda\)'),
         (r'$h$', r'\(h\)'),
@@ -362,13 +366,13 @@ def test_report_atom_site_adp_column_uses_active_b_u_labels():
 
     structure = Structure(name='phase')
     structure.atom_sites.create(
-        label='Si1',
+        id='Si1',
         type_symbol='Si',
         adp_type='Biso',
         adp_iso=0.5,
     )
     structure.atom_sites.create(
-        label='O1',
+        id='O1',
         type_symbol='O',
         adp_type='Uiso',
         adp_iso=0.006,
@@ -388,7 +392,7 @@ def test_report_atom_site_aniso_adp_column_uses_active_b_label():
 
     structure = Structure(name='phase')
     structure.atom_sites.create(
-        label='Si1',
+        id='Si1',
         type_symbol='Si',
         adp_iso=0.5,
     )
@@ -447,7 +451,7 @@ def test_report_descriptor_rows_normalize_angstrom_for_mathjax():
     from easydiffraction.core.display_handler import DisplayHandler
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
     from easydiffraction.report.data_context import _descriptor_rows
 
     parameter = Parameter(
@@ -457,7 +461,7 @@ def test_report_descriptor_rows_normalize_angstrom_for_mathjax():
             latex_name=r'$U_{\mathrm{iso}}$',
             latex_units=r'\AA$^2$',
         ),
-        cif_handler=CifHandler(names=['_atom_site.U_iso_or_equiv']),
+        tags=TagSpec(edi_names=['_atom_site.U_iso_or_equiv']),
     )
 
     rows = _descriptor_rows([parameter])
@@ -470,7 +474,7 @@ def test_report_descriptor_rows_preserve_mixed_mathjax_label_text():
     from easydiffraction.core.display_handler import DisplayHandler
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
     from easydiffraction.report.data_context import _descriptor_rows
 
     parameter = Parameter(
@@ -480,7 +484,7 @@ def test_report_descriptor_rows_preserve_mixed_mathjax_label_text():
             latex_name=r'$2\theta$ offset',
             latex_units=r'$^\circ$',
         ),
-        cif_handler=CifHandler(names=['_instr.2theta_offset']),
+        tags=TagSpec(edi_names=['_instr.2theta_offset']),
     )
 
     rows = _descriptor_rows([parameter])
@@ -502,7 +506,7 @@ def test_descriptor_units_unchanged_for_non_beta_parameters():
     from easydiffraction.core.display_handler import DisplayHandler
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
     from easydiffraction.report.data_context import _descriptor_units
 
     # F2 regression: routing _descriptor_units through resolve_display_units
@@ -512,7 +516,7 @@ def test_descriptor_units_unchanged_for_non_beta_parameters():
         units='angstroms',
         display_handler=DisplayHandler(display_units='Å', latex_units=r'\AA'),
         value_spec=AttributeSpec(default=0.0),
-        cif_handler=CifHandler(names=['_p']),
+        tags=TagSpec(edi_names=['_p']),
     )
     assert _descriptor_units(with_handler, context='html') == 'Å'
     assert _descriptor_units(with_handler, context='latex') == r'\AA'
@@ -522,7 +526,7 @@ def test_descriptor_units_unchanged_for_non_beta_parameters():
         name='q',
         units='degrees',
         value_spec=AttributeSpec(default=0.0),
-        cif_handler=CifHandler(names=['_q']),
+        tags=TagSpec(edi_names=['_q']),
     )
     # No display_handler -> resolves to the declared unit.
     assert _descriptor_units(fallback, context='html') == 'degrees'
@@ -531,7 +535,7 @@ def test_descriptor_units_unchanged_for_non_beta_parameters():
 def test_descriptor_units_resolves_none_unit_to_empty_string():
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
     from easydiffraction.report.data_context import _descriptor_units
 
     # Intentional delta from routing through resolve_display_units: a
@@ -541,7 +545,7 @@ def test_descriptor_units_resolves_none_unit_to_empty_string():
         name='r',
         units='none',
         value_spec=AttributeSpec(default=0.0),
-        cif_handler=CifHandler(names=['_r']),
+        tags=TagSpec(edi_names=['_r']),
     )
     assert _descriptor_units(param, context='html') == ''
     assert _descriptor_units(param, context='gui') == ''
@@ -556,7 +560,7 @@ def test_descriptor_units_suppressed_for_beta_aniso_in_report():
     structure.cell.length_a = 5.0
     structure.cell.length_b = 6.0
     structure.cell.length_c = 8.0
-    structure.atom_sites.create(label='Fe', type_symbol='Fe', adp_iso=0.0)
+    structure.atom_sites.create(id='Fe', type_symbol='Fe', adp_iso=0.0)
     structure.atom_sites['Fe'].adp_type = 'beta'
     structure._sync_atom_site_aniso()
     aniso = structure.atom_site_aniso['Fe']

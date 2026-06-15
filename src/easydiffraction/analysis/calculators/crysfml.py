@@ -44,7 +44,7 @@ _INSTRUMENT_ATTRIBUTE_MAP: tuple[tuple[str, str], ...] = (
     # corrections are intentionally left unmapped here.
     ('calib_d_to_tof_offset', '_pd_meas_tof_offset'),
     ('calib_d_to_tof_linear', '_pd_meas_tof_dtt1'),
-    ('calib_d_to_tof_quad', '_pd_meas_tof_dtt2'),
+    ('calib_d_to_tof_quadratic', '_pd_meas_tof_dtt2'),
     ('setup_twotheta_bank', '_pd_meas_tof_bank_angle'),
 )
 
@@ -66,10 +66,10 @@ _PEAK_ATTRIBUTE_MAP: tuple[tuple[str, str], ...] = (
     ('broad_lorentz_gamma_0', '_pd_jorg_vondreele_gamma0'),
     ('broad_lorentz_gamma_1', '_pd_jorg_vondreele_gamma1'),
     ('broad_lorentz_gamma_2', '_pd_jorg_vondreele_gamma2'),
-    ('exp_decay_beta_0', '_pd_jorg_vondreele_beta0'),
-    ('exp_decay_beta_1', '_pd_jorg_vondreele_beta1'),
-    ('exp_rise_alpha_0', '_pd_jorg_vondreele_alpha0'),
-    ('exp_rise_alpha_1', '_pd_jorg_vondreele_alpha1'),
+    ('decay_beta_0', '_pd_jorg_vondreele_beta0'),
+    ('decay_beta_1', '_pd_jorg_vondreele_beta1'),
+    ('rise_alpha_0', '_pd_jorg_vondreele_alpha0'),
+    ('rise_alpha_1', '_pd_jorg_vondreele_alpha1'),
 )
 
 
@@ -186,13 +186,16 @@ class CrysfmlCalculator(CalculatorBase):
         experiment: ExperimentBase,
     ) -> list[float] | None:
         """Calculate a Crysfml pattern without length adjustment."""
-        if experiment.type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH:
+        if experiment.experiment_type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH:
             _, y = cfml_py_utilities.cw_powder_pattern_from_dict(crysfml_dict)
             return y
-        if experiment.type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
+        if experiment.experiment_type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
             _, y = cfml_py_utilities.tof_powder_pattern_from_dict(crysfml_dict)
             return y
-        log.warning(f'[CrysfmlCalculator] Unsupported beam mode {experiment.type.beam_mode.value}')
+        log.warning(
+            f'[CrysfmlCalculator] Unsupported beam mode '
+            f'{experiment.experiment_type.beam_mode.value}'
+        )
         return None
 
     def _adjust_pattern_length(  # noqa: PLR6301
@@ -287,7 +290,7 @@ class CrysfmlCalculator(CalculatorBase):
 
         for atom in structure.atom_sites:
             atom_site = {
-                '_label': atom.label.value,
+                '_label': atom.id.value,
                 '_type_symbol': _element_symbol(atom.type_symbol.value),
                 '_fract_x': atom.fract_x.value,
                 '_fract_y': atom.fract_y.value,
@@ -318,7 +321,7 @@ class CrysfmlCalculator(CalculatorBase):
             A dictionary representation of the experiment.
         """
         experiment_dict = {
-            '_diffrn_radiation_probe': experiment.type.radiation_probe.value,
+            '_diffrn_radiation_probe': experiment.experiment_type.radiation_probe.value,
         }
         self._update_experiment_dict_from_instrument(experiment_dict, experiment)
         self._update_experiment_dict_from_peak(experiment_dict, experiment)
@@ -342,8 +345,9 @@ class CrysfmlCalculator(CalculatorBase):
             experiment_dict,
             _INSTRUMENT_ATTRIBUTE_MAP,
         )
-        # if hasattr(experiment.instrument, 'calib_d_to_tof_recip'):
-        #    ??? = experiment.instrument.calib_d_to_tof_recip.value
+        # if hasattr(experiment.instrument,
+        #            'calib_d_to_tof_reciprocal'):
+        #    ??? = experiment.instrument.calib_d_to_tof_reciprocal.value
 
     def _update_experiment_dict_from_peak(
         self,

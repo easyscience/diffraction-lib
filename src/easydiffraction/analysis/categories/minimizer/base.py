@@ -15,7 +15,7 @@ from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.variable import GenericDescriptorBase
 from easydiffraction.core.variable import StringDescriptor
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 
 class MinimizerCategoryBase(CategoryItem, SwitchableCategoryBase):
@@ -42,9 +42,8 @@ class MinimizerCategoryBase(CategoryItem, SwitchableCategoryBase):
                     allowed=[member.value for member in MinimizerTypeEnum],
                 ),
             ),
-            cif_handler=CifHandler(
-                names=['_minimizer.type'],
-                iucr_name='_easydiffraction_minimizer.type',
+            tags=TagSpec(
+                edi_names=['_minimizer.type'], cif_names=['_easydiffraction_minimizer.type']
             ),
             display_handler=DisplayHandler(display_name='Type', latex_name='Type'),
         )

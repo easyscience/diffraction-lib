@@ -1,4 +1,5 @@
 ---
+title: Analysis
 icon: material/calculator
 ---
 
@@ -214,10 +215,10 @@ Here is an example of how to set parameters to be refined:
 project.structures['lbco'].cell.length_a.free = True
 
 # Set experiment parameters to be refined.
-project.experiments['hrpt'].linked_phases['lbco'].scale.free = True
+project.experiments['hrpt'].linked_structures['lbco'].scale.free = True
 project.experiments['hrpt'].instrument.calib_twotheta_offset.free = True
-project.experiments['hrpt'].background['10'].y.free = True
-project.experiments['hrpt'].background['165'].y.free = True
+project.experiments['hrpt'].background['10'].intensity.free = True
+project.experiments['hrpt'].background['165'].intensity.free = True
 ```
 
 After setting the parameters to be refined, you can perform the fit
@@ -285,7 +286,7 @@ regions where peaks overlap:
 project.experiments['hrpt'].background.auto_estimate()
 
 # Optionally free some of the new (fixed) points and fit again
-project.experiments['hrpt'].background['1'].y.free = True
+project.experiments['hrpt'].background['1'].intensity.free = True
 project.analysis.fit()
 ```
 
@@ -329,7 +330,7 @@ project.display.posterior.predictive(expt_name='hrpt')
 
 When posterior or posterior-predictive arrays are persisted, they are
 stored in `analysis/results.h5`. Scalar summaries remain in
-`analysis/analysis.cif`.
+`analysis/analysis.edi`.
 
 ## Constraints
 
@@ -349,21 +350,21 @@ An example of setting aliases for parameters in a structure:
 ```python
 # Set aliases for the atomic displacement parameters
 project.analysis.aliases.create(
-    label='biso_La',
+    id='biso_La',
     param=project.structures['lbco'].atom_sites['La'].adp_iso,
 )
 project.analysis.aliases.create(
-    label='biso_Ba',
+    id='biso_Ba',
     param=project.structures['lbco'].atom_sites['Ba'].adp_iso,
 )
 
 # Set aliases for the occupancies of the atom sites
 project.analysis.aliases.create(
-    label='occ_La',
+    id='occ_La',
     param=project.structures['lbco'].atom_sites['La'].occupancy,
 )
 project.analysis.aliases.create(
-    label='occ_Ba',
+    id='occ_Ba',
     param=project.structures['lbco'].atom_sites['Ba'].occupancy,
 )
 ```
@@ -410,43 +411,49 @@ User defined constraints
 
 Constraints enabled: True
 
-## Analysis as CIF
+## Analysis as Text
 
-To inspect an analysis configuration in CIF format, use:
+To inspect an analysis configuration as text, use:
 
 ```python
-# Show analysis as CIF
-project.analysis.show_as_cif()
+# Show analysis as text
+project.analysis.show_as_text()
 ```
 
-Example output:
+Once a fit has run, the output also includes a `_fit_result.*` block.
+Example output (configuration before fitting):
 
 ```
-╒════════════════════════════════════════════════╕
-│ _fitting_mode.type           single            │
-│ _minimizer.type              "lmfit (leastsq)" │
-│                                                │
-│ loop_                                          │
-│ _alias.label                                   │
-│ _alias.param_unique_name                       │
-│ biso_La  lbco.atom_site.La.B_iso_or_equiv      │
-│ biso_Ba  lbco.atom_site.Ba.B_iso_or_equiv      │
-│ occ_La   lbco.atom_site.La.occupancy           │
-│ occ_Ba   lbco.atom_site.Ba.occupancy           │
-│                                                │
-│ loop_                                          │
-│ _constraint.id                                 │
-│ _constraint.expression                         │
-│ biso_Ba  "biso_Ba = biso_La"                   │
-│ occ_Ba   "occ_Ba = 1 - occ_La"                 │
-╘════════════════════════════════════════════════╛
+Analysis info as text
+┌────────────────────────────────────────────────────┐
+│       CIF                                            │
+├────────────────────────────────────────────────────┤
+│   1   _fitting_mode.type single                      │
+│   2                                                  │
+│   3   _minimizer.type "lmfit (leastsq)"              │
+│   4   _minimizer.max_iterations 1000                 │
+│   5                                                  │
+│   6   loop_                                          │
+│   7   _alias.id                                      │
+│   8   _alias.parameter_unique_name                   │
+│   9   biso_La lbco.atom_site.La.adp_iso              │
+│  10   biso_Ba lbco.atom_site.Ba.adp_iso              │
+│  11   occ_La lbco.atom_site.La.occupancy             │
+│  12   occ_Ba lbco.atom_site.Ba.occupancy             │
+│  13                                                  │
+│  14   loop_                                          │
+│  15   _constraint.id                                 │
+│  16   _constraint.expression                         │
+│  17   biso_Ba "biso_Ba = biso_La"                    │
+│  18   occ_Ba "occ_Ba = 1 - occ_La"                   │
+└────────────────────────────────────────────────────┘
 ```
 
 ## Saving an Analysis
 
 Saving the project, as described in the [Project](project.md) section,
-will also save the analysis settings to the `analysis.cif` inside the
-project directory.
+will also save the analysis settings to `analysis/analysis.edi` inside
+the project directory.
 
 <br>
 

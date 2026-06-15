@@ -95,7 +95,7 @@ class CryspyCalculator(CalculatorBase):
             self._cached_peak_types[combined_name] = current_type
 
         # Preferred-orientation row set/identity. Adding or removing a
-        # row, or changing a row's phase_id or Miller direction,
+        # row, or changing a row's structure_id or Miller direction,
         # changes the emitted texture loop's shape and must rebuild the
         # dict. The refinable r/fraction values are patched in place, so
         # they are excluded. Constant-wavelength only, matching the
@@ -103,12 +103,12 @@ class CryspyCalculator(CalculatorBase):
         # tracked here.
         supports_texture = (
             'preferred_orientation' in type(experiment)._public_attrs()
-            and experiment.type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH
+            and experiment.experiment_type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH
         )
         if supports_texture:
             current_pref_orient = tuple(
                 (
-                    item.phase_id.value,
+                    item.structure_id.value,
                     item.index_h.value,
                     item.index_k.value,
                     item.index_l.value,
@@ -282,11 +282,14 @@ class CryspyCalculator(CalculatorBase):
             BeamModeEnum.CONSTANT_WAVELENGTH: 'pd',
             BeamModeEnum.TIME_OF_FLIGHT: 'tof',
         }
-        beam_mode = experiment.type.beam_mode.value
+        beam_mode = experiment.experiment_type.beam_mode.value
         if beam_mode in prefixes:
             cryspy_block_name = f'{prefixes[beam_mode]}_{experiment.name}'
         else:
-            log.warning(f'[CryspyCalculator] Unknown beam mode {experiment.type.beam_mode.value}')
+            log.warning(
+                f'[CryspyCalculator] Unknown beam mode '
+                f'{experiment.experiment_type.beam_mode.value}'
+            )
             return []
 
         try:
@@ -308,7 +311,7 @@ class CryspyCalculator(CalculatorBase):
         structure: Structure,
         experiment: ExperimentBase,
         *,
-        phase_id: str,
+        structure_id: str,
     ) -> list[PowderReflnRecord] | None:
         """
         Return powder reflection records from the latest pattern run.
@@ -321,7 +324,10 @@ class CryspyCalculator(CalculatorBase):
         core_arrays = self._powder_refln_core_arrays(phase_block)
         if core_arrays is None:
             return None
-        x_values = self._powder_refln_x_values(phase_block, experiment.type.beam_mode.value)
+        x_values = self._powder_refln_x_values(
+            phase_block,
+            experiment.experiment_type.beam_mode.value,
+        )
         if x_values is None:
             return None
 
@@ -332,8 +338,8 @@ class CryspyCalculator(CalculatorBase):
 
         return [
             self._powder_refln_record(
-                phase_id=phase_id,
-                beam_mode=experiment.type.beam_mode.value,
+                structure_id=structure_id,
+                beam_mode=experiment.experiment_type.beam_mode.value,
                 hkl=(index_h, index_k, index_l),
                 values=(sthovl, d_value, x_value, f_value, f_sq_value),
             )
@@ -425,7 +431,7 @@ class CryspyCalculator(CalculatorBase):
     @staticmethod
     def _powder_refln_record(
         *,
-        phase_id: str,
+        structure_id: str,
         beam_mode: BeamModeEnum,
         hkl: tuple[int, int, int],
         values: tuple[float, float, float, float, float],
@@ -443,7 +449,7 @@ class CryspyCalculator(CalculatorBase):
             x_kwargs = {'time_of_flight': float(x_value)}
 
         return PowderReflnRecord(
-            phase_id=phase_id,
+            structure_id=structure_id,
             d_spacing=float(d_spacing),
             sin_theta_over_lambda=float(sin_theta_over_lambda),
             index_h=int(index_h),
@@ -638,7 +644,7 @@ class CryspyCalculator(CalculatorBase):
             if adp_enum not in {AdpTypeEnum.BANI, AdpTypeEnum.UANI, AdpTypeEnum.BETA}:
                 continue
 
-            aniso = structure.atom_site_aniso[atom.label.value]
+            aniso = structure.atom_site_aniso[atom.id.value]
             components = [
                 aniso.adp_11.value,
                 aniso.adp_22.value,
@@ -679,8 +685,8 @@ class CryspyCalculator(CalculatorBase):
         experiment : ExperimentBase
             The source experiment.
         """
-        if experiment.type.sample_form.value == SampleFormEnum.POWDER:
-            if experiment.type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH:
+        if experiment.experiment_type.sample_form.value == SampleFormEnum.POWDER:
+            if experiment.experiment_type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH:
                 cryspy_expt_name = f'pd_{experiment.name}'
                 cryspy_expt_dict = cryspy_dict[cryspy_expt_name]
 
@@ -729,14 +735,14 @@ class CryspyCalculator(CalculatorBase):
                 # loop was emitted, so guard.
                 _update_texture_in_cryspy_dict(cryspy_expt_dict, experiment)
 
-            elif experiment.type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
+            elif experiment.experiment_type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
                 cryspy_expt_name = f'tof_{experiment.name}'
                 cryspy_expt_dict = cryspy_dict[cryspy_expt_name]
 
                 # Instrument
                 cryspy_expt_dict['zero'][0] = experiment.instrument.calib_d_to_tof_offset.value
                 cryspy_expt_dict['dtt1'][0] = experiment.instrument.calib_d_to_tof_linear.value
-                cryspy_expt_dict['dtt2'][0] = experiment.instrument.calib_d_to_tof_quad.value
+                cryspy_expt_dict['dtt2'][0] = experiment.instrument.calib_d_to_tof_quadratic.value
                 cryspy_expt_dict['ttheta_bank'] = np.deg2rad(
                     experiment.instrument.setup_twotheta_bank.value
                 )
@@ -749,12 +755,12 @@ class CryspyCalculator(CalculatorBase):
 
                 _update_tof_peak_in_cryspy_dict(cryspy_expt_dict, experiment.peak)
 
-        if experiment.type.sample_form.value == SampleFormEnum.SINGLE_CRYSTAL:
+        if experiment.experiment_type.sample_form.value == SampleFormEnum.SINGLE_CRYSTAL:
             cryspy_expt_name = f'diffrn_{experiment.name}'
             cryspy_expt_dict = cryspy_dict[cryspy_expt_name]
 
             # Instrument
-            if experiment.type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH:
+            if experiment.experiment_type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH:
                 cryspy_expt_dict['wavelength'][0] = experiment.instrument.setup_wavelength.value
 
             # Extinction
@@ -826,6 +832,34 @@ class CryspyCalculator(CalculatorBase):
         finally:
             self._restore_from_u_notation(structure, saved)
 
+        return self._relabel_cif_tags_for_cryspy(cif)
+
+    # Edi persistence renamed several CIF tags away from the legacy
+    # IUCr spellings that cryspy's CIF parser still requires. The
+    # displacement values are already converted to U notation by
+    # ``_temporarily_convert_to_u_notation``; only the tag names need
+    # mapping back so cryspy recognizes the block as a crystal.
+    _CRYSPY_TAG_REPLACEMENTS = (
+        ('_atom_site_aniso.id', '_atom_site_aniso.label'),
+        ('_atom_site.id', '_atom_site.label'),
+        ('_space_group.name_h_m', '_space_group.name_H-M_alt'),
+        ('_space_group.coord_system_code', '_space_group.IT_coordinate_system_code'),
+        ('_atom_site.adp_iso', '_atom_site.U_iso_or_equiv'),
+        ('_atom_site_aniso.adp_11', '_atom_site_aniso.U_11'),
+        ('_atom_site_aniso.adp_22', '_atom_site_aniso.U_22'),
+        ('_atom_site_aniso.adp_33', '_atom_site_aniso.U_33'),
+        ('_atom_site_aniso.adp_12', '_atom_site_aniso.U_12'),
+        ('_atom_site_aniso.adp_13', '_atom_site_aniso.U_13'),
+        ('_atom_site_aniso.adp_23', '_atom_site_aniso.U_23'),
+    )
+
+    @staticmethod
+    def _relabel_cif_tags_for_cryspy(cif: str) -> str:
+        """
+        Map Edi CIF tags to cryspy-recognized legacy spellings.
+        """
+        for edi_tag, cryspy_tag in CryspyCalculator._CRYSPY_TAG_REPLACEMENTS:
+            cif = cif.replace(edi_tag, cryspy_tag)
         return cif
 
     @staticmethod
@@ -865,10 +899,10 @@ class CryspyCalculator(CalculatorBase):
 
             orig_adp_type = atom._adp_type._value
             orig_iso_val = atom._adp_iso._value
-            orig_iso_names = list(atom._adp_iso._cif_handler._names)
+            orig_iso_names = list(atom._adp_iso._tags._edi_names)
 
             atom._adp_iso._value = orig_iso_val / factor
-            atom._adp_iso._cif_handler._names = [
+            atom._adp_iso._tags._edi_names = [
                 '_atom_site.U_iso_or_equiv',
                 '_atom_site.B_iso_or_equiv',
             ]
@@ -878,7 +912,7 @@ class CryspyCalculator(CalculatorBase):
                 saved.append((atom, None, None, None, orig_adp_type, orig_iso_names, orig_iso_val))
             else:
                 atom._adp_type._value = AdpTypeEnum.UANI.value
-                lbl = atom.label.value
+                lbl = atom.id.value
                 if lbl in structure.atom_site_aniso:
                     aniso = structure.atom_site_aniso[lbl]
                 else:
@@ -889,9 +923,9 @@ class CryspyCalculator(CalculatorBase):
                     for s in suffixes:
                         param = getattr(aniso, f'_adp_{s}')
                         orig_vals.append(param._value)
-                        orig_names.append(list(param._cif_handler._names))
+                        orig_names.append(list(param._tags._edi_names))
                         param._value /= factor
-                        param._cif_handler._names = [
+                        param._tags._edi_names = [
                             f'_atom_site_aniso.U_{s}',
                             f'_atom_site_aniso.B_{s}',
                         ]
@@ -936,12 +970,12 @@ class CryspyCalculator(CalculatorBase):
         ) in saved:
             atom._adp_type._value = orig_adp_type
             atom._adp_iso._value = orig_iso_val
-            atom._adp_iso._cif_handler._names = orig_iso_names
+            atom._adp_iso._tags._edi_names = orig_iso_names
             if aniso is not None and orig_vals is not None:
                 for s, val, names in zip(suffixes, orig_vals, orig_names, strict=False):
                     param = getattr(aniso, f'_adp_{s}')
                     param._value = val
-                    param._cif_handler._names = names
+                    param._tags._edi_names = names
 
     @staticmethod
     def _beta_reciprocal_pairs(structure: Structure) -> tuple[float, ...]:
@@ -993,18 +1027,18 @@ class CryspyCalculator(CalculatorBase):
 
         orig_adp_type = atom._adp_type._value
         orig_iso_val = atom._adp_iso._value
-        orig_iso_names = list(atom._adp_iso._cif_handler._names)
+        orig_iso_names = list(atom._adp_iso._tags._edi_names)
 
         # adp_iso already holds the equivalent U for a beta atom; only
         # the CIF tag needs relabelling (cryspy zeroes b_iso for aniso
         # atoms).
-        atom._adp_iso._cif_handler._names = [
+        atom._adp_iso._tags._edi_names = [
             '_atom_site.U_iso_or_equiv',
             '_atom_site.B_iso_or_equiv',
         ]
         atom._adp_type._value = AdpTypeEnum.UANI.value
 
-        lbl = atom.label.value
+        lbl = atom.id.value
         if lbl not in structure.atom_site_aniso:
             return (atom, None, None, None, orig_adp_type, orig_iso_names, orig_iso_val)
         aniso = structure.atom_site_aniso[lbl]
@@ -1014,9 +1048,9 @@ class CryspyCalculator(CalculatorBase):
         for s, pair in zip(suffixes, pairs, strict=False):
             param = getattr(aniso, f'_adp_{s}')
             orig_vals.append(param._value)
-            orig_names.append(list(param._cif_handler._names))
+            orig_names.append(list(param._tags._edi_names))
             param._value /= pair
-            param._cif_handler._names = [
+            param._tags._edi_names = [
                 f'_atom_site_aniso.U_{s}',
                 f'_atom_site_aniso.B_{s}',
             ]
@@ -1043,7 +1077,7 @@ class CryspyCalculator(CalculatorBase):
             The Cryspy CIF string representation of the experiment.
         """
         attrs = type(experiment)._public_attrs()
-        expt_type = experiment.type if 'type' in attrs else None
+        expt_type = experiment.experiment_type if 'experiment_type' in attrs else None
         instrument = experiment.instrument if 'instrument' in attrs else None
         peak = experiment.peak if 'peak' in attrs else None
         extinction = experiment.extinction if 'extinction' in attrs else None
@@ -1112,7 +1146,7 @@ def _cif_instrument_section(
                 'setup_twotheta_bank': '_tof_parameters_2theta_bank',
                 'calib_d_to_tof_offset': '_tof_parameters_Zero',
                 'calib_d_to_tof_linear': '_tof_parameters_Dtt1',
-                'calib_d_to_tof_quad': '_tof_parameters_dtt2',
+                'calib_d_to_tof_quadratic': '_tof_parameters_dtt2',
             }
         elif expt_type.sample_form.value == SampleFormEnum.SINGLE_CRYSTAL:
             instrument_mapping = {}  # TODO: Check this mapping!
@@ -1133,7 +1167,7 @@ def _update_tof_peak_in_cryspy_dict(
     peak_tag = peak.type_info.tag
     # TODO: Need to improve this logic to be more robust and extensible
     #  for future profiles
-    if not hasattr(peak, 'exp_decay_beta_0') and not hasattr(peak, 'dexp_decay_beta_00'):
+    if not hasattr(peak, 'decay_beta_0') and not hasattr(peak, 'dexp_decay_beta_00'):
         cryspy_expt_dict['profile_gammas'][0] = peak.broad_lorentz_gamma_0.value
         cryspy_expt_dict['profile_gammas'][1] = peak.broad_lorentz_gamma_1.value
         cryspy_expt_dict['profile_gammas'][2] = peak.broad_lorentz_gamma_2.value
@@ -1153,11 +1187,11 @@ def _update_tof_peak_in_cryspy_dict(
         cryspy_expt_dict['profile_gammas'][1] = peak.broad_lorentz_gamma_1.value
         cryspy_expt_dict['profile_gammas'][2] = peak.broad_lorentz_gamma_2.value
     else:
-        cryspy_expt_dict['profile_betas'][0] = peak.exp_decay_beta_0.value
-        cryspy_expt_dict['profile_betas'][1] = peak.exp_decay_beta_1.value
+        cryspy_expt_dict['profile_betas'][0] = peak.decay_beta_0.value
+        cryspy_expt_dict['profile_betas'][1] = peak.decay_beta_1.value
 
-        cryspy_expt_dict['profile_alphas'][0] = peak.exp_rise_alpha_0.value
-        cryspy_expt_dict['profile_alphas'][1] = peak.exp_rise_alpha_1.value
+        cryspy_expt_dict['profile_alphas'][0] = peak.rise_alpha_0.value
+        cryspy_expt_dict['profile_alphas'][1] = peak.rise_alpha_1.value
 
         if peak_tag == PeakProfileTypeEnum.TOF_JORGENSEN_VON_DREELE:
             cryspy_expt_dict['profile_gammas'][0] = peak.broad_lorentz_gamma_0.value
@@ -1209,12 +1243,12 @@ def _cif_peak_section(
                 'dexp_switch_r_02': '_tof_profile_r02',
                 'dexp_switch_r_03': '_tof_profile_r03',
             })
-        elif hasattr(peak, 'exp_decay_beta_0') and hasattr(peak, 'exp_rise_alpha_0'):
+        elif hasattr(peak, 'decay_beta_0') and hasattr(peak, 'rise_alpha_0'):
             peak_mapping.update({
-                'exp_decay_beta_0': '_tof_profile_beta0',
-                'exp_decay_beta_1': '_tof_profile_beta1',
-                'exp_rise_alpha_0': '_tof_profile_alpha0',
-                'exp_rise_alpha_1': '_tof_profile_alpha1',
+                'decay_beta_0': '_tof_profile_beta0',
+                'decay_beta_1': '_tof_profile_beta1',
+                'rise_alpha_0': '_tof_profile_alpha0',
+                'rise_alpha_1': '_tof_profile_alpha1',
             })
             if peak.type_info.tag == PeakProfileTypeEnum.TOF_JORGENSEN_VON_DREELE:
                 cif_lines.append('_tof_profile_peak_shape pseudo-Voigt')
@@ -1344,9 +1378,9 @@ def _cif_pref_orient_section(
     Append the cryspy texture (March-Dollase) loop for the phase.
 
     cryspy keys texture to a phase by ``_texture_label``, so only the
-    ``pref_orient`` row whose ``phase_id`` matches the phase being
-    calculated is emitted. A row with ``r = 1`` is a mathematical no-op;
-    an empty collection (the default) emits nothing.
+    ``preferred_orientation`` row whose ``structure_id`` matches the
+    phase being calculated is emitted. A row with ``r = 1`` is a
+    mathematical no-op; an empty collection (the default) emits nothing.
     """
     # Initial support is constant-wavelength only (ADR Deferred Work);
     # the TOF pass-through is not wired, so a TOF texture loop would
@@ -1363,7 +1397,7 @@ def _cif_pref_orient_section(
         return
     phase_label = linked_structure.name
     row = next(
-        (item for item in pref_orient if item.phase_id.value == phase_label),
+        (item for item in pref_orient if item.structure_id.value == phase_label),
         None,
     )
     if row is None:
@@ -1408,10 +1442,10 @@ def _update_texture_in_cryspy_dict(
     """
     Patch cryspy texture g_1/g_2 from preferred-orientation rows.
 
-    Matches each emitted texture row to a ``pref_orient`` row by phase
-    label and writes the refinable coefficient and random fraction in
-    place. ``index_h``/``index_k``/``index_l`` are fixed descriptors, so
-    ``texture_axis`` is never touched. No-op when no texture loop was
+    Matches each emitted texture row to a preferred-orientation row by
+    phase label and writes the refinable coefficient and random fraction
+    in place. ``index_h``/``index_k``/``index_l`` are fixed descriptors,
+    so ``texture_axis`` is never touched. No-op when no texture loop was
     emitted.
     """
     if 'texture_g1' not in cryspy_expt_dict:
@@ -1419,7 +1453,7 @@ def _update_texture_in_cryspy_dict(
     pref_orient = getattr(experiment, 'preferred_orientation', None)
     if pref_orient is None:
         return
-    rows = {item.phase_id.value: item for item in pref_orient}
+    rows = {item.structure_id.value: item for item in pref_orient}
     for index, label in enumerate(cryspy_expt_dict['texture_name']):
         row = rows.get(str(label))
         if row is not None:

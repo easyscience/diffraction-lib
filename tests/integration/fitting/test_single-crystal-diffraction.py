@@ -5,20 +5,20 @@ import tempfile
 
 import pytest
 
-import easydiffraction as ed
+import easydiffraction as edi
 
 TEMP_DIR = tempfile.gettempdir()
 
 
 def test_single_fit_neut_sc_cwl_tbti() -> None:
-    project = ed.Project()
+    project = edi.Project()
 
     # Set structure
-    model_path = ed.download_data(id=20, destination=TEMP_DIR)
+    model_path = edi.download_data('struct-tbti', destination=TEMP_DIR)
     project.structures.add_from_cif_path(model_path)
 
     # Set experiment
-    data_path = ed.download_data(id=19, destination=TEMP_DIR)
+    data_path = edi.download_data('meas-tbti-heidi', destination=TEMP_DIR)
     project.experiments.add_from_data_path(
         name='heidi',
         data_path=data_path,
@@ -28,15 +28,15 @@ def test_single_fit_neut_sc_cwl_tbti() -> None:
         scattering_type='bragg',
     )
     experiment = project.experiments['heidi']
-    experiment.linked_crystal.id = 'tbti'
-    experiment.linked_crystal.scale = 3
+    experiment.linked_structure.structure_id = 'tbti'
+    experiment.linked_structure.scale = 3
     experiment.instrument.setup_wavelength = 0.793
     experiment.extinction.mosaicity = 29820
     experiment.extinction.radius = 27
 
     # Select fitting parameters (experiment only)
     # Structure parameters are selected in the loaded CIF file
-    experiment.linked_crystal.scale.free = True
+    experiment.linked_structure.scale.free = True
     experiment.extinction.radius.free = True
 
     # Perform fit
@@ -48,14 +48,14 @@ def test_single_fit_neut_sc_cwl_tbti() -> None:
 
 
 def test_single_fit_neut_sc_tof_taurine() -> None:
-    project = ed.Project()
+    project = edi.Project()
 
     # Set structure
-    model_path = ed.download_data(id=21, destination=TEMP_DIR)
+    model_path = edi.download_data('struct-taurine', destination=TEMP_DIR)
     project.structures.add_from_cif_path(model_path)
 
     # Set experiment
-    data_path = ed.download_data(id=22, destination=TEMP_DIR)
+    data_path = edi.download_data('meas-taurine-senju', destination=TEMP_DIR)
     project.experiments.add_from_data_path(
         name='senju',
         data_path=data_path,
@@ -65,14 +65,14 @@ def test_single_fit_neut_sc_tof_taurine() -> None:
         scattering_type='bragg',
     )
     experiment = project.experiments['senju']
-    experiment.linked_crystal.id = 'taurine'
-    experiment.linked_crystal.scale = 1.4
+    experiment.linked_structure.structure_id = 'taurine'
+    experiment.linked_structure.scale = 1.4
     experiment.extinction.mosaicity = 1000.0
     experiment.extinction.radius = 2.0
 
     # Select fitting parameters (experiment only)
     # Structure parameters are selected in the loaded CIF file
-    experiment.linked_crystal.scale.free = True
+    experiment.linked_structure.scale.free = True
     experiment.extinction.radius.free = True
 
     # Perform fit

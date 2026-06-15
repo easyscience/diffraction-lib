@@ -17,7 +17,7 @@ def _make_param(
     from easydiffraction.core.display_handler import DisplayHandler
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     display_handler = (
         DisplayHandler(display_units=display_units) if display_units is not None else None
@@ -26,7 +26,7 @@ def _make_param(
         name=name,
         units=units,
         value_spec=AttributeSpec(default=0.0),
-        cif_handler=CifHandler(names=[f'_{cat}.{name}']),
+        tags=TagSpec(edi_names=[f'_{cat}.{name}']),
         display_handler=display_handler,
     )
     param.value = val
@@ -48,12 +48,12 @@ def _make_int_descriptor(db, cat, entry, name, val):
     from easydiffraction.core.display_handler import DisplayHandler
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import IntegerDescriptor
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     descriptor = IntegerDescriptor(
         name=name,
         value_spec=AttributeSpec(default=None, allow_none=True),
-        cif_handler=CifHandler(names=[f'_{cat}.{name}']),
+        tags=TagSpec(edi_names=[f'_{cat}.{name}']),
         display_handler=DisplayHandler(),
     )
     descriptor.value = val
@@ -66,6 +66,7 @@ def _make_int_descriptor(db, cat, entry, name, val):
 def test_how_to_access_parameters_prints_paths_and_uids(capsys, monkeypatch):
     import easydiffraction.analysis.analysis as analysis_mod
     from easydiffraction.analysis.analysis import Analysis
+    from easydiffraction.display.links import TableLink
 
     p1 = _make_param('db1', 'catA', '', 'alpha', 1.0)
     p2 = _make_param('db2', 'catB', 'row1', 'beta', 2.0)
@@ -100,6 +101,9 @@ def test_how_to_access_parameters_prints_paths_and_uids(capsys, monkeypatch):
     data = captured.get('columns_data') or []
 
     assert 'How to Access in Python Code' in headers
+    assert isinstance(data[0][3], TableLink)
+    assert data[0][3] == 'alpha'
+    assert data[0][3].url.endswith('/user-guide/parameters/catA/#cata-alpha')
 
     # Flatten rows to strings for simple membership checks
     flat_rows = [' '.join(map(str, row)) for row in data]
@@ -108,21 +112,48 @@ def test_how_to_access_parameters_prints_paths_and_uids(capsys, monkeypatch):
     assert any("proj.structures['db1'].catA.alpha" in r for r in flat_rows)
     assert any("proj.experiments['db2'].catB['row1'].beta" in r for r in flat_rows)
 
-    # Now check CIF unique identifiers via the new API
+    # Now check constraint unique identifiers via the new API
     captured2 = {}
 
     def fake_render_table2(**kwargs):
         captured2.update(kwargs)
 
     monkeypatch.setattr(analysis_mod, 'render_table', fake_render_table2)
-    a.display.parameter_cif_uids()
+    a.display.parameter_uids()
     headers2 = captured2.get('columns_headers') or []
     data2 = captured2.get('columns_data') or []
-    assert 'Unique Identifier for CIF Constraints' in headers2
+    assert 'Unique Identifier for Constraints' in headers2
+    assert isinstance(data2[0][3], TableLink)
+    assert data2[0][3] == 'alpha'
+    assert data2[0][3].url.endswith('/user-guide/parameters/catA/#cata-alpha')
     flat_rows2 = [' '.join(map(str, row)) for row in data2]
     # Unique names are datablock.category[.entry].parameter
     assert any('db1 catA  alpha' in r.replace('.', ' ') for r in flat_rows2)
     assert any('db2 catB row1 beta' in r.replace('.', ' ') for r in flat_rows2)
+
+    # Edi persistence tags
+    captured3 = {}
+
+    def fake_render_table3(**kwargs):
+        captured3.update(kwargs)
+
+    monkeypatch.setattr(analysis_mod, 'render_table', fake_render_table3)
+    a.display.parameter_edi_tags()
+    assert 'Edi Tag' in (captured3.get('columns_headers') or [])
+    edi_rows = [' '.join(map(str, row)) for row in captured3.get('columns_data') or []]
+    assert any('_catA.alpha' in r for r in edi_rows)
+
+    # Report CIF tags
+    captured4 = {}
+
+    def fake_render_table4(**kwargs):
+        captured4.update(kwargs)
+
+    monkeypatch.setattr(analysis_mod, 'render_table', fake_render_table4)
+    a.display.parameter_cif_tags()
+    assert 'CIF Tag' in (captured4.get('columns_headers') or [])
+    cif_rows = [' '.join(map(str, row)) for row in captured4.get('columns_data') or []]
+    assert any('_catA.alpha' in r for r in cif_rows)
 
 
 def test_how_to_access_parameters_skips_large_loop_categories(capsys, monkeypatch):
@@ -130,7 +161,7 @@ def test_how_to_access_parameters_skips_large_loop_categories(capsys, monkeypatc
     from easydiffraction.analysis.analysis import Analysis
 
     visible = _make_param('db1', 'catA', '', 'alpha', 1.0)
-    data_param = _make_param('db2', 'pd_data', '1', 'intensity_meas', 2.0)
+    data_param = _make_param('db2', 'data', '1', 'intensity_meas', 2.0)
     refln_param = _make_param('db2', 'refln', '1', 'f_calc', 3.0)
 
     class Coll:
@@ -157,16 +188,16 @@ def test_how_to_access_parameters_skips_large_loop_categories(capsys, monkeypatc
 
     flat_rows = [' '.join(map(str, row)) for row in captured.get('columns_data') or []]
     assert any("proj.structures['db1'].catA.alpha" in row for row in flat_rows)
-    assert not any('pd_data' in row for row in flat_rows)
+    assert not any('data' in row for row in flat_rows)
     assert not any('refln' in row for row in flat_rows)
 
 
-def test_parameter_cif_uids_skips_large_loop_categories(monkeypatch):
+def test_parameter_uids_skips_large_loop_categories(monkeypatch):
     import easydiffraction.analysis.analysis as analysis_mod
     from easydiffraction.analysis.analysis import Analysis
 
     visible = _make_param('db1', 'catA', '', 'alpha', 1.0)
-    data_param = _make_param('db2', 'pd_data', '1', 'intensity_meas', 2.0)
+    data_param = _make_param('db2', 'data', '1', 'intensity_meas', 2.0)
     refln_param = _make_param('db2', 'refln', '1', 'f_calc', 3.0)
 
     class Coll:
@@ -186,11 +217,11 @@ def test_parameter_cif_uids_skips_large_loop_categories(monkeypatch):
         captured.update(kwargs)
 
     monkeypatch.setattr(analysis_mod, 'render_table', fake_render_table)
-    Analysis(Project()).display.parameter_cif_uids()
+    Analysis(Project()).display.parameter_uids()
 
     flat_rows = [' '.join(map(str, row)) for row in captured.get('columns_data') or []]
     assert any('db1 catA  alpha' in row.replace('.', ' ') for row in flat_rows)
-    assert not any('pd_data' in row for row in flat_rows)
+    assert not any('data' in row for row in flat_rows)
     assert not any('refln' in row for row in flat_rows)
 
 
@@ -200,7 +231,7 @@ def test_all_params_skips_large_loop_categories(monkeypatch):
 
     structure_param = _make_param('s1', 'cell', '', 'length_a', 4.0)
     visible_experiment_param = _make_param('e1', 'instrument', '', 'wavelength', 1.5)
-    data_param = _make_param('e1', 'pd_data', '1', 'intensity_meas', 10.0)
+    data_param = _make_param('e1', 'data', '1', 'intensity_meas', 10.0)
     refln_param = _make_param('e1', 'refln', '1', 'f_calc', 12.0)
 
     class Coll:
@@ -272,6 +303,12 @@ def test_all_params_marks_constrained_parameters_not_fittable(monkeypatch):
     Analysis(Project()).display.all_params()
 
     structure_df = rendered[0]
+    from easydiffraction.display.links import TableLink
+
+    parameter_cell = structure_df['parameter', 'left'].iloc[0]
+    assert isinstance(parameter_cell, TableLink)
+    assert str(parameter_cell) == 'length_a'
+    assert parameter_cell.url.endswith('/user-guide/parameters/structure/cell/#cell-length-a')
     assert structure_df['parameter', 'left'].tolist() == ['length_a', 'length_b', 'length_c']
     assert structure_df['fittable', 'left'].tolist() == [True, False, False]
 
@@ -424,7 +461,7 @@ def test_all_params_renders_integer_descriptors_without_nan(monkeypatch):
     assert int(structure_df.isna().sum().sum()) == 0
 
 
-def test_how_to_access_and_cif_uids_include_integer_descriptors(monkeypatch):
+def test_how_to_access_and_uids_include_integer_descriptors(monkeypatch):
     import easydiffraction.analysis.analysis as analysis_mod
     from easydiffraction.analysis.analysis import Analysis
 
@@ -456,7 +493,7 @@ def test_how_to_access_and_cif_uids_include_integer_descriptors(monkeypatch):
     assert any("proj.structures['lbco'].atom_site['O'].multiplicity" in row for row in access_rows)
 
     captured.clear()
-    a.display.parameter_cif_uids()
+    a.display.parameter_uids()
 
     uid_rows = [' '.join(map(str, row)) for row in captured.get('columns_data') or []]
     assert any('multiplicity' in row for row in uid_rows)

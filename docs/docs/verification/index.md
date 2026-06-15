@@ -1,4 +1,5 @@
 ---
+title: Verification
 icon: material/check-decagram
 ---
 

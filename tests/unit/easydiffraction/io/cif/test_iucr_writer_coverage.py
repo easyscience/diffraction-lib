@@ -9,20 +9,22 @@ from types import SimpleNamespace
 
 import pytest
 
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 
 class _Descriptor:
     """Minimal CIF descriptor exposing a value and a handler."""
 
-    def __init__(self, value, tag='_x.value', iucr_name=None):
+    def __init__(self, value, tag='_x.value', cif_name=None):
         self.name = tag.rsplit('.', maxsplit=1)[-1]
         self.value = value
-        self._cif_handler = CifHandler(names=[tag], iucr_name=iucr_name)
+        self._tags = TagSpec(
+            edi_names=[tag], cif_names=[cif_name] if cif_name is not None else None
+        )
 
 
-def _descriptor(value, tag='_x.value', iucr_name=None):
-    return _Descriptor(value, tag=tag, iucr_name=iucr_name)
+def _descriptor(value, tag='_x.value', cif_name=None):
+    return _Descriptor(value, tag=tag, cif_name=cif_name)
 
 
 # --- _report_path / iucr_report_path ----------------------------------
@@ -32,7 +34,7 @@ def test_report_path_uses_explicit_path(tmp_path):
     from easydiffraction.io.cif.iucr_writer import iucr_report_path
 
     target = tmp_path / 'custom' / 'out.cif'
-    project = SimpleNamespace(name='demo', info=SimpleNamespace(path=tmp_path))
+    project = SimpleNamespace(name='demo', metadata=SimpleNamespace(path=tmp_path))
 
     assert iucr_report_path(project, target) == target
 
@@ -40,7 +42,7 @@ def test_report_path_uses_explicit_path(tmp_path):
 def test_report_path_raises_when_project_unsaved():
     from easydiffraction.io.cif.iucr_writer import iucr_report_path
 
-    project = SimpleNamespace(name='demo', info=SimpleNamespace(path=None))
+    project = SimpleNamespace(name='demo', metadata=SimpleNamespace(path=None))
 
     with pytest.raises(FileNotFoundError, match='Save the project first'):
         iucr_report_path(project)
@@ -49,7 +51,7 @@ def test_report_path_raises_when_project_unsaved():
 def test_report_path_defaults_to_reports_dir(tmp_path):
     from easydiffraction.io.cif.iucr_writer import iucr_report_path
 
-    project = SimpleNamespace(name='demo', info=SimpleNamespace(path=tmp_path))
+    project = SimpleNamespace(name='demo', metadata=SimpleNamespace(path=tmp_path))
 
     assert iucr_report_path(project) == tmp_path / 'reports' / 'demo.cif'
 
@@ -305,13 +307,13 @@ def test_adp_family_distinguishes_b_and_u():
 def test_atom_site_for_aniso_matches_by_label():
     from easydiffraction.io.cif.iucr_writer import _atom_site_for_aniso
 
-    site = SimpleNamespace(label=_descriptor('Si1'))
-    by_label = {'Si1': site}
-    aniso = SimpleNamespace(label=_descriptor('Si1'))
-    missing = SimpleNamespace(label=_descriptor('O1'))
+    site = SimpleNamespace(id=_descriptor('Si1'))
+    by_id = {'Si1': site}
+    aniso = SimpleNamespace(id=_descriptor('Si1'))
+    missing = SimpleNamespace(id=_descriptor('O1'))
 
-    assert _atom_site_for_aniso(by_label, aniso) is site
-    assert _atom_site_for_aniso(by_label, missing) is None
+    assert _atom_site_for_aniso(by_id, aniso) is site
+    assert _atom_site_for_aniso(by_id, missing) is None
 
 
 # --- formula helpers --------------------------------------------------
@@ -371,9 +373,9 @@ def test_software_role_label_unknown_without_name():
 
     project = SimpleNamespace(
         analysis=SimpleNamespace(
-            software=SimpleNamespace(
-                framework=SimpleNamespace(name=_descriptor(None)),
-            )
+            software={
+                'framework': SimpleNamespace(name=_descriptor(None)),
+            }
         )
     )
     assert _software_role_label(project, 'framework') == '?'
@@ -384,12 +386,12 @@ def test_software_role_label_name_only_when_version_missing():
 
     project = SimpleNamespace(
         analysis=SimpleNamespace(
-            software=SimpleNamespace(
-                framework=SimpleNamespace(
+            software={
+                'framework': SimpleNamespace(
                     name=_descriptor('CrysPy'),
                     version=_descriptor(''),
                 ),
-            )
+            }
         )
     )
     assert _software_role_label(project, 'framework') == 'CrysPy'
@@ -400,12 +402,12 @@ def test_software_role_label_name_and_version():
 
     project = SimpleNamespace(
         analysis=SimpleNamespace(
-            software=SimpleNamespace(
-                calculator=SimpleNamespace(
+            software={
+                'calculator': SimpleNamespace(
                     name=_descriptor('cryspy'),
                     version=_descriptor('1.2'),
                 ),
-            )
+            }
         )
     )
     assert _software_role_label(project, 'calculator') == 'cryspy 1.2'
@@ -414,16 +416,10 @@ def test_software_role_label_name_and_version():
 def test_software_fit_datetime_none_and_value():
     from easydiffraction.io.cif.iucr_writer import _software_fit_datetime
 
-    empty = SimpleNamespace(
-        analysis=SimpleNamespace(software=SimpleNamespace(timestamp=_descriptor('')))
-    )
+    empty = SimpleNamespace(metadata=SimpleNamespace(timestamp=''))
     assert _software_fit_datetime(empty) is None
 
-    populated = SimpleNamespace(
-        analysis=SimpleNamespace(
-            software=SimpleNamespace(timestamp=_descriptor('2026-06-06T00:00:00'))
-        )
-    )
+    populated = SimpleNamespace(metadata=SimpleNamespace(timestamp='2026-06-06T00:00:00'))
     assert _software_fit_datetime(populated) == '2026-06-06T00:00:00'
 
 
@@ -475,7 +471,7 @@ def test_linked_structure_falls_back_to_single_structure():
     structures = _Structures(only=only)
     experiment = SimpleNamespace(
         name='expt',
-        linked_crystal=SimpleNamespace(id=_descriptor('missing')),
+        linked_structure=SimpleNamespace(structure_id=_descriptor('missing')),
     )
     project = SimpleNamespace(structures=structures)
     assert _linked_structure(project, experiment) is only
@@ -490,7 +486,7 @@ def test_linked_structure_raises_on_ambiguous_link():
     )
     experiment = SimpleNamespace(
         name='expt',
-        linked_crystal=SimpleNamespace(id=_descriptor('missing')),
+        linked_structure=SimpleNamespace(structure_id=_descriptor('missing')),
     )
     project = SimpleNamespace(structures=structures)
     with pytest.raises(ValueError, match="links crystal 'missing'"):
@@ -502,8 +498,8 @@ def test_linked_powder_structures_falls_back_to_single():
 
     only = SimpleNamespace(name='only')
     structures = _Structures(only=only)
-    linked_phase = SimpleNamespace(id=_descriptor('missing'))
-    experiment = SimpleNamespace(name='expt', linked_phases=[linked_phase])
+    linked_phase = SimpleNamespace(structure_id=_descriptor('missing'))
+    experiment = SimpleNamespace(name='expt', linked_structures=[linked_phase])
     project = SimpleNamespace(structures=structures)
 
     result = _linked_powder_structures(project, experiment)
@@ -519,10 +515,10 @@ def test_linked_powder_structures_raises_on_ambiguous_link():
     )
     experiment = SimpleNamespace(
         name='expt',
-        linked_phases=[SimpleNamespace(id=_descriptor('missing'))],
+        linked_structures=[SimpleNamespace(structure_id=_descriptor('missing'))],
     )
     project = SimpleNamespace(structures=structures)
-    with pytest.raises(ValueError, match='links phases'):
+    with pytest.raises(ValueError, match='links structures'):
         _linked_powder_structures(project, experiment)
 
 
@@ -553,7 +549,7 @@ def test_collection_values_wraps_scalar_object():
 def test_iucr_descriptor_fallback_through_parameters():
     from easydiffraction.io.cif.iucr_writer import _iucr_descriptor
 
-    descriptor = _descriptor('val', '_a.b', iucr_name='_iucr.a')
+    descriptor = _descriptor('val', '_a.b', cif_name='_iucr.a')
     descriptor.name = 'target'
     owner = SimpleNamespace(
         target='plain string',
@@ -594,11 +590,11 @@ def test_iucr_descriptor_for_tag_returns_none_for_missing_owner():
     assert _iucr_descriptor_for_tag(None, '_iucr.radius') is None
 
 
-def test_descriptor_iucr_name_handles_handlerless_value():
-    from easydiffraction.io.cif.iucr_writer import _descriptor_iucr_name
+def test_descriptor_cif_name_handles_handlerless_value():
+    from easydiffraction.io.cif.iucr_writer import _descriptor_cif_name
 
-    assert _descriptor_iucr_name(SimpleNamespace(value=1.0)) is None
-    assert _descriptor_iucr_name(_descriptor(1.0, '_a.b', '_iucr.a')) == '_iucr.a'
+    assert _descriptor_cif_name(SimpleNamespace(value=1.0)) is None
+    assert _descriptor_cif_name(_descriptor(1.0, '_a.b', '_iucr.a')) == '_iucr.a'
 
 
 def test_iucr_items_empty_for_missing_owner():

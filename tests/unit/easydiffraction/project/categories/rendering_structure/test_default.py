@@ -106,9 +106,9 @@ class TestConstructionAndDefaults:
         rs = RenderingStructure()
         assert rs.viewer.engine in ViewerFactory.supported_engines()
 
-    def test_type_cif_handler_name(self):
+    def test_type_tags_name(self):
         rs = RenderingStructure()
-        assert rs._type._cif_handler.names == ['_rendering_structure.type']
+        assert rs._type._tags.edi_names == ['_rendering_structure.type']
 
     def test_parent_starts_detached(self):
         rs = RenderingStructure()

@@ -85,6 +85,7 @@ def test_fitresults_display_results_places_units_after_parameter(monkeypatch):
             self.uncertainty = 0.05
             self.name = 'a'
             self.units = 'angstrom_squared'
+            self.url = 'https://example.test/docs/a'
 
         def resolve_display_units(self, context):
             assert context == 'gui'
@@ -138,3 +139,8 @@ def test_fitresults_display_results_places_units_after_parameter(monkeypatch):
             '20.00 % ↑',
         ]
     ]
+    from easydiffraction.display.links import TableLink
+
+    parameter_cell = captured['columns_data'][0][3]
+    assert isinstance(parameter_cell, TableLink)
+    assert parameter_cell.url == 'https://example.test/docs/a'

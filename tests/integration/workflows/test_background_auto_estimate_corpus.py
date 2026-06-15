@@ -21,7 +21,7 @@ by the unit tests in
 
 import numpy as np
 
-import easydiffraction as ed
+import easydiffraction as edi
 
 # The estimated background may differ from the coarse hand-placed
 # reference by at most these fractions of the measured signal scale
@@ -33,8 +33,8 @@ _MAX_TOL = 0.45
 
 
 def _assert_tracks_reference(tmp_path, name, data_id, beam_mode, probe, excluded, ref_points):
-    project = ed.Project()
-    data_path = ed.download_data(id=data_id, destination=str(tmp_path))
+    project = edi.Project()
+    data_path = edi.download_data(data_id, destination=str(tmp_path))
     project.experiments.add_from_data_path(
         name=name,
         data_path=data_path,
@@ -53,16 +53,16 @@ def _assert_tracks_reference(tmp_path, name, data_id, beam_mode, probe, excluded
 
     # The tutorial's hand-placed background is the reference curve.
     for px, py in ref_points:
-        experiment.background.create(x=px, y=py)
-    ref_x = np.array([p.x.value for p in experiment.background])
-    ref_y = np.array([p.y.value for p in experiment.background])
+        experiment.background.create(position=px, intensity=py)
+    ref_x = np.array([p.position.value for p in experiment.background])
+    ref_y = np.array([p.intensity.value for p in experiment.background])
     reference = np.interp(x, ref_x, ref_y)
 
     # Strip the reference and estimate the background automatically.
     experiment.background.auto_estimate()
     points = list(experiment.background)
-    est_x = np.array([p.x.value for p in points])
-    est_y = np.array([p.y.value for p in points])
+    est_x = np.array([p.position.value for p in points])
+    est_y = np.array([p.intensity.value for p in points])
     estimate = np.interp(x, est_x, est_y)
 
     span = x.max() - x.min()
@@ -82,7 +82,7 @@ def test_auto_estimate_tracks_cwl_tutorial_background(tmp_path):
     _assert_tracks_reference(
         tmp_path,
         'hrpt',
-        3,
+        'meas-lbco-hrpt',
         'constant wavelength',
         'neutron',
         [(0, 5), (165, 180)],
@@ -95,7 +95,7 @@ def test_auto_estimate_tracks_tof_tutorial_background(tmp_path):
     _assert_tracks_reference(
         tmp_path,
         'sim_si',
-        17,
+        'meas-si-mcstas-dmsc2025',
         'time-of-flight',
         'neutron',
         [(0, 55000), (105500, 200000)],

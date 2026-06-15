@@ -28,7 +28,7 @@ def test_pd_experiment_peak_profile_type_switch(capsys):
     et._set_radiation_probe(RadiationProbeEnum.NEUTRON.value)
     et._set_scattering_type(ScatteringTypeEnum.BRAGG.value)
 
-    ex = ConcretePd(name='ex1', type=et)
+    ex = ConcretePd(name='ex1', experiment_type=et)
     # valid switch using tag string
     import pytest
 
@@ -61,7 +61,7 @@ def test_pd_experiment_peak_profile_switch_warning_lists_added_settings(monkeypa
 
     warnings: list[str] = []
     monkeypatch.setattr(item_base.log, 'warning', warnings.append)
-    ex = ConcretePd(name='ex1', type=et)
+    ex = ConcretePd(name='ex1', experiment_type=et)
 
     ex.peak.type = 'pseudo-voigt + empirical asymmetry'
 
@@ -97,7 +97,7 @@ def test_pd_experiment_peak_profile_switch_warning_lists_reset_settings(monkeypa
 
     warnings: list[str] = []
     monkeypatch.setattr(item_base.log, 'warning', warnings.append)
-    ex = ConcretePd(name='ex1', type=et)
+    ex = ConcretePd(name='ex1', experiment_type=et)
     ex.peak.broad_gauss_u = 0.05
 
     ex.peak.type = 'pseudo-voigt + empirical asymmetry'
@@ -129,7 +129,7 @@ def test_pd_experiment_peak_profile_switch_warning_lists_removed_settings(monkey
 
     warnings: list[str] = []
     monkeypatch.setattr(item_base.log, 'warning', warnings.append)
-    ex = ConcretePd(name='ex1', type=et)
+    ex = ConcretePd(name='ex1', experiment_type=et)
     ex.peak.type = 'pseudo-voigt + empirical asymmetry'
     warnings.clear()
 
@@ -165,7 +165,7 @@ def test_pd_experiment_set_peak_profile_type_silent(capsys):
     et._set_radiation_probe(RadiationProbeEnum.NEUTRON.value)
     et._set_scattering_type(ScatteringTypeEnum.BRAGG.value)
 
-    ex = ConcretePd(name='ex1', type=et)
+    ex = ConcretePd(name='ex1', experiment_type=et)
     ex._set_peak_profile_type('pseudo-voigt + empirical asymmetry')
 
     # Profile type was switched
@@ -196,7 +196,7 @@ def test_pd_experiment_set_peak_profile_type_invalid_keeps_default(capsys):
     et._set_radiation_probe(RadiationProbeEnum.NEUTRON.value)
     et._set_scattering_type(ScatteringTypeEnum.BRAGG.value)
 
-    ex = ConcretePd(name='ex1', type=et)
+    ex = ConcretePd(name='ex1', experiment_type=et)
     original_type = ex.peak.type
     ex._set_peak_profile_type('nonexistent-profile')
 
@@ -225,7 +225,7 @@ def test_pd_experiment_restore_switchable_types_switches_peak():
     et._set_radiation_probe(RadiationProbeEnum.NEUTRON.value)
     et._set_scattering_type(ScatteringTypeEnum.BRAGG.value)
 
-    ex = ConcretePd(name='ex1', type=et)
+    ex = ConcretePd(name='ex1', experiment_type=et)
 
     cif = 'data_ex1\n_peak.type "pseudo-voigt + empirical asymmetry"\n'
     doc = gemmi.cif.read_string(cif)
@@ -258,7 +258,7 @@ def test_base_experiment_restore_switchable_types_is_noop():
     et._set_radiation_probe(RadiationProbeEnum.NEUTRON.value)
     et._set_scattering_type(ScatteringTypeEnum.BRAGG.value)
 
-    ex = ConcreteBase(name='ex1', type=et)
+    ex = ConcreteBase(name='ex1', experiment_type=et)
 
     cif = 'data_ex1\n_peak.type "pseudo-voigt + empirical asymmetry"\n'
     doc = gemmi.cif.read_string(cif)
