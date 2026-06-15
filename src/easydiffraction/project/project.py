@@ -61,20 +61,6 @@ def _raise_legacy_project_cif_error(
     raise ValueError(msg)
 
 
-def _raise_legacy_edifa_error(
-    path: pathlib.Path,
-    *,
-    replacement: str,
-) -> NoReturn:
-    """Raise an explicit migration error for legacy ``.edifa`` files."""
-    msg = (
-        f"Legacy '.edifa' project file '{path}' is no longer supported as "
-        'project persistence. Open it in an EasyDiffraction version that '
-        f'can read .edifa, then save it again to create {replacement}.'
-    )
-    raise ValueError(msg)
-
-
 def _apply_csv_row_to_params(
     row: object,
     columns: object,
@@ -163,13 +149,6 @@ def _load_edi_directory(
     if not section_dir.is_dir():
         return
 
-    legacy_edifa_files = sorted(section_dir.glob('*.edifa'))
-    if legacy_edifa_files:
-        _raise_legacy_edifa_error(
-            legacy_edifa_files[0],
-            replacement=replacement,
-        )
-
     edi_files = sorted(section_dir.glob('*.edi'))
     if edi_files:
         for edi_file in edi_files:
@@ -197,13 +176,6 @@ def _load_project_metadata(project: Project, project_path: pathlib.Path) -> None
     """
     Restore project configuration from Edi.
     """
-    project_edifa_path = project_path / 'project.edifa'
-    if project_edifa_path.is_file():
-        _raise_legacy_edifa_error(
-            project_edifa_path,
-            replacement='project.edi',
-        )
-
     project_edi_path = project_path / 'project.edi'
     if project_edi_path.is_file():
         body = edi_body_from_text(project_edi_path.read_text())
@@ -223,16 +195,6 @@ def _load_project_metadata(project: Project, project_path: pathlib.Path) -> None
 
 def _resolved_analysis_path(project_path: pathlib.Path) -> pathlib.Path | None:
     """Return the preferred analysis path for a saved project."""
-    for analysis_path in (
-        project_path / 'analysis' / 'analysis.edifa',
-        project_path / 'analysis.edifa',
-    ):
-        if analysis_path.is_file():
-            _raise_legacy_edifa_error(
-                analysis_path,
-                replacement='analysis/analysis.edi',
-            )
-
     for analysis_path in (
         project_path / 'analysis' / 'analysis.edi',
         project_path / 'analysis.edi',
