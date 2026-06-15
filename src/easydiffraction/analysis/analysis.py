@@ -1480,10 +1480,10 @@ class Analysis(
         if not resume:
             return False, extra_steps
 
-        if not self._has_resumable_emcee_sidecar():
+        if not self._has_resumable_sidecar():
             log.warning(
-                'resume=True requested, but no saved emcee chain was found; '
-                'starting a fresh fit instead.'
+                'resume=True requested, but no saved chain was found for the active '
+                'minimizer; starting a fresh fit instead.'
             )
             return False, None
 
@@ -1504,14 +1504,28 @@ class Analysis(
             msg = 'Resume is supported in single fit mode only.'
             raise ValueError(msg)
 
-        is_emcee = self.minimizer.type == MinimizerTypeEnum.EMCEE.value
-        if resume and not is_emcee:
-            msg = "Resume is supported only when analysis.minimizer.type = 'emcee'."
+        minimizer_type = self.minimizer.type
+        is_emcee = minimizer_type == MinimizerTypeEnum.EMCEE.value
+        resumable_types = {
+            MinimizerTypeEnum.EMCEE.value,
+            MinimizerTypeEnum.BUMPS_DREAM.value,
+        }
+        if resume and minimizer_type not in resumable_types:
+            msg = (
+                'Resume is supported only for MCMC minimizers '
+                "(analysis.minimizer.type 'emcee' or 'bumps-dream')."
+            )
             raise ValueError(msg)
         if is_emcee and self.project.metadata.path is None:
             msg = (
                 'emcee requires a saved project; call project.save_as(<path>) '
                 'before analysis.fit().'
+            )
+            raise ValueError(msg)
+        if resume and self.project.metadata.path is None:
+            msg = (
+                'Resume requires a saved project; call project.save_as(<path>) '
+                'before analysis.fit(resume=True).'
             )
             raise ValueError(msg)
         if resume and extra_steps is not None:
@@ -1535,10 +1549,16 @@ class Analysis(
         return integer_steps
 
     def _resolved_resume_extra_steps(self, extra_steps: int | None) -> int:
-        """Return explicit or minimizer-default emcee resume steps."""
+        """Return explicit or minimizer-default resume steps."""
         if extra_steps is not None:
             return self._validate_resume_extra_steps(extra_steps)
-        return self._validate_resume_extra_steps(self.minimizer.sampling_steps.value)
+        return self._validate_resume_extra_steps(self._default_resume_extra_steps())
+
+    def _default_resume_extra_steps(self) -> int:
+        """Return the active MCMC minimizer's default resume step count."""
+        if self.minimizer.type == MinimizerTypeEnum.BUMPS_DREAM.value:
+            return int(self.minimizer.steps)
+        return int(self.minimizer.sampling_steps.value)
 
     def _has_resumable_emcee_sidecar(self) -> bool:
         """Return whether the saved project has a resumable chain."""
@@ -1558,6 +1578,33 @@ class Analysis(
                 if group is None:
                     return False
                 return int(group.attrs.get('iteration', 0)) > 0
+        except (OSError, TypeError, ValueError):
+            return False
+
+    def _has_resumable_sidecar(self) -> bool:
+        """Return whether the active minimizer has a resumable chain."""
+        if self.minimizer.type == MinimizerTypeEnum.EMCEE.value:
+            return self._has_resumable_emcee_sidecar()
+        if self.minimizer.type == MinimizerTypeEnum.BUMPS_DREAM.value:
+            return self._has_resumable_dream_sidecar()
+        return False
+
+    def _has_resumable_dream_sidecar(self) -> bool:
+        """Return whether the saved project has a resumable DREAM state."""
+        from easydiffraction.analysis.minimizers.bumps_dream import (  # noqa: PLC0415
+            DREAM_STATE_GROUP,
+        )
+        from easydiffraction.io.results_sidecar import SIDECAR_FILE_NAME  # noqa: PLC0415
+
+        project_path = self.project.metadata.path
+        if project_path is None:
+            return False
+        sidecar_path = project_path / 'analysis' / SIDECAR_FILE_NAME
+        if not sidecar_path.is_file():
+            return False
+        try:
+            with h5py.File(sidecar_path, 'r') as handle:
+                return DREAM_STATE_GROUP in handle
         except (OSError, TypeError, ValueError):
             return False
 

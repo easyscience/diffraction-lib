@@ -143,7 +143,7 @@ Phase 1 review gate. Do not batch multiple steps into one commit.
   `extra_steps` to `samples = current + N, burn = 0`; pass `fit_state`
   to the driver; add a DREAM resume-detection helper.
   Commit: `Implement bumps-dream resume via saved sampler state`.
-- [ ] **P1.4 — Reconcile unified resume semantics.** Ensure
+- [x] **P1.4 — Reconcile unified resume semantics.** Ensure
   `resume=True, extra_steps=N` behaves consistently for emcee and DREAM
   at the `Fitter`/`analysis.fit` layer; share validation/detection
   helpers where clean. Commit: `Unify emcee and dream resume semantics`.
