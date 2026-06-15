@@ -356,21 +356,17 @@ def test_list_tutorials_with_data(monkeypatch, capsys):
     ('terminal_columns', 'expected_width'),
     [(200, 100), (72, 72)],
 )
-def test_list_tutorials_caps_table_width(monkeypatch, terminal_columns, expected_width):
+def test_list_table_width_caps_at_max(monkeypatch, terminal_columns, expected_width):
     import easydiffraction.utils.utils as MUT
 
-    fake_index = {'quick-start': {'url': 'https://x/{version}/t/quick-start.ipynb'}}
-    monkeypatch.setattr(MUT, '_fetch_tutorials_index', lambda: fake_index)
-    monkeypatch.setattr(MUT, 'package_version', lambda name: '0.8.0')
+    # Accept arbitrary args so pytest's own ``get_terminal_size(fallback=...)``
+    # keeps working while this patch is active.
     monkeypatch.setattr(
-        MUT.shutil, 'get_terminal_size', lambda: os.terminal_size((terminal_columns, 24))
+        MUT.shutil,
+        'get_terminal_size',
+        lambda *args, **kwargs: os.terminal_size((terminal_columns, 24)),
     )
-
-    captured = {}
-    monkeypatch.setattr(MUT, 'render_table', lambda **kwargs: captured.update(kwargs))
-
-    MUT.list_tutorials()
-    assert captured['width'] == expected_width
+    assert MUT._list_table_width() == expected_width
 
 
 def test_download_tutorial_unknown_id(monkeypatch):

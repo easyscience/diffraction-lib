@@ -945,6 +945,11 @@ def _tutorial_url_for_format(url: str, fmt: TutorialFormat) -> str:
 _LIST_TABLE_MAX_WIDTH = 100
 
 
+def _list_table_width() -> int:
+    """Return the listing-table width, capped at the maximum."""
+    return min(shutil.get_terminal_size().columns, _LIST_TABLE_MAX_WIDTH)
+
+
 def list_tutorials() -> None:
     """
     Display a table of available tutorial notebooks.
@@ -989,7 +994,7 @@ def list_tutorials() -> None:
         columns_headers=columns_headers,
         columns_data=columns_data,
         columns_alignment=columns_alignment,
-        width=min(shutil.get_terminal_size().columns, _LIST_TABLE_MAX_WIDTH),
+        width=_list_table_width(),
     )
 
 
