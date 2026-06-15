@@ -181,6 +181,8 @@ EasyDiffraction.
     |                                                  | :material-axis-arrow: [index_h][pref_orient]               | preferred_orientation['ID'].index_h           |
     |                                                  | :material-axis-arrow: [index_k][pref_orient]               | preferred_orientation['ID'].index_k           |
     |                                                  | :material-axis-arrow: [index_l][pref_orient]               | preferred_orientation['ID'].index_l           |
+    | :material-blur: [absorption][absorption]         | :material-format-list-bulleted-type: [type][absorption]    | absorption.type                  |
+    |                                                  | :material-circle-opacity: [mu_r][absorption]               | absorption.mu_r                  |
 
 === "CIF name for serialization"
 
@@ -196,6 +198,8 @@ EasyDiffraction.
     |                                                  | :material-axis-arrow: [index_h][pref_orient]               | \_pref_orient.index_h                  | [easydiffractionCIF][0]{:.label-cif} |
     |                                                  | :material-axis-arrow: [index_k][pref_orient]               | \_pref_orient.index_k                  | [easydiffractionCIF][0]{:.label-cif} |
     |                                                  | :material-axis-arrow: [index_l][pref_orient]               | \_pref_orient.index_l                  | [easydiffractionCIF][0]{:.label-cif} |
+    | :material-blur: [absorption][absorption]         | :material-format-list-bulleted-type: [type][absorption]    | \_absorption.type                      | [easydiffractionCIF][0]{:.label-cif} |
+    |                                                  | :material-circle-opacity: [mu_r][absorption]               | \_absorption.mu_r                      | [easydiffractionCIF][0]{:.label-cif} |
 
 [pd-neut-cwl][3]{:.label-experiment} [pd-xray][3]{:.label-experiment}
 
@@ -300,4 +304,5 @@ EasyDiffraction.
 [background]: parameters/background.md
 [linked_phases]: parameters/linked_phases.md
 [pref_orient]: parameters/pref_orient.md
+[absorption]: parameters/absorption.md
 <!-- prettier-ignore-end -->

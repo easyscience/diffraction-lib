@@ -12,6 +12,7 @@ from typing import Any
 
 import numpy as np
 
+from easydiffraction.analysis.calculators import absorption as absorption_correction
 from easydiffraction.analysis.calculators.base import CalculatorBase
 from easydiffraction.analysis.calculators.base import PowderReflnRecord
 from easydiffraction.analysis.calculators.factory import CalculatorFactory
@@ -300,7 +301,7 @@ class CryspyCalculator(CalculatorBase):
             log.warning(f'[CryspyCalculator] No calculated data for {cryspy_block_name}')
             return []
 
-        return y_calc
+        return absorption_correction.apply(y_calc, experiment)
 
     def last_powder_refln_records(
         self,

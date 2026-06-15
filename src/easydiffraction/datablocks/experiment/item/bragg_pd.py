@@ -10,6 +10,7 @@ import numpy as np
 
 from easydiffraction.core.metadata import Compatibility
 from easydiffraction.core.metadata import TypeInfo
+from easydiffraction.datablocks.experiment.categories.absorption.factory import AbsorptionFactory
 from easydiffraction.datablocks.experiment.categories.background.factory import BackgroundFactory
 from easydiffraction.datablocks.experiment.categories.instrument.factory import InstrumentFactory
 from easydiffraction.datablocks.experiment.categories.pref_orient.factory import PrefOrientFactory
@@ -65,6 +66,7 @@ class BraggPdExperiment(PdExperimentBase):
         self._instrument = InstrumentFactory.create(self._instrument_type)
         self._background = BackgroundFactory.create(BackgroundFactory.default_tag())
         self._pref_orient = PrefOrientFactory.create(PrefOrientFactory.default_tag())
+        self._absorption = AbsorptionFactory.create(AbsorptionFactory.default_tag())
         self._refln = None
         self._sync_refln_category()
         self._attach_category_parents()
@@ -198,6 +200,15 @@ class BraggPdExperiment(PdExperimentBase):
         """Per-phase March-Dollase preferred-orientation corrections."""
         return self._pref_orient
 
+    # ------------------------------------------------------------------
+    #  Absorption (switchable-category pattern, Bragg powder only)
+    # ------------------------------------------------------------------
+
+    @property
+    def absorption(self) -> object:
+        """Active sample-absorption correction for this experiment."""
+        return self._absorption
+
     def _restore_switchable_types(self, block: object) -> None:
         """
         Restore Bragg powder switchable category types from CIF.
@@ -206,3 +217,6 @@ class BraggPdExperiment(PdExperimentBase):
         background_tag = read_cif_str(block, '_background.type')
         if background_tag is not None:
             self._replace_background(background_tag, announce=False, strict=False)
+        absorption_tag = read_cif_str(block, '_absorption.type')
+        if absorption_tag is not None:
+            self._replace_absorption(absorption_tag, announce=False, strict=False)
