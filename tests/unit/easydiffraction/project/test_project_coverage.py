@@ -582,3 +582,38 @@ def test_apply_params_from_csv_negative_index_skips_absent_data_file(tmp_path, m
     assert fakes.experiment.loaded == []
     assert fakes.experiment._need_categories_update is True
     assert fakes.structure._need_categories_update is True
+
+
+def test_load_rejects_legacy_edifa_section_file(tmp_path):
+    """A stale ``.edifa`` section must fail loudly, not be skipped."""
+    from easydiffraction.project.project import Project
+
+    project = Project(name='legacy_edifa')
+    project.report.html = False
+    project.save_as(str(tmp_path / 'proj'))
+
+    # Drop a stale previous-format section file alongside the new project.
+    (tmp_path / 'proj' / 'structures').mkdir(exist_ok=True)
+    (tmp_path / 'proj' / 'structures' / 'lbco.edifa').write_text(
+        '_edi.schema_version 1\n\ndata_lbco\n_cell.length_a 3.9\n'
+    )
+
+    with pytest.raises(ValueError, match=r'\.edifa'):
+        Project.load(str(tmp_path / 'proj'))
+
+
+def test_load_rejects_legacy_edifa_analysis_file(tmp_path):
+    """A stale ``analysis.edifa`` must fail loudly, not be skipped."""
+    from easydiffraction.project.project import Project
+
+    project = Project(name='legacy_edifa_analysis')
+    project.report.html = False
+    project.save_as(str(tmp_path / 'proj'))
+
+    (tmp_path / 'proj' / 'analysis').mkdir(exist_ok=True)
+    (tmp_path / 'proj' / 'analysis' / 'analysis.edifa').write_text(
+        '_edi.schema_version 1\n\ndata_analysis\n_fitting_mode.type single\n'
+    )
+
+    with pytest.raises(ValueError, match=r'\.edifa'):
+        Project.load(str(tmp_path / 'proj'))
