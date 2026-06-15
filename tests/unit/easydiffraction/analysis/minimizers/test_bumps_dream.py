@@ -362,7 +362,7 @@ def test_build_driver_stops_mapper_when_driver_clip_fails():
                 steps=10,
                 burn=2,
                 init=minimizer.init,
-                sampler_settings={'samples': 40},
+                sampler_settings={'samples': 40, 'pop': 4},
                 n_parameters=1,
             )
 
@@ -382,3 +382,266 @@ def test_execute_driver_stops_mapper_when_seed_is_invalid():
     assert isinstance(result.error, ValueError)
     driver.fit.assert_not_called()
     stop_mapper.assert_called_once()
+
+
+def _build_dream_state(*, n_var=2, n_pop=6, n_gen=8, n_cr=3, labels=None, seed=0):
+    """Build a populated, h5-dumpable bumps ``MCMCDraw`` for tests."""
+    from bumps.dream.state import MCMCDraw
+
+    state = MCMCDraw(
+        Ngen=n_gen,
+        Nthin=n_gen,
+        Nupdate=n_gen,
+        Nvar=n_var,
+        Npop=n_pop,
+        Ncr=n_cr,
+        thinning=1,
+    )
+    rng = np.random.RandomState(seed)
+    for _ in range(n_gen):
+        x = rng.rand(n_pop, n_var)
+        logp = -rng.rand(n_pop)
+        accept = np.ones(n_pop, dtype=bool)
+        state._generation(new_draws=n_pop, x=x, logp=logp, accept=accept)
+        state._update(CR_weight=np.ones(n_cr) / n_cr)
+    state.labels = labels if labels is not None else [f'p{index}' for index in range(n_var)]
+    return state
+
+
+def test_dream_state_sidecar_round_trips_through_mcmc_h5(tmp_path):
+    from easydiffraction.analysis.minimizers.bumps_dream import DREAM_STATE_GROUP
+    from easydiffraction.analysis.minimizers.bumps_dream import _read_dream_state_sidecar
+    from easydiffraction.analysis.minimizers.bumps_dream import _write_dream_state_sidecar
+
+    sidecar_path = tmp_path / 'analysis' / 'mcmc.h5'
+    state = _build_dream_state(labels=['alpha', 'beta'])
+
+    _write_dream_state_sidecar(sidecar_path, state, ['alpha', 'beta'])
+
+    import h5py
+
+    with h5py.File(sidecar_path, 'r') as handle:
+        assert DREAM_STATE_GROUP in handle
+        assert 'state' in handle[DREAM_STATE_GROUP]
+        assert 'param_names' in handle[DREAM_STATE_GROUP]
+
+    loaded = _read_dream_state_sidecar(sidecar_path)
+    assert loaded is not None
+    restored_state, restored_names = loaded
+    assert restored_names == ['alpha', 'beta']
+    assert int(restored_state.Nvar) == 2
+    assert int(restored_state.Npop) == 6
+    np.testing.assert_allclose(
+        restored_state.draw().points,
+        state.draw().points,
+    )
+
+
+def test_dream_state_sidecar_write_replaces_existing_group(tmp_path):
+    from easydiffraction.analysis.minimizers.bumps_dream import _read_dream_state_sidecar
+    from easydiffraction.analysis.minimizers.bumps_dream import _write_dream_state_sidecar
+
+    sidecar_path = tmp_path / 'mcmc.h5'
+    _write_dream_state_sidecar(sidecar_path, _build_dream_state(n_gen=8), ['a', 'b'])
+    _write_dream_state_sidecar(sidecar_path, _build_dream_state(n_gen=4), ['c', 'd'])
+
+    loaded = _read_dream_state_sidecar(sidecar_path)
+    assert loaded is not None
+    _, restored_names = loaded
+    assert restored_names == ['c', 'd']
+
+
+def test_read_dream_state_sidecar_returns_none_when_file_absent(tmp_path):
+    from easydiffraction.analysis.minimizers.bumps_dream import _read_dream_state_sidecar
+
+    assert _read_dream_state_sidecar(tmp_path / 'missing.h5') is None
+
+
+def test_read_dream_state_sidecar_returns_none_when_group_absent(tmp_path):
+    import h5py
+
+    from easydiffraction.analysis.minimizers.bumps_dream import _read_dream_state_sidecar
+
+    sidecar_path = tmp_path / 'mcmc.h5'
+    with h5py.File(sidecar_path, 'w') as handle:
+        handle.create_group('posterior')
+
+    assert _read_dream_state_sidecar(sidecar_path) is None
+
+
+def test_read_dream_state_sidecar_raises_when_group_malformed(tmp_path):
+    import h5py
+
+    from easydiffraction.analysis.minimizers.bumps_dream import DREAM_STATE_GROUP
+    from easydiffraction.analysis.minimizers.bumps_dream import _read_dream_state_sidecar
+
+    sidecar_path = tmp_path / 'mcmc.h5'
+    with h5py.File(sidecar_path, 'w') as handle:
+        handle.create_group(DREAM_STATE_GROUP)
+
+    with pytest.raises(ValueError, match=r"Malformed 'dream_state' group"):
+        _read_dream_state_sidecar(sidecar_path)
+
+
+def test_persist_dream_state_is_noop_without_sidecar_path():
+    from easydiffraction.analysis.minimizers.bumps_dream import BumpsDreamMinimizer
+
+    minimizer = BumpsDreamMinimizer()
+    assert minimizer._sidecar_path is None
+
+    # Should not raise and should not attempt any write.
+    minimizer._persist_dream_state(raw_state=object(), parameter_names=['a'])
+
+
+def test_validate_dream_resume_accepts_matching_state():
+    from easydiffraction.analysis.minimizers.bumps_dream import BumpsDreamMinimizer
+
+    state = _build_dream_state(n_var=2, n_pop=6, labels=['a', 'b'])
+
+    # ceil(pop_scale * n_parameters) == Npop -> 3 * 2 == 6.
+    BumpsDreamMinimizer._validate_dream_resume(
+        state=state,
+        saved_names=['a', 'b'],
+        names=['a', 'b'],
+        pop_scale=3,
+        n_parameters=2,
+    )
+
+
+def test_validate_dream_resume_rejects_parameter_count_mismatch():
+    from easydiffraction.analysis.minimizers.bumps_dream import BumpsDreamMinimizer
+
+    state = _build_dream_state(n_var=2, n_pop=6, labels=['a', 'b'])
+
+    with pytest.raises(ValueError, match='free-parameter set must match'):
+        BumpsDreamMinimizer._validate_dream_resume(
+            state=state,
+            saved_names=['a', 'b'],
+            names=['a', 'b', 'c'],
+            pop_scale=2,
+            n_parameters=3,
+        )
+
+
+def test_validate_dream_resume_rejects_name_order_mismatch():
+    from easydiffraction.analysis.minimizers.bumps_dream import BumpsDreamMinimizer
+
+    state = _build_dream_state(n_var=2, n_pop=6, labels=['a', 'b'])
+
+    with pytest.raises(ValueError, match='Parameter names/order differ'):
+        BumpsDreamMinimizer._validate_dream_resume(
+            state=state,
+            saved_names=['a', 'b'],
+            names=['b', 'a'],
+            pop_scale=3,
+            n_parameters=2,
+        )
+
+
+def test_validate_dream_resume_rejects_population_mismatch():
+    from easydiffraction.analysis.minimizers.bumps_dream import BumpsDreamMinimizer
+
+    state = _build_dream_state(n_var=2, n_pop=6, labels=['a', 'b'])
+
+    with pytest.raises(ValueError, match='population cannot change on resume'):
+        BumpsDreamMinimizer._validate_dream_resume(
+            state=state,
+            saved_names=['a', 'b'],
+            names=['a', 'b'],
+            pop_scale=4,
+            n_parameters=2,
+        )
+
+
+def test_state_generations_divides_total_draws_by_population():
+    from easydiffraction.analysis.minimizers.bumps_dream import BumpsDreamMinimizer
+
+    state = _build_dream_state(n_var=2, n_pop=6, n_gen=8, labels=['a', 'b'])
+
+    generations = BumpsDreamMinimizer._state_generations(
+        state=state,
+        pop_scale=3,
+        n_parameters=2,
+    )
+
+    assert generations == 8
+
+
+def test_prepare_dream_resume_builds_ring_buffer_overrides(tmp_path):
+    from easydiffraction.analysis.minimizers.bumps_dream import BumpsDreamMinimizer
+    from easydiffraction.analysis.minimizers.bumps_dream import _write_dream_state_sidecar
+
+    sidecar_path = tmp_path / 'mcmc.h5'
+    state = _build_dream_state(n_var=2, n_pop=6, n_gen=8, labels=['a', 'b'])
+    _write_dream_state_sidecar(sidecar_path, state, ['a', 'b'])
+
+    minimizer = BumpsDreamMinimizer()
+    minimizer._sidecar_path = sidecar_path
+    minimizer.pop = 3
+
+    overrides, fit_state = minimizer._prepare_dream_resume(
+        kwargs={'parameter_names': ['a', 'b']},
+        extra_steps=5,
+    )
+
+    assert overrides == {
+        'steps_override': 13,
+        'burn_override': 0,
+        'samples_override': 13 * 3 * 2,
+        'pop_override': 3,
+    }
+    # bumps mutates state in place, so resume must pass a deep copy.
+    assert fit_state is not state
+    np.testing.assert_allclose(fit_state.draw().points, state.draw().points)
+
+
+@pytest.mark.parametrize('extra_steps', [0, -1, 1.5, True])
+def test_prepare_dream_resume_rejects_non_positive_extra_steps(tmp_path, extra_steps):
+    from easydiffraction.analysis.minimizers.bumps_dream import BumpsDreamMinimizer
+
+    minimizer = BumpsDreamMinimizer()
+    minimizer._sidecar_path = tmp_path / 'mcmc.h5'
+
+    with pytest.raises(ValueError, match='positive integer extra_steps'):
+        minimizer._prepare_dream_resume(
+            kwargs={'parameter_names': ['a', 'b']},
+            extra_steps=extra_steps,
+        )
+
+
+def test_prepare_dream_resume_requires_sidecar_path():
+    from easydiffraction.analysis.minimizers.bumps_dream import BumpsDreamMinimizer
+
+    minimizer = BumpsDreamMinimizer()
+    assert minimizer._sidecar_path is None
+
+    with pytest.raises(ValueError, match='requires a saved project'):
+        minimizer._prepare_dream_resume(
+            kwargs={'parameter_names': ['a', 'b']},
+            extra_steps=5,
+        )
+
+
+def test_prepare_dream_resume_requires_existing_chain(tmp_path):
+    from easydiffraction.analysis.minimizers.bumps_dream import BumpsDreamMinimizer
+
+    minimizer = BumpsDreamMinimizer()
+    minimizer._sidecar_path = tmp_path / 'mcmc.h5'
+
+    with pytest.raises(ValueError, match='No saved bumps-dream chain to resume'):
+        minimizer._prepare_dream_resume(
+            kwargs={'parameter_names': ['a', 'b']},
+            extra_steps=5,
+        )
+
+
+def test_chains_alias_shares_storage_with_pop():
+    from easydiffraction.analysis.minimizers.bumps_dream import BumpsDreamMinimizer
+
+    minimizer = BumpsDreamMinimizer()
+    minimizer.chains = 7
+    assert minimizer.pop == 7
+    assert minimizer.chains == 7
+
+    minimizer.pop = 2
+    assert minimizer.chains == 2

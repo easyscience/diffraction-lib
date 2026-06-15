@@ -544,21 +544,40 @@ def test_fit_resume_preserves_explicit_extra_steps(monkeypatch, tmp_path):
     assert captured == {'resume': True, 'extra_steps': 10}
 
 
-def test_fit_resume_missing_sidecar_warns_and_starts_fresh(
+def test_fit_resume_missing_sidecar_raises(
     monkeypatch,
     tmp_path,
 ):
-    from easydiffraction.analysis import analysis as analysis_mod
+    import pytest
+
     from easydiffraction.analysis.analysis import Analysis
 
     analysis = Analysis(project=_make_project_with_names(['e1']))
     analysis.project.verbosity = SimpleNamespace(fit=SimpleNamespace(value='silent'))
     analysis.project.metadata = SimpleNamespace(path=tmp_path)
     analysis.minimizer.type = 'emcee'
-    captured: dict[str, object] = {}
-    warnings: list[str] = []
 
-    monkeypatch.setattr(analysis_mod.log, 'warning', warnings.append)
+    monkeypatch.setattr(
+        analysis,
+        '_run_single',
+        lambda **kwargs: None,
+    )
+
+    with pytest.raises(ValueError, match='no saved.*resumable chain'):
+        analysis.fit(resume=True)
+
+
+def test_dream_fit_resume_defaults_extra_steps_to_sampling_steps(monkeypatch, tmp_path):
+    from easydiffraction.analysis.analysis import Analysis
+
+    analysis = Analysis(project=_make_project_with_names(['e1']))
+    analysis.project.verbosity = SimpleNamespace(fit=SimpleNamespace(value='silent'))
+    analysis.project.metadata = SimpleNamespace(path=tmp_path)
+    analysis.minimizer.type = 'bumps (dream)'
+    analysis.minimizer.sampling_steps = 77
+    captured: dict[str, object] = {}
+
+    monkeypatch.setattr(analysis, '_has_resumable_dream_sidecar', lambda: True)
     monkeypatch.setattr(
         analysis,
         '_run_single',
@@ -567,8 +586,62 @@ def test_fit_resume_missing_sidecar_warns_and_starts_fresh(
 
     analysis.fit(resume=True)
 
-    assert captured == {'resume': False, 'extra_steps': None}
-    assert any('no saved emcee chain' in message for message in warnings)
+    assert captured == {'resume': True, 'extra_steps': 77}
+
+
+def test_dream_fit_resume_missing_sidecar_raises(monkeypatch, tmp_path):
+    import pytest
+
+    from easydiffraction.analysis.analysis import Analysis
+
+    analysis = Analysis(project=_make_project_with_names(['e1']))
+    analysis.project.verbosity = SimpleNamespace(fit=SimpleNamespace(value='silent'))
+    analysis.project.metadata = SimpleNamespace(path=tmp_path)
+    analysis.minimizer.type = 'bumps (dream)'
+
+    monkeypatch.setattr(analysis, '_has_resumable_dream_sidecar', lambda: False)
+    monkeypatch.setattr(analysis, '_run_single', lambda **kwargs: None)
+
+    with pytest.raises(ValueError, match='no saved.*resumable chain'):
+        analysis.fit(resume=True)
+
+
+def test_has_resumable_dream_sidecar_detects_state_group(tmp_path):
+    import h5py
+
+    from easydiffraction.analysis.analysis import Analysis
+    from easydiffraction.analysis.minimizers.bumps_dream import DREAM_STATE_GROUP
+
+    analysis = Analysis(project=_make_project_with_names([]))
+    analysis.project.metadata = SimpleNamespace(path=tmp_path)
+    analysis.minimizer.type = 'bumps (dream)'
+
+    # No sidecar file yet.
+    assert analysis._has_resumable_dream_sidecar() is False
+
+    analysis_dir = tmp_path / 'analysis'
+    analysis_dir.mkdir(parents=True)
+    sidecar_path = analysis_dir / 'mcmc.h5'
+
+    # Sidecar without the dream_state group.
+    with h5py.File(sidecar_path, 'w') as handle:
+        handle.create_group('posterior')
+    assert analysis._has_resumable_dream_sidecar() is False
+
+    # Sidecar with the dream_state group.
+    with h5py.File(sidecar_path, 'a') as handle:
+        handle.create_group(DREAM_STATE_GROUP)
+    assert analysis._has_resumable_dream_sidecar() is True
+
+
+def test_default_resume_extra_steps_reads_sampling_steps():
+    from easydiffraction.analysis.analysis import Analysis
+
+    analysis = Analysis(project=_make_project_with_names([]))
+    analysis.minimizer.type = 'bumps (dream)'
+    analysis.minimizer.sampling_steps = 42
+
+    assert analysis._default_resume_extra_steps() == 42
 
 
 def test_fitting_mode_type_invalid_assignment_raises_and_preserves_state():
