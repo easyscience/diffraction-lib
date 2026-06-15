@@ -2,7 +2,7 @@
 # # LBCO — neutron powder, constant wavelength, pseudo-Voigt
 
 # %%
-import easydiffraction as edi
+import easydiffraction as ed
 from easydiffraction import ExperimentFactory
 from easydiffraction import StructureFactory
 from easydiffraction.analysis import verification as verify
@@ -11,7 +11,7 @@ from easydiffraction.analysis import verification as verify
 # ## Build the project
 
 # %%
-project = edi.Project()
+project = ed.Project()
 
 # %% [markdown]
 # ## Define the structure
@@ -24,7 +24,7 @@ structure.space_group.name_h_m = 'P m -3 m'  # FullProf Space group symbol
 structure.cell.length_a = 3.890790  # FullProf a
 
 structure.atom_sites.create(
-    id='La',  # FullProf Atom
+    label='La',  # FullProf Atom
     type_symbol='La',  # FullProf Typ
     fract_x=0.0,  # FullProf X
     fract_y=0.0,  # FullProf Y
@@ -34,7 +34,7 @@ structure.atom_sites.create(
     adp_iso=0.57511,  # FullProf Biso
 )
 structure.atom_sites.create(
-    id='Ba',  # FullProf Atom
+    label='Ba',  # FullProf Atom
     type_symbol='Ba',  # FullProf Typ
     fract_x=0.0,  # FullProf X
     fract_y=0.0,  # FullProf Y
@@ -44,7 +44,7 @@ structure.atom_sites.create(
     adp_iso=0.57511,  # FullProf Biso
 )
 structure.atom_sites.create(
-    id='Co',  # FullProf Atom
+    label='Co',  # FullProf Atom
     type_symbol='Co',  # FullProf Typ
     fract_x=0.5,  # FullProf X
     fract_y=0.5,  # FullProf Y
@@ -54,7 +54,7 @@ structure.atom_sites.create(
     adp_iso=0.26023,  # FullProf Biso
 )
 structure.atom_sites.create(
-    id='O',  # FullProf Atom
+    label='O',  # FullProf Atom
     type_symbol='O',  # FullProf Typ
     fract_x=0.0,  # FullProf X
     fract_y=0.5,  # FullProf Y
@@ -102,7 +102,7 @@ experiment = ExperimentFactory.from_scratch(
 )
 verify.set_reference_as_measured(experiment, x, calc_fullprof)
 
-experiment.linked_structures.create(structure_id='lbco', scale=FULLPROF_SCALE)
+experiment.linked_phases.create(id='lbco', scale=FULLPROF_SCALE)
 
 experiment.instrument.setup_wavelength = FULLPROF_WAVELENGTH
 experiment.instrument.calib_twotheta_offset = FULLPROF_ZERO
@@ -117,7 +117,7 @@ experiment.peak.broad_lorentz_y = FULLPROF_Y
 project.experiments.add(experiment)
 
 # %% [markdown]
-# ## edi-cryspy VS FullProf
+# ## ed-cryspy VS FullProf
 
 # %%
 experiment.calculator.type = 'cryspy'
@@ -130,11 +130,11 @@ project.display.pattern_comparison(
     reference=calc_fullprof,
     candidate=calc_ed_cryspy,
     reference_label='FullProf',
-    candidate_label='edi-cryspy',
+    candidate_label='ed-cryspy',
 )
 
 # %% [markdown]
-# ## edi-crysfml VS FullProf
+# ## ed-crysfml VS FullProf
 
 # %%
 experiment.calculator.type = 'crysfml'
@@ -147,7 +147,7 @@ project.display.pattern_comparison(
     reference=calc_fullprof,
     candidate=calc_ed_crysfml,
     reference_label='FullProf',
-    candidate_label='edi-crysfml',
+    candidate_label='ed-crysfml',
 )
 
 # %% [markdown]

@@ -1,202 +1,177 @@
 {
-  "bayesian-dream-display-lbco-hrpt": {
-    "order": 21,
-    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/bayesian-dream-display-lbco-hrpt/bayesian-dream-display-lbco-hrpt.ipynb",
-    "original_name": "",
-    "title": "Bayesian Analysis Display (bumps-dream): LBCO, HRPT",
-    "description": "Reopen the saved bumps-DREAM Bayesian project for La0.5Ba0.5CoO3 and inspect persisted fit summaries, correlation matrix, and posterior plots without rerunning MCMC sampling",
-    "level": "advanced"
-  },
-  "bayesian-dream-lbco-hrpt": {
-    "order": 20,
-    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/bayesian-dream-lbco-hrpt/bayesian-dream-lbco-hrpt.ipynb",
-    "original_name": "",
-    "title": "Bayesian Analysis (bumps-dream): LBCO, HRPT",
-    "description": "Bayesian analysis of La0.5Ba0.5CoO3 using Markov Chain Monte Carlo (MCMC) sampling with the bumps-DREAM minimizer, on constant wavelength neutron powder diffraction data from HRPT at PSI",
-    "level": "advanced"
-  },
-  "bayesian-emcee-lbco-hrpt": {
-    "order": 22,
-    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/bayesian-emcee-lbco-hrpt/bayesian-emcee-lbco-hrpt.ipynb",
-    "original_name": "",
-    "title": "Bayesian Analysis (emcee): LBCO, HRPT",
-    "description": "Bayesian analysis of La0.5Ba0.5CoO3 using Markov Chain Monte Carlo (MCMC) sampling with the emcee minimizer, on constant wavelength neutron powder diffraction data from HRPT at PSI",
-    "level": "advanced"
-  },
-  "bayesian-emcee-resume-lbco-hrpt": {
-    "order": 23,
-    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/bayesian-emcee-resume-lbco-hrpt/bayesian-emcee-resume-lbco-hrpt.ipynb",
-    "original_name": "",
-    "title": "Bayesian Analysis Resume (emcee): LBCO, HRPT",
-    "description": "Reload a saved emcee Bayesian project for La0.5Ba0.5CoO3, inspect the posterior, and resume MCMC sampling with additional steps (supported only for emcee, not bumps-DREAM)",
-    "level": "advanced"
-  },
-  "bayesian-emcee-tbti-heidi": {
-    "order": 24,
-    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/bayesian-emcee-tbti-heidi/bayesian-emcee-tbti-heidi.ipynb",
-    "original_name": "",
-    "title": "Bayesian Analysis (emcee): Tb2TiO7, HEiDi",
-    "description": "Bayesian analysis of Tb2TiO7 using Markov Chain Monte Carlo (MCMC) sampling with the emcee minimizer, on constant wavelength single crystal neutron diffraction data from HEiDi at FRM II",
-    "level": "advanced"
-  },
-  "calibrate-beer-ess": {
-    "order": 19,
-    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/calibrate-beer-ess/calibrate-beer-ess.ipynb",
-    "original_name": "",
-    "title": "Instrument calibration: BEER at ESS",
-    "description": "Instrument calibration for BEER at ESS using time-of-flight neutron powder diffraction data simulated with McStas",
-    "level": "intermediate"
-  },
-  "fitting-exercise-si-lbco": {
-    "order": 25,
-    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/fitting-exercise-si-lbco/fitting-exercise-si-lbco.ipynb",
-    "original_name": "dmsc-summer-school-2025_analysis-powder-diffraction",
-    "title": "DMSC Summer School: Powder Diffraction Analysis",
-    "description": "Comprehensive workshop tutorial covering Rietveld refinement of Si and La0.5Ba0.5CoO3 using simulated powder diffraction data",
-    "level": "workshop"
-  },
-  "joint-si-bragg-pdf": {
-    "order": 16,
-    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/joint-si-bragg-pdf/joint-si-bragg-pdf.ipynb",
-    "original_name": "advanced_joint-fit_bragg-pdf_pd-neut-tof_Si",
-    "title": "Advanced: Si Joint Bragg+PDF Fit",
-    "description": "Joint refinement of Si crystal structure combining Bragg diffraction (SEPD) and pair distribution function (NOMAD) analysis",
-    "level": "advanced"
-  },
-  "load-and-fit-lbco-hrpt": {
-    "order": 4,
-    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/load-and-fit-lbco-hrpt/load-and-fit-lbco-hrpt.ipynb",
-    "original_name": "",
-    "title": "Quick Start: LBCO Load Project",
-    "description": "Most minimal example: load a saved project and run a Rietveld refinement of La0.5Ba0.5CoO3 using constant wavelength neutron powder diffraction data from HRPT at PSI",
-    "level": "quick"
-  },
-  "pdf-nacl-xrd": {
-    "order": 13,
-    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/pdf-nacl-xrd/pdf-nacl-xrd.ipynb",
-    "original_name": "pdf_pd-xray_NaCl",
-    "title": "PDF Analysis: NaCl, XRD",
-    "description": "Pair distribution function (PDF) analysis of NaCl using data from an X-ray powder diffraction experiment",
-    "level": "intermediate"
-  },
-  "pdf-ni-npd": {
-    "order": 11,
-    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/pdf-ni-npd/pdf-ni-npd.ipynb",
-    "original_name": "pdf_pd-neut-cwl_Ni",
-    "title": "PDF Analysis: Ni, NPD",
-    "description": "Pair distribution function (PDF) analysis of Ni using data from a constant wavelength neutron powder diffraction experiment",
-    "level": "intermediate"
-  },
-  "pdf-si-nomad": {
-    "order": 12,
-    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/pdf-si-nomad/pdf-si-nomad.ipynb",
-    "original_name": "pdf_pd-neut-tof_Si-NOMAD",
-    "title": "PDF Analysis: Si, NOMAD (TOF)",
-    "description": "Pair distribution function (PDF) analysis of Si using data from a time-of-flight neutron powder diffraction experiment at NOMAD at SNS",
-    "level": "intermediate"
-  },
-  "refine-cosio-d20": {
-    "order": 6,
-    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/refine-cosio-d20/refine-cosio-d20.ipynb",
-    "original_name": "cryst-struct_pd-neut-cwl_CoSiO4-D20",
-    "title": "Crystal Structure: Co2SiO4, D20",
-    "description": "Rietveld refinement of Co2SiO4 crystal structure using constant wavelength neutron powder diffraction data from D20 at ILL",
-    "level": "intermediate"
-  },
-  "refine-cosio-d20-tscan": {
-    "order": 17,
-    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/refine-cosio-d20-tscan/refine-cosio-d20-tscan.ipynb",
-    "original_name": "",
-    "title": "Structure Refinement: Co2SiO4, D20 (Temperature scan)",
-    "description": "Sequential Rietveld refinement of Co2SiO4 using constant wavelength neutron powder diffraction data from D20 at ILL across a temperature scan",
-    "level": "advanced"
-  },
-  "refine-cosio-d20-tscan-resumed": {
-    "order": 5,
-    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/refine-cosio-d20-tscan-resumed/refine-cosio-d20-tscan-resumed.ipynb",
-    "original_name": "",
-    "title": "Structure Refinement: Co2SiO4, D20 (Resumed scan)",
-    "description": "Resume an interrupted sequential Rietveld refinement of Co2SiO4 by reloading a saved project; the remaining temperature-scan datasets are processed and appended to analysis/results.csv",
-    "level": "advanced"
-  },
-  "refine-hs-hrpt": {
-    "order": 7,
-    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/refine-hs-hrpt/refine-hs-hrpt.ipynb",
-    "original_name": "cryst-struct_pd-neut-cwl_HS-HRPT",
-    "title": "Crystal Structure: HS, HRPT",
-    "description": "Rietveld refinement of HS crystal structure using constant wavelength neutron powder diffraction data from HRPT at PSI",
-    "level": "intermediate"
-  },
-  "refine-lbco-hrpt-from-cif": {
-    "order": 2,
-    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/refine-lbco-hrpt-from-cif/refine-lbco-hrpt-from-cif.ipynb",
+  "1": {
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-1/ed-1.ipynb",
     "original_name": "quick_from-cif_pd-neut-cwl_LBCO-HRPT",
     "title": "Basic Tutorial: LBCO from CIF",
     "description": "Basic Rietveld refinement of La0.5Ba0.5CoO3 with structure and experiment defined via CIF files, using constant wavelength neutron powder diffraction data from HRPT at PSI",
     "level": "basic"
   },
-  "refine-lbco-hrpt-from-data": {
-    "order": 1,
-    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/refine-lbco-hrpt-from-data/refine-lbco-hrpt-from-data.ipynb",
+  "2": {
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-2/ed-2.ipynb",
     "original_name": "quick_from-code_pd-neut-cwl_LBCO-HRPT",
     "title": "Quick Start: LBCO from Code",
     "description": "Minimalistic Rietveld refinement of La0.5Ba0.5CoO3 with structure and experiment defined directly in code, using constant wavelength neutron powder diffraction data from HRPT at PSI",
     "level": "quick"
   },
-  "refine-lbco-hrpt-report": {
-    "order": 3,
-    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/refine-lbco-hrpt-report/refine-lbco-hrpt-report.ipynb",
+  "3": {
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-3/ed-3.ipynb",
     "original_name": "basic_single-fit_pd-neut-cwl_LBCO-HRPT",
     "title": "Complete Tutorial: LBCO, HRPT",
     "description": "Comprehensive Rietveld refinement of La0.5Ba0.5CoO3 following a GUI-like workflow with detailed explanations, using constant wavelength neutron powder diffraction data from HRPT at PSI",
     "level": "basic"
   },
-  "refine-lbco-si-mcstas": {
-    "order": 18,
-    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/refine-lbco-si-mcstas/refine-lbco-si-mcstas.ipynb",
-    "original_name": "cryst-struct_pd-neut-tof_multiphase-LBCO-Si_McStas",
-    "title": "Crystal Structure: LBCO+Si Multi-Phase (McStas)",
-    "description": "Rietveld refinement of La0.5Ba0.5CoO3 with a Si impurity phase using time-of-flight neutron powder diffraction data simulated with McStas",
-    "level": "intermediate"
-  },
-  "refine-ncaf-wish": {
-    "order": 15,
-    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/refine-ncaf-wish/refine-ncaf-wish.ipynb",
-    "original_name": "cryst-struct_pd-neut-tof_multidata_NCAF-WISH",
-    "title": "Crystal Structure: NCAF, WISH (Multi-Data)",
-    "description": "Rietveld refinement of Na2Ca3Al2F14 using time-of-flight neutron powder diffraction data from WISH at ISIS with joint fitting of two detector banks",
-    "level": "intermediate"
-  },
-  "refine-pbso4-joint": {
-    "order": 14,
-    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/refine-pbso4-joint/refine-pbso4-joint.ipynb",
+  "4": {
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-4/ed-4.ipynb",
     "original_name": "advanced_joint-fit_pd-neut-xray-cwl_PbSO4",
     "title": "Advanced: PbSO4 Joint NPD+XRD Fit",
     "description": "Advanced Rietveld refinement of PbSO4 using a joint fit of constant wavelength neutron and X-ray powder diffraction data",
     "level": "advanced"
   },
-  "refine-si-sepd": {
-    "order": 8,
-    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/refine-si-sepd/refine-si-sepd.ipynb",
+  "5": {
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-5/ed-5.ipynb",
+    "original_name": "cryst-struct_pd-neut-cwl_CoSiO4-D20",
+    "title": "Crystal Structure: Co2SiO4, D20",
+    "description": "Rietveld refinement of Co2SiO4 crystal structure using constant wavelength neutron powder diffraction data from D20 at ILL",
+    "level": "intermediate"
+  },
+  "6": {
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-6/ed-6.ipynb",
+    "original_name": "cryst-struct_pd-neut-cwl_HS-HRPT",
+    "title": "Crystal Structure: HS, HRPT",
+    "description": "Rietveld refinement of HS crystal structure using constant wavelength neutron powder diffraction data from HRPT at PSI",
+    "level": "intermediate"
+  },
+  "7": {
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-7/ed-7.ipynb",
     "original_name": "cryst-struct_pd-neut-tof_Si-SEPD",
     "title": "Crystal Structure: Si, SEPD (TOF)",
     "description": "Rietveld refinement of Si crystal structure using time-of-flight neutron powder diffraction data from SEPD at Argonne",
     "level": "intermediate"
   },
-  "refine-taurine-senju": {
-    "order": 10,
-    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/refine-taurine-senju/refine-taurine-senju.ipynb",
+  "8": {
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-8/ed-8.ipynb",
+    "original_name": "cryst-struct_pd-neut-tof_multidata_NCAF-WISH",
+    "title": "Crystal Structure: NCAF, WISH (Multi-Data)",
+    "description": "Rietveld refinement of Na2Ca3Al2F14 using time-of-flight neutron powder diffraction data from WISH at ISIS with joint fitting of two detector banks",
+    "level": "intermediate"
+  },
+  "9": {
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-9/ed-9.ipynb",
+    "original_name": "cryst-struct_pd-neut-tof_multiphase-LBCO-Si_McStas",
+    "title": "Crystal Structure: LBCO+Si Multi-Phase (McStas)",
+    "description": "Rietveld refinement of La0.5Ba0.5CoO3 with a Si impurity phase using time-of-flight neutron powder diffraction data simulated with McStas",
+    "level": "intermediate"
+  },
+  "10": {
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-10/ed-10.ipynb",
+    "original_name": "pdf_pd-neut-cwl_Ni",
+    "title": "PDF Analysis: Ni, NPD",
+    "description": "Pair distribution function (PDF) analysis of Ni using data from a constant wavelength neutron powder diffraction experiment",
+    "level": "intermediate"
+  },
+  "11": {
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-11/ed-11.ipynb",
+    "original_name": "pdf_pd-neut-tof_Si-NOMAD",
+    "title": "PDF Analysis: Si, NOMAD (TOF)",
+    "description": "Pair distribution function (PDF) analysis of Si using data from a time-of-flight neutron powder diffraction experiment at NOMAD at SNS",
+    "level": "intermediate"
+  },
+  "12": {
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-12/ed-12.ipynb",
+    "original_name": "pdf_pd-xray_NaCl",
+    "title": "PDF Analysis: NaCl, XRD",
+    "description": "Pair distribution function (PDF) analysis of NaCl using data from an X-ray powder diffraction experiment",
+    "level": "intermediate"
+  },
+  "13": {
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-13/ed-13.ipynb",
+    "original_name": "dmsc-summer-school-2025_analysis-powder-diffraction",
+    "title": "DMSC Summer School: Powder Diffraction Analysis",
+    "description": "Comprehensive workshop tutorial covering Rietveld refinement of Si and La0.5Ba0.5CoO3 using simulated powder diffraction data",
+    "level": "workshop"
+  },
+  "14": {
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-14/ed-14.ipynb",
+    "original_name": "",
+    "title": "Crystal Structure: Tb2TiO7, HEiDi",
+    "description": "Crystal structure refinement of Tb2TiO7 using constant wavelength single crystal neutron diffraction data from HEiDi at FRM II",
+    "level": "intermediate"
+  },
+  "15": {
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-15/ed-15.ipynb",
     "original_name": "",
     "title": "Crystal Structure: Taurine, SENJU (TOF)",
     "description": "Crystal structure refinement of Taurine using time-of-flight single crystal neutron diffraction data from SENJU at J-PARC",
     "level": "intermediate"
   },
-  "refine-tbti-heidi": {
-    "order": 9,
-    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/refine-tbti-heidi/refine-tbti-heidi.ipynb",
+  "16": {
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-16/ed-16.ipynb",
+    "original_name": "advanced_joint-fit_bragg-pdf_pd-neut-tof_Si",
+    "title": "Advanced: Si Joint Bragg+PDF Fit",
+    "description": "Joint refinement of Si crystal structure combining Bragg diffraction (SEPD) and pair distribution function (NOMAD) analysis",
+    "level": "advanced"
+  },
+  "17": {
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-17/ed-17.ipynb",
     "original_name": "",
-    "title": "Crystal Structure: Tb2TiO7, HEiDi",
-    "description": "Crystal structure refinement of Tb2TiO7 using constant wavelength single crystal neutron diffraction data from HEiDi at FRM II",
+    "title": "Structure Refinement: Co2SiO4, D20 (Temperature scan)",
+    "description": "Sequential Rietveld refinement of Co2SiO4 using constant wavelength neutron powder diffraction data from D20 at ILL across a temperature scan",
+    "level": "advanced"
+  },
+  "18": {
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-18/ed-18.ipynb",
+    "original_name": "",
+    "title": "Quick Start: LBCO Load Project",
+    "description": "Most minimal example: load a saved project and run a Rietveld refinement of La0.5Ba0.5CoO3 using constant wavelength neutron powder diffraction data from HRPT at PSI",
+    "level": "quick"
+  },
+  "20": {
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-20/ed-20.ipynb",
+    "original_name": "",
+    "title": "Instrument calibration: BEER at ESS",
+    "description": "Instrument calibration for BEER at ESS using time-of-flight neutron powder diffraction data simulated with McStas",
     "level": "intermediate"
+  },
+  "21": {
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-21/ed-21.ipynb",
+    "original_name": "",
+    "title": "Bayesian Analysis (bumps-dream): LBCO, HRPT",
+    "description": "Bayesian analysis of La0.5Ba0.5CoO3 using Markov Chain Monte Carlo (MCMC) sampling with the bumps-DREAM minimizer, on constant wavelength neutron powder diffraction data from HRPT at PSI",
+    "level": "advanced"
+  },
+  "22": {
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-22/ed-22.ipynb",
+    "original_name": "",
+    "title": "Bayesian Analysis (emcee): Tb2TiO7, HEiDi",
+    "description": "Bayesian analysis of Tb2TiO7 using Markov Chain Monte Carlo (MCMC) sampling with the emcee minimizer, on constant wavelength single crystal neutron diffraction data from HEiDi at FRM II",
+    "level": "advanced"
+  },
+  "23": {
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-23/ed-23.ipynb",
+    "original_name": "",
+    "title": "Structure Refinement: Co2SiO4, D20 (Resumed scan)",
+    "description": "Resume an interrupted sequential Rietveld refinement of Co2SiO4 by reloading a saved project; the remaining temperature-scan datasets are processed and appended to analysis/results.csv",
+    "level": "advanced"
+  },
+  "24": {
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-24/ed-24.ipynb",
+    "original_name": "",
+    "title": "Bayesian Analysis Display (bumps-dream): LBCO, HRPT",
+    "description": "Reopen the saved bumps-DREAM Bayesian project for La0.5Ba0.5CoO3 and inspect persisted fit summaries, correlation matrix, and posterior plots without rerunning MCMC sampling",
+    "level": "advanced"
+  },
+  "25": {
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-25/ed-25.ipynb",
+    "original_name": "",
+    "title": "Bayesian Analysis (emcee): LBCO, HRPT",
+    "description": "Bayesian analysis of La0.5Ba0.5CoO3 using Markov Chain Monte Carlo (MCMC) sampling with the emcee minimizer, on constant wavelength neutron powder diffraction data from HRPT at PSI",
+    "level": "advanced"
+  },
+  "26": {
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-26/ed-26.ipynb",
+    "original_name": "",
+    "title": "Bayesian Analysis Resume (emcee): LBCO, HRPT",
+    "description": "Reload a saved emcee Bayesian project for La0.5Ba0.5CoO3, inspect the posterior, and resume MCMC sampling with additional steps (supported only for emcee, not bumps-DREAM)",
+    "level": "advanced"
   }
 }

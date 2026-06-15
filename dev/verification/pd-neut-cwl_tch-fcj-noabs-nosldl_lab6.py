@@ -2,7 +2,7 @@
 # # LaB₆ — neutron powder, constant wavelength, SyCos/SySin
 
 # %%
-import easydiffraction as edi
+import easydiffraction as ed
 from easydiffraction import ExperimentFactory
 from easydiffraction import StructureFactory
 from easydiffraction.analysis import verification as verify
@@ -11,7 +11,7 @@ from easydiffraction.analysis import verification as verify
 # ## Build the project
 
 # %%
-project = edi.Project()
+project = ed.Project()
 
 # %% [markdown]
 # ## Define the structure
@@ -21,7 +21,7 @@ structure = StructureFactory.from_scratch(name='lab6')
 structure.space_group.name_h_m = 'P m -3 m'  # FullProf Space group symbol
 structure.cell.length_a = 4.156885  # FullProf a
 structure.atom_sites.create(
-    id='La',  # FullProf Atom
+    label='La',  # FullProf Atom
     type_symbol='La',  # FullProf Typ
     fract_x=0.0,  # FullProf X
     fract_y=0.0,  # FullProf Y
@@ -30,7 +30,7 @@ structure.atom_sites.create(
     adp_iso=0.25812,  # FullProf Biso
 )
 structure.atom_sites.create(
-    id='B',  # FullProf Atom
+    label='B',  # FullProf Atom
     type_symbol='11B',  # FullProf "B11     0.66500    0.00000   0"
     fract_x=0.19972,  # FullProf X
     fract_y=0.5,  # FullProf Y
@@ -79,7 +79,7 @@ experiment = ExperimentFactory.from_scratch(
 )
 verify.set_reference_as_measured(experiment, x, calc_fullprof)
 
-experiment.linked_structures.create(structure_id='lab6', scale=FULLPROF_SCALE)
+experiment.linked_phases.create(id='lab6', scale=FULLPROF_SCALE)
 
 experiment.instrument.setup_wavelength = FULLPROF_WAVELENGTH
 experiment.instrument.calib_twotheta_offset = FULLPROF_ZERO
@@ -94,7 +94,7 @@ experiment.peak.broad_lorentz_y = FULLPROF_Y
 project.experiments.add(experiment)
 
 # %% [markdown]
-# ## edi-cryspy VS FullProf
+# ## ed-cryspy VS FullProf
 
 # %%
 experiment.calculator.type = 'cryspy'
@@ -110,11 +110,11 @@ project.display.pattern_comparison(
     reference=calc_fullprof,
     candidate=calc_ed_cryspy,
     reference_label='FullProf',
-    candidate_label='edi-cryspy',
+    candidate_label='ed-cryspy',
 )
 
 # %% [markdown]
-# ## edi-crysfml VS FullProf
+# ## ed-crysfml VS FullProf
 
 # %%
 experiment.calculator.type = 'crysfml'
@@ -127,14 +127,14 @@ project.display.pattern_comparison(
     reference=calc_fullprof,
     candidate=calc_ed_crysfml,
     reference_label='FullProf',
-    candidate_label='edi-crysfml',
+    candidate_label='ed-crysfml',
 )
 
 # %% [markdown]
-# ## Fit edi-crysfml to FullProf
+# ## Fit ed-crysfml to FullProf
 
 # %%
-experiment.linked_structures['lab6'].scale.free = True
+experiment.linked_phases['lab6'].scale.free = True
 experiment.instrument.calib_twotheta_offset.free = True
 
 project.analysis.fit()
@@ -148,7 +148,7 @@ project.display.pattern_comparison(
     reference=calc_fullprof,
     candidate=calc_ed_crysfml_refined,
     reference_label='FullProf',
-    candidate_label='edi-crysfml (refined)',
+    candidate_label='ed-crysfml (refined)',
 )
 
 # %% [markdown]
