@@ -3796,6 +3796,11 @@ CLI command such as:</p>
 <p>Download a specific tutorial by ID:</p>
 <div class="language-bash highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>easydiffraction<span class="w"> </span>download-tutorial<span class="w"> </span><span class="m">1</span>
 </code></pre></div>
+<p>By default this downloads the Jupyter notebook (<code>.ipynb</code>). Use <code>--py</code>
+for the plain-Python script, or pass both flags to get both files:</p>
+<div class="language-bash highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>easydiffraction<span class="w"> </span>download-tutorial<span class="w"> </span><span class="m">1</span><span class="w"> </span>--py<span class="w">          </span><span class="c1"># script only</span>
+python<span class="w"> </span>-m<span class="w"> </span>easydiffraction<span class="w"> </span>download-tutorial<span class="w"> </span><span class="m">1</span><span class="w"> </span>--ipynb<span class="w"> </span>--py<span class="w">  </span><span class="c1"># both</span>
+</code></pre></div>
 <p>Download all available tutorials:</p>
 <div class="language-bash highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>easydiffraction<span class="w"> </span>download-all-tutorials
 </code></pre></div>
