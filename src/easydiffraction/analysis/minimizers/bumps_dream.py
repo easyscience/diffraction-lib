@@ -8,6 +8,7 @@ import multiprocessing
 import random
 import sys
 from dataclasses import dataclass
+from pathlib import Path
 
 import numpy as np
 from bumps.fitproblem import FitProblem
@@ -49,6 +50,48 @@ MAX_RANDOM_SEED = int(np.iinfo(np.uint32).max)
 TOTAL_PROGRESS_POINTS = 25
 DREAM_SAMPLE_ARRAY_NDIM = 3
 DREAM_DRIVER_FAILURES = (ArithmeticError, RuntimeError, TypeError, ValueError)
+
+# Top-level HDF5 group in the MCMC sidecar (mcmc.h5) holding the
+# resumable bumps-DREAM sampler state, alongside emcee's emcee_chain.
+DREAM_STATE_GROUP = 'dream_state'
+
+
+def _write_dream_state_sidecar(
+    sidecar_path: Path,
+    state: object,
+    parameter_names: list[str],
+) -> None:
+    """
+    Persist a DREAM ``MCMCDraw`` state into the MCMC sidecar.
+
+    The state is written under ``/dream_state/state`` via the bumps
+    ``DreamFit.h5dump`` contract, with the fitted-parameter names stored
+    in a sibling ``/dream_state/param_names`` dataset so resume can match
+    by name (bumps does not preserve labels through its own save/load).
+
+    Parameters
+    ----------
+    sidecar_path : Path
+        Path to the ``mcmc.h5`` sidecar file.
+    state : object
+        The bumps ``MCMCDraw`` object captured from ``driver.fitter``.
+    parameter_names : list[str]
+        Fitted-parameter names, in sampling order.
+    """
+    import h5py  # noqa: PLC0415
+    from bumps.fitters import DreamFit  # noqa: PLC0415
+
+    sidecar_path = Path(sidecar_path)
+    sidecar_path.parent.mkdir(parents=True, exist_ok=True)
+    with h5py.File(str(sidecar_path), 'a') as handle:
+        if DREAM_STATE_GROUP in handle:
+            del handle[DREAM_STATE_GROUP]
+        group = handle.create_group(DREAM_STATE_GROUP)
+        DreamFit.h5dump(group.create_group('state'), state)
+        group.create_dataset(
+            'param_names',
+            data=np.array(parameter_names, dtype=h5py.string_dtype(encoding='utf-8')),
+        )
 
 
 @dataclass(slots=True)
@@ -289,6 +332,10 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         tag=MinimizerTypeEnum.BUMPS_DREAM,
         description='Bumps library with DREAM Bayesian sampling',
     )
+
+    # Set by Fitter._set_minimizer_sidecar_path when a project path is
+    # known; enables persisting/resuming the DREAM state in mcmc.h5.
+    _sidecar_path: Path | None = None
 
     def __init__(
         self,
@@ -650,10 +697,25 @@ class BumpsDreamMinimizer(BumpsMinimizer):
 
         self.tracker.start_sampler_post_processing()
 
+        self._persist_dream_state(
+            raw_state=driver_result.raw_state,
+            parameter_names=context.parameter_names,
+        )
+
         return self._build_success_result(
             context=context,
             raw_state=driver_result.raw_state,
             best_nllf=driver_result.best_nllf,
+        )
+
+    def _persist_dream_state(self, *, raw_state: object, parameter_names: object) -> None:
+        """Write the DREAM sampler state to the sidecar when configured."""
+        if self._sidecar_path is None:
+            return
+        _write_dream_state_sidecar(
+            Path(self._sidecar_path),
+            raw_state,
+            [str(name) for name in parameter_names],
         )
 
     def _prepare_run_context(

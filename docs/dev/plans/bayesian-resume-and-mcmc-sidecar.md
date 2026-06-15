@@ -133,7 +133,7 @@ Phase 1 review gate. Do not batch multiple steps into one commit.
   CLI docs, and the tests listed in Concrete files — excluding generated
   outputs. End on zero non-historical `results.h5` hits.
   Commit: `Rename Bayesian sidecar to mcmc.h5 and single-source it`.
-- [ ] **P1.2 — Persist the DREAM raw sampler state.** Capture the
+- [x] **P1.2 — Persist the DREAM raw sampler state.** Capture the
   `MCMCDraw` in `BumpsDreamMinimizer`, add `_sidecar_path` (wired by the
   existing `Fitter._set_minimizer_sidecar_path`), and write a
   `dream_state` HDF5 group (`DreamFit.h5dump` + `param_names`) on save.
