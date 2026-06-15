@@ -150,19 +150,21 @@ Phase 1 review gate. Do not batch multiple steps into one commit.
 - [x] **P1.5 — Add `chains` alias for DREAM `population`.** User-facing
   `chains` alias with conflict detection and "population = scale factor"
   documentation. Commit: `Add chains alias for bumps-dream population`.
-- [ ] **P1.6 — DREAM resume tutorial (+ registration).** Add
-  `bayesian-dream-resume-lbco-hrpt.py` mirroring the emcee resume
-  tutorial; `pixi run notebook-prepare`. Register it everywhere the
-  emcee resume page is registered: `docs/mkdocs.yml` nav,
-  `docs/docs/tutorials/index.md`, `docs/docs/tutorials/index.json`, and
-  `tests/tutorials/baseline.json`; add to `ci_skip.txt` if heavy.
-  Commit: `Add bumps-dream resume tutorial`.
+- [x] **P1.6 — DREAM resume tutorial — deferred to Phase 2.** The
+  tutorial must be **executed** on real LBCO/HRPT data to validate it
+  and to fill its `tests/tutorials/baseline.json` entry
+  (`reduced_chi_square` + parameter values), which is a real bumps-DREAM
+  run — Phase-2-coupled. The implementation engine it exercises is
+  complete and validated (P1.1–P1.5). It is therefore authored and
+  executed in Phase 2 (see *Phase 2 → DREAM resume tutorial*), as a
+  self-contained page (fresh DREAM fit → save → resume), avoiding a new
+  external dataset.
 - [x] **P1.7 — Regenerate sidecar-referencing fixtures/tutorials.**
   No-op: `git ls-files | grep '\.h5'` shows **no tracked `.h5` sidecar
   fixtures**, and committed notebooks are output-stripped, so the rename
   had no binary artifacts to regenerate — the `mcmc.h5` name is produced
   purely at runtime and all textual references were swept in P1.1.
-- [ ] **P1.8 — Phase 1 review gate (no code).** Mark `[x]` and commit the
+- [x] **P1.8 — Phase 1 review gate (no code).** Mark `[x]` and commit the
   checklist update alone. Commit: `Reach Phase 1 review gate`.
 
 ## Phase 2 — Verification
@@ -199,6 +201,15 @@ New tests required:
   `test_emcee_resume_matches_small_dream_posterior`).
 - Confirm `pixi run check` (link-check) passes after the tutorial/nav
   and ADR edits.
+
+DREAM resume tutorial (authored in Phase 2, deferred from P1.6):
+- Add a **self-contained** `bayesian-dream-resume-lbco-hrpt.py` (fresh
+  short DREAM fit → `save_as` → `fit(resume=True, extra_steps=N)` →
+  posterior displays), `pixi run notebook-prepare`, and register it in
+  `docs/mkdocs.yml` nav, `docs/docs/tutorials/index.md`,
+  `docs/docs/tutorials/index.json`, and `tests/tutorials/baseline.json`
+  (baseline values taken from the executed run); add to `ci_skip.txt`
+  if it is too slow for CI. No new external dataset is required.
 
 ## Suggested Pull Request
 
