@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed.
+Accepted.
 
 ## Date
 
@@ -144,6 +144,18 @@ The owner exposes only `experiment.absorption` and a private
 `_swap_absorption` hook (Family A: the hook **replaces the category
 instance** when `type` changes), exactly as `extinction` does today.
 
+**Owner scope — Bragg powder experiments only.** The category is
+attached only when the experiment type is `sample_form = powder` **and**
+`scattering_type = bragg` (the cryspy/crysfml Bragg backends). Total-
+scattering / pdffit experiments **do not expose `experiment.absorption`
+at all** — there is no `none` instance, no `_absorption.*` block, and
+accessing the attribute raises as for any absent category. This mirrors
+`extinction`, which is attached only for single-crystal experiments and
+is simply absent otherwise; attachment is governed by the same
+`Compatibility` gate, not by a runtime no-op. Consequently the `none`
+type's calculator list is `cryspy, crysfml` (the Bragg backends) and
+deliberately excludes `pdffit`.
+
 ### 2. Application point — a pointwise envelope on the calculated pattern
 
 Because A(θ) is a **slowly-varying smooth envelope** of sin²θ (its
@@ -182,10 +194,14 @@ category by registering a class (see Deferred Work).
 
 Notes:
 
-- `none` is the **default** (A ≡ 1). The category always exists for
-  powder so the user can discover and switch it on via
-  `show_supported()`; opting out is `type = 'none'`, not deleting the
-  category. (`scattering_type = 'total'` / pdffit is out of scope.)
+- `none` is the **default** (A ≡ 1). The category exists for every
+  **Bragg powder** experiment (see §1 "Owner scope") so the user can
+  discover and switch it on via `show_supported()`; opting out is
+  `type = 'none'`, not deleting the category. Total-scattering / pdffit
+  experiments do not get the category at all (not even `none`), so the
+  `any` in the `none` row's beam-mode/sample-form columns is bounded by
+  that owner gate — it means "any Bragg-powder beam mode", not literally
+  every experiment type.
 - **Why a single built type is correct now:** the FullProf example suite
   uses only cylindrical absorption (§"Evidence from the FullProf example
   suite"), and our sole verification reference is CW cylindrical (LaB₆,
@@ -201,10 +217,37 @@ Notes:
   neutron vs X-ray. X-ray simply tends to larger μ; the same formula
   applies. Both are supported.
 - The future rows are designed (tags, parameters, CIF) but **not
-  built**. TOF in particular is λ-dependent and the slow-envelope
-  argument does not carry over unchanged (each detector bin mixes
-  wavelengths), so it needs its own application path; it is listed so
-  the taxonomy and CIF tags are settled once.
+  built**. They all share the stable category/swap contract; only the
+  TOF rows additionally need a new calculation path — see §3a.
+
+### 3a. Stable category contract vs. per-mode calculation contract
+
+These two contracts are intentionally separate, so the switchable
+category can be extended without churn while the calculation layer grows
+only as physics demands:
+
+- **Category/swap contract — stable across _all_ types.** Every type
+  (CWL or TOF, Phase 1 or future) is a class registered on
+  `AbsorptionFactory`, selected through `experiment.absorption.type`,
+  swapped by the single `_swap_absorption` hook. Adding a type never
+  changes the category, the hook, the selector surface, or the CIF
+  identity tag. This is what the "no rework" claim refers to.
+- **Calculation contract — per beam mode.** _How_ a type turns its
+  parameters into an applied correction is **not** uniform:
+  - **CWL types** (`cylinder-hewat`, `cylinder-lobanov`, `flat-plate`)
+    share the §2 helper `factor(two_theta, params) → A(2θ)`, applied as
+    a pointwise 2θ envelope. Adding a CWL form is just another branch in
+    that helper.
+  - **TOF types** (`tof-cylinder`, `tof-exponential`) are
+    wavelength-dependent: at fixed scattering angle a TOF bin mixes
+    wavelengths, so a pure A(2θ) envelope is wrong. They will need a
+    distinct `factor_tof(...)` application path keyed on λ (or d-spacing
+    / TOF). Phase 1 does **not** build this path; it is added with the
+    first TOF type, behind the same category/swap contract.
+
+So adding a TOF form leaves the category contract untouched (per the
+first bullet) but **does** extend the calculation layer (a new
+application path) — the Deferred Work note reflects exactly this split.
 
 ### 4. The μR parameter
 
@@ -214,6 +257,27 @@ FullProf's `muR` and CrysFML's `tmv`. It is a `Parameter`
 (absorption is normally fixed, per the LaB₆ reference). Storing μ and R
 separately is rejected (see Alternatives); they can be added later as
 read-only provenance (Deferred Work).
+
+**Out-of-range policy (boundary user input — no silent failure).** The
+Hewat expansion is validated only to μR ≲ 1.5, yet `RangeValidator`
+alone would silently evaluate it at any μR ≥ 0. Phase 1 therefore adds
+an explicit, documented policy on `cylinder-hewat`:
+
+- **Hard floor only in the validator:** `RangeValidator(ge=0.0)` — no
+  hard upper bound. A hard ceiling is rejected because legitimate real
+  examples reach μR = 1.28 (dy*, DyMnGe*; §"Evidence"), and a
+  characterised sample may sit slightly higher; erroring would block
+  valid use.
+- **Warn above the validated ceiling:** when `mu_r` is set (or refined)
+  above **1.5**, the category emits a single `log.warning` stating that
+  μR exceeds the Hewat-validated range and that the (deferred)
+  `cylinder-lobanov` form should be used once available. The pattern is
+  still computed (extrapolated), so workflows do not break, but the user
+  is never silently handed an out-of-range result.
+- This warn-not-fail choice is the boundary-input handling required by
+  [`AGENTS.md`](../../../../AGENTS.md) §Project Context, applied at the
+  public-API edge; the 1.5 threshold is a single named constant so the
+  future `cylinder-lobanov` type can raise/redirect coherently.
 
 `flat-plate` uses `mu_t` (μ·thickness); the TOF exponential form uses
 `coeff` and `exp` (`A = exp(−coeff·λ^exp)`).
@@ -350,9 +414,19 @@ backend round-trip.
 ## Deferred Work
 
 All of these are designed into the taxonomy and CIF tags above but **not
-built in Phase 1** — each is a new class registered on the same
-`AbsorptionFactory`, gated by `Compatibility`/`CalculatorSupport`, with
-no change to the category, the swap hook, or the application helper.
+built in Phase 1**. Two contracts must be kept separate (see §3a "Stable
+vs. calculation contract"):
+
+- **Category/swap contract (stable for all future types):** each is a
+  new class registered on the same `AbsorptionFactory`, gated by
+  `Compatibility`/`CalculatorSupport`, with **no change to the category,
+  the `_swap_absorption` hook, or the selector surface**.
+- **Calculation contract (per beam mode):** CWL types reuse the shared
+  2θ helper `factor(two_theta, params)`. **TOF types do not** — they
+  require a separate wavelength-aware application path (§3a), so adding
+  a TOF form _does_ extend the calculation layer even though it leaves
+  the category/swap contract untouched.
+
 None appears in the FullProf example suite (only the cylinder does), so
 none is urgent; each should land **with a verification dataset**, not on
 spec alone.

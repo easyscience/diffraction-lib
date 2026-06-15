@@ -156,6 +156,7 @@ _PARAMETER_DOCS_BLOCKS = {
         'space_group_Wyckoff',
     }),
     'experiment': frozenset({
+        'absorption',
         'background',
         'calculator',
         'data',
@@ -1301,12 +1302,12 @@ def render_object_help(obj: object) -> None:
 
 def render_cif(cif_text: str) -> None:
     """
-    Display CIF text as a formatted table in Jupyter or terminal.
+    Display Edi-format text as a formatted table in Jupyter or terminal.
 
     Parameters
     ----------
     cif_text : str
-        The CIF text to display.
+        The Edi-format text to display.
     """
     # Split into lines
     lines: list[str] = list(cif_text.splitlines())
@@ -1314,9 +1315,9 @@ def render_cif(cif_text: str) -> None:
     # Convert each line into a single-column format for table rendering
     columns: list[list[str]] = [[line] for line in lines]
 
-    # Render the table using left alignment and no headers
+    # Render the table; the single column is the Edi-format text.
     render_table(
-        columns_headers=['CIF'],
+        columns_headers=['Edi'],
         columns_alignment=['left'],
         columns_data=columns,
     )

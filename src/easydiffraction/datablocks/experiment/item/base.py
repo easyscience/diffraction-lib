@@ -11,6 +11,7 @@ from typing import Any
 import numpy as np
 
 from easydiffraction.core.datablock import DatablockItem
+from easydiffraction.datablocks.experiment.categories.absorption.factory import AbsorptionFactory
 from easydiffraction.datablocks.experiment.categories.background.factory import BackgroundFactory
 from easydiffraction.datablocks.experiment.categories.calculator import CalculatorCategoryFactory
 from easydiffraction.datablocks.experiment.categories.data.factory import DataFactory
@@ -93,6 +94,7 @@ class ExperimentBase(DatablockItem):
             getattr(self, '_diffrn', None),
             getattr(self, '_calculator_category', None),
             getattr(self, '_extinction', None),
+            getattr(self, '_absorption', None),
             getattr(self, '_linked_structure', None),
             getattr(self, '_instrument', None),
             getattr(self, '_refln', None),
@@ -114,6 +116,13 @@ class ExperimentBase(DatablockItem):
             return {'calculator': calculator}
         if category is getattr(self, '_extinction', None):
             return {'calculator': calculator}
+        if category is getattr(self, '_absorption', None):
+            return {
+                'calculator': calculator,
+                'sample_form': self.experiment_type.sample_form.value,
+                'scattering_type': self.experiment_type.scattering_type.value,
+                'beam_mode': self.experiment_type.beam_mode.value,
+            }
         if category is getattr(self, '_peak', None):
             return {
                 'calculator': calculator,
@@ -241,6 +250,42 @@ class ExperimentBase(DatablockItem):
         self._extinction._type.value = new_type
         if announce:
             console.paragraph('Extinction type changed to')
+            console.print(new_type)
+
+    def _swap_absorption(self, new_type: str) -> None:
+        """Switch the active absorption category."""
+        self._replace_absorption(new_type, announce=True)
+
+    def _replace_absorption(
+        self,
+        new_type: str,
+        *,
+        announce: bool,
+        strict: bool = True,
+    ) -> None:
+        """Replace the active absorption category."""
+        supported = AbsorptionFactory.supported_for(
+            **self._supported_filters_for(self.absorption),
+        )
+        supported_tags = [klass.type_info.tag for klass in supported]
+        if new_type not in supported_tags:
+            msg = (
+                f"Unsupported absorption type '{new_type}'. "
+                f'Supported: {supported_tags}. '
+                f"For more information, use 'absorption.show_supported()'"
+            )
+            if strict:
+                raise ValueError(msg)
+            log.warning(msg)
+            return
+
+        old_absorption = self._absorption
+        self._absorption = AbsorptionFactory.create(new_type)
+        old_absorption._parent = None
+        self._absorption._parent = self
+        self._absorption._type.value = new_type
+        if announce:
+            console.paragraph('Absorption type changed to')
             console.print(new_type)
 
     @property

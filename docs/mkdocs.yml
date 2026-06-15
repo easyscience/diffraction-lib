@@ -263,6 +263,7 @@ nav:
           - LaB6 (SyCos/SySin): verification/pd-neut-cwl_tch-fcj-noabs-nosldl_lab6.ipynb
           - LaB6 (FCJ asymmetry): verification/pd-neut-cwl_tch-fcj-noabs_lab6.ipynb
           - LaB6 (absorption): verification/pd-neut-cwl_tch-fcj_lab6.ipynb
+          - LaB6 (absorption, no FCJ): verification/pd-neut-cwl_tch-fcj-nosldl_lab6.ipynb
       - Powder, neutron, time-of-flight:
           - Si (Jorgensen): verification/pd-neut-tof_j_si.ipynb
           - Si (Jorgensen–Von Dreele): verification/pd-neut-tof_jvd_si.ipynb

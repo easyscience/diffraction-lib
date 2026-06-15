@@ -5,6 +5,7 @@
 ├── 📁 analysis
 │   ├── 📁 calculators
 │   │   ├── 📄 __init__.py
+│   │   ├── 📄 absorption.py
 │   │   ├── 📄 base.py
 │   │   ├── 📄 crysfml.py
 │   │   ├── 📄 cryspy.py
@@ -129,6 +130,11 @@
 │   ├── 📁 experiment
 │   │   ├── 📁 categories
 │   │   │   ├── 📁 absorption
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 base.py
+│   │   │   │   ├── 📄 cylinder_hewat.py
+│   │   │   │   ├── 📄 factory.py
+│   │   │   │   └── 📄 none.py
 │   │   │   ├── 📁 background
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 base.py

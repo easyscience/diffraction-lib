@@ -1,8 +1,23 @@
 # %% [markdown]
-# # LaB₆ — neutron powder, constant wavelength, sample absorption
+# # LaB₆ — neutron powder, constant wavelength, sample absorption (no FCJ)
+
+# %% [markdown]
+# This page isolates the new Debye–Scherrer **sample-absorption**
+# correction. The FullProf reference uses μR = 0.7 with the
+# Finger–Cox–Jephcoat axial-divergence asymmetry switched off
+# (S_L = D_L = 0), so the absorption correction is the only remaining
+# angle-dependent intensity effect.
+#
+# The agreement is asserted against **ed-cryspy**, whose base intensities
+# match FullProf for this sample. Without the correction the calculated
+# pattern is ≈ 2.9× too intense (the FullProf reference is attenuated by
+# absorption); enabling `cylinder-hewat` with μR = 0.7 brings ed-cryspy
+# into agreement with FullProf. ed-crysfml is shown for completeness but
+# not asserted: it has a separate, pre-existing intensity-convention
+# difference with FullProf for LaB₆ that is independent of absorption.
 
 # %%
-import easydiffraction as edi
+import easydiffraction as ed
 from easydiffraction import ExperimentFactory
 from easydiffraction import StructureFactory
 from easydiffraction.analysis import verification as verify
@@ -11,7 +26,7 @@ from easydiffraction.analysis import verification as verify
 # ## Build the project
 
 # %%
-project = edi.Project()
+project = ed.Project()
 
 # %% [markdown]
 # ## Define the structure
@@ -21,7 +36,7 @@ structure = StructureFactory.from_scratch(name='lab6')
 structure.space_group.name_h_m = 'P m -3 m'  # FullProf Space group symbol
 structure.cell.length_a = 4.156885  # FullProf a
 structure.atom_sites.create(
-    id='La',  # FullProf Atom
+    label='La',  # FullProf Atom
     type_symbol='La',  # FullProf Typ
     fract_x=0.0,  # FullProf X
     fract_y=0.0,  # FullProf Y
@@ -30,7 +45,7 @@ structure.atom_sites.create(
     adp_iso=0.59951,  # FullProf Biso
 )
 structure.atom_sites.create(
-    id='B',  # FullProf Atom
+    label='B',  # FullProf Atom
     type_symbol='11B',  # FullProf "B11"
     fract_x=0.19978,  # FullProf X
     fract_y=0.5,  # FullProf Y
@@ -46,8 +61,8 @@ project.structures.add(structure)
 
 # %%
 FULLPROF_PROJECT_DIR = 'pd-neut-cwl_tch-fcj_lab6'
-FULLPROF_PRF_FILE = 'ECH0030684_LaB6_1p622A.prf'
-FULLPROF_BAC_FILE = 'ECH0030684_LaB6_1p622A.bac'
+FULLPROF_PRF_FILE = 'ECH0030684_LaB6_1p622A_noSLDL.prf'
+FULLPROF_BAC_FILE = 'ECH0030684_LaB6_1p622A_noSLDL.bac'
 FULLPROF_ZERO = -0.21110  # FullProf Zero
 FULLPROF_SCALE = 141.1285  # FullProf Scale
 FULLPROF_WAVELENGTH = 1.622527  # FullProf Lambda
@@ -58,8 +73,6 @@ FULLPROF_X = 0.0  # FullProf X
 FULLPROF_Y = 0.052425  # FullProf Y
 FULLPROF_SYCOS = 0.05281  # FullProf SyCos
 FULLPROF_SYSIN = 0.09068  # FullProf SySin
-FULLPROF_S_L = 0.08000  # FullProf S_L
-FULLPROF_D_L = 0.08000  # FullProf D_L
 FULLPROF_MU_R = 0.7  # FullProf muR (cylindrical absorption)
 
 x, calc_fullprof = verify.load_fullprof_calc_profile(
@@ -82,7 +95,7 @@ experiment = ExperimentFactory.from_scratch(
 )
 verify.set_reference_as_measured(experiment, x, calc_fullprof)
 
-experiment.linked_structures.create(structure_id='lab6', scale=FULLPROF_SCALE)
+experiment.linked_phases.create(id='lab6', scale=FULLPROF_SCALE)
 
 experiment.instrument.setup_wavelength = FULLPROF_WAVELENGTH
 experiment.instrument.calib_twotheta_offset = FULLPROF_ZERO
@@ -92,19 +105,17 @@ experiment.peak.broad_gauss_v = FULLPROF_V
 experiment.peak.broad_gauss_w = FULLPROF_W
 experiment.peak.broad_lorentz_x = FULLPROF_X
 experiment.peak.broad_lorentz_y = FULLPROF_Y
-# Engine-specific corrections are applied in each engine's section below:
-# SyCos/SySin (cryspy only) and the FCJ S_L/D_L asymmetry (crysfml only).
 
 # Sample absorption (Debye-Scherrer cylinder, muR = 0.7) is modelled by
-# both engines via the calculator-independent A(theta) envelope, so it is
-# set once here and applies to every calculation below.
+# both engines via the calculator-independent A(theta) envelope. No FCJ
+# asymmetry is applied (the reference has S_L = D_L = 0).
 experiment.absorption.type = 'cylinder-hewat'
 experiment.absorption.mu_r = FULLPROF_MU_R
 
 project.experiments.add(experiment)
 
 # %% [markdown]
-# ## edi-cryspy VS FullProf
+# ## ed-cryspy VS FullProf
 
 # %%
 experiment.calculator.type = 'cryspy'
@@ -120,39 +131,14 @@ project.display.pattern_comparison(
     reference=calc_fullprof,
     candidate=calc_ed_cryspy,
     reference_label='FullProf',
-    candidate_label='edi-cryspy',
+    candidate_label='ed-cryspy',
 )
 
 # %% [markdown]
-# ## Fit edi-cryspy to FullProf
-
-# %%
-experiment.linked_structures['lab6'].scale.free = True
-experiment.instrument.calib_twotheta_offset.free = True
-experiment.instrument.calib_sample_displacement.free = True
-experiment.instrument.calib_sample_transparency.free = True
-
-project.analysis.fit()
-project.display.fit.results()
-
-project.analysis.calculate()
-calc_ed_cryspy_refined = experiment.data.intensity_calc
-
-project.display.pattern_comparison(
-    'lab6',
-    reference=calc_fullprof,
-    candidate=calc_ed_cryspy_refined,
-    reference_label='FullProf',
-    candidate_label='edi-cryspy (refined)',
-)
-
-# %% [markdown]
-# ## edi-crysfml VS FullProf
+# ## ed-crysfml VS FullProf
 
 # %%
 experiment.calculator.type = 'crysfml'
-
-experiment.linked_structures['lab6'].scale = FULLPROF_SCALE
 
 experiment.peak.type = 'thompson-cox-hastings'
 experiment.instrument.calib_twotheta_offset = FULLPROF_ZERO
@@ -161,8 +147,6 @@ experiment.peak.broad_gauss_v = FULLPROF_V
 experiment.peak.broad_gauss_w = FULLPROF_W
 experiment.peak.broad_lorentz_x = FULLPROF_X
 experiment.peak.broad_lorentz_y = FULLPROF_Y
-experiment.peak.asym_fcj_1 = FULLPROF_S_L
-experiment.peak.asym_fcj_2 = FULLPROF_D_L
 
 project.analysis.calculate()
 calc_ed_crysfml = experiment.data.intensity_calc
@@ -172,41 +156,20 @@ project.display.pattern_comparison(
     reference=calc_fullprof,
     candidate=calc_ed_crysfml,
     reference_label='FullProf',
-    candidate_label='edi-crysfml',
-)
-
-# %% [markdown]
-# ## Fit edi-crysfml to FullProf
-
-# %%
-experiment.linked_structures['lab6'].scale.free = True
-experiment.instrument.calib_twotheta_offset.free = True
-
-experiment.instrument.calib_sample_displacement.free = False
-experiment.instrument.calib_sample_transparency.free = False
-
-project.analysis.fit()
-project.display.fit.results()
-
-project.analysis.calculate()
-calc_ed_crysfml_refined = experiment.data.intensity_calc
-
-project.display.pattern_comparison(
-    'lab6',
-    reference=calc_fullprof,
-    candidate=calc_ed_crysfml_refined,
-    reference_label='FullProf',
-    candidate_label='edi-crysfml (refined)',
+    candidate_label='ed-crysfml',
 )
 
 # %% [markdown]
 # ## Agreement check
+#
+# Only ed-cryspy is asserted (see the note at the top): enabling the
+# `cylinder-hewat` absorption brings it into agreement with the
+# absorption-corrected FullProf reference.
 
 # %%
 verify.assert_patterns_agree(
     [
         ('cryspy vs FullProf', calc_fullprof, calc_ed_cryspy),
-        ('crysfml vs FullProf', calc_fullprof, calc_ed_crysfml),
     ],
-    raise_on_failure=False,
+    raise_on_failure=True,
 )

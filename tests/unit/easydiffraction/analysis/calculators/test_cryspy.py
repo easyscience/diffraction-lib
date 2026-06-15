@@ -517,3 +517,73 @@ def test_relabel_cif_tags_for_cryspy_maps_edi_tags_to_legacy():
     assert '_atom_site.id\n' not in out
     assert '_atom_site.adp_iso' not in out
     assert '_space_group.name_h_m' not in out
+
+
+def _absorption_cwl_experiment_stub(x, mu_r):
+    """Minimal CWL experiment stub carrying a cylindrical absorption."""
+    from easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat import (
+        CylinderHewatAbsorption,
+    )
+    from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+
+    absorption = CylinderHewatAbsorption()
+    absorption.mu_r = mu_r
+    return SimpleNamespace(
+        name='exp',
+        experiment_type=SimpleNamespace(
+            beam_mode=SimpleNamespace(value=BeamModeEnum.CONSTANT_WAVELENGTH)
+        ),
+        absorption=absorption,
+        data=SimpleNamespace(x=np.asarray(x, dtype=float)),
+    )
+
+
+def _stub_cryspy_engine(monkeypatch, calc, block_payload):
+    """Stub the cryspy object build and engine call for pattern tests."""
+    import easydiffraction.analysis.calculators.cryspy as cryspy_mod
+
+    monkeypatch.setattr(calc, '_invalidate_stale_cache', lambda *a, **k: None)
+    monkeypatch.setattr(
+        calc,
+        '_recreate_cryspy_obj',
+        lambda s, e: SimpleNamespace(get_dictionary=lambda: {f'crystal_{s.name}': {}}),
+    )
+    monkeypatch.setattr(calc, '_update_structure_in_cryspy_dict', lambda *a, **k: None)
+    monkeypatch.setattr(calc, '_update_experiment_in_cryspy_dict', lambda *a, **k: None)
+
+    def _fake_rhochi(_dict, *, dict_in_out, **kwargs):
+        if block_payload is not None:
+            dict_in_out['pd_exp'] = block_payload
+
+    monkeypatch.setattr(cryspy_mod, 'rhochi_calc_chi_sq_by_dictionary', _fake_rhochi)
+
+
+def test_cryspy_calculate_pattern_applies_absorption(monkeypatch):
+    from easydiffraction.analysis.calculators import absorption
+    from easydiffraction.analysis.calculators.cryspy import CryspyCalculator
+
+    calc = CryspyCalculator()
+    x = np.array([10.0, 90.0, 150.0])
+    structure = SimpleNamespace(name='s')
+    experiment = _absorption_cwl_experiment_stub(x, mu_r=0.7)
+    raw = np.array([100.0, 100.0, 100.0])
+    _stub_cryspy_engine(monkeypatch, calc, {'signal_plus': raw / 2, 'signal_minus': raw / 2})
+
+    out = calc.calculate_pattern(structure, experiment)
+
+    expected = raw * absorption.factor(x, experiment.absorption)
+    assert np.allclose(out, expected)
+    # The correction is non-trivial, so deleting the call site would fail.
+    assert not np.allclose(out, raw)
+
+
+def test_cryspy_calculate_pattern_no_data_returns_empty(monkeypatch):
+    from easydiffraction.analysis.calculators.cryspy import CryspyCalculator
+
+    calc = CryspyCalculator()
+    structure = SimpleNamespace(name='s')
+    experiment = _absorption_cwl_experiment_stub(np.array([10.0, 20.0]), mu_r=0.7)
+    _stub_cryspy_engine(monkeypatch, calc, None)  # no powder block -> KeyError path
+
+    out = calc.calculate_pattern(structure, experiment)
+    assert list(out) == []

@@ -272,3 +272,37 @@ class ExtinctionModelEnum(StrEnum):
         if self is ExtinctionModelEnum.LORENTZ:
             return 'Lorentzian mosaicity distribution for extinction correction.'
         return None
+
+
+class AbsorptionTypeEnum(StrEnum):
+    """Sample-absorption correction types for powder experiments."""
+
+    NONE = 'none'
+    CYLINDER_HEWAT = 'cylinder-hewat'
+
+    @classmethod
+    def default(cls) -> 'AbsorptionTypeEnum':
+        """
+        Return the default absorption type (NONE).
+
+        Returns
+        -------
+        'AbsorptionTypeEnum'
+            The default enum member.
+        """
+        return cls.NONE
+
+    def description(self) -> str:
+        """
+        Return a human-readable description of this absorption type.
+
+        Returns
+        -------
+        str
+            Description string for the current enum member.
+        """
+        if self is AbsorptionTypeEnum.NONE:
+            return 'No sample-absorption correction.'
+        if self is AbsorptionTypeEnum.CYLINDER_HEWAT:
+            return 'Cylindrical Debye-Scherrer absorption (Hewat).'
+        return None

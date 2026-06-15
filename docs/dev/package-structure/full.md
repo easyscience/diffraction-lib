@@ -5,6 +5,7 @@
 ├── 📁 analysis
 │   ├── 📁 calculators
 │   │   ├── 📄 __init__.py
+│   │   ├── 📄 absorption.py
 │   │   ├── 📄 base.py
 │   │   │   ├── 🏷️ class PowderReflnRecord
 │   │   │   └── 🏷️ class CalculatorBase
@@ -276,6 +277,15 @@
 │   ├── 📁 experiment
 │   │   ├── 📁 categories
 │   │   │   ├── 📁 absorption
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 base.py
+│   │   │   │   │   └── 🏷️ class AbsorptionBase
+│   │   │   │   ├── 📄 cylinder_hewat.py
+│   │   │   │   │   └── 🏷️ class CylinderHewatAbsorption
+│   │   │   │   ├── 📄 factory.py
+│   │   │   │   │   └── 🏷️ class AbsorptionFactory
+│   │   │   │   └── 📄 none.py
+│   │   │   │       └── 🏷️ class NoAbsorption
 │   │   │   ├── 📁 background
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 base.py
@@ -454,7 +464,8 @@
 │   │   │   │   ├── 🏷️ class BeamModeEnum
 │   │   │   │   ├── 🏷️ class CalculatorEnum
 │   │   │   │   ├── 🏷️ class PeakProfileTypeEnum
-│   │   │   │   └── 🏷️ class ExtinctionModelEnum
+│   │   │   │   ├── 🏷️ class ExtinctionModelEnum
+│   │   │   │   └── 🏷️ class AbsorptionTypeEnum
 │   │   │   ├── 📄 factory.py
 │   │   │   │   └── 🏷️ class ExperimentFactory
 │   │   │   └── 📄 total_pd.py
