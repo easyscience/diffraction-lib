@@ -24,6 +24,8 @@ from easydiffraction.io.cif.serialize import project_config_to_cif
 from easydiffraction.io.cif.serialize import project_to_cif
 from easydiffraction.io.edi import edi_body_from_text
 from easydiffraction.io.edi import section_to_edi
+from easydiffraction.io.results_sidecar import SIDECAR_FILE_NAME
+from easydiffraction.io.results_sidecar import carry_over_raw_sampler_state
 from easydiffraction.io.results_sidecar import read_analysis_results_sidecar
 from easydiffraction.io.results_sidecar import write_analysis_results_sidecar
 from easydiffraction.project.display import ProjectDisplay
@@ -661,6 +663,8 @@ class Project(GuardedBase):  # noqa: PLR0904
         else:
             project_dir = resolve_artifact_path(dir_path)
 
+        previous_path = self.metadata.path
+
         if overwrite and project_dir.is_dir():
             current_working_directory = pathlib.Path.cwd().resolve()
             resolved_project_dir = project_dir.resolve()
@@ -674,6 +678,16 @@ class Project(GuardedBase):  # noqa: PLR0904
                 shutil.rmtree(project_dir)
 
         self.metadata.path = project_dir
+        # Relocating a saved Bayesian project must preserve the raw,
+        # resumable sampler-state groups (emcee_chain / dream_state).
+        # save() rewrites only the derived sidecar arrays from memory, so
+        # copy the raw groups across before they are rebuilt; otherwise
+        # resume after load + save_as would have no chain to extend.
+        if previous_path is not None and project_dir.resolve() != previous_path.resolve():
+            carry_over_raw_sampler_state(
+                source_analysis_dir=previous_path / 'analysis',
+                destination_analysis_dir=project_dir / 'analysis',
+            )
         self.save()
 
     def apply_params_from_csv(self, row_index: int) -> None:

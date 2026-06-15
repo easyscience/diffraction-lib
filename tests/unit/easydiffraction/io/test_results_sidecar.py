@@ -239,6 +239,68 @@ def test_prepare_for_new_fit_clears_all_raw_state_groups(tmp_path):
     assert not sidecar_path.is_file()
 
 
+def test_carry_over_raw_sampler_state_copies_engine_groups(tmp_path):
+    import h5py
+
+    from easydiffraction.io import results_sidecar as results_sidecar_mod
+
+    source_dir = Path(tmp_path) / 'src' / 'analysis'
+    source_dir.mkdir(parents=True)
+    with h5py.File(source_dir / 'mcmc.h5', 'w') as handle:
+        chain = handle.create_group('emcee_chain')
+        chain.attrs['iteration'] = 5
+        state = handle.create_group('dream_state')
+        state.create_dataset('param_names', data=[b'a', b'b'])
+        handle.create_group('posterior')  # canonical: must NOT be copied
+
+    dest_dir = Path(tmp_path) / 'dst' / 'analysis'
+
+    results_sidecar_mod.carry_over_raw_sampler_state(
+        source_analysis_dir=source_dir,
+        destination_analysis_dir=dest_dir,
+    )
+
+    with h5py.File(dest_dir / 'mcmc.h5', 'r') as handle:
+        assert handle['emcee_chain'].attrs['iteration'] == 5
+        assert 'dream_state' in handle
+        assert list(handle['dream_state']['param_names'][()]) == [b'a', b'b']
+        # Canonical groups are rebuilt from memory, never carried over.
+        assert 'posterior' not in handle
+
+
+def test_carry_over_raw_sampler_state_is_noop_without_source(tmp_path):
+    from easydiffraction.io import results_sidecar as results_sidecar_mod
+
+    dest_dir = Path(tmp_path) / 'dst' / 'analysis'
+
+    results_sidecar_mod.carry_over_raw_sampler_state(
+        source_analysis_dir=Path(tmp_path) / 'missing' / 'analysis',
+        destination_analysis_dir=dest_dir,
+    )
+
+    assert not (dest_dir / 'mcmc.h5').exists()
+
+
+def test_carry_over_raw_sampler_state_is_noop_without_raw_groups(tmp_path):
+    import h5py
+
+    from easydiffraction.io import results_sidecar as results_sidecar_mod
+
+    source_dir = Path(tmp_path) / 'src' / 'analysis'
+    source_dir.mkdir(parents=True)
+    with h5py.File(source_dir / 'mcmc.h5', 'w') as handle:
+        handle.create_group('posterior')
+
+    dest_dir = Path(tmp_path) / 'dst' / 'analysis'
+
+    results_sidecar_mod.carry_over_raw_sampler_state(
+        source_analysis_dir=source_dir,
+        destination_analysis_dir=dest_dir,
+    )
+
+    assert not (dest_dir / 'mcmc.h5').exists()
+
+
 def test_should_use_sidecar_compares_to_fit_result_kind_enum():
     """`_should_use_sidecar` must read from `FitResultKindEnum`, not a literal."""
     from easydiffraction.analysis.enums import FitResultKindEnum
