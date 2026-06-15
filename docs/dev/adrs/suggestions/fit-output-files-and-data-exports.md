@@ -47,8 +47,7 @@ and large numerical arrays should not be embedded in
 The accepted baseline is:
 
 - `analysis/results.csv` for sequential deterministic fit tables
-- `analysis/mcmc.h5` for large Bayesian arrays and result-derived
-  caches
+- `analysis/mcmc.h5` for large Bayesian arrays and result-derived caches
 
 Any future change to those canonical filenames would need a follow-up
 ADR.
@@ -128,7 +127,7 @@ analysis/
 | single deterministic     | `analysis/analysis.cif`                          | open question                | none initially        | none initially        | `analysis/exports/*.csv`        |
 | joint deterministic      | `analysis/analysis.cif`                          | open question                | none initially        | none initially        | `analysis/exports/*.csv`        |
 | sequential deterministic | `analysis/analysis.cif` + `analysis/results.csv` | `analysis/results.csv`       | none initially        | `analysis/data.h5`    | `analysis/exports/*.csv`        |
-| single Bayesian          | `analysis/analysis.cif` + `analysis/mcmc.h5`  | optional summary export only | `analysis/mcmc.h5` | none initially        | optional summary/predictive CSV |
+| single Bayesian          | `analysis/analysis.cif` + `analysis/mcmc.h5`     | optional summary export only | `analysis/mcmc.h5`    | none initially        | optional summary/predictive CSV |
 
 ## Open Questions
 

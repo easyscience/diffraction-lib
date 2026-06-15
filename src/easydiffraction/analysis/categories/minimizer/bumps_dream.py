@@ -4,13 +4,16 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
 from typing import ClassVar
 
 from easydiffraction.analysis.categories.minimizer.bayesian_base import BayesianMinimizerBase
 from easydiffraction.analysis.categories.minimizer.factory import MinimizerCategoryFactory
 from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 from easydiffraction.core.metadata import TypeInfo
-from easydiffraction.core.variable import IntegerDescriptor
+
+if TYPE_CHECKING:
+    from easydiffraction.core.variable import IntegerDescriptor
 
 DEFAULT_SAMPLING_STEPS = 3000
 DEFAULT_BURN_IN_STEPS = 600
@@ -48,15 +51,18 @@ class BumpsDreamMinimizer(BayesianMinimizerBase):
     @property
     def chains(self) -> IntegerDescriptor:
         """
-        Friendly alias for ``population_size`` (the DREAM population
-        scale factor): DREAM runs ``ceil(chains * n_parameters)``
-        parallel chains. ``chains`` and ``population_size`` share one
-        descriptor, so setting either updates the same value (there is
-        no separate value to conflict).
+        Alias for ``population_size`` (the population scale factor).
+
+        DREAM runs ``ceil(chains * n_parameters)`` parallel chains.
+        ``chains`` and ``population_size`` share one descriptor, so
+        setting either updates the same value (no separate value to
+        conflict).
         """
         return self.population_size
 
     @chains.setter
     def chains(self, value: int) -> None:
-        """Set the population scale factor (alias for ``population_size``)."""
+        """
+        Set the population scale factor (alias for ``population_size``).
+        """
         self.population_size = value

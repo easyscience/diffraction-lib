@@ -19,15 +19,18 @@ single-sidecar/per-engine-groups wording:
 The `results.h5` → `mcmc.h5` rename additionally updates **plain
 references** in other accepted ADRs, the ADR index, the
 `fit-output-files-and-data-exports` suggestion, user/CLI docs, and tests
-— the full set is enumerated in ADR §4 and under *Concrete files* / P1.1.
+— the full set is enumerated in ADR §4 and under _Concrete files_ /
+P1.1.
 
 Accepted ADRs this work must **respect**:
 
 - [`minimizer-input-output-split.md`](../adrs/accepted/minimizer-input-output-split.md)
-  — `analysis.minimizer` (input) / `analysis.fit_result` (output) pairing.
+  — `analysis.minimizer` (input) / `analysis.fit_result` (output)
+  pairing.
 - [`switchable-category-owned-selectors.md`](../adrs/accepted/switchable-category-owned-selectors.md)
   — the `minimizer.type` selector surface.
-- [`undo-fit.md`](../adrs/accepted/undo-fit.md) — undo clears the sidecar.
+- [`undo-fit.md`](../adrs/accepted/undo-fit.md) — undo clears the
+  sidecar.
 
 ## Branch and PR
 
@@ -40,7 +43,8 @@ Flat-slug branch `bayesian-resume-and-mcmc-sidecar` off `develop`
 `bayesian_extend`) is the blueprint for the DREAM sampler mechanics:
 `src/easyscience/fitting/minimizers/minimizer_bumps.py` —
 `mcmc_sample(resume_state=…)`, `_resolve_population_alias`,
-`save_sampler_state`/`load_sampler_state`, and the ring-buffer docstring.
+`save_sampler_state`/`load_sampler_state`, and the ring-buffer
+docstring.
 
 ## Decisions (already made)
 
@@ -53,21 +57,23 @@ Flat-slug branch `bayesian-resume-and-mcmc-sidecar` off `develop`
   DREAM translates `extra_steps=N` to `samples = current + N, burn = 0`
   (ring-buffer extend); population scale recovered from `state.Npop`;
   state deep-copied before fitting.
-- DREAM resume validates parameter count, population, and **names**
-  (we persist names, so no positional-only fallback).
+- DREAM resume validates parameter count, population, and **names** (we
+  persist names, so no positional-only fallback).
 - Beta project: no legacy shim; regenerate fixtures/tutorials/tests that
   reference `results.h5`.
 
 ## Resolved decisions (no open questions blocking `/draft-impl-1`)
 
-1. **DREAM state layout is fixed in the ADR** — a top-level `dream_state`
-   HDF5 group holding the `MCMCDraw` (`DreamFit.h5dump`) plus a
-   `param_names` dataset. Not deferred; P1.2/P1.3 implement exactly this.
+1. **DREAM state layout is fixed in the ADR** — a top-level
+   `dream_state` HDF5 group holding the `MCMCDraw` (`DreamFit.h5dump`)
+   plus a `param_names` dataset. Not deferred; P1.2/P1.3 implement
+   exactly this.
 2. **The `chains` alias is included** as an approved user-facing API
    addition (ADR §1). P1.5 stays in scope; it is not optional.
-3. **Unified `extra_steps` semantics** — emcee appends, DREAM extends its
-   ring buffer (`samples = current + N`, `burn = 0`); both yield the same
-   "added N draws". The Phase 2 cross-engine parity test enforces this.
+3. **Unified `extra_steps` semantics** — emcee appends, DREAM extends
+   its ring buffer (`samples = current + N`, `burn = 0`); both yield the
+   same "added N draws". The Phase 2 cross-engine parity test enforces
+   this.
 
 ## Concrete files likely to change
 
@@ -97,9 +103,9 @@ Flat-slug branch `bayesian-resume-and-mcmc-sidecar` off `develop`
   - Tests: `tests/unit/easydiffraction/io/test_results_sidecar*.py`,
     `analysis/test_analysis_coverage.py`,
     `analysis/test_fitting_coverage.py`,
-    `analysis/minimizers/test_emcee.py`,
-    `test___main__*.py`, `tests/integration/fitting/test_emcee.py`,
-    `test_bayesian_dream.py`, and any tracked project fixtures.
+    `analysis/minimizers/test_emcee.py`, `test___main__*.py`,
+    `tests/integration/fitting/test_emcee.py`, `test_bayesian_dream.py`,
+    and any tracked project fixtures.
 - DREAM resume tutorial + its registration artifacts:
   `docs/docs/tutorials/bayesian-dream-resume-*.py` (+ regenerated
   `.ipynb`), `docs/docs/tutorials/index.md`,
@@ -121,53 +127,58 @@ the step's `Commit:` message **before** starting the next step or the
 Phase 1 review gate. Do not batch multiple steps into one commit.
 
 - [x] **P1.1 — Rename sidecar `results.h5` → `mcmc.h5`, single-source
-  the name, sweep all references.** Update `SIDECAR_FILE_NAME`, replace
-  the duplicated literals in `fitting.py` / `analysis.py` with the
-  constant/helper, update `__main__.py` messages. Then run
-  `git grep -n 'results\.h5'` and update **every** tracked reference —
-  the accepted ADRs (`analysis-cif-fit-state`,
-  `minimizer-category-consolidation` incl. the per-engine-groups
-  clarification, `undo-fit`, `minimizer-input-output-split`,
-  `runtime-fit-results`, `edstar-project-persistence`) and index rows,
-  the `fit-output-files-and-data-exports` suggestion, the user-guide and
-  CLI docs, and the tests listed in Concrete files — excluding generated
-  outputs. End on zero non-historical `results.h5` hits.
-  Commit: `Rename Bayesian sidecar to mcmc.h5 and single-source it`.
+      the name, sweep all references.** Update `SIDECAR_FILE_NAME`,
+      replace the duplicated literals in `fitting.py` / `analysis.py`
+      with the constant/helper, update `__main__.py` messages. Then run
+      `git grep -n 'results\.h5'` and update **every** tracked reference
+      — the accepted ADRs (`analysis-cif-fit-state`,
+      `minimizer-category-consolidation` incl. the per-engine-groups
+      clarification, `undo-fit`, `minimizer-input-output-split`,
+      `runtime-fit-results`, `edstar-project-persistence`) and index
+      rows, the `fit-output-files-and-data-exports` suggestion, the
+      user-guide and CLI docs, and the tests listed in Concrete files —
+      excluding generated outputs. End on zero non-historical
+      `results.h5` hits. Commit:
+      `Rename Bayesian sidecar to mcmc.h5 and single-source it`.
 - [x] **P1.2 — Persist the DREAM raw sampler state.** Capture the
-  `MCMCDraw` in `BumpsDreamMinimizer`, add `_sidecar_path` (wired by the
-  existing `Fitter._set_minimizer_sidecar_path`), and write a
-  `dream_state` HDF5 group (`DreamFit.h5dump` + `param_names`) on save.
-  Commit: `Persist bumps-dream sampler state to the mcmc sidecar`.
+      `MCMCDraw` in `BumpsDreamMinimizer`, add `_sidecar_path` (wired by
+      the existing `Fitter._set_minimizer_sidecar_path`), and write a
+      `dream_state` HDF5 group (`DreamFit.h5dump` + `param_names`) on
+      save. Commit:
+      `Persist bumps-dream sampler state to the mcmc sidecar`.
 - [x] **P1.3 — DREAM resume: load, validate, extend.** Override `fit()`;
-  load + deep-copy the state; validate count/population/names; translate
-  `extra_steps` to `samples = current + N, burn = 0`; pass `fit_state`
-  to the driver; add a DREAM resume-detection helper.
-  Commit: `Implement bumps-dream resume via saved sampler state`.
+      load + deep-copy the state; validate count/population/names;
+      translate `extra_steps` to `samples = current + N, burn = 0`; pass
+      `fit_state` to the driver; add a DREAM resume-detection helper.
+      Commit: `Implement bumps-dream resume via saved sampler state`.
 - [x] **P1.4 — Reconcile unified resume semantics.** Ensure
-  `resume=True, extra_steps=N` behaves consistently for emcee and DREAM
-  at the `Fitter`/`analysis.fit` layer; share validation/detection
-  helpers where clean. Commit: `Unify emcee and dream resume semantics`.
+      `resume=True, extra_steps=N` behaves consistently for emcee and
+      DREAM at the `Fitter`/`analysis.fit` layer; share
+      validation/detection helpers where clean. Commit:
+      `Unify emcee and dream resume semantics`.
 - [x] **P1.5 — Add `chains` alias for DREAM `population_size`.**
-  User-facing `chains` alias on the persisted category, sharing the
-  `population_size` descriptor (always value-consistent; no separate
-  `population` field), with "population = scale factor" documentation.
-  Commit: `Add chains alias for bumps-dream population`.
+      User-facing `chains` alias on the persisted category, sharing the
+      `population_size` descriptor (always value-consistent; no separate
+      `population` field), with "population = scale factor"
+      documentation. Commit:
+      `Add chains alias for bumps-dream population`.
 - [x] **P1.6 — DREAM resume tutorial — deferred to Phase 2.** The
-  tutorial must be **executed** on real LBCO/HRPT data to validate it
-  and to fill its `tests/tutorials/baseline.json` entry
-  (`reduced_chi_square` + parameter values), which is a real bumps-DREAM
-  run — Phase-2-coupled. The implementation engine it exercises is
-  complete and validated (P1.1–P1.5). It is therefore authored and
-  executed in Phase 2 (see *Phase 2 → DREAM resume tutorial*), as a
-  self-contained page (fresh DREAM fit → save → resume), avoiding a new
-  external dataset.
+      tutorial must be **executed** on real LBCO/HRPT data to validate
+      it and to fill its `tests/tutorials/baseline.json` entry
+      (`reduced_chi_square` + parameter values), which is a real
+      bumps-DREAM run — Phase-2-coupled. The implementation engine it
+      exercises is complete and validated (P1.1–P1.5). It is therefore
+      authored and executed in Phase 2 (see _Phase 2 → DREAM resume
+      tutorial_), as a self-contained page (fresh DREAM fit → save →
+      resume), avoiding a new external dataset.
 - [x] **P1.7 — Regenerate sidecar-referencing fixtures/tutorials.**
-  No-op: `git ls-files | grep '\.h5'` shows **no tracked `.h5` sidecar
-  fixtures**, and committed notebooks are output-stripped, so the rename
-  had no binary artifacts to regenerate — the `mcmc.h5` name is produced
-  purely at runtime and all textual references were swept in P1.1.
-- [x] **P1.8 — Phase 1 review gate (no code).** Mark `[x]` and commit the
-  checklist update alone. Commit: `Reach Phase 1 review gate`.
+      No-op: `git ls-files | grep '\.h5'` shows **no tracked `.h5`
+      sidecar fixtures**, and committed notebooks are output-stripped,
+      so the rename had no binary artifacts to regenerate — the
+      `mcmc.h5` name is produced purely at runtime and all textual
+      references were swept in P1.1.
+- [x] **P1.8 — Phase 1 review gate (no code).** Mark `[x]` and commit
+      the checklist update alone. Commit: `Reach Phase 1 review gate`.
 
 ## Phase 2 — Verification
 
@@ -182,6 +193,7 @@ pixi run script-tests > /tmp/ed-script.log 2>&1; script_exit_code=$?; tail -n 40
 ```
 
 New tests required:
+
 - Unit: DREAM state round-trips through the `mcmc.h5` `dream_state`
   group; resume validation rejects mismatched count/population/names;
   `extra_steps` → `samples=current+N` translation; `chains` ⇄
@@ -189,8 +201,8 @@ New tests required:
 - Unit — raw-state lifecycle (one sidecar, several engines):
   - a fresh (non-resume) fit clears **all** raw sampler-state groups
     (every engine), so no prior chain survives — including the
-    emcee→fresh-DREAM→emcee-`resume=True` path, which must **not** resume
-    the original emcee chain;
+    emcee→fresh-DREAM→emcee-`resume=True` path, which must **not**
+    resume the original emcee chain;
   - resume detection and resume read **only** the active minimizer's
     group;
   - explicit `resume=True` with a missing or malformed `dream_state`
@@ -204,8 +216,8 @@ New tests required:
 - Confirm `pixi run check` (link-check) passes after the tutorial/nav
   and ADR edits.
 
-DREAM resume tutorial + external-project regeneration (Phase 2,
-deferred from P1.6 — supersedes the earlier self-contained note):
+DREAM resume tutorial + external-project regeneration (Phase 2, deferred
+from P1.6 — supersedes the earlier self-contained note):
 
 The dream tutorial mirrors the emcee one (load a published project, then
 resume), not a self-contained fresh fit. This requires regenerating the
@@ -216,11 +228,11 @@ published Bayesian projects so the saved DREAM project carries a
    code: `proj-lbco-hrpt-emcee` (emcee, persists `emcee_chain`) and
    `proj-lbco-hrpt-dream` (bumps-DREAM, now persists `dream_state` via
    P1.2). Use a fixed seed for reproducible baselines.
-2. **Publish to the external data repo**: zip each saved project and push
-   to `easyscience/diffraction`, then bump the pinned commit in
+2. **Publish to the external data repo**: zip each saved project and
+   push to `easyscience/diffraction`, then bump the pinned commit in
    `src/easydiffraction/_data_index_ref.txt` (current `11bb1e4…`) so the
-   tutorials download the new projects. *(Outward-facing: confirm before
-   pushing; needs write access to that repo.)*
+   tutorials download the new projects. _(Outward-facing: confirm before
+   pushing; needs write access to that repo.)_
 3. **Adapt `bayesian-dream-display-lbco-hrpt.py`** to load **and**
    `fit(resume=True, extra_steps=N)` — parallel to
    `bayesian-emcee-resume-lbco-hrpt.py` — and rename to

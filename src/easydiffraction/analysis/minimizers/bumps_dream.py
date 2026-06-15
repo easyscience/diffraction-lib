@@ -69,8 +69,9 @@ def _write_dream_state_sidecar(
 
     The state is written under ``/dream_state/state`` via the bumps
     ``DreamFit.h5dump`` contract, with the fitted-parameter names stored
-    in a sibling ``/dream_state/param_names`` dataset so resume can match
-    by name (bumps does not preserve labels through its own save/load).
+    in a sibling ``/dream_state/param_names`` dataset so resume can
+    match by name (bumps does not preserve labels through its own
+    save/load).
 
     Parameters
     ----------
@@ -826,7 +827,9 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         )
 
     def _persist_dream_state(self, *, raw_state: object, parameter_names: object) -> None:
-        """Write the DREAM sampler state to the sidecar when configured."""
+        """
+        Write the DREAM sampler state to the sidecar when configured.
+        """
         if self._sidecar_path is None:
             return
         _write_dream_state_sidecar(
@@ -846,8 +849,8 @@ class BumpsDreamMinimizer(BumpsMinimizer):
 
         Returns the driver overrides (extending the chain by
         ``extra_steps`` generations via the ring-buffer contract) and a
-        deep-copied ``fit_state`` for ``FitDriver.fit``. The deep copy is
-        required because bumps mutates the state in place.
+        deep-copied ``fit_state`` for ``FitDriver.fit``. The deep copy
+        is required because bumps mutates the state in place.
         """
         import copy  # noqa: PLC0415
 
@@ -859,7 +862,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
             raise ValueError(msg)
         loaded = _read_dream_state_sidecar(Path(self._sidecar_path))
         if loaded is None:
-            msg = "No saved bumps-dream chain to resume; run a fresh fit first."
+            msg = 'No saved bumps-dream chain to resume; run a fresh fit first.'
             raise ValueError(msg)
         state, saved_names = loaded
 
@@ -894,7 +897,8 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         pop_scale: int,
         n_parameters: int,
     ) -> None:
-        """Reject a resume whose model does not match the saved chain.
+        """
+        Reject a resume whose model does not match the saved chain.
 
         Mismatched free-parameter count, names/order, or population are
         all rejected — the population, in particular, cannot change on
@@ -939,7 +943,8 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         samples_override: int | None = None,
         pop_override: int | None = None,
     ) -> _DreamRunContext:
-        """Prepare a driver and metadata for one DREAM solver run.
+        """
+        Prepare a driver and metadata for one DREAM solver run.
 
         The ``*_override`` arguments are set only on a resume run, where
         they extend the saved chain (see ``_prepare_dream_resume``); a
@@ -1111,9 +1116,9 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         """
         Run the DREAM driver under a deterministic RNG-state guard.
 
-        ``fit_state`` is a deep-copied saved ``MCMCDraw`` on a resume run
-        (``None`` for a fresh run); it is passed to ``FitDriver.fit`` so
-        DREAM continues the existing chain.
+        ``fit_state`` is a deep-copied saved ``MCMCDraw`` on a resume
+        run (``None`` for a fresh run); it is passed to
+        ``FitDriver.fit`` so DREAM continues the existing chain.
         """
         numpy_rng = np.random.mtrand._rand
         numpy_state = numpy_rng.get_state()

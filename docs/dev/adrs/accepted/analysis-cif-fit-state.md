@@ -235,9 +235,9 @@ metadata from `_minimizer.*`.
 
 ### Posterior sidecar
 
-Persist large posterior arrays in `analysis/mcmc.h5` using `h5py`.
-This includes canonical posterior arrays and saved distribution, pair,
-and predictive cache arrays. The HDF5 file is self-describing; no CIF
+Persist large posterior arrays in `analysis/mcmc.h5` using `h5py`. This
+includes canonical posterior arrays and saved distribution, pair, and
+predictive cache arrays. The HDF5 file is self-describing; no CIF
 manifest rows or sidecar filename tags are persisted.
 
 The sidecar filename is fixed to `mcmc.h5` inside the project

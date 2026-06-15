@@ -20,23 +20,24 @@ across sessions) is implemented for **emcee only**:
 
 - `MinimizerFitOptions.resume` / `extra_steps` and the matching
   `FitterFitOptions` already exist and are engine-agnostic.
-- `MinimizerBase.fit()` raises `NotImplementedError("…does not support
-  resume")`; `EmceeMinimizer` overrides `fit()` to implement it.
+- `MinimizerBase.fit()` raises
+  `NotImplementedError("…does not support resume")`; `EmceeMinimizer`
+  overrides `fit()` to implement it.
 - emcee persists its raw chain **live during sampling** via
   `emcee.backends.HDFBackend(name='emcee_chain')` into the project's
   `analysis/results.h5` sidecar. Resume reads the last state from that
   HDF5 group and runs `extra_steps` more iterations.
 - `BumpsDreamMinimizer` runs `FitDriver.fit()`, captures
   `driver.fitter.state` (a bumps `MCMCDraw`), but **discards** it. Only
-  the *derived* posterior arrays reach the sidecar via
+  the _derived_ posterior arrays reach the sidecar via
   `write_analysis_results_sidecar()`. The raw sampler state is never
   persisted, so there is nothing to resume from.
 
 bumps DREAM **does** support resume — `FitDriver.fit(fit_state=…)` plus
-`bumps.dream.state.save_state`/`load_state` (gzipped `.mc` text files) or
-`DreamFit.h5dump`/`h5load` (HDF5). The capability is unused because the
-caller must persist the state explicitly; emcee only looks "automatic"
-because its backend streams to disk during the run.
+`bumps.dream.state.save_state`/`load_state` (gzipped `.mc` text files)
+or `DreamFit.h5dump`/`h5load` (HDF5). The capability is unused because
+the caller must persist the state explicitly; emcee only looks
+"automatic" because its backend streams to disk during the run.
 
 `easyscience/core` PR #257 ("Bayesian extend/resume") is a reference
 implementation for the DREAM-side mechanics: it surfaces the `MCMCDraw`
@@ -53,11 +54,10 @@ and pair caches, posterior-predictive sets, and emcee's raw chain) and
 is created only for Bayesian minimizers — deterministic least-squares
 results live in CIF, not here.
 
-Two accepted ADRs currently fix the sidecar name and the
-one-file rule:
+Two accepted ADRs currently fix the sidecar name and the one-file rule:
 
-- [`analysis-cif-fit-state.md`](../accepted/analysis-cif-fit-state.md)
-  — "The sidecar filename is fixed to `results.h5`".
+- [`analysis-cif-fit-state.md`](../accepted/analysis-cif-fit-state.md) —
+  "The sidecar filename is fixed to `results.h5`".
 - [`minimizer-category-consolidation.md`](../accepted/minimizer-category-consolidation.md)
   — "There is exactly **one** sidecar file per fit, regardless of
   minimizer: `analysis/results.h5`".
@@ -67,9 +67,9 @@ one-file rule:
 ### 1. Extend resume to bumps DREAM, consistent with emcee
 
 `BumpsDreamMinimizer` gains resume parity with `EmceeMinimizer` behind
-the existing engine-agnostic API: `analysis.fit(resume=True,
-extra_steps=N)`. The owner-level surface and `MinimizerFitOptions`
-do not change. Internally:
+the existing engine-agnostic API:
+`analysis.fit(resume=True, extra_steps=N)`. The owner-level surface and
+`MinimizerFitOptions` do not change. Internally:
 
 - `BumpsDreamMinimizer` overrides `fit()` (like emcee) instead of
   inheriting the `NotImplementedError` guard.
@@ -93,7 +93,7 @@ fallback).
 
 The DREAM minimizer also gains a user-facing **`chains` alias** for the
 existing `population_size` setting (an approved API addition): `chains`
-is the discoverable name for the population *scale factor* — bumps
+is the discoverable name for the population _scale factor_ — bumps
 creates `ceil(chains · n_parameters)` parallel chains. `chains` and
 `population_size` are two names for **one** descriptor (shared storage),
 so they are always value-consistent and cannot disagree; no separate
@@ -114,11 +114,11 @@ file, distinguished by an **engine-keyed HDF5 group**:
 The derived posterior arrays (`/posterior/*`, caches, predictive sets)
 continue to be written by `write_analysis_results_sidecar()` as today.
 
-**State lifecycle (one sidecar, several engines).** A *fresh*
+**State lifecycle (one sidecar, several engines).** A _fresh_
 (non-resume) fit clears **all** raw sampler-state groups (both
 `emcee_chain` and `dream_state`) before writing — consistent with the
 existing rule that `analysis.fit()` truncates the sidecar (see
-`minimizer-category-consolidation.md` §4). Clearing *every* group, not
+`minimizer-category-consolidation.md` §4). Clearing _every_ group, not
 just the active engine's, is what prevents the stale-state trap: an
 emcee fit, then a fresh DREAM fit, then `emcee resume=True` must **not**
 resume the original emcee chain. Resume detection and resume then read
@@ -148,7 +148,8 @@ this currently spans:
   `mcmc.h5`), `minimizer-category-consolidation.md` (filename + the
   per-engine-state-groups clarification above), `undo-fit.md`,
   `minimizer-input-output-split.md`, `runtime-fit-results.md`,
-  `edstar-project-persistence.md`, and the `docs/dev/adrs/index.md` rows.
+  `edstar-project-persistence.md`, and the `docs/dev/adrs/index.md`
+  rows.
 - Suggestion ADR `fit-output-files-and-data-exports.md`.
 - User docs: `docs/docs/cli/index.md`,
   `docs/docs/user-guide/{concept,data-format}.md`,

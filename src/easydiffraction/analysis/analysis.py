@@ -1556,7 +1556,9 @@ class Analysis(
         return self._validate_resume_extra_steps(self._default_resume_extra_steps())
 
     def _default_resume_extra_steps(self) -> int:
-        """Return the active MCMC minimizer's default resume step count."""
+        """
+        Return the active MCMC minimizer's default resume step count.
+        """
         # Both Bayesian categories (emcee and bumps-dream) expose the
         # ``sampling_steps`` descriptor; the runtime-only ``steps`` attr
         # is not on the persisted minimizer category.
@@ -1592,7 +1594,9 @@ class Analysis(
         return False
 
     def _has_resumable_dream_sidecar(self) -> bool:
-        """Return whether the saved project has a resumable DREAM state."""
+        """
+        Return whether the saved project has a resumable DREAM state.
+        """
         from easydiffraction.analysis.minimizers.bumps_dream import (  # noqa: PLC0415
             DREAM_STATE_GROUP,
         )

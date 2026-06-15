@@ -68,10 +68,9 @@ After `undo_fit()`:
   `Analysis._persisted_fit_state_sidecar` dict is reset to empty. All
   canonical groups (`/posterior`, `/distribution_cache`, `/pair_cache`,
   `/predictive`, plus the raw sampler-state group — `/emcee_chain` for
-  emcee or `/dream_state` for bumps-DREAM) belong to the
-  discarded fit, so the next save writes an empty sidecar and truncates
-  the file. This is the same truncation that runs at the start of a new
-  fit — see
+  emcee or `/dream_state` for bumps-DREAM) belong to the discarded fit,
+  so the next save writes an empty sidecar and truncates the file. This
+  is the same truncation that runs at the start of a new fit — see
   [`minimizer-category-consolidation.md`](../accepted/minimizer-category-consolidation.md)
   §4.
 

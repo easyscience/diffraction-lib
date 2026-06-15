@@ -185,7 +185,8 @@ stale raw-state group from a previous engine can be resumed by accident.
 
 For deterministic runs the Bayesian groups are absent and the sidecar
 file may not exist at all. Only the active engine's raw-state group is
-present after a run (`/emcee_chain` for emcee, `/dream_state` for DREAM).
+present after a run (`/emcee_chain` for emcee, `/dream_state` for
+DREAM).
 
 ### 5. Unified, verbose attribute names with internal mapping
 
@@ -386,8 +387,7 @@ _fit_result.best_log_posterior        -1237.89
 ```
 
 emcee's resumable chain state lives in the `/emcee_chain` group of the
-same `analysis/mcmc.h5` file (see §4). No sidecar path appears in
-CIF.
+same `analysis/mcmc.h5` file (see §4). No sidecar path appears in CIF.
 
 ## Superseded Selector Layout
 
