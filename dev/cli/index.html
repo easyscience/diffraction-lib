@@ -3810,12 +3810,12 @@ project directory before downloading and unpacking a fresh copy.</p>
 <div class="language-bash highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>easydiffraction<span class="w"> </span>PROJECT_DIR<span class="w"> </span>fit
 </code></pre></div>
 <p><code>PROJECT_DIR</code> is the path to a project directory previously created by
-<code>project.save_as()</code>. It must contain a <code>project.edifa</code> file along with
-the <code>structures/</code>, <code>experiments/</code>, and <code>analysis/</code> subdirectories.</p>
+<code>project.save_as()</code>. It must contain a <code>project.edi</code> file along with the
+<code>structures/</code>, <code>experiments/</code>, and <code>analysis/</code> subdirectories.</p>
 <p>After fitting, the command displays the fit results and a project
 summary. By default, updated parameter values are <strong>saved back</strong> to the
 project directory.</p>
-<p>If <code>project.edifa</code> enables any <code>_report.*</code> output flags, the same save
+<p>If <code>project.edi</code> enables any <code>_report.*</code> output flags, the same save
 also writes those reports. For example, <code>_report.html true</code> writes the
 HTML report after the fit, and <code>_report.tex true</code> plus
 <code>_report.pdf true</code> writes the TeX bundle and PDF when a TeX engine is

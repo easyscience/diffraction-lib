@@ -12,7 +12,7 @@
 # ## 🛠️ Import Library
 
 # %%
-import easydiffraction as ed
+import easydiffraction as edi
 
 # %% [markdown]
 # ## 📦 Define Project
@@ -21,7 +21,7 @@ import easydiffraction as ed
 # ### Create Project
 
 # %%
-project = ed.Project(name='ni_pdf')
+project = edi.Project(name='ni_pdf')
 
 # %% [markdown]
 # ### Add Structure
@@ -52,7 +52,7 @@ project.display.structure(struct_name='ni')
 # ### Add Experiment
 
 # %%
-data_path = ed.download_data('meas-ni-pdf', destination='data')
+data_path = edi.download_data('meas-ni-pdf', destination='data')
 
 # %%
 project.experiments.add_from_data_path(

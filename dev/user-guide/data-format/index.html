@@ -627,10 +627,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#edifa-projects-and-cif-data" class="md-nav__link">
+  <a href="#edi-projects-and-cif-data" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Edifa Projects And CIF Data
+        Edi Projects And CIF Data
       
     </span>
   </a>
@@ -3750,10 +3750,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#edifa-projects-and-cif-data" class="md-nav__link">
+  <a href="#edi-projects-and-cif-data" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Edifa Projects And CIF Data
+        Edi Projects And CIF Data
       
     </span>
   </a>
@@ -3870,16 +3870,25 @@
 <h1 id="data-format">Data Format</h1>
 <p>Before starting the data analysis workflow, it is important to define
 the <strong>data formats</strong> used in EasyDiffraction.</p>
-<h2 id="edifa-projects-and-cif-data">Edifa Projects And <abbr title="Crystallographic Information File.">CIF</abbr> Data</h2>
+<h2 id="edi-projects-and-cif-data">Edi Projects And <abbr title="Crystallographic Information File.">CIF</abbr> Data</h2>
 <p>Each software package typically uses its own <strong>data format</strong> and
 <strong>parameter names</strong> for storing and sharing data. EasyDiffraction uses
-<strong>Edifa</strong> for saved project state and <strong>Crystallographic Information
-File (<abbr title="Crystallographic Information File.">CIF</abbr>)</strong> for crystallographic input and strict report export.</p>
-<p>Edifa uses <abbr title="Crystallographic Information File.">CIF</abbr>-like syntax, but its keys are chosen for
-EasyDiffraction's Python-facing project model. <abbr title="Crystallographic Information File.">CIF</abbr> remains the standard
-exchange format used by crystallography and materials science. It
-provides both a human-readable syntax and dictionaries that define the
-meaning of each parameter.</p>
+<strong>Edi</strong> for saved project state and <strong>Crystallographic Information File
+(<abbr title="Crystallographic Information File.">CIF</abbr>)</strong> for crystallographic input and strict report export.</p>
+<div class="admonition note">
+<p class="admonition-title">Pronunciation</p>
+<p><strong>Edi</strong> is the short name for EasyDiffraction, pronounced <strong>"eddie"</strong>
+(/ˈɛdi/). It is the same short form you use in code
+(<code>import easydiffraction as edi</code>) and the suffix on saved files
+(<code>.edi</code>). Write it as a word — lowercase <code>edi</code> for the extension and
+<code>_edi.*</code> keys, capitalised <code>Edi</code> at the start of a sentence — not as
+an all-caps acronym.</p>
+</div>
+<p>Edi uses <abbr title="Crystallographic Information File.">CIF</abbr>-like syntax, but its keys are chosen for EasyDiffraction's
+Python-facing project model. <abbr title="Crystallographic Information File.">CIF</abbr> remains the standard exchange format
+used by crystallography and materials science. It provides both a
+human-readable syntax and dictionaries that define the meaning of each
+parameter.</p>
 <p>These dictionaries are maintained by the
 <a href="https://www.iucr.org">International Union of Crystallography (<abbr title="International Union of Crystallography.">IUCr</abbr>)</a>.<br />
 The base dictionary, <strong>coreCIF</strong>, contains the most common parameters in
@@ -3887,14 +3896,14 @@ crystallography. The <strong>pdCIF</strong> dictionary covers parameters specifi
 powder diffraction, <strong>magCIF</strong> is used for magnetic structure analysis.</p>
 <p>As most crystallographic parameters needed for diffraction data analysis
 are already covered by <abbr title="International Union of Crystallography.">IUCr</abbr> dictionaries, EasyDiffraction follows those
-dictionaries for <abbr title="Crystallographic Information File.">CIF</abbr> import and report output where they fit. Edifa uses
+dictionaries for <abbr title="Crystallographic Information File.">CIF</abbr> import and report output where they fit. Edi uses
 the same names when they are already clear, and uses
 EasyDiffraction-owned names where the project API is clearer.</p>
 <p>The key advantage of <abbr title="Crystallographic Information File.">CIF</abbr> is standardized naming for scientific exchange.
-The key advantage of Edifa is that saved projects round-trip the
+The key advantage of Edi is that saved projects round-trip the
 EasyDiffraction project model without overloading report <abbr title="Crystallographic Information File.">CIF</abbr> as project
 state.</p>
-<p>The <a href="../parameters/">Parameters</a> section lists Python access paths, Edifa
+<p>The <a href="../parameters/">Parameters</a> section lists Python access paths, Edi
 keys, and <abbr title="Crystallographic Information File.">CIF</abbr> keys side by side.</p>
 <h2 id="format-comparison">Format Comparison</h2>
 <p>Below, we compare <strong><abbr title="Crystallographic Information File.">CIF</abbr></strong> with another common data format in
@@ -4095,7 +4104,7 @@ better suited for human-readable crystallographic data.</p>
 <h2 id="experiment-definition">Experiment Definition</h2>
 <p>The previous example described the <strong>structure</strong> (crystallographic
 model), but how is the <strong>experiment</strong> itself represented?</p>
-<p>The experiment is saved in Edifa. For example, line-segment background
+<p>The experiment is saved in Edi. For example, line-segment background
 intensity in a powder diffraction experiment is represented as:</p>
 <!-- prettier-ignore-start -->
 
@@ -4117,13 +4126,12 @@ loop_
 <p>More details on how to define the experiment are provided in the
 <a href="../analysis-workflow/experiment/">Experiment</a> section.</p>
 <h2 id="other-inputoutput-blocks">Other Input/Output Blocks</h2>
-<p>EasyDiffraction saves projects as a directory of Edifa files and
-sidecars:</p>
+<p>EasyDiffraction saves projects as a directory of Edi files and sidecars:</p>
 <ul>
-<li><code>project.edifa</code>: project metadata and display/report configuration</li>
-<li><code>structures/&lt;structure&gt;.edifa</code>: structure models</li>
-<li><code>experiments/&lt;experiment&gt;.edifa</code>: experiment setup and data</li>
-<li><code>analysis/analysis.edifa</code>: fitting and analysis settings</li>
+<li><code>project.edi</code>: project metadata and display/report configuration</li>
+<li><code>structures/&lt;structure&gt;.edi</code>: structure models</li>
+<li><code>experiments/&lt;experiment&gt;.edi</code>: experiment setup and data</li>
+<li><code>analysis/analysis.edi</code>: fitting and analysis settings</li>
 <li><code>analysis/results.csv</code> and <code>analysis/results.h5</code>: fit result sidecars</li>
 <li><code>reports/&lt;project&gt;.*</code>: generated reports when enabled through
   <code>project.report</code></li>

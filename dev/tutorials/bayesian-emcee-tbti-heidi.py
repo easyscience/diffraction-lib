@@ -25,7 +25,7 @@
 # ## 🛠️ Import Library
 
 # %%
-import easydiffraction as ed
+import easydiffraction as edi
 
 # %% [markdown]
 # ## 📦 Define Project
@@ -35,7 +35,7 @@ import easydiffraction as ed
 # workflow inside this object.
 
 # %%
-project = ed.Project(name='tbti_heidi_emcee')
+project = edi.Project(name='tbti_heidi_emcee')
 
 # %%
 project.save_as(dir_path='projects/bayesian-emcee-tbti-heidi')
@@ -49,7 +49,7 @@ project.save_as(dir_path='projects/bayesian-emcee-tbti-heidi')
 # model without rebuilding the full structure by hand.
 
 # %%
-structure_path = ed.download_data('struct-tbti', destination='data')
+structure_path = edi.download_data('struct-tbti', destination='data')
 
 # %%
 project.structures.add_from_cif_path(structure_path)
@@ -72,7 +72,7 @@ project.display.structure(struct_name='tbti')
 # wavelength, and extinction model.
 
 # %%
-data_path = ed.download_data('meas-tbti-heidi', destination='data')
+data_path = edi.download_data('meas-tbti-heidi', destination='data')
 
 # %%
 project.experiments.add_from_data_path(

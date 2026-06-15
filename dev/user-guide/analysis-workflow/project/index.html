@@ -845,10 +845,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-projectedifa" class="md-nav__link">
+  <a href="#1-projectedi" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. project.edifa
+        1. project.edi
       
     </span>
   </a>
@@ -856,10 +856,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-structures-lbcoedifa" class="md-nav__link">
+  <a href="#2-structures-lbcoedi" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. structures / lbco.edifa
+        2. structures / lbco.edi
       
     </span>
   </a>
@@ -867,10 +867,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-experiments-hrptedifa" class="md-nav__link">
+  <a href="#3-experiments-hrptedi" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. experiments / hrpt.edifa
+        3. experiments / hrpt.edi
       
     </span>
   </a>
@@ -878,10 +878,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#4-analysis-analysisedifa" class="md-nav__link">
+  <a href="#4-analysis-analysisedi" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. analysis / analysis.edifa
+        4. analysis / analysis.edi
       
     </span>
   </a>
@@ -3821,10 +3821,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-projectedifa" class="md-nav__link">
+  <a href="#1-projectedi" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. project.edifa
+        1. project.edi
       
     </span>
   </a>
@@ -3832,10 +3832,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-structures-lbcoedifa" class="md-nav__link">
+  <a href="#2-structures-lbcoedi" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. structures / lbco.edifa
+        2. structures / lbco.edi
       
     </span>
   </a>
@@ -3843,10 +3843,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-experiments-hrptedifa" class="md-nav__link">
+  <a href="#3-experiments-hrptedi" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. experiments / hrpt.edifa
+        3. experiments / hrpt.edi
       
     </span>
   </a>
@@ -3854,10 +3854,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#4-analysis-analysisedifa" class="md-nav__link">
+  <a href="#4-analysis-analysisedi" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. analysis / analysis.edifa
+        4. analysis / analysis.edi
       
     </span>
   </a>
@@ -3912,7 +3912,7 @@ as described in the <a href="../../first-steps/">First Steps</a> section.</p>
 <p>You can manually create a new project and specify its short <strong>name</strong>,
 <strong>title</strong> and <strong>description</strong>. All these parameters are optional.</p>
 <div class="language-py highlight"><pre><span></span><code><span class="c1"># Create a new project</span>
-<span class="n">project</span> <span class="o">=</span> <span class="n">ed</span><span class="o">.</span><span class="n">Project</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;lbco_hrpt&#39;</span><span class="p">)</span>
+<span class="n">project</span> <span class="o">=</span> <span class="n">edi</span><span class="o">.</span><span class="n">Project</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;lbco_hrpt&#39;</span><span class="p">)</span>
 
 <span class="c1"># Define project metadata</span>
 <span class="n">project</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;La0.5Ba0.5CoO3 from neutron diffraction at HRPT@PSI&#39;</span>
@@ -3937,7 +3937,7 @@ you can just call the <code>save</code>:</p>
 directory created by <code>project.save_as()</code> or <code>project.save()</code>. This is
 useful for continuing a previous session or reusing a downloaded saved
 project.</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">project</span> <span class="o">=</span> <span class="n">ed</span><span class="o">.</span><span class="n">Project</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;lbco_hrpt&#39;</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span class="n">project</span> <span class="o">=</span> <span class="n">edi</span><span class="o">.</span><span class="n">Project</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;lbco_hrpt&#39;</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="project-structure">Project Structure</h2>
 <p>The example below illustrates a typical <strong>project structure</strong> for a
@@ -3947,15 +3947,15 @@ project.</p>
 <div class="cif">
 <pre>
 📁 <span class="red"><b>La0.5Ba0.5CoO3</b></span>     - project root
-├── 📄 <span class="orange"><b>project.edifa</b></span> - project configuration
+├── 📄 <span class="orange"><b>project.edi</b></span> - project configuration
 ├── 📁 structures  - structures
-│   ├── 📄 <span class="orange"><b>lbco.edifa</b></span> - LBCO
+│   ├── 📄 <span class="orange"><b>lbco.edi</b></span> - LBCO
 │   └── ...
 ├── 📁 experiments - experiments
-│   ├── 📄 <span class="orange"><b>hrpt.edifa</b></span> - HRPT pattern
+│   ├── 📄 <span class="orange"><b>hrpt.edi</b></span> - HRPT pattern
 │   └── ...
 ├── 📁 analysis    - analysis
-│   ├── 📄 <span class="orange"><b>analysis.edifa</b></span> - fit state
+│   ├── 📄 <span class="orange"><b>analysis.edi</b></span> - fit state
 │   └── 📄 <span class="orange"><b>results.h5</b></span>   - Bayesian arrays
 └── 📁 reports     - reports
     ├── 📄 <span class="orange"><b>La0.5Ba0.5CoO3.cif</b></span>  - IUCr
@@ -3971,20 +3971,19 @@ directory, showing the main files created by a typical workflow.</p>
 <div class="admonition warning">
 <p class="admonition-title">Important</p>
 <p>If you save the project right after creating it, the project directory will
-only contain the <code>project.edifa</code> file. The other folders and files will be
+only contain the <code>project.edi</code> file. The other folders and files will be
 created as you add structures, experiments, and set up the analysis. The
 reports folder is created only when at least one of
 <code>project.report.cif</code>, <code>project.report.html</code>, <code>project.report.tex</code>,
 or <code>project.report.pdf</code> is set to <code>True</code> before <code>project.save()</code>.</p>
 </div>
-<h3 id="1-projectedifa">1. <span class="orange">project.edifa</span></h3>
+<h3 id="1-projectedi">1. <span class="orange">project.edi</span></h3>
 <p>This file stores project-level metadata and display configuration.</p>
 <!-- prettier-ignore-start -->
 
 <div class="cif">
 <pre>
-<span class="blue"><b>_edifa</b>.schema_name</span>    EasyDiffraction
-<span class="blue"><b>_edifa</b>.schema_version</span> 1
+<span class="blue"><b>_edi</b>.schema_version</span> 1
 
 <span class="blue"><b>_metadata</b>.name</span>          lbco_hrpt
 <span class="blue"><b>_metadata</b>.title</span>         "La0.5Ba0.5CoO3 from neutron diffraction at HRPT@PSI"
@@ -4009,7 +4008,7 @@ or <code>project.report.pdf</code> is set to <code>True</code> before <code>proj
 
 <!-- prettier-ignore-end -->
 
-<h3 id="2-structures-lbcoedifa">2. structures / <span class="orange">lbco.edifa</span></h3>
+<h3 id="2-structures-lbcoedi">2. structures / <span class="orange">lbco.edi</span></h3>
 <p>This file contains crystallographic information associated with the
 structure model, including <strong>space group</strong>, <strong>unit cell parameters</strong>,
 and <strong>atomic positions</strong>.</p>
@@ -4048,7 +4047,7 @@ O  O    0   0.5 0.5   c   1    Biso 1.4041
 
 <!-- prettier-ignore-end -->
 
-<h3 id="3-experiments-hrptedifa">3. experiments / <span class="orange">hrpt.edifa</span></h3>
+<h3 id="3-experiments-hrptedi">3. experiments / <span class="orange">hrpt.edi</span></h3>
 <p>This file contains the <strong>experiment type</strong>, <strong>calculation engine</strong>,
 <strong>instrumental parameters</strong>, <strong>peak parameters</strong>, <strong>associated phases</strong>,
 <strong>background parameters</strong> and <strong>measured diffraction data</strong>.</p>
@@ -4113,7 +4112,7 @@ loop_
 
 <!-- prettier-ignore-end -->
 
-<h3 id="4-analysis-analysisedifa">4. analysis / <span class="orange">analysis.edifa</span></h3>
+<h3 id="4-analysis-analysisedi">4. analysis / <span class="orange">analysis.edi</span></h3>
 <p>This file contains settings used for data analysis, including the choice
 of <strong>calculation</strong> and <strong>fitting</strong> engines, as well as user defined
 <strong>constraints</strong>.</p>

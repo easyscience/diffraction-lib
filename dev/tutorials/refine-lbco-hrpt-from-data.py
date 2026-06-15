@@ -25,13 +25,13 @@
 # ## 🛠️ Import Library
 
 # %%
-import easydiffraction as ed
+import easydiffraction as edi
 
 # %% [markdown]
 # ## 📦 Define Project
 
 # %%
-project = ed.Project(name='lbco_hrpt')
+project = edi.Project(name='lbco_hrpt')
 
 # %% [markdown]
 # ## 🧩 Define Structure
@@ -92,7 +92,7 @@ project.display.structure(struct_name='lbco')
 # ## 🔬 Define Experiment
 
 # %%
-data_path = ed.download_data('meas-lbco-hrpt', destination='data')
+data_path = edi.download_data('meas-lbco-hrpt', destination='data')
 
 # %%
 project.experiments.add_from_data_path(

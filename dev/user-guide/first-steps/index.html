@@ -3936,12 +3936,12 @@ script or <abbr title="An open-source web application that allows you to create 
 </code></pre></div>
 <p>Alternatively, you can import it with an alias to avoid naming conflicts
 and for convenience:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">easydiffraction</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ed</span>
+<div class="language-python highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">easydiffraction</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">edi</span>
 </code></pre></div>
 <p>The latter syntax allows you to access all the modules and classes
-within the package using the <code>ed</code> prefix. For example, you can create a
+within the package using the <code>edi</code> prefix. For example, you can create a
 project instance like this:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">project</span> <span class="o">=</span> <span class="n">ed</span><span class="o">.</span><span class="n">Project</span><span class="p">()</span>
+<div class="language-python highlight"><pre><span></span><code><span class="n">project</span> <span class="o">=</span> <span class="n">edi</span><span class="o">.</span><span class="n">Project</span><span class="p">()</span>
 </code></pre></div>
 <p>A complete tutorial using the <code>import</code> syntax can be found
 <a href="../../tutorials/refine-lbco-hrpt-report/">here</a>.</p>
@@ -3970,11 +3970,11 @@ remote repository, making it easy to access and use them while
 experimenting with EasyDiffraction.</p>
 <p>You can list the available datasets and their slugs with <code>list_data()</code>,
 then download one like this:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">easydiffraction</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ed</span>
+<div class="language-python highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">easydiffraction</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">edi</span>
 
-<span class="n">ed</span><span class="o">.</span><span class="n">list_data</span><span class="p">()</span>
+<span class="n">edi</span><span class="o">.</span><span class="n">list_data</span><span class="p">()</span>
 
-<span class="n">data_path</span> <span class="o">=</span> <span class="n">ed</span><span class="o">.</span><span class="n">download_data</span><span class="p">(</span><span class="s1">&#39;meas-lbco-hrpt&#39;</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
+<span class="n">data_path</span> <span class="o">=</span> <span class="n">edi</span><span class="o">.</span><span class="n">download_data</span><span class="p">(</span><span class="s1">&#39;meas-lbco-hrpt&#39;</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
 </code></pre></div>
 <p>This command downloads the <code>measured/lbco-hrpt</code> dataset and saves it in
 the <code>data</code> directory of your current working directory, returning the

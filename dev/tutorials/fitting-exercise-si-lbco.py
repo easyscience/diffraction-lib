@@ -34,7 +34,7 @@
 # components.
 
 # %%
-import easydiffraction as ed
+import easydiffraction as edi
 
 # %% [markdown]
 # ## 📘 Introduction: Simple Reference Fit – Si
@@ -65,7 +65,7 @@ import easydiffraction as ed
 # analysis workflow.
 
 # %%
-project_1 = ed.Project(name='reference')
+project_1 = edi.Project(name='reference')
 
 # %% [markdown]
 # You can set the title and description of the project to provide
@@ -105,7 +105,7 @@ si_xye_path = f'{data_dir}/{file_name}'
 # file is already present.
 
 # %%
-si_xye_path = ed.download_data('meas-si-mcstas-dmsc2025', destination=data_dir)
+si_xye_path = edi.download_data('meas-si-mcstas-dmsc2025', destination=data_dir)
 
 # %% [markdown]
 # Now we can create the experiment and load the measured data. In this
@@ -209,10 +209,10 @@ project_1.display.pattern(expt_name='sim_si')
 # for more details about the instrument parameters.
 
 # %%
-project_1.experiments['sim_si'].instrument.setup_twotheta_bank = ed.extract_metadata(
+project_1.experiments['sim_si'].instrument.setup_twotheta_bank = edi.extract_metadata(
     si_xye_path, r'two_theta\s*=\s*(\d*\.?\d+)'
 )
-project_1.experiments['sim_si'].instrument.calib_d_to_tof_linear = ed.extract_metadata(
+project_1.experiments['sim_si'].instrument.calib_d_to_tof_linear = edi.extract_metadata(
     si_xye_path, r'DIFC\s*=\s*(\d*\.?\d+)'
 )
 
@@ -739,7 +739,7 @@ project_1.save_as(dir_path='projects/fitting-exercise-si-lbco-reference')
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2 = ed.Project(name='main')
+project_2 = edi.Project(name='main')
 project_2.metadata.title = 'La0.5Ba0.5CoO3 Fit'
 project_2.metadata.description = 'Fitting simulated powder diffraction pattern of La0.5Ba0.5CoO3.'
 
@@ -768,7 +768,7 @@ lbco_xye_path = f'{data_dir}/{file_name}'
 
 # Uncomment the following line if your data reduction failed and the
 # reduced data file is missing.
-lbco_xye_path = ed.download_data('meas-lbco-si-mcstas-dmsc2025', destination=data_dir)
+lbco_xye_path = edi.download_data('meas-lbco-si-mcstas-dmsc2025', destination=data_dir)
 
 project_2.experiments.add_from_data_path(
     name='sim_lbco',
@@ -821,10 +821,10 @@ project_2.display.pattern(expt_name='sim_lbco')
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2.experiments['sim_lbco'].instrument.setup_twotheta_bank = ed.extract_metadata(
+project_2.experiments['sim_lbco'].instrument.setup_twotheta_bank = edi.extract_metadata(
     lbco_xye_path, r'two_theta\s*=\s*(\d*\.?\d+)'
 )
-project_2.experiments['sim_lbco'].instrument.calib_d_to_tof_linear = ed.extract_metadata(
+project_2.experiments['sim_lbco'].instrument.calib_d_to_tof_linear = edi.extract_metadata(
     lbco_xye_path, r'DIFC\s*=\s*(\d*\.?\d+)'
 )
 

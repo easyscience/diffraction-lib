@@ -2,7 +2,7 @@
 # # Tb₂Ti₂O₇ — neutron single crystal, constant wavelength, isotropic extinction
 
 # %%
-import easydiffraction as ed
+import easydiffraction as edi
 from easydiffraction import ExperimentFactory
 from easydiffraction import StructureFactory
 from easydiffraction.analysis import verification as verify
@@ -11,7 +11,7 @@ from easydiffraction.analysis import verification as verify
 # ## Build the project
 
 # %%
-project = ed.Project()
+project = edi.Project()
 
 # %% [markdown]
 # ## Define the structure
@@ -121,7 +121,7 @@ verify.set_reference_reflections(experiment, f2calc)
 project.experiments.add(experiment)
 
 # %% [markdown]
-# ## ed-cryspy VS FullProf
+# ## edi-cryspy VS FullProf
 
 # %%
 calc_ed_cryspy = verify.calculate_reflections(project, experiment, 'cryspy')
@@ -132,11 +132,11 @@ project.display.reflection_comparison(
     reference=reference,
     candidate=candidate,
     reference_label='FullProf',
-    candidate_label='ed-cryspy',
+    candidate_label='edi-cryspy',
 )
 
 # %% [markdown]
-# ## Fit ed-cryspy to FullProf
+# ## Fit edi-cryspy to FullProf
 
 # %%
 experiment.calculator.type = 'cryspy'
@@ -155,7 +155,7 @@ project.display.reflection_comparison(
     reference=reference_refined,
     candidate=candidate_refined,
     reference_label='FullProf',
-    candidate_label='ed-cryspy (scale + ext radius)',
+    candidate_label='edi-cryspy (scale + ext radius)',
 )
 
 verify.report_refinement_closeness(

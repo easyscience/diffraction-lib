@@ -29,7 +29,7 @@
 # ## 🛠️ Import Library
 
 # %%
-import easydiffraction as ed
+import easydiffraction as edi
 
 # %% [markdown]
 # ## 📂 Load Project
@@ -41,7 +41,7 @@ import easydiffraction as ed
 # and posterior caches, from the EasyDiffraction data repository.
 
 # %%
-project_dir = ed.download_data('proj-lbco-hrpt-emcee', destination='projects')
+project_dir = edi.download_data('proj-lbco-hrpt-emcee', destination='projects')
 
 # %% [markdown]
 # ### Load Project
@@ -50,7 +50,7 @@ project_dir = ed.download_data('proj-lbco-hrpt-emcee', destination='projects')
 # caches. No new fit is launched in this tutorial.
 
 # %%
-project = ed.Project.load(project_dir)
+project = edi.Project.load(project_dir)
 
 # %% [markdown]
 # Re-save the project to a fresh working directory so resuming the

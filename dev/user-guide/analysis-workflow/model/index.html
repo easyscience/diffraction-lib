@@ -3999,7 +3999,7 @@ which makes it easier to manage the structure:</p>
 </code></pre></div>
 <h2 id="viewing-a-structure-as-text">Viewing a Structure as Text</h2>
 <p>To inspect a structure's serialized text (the same content the project
-persists into its Edifa files), use:</p>
+persists into its Edi files), use:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="c1"># Show structure as text</span>
 <span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="p">[</span><span class="s1">&#39;lbco&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">show_as_text</span><span class="p">()</span>
 </code></pre></div>
@@ -4066,7 +4066,7 @@ schematic in a console — mirroring how <code>project.rendering_plot</code> and
 <span class="n">project</span><span class="o">.</span><span class="n">structure_style</span><span class="o">.</span><span class="n">adp_probability</span> <span class="o">=</span> <span class="mf">0.5</span>  <span class="c1"># ADP ellipsoid probability level (0, 1)</span>
 </code></pre></div>
 <p>Bonds are generated automatically between atoms whose separation falls
-within the per-structure cutoffs stored on <code>structure.geom</code> (the Edifa
+within the per-structure cutoffs stored on <code>structure.geom</code> (the Edi
 <code>_geom</code> parameters):</p>
 <div class="language-python highlight"><pre><span></span><code><span class="c1"># Tune the per-structure bond-generation cutoffs (angstrom)</span>
 <span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="p">[</span><span class="s1">&#39;lbco&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">min_bond_distance_cutoff</span> <span class="o">=</span> <span class="mf">0.5</span>
@@ -4093,9 +4093,9 @@ section).</p>
 <h2 id="saving-a-structure">Saving a Structure</h2>
 <p>Saving the project, as described in the <a href="../project/">Project</a> section,
 will also save the structure. Each structure is saved as a separate
-<code>.edifa</code> file in the <code>structures</code> subdirectory of the project directory.
+<code>.edi</code> file in the <code>structures</code> subdirectory of the project directory.
 The project file contains references to these files.</p>
-<p>Below is an example of the saved Edifa file for the <code>lbco</code> structure:</p>
+<p>Below is an example of the saved Edi file for the <code>lbco</code> structure:</p>
 <!-- prettier-ignore-start -->
 
 <div class="cif">

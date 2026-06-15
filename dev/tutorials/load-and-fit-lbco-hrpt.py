@@ -15,7 +15,7 @@
 # ## 🛠️ Import Library
 
 # %%
-import easydiffraction as ed
+import easydiffraction as edi
 
 # %% [markdown]
 # ## 📂 Load Project
@@ -27,13 +27,13 @@ import easydiffraction as ed
 # repository.
 
 # %%
-project_dir = ed.download_data('proj-lbco-hrpt', destination='projects')
+project_dir = edi.download_data('proj-lbco-hrpt', destination='projects')
 
 # %% [markdown]
 # ### Load Project
 
 # %%
-project = ed.Project.load(project_dir)
+project = edi.Project.load(project_dir)
 
 # %% [markdown]
 # Re-save the project to a fresh working directory so fitting below

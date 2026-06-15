@@ -4335,7 +4335,7 @@ for details.</p>
 <h3 id="measured-data-category">7. Measured Data Category</h3>
 <p>If you do not have a <abbr title="Crystallographic Information File.">CIF</abbr> file for your experiment, you can load measured
 data from a file in a supported format. The measured data is added to
-the experiment and saved with the project as Edifa. The expected format
+the experiment and saved with the project as Edi. The expected format
 depends on the experiment type.</p>
 <h4 id="supported-data-file-formats">Supported data file formats:</h4>
 <ul>
@@ -4421,7 +4421,7 @@ calculated as the <strong>square root</strong> of measured intensities.</p>
 </code></pre></div>
 <h2 id="viewing-an-experiment-as-text">Viewing an Experiment as Text</h2>
 <p>To inspect an experiment's serialized text (the same content the project
-persists into its Edifa files), use:</p>
+persists into its Edi files), use:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="c1"># Show experiment as text</span>
 <span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="p">[</span><span class="s1">&#39;hrpt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">show_as_text</span><span class="p">()</span>
 </code></pre></div>
@@ -4476,12 +4476,12 @@ display. Example output:</p>
 <h2 id="saving-an-experiment">Saving an Experiment</h2>
 <p>Saving the project, as described in the <a href="../project/">Project</a> section, will
 also save the experiment. Each experiment is saved as a separate
-<code>.edifa</code> file in the <code>experiments</code> subdirectory of the project
+<code>.edi</code> file in the <code>experiments</code> subdirectory of the project
 directory. The project file contains references to these files.</p>
 <p>EasyDiffraction supports different types of experiments, and each
-experiment is saved in a dedicated Edifa file with experiment-specific
+experiment is saved in a dedicated Edi file with experiment-specific
 parameters.</p>
-<p>Below are examples of how different experiments are saved in Edifa
+<p>Below are examples of how different experiments are saved in Edi
 format.</p>
 <h3 id="pd-neut-cwl"><a class="label-experiment" href="../../glossary/#experiment-type-labels">pd-neut-cwl</a></h3>
 <p>This example represents a constant-wavelength neutron powder diffraction

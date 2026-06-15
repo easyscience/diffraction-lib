@@ -3795,7 +3795,7 @@ the next <code>project.save()</code> writes them:</p>
 </code></pre></div>
 <h2 id="configuring-saved-reports">Configuring Saved Reports</h2>
 <p>Report output is controlled by <code>project.report</code>, a project-level
-configuration category that is saved in <code>project.edifa</code>. Regular
+configuration category that is saved in <code>project.edi</code>. Regular
 <code>project.save()</code> calls read this configuration and write the selected
 report formats.</p>
 <table>
@@ -3865,7 +3865,7 @@ vendored MathJax bundle next to it, adding about 4.5 MB total.</p>
 when a fit writes the project back to disk:</p>
 <div class="language-bash highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>easydiffraction<span class="w"> </span>path/to/project<span class="w"> </span>fit
 </code></pre></div>
-<p>If <code>project.edifa</code> contains <code>_report.html true</code>, <code>_report.tex true</code>, or
+<p>If <code>project.edi</code> contains <code>_report.html true</code>, <code>_report.tex true</code>, or
 another enabled report flag, <code>fit</code> writes those reports as part of the
 normal project save. Use the Python per-format methods above for one-off
 exports without changing the saved configuration.</p>

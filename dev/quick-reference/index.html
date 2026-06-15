@@ -3749,30 +3749,30 @@ parameters and results.</p>
 and <a href="../tutorials/">Tutorials</a>.</p>
 <h2 id="start-a-session">Start a Session</h2>
 <p>Import the package and create or load a project:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">easydiffraction</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ed</span>
+<div class="language-python highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">easydiffraction</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">edi</span>
 
-<span class="n">project</span> <span class="o">=</span> <span class="n">ed</span><span class="o">.</span><span class="n">Project</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;lbco_hrpt&#39;</span><span class="p">)</span>
+<span class="n">project</span> <span class="o">=</span> <span class="n">edi</span><span class="o">.</span><span class="n">Project</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;lbco_hrpt&#39;</span><span class="p">)</span>
 </code></pre></div>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction</span><span class="w"> </span><span class="kn">import</span> <span class="n">Project</span>
 
 <span class="n">project</span> <span class="o">=</span> <span class="n">Project</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;lbco_hrpt&#39;</span><span class="p">)</span>
 </code></pre></div>
 <p>Check the installed version:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">ed</span><span class="o">.</span><span class="n">show_version</span><span class="p">()</span>
+<div class="language-python highlight"><pre><span></span><code><span class="n">edi</span><span class="o">.</span><span class="n">show_version</span><span class="p">()</span>
 </code></pre></div>
 <h2 id="get-example-data">Get Example Data</h2>
 <p>Download a dataset by its slug into a local directory:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">ed</span><span class="o">.</span><span class="n">list_data</span><span class="p">()</span>
+<div class="language-python highlight"><pre><span></span><code><span class="n">edi</span><span class="o">.</span><span class="n">list_data</span><span class="p">()</span>
 
-<span class="n">structure_path</span> <span class="o">=</span> <span class="n">ed</span><span class="o">.</span><span class="n">download_data</span><span class="p">(</span><span class="s1">&#39;struct-lbco&#39;</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
-<span class="n">data_path</span> <span class="o">=</span> <span class="n">ed</span><span class="o">.</span><span class="n">download_data</span><span class="p">(</span><span class="s1">&#39;meas-lbco-hrpt&#39;</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
+<span class="n">structure_path</span> <span class="o">=</span> <span class="n">edi</span><span class="o">.</span><span class="n">download_data</span><span class="p">(</span><span class="s1">&#39;struct-lbco&#39;</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
+<span class="n">data_path</span> <span class="o">=</span> <span class="n">edi</span><span class="o">.</span><span class="n">download_data</span><span class="p">(</span><span class="s1">&#39;meas-lbco-hrpt&#39;</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
 </code></pre></div>
 <p>Project archives are extracted automatically, and <code>download_data()</code>
 returns the extracted project directory path.</p>
 <p>For tutorial notebooks:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">ed</span><span class="o">.</span><span class="n">list_tutorials</span><span class="p">()</span>
-<span class="n">ed</span><span class="o">.</span><span class="n">download_tutorial</span><span class="p">(</span><span class="s1">&#39;refine-lbco-hrpt-from-cif&#39;</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="s1">&#39;tutorials&#39;</span><span class="p">)</span>
-<span class="n">ed</span><span class="o">.</span><span class="n">download_all_tutorials</span><span class="p">(</span><span class="n">destination</span><span class="o">=</span><span class="s1">&#39;tutorials&#39;</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span class="n">edi</span><span class="o">.</span><span class="n">list_tutorials</span><span class="p">()</span>
+<span class="n">edi</span><span class="o">.</span><span class="n">download_tutorial</span><span class="p">(</span><span class="s1">&#39;refine-lbco-hrpt-from-cif&#39;</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="s1">&#39;tutorials&#39;</span><span class="p">)</span>
+<span class="n">edi</span><span class="o">.</span><span class="n">download_all_tutorials</span><span class="p">(</span><span class="n">destination</span><span class="o">=</span><span class="s1">&#39;tutorials&#39;</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="build-a-project">Build a Project</h2>
 <p>Load a structure from <abbr title="Crystallographic Information File.">CIF</abbr>:</p>
@@ -3845,7 +3845,7 @@ returns the extracted project directory path.</p>
 <span class="n">project</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">free</span><span class="p">()</span>
 <span class="n">project</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">access</span><span class="p">()</span>
 <span class="n">project</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">uid</span><span class="p">()</span>
-<span class="n">project</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">edifa</span><span class="p">()</span>
+<span class="n">project</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">edi</span><span class="p">()</span>
 <span class="n">project</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">cif</span><span class="p">()</span>
 </code></pre></div>
 <h2 id="show-tables-and-select-types">Show Tables and Select Types</h2>
@@ -4025,7 +4025,7 @@ expression using those aliases:</p>
 <span class="n">project</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
 </code></pre></div>
 <p>Load it again:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">project</span> <span class="o">=</span> <span class="n">ed</span><span class="o">.</span><span class="n">Project</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;lbco_hrpt&#39;</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span class="n">project</span> <span class="o">=</span> <span class="n">edi</span><span class="o">.</span><span class="n">Project</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;lbco_hrpt&#39;</span><span class="p">)</span>
 </code></pre></div>
 <p>Run a saved project from the command line:</p>
 <div class="language-bash highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>easydiffraction<span class="w"> </span>lbco_hrpt<span class="w"> </span>fit
@@ -4034,12 +4034,12 @@ python<span class="w"> </span>-m<span class="w"> </span>easydiffraction<span cla
 python<span class="w"> </span>-m<span class="w"> </span>easydiffraction<span class="w"> </span>lbco_hrpt<span class="w"> </span>undo
 python<span class="w"> </span>-m<span class="w"> </span>easydiffraction<span class="w"> </span>lbco_hrpt<span class="w"> </span>undo<span class="w"> </span>--dry
 </code></pre></div>
-<p>When <code>project.edifa</code> enables <code>_report.cif</code>, <code>_report.html</code>,
-<code>_report.tex</code>, or <code>_report.pdf</code>, the <code>fit</code> command writes those reports
-during the normal project save.</p>
+<p>When <code>project.edi</code> enables <code>_report.cif</code>, <code>_report.html</code>, <code>_report.tex</code>,
+or <code>_report.pdf</code>, the <code>fit</code> command writes those reports during the
+normal project save.</p>
 <p>Load a saved example project straight from <code>download_data()</code>:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">saved_project_dir</span> <span class="o">=</span> <span class="n">ed</span><span class="o">.</span><span class="n">download_data</span><span class="p">(</span><span class="s1">&#39;proj-lbco-hrpt&#39;</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="s1">&#39;projects&#39;</span><span class="p">)</span>
-<span class="n">project</span> <span class="o">=</span> <span class="n">ed</span><span class="o">.</span><span class="n">Project</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">saved_project_dir</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span class="n">saved_project_dir</span> <span class="o">=</span> <span class="n">edi</span><span class="o">.</span><span class="n">download_data</span><span class="p">(</span><span class="s1">&#39;proj-lbco-hrpt&#39;</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="s1">&#39;projects&#39;</span><span class="p">)</span>
+<span class="n">project</span> <span class="o">=</span> <span class="n">edi</span><span class="o">.</span><span class="n">Project</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">saved_project_dir</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="command-line-reminders">Command-Line Reminders</h2>
 <div class="language-bash highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>easydiffraction<span class="w"> </span>--help
