@@ -1053,14 +1053,17 @@ class TestFitRequestValidation:
         with pytest.raises(ValueError, match='single fit mode only'):
             a._validate_fit_request(mode=FitModeEnum.JOINT, resume=True, extra_steps=None)
 
-    def test_validate_fit_request_resume_requires_emcee(self):
+    def test_validate_fit_request_resume_requires_mcmc_minimizer(self):
         import pytest
 
         from easydiffraction.analysis.analysis import Analysis
         from easydiffraction.analysis.enums import FitModeEnum
 
         a = Analysis(project=_make_project())  # default lmfit minimizer
-        with pytest.raises(ValueError, match=r"analysis.minimizer.type = 'emcee'"):
+        with pytest.raises(
+            ValueError,
+            match=r"Resume is supported only for MCMC minimizers",
+        ):
             a._validate_fit_request(mode=FitModeEnum.SINGLE, resume=True, extra_steps=None)
 
 
