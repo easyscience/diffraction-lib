@@ -200,6 +200,18 @@ def download_data(
     edi.download_data(name, destination=destination, overwrite=overwrite)
 
 
+def _selected_tutorial_formats(*, ipynb: bool, py: bool) -> list[str]:
+    """
+    Return the formats to download; default to notebook if none set.
+    """
+    formats = []
+    if ipynb:
+        formats.append('ipynb')
+    if py:
+        formats.append('py')
+    return formats or ['ipynb']
+
+
 @app.command('download-tutorial')
 def download_tutorial(
     name: str = typer.Argument(
@@ -212,6 +224,16 @@ def download_tutorial(
         '-d',
         help='Directory to save the tutorial into.',
     ),
+    ipynb: bool = typer.Option(  # noqa: FBT001
+        False,  # noqa: FBT003
+        '--ipynb',
+        help='Download the Jupyter notebook (.ipynb). Default when no format flag is given.',
+    ),
+    py: bool = typer.Option(  # noqa: FBT001
+        False,  # noqa: FBT003
+        '--py',
+        help='Download the plain-Python script (.py). Combine with --ipynb to get both.',
+    ),
     overwrite: bool = typer.Option(  # noqa: FBT001
         False,  # noqa: FBT003
         '--overwrite',
@@ -219,8 +241,14 @@ def download_tutorial(
         help='Overwrite existing file if present.',
     ),
 ) -> None:
-    """Download a specific tutorial notebook by its name."""
-    edi.download_tutorial(name, destination=destination, overwrite=overwrite)
+    """Download a tutorial by its name as a notebook and/or script."""
+    for file_format in _selected_tutorial_formats(ipynb=ipynb, py=py):
+        edi.download_tutorial(
+            name,
+            destination=destination,
+            file_format=file_format,
+            overwrite=overwrite,
+        )
 
 
 @app.command('download-all-tutorials')

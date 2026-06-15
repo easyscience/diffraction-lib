@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
+import os
+
 import numpy as np
 import pytest
 
@@ -350,6 +352,27 @@ def test_list_tutorials_with_data(monkeypatch, capsys):
     assert 'Advanced' in out
 
 
+@pytest.mark.parametrize(
+    ('terminal_columns', 'expected_width'),
+    [(200, 100), (72, 72)],
+)
+def test_list_tutorials_caps_table_width(monkeypatch, terminal_columns, expected_width):
+    import easydiffraction.utils.utils as MUT
+
+    fake_index = {'quick-start': {'url': 'https://x/{version}/t/quick-start.ipynb'}}
+    monkeypatch.setattr(MUT, '_fetch_tutorials_index', lambda: fake_index)
+    monkeypatch.setattr(MUT, 'package_version', lambda name: '0.8.0')
+    monkeypatch.setattr(
+        MUT.shutil, 'get_terminal_size', lambda: os.terminal_size((terminal_columns, 24))
+    )
+
+    captured = {}
+    monkeypatch.setattr(MUT, 'render_table', lambda **kwargs: captured.update(kwargs))
+
+    MUT.list_tutorials()
+    assert captured['width'] == expected_width
+
+
 def test_download_tutorial_unknown_id(monkeypatch):
     import easydiffraction.utils.utils as MUT
 
@@ -386,6 +409,52 @@ def test_download_tutorial_success(monkeypatch, tmp_path):
     result = MUT.download_tutorial('quick-start', destination=str(tmp_path))
     assert result == str(tmp_path / 'quick-start.ipynb')
     assert (tmp_path / 'quick-start.ipynb').exists()
+
+
+def test_download_tutorial_py_format_swaps_extension(monkeypatch, tmp_path):
+    import easydiffraction.utils.utils as MUT
+
+    fake_index = {
+        'quick-start': {
+            'url': 'https://example.com/{version}/tutorials/quick-start/quick-start.ipynb',
+            'title': 'Quick Start',
+        },
+    }
+    monkeypatch.setattr(MUT, '_fetch_tutorials_index', lambda: fake_index)
+    monkeypatch.setattr(MUT, '_get_version_for_url', lambda: '0.8.0')
+
+    requested_urls = []
+
+    class DummyResp:
+        def read(self):
+            return b'# quick-start script'
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return False
+
+    def fake_urlopen(url):
+        requested_urls.append(url)
+        return DummyResp()
+
+    monkeypatch.setattr(MUT, '_safe_urlopen', fake_urlopen)
+
+    result = MUT.download_tutorial('quick-start', destination=str(tmp_path), file_format='py')
+    assert result == str(tmp_path / 'quick-start.py')
+    assert (tmp_path / 'quick-start.py').exists()
+    # The notebook lives nested (tutorials/<name>/<name>.ipynb) but the
+    # .py source is published flat at tutorials/<name>.py.
+    assert requested_urls == ['https://example.com/0.8.0/tutorials/quick-start.py']
+
+
+def test_download_tutorial_unknown_format(monkeypatch):
+    import easydiffraction.utils.utils as MUT
+
+    monkeypatch.setattr(MUT, '_fetch_tutorials_index', lambda: {'quick-start': {}})
+    with pytest.raises(ValueError, match="Unknown tutorial format 'txt'"):
+        MUT.download_tutorial('quick-start', file_format='txt')
 
 
 def test_download_tutorial_uses_artifact_root(monkeypatch, tmp_path):

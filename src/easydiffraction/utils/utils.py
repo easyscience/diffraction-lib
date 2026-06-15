@@ -904,6 +904,47 @@ def _resolve_tutorial_url(url_template: str) -> str:
     return url_template.replace('{version}', version)
 
 
+class TutorialFormat(StrEnum):
+    """The file formats a tutorial can be downloaded in."""
+
+    IPYNB = 'ipynb'
+    PY = 'py'
+
+
+def _resolve_tutorial_format(file_format: str) -> TutorialFormat:
+    """Return the validated tutorial format, or raise ValueError."""
+    try:
+        return TutorialFormat(file_format)
+    except ValueError:
+        allowed = ', '.join(repr(member.value) for member in TutorialFormat)
+        msg = f"Unknown tutorial format '{file_format}'. Choose one of: {allowed}."
+        raise ValueError(msg) from None
+
+
+def _tutorial_url_for_format(url: str, fmt: TutorialFormat) -> str:
+    """Return the published URL for the requested tutorial format."""
+    if fmt is TutorialFormat.IPYNB:
+        return url
+    if not url.endswith('.ipynb'):
+        msg = f'Tutorial URL does not point to a notebook: {url}'
+        raise ValueError(msg)
+    # The notebook is published nested at
+    # ``tutorials/<name>/<name>.ipynb`` (mkdocs-jupyter include_source),
+    # whereas the .py source is a flat static copy at
+    # ``tutorials/<name>.py``. Map the former to the latter, falling
+    # back to a same-directory swap for a flat layout.
+    name = pathlib.PurePosixPath(urlparse(url).path).name[: -len('.ipynb')]
+    nested_suffix = f'{name}/{name}.ipynb'
+    if url.endswith(nested_suffix):
+        return f'{url[: -len(nested_suffix)]}{name}.py'
+    return f'{url[: -len(".ipynb")]}.py'
+
+
+# Cap the listing table so it stays readable on very wide terminals
+# while still shrinking to fit narrower ones.
+_LIST_TABLE_MAX_WIDTH = 100
+
+
 def list_tutorials() -> None:
     """
     Display a table of available tutorial notebooks.
@@ -948,7 +989,7 @@ def list_tutorials() -> None:
         columns_headers=columns_headers,
         columns_data=columns_data,
         columns_alignment=columns_alignment,
-        width=shutil.get_terminal_size().columns,
+        width=min(shutil.get_terminal_size().columns, _LIST_TABLE_MAX_WIDTH),
     )
 
 
@@ -970,10 +1011,11 @@ def download_tutorial(
     name: int | str,
     destination: str = 'tutorials',
     *,
+    file_format: str = 'ipynb',
     overwrite: bool = False,
 ) -> str:
     """
-    Download a tutorial notebook by its name.
+    Download a tutorial by its name in one file format.
 
     Example: path = download_tutorial('refine-lbco-hrpt-from-cif')
 
@@ -987,24 +1029,29 @@ def download_tutorial(
         Directory to save the file into (created if missing). Relative
         destinations are resolved against the configured artifact root
         when ``EASYDIFFRACTION_ARTIFACT_ROOT`` is set.
+    file_format : str, default='ipynb'
+        File format to download: ``'ipynb'`` for the Jupyter notebook or
+        ``'py'`` for the plain-Python script.
     overwrite : bool, default=False
         Whether to overwrite the file if it already exists.
 
     Returns
     -------
     str
-        Full path to the downloaded file as string. A malformed name
-        raises ``ValueError`` and an unknown name raises ``KeyError``.
+        Full path to the downloaded file as string. A malformed name or
+        format raises ``ValueError`` and an unknown name raises
+        ``KeyError``.
     """
+    fmt = _resolve_tutorial_format(file_format)
     index = _fetch_tutorials_index()
     resource_id = _resolve_tutorial_id(name, index)
 
     record = index[resource_id]
     url_template = record['url']
-    url = _resolve_tutorial_url(url_template)
+    url = _tutorial_url_for_format(_resolve_tutorial_url(url_template), fmt)
     _validate_url(url)
 
-    fname = f'{resource_id}.ipynb'
+    fname = f'{resource_id}.{fmt.value}'
 
     dest_path = resolve_artifact_path(destination)
     dest_path.mkdir(parents=True, exist_ok=True)

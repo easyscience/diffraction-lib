@@ -50,7 +50,9 @@ def test_cli_subcommands_call_utils(monkeypatch):
     monkeypatch.setattr(
         edi,
         'download_tutorial',
-        lambda id, destination='tutorials', overwrite=False: calls.append(f'DOWNLOAD_{id}'),
+        lambda id, destination='tutorials', file_format='ipynb', overwrite=False: calls.append(
+            f'DOWNLOAD_{id}'
+        ),
     )
 
     list_result = runner.invoke(main_mod.app, ['list-tutorials'])

@@ -733,7 +733,8 @@
 │   │   └── 🏷️ class ConsolePrinter
 │   ├── 📄 matplotlib_config.py
 │   └── 📄 utils.py
-│       └── 🏷️ class DataCategoryEnum
+│       ├── 🏷️ class DataCategoryEnum
+│       └── 🏷️ class TutorialFormat
 ├── 📄 __init__.py
 └── 📄 __main__.py
 ```

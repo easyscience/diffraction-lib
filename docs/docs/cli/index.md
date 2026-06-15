@@ -92,6 +92,14 @@ Download a specific tutorial by ID:
 python -m easydiffraction download-tutorial 1
 ```
 
+By default this downloads the Jupyter notebook (`.ipynb`). Use `--py`
+for the plain-Python script, or pass both flags to get both files:
+
+```bash
+python -m easydiffraction download-tutorial 1 --py          # script only
+python -m easydiffraction download-tutorial 1 --ipynb --py  # both
+```
+
 Download all available tutorials:
 
 ```bash

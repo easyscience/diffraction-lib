@@ -61,7 +61,9 @@ def test_cli_subcommands_call_utils(monkeypatch):
     monkeypatch.setattr(
         edi,
         'download_tutorial',
-        lambda name, destination='tutorials', overwrite=False: logs.append(f'DOWNLOAD_{name}'),
+        lambda name, destination='tutorials', file_format='ipynb', overwrite=False: logs.append(
+            f'DOWNLOAD_{name}_{file_format}'
+        ),
     )
 
     res0 = runner.invoke(main_mod.app, ['list-data'])
@@ -83,8 +85,38 @@ def test_cli_subcommands_call_utils(monkeypatch):
         'DATA_proj-lbco-hrpt_projects_False',
         'LIST',
         'DOWNLOAD_ALL',
-        'DOWNLOAD_refine-lbco-hrpt-from-cif',
+        'DOWNLOAD_refine-lbco-hrpt-from-cif_ipynb',
     ]
+
+
+def test_cli_download_tutorial_format_flags(monkeypatch):
+    import easydiffraction as edi
+    import easydiffraction.__main__ as main_mod
+
+    calls = []
+    monkeypatch.setattr(
+        edi,
+        'download_tutorial',
+        lambda name, destination='tutorials', file_format='ipynb', overwrite=False: calls.append(
+            file_format
+        ),
+    )
+
+    # Default (no flag) -> notebook only.
+    calls.clear()
+    assert runner.invoke(main_mod.app, ['download-tutorial', '3']).exit_code == 0
+    assert calls == ['ipynb']
+
+    # --py alone -> script only.
+    calls.clear()
+    assert runner.invoke(main_mod.app, ['download-tutorial', '3', '--py']).exit_code == 0
+    assert calls == ['py']
+
+    # Both flags -> notebook and script.
+    calls.clear()
+    res = runner.invoke(main_mod.app, ['download-tutorial', '3', '--ipynb', '--py'])
+    assert res.exit_code == 0
+    assert calls == ['ipynb', 'py']
 
 
 def test_cli_removed_report_commands_are_unknown(tmp_path):
