@@ -80,21 +80,23 @@ TOF linear conversion.
 
 TOF quadratic correction.
 
-## Additional Edi Keys
+### :material-tune: calib_sample_displacement { #instrument-calib-sample-displacement }
 
-### :material-tag: calib_sample_displacement { #instrument-calib-sample-displacement }
-
-| Access                                 | Source                |
-| -------------------------------------- | --------------------- |
-| \_instrument.calib_sample_displacement | [Edi][0]{:.label-cif} |
+| Access                                 | Source                    |
+| -------------------------------------- | ------------------------- |
+| instrument.calib_sample_displacement   | [code][0]{:.label-cif}    |
+| \_instrument.calib_sample_displacement | [Edi][0]{:.label-cif}     |
+| \_instr.sample_displacement            | [coreCIF][0]{:.label-cif} |
 
 Specimen displacement from the diffractometer axis.
 
-### :material-tag: calib_sample_transparency { #instrument-calib-sample-transparency }
+### :material-tune: calib_sample_transparency { #instrument-calib-sample-transparency }
 
-| Access                                 | Source                |
-| -------------------------------------- | --------------------- |
-| \_instrument.calib_sample_transparency | [Edi][0]{:.label-cif} |
+| Access                                 | Source                    |
+| -------------------------------------- | ------------------------- |
+| instrument.calib_sample_transparency   | [code][0]{:.label-cif}    |
+| \_instrument.calib_sample_transparency | [Edi][0]{:.label-cif}     |
+| \_instr.sample_transparency            | [coreCIF][0]{:.label-cif} |
 
 Sample transparency (beam penetration) shift.
 
