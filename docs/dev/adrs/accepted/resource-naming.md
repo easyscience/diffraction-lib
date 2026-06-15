@@ -263,36 +263,36 @@ Presentation order moves to the MkDocs nav (Decision 4), so these slugs
 carry no sequence and can be inserted, removed, or reordered freely.
 There is no `ed-19` tutorial — id 19 is a dataset only.
 
-| Old id | Title                                        | New id                             |
-| ------ | -------------------------------------------- | ---------------------------------- |
-| ed-1   | Structure Refinement: LBCO, HRPT (from CIF)  | `refine-lbco-hrpt-from-cif`        |
-| ed-2   | Structure Refinement: LBCO, HRPT (from data) | `refine-lbco-hrpt-from-data`       |
-| ed-3   | Structure Refinement: LBCO, HRPT (report)    | `refine-lbco-hrpt-report`          |
-| ed-4   | Refinement: PbSO4, NPD+XRD                   | `refine-pbso4-joint`               |
-| ed-5   | Refinement: Co2SiO4, D20                     | `refine-cosio-d20`                 |
-| ed-6   | Refinement: HS, HRPT                         | `refine-hs-hrpt`                   |
-| ed-7   | Refinement: Si, SEPD                         | `refine-si-sepd`                   |
-| ed-8   | Refinement: NCAF, WISH                       | `refine-ncaf-wish`                 |
-| ed-9   | Refinement: LBCO+Si, McStas                  | `refine-lbco-si-mcstas`            |
-| ed-10  | PDF: Ni, NPD                                 | `pdf-ni-npd`                       |
-| ed-11  | PDF: Si, NOMAD (SNS)                         | `pdf-si-nomad`                     |
-| ed-12  | PDF: NaCl, XRD                               | `pdf-nacl-xrd`                     |
-| ed-13  | Fitting exercise: Si, LBCO                   | `fitting-exercise-si-lbco`         |
-| ed-14  | Refinement: Tb2Ti2O7, HEiDi                  | `refine-tbti-heidi`                |
-| ed-15  | Refinement: Taurine, SENJU                   | `refine-taurine-senju`             |
-| ed-16  | Joint: Si, Bragg+PDF                         | `joint-si-bragg-pdf`               |
-| ed-17  | Refinement: Co2SiO4, D20 (T-scan)            | `refine-cosio-d20-tscan`           |
-| ed-18  | Load Project and Fit: LBCO, HRPT             | `load-and-fit-lbco-hrpt`           |
-| ed-20  | Instrument calibration: BEER, ESS            | `calibrate-beer-ess`               |
-| ed-21  | Bayesian (bumps-dream): LBCO, HRPT           | `bayesian-dream-lbco-hrpt`         |
-| ed-22  | Bayesian (emcee): Tb2Ti2O7, HEiDi            | `bayesian-emcee-tbti-heidi`        |
-| ed-23  | Refinement: Co2SiO4 D20 (T-scan, resumed)    | `refine-cosio-d20-tscan-resumed`   |
-| ed-24  | Bayesian Display (bumps-dream): LBCO, HRPT   | `bayesian-dream-display-lbco-hrpt` |
-| ed-25  | Bayesian (emcee): LBCO, HRPT                 | `bayesian-emcee-lbco-hrpt`         |
-| ed-26  | Bayesian Resume (emcee): LBCO, HRPT          | `bayesian-emcee-resume-lbco-hrpt`  |
-| ed-27  | Calculation Without Data: LBCO, CWL          | `simulate-lbco-cwl`                |
-| ed-28  | Calculation Without Data: Si, TOF            | `simulate-si-tof`                  |
-| ed-29  | Calculation Without Data: NaCl, X-ray        | `simulate-nacl-xray`               |
+| Old id | Title                                        | New id                            |
+| ------ | -------------------------------------------- | --------------------------------- |
+| ed-1   | Structure Refinement: LBCO, HRPT (from CIF)  | `refine-lbco-hrpt-from-cif`       |
+| ed-2   | Structure Refinement: LBCO, HRPT (from data) | `refine-lbco-hrpt-from-data`      |
+| ed-3   | Structure Refinement: LBCO, HRPT (report)    | `refine-lbco-hrpt-report`         |
+| ed-4   | Refinement: PbSO4, NPD+XRD                   | `refine-pbso4-joint`              |
+| ed-5   | Refinement: Co2SiO4, D20                     | `refine-cosio-d20`                |
+| ed-6   | Refinement: HS, HRPT                         | `refine-hs-hrpt`                  |
+| ed-7   | Refinement: Si, SEPD                         | `refine-si-sepd`                  |
+| ed-8   | Refinement: NCAF, WISH                       | `refine-ncaf-wish`                |
+| ed-9   | Refinement: LBCO+Si, McStas                  | `refine-lbco-si-mcstas`           |
+| ed-10  | PDF: Ni, NPD                                 | `pdf-ni-npd`                      |
+| ed-11  | PDF: Si, NOMAD (SNS)                         | `pdf-si-nomad`                    |
+| ed-12  | PDF: NaCl, XRD                               | `pdf-nacl-xrd`                    |
+| ed-13  | Fitting exercise: Si, LBCO                   | `fitting-exercise-si-lbco`        |
+| ed-14  | Refinement: Tb2Ti2O7, HEiDi                  | `refine-tbti-heidi`               |
+| ed-15  | Refinement: Taurine, SENJU                   | `refine-taurine-senju`            |
+| ed-16  | Joint: Si, Bragg+PDF                         | `joint-si-bragg-pdf`              |
+| ed-17  | Refinement: Co2SiO4, D20 (T-scan)            | `refine-cosio-d20-tscan`          |
+| ed-18  | Load Project and Fit: LBCO, HRPT             | `load-and-fit-lbco-hrpt`          |
+| ed-20  | Instrument calibration: BEER, ESS            | `calibrate-beer-ess`              |
+| ed-21  | Bayesian (bumps-dream): LBCO, HRPT           | `bayesian-dream-lbco-hrpt`        |
+| ed-22  | Bayesian (emcee): Tb2Ti2O7, HEiDi            | `bayesian-emcee-tbti-heidi`       |
+| ed-23  | Refinement: Co2SiO4 D20 (T-scan, resumed)    | `refine-cosio-d20-tscan-resumed`  |
+| ed-24  | Bayesian Resume (bumps-dream): LBCO, HRPT    | `bayesian-dream-resume-lbco-hrpt` |
+| ed-25  | Bayesian (emcee): LBCO, HRPT                 | `bayesian-emcee-lbco-hrpt`        |
+| ed-26  | Bayesian Resume (emcee): LBCO, HRPT          | `bayesian-emcee-resume-lbco-hrpt` |
+| ed-27  | Calculation Without Data: LBCO, CWL          | `simulate-lbco-cwl`               |
+| ed-28  | Calculation Without Data: Si, TOF            | `simulate-si-tof`                 |
+| ed-29  | Calculation Without Data: NaCl, X-ray        | `simulate-nacl-xray`              |
 
 ## Deferred Work
 
