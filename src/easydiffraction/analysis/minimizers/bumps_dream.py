@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+import math
 import multiprocessing
 import random
 import sys
@@ -25,12 +26,14 @@ from easydiffraction.analysis.fit_helpers.bayesian import compute_convergence_di
 from easydiffraction.analysis.fit_helpers.bayesian import standard_deviations_from_summaries
 from easydiffraction.analysis.fit_helpers.bayesian import summarize_posterior_parameters
 from easydiffraction.analysis.fit_helpers.tracking import SamplerProgressUpdate
+from easydiffraction.analysis.minimizers.base import MinimizerFitOptions
 from easydiffraction.analysis.minimizers.bumps import BumpsMinimizer
 from easydiffraction.analysis.minimizers.bumps import _EasyDiffractionFitness
 from easydiffraction.analysis.minimizers.enums import DreamPopulationInitializationEnum
 from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 from easydiffraction.analysis.minimizers.factory import MinimizerFactory
 from easydiffraction.core.metadata import TypeInfo
+from easydiffraction.utils.enums import VerbosityEnum
 from easydiffraction.utils.logging import log
 
 _BUMPS_DREAM_LOG = log
@@ -92,6 +95,50 @@ def _write_dream_state_sidecar(
             'param_names',
             data=np.array(parameter_names, dtype=h5py.string_dtype(encoding='utf-8')),
         )
+
+
+def _read_dream_state_sidecar(sidecar_path: Path) -> tuple[object, list[str]] | None:
+    """
+    Read a persisted DREAM state from the MCMC sidecar.
+
+    Returns the bumps ``MCMCDraw`` state and the stored fitted-parameter
+    names, or ``None`` when the sidecar or its ``dream_state`` group is
+    absent.
+
+    Parameters
+    ----------
+    sidecar_path : Path
+        Path to the ``mcmc.h5`` sidecar file.
+
+    Returns
+    -------
+    tuple[object, list[str]] | None
+        ``(state, param_names)`` when present, otherwise ``None``.
+
+    Raises
+    ------
+    ValueError
+        If the ``dream_state`` group is present but malformed.
+    """
+    import h5py  # noqa: PLC0415
+    from bumps.fitters import DreamFit  # noqa: PLC0415
+
+    sidecar_path = Path(sidecar_path)
+    if not sidecar_path.is_file():
+        return None
+    with h5py.File(str(sidecar_path), 'r') as handle:
+        if DREAM_STATE_GROUP not in handle:
+            return None
+        group = handle[DREAM_STATE_GROUP]
+        if 'state' not in group or 'param_names' not in group:
+            msg = f"Malformed '{DREAM_STATE_GROUP}' group in '{sidecar_path}'."
+            raise ValueError(msg)
+        state = DreamFit.h5load(group['state'])
+        param_names = [
+            name.decode('utf-8') if isinstance(name, bytes) else str(name)
+            for name in group['param_names'][()]
+        ]
+    return state, param_names
 
 
 @dataclass(slots=True)
@@ -636,15 +683,18 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         steps: int,
         burn: int,
         n_parameters: int,
+        samples_override: int | None = None,
+        pop_override: int | None = None,
     ) -> dict[str, object]:
         """Build the sampler settings dictionary recorded in results."""
-        samples = steps * self.pop * n_parameters
+        pop = self.pop if pop_override is None else int(pop_override)
+        samples = steps * pop * n_parameters if samples_override is None else int(samples_override)
         return {
             'random_seed': int(random_seed),
             'steps': int(steps),
             'burn': int(burn),
             'thin': int(self.thin),
-            'pop': int(self.pop),
+            'pop': int(pop),
             'parallel': int(self.parallel),
             'init': self.init.value,
             'samples': int(samples),
@@ -652,6 +702,42 @@ class BumpsDreamMinimizer(BumpsMinimizer):
             'outliers': DEFAULT_OUTLIER_TEST,
             'trim': DEFAULT_TRIM,
         }
+
+    def fit(
+        self,
+        parameters: list[object],
+        objective_function: object,
+        verbosity: VerbosityEnum = VerbosityEnum.FULL,
+        *,
+        options: MinimizerFitOptions | None = None,
+    ) -> BayesianFitResults:
+        """
+        Run DREAM sampling and return Bayesian fit results.
+
+        Overrides the base ``fit`` so bumps-DREAM supports resume:
+        ``resume`` and ``extra_steps`` are threaded into the solver,
+        which extends the saved chain instead of starting cold.
+        """
+        fit_options = options or MinimizerFitOptions()
+        if fit_options.use_physical_limits:
+            self._apply_physical_limits(parameters)
+
+        resolved_random_seed = self._resolve_random_seed(fit_options.random_seed)
+        minimizer_name = self.name or 'Unnamed Minimizer'
+        if self.method is not None and f'({self.method})' not in minimizer_name:
+            minimizer_name += f' ({self.method})'
+        self._start_tracking(minimizer_name, verbosity=verbosity)
+
+        try:
+            solver_args = self._prepare_solver_args(parameters)
+            solver_args['random_seed'] = resolved_random_seed
+            solver_args['resume'] = fit_options.resume
+            solver_args['extra_steps'] = fit_options.extra_steps
+            raw_result = self._run_solver(objective_function, **solver_args)
+            return self._finalize_fit(parameters, raw_result)
+        finally:
+            if fit_options.finalize_tracking:
+                self._stop_tracking()
 
     def _run_solver(
         self,
@@ -673,12 +759,27 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         object
             Normalized DREAM result stored in an ``OptimizeResult``.
         """
-        total_iterations = int(self.steps + self._resolved_burn(self.steps) + 1)
+        resume = bool(kwargs.get('resume'))
+        resume_overrides: dict[str, object] = {}
+        fit_state = None
+        if resume:
+            resume_overrides, fit_state = self._prepare_dream_resume(
+                kwargs=kwargs,
+                extra_steps=kwargs.get('extra_steps'),
+            )
+            total_iterations = int(resume_overrides['steps_override'] + 1)
+        else:
+            total_iterations = int(self.steps + self._resolved_burn(self.steps) + 1)
         self.tracker.start_sampler_pre_processing(total_iterations=total_iterations)
-        context = self._prepare_run_context(objective_function=objective_function, kwargs=kwargs)
+        context = self._prepare_run_context(
+            objective_function=objective_function,
+            kwargs=kwargs,
+            **resume_overrides,
+        )
         driver_result = self._execute_driver(
             driver=context.driver,
             random_seed=int(context.sampler_settings['random_seed']),
+            fit_state=fit_state,
         )
         if driver_result.error is not None:
             return self._failure_result(
@@ -718,13 +819,99 @@ class BumpsDreamMinimizer(BumpsMinimizer):
             [str(name) for name in parameter_names],
         )
 
+    def _prepare_dream_resume(
+        self,
+        *,
+        kwargs: dict[str, object],
+        extra_steps: object,
+    ) -> tuple[dict[str, object], object]:
+        """
+        Load and validate saved DREAM state for a resume run.
+
+        Returns the driver overrides (extending the chain by
+        ``extra_steps`` generations via the ring-buffer contract) and a
+        deep-copied ``fit_state`` for ``FitDriver.fit``. The deep copy is
+        required because bumps mutates the state in place.
+        """
+        import copy  # noqa: PLC0415
+
+        if not isinstance(extra_steps, int) or isinstance(extra_steps, bool) or extra_steps <= 0:
+            msg = 'Resuming a bumps-dream fit requires a positive integer extra_steps.'
+            raise ValueError(msg)
+        if self._sidecar_path is None:
+            msg = 'bumps-dream resume requires a saved project; no sidecar path is set.'
+            raise ValueError(msg)
+        loaded = _read_dream_state_sidecar(Path(self._sidecar_path))
+        if loaded is None:
+            msg = "No saved bumps-dream chain to resume; run a fresh fit first."
+            raise ValueError(msg)
+        state, saved_names = loaded
+
+        parameter_names = [str(name) for name in kwargs.get('parameter_names')]
+        self._validate_dream_resume(state=state, saved_names=saved_names, names=parameter_names)
+
+        n_parameters = len(parameter_names)
+        pop_scale = self._recovered_population_scale(state=state, n_parameters=n_parameters)
+        current_steps = self._state_generations(
+            state=state, pop_scale=pop_scale, n_parameters=n_parameters
+        )
+        target_steps = current_steps + int(extra_steps)
+        overrides = {
+            'steps_override': target_steps,
+            'burn_override': 0,
+            'samples_override': target_steps * pop_scale * n_parameters,
+            'pop_override': pop_scale,
+        }
+        return overrides, copy.deepcopy(state)
+
+    @staticmethod
+    def _validate_dream_resume(*, state: object, saved_names: list[str], names: list[str]) -> None:
+        """Reject a resume whose model does not match the saved chain."""
+        if int(state.Nvar) != len(names):
+            msg = (
+                f'Saved bumps-dream chain has {int(state.Nvar)} parameters but the current '
+                f'model has {len(names)}. The free-parameter set must match to resume.'
+            )
+            raise ValueError(msg)
+        if saved_names and list(saved_names) != list(names):
+            msg = (
+                'Parameter names/order differ between the current model and the saved '
+                f'bumps-dream chain.\n  current: {names}\n  saved:   {list(saved_names)}'
+            )
+            raise ValueError(msg)
+
+    @staticmethod
+    def _recovered_population_scale(*, state: object, n_parameters: int) -> int:
+        """Recover the DREAM population scale factor from a saved state."""
+        npop = int(state.Npop)
+        recovered = math.ceil(npop / n_parameters)
+        if math.ceil(recovered * n_parameters) != npop:
+            recovered = npop // n_parameters
+        return max(int(recovered), 1)
+
+    @staticmethod
+    def _state_generations(*, state: object, pop_scale: int, n_parameters: int) -> int:
+        """Return the number of generations stored in a saved state."""
+        total_draws = int(state.draw().points.shape[0])
+        pop_size = max(pop_scale * n_parameters, 1)
+        return max(total_draws // pop_size, 1)
+
     def _prepare_run_context(
         self,
         *,
         objective_function: object,
         kwargs: dict[str, object],
+        steps_override: int | None = None,
+        burn_override: int | None = None,
+        samples_override: int | None = None,
+        pop_override: int | None = None,
     ) -> _DreamRunContext:
-        """Prepare a driver and metadata for one DREAM solver run."""
+        """Prepare a driver and metadata for one DREAM solver run.
+
+        The ``*_override`` arguments are set only on a resume run, where
+        they extend the saved chain (see ``_prepare_dream_resume``); a
+        fresh run leaves them ``None`` and uses the configured settings.
+        """
         bumps_params = kwargs.get('bumps_params')
         parameter_names = kwargs.get('parameter_names')
         parameter_display_names = kwargs.get('parameter_display_names')
@@ -735,14 +922,16 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         fitness = _EasyDiffractionFitness(bumps_params, objective_function)
         fitness.nllf()
         fitclass = next(cls for cls in FITTERS if cls.id == self.method)
-        steps = self.steps
-        burn = self._resolved_burn(steps)
+        steps = self.steps if steps_override is None else int(steps_override)
+        burn = self._resolved_burn(self.steps) if burn_override is None else int(burn_override)
         init = self.init
         sampler_settings = self._sampler_settings(
             random_seed=random_seed,
             steps=steps,
             burn=burn,
             n_parameters=len(bumps_params),
+            samples_override=samples_override,
+            pop_override=pop_override,
         )
         driver = self._build_driver(
             fitclass=fitclass,
@@ -800,7 +989,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
                 steps=steps,
                 burn=burn,
                 thin=self.thin,
-                pop=self.pop,
+                pop=int(sampler_settings['pop']),
                 init=init.value,
                 samples=sampler_settings['samples'],
                 alpha=DEFAULT_ALPHA,
@@ -883,9 +1072,15 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         )
 
     @staticmethod
-    def _execute_driver(*, driver: FitDriver, random_seed: int) -> _DreamDriverResult:
+    def _execute_driver(
+        *, driver: FitDriver, random_seed: int, fit_state: object | None = None
+    ) -> _DreamDriverResult:
         """
         Run the DREAM driver under a deterministic RNG-state guard.
+
+        ``fit_state`` is a deep-copied saved ``MCMCDraw`` on a resume run
+        (``None`` for a fresh run); it is passed to ``FitDriver.fit`` so
+        DREAM continues the existing chain.
         """
         numpy_rng = np.random.mtrand._rand
         numpy_state = numpy_rng.get_state()
@@ -894,7 +1089,8 @@ class BumpsDreamMinimizer(BumpsMinimizer):
             validated_seed = BumpsDreamMinimizer._validated_random_seed_value(random_seed)
             numpy_rng.seed(validated_seed)
             random.seed(validated_seed)
-            best_values, best_nllf = driver.fit()
+            fit_kwargs = {} if fit_state is None else {'fit_state': fit_state}
+            best_values, best_nllf = driver.fit(**fit_kwargs)
         except DREAM_DRIVER_FAILURES as error:  # pragma: no cover - backend-specific
             return _DreamDriverResult(
                 best_values=None,

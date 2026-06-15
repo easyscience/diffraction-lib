@@ -138,7 +138,7 @@ Phase 1 review gate. Do not batch multiple steps into one commit.
   existing `Fitter._set_minimizer_sidecar_path`), and write a
   `dream_state` HDF5 group (`DreamFit.h5dump` + `param_names`) on save.
   Commit: `Persist bumps-dream sampler state to the mcmc sidecar`.
-- [ ] **P1.3 — DREAM resume: load, validate, extend.** Override `fit()`;
+- [x] **P1.3 — DREAM resume: load, validate, extend.** Override `fit()`;
   load + deep-copy the state; validate count/population/names; translate
   `extra_steps` to `samples = current + N, burn = 0`; pass `fit_state`
   to the driver; add a DREAM resume-detection helper.
