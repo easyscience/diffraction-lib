@@ -22,6 +22,16 @@ from easydiffraction.display.theme import DARK_AXIS_FRAME_COLOR
 from easydiffraction.display.theme import LIGHT_AXIS_FRAME_COLOR
 from easydiffraction.utils._vendored.theme_detect import is_dark
 
+# Single source of truth for the spacing of every notebook/site table
+# output. Both the Rich (<pre>) and pandas (<table>) backends apply
+# these inline so the table looks identical in JupyterLab and in the
+# built docs site -- the site's theme CSS cannot reach a standalone
+# notebook, so the values must travel inline rather than in a
+# stylesheet. Tuned to sit between the host defaults: tight enough to
+# group the rows, loose enough to stay readable.
+TABLE_CELL_LINE_HEIGHT = '1.2'
+TABLE_CELL_PADDING = '0.15em 0.5em'
+
 
 class TableBackendBase(ABC):
     """

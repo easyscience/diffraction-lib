@@ -19,6 +19,7 @@ except ImportError:
     display = None
 
 from easydiffraction.display.links import TableLink
+from easydiffraction.display.tablers.base import TABLE_CELL_LINE_HEIGHT
 from easydiffraction.display.tablers.base import TableBackendBase
 from easydiffraction.utils.environment import can_use_ipython_display
 from easydiffraction.utils.logging import ConsoleManager
@@ -80,12 +81,15 @@ class RichTableBackend(TableBackendBase):
         tmp = Console(force_jupyter=False, record=True, file=io.StringIO())
         tmp.print(table)
         html = tmp.export_html(inline_styles=True)
-        # Remove margins inside pre blocks, shrink the font, and tighten
-        # the line spacing so notebook/HTML tables stay compact (the box
-        # rows otherwise inherit the page's tall code line-height).
+        # Merge the compact spacing into Rich's own ``<pre>`` style
+        # attribute (rather than prepending a second, conflicting one)
+        # so the font-family Rich emits is preserved. Line height comes
+        # from the shared constant, keeping this in sync with the pandas
+        # table backend.
         return html.replace(
-            '<pre ',
-            "<pre style='margin:0; font-size: 0.9em !important; line-height: 1.2 !important; ' ",
+            '<pre style="font-family:',
+            f'<pre style="margin:0; font-size:0.9em !important; '
+            f'line-height:{TABLE_CELL_LINE_HEIGHT} !important; font-family:',
         )
 
     def build_renderable(

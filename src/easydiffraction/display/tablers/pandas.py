@@ -17,6 +17,8 @@ except ImportError:
     display = None
 
 from easydiffraction.display.links import TableLink
+from easydiffraction.display.tablers.base import TABLE_CELL_LINE_HEIGHT
+from easydiffraction.display.tablers.base import TABLE_CELL_PADDING
 from easydiffraction.display.tablers.base import TableBackendBase
 from easydiffraction.utils.environment import can_use_ipython_display
 from easydiffraction.utils.logging import log
@@ -33,16 +35,19 @@ _RICH_COLOR_RE = re.compile(r'\[(\w+)\](.*?)\[/\1\]')
 BORDER_COLOR = 'rgba(128, 128, 128, 0.4)'
 INDEX_COLOR = 'rgba(128, 128, 128, 0.7)'
 
-# Compact cell metrics matching the Rich layout. ``border: 0`` and
-# ``min-width: 0`` neutralise MkDocs Material's ``table:not([class])``
-# rules, which otherwise inject a per-row ``border-top`` (stray rules
-# between rows) and ``th { min-width: 5rem }`` (over-wide columns) onto
-# class-less embedded tables. ``white-space: nowrap`` keeps each cell on
-# one line so a wide table scrolls horizontally rather than folding into
-# multi-line rows. Inline values win over the theme stylesheet, so no
-# CSS class or ``<style>`` block is needed.
+# Compact cell metrics matching the Rich layout. Spacing comes from the
+# shared ``TABLE_CELL_*`` constants so both backends stay in sync.
+# ``border: 0`` and ``min-width: 0`` neutralise MkDocs Material's
+# ``table:not([class])`` rules, which otherwise inject a per-row
+# ``border-top`` (stray rules between rows) and a ``min-width`` on
+# ``th`` (over-wide columns) onto class-less embedded tables.
+# ``white-space: nowrap`` keeps each cell on one line so a wide table
+# scrolls horizontally rather than folding into multi-line rows. Inline
+# values win over the theme stylesheet, so no CSS class or ``<style>``
+# block is needed.
 _CELL_STYLE = (
-    'padding: 0.25em 0.5em; line-height: 1.15em; border: 0; min-width: 0; white-space: nowrap'
+    f'padding: {TABLE_CELL_PADDING}; line-height: {TABLE_CELL_LINE_HEIGHT}; '
+    'border: 0; min-width: 0; white-space: nowrap'
 )
 _TRANSPARENT_ROW = 'background-color: transparent'
 
