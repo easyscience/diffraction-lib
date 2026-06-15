@@ -2,7 +2,7 @@
 # # Tb₂Ti₂O₇ — neutron single crystal, constant wavelength, isotropic extinction
 
 # %%
-import easydiffraction as ed
+import easydiffraction as edi
 from easydiffraction import ExperimentFactory
 from easydiffraction import StructureFactory
 from easydiffraction.analysis import verification as verify
@@ -11,7 +11,7 @@ from easydiffraction.analysis import verification as verify
 # ## Build the project
 
 # %%
-project = ed.Project()
+project = edi.Project()
 
 # %% [markdown]
 # ## Define the structure
@@ -30,7 +30,7 @@ structure.cell.length_a = 10.130  # FullProf a
 # in the site multiplicity; CIF/EasyDiffraction use 1.0 for a fully
 # occupied site.
 structure.atom_sites.create(
-    label='Tb',  # FullProf Atom
+    id='Tb',  # FullProf Atom
     type_symbol='Tb',  # FullProf Typ
     fract_x=0.5,  # FullProf X
     fract_y=0.5,  # FullProf Y
@@ -42,7 +42,7 @@ aniso.adp_11 = 0.00098991673  # FullProf beta11
 aniso.adp_12 = -0.00047650724  # FullProf beta12
 
 structure.atom_sites.create(
-    label='Ti',  # FullProf Atom
+    id='Ti',  # FullProf Atom
     type_symbol='Ti',  # FullProf Typ
     fract_x=0,  # FullProf X
     fract_y=0,  # FullProf Y
@@ -54,7 +54,7 @@ aniso.adp_11 = 0.00090989727  # FullProf beta11
 aniso.adp_12 = -0.00016990340  # FullProf beta12
 
 structure.atom_sites.create(
-    label='O1',  # FullProf Atom
+    id='O1',  # FullProf Atom
     type_symbol='O',  # FullProf Typ
     fract_x=0.32804,  # FullProf X
     fract_y=0.125,  # FullProf Y
@@ -67,7 +67,7 @@ aniso.adp_22 = 0.00078215479  # FullProf beta22
 aniso.adp_23 = 0.00041246481  # FullProf beta23
 
 structure.atom_sites.create(
-    label='O2',  # FullProf Atom
+    id='O2',  # FullProf Atom
     type_symbol='O',  # FullProf Typ
     fract_x=0.375,  # FullProf X
     fract_y=0.375,  # FullProf Y
@@ -80,7 +80,7 @@ aniso.adp_11 = 0.00060762477  # FullProf beta11
 project.structures.add(structure)
 
 # %%
-structure.show_as_cif()
+structure.show_as_text()
 
 # %% [markdown]
 # ## Load the FullProf reference
@@ -108,8 +108,8 @@ experiment = ExperimentFactory.from_scratch(
     radiation_probe='neutron',
     scattering_type='bragg',
 )
-experiment.linked_crystal.id = 'tbti'
-experiment.linked_crystal.scale = FULLPROF_SCALE
+experiment.linked_structure.structure_id = 'tbti'
+experiment.linked_structure.scale = FULLPROF_SCALE
 experiment.instrument.setup_wavelength = FULLPROF_WAVELENGTH
 experiment.extinction.type = 'becker-coppens'
 experiment.extinction.model = 'gauss'
@@ -121,7 +121,7 @@ verify.set_reference_reflections(experiment, f2calc)
 project.experiments.add(experiment)
 
 # %% [markdown]
-# ## ed-cryspy VS FullProf
+# ## edi-cryspy VS FullProf
 
 # %%
 calc_ed_cryspy = verify.calculate_reflections(project, experiment, 'cryspy')
@@ -132,16 +132,16 @@ project.display.reflection_comparison(
     reference=reference,
     candidate=candidate,
     reference_label='FullProf',
-    candidate_label='ed-cryspy',
+    candidate_label='edi-cryspy',
 )
 
 # %% [markdown]
-# ## Fit ed-cryspy to FullProf
+# ## Fit edi-cryspy to FullProf
 
 # %%
 experiment.calculator.type = 'cryspy'
 
-experiment.linked_crystal.scale.free = True
+experiment.linked_structure.scale.free = True
 experiment.extinction.radius.free = True
 
 project.analysis.fit()
@@ -155,7 +155,7 @@ project.display.reflection_comparison(
     reference=reference_refined,
     candidate=candidate_refined,
     reference_label='FullProf',
-    candidate_label='ed-cryspy (scale + ext radius)',
+    candidate_label='edi-cryspy (scale + ext radius)',
 )
 
 verify.report_refinement_closeness(

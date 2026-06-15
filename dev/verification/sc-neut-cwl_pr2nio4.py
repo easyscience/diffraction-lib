@@ -2,7 +2,7 @@
 # # Pr₂NiO₄ — neutron single crystal, constant wavelength
 
 # %%
-import easydiffraction as ed
+import easydiffraction as edi
 from easydiffraction import ExperimentFactory
 from easydiffraction import StructureFactory
 from easydiffraction.analysis import verification as verify
@@ -11,7 +11,7 @@ from easydiffraction.analysis import verification as verify
 # ## Build the project
 
 # %%
-project = ed.Project()
+project = edi.Project()
 
 # %% [markdown]
 # ## Define the structure
@@ -33,7 +33,7 @@ structure.cell.length_c = 12.483399  # FullProf c
 # occupancy here is the FullProf Occ scaled by the multiplicity (1.0 for
 # a full site).
 structure.atom_sites.create(
-    label='Pr',  # FullProf Atom
+    id='Pr',  # FullProf Atom
     type_symbol='Pr',  # FullProf Typ
     fract_x=0.5,  # FullProf X
     fract_y=0.5,  # FullProf Y
@@ -46,7 +46,7 @@ aniso.adp_22 = 0.00710  # FullProf beta22
 aniso.adp_33 = 0.00084  # FullProf beta33
 
 structure.atom_sites.create(
-    label='Ni',  # FullProf Atom
+    id='Ni',  # FullProf Atom
     type_symbol='Ni',  # FullProf Typ
     fract_x=0,  # FullProf X
     fract_y=0,  # FullProf Y
@@ -59,7 +59,7 @@ aniso.adp_22 = 0.00280  # FullProf beta22
 aniso.adp_33 = 0.00151  # FullProf beta33
 
 structure.atom_sites.create(
-    label='O1',  # FullProf Atom
+    id='O1',  # FullProf Atom
     type_symbol='O',  # FullProf Typ
     fract_x=0.25,  # FullProf X
     fract_y=0.25,  # FullProf Y
@@ -73,7 +73,7 @@ aniso.adp_33 = 0.00413  # FullProf beta33
 aniso.adp_12 = -0.00140  # FullProf beta12
 
 structure.atom_sites.create(
-    label='O2',  # FullProf Atom
+    id='O2',  # FullProf Atom
     type_symbol='O',  # FullProf Typ
     fract_x=0,  # FullProf X
     fract_y=0,  # FullProf Y
@@ -87,7 +87,7 @@ aniso.adp_22 = 0.01716  # FullProf beta22
 aniso.adp_33 = 0.00045  # FullProf beta33
 
 structure.atom_sites.create(
-    label='Oi',  # FullProf Atom
+    id='Oi',  # FullProf Atom
     type_symbol='O',  # FullProf Typ
     fract_x=0.25,  # FullProf X
     fract_y=0.25,  # FullProf Y
@@ -102,7 +102,7 @@ aniso.adp_33 = 0.00100  # FullProf beta33
 
 # The split interstitial oxygen Od is refined with an isotropic B.
 structure.atom_sites.create(
-    label='Od',  # FullProf Atom
+    id='Od',  # FullProf Atom
     type_symbol='O',  # FullProf Typ
     fract_x=0.07347,  # FullProf X
     fract_y=0.07347,  # FullProf Y
@@ -115,7 +115,7 @@ structure.atom_sites.create(
 project.structures.add(structure)
 
 # %%
-structure.show_as_cif()
+structure.show_as_text()
 
 # %% [markdown]
 # ## Load the FullProf reference
@@ -140,8 +140,8 @@ experiment = ExperimentFactory.from_scratch(
     scattering_type='bragg',
 )
 
-experiment.linked_crystal.id = 'pr2nio4'
-experiment.linked_crystal.scale = FULLPROF_SCALE
+experiment.linked_structure.structure_id = 'pr2nio4'
+experiment.linked_structure.scale = FULLPROF_SCALE
 experiment.instrument.setup_wavelength = FULLPROF_WAVELENGTH
 
 verify.set_reference_reflections(experiment, f2calc)
@@ -149,7 +149,7 @@ verify.set_reference_reflections(experiment, f2calc)
 project.experiments.add(experiment)
 
 # %% [markdown]
-# ## ed-cryspy VS FullProf
+# ## edi-cryspy VS FullProf
 
 # %%
 calc_ed_cryspy = verify.calculate_reflections(project, experiment, 'cryspy')
@@ -160,16 +160,16 @@ project.display.reflection_comparison(
     reference=reference,
     candidate=candidate,
     reference_label='FullProf',
-    candidate_label='ed-cryspy',
+    candidate_label='edi-cryspy',
 )
 
 # %% [markdown]
-# ## Fit ed-cryspy to FullProf
+# ## Fit edi-cryspy to FullProf
 
 # %%
 experiment.calculator.type = 'cryspy'
 
-experiment.linked_crystal.scale.free = True
+experiment.linked_structure.scale.free = True
 
 project.analysis.fit()
 project.display.fit.results()
@@ -182,7 +182,7 @@ project.display.reflection_comparison(
     reference=reference_refined,
     candidate=candidate_refined,
     reference_label='FullProf',
-    candidate_label='ed-cryspy (scale only)',
+    candidate_label='edi-cryspy (scale only)',
 )
 
 verify.report_refinement_closeness(
