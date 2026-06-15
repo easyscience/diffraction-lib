@@ -157,9 +157,11 @@ Phase 1 review gate. Do not batch multiple steps into one commit.
   `docs/docs/tutorials/index.md`, `docs/docs/tutorials/index.json`, and
   `tests/tutorials/baseline.json`; add to `ci_skip.txt` if heavy.
   Commit: `Add bumps-dream resume tutorial`.
-- [ ] **P1.7 — Regenerate sidecar-referencing fixtures/tutorials.**
-  Re-save committed project fixtures and tutorial outputs so the sidecar
-  is `mcmc.h5`. Commit: `Regenerate fixtures for mcmc.h5 sidecar`.
+- [x] **P1.7 — Regenerate sidecar-referencing fixtures/tutorials.**
+  No-op: `git ls-files | grep '\.h5'` shows **no tracked `.h5` sidecar
+  fixtures**, and committed notebooks are output-stripped, so the rename
+  had no binary artifacts to regenerate — the `mcmc.h5` name is produced
+  purely at runtime and all textual references were swept in P1.1.
 - [ ] **P1.8 — Phase 1 review gate (no code).** Mark `[x]` and commit the
   checklist update alone. Commit: `Reach Phase 1 review gate`.
 
