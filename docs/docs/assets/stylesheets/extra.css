@@ -209,7 +209,7 @@ label.md-nav__title[for="__drawer"] {
 
 /* Keep prose line length stable when sidebars are hidden at narrower widths */
 .md-main .md-content > .md-content__inner {
-  width: min(100%, 45em);
+  width: min(100%, 47em);
   margin-left: auto !important;
   margin-right: auto !important;
 }
