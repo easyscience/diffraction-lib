@@ -64,10 +64,11 @@ After `undo_fit()`:
   the anchors needed for idempotence (§6). Undo therefore leaves these
   rows in place; the next fit rewrites them via
   `_capture_fit_parameter_state()`.
-- `analysis/results.h5` is cleared in memory only: the
+- `analysis/mcmc.h5` is cleared in memory only: the
   `Analysis._persisted_fit_state_sidecar` dict is reset to empty. All
   canonical groups (`/posterior`, `/distribution_cache`, `/pair_cache`,
-  `/predictive`, plus `/emcee_chain` for emcee fits) belong to the
+  `/predictive`, plus the raw sampler-state group — `/emcee_chain` for
+  emcee or `/dream_state` for bumps-DREAM) belong to the
   discarded fit, so the next save writes an empty sidecar and truncates
   the file. This is the same truncation that runs at the start of a new
   fit — see
@@ -169,7 +170,7 @@ This command should:
 - execute `project.analysis.undo_fit()`
 - save the recovered state back to the same project directory by default
   — the rewritten `analysis/analysis.cif` reflects the rolled-back
-  scalars and `analysis/results.h5` is truncated
+  scalars and `analysis/mcmc.h5` is truncated
 - support `--dry` to preview the rollback without writing any file. The
   in-memory rollback still runs (so the summary numbers are real), but
   `project.save()` is skipped. This mirrors the existing
@@ -242,12 +243,12 @@ project.analysis.fit_results                            # None
 project.structures['lbco'].cell.length_a.value          # 3.8800 (start_value)
 project.structures['lbco'].cell.length_a.uncertainty    # 0.0000 (start_uncertainty)
 
-# Persist the rollback to disk; analysis/results.h5 is cleared too:
+# Persist the rollback to disk; analysis/mcmc.h5 is cleared too:
 project.save()
 ```
 
 For Bayesian fits, the same call also clears `parameter.posterior` on
-every fitted parameter and truncates `analysis/results.h5` (the
+every fitted parameter and truncates `analysis/mcmc.h5` (the
 `/posterior`, `/distribution_cache`, `/pair_cache`, `/predictive`, and
 `/emcee_chain` groups).
 
@@ -261,7 +262,7 @@ $ python -m easydiffraction projects/lbco_hrpt undo
 Undoing last fit for 'lbco_hrpt'...
 ✅ Restored 8 parameters to their pre-fit values.
 ✅ Cleared analysis.fit_results.
-✅ Cleared analysis/results.h5 (Bayesian sidecar).
+✅ Cleared analysis/mcmc.h5 (Bayesian sidecar).
 ✅ Saved project to projects/lbco_hrpt.
 ```
 
@@ -272,7 +273,7 @@ $ python -m easydiffraction projects/lbco_hrpt undo --dry
 Would undo last fit for 'lbco_hrpt' (dry run, no files written):
   - 8 parameters would be restored to pre-fit values
   - analysis.fit_results would be cleared
-  - analysis/results.h5 (Bayesian sidecar) would be cleared
+  - analysis/mcmc.h5 (Bayesian sidecar) would be cleared
 ```
 
 No-op cases — the project has nothing to undo. All three sub-cases exit

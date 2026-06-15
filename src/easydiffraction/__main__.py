@@ -122,7 +122,7 @@ def _display_undo_summary(
         if outcome.cleared_fit_result:
             typer.echo('  - analysis.fit_results would be cleared')
         if outcome.cleared_sidecar:
-            typer.echo('  - analysis/results.h5 (Bayesian sidecar) would be cleared')
+            typer.echo('  - analysis/mcmc.h5 (Bayesian sidecar) would be cleared')
         return
 
     typer.echo(f"Undoing last fit for '{project_name}'...")
@@ -130,7 +130,7 @@ def _display_undo_summary(
     if outcome.cleared_fit_result:
         typer.echo('✅ Cleared analysis.fit_results.')
     if outcome.cleared_sidecar:
-        typer.echo('✅ Cleared analysis/results.h5 (Bayesian sidecar).')
+        typer.echo('✅ Cleared analysis/mcmc.h5 (Bayesian sidecar).')
     project.save()
     typer.echo(f'✅ Saved project to {project_dir}.')
 

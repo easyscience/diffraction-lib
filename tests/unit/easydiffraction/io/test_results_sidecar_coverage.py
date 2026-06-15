@@ -69,7 +69,7 @@ def _empty_analysis(*, has_fit_state: bool = True, bayesian: bool = True) -> obj
 def test_delete_stale_sidecar_removes_existing_file(tmp_path):
     from easydiffraction.io.results_sidecar import _delete_stale_sidecar
 
-    sidecar_path = Path(tmp_path) / 'results.h5'
+    sidecar_path = Path(tmp_path) / 'mcmc.h5'
     sidecar_path.write_bytes(b'stale')
     assert sidecar_path.is_file()
 
@@ -110,7 +110,7 @@ def test_warn_existing_sidecar_overwrite_warns_for_nonempty(tmp_path, monkeypatc
     warnings: list[str] = []
     monkeypatch.setattr(mod.log, 'warning', warnings.append)
 
-    sidecar_path = Path(tmp_path) / 'results.h5'
+    sidecar_path = Path(tmp_path) / 'mcmc.h5'
     sidecar_path.write_bytes(b'payload')
 
     mod._warn_existing_sidecar_overwrite(sidecar_path)
@@ -126,7 +126,7 @@ def test_prepare_analysis_results_sidecar_for_new_fit_warns_and_removes(tmp_path
     monkeypatch.setattr(mod.log, 'warning', warnings.append)
 
     analysis_dir = Path(tmp_path)
-    sidecar_path = analysis_dir / 'results.h5'
+    sidecar_path = analysis_dir / 'mcmc.h5'
     sidecar_path.write_bytes(b'previous-fit')
 
     mod.prepare_analysis_results_sidecar_for_new_fit(analysis_dir=analysis_dir)
@@ -425,14 +425,14 @@ def test_write_analysis_results_sidecar_removes_file_when_nothing_written(tmp_pa
 
     mod.write_analysis_results_sidecar(analysis=analysis, analysis_dir=analysis_dir)
 
-    assert not (analysis_dir / 'results.h5').exists()
+    assert not (analysis_dir / 'mcmc.h5').exists()
 
 
 def test_write_analysis_results_sidecar_deletes_stale_when_not_bayesian(tmp_path):
     from easydiffraction.io import results_sidecar as mod
 
     analysis_dir = Path(tmp_path)
-    sidecar_path = analysis_dir / 'results.h5'
+    sidecar_path = analysis_dir / 'mcmc.h5'
     sidecar_path.write_bytes(b'stale')
 
     analysis = _empty_analysis(bayesian=False)
@@ -499,7 +499,7 @@ def test_read_analysis_results_sidecar_populates_all_groups(tmp_path):
     from easydiffraction.io import results_sidecar as mod
 
     analysis_dir = Path(tmp_path)
-    path = analysis_dir / 'results.h5'
+    path = analysis_dir / 'mcmc.h5'
     with h5py.File(path, 'w') as handle:
         mod._create_dataset(handle, mod._POSTERIOR_PARAMETER_SAMPLES_PATH, np.zeros((2, 1, 1)))
         mod._write_payload_group(
@@ -536,7 +536,7 @@ def test_read_analysis_results_sidecar_skips_empty_groups(tmp_path):
     from easydiffraction.io import results_sidecar as mod
 
     analysis_dir = Path(tmp_path)
-    path = analysis_dir / 'results.h5'
+    path = analysis_dir / 'mcmc.h5'
     # File exists but contains no canonical EasyDiffraction groups.
     with h5py.File(path, 'w') as handle:
         handle.create_group('unrelated')

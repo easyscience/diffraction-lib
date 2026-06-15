@@ -37,7 +37,7 @@ to the old suggestions path.
 - Edi becomes the project persistence format: `project.edi`,
   `structures/<structure>.edi`, `experiments/<experiment>.edi`, and
   `analysis/analysis.edi`.
-- `analysis/results.csv`, `analysis/results.h5`, and
+- `analysis/results.csv`, `analysis/mcmc.h5`, and
   `reports/<project>.cif` keep their current locations and purposes.
 - Report CIF generation stays strict IUCr/pdCIF export. Regular project
   save/load must not treat report CIF as round-trippable project state.
@@ -220,7 +220,7 @@ code/Edi/CIF reference.
   experiments/<experiment>.edi
   analysis/analysis.edi
   analysis/results.csv
-  analysis/results.h5
+  analysis/mcmc.h5
   reports/<project>.cif
   ```
 

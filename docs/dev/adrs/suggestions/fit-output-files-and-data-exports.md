@@ -7,7 +7,7 @@
 The current branch already adopts two pieces of this naming scheme:
 
 - sequential deterministic results stay in `analysis/results.csv`
-- Bayesian arrays and plot caches use `analysis/results.h5`
+- Bayesian arrays and plot caches use `analysis/mcmc.h5`
 
 Those decisions now live in
 [Analysis CIF Fit State](../accepted/analysis-cif-fit-state.md). This
@@ -29,7 +29,7 @@ Different fit modes still produce different kinds of reusable output:
   covariance/correlation summaries
 
 The accepted fit-state ADR already standardizes the canonical saved fit
-projection in `analysis/analysis.cif` plus `analysis/results.h5` for
+projection in `analysis/analysis.cif` plus `analysis/mcmc.h5` for
 Bayesian sidecars. What remains open here is whether project save should
 also produce optional archives or user-facing export files beyond that
 accepted baseline.
@@ -47,7 +47,7 @@ and large numerical arrays should not be embedded in
 The accepted baseline is:
 
 - `analysis/results.csv` for sequential deterministic fit tables
-- `analysis/results.h5` for large Bayesian arrays and result-derived
+- `analysis/mcmc.h5` for large Bayesian arrays and result-derived
   caches
 
 Any future change to those canonical filenames would need a follow-up
@@ -81,11 +81,11 @@ Sequential measured input data may optionally be archived in
 `analysis/data.h5`, but that archive is data, not results. It must not
 replace `analysis/results.csv`.
 
-### 4. Bayesian arrays use `analysis/results.h5`
+### 4. Bayesian arrays use `analysis/mcmc.h5`
 
 Single Bayesian fits should store posterior samples, log posterior
 arrays, predictive arrays, and prepared plot caches in
-`analysis/results.h5`.
+`analysis/mcmc.h5`.
 
 The previous candidate name `analysis/bayesian_data.h5` remains rejected
 because it mixes fit type with file role and blurs result arrays with
@@ -112,7 +112,7 @@ Suggested first layout:
 analysis/
   analysis.cif
   results.csv        # sequential deterministic only, when applicable
-  results.h5         # Bayesian and other structured result arrays
+  mcmc.h5         # Bayesian and other structured result arrays
   data.h5            # optional archived measured/input data
   exports/
     <experiment>_measured.csv
@@ -128,7 +128,7 @@ analysis/
 | single deterministic     | `analysis/analysis.cif`                          | open question                | none initially        | none initially        | `analysis/exports/*.csv`        |
 | joint deterministic      | `analysis/analysis.cif`                          | open question                | none initially        | none initially        | `analysis/exports/*.csv`        |
 | sequential deterministic | `analysis/analysis.cif` + `analysis/results.csv` | `analysis/results.csv`       | none initially        | `analysis/data.h5`    | `analysis/exports/*.csv`        |
-| single Bayesian          | `analysis/analysis.cif` + `analysis/results.h5`  | optional summary export only | `analysis/results.h5` | none initially        | optional summary/predictive CSV |
+| single Bayesian          | `analysis/analysis.cif` + `analysis/mcmc.h5`  | optional summary export only | `analysis/mcmc.h5` | none initially        | optional summary/predictive CSV |
 
 ## Open Questions
 
@@ -145,7 +145,7 @@ analysis/
   opt-in, automatic below a size threshold, or always disabled unless
   requested?
 - What size threshold and compression policy should control the optional
-  `analysis/data.h5`, and does `analysis/results.h5` need a matching
+  `analysis/data.h5`, and does `analysis/mcmc.h5` need a matching
   convention?
 - Should external CSV exports be regenerated from canonical CIF/HDF5 on
   demand rather than stored persistently?

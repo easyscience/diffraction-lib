@@ -174,7 +174,7 @@ python -m easydiffraction PROJECT_DIR undo
 
 The command restores each refined parameter to its saved pre-fit
 `start_value` / `start_uncertainty`, clears `analysis.fit_results`,
-truncates `analysis/results.h5` (the Bayesian sidecar), and **saves the
+truncates `analysis/mcmc.h5` (the Bayesian sidecar), and **saves the
 rolled-back state back** to the project directory by default.
 
 Use the `--dry` flag to preview the rollback **without overwriting** any

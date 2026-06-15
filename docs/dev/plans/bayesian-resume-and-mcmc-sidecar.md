@@ -120,7 +120,7 @@ explicit paths (per [`AGENTS.md`](../../../AGENTS.md) §Commits — no
 the step's `Commit:` message **before** starting the next step or the
 Phase 1 review gate. Do not batch multiple steps into one commit.
 
-- [ ] **P1.1 — Rename sidecar `results.h5` → `mcmc.h5`, single-source
+- [x] **P1.1 — Rename sidecar `results.h5` → `mcmc.h5`, single-source
   the name, sweep all references.** Update `SIDECAR_FILE_NAME`, replace
   the duplicated literals in `fitting.py` / `analysis.py` with the
   constant/helper, update `__main__.py` messages. Then run

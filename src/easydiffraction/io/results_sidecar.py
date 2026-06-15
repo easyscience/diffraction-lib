@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 SidecarPayload = dict[str, dict[str, object]]
-SIDECAR_FILE_NAME = 'results.h5'
+SIDECAR_FILE_NAME = 'mcmc.h5'
 _POSTERIOR_PARAMETER_SAMPLES_PATH = '/posterior/parameter_samples'
 _POSTERIOR_LOG_POSTERIOR_PATH = '/posterior/log_posterior'
 _POSTERIOR_DRAW_INDEX_PATH = '/posterior/draw_index'
@@ -310,7 +310,7 @@ def write_analysis_results_sidecar(
     analysis_dir: Path,
 ) -> None:
     """
-    Write persisted Bayesian arrays to ``analysis/results.h5``.
+    Write persisted Bayesian arrays to ``analysis/mcmc.h5``.
 
     Parameters
     ----------
@@ -409,7 +409,7 @@ def read_analysis_results_sidecar(
     analysis_dir: Path,
 ) -> None:
     """
-    Read persisted Bayesian arrays from ``analysis/results.h5``.
+    Read persisted Bayesian arrays from ``analysis/mcmc.h5``.
 
     Parameters
     ----------

@@ -97,7 +97,7 @@ project_dir/
 |-- analysis/
 |   |-- analysis.edi
 |   |-- results.csv
-|   `-- results.h5
+|   `-- mcmc.h5
 `-- reports/
     `-- <project>.cif
 ```
@@ -108,7 +108,7 @@ continue to use `_easydiffraction_*` extension categories inside report
 CIF.
 
 Edi governs the `*.edi` files only. Existing non-STAR analysis artifacts
-keep their current formats: `analysis/results.h5` remains the binary
+keep their current formats: `analysis/mcmc.h5` remains the binary
 fit-result sidecar, and `analysis/results.csv` remains the tabular
 sequential-fit output used by plotting and user inspection.
 

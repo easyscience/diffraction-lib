@@ -1542,11 +1542,13 @@ class Analysis(
 
     def _has_resumable_emcee_sidecar(self) -> bool:
         """Return whether the saved project has a resumable chain."""
+        from easydiffraction.io.results_sidecar import SIDECAR_FILE_NAME  # noqa: PLC0415
+
         project_path = self.project.metadata.path
         if project_path is None:
             return False
 
-        sidecar_path = project_path / 'analysis' / 'results.h5'
+        sidecar_path = project_path / 'analysis' / SIDECAR_FILE_NAME
         if not sidecar_path.is_file():
             return False
 

@@ -137,46 +137,55 @@ populated by deterministic or Bayesian fits as appropriate. Per-
 parameter posterior order is the order of the `_fit_parameter` rows
 themselves; no separate parallel loop is needed.
 
-### 4. Heavy posterior arrays live in `analysis/results.h5`, not in CIF
+### 4. Heavy posterior arrays live in `analysis/mcmc.h5`, not in CIF
 
 Posterior chains, KDE / distribution caches, pair-plot caches, and
 predictive datasets are large arrays unsuited to CIF. The existing
-`analysis/results.h5` sidecar absorbs all of them. The corresponding
+`analysis/mcmc.h5` sidecar absorbs all of them. The corresponding
 manifest categories (`_bayesian_distribution_cache`,
 `_bayesian_pair_cache`, `_bayesian_predictive_dataset`) are removed from
 CIF entirely — the HDF5 file is self-describing.
 
 There is exactly **one** sidecar file per fit, regardless of minimizer:
-`analysis/results.h5`. No CIF tag stores the sidecar path. The file uses
+`analysis/mcmc.h5`. No CIF tag stores the sidecar path. The file uses
 namespaced top-level groups:
 
 ```
-analysis/results.h5
+analysis/mcmc.h5
 ├── /posterior/            # canonical posterior chains, log-prob (all Bayesian samplers)
 ├── /distribution_cache/   # KDE / 1-D distribution plots
 ├── /pair_cache/           # pair-plot grids
 ├── /predictive/           # posterior-predictive datasets
-└── /emcee_chain/          # emcee HDFBackend live state (emcee runs only)
+├── /emcee_chain/          # emcee HDFBackend live state (emcee runs only)
+└── /dream_state/          # bumps-DREAM MCMCDraw + param_names (dream runs only)
 ```
+
+Each engine persists its **resumable raw sampler state** in its own
+top-level group (`/emcee_chain/`, `/dream_state/`); see
+[`bayesian-resume-and-mcmc-sidecar.md`](bayesian-resume-and-mcmc-sidecar.md).
 
 **Lifecycle rule: a new fit overwrites the file.** Mixing partial
 results from different minimizers — or from the same minimizer with
 different settings or a different free-parameter set — is the most
 common source of "stale plot" confusion. To prevent this, calling
-`analysis.fit()` truncates `analysis/results.h5` (recreating it with the
+`analysis.fit()` truncates `analysis/mcmc.h5` (recreating it with the
 new run's groups). The user is shown a `log.warn(...)` message the first
 time a fit is started while a populated sidecar exists, naming the file
 and stating that previous results will be overwritten.
 
 Resume is the only exception: `analysis.fit(resume=True, extra_steps=N)`
-opens the existing file in append mode and extends the chain. Resume is
-rejected with a clear error if the active minimizer does not support it,
-if `results.h5` is missing, or if the stored chain's parameter set does
-not match the current one.
+opens the existing file in append mode and extends the chain. It is
+supported by both emcee and bumps-DREAM
+([`bayesian-resume-and-mcmc-sidecar.md`](bayesian-resume-and-mcmc-sidecar.md)),
+each reading only its own state group. Resume is rejected with a clear
+error if the active minimizer does not support it, if `mcmc.h5` is
+missing, or if the stored chain's parameter set does not match the
+current one. Because a fresh (non-resume) fit truncates the file, no
+stale raw-state group from a previous engine can be resumed by accident.
 
 For deterministic runs the Bayesian groups are absent and the sidecar
-file may not exist at all. For non-emcee Bayesian runs the
-`/emcee_chain` group is absent.
+file may not exist at all. Only the active engine's raw-state group is
+present after a run (`/emcee_chain` for emcee, `/dream_state` for DREAM).
 
 ### 5. Unified, verbose attribute names with internal mapping
 
@@ -377,7 +386,7 @@ _fit_result.best_log_posterior        -1237.89
 ```
 
 emcee's resumable chain state lives in the `/emcee_chain` group of the
-same `analysis/results.h5` file (see §4). No sidecar path appears in
+same `analysis/mcmc.h5` file (see §4). No sidecar path appears in
 CIF.
 
 ## Superseded Selector Layout

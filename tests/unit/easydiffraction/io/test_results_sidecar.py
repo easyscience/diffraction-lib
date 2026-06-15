@@ -87,7 +87,7 @@ def test_write_and_read_analysis_results_sidecar_round_trip_predictive(tmp_path)
 
     write_analysis_results_sidecar(analysis=analysis, analysis_dir=analysis_dir)
 
-    sidecar_path = analysis_dir / 'results.h5'
+    sidecar_path = analysis_dir / 'mcmc.h5'
     assert sidecar_path.is_file()
 
     import h5py
@@ -155,7 +155,7 @@ def test_write_analysis_results_sidecar_truncates_stale_payloads(tmp_path):
 
     import h5py
 
-    with h5py.File(analysis_dir / 'results.h5', 'r') as handle:
+    with h5py.File(analysis_dir / 'mcmc.h5', 'r') as handle:
         assert 'posterior' not in handle
         assert 'alpha' not in handle['distribution_cache']
         assert 'alpha__beta' not in handle['pair_cache']
@@ -175,7 +175,7 @@ def test_write_analysis_results_sidecar_preserves_emcee_chain_group(tmp_path):
 
     import h5py
 
-    with h5py.File(analysis_dir / 'results.h5', 'a') as handle:
+    with h5py.File(analysis_dir / 'mcmc.h5', 'a') as handle:
         chain = handle.require_group(EMCEE_CHAIN_GROUP)
         chain.attrs['iteration'] = 7
 
@@ -184,7 +184,7 @@ def test_write_analysis_results_sidecar_preserves_emcee_chain_group(tmp_path):
         analysis_dir=analysis_dir,
     )
 
-    with h5py.File(analysis_dir / 'results.h5', 'r') as handle:
+    with h5py.File(analysis_dir / 'mcmc.h5', 'r') as handle:
         assert handle[EMCEE_CHAIN_GROUP].attrs['iteration'] == 7
 
 

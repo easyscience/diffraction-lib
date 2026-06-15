@@ -329,7 +329,7 @@ project.display.posterior.predictive(expt_name='hrpt')
 ```
 
 When posterior or posterior-predictive arrays are persisted, they are
-stored in `analysis/results.h5`. Scalar summaries remain in
+stored in `analysis/mcmc.h5`. Scalar summaries remain in
 `analysis/analysis.edi`.
 
 ## Constraints

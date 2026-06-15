@@ -1151,7 +1151,7 @@ class TestResumableEmceeSidecar:
 
         analysis_dir = tmp_path / 'analysis'
         analysis_dir.mkdir()
-        sidecar = analysis_dir / 'results.h5'
+        sidecar = analysis_dir / 'mcmc.h5'
         with h5py.File(sidecar, 'w') as handle:
             group = handle.create_group(EMCEE_CHAIN_GROUP)
             group.attrs['iteration'] = 12
@@ -1173,7 +1173,7 @@ class TestResumableEmceeSidecar:
 
         analysis_dir = tmp_path / 'analysis'
         analysis_dir.mkdir()
-        sidecar = analysis_dir / 'results.h5'
+        sidecar = analysis_dir / 'mcmc.h5'
         with h5py.File(sidecar, 'w') as handle:
             group = handle.create_group(EMCEE_CHAIN_GROUP)
             group.attrs['iteration'] = 0
@@ -1194,7 +1194,7 @@ class TestResumableEmceeSidecar:
 
         analysis_dir = tmp_path / 'analysis'
         analysis_dir.mkdir()
-        sidecar = analysis_dir / 'results.h5'
+        sidecar = analysis_dir / 'mcmc.h5'
         with h5py.File(sidecar, 'w') as handle:
             handle.create_group('some_other_group')
 

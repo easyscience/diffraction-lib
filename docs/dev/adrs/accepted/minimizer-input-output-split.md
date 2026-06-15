@@ -419,7 +419,7 @@ under `_minimizer.*`, the duplications with `fit_result` remain, and the
 ### C. Move outputs into the runtime `fit_results` object, not a CIF category
 
 Persist only settings in CIF; outputs live in `analysis.fit_results` at
-runtime and `analysis/results.h5` on disk. Rejected because the small
+runtime and `analysis/mcmc.h5` on disk. Rejected because the small
 scalar outputs (success, χ², runtime, R̂) are exactly what users want to
 read from CIF without unpacking HDF5, and the consolidation ADR
 explicitly puts them in CIF (`_minimizer.*` today).

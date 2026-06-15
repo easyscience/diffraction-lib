@@ -456,7 +456,7 @@ def test_undo_real_without_cleared_flags_saves_only(monkeypatch):
     assert calls == ['SAVE']
     assert 'Restored 3 parameters to their pre-fit values.' in result.stdout
     assert 'Cleared analysis.fit_results.' not in result.stdout
-    assert 'Cleared analysis/results.h5 (Bayesian sidecar).' not in result.stdout
+    assert 'Cleared analysis/mcmc.h5 (Bayesian sidecar).' not in result.stdout
 
 
 def test_undo_real_with_sidecar_cleared_echoes_sidecar_line(monkeypatch):
@@ -488,7 +488,7 @@ def test_undo_real_with_sidecar_cleared_echoes_sidecar_line(monkeypatch):
 
     assert result.exit_code == 0
     assert 'Cleared analysis.fit_results.' not in result.stdout
-    assert 'Cleared analysis/results.h5 (Bayesian sidecar).' in result.stdout
+    assert 'Cleared analysis/mcmc.h5 (Bayesian sidecar).' in result.stdout
 
 
 def test_undo_falls_back_to_project_dir_when_name_missing(monkeypatch, tmp_path):

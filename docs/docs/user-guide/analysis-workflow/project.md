@@ -86,7 +86,7 @@ The example below illustrates a typical **project structure** for a
 │   └── ...
 ├── 📁 analysis    - analysis
 │   ├── 📄 <span class="orange"><b>analysis.edi</b></span> - fit state
-│   └── 📄 <span class="orange"><b>results.h5</b></span>   - Bayesian arrays
+│   └── 📄 <span class="orange"><b>mcmc.h5</b></span>   - Bayesian arrays
 └── 📁 reports     - reports
     ├── 📄 <span class="orange"><b>La0.5Ba0.5CoO3.cif</b></span>  - IUCr
     └── 📄 <span class="orange"><b>La0.5Ba0.5CoO3.html</b></span> - HTML
@@ -282,7 +282,7 @@ occ_Ba   "occ_Ba = 1 - occ_La"
 <!-- prettier-ignore-end -->
 
 When a Bayesian fit stores persisted posterior or predictive arrays, the
-same `analysis/` directory also contains `results.h5`.
+same `analysis/` directory also contains `mcmc.h5`.
 
 <br>
 

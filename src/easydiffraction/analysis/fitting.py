@@ -301,9 +301,13 @@ class Fitter:
         if analysis is None or not hasattr(self.minimizer, '_sidecar_path'):
             return
 
+        from easydiffraction.io.results_sidecar import SIDECAR_FILE_NAME  # noqa: PLC0415
+
         project_metadata = getattr(getattr(analysis, 'project', None), 'metadata', None)
         project_path = getattr(project_metadata, 'path', None)
-        sidecar_path = None if project_path is None else project_path / 'analysis' / 'results.h5'
+        sidecar_path = (
+            None if project_path is None else project_path / 'analysis' / SIDECAR_FILE_NAME
+        )
         self.minimizer._sidecar_path = sidecar_path
 
     def _backfill_persisted_fitting_time(self, analysis: object) -> None:
