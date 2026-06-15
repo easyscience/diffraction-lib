@@ -23,7 +23,7 @@ from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 from easydiffraction.utils.logging import log
 
 
@@ -48,11 +48,7 @@ class TotalDataPoint(CategoryItem):
                 default='0',
                 validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
             ),
-            cif_handler=CifHandler(
-                names=['_data.id'],
-                import_names=['_pd_data.point_id'],
-                iucr_name='_pd_data.point_id',
-            ),
+            tags=TagSpec(edi_names=['_data.id'], cif_names=['_pd_data.point_id']),
         )
         self._r = NumericDescriptor(
             name='r',
@@ -66,11 +62,7 @@ class TotalDataPoint(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(
-                names=['_data.r'],
-                import_names=['_pd_proc.r'],
-                iucr_name='_pd_proc.r',
-            ),
+            tags=TagSpec(edi_names=['_data.r'], cif_names=['_pd_proc.r']),
         )
         self._g_r_meas = NumericDescriptor(
             name='g_r_meas',
@@ -78,11 +70,7 @@ class TotalDataPoint(CategoryItem):
             value_spec=AttributeSpec(
                 default=0.0,
             ),
-            cif_handler=CifHandler(
-                names=['_data.g_r_meas'],
-                import_names=['_pd_meas.intensity_total'],
-                iucr_name='_pd_meas.intensity_total',
-            ),
+            tags=TagSpec(edi_names=['_data.g_r_meas'], cif_names=['_pd_meas.intensity_total']),
         )
         self._g_r_meas_su = NumericDescriptor(
             name='g_r_meas_su',
@@ -91,10 +79,8 @@ class TotalDataPoint(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(
-                names=['_data.g_r_meas_su'],
-                import_names=['_pd_meas.intensity_total_su'],
-                iucr_name='_pd_meas.intensity_total_su',
+            tags=TagSpec(
+                edi_names=['_data.g_r_meas_su'], cif_names=['_pd_meas.intensity_total_su']
             ),
         )
         self._g_r_calc = NumericDescriptor(
@@ -103,11 +89,7 @@ class TotalDataPoint(CategoryItem):
             value_spec=AttributeSpec(
                 default=0.0,
             ),
-            cif_handler=CifHandler(
-                names=['_data.g_r_calc'],
-                import_names=['_pd_calc.intensity_total'],
-                iucr_name='_pd_calc.intensity_total',
-            ),
+            tags=TagSpec(edi_names=['_data.g_r_calc'], cif_names=['_pd_calc.intensity_total']),
         )
         self._calc_status = StringDescriptor(
             name='calc_status',
@@ -116,10 +98,8 @@ class TotalDataPoint(CategoryItem):
                 default='incl',
                 validator=MembershipValidator(allowed=['incl', 'excl']),
             ),
-            cif_handler=CifHandler(
-                names=['_data.calc_status'],
-                import_names=['_pd_data.refinement_status'],
-                iucr_name='_pd_data.refinement_status',
+            tags=TagSpec(
+                edi_names=['_data.calc_status'], cif_names=['_pd_data.refinement_status']
             ),
         )
 

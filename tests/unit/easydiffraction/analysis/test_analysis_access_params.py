@@ -17,7 +17,7 @@ def _make_param(
     from easydiffraction.core.display_handler import DisplayHandler
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     display_handler = (
         DisplayHandler(display_units=display_units) if display_units is not None else None
@@ -26,7 +26,7 @@ def _make_param(
         name=name,
         units=units,
         value_spec=AttributeSpec(default=0.0),
-        cif_handler=CifHandler(names=[f'_{cat}.{name}']),
+        tags=TagSpec(edi_names=[f'_{cat}.{name}']),
         display_handler=display_handler,
     )
     param.value = val
@@ -48,12 +48,12 @@ def _make_int_descriptor(db, cat, entry, name, val):
     from easydiffraction.core.display_handler import DisplayHandler
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import IntegerDescriptor
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     descriptor = IntegerDescriptor(
         name=name,
         value_spec=AttributeSpec(default=None, allow_none=True),
-        cif_handler=CifHandler(names=[f'_{cat}.{name}']),
+        tags=TagSpec(edi_names=[f'_{cat}.{name}']),
         display_handler=DisplayHandler(),
     )
     descriptor.value = val

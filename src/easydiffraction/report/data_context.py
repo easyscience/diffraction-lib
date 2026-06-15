@@ -943,12 +943,12 @@ def _adp_iso_label(family: str, *, context: str) -> str:
 
 
 def _first_cif_name(parameter: object) -> str | None:
-    """Return the first CIF tag for a descriptor."""
-    cif_handler = getattr(parameter, '_cif_handler', None)
-    names = getattr(cif_handler, 'names', ())
-    if not names:
+    """Return the active (canonical) CIF export tag for a descriptor."""
+    tags = getattr(parameter, '_tags', None)
+    cif_names = getattr(tags, 'cif_names', ())
+    if not cif_names:
         return None
-    return str(names[0])
+    return str(cif_names[0])
 
 
 def _display_units(units: object) -> str:

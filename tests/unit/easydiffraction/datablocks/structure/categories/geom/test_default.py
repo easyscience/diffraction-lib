@@ -102,16 +102,16 @@ class TestGeomConstruction:
 # ----------------------------------------------------------------------
 
 
-class TestGeomCifHandlers:
+class TestGeomTagSpecs:
     def test_min_bond_distance_cutoff_cif_name(self):
         geom = Geom()
-        assert geom.min_bond_distance_cutoff._cif_handler.names == [
+        assert geom.min_bond_distance_cutoff._tags.edi_names == [
             '_geom.min_bond_distance_cutoff',
         ]
 
     def test_bond_distance_inc_cif_name(self):
         geom = Geom()
-        assert geom.bond_distance_inc._cif_handler.names == [
+        assert geom.bond_distance_inc._tags.edi_names == [
             '_geom.bond_distance_inc',
         ]
 

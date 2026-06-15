@@ -1419,7 +1419,7 @@ def _descriptor_value(value: object) -> object:
 
 def _is_cif_descriptor(value: object) -> bool:
     """Return whether value is a CIF descriptor or parameter."""
-    return hasattr(value, 'value') and hasattr(value, '_cif_handler')
+    return hasattr(value, 'value') and hasattr(value, '_tags')
 
 
 def _iucr_items(owner: object, attr_names: tuple[str, ...]) -> list[tuple[str, object]]:
@@ -1430,15 +1430,15 @@ def _iucr_items(owner: object, attr_names: tuple[str, ...]) -> list[tuple[str, o
 
 
 def _iucr_item(owner: object, attr_name: str) -> tuple[str, object]:
-    """Return one ``(iucr_name, value)`` pair for a descriptor."""
+    """Return one ``(cif_name, value)`` pair for a descriptor."""
     descriptor = _iucr_descriptor(owner, attr_name)
-    return descriptor._cif_handler.iucr_name, descriptor
+    return descriptor._tags.cif_name, descriptor
 
 
 def _iucr_descriptor(owner: object, attr_name: str) -> object:
     """Return the descriptor carrying CIF metadata for *attr_name*."""
     descriptor = getattr(owner, attr_name)
-    if hasattr(descriptor, '_cif_handler'):
+    if hasattr(descriptor, '_tags'):
         return descriptor
 
     for descriptor in _owner_descriptors(owner):
@@ -1455,21 +1455,21 @@ def _iucr_descriptor_for_tag(owner: object, tag: str) -> object | None:
         return None
 
     private_type = getattr(owner, '_type', None)
-    if _descriptor_iucr_name(private_type) == tag:
+    if _descriptor_cif_name(private_type) == tag:
         return private_type
 
     for descriptor in _owner_descriptors(owner):
-        if _descriptor_iucr_name(descriptor) == tag:
+        if _descriptor_cif_name(descriptor) == tag:
             return descriptor
     return None
 
 
-def _descriptor_iucr_name(descriptor: object) -> str | None:
+def _descriptor_cif_name(descriptor: object) -> str | None:
     """Return a descriptor's IUCr tag name, if present."""
-    handler = getattr(descriptor, '_cif_handler', None)
+    handler = getattr(descriptor, '_tags', None)
     if handler is None:
         return None
-    return handler.iucr_name
+    return handler.cif_name
 
 
 def _owner_descriptors(owner: object) -> Iterable[object]:

@@ -11,7 +11,7 @@ from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.variable import StringDescriptor
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 from easydiffraction.io.cif.serialize import project_metadata_to_cif
 from easydiffraction.project.categories.metadata.factory import ProjectMetadataFactory
 from easydiffraction.utils.logging import console
@@ -49,60 +49,41 @@ class ProjectMetadata(CategoryItem):
             name='name',
             description='Project identifier',
             value_spec=AttributeSpec(default=name),
-            cif_handler=CifHandler(
-                names=['_metadata.name'],
-                import_names=['_project.id'],
-                iucr_name='_project.id',
-            ),
+            tags=TagSpec(edi_names=['_metadata.name'], cif_names=['_project.id']),
         )
         self._title_descriptor = StringDescriptor(
             name='title',
             description='Project title',
             value_spec=AttributeSpec(default=title),
-            cif_handler=CifHandler(
-                names=['_metadata.title'],
-                import_names=['_project.title'],
-                iucr_name='_project.title',
-            ),
+            tags=TagSpec(edi_names=['_metadata.title'], cif_names=['_project.title']),
         )
         self._description_descriptor = StringDescriptor(
             name='description',
             description='Project description',
             value_spec=AttributeSpec(default=' '.join(description.split())),
-            cif_handler=CifHandler(
-                names=['_metadata.description'],
-                import_names=['_project.description'],
-                iucr_name='_project.description',
-            ),
+            tags=TagSpec(edi_names=['_metadata.description'], cif_names=['_project.description']),
         )
         self._created_descriptor = StringDescriptor(
             name='created',
             description='Project creation timestamp',
             value_spec=AttributeSpec(default=created.strftime(_PROJECT_TIMESTAMP_FORMAT)),
-            cif_handler=CifHandler(
-                names=['_metadata.created'],
-                import_names=['_project.created'],
-                iucr_name='_project.created',
-            ),
+            tags=TagSpec(edi_names=['_metadata.created'], cif_names=['_project.created']),
         )
         self._last_modified_descriptor = StringDescriptor(
             name='last_modified',
             description='Project last-modified timestamp',
             value_spec=AttributeSpec(default=last_modified.strftime(_PROJECT_TIMESTAMP_FORMAT)),
-            cif_handler=CifHandler(
-                names=['_metadata.last_modified'],
-                import_names=['_project.last_modified'],
-                iucr_name='_project.last_modified',
+            tags=TagSpec(
+                edi_names=['_metadata.last_modified'], cif_names=['_project.last_modified']
             ),
         )
         self._timestamp_descriptor = StringDescriptor(
             name='timestamp',
             description='Project fit timestamp',
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(
-                names=['_metadata.timestamp'],
-                import_names=['_software.timestamp'],
-                iucr_name='_easydiffraction_project.timestamp',
+            tags=TagSpec(
+                edi_names=['_metadata.timestamp'],
+                cif_names=['_easydiffraction_project.timestamp', '_software.timestamp'],
             ),
         )
         self._path: pathlib.Path | None = None

@@ -12,7 +12,7 @@ from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.variable import Parameter
 from easydiffraction.crystallography import crystallography as ecr
 from easydiffraction.datablocks.structure.categories.cell.factory import CellFactory
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 
 @CellFactory.register
@@ -49,7 +49,7 @@ class Cell(CategoryItem):
                 default=10.0,
                 validator=RangeValidator(ge=0, le=30),
             ),
-            cif_handler=CifHandler(names=['_cell.length_a']),
+            tags=TagSpec(edi_names=['_cell.length_a']),
         )
         self._length_b = Parameter(
             name='length_b',
@@ -65,7 +65,7 @@ class Cell(CategoryItem):
                 default=10.0,
                 validator=RangeValidator(ge=0, le=30),
             ),
-            cif_handler=CifHandler(names=['_cell.length_b']),
+            tags=TagSpec(edi_names=['_cell.length_b']),
         )
         self._length_c = Parameter(
             name='length_c',
@@ -81,7 +81,7 @@ class Cell(CategoryItem):
                 default=10.0,
                 validator=RangeValidator(ge=0, le=30),
             ),
-            cif_handler=CifHandler(names=['_cell.length_c']),
+            tags=TagSpec(edi_names=['_cell.length_c']),
         )
         self._angle_alpha = Parameter(
             name='angle_alpha',
@@ -97,7 +97,7 @@ class Cell(CategoryItem):
                 default=90.0,
                 validator=RangeValidator(ge=0, le=180),
             ),
-            cif_handler=CifHandler(names=['_cell.angle_alpha']),
+            tags=TagSpec(edi_names=['_cell.angle_alpha']),
         )
         self._angle_beta = Parameter(
             name='angle_beta',
@@ -113,7 +113,7 @@ class Cell(CategoryItem):
                 default=90.0,
                 validator=RangeValidator(ge=0, le=180),
             ),
-            cif_handler=CifHandler(names=['_cell.angle_beta']),
+            tags=TagSpec(edi_names=['_cell.angle_beta']),
         )
         self._angle_gamma = Parameter(
             name='angle_gamma',
@@ -129,7 +129,7 @@ class Cell(CategoryItem):
                 default=90.0,
                 validator=RangeValidator(ge=0, le=180),
             ),
-            cif_handler=CifHandler(names=['_cell.angle_gamma']),
+            tags=TagSpec(edi_names=['_cell.angle_gamma']),
         )
 
     # ------------------------------------------------------------------

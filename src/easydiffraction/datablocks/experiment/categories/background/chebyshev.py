@@ -25,7 +25,7 @@ from easydiffraction.datablocks.experiment.categories.background.base import Bac
 from easydiffraction.datablocks.experiment.categories.background.factory import BackgroundFactory
 from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_table
@@ -57,11 +57,7 @@ class PolynomialTerm(CategoryItem):
                 #  Do we need conversion between CIF and internal label?
                 validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
             ),
-            cif_handler=CifHandler(
-                names=['_background.id'],
-                import_names=['_pd_background.id'],
-                iucr_name='_pd_background.id',
-            ),
+            tags=TagSpec(edi_names=['_background.id'], cif_names=['_pd_background.id']),
         )
         self._order = NumericDescriptor(
             name='order',
@@ -70,10 +66,8 @@ class PolynomialTerm(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_background.order'],
-                import_names=['_pd_background.Chebyshev_order'],
-                iucr_name='_pd_background.Chebyshev_order',
+            tags=TagSpec(
+                edi_names=['_background.order'], cif_names=['_pd_background.Chebyshev_order']
             ),
         )
         self._coef = Parameter(
@@ -83,10 +77,8 @@ class PolynomialTerm(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_background.coef'],
-                import_names=['_pd_background.Chebyshev_coef'],
-                iucr_name='_pd_background.Chebyshev_coef',
+            tags=TagSpec(
+                edi_names=['_background.coef'], cif_names=['_pd_background.Chebyshev_coef']
             ),
         )
 

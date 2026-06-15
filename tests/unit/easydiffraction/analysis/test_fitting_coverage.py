@@ -184,12 +184,12 @@ def _make_fitter_with_dummy_minimizer():
 def _make_param(name):
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     return Parameter(
         name=name,
         value_spec=AttributeSpec(default=0.0),
-        cif_handler=CifHandler(names=[f'_param.{name}']),
+        tags=TagSpec(edi_names=[f'_param.{name}']),
     )
 
 

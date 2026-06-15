@@ -19,7 +19,7 @@ from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.variable import Parameter
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 
 class TofGaussianBroadeningMixin:
@@ -46,10 +46,9 @@ class TofGaussianBroadeningMixin:
                 default=7.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_peak.broad_gauss_sigma_0'],
-                import_names=['_peak.gauss_sigma_0'],
-                iucr_name='_easydiffraction_peak.gauss_sigma_0',
+            tags=TagSpec(
+                edi_names=['_peak.broad_gauss_sigma_0'],
+                cif_names=['_easydiffraction_peak.broad_gauss_sigma_0'],
             ),
         )
         self._broad_gauss_sigma_1 = Parameter(
@@ -64,10 +63,9 @@ class TofGaussianBroadeningMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_peak.broad_gauss_sigma_1'],
-                import_names=['_peak.gauss_sigma_1'],
-                iucr_name='_easydiffraction_peak.gauss_sigma_1',
+            tags=TagSpec(
+                edi_names=['_peak.broad_gauss_sigma_1'],
+                cif_names=['_easydiffraction_peak.broad_gauss_sigma_1'],
             ),
         )
         self._broad_gauss_sigma_2 = Parameter(
@@ -82,10 +80,9 @@ class TofGaussianBroadeningMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_peak.broad_gauss_sigma_2'],
-                import_names=['_peak.gauss_sigma_2'],
-                iucr_name='_easydiffraction_peak.gauss_sigma_2',
+            tags=TagSpec(
+                edi_names=['_peak.broad_gauss_sigma_2'],
+                cif_names=['_easydiffraction_peak.broad_gauss_sigma_2'],
             ),
         )
 
@@ -154,10 +151,9 @@ class TofLorentzianBroadeningMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_peak.broad_lorentz_gamma_0'],
-                import_names=['_peak.lorentz_gamma_0'],
-                iucr_name='_easydiffraction_peak.lorentz_gamma_0',
+            tags=TagSpec(
+                edi_names=['_peak.broad_lorentz_gamma_0'],
+                cif_names=['_easydiffraction_peak.broad_lorentz_gamma_0'],
             ),
         )
         self._broad_lorentz_gamma_1 = Parameter(
@@ -172,10 +168,9 @@ class TofLorentzianBroadeningMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_peak.broad_lorentz_gamma_1'],
-                import_names=['_peak.lorentz_gamma_1'],
-                iucr_name='_easydiffraction_peak.lorentz_gamma_1',
+            tags=TagSpec(
+                edi_names=['_peak.broad_lorentz_gamma_1'],
+                cif_names=['_easydiffraction_peak.broad_lorentz_gamma_1'],
             ),
         )
         self._broad_lorentz_gamma_2 = Parameter(
@@ -190,10 +185,9 @@ class TofLorentzianBroadeningMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_peak.broad_lorentz_gamma_2'],
-                import_names=['_peak.lorentz_gamma_2'],
-                iucr_name='_easydiffraction_peak.lorentz_gamma_2',
+            tags=TagSpec(
+                edi_names=['_peak.broad_lorentz_gamma_2'],
+                cif_names=['_easydiffraction_peak.broad_lorentz_gamma_2'],
             ),
         )
 
@@ -274,10 +268,9 @@ class TofBackToBackExponentialMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_peak.rise_alpha_0'],
-                import_names=['_peak.exp_rise_alpha_0'],
-                iucr_name='_easydiffraction_peak.rise_alpha_0',
+            tags=TagSpec(
+                edi_names=['_peak.rise_alpha_0'],
+                cif_names=['_easydiffraction_peak.rise_alpha_0', '_peak.exp_rise_alpha_0'],
             ),
         )
         self._rise_alpha_1 = Parameter(
@@ -292,10 +285,9 @@ class TofBackToBackExponentialMixin:
                 default=0.2,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_peak.rise_alpha_1'],
-                import_names=['_peak.exp_rise_alpha_1'],
-                iucr_name='_easydiffraction_peak.rise_alpha_1',
+            tags=TagSpec(
+                edi_names=['_peak.rise_alpha_1'],
+                cif_names=['_easydiffraction_peak.rise_alpha_1', '_peak.exp_rise_alpha_1'],
             ),
         )
         self._decay_beta_0 = Parameter(
@@ -310,10 +302,9 @@ class TofBackToBackExponentialMixin:
                 default=0.04,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_peak.decay_beta_0'],
-                import_names=['_peak.exp_decay_beta_0'],
-                iucr_name='_easydiffraction_peak.decay_beta_0',
+            tags=TagSpec(
+                edi_names=['_peak.decay_beta_0'],
+                cif_names=['_easydiffraction_peak.decay_beta_0', '_peak.exp_decay_beta_0'],
             ),
         )
         self._decay_beta_1 = Parameter(
@@ -328,10 +319,9 @@ class TofBackToBackExponentialMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_peak.decay_beta_1'],
-                import_names=['_peak.exp_decay_beta_1'],
-                iucr_name='_easydiffraction_peak.decay_beta_1',
+            tags=TagSpec(
+                edi_names=['_peak.decay_beta_1'],
+                cif_names=['_easydiffraction_peak.decay_beta_1', '_peak.exp_decay_beta_1'],
             ),
         )
 
@@ -424,9 +414,9 @@ class TofDoubleExponentialMixin:
                 default=0.25,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_peak.dexp_rise_alpha_1'],
-                iucr_name='_easydiffraction_peak.dexp_rise_alpha_1',
+            tags=TagSpec(
+                edi_names=['_peak.dexp_rise_alpha_1'],
+                cif_names=['_easydiffraction_peak.dexp_rise_alpha_1'],
             ),
         )
         self._dexp_rise_alpha_2 = Parameter(
@@ -441,9 +431,9 @@ class TofDoubleExponentialMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_peak.dexp_rise_alpha_2'],
-                iucr_name='_easydiffraction_peak.dexp_rise_alpha_2',
+            tags=TagSpec(
+                edi_names=['_peak.dexp_rise_alpha_2'],
+                cif_names=['_easydiffraction_peak.dexp_rise_alpha_2'],
             ),
         )
         self._dexp_decay_beta_00 = Parameter(
@@ -458,9 +448,9 @@ class TofDoubleExponentialMixin:
                 default=4.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_peak.dexp_decay_beta_00'],
-                iucr_name='_easydiffraction_peak.dexp_decay_beta_00',
+            tags=TagSpec(
+                edi_names=['_peak.dexp_decay_beta_00'],
+                cif_names=['_easydiffraction_peak.dexp_decay_beta_00'],
             ),
         )
         self._dexp_decay_beta_01 = Parameter(
@@ -475,9 +465,9 @@ class TofDoubleExponentialMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_peak.dexp_decay_beta_01'],
-                iucr_name='_easydiffraction_peak.dexp_decay_beta_01',
+            tags=TagSpec(
+                edi_names=['_peak.dexp_decay_beta_01'],
+                cif_names=['_easydiffraction_peak.dexp_decay_beta_01'],
             ),
         )
         self._dexp_decay_beta_10 = Parameter(
@@ -492,9 +482,9 @@ class TofDoubleExponentialMixin:
                 default=2.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_peak.dexp_decay_beta_10'],
-                iucr_name='_easydiffraction_peak.dexp_decay_beta_10',
+            tags=TagSpec(
+                edi_names=['_peak.dexp_decay_beta_10'],
+                cif_names=['_easydiffraction_peak.dexp_decay_beta_10'],
             ),
         )
         self._dexp_switch_r_01 = Parameter(
@@ -505,9 +495,9 @@ class TofDoubleExponentialMixin:
                 default=0.5,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_peak.dexp_switch_r_01'],
-                iucr_name='_easydiffraction_peak.dexp_switch_r_01',
+            tags=TagSpec(
+                edi_names=['_peak.dexp_switch_r_01'],
+                cif_names=['_easydiffraction_peak.dexp_switch_r_01'],
             ),
         )
         self._dexp_switch_r_02 = Parameter(
@@ -518,9 +508,9 @@ class TofDoubleExponentialMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_peak.dexp_switch_r_02'],
-                iucr_name='_easydiffraction_peak.dexp_switch_r_02',
+            tags=TagSpec(
+                edi_names=['_peak.dexp_switch_r_02'],
+                cif_names=['_easydiffraction_peak.dexp_switch_r_02'],
             ),
         )
         self._dexp_switch_r_03 = Parameter(
@@ -531,9 +521,9 @@ class TofDoubleExponentialMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_peak.dexp_switch_r_03'],
-                iucr_name='_easydiffraction_peak.dexp_switch_r_03',
+            tags=TagSpec(
+                edi_names=['_peak.dexp_switch_r_03'],
+                cif_names=['_easydiffraction_peak.dexp_switch_r_03'],
             ),
         )
 

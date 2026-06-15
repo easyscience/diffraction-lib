@@ -15,7 +15,7 @@ from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 
 @InstrumentFactory.register
@@ -75,9 +75,8 @@ class TofPdInstrument(InstrumentBase):
                 default=150.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_instrument.setup_twotheta_bank'],
-                import_names=['_instr.2theta_bank'],
+            tags=TagSpec(
+                edi_names=['_instrument.setup_twotheta_bank'], cif_names=['_instr.2theta_bank']
             ),
         )
         self._calib_d_to_tof_offset: Parameter = Parameter(
@@ -94,9 +93,9 @@ class TofPdInstrument(InstrumentBase):
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_instrument.calib_d_to_tof_offset'],
-                import_names=['_instr.d_to_tof_offset'],
+            tags=TagSpec(
+                edi_names=['_instrument.calib_d_to_tof_offset'],
+                cif_names=['_instr.d_to_tof_offset'],
             ),
         )
         self._calib_d_to_tof_linear: Parameter = Parameter(
@@ -113,9 +112,9 @@ class TofPdInstrument(InstrumentBase):
                 default=10000.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_instrument.calib_d_to_tof_linear'],
-                import_names=['_instr.d_to_tof_linear'],
+            tags=TagSpec(
+                edi_names=['_instrument.calib_d_to_tof_linear'],
+                cif_names=['_instr.d_to_tof_linear'],
             ),
         )
         self._calib_d_to_tof_quadratic: Parameter = Parameter(
@@ -132,9 +131,9 @@ class TofPdInstrument(InstrumentBase):
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_instrument.calib_d_to_tof_quadratic'],
-                import_names=['_instr.d_to_tof_quad'],
+            tags=TagSpec(
+                edi_names=['_instrument.calib_d_to_tof_quadratic'],
+                cif_names=['_instr.d_to_tof_quad'],
             ),
         )
         self._calib_d_to_tof_reciprocal: Parameter = Parameter(
@@ -151,9 +150,9 @@ class TofPdInstrument(InstrumentBase):
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_instrument.calib_d_to_tof_reciprocal'],
-                import_names=['_instr.d_to_tof_recip'],
+            tags=TagSpec(
+                edi_names=['_instrument.calib_d_to_tof_reciprocal'],
+                cif_names=['_instr.d_to_tof_recip'],
             ),
         )
 

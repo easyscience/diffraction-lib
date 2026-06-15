@@ -124,13 +124,13 @@ class TestAtomSiteAniso:
         entry = AtomSiteAniso()
         # Canonical persistence name plus the B/U/beta import aliases,
         # with the IUCr export convention defaulting to B first.
-        assert entry._adp_11._cif_handler.names == ['_atom_site_aniso.adp_11']
-        assert entry._adp_11._cif_handler.import_names == [
+        assert entry._adp_11._tags.edi_names == ['_atom_site_aniso.adp_11']
+        assert entry._adp_11._tags.cif_names == [
             '_atom_site_aniso.B_11',
             '_atom_site_aniso.U_11',
             '_atom_site_aniso.beta_11',
         ]
-        assert entry._adp_11._cif_handler.iucr_name == '_atom_site_aniso.B_11'
+        assert entry._adp_11._tags.cif_name == '_atom_site_aniso.B_11'
 
     def test_identity_entry_name_follows_id(self):
         from easydiffraction.datablocks.structure.categories.atom_site_aniso.default import (
@@ -344,12 +344,12 @@ class TestCifNameReordering:
         site = AtomSite()
         # Canonical persistence name plus the B/U import aliases, with the
         # IUCr export convention defaulting to B first.
-        assert site._adp_iso._cif_handler.names == ['_atom_site.adp_iso']
-        assert site._adp_iso._cif_handler.import_names == [
+        assert site._adp_iso._tags.edi_names == ['_atom_site.adp_iso']
+        assert site._adp_iso._tags.cif_names == [
             '_atom_site.B_iso_or_equiv',
             '_atom_site.U_iso_or_equiv',
         ]
-        assert site._adp_iso._cif_handler.iucr_name == '_atom_site.B_iso_or_equiv'
+        assert site._adp_iso._tags.cif_name == '_atom_site.B_iso_or_equiv'
 
     def test_uiso_reorders_iso_cif_names(self):
         from easydiffraction.datablocks.structure.item.base import Structure
@@ -359,8 +359,7 @@ class TestCifNameReordering:
         structure._sync_atom_site_aniso()
         structure.atom_sites['Si'].adp_type = 'Uiso'
         assert (
-            structure.atom_sites['Si']._adp_iso._cif_handler.names[0]
-            == '_atom_site.U_iso_or_equiv'
+            structure.atom_sites['Si']._adp_iso._tags.cif_names[0] == '_atom_site.U_iso_or_equiv'
         )
 
     def test_bani_reorders_aniso_cif_names(self):
@@ -371,7 +370,7 @@ class TestCifNameReordering:
         structure._sync_atom_site_aniso()
         structure.atom_sites['Si'].adp_type = 'Bani'
         aniso = structure.atom_site_aniso['Si']
-        assert aniso._adp_11._cif_handler.names[0] == '_atom_site_aniso.B_11'
+        assert aniso._adp_11._tags.cif_names[0] == '_atom_site_aniso.B_11'
 
     def test_uani_reorders_aniso_cif_names(self):
         from easydiffraction.datablocks.structure.item.base import Structure
@@ -381,7 +380,7 @@ class TestCifNameReordering:
         structure._sync_atom_site_aniso()
         structure.atom_sites['Si'].adp_type = 'Uani'
         aniso = structure.atom_site_aniso['Si']
-        assert aniso._adp_11._cif_handler.names[0] == '_atom_site_aniso.U_11'
+        assert aniso._adp_11._tags.cif_names[0] == '_atom_site_aniso.U_11'
 
 
 # ------------------------------------------------------------------
@@ -544,8 +543,8 @@ class TestBetaDisplayAndTags:
         )
 
         entry = AtomSiteAniso()
-        assert '_atom_site_aniso.beta_11' in entry.adp_11._cif_handler.import_names
-        assert '_atom_site_aniso.beta_23' in entry.adp_23._cif_handler.import_names
+        assert '_atom_site_aniso.beta_11' in entry.adp_11._tags.cif_names
+        assert '_atom_site_aniso.beta_23' in entry.adp_23._tags.cif_names
 
     def test_off_diagonal_accepts_negative_value(self):
         from easydiffraction.datablocks.structure.categories.atom_site_aniso.default import (

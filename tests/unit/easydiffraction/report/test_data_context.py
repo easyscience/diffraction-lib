@@ -47,12 +47,12 @@ class _TwoThetaDescriptor:
 def _parameter(name, value, uncertainty):
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     parameter = Parameter(
         name=name,
         value_spec=AttributeSpec(default=0.0),
-        cif_handler=CifHandler(names=[f'_{name}']),
+        tags=TagSpec(edi_names=[f'_{name}']),
     )
     parameter.value = value
     parameter.free = True
@@ -451,7 +451,7 @@ def test_report_descriptor_rows_normalize_angstrom_for_mathjax():
     from easydiffraction.core.display_handler import DisplayHandler
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
     from easydiffraction.report.data_context import _descriptor_rows
 
     parameter = Parameter(
@@ -461,7 +461,7 @@ def test_report_descriptor_rows_normalize_angstrom_for_mathjax():
             latex_name=r'$U_{\mathrm{iso}}$',
             latex_units=r'\AA$^2$',
         ),
-        cif_handler=CifHandler(names=['_atom_site.U_iso_or_equiv']),
+        tags=TagSpec(edi_names=['_atom_site.U_iso_or_equiv']),
     )
 
     rows = _descriptor_rows([parameter])
@@ -474,7 +474,7 @@ def test_report_descriptor_rows_preserve_mixed_mathjax_label_text():
     from easydiffraction.core.display_handler import DisplayHandler
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
     from easydiffraction.report.data_context import _descriptor_rows
 
     parameter = Parameter(
@@ -484,7 +484,7 @@ def test_report_descriptor_rows_preserve_mixed_mathjax_label_text():
             latex_name=r'$2\theta$ offset',
             latex_units=r'$^\circ$',
         ),
-        cif_handler=CifHandler(names=['_instr.2theta_offset']),
+        tags=TagSpec(edi_names=['_instr.2theta_offset']),
     )
 
     rows = _descriptor_rows([parameter])
@@ -506,7 +506,7 @@ def test_descriptor_units_unchanged_for_non_beta_parameters():
     from easydiffraction.core.display_handler import DisplayHandler
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
     from easydiffraction.report.data_context import _descriptor_units
 
     # F2 regression: routing _descriptor_units through resolve_display_units
@@ -516,7 +516,7 @@ def test_descriptor_units_unchanged_for_non_beta_parameters():
         units='angstroms',
         display_handler=DisplayHandler(display_units='Å', latex_units=r'\AA'),
         value_spec=AttributeSpec(default=0.0),
-        cif_handler=CifHandler(names=['_p']),
+        tags=TagSpec(edi_names=['_p']),
     )
     assert _descriptor_units(with_handler, context='html') == 'Å'
     assert _descriptor_units(with_handler, context='latex') == r'\AA'
@@ -526,7 +526,7 @@ def test_descriptor_units_unchanged_for_non_beta_parameters():
         name='q',
         units='degrees',
         value_spec=AttributeSpec(default=0.0),
-        cif_handler=CifHandler(names=['_q']),
+        tags=TagSpec(edi_names=['_q']),
     )
     # No display_handler -> resolves to the declared unit.
     assert _descriptor_units(fallback, context='html') == 'degrees'
@@ -535,7 +535,7 @@ def test_descriptor_units_unchanged_for_non_beta_parameters():
 def test_descriptor_units_resolves_none_unit_to_empty_string():
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
     from easydiffraction.report.data_context import _descriptor_units
 
     # Intentional delta from routing through resolve_display_units: a
@@ -545,7 +545,7 @@ def test_descriptor_units_resolves_none_unit_to_empty_string():
         name='r',
         units='none',
         value_spec=AttributeSpec(default=0.0),
-        cif_handler=CifHandler(names=['_r']),
+        tags=TagSpec(edi_names=['_r']),
     )
     assert _descriptor_units(param, context='html') == ''
     assert _descriptor_units(param, context='gui') == ''

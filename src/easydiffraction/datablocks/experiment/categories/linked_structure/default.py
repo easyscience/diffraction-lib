@@ -17,7 +17,7 @@ from easydiffraction.datablocks.experiment.categories.linked_structure.factory i
     LinkedStructureFactory,
 )
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 
 @LinkedStructureFactory.register
@@ -44,10 +44,9 @@ class LinkedStructure(CategoryItem):
                 default='Si',
                 validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
             ),
-            cif_handler=CifHandler(
-                names=['_linked_structure.structure_id'],
-                import_names=['_sc_crystal_block.id'],
-                iucr_name='_easydiffraction_sc_crystal_block.id',
+            tags=TagSpec(
+                edi_names=['_linked_structure.structure_id'],
+                cif_names=['_easydiffraction_sc_crystal_block.id', '_sc_crystal_block.id'],
             ),
             display_handler=DisplayHandler(
                 display_name='Structure',
@@ -61,10 +60,9 @@ class LinkedStructure(CategoryItem):
                 default=1.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_linked_structure.scale'],
-                import_names=['_sc_crystal_block.scale'],
-                iucr_name='_easydiffraction_sc_crystal_block.scale',
+            tags=TagSpec(
+                edi_names=['_linked_structure.scale'],
+                cif_names=['_easydiffraction_sc_crystal_block.scale', '_sc_crystal_block.scale'],
             ),
             display_handler=DisplayHandler(
                 display_name='Scale',

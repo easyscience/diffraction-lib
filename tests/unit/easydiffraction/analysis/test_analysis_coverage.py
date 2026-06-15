@@ -10,12 +10,12 @@ import numpy as np
 def _make_parameter(name, value):
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     return Parameter(
         name=name,
         value_spec=AttributeSpec(default=value),
-        cif_handler=CifHandler(names=[f'_{name}.value']),
+        tags=TagSpec(edi_names=[f'_{name}.value']),
     )
 
 
@@ -1769,7 +1769,7 @@ def _identity_param(*, datablock, category, entry, name):
             category_code=category,
             category_entry_name=entry,
         ),
-        _cif_handler=SimpleNamespace(uid=f'{category}_{name}_uid'),
+        _tags=SimpleNamespace(uid=f'{category}_{name}_uid'),
     )
 
 

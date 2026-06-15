@@ -15,7 +15,7 @@ from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 
 class CwlInstrumentBase(InstrumentBase):
@@ -39,10 +39,9 @@ class CwlInstrumentBase(InstrumentBase):
                 default=1.5406,
                 validator=RangeValidator(ge=0.0),
             ),
-            cif_handler=CifHandler(
-                names=['_instrument.setup_wavelength'],
-                import_names=['_instr.wavelength'],
-                iucr_name='_diffrn_radiation_wavelength.value',
+            tags=TagSpec(
+                edi_names=['_instrument.setup_wavelength'],
+                cif_names=['_diffrn_radiation_wavelength.value', '_instr.wavelength'],
             ),
         )
 
@@ -123,10 +122,9 @@ class CwlPdInstrument(CwlInstrumentBase):
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_instrument.calib_twotheta_offset'],
-                import_names=['_instr.2theta_offset'],
-                iucr_name='_pd_calib.2theta_offset',
+            tags=TagSpec(
+                edi_names=['_instrument.calib_twotheta_offset'],
+                cif_names=['_pd_calib.2theta_offset', '_instr.2theta_offset'],
             ),
         )
 
@@ -144,10 +142,9 @@ class CwlPdInstrument(CwlInstrumentBase):
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_instrument.calib_sample_displacement'],
-                import_names=['_instr.sample_displacement'],
-                iucr_name='_instr.sample_displacement',
+            tags=TagSpec(
+                edi_names=['_instrument.calib_sample_displacement'],
+                cif_names=['_instr.sample_displacement'],
             ),
         )
 
@@ -165,10 +162,9 @@ class CwlPdInstrument(CwlInstrumentBase):
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_instrument.calib_sample_transparency'],
-                import_names=['_instr.sample_transparency'],
-                iucr_name='_instr.sample_transparency',
+            tags=TagSpec(
+                edi_names=['_instrument.calib_sample_transparency'],
+                cif_names=['_instr.sample_transparency'],
             ),
         )
 

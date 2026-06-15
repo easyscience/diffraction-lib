@@ -14,7 +14,7 @@ from easydiffraction.core.variable import BoolDescriptor
 from easydiffraction.core.variable import IntegerDescriptor
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import StringDescriptor
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 
 @FitResultFactory.register
@@ -64,9 +64,9 @@ class BayesianFitResult(FitResultBase):
             name='point_estimate_name',
             description='Committed sampled point estimate name.',
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(
-                names=['_fit_result.point_estimate_name'],
-                iucr_name='_easydiffraction_fit_result.point_estimate_name',
+            tags=TagSpec(
+                edi_names=['_fit_result.point_estimate_name'],
+                cif_names=['_easydiffraction_fit_result.point_estimate_name'],
             ),
         )
 
@@ -77,9 +77,9 @@ class BayesianFitResult(FitResultBase):
             name='sampler_completed',
             description='Whether the sampler completed and returned posterior data.',
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(
-                names=['_fit_result.sampler_completed'],
-                iucr_name='_easydiffraction_fit_result.sampler_completed',
+            tags=TagSpec(
+                edi_names=['_fit_result.sampler_completed'],
+                cif_names=['_easydiffraction_fit_result.sampler_completed'],
             ),
         )
 
@@ -90,9 +90,9 @@ class BayesianFitResult(FitResultBase):
             name='credible_interval_inner',
             description='Inner credible-interval level used in summaries.',
             value_spec=AttributeSpec(default=0.68),
-            cif_handler=CifHandler(
-                names=['_fit_result.credible_interval_inner'],
-                iucr_name='_easydiffraction_fit_result.credible_interval_inner',
+            tags=TagSpec(
+                edi_names=['_fit_result.credible_interval_inner'],
+                cif_names=['_easydiffraction_fit_result.credible_interval_inner'],
             ),
         )
 
@@ -103,9 +103,9 @@ class BayesianFitResult(FitResultBase):
             name='credible_interval_outer',
             description='Outer credible-interval level used in summaries.',
             value_spec=AttributeSpec(default=0.95),
-            cif_handler=CifHandler(
-                names=['_fit_result.credible_interval_outer'],
-                iucr_name='_easydiffraction_fit_result.credible_interval_outer',
+            tags=TagSpec(
+                edi_names=['_fit_result.credible_interval_outer'],
+                cif_names=['_easydiffraction_fit_result.credible_interval_outer'],
             ),
         )
 
@@ -116,9 +116,9 @@ class BayesianFitResult(FitResultBase):
             name='acceptance_rate_mean',
             description='Mean sampler acceptance rate.',
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(
-                names=['_fit_result.acceptance_rate_mean'],
-                iucr_name='_easydiffraction_fit_result.acceptance_rate_mean',
+            tags=TagSpec(
+                edi_names=['_fit_result.acceptance_rate_mean'],
+                cif_names=['_easydiffraction_fit_result.acceptance_rate_mean'],
             ),
         )
 
@@ -129,9 +129,9 @@ class BayesianFitResult(FitResultBase):
             name='resolved_random_seed',
             description='Runtime random seed used by the sampler.',
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(
-                names=['_fit_result.resolved_random_seed'],
-                iucr_name='_easydiffraction_fit_result.resolved_random_seed',
+            tags=TagSpec(
+                edi_names=['_fit_result.resolved_random_seed'],
+                cif_names=['_easydiffraction_fit_result.resolved_random_seed'],
             ),
         )
 
@@ -142,9 +142,9 @@ class BayesianFitResult(FitResultBase):
             name='gelman_rubin_max',
             description='Maximum rank-normalized split R-hat.',
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(
-                names=['_fit_result.gelman_rubin_max'],
-                iucr_name='_easydiffraction_fit_result.gelman_rubin_max',
+            tags=TagSpec(
+                edi_names=['_fit_result.gelman_rubin_max'],
+                cif_names=['_easydiffraction_fit_result.gelman_rubin_max'],
             ),
         )
 
@@ -155,9 +155,9 @@ class BayesianFitResult(FitResultBase):
             name='effective_sample_size_min',
             description='Minimum bulk effective sample size.',
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(
-                names=['_fit_result.effective_sample_size_min'],
-                iucr_name='_easydiffraction_fit_result.effective_sample_size_min',
+            tags=TagSpec(
+                edi_names=['_fit_result.effective_sample_size_min'],
+                cif_names=['_easydiffraction_fit_result.effective_sample_size_min'],
             ),
         )
 
@@ -168,9 +168,9 @@ class BayesianFitResult(FitResultBase):
             name='best_log_posterior',
             description='Best log-posterior value found.',
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(
-                names=['_fit_result.best_log_posterior'],
-                iucr_name='_easydiffraction_fit_result.best_log_posterior',
+            tags=TagSpec(
+                edi_names=['_fit_result.best_log_posterior'],
+                cif_names=['_easydiffraction_fit_result.best_log_posterior'],
             ),
         )
 

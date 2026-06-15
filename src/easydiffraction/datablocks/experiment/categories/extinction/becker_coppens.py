@@ -19,7 +19,7 @@ from easydiffraction.datablocks.experiment.categories.extinction.factory import 
 from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
 from easydiffraction.datablocks.experiment.item.enums import ExtinctionModelEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 
 @ExtinctionFactory.register
@@ -54,9 +54,8 @@ class BeckerCoppensExtinction(ExtinctionBase):
             name='model',
             enum=ExtinctionModelEnum,
             description='Mosaicity distribution model (gauss or lorentz)',
-            cif_handler=CifHandler(
-                names=['_extinction.model'],
-                iucr_name='_easydiffraction_extinction.model',
+            tags=TagSpec(
+                edi_names=['_extinction.model'], cif_names=['_easydiffraction_extinction.model']
             ),
         )
 
@@ -72,9 +71,9 @@ class BeckerCoppensExtinction(ExtinctionBase):
                 default=1.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_extinction.mosaicity'],
-                iucr_name='_easydiffraction_extinction.mosaicity',
+            tags=TagSpec(
+                edi_names=['_extinction.mosaicity'],
+                cif_names=['_easydiffraction_extinction.mosaicity'],
             ),
         )
         self._radius = Parameter(
@@ -89,9 +88,8 @@ class BeckerCoppensExtinction(ExtinctionBase):
                 default=1.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_extinction.radius'],
-                iucr_name='_easydiffraction_extinction.radius',
+            tags=TagSpec(
+                edi_names=['_extinction.radius'], cif_names=['_easydiffraction_extinction.radius']
             ),
         )
 

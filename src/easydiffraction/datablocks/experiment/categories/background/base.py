@@ -14,7 +14,7 @@ from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.datablocks.experiment.categories.background.enums import BackgroundTypeEnum
 from easydiffraction.datablocks.experiment.categories.background.factory import BackgroundFactory
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 
 class BackgroundBase(CategoryCollection, SwitchableCategoryBase):
@@ -47,9 +47,8 @@ class BackgroundBase(CategoryCollection, SwitchableCategoryBase):
                     allowed=[member.value for member in BackgroundTypeEnum],
                 ),
             ),
-            cif_handler=CifHandler(
-                names=['_background.type'],
-                iucr_name='_easydiffraction_background.type',
+            tags=TagSpec(
+                edi_names=['_background.type'], cif_names=['_easydiffraction_background.type']
             ),
         )
 

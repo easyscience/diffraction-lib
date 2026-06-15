@@ -430,7 +430,7 @@ class AnalysisDisplay:
         self._show_parameter_names(
             column_header='Unique Identifier for Constraints',
             paragraph_title='Show parameter unique identifiers for constraints',
-            value_fn=lambda param: param._cif_handler.uid,
+            value_fn=lambda param: param._tags.uid,
         )
 
     def parameter_edi_tags(self) -> None:
@@ -438,7 +438,7 @@ class AnalysisDisplay:
         self._show_parameter_names(
             column_header='Edi Tag',
             paragraph_title='Show parameter Edi tags',
-            value_fn=lambda param: param._cif_handler.project_name,
+            value_fn=lambda param: param._tags.edi_name,
         )
 
     def parameter_cif_tags(self) -> None:
@@ -446,7 +446,7 @@ class AnalysisDisplay:
         self._show_parameter_names(
             column_header='CIF Tag',
             paragraph_title='Show parameter CIF tags',
-            value_fn=lambda param: param._cif_handler.iucr_name,
+            value_fn=lambda param: param._tags.cif_name,
         )
 
     def constraints(self) -> None:

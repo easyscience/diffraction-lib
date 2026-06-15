@@ -381,14 +381,14 @@ def test_temporarily_convert_to_u_notation_stashes_and_restores_beta():
     aniso = structure.atom_site_aniso['Fe']
     assert atom.adp_type.value == AdpTypeEnum.UANI.value
     assert aniso.adp_11.value == pytest.approx(expected_u11)
-    assert '_atom_site_aniso.U_11' in aniso.adp_11._cif_handler.names
+    assert '_atom_site_aniso.U_11' in aniso.adp_11._tags.edi_names
 
     CryspyCalculator._restore_from_u_notation(structure, saved)
 
     assert atom.adp_type.value == AdpTypeEnum.BETA.value
     assert aniso.adp_11.value == pytest.approx(0.001)
     assert aniso.adp_23.value == pytest.approx(-0.0002)
-    assert '_atom_site_aniso.beta_11' in aniso.adp_11._cif_handler.names
+    assert '_atom_site_aniso.beta_11' in aniso.adp_11._tags.cif_names
 
 
 def _bragg_powder_experiment(beam_mode):

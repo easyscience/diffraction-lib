@@ -20,7 +20,7 @@ from easydiffraction.datablocks.experiment.categories.data_range.factory import 
 from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 from easydiffraction.utils.utils import tof_to_d
 
 
@@ -64,10 +64,9 @@ class TofPdDataRange(DataRangeBase):
                 default=np.nan,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(
-                names=['_data_range.time_of_flight_min'],
-                import_names=['_pd_meas.time_of_flight_range_min'],
-                iucr_name='_pd_meas.time_of_flight_range_min',
+            tags=TagSpec(
+                edi_names=['_data_range.time_of_flight_min'],
+                cif_names=['_pd_meas.time_of_flight_range_min'],
             ),
         )
         self._time_of_flight_max = NumericDescriptor(
@@ -84,10 +83,9 @@ class TofPdDataRange(DataRangeBase):
                 default=np.nan,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(
-                names=['_data_range.time_of_flight_max'],
-                import_names=['_pd_meas.time_of_flight_range_max'],
-                iucr_name='_pd_meas.time_of_flight_range_max',
+            tags=TagSpec(
+                edi_names=['_data_range.time_of_flight_max'],
+                cif_names=['_pd_meas.time_of_flight_range_max'],
             ),
         )
         self._time_of_flight_inc = NumericDescriptor(
@@ -104,10 +102,9 @@ class TofPdDataRange(DataRangeBase):
                 default=np.nan,
                 validator=RangeValidator(gt=0),
             ),
-            cif_handler=CifHandler(
-                names=['_data_range.time_of_flight_inc'],
-                import_names=['_pd_meas.time_of_flight_range_inc'],
-                iucr_name='_pd_meas.time_of_flight_range_inc',
+            tags=TagSpec(
+                edi_names=['_data_range.time_of_flight_inc'],
+                cif_names=['_pd_meas.time_of_flight_range_inc'],
             ),
         )
 

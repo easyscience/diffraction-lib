@@ -29,7 +29,7 @@ from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.crystallography import crystallography as ecr
 from easydiffraction.datablocks.structure.categories.atom_sites.enums import AdpTypeEnum
 from easydiffraction.datablocks.structure.categories.atom_sites.factory import AtomSitesFactory
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 from easydiffraction.utils.logging import log
 
 
@@ -70,11 +70,7 @@ class AtomSite(CategoryItem):
                 #  Do we need conversion between CIF and internal id?
                 validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
             ),
-            cif_handler=CifHandler(
-                names=['_atom_site.id'],
-                import_names=['_atom_site.label'],
-                iucr_name='_atom_site.label',
-            ),
+            tags=TagSpec(edi_names=['_atom_site.id'], cif_names=['_atom_site.label']),
         )
         self._type_symbol = StringDescriptor(
             name='type_symbol',
@@ -87,7 +83,7 @@ class AtomSite(CategoryItem):
                 default='Tb',
                 validator=MembershipValidator(allowed=self._type_symbol_allowed_values),
             ),
-            cif_handler=CifHandler(names=['_atom_site.type_symbol']),
+            tags=TagSpec(edi_names=['_atom_site.type_symbol']),
         )
         self._fract_x = Parameter(
             name='fract_x',
@@ -100,7 +96,7 @@ class AtomSite(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_atom_site.fract_x']),
+            tags=TagSpec(edi_names=['_atom_site.fract_x']),
         )
         self._fract_y = Parameter(
             name='fract_y',
@@ -113,7 +109,7 @@ class AtomSite(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_atom_site.fract_y']),
+            tags=TagSpec(edi_names=['_atom_site.fract_y']),
         )
         self._fract_z = Parameter(
             name='fract_z',
@@ -126,7 +122,7 @@ class AtomSite(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_atom_site.fract_z']),
+            tags=TagSpec(edi_names=['_atom_site.fract_z']),
         )
         self._wyckoff_letter = StringDescriptor(
             name='wyckoff_letter',
@@ -142,13 +138,9 @@ class AtomSite(CategoryItem):
                     allowed=lambda: self._wyckoff_letter_allowed_values,
                 ),
             ),
-            cif_handler=CifHandler(
-                names=['_atom_site.wyckoff_letter'],
-                import_names=[
-                    '_atom_site.Wyckoff_symbol',
-                    '_atom_site.Wyckoff_letter',
-                ],
-                iucr_name='_atom_site.Wyckoff_symbol',
+            tags=TagSpec(
+                edi_names=['_atom_site.wyckoff_letter'],
+                cif_names=['_atom_site.Wyckoff_symbol', '_atom_site.Wyckoff_letter'],
             ),
         )
         self._multiplicity = IntegerDescriptor(
@@ -160,10 +152,9 @@ class AtomSite(CategoryItem):
                 latex_name='Mult.',
             ),
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(
-                names=['_atom_site.multiplicity'],
-                import_names=['_atom_site.site_symmetry_multiplicity'],
-                iucr_name='_atom_site.site_symmetry_multiplicity',
+            tags=TagSpec(
+                edi_names=['_atom_site.multiplicity'],
+                cif_names=['_atom_site.site_symmetry_multiplicity'],
             ),
         )
         self._occupancy = Parameter(
@@ -178,7 +169,7 @@ class AtomSite(CategoryItem):
                 default=1.0,
                 validator=RangeValidator(ge=0.0, le=1.0),
             ),
-            cif_handler=CifHandler(names=['_atom_site.occupancy']),
+            tags=TagSpec(edi_names=['_atom_site.occupancy']),
         )
         self._adp_iso = Parameter(
             name='adp_iso',
@@ -194,14 +185,9 @@ class AtomSite(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(ge=0.0, le=10.0),
             ),
-            cif_handler=CifHandler(
-                project_name='_atom_site.adp_iso',
-                names=['_atom_site.adp_iso'],
-                import_names=[
-                    '_atom_site.B_iso_or_equiv',
-                    '_atom_site.U_iso_or_equiv',
-                ],
-                iucr_name='_atom_site.B_iso_or_equiv',
+            tags=TagSpec(
+                edi_names=['_atom_site.adp_iso'],
+                cif_names=['_atom_site.B_iso_or_equiv', '_atom_site.U_iso_or_equiv'],
             ),
         )
         self._adp_type = EnumDescriptor(
@@ -213,11 +199,7 @@ class AtomSite(CategoryItem):
                 display_name='ADP type',
                 latex_name='ADP type',
             ),
-            cif_handler=CifHandler(
-                names=['_atom_site.adp_type'],
-                import_names=['_atom_site.ADP_type'],
-                iucr_name='_atom_site.ADP_type',
-            ),
+            tags=TagSpec(edi_names=['_atom_site.adp_type'], cif_names=['_atom_site.ADP_type']),
         )
 
     # ------------------------------------------------------------------
@@ -581,12 +563,12 @@ class AtomSite(CategoryItem):
             return
         is_u = AdpTypeEnum(new_type) in {AdpTypeEnum.UISO, AdpTypeEnum.UANI}
         if is_u:
-            self._adp_iso._cif_handler._names = [
+            self._adp_iso._tags._cif_names = [
                 '_atom_site.U_iso_or_equiv',
                 '_atom_site.B_iso_or_equiv',
             ]
         else:
-            self._adp_iso._cif_handler._names = [
+            self._adp_iso._tags._cif_names = [
                 '_atom_site.B_iso_or_equiv',
                 '_atom_site.U_iso_or_equiv',
             ]
@@ -598,12 +580,12 @@ class AtomSite(CategoryItem):
         for suffix in ('11', '22', '33', '12', '13', '23'):
             param = getattr(aniso, f'_adp_{suffix}')
             if is_u:
-                param._cif_handler._names = [
+                param._tags._cif_names = [
                     f'_atom_site_aniso.U_{suffix}',
                     f'_atom_site_aniso.B_{suffix}',
                 ]
             else:
-                param._cif_handler._names = [
+                param._tags._cif_names = [
                     f'_atom_site_aniso.B_{suffix}',
                     f'_atom_site_aniso.U_{suffix}',
                 ]
@@ -613,7 +595,7 @@ class AtomSite(CategoryItem):
         Put the beta-family CIF names first for a beta-tensor atom.
         """
         # adp_iso has no beta form; keep its B/U-equivalent ordering.
-        self._adp_iso._cif_handler._names = [
+        self._adp_iso._tags._cif_names = [
             '_atom_site.B_iso_or_equiv',
             '_atom_site.U_iso_or_equiv',
         ]
@@ -622,7 +604,7 @@ class AtomSite(CategoryItem):
             return
         for suffix in ('11', '22', '33', '12', '13', '23'):
             param = getattr(aniso, f'_adp_{suffix}')
-            param._cif_handler._names = [
+            param._tags._cif_names = [
                 f'_atom_site_aniso.beta_{suffix}',
                 f'_atom_site_aniso.B_{suffix}',
                 f'_atom_site_aniso.U_{suffix}',

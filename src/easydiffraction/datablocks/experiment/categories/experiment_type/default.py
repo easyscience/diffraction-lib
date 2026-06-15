@@ -4,8 +4,7 @@
 Experiment type descriptor (form, beam, probe, scattering).
 
 This lightweight container stores the categorical attributes defining an
-experiment configuration and handles CIF serialization via
-``CifHandler``.
+experiment configuration and handles CIF serialization via ``TagSpec``.
 """
 
 from __future__ import annotations
@@ -21,7 +20,7 @@ from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import RadiationProbeEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 
 @ExperimentTypeFactory.register
@@ -42,10 +41,12 @@ class ExperimentType(CategoryItem):
             name='sample_form',
             enum=SampleFormEnum,
             description='Powder diffraction or single crystal diffraction',
-            cif_handler=CifHandler(
-                names=['_experiment_type.sample_form'],
-                import_names=['_expt_type.sample_form'],
-                iucr_name='_easydiffraction_experiment_type.sample_form',
+            tags=TagSpec(
+                edi_names=['_experiment_type.sample_form'],
+                cif_names=[
+                    '_easydiffraction_experiment_type.sample_form',
+                    '_expt_type.sample_form',
+                ],
             ),
             display_handler=DisplayHandler(
                 display_name='Sample form',
@@ -57,10 +58,9 @@ class ExperimentType(CategoryItem):
             name='beam_mode',
             enum=BeamModeEnum,
             description='Constant wavelength (CW) or time-of-flight (TOF) measurement',
-            cif_handler=CifHandler(
-                names=['_experiment_type.beam_mode'],
-                import_names=['_expt_type.beam_mode'],
-                iucr_name='_easydiffraction_experiment_type.beam_mode',
+            tags=TagSpec(
+                edi_names=['_experiment_type.beam_mode'],
+                cif_names=['_easydiffraction_experiment_type.beam_mode', '_expt_type.beam_mode'],
             ),
             display_handler=DisplayHandler(
                 display_name='Beam mode',
@@ -71,10 +71,12 @@ class ExperimentType(CategoryItem):
             name='radiation_probe',
             enum=RadiationProbeEnum,
             description='Neutron or X-ray diffraction measurement',
-            cif_handler=CifHandler(
-                names=['_experiment_type.radiation_probe'],
-                import_names=['_expt_type.radiation_probe'],
-                iucr_name='_easydiffraction_experiment_type.radiation_probe',
+            tags=TagSpec(
+                edi_names=['_experiment_type.radiation_probe'],
+                cif_names=[
+                    '_easydiffraction_experiment_type.radiation_probe',
+                    '_expt_type.radiation_probe',
+                ],
             ),
             display_handler=DisplayHandler(
                 display_name='Probe',
@@ -85,10 +87,12 @@ class ExperimentType(CategoryItem):
             name='scattering_type',
             enum=ScatteringTypeEnum,
             description='Conventional Bragg diffraction or total scattering (PDF)',
-            cif_handler=CifHandler(
-                names=['_experiment_type.scattering_type'],
-                import_names=['_expt_type.scattering_type'],
-                iucr_name='_easydiffraction_experiment_type.scattering_type',
+            tags=TagSpec(
+                edi_names=['_experiment_type.scattering_type'],
+                cif_names=[
+                    '_easydiffraction_experiment_type.scattering_type',
+                    '_expt_type.scattering_type',
+                ],
             ),
             display_handler=DisplayHandler(
                 display_name='Scattering type',

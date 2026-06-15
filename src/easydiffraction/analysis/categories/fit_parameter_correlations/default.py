@@ -17,7 +17,7 @@ from easydiffraction.core.validation import RegexValidator
 from easydiffraction.core.variable import EnumDescriptor
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import StringDescriptor
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 
 def _normalized_parameter_pair(
@@ -46,13 +46,13 @@ class FitParameterCorrelationItem(CategoryItem):
                 default='_',
                 validator=RegexValidator(pattern=r'^[A-Za-z0-9_.:-]+$'),
             ),
-            cif_handler=CifHandler(names=['_fit_parameter_correlation.id']),
+            tags=TagSpec(edi_names=['_fit_parameter_correlation.id']),
         )
         self._source_kind = EnumDescriptor(
             name='source_kind',
             enum=FitCorrelationSourceEnum,
             description='Origin of the persisted correlation summary.',
-            cif_handler=CifHandler(names=['_fit_parameter_correlation.source_kind']),
+            tags=TagSpec(edi_names=['_fit_parameter_correlation.source_kind']),
         )
         self._parameter_unique_name_i = StringDescriptor(
             name='parameter_unique_name_i',
@@ -61,9 +61,9 @@ class FitParameterCorrelationItem(CategoryItem):
                 default='_',
                 validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_.]*$'),
             ),
-            cif_handler=CifHandler(
-                names=['_fit_parameter_correlation.parameter_unique_name_i'],
-                import_names=['_fit_parameter_correlation.param_unique_name_i'],
+            tags=TagSpec(
+                edi_names=['_fit_parameter_correlation.parameter_unique_name_i'],
+                cif_names=['_fit_parameter_correlation.param_unique_name_i'],
             ),
         )
         self._parameter_unique_name_j = StringDescriptor(
@@ -73,9 +73,9 @@ class FitParameterCorrelationItem(CategoryItem):
                 default='_',
                 validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_.]*$'),
             ),
-            cif_handler=CifHandler(
-                names=['_fit_parameter_correlation.parameter_unique_name_j'],
-                import_names=['_fit_parameter_correlation.param_unique_name_j'],
+            tags=TagSpec(
+                edi_names=['_fit_parameter_correlation.parameter_unique_name_j'],
+                cif_names=['_fit_parameter_correlation.param_unique_name_j'],
             ),
         )
         self._correlation = NumericDescriptor(
@@ -85,7 +85,7 @@ class FitParameterCorrelationItem(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(ge=-1.0, le=1.0),
             ),
-            cif_handler=CifHandler(names=['_fit_parameter_correlation.correlation']),
+            tags=TagSpec(edi_names=['_fit_parameter_correlation.correlation']),
         )
 
     @property

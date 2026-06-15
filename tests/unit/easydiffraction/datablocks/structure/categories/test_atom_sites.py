@@ -129,10 +129,10 @@ class TestAtomSite:
 
         site = AtomSite()
 
-        assert site.adp_type._cif_handler.names == ['_atom_site.adp_type']
-        assert site.adp_type._cif_handler.import_names == ['_atom_site.ADP_type']
-        assert site.wyckoff_letter._cif_handler.names == ['_atom_site.wyckoff_letter']
-        assert site.wyckoff_letter._cif_handler.import_names == [
+        assert site.adp_type._tags.edi_names == ['_atom_site.adp_type']
+        assert site.adp_type._tags.cif_names == ['_atom_site.ADP_type']
+        assert site.wyckoff_letter._tags.edi_names == ['_atom_site.wyckoff_letter']
+        assert site.wyckoff_letter._tags.cif_names == [
             '_atom_site.Wyckoff_symbol',
             '_atom_site.Wyckoff_letter',
         ]

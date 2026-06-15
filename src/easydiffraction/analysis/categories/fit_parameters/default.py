@@ -18,7 +18,7 @@ from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RegexValidator
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import StringDescriptor
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 
 class FitParameterItem(CategoryItem):
@@ -58,97 +58,97 @@ class FitParameterItem(CategoryItem):
                 default='_',
                 validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_.]*$'),
             ),
-            cif_handler=CifHandler(
-                names=['_fit_parameter.parameter_unique_name'],
-                import_names=['_fit_parameter.param_unique_name'],
+            tags=TagSpec(
+                edi_names=['_fit_parameter.parameter_unique_name'],
+                cif_names=['_fit_parameter.param_unique_name'],
             ),
         )
         self._fit_min = NumericDescriptor(
             name='fit_min',
             description='Persisted lower fit bound.',
             value_spec=AttributeSpec(default=-np.inf),
-            cif_handler=CifHandler(names=['_fit_parameter.fit_min']),
+            tags=TagSpec(edi_names=['_fit_parameter.fit_min']),
         )
         self._fit_max = NumericDescriptor(
             name='fit_max',
             description='Persisted upper fit bound.',
             value_spec=AttributeSpec(default=np.inf),
-            cif_handler=CifHandler(names=['_fit_parameter.fit_max']),
+            tags=TagSpec(edi_names=['_fit_parameter.fit_max']),
         )
         self._bounds_uncertainty_multiplier = NumericDescriptor(
             name='bounds_uncertainty_multiplier',
             description='Multiplier used to derive fit bounds from uncertainty.',
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(
-                names=['_fit_parameter.bounds_uncertainty_multiplier'],
-                import_names=['_fit_parameter.fit_bounds_uncertainty_multiplier'],
+            tags=TagSpec(
+                edi_names=['_fit_parameter.bounds_uncertainty_multiplier'],
+                cif_names=['_fit_parameter.fit_bounds_uncertainty_multiplier'],
             ),
         )
         self._start_value = NumericDescriptor(
             name='start_value',
             description='Persisted pre-fit value snapshot.',
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(names=['_fit_parameter.start_value']),
+            tags=TagSpec(edi_names=['_fit_parameter.start_value']),
         )
         self._start_uncertainty = NumericDescriptor(
             name='start_uncertainty',
             description='Persisted pre-fit uncertainty snapshot.',
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(names=['_fit_parameter.start_uncertainty']),
+            tags=TagSpec(edi_names=['_fit_parameter.start_uncertainty']),
         )
         self._posterior_best_sample_value = NumericDescriptor(
             name='posterior_best_sample_value',
             description='Highest-posterior sampled parameter value.',
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(names=['_fit_parameter.posterior_best_sample_value']),
+            tags=TagSpec(edi_names=['_fit_parameter.posterior_best_sample_value']),
         )
         self._posterior_median = NumericDescriptor(
             name='posterior_median',
             description='Posterior median value.',
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(names=['_fit_parameter.posterior_median']),
+            tags=TagSpec(edi_names=['_fit_parameter.posterior_median']),
         )
         self._posterior_uncertainty = NumericDescriptor(
             name='posterior_uncertainty',
             description='Posterior standard deviation.',
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(names=['_fit_parameter.posterior_uncertainty']),
+            tags=TagSpec(edi_names=['_fit_parameter.posterior_uncertainty']),
         )
         self._posterior_interval_68_low = NumericDescriptor(
             name='posterior_interval_68_low',
             description='Lower bound of the 68% credible interval.',
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(names=['_fit_parameter.posterior_interval_68_low']),
+            tags=TagSpec(edi_names=['_fit_parameter.posterior_interval_68_low']),
         )
         self._posterior_interval_68_high = NumericDescriptor(
             name='posterior_interval_68_high',
             description='Upper bound of the 68% credible interval.',
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(names=['_fit_parameter.posterior_interval_68_high']),
+            tags=TagSpec(edi_names=['_fit_parameter.posterior_interval_68_high']),
         )
         self._posterior_interval_95_low = NumericDescriptor(
             name='posterior_interval_95_low',
             description='Lower bound of the 95% credible interval.',
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(names=['_fit_parameter.posterior_interval_95_low']),
+            tags=TagSpec(edi_names=['_fit_parameter.posterior_interval_95_low']),
         )
         self._posterior_interval_95_high = NumericDescriptor(
             name='posterior_interval_95_high',
             description='Upper bound of the 95% credible interval.',
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(names=['_fit_parameter.posterior_interval_95_high']),
+            tags=TagSpec(edi_names=['_fit_parameter.posterior_interval_95_high']),
         )
         self._posterior_gelman_rubin = NumericDescriptor(
             name='posterior_gelman_rubin',
             description='Rank-normalized split-R-hat when available.',
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(names=['_fit_parameter.posterior_gelman_rubin']),
+            tags=TagSpec(edi_names=['_fit_parameter.posterior_gelman_rubin']),
         )
         self._posterior_effective_sample_size_bulk = NumericDescriptor(
             name='posterior_effective_sample_size_bulk',
             description='Bulk effective sample size when available.',
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(names=['_fit_parameter.posterior_effective_sample_size_bulk']),
+            tags=TagSpec(edi_names=['_fit_parameter.posterior_effective_sample_size_bulk']),
         )
 
     @property

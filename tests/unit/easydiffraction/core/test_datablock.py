@@ -8,7 +8,7 @@ def test_datablock_collection_add_and_filters_with_real_parameters():
     from easydiffraction.core.datablock import DatablockItem
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     class Cat(CategoryItem):
         def __init__(self):
@@ -21,14 +21,14 @@ def test_datablock_collection_add_and_filters_with_real_parameters():
                 description='',
                 value_spec=AttributeSpec(default=0.0),
                 units='',
-                cif_handler=CifHandler(names=['_cat.p1']),
+                tags=TagSpec(edi_names=['_cat.p1']),
             )
             self._p2 = Parameter(
                 name='p2',
                 description='',
                 value_spec=AttributeSpec(default=0.0),
                 units='',
-                cif_handler=CifHandler(names=['_cat.p2']),
+                tags=TagSpec(edi_names=['_cat.p2']),
             )
             # Set actual values via setter
             self._p1.value = 1.0
@@ -82,7 +82,7 @@ def test_datablock_collection_fittable_excludes_symmetry_constrained_parameters(
     from easydiffraction.core.datablock import DatablockItem
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     class Cat(CategoryItem):
         def __init__(self):
@@ -94,14 +94,14 @@ def test_datablock_collection_fittable_excludes_symmetry_constrained_parameters(
                 description='',
                 value_spec=AttributeSpec(default=0.0),
                 units='',
-                cif_handler=CifHandler(names=['_cat.free_param']),
+                tags=TagSpec(edi_names=['_cat.free_param']),
             )
             self._fixed_param = Parameter(
                 name='fixed_param',
                 description='',
                 value_spec=AttributeSpec(default=0.0),
                 units='',
-                cif_handler=CifHandler(names=['_cat.fixed_param']),
+                tags=TagSpec(edi_names=['_cat.fixed_param']),
             )
             self._free_param.value = 1.0
             self._fixed_param.value = 2.0
@@ -140,7 +140,7 @@ def test_datablock_item_help(capsys):
     from easydiffraction.core.datablock import DatablockItem
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     class Cat(CategoryItem):
         def __init__(self):
@@ -152,7 +152,7 @@ def test_datablock_item_help(capsys):
                 description='',
                 value_spec=AttributeSpec(default=0.0),
                 units='',
-                cif_handler=CifHandler(names=['_cat.p1']),
+                tags=TagSpec(edi_names=['_cat.p1']),
             )
 
         @property

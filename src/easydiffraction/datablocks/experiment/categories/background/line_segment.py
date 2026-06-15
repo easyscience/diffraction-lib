@@ -30,7 +30,7 @@ from easydiffraction.datablocks.experiment.categories.background.base import Bac
 from easydiffraction.datablocks.experiment.categories.background.factory import BackgroundFactory
 from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_table
@@ -57,11 +57,7 @@ class LineSegment(CategoryItem):
                 #  Do we need conversion between CIF and internal label?
                 validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
             ),
-            cif_handler=CifHandler(
-                names=['_background.id'],
-                import_names=['_pd_background.id'],
-                iucr_name='_pd_background.id',
-            ),
+            tags=TagSpec(edi_names=['_background.id'], cif_names=['_pd_background.id']),
             display_handler=DisplayHandler(
                 display_name='ID',
                 latex_name='ID',
@@ -74,13 +70,9 @@ class LineSegment(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_background.position'],
-                import_names=[
-                    '_pd_background.line_segment_X',
-                    '_pd_background_line_segment_X',
-                ],
-                iucr_name='_pd_background.line_segment_X',
+            tags=TagSpec(
+                edi_names=['_background.position'],
+                cif_names=['_pd_background.line_segment_X', '_pd_background_line_segment_X'],
             ),
             display_handler=DisplayHandler(
                 display_name='Position',
@@ -94,13 +86,12 @@ class LineSegment(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_background.intensity'],
-                import_names=[
+            tags=TagSpec(
+                edi_names=['_background.intensity'],
+                cif_names=[
                     '_pd_background.line_segment_intensity',
                     '_pd_background_line_segment_intensity',
                 ],
-                iucr_name='_pd_background.line_segment_intensity',
             ),
             display_handler=DisplayHandler(
                 display_name='Intensity',

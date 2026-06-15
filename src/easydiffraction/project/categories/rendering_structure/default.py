@@ -13,7 +13,7 @@ from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.display.structure.enums import ViewerEngineEnum
 from easydiffraction.display.structure.viewing import Viewer
 from easydiffraction.display.structure.viewing import ViewerFactory
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 from easydiffraction.io.cif.parse import read_cif_str
 from easydiffraction.project.categories.rendering_structure.factory import (
     RenderingStructureFactory,
@@ -49,7 +49,7 @@ class RenderingStructure(CategoryItem, SwitchableCategoryBase):
                 default=AUTO_ENGINE,
                 validator=MembershipValidator(allowed=VIEW_ENGINE_OPTIONS),
             ),
-            cif_handler=CifHandler(names=['_rendering_structure.type']),
+            tags=TagSpec(edi_names=['_rendering_structure.type']),
         )
 
     @staticmethod

@@ -9,20 +9,22 @@ from types import SimpleNamespace
 
 import pytest
 
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 
 class _Descriptor:
     """Minimal CIF descriptor exposing a value and a handler."""
 
-    def __init__(self, value, tag='_x.value', iucr_name=None):
+    def __init__(self, value, tag='_x.value', cif_name=None):
         self.name = tag.rsplit('.', maxsplit=1)[-1]
         self.value = value
-        self._cif_handler = CifHandler(names=[tag], iucr_name=iucr_name)
+        self._tags = TagSpec(
+            edi_names=[tag], cif_names=[cif_name] if cif_name is not None else None
+        )
 
 
-def _descriptor(value, tag='_x.value', iucr_name=None):
-    return _Descriptor(value, tag=tag, iucr_name=iucr_name)
+def _descriptor(value, tag='_x.value', cif_name=None):
+    return _Descriptor(value, tag=tag, cif_name=cif_name)
 
 
 # --- _report_path / iucr_report_path ----------------------------------
@@ -547,7 +549,7 @@ def test_collection_values_wraps_scalar_object():
 def test_iucr_descriptor_fallback_through_parameters():
     from easydiffraction.io.cif.iucr_writer import _iucr_descriptor
 
-    descriptor = _descriptor('val', '_a.b', iucr_name='_iucr.a')
+    descriptor = _descriptor('val', '_a.b', cif_name='_iucr.a')
     descriptor.name = 'target'
     owner = SimpleNamespace(
         target='plain string',
@@ -588,11 +590,11 @@ def test_iucr_descriptor_for_tag_returns_none_for_missing_owner():
     assert _iucr_descriptor_for_tag(None, '_iucr.radius') is None
 
 
-def test_descriptor_iucr_name_handles_handlerless_value():
-    from easydiffraction.io.cif.iucr_writer import _descriptor_iucr_name
+def test_descriptor_cif_name_handles_handlerless_value():
+    from easydiffraction.io.cif.iucr_writer import _descriptor_cif_name
 
-    assert _descriptor_iucr_name(SimpleNamespace(value=1.0)) is None
-    assert _descriptor_iucr_name(_descriptor(1.0, '_a.b', '_iucr.a')) == '_iucr.a'
+    assert _descriptor_cif_name(SimpleNamespace(value=1.0)) is None
+    assert _descriptor_cif_name(_descriptor(1.0, '_a.b', '_iucr.a')) == '_iucr.a'
 
 
 def test_iucr_items_empty_for_missing_owner():

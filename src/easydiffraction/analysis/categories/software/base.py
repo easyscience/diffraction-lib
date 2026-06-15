@@ -9,7 +9,7 @@ from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.variable import EnumDescriptor
 from easydiffraction.core.variable import StringDescriptor
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 
 class SoftwareRole(CategoryItem):
@@ -34,25 +34,25 @@ class SoftwareRole(CategoryItem):
             enum=SoftwareRoleEnum,
             description='Software role.',
             default=role_value,
-            cif_handler=CifHandler(names=['_software.id']),
+            tags=TagSpec(edi_names=['_software.id']),
         )
         self._name = StringDescriptor(
             name='name',
             description='Software package name.',
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(names=['_software.name']),
+            tags=TagSpec(edi_names=['_software.name']),
         )
         self._version = StringDescriptor(
             name='version',
             description='Software package version.',
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(names=['_software.version']),
+            tags=TagSpec(edi_names=['_software.version']),
         )
         self._url = StringDescriptor(
             name='url',
             description='Software project URL.',
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(names=['_software.url']),
+            tags=TagSpec(edi_names=['_software.url']),
         )
 
     @property

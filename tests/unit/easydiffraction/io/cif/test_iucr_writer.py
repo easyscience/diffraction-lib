@@ -7,14 +7,16 @@ from __future__ import annotations
 from collections import UserDict
 from types import SimpleNamespace
 
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 
 class _Descriptor:
-    def __init__(self, value, tag='_x.value', iucr_name=None):
+    def __init__(self, value, tag='_x.value', cif_name=None):
         self.name = tag.rsplit('.', maxsplit=1)[-1]
         self.value = value
-        self._cif_handler = CifHandler(names=[tag], iucr_name=iucr_name)
+        self._tags = TagSpec(
+            edi_names=[tag], cif_names=[cif_name] if cif_name is not None else None
+        )
 
 
 class _SwitchableCategory:
@@ -56,8 +58,8 @@ def _collection(*items):
     return _Collection({item.name: item for item in items})
 
 
-def _descriptor(value, tag='_x.value', iucr_name=None):
-    return _Descriptor(value, tag=tag, iucr_name=iucr_name)
+def _descriptor(value, tag='_x.value', cif_name=None):
+    return _Descriptor(value, tag=tag, cif_name=cif_name)
 
 
 def _experiment_type(*, sample_form, beam_mode='constant wavelength'):
@@ -486,9 +488,9 @@ def test_iucr_extension_items_preserve_parameter_uncertainties():
     scale = Parameter(
         name='scale',
         value_spec=AttributeSpec(default=1.0),
-        cif_handler=CifHandler(
-            names=['_sc_crystal_block.scale'],
-            iucr_name='_easydiffraction_sc_crystal_block.scale',
+        tags=TagSpec(
+            edi_names=['_sc_crystal_block.scale'],
+            cif_names=['_easydiffraction_sc_crystal_block.scale'],
         ),
     )
     scale.value = 2.87438284

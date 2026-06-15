@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 
     from easydiffraction.core.display_handler import DisplayHandler
     from easydiffraction.core.posterior import PosteriorParameterSummary
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
 # ======================================================================
 
@@ -202,7 +202,7 @@ class GenericDescriptorBase(GuardedBase):
     @property
     def url(self) -> str:
         """Online documentation URL for this persisted descriptor."""
-        return self._cif_handler.url
+        return self._tags.url
 
     def resolve_display_name(self, context: str) -> str:
         """
@@ -634,7 +634,7 @@ class StringDescriptor(GenericStringDescriptor):
     def __init__(
         self,
         *,
-        cif_handler: CifHandler,
+        tags: TagSpec,
         **kwargs: object,
     ) -> None:
         """
@@ -642,14 +642,14 @@ class StringDescriptor(GenericStringDescriptor):
 
         Parameters
         ----------
-        cif_handler : CifHandler
+        tags : TagSpec
             Object that tracks CIF identifiers.
         **kwargs : object
             Forwarded to GenericStringDescriptor.
         """
         super().__init__(**kwargs)
-        self._cif_handler = cif_handler
-        self._cif_handler.attach(self)
+        self._tags = tags
+        self._tags.attach(self)
 
 
 # ======================================================================
@@ -670,7 +670,7 @@ class EnumDescriptor(StringDescriptor):
         *,
         name: str,
         enum: type[StrEnum],
-        cif_handler: CifHandler,
+        tags: TagSpec,
         description: str | None = None,
         default: str | None = None,
         display_handler: DisplayHandler | None = None,
@@ -685,7 +685,7 @@ class EnumDescriptor(StringDescriptor):
         enum : type[StrEnum]
             The ``(str, Enum)`` class whose members are the allowed
             values.
-        cif_handler : CifHandler
+        tags : TagSpec
             Object that tracks CIF identifiers.
         description : str | None, default=None
             Optional human-readable description.
@@ -705,7 +705,7 @@ class EnumDescriptor(StringDescriptor):
             name=name,
             description=description,
             value_spec=value_spec,
-            cif_handler=cif_handler,
+            tags=tags,
             display_handler=display_handler,
         )
 
@@ -744,7 +744,7 @@ class BoolDescriptor(GenericBoolDescriptor):
     def __init__(
         self,
         *,
-        cif_handler: CifHandler,
+        tags: TagSpec,
         **kwargs: object,
     ) -> None:
         """
@@ -752,14 +752,14 @@ class BoolDescriptor(GenericBoolDescriptor):
 
         Parameters
         ----------
-        cif_handler : CifHandler
+        tags : TagSpec
             Object that tracks CIF identifiers.
         **kwargs : object
             Forwarded to GenericBoolDescriptor.
         """
         super().__init__(**kwargs)
-        self._cif_handler = cif_handler
-        self._cif_handler.attach(self)
+        self._tags = tags
+        self._tags.attach(self)
 
 
 # ======================================================================
@@ -771,7 +771,7 @@ class NumericDescriptor(GenericNumericDescriptor):
     def __init__(
         self,
         *,
-        cif_handler: CifHandler,
+        tags: TagSpec,
         **kwargs: object,
     ) -> None:
         """
@@ -779,14 +779,14 @@ class NumericDescriptor(GenericNumericDescriptor):
 
         Parameters
         ----------
-        cif_handler : CifHandler
+        tags : TagSpec
             Object that tracks CIF identifiers.
         **kwargs : object
             Forwarded to GenericNumericDescriptor.
         """
         super().__init__(**kwargs)
-        self._cif_handler = cif_handler
-        self._cif_handler.attach(self)
+        self._tags = tags
+        self._tags.attach(self)
 
 
 # ======================================================================
@@ -798,7 +798,7 @@ class IntegerDescriptor(GenericIntegerDescriptor):
     def __init__(
         self,
         *,
-        cif_handler: CifHandler,
+        tags: TagSpec,
         **kwargs: object,
     ) -> None:
         """
@@ -806,14 +806,14 @@ class IntegerDescriptor(GenericIntegerDescriptor):
 
         Parameters
         ----------
-        cif_handler : CifHandler
+        tags : TagSpec
             Object that tracks CIF identifiers.
         **kwargs : object
             Forwarded to GenericIntegerDescriptor.
         """
         super().__init__(**kwargs)
-        self._cif_handler = cif_handler
-        self._cif_handler.attach(self)
+        self._tags = tags
+        self._tags.attach(self)
 
 
 # ======================================================================
@@ -825,7 +825,7 @@ class Parameter(GenericParameter):
     def __init__(
         self,
         *,
-        cif_handler: CifHandler,
+        tags: TagSpec,
         **kwargs: object,
     ) -> None:
         """
@@ -833,11 +833,11 @@ class Parameter(GenericParameter):
 
         Parameters
         ----------
-        cif_handler : CifHandler
+        tags : TagSpec
             Object that tracks CIF identifiers.
         **kwargs : object
             Forwarded to GenericParameter.
         """
         super().__init__(**kwargs)
-        self._cif_handler = cif_handler
-        self._cif_handler.attach(self)
+        self._tags = tags
+        self._tags.attach(self)

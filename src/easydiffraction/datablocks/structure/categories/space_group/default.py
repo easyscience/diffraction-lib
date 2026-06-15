@@ -17,7 +17,7 @@ from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.datablocks.structure.categories.space_group.factory import SpaceGroupFactory
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 _CRYSTAL_SYSTEM_RANGES = (
     (1, 2, 'triclinic'),
@@ -65,15 +65,14 @@ class SpaceGroup(CategoryItem):
                     allowed=lambda: self._name_h_m_allowed_values,
                 ),
             ),
-            cif_handler=CifHandler(
-                names=['_space_group.name_h_m'],
-                import_names=[
+            tags=TagSpec(
+                edi_names=['_space_group.name_h_m'],
+                cif_names=[
                     '_space_group.name_H-M_alt',
                     '_space_group_name_H-M_alt',
                     '_symmetry.space_group_name_H-M',
                     '_symmetry_space_group_name_H-M',
                 ],
-                iucr_name='_space_group.name_H-M_alt',
             ),
         )
         self._coord_system_code = StringDescriptor(
@@ -89,15 +88,14 @@ class SpaceGroup(CategoryItem):
                     allowed=lambda: self._coord_system_code_allowed_values
                 ),
             ),
-            cif_handler=CifHandler(
-                names=['_space_group.coord_system_code'],
-                import_names=[
+            tags=TagSpec(
+                edi_names=['_space_group.coord_system_code'],
+                cif_names=[
                     '_space_group.IT_coordinate_system_code',
                     '_space_group_IT_coordinate_system_code',
                     '_symmetry.IT_coordinate_system_code',
                     '_symmetry_IT_coordinate_system_code',
                 ],
-                iucr_name='_space_group.IT_coordinate_system_code',
             ),
         )
 

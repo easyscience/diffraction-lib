@@ -159,11 +159,11 @@ def param_to_cif(param: object) -> str:
     """
     Render a single descriptor/parameter to a CIF line.
 
-    Expects ``param`` to expose ``_cif_handler.project_name`` and
-    ``value``. Free parameters are written with uncertainty brackets
-    (see :func:`format_param_value`).
+    Expects ``param`` to expose ``_tags.edi_name`` and ``value``. Free
+    parameters are written with uncertainty brackets (see
+    :func:`format_param_value`).
     """
-    main_key: str = param._cif_handler.project_name  # type: ignore[attr-defined]
+    main_key: str = param._tags.edi_name  # type: ignore[attr-defined]
     return f'{main_key} {format_param_value(param)}'
 
 
@@ -172,7 +172,7 @@ def category_item_to_cif(item: object) -> str:
     Render a CategoryItem-like object to CIF text.
 
     Expects ``item.parameters`` iterable of params with
-    ``_cif_handler.project_name`` and ``value``.
+    ``_tags.edi_name`` and ``value``.
     """
     parameters_hook = getattr(item, '_cif_parameters', None)
     parameters = parameters_hook() if parameters_hook is not None else item.parameters
@@ -186,7 +186,7 @@ def _validate_loop_tags(
 ) -> None:
     """Log an error if any row tag disagrees with *header_tags*."""
     for col, p in enumerate(parameters):
-        tag = p._cif_handler.project_name  # type: ignore[attr-defined]
+        tag = p._tags.edi_name  # type: ignore[attr-defined]
         if tag != header_tags[col]:
             log.error(
                 f'CIF tag mismatch in loop column {col}: '
@@ -290,7 +290,7 @@ def _standard_collection_loop_to_cif(
     lines = ['loop_']
     header_tags: list[str] = []
     for p in _loop_parameters(first_item):
-        tag = p._cif_handler.project_name  # type: ignore[attr-defined]
+        tag = p._tags.edi_name  # type: ignore[attr-defined]
         header_tags.append(tag)
         lines.append(tag)
 
@@ -885,7 +885,7 @@ def param_from_cif(
 
     # Try to find the value(s) from the CIF block iterating over
     # the possible cif names in order of preference.
-    for tag in self._cif_handler.read_names:
+    for tag in self._tags.read_names:
         candidates = list(block.find_values(tag))
         if candidates:
             found_values = candidates
@@ -1018,7 +1018,7 @@ def _find_loop_for_category(
         The matching loop, or ``None`` if not found.
     """
     for param in category_item.parameters:
-        for name in param._cif_handler.read_names:
+        for name in param._tags.read_names:
             loop_ref = block.find_loop(name)
             if loop_ref is None:
                 continue
@@ -1083,7 +1083,7 @@ def category_collection_from_cif(
         current_item = self._items[row_idx]
         for param in current_item.parameters:
             tag_found = False
-            for cif_name in param._cif_handler.read_names:
+            for cif_name in param._tags.read_names:
                 if cif_name in loop.tags:
                     col_idx = loop.tags.index(cif_name)
                     # TODO: The following is duplication of

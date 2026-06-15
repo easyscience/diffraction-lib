@@ -21,11 +21,11 @@ def test_format_value_quotes_whitespace_strings():
 
 def test_param_to_cif_minimal():
     import easydiffraction.io.cif.serialize as MUT
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     class P:
         def __init__(self):
-            self._cif_handler = CifHandler(names=['_x.y'])
+            self._tags = TagSpec(edi_names=['_x.y'])
             self.value = 3
 
     p = P()
@@ -36,12 +36,12 @@ def test_format_param_value_with_uncertainty_uses_two_sig_digits():
     import easydiffraction.io.cif.serialize as MUT
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     p = Parameter(
         name='p',
         value_spec=AttributeSpec(default=0.0),
-        cif_handler=CifHandler(names=['_x.p']),
+        tags=TagSpec(edi_names=['_x.p']),
     )
     p.value = 11.98509310
     p.free = True
@@ -54,12 +54,12 @@ def test_format_param_value_with_large_uncertainty_is_readable():
     import easydiffraction.io.cif.serialize as MUT
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     p = Parameter(
         name='p',
         value_spec=AttributeSpec(default=0.0),
-        cif_handler=CifHandler(names=['_x.p']),
+        tags=TagSpec(edi_names=['_x.p']),
     )
     p.value = 882.16515040
     p.free = True
@@ -75,12 +75,12 @@ def test_param_from_cif_empty_brackets_marks_free_without_uncertainty():
 
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     p = Parameter(
         name='2theta_offset',
         value_spec=AttributeSpec(default=0.0),
-        cif_handler=CifHandler(names=['_instr.2theta_offset']),
+        tags=TagSpec(edi_names=['_instr.2theta_offset']),
     )
     doc = gemmi.cif.read_string('data_test\n_instr.2theta_offset 0.5()\n')
 
@@ -107,7 +107,7 @@ def test_param_from_cif_missing_tag_keeps_sentinel_default_without_validating():
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.validation import RangeValidator
     from easydiffraction.core.variable import Parameter
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     p = Parameter(
         name='two_theta_min',
@@ -115,7 +115,7 @@ def test_param_from_cif_missing_tag_keeps_sentinel_default_without_validating():
             default=float('nan'),
             validator=RangeValidator(ge=0, le=180),
         ),
-        cif_handler=CifHandler(names=['_data_range.2theta_min']),
+        tags=TagSpec(edi_names=['_data_range.2theta_min']),
     )
     # Block without the tag: the absent value falls back to the default.
     doc = gemmi.cif.read_string('data_test\n_instr.2theta_offset 0.5\n')
@@ -129,14 +129,14 @@ def test_category_collection_to_cif_empty_and_one_row():
     import easydiffraction.io.cif.serialize as MUT
     from easydiffraction.core.category import CategoryCollection
     from easydiffraction.core.category import CategoryItem
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     class Item(CategoryItem):
         def __init__(self, name, value):
             super().__init__()
             self._identity.category_entry_name = name
             self._p = type('P', (), {})()
-            self._p._cif_handler = CifHandler(names=['_x'])
+            self._p._tags = TagSpec(edi_names=['_x'])
             self._p.value = value
 
         @property

@@ -21,7 +21,7 @@ from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.datablocks.structure.categories.atom_site_aniso.factory import (
     AtomSiteAnisoFactory,
 )
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 
 class _AnisoAdpParameter(Parameter):
@@ -100,11 +100,7 @@ class AtomSiteAniso(CategoryItem):
             name='id',
             description='Atom-site id matching the parent atom_site entry.',
             value_spec=AttributeSpec(default=''),
-            cif_handler=CifHandler(
-                names=['_atom_site_aniso.id'],
-                import_names=['_atom_site_aniso.label'],
-                iucr_name='_atom_site_aniso.label',
-            ),
+            tags=TagSpec(edi_names=['_atom_site_aniso.id'], cif_names=['_atom_site_aniso.label']),
         )
 
         self._adp_11 = _AnisoAdpParameter(
@@ -121,15 +117,13 @@ class AtomSiteAniso(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(ge=0.0, le=10.0),
             ),
-            cif_handler=CifHandler(
-                project_name='_atom_site_aniso.adp_11',
-                names=['_atom_site_aniso.adp_11'],
-                import_names=[
+            tags=TagSpec(
+                edi_names=['_atom_site_aniso.adp_11'],
+                cif_names=[
                     '_atom_site_aniso.B_11',
                     '_atom_site_aniso.U_11',
                     '_atom_site_aniso.beta_11',
                 ],
-                iucr_name='_atom_site_aniso.B_11',
             ),
         )
         self._adp_22 = _AnisoAdpParameter(
@@ -146,15 +140,13 @@ class AtomSiteAniso(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(ge=0.0, le=10.0),
             ),
-            cif_handler=CifHandler(
-                project_name='_atom_site_aniso.adp_22',
-                names=['_atom_site_aniso.adp_22'],
-                import_names=[
+            tags=TagSpec(
+                edi_names=['_atom_site_aniso.adp_22'],
+                cif_names=[
                     '_atom_site_aniso.B_22',
                     '_atom_site_aniso.U_22',
                     '_atom_site_aniso.beta_22',
                 ],
-                iucr_name='_atom_site_aniso.B_22',
             ),
         )
         self._adp_33 = _AnisoAdpParameter(
@@ -171,15 +163,13 @@ class AtomSiteAniso(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(ge=0.0, le=10.0),
             ),
-            cif_handler=CifHandler(
-                project_name='_atom_site_aniso.adp_33',
-                names=['_atom_site_aniso.adp_33'],
-                import_names=[
+            tags=TagSpec(
+                edi_names=['_atom_site_aniso.adp_33'],
+                cif_names=[
                     '_atom_site_aniso.B_33',
                     '_atom_site_aniso.U_33',
                     '_atom_site_aniso.beta_33',
                 ],
-                iucr_name='_atom_site_aniso.B_33',
             ),
         )
         self._adp_12 = _AnisoAdpParameter(
@@ -196,15 +186,13 @@ class AtomSiteAniso(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                project_name='_atom_site_aniso.adp_12',
-                names=['_atom_site_aniso.adp_12'],
-                import_names=[
+            tags=TagSpec(
+                edi_names=['_atom_site_aniso.adp_12'],
+                cif_names=[
                     '_atom_site_aniso.B_12',
                     '_atom_site_aniso.U_12',
                     '_atom_site_aniso.beta_12',
                 ],
-                iucr_name='_atom_site_aniso.B_12',
             ),
         )
         self._adp_13 = _AnisoAdpParameter(
@@ -221,15 +209,13 @@ class AtomSiteAniso(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                project_name='_atom_site_aniso.adp_13',
-                names=['_atom_site_aniso.adp_13'],
-                import_names=[
+            tags=TagSpec(
+                edi_names=['_atom_site_aniso.adp_13'],
+                cif_names=[
                     '_atom_site_aniso.B_13',
                     '_atom_site_aniso.U_13',
                     '_atom_site_aniso.beta_13',
                 ],
-                iucr_name='_atom_site_aniso.B_13',
             ),
         )
         self._adp_23 = _AnisoAdpParameter(
@@ -246,15 +232,13 @@ class AtomSiteAniso(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                project_name='_atom_site_aniso.adp_23',
-                names=['_atom_site_aniso.adp_23'],
-                import_names=[
+            tags=TagSpec(
+                edi_names=['_atom_site_aniso.adp_23'],
+                cif_names=[
                     '_atom_site_aniso.B_23',
                     '_atom_site_aniso.U_23',
                     '_atom_site_aniso.beta_23',
                 ],
-                iucr_name='_atom_site_aniso.B_23',
             ),
         )
 

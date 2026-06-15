@@ -25,7 +25,7 @@ from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -47,10 +47,9 @@ class PowderReflnBase(SingleCrystalRefln):
                 latex_name='Structure',
             ),
             value_spec=AttributeSpec(default=''),
-            cif_handler=CifHandler(
-                names=['_refln.structure_id'],
-                import_names=['_refln.phase_id'],
-                iucr_name='_pd_refln.phase_id',
+            tags=TagSpec(
+                edi_names=['_refln.structure_id'],
+                cif_names=['_pd_refln.phase_id', '_refln.phase_id'],
             ),
         )
         self._f_calc = NumericDescriptor(
@@ -64,7 +63,7 @@ class PowderReflnBase(SingleCrystalRefln):
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(names=['_refln.f_calc']),
+            tags=TagSpec(edi_names=['_refln.f_calc']),
         )
         self._f_squared_calc = NumericDescriptor(
             name='f_squared_calc',
@@ -77,7 +76,7 @@ class PowderReflnBase(SingleCrystalRefln):
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(names=['_refln.f_squared_calc']),
+            tags=TagSpec(edi_names=['_refln.f_squared_calc']),
         )
 
     @property
@@ -131,7 +130,7 @@ class PowderCwlRefln(PowderReflnBase):
                 default=0.0,
                 validator=RangeValidator(ge=0, le=180),
             ),
-            cif_handler=CifHandler(names=['_refln.two_theta']),
+            tags=TagSpec(edi_names=['_refln.two_theta']),
         )
 
     @property
@@ -165,7 +164,7 @@ class PowderTofRefln(PowderReflnBase):
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(names=['_refln.time_of_flight']),
+            tags=TagSpec(edi_names=['_refln.time_of_flight']),
         )
 
     @property

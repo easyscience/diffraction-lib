@@ -24,14 +24,14 @@ from easydiffraction.core.variable import IntegerDescriptor
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import Parameter
 from easydiffraction.core.variable import StringDescriptor
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 from easydiffraction.utils.logging import Logger
 
 
 def _bare_param(name: str, value: object) -> object:
     """Return a minimal serialize-only param exposing handler + value."""
     param = type('P', (), {})()
-    param._cif_handler = CifHandler(names=[name])
+    param._tags = TagSpec(edi_names=[name])
     param.value = value
     return param
 
@@ -93,7 +93,7 @@ def test_format_param_value_free_without_uncertainty_uses_empty_brackets():
     param = Parameter(
         name='p',
         value_spec=AttributeSpec(default=0.0),
-        cif_handler=CifHandler(names=['_x.p']),
+        tags=TagSpec(edi_names=['_x.p']),
     )
     param.value = 3.5
     param.free = True
@@ -105,7 +105,7 @@ def test_format_param_value_user_constrained_free_param_has_no_brackets():
     param = Parameter(
         name='p',
         value_spec=AttributeSpec(default=0.0),
-        cif_handler=CifHandler(names=['_x.p']),
+        tags=TagSpec(edi_names=['_x.p']),
     )
     param.value = 2.0
     param._set_value_user_constrained(2.0)
@@ -553,7 +553,7 @@ def test_set_param_from_raw_integer_value():
     param = IntegerDescriptor(
         name='n',
         value_spec=AttributeSpec(data_type=DataTypes.INTEGER, default=0),
-        cif_handler=CifHandler(names=['_x.n']),
+        tags=TagSpec(edi_names=['_x.n']),
     )
 
     MUT._set_param_from_raw_cif_value(param, '7')
@@ -566,7 +566,7 @@ def test_set_param_from_raw_non_integer_is_ignored_with_warning(monkeypatch):
     param = IntegerDescriptor(
         name='n',
         value_spec=AttributeSpec(data_type=DataTypes.INTEGER, default=0),
-        cif_handler=CifHandler(names=['_x.n']),
+        tags=TagSpec(edi_names=['_x.n']),
     )
     param.value = 5
 
@@ -580,7 +580,7 @@ def test_set_param_from_raw_numeric_with_brackets_marks_free_and_uncertainty():
     param = Parameter(
         name='p',
         value_spec=AttributeSpec(default=0.0),
-        cif_handler=CifHandler(names=['_x.p']),
+        tags=TagSpec(edi_names=['_x.p']),
     )
 
     MUT._set_param_from_raw_cif_value(param, '1.23(45)')
@@ -594,7 +594,7 @@ def test_set_param_from_raw_string_strips_quotes():
     param = StringDescriptor(
         name='s',
         value_spec=AttributeSpec(default='x'),
-        cif_handler=CifHandler(names=['_x.s']),
+        tags=TagSpec(edi_names=['_x.s']),
     )
 
     MUT._set_param_from_raw_cif_value(param, "'hello'")
@@ -603,7 +603,7 @@ def test_set_param_from_raw_string_strips_quotes():
 
 
 def test_set_param_from_raw_bool_value():
-    param = BoolDescriptor(name='b', cif_handler=CifHandler(names=['_x.b']))
+    param = BoolDescriptor(name='b', tags=TagSpec(edi_names=['_x.b']))
 
     MUT._set_param_from_raw_cif_value(param, 'true')
 
@@ -614,7 +614,7 @@ def test_set_param_from_raw_unknown_marker_resets_to_default():
     param = StringDescriptor(
         name='s',
         value_spec=AttributeSpec(default='def'),
-        cif_handler=CifHandler(names=['_x.s']),
+        tags=TagSpec(edi_names=['_x.s']),
     )
     param.value = 'changed'
 
@@ -627,7 +627,7 @@ def test_set_param_to_default_restores_descriptor_default():
     param = StringDescriptor(
         name='s',
         value_spec=AttributeSpec(default='dd'),
-        cif_handler=CifHandler(names=['_x.s']),
+        tags=TagSpec(edi_names=['_x.s']),
     )
     param.value = 'changed'
 
@@ -641,7 +641,7 @@ def test_set_param_to_default_raises_for_required_field_without_default(monkeypa
     param = StringDescriptor(
         name='nd',
         value_spec=AttributeSpec(),
-        cif_handler=CifHandler(names=['_x.nd']),
+        tags=TagSpec(edi_names=['_x.nd']),
     )
 
     with pytest.raises(ValueError, match='Cannot load required CIF field'):
@@ -657,7 +657,7 @@ def test_param_from_cif_missing_tag_uses_default():
     param = Parameter(
         name='p',
         value_spec=AttributeSpec(default=9.0),
-        cif_handler=CifHandler(names=['_x.absent']),
+        tags=TagSpec(edi_names=['_x.absent']),
     )
     param.value = 3.0
     block = gemmi.cif.read_string('data_t\n_x.other 1\n').sole_block()
@@ -671,7 +671,7 @@ def test_param_from_cif_selects_value_at_loop_index():
     param = NumericDescriptor(
         name='a',
         value_spec=AttributeSpec(default=0.0),
-        cif_handler=CifHandler(names=['_loop.a']),
+        tags=TagSpec(edi_names=['_loop.a']),
     )
     block = gemmi.cif.read_string('data_t\nloop_\n_loop.a\n10\n20\n30\n').sole_block()
 
@@ -698,12 +698,12 @@ class _PairItem(CategoryItem):
         self._a = NumericDescriptor(
             name='a',
             value_spec=AttributeSpec(default=0.0),
-            cif_handler=CifHandler(names=['_pc.a']),
+            tags=TagSpec(edi_names=['_pc.a']),
         )
         self._b = NumericDescriptor(
             name='b',
             value_spec=AttributeSpec(default=99.0),
-            cif_handler=CifHandler(names=['_pc.b']),
+            tags=TagSpec(edi_names=['_pc.b']),
         )
 
     @property
@@ -748,7 +748,7 @@ def test_category_collection_from_cif_reads_scalar_descriptors():
             self._count = NumericDescriptor(
                 name='count',
                 value_spec=AttributeSpec(default=0.0),
-                cif_handler=CifHandler(names=['_pc.count']),
+                tags=TagSpec(edi_names=['_pc.count']),
             )
 
     coll = ScalarCollection()

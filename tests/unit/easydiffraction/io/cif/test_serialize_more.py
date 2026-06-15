@@ -6,13 +6,13 @@ def test_datablock_item_to_cif_includes_item_and_collection():
     import easydiffraction.io.cif.serialize as MUT
     from easydiffraction.core.category import CategoryCollection
     from easydiffraction.core.category import CategoryItem
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     class Item(CategoryItem):
         def __init__(self, val):
             super().__init__()
             self._p = type('P', (), {})()
-            self._p._cif_handler = CifHandler(names=['_aa'])
+            self._p._tags = TagSpec(edi_names=['_aa'])
             self._p.value = val
 
         @property
@@ -44,13 +44,13 @@ def test_datablock_item_to_cif_skips_empty_category_fragments():
     import easydiffraction.io.cif.serialize as MUT
     from easydiffraction.core.category import CategoryCollection
     from easydiffraction.core.category import CategoryItem
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     class Item(CategoryItem):
         def __init__(self, val):
             super().__init__()
             self._p = type('P', (), {})()
-            self._p._cif_handler = CifHandler(names=['_aa'])
+            self._p._tags = TagSpec(edi_names=['_aa'])
             self._p.value = val
 
         @property
@@ -144,13 +144,13 @@ def test_experiment_to_cif_with_and_without_data():
             self.datastore = DS(data_text)
             # Minimal CategoryItem to be picked up by datablock_item_to_cif
             from easydiffraction.core.category import CategoryItem
-            from easydiffraction.io.cif.handler import CifHandler
+            from easydiffraction.io.cif.handler import TagSpec
 
             class Item(CategoryItem):
                 def __init__(self):
                     super().__init__()
                     self._p = type('P', (), {})()
-                    self._p._cif_handler = CifHandler(names=['_k'])
+                    self._p._tags = TagSpec(edi_names=['_k'])
                     self._p.value = 1
 
                 @property

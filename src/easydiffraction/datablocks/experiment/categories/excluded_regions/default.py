@@ -19,7 +19,7 @@ from easydiffraction.datablocks.experiment.categories.excluded_regions.factory i
     ExcludedRegionsFactory,
 )
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.utils import render_table
 
@@ -44,9 +44,9 @@ class ExcludedRegion(CategoryItem):
                 #  Do we need conversion between CIF and internal label?
                 validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
             ),
-            cif_handler=CifHandler(
-                names=['_excluded_region.id'],
-                iucr_name='_easydiffraction_excluded_region.id',
+            tags=TagSpec(
+                edi_names=['_excluded_region.id'],
+                cif_names=['_easydiffraction_excluded_region.id'],
             ),
         )
         self._start = NumericDescriptor(
@@ -56,9 +56,9 @@ class ExcludedRegion(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_excluded_region.start'],
-                iucr_name='_easydiffraction_excluded_region.start',
+            tags=TagSpec(
+                edi_names=['_excluded_region.start'],
+                cif_names=['_easydiffraction_excluded_region.start'],
             ),
         )
         self._end = NumericDescriptor(
@@ -68,9 +68,9 @@ class ExcludedRegion(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_excluded_region.end'],
-                iucr_name='_easydiffraction_excluded_region.end',
+            tags=TagSpec(
+                edi_names=['_excluded_region.end'],
+                cif_names=['_easydiffraction_excluded_region.end'],
             ),
         )
 

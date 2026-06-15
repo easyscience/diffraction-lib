@@ -17,13 +17,13 @@ class _Descriptor:
 def _make_parameter(name, *, display_handler=None, cif_names=None):
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     return Parameter(
         name=name,
         value_spec=AttributeSpec(default=0.0),
         display_handler=display_handler,
-        cif_handler=CifHandler(names=cif_names or [f'_{name}']),
+        tags=TagSpec(edi_names=cif_names or [f'_{name}']),
     )
 
 
@@ -89,7 +89,7 @@ def test_first_cif_name_returns_none_without_handler():
 def test_first_cif_name_returns_none_for_empty_names():
     from easydiffraction.report.data_context import _first_cif_name
 
-    parameter = SimpleNamespace(_cif_handler=SimpleNamespace(names=()))
+    parameter = SimpleNamespace(_tags=SimpleNamespace(edi_names=()))
     assert _first_cif_name(parameter) is None
 
 
@@ -116,24 +116,24 @@ def test_descriptor_is_numeric_classifies_descriptor_types():
     from easydiffraction.core.variable import IntegerDescriptor
     from easydiffraction.core.variable import NumericDescriptor
     from easydiffraction.core.variable import StringDescriptor
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
     from easydiffraction.report.data_context import _descriptor_is_numeric
 
-    cif_handler = CifHandler(names=['_x.y'])
+    tags = TagSpec(edi_names=['_x.y'])
     integer = IntegerDescriptor(
         name='n',
         value_spec=AttributeSpec(default=0),
-        cif_handler=cif_handler,
+        tags=tags,
     )
     numeric = NumericDescriptor(
         name='m',
         value_spec=AttributeSpec(default=0.0),
-        cif_handler=cif_handler,
+        tags=tags,
     )
     string = StringDescriptor(
         name='s',
         value_spec=AttributeSpec(default=''),
-        cif_handler=cif_handler,
+        tags=tags,
     )
 
     assert _descriptor_is_numeric(integer) is True

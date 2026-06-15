@@ -25,7 +25,7 @@ from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import tof_to_d
 from easydiffraction.utils.utils import twotheta_to_d
@@ -61,11 +61,7 @@ class PdDataPointBaseMixin:
                 #  Do we need conversion between CIF and internal label?
                 validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
             ),
-            cif_handler=CifHandler(
-                names=['_data.id'],
-                import_names=['_pd_data.point_id'],
-                iucr_name='_pd_data.point_id',
-            ),
+            tags=TagSpec(edi_names=['_data.id'], cif_names=['_pd_data.point_id']),
         )
         self._d_spacing = NumericDescriptor(
             name='d_spacing',
@@ -81,11 +77,7 @@ class PdDataPointBaseMixin:
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(
-                names=['_data.d_spacing'],
-                import_names=['_pd_proc.d_spacing'],
-                iucr_name='_pd_proc.d_spacing',
-            ),
+            tags=TagSpec(edi_names=['_data.d_spacing'], cif_names=['_pd_proc.d_spacing']),
         )
         self._intensity_meas = NumericDescriptor(
             name='intensity_meas',
@@ -98,13 +90,9 @@ class PdDataPointBaseMixin:
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(
-                names=['_data.intensity_meas'],
-                import_names=[
-                    '_pd_meas.intensity_total',
-                    '_pd_proc.intensity_norm',
-                ],
-                iucr_name='_pd_meas.intensity_total',
+            tags=TagSpec(
+                edi_names=['_data.intensity_meas'],
+                cif_names=['_pd_meas.intensity_total', '_pd_proc.intensity_norm'],
             ),
         )
         self._intensity_meas_su = NumericDescriptor(
@@ -118,13 +106,9 @@ class PdDataPointBaseMixin:
                 default=1.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(
-                names=['_data.intensity_meas_su'],
-                import_names=[
-                    '_pd_meas.intensity_total_su',
-                    '_pd_proc.intensity_norm_su',
-                ],
-                iucr_name='_pd_meas.intensity_total_su',
+            tags=TagSpec(
+                edi_names=['_data.intensity_meas_su'],
+                cif_names=['_pd_meas.intensity_total_su', '_pd_proc.intensity_norm_su'],
             ),
         )
         self._intensity_calc = NumericDescriptor(
@@ -138,10 +122,8 @@ class PdDataPointBaseMixin:
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(
-                names=['_data.intensity_calc'],
-                import_names=['_pd_calc.intensity_total'],
-                iucr_name='_pd_calc.intensity_total',
+            tags=TagSpec(
+                edi_names=['_data.intensity_calc'], cif_names=['_pd_calc.intensity_total']
             ),
         )
         self._intensity_bkg = NumericDescriptor(
@@ -155,11 +137,7 @@ class PdDataPointBaseMixin:
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(
-                names=['_data.intensity_bkg'],
-                import_names=['_pd_calc.intensity_bkg'],
-                iucr_name='_pd_calc.intensity_bkg',
-            ),
+            tags=TagSpec(edi_names=['_data.intensity_bkg'], cif_names=['_pd_calc.intensity_bkg']),
         )
         self._calc_status = StringDescriptor(
             name='calc_status',
@@ -172,10 +150,8 @@ class PdDataPointBaseMixin:
                 default='incl',  # TODO: Make Enum
                 validator=MembershipValidator(allowed=['incl', 'excl']),
             ),
-            cif_handler=CifHandler(
-                names=['_data.calc_status'],
-                import_names=['_pd_data.refinement_status'],
-                iucr_name='_pd_data.refinement_status',
+            tags=TagSpec(
+                edi_names=['_data.calc_status'], cif_names=['_pd_data.refinement_status']
             ),
         )
 
@@ -274,13 +250,9 @@ class PdCwlDataPointMixin:
                 default=0.0,
                 validator=RangeValidator(ge=0, le=180),
             ),
-            cif_handler=CifHandler(
-                names=['_data.two_theta'],
-                import_names=[
-                    '_pd_proc.2theta_scan',
-                    '_pd_meas.2theta_scan',
-                ],
-                iucr_name='_pd_proc.2theta_scan',
+            tags=TagSpec(
+                edi_names=['_data.two_theta'],
+                cif_names=['_pd_proc.2theta_scan', '_pd_meas.2theta_scan'],
             ),
         )
 
@@ -319,10 +291,8 @@ class PdTofDataPointMixin:
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(
-                names=['_data.time_of_flight'],
-                import_names=['_pd_meas.time_of_flight'],
-                iucr_name='_pd_meas.time_of_flight',
+            tags=TagSpec(
+                edi_names=['_data.time_of_flight'], cif_names=['_pd_meas.time_of_flight']
             ),
         )
 

@@ -33,12 +33,12 @@ def _make_project_with_names(names):
 def _make_parameter(name, value):
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
     return Parameter(
         name=name,
         value_spec=AttributeSpec(default=value),
-        cif_handler=CifHandler(names=[f'_{name}.value']),
+        tags=TagSpec(edi_names=[f'_{name}.value']),
     )
 
 
@@ -92,14 +92,12 @@ def test_analysis_extension_descriptors_keep_save_tags_and_iucr_names():
     analysis = Analysis(project=_make_project_with_names([]))
     calculator = Calculator(type='cryspy')
 
-    assert analysis.minimizer._type._cif_handler.names == ['_minimizer.type']
-    assert analysis.minimizer._type._cif_handler.iucr_name == '_easydiffraction_minimizer.type'
-    assert analysis.fitting_mode._type._cif_handler.names == ['_fitting_mode.type']
-    assert (
-        analysis.fitting_mode._type._cif_handler.iucr_name == '_easydiffraction_fitting_mode.type'
-    )
-    assert calculator._type._cif_handler.names == ['_calculator.type']
-    assert calculator._type._cif_handler.iucr_name == '_easydiffraction_calculator.type'
+    assert analysis.minimizer._type._tags.edi_names == ['_minimizer.type']
+    assert analysis.minimizer._type._tags.cif_name == '_easydiffraction_minimizer.type'
+    assert analysis.fitting_mode._type._tags.edi_names == ['_fitting_mode.type']
+    assert analysis.fitting_mode._type._tags.cif_name == '_easydiffraction_fitting_mode.type'
+    assert calculator._type._tags.edi_names == ['_calculator.type']
+    assert calculator._type._tags.cif_name == '_easydiffraction_calculator.type'
 
 
 def test_fit_mode_category_and_joint_fit(monkeypatch, capsys):

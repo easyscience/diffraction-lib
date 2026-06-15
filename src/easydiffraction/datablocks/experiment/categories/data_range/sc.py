@@ -17,7 +17,7 @@ from easydiffraction.datablocks.experiment.categories.data_range.factory import 
 from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 
 @DataRangeFactory.register
@@ -63,10 +63,9 @@ class ScDataRange(DataRangeBase):
                 default=np.nan,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(
-                names=['_data_range.sin_theta_over_lambda_min'],
-                import_names=['_refln.sin_theta_over_lambda_range_min'],
-                iucr_name='_refln.sin_theta_over_lambda_range_min',
+            tags=TagSpec(
+                edi_names=['_data_range.sin_theta_over_lambda_min'],
+                cif_names=['_refln.sin_theta_over_lambda_range_min'],
             ),
         )
         self._sin_theta_over_lambda_max = NumericDescriptor(
@@ -83,10 +82,9 @@ class ScDataRange(DataRangeBase):
                 default=np.nan,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(
-                names=['_data_range.sin_theta_over_lambda_max'],
-                import_names=['_refln.sin_theta_over_lambda_range_max'],
-                iucr_name='_refln.sin_theta_over_lambda_range_max',
+            tags=TagSpec(
+                edi_names=['_data_range.sin_theta_over_lambda_max'],
+                cif_names=['_refln.sin_theta_over_lambda_range_max'],
             ),
         )
 

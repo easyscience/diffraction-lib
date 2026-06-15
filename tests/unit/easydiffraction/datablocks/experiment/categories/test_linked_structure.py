@@ -37,17 +37,17 @@ def test_linked_structure_property_setters():
     assert lc.scale.value == 2.5
 
 
-def test_linked_structure_cif_handler_names():
+def test_linked_structure_tags_names():
     from easydiffraction.datablocks.experiment.categories.linked_structure.default import (
         LinkedStructure,
     )
 
     lc = LinkedStructure()
 
-    id_cif_names = lc._structure_id._cif_handler.names
+    id_cif_names = lc._structure_id._tags.edi_names
     assert '_linked_structure.structure_id' in id_cif_names
 
-    scale_cif_names = lc._scale._cif_handler.names
+    scale_cif_names = lc._scale._tags.edi_names
     assert '_linked_structure.scale' in scale_cif_names
 
 

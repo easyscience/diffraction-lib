@@ -18,7 +18,7 @@ from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RegexValidator
 from easydiffraction.core.variable import StringDescriptor
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 
 class Alias(CategoryItem):
@@ -44,10 +44,8 @@ class Alias(CategoryItem):
                 default='_',  # TODO: Maybe None?
                 validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
             ),
-            cif_handler=CifHandler(
-                names=['_alias.id'],
-                import_names=['_alias.label'],
-                iucr_name='_easydiffraction_alias.id',
+            tags=TagSpec(
+                edi_names=['_alias.id'], cif_names=['_easydiffraction_alias.id', '_alias.label']
             ),
         )
         self._parameter_unique_name = StringDescriptor(
@@ -57,10 +55,12 @@ class Alias(CategoryItem):
                 default='_',
                 validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_.]*$'),
             ),
-            cif_handler=CifHandler(
-                names=['_alias.parameter_unique_name'],
-                import_names=['_alias.param_unique_name'],
-                iucr_name='_easydiffraction_alias.parameter_unique_name',
+            tags=TagSpec(
+                edi_names=['_alias.parameter_unique_name'],
+                cif_names=[
+                    '_easydiffraction_alias.parameter_unique_name',
+                    '_alias.param_unique_name',
+                ],
             ),
         )
 

@@ -5,14 +5,14 @@ from easydiffraction.analysis.categories.aliases import Alias
 from easydiffraction.analysis.categories.aliases import Aliases
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.variable import Parameter
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 
 def test_alias_creation_and_collection():
     p1 = Parameter(
         name='adp_iso',
         value_spec=AttributeSpec(default=0.5),
-        cif_handler=CifHandler(names=['_atom_site.adp_iso']),
+        tags=TagSpec(edi_names=['_atom_site.adp_iso']),
     )
     a = Alias()
     a.id = 'x'

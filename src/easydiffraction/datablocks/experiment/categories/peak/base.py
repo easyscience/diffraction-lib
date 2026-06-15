@@ -12,7 +12,7 @@ from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.datablocks.experiment.categories.peak.factory import PeakFactory
 from easydiffraction.datablocks.experiment.item.enums import PeakProfileTypeEnum
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.utils import render_table
 
@@ -43,10 +43,7 @@ class PeakBase(CategoryItem, SwitchableCategoryBase):
                     allowed=[member.value for member in PeakProfileTypeEnum],
                 ),
             ),
-            cif_handler=CifHandler(
-                names=['_peak.type'],
-                iucr_name='_easydiffraction_peak.type',
-            ),
+            tags=TagSpec(edi_names=['_peak.type'], cif_names=['_easydiffraction_peak.type']),
         )
 
     def _canonicalize(self, value: str) -> str:

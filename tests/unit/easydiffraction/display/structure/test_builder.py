@@ -646,13 +646,11 @@ class TestStructureStyleInputs:
     def test_default_color_scheme_is_jmol(self):
         assert StructureStyle().color_scheme.value == ColorSchemeEnum.JMOL.value
 
-    def test_atom_view_cif_handler_name(self):
-        assert StructureStyle().atom_view._cif_handler.names == ['_structure_style.atom_view']
+    def test_atom_view_tags_name(self):
+        assert StructureStyle().atom_view._tags.edi_names == ['_structure_style.atom_view']
 
-    def test_color_scheme_cif_handler_name(self):
-        assert StructureStyle().color_scheme._cif_handler.names == [
-            '_structure_style.color_scheme'
-        ]
+    def test_color_scheme_tags_name(self):
+        assert StructureStyle().color_scheme._tags.edi_names == ['_structure_style.color_scheme']
 
     def test_invalid_atom_view_rejected(self):
         with pytest.raises(ValueError, match='not a valid AtomViewEnum'):

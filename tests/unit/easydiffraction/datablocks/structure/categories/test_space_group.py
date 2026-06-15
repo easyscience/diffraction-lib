@@ -17,15 +17,15 @@ def test_space_group_name_updates_it_code():
 def test_space_group_uses_iucr_casing_with_legacy_aliases():
     sg = SpaceGroup()
 
-    assert sg.name_h_m._cif_handler.names == ['_space_group.name_h_m']
-    assert sg.name_h_m._cif_handler.import_names == [
+    assert sg.name_h_m._tags.edi_names == ['_space_group.name_h_m']
+    assert sg.name_h_m._tags.cif_names == [
         '_space_group.name_H-M_alt',
         '_space_group_name_H-M_alt',
         '_symmetry.space_group_name_H-M',
         '_symmetry_space_group_name_H-M',
     ]
-    assert sg.coord_system_code._cif_handler.names == ['_space_group.coord_system_code']
-    assert sg.coord_system_code._cif_handler.import_names == [
+    assert sg.coord_system_code._tags.edi_names == ['_space_group.coord_system_code']
+    assert sg.coord_system_code._tags.cif_names == [
         '_space_group.IT_coordinate_system_code',
         '_space_group_IT_coordinate_system_code',
         '_symmetry.IT_coordinate_system_code',

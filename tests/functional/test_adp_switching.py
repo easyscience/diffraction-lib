@@ -222,25 +222,25 @@ class TestCifNamesByAdpType:
         s.atom_sites['A'].adp_type = 'Biso'
         s._update_categories()
         site = s.atom_sites['A']
-        assert '_atom_site.B_iso_or_equiv' in site._adp_iso._cif_handler.names[0]
+        assert '_atom_site.B_iso_or_equiv' in site._adp_iso._tags.cif_names[0]
 
     def test_uiso_uses_u_names(self):
         project = _make_project_with_structure()
         s = project.structures['cubic']
         s.atom_sites['A'].adp_type = 'Uiso'
         site = s.atom_sites['A']
-        assert '_atom_site.U_iso_or_equiv' in site._adp_iso._cif_handler.names[0]
+        assert '_atom_site.U_iso_or_equiv' in site._adp_iso._tags.cif_names[0]
 
     def test_bani_uses_b_aniso_names(self):
         project = _make_project_with_structure()
         s = project.structures['cubic']
         s.atom_sites['A'].adp_type = 'Bani'
         aniso = s.atom_site_aniso['A']
-        assert aniso._adp_11._cif_handler.names[0] == '_atom_site_aniso.B_11'
+        assert aniso._adp_11._tags.cif_names[0] == '_atom_site_aniso.B_11'
 
     def test_uani_uses_u_aniso_names(self):
         project = _make_project_with_structure()
         s = project.structures['cubic']
         s.atom_sites['A'].adp_type = 'Uani'
         aniso = s.atom_site_aniso['A']
-        assert aniso._adp_11._cif_handler.names[0] == '_atom_site_aniso.U_11'
+        assert aniso._adp_11._tags.cif_names[0] == '_atom_site_aniso.U_11'

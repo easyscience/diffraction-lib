@@ -13,7 +13,7 @@ from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.display.tables import TableEngineEnum
 from easydiffraction.display.tables import TableRenderer
 from easydiffraction.display.tables import TableRendererFactory
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 from easydiffraction.io.cif.parse import read_cif_str
 from easydiffraction.project.categories.rendering_table.factory import RenderingTableFactory
 from easydiffraction.utils.logging import log
@@ -49,7 +49,7 @@ class RenderingTable(CategoryItem, SwitchableCategoryBase):
                     allowed=TABLE_ENGINE_OPTIONS,
                 ),
             ),
-            cif_handler=CifHandler(names=['_rendering_table.type']),
+            tags=TagSpec(edi_names=['_rendering_table.type']),
         )
 
     @staticmethod

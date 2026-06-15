@@ -12,7 +12,7 @@ from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.datablocks.structure.categories.geom.factory import GeomFactory
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 
 @GeomFactory.register
@@ -36,7 +36,7 @@ class Geom(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(ge=0.0),
             ),
-            cif_handler=CifHandler(names=['_geom.min_bond_distance_cutoff']),
+            tags=TagSpec(edi_names=['_geom.min_bond_distance_cutoff']),
         )
         self._bond_distance_inc = NumericDescriptor(
             name='bond_distance_inc',
@@ -45,10 +45,8 @@ class Geom(CategoryItem):
                 default=0.25,
                 validator=RangeValidator(ge=0.0),
             ),
-            cif_handler=CifHandler(
-                names=['_geom.bond_distance_inc'],
-                import_names=['_geom.bond_distance_incr'],
-                iucr_name='_geom.bond_distance_incr',
+            tags=TagSpec(
+                edi_names=['_geom.bond_distance_inc'], cif_names=['_geom.bond_distance_incr']
             ),
         )
 

@@ -898,10 +898,10 @@ class CryspyCalculator(CalculatorBase):
 
             orig_adp_type = atom._adp_type._value
             orig_iso_val = atom._adp_iso._value
-            orig_iso_names = list(atom._adp_iso._cif_handler._names)
+            orig_iso_names = list(atom._adp_iso._tags._edi_names)
 
             atom._adp_iso._value = orig_iso_val / factor
-            atom._adp_iso._cif_handler._names = [
+            atom._adp_iso._tags._edi_names = [
                 '_atom_site.U_iso_or_equiv',
                 '_atom_site.B_iso_or_equiv',
             ]
@@ -922,9 +922,9 @@ class CryspyCalculator(CalculatorBase):
                     for s in suffixes:
                         param = getattr(aniso, f'_adp_{s}')
                         orig_vals.append(param._value)
-                        orig_names.append(list(param._cif_handler._names))
+                        orig_names.append(list(param._tags._edi_names))
                         param._value /= factor
-                        param._cif_handler._names = [
+                        param._tags._edi_names = [
                             f'_atom_site_aniso.U_{s}',
                             f'_atom_site_aniso.B_{s}',
                         ]
@@ -969,12 +969,12 @@ class CryspyCalculator(CalculatorBase):
         ) in saved:
             atom._adp_type._value = orig_adp_type
             atom._adp_iso._value = orig_iso_val
-            atom._adp_iso._cif_handler._names = orig_iso_names
+            atom._adp_iso._tags._edi_names = orig_iso_names
             if aniso is not None and orig_vals is not None:
                 for s, val, names in zip(suffixes, orig_vals, orig_names, strict=False):
                     param = getattr(aniso, f'_adp_{s}')
                     param._value = val
-                    param._cif_handler._names = names
+                    param._tags._edi_names = names
 
     @staticmethod
     def _beta_reciprocal_pairs(structure: Structure) -> tuple[float, ...]:
@@ -1026,12 +1026,12 @@ class CryspyCalculator(CalculatorBase):
 
         orig_adp_type = atom._adp_type._value
         orig_iso_val = atom._adp_iso._value
-        orig_iso_names = list(atom._adp_iso._cif_handler._names)
+        orig_iso_names = list(atom._adp_iso._tags._edi_names)
 
         # adp_iso already holds the equivalent U for a beta atom; only
         # the CIF tag needs relabelling (cryspy zeroes b_iso for aniso
         # atoms).
-        atom._adp_iso._cif_handler._names = [
+        atom._adp_iso._tags._edi_names = [
             '_atom_site.U_iso_or_equiv',
             '_atom_site.B_iso_or_equiv',
         ]
@@ -1047,9 +1047,9 @@ class CryspyCalculator(CalculatorBase):
         for s, pair in zip(suffixes, pairs, strict=False):
             param = getattr(aniso, f'_adp_{s}')
             orig_vals.append(param._value)
-            orig_names.append(list(param._cif_handler._names))
+            orig_names.append(list(param._tags._edi_names))
             param._value /= pair
-            param._cif_handler._names = [
+            param._tags._edi_names = [
                 f'_atom_site_aniso.U_{s}',
                 f'_atom_site_aniso.B_{s}',
             ]

@@ -1,32 +1,45 @@
 # SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Minimal CIF tag handler used by descriptors/parameters."""
+"""
+Tag specification used by descriptors/parameters.
+
+A :class:`TagSpec` records the names a single descriptor/parameter uses
+across the two persistence/exchange formats, plus its documentation
+location:
+
+* ``edi_names`` — names searched and written for the **Edi** project
+  format (``.edi`` files). ``edi_name`` (``edi_names[0]``) is the
+  canonical name used when writing.
+* ``cif_names`` — names searched and written for strict **CIF**
+  import/export (``.cif`` files, including the report). ``cif_name``
+  (``cif_names[0]``) is the canonical name used when exporting; it is
+  an IUCr/pdCIF dictionary name where one exists and an
+  ``_easydiffraction_*`` extension otherwise. Remaining entries are
+  additional spellings accepted on CIF import. Defaults to ``edi_names``
+  when not given.
+
+Both lists are ordered by priority: the first entry is canonical for
+writing, and the whole list is accepted on read.
+"""
 
 from __future__ import annotations
 
 
-class CifHandler:
-    """
-    Canonical CIF handler used by descriptors/parameters.
-
-    Holds persistence/import/export tags and attaches to an owning
-    descriptor so it can derive a stable uid if needed.
-    """
+class TagSpec:
+    """Per-descriptor tag specification across Edi and CIF formats."""
 
     def __init__(
         self,
         *,
-        names: list[str],
-        project_name: str | None = None,
-        import_names: list[str] | None = None,
-        iucr_name: str | None = None,
+        edi_names: list[str],
+        edi_name: str | None = None,
+        cif_names: list[str] | None = None,
         docs_page: str | None = None,
         docs_anchor: str | None = None,
     ) -> None:
-        self._names = names
-        self._project_name = project_name
-        self._import_names = import_names
-        self._iucr_name = iucr_name
+        self._edi_names = edi_names
+        self._explicit_edi_name = edi_name
+        self._cif_names = cif_names
         self._docs_page = docs_page
         self._docs_anchor = docs_anchor
         self._owner = None  # set by attach
@@ -36,45 +49,53 @@ class CifHandler:
         self._owner = owner
 
     @property
-    def names(self) -> list[str]:
-        """List of CIF tag names associated with the owner."""
-        return self._names
+    def edi_names(self) -> list[str]:
+        """Edi tag names accepted on read; first is canonical."""
+        return self._edi_names
 
     @property
-    def project_name(self) -> str:
-        """Edi project data name used by project persistence."""
-        if self._project_name is not None:
-            return self._project_name
-        return self._names[0]
+    def edi_name(self) -> str:
+        """Canonical Edi tag used when writing ``.edi`` files."""
+        if self._explicit_edi_name is not None:
+            return self._explicit_edi_name
+        return self._edi_names[0]
 
     @property
-    def import_names(self) -> list[str]:
-        """Accepted legacy or external names used by project import."""
-        if self._import_names is not None:
-            return self._import_names
-        return self._names
+    def edi_read_names(self) -> list[str]:
+        """Accepted ``.edi`` load names, in lookup order."""
+        return list(dict.fromkeys([self.edi_name, *self._edi_names]))
+
+    @property
+    def cif_names(self) -> list[str]:
+        """CIF tag names; first is canonical for export."""
+        if self._cif_names is not None:
+            return self._cif_names
+        return self._edi_names
+
+    @property
+    def cif_name(self) -> str:
+        """Canonical CIF tag used by report/strict-CIF export."""
+        return self.cif_names[0]
+
+    @property
+    def cif_read_names(self) -> list[str]:
+        """Accepted ``.cif`` import names, in lookup order."""
+        return list(dict.fromkeys(self.cif_names))
 
     @property
     def read_names(self) -> list[str]:
-        """Accepted project-load names in lookup order."""
-        return list(dict.fromkeys([self.project_name, *self.import_names]))
-
-    @property
-    def iucr_name(self) -> str:
-        """IUCr-side CIF tag name for export writers."""
-        if self._iucr_name is not None:
-            return self._iucr_name
-        return self._names[0]
+        """Names accepted on read across both formats (union)."""
+        return list(dict.fromkeys([self.edi_name, *self._edi_names, *self.cif_names]))
 
     @property
     def category_name(self) -> str:
         """Project data category name derived from the Edi tag."""
-        return _split_data_name(self.project_name)[0]
+        return _split_data_name(self.edi_name)[0]
 
     @property
     def category_entry_name(self) -> str:
         """Project data item name derived from the Edi tag."""
-        return _split_data_name(self.project_name)[1]
+        return _split_data_name(self.edi_name)[1]
 
     @property
     def docs_page(self) -> str:
@@ -92,11 +113,11 @@ class CifHandler:
 
     @property
     def url(self) -> str:
-        """Versioned online documentation URL for this handler."""
+        """Versioned online documentation URL for this descriptor."""
         from easydiffraction.utils.utils import parameter_docs_url  # noqa: PLC0415
 
         return parameter_docs_url(
-            self.project_name,
+            self.edi_name,
             page=self._docs_page,
             anchor=self._docs_anchor,
         )
