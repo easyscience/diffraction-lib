@@ -1231,13 +1231,13 @@ implementation should add a small documentation-url resolver that:
   a page or anchor cannot be derived from the Edi name.
 
 The shared resolver should be the only code that knows the absolute site
-base and version folder. `CifHandler.project_name` (introduced by
-Migration Sketch step 1) is the source value for ordinary descriptors;
-descriptor classes expose `param.url` by asking the resolver to build
-the URL from that project name. This keeps old installed versions linked
-to the documentation version they were tested against, while future docs
-reorganizations require changing one resolver or adding redirects rather
-than editing every parameter declaration.
+base and version folder. `TagSpec.edi_name` (the canonical Edi tag) is
+the source value for ordinary descriptors; descriptor classes expose
+`param.url` by asking the resolver to build the URL from that project
+name. This keeps old installed versions linked to the documentation
+version they were tested against, while future docs reorganizations
+require changing one resolver or adding redirects rather than editing
+every parameter declaration.
 
 Parameter-reference detail pages must publish stable explicit anchors
 derived by the same helper used by the resolver. Do not rely on MkDocs'
@@ -1293,7 +1293,7 @@ new extension is required.
    category, preserving current and official tags as read aliases.
 6. Add the shared versioned documentation-url resolver and descriptor
    `url` property, deriving ordinary parameter URLs from
-   `CifHandler.project_name`.
+   `TagSpec.edi_name`.
 7. Rework the user-guide parameter reference per §Documentation:
    Parameter-Reference Pages — three-tab tables ("How to access in the
    code", "Keys in Edi", "Keys in CIF"), Edi-named and
