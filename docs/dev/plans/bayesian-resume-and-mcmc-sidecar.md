@@ -241,6 +241,32 @@ published Bayesian projects so the saved DREAM project carries a
    the regenerated run). `notebook-prepare` to regenerate the notebook.
 4. Verify both resume tutorials execute against the new pinned data.
 
+### Phase 2 status (completed)
+
+- New unit tests added for the DREAM state round-trip, resume validation
+  (count / order / population), `extra_steps` translation, `chains` ⇄
+  `population_size` consistency, and the raw-state lifecycle; a new
+  integration test mirrors the emcee resume parity check. Four
+  pre-existing tests were updated to the resume-aware API.
+- **Scope addition surfaced during verification:** `project.save_as`
+  rebuilds the derived sidecar arrays from memory but previously dropped
+  the raw sampler-state groups, so a resume after `load` + `save_as`
+  (the exact flow both resume tutorials use) found no chain — emcee only
+  appeared to work because the old code silently restarted a fresh fit.
+  The ADR already requires resume to survive a save/load round-trip, so
+  `save_as` now copies the `emcee_chain` / `dream_state` groups across
+  via `carry_over_raw_sampler_state` (covered by new unit tests and the
+  ADR §2 note). This fixes resume for both engines.
+- Both published projects were regenerated at 10000 steps (seed 42),
+  pushed to `easyscience/diffraction`, and the pinned commit bumped to
+  `8449440`. The DREAM tutorial was renamed to
+  `bayesian-dream-resume-lbco-hrpt` (load + resume), nav / `index.md` /
+  `index.json` / `baseline.json` updated, and the stale "emcee only"
+  note removed from the emcee resume tutorial.
+- `pixi run fix`, `check`, `unit-tests` (3628), `integration-tests`
+  (194), `script-tests` (34 passed, 8 skipped), and the tutorial-output
+  baseline checks (24 passed) all pass against the new pinned data.
+
 ## Suggested Pull Request
 
 **Title:** Resume and extend Bayesian (bumps-DREAM) refinements; clearer
