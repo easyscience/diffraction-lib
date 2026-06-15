@@ -125,7 +125,7 @@ notebook-tests = { cmd = 'python -m pytest --nbmake docs/docs/tutorials/ docs/do
   'clean-tutorial-projects',
 ], env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials' } }
 
-# Parse the analysis.edifa of every saved tutorial project and assert its
+# Parse the analysis.edi of every saved tutorial project and assert its
 # refined fit results against tests/tutorials/baseline.json. Run only after
 # the tutorials have been executed (script-tests or notebook-tests), so the
 # saved projects exist under tmp/tutorials/projects/.
