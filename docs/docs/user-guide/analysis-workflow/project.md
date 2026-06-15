@@ -117,7 +117,6 @@ This file stores project-level metadata and display configuration.
 
 <div class="cif">
 <pre>
-<span class="blue"><b>_edi</b>.schema_name</span>    EasyDiffraction
 <span class="blue"><b>_edi</b>.schema_version</span> 1
 
 <span class="blue"><b>_metadata</b>.name</span>          lbco_hrpt
