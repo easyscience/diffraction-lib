@@ -270,7 +270,7 @@ class TofBackToBackExponentialMixin:
             ),
             tags=TagSpec(
                 edi_names=['_peak.rise_alpha_0'],
-                cif_names=['_easydiffraction_peak.rise_alpha_0', '_peak.exp_rise_alpha_0'],
+                cif_names=['_easydiffraction_peak.rise_alpha_0'],
             ),
         )
         self._rise_alpha_1 = Parameter(
@@ -287,7 +287,7 @@ class TofBackToBackExponentialMixin:
             ),
             tags=TagSpec(
                 edi_names=['_peak.rise_alpha_1'],
-                cif_names=['_easydiffraction_peak.rise_alpha_1', '_peak.exp_rise_alpha_1'],
+                cif_names=['_easydiffraction_peak.rise_alpha_1'],
             ),
         )
         self._decay_beta_0 = Parameter(
@@ -304,7 +304,7 @@ class TofBackToBackExponentialMixin:
             ),
             tags=TagSpec(
                 edi_names=['_peak.decay_beta_0'],
-                cif_names=['_easydiffraction_peak.decay_beta_0', '_peak.exp_decay_beta_0'],
+                cif_names=['_easydiffraction_peak.decay_beta_0'],
             ),
         )
         self._decay_beta_1 = Parameter(
@@ -321,7 +321,7 @@ class TofBackToBackExponentialMixin:
             ),
             tags=TagSpec(
                 edi_names=['_peak.decay_beta_1'],
-                cif_names=['_easydiffraction_peak.decay_beta_1', '_peak.exp_decay_beta_1'],
+                cif_names=['_easydiffraction_peak.decay_beta_1'],
             ),
         )
 
