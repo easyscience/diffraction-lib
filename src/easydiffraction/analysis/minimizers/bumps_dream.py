@@ -461,6 +461,22 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         self._pop = self._validated_positive_integer('pop', value)
 
     @property
+    def chains(self) -> int:
+        """
+        Friendly alias for ``pop``, the DREAM population scale factor.
+
+        DREAM runs ``ceil(chains * n_parameters)`` parallel chains, so
+        ``chains`` is a per-parameter multiplier rather than an absolute
+        chain count.
+        """
+        return self.pop
+
+    @chains.setter
+    def chains(self, value: int) -> None:
+        """Set the DREAM population scale factor (alias for ``pop``)."""
+        self.pop = value
+
+    @property
     def parallel(self) -> int:
         """DREAM parallel worker count; ``0`` uses all CPUs."""
         return self._parallel

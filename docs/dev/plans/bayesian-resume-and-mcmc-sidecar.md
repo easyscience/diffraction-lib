@@ -147,7 +147,7 @@ Phase 1 review gate. Do not batch multiple steps into one commit.
   `resume=True, extra_steps=N` behaves consistently for emcee and DREAM
   at the `Fitter`/`analysis.fit` layer; share validation/detection
   helpers where clean. Commit: `Unify emcee and dream resume semantics`.
-- [ ] **P1.5 — Add `chains` alias for DREAM `population`.** User-facing
+- [x] **P1.5 — Add `chains` alias for DREAM `population`.** User-facing
   `chains` alias with conflict detection and "population = scale factor"
   documentation. Commit: `Add chains alias for bumps-dream population`.
 - [ ] **P1.6 — DREAM resume tutorial (+ registration).** Add
