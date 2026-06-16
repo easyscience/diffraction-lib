@@ -69,8 +69,8 @@ def test_pd_experiment_peak_profile_switch_warning_lists_added_settings(monkeypa
         (
             'Switching peak profile type adds these settings with defaults:\n'
             '• asym_beba_a0=0.0\n'
-            '• asym_beba_b0=0.0\n'
             '• asym_beba_a1=0.0\n'
+            '• asym_beba_b0=0.0\n'
             '• asym_beba_b1=0.0'
         )
     ]
@@ -139,8 +139,8 @@ def test_pd_experiment_peak_profile_switch_warning_lists_removed_settings(monkey
         (
             'Switching peak profile type removes these settings:\n'
             '• asym_beba_a0\n'
-            '• asym_beba_b0\n'
             '• asym_beba_a1\n'
+            '• asym_beba_b0\n'
             '• asym_beba_b1'
         )
     ]
