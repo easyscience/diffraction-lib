@@ -5,9 +5,13 @@
 # convention (`adp_type='beta'`) and the cylindrical Debye–Scherrer
 # sample-absorption correction on a powder pattern.
 #
-# The **only** parameter that does not match is the empirical
-# axial-divergence asymmetry, which refines to the opposite sign (cryspy
-# issue #50).
+# The **only** parameter that does not match is the Bérar–Baldinozzi
+# axial-divergence asymmetry: cryspy and FullProf implement it with
+# different conventions (an overall sign and a coefficient inside the
+# `F_b` term differ), so the `asym_beba_*` coefficients do not transfer
+# one-to-one between the two programs. Freeing them in the fit absorbs
+# the difference; the structural results are unaffected. See development
+# issue 166 for the detailed comparison.
 
 # %%
 import easydiffraction as edi
@@ -126,12 +130,12 @@ experiment.linked_structures.create(structure_id='y2o3', scale=FULLPROF_SCALE)
 experiment.instrument.setup_wavelength = FULLPROF_WAVELENGTH
 experiment.instrument.calib_twotheta_offset = FULLPROF_ZERO
 
-experiment.peak.type = 'pseudo-voigt + empirical asymmetry'
+experiment.peak.type = 'pseudo-voigt + berar-baldinozzi asymmetry'
 experiment.peak.broad_gauss_u = FULLPROF_U
 experiment.peak.broad_gauss_v = FULLPROF_V
 experiment.peak.broad_gauss_w = FULLPROF_W
-experiment.peak.asym_empir_1 = FULLPROF_ASY_1
-experiment.peak.asym_empir_2 = FULLPROF_ASY_2
+experiment.peak.asym_beba_a0 = FULLPROF_ASY_1
+experiment.peak.asym_beba_b0 = FULLPROF_ASY_2
 
 experiment.absorption.type = 'cylinder-hewat'
 experiment.absorption.mu_r = FULLPROF_MU_R
@@ -163,8 +167,8 @@ project.display.pattern_comparison(
 # ## Fit edi-cryspy to FullProf
 
 # %%
-experiment.peak.asym_empir_1.free = True
-experiment.peak.asym_empir_2.free = True
+experiment.peak.asym_beba_a0.free = True
+experiment.peak.asym_beba_b0.free = True
 
 project.analysis.fit()
 project.display.fit.results()

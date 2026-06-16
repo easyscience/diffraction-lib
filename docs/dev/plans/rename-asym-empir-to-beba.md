@@ -182,7 +182,7 @@ applies: commit each completed step locally before starting the next.
   `pixi run notebook-prepare`; stage the regenerated `.ipynb`.
   Commit: `Rename pbso4 empirical page to beba and add mismatch note`
 
-- [ ] **P1.6 — Update the Y₂O₃ Verification page.** In
+- [x] **P1.6 — Update the Y₂O₃ Verification page.** In
   `pd-neut-cwl_pv-beta_y2o3.py` rename `asym_empir_1/2 → asym_beba_a0/b0`
   (and the `FULLPROF_ASY_*` constants/comments as needed); replace the
   existing "refines to opposite sign (cryspy #50)" wording with the
@@ -241,7 +241,7 @@ new type string and class.
 - [x] P1.3 calculators
 - [x] P1.4 existing test references
 - [x] P1.5 PbSO₄ page rename + note
-- [ ] P1.6 Y₂O₃ page note
+- [x] P1.6 Y₂O₃ page note
 - [ ] P1.7 tutorials
 - [ ] P1.8 docs + issues 133 & 166
 - [ ] P1.9 Phase 1 review gate
