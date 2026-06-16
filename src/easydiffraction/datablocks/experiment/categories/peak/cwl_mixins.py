@@ -210,7 +210,7 @@ class BerarBaldinozziAsymmetryMixin:
             description='Berar-Baldinozzi asymmetry coefficient A0 (Fa/tan theta)',
             units='none',
             display_handler=DisplayHandler(
-                display_name='A0',
+                display_name='A₀',
                 latex_name=r'$A_0$',
             ),
             value_spec=AttributeSpec(
@@ -227,7 +227,7 @@ class BerarBaldinozziAsymmetryMixin:
             description='Berar-Baldinozzi asymmetry coefficient B0 (Fb/tan theta)',
             units='none',
             display_handler=DisplayHandler(
-                display_name='B0',
+                display_name='B₀',
                 latex_name=r'$B_0$',
             ),
             value_spec=AttributeSpec(
@@ -244,7 +244,7 @@ class BerarBaldinozziAsymmetryMixin:
             description='Berar-Baldinozzi asymmetry coefficient A1 (Fa/tan 2theta)',
             units='none',
             display_handler=DisplayHandler(
-                display_name='A1',
+                display_name='A₁',
                 latex_name=r'$A_1$',
             ),
             value_spec=AttributeSpec(
@@ -261,7 +261,7 @@ class BerarBaldinozziAsymmetryMixin:
             description='Berar-Baldinozzi asymmetry coefficient B1 (Fb/tan 2theta)',
             units='none',
             display_handler=DisplayHandler(
-                display_name='B1',
+                display_name='B₁',
                 latex_name=r'$B_1$',
             ),
             value_spec=AttributeSpec(
