@@ -37,8 +37,8 @@ class PeakFactory(FactoryBase):
             ('beam_mode', BeamModeEnum.CONSTANT_WAVELENGTH),
         }): {
             'pseudo-voigt': PeakProfileTypeEnum.CWL_PSEUDO_VOIGT,
-            'pseudo-voigt + empirical asymmetry': (
-                PeakProfileTypeEnum.CWL_PSEUDO_VOIGT_EMPIRICAL_ASYMMETRY
+            'pseudo-voigt + berar-baldinozzi asymmetry': (
+                PeakProfileTypeEnum.CWL_PSEUDO_VOIGT_BERAR_BALDINOZZI_ASYMMETRY
             ),
             'thompson-cox-hastings': PeakProfileTypeEnum.CWL_THOMPSON_COX_HASTINGS,
         },

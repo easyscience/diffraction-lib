@@ -154,7 +154,7 @@ applies: commit each completed step locally before starting the next.
   (`_peak.asym_beba_*`).
   Commit: `Rename empirical asymmetry params to beba in peak mixin`
 
-- [ ] **P1.2 — Rename peak class, enum, factory, package init.** Update
+- [x] **P1.2 — Rename peak class, enum, factory, package init.** Update
   `cwl.py` (`CwlPseudoVoigtBerarBaldinozziAsymmetry`, mixin import,
   docstrings), `enums.py` (member, value
   `cwl-pseudo-voigt-berar-baldinozzi-asymmetry`, `description()` text),
@@ -237,7 +237,7 @@ new type string and class.
 ## Status checklist
 
 - [x] P1.1 model params + mixin
-- [ ] P1.2 peak class + enum + factory + init
+- [x] P1.2 peak class + enum + factory + init
 - [ ] P1.3 calculators
 - [ ] P1.4 existing test references
 - [ ] P1.5 PbSO₄ page rename + note

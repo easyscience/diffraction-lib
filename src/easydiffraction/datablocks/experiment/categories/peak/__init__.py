@@ -4,7 +4,7 @@
 
 from easydiffraction.datablocks.experiment.categories.peak.cwl import CwlPseudoVoigt
 from easydiffraction.datablocks.experiment.categories.peak.cwl import (
-    CwlPseudoVoigtEmpiricalAsymmetry,
+    CwlPseudoVoigtBerarBaldinozziAsymmetry,
 )
 from easydiffraction.datablocks.experiment.categories.peak.cwl import CwlThompsonCoxHastings
 from easydiffraction.datablocks.experiment.categories.peak.tof import TofDoubleJorgensenVonDreele
