@@ -273,6 +273,9 @@ def test_build_mapper_falls_back_for_serial_and_unpicklable(monkeypatch):
 
     warnings: list[str] = []
     minimizer.parallel = 0
+    # Force the process-pool fallback path (no fork pool) to exercise the
+    # MPMapper/serial branch.
+    monkeypatch.setattr(minimizer, '_build_fork_pool_mapper', lambda problem: None)
     _simulate_import_safe_spawn_main_module(monkeypatch)
     monkeypatch.setattr(
         'easydiffraction.analysis.minimizers.bumps_dream.can_pickle', lambda problem: False
@@ -290,6 +293,7 @@ def test_build_mapper_temporarily_clears_shared_display_handle(monkeypatch):
 
     minimizer = BumpsDreamMinimizer()
     minimizer.parallel = 0
+    monkeypatch.setattr(minimizer, '_build_fork_pool_mapper', lambda problem: None)
     _simulate_import_safe_spawn_main_module(monkeypatch)
     handle = object()
     activity_indicator = object()
@@ -329,6 +333,7 @@ def test_build_mapper_allows_real_can_pickle_with_live_tracker_state(monkeypatch
 
     minimizer = BumpsDreamMinimizer()
     minimizer.parallel = 0
+    monkeypatch.setattr(minimizer, '_build_fork_pool_mapper', lambda problem: None)
     _simulate_import_safe_spawn_main_module(monkeypatch)
     bumps_params = [BumpsParameter(value=1.0, name='alpha')]
 
@@ -353,6 +358,7 @@ def test_build_mapper_falls_back_for_spawn_bootstrap_runtime_error(monkeypatch):
     minimizer = BumpsDreamMinimizer()
     minimizer.parallel = 0
     warnings: list[str] = []
+    monkeypatch.setattr(minimizer, '_build_fork_pool_mapper', lambda problem: None)
     _simulate_import_safe_spawn_main_module(monkeypatch)
 
     monkeypatch.setattr(
@@ -389,6 +395,7 @@ def test_build_mapper_falls_back_before_starting_spawn_for_direct_script(monkeyp
     warnings: list[str] = []
     pickle_checks: list[object] = []
 
+    monkeypatch.setattr(minimizer, '_build_fork_pool_mapper', lambda problem: None)
     monkeypatch.setattr(
         'easydiffraction.analysis.minimizers.bumps_dream.multiprocessing.get_start_method',
         lambda allow_none=True: 'spawn',

@@ -645,3 +645,75 @@ def test_chains_alias_shares_storage_with_pop():
 
     minimizer.pop = 2
     assert minimizer.chains == 2
+
+
+def test_dream_nllf_worker_requires_initialized_problem():
+    from easydiffraction.analysis.minimizers import bumps_dream as bd
+
+    bd._set_dream_worker_problem(None)
+    with pytest.raises(RuntimeError, match='worker problem has not been initialized'):
+        bd._dream_nllf_worker(np.array([1.0]))
+
+    problem = SimpleNamespace(nllf=lambda point: float(point[0]) * 2.0)
+    bd._set_dream_worker_problem(problem)
+    try:
+        assert bd._dream_nllf_worker(np.array([3.0])) == 6.0
+    finally:
+        bd._set_dream_worker_problem(None)
+
+
+def test_dream_fork_pool_mapper_maps_points_via_pool():
+    from easydiffraction.analysis.minimizers import bumps_dream as bd
+
+    class FakePool:
+        def map(self, fn, points):
+            return [fn(point) for point in points]
+
+    problem = SimpleNamespace(nllf=lambda point: float(point[0]))
+    bd._set_dream_worker_problem(problem)
+    try:
+        mapper = bd._DreamForkPoolMapper(FakePool())
+        assert mapper([np.array([1.0]), np.array([2.5])]) == [1.0, 2.5]
+    finally:
+        bd._set_dream_worker_problem(None)
+
+
+def test_shutdown_fork_pool_mapper_terminates_and_clears_problem():
+    from easydiffraction.analysis.minimizers import bumps_dream as bd
+    from easydiffraction.analysis.minimizers.bumps_dream import BumpsDreamMinimizer
+
+    events: list[str] = []
+
+    class FakePool:
+        def terminate(self):
+            events.append('terminate')
+
+        def join(self):
+            events.append('join')
+
+    bd._set_dream_worker_problem(object())
+    mapper = bd._DreamForkPoolMapper(FakePool())
+
+    BumpsDreamMinimizer._shutdown_fork_pool_mapper(mapper)
+
+    assert events == ['terminate', 'join']
+    assert bd._DREAM_WORKER_PROBLEM is None
+
+    # Tolerates a non-fork mapper (e.g. MPMapper's plain function) and None.
+    BumpsDreamMinimizer._shutdown_fork_pool_mapper(lambda points: points)
+    BumpsDreamMinimizer._shutdown_fork_pool_mapper(None)
+
+
+def test_build_fork_pool_mapper_returns_none_without_fork(monkeypatch):
+    from easydiffraction.analysis.minimizers import bumps_dream as bd
+    from easydiffraction.analysis.minimizers.bumps_dream import BumpsDreamMinimizer
+
+    minimizer = BumpsDreamMinimizer()
+    minimizer.parallel = 0
+    monkeypatch.setattr(
+        bd.multiprocessing,
+        'get_all_start_methods',
+        lambda: ['spawn', 'forkserver'],
+    )
+
+    assert minimizer._build_fork_pool_mapper('problem') is None

@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import math
 import multiprocessing
+import os
 import random
 import sys
 from dataclasses import dataclass
@@ -57,6 +58,45 @@ DREAM_DRIVER_FAILURES = (ArithmeticError, RuntimeError, TypeError, ValueError)
 # Top-level HDF5 group in the MCMC sidecar (mcmc.h5) holding the
 # resumable bumps-DREAM sampler state, alongside emcee's emcee_chain.
 DREAM_STATE_GROUP = 'dream_state'
+
+# Fork-inherited problem for parallel DREAM population evaluation.
+# bumps' MPMapper needs a picklable problem and an import-safe main
+# module, so it silently falls back to serial for cryspy problems run
+# from a notebook or script (spawn/forkserver start methods). Mirroring
+# the emcee minimizer, a fork-based pool inherits the problem through
+# this module global instead of pickling it, keeping evaluation
+# parallel where MPMapper cannot.
+_DREAM_WORKER_PROBLEM: object | None = None
+
+
+def _set_dream_worker_problem(problem: object | None) -> None:
+    """Set the fork-inherited DREAM worker problem."""
+    global _DREAM_WORKER_PROBLEM  # noqa: PLW0603
+    _DREAM_WORKER_PROBLEM = problem
+
+
+def _dream_nllf_worker(point: object) -> float:
+    """Evaluate one point's negative log-likelihood in a fork worker."""
+    if _DREAM_WORKER_PROBLEM is None:
+        msg = 'DREAM worker problem has not been initialized.'
+        raise RuntimeError(msg)
+    return _DREAM_WORKER_PROBLEM.nllf(point)
+
+
+class _DreamForkPoolMapper:
+    """
+    Fork-based population mapper matching the bumps mapper contract.
+    """
+
+    def __init__(self, pool: object) -> None:
+        """Store the fork pool used to evaluate the population."""
+        self.pool = pool
+
+    def __call__(self, points: object) -> list[float]:
+        """
+        Return the negative log-likelihood for each population point.
+        """
+        return self.pool.map(_dream_nllf_worker, list(points))
 
 
 def _write_dream_state_sidecar(
@@ -1037,9 +1077,11 @@ class BumpsDreamMinimizer(BumpsMinimizer):
             driver.clip()
         except KeyboardInterrupt:
             MPMapper.stop_mapper()
+            self._shutdown_fork_pool_mapper(mapper)
             raise
         except Exception:
             MPMapper.stop_mapper()
+            self._shutdown_fork_pool_mapper(mapper)
             raise
         else:
             return driver
@@ -1049,6 +1091,56 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         if self.parallel == 1:
             return None
 
+        shared_display_handle = getattr(self.tracker, '_shared_display_handle', None)
+        activity_indicator = getattr(self.tracker, '_activity_indicator', None)
+        if shared_display_handle is not None:
+            self.tracker._set_shared_display_handle(None)
+        if activity_indicator is not None:
+            self.tracker._activity_indicator = None
+
+        try:
+            # Prefer a fork-based pool: it inherits the (unpicklable)
+            # cryspy problem instead of pickling it, so it parallelizes
+            # where bumps' MPMapper would fall back to serial.
+            fork_mapper = self._build_fork_pool_mapper(problem)
+            if fork_mapper is not None:
+                return fork_mapper
+            return self._build_process_pool_mapper(problem)
+        finally:
+            if activity_indicator is not None:
+                self.tracker._activity_indicator = activity_indicator
+            if shared_display_handle is not None:
+                self.tracker._set_shared_display_handle(shared_display_handle)
+
+    def _resolved_worker_count(self) -> int:
+        """
+        Return the worker count for parallel population evaluation.
+        """
+        if self.parallel > 0:
+            return self.parallel
+        return os.cpu_count() or 1
+
+    def _build_fork_pool_mapper(self, problem: FitProblem) -> object | None:
+        """
+        Return a fork-pool mapper, or ``None`` when fork is unusable.
+        """
+        if os.name == 'nt' or 'fork' not in multiprocessing.get_all_start_methods():
+            return None
+        worker_count = self._resolved_worker_count()
+        if worker_count <= 1:
+            return None
+
+        _set_dream_worker_problem(problem)
+        try:
+            context = multiprocessing.get_context('fork')
+            pool = context.Pool(worker_count)
+        except (OSError, ValueError, RuntimeError):
+            _set_dream_worker_problem(None)
+            return None
+        return _DreamForkPoolMapper(pool)
+
+    def _build_process_pool_mapper(self, problem: FitProblem) -> object | None:
+        """Return a bumps MPMapper, or ``None`` to run serially."""
         if self._requires_serial_mapper_for_spawn_main_module():
             self._warn_after_tracking(
                 'DREAM parallel evaluation requires an import-safe main '
@@ -1056,13 +1148,6 @@ class BumpsDreamMinimizer(BumpsMinimizer):
                 'serial execution.'
             )
             return None
-
-        shared_display_handle = getattr(self.tracker, '_shared_display_handle', None)
-        activity_indicator = getattr(self.tracker, '_activity_indicator', None)
-        if shared_display_handle is not None:
-            self.tracker._set_shared_display_handle(None)
-        if activity_indicator is not None:
-            self.tracker._activity_indicator = None
 
         try:
             if not can_pickle(problem):
@@ -1083,11 +1168,15 @@ class BumpsDreamMinimizer(BumpsMinimizer):
                 'serial execution.'
             )
             return None
-        finally:
-            if activity_indicator is not None:
-                self.tracker._activity_indicator = activity_indicator
-            if shared_display_handle is not None:
-                self.tracker._set_shared_display_handle(shared_display_handle)
+
+    @staticmethod
+    def _shutdown_fork_pool_mapper(mapper: object | None) -> None:
+        """Terminate a fork-pool mapper and clear the worker problem."""
+        pool = getattr(mapper, 'pool', None)
+        if pool is not None:
+            pool.terminate()
+            pool.join()
+        _set_dream_worker_problem(None)
 
     @staticmethod
     def _requires_serial_mapper_for_spawn_main_module() -> bool:
@@ -1138,6 +1227,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
             )
         finally:
             MPMapper.stop_mapper()
+            BumpsDreamMinimizer._shutdown_fork_pool_mapper(getattr(driver, 'mapper', None))
             numpy_rng.set_state(numpy_state)
             random.setstate(python_state)
 
