@@ -88,7 +88,7 @@ def _patch_variable_types(monkeypatch):
 
 def _minimal_template(**overrides):
     base = {
-        'structure_cif': 'struct',
+        'structure_cifs': ['struct'],
         'experiment_cif': 'expt',
         'initial_params': {},
         'free_parameter_unique_names': ['cell.a'],
@@ -642,7 +642,7 @@ class TestBuildTemplate:
 
         template = _build_template(project)
 
-        assert template.structure_cif == 'STRUCT_CIF'
+        assert template.structure_cifs == ['STRUCT_CIF']
         assert template.experiment_cif == 'EXPT_CIF'
         # Only the free, non-user-constrained parameter is collected.
         assert template.free_parameter_unique_names == ['cell.a']
@@ -814,10 +814,16 @@ class TestCheckSeqPreconditions:
         # No exception means success.
         assert _check_seq_preconditions(project) is None
 
-    def test_rejects_multiple_structures(self, monkeypatch):
+    def test_accepts_multiple_structures(self, monkeypatch):
         _patch_variable_types(monkeypatch)
         project = _precondition_project(n_structures=2)
-        with pytest.raises(ValueError, match=r'exactly 1 structure'):
+        # Multiple structures are now supported; no exception means success.
+        assert _check_seq_preconditions(project) is None
+
+    def test_rejects_no_structures(self, monkeypatch):
+        _patch_variable_types(monkeypatch)
+        project = _precondition_project(n_structures=0)
+        with pytest.raises(ValueError, match=r'at least 1 structure'):
             _check_seq_preconditions(project)
 
     def test_rejects_multiple_experiments(self, monkeypatch):
