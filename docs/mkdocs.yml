@@ -242,6 +242,7 @@ nav:
           - NCAF pd-neut-tof: tutorials/refine-ncaf-wish.ipynb
           - Si Bragg+PDF: tutorials/joint-si-bragg-pdf.ipynb
           - Co2SiO4 T-scan: tutorials/refine-cosio-d20-tscan.ipynb
+          - YAlO3+Al2O3 T-scan: tutorials/refine-yap-tscan.ipynb
       - Simulated Data:
           - LBCO+Si McStas: tutorials/refine-lbco-si-mcstas.ipynb
           - BEER McStas: tutorials/calibrate-beer-ess.ipynb
@@ -264,6 +265,7 @@ nav:
           - LaB6 (FCJ asymmetry): verification/pd-neut-cwl_tch-fcj-noabs_lab6.ipynb
           - LaB6 (absorption): verification/pd-neut-cwl_tch-fcj_lab6.ipynb
           - LaB6 (absorption, no FCJ): verification/pd-neut-cwl_tch-fcj-nosldl_lab6.ipynb
+          - Y2O3 (anisotropic β-tensor ADPs): verification/pd-neut-cwl_pv-beta_y2o3.ipynb
       - Powder, neutron, time-of-flight:
           - Si (Jorgensen): verification/pd-neut-tof_j_si.ipynb
           - Si (Jorgensen–Von Dreele): verification/pd-neut-tof_jvd_si.ipynb

@@ -66,6 +66,13 @@ and so on. The list below notes only what is specific to each page.
   absorption (μR = 0.7) with FCJ asymmetry switched off, isolating the
   absorption correction. ed-cryspy matches FullProf (enabling the
   correction removes a ≈ 2.9× intensity mismatch).
+- [Y₂O₃ `pd-neut-cwl` (anisotropic β-tensor ADPs)](pd-neut-cwl_pv-beta_y2o3.ipynb)
+  – Yttria (Y₂O₃, bixbyite, _Ia-3_); dimensionless β-tensor anisotropic
+  ADPs (`adp_type='beta'`) on the three sites, with cylindrical
+  Debye–Scherrer absorption (μR = 1.5) and the Thompson–Cox–Hastings
+  profile. cryspy only. Refining every parameter recovers the FullProf
+  values; the empirical asymmetry mirrors to the opposite sign (cryspy
+  issue #50) but all closeness metrics stay within tolerance.
 
 ## Powder, neutron, time-of-flight
 
