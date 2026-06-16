@@ -152,7 +152,8 @@ def test_pre_processing_pending_emits_status_row_first(silent_tracker):
     )
 
     first_row = silent_tracker._df_rows[0]
-    # Status row: blank progress column, phase = pre-processing.
+    # Status row: blank step and progress columns, phase = pre-processing.
+    assert first_row[0] == ''
     assert first_row[1] == ''
     assert first_row[4] == tracking_mod.SAMPLER_PHASE_PRE_PROCESSING
     assert silent_tracker._sampler_pre_processing_pending is False

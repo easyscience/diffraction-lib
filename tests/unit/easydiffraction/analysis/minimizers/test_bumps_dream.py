@@ -115,9 +115,11 @@ def test_dream_progress_monitor_reports_relative_progress_on_resume():
     assert max(monitor._sampling_targets) == 1101
 
 
-def test_dream_progress_monitor_reports_absolute_progress_when_fresh():
+def test_dream_progress_monitor_excludes_initial_generation_when_fresh():
     from easydiffraction.analysis.minimizers.bumps_dream import _DreamProgressMonitor
 
+    # total_generations = steps + burn + 1; the +1 initial generation is
+    # setup, so the reported total is steps + burn (here 100).
     monitor = _DreamProgressMonitor(
         tracker=MagicMock(),
         n_points=100,
@@ -127,8 +129,9 @@ def test_dream_progress_monitor_reports_absolute_progress_when_fresh():
     )
 
     assert monitor._reported_iteration(40) == 40
-    assert monitor._reported_total_iterations() == 101
-    assert monitor._progress_percent(40) == pytest.approx(100.0 * 40 / 101)
+    assert monitor._reported_iteration(101) == 100
+    assert monitor._reported_total_iterations() == 100
+    assert monitor._progress_percent(40) == pytest.approx(40.0)
 
 
 def test_init_accepts_enum_or_string_and_rejects_invalid():

@@ -35,7 +35,7 @@ SAMPLER_PHASE_POST_PROCESSING = 'post-processing'
 SAMPLER_PHASE_PRE_PROCESSING = 'pre-processing'
 DEFAULT_HEADERS = ['iteration', 'time (s)', 'χ²', 'change / status']
 DEFAULT_ALIGNMENTS = ['center', 'center', 'center', 'center']
-SAMPLER_HEADERS = ['iteration', 'progress', 'time (s)', 'log posterior', 'phase']
+SAMPLER_HEADERS = ['step', 'progress', 'time (s)', 'log posterior', 'phase']
 SAMPLER_ALIGNMENTS = ['center', 'center', 'center', 'center', 'center']
 
 _TerminalLiveHandle = _SharedTerminalLiveHandle
@@ -423,8 +423,11 @@ class FitProgressTracker:
         self._last_progress_time = update.elapsed_time
         if self._sampler_pre_processing_pending:
             self._sampler_pre_processing_pending = False
+            # Pre-processing is setup, not a sampling step, so the step
+            # cell is left blank; real step counts start at the first
+            # sampling row.
             return self._sampler_status_row(
-                iteration_label=self._sampler_iteration_label(clamped_iteration),
+                iteration_label='',
                 phase=SAMPLER_PHASE_PRE_PROCESSING,
                 elapsed_time=update.elapsed_time,
                 log_posterior=update.log_posterior,

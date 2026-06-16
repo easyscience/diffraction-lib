@@ -256,12 +256,12 @@ class _DreamProgressMonitor(bumps_monitor.Monitor):
         return min(relative, self._reported_total_iterations())
 
     def _reported_total_iterations(self) -> int:
-        """Return the total relative to the resume baseline."""
-        if self._start_generation > 0:
-            # The saved initial generation is already present, so only
-            # the new generations (extra_steps) are reported (1..extra).
-            return max(1, self._total_generations - self._start_generation - 1)
-        return self._total_generations
+        """Return the reported step total, excluding setup."""
+        # total_generations counts the bumps initial generation (the
+        # blank pre-processing row), which is setup rather than a step;
+        # exclude it (and, on resume, the already-saved generations) so
+        # the bar reads steps+burn (fresh) or extra_steps (resume).
+        return max(1, self._total_generations - self._start_generation - 1)
 
     @staticmethod
     def config_history(history: object) -> None:

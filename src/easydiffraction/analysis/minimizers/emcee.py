@@ -721,9 +721,14 @@ class EmceeMinimizer(MinimizerBase):
         )
         self._sampler = sampler
 
+        # The progress bar counts requested steps: extra_steps on
+        # resume, or nsteps + nburn on a fresh run. total_iterations
+        # carries an extra initial iteration (the blank pre-processing
+        # row) that is run but not shown as a step.
+        reporter_total_steps = int(extra_steps) if resume else (self.nsteps + self.nburn)
         reporter = _EmceeProgressReporter(
             tracker=self.tracker,
-            total_steps=total_iterations,
+            total_steps=reporter_total_steps,
             burn_steps=0 if resume else self.nburn,
         )
         if resume:
@@ -1096,11 +1101,6 @@ class EmceeMinimizer(MinimizerBase):
             posterior_parameter_summaries
         )
         best_log_posterior = float(finite_log_posterior[best_draw_index, best_walker_index])
-        self._track_sampler_completion(
-            total_steps=total_steps,
-            best_log_posterior=best_log_posterior,
-            reduced_chi_square=None,
-        )
 
         return OptimizeResult(
             x=best_sample_values,
@@ -1177,32 +1177,6 @@ class EmceeMinimizer(MinimizerBase):
                 'Convergence diagnostics indicate the posterior may be poorly mixed.'
             )
         return convergence_diagnostics
-
-    def _track_sampler_completion(
-        self,
-        *,
-        total_steps: int,
-        best_log_posterior: float,
-        reduced_chi_square: float | None,
-    ) -> None:
-        """Record one final sampler progress row."""
-        reduced_chi2 = reduced_chi_square
-        if reduced_chi2 is None:
-            reduced_chi2 = self.tracker.best_chi2
-        if reduced_chi2 is None:
-            reduced_chi2 = np.nan
-        self.tracker.track_sampler_progress(
-            SamplerProgressUpdate(
-                iteration=max(1, total_steps),
-                total_iterations=max(1, total_steps),
-                phase='sampling',
-                progress_percent=100.0,
-                log_posterior=best_log_posterior,
-                reduced_chi2=float(reduced_chi2),
-                elapsed_time=self.tracker._current_elapsed_time(),
-                force_report=True,
-            )
-        )
 
     @staticmethod
     def _sync_result_to_parameters(
