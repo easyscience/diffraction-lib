@@ -46,8 +46,8 @@ and so on. The list below notes only what is specific to each page.
   Anglesite (PbSO₄, _Pnma_); pseudo-Voigt, no asymmetry.
 - [PbSO₄ `pd-neut-cwl` (Bérar–Baldinozzi asymmetry)](pd-neut-cwl_pv-beba_pbso4.ipynb)
   – Anglesite (PbSO₄, _Pnma_); pseudo-Voigt with Bérar–Baldinozzi
-  (FullProf-style) axial-divergence asymmetry (`asym_beba_*`). Skipped in
-  CI: cryspy and FullProf implement this asymmetry with different
+  (FullProf-style) axial-divergence asymmetry (`asym_beba_*`). Skipped
+  in CI: cryspy and FullProf implement this asymmetry with different
   conventions (issue 166), and crysfml has no empirical-asymmetry model.
 - [LaB₆ `pd-neut-cwl` (SyCos/SySin)](pd-neut-cwl_tch-fcj-noabs-nosldl_lab6.ipynb)
   – Lanthanum hexaboride (LaB₆, _Pm-3m_); pseudo-Voigt with SyCos/SySin
@@ -72,9 +72,9 @@ and so on. The list below notes only what is specific to each page.
   Debye–Scherrer absorption (μR = 1.5) and the Thompson–Cox–Hastings
   profile. cryspy only. Refining every parameter recovers the FullProf
   values; the Bérar–Baldinozzi asymmetry (`asym_beba_*`) is implemented
-  with different conventions in cryspy and FullProf (issue 166), so those
-  coefficients do not transfer one-to-one, but all closeness metrics stay
-  within tolerance.
+  with different conventions in cryspy and FullProf (issue 166), so
+  those coefficients do not transfer one-to-one, but all closeness
+  metrics stay within tolerance.
 
 ## Powder, neutron, time-of-flight
 

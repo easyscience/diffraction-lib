@@ -6,10 +6,10 @@ from easydiffraction.core.metadata import CalculatorSupport
 from easydiffraction.core.metadata import Compatibility
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.datablocks.experiment.categories.peak.base import PeakBase
-from easydiffraction.datablocks.experiment.categories.peak.cwl_mixins import CwlBroadeningMixin
 from easydiffraction.datablocks.experiment.categories.peak.cwl_mixins import (
     BerarBaldinozziAsymmetryMixin,
 )
+from easydiffraction.datablocks.experiment.categories.peak.cwl_mixins import CwlBroadeningMixin
 from easydiffraction.datablocks.experiment.categories.peak.cwl_mixins import FcjAsymmetryMixin
 from easydiffraction.datablocks.experiment.categories.peak.factory import PeakFactory
 from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
@@ -65,7 +65,9 @@ class CwlPseudoVoigtBerarBaldinozziAsymmetry(
     )
 
     def __init__(self) -> None:
-        """Initialize the pseudo-Voigt with Berar-Baldinozzi asymmetry."""
+        """
+        Initialize the pseudo-Voigt with Berar-Baldinozzi asymmetry.
+        """
         super().__init__()
 
 

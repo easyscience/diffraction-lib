@@ -400,11 +400,11 @@
 │   │   │   │   │   └── 🏷️ class PeakBase
 │   │   │   │   ├── 📄 cwl.py
 │   │   │   │   │   ├── 🏷️ class CwlPseudoVoigt
-│   │   │   │   │   ├── 🏷️ class CwlPseudoVoigtEmpiricalAsymmetry
+│   │   │   │   │   ├── 🏷️ class CwlPseudoVoigtBerarBaldinozziAsymmetry
 │   │   │   │   │   └── 🏷️ class CwlThompsonCoxHastings
 │   │   │   │   ├── 📄 cwl_mixins.py
 │   │   │   │   │   ├── 🏷️ class CwlBroadeningMixin
-│   │   │   │   │   ├── 🏷️ class EmpiricalAsymmetryMixin
+│   │   │   │   │   ├── 🏷️ class BerarBaldinozziAsymmetryMixin
 │   │   │   │   │   └── 🏷️ class FcjAsymmetryMixin
 │   │   │   │   ├── 📄 factory.py
 │   │   │   │   │   └── 🏷️ class PeakFactory
