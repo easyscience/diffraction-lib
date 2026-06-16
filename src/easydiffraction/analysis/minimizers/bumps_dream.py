@@ -252,11 +252,16 @@ class _DreamProgressMonitor(bumps_monitor.Monitor):
     def _reported_iteration(self, generation: int) -> int:
         """Return the generation relative to the resume baseline."""
         clamped_generation = min(generation, self._total_generations)
-        return max(1, clamped_generation - self._start_generation)
+        relative = max(1, clamped_generation - self._start_generation)
+        return min(relative, self._reported_total_iterations())
 
     def _reported_total_iterations(self) -> int:
         """Return the total relative to the resume baseline."""
-        return max(1, self._total_generations - self._start_generation)
+        if self._start_generation > 0:
+            # The saved initial generation is already present, so only
+            # the new generations (extra_steps) are reported (1..extra).
+            return max(1, self._total_generations - self._start_generation - 1)
+        return self._total_generations
 
     @staticmethod
     def config_history(history: object) -> None:
@@ -399,12 +404,7 @@ class _DreamProgressMonitor(bumps_monitor.Monitor):
 
     def _progress_percent(self, generation: int) -> float:
         """Return DREAM progress over new generations, in percent."""
-        clamped_generation = min(generation, self._total_generations)
-        numerator = max(0, clamped_generation - self._start_generation)
-        denominator = self._total_generations - self._start_generation
-        if denominator <= 0:
-            return 100.0
-        return 100.0 * numerator / denominator
+        return 100.0 * self._reported_iteration(generation) / self._reported_total_iterations()
 
     @staticmethod
     def _population_mean_log_posterior(history: object) -> float:

@@ -103,11 +103,13 @@ def test_dream_progress_monitor_reports_relative_progress_on_resume():
         start_generation=1000,
     )
 
-    # Progress is reported over the 100 new generations, not 1001/1101.
+    # Progress is reported over the 100 new generations (1/100..100/100),
+    # not the absolute 1001/1101.
     assert monitor._reported_iteration(1000) == 1
     assert monitor._reported_iteration(1050) == 50
-    assert monitor._reported_total_iterations() == 101
-    assert monitor._progress_percent(1050) == pytest.approx(100.0 * 50 / 101)
+    assert monitor._reported_iteration(1100) == 100
+    assert monitor._reported_total_iterations() == 100
+    assert monitor._progress_percent(1050) == pytest.approx(50.0)
     # Reporting targets fall within the new generation range.
     assert min(monitor._sampling_targets) >= 1001
     assert max(monitor._sampling_targets) == 1101
