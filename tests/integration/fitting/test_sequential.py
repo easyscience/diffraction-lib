@@ -284,12 +284,12 @@ def test_fit_sequential_requires_saved_project(tmp_path) -> None:
         _run_sequential_fit(project, str(tmp_path))
 
 
-def test_fit_sequential_requires_one_structure(tmp_path) -> None:
+def test_fit_sequential_requires_at_least_one_structure(tmp_path) -> None:
     """fit_sequential raises if no structures exist."""
     project = Project(name='no_struct')
     project.save_as(str(tmp_path / 'proj'))
 
-    with pytest.raises(ValueError, match='exactly 1 structure'):
+    with pytest.raises(ValueError, match='at least 1 structure'):
         _run_sequential_fit(project, str(tmp_path))
 
 
