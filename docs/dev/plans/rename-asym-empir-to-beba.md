@@ -29,7 +29,17 @@ finding documented in issue 166 (issue 133 stays open for the separate
 
 ## Branch + PR
 
-- Branch: `rename-asym-empir-to-beba` (flat slug off `develop`).
+- Planned branch: `rename-asym-empir-to-beba` (flat slug off `develop`).
+- **Deliberate exception (AGENTS.md §Planning).** Phase 1 was
+  implemented on the **current `sequential-fix` branch** at the user's
+  explicit instruction ("draft-impl-1 … in the current branch") instead
+  of creating the planned `rename-asym-empir-to-beba` branch. The beba
+  Phase 1 commits therefore sit on top of pre-existing, unrelated
+  `sequential-fix` commits (e.g. `d18d36b8 Use id instead of label in
+  lab6 nosldl atom sites`), which are **not** part of this rename and
+  were not produced by this work. When the PR is opened, scope the base
+  / commit range to exclude those unrelated commits, or land the rename
+  via this branch as the user directs.
 - PR targets `develop`, not `master`. Do not push unless asked.
 
 ## Naming scheme
