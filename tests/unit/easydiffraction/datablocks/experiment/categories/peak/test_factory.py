@@ -54,6 +54,17 @@ def test_peak_factory_default_and_combinations_and_errors():
     )
     assert cwl_alias == PeakProfileTypeEnum.CWL_PSEUDO_VOIGT
 
+    # The Berar-Baldinozzi user type string resolves to the renamed tag
+    # and class in the constant-wavelength Bragg context.
+    beba_alias = PeakFactory._canonical_tag_for(
+        'pseudo-voigt + berar-baldinozzi asymmetry',
+        scattering_type=ScatteringTypeEnum.BRAGG,
+        beam_mode=BeamModeEnum.CONSTANT_WAVELENGTH,
+    )
+    assert beba_alias == PeakProfileTypeEnum.CWL_PSEUDO_VOIGT_BERAR_BALDINOZZI_ASYMMETRY
+    beba_peak = PeakFactory.create(beba_alias)
+    assert beba_peak.__class__.__name__ == 'CwlPseudoVoigtBerarBaldinozziAsymmetry'
+
     tof_alias = PeakFactory._canonical_tag_for(
         'pseudo-voigt',
         scattering_type=ScatteringTypeEnum.BRAGG,
