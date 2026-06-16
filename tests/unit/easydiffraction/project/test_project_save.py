@@ -117,3 +117,52 @@ def test_project_save_omits_empty_fit_state_sections(tmp_path):
 
     assert '_fit_parameter.parameter_unique_name' not in analysis_cif
     assert '_fit_result.result_kind' not in analysis_cif
+
+
+def test_save_as_in_place_preserves_raw_sampler_state(tmp_path):
+    """save_as() to the current path keeps the resumable raw chain.
+
+    Regression: a same-path save_as() previously wiped the directory
+    (and so the raw dream_state / emcee_chain groups in mcmc.h5) before
+    save() rebuilt only the derived arrays, breaking resume on reload.
+    """
+    import h5py
+    import numpy as np
+
+    from easydiffraction.analysis.enums import FitResultKindEnum
+    from easydiffraction.project.project import Project
+
+    project = Project(name='resumable')
+    project.report.html = False
+    target = tmp_path / 'proj'
+    project.save_as(str(target))
+
+    # Make the analysis look like a saved Bayesian fit so the sidecar is
+    # written rather than deleted as stale.
+    analysis = project.analysis
+    analysis.minimizer.type = 'bumps (dream)'
+    analysis._set_has_persisted_fit_state(value=True)
+    analysis.fit_result._set_result_kind(FitResultKindEnum.BAYESIAN.value)
+    analysis._persisted_fit_state_sidecar = {
+        'posterior': {
+            'parameter_samples': np.zeros((2, 2, 1), dtype=float),
+            'log_posterior': np.zeros((2, 2), dtype=float),
+            'draw_index': np.arange(2, dtype=float),
+        }
+    }
+
+    # Seed a raw resumable sampler-state group, as a real resume would.
+    sidecar_path = target / 'analysis' / 'mcmc.h5'
+    with h5py.File(sidecar_path, 'a') as handle:
+        state = handle.create_group('dream_state')
+        state.create_dataset(
+            'param_names',
+            data=np.array([b'lbco.cell.length_a']),
+        )
+
+    # Save in place (same path as the loaded project).
+    project.save_as(str(target))
+
+    with h5py.File(sidecar_path, 'r') as handle:
+        assert 'dream_state' in handle  # raw chain survives
+        assert 'posterior' in handle  # derived arrays rebuilt
