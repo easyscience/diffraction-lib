@@ -195,7 +195,7 @@ applies: commit each completed step locally before starting the next.
   `pixi run notebook-prepare`; stage the regenerated `.ipynb` siblings.
   Commit: `Use beba asymmetry names in tutorials`
 
-- [ ] **P1.8 — Update remaining docs, issue 133, and issue 166.** Update
+- [x] **P1.8 — Update remaining docs, issue 133, and issue 166.** Update
   `user-guide/parameters/experiment/peak.md`, the persistence ADR +
   `handler-inventory.json`, and `python-cif-category-correspondence.md`
   to the new tags. In issue 133, mark the rename item done (leave the
@@ -243,7 +243,7 @@ new type string and class.
 - [x] P1.5 PbSO₄ page rename + note
 - [x] P1.6 Y₂O₃ page note
 - [x] P1.7 tutorials
-- [ ] P1.8 docs + issues 133 & 166
+- [x] P1.8 docs + issues 133 & 166
 - [ ] P1.9 Phase 1 review gate
 - [ ] Phase 2 verification green
 

@@ -6,16 +6,17 @@
 
 ## Summary
 
-The four empirical peak-asymmetry parameters (`asym_empir_1`…`4`) are
-the **Bérar–Baldinozzi (1993)** correction — FullProf's `P1`…`P4`. When
-the *same* parameter values are fed to cryspy and to FullProf, the two
-codes produce **different** asymmetric profiles. A controlled
-calculate-vs-calculate study pins the entire discrepancy to exactly
-**two** independent causes, and — checked against the original paper —
-shows that **cryspy is faithful to the published Bérar–Baldinozzi
+The four empirical peak-asymmetry parameters (`asym_beba_a0`,
+`asym_beba_b0`, `asym_beba_a1`, `asym_beba_b1`; formerly `asym_empir_1`…
+`4`) are the **Bérar–Baldinozzi (1993)** correction — FullProf's
+`P1`…`P4`. When the *same* parameter values are fed to cryspy and to
+FullProf, the two codes produce **different** asymmetric profiles. A
+controlled calculate-vs-calculate study pins the entire discrepancy to
+exactly **two** independent causes, and — checked against the original
+paper — shows that **cryspy is faithful to the published Bérar–Baldinozzi
 functions while FullProf's executable departs from them**. This is the
 root cause behind the long-standing "asymmetry parameters don't agree"
-observation (the CI-skipped `pd-neut-cwl_pv-asym_empir_pbso4`
+observation (the CI-skipped `pd-neut-cwl_pv-beba_pbso4`
 Verification page) and the "refines to opposite sign" note on the new
 `pd-neut-cwl_pv-beta_y2o3` page.
 
@@ -40,7 +41,8 @@ Gaussian** — explicitly the odd Hermite polynomials `H1 = 2z` and
 
 The four refinable coefficients map onto the basis as
 `(A0, B0, A1, B1) = (Fa/tan θ, Fb/tan θ, Fa/tan 2θ, Fb/tan 2θ)`, which is
-FullProf's `(P1, P2, P3, P4)` and our `(asym_empir_1…4)`.
+FullProf's `(P1, P2, P3, P4)` and our
+`(asym_beba_a0, asym_beba_b0, asym_beba_a1, asym_beba_b1)`.
 
 ## What each implementation actually uses
 
@@ -154,19 +156,18 @@ precision, so the program's `Fb` is `≈ (8z³−6z)` but not provably exactly
    the `Fb` linear term. If confirmed, this affects every FullProf user,
    not just cross-engine comparisons.
 3. **Keep our docs honest**: the `pd-neut-cwl_pv-beta_y2o3` page's
-   "asymmetry refines to opposite sign" note and the CI-skip on
-   `pd-neut-cwl_pv-asym_empir_pbso4` remain correct and should cite this
-   issue.
-4. Fold the now-confirmed Bérar–Baldinozzi identity into the **rename**
-   tracked by issue 133 (use a `berar_baldinozzi` / `bb` model tag,
-   consistent with `asym_fcj_*`).
+   asymmetry note and the CI-skip on `pd-neut-cwl_pv-beba_pbso4` remain
+   correct and cite this issue.
+4. **Done:** the rename tracked by issue 133 landed — the parameters are
+   now `asym_beba_{a0,b0,a1,b1}` (the `beba` model tag mirrors
+   `asym_fcj_*`).
 
 ## Relations
 
 - **Relates to** issue 133 (rename `asym_empir_*`; add physical FCJ
   model) — this issue supplies the confirmed physics/naming basis.
-- **Relates to** the Verification pages `pd-neut-cwl_pv-asym_empir_pbso4`
-  (CI-skipped) and `pd-neut-cwl_pv-beta_y2o3` (documents the sign
-  mirror).
+- **Relates to** the Verification pages `pd-neut-cwl_pv-beba_pbso4`
+  (CI-skipped) and `pd-neut-cwl_pv-beta_y2o3` (documents the convention
+  difference).
 - **Upstream:** cryspy issue
   [#50](https://github.com/ikibalin/cryspy/issues/50).

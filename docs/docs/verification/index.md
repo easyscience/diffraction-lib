@@ -71,8 +71,10 @@ and so on. The list below notes only what is specific to each page.
   ADPs (`adp_type='beta'`) on the three sites, with cylindrical
   Debye–Scherrer absorption (μR = 1.5) and the Thompson–Cox–Hastings
   profile. cryspy only. Refining every parameter recovers the FullProf
-  values; the empirical asymmetry mirrors to the opposite sign (cryspy
-  issue #50) but all closeness metrics stay within tolerance.
+  values; the Bérar–Baldinozzi asymmetry (`asym_beba_*`) is implemented
+  with different conventions in cryspy and FullProf (issue 166), so those
+  coefficients do not transfer one-to-one, but all closeness metrics stay
+  within tolerance.
 
 ## Powder, neutron, time-of-flight
 
