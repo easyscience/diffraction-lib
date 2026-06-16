@@ -29,9 +29,9 @@ than strictly-positive-per-element, so a single `0` weight stays valid
 (that experiment contributes zero residuals). Defining the full
 supported range and validator semantics for `joint_fit.weight` —
 including whether `0` formally means exclusion and whether an upper
-bound exists — remains with issue 122 (`Define joint_fit.weight
-Bounds`); this fix deliberately leaves the descriptor-level
-`RangeValidator()` untouched.
+bound exists — remains with issue 122
+(`Define joint_fit.weight Bounds`); this fix deliberately leaves the
+descriptor-level `RangeValidator()` untouched.
 
 **Related:** issue 3 (rebuild joint-fit weights on every fit), issue 122
 (define `joint_fit.weight` bounds).

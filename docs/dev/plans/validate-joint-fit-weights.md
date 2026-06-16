@@ -23,8 +23,9 @@ strategy, but introduces no new category, factory, or persisted state.
 
 Joint-fit weights are read from `analysis.joint_fit[<id>].weight.value`
 and passed as a NumPy array into `Fitter.fit(...)`, which forwards them
-to `Fitter._residual_function` (`src/easydiffraction/analysis/fitting.py`).
-There the array is normalised and applied per experiment:
+to `Fitter._residual_function`
+(`src/easydiffraction/analysis/fitting.py`). There the array is
+normalised and applied per experiment:
 
 ```python
 norm_weights *= num_expts / np.sum(norm_weights)   # line ~440
@@ -52,7 +53,7 @@ user-facing error.
 1. **Validate once, at the `Fitter.fit()` chokepoint** — not inside
    `_residual_function` (which the minimiser calls every iteration; the
    weights are static across a fit) and not only at the descriptor
-   setter (a per-element setter cannot catch the *aggregate* all-zero
+   setter (a per-element setter cannot catch the _aggregate_ all-zero
    case). `Fitter.fit()` is the single point every joint fit passes
    through (both `Analysis._fit_joint` and any direct `Fitter.fit`
    caller), so one up-front check covers all paths and runs once.
@@ -78,9 +79,9 @@ user-facing error.
      false, so a `<= 0`-only check would let it through and corrupt the
      `num_expts / np.sum(...)` normalisation. This catches both the
      all-zero set (per-element checks miss it) and the overflow case.
-   When `weights is None` (single/sequential fits, or joint with equal
-   weights) the array is implicitly all-ones — always valid — and the
-   check is skipped.
+     When `weights is None` (single/sequential fits, or joint with equal
+     weights) the array is implicitly all-ones — always valid — and the
+     check is skipped.
 
 4. **Do not adopt strictly-positive-per-element here.** Requiring every
    weight `> 0` would preempt issue **122 — Define `joint_fit.weight`
@@ -122,7 +123,8 @@ Phase 1 (implementation):
   `Fitter._require_valid_weights`, call it in `Fitter.fit()`, extend the
   `fit()` `Raises` docstring.
 - `docs/dev/issues/open/highest_validate-joint-fit-weights-before-residual-normalisation.md`
-  → `docs/dev/issues/closed/validate-joint-fit-weights-before-residual-normalisation.md`
+  →
+  `docs/dev/issues/closed/validate-joint-fit-weights-before-residual-normalisation.md`
   (`git mv`, drop `highest_` prefix, rewrite body to describe the fix).
 - `docs/dev/issues/index.md` — move the issue row from the open table to
   the closed table.
@@ -131,14 +133,14 @@ Phase 2 (verification — tests):
 
 - `tests/unit/easydiffraction/analysis/test_fitting.py` — unit tests for
   `Fitter._require_valid_weights` (pure static helper; no engine).
-- `tests/integration/fitting/test_powder-diffraction_joint-fit.py` —
-  one end-to-end test asserting the clear `ValueError` for an all-zero
+- `tests/integration/fitting/test_powder-diffraction_joint-fit.py` — one
+  end-to-end test asserting the clear `ValueError` for an all-zero
   weight set via the public joint-fit path.
 
 ## Branch and PR notes
 
-- Branch: `validate-joint-fit-weights` (flat slug off `develop`), created
-  and checked out by `/draft-impl-1`'s setup.
+- Branch: `validate-joint-fit-weights` (flat slug off `develop`),
+  created and checked out by `/draft-impl-1`'s setup.
 - PR targets `develop`. Do not push unless asked.
 
 ## Implementation steps (Phase 1)
@@ -149,48 +151,53 @@ committed locally (atomic, single-purpose) before moving to the next
 step or the review gate. Mark each `- [ ]` as `- [x]` in the same commit
 that completes it.
 
-- [x] **P1.1 — Add weight validation to `Fitter.fit()`.**
-  In `src/easydiffraction/analysis/fitting.py`:
-  - Add a `@staticmethod _require_valid_weights(weights:
-    np.ndarray | None, experiments: list[ExperimentBase]) -> None`
+- [x] **P1.1 — Add weight validation to `Fitter.fit()`.** In
+      `src/easydiffraction/analysis/fitting.py`:
+  - Add a
+    `@staticmethod _require_valid_weights(weights: np.ndarray | None, experiments: list[ExperimentBase]) -> None`
     immediately after `_require_measured_data`, with a numpy-style
     docstring (Parameters / Raises). When `weights is None`, return
-    immediately. Otherwise coerce to `arr = np.asarray(weights,
-    dtype=np.float64)` and raise `ValueError` with a clear, user-facing
-    message (mirroring the tone of `_require_measured_data`, naming the
-    joint-fit weights and the offending condition) if any of:
-    - `arr.ndim != 1` — weights must be a 1-D array (rejects scalar/2-D);
+    immediately. Otherwise coerce to
+    `arr = np.asarray(weights, dtype=np.float64)` and raise `ValueError`
+    with a clear, user-facing message (mirroring the tone of
+    `_require_measured_data`, naming the joint-fit weights and the
+    offending condition) if any of:
+    - `arr.ndim != 1` — weights must be a 1-D array (rejects
+      scalar/2-D);
     - `arr.size != len(experiments)` — one weight per experiment
       (rejects short/long arrays);
     - `not np.isfinite(arr).all()` — any element is `nan`/`inf`;
     - `(arr < 0).any()` — any element is negative;
-    - computing the total **once** as `total = arr.sum(dtype=np.float64)`
-      and then `not np.isfinite(total) or total <= 0` — the total must be
-      finite and strictly positive (rejects the all-zero set and the
+    - computing the total **once** as
+      `total = arr.sum(dtype=np.float64)` and then
+      `not np.isfinite(total) or total <= 0` — the total must be finite
+      and strictly positive (rejects the all-zero set and the
       finite-elements-overflow-to-`inf` case from review F1).
   - Call `self._require_valid_weights(weights, experiments)` in `fit()`
     right after the `self._require_measured_data(experiments)` line.
   - Extend the `fit()` `Raises` section to document that a `ValueError`
     is raised for invalid joint-fit weights.
-  - Stage: `git add src/easydiffraction/analysis/fitting.py docs/dev/plans/validate-joint-fit-weights.md`
+  - Stage:
+    `git add src/easydiffraction/analysis/fitting.py docs/dev/plans/validate-joint-fit-weights.md`
   - Commit: `Validate joint-fit weights before residual normalisation`
 
 - [x] **P1.2 — Close issue 15.**
   - `git mv docs/dev/issues/open/highest_validate-joint-fit-weights-before-residual-normalisation.md docs/dev/issues/closed/validate-joint-fit-weights-before-residual-normalisation.md`
   - Rewrite the closed file body to describe what closed it (fit-time
     `_require_valid_weights` guard; non-negative + finite + positive
-    total; per-element bounds deferred to issue 122). Keep the
-    `# 15. …` H1.
+    total; per-element bounds deferred to issue 122). Keep the `# 15. …`
+    H1.
   - Update `docs/dev/issues/index.md`: remove the issue 15 row from the
     open table and add it to the closed table, linking the new
     `closed/...` path.
-  - Stage: `git add docs/dev/issues/index.md docs/dev/issues/closed/validate-joint-fit-weights-before-residual-normalisation.md docs/dev/plans/validate-joint-fit-weights.md`
+  - Stage:
+    `git add docs/dev/issues/index.md docs/dev/issues/closed/validate-joint-fit-weights-before-residual-normalisation.md docs/dev/plans/validate-joint-fit-weights.md`
     (the `git mv` already stages the deletion of the open file).
   - Commit: `Close joint-fit weight validation issue`
 
 - [x] **P1.3 — Phase 1 review gate.** No-code step. Mark this item
-  `[x]`, commit the checklist update alone with message
-  `Reach Phase 1 review gate`, then stop for Phase 1 review.
+      `[x]`, commit the checklist update alone with message
+      `Reach Phase 1 review gate`, then stop for Phase 1 review.
 
 ## Verification (Phase 2)
 
@@ -205,8 +212,8 @@ Tests to add:
   no engine, satisfying §Testing's "no real calculation engines"):
   - accepts `None`;
   - accepts a valid positive array (e.g. `[0.3, 0.7]`);
-  - accepts an array containing a single `0` with positive total
-    (e.g. `[0.0, 1.0]`) — confirms 0-as-exclusion stays valid;
+  - accepts an array containing a single `0` with positive total (e.g.
+    `[0.0, 1.0]`) — confirms 0-as-exclusion stays valid;
   - raises `ValueError` for a negative element (`[-1.0, 1.0]`);
   - raises `ValueError` for an all-zero set (`[0.0, 0.0]`);
   - raises `ValueError` for `nan` and for `inf`;
@@ -214,10 +221,9 @@ Tests to add:
     (e.g. `[1e308, 1e308]`) — review F1;
   - raises `ValueError` for a scalar and for a 2-D array — review F2;
   - raises `ValueError` for a length mismatch vs `experiments` (both
-    short and long) — review F2.
-  Pass a lightweight stub `experiments` sequence of the expected length
-  (the helper only reads `len(experiments)`), keeping the test
-  engine-free.
+    short and long) — review F2. Pass a lightweight stub `experiments`
+    sequence of the expected length (the helper only reads
+    `len(experiments)`), keeping the test engine-free.
 - `tests/integration/fitting/test_powder-diffraction_joint-fit.py` — add
   a test that builds a joint fit with all-zero weights through the
   public API and asserts a `ValueError` (reusing the file's existing

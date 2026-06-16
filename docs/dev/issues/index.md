@@ -155,7 +155,7 @@ individual issue files** — not here.
 | #   | Issue                                                                                                                                                        |
 | --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | 3   | [Rebuild Joint-Fit Weights on Every Fit](closed/rebuild-joint-fit-weights-on-every-fit.md)                                                                   |
-| 15  | [Validate Joint-Fit Weights Before Residual Normalisation](closed/validate-joint-fit-weights-before-residual-normalisation.md)                                |
+| 15  | [Validate Joint-Fit Weights Before Residual Normalisation](closed/validate-joint-fit-weights-before-residual-normalisation.md)                               |
 | 16  | [Add Serial Pattern-Generation Benchmarks](closed/add-serial-pattern-generation-benchmarks.md)                                                               |
 | 24  | [Process Default Values on Experiment Creation](closed/process-default-values-on-experiment-creation.md)                                                     |
 | 43  | [Fix Summary Display Inconsistencies](closed/fix-summary-display-inconsistencies.md)                                                                         |
