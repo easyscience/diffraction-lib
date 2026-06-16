@@ -14,7 +14,6 @@ individual issue files** — not here.
 
 | #   | Issue                                                                                                                                                                          | Priority             | Type                                                        |
 | --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------- | ----------------------------------------------------------- |
-| 15  | [Validate Joint-Fit Weights Before Residual Normalisation](open/highest_validate-joint-fit-weights-before-residual-normalisation.md)                                           | `[priority] highest` | Correctness                                                 |
 | 85  | [Retain Per-Experiment Fitted Parameters for Plotting](open/highest_retain-per-experiment-fitted-parameters-for-plotting.md)                                                   | `[priority] highest` | Correctness / UX                                            |
 | 119 | [Model Sample Absorption (Debye–Scherrer, μR)](open/highest_model-sample-absorption-debye-scherrer-r.md)                                                                       | `[priority] highest` | Physics / Engine feature                                    |
 | 130 | [cryspy Diverges on TOF Jorgensen–Von Dreele Lorentzian](open/highest_cryspy-diverges-on-tof-jorgensen-von-dreele-lorentzian.md)                                               | `[priority] highest` | Correctness                                                 |
@@ -156,6 +155,7 @@ individual issue files** — not here.
 | #   | Issue                                                                                                                                                        |
 | --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | 3   | [Rebuild Joint-Fit Weights on Every Fit](closed/rebuild-joint-fit-weights-on-every-fit.md)                                                                   |
+| 15  | [Validate Joint-Fit Weights Before Residual Normalisation](closed/validate-joint-fit-weights-before-residual-normalisation.md)                                |
 | 16  | [Add Serial Pattern-Generation Benchmarks](closed/add-serial-pattern-generation-benchmarks.md)                                                               |
 | 24  | [Process Default Values on Experiment Creation](closed/process-default-values-on-experiment-creation.md)                                                     |
 | 43  | [Fix Summary Display Inconsistencies](closed/fix-summary-display-inconsistencies.md)                                                                         |

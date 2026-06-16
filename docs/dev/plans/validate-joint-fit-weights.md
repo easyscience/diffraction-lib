@@ -175,7 +175,7 @@ that completes it.
   - Stage: `git add src/easydiffraction/analysis/fitting.py docs/dev/plans/validate-joint-fit-weights.md`
   - Commit: `Validate joint-fit weights before residual normalisation`
 
-- [ ] **P1.2 — Close issue 15.**
+- [x] **P1.2 — Close issue 15.**
   - `git mv docs/dev/issues/open/highest_validate-joint-fit-weights-before-residual-normalisation.md docs/dev/issues/closed/validate-joint-fit-weights-before-residual-normalisation.md`
   - Rewrite the closed file body to describe what closed it (fit-time
     `_require_valid_weights` guard; non-negative + finite + positive
@@ -253,7 +253,7 @@ Notes:
 ## Status checklist
 
 - [x] P1.1 — Add weight validation to `Fitter.fit()`
-- [ ] P1.2 — Close issue 15
+- [x] P1.2 — Close issue 15
 - [ ] P1.3 — Phase 1 review gate
 - [ ] Phase 2 — tests added and full verification suite green
 
