@@ -146,7 +146,7 @@ to catch every occurrence before each commit.
 Each `- [ ]` is one atomic commit. Stage only the listed paths. AGENTS.md
 applies: commit each completed step locally before starting the next.
 
-- [ ] **P1.1 — Rename model parameters and mixin.** In `cwl_mixins.py`
+- [x] **P1.1 — Rename model parameters and mixin.** In `cwl_mixins.py`
   rename `EmpiricalAsymmetryMixin` → `BerarBaldinozziAsymmetryMixin`;
   rename the four `_asym_empir_*` parameters, properties, and setters to
   `asym_beba_{a0,b0,a1,b1}`; update `name=`, `description=`,
@@ -236,7 +236,7 @@ new type string and class.
 
 ## Status checklist
 
-- [ ] P1.1 model params + mixin
+- [x] P1.1 model params + mixin
 - [ ] P1.2 peak class + enum + factory + init
 - [ ] P1.3 calculators
 - [ ] P1.4 existing test references
