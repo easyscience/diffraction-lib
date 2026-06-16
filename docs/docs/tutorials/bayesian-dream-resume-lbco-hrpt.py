@@ -129,6 +129,13 @@ project.display.posterior.predictive(expt_name='hrpt', x_min=92, x_max=93)
 # the existing chain. We use only 100 steps here to keep the tutorial
 # fast, but in practice you would typically run more steps to ensure
 # convergence and better posterior resolution.
+#
+# Each DREAM generation evaluates the whole population in parallel, so
+# the cost of resuming scales with `population_size`: `extra_steps=100`
+# with the default population is on the order of a couple of thousand
+# model evaluations, not 100. The progress bar counts the new
+# generations (`1/100`), independent of how long the saved chain
+# already is.
 
 # %%
 project.analysis.minimizer.random_seed = 42  # fixed seed for reproducible output
