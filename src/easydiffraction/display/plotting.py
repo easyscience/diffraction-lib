@@ -995,8 +995,12 @@ class Plotter(RendererBase):
 
         Parameters
         ----------
-        x, y, sy : list
-            Parallel lists of x values, y values, and y uncertainties.
+        x : list
+            x values.
+        y : list
+            y values.
+        sy : list
+            y uncertainties.
 
         Returns
         -------
