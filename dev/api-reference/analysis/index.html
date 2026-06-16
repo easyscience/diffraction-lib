@@ -2173,14 +2173,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/bayesian-dream-display-lbco-hrpt/" class="md-nav__link">
+      <a href="../../tutorials/bayesian-dream-resume-lbco-hrpt/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    LBCO pd bumps-dream Display
+    LBCO pd bumps-dream Resume
   
 
     
@@ -34573,6 +34573,25 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
       </thead>
       <tbody>
           <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;chains&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.analysis.categories.minimizer.bumps_dream.BumpsDreamMinimizer.chains&lt;/code&gt;)" href="#easydiffraction.analysis.categories.minimizer.bumps_dream.BumpsDreamMinimizer.chains">chains</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;IntegerDescriptor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.IntegerDescriptor&lt;/code&gt;)" href="../core/#easydiffraction.core.variable.IntegerDescriptor">IntegerDescriptor</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Alias for <code>population_size</code> (the population scale factor).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
             <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;nb&quot;&gt;type&lt;/span&gt;&lt;/code&gt;
 
   &lt;span class=&quot;doc doc-labels&quot;&gt;
@@ -34791,6 +34810,36 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
 
 
 <h10 id="easydiffraction.analysis.categories.minimizer.bumps_dream.BumpsDreamMinimizer-attributes">Attributes</h10>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.analysis.categories.minimizer.bumps_dream.BumpsDreamMinimizer.chains" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">chains</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Alias for <code>population_size</code> (the population scale factor).</p>
+<p>DREAM runs <code>ceil(chains * n_parameters)</code> parallel chains.
+<code>chains</code> and <code>population_size</code> share one descriptor, so
+setting either updates the same value (no separate value to
+conflict).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
 
 <div class="doc doc-object doc-attribute">
 
@@ -55019,7 +55068,7 @@ it.</p>
               <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;fit&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;parameters&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;objective_function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;verbosity&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;VerbosityEnum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;FULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;options&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.analysis.minimizers.bumps_dream.BumpsDreamMinimizer.fit&lt;/code&gt;)" href="#easydiffraction.analysis.minimizers.bumps_dream.BumpsDreamMinimizer.fit">fit</a></code></td>
               <td>
                 <div class="doc-md-description">
-                  <p>Run the full minimization workflow.</p>
+                  <p>Run DREAM sampling and return Bayesian fit results.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -55131,6 +55180,25 @@ it.</p>
             <td>
               <div class="doc-md-description">
                 <p>DREAM population multiplier.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;chains&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.analysis.minimizers.bumps_dream.BumpsDreamMinimizer.chains&lt;/code&gt;)" href="#easydiffraction.analysis.minimizers.bumps_dream.BumpsDreamMinimizer.chains">chains</a></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Friendly alias for <code>pop</code>, the DREAM population scale factor.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -55323,6 +55391,35 @@ it.</p>
 
 
 
+<h9 id="easydiffraction.analysis.minimizers.bumps_dream.BumpsDreamMinimizer.chains" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">chains</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h9>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Friendly alias for <code>pop</code>, the DREAM population scale factor.</p>
+<p>DREAM runs <code>ceil(chains * n_parameters)</code> parallel chains, so
+<code>chains</code> is a per-parameter multiplier rather than an absolute
+chain count.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
 <h9 id="easydiffraction.analysis.minimizers.bumps_dream.BumpsDreamMinimizer.parallel" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">parallel</span></code>
 
@@ -55385,160 +55482,13 @@ it.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Run the full minimization workflow.</p>
+        <p>Run DREAM sampling and return Bayesian fit results.</p>
+<p>Overrides the base <code>fit</code> so bumps-DREAM supports resume:
+<code>resume</code> and <code>extra_steps</code> are threaded into the solver,
+which extends the saved chain instead of starting cold.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
-
-
-<p><span class="doc-section-title">Parameters:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Description</th>
-          <th>Default</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>parameters</code>
-            </td>
-            <td>
-                  <code><span title="list">list</span>[<span title="object">object</span>]</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Free parameters to optimize.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>objective_function</code>
-            </td>
-            <td>
-                  <code><span title="collections.abc.Callable">Callable</span>[..., <span title="object">object</span>]</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Callable returning residuals for a given set of engine
-arguments.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>verbosity</code>
-            </td>
-            <td>
-                  <code><a class="autorefs autorefs-internal" title="&lt;code&gt;VerbosityEnum&lt;/code&gt; (&lt;code&gt;easydiffraction.utils.enums.VerbosityEnum&lt;/code&gt;)" href="../utils/#easydiffraction.utils.enums.VerbosityEnum">VerbosityEnum</a></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Console output verbosity.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-              </div>
-            </td>
-            <td>
-                  <code>VerbosityEnum.FULL</code>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>options</code>
-            </td>
-            <td>
-                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;MinimizerFitOptions&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;finalize_tracking&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;True&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;use_physical_limits&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;False&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;random_seed&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;resume&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;False&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;extra_steps&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;
-
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt; (&lt;code&gt;easydiffraction.analysis.minimizers.base.MinimizerFitOptions&lt;/code&gt;)" href="#easydiffraction.analysis.minimizers.base.MinimizerFitOptions">MinimizerFitOptions</a> | None</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Execution options controlling limits, randomness, resume,
-and tracker finalization.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-              </div>
-            </td>
-            <td>
-                  <code>None</code>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-    <p><span class="doc-section-title">Returns:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;FitResults&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;success&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;False&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;parameters&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;reduced_chi_square&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;engine_result&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;starting_parameters&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fitting_time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.analysis.fit_helpers.reporting.FitResults&lt;/code&gt;)" href="#easydiffraction.analysis.fit_helpers.reporting.FitResults">FitResults</a></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>FitResults with success flag, best chi2 and timing.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-<p><span class="doc-section-title">Raises:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="NotImplementedError">NotImplementedError</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>If resume is requested for a minimizer that does not support
-it.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
 
 
     </div>

@@ -1,9 +1,9 @@
 # %% [markdown]
-# # Bayesian Analysis Resume (`emcee`): LBCO, HRPT
+# # Bayesian Analysis Resume (`bumps-dream`): LBCO, HRPT
 #
 # This tutorial shows how to reopen the Bayesian project created previously,
 # inspect the saved fit results and then run more sampling steps to
-# extend the existing chain. Both emcee and BUMPS-DREAM support saving
+# extend the existing chain. Both BUMPS-DREAM and emcee support saving
 # and resuming their sampler state, so the same workflow applies to
 # either engine.
 #
@@ -20,8 +20,8 @@
 #
 # - run a short local refinement,
 # - derive finite fit bounds for the sampled parameters,
-# - switch to emcee and sample the posterior,
-# - save the project with the emcee chain,
+# - switch to DREAM and sample the posterior,
+# - save the project with the DREAM sampler state,
 # - resume the chain with additional steps,
 # - inspect posterior plots after each sampling stage.
 
@@ -37,11 +37,12 @@ import easydiffraction as edi
 # %% [markdown]
 # ### Locate Project
 #
-# Download and extract the saved emcee project, with the persisted chain
-# and posterior caches, from the EasyDiffraction data repository.
+# Download and extract the saved DREAM project, with the persisted
+# sampler state and posterior caches, from the EasyDiffraction data
+# repository.
 
 # %%
-project_dir = edi.download_data('proj-lbco-hrpt-emcee', destination='projects')
+project_dir = edi.download_data('proj-lbco-hrpt-dream', destination='projects')
 
 # %% [markdown]
 # ### Load Project
@@ -57,7 +58,7 @@ project = edi.Project.load(project_dir)
 # chain below writes there instead of the bundled read-only copy.
 
 # %%
-project.save_as(dir_path='projects/bayesian-emcee-resume-lbco-hrpt')
+project.save_as(dir_path='projects/bayesian-dream-resume-lbco-hrpt')
 
 # %% [markdown]
 # ## 📊 Inspect Results
@@ -124,10 +125,17 @@ project.display.posterior.predictive(expt_name='hrpt', x_min=92, x_max=93)
 # %% [markdown]
 # ### Run Sampling
 #
-# Resume from the saved backend and append 100 more emcee steps to the
-# existing chain. We use only 100 steps here to keep the tutorial fast,
-# but in practice you would typically run more steps to ensure
+# Resume from the saved DREAM state and append 100 more generations to
+# the existing chain. We use only 100 steps here to keep the tutorial
+# fast, but in practice you would typically run more steps to ensure
 # convergence and better posterior resolution.
+#
+# Each DREAM generation evaluates the whole population in parallel, so
+# the cost of resuming scales with `population_size`: `extra_steps=100`
+# with the default population is on the order of a couple of thousand
+# model evaluations, not 100. The progress bar counts the new
+# generations (`1/100`), independent of how long the saved chain
+# already is.
 
 # %%
 project.analysis.minimizer.random_seed = 42  # fixed seed for reproducible output
@@ -154,4 +162,4 @@ project.display.posterior.predictive(expt_name='hrpt', x_min=92, x_max=93)
 # ## 💾 Save Project
 
 # %%
-project.save_as(dir_path='projects/bayesian-emcee-resume-lbco-hrpt')
+project.save_as(dir_path='projects/bayesian-dream-resume-lbco-hrpt')
