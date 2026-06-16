@@ -155,6 +155,7 @@
 │   │   ├── 📄 bumps_de.py
 │   │   │   └── 🏷️ class BumpsDEMinimizer
 │   │   ├── 📄 bumps_dream.py
+│   │   │   ├── 🏷️ class _DreamForkPoolMapper
 │   │   │   ├── 🏷️ class _DreamRunContext
 │   │   │   ├── 🏷️ class _DreamDriverResult
 │   │   │   ├── 🏷️ class _DreamProgressMonitor

@@ -1,13 +1,12 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Integration checks for emcee Bayesian sampling."""
+"""Integration checks for bumps-DREAM resume (extend a saved chain)."""
 
 from __future__ import annotations
 
 from dataclasses import dataclass
 
 import numpy as np
-import pytest
 
 from easydiffraction.utils.enums import VerbosityEnum
 
@@ -58,10 +57,6 @@ def _array_residuals(values: np.ndarray) -> np.ndarray:
     return (np.asarray(values, dtype=float) - target) / sigma
 
 
-def _mapping_residuals(values: dict[str, object]) -> np.ndarray:
-    return _array_residuals(np.asarray([values['x'], values['y']], dtype=float))
-
-
 def _posterior_medians(results: object) -> np.ndarray:
     return np.asarray(
         [summary.median for summary in results.posterior_parameter_summaries],
@@ -69,11 +64,8 @@ def _posterior_medians(results: object) -> np.ndarray:
     )
 
 
-@pytest.mark.parametrize('proposal_moves', ['de'])
-def test_emcee_resume_matches_small_dream_posterior(tmp_path, proposal_moves):
-    from easydiffraction.analysis.minimizers.base import MinimizerFitOptions
+def _build_dream(sidecar_path: object) -> object:
     from easydiffraction.analysis.minimizers.bumps_dream import BumpsDreamMinimizer
-    from easydiffraction.analysis.minimizers.emcee import EmceeMinimizer
 
     dream = BumpsDreamMinimizer()
     dream.steps = 80
@@ -81,42 +73,85 @@ def test_emcee_resume_matches_small_dream_posterior(tmp_path, proposal_moves):
     dream.thin = 1
     dream.pop = 4
     dream.parallel = 1
-    dream_results = dream.fit(
+    dream._sidecar_path = sidecar_path
+    return dream
+
+
+def test_dream_resume_grows_chain_and_matches_longer_run(tmp_path):
+    from easydiffraction.analysis.minimizers.base import MinimizerFitOptions
+    from easydiffraction.analysis.minimizers.bumps_dream import DREAM_STATE_GROUP
+
+    sidecar_path = tmp_path / 'analysis' / 'mcmc.h5'
+
+    dream = _build_dream(sidecar_path)
+    fresh_results = dream.fit(
         _toy_parameters(),
         _array_residuals,
         verbosity=VerbosityEnum.SILENT,
         options=MinimizerFitOptions(random_seed=123),
     )
 
-    emcee = EmceeMinimizer()
-    emcee.nsteps = 80
-    emcee.nburn = 20
-    emcee.thin = 1
-    emcee.nwalkers = 16
-    emcee.parallel_workers = 1
-    emcee.proposal_moves = proposal_moves
-    emcee._sidecar_path = tmp_path / 'analysis' / 'mcmc.h5'
-    emcee_results = emcee.fit(
+    # The fresh fit persists a resumable DREAM state in the sidecar.
+    assert fresh_results.success is True
+    assert fresh_results.posterior_samples.parameter_samples.shape == (80, 8, 2)
+    assert sidecar_path.is_file()
+
+    import h5py
+
+    with h5py.File(sidecar_path, 'r') as handle:
+        assert DREAM_STATE_GROUP in handle
+
+    resumed_results = dream.fit(
         _toy_parameters(),
-        _mapping_residuals,
-        verbosity=VerbosityEnum.SILENT,
-        options=MinimizerFitOptions(random_seed=123),
-    )
-    resumed_results = emcee.fit(
-        _toy_parameters(),
-        _mapping_residuals,
+        _array_residuals,
         verbosity=VerbosityEnum.SILENT,
         options=MinimizerFitOptions(random_seed=123, resume=True, extra_steps=20),
     )
 
-    assert dream_results.success is True
-    assert emcee_results.success is True
+    # Resume extends the saved chain by exactly extra_steps generations.
     assert resumed_results.success is True
-    assert resumed_results.posterior_samples is not None
-    assert resumed_results.posterior_samples.parameter_samples.shape[1:] == (16, 2)
-    assert resumed_results.sampler_settings['total_steps'] == 121
+    assert resumed_results.posterior_samples.parameter_samples.shape == (100, 8, 2)
+
+    # A single 100-generation run reaches a comparable posterior.
+    longer = _build_dream(tmp_path / 'longer' / 'mcmc.h5')
+    longer.steps = 100
+    longer_results = longer.fit(
+        _toy_parameters(),
+        _array_residuals,
+        verbosity=VerbosityEnum.SILENT,
+        options=MinimizerFitOptions(random_seed=123),
+    )
+
     np.testing.assert_allclose(
         _posterior_medians(resumed_results),
-        _posterior_medians(dream_results),
+        _posterior_medians(longer_results),
         atol=0.35,
     )
+
+
+def test_dream_resume_rejects_population_change(tmp_path):
+    import pytest
+
+    from easydiffraction.analysis.minimizers.base import MinimizerFitOptions
+
+    sidecar_path = tmp_path / 'analysis' / 'mcmc.h5'
+
+    dream = _build_dream(sidecar_path)
+    dream.fit(
+        _toy_parameters(),
+        _array_residuals,
+        verbosity=VerbosityEnum.SILENT,
+        options=MinimizerFitOptions(random_seed=123),
+    )
+
+    # Changing the population scale cannot be honoured on resume because
+    # bumps resumes positionally into a fixed chain count.
+    dream.pop = 6
+
+    with pytest.raises(ValueError, match='population cannot change on resume'):
+        dream.fit(
+            _toy_parameters(),
+            _array_residuals,
+            verbosity=VerbosityEnum.SILENT,
+            options=MinimizerFitOptions(random_seed=123, resume=True, extra_steps=20),
+        )

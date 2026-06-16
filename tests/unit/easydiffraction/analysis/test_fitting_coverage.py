@@ -389,7 +389,7 @@ def test_set_minimizer_sidecar_path_builds_results_path(tmp_path):
 
     fitter._set_minimizer_sidecar_path(analysis)
 
-    assert fitter.minimizer._sidecar_path == tmp_path / 'analysis' / 'results.h5'
+    assert fitter.minimizer._sidecar_path == tmp_path / 'analysis' / 'mcmc.h5'
 
 
 def test_backfill_persisted_fitting_time_noop_when_analysis_none():

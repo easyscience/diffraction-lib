@@ -24,6 +24,7 @@ from easydiffraction.io.cif.serialize import project_config_to_cif
 from easydiffraction.io.cif.serialize import project_to_cif
 from easydiffraction.io.edi import edi_body_from_text
 from easydiffraction.io.edi import section_to_edi
+from easydiffraction.io.results_sidecar import carry_over_raw_sampler_state
 from easydiffraction.io.results_sidecar import read_analysis_results_sidecar
 from easydiffraction.io.results_sidecar import write_analysis_results_sidecar
 from easydiffraction.project.display import ProjectDisplay
@@ -661,7 +662,17 @@ class Project(GuardedBase):  # noqa: PLR0904
         else:
             project_dir = resolve_artifact_path(dir_path)
 
-        if overwrite and project_dir.is_dir():
+        previous_path = self.metadata.path
+        saving_in_place = (
+            previous_path is not None and project_dir.resolve() == previous_path.resolve()
+        )
+
+        # Saving in place (same path as the loaded/previous project)
+        # must behave like save(): never wipe the directory, or the
+        # existing mcmc.h5 (with the raw, resumable sampler-state groups
+        # that cannot be rebuilt from memory) would be lost. save()
+        # overwrites the derived arrays in place and keeps those groups.
+        if overwrite and project_dir.is_dir() and not saving_in_place:
             current_working_directory = pathlib.Path.cwd().resolve()
             resolved_project_dir = project_dir.resolve()
             if resolved_project_dir == current_working_directory:
@@ -674,6 +685,18 @@ class Project(GuardedBase):  # noqa: PLR0904
                 shutil.rmtree(project_dir)
 
         self.metadata.path = project_dir
+        # Relocating a saved Bayesian project to a new path must keep
+        # the raw, resumable sampler-state groups (emcee_chain /
+        # dream_state). save() rebuilds only the derived sidecar arrays
+        # from memory, so copy the raw groups across before they are
+        # rebuilt; else resume after load + save_as would have no chain
+        # to extend. Saving in place needs no copy (save() preserves
+        # them).
+        if previous_path is not None and not saving_in_place:
+            carry_over_raw_sampler_state(
+                source_analysis_dir=previous_path / 'analysis',
+                destination_analysis_dir=project_dir / 'analysis',
+            )
         self.save()
 
     def apply_params_from_csv(self, row_index: int) -> None:

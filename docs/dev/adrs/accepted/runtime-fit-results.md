@@ -33,7 +33,7 @@ persisted projection. The accepted
 ADRs, as amended by
 [`minimizer-input-output-split.md`](minimizer-input-output-split.md),
 define the current compact projection for fit headers, paired fit-result
-outputs, parameter posterior summaries, and the `analysis/results.h5`
+outputs, parameter posterior summaries, and the `analysis/mcmc.h5`
 sidecar.
 
 ## Consequences

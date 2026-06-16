@@ -100,7 +100,7 @@ credible intervals, correlations, posterior-predictive patterns, and
 diagnostics such as r-hat and effective sample size. EasyDiffraction
 currently exposes Bayesian workflows through `bumps (dream)` and
 `emcee`; their posterior and predictive arrays are stored in
-`analysis/results.h5` when available.
+`analysis/mcmc.h5` when available.
 
 <!-- prettier-ignore-start -->
 ![](../assets/images/user-guide/data-analysis_refinement.png){ width="450", loading=lazy }

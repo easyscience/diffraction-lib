@@ -247,7 +247,7 @@ nav:
           - BEER McStas: tutorials/calibrate-beer-ess.ipynb
       - Bayesian Analysis:
           - LBCO pd bumps-dream: tutorials/bayesian-dream-lbco-hrpt.ipynb
-          - LBCO pd bumps-dream Display: tutorials/bayesian-dream-display-lbco-hrpt.ipynb
+          - LBCO pd bumps-dream Resume: tutorials/bayesian-dream-resume-lbco-hrpt.ipynb
           - LBCO pd emcee: tutorials/bayesian-emcee-lbco-hrpt.ipynb
           - LBCO pd emcee Resume: tutorials/bayesian-emcee-resume-lbco-hrpt.ipynb
           - Tb2TiO7 sg bumps-dream: tutorials/bayesian-emcee-tbti-heidi.ipynb

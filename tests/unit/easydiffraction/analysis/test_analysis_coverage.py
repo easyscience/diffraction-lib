@@ -1053,14 +1053,17 @@ class TestFitRequestValidation:
         with pytest.raises(ValueError, match='single fit mode only'):
             a._validate_fit_request(mode=FitModeEnum.JOINT, resume=True, extra_steps=None)
 
-    def test_validate_fit_request_resume_requires_emcee(self):
+    def test_validate_fit_request_resume_requires_mcmc_minimizer(self):
         import pytest
 
         from easydiffraction.analysis.analysis import Analysis
         from easydiffraction.analysis.enums import FitModeEnum
 
         a = Analysis(project=_make_project())  # default lmfit minimizer
-        with pytest.raises(ValueError, match=r"analysis.minimizer.type = 'emcee'"):
+        with pytest.raises(
+            ValueError,
+            match=r'Resume is supported only for MCMC minimizers',
+        ):
             a._validate_fit_request(mode=FitModeEnum.SINGLE, resume=True, extra_steps=None)
 
 
@@ -1151,7 +1154,7 @@ class TestResumableEmceeSidecar:
 
         analysis_dir = tmp_path / 'analysis'
         analysis_dir.mkdir()
-        sidecar = analysis_dir / 'results.h5'
+        sidecar = analysis_dir / 'mcmc.h5'
         with h5py.File(sidecar, 'w') as handle:
             group = handle.create_group(EMCEE_CHAIN_GROUP)
             group.attrs['iteration'] = 12
@@ -1173,7 +1176,7 @@ class TestResumableEmceeSidecar:
 
         analysis_dir = tmp_path / 'analysis'
         analysis_dir.mkdir()
-        sidecar = analysis_dir / 'results.h5'
+        sidecar = analysis_dir / 'mcmc.h5'
         with h5py.File(sidecar, 'w') as handle:
             group = handle.create_group(EMCEE_CHAIN_GROUP)
             group.attrs['iteration'] = 0
@@ -1194,7 +1197,7 @@ class TestResumableEmceeSidecar:
 
         analysis_dir = tmp_path / 'analysis'
         analysis_dir.mkdir()
-        sidecar = analysis_dir / 'results.h5'
+        sidecar = analysis_dir / 'mcmc.h5'
         with h5py.File(sidecar, 'w') as handle:
             handle.create_group('some_other_group')
 

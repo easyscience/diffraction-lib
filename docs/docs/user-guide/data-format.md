@@ -221,7 +221,7 @@ EasyDiffraction saves projects as a directory of Edi files and sidecars:
 - `structures/<structure>.edi`: structure models
 - `experiments/<experiment>.edi`: experiment setup and data
 - `analysis/analysis.edi`: fitting and analysis settings
-- `analysis/results.csv` and `analysis/results.h5`: fit result sidecars
+- `analysis/results.csv` and `analysis/mcmc.h5`: fit result sidecars
 - `reports/<project>.*`: generated reports when enabled through
   `project.report`
 

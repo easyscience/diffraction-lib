@@ -87,7 +87,7 @@ def test_write_and_read_analysis_results_sidecar_round_trip_predictive(tmp_path)
 
     write_analysis_results_sidecar(analysis=analysis, analysis_dir=analysis_dir)
 
-    sidecar_path = analysis_dir / 'results.h5'
+    sidecar_path = analysis_dir / 'mcmc.h5'
     assert sidecar_path.is_file()
 
     import h5py
@@ -155,7 +155,7 @@ def test_write_analysis_results_sidecar_truncates_stale_payloads(tmp_path):
 
     import h5py
 
-    with h5py.File(analysis_dir / 'results.h5', 'r') as handle:
+    with h5py.File(analysis_dir / 'mcmc.h5', 'r') as handle:
         assert 'posterior' not in handle
         assert 'alpha' not in handle['distribution_cache']
         assert 'alpha__beta' not in handle['pair_cache']
@@ -175,7 +175,7 @@ def test_write_analysis_results_sidecar_preserves_emcee_chain_group(tmp_path):
 
     import h5py
 
-    with h5py.File(analysis_dir / 'results.h5', 'a') as handle:
+    with h5py.File(analysis_dir / 'mcmc.h5', 'a') as handle:
         chain = handle.require_group(EMCEE_CHAIN_GROUP)
         chain.attrs['iteration'] = 7
 
@@ -184,8 +184,121 @@ def test_write_analysis_results_sidecar_preserves_emcee_chain_group(tmp_path):
         analysis_dir=analysis_dir,
     )
 
-    with h5py.File(analysis_dir / 'results.h5', 'r') as handle:
+    with h5py.File(analysis_dir / 'mcmc.h5', 'r') as handle:
         assert handle[EMCEE_CHAIN_GROUP].attrs['iteration'] == 7
+
+
+def test_write_analysis_results_sidecar_preserves_dream_state_group(tmp_path):
+    from easydiffraction.analysis.minimizers.bumps_dream import DREAM_STATE_GROUP
+    from easydiffraction.io import results_sidecar as results_sidecar_mod
+
+    analysis_dir = Path(tmp_path) / 'analysis'
+    analysis = _analysis_with_sidecar_payload()
+    results_sidecar_mod.write_analysis_results_sidecar(
+        analysis=analysis,
+        analysis_dir=analysis_dir,
+    )
+
+    import h5py
+
+    with h5py.File(analysis_dir / 'mcmc.h5', 'a') as handle:
+        state = handle.require_group(DREAM_STATE_GROUP)
+        state.attrs['generations'] = 11
+
+    results_sidecar_mod.write_analysis_results_sidecar(
+        analysis=analysis,
+        analysis_dir=analysis_dir,
+    )
+
+    with h5py.File(analysis_dir / 'mcmc.h5', 'r') as handle:
+        assert handle[DREAM_STATE_GROUP].attrs['generations'] == 11
+
+
+def test_prepare_for_new_fit_clears_all_raw_state_groups(tmp_path):
+    from easydiffraction.analysis.minimizers.bumps_dream import DREAM_STATE_GROUP
+    from easydiffraction.analysis.minimizers.emcee import EMCEE_CHAIN_GROUP
+    from easydiffraction.io import results_sidecar as results_sidecar_mod
+
+    analysis_dir = Path(tmp_path) / 'analysis'
+    analysis_dir.mkdir(parents=True)
+    sidecar_path = analysis_dir / 'mcmc.h5'
+
+    import h5py
+
+    # A fresh fit must wipe every engine's raw sampler-state group, not
+    # just the active one, so a stale chain can never be resumed.
+    with h5py.File(sidecar_path, 'w') as handle:
+        handle.create_group(EMCEE_CHAIN_GROUP)
+        handle.create_group(DREAM_STATE_GROUP)
+        handle.create_group('posterior')
+
+    results_sidecar_mod.prepare_analysis_results_sidecar_for_new_fit(
+        analysis_dir=analysis_dir,
+    )
+
+    assert not sidecar_path.is_file()
+
+
+def test_carry_over_raw_sampler_state_copies_engine_groups(tmp_path):
+    import h5py
+
+    from easydiffraction.io import results_sidecar as results_sidecar_mod
+
+    source_dir = Path(tmp_path) / 'src' / 'analysis'
+    source_dir.mkdir(parents=True)
+    with h5py.File(source_dir / 'mcmc.h5', 'w') as handle:
+        chain = handle.create_group('emcee_chain')
+        chain.attrs['iteration'] = 5
+        state = handle.create_group('dream_state')
+        state.create_dataset('param_names', data=[b'a', b'b'])
+        handle.create_group('posterior')  # canonical: must NOT be copied
+
+    dest_dir = Path(tmp_path) / 'dst' / 'analysis'
+
+    results_sidecar_mod.carry_over_raw_sampler_state(
+        source_analysis_dir=source_dir,
+        destination_analysis_dir=dest_dir,
+    )
+
+    with h5py.File(dest_dir / 'mcmc.h5', 'r') as handle:
+        assert handle['emcee_chain'].attrs['iteration'] == 5
+        assert 'dream_state' in handle
+        assert list(handle['dream_state']['param_names'][()]) == [b'a', b'b']
+        # Canonical groups are rebuilt from memory, never carried over.
+        assert 'posterior' not in handle
+
+
+def test_carry_over_raw_sampler_state_is_noop_without_source(tmp_path):
+    from easydiffraction.io import results_sidecar as results_sidecar_mod
+
+    dest_dir = Path(tmp_path) / 'dst' / 'analysis'
+
+    results_sidecar_mod.carry_over_raw_sampler_state(
+        source_analysis_dir=Path(tmp_path) / 'missing' / 'analysis',
+        destination_analysis_dir=dest_dir,
+    )
+
+    assert not (dest_dir / 'mcmc.h5').exists()
+
+
+def test_carry_over_raw_sampler_state_is_noop_without_raw_groups(tmp_path):
+    import h5py
+
+    from easydiffraction.io import results_sidecar as results_sidecar_mod
+
+    source_dir = Path(tmp_path) / 'src' / 'analysis'
+    source_dir.mkdir(parents=True)
+    with h5py.File(source_dir / 'mcmc.h5', 'w') as handle:
+        handle.create_group('posterior')
+
+    dest_dir = Path(tmp_path) / 'dst' / 'analysis'
+
+    results_sidecar_mod.carry_over_raw_sampler_state(
+        source_analysis_dir=source_dir,
+        destination_analysis_dir=dest_dir,
+    )
+
+    assert not (dest_dir / 'mcmc.h5').exists()
 
 
 def test_should_use_sidecar_compares_to_fit_result_kind_enum():

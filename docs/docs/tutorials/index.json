@@ -1,10 +1,10 @@
 {
-  "bayesian-dream-display-lbco-hrpt": {
+  "bayesian-dream-resume-lbco-hrpt": {
     "order": 21,
-    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/bayesian-dream-display-lbco-hrpt/bayesian-dream-display-lbco-hrpt.ipynb",
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/bayesian-dream-resume-lbco-hrpt/bayesian-dream-resume-lbco-hrpt.ipynb",
     "original_name": "",
-    "title": "Bayesian Analysis Display (bumps-dream): LBCO, HRPT",
-    "description": "Reopen the saved bumps-DREAM Bayesian project for La0.5Ba0.5CoO3 and inspect persisted fit summaries, correlation matrix, and posterior plots without rerunning MCMC sampling",
+    "title": "Bayesian Analysis Resume (bumps-dream): LBCO, HRPT",
+    "description": "Reload a saved bumps-DREAM Bayesian project for La0.5Ba0.5CoO3, inspect the posterior, and resume MCMC sampling with additional steps",
     "level": "advanced"
   },
   "bayesian-dream-lbco-hrpt": {
@@ -28,7 +28,7 @@
     "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/bayesian-emcee-resume-lbco-hrpt/bayesian-emcee-resume-lbco-hrpt.ipynb",
     "original_name": "",
     "title": "Bayesian Analysis Resume (emcee): LBCO, HRPT",
-    "description": "Reload a saved emcee Bayesian project for La0.5Ba0.5CoO3, inspect the posterior, and resume MCMC sampling with additional steps (supported only for emcee, not bumps-DREAM)",
+    "description": "Reload a saved emcee Bayesian project for La0.5Ba0.5CoO3, inspect the posterior, and resume MCMC sampling with additional steps",
     "level": "advanced"
   },
   "bayesian-emcee-tbti-heidi": {

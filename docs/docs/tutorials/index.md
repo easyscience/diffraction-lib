@@ -50,7 +50,7 @@ The tutorials are organized into the following categories:
   `analysis/results.csv` after an incomplete previous run.
 
 See also under [Bayesian Analysis](#bayesian-analysis):
-[LBCO Bayesian Display (`bumps-dream`)](bayesian-dream-display-lbco-hrpt.ipynb)
+[LBCO Bayesian Resume (`bumps-dream`)](bayesian-dream-resume-lbco-hrpt.ipynb)
 and
 [LBCO Bayesian Resume (`emcee`)](bayesian-emcee-resume-lbco-hrpt.ipynb)
 — both load saved projects containing Bayesian fit state.
@@ -135,11 +135,11 @@ and
   (MCMC) sampling with the bumps-DREAM minimizer to explore the
   posterior distribution of the refined parameters, providing insights
   into parameter uncertainties and correlations.
-- [LBCO Bayesian Display (`bumps-dream`)](bayesian-dream-display-lbco-hrpt.ipynb)
+- [LBCO Bayesian Resume (`bumps-dream`)](bayesian-dream-resume-lbco-hrpt.ipynb)
   – Shows how to reopen the saved Bayesian project produced by the LBCO
-  Bayesian tutorial and inspect persisted fit summaries, correlation
-  matrix, posterior distribution plots, and predictive checks — without
-  rerunning MCMC sampling.
+  Bayesian tutorial, inspect persisted fit summaries, correlation
+  matrix, posterior distribution plots, and predictive checks, and then
+  resume DREAM sampling with additional steps.
 - [LBCO Bayesian (`emcee`)](bayesian-emcee-lbco-hrpt.ipynb) – Two-stage
   workflow on the LBCO HRPT dataset: first a quick local refinement to
   obtain a point estimate and uncertainties, then full posterior

@@ -398,7 +398,7 @@ def test_cli_undo_dry_uses_outcome_summary_without_saving(monkeypatch, tmp_path)
     assert "Would undo last fit for 'demo_project'" in result.stdout
     assert '2 parameters would be restored to pre-fit values' in result.stdout
     assert 'analysis.fit_results would be cleared' in result.stdout
-    assert 'analysis/results.h5 (Bayesian sidecar) would be cleared' in result.stdout
+    assert 'analysis/mcmc.h5 (Bayesian sidecar) would be cleared' in result.stdout
 
 
 def test_cli_undo_saves_after_real_rollback(monkeypatch, tmp_path):
