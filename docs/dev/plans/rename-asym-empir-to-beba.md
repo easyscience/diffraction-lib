@@ -190,7 +190,7 @@ applies: commit each completed step locally before starting the next.
   regenerated `.ipynb`.
   Commit: `Use beba names and neutral mismatch note on y2o3 page`
 
-- [ ] **P1.7 — Update tutorials.** Rename the parameter references in
+- [x] **P1.7 — Update tutorials.** Rename the parameter references in
   `refine-cosio-d20.py` and `refine-hs-hrpt.py`. Run
   `pixi run notebook-prepare`; stage the regenerated `.ipynb` siblings.
   Commit: `Use beba asymmetry names in tutorials`
@@ -242,7 +242,7 @@ new type string and class.
 - [x] P1.4 existing test references
 - [x] P1.5 PbSO₄ page rename + note
 - [x] P1.6 Y₂O₃ page note
-- [ ] P1.7 tutorials
+- [x] P1.7 tutorials
 - [ ] P1.8 docs + issues 133 & 166
 - [ ] P1.9 Phase 1 review gate
 - [ ] Phase 2 verification green
