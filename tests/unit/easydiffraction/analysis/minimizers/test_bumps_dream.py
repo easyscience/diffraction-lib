@@ -90,6 +90,45 @@ def test_dream_progress_monitor_allocates_rows_by_phase_ratio():
     assert len(monitor._sampling_targets) == 15
 
 
+def test_dream_progress_monitor_reports_relative_progress_on_resume():
+    from easydiffraction.analysis.minimizers.bumps_dream import _DreamProgressMonitor
+
+    # Resume from a 1000-generation chain, adding 100 more (burn=0).
+    monitor = _DreamProgressMonitor(
+        tracker=MagicMock(),
+        n_points=100,
+        n_parameters=5,
+        total_generations=1101,
+        burn_steps=0,
+        start_generation=1000,
+    )
+
+    # Progress is reported over the 100 new generations, not 1001/1101.
+    assert monitor._reported_iteration(1000) == 1
+    assert monitor._reported_iteration(1050) == 50
+    assert monitor._reported_total_iterations() == 101
+    assert monitor._progress_percent(1050) == pytest.approx(100.0 * 50 / 101)
+    # Reporting targets fall within the new generation range.
+    assert min(monitor._sampling_targets) >= 1001
+    assert max(monitor._sampling_targets) == 1101
+
+
+def test_dream_progress_monitor_reports_absolute_progress_when_fresh():
+    from easydiffraction.analysis.minimizers.bumps_dream import _DreamProgressMonitor
+
+    monitor = _DreamProgressMonitor(
+        tracker=MagicMock(),
+        n_points=100,
+        n_parameters=3,
+        total_generations=101,
+        burn_steps=0,
+    )
+
+    assert monitor._reported_iteration(40) == 40
+    assert monitor._reported_total_iterations() == 101
+    assert monitor._progress_percent(40) == pytest.approx(100.0 * 40 / 101)
+
+
 def test_init_accepts_enum_or_string_and_rejects_invalid():
     from easydiffraction.analysis.minimizers.bumps_dream import BumpsDreamMinimizer
     from easydiffraction.analysis.minimizers.enums import DreamPopulationInitializationEnum
@@ -361,7 +400,6 @@ def test_build_driver_stops_mapper_when_driver_clip_fails():
                 fitness=SimpleNamespace(numpoints=lambda: 10),
                 steps=10,
                 burn=2,
-                init=minimizer.init,
                 sampler_settings={'samples': 40, 'pop': 4},
                 n_parameters=1,
             )
@@ -589,6 +627,7 @@ def test_prepare_dream_resume_builds_ring_buffer_overrides(tmp_path):
         'burn_override': 0,
         'samples_override': 13 * 3 * 2,
         'pop_override': 3,
+        'start_generation': 8,
     }
     # bumps mutates state in place, so resume must pass a deep copy.
     assert fit_state is not state

@@ -553,7 +553,6 @@ def test_build_driver_stops_mapper_when_driver_clip_fails():
                 fitness=SimpleNamespace(numpoints=lambda: 10),
                 steps=10,
                 burn=2,
-                init=minimizer.init,
                 sampler_settings={'samples': 40, 'pop': 4},
                 n_parameters=1,
             )

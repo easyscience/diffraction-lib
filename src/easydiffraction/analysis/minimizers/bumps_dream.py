@@ -220,6 +220,7 @@ class _DreamProgressMonitor(bumps_monitor.Monitor):
         n_parameters: int,
         total_generations: int,
         burn_steps: int,
+        start_generation: int = 0,
     ) -> None:
         """Precompute per-phase progress targets for reporting."""
         self._tracker = tracker
@@ -227,6 +228,10 @@ class _DreamProgressMonitor(bumps_monitor.Monitor):
         self._n_parameters = n_parameters
         self._total_generations = max(1, total_generations)
         self._burn_steps = max(0, burn_steps)
+        # On a resume run the chain already holds ``start_generation``
+        # generations, so progress is reported relative to that baseline
+        # (1..extra_steps) instead of the absolute generation count.
+        self._start_generation = min(max(0, start_generation), self._total_generations - 1)
         burn_target_count, sampling_target_count = self._phase_progress_point_counts(
             total_generations=self._total_generations,
             burn_steps=self._burn_steps,
@@ -237,12 +242,21 @@ class _DreamProgressMonitor(bumps_monitor.Monitor):
             target_count=burn_target_count,
         )
         self._sampling_targets = self._progress_targets(
-            start=self._burn_steps + 1,
+            start=max(self._burn_steps, self._start_generation) + 1,
             stop=self._total_generations,
             target_count=sampling_target_count,
         )
         self._next_burn_target_index = 0
         self._next_sampling_target_index = 0
+
+    def _reported_iteration(self, generation: int) -> int:
+        """Return the generation relative to the resume baseline."""
+        clamped_generation = min(generation, self._total_generations)
+        return max(1, clamped_generation - self._start_generation)
+
+    def _reported_total_iterations(self) -> int:
+        """Return the total relative to the resume baseline."""
+        return max(1, self._total_generations - self._start_generation)
 
     @staticmethod
     def config_history(history: object) -> None:
@@ -260,8 +274,8 @@ class _DreamProgressMonitor(bumps_monitor.Monitor):
         log_posterior = self._population_mean_log_posterior(history)
         self._tracker.track_sampler_progress(
             SamplerProgressUpdate(
-                iteration=generation,
-                total_iterations=self._total_generations,
+                iteration=self._reported_iteration(generation),
+                total_iterations=self._reported_total_iterations(),
                 phase=self._phase_name(generation),
                 progress_percent=self._progress_percent(generation),
                 log_posterior=log_posterior,
@@ -281,8 +295,8 @@ class _DreamProgressMonitor(bumps_monitor.Monitor):
         reduced_chi2 = self._reduced_chi_square_from_nllf(best_nllf)
         self._tracker.track_sampler_progress(
             SamplerProgressUpdate(
-                iteration=generation,
-                total_iterations=self._total_generations,
+                iteration=self._reported_iteration(generation),
+                total_iterations=self._reported_total_iterations(),
                 phase=self._phase_name(generation),
                 progress_percent=self._progress_percent(generation),
                 log_posterior=self._population_mean_log_posterior(history),
@@ -384,9 +398,13 @@ class _DreamProgressMonitor(bumps_monitor.Monitor):
         return 'sampling'
 
     def _progress_percent(self, generation: int) -> float:
-        """Return DREAM progress as a percentage."""
+        """Return DREAM progress over new generations, in percent."""
         clamped_generation = min(generation, self._total_generations)
-        return 100.0 * clamped_generation / self._total_generations
+        numerator = max(0, clamped_generation - self._start_generation)
+        denominator = self._total_generations - self._start_generation
+        if denominator <= 0:
+            return 100.0
+        return 100.0 * numerator / denominator
 
     @staticmethod
     def _population_mean_log_posterior(history: object) -> float:
@@ -824,7 +842,10 @@ class BumpsDreamMinimizer(BumpsMinimizer):
                 kwargs=kwargs,
                 extra_steps=kwargs.get('extra_steps'),
             )
-            total_iterations = int(resume_overrides['steps_override'] + 1)
+            # Report progress over the new generations only (1..extra).
+            total_iterations = int(
+                resume_overrides['steps_override'] - resume_overrides['start_generation'] + 1
+            )
         else:
             total_iterations = int(self.steps + self._resolved_burn(self.steps) + 1)
         self.tracker.start_sampler_pre_processing(total_iterations=total_iterations)
@@ -925,6 +946,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
             'burn_override': 0,
             'samples_override': target_steps * pop_scale * n_parameters,
             'pop_override': pop_scale,
+            'start_generation': current_steps,
         }
         return overrides, copy.deepcopy(state)
 
@@ -982,6 +1004,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         burn_override: int | None = None,
         samples_override: int | None = None,
         pop_override: int | None = None,
+        start_generation: int = 0,
     ) -> _DreamRunContext:
         """
         Prepare a driver and metadata for one DREAM solver run.
@@ -1002,7 +1025,6 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         fitclass = next(cls for cls in FITTERS if cls.id == self.method)
         steps = self.steps if steps_override is None else int(steps_override)
         burn = self._resolved_burn(self.steps) if burn_override is None else int(burn_override)
-        init = self.init
         sampler_settings = self._sampler_settings(
             random_seed=random_seed,
             steps=steps,
@@ -1016,9 +1038,9 @@ class BumpsDreamMinimizer(BumpsMinimizer):
             fitness=fitness,
             steps=steps,
             burn=burn,
-            init=init,
             sampler_settings=sampler_settings,
             n_parameters=len(bumps_params),
+            start_generation=start_generation,
         )
         starting_values = np.array([parameter.value for parameter in bumps_params], dtype=float)
         resolved_uncertainties = (
@@ -1043,9 +1065,9 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         fitness: object,
         steps: int,
         burn: int,
-        init: DreamPopulationInitializationEnum,
         sampler_settings: dict[str, object],
         n_parameters: int,
+        start_generation: int = 0,
     ) -> FitDriver:
         """Build and clip the BUMPS DREAM driver."""
         total_generations = int(steps + burn + 1)
@@ -1056,6 +1078,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
             n_parameters=n_parameters,
             total_generations=total_generations,
             burn_steps=int(burn),
+            start_generation=int(start_generation),
         )
         mapper = self._build_mapper(problem)
         try:
@@ -1068,7 +1091,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
                 burn=burn,
                 thin=self.thin,
                 pop=int(sampler_settings['pop']),
-                init=init.value,
+                init=self.init.value,
                 samples=sampler_settings['samples'],
                 alpha=DEFAULT_ALPHA,
                 outliers=DEFAULT_OUTLIER_TEST,
