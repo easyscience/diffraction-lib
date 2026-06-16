@@ -261,7 +261,7 @@ Notes:
 - [x] P1.1 — Add weight validation to `Fitter.fit()`
 - [x] P1.2 — Close issue 15
 - [x] P1.3 — Phase 1 review gate
-- [ ] Phase 2 — tests added and full verification suite green
+- [x] Phase 2 — tests added and full verification suite green
 
 ## Suggested Pull Request
 
