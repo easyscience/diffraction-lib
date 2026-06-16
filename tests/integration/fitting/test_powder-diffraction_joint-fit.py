@@ -3,6 +3,7 @@
 
 import tempfile
 
+import pytest
 from numpy.testing import assert_almost_equal
 
 from easydiffraction import ExperimentFactory
@@ -315,6 +316,41 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     )
 
 
+def test_joint_fit_rejects_all_zero_weights() -> None:
+    # An all-zero joint-fit weight set would divide by zero during
+    # residual normalisation; the public fit path must reject it up
+    # front with a clear error instead of producing nan residuals.
+    model = StructureFactory.from_scratch(name='pbso4')
+    model.space_group.name_h_m = 'P n m a'
+    model.cell.length_a = 8.47
+    model.cell.length_b = 5.39
+    model.cell.length_c = 6.95
+
+    data_path = download_data('meas-pbso4-d1a-part1', destination=TEMP_DIR)
+    expt1 = ExperimentFactory.from_data_path(name='npd1', data_path=data_path)
+    expt1.linked_structures.create(structure_id='pbso4', scale=1.46)
+
+    data_path = download_data('meas-pbso4-d1a-part2', destination=TEMP_DIR)
+    expt2 = ExperimentFactory.from_data_path(name='npd2', data_path=data_path)
+    expt2.linked_structures.create(structure_id='pbso4', scale=1.46)
+
+    project = Project()
+    project.structures.add(model)
+    project.experiments.add(expt1)
+    project.experiments.add(expt2)
+
+    project.analysis.minimizer.type = 'lmfit'
+    project.analysis.fitting_mode.type = 'joint'
+
+    # Force an all-zero weight set via the public joint-fit API.
+    project.analysis.joint_fit.create(experiment_id='npd1', weight=0.0)
+    project.analysis.joint_fit.create(experiment_id='npd2', weight=0.0)
+
+    with pytest.raises(ValueError, match='Joint-fit weights'):
+        project.analysis.fit()
+
+
 if __name__ == '__main__':
     test_joint_fit_split_dataset_neutron_pd_cwl_pbso4()
     test_joint_fit_neutron_xray_pd_cwl_pbso4()
+    test_joint_fit_rejects_all_zero_weights()
