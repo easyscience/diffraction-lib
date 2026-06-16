@@ -309,9 +309,9 @@ class Fitter:
 
         Joint-fit weights are normalised by their total and applied as
         ``sqrt(weight)`` per experiment. An invalid set (wrong shape,
-        negative, non-finite, or summing to a non-positive or
-        non-finite total) would feed ``nan`` or division-by-zero
-        residuals to the minimizer, so it is rejected up front.
+        negative, non-finite, or summing to a non-positive or non-finite
+        total) would feed ``nan`` or division-by-zero residuals to the
+        minimizer, so it is rejected up front.
 
         Parameters
         ----------
@@ -319,8 +319,8 @@ class Fitter:
             Per-experiment joint-fit weights, or ``None`` for equal
             weights (always valid).
         experiments : list[ExperimentBase]
-            Experiments scheduled for fitting; one weight per
-            experiment is required.
+            Experiments scheduled for fitting; one weight per experiment
+            is required.
 
         Raises
         ------
@@ -349,7 +349,11 @@ class Fitter:
         if (arr < 0).any():
             msg = f'Joint-fit weights must all be non-negative; got {arr.tolist()}.'
             raise ValueError(msg)
-        total = arr.sum(dtype=np.float64)
+        # Overflow to inf is a valid outcome here (e.g. [1e308, 1e308]);
+        # it is caught by the isfinite check below, so silence the noisy
+        # low-level warning and surface only the clear error.
+        with np.errstate(over='ignore'):
+            total = arr.sum(dtype=np.float64)
         if not np.isfinite(total) or total <= 0:
             msg = (
                 'Joint-fit weights must sum to a finite positive total; '
