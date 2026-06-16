@@ -149,7 +149,7 @@ committed locally (atomic, single-purpose) before moving to the next
 step or the review gate. Mark each `- [ ]` as `- [x]` in the same commit
 that completes it.
 
-- [ ] **P1.1 — Add weight validation to `Fitter.fit()`.**
+- [x] **P1.1 — Add weight validation to `Fitter.fit()`.**
   In `src/easydiffraction/analysis/fitting.py`:
   - Add a `@staticmethod _require_valid_weights(weights:
     np.ndarray | None, experiments: list[ExperimentBase]) -> None`
@@ -252,7 +252,7 @@ Notes:
 
 ## Status checklist
 
-- [ ] P1.1 — Add weight validation to `Fitter.fit()`
+- [x] P1.1 — Add weight validation to `Fitter.fit()`
 - [ ] P1.2 — Close issue 15
 - [ ] P1.3 — Phase 1 review gate
 - [ ] Phase 2 — tests added and full verification suite green

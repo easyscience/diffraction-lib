@@ -201,10 +201,13 @@ class Fitter:
         ------
         ValueError
             If resume is requested without the same free parameter set
-            used by the saved emcee chain.
+            used by the saved emcee chain, or if the joint-fit *weights*
+            are not a 1-D array of one finite, non-negative value per
+            experiment whose total is finite and positive.
         """
         fit_options = options or FitterFitOptions()
         self._require_measured_data(experiments)
+        self._require_valid_weights(weights, experiments)
         # Enforce symmetry constraints (e.g. ADP) before collecting
         # free parameters so that components fixed by site symmetry are
         # excluded from the minimizer's parameter set.
@@ -295,6 +298,64 @@ class Fitter:
                     'but fitting against it is not.)'
                 )
                 raise ValueError(msg)
+
+    @staticmethod
+    def _require_valid_weights(
+        weights: np.ndarray | None,
+        experiments: list[ExperimentBase],
+    ) -> None:
+        """
+        Reject joint-fit weights that would corrupt the residuals.
+
+        Joint-fit weights are normalised by their total and applied as
+        ``sqrt(weight)`` per experiment. An invalid set (wrong shape,
+        negative, non-finite, or summing to a non-positive or
+        non-finite total) would feed ``nan`` or division-by-zero
+        residuals to the minimizer, so it is rejected up front.
+
+        Parameters
+        ----------
+        weights : np.ndarray | None
+            Per-experiment joint-fit weights, or ``None`` for equal
+            weights (always valid).
+        experiments : list[ExperimentBase]
+            Experiments scheduled for fitting; one weight per
+            experiment is required.
+
+        Raises
+        ------
+        ValueError
+            If *weights* is not a 1-D array of one finite, non-negative
+            value per experiment whose total is finite and positive.
+        """
+        if weights is None:
+            return
+        arr = np.asarray(weights, dtype=np.float64)
+        if arr.ndim != 1:
+            msg = (
+                'Joint-fit weights must be a 1-D array with one weight '
+                f'per experiment; got a {arr.ndim}-D array.'
+            )
+            raise ValueError(msg)
+        if arr.size != len(experiments):
+            msg = (
+                'Joint-fit weights must provide one weight per experiment; '
+                f'got {arr.size} weight(s) for {len(experiments)} experiment(s).'
+            )
+            raise ValueError(msg)
+        if not np.isfinite(arr).all():
+            msg = f'Joint-fit weights must all be finite numbers; got {arr.tolist()}.'
+            raise ValueError(msg)
+        if (arr < 0).any():
+            msg = f'Joint-fit weights must all be non-negative; got {arr.tolist()}.'
+            raise ValueError(msg)
+        total = arr.sum(dtype=np.float64)
+        if not np.isfinite(total) or total <= 0:
+            msg = (
+                'Joint-fit weights must sum to a finite positive total; '
+                f'got a total of {total} for {arr.tolist()}.'
+            )
+            raise ValueError(msg)
 
     def _set_minimizer_sidecar_path(self, analysis: object) -> None:
         """Set the analysis results sidecar path when supported."""
