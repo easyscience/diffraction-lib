@@ -52,7 +52,7 @@ class SequentialFitTemplate:
     template can be pickled for ``ProcessPoolExecutor``.
     """
 
-    structure_cif: str
+    structure_cifs: list[str]
     experiment_cif: str
     initial_params: dict[str, float]
     free_parameter_unique_names: list[str]
@@ -126,7 +126,8 @@ def _fit_worker_success(
     finally:
         Project._loading = False
 
-    project.structures.add_from_cif_str(template.structure_cif)
+    for structure_cif in template.structure_cifs:
+        project.structures.add_from_cif_str(structure_cif)
     project.experiments.add_from_cif_str(template.experiment_cif)
     expt = next(iter(project.experiments.values()))
     expt._load_ascii_data_to_experiment(data_path)
@@ -568,8 +569,8 @@ def _build_template(project: object) -> SequentialFitTemplate:
     Parameters
     ----------
     project : object
-        The main project instance (must have exactly 1 structure and 1
-        experiment).
+        The main project instance (must have at least 1 structure and
+        exactly 1 experiment).
 
     Returns
     -------
@@ -585,7 +586,6 @@ def _build_template(project: object) -> SequentialFitTemplate:
     from easydiffraction.core.variable import NumericDescriptor  # noqa: PLC0415
     from easydiffraction.core.variable import Parameter  # noqa: PLC0415
 
-    structure = next(iter(project.structures.values()))
     experiment = next(iter(project.experiments.values()))
 
     # Collect free parameter unique_names and initial values
@@ -638,7 +638,7 @@ def _build_template(project: object) -> SequentialFitTemplate:
             diffrn_field_names.append(field_name)
 
     return SequentialFitTemplate(
-        structure_cif=structure.as_cif,
+        structure_cifs=[structure.as_cif for structure in project.structures.values()],
         experiment_cif=experiment.as_cif,
         initial_params=initial_params,
         free_parameter_unique_names=free_names,
@@ -1042,8 +1042,8 @@ def _check_seq_preconditions(project: object) -> list[str]:
     ValueError
         If preconditions are not met.
     """
-    if len(project.structures) != 1:
-        msg = f'Sequential fitting requires exactly 1 structure, found {len(project.structures)}.'
+    if len(project.structures) < 1:
+        msg = 'Sequential fitting requires at least 1 structure, found none.'
         raise ValueError(msg)
 
     if len(project.experiments) != 1:
