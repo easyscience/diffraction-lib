@@ -188,7 +188,7 @@ that completes it.
     (the `git mv` already stages the deletion of the open file).
   - Commit: `Close joint-fit weight validation issue`
 
-- [ ] **P1.3 — Phase 1 review gate.** No-code step. Mark this item
+- [x] **P1.3 — Phase 1 review gate.** No-code step. Mark this item
   `[x]`, commit the checklist update alone with message
   `Reach Phase 1 review gate`, then stop for Phase 1 review.
 
@@ -254,7 +254,7 @@ Notes:
 
 - [x] P1.1 — Add weight validation to `Fitter.fit()`
 - [x] P1.2 — Close issue 15
-- [ ] P1.3 — Phase 1 review gate
+- [x] P1.3 — Phase 1 review gate
 - [ ] Phase 2 — tests added and full verification suite green
 
 ## Suggested Pull Request
