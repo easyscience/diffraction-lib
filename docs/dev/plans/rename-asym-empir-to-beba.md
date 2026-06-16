@@ -162,7 +162,7 @@ applies: commit each completed step locally before starting the next.
   `peak/__init__.py` (import the renamed class).
   Commit: `Rename pseudo-Voigt empirical-asymmetry peak type to beba`
 
-- [ ] **P1.3 — Update calculators.** In `cryspy.py` update the four
+- [x] **P1.3 — Update calculators.** In `cryspy.py` update the four
   `experiment.peak.asym_empir_* → asym_beba_*` reads and the CIF map
   (`asym_beba_a0 → _pd_instr_reflex_asymmetry_p1`, etc., preserving the
   `p1…p4` order). Same CIF map in `crysfml.py`.
@@ -238,7 +238,7 @@ new type string and class.
 
 - [x] P1.1 model params + mixin
 - [x] P1.2 peak class + enum + factory + init
-- [ ] P1.3 calculators
+- [x] P1.3 calculators
 - [ ] P1.4 existing test references
 - [ ] P1.5 PbSO₄ page rename + note
 - [ ] P1.6 Y₂O₃ page note
