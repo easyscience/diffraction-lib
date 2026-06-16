@@ -44,11 +44,11 @@ and so on. The list below notes only what is specific to each page.
   reciprocal, non-normalised texture convention.
 - [PbSO₄ `pd-neut-cwl` (pseudo-Voigt)](pd-neut-cwl_pv_pbso4.ipynb) –
   Anglesite (PbSO₄, _Pnma_); pseudo-Voigt, no asymmetry.
-- [PbSO₄ `pd-neut-cwl` (empirical asymmetry)](pd-neut-cwl_pv-asym_empir_pbso4.ipynb)
-  – Anglesite (PbSO₄, _Pnma_); pseudo-Voigt with empirical
-  (FullProf-style) axial-divergence asymmetry. Skipped in CI: cryspy and
-  FullProf parameterise the empirical asymmetry differently, and crysfml
-  has no empirical-asymmetry model.
+- [PbSO₄ `pd-neut-cwl` (Bérar–Baldinozzi asymmetry)](pd-neut-cwl_pv-beba_pbso4.ipynb)
+  – Anglesite (PbSO₄, _Pnma_); pseudo-Voigt with Bérar–Baldinozzi
+  (FullProf-style) axial-divergence asymmetry (`asym_beba_*`). Skipped in
+  CI: cryspy and FullProf implement this asymmetry with different
+  conventions (issue 166), and crysfml has no empirical-asymmetry model.
 - [LaB₆ `pd-neut-cwl` (SyCos/SySin)](pd-neut-cwl_tch-fcj-noabs-nosldl_lab6.ipynb)
   – Lanthanum hexaboride (LaB₆, _Pm-3m_); pseudo-Voigt with SyCos/SySin
   sample-displacement and transparency corrections. Skipped in CI:

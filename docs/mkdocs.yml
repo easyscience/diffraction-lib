@@ -260,7 +260,7 @@ nav:
           - LBCO: verification/pd-neut-cwl_pv_lbco.ipynb
           - LBCO (preferred orientation): verification/pd-neut-cwl_pv-march_lbco.ipynb
           - PbSO4 (pseudo-Voigt): verification/pd-neut-cwl_pv_pbso4.ipynb
-          - PbSO4 (empirical asymmetry): verification/pd-neut-cwl_pv-asym_empir_pbso4.ipynb
+          - PbSO4 (Bérar–Baldinozzi asymmetry): verification/pd-neut-cwl_pv-beba_pbso4.ipynb
           - LaB6 (SyCos/SySin): verification/pd-neut-cwl_tch-fcj-noabs-nosldl_lab6.ipynb
           - LaB6 (FCJ asymmetry): verification/pd-neut-cwl_tch-fcj-noabs_lab6.ipynb
           - LaB6 (absorption): verification/pd-neut-cwl_tch-fcj_lab6.ipynb

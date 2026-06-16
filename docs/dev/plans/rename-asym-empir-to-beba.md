@@ -173,7 +173,7 @@ applies: commit each completed step locally before starting the next.
   the test files listed above. No new tests (those belong to Phase 2).
   Commit: `Update tests for beba asymmetry rename`
 
-- [ ] **P1.5 — Rename and update the PbSO₄ empirical Verification page.**
+- [x] **P1.5 — Rename and update the PbSO₄ empirical Verification page.**
   `git mv` `pd-neut-cwl_pv-asym_empir_pbso4.py` →
   `pd-neut-cwl_pv-beba_pbso4.py`; update parameter names; add the neutral
   mismatch note (markdown cell); update its FullProf reference folder
@@ -240,7 +240,7 @@ new type string and class.
 - [x] P1.2 peak class + enum + factory + init
 - [x] P1.3 calculators
 - [x] P1.4 existing test references
-- [ ] P1.5 PbSO₄ page rename + note
+- [x] P1.5 PbSO₄ page rename + note
 - [ ] P1.6 Y₂O₃ page note
 - [ ] P1.7 tutorials
 - [ ] P1.8 docs + issues 133 & 166
