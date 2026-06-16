@@ -5,12 +5,12 @@
 def test_cwl_peak_classes_expose_expected_parameters_and_category():
     from easydiffraction.datablocks.experiment.categories.peak.cwl import CwlPseudoVoigt
     from easydiffraction.datablocks.experiment.categories.peak.cwl import (
-        CwlPseudoVoigtEmpiricalAsymmetry,
+        CwlPseudoVoigtBerarBaldinozziAsymmetry,
     )
     from easydiffraction.datablocks.experiment.categories.peak.cwl import CwlThompsonCoxHastings
 
     pv = CwlPseudoVoigt()
-    spv = CwlPseudoVoigtEmpiricalAsymmetry()
+    spv = CwlPseudoVoigtBerarBaldinozziAsymmetry()
     tch = CwlThompsonCoxHastings()
 
     # Category code set by PeakBase
@@ -28,9 +28,9 @@ def test_cwl_peak_classes_expose_expected_parameters_and_category():
             'broad_lorentz_y',
         }.issubset(names)
 
-    # EmpiricalAsymmetry added only for split PV
+    # BerarBaldinozziAsymmetry added only for split PV
     names_spv = {p.name for p in spv.parameters}
-    assert {'asym_empir_1', 'asym_empir_2', 'asym_empir_3', 'asym_empir_4'}.issubset(names_spv)
+    assert {'asym_beba_a0', 'asym_beba_b0', 'asym_beba_a1', 'asym_beba_b1'}.issubset(names_spv)
 
     # FCJ asymmetry for TCH
     names_tch = {p.name for p in tch.parameters}

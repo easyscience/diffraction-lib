@@ -43,17 +43,17 @@ def test_from_cif_str_restores_non_default_peak_profile_type():
         radiation_probe='xray',
         scattering_type='bragg',
     )
-    expt.peak.type = 'pseudo-voigt + empirical asymmetry'
-    expt.peak.asym_empir_1 = -0.005
-    expt.peak.asym_empir_2 = 0.067
+    expt.peak.type = 'pseudo-voigt + berar-baldinozzi asymmetry'
+    expt.peak.asym_beba_a0 = -0.005
+    expt.peak.asym_beba_b0 = 0.067
     expt.peak.broad_gauss_u = 0.039
 
     cif_str = expt.as_cif
 
     loaded = ExperimentFactory.from_cif_str(cif_str)
 
-    assert loaded.peak.type == 'cwl-pseudo-voigt-empirical-asymmetry'
-    assert loaded.peak.__class__.__name__ == 'CwlPseudoVoigtEmpiricalAsymmetry'
-    assert abs(loaded.peak.asym_empir_1.value - (-0.005)) < 1e-6
-    assert abs(loaded.peak.asym_empir_2.value - 0.067) < 1e-6
+    assert loaded.peak.type == 'cwl-pseudo-voigt-berar-baldinozzi-asymmetry'
+    assert loaded.peak.__class__.__name__ == 'CwlPseudoVoigtBerarBaldinozziAsymmetry'
+    assert abs(loaded.peak.asym_beba_a0.value - (-0.005)) < 1e-6
+    assert abs(loaded.peak.asym_beba_b0.value - 0.067) < 1e-6
     assert abs(loaded.peak.broad_gauss_u.value - 0.039) < 1e-6

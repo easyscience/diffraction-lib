@@ -152,7 +152,7 @@ class TestPdExperimentPeak:
         assert 'Alias' not in out
         assert 'cwl-pseudo-voigt' not in out
         assert 'pseudo-voigt' in out
-        assert 'pseudo-voigt + empirical asymmetry' in out
+        assert 'pseudo-voigt + berar-baldinozzi asymmetry' in out
 
 
 # ------------------------------------------------------------------

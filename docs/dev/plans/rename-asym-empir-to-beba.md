@@ -168,7 +168,7 @@ applies: commit each completed step locally before starting the next.
   `p1…p4` order). Same CIF map in `crysfml.py`.
   Commit: `Map beba asymmetry params in cryspy and crysfml calculators`
 
-- [ ] **P1.4 — Update existing test references.** Mechanically rename
+- [x] **P1.4 — Update existing test references.** Mechanically rename
   `asym_empir_*`, the mixin/class/enum names, and the type string across
   the test files listed above. No new tests (those belong to Phase 2).
   Commit: `Update tests for beba asymmetry rename`
@@ -239,7 +239,7 @@ new type string and class.
 - [x] P1.1 model params + mixin
 - [x] P1.2 peak class + enum + factory + init
 - [x] P1.3 calculators
-- [ ] P1.4 existing test references
+- [x] P1.4 existing test references
 - [ ] P1.5 PbSO₄ page rename + note
 - [ ] P1.6 Y₂O₃ page note
 - [ ] P1.7 tutorials

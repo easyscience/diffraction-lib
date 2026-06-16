@@ -63,15 +63,15 @@ def test_pd_experiment_peak_profile_switch_warning_lists_added_settings(monkeypa
     monkeypatch.setattr(item_base.log, 'warning', warnings.append)
     ex = ConcretePd(name='ex1', experiment_type=et)
 
-    ex.peak.type = 'pseudo-voigt + empirical asymmetry'
+    ex.peak.type = 'pseudo-voigt + berar-baldinozzi asymmetry'
 
     assert warnings == [
         (
             'Switching peak profile type adds these settings with defaults:\n'
-            '• asym_empir_1=0.0\n'
-            '• asym_empir_2=0.0\n'
-            '• asym_empir_3=0.0\n'
-            '• asym_empir_4=0.0'
+            '• asym_beba_a0=0.0\n'
+            '• asym_beba_b0=0.0\n'
+            '• asym_beba_a1=0.0\n'
+            '• asym_beba_b1=0.0'
         )
     ]
 
@@ -100,7 +100,7 @@ def test_pd_experiment_peak_profile_switch_warning_lists_reset_settings(monkeypa
     ex = ConcretePd(name='ex1', experiment_type=et)
     ex.peak.broad_gauss_u = 0.05
 
-    ex.peak.type = 'pseudo-voigt + empirical asymmetry'
+    ex.peak.type = 'pseudo-voigt + berar-baldinozzi asymmetry'
 
     assert warnings[1] == (
         'Switching peak profile type resets these settings to defaults:\n'
@@ -130,7 +130,7 @@ def test_pd_experiment_peak_profile_switch_warning_lists_removed_settings(monkey
     warnings: list[str] = []
     monkeypatch.setattr(item_base.log, 'warning', warnings.append)
     ex = ConcretePd(name='ex1', experiment_type=et)
-    ex.peak.type = 'pseudo-voigt + empirical asymmetry'
+    ex.peak.type = 'pseudo-voigt + berar-baldinozzi asymmetry'
     warnings.clear()
 
     ex.peak.type = 'pseudo-voigt'
@@ -138,10 +138,10 @@ def test_pd_experiment_peak_profile_switch_warning_lists_removed_settings(monkey
     assert warnings == [
         (
             'Switching peak profile type removes these settings:\n'
-            '• asym_empir_1\n'
-            '• asym_empir_2\n'
-            '• asym_empir_3\n'
-            '• asym_empir_4'
+            '• asym_beba_a0\n'
+            '• asym_beba_b0\n'
+            '• asym_beba_a1\n'
+            '• asym_beba_b1'
         )
     ]
 
@@ -166,11 +166,11 @@ def test_pd_experiment_set_peak_profile_type_silent(capsys):
     et._set_scattering_type(ScatteringTypeEnum.BRAGG.value)
 
     ex = ConcretePd(name='ex1', experiment_type=et)
-    ex._set_peak_profile_type('pseudo-voigt + empirical asymmetry')
+    ex._set_peak_profile_type('pseudo-voigt + berar-baldinozzi asymmetry')
 
     # Profile type was switched
-    assert ex.peak.type == 'cwl-pseudo-voigt-empirical-asymmetry'
-    assert ex.peak.__class__.__name__ == 'CwlPseudoVoigtEmpiricalAsymmetry'
+    assert ex.peak.type == 'cwl-pseudo-voigt-berar-baldinozzi-asymmetry'
+    assert ex.peak.__class__.__name__ == 'CwlPseudoVoigtBerarBaldinozziAsymmetry'
 
     # No console output was emitted
     captured = capsys.readouterr().out
@@ -227,14 +227,14 @@ def test_pd_experiment_restore_switchable_types_switches_peak():
 
     ex = ConcretePd(name='ex1', experiment_type=et)
 
-    cif = 'data_ex1\n_peak.type "pseudo-voigt + empirical asymmetry"\n'
+    cif = 'data_ex1\n_peak.type "pseudo-voigt + berar-baldinozzi asymmetry"\n'
     doc = gemmi.cif.read_string(cif)
     block = doc.sole_block()
 
     ex._restore_switchable_types(block)
 
-    assert ex.peak.type == 'cwl-pseudo-voigt-empirical-asymmetry'
-    assert ex.peak.__class__.__name__ == 'CwlPseudoVoigtEmpiricalAsymmetry'
+    assert ex.peak.type == 'cwl-pseudo-voigt-berar-baldinozzi-asymmetry'
+    assert ex.peak.__class__.__name__ == 'CwlPseudoVoigtBerarBaldinozziAsymmetry'
 
 
 def test_base_experiment_restore_switchable_types_is_noop():
@@ -260,7 +260,7 @@ def test_base_experiment_restore_switchable_types_is_noop():
 
     ex = ConcreteBase(name='ex1', experiment_type=et)
 
-    cif = 'data_ex1\n_peak.type "pseudo-voigt + empirical asymmetry"\n'
+    cif = 'data_ex1\n_peak.type "pseudo-voigt + berar-baldinozzi asymmetry"\n'
     doc = gemmi.cif.read_string(cif)
     block = doc.sole_block()
 
