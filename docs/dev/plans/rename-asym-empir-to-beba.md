@@ -211,7 +211,7 @@ applies: commit each completed step locally before starting the next.
   where natural.
   Commit: `Update docs, issue 133, and issue 166 for beba asymmetry rename`
 
-- [ ] **P1.9 — Phase 1 review gate.** No-code step; mark `[x]` and
+- [x] **P1.9 — Phase 1 review gate.** No-code step; mark `[x]` and
   commit the checklist update alone.
   Commit: `Reach Phase 1 review gate`
 
@@ -244,7 +244,7 @@ new type string and class.
 - [x] P1.6 Y₂O₃ page note
 - [x] P1.7 tutorials
 - [x] P1.8 docs + issues 133 & 166
-- [ ] P1.9 Phase 1 review gate
+- [x] P1.9 Phase 1 review gate
 - [ ] Phase 2 verification green
 
 ## Suggested Pull Request
