@@ -42,12 +42,12 @@ Intent 3 is where the current modes break down. It is served today by
   experiment's refined values (an implicit carry-forward) and
   **overwrites** the shared structure. Per-experiment results are not
   retained on the structure, so plotting an earlier experiment shows the
-  *last* experiment's calculated pattern — this is **issue 85**. A
+  _last_ experiment's calculated pattern — this is **issue 85**. A
   legacy in-memory `_parameter_snapshots` store plus
   `plot_param_series_from_snapshots` exists only as a fallback for this
   path.
 - `sequential` mode: fits **exactly one** loaded experiment as a
-  *template* against a **folder of files on disk**
+  _template_ against a **folder of files on disk**
   (`sequential_fit.data_dir` / `file_pattern`), writing per-point
   results to `analysis/results.csv` with parameter-evolution plots. A
   guard test asserts `match='exactly 1 experiment'`, so this mode
@@ -73,23 +73,23 @@ than a defect to patch in place. It extends, and partly revises,
 `fitting_mode.show_supported()` returns only the modes that make sense
 for the data currently loaded:
 
-| Experiments loaded | Available modes |
-| --- | --- |
-| 0 | — (no fitting possible) |
-| 1 | `single` |
-| ≥ 2 | `joint`, `sequential` |
+| Experiments loaded | Available modes         |
+| ------------------ | ----------------------- |
+| 0                  | — (no fitting possible) |
+| 1                  | `single`                |
+| ≥ 2                | `joint`, `sequential`   |
 
 This is wired through the existing switchable-category selector
 contract: `FittingMode._supported_types(filters)` (today it ignores
-`filters`) consumes the experiment count and returns the valid list.
-The owner does not gain any new `analysis.*` setter — the
+`filters`) consumes the experiment count and returns the valid list. The
+owner does not gain any new `analysis.*` setter — the
 category-owned-selector contract from
 [`switchable-category-owned-selectors`](accepted/switchable-category-owned-selectors.md)
 is preserved.
 
-The choice the scientist actually makes — "fit them **together** or
-**in turn**?" — therefore only appears when it is meaningful (≥2
-datasets). With one dataset there is no choice to make.
+The choice the scientist actually makes — "fit them **together** or **in
+turn**?" — therefore only appears when it is meaningful (≥2 datasets).
+With one dataset there is no choice to make.
 
 ### 2. Restrict `single` to exactly one loaded experiment
 
@@ -109,24 +109,88 @@ This absorbs the old `single`-with-N behaviour (which was already an
 implicit carry-forward) and makes it correct. The name matches the
 behaviour: each fit is seeded by the previous one, in sequence.
 
+Scope of the carry-forward is made precise:
+
+- **Shared (structure) parameters** are carried forward — the refined
+  values of point _i_ become the starting values for point _i+1_. This
+  is the scientifically meaningful "track the model as it evolves"
+  behaviour (e.g. lattice parameter across a temperature ramp).
+- **Per-experiment parameters** (scale, background, instrument terms)
+  are refined independently for each point and are **not** cross-applied
+  between experiments.
+- The series order is **deterministic**: experiments are fit in their
+  project collection order — never an arbitrary or hash order. A
+  configurable reverse/custom ordering is **not** part of the first
+  step: the existing `reverse` flag lives on the parked `sequential_fit`
+  category (Decision 5a) and has no loaded-dataset home, and this ADR
+  adds no new owner-level setter or category for it. Ordering control is
+  therefore deferred to the input-source follow-up; until then users
+  order the series by the order in which they add experiments.
+
+### 3a. Preconditions that make loaded experiments a valid series
+
+`show_supported()` lists `sequential` based on experiment **count only**
+(≥2), so the offered list stays predictable and explainable from what
+the scientist can see. The richer preconditions are enforced at **fit
+time** with specific, actionable errors rather than by silently
+withholding the mode:
+
+- **Measured data on every experiment** in the series (reuse the
+  existing `_require_measured_data` guard).
+- **A shared structure model**: every experiment in the series must
+  reference the same structure(s); a sequential run carries _those_
+  parameters forward, so a project whose experiments point at different
+  structures is not a single series and is rejected with a clear error.
+- **Each experiment individually fittable**: a valid calculator and a
+  non-empty free-parameter set. Experiment/calculator _types_ may differ
+  across points (the carry-forward acts on the shared structure), so the
+  series is not constrained to one probe or instrument.
+- **Stable order** as defined in Decision 3.
+
+When any precondition fails, the error names the offending experiment
+and the rule, so a scientist is never left with a mode that "is offered
+but will not run" without an explanation.
+
 ### 4. Fix issue 85 as the core of the new `sequential`
 
 A loaded-dataset `sequential` mode is only correct if it retains each
 experiment's fitted parameters. Issue 85 is therefore **resolved by
-construction** of this mode, not by a separate snapshot-restore patch:
-before recomputing/plotting an experiment's calculated pattern, that
-experiment's stored parameter set is applied to the shared structure.
+construction** of this mode, not by a separate snapshot-restore patch.
 The existing per-point evolution output (`results.csv` /
 `plot_param_series`) becomes the shared result surface for `sequential`,
 so the legacy `_parameter_snapshots` fallback can be unified into it
 rather than left as dead code.
+
+### 4a. Replay contract — re-plotting must not mutate live state
+
+Because all loaded experiments share one live structure object,
+re-applying a stored per-point parameter set to plot an earlier point is
+itself a mutation. Without a rule, fixing issue 85 could introduce a new
+bug: plotting point A silently changes the structure used by point B,
+later calculations, `save`, and `undo`. The contract is therefore:
+
+- **The live model is authoritative and is not perturbed by viewing.**
+  After a `sequential` run the live model holds the last point's values
+  (consistent with carry-forward); plotting or recomputing any point
+  must leave that live state exactly as it was.
+- **Per-point recomputation is scoped and self-restoring.** Applying a
+  point's stored parameters happens inside a temporary context that
+  captures the affected live values, computes, and restores them on exit
+  (including on error). This is an internal-only, reversible apply — it
+  never reaches `save` or `undo`.
+- **Prefer reading over recomputing.** Where a point's calculated arrays
+  can be persisted/cached alongside its parameters, plotting reads them
+  directly and avoids touching the live structure at all; the scoped
+  apply-then-restore is the fallback when a recompute is unavoidable.
+- **`save` / `undo` operate on the live model only** and are defined to
+  be independent of whatever point was last plotted.
 
 ### 5. Hide irrelevant mode categories from display; never mutate the attribute set
 
 Mode-specific configuration categories (`joint_fit`, `sequential_fit`,
 `sequential_fit_extract`) remain **eagerly instantiated** in
 `Analysis.__init__` and are **always present as attributes**. What
-changes is *visibility*: the existing display filter (`_help_filter`,
+changes is _visibility_: the existing display filter (`_help_filter`,
 `analysis.py`) and serialization filter (`_serializable_categories`) are
 extended so that categories irrelevant to the available modes (given the
 current experiment count and active mode) are hidden from
@@ -139,6 +203,41 @@ introspection and CIF restore, and conflicts with the "eager, explicit
 `__init__`, no runtime class mutation" architecture in §Architecture.
 Hiding from the surface gives the user the same clean experience without
 the fragility.
+
+### 5a. The folder-of-files sweep is parked for the first step
+
+The redefined `sequential` (loaded datasets) and the existing folder
+sweep cannot share the `sequential_fit` / `sequential_fit_extract`
+surface at the same time: those categories model folder input
+(`data_dir`, `file_pattern`, `max_workers`, `chunk_size`, `reverse`,
+extraction rules) that loaded-dataset `sequential` does not read. Two
+input models also cannot live under one count-gated mode, because the
+folder sweep requires **exactly one** loaded template while
+loaded-dataset `sequential` requires **≥2** — opposite preconditions.
+The first step therefore commits to one contract instead of leaving the
+surface ambiguous:
+
+- Loaded-dataset `sequential` uses **neither** `sequential_fit` nor
+  `sequential_fit_extract`.
+- The folder-sweep execution path and its two categories are **retained
+  in the codebase but parked**: not reachable through the `fitting_mode`
+  selector in this step, hidden from the analysis display surface, and
+  omitted from CIF serialization (so stale folder settings cannot
+  survive under a mode that no longer reads them).
+- The parked capability is restored — as an explicit input source or a
+  separate `scan` mode — by the deferred input-source ADR (see Open
+  Questions and Deferred Work). The new `sequential` is designed so that
+  slot-in is additive, not a rewrite.
+
+**Owner confirmation required.** Parking the folder sweep is a
+**temporary removal of an existing, tested user-facing workflow** (CSV
+output, extraction rules, crash recovery, parallel workers). Per
+§"Change Discipline" this removal must be explicitly approved before
+implementation. The documented alternative that avoids any removal is to
+split the folder sweep into its own `scan` mode **now** (available when
+exactly one experiment is loaded); that keeps the feature continuously
+available but revises the agreed availability table by adding `scan` to
+the one-dataset row (see Alternatives Considered).
 
 ### 6. Validate at fit time with clear, user-facing errors
 
@@ -172,14 +271,17 @@ No silent auto-switching of the mode behind the user's back.
 ### Trade-offs
 
 - Redefining `sequential` is a **behavioural change to an existing,
-  tested feature** (the folder-of-files sweep). Its fate must be settled
-  (see Open Questions) and its tests reworked.
+  tested feature**. The first step parks the folder-of-files sweep
+  (Decision 5a), which is a temporary removal of a user-facing workflow
+  requiring owner sign-off; its tests are reworked and its restoration
+  is a tracked follow-up. The no-removal alternative (`scan` now) trades
+  this off against a revised availability table.
 - "Fit each loaded dataset independently from the same starting model"
   (pure independence, no carry-forward) is no longer a distinct mode
   unless carry-forward is made optional (Open Questions).
-- Mode availability now depends on mutable project state
-  (experiment count), so help/display output changes as data is loaded —
-  intended, but a shift from static mode listing.
+- Mode availability now depends on mutable project state (experiment
+  count), so help/display output changes as data is loaded — intended,
+  but a shift from static mode listing.
 
 ### Compatibility
 
@@ -198,8 +300,8 @@ Earlier direction: restrict `single` to one dataset and **drop** the
 "fit each loaded dataset" capability altogether, deleting
 `_parameter_snapshots` / `plot_param_series_from_snapshots` as dead
 code; multi-dataset users would use `joint` or separate projects.
-Rejected because the project owner wants a per-dataset series fit for
-≥2 loaded datasets — i.e. exactly the behaviour this ADR renames to
+Rejected because the project owner wants a per-dataset series fit for ≥2
+loaded datasets — i.e. exactly the behaviour this ADR renames to
 `sequential` — so the capability is kept and fixed, not removed.
 
 ### Keep folder-based `sequential`, only gate its visibility by count
@@ -209,12 +311,25 @@ Rejected: it would offer a mode that immediately errors with "exactly 1
 experiment," and its behaviour (sweep a disk folder) would not match the
 loaded datasets the user sees.
 
+### Split the folder sweep into a `scan` mode now
+
+Instead of parking the folder sweep (Decision 5a), promote it to a
+distinct `scan` mode in this step: `sequential_fit` /
+`sequential_fit_extract` belong to `scan`, loaded-dataset `sequential`
+uses neither, and the surface conflict is resolved with no feature
+removal. The cost is that `scan` (needing exactly one loaded template)
+appears in the **one-dataset** row alongside `single`, revising the
+agreed availability table. This is the recommended fallback if the owner
+declines the temporary removal in Decision 5a; the choice between "park
+now, restore later" and "split into `scan` now" is the main decision the
+owner must confirm.
+
 ### Gate `sequential` visibility by whether a data folder is configured
 
 Show `sequential` only once `sequential_fit.data_dir` is set. Rejected
 for discoverability: a non-programmer scientist cannot find a workflow
-hidden behind a string field they do not know to set
-(§Project Context favours discoverability).
+hidden behind a string field they do not know to set (§Project Context
+favours discoverability).
 
 ### Collapse to two modes (`joint`, `sequential`) with `single` = N-of-1
 
@@ -227,21 +342,20 @@ common one-dataset case, even if internally it is the degenerate series.
 These were deliberately deferred during design and should be resolved
 before or during the implementation plan.
 
-### Fate of the folder-of-files sweep (deferred by owner)
+### Long-term home of the folder-of-files sweep
 
-The current folder-based `sequential` (parallel workers, `results.csv`,
-`sequential_fit_extract` rules, crash recovery) is a substantial tested
-feature. Options:
+Decision 5a settles the _first-step_ contract (park the folder sweep, or
+— per Alternatives — split it into `scan` now). What remains open is its
+**long-term** home once the first step ships:
 
-- **Unify** it into the new `sequential` as an optional *input source*
-  (loaded datasets by default, a folder for large series) — likely the
-  best long-term home; design the new mode so the folder path can slot
-  in later.
-- Keep it as a **separate** mode/workflow (e.g. `scan` / `parametric`).
-- Remove it.
+- **Unify** it into `sequential` as an optional _input source_ (loaded
+  datasets by default, a folder for large series) — likely the best
+  long-term home for one mental model and one evolution output.
+- Keep it as a permanent **separate** `scan` / `parametric` mode.
 
-The new `sequential` should be designed so unification remains possible
-without a rewrite.
+The new `sequential` must be designed so either path is additive, not a
+rewrite. This choice, and the Decision 5a "park vs split now" call, are
+the two folder-sweep decisions the owner needs to make.
 
 ### Carry-forward vs independent
 
@@ -258,10 +372,9 @@ Keep `sequential`, or choose a term that reads better to scientists for
 
 ### Resume support
 
-Resume is currently "single mode only"
-(`_validate_fit_request`). Define whether the redefined `single`
-(one dataset) keeps resume, and whether `sequential` supports
-per-point resume.
+Resume is currently "single mode only" (`_validate_fit_request`). Define
+whether the redefined `single` (one dataset) keeps resume, and whether
+`sequential` supports per-point resume.
 
 ## Deferred Work
 
