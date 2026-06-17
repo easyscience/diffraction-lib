@@ -4,18 +4,17 @@ Governed by [`AGENTS.md`](../../../AGENTS.md). No deliberate exceptions
 to those instructions are taken in this plan.
 
 Implements ADR
-[`dataset-driven-fit-modes`](../adrs/suggestions/dataset-driven-fit-modes.md)
-(Status: Proposed — this plan promotes it to `accepted/` as part of the
-implementation, per §Change Discipline). Closes issue **85 — Retain
+[`dataset-driven-fit-modes`](../adrs/accepted/dataset-driven-fit-modes.md)
+(promoted from a suggestion to `accepted/` in P1.8, per
+§Change Discipline). Closes issue **85 — Retain
 Per-Experiment Fitted Parameters for Plotting**
 ([`open/highest_retain-per-experiment-fitted-parameters-for-plotting.md`](../issues/open/highest_retain-per-experiment-fitted-parameters-for-plotting.md))
 by removing the `single`-with-N path that caused it.
 
 ## ADR
 
-This plan **owns** the ADR `dataset-driven-fit-modes` (currently a
-suggestion). Phase 1 promotes it to `accepted/` (P1.8). The change also
-extends the accepted
+This plan **owns** the ADR `dataset-driven-fit-modes`. Phase 1 promotes
+it to `accepted/` (P1.8). The change also extends the accepted
 [`fit-mode-categories`](../adrs/accepted/fit-mode-categories.md) ADR but
 does not modify it.
 
@@ -217,7 +216,7 @@ locally (atomic, single-purpose) before moving on. Mark each `- [ ]` as
   incorrect, and no tutorial edit (or `notebook-prepare`) is required.
   Commit: `Confirm no tutorial relies on single-with-N`
 
-- [ ] **P1.8 — Close issue 85 and promote the ADR.**
+- [x] **P1.8 — Close issue 85 and promote the ADR.**
   `git mv` issue 85 to `closed/retain-per-experiment-fitted-parameters-for-plotting.md`,
   rewrite its body to describe the resolution (single restricted to one
   dataset; snapshot fallback removed), and update
@@ -270,7 +269,7 @@ Notes:
 - [ ] P1.5 — Sequential data source: default, no-files error, `copy_data`
 - [x] P1.6 — Reconcile display/serialization filters
 - [x] P1.7 — Update tutorials relying on `single`-with-N
-- [ ] P1.8 — Close issue 85 and promote the ADR
+- [x] P1.8 — Close issue 85 and promote the ADR
 - [ ] P1.9 — Phase 1 review gate
 - [ ] Phase 2 — tests added and full verification suite green
 

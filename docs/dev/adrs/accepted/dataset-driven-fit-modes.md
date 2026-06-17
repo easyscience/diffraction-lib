@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed.
+Accepted.
 
 ## Date
 
@@ -16,7 +16,7 @@ Analysis and fitting.
 
 The analysis layer offers three fit modes through the `fitting_mode`
 switchable category established by
-[`fit-mode-categories`](../accepted/fit-mode-categories.md): `single`,
+[`fit-mode-categories`](fit-mode-categories.md): `single`,
 `joint`, and `sequential`. Two problems make the current surface
 confusing and partly incorrect.
 
@@ -53,7 +53,7 @@ one-dataset case — which removes the buggy multi-loop and closes issue
 85 — (3) keeps `sequential` as the folder sweep it already is, and (4)
 tidies the `sequential` data-source configuration (sensible defaults, an
 optional copy-into-project flag, and room for a future remote source).
-It extends [`fit-mode-categories`](../accepted/fit-mode-categories.md).
+It extends [`fit-mode-categories`](fit-mode-categories.md).
 
 An earlier draft of this ADR proposed redefining `sequential` to fit the
 loaded datasets in turn; that direction was dropped (see Alternatives
@@ -78,23 +78,30 @@ through the existing switchable-category selector
 (`FittingMode._supported_types(filters)`, which today ignores its
 `filters`); it now consumes project state. No new owner-level setter is
 added — the category-owned-selector contract from
-[`switchable-category-owned-selectors`](../accepted/switchable-category-owned-selectors.md)
+[`switchable-category-owned-selectors`](switchable-category-owned-selectors.md)
 is preserved.
 
-**Applicability** predicates (drive `show_supported()`):
+**Applicability** predicates (drive `show_supported()`) are by **total
+loaded-experiment count**:
 
-- `single` → exactly one experiment with measured data.
-- `joint` → two or more experiments with measured data.
-- `sequential` → exactly one experiment with measured data (the
-  template). It deliberately does **not** require a configured data
-  source, so `sequential` is offered as soon as one dataset is loaded —
-  preserving the intended workflow of switching to it and *then*
-  pointing it at a folder.
+- `single` → exactly one loaded experiment.
+- `joint` → two or more loaded experiments.
+- `sequential` → exactly one loaded experiment (the template). It
+  deliberately does **not** require a configured data source, so
+  `sequential` is offered as soon as one dataset is loaded — preserving
+  the intended workflow of switching to it and *then* pointing it at a
+  folder.
 
-**Readiness** (checked at `fit()` time, see Decisions 4 and 6):
-`sequential` additionally needs a resolvable `data_dir` that matches at
-least one file. An unconfigured or empty source is a clear fit-time
-error, **not** a reason to hide the mode.
+**Readiness** (checked at `fit()` time, see Decisions 4 and 6) covers
+everything beyond the count: each scheduled experiment must have measured
+data (enforced by the existing `Fitter._require_measured_data` guard — a
+calculated-only experiment yields a clear fit-time error, not a hidden
+mode), and `sequential` additionally needs a resolvable `data_dir` that
+matches at least one file. An unconfigured or empty source is a clear
+fit-time error, **not** a reason to hide the mode. Counting *loaded* (not
+*measured*) experiments for applicability keeps `show_supported()` and
+`fit()` consistent for mixed measured/calculated projects without any
+"schedule only the measured subset" filtering.
 
 The availability table is a **consequence** of the applicability
 predicates, not a hard-coded rule:
@@ -132,12 +139,16 @@ sweep itself.
 The `sequential_fit` category keeps `data_dir`, `file_pattern`,
 `max_workers`, `chunk_size`, and `reverse`, with these refinements:
 
-- **`file_pattern` default derived from the template.** Default the glob
-  to the loaded template experiment's own data-file extension (load
-  `.xye` → default `*.xye`); fall back to `*` only when the extension is
-  unknown. Zero-config for the common case.
+- **`file_pattern` keeps its `'*'` default (first step).** Deriving the
+  glob from the loaded template experiment's data-file extension is
+  **deferred** (see Deferred Work): the experiment model does not retain
+  its source data-file path today, so the extension is unavailable
+  without new source-path metadata. The shipped first-step default is
+  therefore `'*'` (the explicit fallback); the derived default is a
+  tracked follow-up.
 - **No smart default for `data_dir`.** It stays unset by default; a
   silent auto-pickup of files from a guessed folder would be surprising.
+  An unset `data_dir` is a clear fit-time error (Decision 6).
 - **`copy_data` (new boolean, default `False`).** When `False`
   (default), matched files are referenced in place; when `True`, the
   matched files are copied into the project so it is self-contained.
@@ -162,9 +173,12 @@ The `sequential_fit` category keeps `data_dir`, `file_pattern`,
     self-contained: on reload — even moved or shared, with the original
     external source gone — `sequential` readiness resolves against the
     in-project copy. `file_pattern` persists as set (the copied files
-    keep their names, so it still matches). Re-running `fit()` re-copies
-    from whatever `data_dir` currently points at, so pointing it back at
-    a fresh external folder refreshes the archive.
+    keep their names, so it still matches). The copy is **idempotent**:
+    when the resolved source directory is already the copy destination
+    (the post-reload case, where `data_dir` already points at
+    `data/sequential/`), the copy is skipped and the run uses the
+    archived files. Re-running `fit()` against a fresh external
+    `data_dir` re-copies and refreshes the archive.
   - **What is serialized.** The `sequential_fit` fields — including
     `copy_data` and the (possibly rewritten) `data_dir` / `file_pattern`
     — are written to CIF as for any category. When `copy_data=False`,
@@ -296,5 +310,10 @@ safer and more discoverable.
   Decision 4 (e.g. content-hash dedup, incremental sync, a configurable
   destination) — the default-off flag and minimal overwrite contract
   ship in the first step.
+- **Template-derived `file_pattern` default.** Deferred from Decision 4:
+  retain the template experiment's source data-file path as new
+  experiment metadata (with persistence and tests), then default the
+  glob to its extension (`.xye` → `*.xye`). The first step ships the
+  `'*'` default.
 - Detailed result-file/export layout remains governed by
-  [`fit-output-files-and-data-exports`](fit-output-files-and-data-exports.md).
+  [`fit-output-files-and-data-exports`](../suggestions/fit-output-files-and-data-exports.md).
