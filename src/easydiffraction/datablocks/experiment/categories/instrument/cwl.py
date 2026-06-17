@@ -171,7 +171,7 @@ class CwlPdInstrumentBase(CwlInstrumentBase):
     """Base class for CW powder diffractometers."""
 
     def __init__(self) -> None:
-        """Initialize the CW powder diffractometer."""
+        """Initialize the CW powder diffractometer base."""
         super().__init__()
 
         self._calib_twotheta_offset: Parameter = Parameter(
