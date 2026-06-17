@@ -44,11 +44,11 @@ and so on. The list below notes only what is specific to each page.
   reciprocal, non-normalised texture convention.
 - [PbSO₄ `pd-neut-cwl` (pseudo-Voigt)](pd-neut-cwl_pv_pbso4.ipynb) –
   Anglesite (PbSO₄, _Pnma_); pseudo-Voigt, no asymmetry.
-- [PbSO₄ `pd-neut-cwl` (empirical asymmetry)](pd-neut-cwl_pv-asym_empir_pbso4.ipynb)
-  – Anglesite (PbSO₄, _Pnma_); pseudo-Voigt with empirical
-  (FullProf-style) axial-divergence asymmetry. Skipped in CI: cryspy and
-  FullProf parameterise the empirical asymmetry differently, and crysfml
-  has no empirical-asymmetry model.
+- [PbSO₄ `pd-neut-cwl` (Bérar–Baldinozzi asymmetry)](pd-neut-cwl_pv-beba_pbso4.ipynb)
+  – Anglesite (PbSO₄, _Pnma_); pseudo-Voigt with Bérar–Baldinozzi
+  (FullProf-style) axial-divergence asymmetry (`asym_beba_*`). Skipped
+  in CI: cryspy and FullProf implement this asymmetry with different
+  conventions (issue 166), and crysfml has no empirical-asymmetry model.
 - [LaB₆ `pd-neut-cwl` (SyCos/SySin)](pd-neut-cwl_tch-fcj-noabs-nosldl_lab6.ipynb)
   – Lanthanum hexaboride (LaB₆, _Pm-3m_); pseudo-Voigt with SyCos/SySin
   sample-displacement and transparency corrections. Skipped in CI:
@@ -66,6 +66,15 @@ and so on. The list below notes only what is specific to each page.
   absorption (μR = 0.7) with FCJ asymmetry switched off, isolating the
   absorption correction. ed-cryspy matches FullProf (enabling the
   correction removes a ≈ 2.9× intensity mismatch).
+- [Y₂O₃ `pd-neut-cwl` (anisotropic β-tensor ADPs)](pd-neut-cwl_pv-beta_y2o3.ipynb)
+  – Yttria (Y₂O₃, bixbyite, _Ia-3_); dimensionless β-tensor anisotropic
+  ADPs (`adp_type='beta'`) on the three sites, with cylindrical
+  Debye–Scherrer absorption (μR = 1.5) and the Thompson–Cox–Hastings
+  profile. cryspy only. Refining every parameter recovers the FullProf
+  values; the Bérar–Baldinozzi asymmetry (`asym_beba_*`) is implemented
+  with different conventions in cryspy and FullProf (issue 166), so
+  those coefficients do not transfer one-to-one, but all closeness
+  metrics stay within tolerance.
 
 ## Powder, neutron, time-of-flight
 

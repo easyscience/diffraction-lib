@@ -39,7 +39,7 @@ def _minimal_template(
     if diffrn_fields is None:
         diffrn_fields = []
     return SequentialFitTemplate(
-        structure_cif='',
+        structure_cifs=[],
         experiment_cif='',
         initial_params={},
         free_parameter_unique_names=free_names,

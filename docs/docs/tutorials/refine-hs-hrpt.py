@@ -114,7 +114,7 @@ expt.instrument.calib_twotheta_offset = 0.0
 
 # %%
 expt.peak.show_supported()
-expt.peak.type = 'pseudo-voigt + empirical asymmetry'
+expt.peak.type = 'pseudo-voigt + berar-baldinozzi asymmetry'
 expt.peak.broad_gauss_u = 0.1
 expt.peak.broad_gauss_v = -0.2
 expt.peak.broad_gauss_w = 0.2
@@ -299,10 +299,10 @@ structure.atom_sites['O'].adp_iso.free = True
 structure.atom_sites['Cl'].adp_iso.free = True
 structure.atom_sites['H'].adp_iso.free = True
 
-expt.peak.asym_empir_1.free = True
-expt.peak.asym_empir_2.free = True
-expt.peak.asym_empir_3.free = True
-expt.peak.asym_empir_4.free = True
+expt.peak.asym_beba_a0.free = True
+expt.peak.asym_beba_b0.free = True
+expt.peak.asym_beba_a1.free = True
+expt.peak.asym_beba_b1.free = True
 
 # %% [markdown]
 # Show free parameters after selection.

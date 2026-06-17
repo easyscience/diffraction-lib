@@ -119,6 +119,14 @@
     "description": "Resume an interrupted sequential Rietveld refinement of Co2SiO4 by reloading a saved project; the remaining temperature-scan datasets are processed and appended to analysis/results.csv",
     "level": "advanced"
   },
+  "refine-yap-tscan": {
+    "order": 26,
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/refine-yap-tscan/refine-yap-tscan.ipynb",
+    "original_name": "",
+    "title": "Structure Refinement: YAlO3 + Al2O3 (Temperature scan)",
+    "description": "Sequential two-phase Rietveld refinement of YAlO3 with an Al2O3 corundum impurity using constant wavelength neutron powder diffraction data across a temperature scan",
+    "level": "advanced"
+  },
   "refine-hs-hrpt": {
     "order": 7,
     "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/refine-hs-hrpt/refine-hs-hrpt.ipynb",

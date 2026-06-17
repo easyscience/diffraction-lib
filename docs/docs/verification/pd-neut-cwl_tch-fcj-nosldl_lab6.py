@@ -36,7 +36,7 @@ structure = StructureFactory.from_scratch(name='lab6')
 structure.space_group.name_h_m = 'P m -3 m'  # FullProf Space group symbol
 structure.cell.length_a = 4.156885  # FullProf a
 structure.atom_sites.create(
-    label='La',  # FullProf Atom
+    id='La',  # FullProf Atom
     type_symbol='La',  # FullProf Typ
     fract_x=0.0,  # FullProf X
     fract_y=0.0,  # FullProf Y
@@ -45,7 +45,7 @@ structure.atom_sites.create(
     adp_iso=0.59951,  # FullProf Biso
 )
 structure.atom_sites.create(
-    label='B',  # FullProf Atom
+    id='B',  # FullProf Atom
     type_symbol='11B',  # FullProf "B11"
     fract_x=0.19978,  # FullProf X
     fract_y=0.5,  # FullProf Y
@@ -95,7 +95,7 @@ experiment = ExperimentFactory.from_scratch(
 )
 verify.set_reference_as_measured(experiment, x, calc_fullprof)
 
-experiment.linked_phases.create(id='lab6', scale=FULLPROF_SCALE)
+experiment.linked_structures.create(structure_id='lab6', scale=FULLPROF_SCALE)
 
 experiment.instrument.setup_wavelength = FULLPROF_WAVELENGTH
 experiment.instrument.calib_twotheta_offset = FULLPROF_ZERO

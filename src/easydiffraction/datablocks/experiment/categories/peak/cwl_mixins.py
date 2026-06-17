@@ -198,59 +198,79 @@ class CwlBroadeningMixin:
         self._broad_lorentz_y.value = value
 
 
-class EmpiricalAsymmetryMixin:
-    """Empirical CWL peak asymmetry parameters."""
+class BerarBaldinozziAsymmetryMixin:
+    """Berar-Baldinozzi empirical CWL peak asymmetry parameters."""
 
     def __init__(self) -> None:
-        """Initialize the empirical CWL peak asymmetry parameters."""
+        """Initialize the Berar-Baldinozzi peak asymmetry parameters."""
         super().__init__()
 
-        self._asym_empir_1: Parameter = Parameter(
-            name='asym_empir_1',
-            description='Empirical asymmetry coefficient p1',
+        self._asym_beba_a0: Parameter = Parameter(
+            name='asym_beba_a0',
+            description='Berar-Baldinozzi asymmetry coefficient A0 (Fa/tan theta)',
             units='none',
+            display_handler=DisplayHandler(
+                display_name='A₀',
+                latex_name=r'$A_0$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
             ),
             tags=TagSpec(
-                edi_names=['_peak.asym_empir_1'], cif_names=['_easydiffraction_peak.asym_empir_1']
+                edi_names=['_peak.asym_beba_a0'],
+                cif_names=['_easydiffraction_peak.asym_beba_a0'],
             ),
         )
-        self._asym_empir_2: Parameter = Parameter(
-            name='asym_empir_2',
-            description='Empirical asymmetry coefficient p2',
+        self._asym_beba_b0: Parameter = Parameter(
+            name='asym_beba_b0',
+            description='Berar-Baldinozzi asymmetry coefficient B0 (Fb/tan theta)',
             units='none',
+            display_handler=DisplayHandler(
+                display_name='B₀',
+                latex_name=r'$B_0$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
             ),
             tags=TagSpec(
-                edi_names=['_peak.asym_empir_2'], cif_names=['_easydiffraction_peak.asym_empir_2']
+                edi_names=['_peak.asym_beba_b0'],
+                cif_names=['_easydiffraction_peak.asym_beba_b0'],
             ),
         )
-        self._asym_empir_3: Parameter = Parameter(
-            name='asym_empir_3',
-            description='Empirical asymmetry coefficient p3',
+        self._asym_beba_a1: Parameter = Parameter(
+            name='asym_beba_a1',
+            description='Berar-Baldinozzi asymmetry coefficient A1 (Fa/tan 2theta)',
             units='none',
+            display_handler=DisplayHandler(
+                display_name='A₁',
+                latex_name=r'$A_1$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
             ),
             tags=TagSpec(
-                edi_names=['_peak.asym_empir_3'], cif_names=['_easydiffraction_peak.asym_empir_3']
+                edi_names=['_peak.asym_beba_a1'],
+                cif_names=['_easydiffraction_peak.asym_beba_a1'],
             ),
         )
-        self._asym_empir_4: Parameter = Parameter(
-            name='asym_empir_4',
-            description='Empirical asymmetry coefficient p4',
+        self._asym_beba_b1: Parameter = Parameter(
+            name='asym_beba_b1',
+            description='Berar-Baldinozzi asymmetry coefficient B1 (Fb/tan 2theta)',
             units='none',
+            display_handler=DisplayHandler(
+                display_name='B₁',
+                latex_name=r'$B_1$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
             ),
             tags=TagSpec(
-                edi_names=['_peak.asym_empir_4'], cif_names=['_easydiffraction_peak.asym_empir_4']
+                edi_names=['_peak.asym_beba_b1'],
+                cif_names=['_easydiffraction_peak.asym_beba_b1'],
             ),
         )
 
@@ -259,64 +279,64 @@ class EmpiricalAsymmetryMixin:
     # ------------------------------------------------------------------
 
     @property
-    def asym_empir_1(self) -> Parameter:
+    def asym_beba_a0(self) -> Parameter:
         """
-        Empirical asymmetry coefficient p1.
+        Berar-Baldinozzi asymmetry coefficient A0 (Fa/tan theta).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
         """
-        return self._asym_empir_1
+        return self._asym_beba_a0
 
-    @asym_empir_1.setter
-    def asym_empir_1(self, value: float) -> None:
-        """Set the empirical asymmetry coefficient p1."""
-        self._asym_empir_1.value = value
+    @asym_beba_a0.setter
+    def asym_beba_a0(self, value: float) -> None:
+        """Set Berar-Baldinozzi asymmetry coefficient A0."""
+        self._asym_beba_a0.value = value
 
     @property
-    def asym_empir_2(self) -> Parameter:
+    def asym_beba_b0(self) -> Parameter:
         """
-        Empirical asymmetry coefficient p2.
+        Berar-Baldinozzi asymmetry coefficient B0 (Fb/tan theta).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
         """
-        return self._asym_empir_2
+        return self._asym_beba_b0
 
-    @asym_empir_2.setter
-    def asym_empir_2(self, value: float) -> None:
-        """Set the empirical asymmetry coefficient p2."""
-        self._asym_empir_2.value = value
+    @asym_beba_b0.setter
+    def asym_beba_b0(self, value: float) -> None:
+        """Set Berar-Baldinozzi asymmetry coefficient B0."""
+        self._asym_beba_b0.value = value
 
     @property
-    def asym_empir_3(self) -> Parameter:
+    def asym_beba_a1(self) -> Parameter:
         """
-        Empirical asymmetry coefficient p3.
+        Berar-Baldinozzi asymmetry coefficient A1 (Fa/tan 2theta).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
         """
-        return self._asym_empir_3
+        return self._asym_beba_a1
 
-    @asym_empir_3.setter
-    def asym_empir_3(self, value: float) -> None:
-        """Set the empirical asymmetry coefficient p3."""
-        self._asym_empir_3.value = value
+    @asym_beba_a1.setter
+    def asym_beba_a1(self, value: float) -> None:
+        """Set Berar-Baldinozzi asymmetry coefficient A1."""
+        self._asym_beba_a1.value = value
 
     @property
-    def asym_empir_4(self) -> Parameter:
+    def asym_beba_b1(self) -> Parameter:
         """
-        Empirical asymmetry coefficient p4.
+        Berar-Baldinozzi asymmetry coefficient B1 (Fb/tan 2theta).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
         """
-        return self._asym_empir_4
+        return self._asym_beba_b1
 
-    @asym_empir_4.setter
-    def asym_empir_4(self, value: float) -> None:
-        """Set the empirical asymmetry coefficient p4."""
-        self._asym_empir_4.value = value
+    @asym_beba_b1.setter
+    def asym_beba_b1(self, value: float) -> None:
+        """Set Berar-Baldinozzi asymmetry coefficient B1."""
+        self._asym_beba_b1.value = value
 
 
 class FcjAsymmetryMixin:

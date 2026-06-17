@@ -13,7 +13,7 @@
 # underlying issue is resolved.
 #
 # Example (do not leave commented examples as active entries):
-pd-neut-cwl_pv-asym_empir_pbso4  # Asymmetry params are different. Empirical asymmetry is not in ed-crysfml
+pd-neut-cwl_pv-beba_pbso4  # Berar-Baldinozzi asymmetry differs between cryspy/FullProf (issue 166); not in ed-crysfml
 pd-neut-cwl_tch-fcj-noabs-nosldl_lab6  # needs unreleased cryspy PR #46 (SyCos/SySin, cos2theta convention)
 pd-neut-cwl_tch-fcj-noabs_lab6  # FCJ asymmetry (S_L/D_L) not implemented in cryspy; see docs/dev/issues/index.md
 pd-neut-cwl_tch-fcj_lab6  # FCJ asymmetry (S_L/D_L) not implemented in cryspy; absorption (muR=0.7, HEWAT) now modelled; see docs/dev/issues/index.md

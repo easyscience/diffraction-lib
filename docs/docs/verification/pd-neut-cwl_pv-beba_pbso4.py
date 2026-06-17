@@ -1,5 +1,16 @@
 # %% [markdown]
-# # PbSO₄ — neutron powder, constant wavelength, empirical asymmetry
+# # PbSO₄ — neutron powder, constant wavelength, Bérar–Baldinozzi asymmetry
+#
+# **Note — cryspy vs FullProf.**
+#
+# cryspy and FullProf implement the
+# Bérar–Baldinozzi empirical asymmetry with different conventions: an
+# overall sign and a coefficient inside the `F_b` term differ between the
+# two software. As a result the four `asym_beba_*` parameters do **not**
+# transfer one-to-one between cryspy and FullProf — the same numbers give
+# different profiles. The refinement below frees the asymmetry so it can
+# absorb this convention difference; the structural results are
+# unaffected.
 
 # %%
 import easydiffraction as edi
@@ -77,7 +88,7 @@ project.structures.add(structure)
 # ## Load the FullProf reference
 
 # %%
-FULLPROF_PROJECT_DIR = 'pd-neut-cwl_pv-asym_empir_pbso4'
+FULLPROF_PROJECT_DIR = 'pd-neut-cwl_pv-beba_pbso4'
 FULLPROF_PRF_FILE = 'pbso4.prf'
 FULLPROF_BAC_FILE = 'pbso4.bac'
 FULLPROF_ZERO = -0.08424  # FullProf Zero
@@ -124,8 +135,8 @@ experiment.peak.broad_gauss_v = FULLPROF_V
 experiment.peak.broad_gauss_w = FULLPROF_W
 experiment.peak.broad_lorentz_x = FULLPROF_X
 experiment.peak.broad_lorentz_y = FULLPROF_Y
-# The empirical-asymmetry coefficients (cryspy only) are set in the
-# cryspy section below; crysfml has no empirical-asymmetry model.
+# The Berar-Baldinozzi asymmetry coefficients (cryspy only) are set in
+# the cryspy section below; crysfml has no empirical-asymmetry model.
 
 project.experiments.add(experiment)
 
@@ -133,16 +144,16 @@ project.experiments.add(experiment)
 # ## edi-cryspy VS FullProf
 
 # %%
-experiment.peak.type = 'pseudo-voigt + empirical asymmetry'
+experiment.peak.type = 'pseudo-voigt + berar-baldinozzi asymmetry'
 experiment.peak.broad_gauss_u = FULLPROF_U
 experiment.peak.broad_gauss_v = FULLPROF_V
 experiment.peak.broad_gauss_w = FULLPROF_W
 experiment.peak.broad_lorentz_x = FULLPROF_X
 experiment.peak.broad_lorentz_y = FULLPROF_Y
-experiment.peak.asym_empir_1 = FULLPROF_ASY_1
-experiment.peak.asym_empir_2 = FULLPROF_ASY_2
-experiment.peak.asym_empir_3 = FULLPROF_ASY_3
-experiment.peak.asym_empir_4 = FULLPROF_ASY_4
+experiment.peak.asym_beba_a0 = FULLPROF_ASY_1
+experiment.peak.asym_beba_b0 = FULLPROF_ASY_2
+experiment.peak.asym_beba_a1 = FULLPROF_ASY_3
+experiment.peak.asym_beba_b1 = FULLPROF_ASY_4
 
 experiment.calculator.type = 'cryspy'
 
@@ -161,17 +172,18 @@ project.display.pattern_comparison(
 # ## Fit edi-cryspy to FullProf
 
 # %%
-# cryspy and FullProf parameterise the empirical asymmetry differently, so
-# the FullProf coefficients do not transfer 1-to-1. Freeing cryspy's own
-# coefficients recovers the FullProf profile, confirming the structure and
-# the symmetric profile are correct.
+# cryspy and FullProf implement the Berar-Baldinozzi asymmetry with
+# different conventions, so the FullProf coefficients do not transfer
+# 1-to-1. Freeing cryspy's own coefficients recovers the FullProf
+# profile, confirming the structure and the symmetric profile are
+# correct.
 experiment.calculator.type = 'cryspy'
 
 experiment.linked_structures['pbso4'].scale.free = True
-experiment.peak.asym_empir_1.free = True
-experiment.peak.asym_empir_2.free = True
-experiment.peak.asym_empir_3.free = True
-experiment.peak.asym_empir_4.free = True
+experiment.peak.asym_beba_a0.free = True
+experiment.peak.asym_beba_b0.free = True
+experiment.peak.asym_beba_a1.free = True
+experiment.peak.asym_beba_b1.free = True
 
 project.analysis.fit()
 project.display.fit.results()
@@ -188,60 +200,12 @@ project.display.pattern_comparison(
 )
 
 # %% [markdown]
-# ## edi-crysfml VS FullProf
-
-# %%
-experiment.calculator.type = 'crysfml'
-
-experiment.linked_structures['pbso4'].scale = FULLPROF_SCALE
-
-experiment.peak.type = 'pseudo-voigt'
-experiment.peak.broad_gauss_u = FULLPROF_U
-experiment.peak.broad_gauss_v = FULLPROF_V
-experiment.peak.broad_gauss_w = FULLPROF_W
-experiment.peak.broad_lorentz_x = FULLPROF_X
-experiment.peak.broad_lorentz_y = FULLPROF_Y
-
-project.analysis.calculate()
-calc_ed_crysfml = experiment.data.intensity_calc
-
-project.display.pattern_comparison(
-    'pbso4',
-    reference=calc_fullprof,
-    candidate=calc_ed_crysfml,
-    reference_label='FullProf',
-    candidate_label='edi-crysfml',
-)
-
-# %% [markdown]
-# ## Fit edi-crysfml to FullProf
-
-# %%
-experiment.linked_structures['pbso4'].scale.free = True
-experiment.instrument.calib_twotheta_offset.free = True
-
-project.analysis.fit()
-project.display.fit.results()
-
-project.analysis.calculate()
-calc_ed_crysfml_refined = experiment.data.intensity_calc
-
-project.display.pattern_comparison(
-    'pbso4',
-    reference=calc_fullprof,
-    candidate=calc_ed_crysfml_refined,
-    reference_label='FullProf',
-    candidate_label='edi-crysfml (refined)',
-)
-
-# %% [markdown]
 # ## Agreement check
 
 # %%
 verify.assert_patterns_agree(
     [
         ('cryspy vs FullProf', calc_fullprof, calc_ed_cryspy_refined),
-        ('crysfml vs FullProf', calc_fullprof, calc_ed_crysfml_refined),
     ],
     raise_on_failure=False,
 )

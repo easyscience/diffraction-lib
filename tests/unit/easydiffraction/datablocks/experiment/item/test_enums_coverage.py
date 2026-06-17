@@ -158,7 +158,7 @@ class TestPeakProfileTypeEnum:
         assert 'pseudo-voigt' in desc.lower()
 
     def test_description_pseudo_voigt_empirical_asymmetry(self):
-        desc = PeakProfileTypeEnum.CWL_PSEUDO_VOIGT_EMPIRICAL_ASYMMETRY.description()
+        desc = PeakProfileTypeEnum.CWL_PSEUDO_VOIGT_BERAR_BALDINOZZI_ASYMMETRY.description()
         assert isinstance(desc, str)
         assert 'asymmetry' in desc.lower()
 

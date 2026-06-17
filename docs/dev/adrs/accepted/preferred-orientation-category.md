@@ -210,7 +210,7 @@ expt = project.experiments['hrpt']
 
 # Add a March–Dollase correction for a linked phase, axis [0 0 1].
 # Uses the keyword-based collection constructor `.create(...)`, exactly
-# like `experiment.linked_phases.create(id=..., scale=...)`.
+# like `experiment.linked_structures.create(id=..., scale=...)`.
 expt.preferred_orientation.create(
     phase_id='lbco',
     march_r=0.8,

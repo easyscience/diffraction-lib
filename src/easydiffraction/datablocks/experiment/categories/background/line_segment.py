@@ -371,8 +371,8 @@ class LineSegmentBackground(BackgroundBase):
         log.info(summary)
 
     def show(self) -> None:
-        """Print a table of control points (x, intensity)."""
-        columns_headers: list[str] = ['X', 'Intensity']
+        """Print a table of control points (position, intensity)."""
+        columns_headers: list[str] = ['Position', 'Intensity']
         columns_alignment = ['left', 'left']
         columns_data: list[list[float]] = [
             [p.position.value, p.intensity.value] for p in self._items

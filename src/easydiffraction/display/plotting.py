@@ -979,6 +979,38 @@ class Plotter(RendererBase):
         return names
 
     @staticmethod
+    def _order_series_by_x(
+        x: list,
+        y: list,
+        sy: list,
+    ) -> tuple[list, list, list]:
+        """
+        Order series points by their x value.
+
+        Sequential results are recorded in file-processing order, which
+        is not necessarily ascending in the x quantity (for example a
+        temperature scan whose files sort lexicographically). Reordering
+        by x leaves the markers unchanged but makes the connecting line
+        follow the series. Non-numeric x values are placed last.
+
+        Parameters
+        ----------
+        x : list
+            x values.
+        y : list
+            y values.
+        sy : list
+            y uncertainties.
+
+        Returns
+        -------
+        tuple[list, list, list]
+            The three lists reordered by ascending x.
+        """
+        order = np.argsort(np.asarray(x, dtype=float), kind='stable').tolist()
+        return [x[i] for i in order], [y[i] for i in order], [sy[i] for i in order]
+
+    @staticmethod
     def _numeric_series_values(values: object) -> list[float]:
         """Return one CSV column normalized to numeric plot values."""
         series = pd.Series(values)
@@ -6154,6 +6186,8 @@ class Plotter(RendererBase):
 
         title = f"Parameter '{column_name}' across fit results"
 
+        x, y, sy = self._order_series_by_x(x, y, sy)
+
         self._backend.plot_scatter(
             x=x,
             y=y,
@@ -6225,6 +6259,8 @@ class Plotter(RendererBase):
                 ]
 
             title = f"Parameter '{unique_name}' across fit results"
+
+        x, y, sy = self._order_series_by_x(x, y, sy)
 
         self._backend.plot_scatter(
             x=x,

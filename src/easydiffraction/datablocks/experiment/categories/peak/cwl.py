@@ -6,10 +6,10 @@ from easydiffraction.core.metadata import CalculatorSupport
 from easydiffraction.core.metadata import Compatibility
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.datablocks.experiment.categories.peak.base import PeakBase
-from easydiffraction.datablocks.experiment.categories.peak.cwl_mixins import CwlBroadeningMixin
 from easydiffraction.datablocks.experiment.categories.peak.cwl_mixins import (
-    EmpiricalAsymmetryMixin,
+    BerarBaldinozziAsymmetryMixin,
 )
+from easydiffraction.datablocks.experiment.categories.peak.cwl_mixins import CwlBroadeningMixin
 from easydiffraction.datablocks.experiment.categories.peak.cwl_mixins import FcjAsymmetryMixin
 from easydiffraction.datablocks.experiment.categories.peak.factory import PeakFactory
 from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
@@ -43,16 +43,18 @@ class CwlPseudoVoigt(
 
 
 @PeakFactory.register
-class CwlPseudoVoigtEmpiricalAsymmetry(
+class CwlPseudoVoigtBerarBaldinozziAsymmetry(
     PeakBase,
     CwlBroadeningMixin,
-    EmpiricalAsymmetryMixin,
+    BerarBaldinozziAsymmetryMixin,
 ):
-    """Pseudo-Voigt with empirical asymmetry correction for CWL mode."""
+    """Pseudo-Voigt with Berar-Baldinozzi asymmetry for CWL mode."""
 
     type_info = TypeInfo(
-        tag=PeakProfileTypeEnum.CWL_PSEUDO_VOIGT_EMPIRICAL_ASYMMETRY.value,
-        description=(PeakProfileTypeEnum.CWL_PSEUDO_VOIGT_EMPIRICAL_ASYMMETRY.description()),
+        tag=PeakProfileTypeEnum.CWL_PSEUDO_VOIGT_BERAR_BALDINOZZI_ASYMMETRY.value,
+        description=(
+            PeakProfileTypeEnum.CWL_PSEUDO_VOIGT_BERAR_BALDINOZZI_ASYMMETRY.description()
+        ),
     )
     compatibility = Compatibility(
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
@@ -63,7 +65,9 @@ class CwlPseudoVoigtEmpiricalAsymmetry(
     )
 
     def __init__(self) -> None:
-        """Initialize the pseudo-Voigt with empirical asymmetry."""
+        """
+        Initialize the pseudo-Voigt with Berar-Baldinozzi asymmetry.
+        """
         super().__init__()
 
 

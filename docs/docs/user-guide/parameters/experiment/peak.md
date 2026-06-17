@@ -232,45 +232,45 @@ Particle diameter for spherical envelope damping correction.
 [pd-neut-cwl][3]{:.label-experiment}
 [pd-neut-tof][3]{:.label-experiment} [pd-xray][3]{:.label-experiment}
 
-### :material-tag: asym_empir_1 { #peak-asym-empir-1 }
+### :material-tag: asym_beba_a0 { #peak-asym-beba-a0 }
 
 | Access                              | Source                    |
 | ----------------------------------- | ------------------------- |
-| peak.asym_empir_1                   | [code][0]{:.label-cif}    |
-| \_peak.asym_empir_1                 | [Edi][0]{:.label-cif}     |
-| \_easydiffraction_peak.asym_empir_1 | [coreCIF][0]{:.label-cif} |
+| peak.asym_beba_a0                   | [code][0]{:.label-cif}    |
+| \_peak.asym_beba_a0                 | [Edi][0]{:.label-cif}     |
+| \_easydiffraction_peak.asym_beba_a0 | [coreCIF][0]{:.label-cif} |
 
-Empirical asymmetry coefficient p1.
+Berar-Baldinozzi asymmetry coefficient A0 (Fa/tan theta).
 
-### :material-tag: asym_empir_2 { #peak-asym-empir-2 }
-
-| Access                              | Source                    |
-| ----------------------------------- | ------------------------- |
-| peak.asym_empir_2                   | [code][0]{:.label-cif}    |
-| \_peak.asym_empir_2                 | [Edi][0]{:.label-cif}     |
-| \_easydiffraction_peak.asym_empir_2 | [coreCIF][0]{:.label-cif} |
-
-Empirical asymmetry coefficient p2.
-
-### :material-tag: asym_empir_3 { #peak-asym-empir-3 }
+### :material-tag: asym_beba_b0 { #peak-asym-beba-b0 }
 
 | Access                              | Source                    |
 | ----------------------------------- | ------------------------- |
-| peak.asym_empir_3                   | [code][0]{:.label-cif}    |
-| \_peak.asym_empir_3                 | [Edi][0]{:.label-cif}     |
-| \_easydiffraction_peak.asym_empir_3 | [coreCIF][0]{:.label-cif} |
+| peak.asym_beba_b0                   | [code][0]{:.label-cif}    |
+| \_peak.asym_beba_b0                 | [Edi][0]{:.label-cif}     |
+| \_easydiffraction_peak.asym_beba_b0 | [coreCIF][0]{:.label-cif} |
 
-Empirical asymmetry coefficient p3.
+Berar-Baldinozzi asymmetry coefficient B0 (Fb/tan theta).
 
-### :material-tag: asym_empir_4 { #peak-asym-empir-4 }
+### :material-tag: asym_beba_a1 { #peak-asym-beba-a1 }
 
 | Access                              | Source                    |
 | ----------------------------------- | ------------------------- |
-| peak.asym_empir_4                   | [code][0]{:.label-cif}    |
-| \_peak.asym_empir_4                 | [Edi][0]{:.label-cif}     |
-| \_easydiffraction_peak.asym_empir_4 | [coreCIF][0]{:.label-cif} |
+| peak.asym_beba_a1                   | [code][0]{:.label-cif}    |
+| \_peak.asym_beba_a1                 | [Edi][0]{:.label-cif}     |
+| \_easydiffraction_peak.asym_beba_a1 | [coreCIF][0]{:.label-cif} |
 
-Empirical asymmetry coefficient p4.
+Berar-Baldinozzi asymmetry coefficient A1 (Fa/tan 2theta).
+
+### :material-tag: asym_beba_b1 { #peak-asym-beba-b1 }
+
+| Access                              | Source                    |
+| ----------------------------------- | ------------------------- |
+| peak.asym_beba_b1                   | [code][0]{:.label-cif}    |
+| \_peak.asym_beba_b1                 | [Edi][0]{:.label-cif}     |
+| \_easydiffraction_peak.asym_beba_b1 | [coreCIF][0]{:.label-cif} |
+
+Berar-Baldinozzi asymmetry coefficient B1 (Fb/tan 2theta).
 
 ### :material-tag: asym_fcj_1 { #peak-asym-fcj-1 }
 
@@ -381,7 +381,7 @@ Double-exp switching function r₀₃.
 | \_easydiffraction_peak.type | [coreCIF][0]{:.label-cif} |
 
 Active peak profile type tag. Supported values include
-`cwl-pseudo-voigt`, `cwl-pseudo-voigt-empirical-asymmetry`,
+`cwl-pseudo-voigt`, `cwl-pseudo-voigt-berar-baldinozzi-asymmetry`,
 `cwl-thompson-cox-hastings`, `tof-pseudo-voigt`, `tof-jorgensen`,
 `tof-jorgensen-von-dreele`, `tof-double-jorgensen-von-dreele`, and
 `total-gaussian-damped-sinc`.
