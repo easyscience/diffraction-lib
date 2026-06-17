@@ -443,7 +443,7 @@ def fullprof_label(project_dir: str, summary_file: str) -> str:
     return f'FullProf {fullprof_version(project_dir, summary_file)}'
 
 
-_VCS_HASH_LOCAL_RE = re.compile(r'^g?[0-9a-f]{6,40}$')
+_VCS_HASH_LOCAL_RE = re.compile(r'^g[0-9a-f]{6,40}$')
 
 
 def _label_version(package_name: str) -> str | None:
@@ -452,7 +452,7 @@ def _label_version(package_name: str) -> str | None:
 
     Keeps this project's versioningit dev markers
     (``+dev{N}`` / ``+dirty{N}`` / ``+devdirty{N}``) and any PEP 440
-    public dev/pre-release segment, but trims a pure VCS-hash local part
+    public dev/pre-release segment, but trims a g-prefixed VCS-hash local part
     (for example ``+g1a2b3c``) so the label stays readable.
 
     Parameters
