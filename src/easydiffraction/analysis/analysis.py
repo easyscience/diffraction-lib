@@ -1494,6 +1494,36 @@ class Analysis(
 
         return True, self._resolved_resume_extra_steps(extra_steps)
 
+    def _require_mode_applicable(self, mode: FitModeEnum) -> None:
+        """
+        Reject a fit mode that does not apply to the loaded project.
+
+        Applicability is by loaded-experiment count and uses the same
+        predicate as ``fitting_mode.show_supported()``. Whether each
+        scheduled experiment has measured data is a separate readiness
+        check enforced later by the fitter.
+
+        Parameters
+        ----------
+        mode : FitModeEnum
+            The selected fitting mode.
+
+        Raises
+        ------
+        ValueError
+            If the mode does not apply to the current experiment count.
+        """
+        count = self._loaded_experiment_count()
+        valid = [tag for tag, _ in FittingMode._supported_types({'experiment_count': count})]
+        if mode.value in valid:
+            return
+        valid_text = ', '.join(repr(tag) for tag in valid) if valid else 'none'
+        msg = (
+            f'Fit mode {mode.value!r} does not apply to a project with '
+            f'{count} loaded experiment(s). Applicable mode(s): {valid_text}.'
+        )
+        raise ValueError(msg)
+
     def _validate_fit_request(
         self,
         *,
@@ -1502,6 +1532,7 @@ class Analysis(
         extra_steps: int | None,
     ) -> None:
         """Validate fit options before dispatching to a fitting mode."""
+        self._require_mode_applicable(mode)
         if extra_steps is not None and not resume:
             msg = 'extra_steps is only valid when resume=True.'
             raise ValueError(msg)

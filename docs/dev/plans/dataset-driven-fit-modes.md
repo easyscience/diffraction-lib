@@ -159,7 +159,7 @@ locally (atomic, single-purpose) before moving on. Mark each `- [ ]` as
   Files: `analysis.py`, `fitting_mode/default.py`.
   Commit: `Offer fit modes by project applicability`
 
-- [ ] **P1.2 — Enforce mode preconditions at fit time.**
+- [x] **P1.2 — Enforce mode preconditions at fit time.**
   In `_validate_fit_request`, reject a selected mode whose applicability
   predicate the project does not meet — `single`/`sequential` unless
   exactly one experiment is loaded, `joint` unless ≥2 — with a clear
@@ -260,7 +260,7 @@ Notes:
 ## Status checklist
 
 - [x] P1.1 — Applicability-based `show_supported()`
-- [ ] P1.2 — Enforce mode preconditions at fit time
+- [x] P1.2 — Enforce mode preconditions at fit time
 - [ ] P1.3 — Restrict `single` to exactly one experiment
 - [ ] P1.4 — Remove the `single`-with-N snapshot machinery
 - [ ] P1.5 — Sequential data source: default, no-files error, `copy_data`
