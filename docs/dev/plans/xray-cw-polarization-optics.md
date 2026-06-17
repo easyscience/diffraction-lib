@@ -98,14 +98,11 @@ injection, not a backend extension. No `pyproject.toml` / `pixi.toml` /
    `docs/docs/tutorials/simulate-nacl-xray.py` (setting the coefficient
    and showing the pattern responds) without a new FullProf page? The
    plan defaults to the lighter demonstration if the data is not on hand.
-2. **cryspy cached-dict keys (P1.4).** The CIF-build path is the primary
-   binding. Whether the cached working dict in
-   `_update_experiment_in_cryspy_dict` exposes `k`/`cthm` keys to patch
-   (mirroring `wavelength`) must be confirmed at implementation time; if
-   absent, rely on the CIF-build path plus cache rebuild on value change,
-   guarded like the existing `offset_sycos` key check. Because both
-   fields are non-refinable, the only scenario needing the patch is a
-   user changing the value after the dict is cached.
+2. **cryspy cached-dict keys (P1.4).** Resolved in P1.4: the CIF-build
+   path emits `_setup_K` and `_setup_cthm`, the cached working dict is
+   patched when `k`/`cthm` keys are exposed, and polarization settings
+   are part of the cache-invalidation key so releases without those
+   patch keys rebuild from CIF on value changes.
 
 ## Concrete files likely to change
 
@@ -185,7 +182,7 @@ Phase 2 (tests + verification):
   multiplies `y` by `lp_factor` over the experiment's 2θ grid.
   Commit: `Add shared Lorentz-polarization helper`
 
-- [ ] **P1.4 — Bind cryspy natively.**
+- [x] **P1.4 — Bind cryspy natively.**
   In `cryspy.py` `_cif_instrument_section`, within the existing powder
   branch, when `hasattr(instrument, 'setup_polarization_coefficient')`
   append `_setup_K <coefficient>` and
@@ -266,7 +263,7 @@ include them only in the `pixi run fix` commit. Leave generated
 - [x] P1.1 — Promote the ADR to `accepted/` and update `index.md`
 - [x] P1.2 — Split the CW powder instrument by radiation probe
 - [x] P1.3 — Add the shared Lorentz-polarization helper
-- [ ] P1.4 — Bind cryspy natively
+- [x] P1.4 — Bind cryspy natively
 - [ ] P1.5 — Bind crysfml (verify native line first, then fall back)
 - [ ] P1.6 — Demonstrate the new fields in docs
 - [ ] P1.7 — Phase 1 review gate
