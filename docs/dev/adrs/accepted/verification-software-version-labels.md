@@ -15,15 +15,15 @@ Quality.
 ## Context
 
 The cross-engine **Verification** pages (established by
-[`test-suite-and-validation`](test-suite-and-validation.md)
-§6) overlay an EasyDiffraction calculator on a frozen FullProf reference
-and score the agreement. A scientist reading such a page — or revisiting
-it after an engine update — needs to know **which versions of software
-produced the curves**, because cross-engine agreement is version
-dependent. The Bérar–Baldinozzi case (issue 166) is the clearest
-example: whether cryspy and FullProf agree depends on the exact cryspy
-build, so a page that does not state its versions cannot be reproduced
-or trusted over time.
+[`test-suite-and-validation`](test-suite-and-validation.md) §6) overlay
+an EasyDiffraction calculator on a frozen FullProf reference and score
+the agreement. A scientist reading such a page — or revisiting it after
+an engine update — needs to know **which versions of software produced
+the curves**, because cross-engine agreement is version dependent. The
+Bérar–Baldinozzi case (issue 166) is the clearest example: whether
+cryspy and FullProf agree depends on the exact cryspy build, so a page
+that does not state its versions cannot be reproduced or trusted over
+time.
 
 Today this **provenance is incomplete and inconsistent**:
 
@@ -95,20 +95,20 @@ A dev or pre-release install keeps its **dev marker** visible (so a
 dev-build comparison is not mistaken for a released one) while dropping
 only a **pure VCS-hash local segment** (`+g<hex>`) to keep the label
 readable. Concretely, this project's versioningit emits the dev signal
-in the *local* segment — `{base}+dev{N}`, `{base}+dirty{N}`,
-`{base}+devdirty{N}` (see `pyproject.toml`
-`[tool.versioningit.format]`) — so those markers are **preserved
-verbatim**: an `edi` install of `1.2.3+dev3` renders `edi 1.2.3+dev3`.
-A pure git-hash local part such as `0.11.0.dev3+g1a2b3c` is trimmed to
-`edi 0.11.0.dev3`. The same rule applies to any engine package. (A
-public-segment-only formatter such as `stripped_package_version` is
-deliberately **not** used here: it would discard the `+dev*`/`+dirty*`
-local markers and make a dev build look released.)
+in the _local_ segment — `{base}+dev{N}`, `{base}+dirty{N}`,
+`{base}+devdirty{N}` (see `pyproject.toml` `[tool.versioningit.format]`)
+— so those markers are **preserved verbatim**: an `edi` install of
+`1.2.3+dev3` renders `edi 1.2.3+dev3`. A pure git-hash local part such
+as `0.11.0.dev3+g1a2b3c` is trimmed to `edi 0.11.0.dev3`. The same rule
+applies to any engine package. (A public-segment-only formatter such as
+`stripped_package_version` is deliberately **not** used here: it would
+discard the `+dev*`/`+dirty*` local markers and make a dev build look
+released.)
 
 ### 3. A `verify` helper builds the candidate label from an explicit engine tag
 
-A single helper — `verify.engine_label(engine, note=None)` — returns
-the **candidate** string only (the reference side stays the existing
+A single helper — `verify.engine_label(engine, note=None)` — returns the
+**candidate** string only (the reference side stays the existing
 `verify.fullprof_label`, so the two single-purpose helpers mirror each
 other). The optional free-text `note` annotates the candidate inside the
 parentheses (for example `note='refined'`, `note='scale only'`,
@@ -244,14 +244,13 @@ the rationale is not lost:
 - **Label binding — resolved (Decision 3).** The helper takes an
   explicit engine tag, not `experiment.calculator.type`, so a stored
   result keeps the version of the engine that produced it.
-- **Helper name — resolved:
-  `verify.engine_label(engine, note=None)`, candidate only (Decision
-  3).** The reference side stays `verify.fullprof_label`; the two small
-  single-purpose helpers mirror each other and the page composes the
-  combined table label from both. No single dual-return call (it would
-  couple engine-version logic to `.sum` parsing). The free-text `note`
-  generalises a boolean `refined` so annotations like `scale only` are
-  expressible.
+- **Helper name — resolved: `verify.engine_label(engine, note=None)`,
+  candidate only (Decision 3).** The reference side stays
+  `verify.fullprof_label`; the two small single-purpose helpers mirror
+  each other and the page composes the combined table label from both.
+  No single dual-return call (it would couple engine-version logic to
+  `.sum` parsing). The free-text `note` generalises a boolean `refined`
+  so annotations like `scale only` are expressible.
 - **Render location — resolved: legend + agreement-table label only
   (Decision 1).** No separate provenance caption/row; the versions live
   on the two label surfaces a page already has, reusing existing label
@@ -259,9 +258,9 @@ the rationale is not lost:
 - **Format — resolved: bare `X.Y.Z`, no `v` prefix (Decision 2), applied
   to all three components.** `fullprof_label` drops its `v` to match
   (Compatibility). Pre-release/dev builds **keep** this repo's local dev
-  markers (`+dev*`/`+dirty*`/`+devdirty*`) and trim only a pure `+g<hex>`
-  VCS-hash tail (Decision 2a); `stripped_package_version` is not used
-  because it would drop those markers.
+  markers (`+dev*`/`+dirty*`/`+devdirty*`) and trim only a pure
+  `+g<hex>` VCS-hash tail (Decision 2a); `stripped_package_version` is
+  not used because it would drop those markers.
 
 ## Deferred Work
 
