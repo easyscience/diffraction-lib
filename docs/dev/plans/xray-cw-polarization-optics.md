@@ -214,7 +214,7 @@ Phase 2 (tests + verification):
   plus regenerated notebook.
   Commit: `Document X-ray CW polarization optics fields`
 
-- [ ] **P1.7 — Phase 1 review gate.** No-code step. Mark complete and
+- [x] **P1.7 — Phase 1 review gate.** No-code step. Mark complete and
   commit the checklist update alone.
   Commit: `Reach Phase 1 review gate`
 
@@ -264,7 +264,7 @@ include them only in the `pixi run fix` commit. Leave generated
 - [x] P1.4 — Bind cryspy natively
 - [x] P1.5 — Bind crysfml (verify native line first, then fall back)
 - [x] P1.6 — Demonstrate the new fields in docs
-- [ ] P1.7 — Phase 1 review gate
+- [x] P1.7 — Phase 1 review gate
 - [ ] Phase 2 — tests added/updated and all five tasks pass
 
 ## Suggested Pull Request
