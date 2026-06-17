@@ -12,13 +12,9 @@ locally before the next step** (atomic, single-purpose commits per
 ## ADR
 
 Implements
-[`docs/dev/adrs/suggestions/xray-cw-polarization-optics.md`](../adrs/suggestions/xray-cw-polarization-optics.md)
-(Status: Proposed). The ADR is not yet promoted to `accepted/`;
-`/draft-impl-1` commits it and promotes it to `accepted/` as part of the
-implementation per §Change Discipline (move the file, flip Status to
-Accepted, flip the existing **Experiment model** `index.md` row from
-`Suggestion` to `Accepted` with an `accepted/…` link — see P1.1 — and
-fix links). This plan uses the same slug as the ADR.
+[`docs/dev/adrs/accepted/xray-cw-polarization-optics.md`](../adrs/accepted/xray-cw-polarization-optics.md)
+(Status: Accepted). The ADR was promoted to `accepted/` during P1.1 per
+§Change Discipline. This plan uses the same slug as the ADR.
 
 Related accepted ADRs consulted:
 
@@ -148,21 +144,12 @@ Phase 2 (tests + verification):
 
 ## Implementation steps (Phase 1)
 
-- [ ] **P1.1 — Promote the ADR to `accepted/`.** Before any code edit,
-  `git mv docs/dev/adrs/suggestions/xray-cw-polarization-optics.md
-  docs/dev/adrs/accepted/`, set its `**Status:**` to `Accepted`, **flip
-  the existing** **Experiment model** row for this ADR in
-  `docs/dev/adrs/index.md` (currently `Suggestion`, ~line 45) **in
-  place** to `Accepted`, repointing its link from `suggestions/…` to
-  `accepted/xray-cw-polarization-optics.md` (do **not** add a second
-  row), update this plan's `## ADR` link to the `accepted/` path, and
-  fix every
-  remaining `suggestions/` reference found by
-  `git grep -n 'xray-cw-polarization-optics'`. `/draft-impl-1`'s Phase A
-  commits/cleans the ADR where it currently lives but does not invent
-  this promotion, so it is an explicit step here (per §Change
-  Discipline: an ADR-implementing change must not leave the ADR in
-  `suggestions/`).
+- [x] **P1.1 — Promote the ADR to `accepted/`.** The ADR was moved into
+  `docs/dev/adrs/accepted/`, its status was set to `Accepted`, the
+  existing **Experiment model** row in `docs/dev/adrs/index.md` was
+  repointed to `accepted/xray-cw-polarization-optics.md`, this plan's
+  `## ADR` link was updated, and remaining stale path references were
+  cleared.
   Commit: `Promote xray-cw-polarization-optics ADR to accepted`
 
 - [ ] **P1.2 — Split the CW powder instrument by radiation probe.**
@@ -276,7 +263,7 @@ include them only in the `pixi run fix` commit. Leave generated
 
 ## Status checklist
 
-- [ ] P1.1 — Promote the ADR to `accepted/` and update `index.md`
+- [x] P1.1 — Promote the ADR to `accepted/` and update `index.md`
 - [ ] P1.2 — Split the CW powder instrument by radiation probe
 - [ ] P1.3 — Add the shared Lorentz-polarization helper
 - [ ] P1.4 — Bind cryspy natively
