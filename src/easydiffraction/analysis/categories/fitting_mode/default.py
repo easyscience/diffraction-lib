@@ -52,6 +52,16 @@ class FittingMode(CategoryItem, SwitchableCategoryBase):
     def _supported_types(
         filters: dict[str, object],
     ) -> list[tuple[str, str]]:
-        """Return supported fitting modes."""
-        del filters
-        return [(mode.value, mode.description()) for mode in FitModeEnum]
+        """Return fitting modes applicable to the loaded project."""
+        count = filters.get('experiment_count')
+        if count is None:
+            return [(mode.value, mode.description()) for mode in FitModeEnum]
+        applicable = []
+        for mode in FitModeEnum:
+            if mode is FitModeEnum.JOINT:
+                ok = count >= 2
+            else:  # SINGLE or SEQUENTIAL
+                ok = count == 1
+            if ok:
+                applicable.append((mode.value, mode.description()))
+        return applicable

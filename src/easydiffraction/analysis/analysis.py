@@ -617,17 +617,21 @@ class Analysis(
         self._fit_parameter_correlations._parent = self
         self._software._parent = self
 
-    @staticmethod
-    def _supported_filters_for(category: object) -> dict[str, object]:
+    def _loaded_experiment_count(self) -> int:
+        """Return the number of experiments loaded in the project."""
+        return len(self.project.experiments)
+
+    def _supported_filters_for(self, category: object) -> dict[str, object]:
         """
         Return owner context filters for a switchable category.
 
-        Analysis-level switchables (minimizer, fitting_mode) have no
-        owner-supplied context today; their supported-types lookups read
-        only the registered factory entries. The empty dict is therefore
-        intentional and applies uniformly across both categories.
+        The ``fitting_mode`` selector is applicability-driven: it needs
+        the loaded-experiment count to decide which modes apply. Other
+        analysis-level switchables (minimizer) have no owner-supplied
+        context and receive an empty dict.
         """
-        del category
+        if category is self._fitting_mode:
+            return {'experiment_count': self._loaded_experiment_count()}
         return {}
 
     @staticmethod

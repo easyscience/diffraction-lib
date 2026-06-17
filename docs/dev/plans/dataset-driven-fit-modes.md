@@ -150,7 +150,7 @@ locally (atomic, single-purpose) before moving on. Mark each `- [ ]` as
   existing `Fitter._require_measured_data` guard at `fit()`. No
   "schedule only the measured subset" filtering is introduced.
 
-- [ ] **P1.1 — Applicability-based `show_supported()`.**
+- [x] **P1.1 — Applicability-based `show_supported()`.**
   Add an Analysis helper that returns the loaded-experiment count
   (`len(project.experiments)`); have `_supported_filters_for` pass that
   count to the `fitting_mode` category; implement
@@ -259,7 +259,7 @@ Notes:
 
 ## Status checklist
 
-- [ ] P1.1 — Applicability-based `show_supported()`
+- [x] P1.1 — Applicability-based `show_supported()`
 - [ ] P1.2 — Enforce mode preconditions at fit time
 - [ ] P1.3 — Restrict `single` to exactly one experiment
 - [ ] P1.4 — Remove the `single`-with-N snapshot machinery
