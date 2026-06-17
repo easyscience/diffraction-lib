@@ -2748,7 +2748,7 @@ class Analysis(
         ValueError
             If ``data_dir`` is unset, does not resolve to a directory
             with matching files, or (with ``copy_data``) the project is
-            unsaved.
+            unsaved or ``data_dir`` overlaps the managed archive folder.
         """
         from easydiffraction.io.ascii import extract_data_paths_from_dir  # noqa: PLC0415
 
@@ -2787,14 +2787,30 @@ class Analysis(
             raise ValueError(msg)
 
         destination = project_path / 'data' / 'sequential'
-        if source.resolve() == destination.resolve():
+        source_resolved = source.resolve()
+        destination_resolved = destination.resolve()
+        if source_resolved == destination_resolved:
             return str(source)
+
+        # Refusing overlapping source/destination keeps the refresh
+        # rmtree below from ever deleting the user's source files: a
+        # data_dir nested in (or containing) the managed archive would
+        # otherwise be wiped before it is copied.
+        nested = source_resolved.is_relative_to(destination_resolved)
+        contains = destination_resolved.is_relative_to(source_resolved)
+        if nested or contains:
+            msg = (
+                'With copy_data=True, analysis.sequential_fit.data_dir must be a '
+                f'folder separate from the managed archive at {destination}; got a '
+                f'nested or containing path ({source}).'
+            )
+            raise ValueError(msg)
 
         import shutil  # noqa: PLC0415
 
         # Refresh the archive so it holds exactly the current matched set
-        # (the self-copy case returned above, so this never wipes the
-        # archive while reading from it).
+        # (the self-copy case returned above, and overlapping paths were
+        # rejected, so this never deletes the source while reading it).
         if destination.exists():
             shutil.rmtree(destination)
         destination.mkdir(parents=True, exist_ok=True)
