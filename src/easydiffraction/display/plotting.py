@@ -919,10 +919,10 @@ class Plotter(RendererBase):
         """
         Plot a parameter's value across sequential fit results.
 
-        When a ``results.csv`` file exists in the project's
-        ``analysis/`` directory, data is read from CSV.  Otherwise,
-        falls back to in-memory parameter snapshots (produced by
-        ``fit()`` in single mode).
+        Data is read from the ``results.csv`` written by a sequential
+        fit in the project's ``analysis/`` directory. When no such file
+        exists, there is no parameter series to plot and a warning is
+        emitted.
 
         Parameters
         ----------
@@ -940,28 +940,25 @@ class Plotter(RendererBase):
             log.warning('Series plot target does not expose a CSV column name.')
             return
 
-        # Try CSV first (produced by fit_sequential or future fit)
         csv_path = None
         if self._project.metadata.path is not None:
             candidate = pathlib.Path(self._project.metadata.path) / 'analysis' / 'results.csv'
             if candidate.is_file():
                 csv_path = str(candidate)
 
-        if csv_path is not None:
-            self._plot_param_series_from_csv(
-                csv_path=csv_path,
-                column_names=column_names,
-                param_descriptor=param,
-                versus_path=versus,
+        if csv_path is None:
+            log.warning(
+                'No sequential results found to plot; run a sequential fit '
+                'to produce analysis/results.csv first.'
             )
-        else:
-            # Fallback: in-memory snapshots from fit() single mode
-            self.plot_param_series_from_snapshots(
-                column_names[0],
-                versus,
-                self._project.experiments,
-                self._project.analysis._parameter_snapshots,
-            )
+            return
+
+        self._plot_param_series_from_csv(
+            csv_path=csv_path,
+            column_names=column_names,
+            param_descriptor=param,
+            versus_path=versus,
+        )
 
     @staticmethod
     def _series_column_names(param: object) -> list[str]:
@@ -1032,9 +1029,8 @@ class Plotter(RendererBase):
         """
         Plot every fitted parameter across sequential fit results.
 
-        Iterates the fitted parameters recorded in ``results.csv`` (or,
-        when absent, in the in-memory parameter snapshots) and emits one
-        ``plot_param_series`` plot per parameter.
+        Iterates the fitted parameters recorded in ``results.csv`` and
+        emits one ``plot_param_series`` plot per parameter.
 
         Parameters
         ----------
@@ -1060,7 +1056,7 @@ class Plotter(RendererBase):
 
     def _collect_fitted_parameter_unique_names(self) -> list[str]:
         """
-        Return fitted parameter unique names from CSV or snapshots.
+        Return fitted parameter unique names from ``results.csv``.
         """
         from easydiffraction.analysis.sequential import _META_COLUMNS  # noqa: PLC0415
 
@@ -1072,21 +1068,17 @@ class Plotter(RendererBase):
             if candidate.is_file():
                 csv_path = str(candidate)
 
-        if csv_path is not None:
-            df = pd.read_csv(csv_path)
-            return [
-                column
-                for column in df.columns
-                if column not in meta
-                and not column.startswith('diffrn.')
-                and not column.endswith('.uncertainty')
-            ]
-
-        snapshots = self._project.analysis._parameter_snapshots
-        if not snapshots:
+        if csv_path is None:
             return []
-        first_snapshot = next(iter(snapshots.values()))
-        return list(first_snapshot.keys())
+
+        df = pd.read_csv(csv_path)
+        return [
+            column
+            for column in df.columns
+            if column not in meta
+            and not column.startswith('diffrn.')
+            and not column.endswith('.uncertainty')
+        ]
 
     def _fitted_param_descriptors_by_unique_name(self) -> dict[str, object]:
         """Return descriptor map keyed by ``unique_name``."""
@@ -6193,80 +6185,6 @@ class Plotter(RendererBase):
             y=y,
             sy=sy,
             axes_labels=[x_label, y_label],
-            title=title,
-            height=self.height,
-        )
-
-    def plot_param_series_from_snapshots(
-        self,
-        unique_name: str,
-        versus_path: str | None,
-        experiments: object,
-        parameter_snapshots: dict[str, dict[str, dict]],
-    ) -> None:
-        """
-        Plot a parameter's value from in-memory snapshots.
-
-        This is a backward-compatibility method used when no CSV file is
-        available (e.g. after ``fit()`` in single mode, before PR 13
-        adds CSV output to the existing fit loop).
-
-        Parameters
-        ----------
-        unique_name : str
-            Unique name of the parameter to plot.
-        versus_path : str | None
-            Persisted diffrn path for the x-axis.
-        experiments : object
-            Experiments collection for accessing diffrn conditions.
-        parameter_snapshots : dict[str, dict[str, dict]]
-            Per-experiment parameter value snapshots.
-        """
-        x = []
-        y = []
-        sy = []
-        axes_labels = []
-        title = ''
-
-        for idx, expt_name in enumerate(parameter_snapshots, start=1):
-            experiment = experiments[expt_name]
-            diffrn = experiment.diffrn
-
-            x_axis_param = self._resolve_diffrn_descriptor(
-                diffrn,
-                self._versus_field_name(versus_path),
-            )
-
-            if x_axis_param is not None and x_axis_param.value is not None:
-                value = x_axis_param.value
-            else:
-                value = idx
-            x.append(value)
-
-            param_data = parameter_snapshots[expt_name][unique_name]
-            y.append(param_data['value'])
-            sy.append(param_data['uncertainty'])
-
-            if x_axis_param is not None:
-                axes_labels = [
-                    self._versus_axis_label(versus_path, x_axis_param),
-                    f'Parameter value ({param_data["units"]})',
-                ]
-            else:
-                axes_labels = [
-                    'Experiment No.',
-                    f'Parameter value ({param_data["units"]})',
-                ]
-
-            title = f"Parameter '{unique_name}' across fit results"
-
-        x, y, sy = self._order_series_by_x(x, y, sy)
-
-        self._backend.plot_scatter(
-            x=x,
-            y=y,
-            sy=sy,
-            axes_labels=axes_labels,
             title=title,
             height=self.height,
         )

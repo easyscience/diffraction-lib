@@ -599,7 +599,6 @@ class Analysis(
         self._persisted_fit_state_sidecar: dict[str, object] = {}
         self._fitter = Fitter(self.minimizer.type)
         self._fit_results = None
-        self._parameter_snapshots: dict[str, dict[str, dict]] = {}
         self._display = AnalysisDisplay(self)
         self._attach_category_parents()
 
@@ -3031,26 +3030,6 @@ class Analysis(
         console.print("🚀 Starting fit process with 'lmfit'...")
         console.print('📈 Goodness-of-fit (reduced χ²) per experiment:')
         return make_display_handle()
-
-    def _snapshot_params(self, expt_name: str, results: object) -> None:
-        """
-        Snapshot parameter values for a single experiment.
-
-        Parameters
-        ----------
-        expt_name : str
-            Experiment name key for the snapshot dict.
-        results : object
-            Fit results with ``.parameters`` list.
-        """
-        snapshot: dict[str, dict] = {}
-        for param in results.parameters:
-            snapshot[param.unique_name] = {
-                'value': param.value,
-                'uncertainty': param.uncertainty,
-                'units': _parameter_display_units(param),
-            }
-        self._parameter_snapshots[expt_name] = snapshot
 
     def _fit_single_update_short_table(
         self,

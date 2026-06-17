@@ -176,7 +176,7 @@ locally (atomic, single-purpose) before moving on. Mark each `- [ ]` as
   `analysis.py`.
   Commit: `Fit a single experiment in single mode`
 
-- [ ] **P1.4 — Remove the `single`-with-N snapshot machinery.**
+- [x] **P1.4 — Remove the `single`-with-N snapshot machinery.**
   Delete `_parameter_snapshots` and `_snapshot_params`; remove
   `plot_param_series_from_snapshots` and the snapshot fallback branches
   in `plot_param_series`, `plot_all_param_series`, and
@@ -262,7 +262,7 @@ Notes:
 - [x] P1.1 — Applicability-based `show_supported()`
 - [x] P1.2 — Enforce mode preconditions at fit time
 - [x] P1.3 — Restrict `single` to exactly one experiment
-- [ ] P1.4 — Remove the `single`-with-N snapshot machinery
+- [x] P1.4 — Remove the `single`-with-N snapshot machinery
 - [ ] P1.5 — Sequential data source: default, no-files error, `copy_data`
 - [ ] P1.6 — Reconcile display/serialization filters
 - [ ] P1.7 — Update tutorials relying on `single`-with-N
