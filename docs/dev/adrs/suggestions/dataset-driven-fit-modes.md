@@ -16,7 +16,7 @@ Analysis and fitting.
 
 The analysis layer offers three fit modes through the `fitting_mode`
 switchable category established by
-[`fit-mode-categories`](accepted/fit-mode-categories.md): `single`,
+[`fit-mode-categories`](../accepted/fit-mode-categories.md): `single`,
 `joint`, and `sequential`. Two problems make the current surface
 confusing and partly incorrect.
 
@@ -53,7 +53,7 @@ one-dataset case — which removes the buggy multi-loop and closes issue
 85 — (3) keeps `sequential` as the folder sweep it already is, and (4)
 tidies the `sequential` data-source configuration (sensible defaults, an
 optional copy-into-project flag, and room for a future remote source).
-It extends [`fit-mode-categories`](accepted/fit-mode-categories.md).
+It extends [`fit-mode-categories`](../accepted/fit-mode-categories.md).
 
 An earlier draft of this ADR proposed redefining `sequential` to fit the
 loaded datasets in turn; that direction was dropped (see Alternatives
@@ -64,26 +64,40 @@ behaviour and solving issue 85 by restricting `single`.
 
 ### 1. Mode availability is precondition-based, not a static list
 
-Each fit mode declares a **precondition predicate** — "can I run on this
-project right now?" — and `fitting_mode.show_supported()` lists exactly
-the modes whose preconditions the current project satisfies. This is
-wired through the existing switchable-category selector
+Two distinct concepts are separated explicitly so that offering a mode
+and being able to run it do not collapse into one rule:
+
+- **Applicability** — "could this mode apply to the project as loaded?"
+  This drives `fitting_mode.show_supported()`.
+- **Readiness** — "is this mode fully configured to run right now?" This
+  is checked only at `fit()` time and produces the Decision 6 errors.
+
+`fitting_mode.show_supported()` lists exactly the modes whose
+**applicability** predicate the current project satisfies. This is wired
+through the existing switchable-category selector
 (`FittingMode._supported_types(filters)`, which today ignores its
 `filters`); it now consumes project state. No new owner-level setter is
 added — the category-owned-selector contract from
-[`switchable-category-owned-selectors`](accepted/switchable-category-owned-selectors.md)
+[`switchable-category-owned-selectors`](../accepted/switchable-category-owned-selectors.md)
 is preserved.
 
-Preconditions:
+**Applicability** predicates (drive `show_supported()`):
 
 - `single` → exactly one experiment with measured data.
 - `joint` → two or more experiments with measured data.
 - `sequential` → exactly one experiment with measured data (the
-  template) plus a resolvable data source (checked fully at fit time;
-  see Decision 4).
+  template). It deliberately does **not** require a configured data
+  source, so `sequential` is offered as soon as one dataset is loaded —
+  preserving the intended workflow of switching to it and *then*
+  pointing it at a folder.
 
-The availability table is a **consequence** of these predicates, not a
-hard-coded rule:
+**Readiness** (checked at `fit()` time, see Decisions 4 and 6):
+`sequential` additionally needs a resolvable `data_dir` that matches at
+least one file. An unconfigured or empty source is a clear fit-time
+error, **not** a reason to hide the mode.
+
+The availability table is a **consequence** of the applicability
+predicates, not a hard-coded rule:
 
 | Experiments loaded | Available modes        |
 | ------------------ | ---------------------- |
@@ -91,12 +105,12 @@ hard-coded rule:
 | 1                  | `single`, `sequential` |
 | ≥ 2                | `joint`                |
 
-Predicate-based detection is preferred over a central `if count >= 2`
+Predicate-based applicability is preferred over a central `if count >= 2`
 switch because it is **honest** (it can also reflect, e.g., an
 experiment with no measured data, not just a count), **extensible** (a
-future remote data source simply becomes another way `sequential`'s
-"resolvable data source" precondition is met — see Deferred Work), and
-keeps the selector contract clean.
+future remote data source becomes another way `sequential`'s readiness
+is satisfied — see Deferred Work), and keeps the selector contract
+clean.
 
 ### 2. Restrict `single` to exactly one loaded experiment
 
@@ -128,7 +142,36 @@ The `sequential_fit` category keeps `data_dir`, `file_pattern`,
   (default), matched files are referenced in place; when `True`, the
   matched files are copied into the project so it is self-contained.
   Default-off avoids surprising large copies for thousand-file series,
-  while letting users opt into a portable, archived project.
+  while letting users opt into a portable, archived project. To avoid
+  shipping a decided field with an undefined contract, the **minimal
+  first-step behaviour is fully specified here**:
+  - **Timing.** The copy happens at `fit()` time, during `sequential`
+    readiness resolution, *before* the sweep begins — not at config
+    time (so it always reflects the `data_dir`/`file_pattern` in effect
+    for that run).
+  - **Destination.** A fixed project-relative folder
+    (`<project>/data/sequential/`); the run then reads its inputs from
+    there. The destination is derived, not separately configurable.
+  - **Conflict policy.** Idempotent overwrite: a destination file of the
+    same name is overwritten so the in-project copy always matches the
+    current source. (Users with very large series leave `copy_data`
+    off.)
+  - **Round-trip / portability contract.** Once a copy succeeds, the
+    persisted `data_dir` is **rewritten to the project-relative copy
+    destination** (`data/sequential/`). The saved project is therefore
+    self-contained: on reload — even moved or shared, with the original
+    external source gone — `sequential` readiness resolves against the
+    in-project copy. `file_pattern` persists as set (the copied files
+    keep their names, so it still matches). Re-running `fit()` re-copies
+    from whatever `data_dir` currently points at, so pointing it back at
+    a fresh external folder refreshes the archive.
+  - **What is serialized.** The `sequential_fit` fields — including
+    `copy_data` and the (possibly rewritten) `data_dir` / `file_pattern`
+    — are written to CIF as for any category. When `copy_data=False`,
+    `data_dir` persists exactly as the user set it (reference in place);
+    when `copy_data=True`, it persists as the in-project destination per
+    the round-trip contract above. The copied data files themselves are
+    project artifacts, not CIF content.
 
 ### 5. Close issue 85 by removing `single`-with-N
 
@@ -235,11 +278,6 @@ safer and more discoverable.
 
 ## Open Questions
 
-- **`copy_data` mechanics.** When the copy happens (at config time vs at
-  fit time), what is stored after a copy (the in-project path vs the
-  original reference), and the overwrite/dedup policy. The field and its
-  default-off behaviour are decided here; the copy mechanism may be a
-  small follow-up.
 - **Resume.** Resume is currently "single mode only"
   (`_validate_fit_request`). Confirm `single` (one dataset) keeps resume
   as today; any per-point resume for `sequential` is out of scope.
@@ -254,6 +292,9 @@ safer and more discoverable.
   satisfy the `sequential` "resolvable data source" precondition,
   reusing the same mode and `results.csv` evolution output without
   reopening the mode design.
-- The `copy_data` copy mechanism, if not implemented in the first step.
+- Advanced `copy_data` policies beyond the first-step contract in
+  Decision 4 (e.g. content-hash dedup, incremental sync, a configurable
+  destination) — the default-off flag and minimal overwrite contract
+  ship in the first step.
 - Detailed result-file/export layout remains governed by
-  [`fit-output-files-and-data-exports`](suggestions/fit-output-files-and-data-exports.md).
+  [`fit-output-files-and-data-exports`](fit-output-files-and-data-exports.md).
