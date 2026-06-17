@@ -76,12 +76,11 @@ does not modify it.
 
 ## Open questions
 
-- **`fitting-exercise-si-lbco.py` pedagogy (P1.7).** This tutorial fits
-  multiple experiments per project in default (`single`) mode. The plan
-  switches those fits to `joint`; if the exercise intends *independent*
-  per-experiment fits, it should instead be split into single-experiment
-  projects. Default taken: switch to `joint`; confirm during review if
-  the pedagogy requires otherwise.
+- **`fitting-exercise-si-lbco.py` pedagogy (P1.7) — RESOLVED.** The
+  audit in P1.7 found this tutorial uses two separate one-experiment
+  projects (not multiple experiments in one project), so it does not
+  rely on `single`-with-N and needs no change. No pedagogy decision is
+  required.
 - **Resume** stays `single`-only as today; per-point `sequential` resume
   is out of scope (ADR Open Questions).
 - **Template-derived `file_pattern` (deferred).** Needs new experiment
@@ -206,12 +205,17 @@ locally (atomic, single-purpose) before moving on. Mark each `- [ ]` as
   etc.); adjust only if needed. Files: `analysis.py`.
   Commit: `Align analysis category visibility with fit modes`
 
-- [ ] **P1.7 — Update tutorials relying on `single`-with-N.**
-  In `docs/docs/tutorials/fitting-exercise-si-lbco.py`, switch the
-  multi-experiment `single` fits to `joint` (see Open questions), then
-  run `pixi run notebook-prepare`. Stage the `.py` and regenerated
-  `.ipynb`. Files: tutorial source + notebook.
-  Commit: `Update Si/LBCO exercise to joint fitting`
+- [x] **P1.7 — Audit tutorials for `single`-with-N (no change needed).**
+  An audit of every `docs/docs/tutorials/*.py` found **no** tutorial
+  fits ≥2 experiments in `single`/default mode:
+  `fitting-exercise-si-lbco.py` uses two *separate* projects with one
+  experiment each (`sim_si`, `sim_lbco`) — its repeated `fit()` calls are
+  progressive single-experiment refinements, not `single`-with-N; the
+  multi-experiment tutorials (`calibrate-beer-ess`, `joint-si-bragg-pdf`,
+  `refine-ncaf-wish`) all set `joint`/`sequential` before fitting. So the
+  earlier premise that the Si/LBCO exercise relied on `single`-with-N was
+  incorrect, and no tutorial edit (or `notebook-prepare`) is required.
+  Commit: `Confirm no tutorial relies on single-with-N`
 
 - [ ] **P1.8 — Close issue 85 and promote the ADR.**
   `git mv` issue 85 to `closed/retain-per-experiment-fitted-parameters-for-plotting.md`,
@@ -265,7 +269,7 @@ Notes:
 - [x] P1.4 — Remove the `single`-with-N snapshot machinery
 - [ ] P1.5 — Sequential data source: default, no-files error, `copy_data`
 - [x] P1.6 — Reconcile display/serialization filters
-- [ ] P1.7 — Update tutorials relying on `single`-with-N
+- [x] P1.7 — Update tutorials relying on `single`-with-N
 - [ ] P1.8 — Close issue 85 and promote the ADR
 - [ ] P1.9 — Phase 1 review gate
 - [ ] Phase 2 — tests added and full verification suite green
