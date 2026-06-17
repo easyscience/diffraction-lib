@@ -219,32 +219,6 @@ class TestCurrentMinimizerSetter:
 # ------------------------------------------------------------------
 
 
-class TestSnapshotParams:
-    def test_snapshot_stores_values(self):
-        from easydiffraction.analysis.analysis import Analysis
-
-        a = Analysis(project=_make_project())
-
-        class FakeParam:
-            unique_name = 'p1'
-            value = 1.23
-            uncertainty = 0.01
-            units = 'angstroms'
-
-            def resolve_display_units(self, context):
-                assert context == 'gui'
-                return 'Å'
-
-        class FakeResults:
-            parameters = [FakeParam()]
-
-        a._snapshot_params('expt1', FakeResults())
-        assert 'expt1' in a._parameter_snapshots
-        assert a._parameter_snapshots['expt1']['p1']['value'] == 1.23
-        assert a._parameter_snapshots['expt1']['p1']['uncertainty'] == 0.01
-        assert a._parameter_snapshots['expt1']['p1']['units'] == 'Å'
-
-
 class TestBayesianProjection:
     def test_single_parameter_projection_persists_distribution_and_predictive_caches(self):
         from easydiffraction.analysis.analysis import Analysis
@@ -2735,3 +2709,152 @@ class TestShortTableAndUpdateCategories:
 
         a._update_categories()
         assert applied == [True]
+
+
+# ------------------------------------------------------------------
+# Fit-mode applicability (loaded-experiment count)
+# ------------------------------------------------------------------
+
+
+def _analysis_with_experiment_names(names, *, path=None):
+    from easydiffraction.analysis.analysis import Analysis
+
+    project = SimpleNamespace(
+        experiments=SimpleNamespace(names=list(names)),
+        structures=object(),
+        metadata=SimpleNamespace(path=path),
+        _varname='proj',
+    )
+    return Analysis(project=project)
+
+
+class TestModeApplicability:
+    def test_supported_filters_passes_experiment_count(self):
+        a = _analysis_with_experiment_names(['e1', 'e2'])
+        assert a._supported_filters_for(a.fitting_mode) == {'experiment_count': 2}
+
+    def test_supported_filters_empty_for_other_categories(self):
+        a = _analysis_with_experiment_names(['e1'])
+        assert a._supported_filters_for(a.minimizer) == {}
+
+    def test_single_requires_exactly_one_experiment(self):
+        import pytest
+
+        from easydiffraction.analysis.enums import FitModeEnum
+
+        a = _analysis_with_experiment_names(['e1', 'e2'])
+        with pytest.raises(ValueError, match="Fit mode 'single' does not apply"):
+            a._require_mode_applicable(FitModeEnum.SINGLE)
+
+    def test_joint_requires_two_or_more_experiments(self):
+        import pytest
+
+        from easydiffraction.analysis.enums import FitModeEnum
+
+        a = _analysis_with_experiment_names(['e1'])
+        with pytest.raises(ValueError, match="Fit mode 'joint' does not apply"):
+            a._require_mode_applicable(FitModeEnum.JOINT)
+
+    def test_applicable_modes_do_not_raise(self):
+        from easydiffraction.analysis.enums import FitModeEnum
+
+        one = _analysis_with_experiment_names(['e1'])
+        one._require_mode_applicable(FitModeEnum.SINGLE)
+        one._require_mode_applicable(FitModeEnum.SEQUENTIAL)
+
+        two = _analysis_with_experiment_names(['e1', 'e2'])
+        two._require_mode_applicable(FitModeEnum.JOINT)
+
+
+# ------------------------------------------------------------------
+# Sequential source resolution + copy_data
+# ------------------------------------------------------------------
+
+
+class TestResolveSequentialSource:
+    def _saved_analysis(self, tmp_path):
+        return _analysis_with_experiment_names(['e1'], path=tmp_path)
+
+    def test_unset_data_dir_raises(self, tmp_path):
+        import pytest
+
+        a = self._saved_analysis(tmp_path)
+        with pytest.raises(ValueError, match='needs a data folder'):
+            a._resolve_sequential_source()
+
+    def test_no_matching_files_raises(self, tmp_path):
+        import pytest
+
+        a = self._saved_analysis(tmp_path)
+        src = tmp_path / 'scans'
+        src.mkdir()
+        a.sequential_fit.data_dir.value = str(src)
+        a.sequential_fit.file_pattern.value = '*.xye'
+        with pytest.raises(ValueError, match='No sequential data files found'):
+            a._resolve_sequential_source()
+
+    def test_without_copy_returns_source(self, tmp_path):
+        a = self._saved_analysis(tmp_path)
+        src = tmp_path / 'scans'
+        src.mkdir()
+        (src / 'a.xye').write_text('1\n')
+        a.sequential_fit.data_dir.value = str(src)
+        a.sequential_fit.file_pattern.value = '*.xye'
+        assert a._resolve_sequential_source() == str(src)
+
+    def test_copy_data_archives_and_rewrites_data_dir(self, tmp_path):
+        a = self._saved_analysis(tmp_path)
+        src = tmp_path / 'ext'
+        src.mkdir()
+        (src / 'a.xye').write_text('1\n')
+        (src / 'b.xye').write_text('2\n')
+        a.sequential_fit.data_dir.value = str(src)
+        a.sequential_fit.file_pattern.value = '*.xye'
+        a.sequential_fit.copy_data.value = True
+
+        dest = tmp_path / 'data' / 'sequential'
+        assert a._resolve_sequential_source() == str(dest)
+        assert sorted(p.name for p in dest.iterdir()) == ['a.xye', 'b.xye']
+        assert a.sequential_fit.data_dir.value == 'data/sequential'
+
+    def test_copy_data_refresh_drops_stale_files(self, tmp_path):
+        a = self._saved_analysis(tmp_path)
+        dest = tmp_path / 'data' / 'sequential'
+        dest.mkdir(parents=True)
+        (dest / 'stale.xye').write_text('old\n')
+        src = tmp_path / 'ext'
+        src.mkdir()
+        (src / 'a.xye').write_text('1\n')
+        a.sequential_fit.data_dir.value = str(src)
+        a.sequential_fit.file_pattern.value = '*.xye'
+        a.sequential_fit.copy_data.value = True
+
+        a._resolve_sequential_source()
+        assert sorted(p.name for p in dest.iterdir()) == ['a.xye']
+
+    def test_copy_data_idempotent_self_copy(self, tmp_path):
+        a = self._saved_analysis(tmp_path)
+        dest = tmp_path / 'data' / 'sequential'
+        dest.mkdir(parents=True)
+        (dest / 'a.xye').write_text('1\n')
+        a.sequential_fit.data_dir.value = str(dest)
+        a.sequential_fit.file_pattern.value = '*.xye'
+        a.sequential_fit.copy_data.value = True
+
+        assert a._resolve_sequential_source() == str(dest)
+        assert (dest / 'a.xye').exists()
+
+    def test_copy_data_rejects_nested_source(self, tmp_path):
+        import pytest
+
+        a = self._saved_analysis(tmp_path)
+        nested = tmp_path / 'data' / 'sequential' / 'raw'
+        nested.mkdir(parents=True)
+        (nested / 'a.xye').write_text('1\n')
+        a.sequential_fit.data_dir.value = str(nested)
+        a.sequential_fit.file_pattern.value = '*.xye'
+        a.sequential_fit.copy_data.value = True
+
+        with pytest.raises(ValueError, match='separate from the managed archive'):
+            a._resolve_sequential_source()
+        assert (nested / 'a.xye').exists()

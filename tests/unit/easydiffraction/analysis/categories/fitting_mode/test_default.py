@@ -50,6 +50,19 @@ def test_fitting_mode_supported_types_include_all_modes():
     assert tags == ['single', 'joint', 'sequential']
 
 
+def test_fitting_mode_supported_types_by_experiment_count():
+    from easydiffraction.analysis.categories.fitting_mode.default import FittingMode
+
+    def tags_for(count):
+        supported = FittingMode._supported_types({'experiment_count': count})
+        return [tag for tag, _description in supported]
+
+    assert tags_for(0) == []
+    assert tags_for(1) == ['single', 'sequential']
+    assert tags_for(2) == ['joint']
+    assert tags_for(5) == ['joint']
+
+
 def test_fitting_mode_from_cif_restores_value_without_parent():
     from easydiffraction.analysis.categories.fitting_mode.default import FittingMode
 

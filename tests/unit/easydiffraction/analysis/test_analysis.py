@@ -471,7 +471,7 @@ def test_fit_interrupt_cleans_state_and_prints_message(monkeypatch, capsys):
             del traceback
             events.append(exc_type)
 
-    analysis = Analysis(project=_make_project_with_names([]))
+    analysis = Analysis(project=_make_project_with_names(['e1']))
     analysis.project.verbosity = SimpleNamespace(fit=SimpleNamespace(value='full'))
     analysis.fit_results = object()
     analysis.fitter.results = object()
@@ -837,7 +837,6 @@ def test_fit_single_short_reuses_tracker_display_handle(monkeypatch):
     monkeypatch.setattr(
         'easydiffraction.analysis.analysis.make_display_handle', fake_make_display_handle
     )
-    monkeypatch.setattr(analysis, '_snapshot_params', lambda expt_name, results: None)
     monkeypatch.setattr(analysis.fitter, 'fit', fake_fit)
     monkeypatch.setattr(Analysis, '_fit_single_update_short_table', fake_update_short_table)
 
@@ -898,7 +897,7 @@ def test_run_sequential_sets_mode_and_saves_project(monkeypatch, tmp_path):
         analysis, '_update_categories', lambda: calls.append(('update_categories', None))
     )
     monkeypatch.setattr(
-        analysis, '_resolve_sequential_data_dir', lambda: tmp_path / 'resolved-scans'
+        analysis, '_resolve_sequential_source', lambda: str(tmp_path / 'resolved-scans')
     )
     analysis.fit_results = object()
     analysis.fitter.results = object()
