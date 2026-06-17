@@ -182,7 +182,7 @@ run until Phase 2).
       update its docstring example. Docstrings only; no test edits.
       Commit: `Add engine_label helper and drop v from fullprof_label`
 
-- [ ] **P1.3 — Migrate the 15 verification pages.** For each
+- [x] **P1.3 — Migrate the 15 verification pages.** For each
       `docs/docs/verification/*.py`: define page-level label variables
       right after each calculation
       (`LABEL_CRYSPY = verify.engine_label('cryspy')`, refined/annotated
@@ -226,7 +226,7 @@ run until Phase 2).
 
 - [x] P1.1 share engine→package map
 - [x] P1.2 engine_label + bare fullprof_label
-- [ ] P1.3 migrate 15 verification pages
+- [x] P1.3 migrate 15 verification pages
 - [ ] P1.4 promote ADR
 - [ ] P1.5 Phase 1 review gate
 - [ ] Phase 2 verification green

@@ -72,6 +72,8 @@ project.structures.add(structure)
 # %%
 FULLPROF_PROJECT_DIR = 'pd-neut-cwl_pv_lbco'
 FULLPROF_PRF_FILE = 'lbco.prf'
+FULLPROF_SUM_FILE = 'lbco.sum'
+FULLPROF_LABEL = verify.fullprof_label(FULLPROF_PROJECT_DIR, FULLPROF_SUM_FILE)
 FULLPROF_BAC_FILE = 'lbco.bac'
 FULLPROF_ZERO = 0.62040  # FullProf Zero
 FULLPROF_SCALE = 9.405870  # FullProf Scale
@@ -129,8 +131,8 @@ project.display.pattern_comparison(
     'lbco',
     reference=calc_fullprof,
     candidate=calc_ed_cryspy,
-    reference_label='FullProf',
-    candidate_label='edi-cryspy',
+    reference_label=FULLPROF_LABEL,
+    candidate_label=verify.engine_label('cryspy'),
 )
 
 # %% [markdown]
@@ -146,8 +148,8 @@ project.display.pattern_comparison(
     'lbco',
     reference=calc_fullprof,
     candidate=calc_ed_crysfml,
-    reference_label='FullProf',
-    candidate_label='edi-crysfml',
+    reference_label=FULLPROF_LABEL,
+    candidate_label=verify.engine_label('crysfml'),
 )
 
 # %% [markdown]
@@ -156,7 +158,7 @@ project.display.pattern_comparison(
 # %%
 verify.assert_patterns_agree(
     [
-        ('cryspy vs FullProf', calc_fullprof, calc_ed_cryspy),
-        ('crysfml vs FullProf', calc_fullprof, calc_ed_crysfml),
+        (f'{verify.engine_label("cryspy")} vs {FULLPROF_LABEL}', calc_fullprof, calc_ed_cryspy),
+        (f'{verify.engine_label("crysfml")} vs {FULLPROF_LABEL}', calc_fullprof, calc_ed_crysfml),
     ],
 )

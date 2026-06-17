@@ -121,7 +121,7 @@ project.display.pattern_comparison(
     reference=calc_fullprof,
     candidate=calc_ed_cryspy,
     reference_label=FULLPROF_LABEL,
-    candidate_label='edi-cryspy',
+    candidate_label=verify.engine_label('cryspy'),
 )
 
 # %% [markdown]
@@ -144,7 +144,7 @@ project.display.pattern_comparison(
     reference=calc_fullprof,
     candidate=calc_ed_cryspy_refined,
     reference_label=FULLPROF_LABEL,
-    candidate_label='edi-cryspy (refined)',
+    candidate_label=verify.engine_label('cryspy', note='refined'),
 )
 
 # %%
@@ -170,7 +170,7 @@ project.display.pattern_comparison(
     reference=calc_fullprof,
     candidate=calc_ed_crysfml,
     reference_label=FULLPROF_LABEL,
-    candidate_label='edi-crysfml',
+    candidate_label=verify.engine_label('crysfml'),
 )
 
 # %% [markdown]
@@ -192,7 +192,7 @@ project.display.pattern_comparison(
     reference=calc_fullprof,
     candidate=calc_ed_crysfml_refined,
     reference_label=FULLPROF_LABEL,
-    candidate_label='edi-crysfml (refined)',
+    candidate_label=verify.engine_label('crysfml', note='refined'),
 )
 
 # %%
@@ -208,12 +208,12 @@ experiment.peak.broad_lorentz_gamma_1
 verify.assert_patterns_agree(
     [
         (
-            'cryspy vs FullProf',
+            f'{verify.engine_label("cryspy", note="refined")} vs {FULLPROF_LABEL}',
             verify.restrict_to_included(experiment, calc_fullprof),
             calc_ed_cryspy_refined,
         ),
         (
-            'crysfml vs FullProf',
+            f'{verify.engine_label("crysfml", note="refined")} vs {FULLPROF_LABEL}',
             verify.restrict_to_included(experiment, calc_fullprof),
             calc_ed_crysfml_refined,
         ),

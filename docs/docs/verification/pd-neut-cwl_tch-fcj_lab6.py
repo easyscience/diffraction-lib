@@ -47,6 +47,8 @@ project.structures.add(structure)
 # %%
 FULLPROF_PROJECT_DIR = 'pd-neut-cwl_tch-fcj_lab6'
 FULLPROF_PRF_FILE = 'ECH0030684_LaB6_1p622A.prf'
+FULLPROF_SUM_FILE = 'ECH0030684_LaB6_1p622A.sum'
+FULLPROF_LABEL = verify.fullprof_label(FULLPROF_PROJECT_DIR, FULLPROF_SUM_FILE)
 FULLPROF_BAC_FILE = 'ECH0030684_LaB6_1p622A.bac'
 FULLPROF_ZERO = -0.21110  # FullProf Zero
 FULLPROF_SCALE = 141.1285  # FullProf Scale
@@ -119,8 +121,8 @@ project.display.pattern_comparison(
     'lab6',
     reference=calc_fullprof,
     candidate=calc_ed_cryspy,
-    reference_label='FullProf',
-    candidate_label='edi-cryspy',
+    reference_label=FULLPROF_LABEL,
+    candidate_label=verify.engine_label('cryspy'),
 )
 
 # %% [markdown]
@@ -142,8 +144,8 @@ project.display.pattern_comparison(
     'lab6',
     reference=calc_fullprof,
     candidate=calc_ed_cryspy_refined,
-    reference_label='FullProf',
-    candidate_label='edi-cryspy (refined)',
+    reference_label=FULLPROF_LABEL,
+    candidate_label=verify.engine_label('cryspy', note='refined'),
 )
 
 # %% [markdown]
@@ -171,8 +173,8 @@ project.display.pattern_comparison(
     'lab6',
     reference=calc_fullprof,
     candidate=calc_ed_crysfml,
-    reference_label='FullProf',
-    candidate_label='edi-crysfml',
+    reference_label=FULLPROF_LABEL,
+    candidate_label=verify.engine_label('crysfml'),
 )
 
 # %% [markdown]
@@ -195,8 +197,8 @@ project.display.pattern_comparison(
     'lab6',
     reference=calc_fullprof,
     candidate=calc_ed_crysfml_refined,
-    reference_label='FullProf',
-    candidate_label='edi-crysfml (refined)',
+    reference_label=FULLPROF_LABEL,
+    candidate_label=verify.engine_label('crysfml', note='refined'),
 )
 
 # %% [markdown]
@@ -205,8 +207,8 @@ project.display.pattern_comparison(
 # %%
 verify.assert_patterns_agree(
     [
-        ('cryspy vs FullProf', calc_fullprof, calc_ed_cryspy),
-        ('crysfml vs FullProf', calc_fullprof, calc_ed_crysfml),
+        (f'{verify.engine_label("cryspy")} vs {FULLPROF_LABEL}', calc_fullprof, calc_ed_cryspy),
+        (f'{verify.engine_label("crysfml")} vs {FULLPROF_LABEL}', calc_fullprof, calc_ed_crysfml),
     ],
     raise_on_failure=False,
 )

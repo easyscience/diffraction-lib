@@ -160,7 +160,7 @@ project.display.pattern_comparison(
     reference=verify.restrict_to_included(experiment, calc_fullprof),
     candidate=calc_ed_cryspy,
     reference_label=FULLPROF_LABEL,
-    candidate_label='edi-cryspy',
+    candidate_label=verify.engine_label('cryspy'),
 )
 
 # %% [markdown]
@@ -181,7 +181,7 @@ project.display.pattern_comparison(
     reference=verify.restrict_to_included(experiment, calc_fullprof),
     candidate=calc_ed_cryspy_refined,
     reference_label=FULLPROF_LABEL,
-    candidate_label='edi-cryspy (refined)',
+    candidate_label=verify.engine_label('cryspy', note='refined'),
 )
 
 # %% [markdown]
@@ -191,7 +191,7 @@ project.display.pattern_comparison(
 verify.assert_patterns_agree(
     [
         (
-            'cryspy vs FullProf',
+            f'{verify.engine_label("cryspy", note="refined")} vs {FULLPROF_LABEL}',
             verify.restrict_to_included(experiment, calc_fullprof),
             calc_ed_cryspy_refined,
         ),
