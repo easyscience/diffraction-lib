@@ -62,6 +62,7 @@ class BraggPdExperiment(PdExperimentBase):
             scattering_type=self.experiment_type.scattering_type.value,
             beam_mode=self.experiment_type.beam_mode.value,
             sample_form=self.experiment_type.sample_form.value,
+            radiation_probe=self.experiment_type.radiation_probe.value,
         )
         self._instrument = InstrumentFactory.create(self._instrument_type)
         self._background = BackgroundFactory.create(BackgroundFactory.default_tag())

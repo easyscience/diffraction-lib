@@ -152,7 +152,7 @@ Phase 2 (tests + verification):
   cleared.
   Commit: `Promote xray-cw-polarization-optics ADR to accepted`
 
-- [ ] **P1.2 — Split the CW powder instrument by radiation probe.**
+- [x] **P1.2 — Split the CW powder instrument by radiation probe.**
   In `cwl.py`, extract a `CwlPdInstrumentBase(CwlInstrumentBase)` holding
   the existing `calib_*` fields and properties. Add
   `CwlPdNeutronInstrument` (tag `cwl-pd-neutron`) and
@@ -264,7 +264,7 @@ include them only in the `pixi run fix` commit. Leave generated
 ## Status checklist
 
 - [x] P1.1 — Promote the ADR to `accepted/` and update `index.md`
-- [ ] P1.2 — Split the CW powder instrument by radiation probe
+- [x] P1.2 — Split the CW powder instrument by radiation probe
 - [ ] P1.3 — Add the shared Lorentz-polarization helper
 - [ ] P1.4 — Bind cryspy natively
 - [ ] P1.5 — Bind crysfml (verify native line first, then fall back)
