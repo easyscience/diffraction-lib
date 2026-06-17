@@ -450,9 +450,9 @@ def _label_version(package_name: str) -> str | None:
     """
     Return an installed package version formatted for a page label.
 
-    Keeps this project's versioningit dev markers
-    (``+dev{N}`` / ``+dirty{N}`` / ``+devdirty{N}``) and any PEP 440
-    public dev/pre-release segment, but trims a g-prefixed VCS-hash local part
+    Keeps this project's versioningit dev markers (``+dev{N}`` /
+    ``+dirty{N}`` / ``+devdirty{N}``) and any PEP 440 public
+    dev/pre-release segment, but trims a g-prefixed VCS-hash local part
     (for example ``+g1a2b3c``) so the label stays readable.
 
     Parameters
@@ -484,8 +484,8 @@ def engine_label(engine: str, note: str | None = None) -> str:
     ``note``, ``'edi 1.2.3 (cryspy 2.4.1, refined)'``. The engine is
     named explicitly (not read from the active calculator) so a stored
     result keeps the version of the engine that produced it. An
-    unresolvable version renders a visible ``?`` marker rather than being
-    omitted.
+    unresolvable version renders a visible ``?`` marker rather than
+    being omitted.
 
     Parameters
     ----------
