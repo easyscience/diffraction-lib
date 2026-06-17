@@ -6201,7 +6201,7 @@ writing, and the whole list is accepted on read.</p>
   &lt;/span&gt; (&lt;code&gt;easydiffraction.io.cif.iucr_transformers.WavelengthTransformer.items&lt;/code&gt;)" href="#easydiffraction.io.cif.iucr_transformers.WavelengthTransformer.items">items</a></code></td>
               <td>
                 <div class="doc-md-description">
-                  <p>Return wavelength items for a monochromatic experiment.</p>
+                  <p>Return single-row wavelength items for a monochromatic beam.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -6216,7 +6216,7 @@ writing, and the whole list is accepted on read.</p>
   &lt;/span&gt; (&lt;code&gt;easydiffraction.io.cif.iucr_transformers.WavelengthTransformer.loop&lt;/code&gt;)" href="#easydiffraction.io.cif.iucr_transformers.WavelengthTransformer.loop">loop</a></code></td>
               <td>
                 <div class="doc-md-description">
-                  <p>Return a wavelength loop for multi-wavelength experiments.</p>
+                  <p>Return a two-row wavelength loop for an active doublet.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -6287,7 +6287,12 @@ writing, and the whole list is accepted on read.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return wavelength items for a monochromatic experiment.</p>
+        <p>Return single-row wavelength items for a monochromatic beam.</p>
+<p>Emits the single <code>_diffrn_radiation_wavelength</code> row when the
+beam is monochromatic, or when a second wavelength is recorded
+but disabled (<code>setup_wavelength_2_to_1_ratio == 0</code>). Returns
+<code>None</code> when no wavelength exists, or when an active doublet is
+present so the writer falls through to :meth:<code>loop</code>.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -6346,7 +6351,7 @@ writing, and the whole list is accepted on read.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Wavelength items, or <code>None</code> when no wavelength exists.</p>
+                <p>Single-row wavelength items, or <code>None</code>.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -6376,7 +6381,13 @@ writing, and the whole list is accepted on read.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return a wavelength loop for multi-wavelength experiments.</p>
+        <p>Return a two-row wavelength loop for an active doublet.</p>
+<p>Emits the <code>_diffrn_radiation_wavelength</code> loop with the primary
+wavelength (<code>wt</code> 1.0) and the second component (<code>wt</code> =
+<code>setup_wavelength_2_to_1_ratio</code>) when the doublet is active;
+<code>None</code> otherwise. The incomplete pair (a positive ratio with
+no second wavelength) is rejected by
+:func:<code>_wavelength_doublet_active</code>.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -6435,7 +6446,7 @@ writing, and the whole list is accepted on read.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Wavelength loop, or <code>None</code> for monochromatic experiments.</p>
+                <p>Wavelength loop, or <code>None</code> when not an active doublet.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->

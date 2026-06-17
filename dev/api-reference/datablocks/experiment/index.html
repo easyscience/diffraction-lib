@@ -40712,6 +40712,44 @@ for concrete CWL/TOF instrument definitions.</p>
             </td>
           </tr>
           <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;setup_wavelength_2&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlInstrumentBase.setup_wavelength_2&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlInstrumentBase.setup_wavelength_2">setup_wavelength_2</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;NumericDescriptor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.NumericDescriptor&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.NumericDescriptor">NumericDescriptor</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Second incident wavelength λ₂ (Å), e.g. the X-ray K-alpha2 line.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;setup_wavelength_2_to_1_ratio&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlInstrumentBase.setup_wavelength_2_to_1_ratio&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlInstrumentBase.setup_wavelength_2_to_1_ratio">setup_wavelength_2_to_1_ratio</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;NumericDescriptor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.NumericDescriptor&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.NumericDescriptor">NumericDescriptor</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Relative intensity of wavelength_2 to wavelength (I₂/I₁).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
             <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;unique_name&lt;/span&gt;&lt;/code&gt;
 
   &lt;span class=&quot;doc doc-labels&quot;&gt;
@@ -40799,6 +40837,66 @@ for concrete CWL/TOF instrument definitions.</p>
         <p>Incident neutron or X-ray wavelength (Å).</p>
 <p>Reading this property returns the underlying <code>Parameter</code>
 object. Assigning to it updates the parameter value.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlInstrumentBase.setup_wavelength_2" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">setup_wavelength_2</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Second incident wavelength λ₂ (Å), e.g. the X-ray K-alpha2 line.</p>
+<p>Reading returns the underlying <code>NumericDescriptor</code>; assigning
+a number updates its value. Default <code>0.0</code> means no second
+component (monochromatic). Non-refinable placeholder: no engine
+consumes it yet.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlInstrumentBase.setup_wavelength_2_to_1_ratio" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">setup_wavelength_2_to_1_ratio</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Relative intensity of wavelength_2 to wavelength (I₂/I₁).</p>
+<p>The <code>_2_to_1_</code> ordering names the direction: numerator is the
+second component, denominator the first. Range <code>[0, 1]</code>;
+default <code>0.0</code> disables the second component. Non-refinable
+placeholder.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -41213,6 +41311,44 @@ object. Assigning to it updates the parameter value.</p>
               </div>
             </td>
           </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;setup_wavelength_2&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlScInstrument.setup_wavelength_2&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlScInstrument.setup_wavelength_2">setup_wavelength_2</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;NumericDescriptor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.NumericDescriptor&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.NumericDescriptor">NumericDescriptor</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Second incident wavelength λ₂ (Å), e.g. the X-ray K-alpha2 line.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;setup_wavelength_2_to_1_ratio&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlScInstrument.setup_wavelength_2_to_1_ratio&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlScInstrument.setup_wavelength_2_to_1_ratio">setup_wavelength_2_to_1_ratio</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;NumericDescriptor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.NumericDescriptor&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.NumericDescriptor">NumericDescriptor</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Relative intensity of wavelength_2 to wavelength (I₂/I₁).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
       </tbody>
     </table>
 
@@ -41322,6 +41458,66 @@ object. Assigning to it updates the parameter value.</p>
         <p>Incident neutron or X-ray wavelength (Å).</p>
 <p>Reading this property returns the underlying <code>Parameter</code>
 object. Assigning to it updates the parameter value.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlScInstrument.setup_wavelength_2" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">setup_wavelength_2</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Second incident wavelength λ₂ (Å), e.g. the X-ray K-alpha2 line.</p>
+<p>Reading returns the underlying <code>NumericDescriptor</code>; assigning
+a number updates its value. Default <code>0.0</code> means no second
+component (monochromatic). Non-refinable placeholder: no engine
+consumes it yet.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlScInstrument.setup_wavelength_2_to_1_ratio" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">setup_wavelength_2_to_1_ratio</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Relative intensity of wavelength_2 to wavelength (I₂/I₁).</p>
+<p>The <code>_2_to_1_</code> ordering names the direction: numerator is the
+second component, denominator the first. Range <code>[0, 1]</code>;
+default <code>0.0</code> disables the second component. Non-refinable
+placeholder.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -41718,6 +41914,44 @@ object. Assigning to it updates the parameter value.</p>
               </div>
             </td>
           </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;setup_wavelength_2&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.setup_wavelength_2&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.setup_wavelength_2">setup_wavelength_2</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;NumericDescriptor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.NumericDescriptor&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.NumericDescriptor">NumericDescriptor</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Second incident wavelength λ₂ (Å), e.g. the X-ray K-alpha2 line.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;setup_wavelength_2_to_1_ratio&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.setup_wavelength_2_to_1_ratio&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.setup_wavelength_2_to_1_ratio">setup_wavelength_2_to_1_ratio</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;NumericDescriptor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.NumericDescriptor&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.NumericDescriptor">NumericDescriptor</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Relative intensity of wavelength_2 to wavelength (I₂/I₁).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
       </tbody>
     </table>
 
@@ -41911,6 +42145,66 @@ object. Assigning to it updates the parameter value.</p>
         <p>Incident neutron or X-ray wavelength (Å).</p>
 <p>Reading this property returns the underlying <code>Parameter</code>
 object. Assigning to it updates the parameter value.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.setup_wavelength_2" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">setup_wavelength_2</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Second incident wavelength λ₂ (Å), e.g. the X-ray K-alpha2 line.</p>
+<p>Reading returns the underlying <code>NumericDescriptor</code>; assigning
+a number updates its value. Default <code>0.0</code> means no second
+component (monochromatic). Non-refinable placeholder: no engine
+consumes it yet.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.setup_wavelength_2_to_1_ratio" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">setup_wavelength_2_to_1_ratio</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Relative intensity of wavelength_2 to wavelength (I₂/I₁).</p>
+<p>The <code>_2_to_1_</code> ordering names the direction: numerator is the
+second component, denominator the first. Range <code>[0, 1]</code>;
+default <code>0.0</code> disables the second component. Non-refinable
+placeholder.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
