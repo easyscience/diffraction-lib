@@ -240,18 +240,15 @@ experiment.linked_structures['ncaf'].scale
 # ## Agreement check
 
 # %%
-verify.assert_patterns_agree(
-    [
-        (
-            f'{LABEL_ED_CRYSPY_REFINED} vs {FULLPROF_LABEL}',
-            verify.restrict_to_included(experiment, calc_fullprof),
-            calc_ed_cryspy_refined,
-        ),
-        (
-            f'{LABEL_ED_CRYSFML_REFINED} vs {FULLPROF_LABEL}',
-            verify.restrict_to_included(experiment, calc_fullprof),
-            calc_ed_crysfml_refined,
-        ),
-    ],
-    raise_on_failure=False,
-)
+verify.assert_patterns_agree([
+    (
+        f'{LABEL_ED_CRYSPY_REFINED} vs {FULLPROF_LABEL}',
+        verify.restrict_to_included(experiment, calc_fullprof),
+        calc_ed_cryspy_refined,
+    ),
+    (
+        f'{LABEL_ED_CRYSFML_REFINED} vs {FULLPROF_LABEL}',
+        verify.restrict_to_included(experiment, calc_fullprof),
+        calc_ed_crysfml_refined,
+    ),
+])

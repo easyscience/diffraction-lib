@@ -175,5 +175,6 @@ verify.assert_patterns_agree(
     [
         (f'{LABEL_ED_CRYSPY_REFINED} vs {FULLPROF_LABEL}', reference_refined, candidate_refined),
     ],
-    raise_on_failure=False,
+    known_discrepancy=True,
+    reason='cryspy and FullProf use different extinction conventions.',
 )

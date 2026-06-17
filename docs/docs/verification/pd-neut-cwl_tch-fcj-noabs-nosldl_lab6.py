@@ -165,5 +165,6 @@ verify.assert_patterns_agree(
         (f'{LABEL_ED_CRYSPY} vs {FULLPROF_LABEL}', calc_fullprof, calc_ed_cryspy),
         (f'{LABEL_ED_CRYSFML} vs {FULLPROF_LABEL}', calc_fullprof, calc_ed_crysfml),
     ],
-    raise_on_failure=False,
+    known_discrepancy=True,
+    reason=('needs unreleased cryspy PR #46 (SyCos/SySin, cos2theta convention)'),
 )

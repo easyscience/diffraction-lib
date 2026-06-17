@@ -222,5 +222,6 @@ verify.assert_patterns_agree(
             calc_ed_crysfml_refined,
         ),
     ],
-    raise_on_failure=False,
+    known_discrepancy=True,
+    reason='cryspy TOF Lorentzian discrepancy.',
 )

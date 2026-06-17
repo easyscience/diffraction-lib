@@ -42,8 +42,8 @@ instrument-meaningful.
    known and fall back to the empirical correction otherwise.
 
 **Relates to:** the asymmetry discrepancy tracked in issue 166 and on
-the `pd-neut-cwl_pv-beba_pbso4` Verification page (currently in
-`docs/docs/verification/ci_skip.txt`), and the TCH/FCJ work noted on the
+the `pd-neut-cwl_pv-beba_pbso4` Verification page (currently marked
+`known_discrepancy=True`), and the TCH/FCJ work noted on the
 `pd-neut-cwl_tch-fcj_lab6` page.
 
 **Depends on:** calculator-backend support for the FCJ asymmetry

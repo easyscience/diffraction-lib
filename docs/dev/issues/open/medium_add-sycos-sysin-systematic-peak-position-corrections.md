@@ -16,11 +16,12 @@ calculator wiring — is still to do.
 
 A prepared verification page,
 `docs/docs/verification/pd-neut-cwl_tch-fcj_lab6.py`, uses the issue #38
-LaB6 dataset and is skipped via `ci_skip.txt`. Finishing it also needs a
-custom ¹¹B scattering length, the Thompson–Cox–Hastings profile, and a
-FullProf-style polynomial background, which that dataset relies on.
+LaB6 dataset and is marked `known_discrepancy=True`. Finishing it also
+needs a custom ¹¹B scattering length, the Thompson–Cox–Hastings profile,
+and a FullProf-style polynomial background, which that dataset relies
+on.
 
 **Fix:** add `SyCos`/`SySin` to the CWL instrument category, pass them
-to the calculators, then un-skip the LaB6 page.
+to the calculators, then re-gate the LaB6 page.
 
 **Depends on:** nothing.

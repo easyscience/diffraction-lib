@@ -214,5 +214,9 @@ verify.assert_patterns_agree(
         (f'{LABEL_ED_CRYSPY} vs {FULLPROF_LABEL}', calc_fullprof, calc_ed_cryspy),
         (f'{LABEL_ED_CRYSFML} vs {FULLPROF_LABEL}', calc_fullprof, calc_ed_crysfml),
     ],
-    raise_on_failure=False,
+    known_discrepancy=True,
+    reason=(
+        'FCJ asymmetry (S_L/D_L) is not implemented in cryspy; '
+        'absorption is modelled by both engines.'
+    ),
 )

@@ -207,9 +207,6 @@ project.display.pattern_comparison(
 # ## Agreement check
 
 # %%
-verify.assert_patterns_agree(
-    [
-        (f'{LABEL_ED_CRYSPY_REFINED} vs {FULLPROF_LABEL}', calc_fullprof, calc_ed_cryspy_refined),
-    ],
-    raise_on_failure=False,
-)
+verify.assert_patterns_agree([
+    (f'{LABEL_ED_CRYSPY_REFINED} vs {FULLPROF_LABEL}', calc_fullprof, calc_ed_cryspy_refined),
+])

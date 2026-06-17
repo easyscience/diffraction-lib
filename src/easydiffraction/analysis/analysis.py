@@ -2808,7 +2808,7 @@ class Analysis(
         for path in matched:
             shutil.copy2(path, destination / Path(path).name)
 
-        self._sequential_fit.data_dir = str(Path('data') / 'sequential')
+        self._sequential_fit.data_dir = Path('data', 'sequential').as_posix()
         return str(destination)
 
     def _prepare_fit_run(

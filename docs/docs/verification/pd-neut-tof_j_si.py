@@ -206,5 +206,9 @@ verify.assert_patterns_agree(
             calc_ed_crysfml_refined,
         ),
     ],
-    raise_on_failure=False,
+    known_discrepancy=True,
+    reason=(
+        'ed-crysfml TOF Jorgensen profile is about 8.5% off after '
+        'fitting scale; cryspy matches FullProf.'
+    ),
 )

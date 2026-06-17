@@ -24,6 +24,7 @@ import numpy as np
 from easydiffraction.datablocks.experiment.item.base import intensity_category_for
 from easydiffraction.utils.utils import SOFTWARE_PACKAGE_BY_ENGINE
 from easydiffraction.utils.utils import package_version
+from easydiffraction.utils.utils import print_table_footnote
 from easydiffraction.utils.utils import render_table
 
 # Closeness metrics are computed on absolute intensities: each page
@@ -973,14 +974,26 @@ def assert_patterns_agree(
     comparisons: list[tuple[str, np.ndarray, np.ndarray]],
     *,
     tolerances: AgreementTolerances | None = None,
-    raise_on_failure: bool = True,
+    known_discrepancy: bool = False,
+    reason: str | None = None,
 ) -> bool:
     """
-    Render a pass/fail agreement table for one or more pattern pairs.
+    Assert one or more pattern pairs meet their documented expectation.
 
     Each comparison is scored with :func:`pattern_closeness` and checked
     against ``tolerances``. A single table summarises every metric with
     a check/cross icon; an out-of-bounds actual value is shown in red.
+
+    The assertion is two-sided and driven by ``known_discrepancy``:
+
+    * ``known_discrepancy=False`` (default) asserts the patterns
+      **agree** — the page is a regression test, and any
+      out-of-tolerance metric raises ``AssertionError``.
+    * ``known_discrepancy=True`` asserts the patterns **still disagree**
+      — the documented known-bad state. The expected out-of-tolerance
+      result passes (the discrepancy stays visible); if the page has
+      started agreeing within tolerance it raises ``AssertionError`` so
+      the now-fixed page fails CI and must be re-gated by hand.
 
     Parameters
     ----------
@@ -988,20 +1001,36 @@ def assert_patterns_agree(
         ``(label, reference, candidate)`` triples to compare.
     tolerances : AgreementTolerances | None, default=None
         Tolerance bounds; the documented defaults are used when omitted.
-    raise_on_failure : bool, default=True
-        Whether to raise ``AssertionError`` when any metric is out of
-        bounds, so the verification notebooks stay regression-checked.
+    known_discrepancy : bool, default=False
+        When True, assert the documented disagreement persists instead
+        of asserting agreement (see above).
+    reason : str | None, default=None
+        Required when ``known_discrepancy=True``: a short explanation of
+        the known-bad state, shown on the published page.
 
     Returns
     -------
     bool
-        ``True`` when every metric is within tolerance.
+        ``True`` when the page met its expectation (a default page that
+        agrees, or a ``known_discrepancy`` page that still disagrees).
 
     Raises
     ------
+    ValueError
+        If ``known_discrepancy=True`` is given without a non-empty
+        ``reason``.
     AssertionError
-        If any metric is out of bounds and ``raise_on_failure`` is True.
+        If the expectation is not met: a default page whose patterns
+        disagree, or a ``known_discrepancy`` page that now agrees within
+        tolerance.
     """
+    if known_discrepancy and not (reason and reason.strip()):
+        msg = (
+            '`known_discrepancy=True` requires a non-empty `reason` '
+            'explaining the known-bad state (shown on the page).'
+        )
+        raise ValueError(msg)
+
     tolerances = tolerances or AgreementTolerances()
     rows: list[list[str]] = []
     failures: list[str] = []
@@ -1025,11 +1054,23 @@ def assert_patterns_agree(
         columns_data=rows,
     )
 
-    if failures and raise_on_failure:
+    if known_discrepancy:
+        print_table_footnote([('Known discrepancy', reason)])
+        if not failures:
+            msg = (
+                'This page now agrees within tolerance — remove '
+                '`known_discrepancy` (and `reason`) to re-gate it as a '
+                'regression test, or tighten the tolerance if the match '
+                'is spurious.'
+            )
+            raise AssertionError(msg)
+        return True
+
+    if failures:
         joined = '; '.join(failures)
         msg = f'Pattern agreement check failed: {joined}.'
         raise AssertionError(msg)
-    return not failures
+    return True
 
 
 # ----------------------------------------------------------------------

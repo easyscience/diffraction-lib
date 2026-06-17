@@ -14,12 +14,12 @@ complementary to the `cryspy` Jorgensen–Von Dreele Lorentzian divergence
 tracked in issue 130.
 
 **Visible on:** the Si TOF Jorgensen Verification page
-(`pd-neut-tof_j_si`), currently skipped via
-`docs/docs/verification/ci_skip.txt`. Re-enable the page (or tighten its
-agreement check) once the crysfml profile is reconciled.
+(`pd-neut-tof_j_si`), currently marked with `known_discrepancy=True`.
+Re-gate the page (or tighten its agreement check) once the crysfml
+profile is reconciled.
 
 **Depends on:** nothing.
 
 **Recommended-priority note:** crysfml TOF Jorgensen is ~8.5% off and
-has a CI-skipped verification page (paired with #130). **Tier 1 (do
-first).**
+has a known-discrepancy verification page (paired with #130). **Tier 1
+(do first).**
