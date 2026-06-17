@@ -49,6 +49,32 @@ def test_crysfml_calculate_pattern_applies_absorption(monkeypatch):
     assert not np.allclose(out, raw)
 
 
+def test_crysfml_calculate_pattern_applies_polarization(monkeypatch):
+    from easydiffraction.analysis.calculators import polarization
+    from easydiffraction.analysis.calculators.crysfml import CrysfmlCalculator
+    from easydiffraction.datablocks.experiment.categories.instrument.cwl import CwlPdXrayInstrument
+
+    calc = CrysfmlCalculator()
+    x = np.array([0.0, 45.0, 90.0])
+    instrument = CwlPdXrayInstrument()
+    instrument.setup_polarization_coefficient = 0.5
+    instrument.setup_monochromator_twotheta = 60.0
+    experiment = SimpleNamespace(
+        name='exp',
+        instrument=instrument,
+        data=SimpleNamespace(x=x),
+    )
+    raw = [100.0, 100.0, 100.0]
+    monkeypatch.setattr(calc, '_crysfml_dict', lambda s, e: {})
+    monkeypatch.setattr(calc, '_calculate_adjusted_pattern', lambda d, e: list(raw))
+
+    out = calc.calculate_pattern(None, experiment)
+
+    expected = polarization.apply(raw, experiment)
+    assert np.allclose(out, expected)
+    assert not np.allclose(out, raw)
+
+
 def test_crysfml_calculate_pattern_preserves_empty_no_data(monkeypatch):
     from easydiffraction.analysis.calculators.crysfml import CrysfmlCalculator
 

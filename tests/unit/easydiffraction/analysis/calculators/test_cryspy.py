@@ -92,7 +92,7 @@ def test_tof_pseudo_voigt_cif_section_uses_non_convoluted_peak_shape():
 
 def test_cwl_cif_instrument_section_emits_sycos_sysin():
     import easydiffraction.analysis.calculators.cryspy as MUT
-    from easydiffraction.datablocks.experiment.categories.instrument.cwl import CwlPdInstrument
+    from easydiffraction.datablocks.experiment.categories.instrument.cwl import CwlPdNeutronInstrument
     from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
     from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 
@@ -100,7 +100,7 @@ def test_cwl_cif_instrument_section_emits_sycos_sysin():
         beam_mode=SimpleNamespace(value=BeamModeEnum.CONSTANT_WAVELENGTH),
         sample_form=SimpleNamespace(value=SampleFormEnum.POWDER),
     )
-    instrument = CwlPdInstrument()
+    instrument = CwlPdNeutronInstrument()
     instrument.calib_sample_displacement = 0.05
     instrument.calib_sample_transparency = 0.09
 
@@ -110,6 +110,29 @@ def test_cwl_cif_instrument_section_emits_sycos_sysin():
 
     assert '_setup_offset_SyCos 0.05' in cif_text
     assert '_setup_offset_SySin 0.09' in cif_text
+
+
+def test_cwl_cif_instrument_section_emits_xray_polarization_setup():
+    import easydiffraction.analysis.calculators.cryspy as MUT
+    from easydiffraction.analysis.calculators import polarization
+    from easydiffraction.datablocks.experiment.categories.instrument.cwl import CwlPdXrayInstrument
+    from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+    from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
+
+    expt_type = SimpleNamespace(
+        beam_mode=SimpleNamespace(value=BeamModeEnum.CONSTANT_WAVELENGTH),
+        sample_form=SimpleNamespace(value=SampleFormEnum.POWDER),
+    )
+    instrument = CwlPdXrayInstrument()
+    instrument.setup_polarization_coefficient = 0.5
+    instrument.setup_monochromator_twotheta = 60.0
+
+    cif_lines: list[str] = []
+    MUT._cif_instrument_section(cif_lines, expt_type, instrument)
+    cif_text = '\n'.join(cif_lines)
+
+    assert '_setup_K 0.5' in cif_text
+    assert f'_setup_cthm {polarization.monochromator_cthm(60.0)}' in cif_text
 
 
 def test_update_experiment_in_cryspy_dict_sets_sycos_sysin():
@@ -150,6 +173,38 @@ def test_update_experiment_in_cryspy_dict_tolerates_missing_sycos_keys():
     CryspyCalculator._update_experiment_in_cryspy_dict(cryspy_dict, experiment)
 
     assert 'offset_sycos' not in cryspy_dict['pd_exp']
+
+
+def test_update_experiment_in_cryspy_dict_sets_polarization_keys():
+    from easydiffraction.analysis.calculators import polarization
+    from easydiffraction.analysis.calculators.cryspy import CryspyCalculator
+    from easydiffraction.datablocks.experiment.categories.instrument.cwl import CwlPdXrayInstrument
+    from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+    from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
+
+    instrument = CwlPdXrayInstrument()
+    instrument.setup_polarization_coefficient = 0.5
+    instrument.setup_monochromator_twotheta = 60.0
+    experiment = _cwl_experiment_stub()
+    experiment.instrument = instrument
+    experiment.experiment_type = SimpleNamespace(
+        sample_form=SimpleNamespace(value=SampleFormEnum.POWDER),
+        beam_mode=SimpleNamespace(value=BeamModeEnum.CONSTANT_WAVELENGTH),
+    )
+    cryspy_dict = {
+        'pd_exp': {
+            'offset_ttheta': [0.0],
+            'wavelength': [0.0],
+            'k': [0.0],
+            'cthm': [0.0],
+            'resolution_parameters': [0.0] * 5,
+        }
+    }
+
+    CryspyCalculator._update_experiment_in_cryspy_dict(cryspy_dict, experiment)
+
+    assert cryspy_dict['pd_exp']['k'][0] == 0.5
+    assert cryspy_dict['pd_exp']['cthm'][0] == polarization.monochromator_cthm(60.0)
 
 
 def test_update_structure_zeroes_biso_for_anisotropic_atoms():

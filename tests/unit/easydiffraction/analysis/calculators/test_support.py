@@ -27,14 +27,15 @@ def test_matrix_entries_are_well_typed():
         assert all(isinstance(c, CalculatorEnum) for c in entry.calculators)
 
 
-def test_cwl_pd_supports_all_three_engines():
+def test_cwl_pd_bragg_instruments_support_bragg_engines_only():
     from easydiffraction.analysis.calculators.support import calculator_support_matrix
     from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
 
     by_tag = {e.instrument_tag: e for e in calculator_support_matrix()}
 
-    expected = {CalculatorEnum.CRYSPY, CalculatorEnum.CRYSFML, CalculatorEnum.PDFFIT}
-    assert expected <= by_tag['cwl-pd'].calculators
+    expected = frozenset({CalculatorEnum.CRYSPY, CalculatorEnum.CRYSFML})
+    assert by_tag['cwl-pd-neutron'].calculators == expected
+    assert by_tag['cwl-pd-xray'].calculators == expected
 
 
 def test_cwl_sc_supports_cryspy_only():
