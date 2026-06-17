@@ -162,7 +162,7 @@ each before the next. No `test_verification.py` changes in Phase 1 — the
 existing `fullprof_label` test may be left temporarily stale (it is not
 run until Phase 2).
 
-- [ ] **P1.1 — Share the engine→package map in `utils.utils`.** Move
+- [x] **P1.1 — Share the engine→package map in `utils.utils`.** Move
       `_SOFTWARE_PACKAGE_BY_ENGINE` from `analysis.py` into
       `src/easydiffraction/utils/utils.py` (public
       `SOFTWARE_PACKAGE_BY_ENGINE`); import it in `analysis.py` so
@@ -224,7 +224,7 @@ run until Phase 2).
 
 ## Status checklist
 
-- [ ] P1.1 share engine→package map
+- [x] P1.1 share engine→package map
 - [ ] P1.2 engine_label + bare fullprof_label
 - [ ] P1.3 migrate 15 verification pages
 - [ ] P1.4 promote ADR

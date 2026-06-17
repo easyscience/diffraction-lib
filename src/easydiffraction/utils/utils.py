@@ -686,6 +686,17 @@ def list_data() -> None:
     )
 
 
+SOFTWARE_PACKAGE_BY_ENGINE = {
+    'cryspy': 'cryspy',
+    'crysfml': 'crysfml',
+    'pdffit': 'diffpy.pdffit2',
+    'lmfit': 'lmfit',
+    'dfols': 'dfols',
+    'bumps': 'bumps',
+    'emcee': 'emcee',
+}
+
+
 def package_version(package_name: str) -> str | None:
     """
     Get the installed version string of the specified package.

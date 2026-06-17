@@ -72,6 +72,7 @@ from easydiffraction.utils.utils import package_version
 from easydiffraction.utils.utils import render_cif
 from easydiffraction.utils.utils import render_object_help
 from easydiffraction.utils.utils import render_table
+from easydiffraction.utils.utils import SOFTWARE_PACKAGE_BY_ENGINE
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -109,15 +110,6 @@ _UNDO_ABS_TOL = 0.0
 _GT_REFLECTION_THRESHOLD_SIGMA = 3.0
 _GT_REFLECTION_THRESHOLD_EXPRESSION = r'I>3\s(I)'
 _EASYDIFFRACTION_URL = 'https://github.com/easyscience/diffraction-lib'
-_SOFTWARE_PACKAGE_BY_ENGINE = {
-    'cryspy': 'cryspy',
-    'crysfml': 'crysfml',
-    'pdffit': 'diffpy.pdffit2',
-    'lmfit': 'lmfit',
-    'dfols': 'dfols',
-    'bumps': 'bumps',
-    'emcee': 'emcee',
-}
 
 
 @dataclass(frozen=True)
@@ -642,7 +634,7 @@ class Analysis(
     @staticmethod
     def _software_version(name: str) -> str | None:
         """Return the installed package version for one engine name."""
-        package_name = _SOFTWARE_PACKAGE_BY_ENGINE.get(name)
+        package_name = SOFTWARE_PACKAGE_BY_ENGINE.get(name)
         if package_name is None:
             return None
         return package_version(package_name)
