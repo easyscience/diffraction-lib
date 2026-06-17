@@ -209,17 +209,25 @@ experiment.peak.broad_lorentz_gamma_1
 # ## Agreement check
 
 # %%
+# crysfml matches FullProf, so it is gated as a regression test.
+verify.assert_patterns_agree(
+    [
+        (
+            f'{LABEL_ED_CRYSFML_REFINED} vs {FULLPROF_LABEL}',
+            verify.restrict_to_included(experiment, calc_fullprof),
+            calc_ed_crysfml_refined,
+        ),
+    ],
+)
+
+# cryspy is the known-bad comparison, asserted separately so it cannot
+# mask a crysfml regression in the gated call above.
 verify.assert_patterns_agree(
     [
         (
             f'{LABEL_ED_CRYSPY_REFINED} vs {FULLPROF_LABEL}',
             verify.restrict_to_included(experiment, calc_fullprof),
             calc_ed_cryspy_refined,
-        ),
-        (
-            f'{LABEL_ED_CRYSFML_REFINED} vs {FULLPROF_LABEL}',
-            verify.restrict_to_included(experiment, calc_fullprof),
-            calc_ed_crysfml_refined,
         ),
     ],
     known_discrepancy=True,

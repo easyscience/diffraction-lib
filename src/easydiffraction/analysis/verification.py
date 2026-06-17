@@ -989,11 +989,15 @@ def assert_patterns_agree(
     * ``known_discrepancy=False`` (default) asserts the patterns
       **agree** — the page is a regression test, and any
       out-of-tolerance metric raises ``AssertionError``.
-    * ``known_discrepancy=True`` asserts the patterns **still disagree**
-      — the documented known-bad state. The expected out-of-tolerance
-      result passes (the discrepancy stays visible); if the page has
-      started agreeing within tolerance it raises ``AssertionError`` so
-      the now-fixed page fails CI and must be re-gated by hand.
+    * ``known_discrepancy=True`` asserts that **every** listed
+      comparison **still disagrees** — the documented known-bad state.
+      The expected out-of-tolerance result passes (the discrepancy
+      stays visible); if **any** comparison has started agreeing
+      within tolerance it raises ``AssertionError`` so the now-fixed
+      comparison fails CI and must be re-gated by hand. A known-bad
+      comparison cannot mask a regression in an expected-good one:
+      keep expected-good comparisons in their own default (gated)
+      call.
 
     Parameters
     ----------
@@ -1021,8 +1025,8 @@ def assert_patterns_agree(
         ``reason``.
     AssertionError
         If the expectation is not met: a default page whose patterns
-        disagree, or a ``known_discrepancy`` page that now agrees within
-        tolerance.
+        disagree, or a ``known_discrepancy`` call in which any
+        comparison now agrees within tolerance.
     """
     if known_discrepancy and not (reason and reason.strip()):
         msg = (
@@ -1034,8 +1038,10 @@ def assert_patterns_agree(
     tolerances = tolerances or AgreementTolerances()
     rows: list[list[str]] = []
     failures: list[str] = []
+    agreeing: list[str] = []
     for label, reference, candidate in comparisons:
         checks = _agreement_checks(pattern_closeness(reference, candidate), tolerances)
+        comparison_failed = False
         for index, check in enumerate(checks):
             actual = check.actual if check.passed else f'[red]{check.actual}[/red]'
             rows.append([
@@ -1047,6 +1053,9 @@ def assert_patterns_agree(
             ])
             if not check.passed:
                 failures.append(f'{label} · {check.metric} = {check.actual}')
+                comparison_failed = True
+        if not comparison_failed:
+            agreeing.append(label)
 
     render_table(
         columns_headers=['Comparison', 'Metric', 'Expected', 'Actual', 'OK'],
@@ -1056,12 +1065,19 @@ def assert_patterns_agree(
 
     if known_discrepancy:
         print_table_footnote([('Known discrepancy', reason)])
-        if not failures:
+        # A known_discrepancy call asserts that *every* listed
+        # comparison still disagrees, so a known-bad comparison cannot
+        # mask a regression in an expected-good one. Any comparison that
+        # now agrees within tolerance must be re-gated on its own.
+        if agreeing:
+            joined = ', '.join(agreeing)
             msg = (
-                'This page now agrees within tolerance — remove '
-                '`known_discrepancy` (and `reason`) to re-gate it as a '
-                'regression test, or tighten the tolerance if the match '
-                'is spurious.'
+                f'These comparisons now agree within tolerance: {joined}. '
+                'A `known_discrepancy=True` call asserts that every listed '
+                'comparison still disagrees; move each agreeing comparison '
+                'into its own gated `assert_patterns_agree(...)` call '
+                '(without `known_discrepancy`), or tighten the tolerance if '
+                'the match is spurious.'
             )
             raise AssertionError(msg)
         return True

@@ -297,11 +297,39 @@ def test_assert_patterns_agree_known_discrepancy_passes_while_divergent():
     assert result is True
 
 
+def test_assert_patterns_agree_known_discrepancy_passes_when_all_disagree():
+    x = np.linspace(0.0, 10.0, 200)
+    reference = _gaussian(x, 5.0, 0.4) * 100.0
+    bad_one = _gaussian(x, 6.5, 0.4) * 100.0
+    bad_two = _gaussian(x, 3.5, 0.4) * 100.0
+    result = verify.assert_patterns_agree(
+        [('one', reference, bad_one), ('two', reference, bad_two)],
+        known_discrepancy=True,
+        reason='both engines known-bad',
+    )
+    assert result is True
+
+
+def test_assert_patterns_agree_known_discrepancy_regates_when_one_comparison_agrees():
+    # A known-bad comparison must not mask a regression in an
+    # expected-good comparison sharing the same call.
+    x = np.linspace(0.0, 10.0, 200)
+    reference = _gaussian(x, 5.0, 0.4) * 100.0
+    agreeing = reference * 1.0001
+    divergent = _gaussian(x, 6.5, 0.4) * 100.0
+    with pytest.raises(AssertionError, match='now agree within tolerance'):
+        verify.assert_patterns_agree(
+            [('good', reference, agreeing), ('bad', reference, divergent)],
+            known_discrepancy=True,
+            reason='only one engine is known-bad',
+        )
+
+
 def test_assert_patterns_agree_known_discrepancy_regates_when_agreeing():
     x = np.linspace(0.0, 10.0, 200)
     reference = _gaussian(x, 5.0, 0.4) * 100.0
     candidate = reference * 1.0001
-    with pytest.raises(AssertionError, match='now agrees within tolerance'):
+    with pytest.raises(AssertionError, match='now agree within tolerance'):
         verify.assert_patterns_agree(
             [('a vs b', reference, candidate)],
             known_discrepancy=True,

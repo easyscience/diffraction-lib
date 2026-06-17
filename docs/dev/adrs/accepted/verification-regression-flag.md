@@ -77,7 +77,7 @@ is explained on the published page.
 `raise_on_failure` is replaced by `known_discrepancy` (default `False`).
 Beta, no shims: existing pages are migrated, not aliased.
 
-### 1a. A re-gated discrepancy fails CI
+### 1a. A re-gated discrepancy fails CI, per comparison
 
 `known_discrepancy=True` is a **two-sided** assertion. It does not
 merely silence a failure; it asserts the discrepancy is **still there**.
@@ -85,6 +85,16 @@ The moment a known-bad page starts matching within tolerance, the page
 **hard-fails** with a re-gate message. A developer clears it by deleting
 `known_discrepancy` / `reason` (re-gating the page) or, if the match is
 spurious, by tightening the tolerance.
+
+The assertion is evaluated **per comparison**: a
+`known_discrepancy=True` call asserts that _every_ listed
+`(label, reference, candidate)` comparison still disagrees, and re-gates
+if **any** of them now agrees. This stops a known-bad comparison from
+masking a regression in an expected-good one that shares the same call —
+for example a page that overlays both engines where one matches the
+reference and the other does not. Expected-good comparisons therefore
+stay in their own default (gated) `assert_patterns_agree(...)` call, and
+only the genuinely known-bad comparisons carry `known_discrepancy=True`.
 
 ### 1b. Return value means "expectation met"
 

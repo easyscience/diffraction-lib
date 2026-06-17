@@ -193,6 +193,7 @@ experiment.linked_structures['si'].scale
 # ## Agreement check
 
 # %%
+# cryspy matches FullProf, so it is gated as a regression test.
 verify.assert_patterns_agree(
     [
         (
@@ -200,6 +201,13 @@ verify.assert_patterns_agree(
             verify.restrict_to_included(experiment, calc_fullprof),
             calc_ed_cryspy_refined,
         ),
+    ],
+)
+
+# ed-crysfml is the known-bad comparison, asserted separately so it
+# cannot mask a cryspy regression in the gated call above.
+verify.assert_patterns_agree(
+    [
         (
             f'{LABEL_ED_CRYSFML_REFINED} vs {FULLPROF_LABEL}',
             verify.restrict_to_included(experiment, calc_fullprof),
@@ -207,8 +215,5 @@ verify.assert_patterns_agree(
         ),
     ],
     known_discrepancy=True,
-    reason=(
-        'ed-crysfml TOF Jorgensen profile is about 8.5% off after '
-        'fitting scale; cryspy matches FullProf.'
-    ),
+    reason='ed-crysfml TOF Jorgensen profile is about 8.5% off after fitting scale.',
 )
