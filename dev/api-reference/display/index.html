@@ -9269,17 +9269,6 @@ consistent configuration surface and engine handling.</p>
               </td>
             </tr>
             <tr class="doc-section-item">
-              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;plot_param_series_from_snapshots&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;unique_name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;versus_path&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;experiments&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;parameter_snapshots&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.display.plotting.Plotter.plot_param_series_from_snapshots&lt;/code&gt;)" href="#easydiffraction.display.plotting.Plotter.plot_param_series_from_snapshots">plot_param_series_from_snapshots</a></code></td>
-              <td>
-                <div class="doc-md-description">
-                  <p>Plot a parameter's value from in-memory snapshots.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-                </div>
-              </td>
-            </tr>
-            <tr class="doc-section-item">
               <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt;
 
   &lt;span class=&quot;doc doc-labels&quot;&gt;
@@ -10443,10 +10432,10 @@ single-crystal external-reference Verification pages.</p>
     <div class="doc doc-contents ">
 
         <p>Plot a parameter's value across sequential fit results.</p>
-<p>When a <code>results.csv</code> file exists in the project's
-<code>analysis/</code> directory, data is read from CSV.  Otherwise,
-falls back to in-memory parameter snapshots (produced by
-<code>fit()</code> in single mode).</p>
+<p>Data is read from the <code>results.csv</code> written by a sequential
+fit in the project's <code>analysis/</code> directory. When no such file
+exists, there is no parameter series to plot and a warning is
+emitted.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -10525,9 +10514,8 @@ sequence number is used instead.</p>
     <div class="doc doc-contents ">
 
         <p>Plot every fitted parameter across sequential fit results.</p>
-<p>Iterates the fitted parameters recorded in <code>results.csv</code> (or,
-when absent, in the in-memory parameter snapshots) and emits one
-<code>plot_param_series</code> plot per parameter.</p>
+<p>Iterates the fitted parameters recorded in <code>results.csv</code> and
+emits one <code>plot_param_series</code> plot per parameter.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -11069,121 +11057,6 @@ composite plots.</p>
 
 <!-- prettier-ignore-end -->
               </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h7 id="easydiffraction.display.plotting.Plotter.plot_param_series_from_snapshots" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">plot_param_series_from_snapshots</span><span class="p">(</span><span class="n">unique_name</span><span class="p">,</span> <span class="n">versus_path</span><span class="p">,</span> <span class="n">experiments</span><span class="p">,</span> <span class="n">parameter_snapshots</span><span class="p">)</span></code>
-
-</h7>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Plot a parameter's value from in-memory snapshots.</p>
-<p>This is a backward-compatibility method used when no CSV file is
-available (e.g. after <code>fit()</code> in single mode, before PR 13
-adds CSV output to the existing fit loop).</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-
-
-<p><span class="doc-section-title">Parameters:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Description</th>
-          <th>Default</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>unique_name</code>
-            </td>
-            <td>
-                  <code><span title="str">str</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Unique name of the parameter to plot.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>versus_path</code>
-            </td>
-            <td>
-                  <code><span title="str">str</span> | None</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Persisted diffrn path for the x-axis.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>experiments</code>
-            </td>
-            <td>
-                  <code><span title="object">object</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Experiments collection for accessing diffrn conditions.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>parameter_snapshots</code>
-            </td>
-            <td>
-                  <code><span title="dict">dict</span>[<span title="str">str</span>, <span title="dict">dict</span>[<span title="str">str</span>, <span title="dict">dict</span>]]</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Per-experiment parameter value snapshots.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-              </div>
-            </td>
-            <td>
-                <em>required</em>
             </td>
           </tr>
       </tbody>
