@@ -6,6 +6,8 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
+import pytest
+
 from easydiffraction.io.cif.handler import TagSpec
 
 
@@ -32,6 +34,70 @@ def test_wavelength_transformer_emits_monochromatic_items():
         ('_diffrn_radiation_wavelength.wt', 1.0),
     )
     assert transformer.loop(experiment) is None
+
+
+def test_wavelength_transformer_disabled_second_wavelength_is_monochromatic():
+    from easydiffraction.io.cif.iucr_transformers import WavelengthTransformer
+
+    # Second wavelength recorded but disabled (ratio == 0): single-row
+    # scalar output, matching the CFL `LAMBDA … 0.0` convention.
+    instrument = SimpleNamespace(
+        setup_wavelength=_Descriptor(1.5406),
+        setup_wavelength_2=_Descriptor(1.5444),
+        setup_wavelength_2_to_1_ratio=_Descriptor(0.0),
+    )
+    experiment = SimpleNamespace(instrument=instrument)
+    transformer = WavelengthTransformer()
+
+    assert tuple((item.tag, item.value) for item in transformer.items(experiment)) == (
+        ('_diffrn_radiation_wavelength.id', '1'),
+        ('_diffrn_radiation_wavelength.value', 1.5406),
+        ('_diffrn_radiation_wavelength.wt', 1.0),
+    )
+    assert transformer.loop(experiment) is None
+
+
+def test_wavelength_transformer_emits_active_doublet_loop():
+    from easydiffraction.io.cif.iucr_transformers import WavelengthTransformer
+
+    instrument = SimpleNamespace(
+        setup_wavelength=_Descriptor(1.5406),
+        setup_wavelength_2=_Descriptor(1.5444),
+        setup_wavelength_2_to_1_ratio=_Descriptor(0.5),
+    )
+    experiment = SimpleNamespace(instrument=instrument)
+    transformer = WavelengthTransformer()
+
+    # Active doublet: items() defers and loop() emits the two rows.
+    assert transformer.items(experiment) is None
+    loop = transformer.loop(experiment)
+    assert loop.tags == (
+        '_diffrn_radiation_wavelength.id',
+        '_diffrn_radiation_wavelength.value',
+        '_diffrn_radiation_wavelength.wt',
+    )
+    assert loop.rows == (
+        ('1', 1.5406, 1.0),
+        ('2', 1.5444, 0.5),
+    )
+
+
+def test_wavelength_transformer_rejects_incomplete_pair(monkeypatch):
+    from easydiffraction.io.cif.iucr_transformers import WavelengthTransformer
+    from easydiffraction.utils.logging import Logger
+
+    # A positive ratio with no second wavelength is an incomplete pair:
+    # rejected, not silently dropped.
+    monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.RAISE, raising=True)
+    instrument = SimpleNamespace(
+        setup_wavelength=_Descriptor(1.5406),
+        setup_wavelength_2=_Descriptor(0.0),
+        setup_wavelength_2_to_1_ratio=_Descriptor(0.5),
+    )
+    experiment = SimpleNamespace(instrument=instrument)
+
+    with pytest.raises(ValueError, match='second wavelength'):
+        WavelengthTransformer().items(experiment)
 
 
 def test_tof_calibration_transformer_emits_powers_and_ids():
