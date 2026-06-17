@@ -500,11 +500,24 @@ def engine_label(engine: str, note: str | None = None) -> str:
     -------
     str
         The candidate label string.
+
+    Raises
+    ------
+    ValueError
+        If ``engine`` is not in the shared engine-to-package map.
     """
+    if engine not in SOFTWARE_PACKAGE_BY_ENGINE:
+        supported = ', '.join(sorted(SOFTWARE_PACKAGE_BY_ENGINE))
+        msg = f"Unknown engine {engine!r}; expected one of: {supported}."
+        raise ValueError(msg)
+
     edi_version = _label_version('easydiffraction')
-    engine_version = _label_version(SOFTWARE_PACKAGE_BY_ENGINE.get(engine, engine))
+    engine_version = _label_version(SOFTWARE_PACKAGE_BY_ENGINE[engine])
     edi_text = f'edi {edi_version}' if edi_version is not None else 'edi ?'
-    engine_text = f'{engine} {engine_version}' if engine_version is not None else f'{engine} ?'
+    if engine_version is None:
+        engine_text = f'{engine} ?'
+    else:
+        engine_text = f'{engine} {engine_version}'
     inner = engine_text if note is None else f'{engine_text}, {note}'
     return f'{edi_text} ({inner})'
 
