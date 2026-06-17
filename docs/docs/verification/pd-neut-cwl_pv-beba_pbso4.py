@@ -1,14 +1,16 @@
 # %% [markdown]
 # # PbSO₄ — neutron powder, constant wavelength, Bérar–Baldinozzi asymmetry
 #
-# **Note — cryspy vs FullProf.** cryspy and FullProf implement the
+# **Note — cryspy vs FullProf.**
+#
+# cryspy and FullProf implement the
 # Bérar–Baldinozzi empirical asymmetry with different conventions: an
 # overall sign and a coefficient inside the `F_b` term differ between the
-# two programs. As a result the four `asym_beba_*` parameters do **not**
+# two software. As a result the four `asym_beba_*` parameters do **not**
 # transfer one-to-one between cryspy and FullProf — the same numbers give
 # different profiles. The refinement below frees the asymmetry so it can
 # absorb this convention difference; the structural results are
-# unaffected. See development issue 166 for the detailed comparison.
+# unaffected.
 
 # %%
 import easydiffraction as edi
@@ -198,60 +200,12 @@ project.display.pattern_comparison(
 )
 
 # %% [markdown]
-# ## edi-crysfml VS FullProf
-
-# %%
-experiment.calculator.type = 'crysfml'
-
-experiment.linked_structures['pbso4'].scale = FULLPROF_SCALE
-
-experiment.peak.type = 'pseudo-voigt'
-experiment.peak.broad_gauss_u = FULLPROF_U
-experiment.peak.broad_gauss_v = FULLPROF_V
-experiment.peak.broad_gauss_w = FULLPROF_W
-experiment.peak.broad_lorentz_x = FULLPROF_X
-experiment.peak.broad_lorentz_y = FULLPROF_Y
-
-project.analysis.calculate()
-calc_ed_crysfml = experiment.data.intensity_calc
-
-project.display.pattern_comparison(
-    'pbso4',
-    reference=calc_fullprof,
-    candidate=calc_ed_crysfml,
-    reference_label='FullProf',
-    candidate_label='edi-crysfml',
-)
-
-# %% [markdown]
-# ## Fit edi-crysfml to FullProf
-
-# %%
-experiment.linked_structures['pbso4'].scale.free = True
-experiment.instrument.calib_twotheta_offset.free = True
-
-project.analysis.fit()
-project.display.fit.results()
-
-project.analysis.calculate()
-calc_ed_crysfml_refined = experiment.data.intensity_calc
-
-project.display.pattern_comparison(
-    'pbso4',
-    reference=calc_fullprof,
-    candidate=calc_ed_crysfml_refined,
-    reference_label='FullProf',
-    candidate_label='edi-crysfml (refined)',
-)
-
-# %% [markdown]
 # ## Agreement check
 
 # %%
 verify.assert_patterns_agree(
     [
         ('cryspy vs FullProf', calc_fullprof, calc_ed_cryspy_refined),
-        ('crysfml vs FullProf', calc_fullprof, calc_ed_crysfml_refined),
     ],
     raise_on_failure=False,
 )
