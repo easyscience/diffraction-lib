@@ -618,7 +618,7 @@ class Analysis(
 
     def _loaded_experiment_count(self) -> int:
         """Return the number of experiments loaded in the project."""
-        return len(self.project.experiments)
+        return len(self.project.experiments.names)
 
     def _supported_filters_for(self, category: object) -> dict[str, object]:
         """
@@ -1531,7 +1531,6 @@ class Analysis(
         extra_steps: int | None,
     ) -> None:
         """Validate fit options before dispatching to a fitting mode."""
-        self._require_mode_applicable(mode)
         if extra_steps is not None and not resume:
             msg = 'extra_steps is only valid when resume=True.'
             raise ValueError(msg)
@@ -1565,6 +1564,7 @@ class Analysis(
             raise ValueError(msg)
         if resume and extra_steps is not None:
             self._validate_resume_extra_steps(extra_steps)
+        self._require_mode_applicable(mode)
 
     @staticmethod
     def _validate_resume_extra_steps(extra_steps: object) -> int:
