@@ -92,7 +92,9 @@ def test_tof_pseudo_voigt_cif_section_uses_non_convoluted_peak_shape():
 
 def test_cwl_cif_instrument_section_emits_sycos_sysin():
     import easydiffraction.analysis.calculators.cryspy as MUT
-    from easydiffraction.datablocks.experiment.categories.instrument.cwl import CwlPdNeutronInstrument
+    from easydiffraction.datablocks.experiment.categories.instrument.cwl import (
+        CwlPdNeutronInstrument,
+    )
     from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
     from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 

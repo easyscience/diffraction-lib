@@ -4,9 +4,9 @@
 Calculator-independent CW Lorentz-polarization correction factor.
 
 The public instrument stores the physical monochromator angle in
-degrees. Backends that expose the FullProf/Cryspy form consume
-``cthm = cos^2(2theta_m)``, while backends without a native field use
-the same value in the pointwise multiplier here.
+degrees. Backends that expose the FullProf/Cryspy form consume ``cthm =
+cos^2(2theta_m)``, while backends without a native field use the same
+value in the pointwise multiplier here.
 """
 
 from __future__ import annotations
@@ -62,10 +62,10 @@ def apply(y: object, experiment: object) -> object:
     """
     Apply the CW Lorentz-polarization factor to calculated intensities.
 
-    The pattern is returned unchanged unless the experiment has an
-    X-ray CW powder instrument with a nonzero polarization coefficient.
-    Empty arrays and backend no-data paths whose shape does not match
-    the experiment 2-theta grid are also left unchanged.
+    The pattern is returned unchanged unless the experiment has an X-ray
+    CW powder instrument with a nonzero polarization coefficient. Empty
+    arrays and backend no-data paths whose shape does not match the
+    experiment 2-theta grid are also left unchanged.
 
     Parameters
     ----------
@@ -85,7 +85,7 @@ def apply(y: object, experiment: object) -> object:
         return y
 
     coefficient = instrument.setup_polarization_coefficient.value
-    if coefficient == 0.0:
+    if not coefficient:
         return y
 
     y_values = np.asarray(y, dtype=float)

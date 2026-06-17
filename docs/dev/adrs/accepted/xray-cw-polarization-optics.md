@@ -19,12 +19,12 @@ This ADR follows the conventions in
 
 Constant-wavelength X-ray powder calculations need the same
 Lorentz-polarization controls that FullProf exposes on the PCR
-`Lambda1 Lambda2 Ratio Bkpos Wdt Cthm muR AsyLim Rpolarz 2nd-muR`
-line. The two relevant values are:
+`Lambda1 Lambda2 Ratio Bkpos Wdt Cthm muR AsyLim Rpolarz 2nd-muR` line.
+The two relevant values are:
 
-| FullProf field | Backend field | Meaning |
-| -------------- | ------------- | ------- |
-| `Rpolarz`      | Cryspy `_setup_K` | Polarization coefficient in the CW Lorentz-polarization factor. |
+| FullProf field | Backend field        | Meaning                                                           |
+| -------------- | -------------------- | ----------------------------------------------------------------- |
+| `Rpolarz`      | Cryspy `_setup_K`    | Polarization coefficient in the CW Lorentz-polarization factor.   |
 | `Cthm`         | Cryspy `_setup_cthm` | `cos²(2θm)`, where `2θm` is the pre-specimen monochromator angle. |
 
 These names are calculator-oriented and should not become the public
@@ -53,17 +53,17 @@ candidates, consistent with
 ### Backend support already present
 
 The Cryspy `Setup` item already declares both fields as optional,
-non-refinable descriptors (`C_item_loop_classes/cl_1_setup.py`):
-`k` (CIF `_setup_K`) and `cthm` (CIF `_setup_cthm`), with defaults
-`k = 0.0` and `cthm = 0.91`. Neither is in Cryspy's refinable-attribute
-set, so binding them is a value-injection task, not a backend
-extension. (Note the FullProf diagnostic below uses `Cthm = 0.8`, which
-differs from Cryspy's `0.91` default — defaults must be set explicitly,
-not inherited from the backend.) CrysFML's current Python wrapper has no
-equivalent declared field (see Decision 5).
+non-refinable descriptors (`C_item_loop_classes/cl_1_setup.py`): `k`
+(CIF `_setup_K`) and `cthm` (CIF `_setup_cthm`), with defaults `k = 0.0`
+and `cthm = 0.91`. Neither is in Cryspy's refinable-attribute set, so
+binding them is a value-injection task, not a backend extension. (Note
+the FullProf diagnostic below uses `Cthm = 0.8`, which differs from
+Cryspy's `0.91` default — defaults must be set explicitly, not inherited
+from the backend.) CrysFML's current Python wrapper has no equivalent
+declared field (see Decision 5).
 
-The existing CW instrument category is a single class,
-`CwlPdInstrument` (factory tag `cwl-pd`,
+The existing CW instrument category is a single class, `CwlPdInstrument`
+(factory tag `cwl-pd`,
 `src/easydiffraction/datablocks/experiment/categories/instrument/cwl.py`),
 serving **both** neutron and X-ray, **both** `bragg` and `total`
 scattering, across the `cryspy`, `crysfml`, and `pdffit` calculators.
@@ -74,8 +74,8 @@ the model this ADR follows for declaration style.
 
 ### Diagnostic evidence
 
-`docs/docs/verification/pd-xray-pbso4-single-polarized-wdt48.py`
-adds a focused diagnostic reference generated from
+`docs/docs/verification/pd-xray-pbso4-single-polarized-wdt48.py` adds a
+focused diagnostic reference generated from
 `pbsox_single_polarized_wdt48.pcr`:
 
 - `Lambda1 = Lambda2 = 1.540560`
@@ -84,15 +84,15 @@ adds a focused diagnostic reference generated from
 - `Rpolarz = 0.5`
 - `Cthm = 0.8`
 
-The current EasyDiffraction adapters do not expose or bind these
-optics fields. Against that FullProf reference the current results are:
+The current EasyDiffraction adapters do not expose or bind these optics
+fields. Against that FullProf reference the current results are:
 
-| Engine | State | Profile diff | Max deviation | Area ratio | Correlation |
-| ------ | ----- | ------------ | ------------- | ---------- | ----------- |
-| cryspy | raw | 33.65 % | 33.54 % | 0.7537 | 0.9931 |
-| cryspy | scale + U/V/W/Y refined | 10.20 % | 6.48 % | 1.1222 | 0.9950 |
-| crysfml | raw | 36.18 % | 34.63 % | 0.6859 | 0.9895 |
-| crysfml | scale + U/V/W/Y refined | 10.08 % | 6.69 % | 1.1156 | 0.9951 |
+| Engine  | State                   | Profile diff | Max deviation | Area ratio | Correlation |
+| ------- | ----------------------- | ------------ | ------------- | ---------- | ----------- |
+| cryspy  | raw                     | 33.65 %      | 33.54 %       | 0.7537     | 0.9931      |
+| cryspy  | scale + U/V/W/Y refined | 10.20 %      | 6.48 %        | 1.1222     | 0.9950      |
+| crysfml | raw                     | 36.18 %      | 34.63 %       | 0.6859     | 0.9895      |
+| crysfml | scale + U/V/W/Y refined | 10.08 %      | 6.69 %        | 1.1156     | 0.9951      |
 
 The large raw area mismatch is expected: the FullProf reference contains
 an active X-ray polarization correction, while EasyDiffraction currently
@@ -117,8 +117,8 @@ for neutron CW powder experiments, where the polarization coefficient is
 identically zero (unlike sample absorption, which is physically real for
 both probes — so the
 [`model-sample-absorption.md`](../accepted/model-sample-absorption.md)
-single-shared-category precedent does not transfer cleanly here). Use the
-existing `Compatibility.radiation_probe` axis and register separate
+single-shared-category precedent does not transfer cleanly here). Use
+the existing `Compatibility.radiation_probe` axis and register separate
 instrument classes:
 
 - `CwlPdNeutronInstrument`
@@ -131,16 +131,15 @@ does not expose them.
 discriminator in the codebase.** It therefore carries concrete,
 non-trivial impact that the implementing plan must cover:
 
-- `InstrumentFactory` default rules
-  (`.../instrument/factory.py`) currently key only on
-  `(beam_mode, sample_form)`. They must gain `radiation_probe`, and the
-  single `cwl-pd` tag splits into `cwl-pd-neutron` / `cwl-pd-xray`
-  (factory tags follow
+- `InstrumentFactory` default rules (`.../instrument/factory.py`)
+  currently key only on `(beam_mode, sample_form)`. They must gain
+  `radiation_probe`, and the single `cwl-pd` tag splits into
+  `cwl-pd-neutron` / `cwl-pd-xray` (factory tags follow
   [`factory-tag-naming.md`](../accepted/factory-tag-naming.md)).
 - The call site `BraggPdExperiment` (`.../experiment/item/bragg_pd.py`)
   builds the default instrument tag via
-  `InstrumentFactory.default_tag(scattering_type, beam_mode,
-  sample_form)` and must also pass `radiation_probe`.
+  `InstrumentFactory.default_tag(scattering_type, beam_mode, sample_form)`
+  and must also pass `radiation_probe`.
 - Renaming the persisted **instrument** tag is a breaking change to
   saved projects and to any test/tutorial CIF pinning the instrument
   `cwl-pd`. The project is in beta (no legacy shims), so the rename is
@@ -167,13 +166,13 @@ PDF path does not route through `cwl-pd` and is untouched by the split.
 unused aspirational metadata, not a live routing path.) The routing
 matrix the plan must implement:
 
-| scattering | beam_mode | sample_form | radiation_probe | default tag |
-| ---------- | --------- | ----------- | --------------- | ----------- |
-| bragg | constant wavelength | powder | neutron | `cwl-pd-neutron` |
-| bragg | constant wavelength | powder | xray | `cwl-pd-xray` |
-| bragg | constant wavelength | single crystal | (any) | `cwl-sc` (unchanged) |
-| bragg | time of flight | powder | (any) | `tof-pd` (unchanged) |
-| total | constant wavelength | powder | (any) | no factory instrument (unchanged) |
+| scattering | beam_mode           | sample_form    | radiation_probe | default tag                       |
+| ---------- | ------------------- | -------------- | --------------- | --------------------------------- |
+| bragg      | constant wavelength | powder         | neutron         | `cwl-pd-neutron`                  |
+| bragg      | constant wavelength | powder         | xray            | `cwl-pd-xray`                     |
+| bragg      | constant wavelength | single crystal | (any)           | `cwl-sc` (unchanged)              |
+| bragg      | time of flight      | powder         | (any)           | `tof-pd` (unchanged)              |
+| total      | constant wavelength | powder         | (any)           | no factory instrument (unchanged) |
 
 Single crystal (`cwl-sc`) and TOF (`tof-pd`/`tof-sc`) stay
 probe-neutral: this ADR scopes X-ray optics to powder-Bragg CW, where
@@ -187,9 +186,10 @@ classification note above).
 opt-in.** Even on `CwlPdXrayInstrument`, the polarization coefficient
 defaults to `0.0` (and the monochromator term is then inert, since the
 Lorentz-polarization factor reduces to the neutron form when `k = 0` —
-see Decision 4). Existing X-ray verification numbers therefore do **not**
-change until a user explicitly sets the coefficient. Picking a non-zero
-characteristic-radiation default is deferred (see Deferred Work).
+see Decision 4). Existing X-ray verification numbers therefore do
+**not** change until a user explicitly sets the coefficient. Picking a
+non-zero characteristic-radiation default is deferred (see Deferred
+Work).
 
 ### 3. Use physical public names, non-refinable
 
@@ -204,8 +204,8 @@ experiment.instrument.setup_monochromator_twotheta
 
 Do not expose public names `setup_k`, `setup_cthm`, `K`, or `Cthm`.
 
-`setup_polarization_coefficient` is a dimensionless fixed descriptor.
-It maps directly to FullProf `Rpolarz` and Cryspy `_setup_K`. It is a
+`setup_polarization_coefficient` is a dimensionless fixed descriptor. It
+maps directly to FullProf `Rpolarz` and Cryspy `_setup_K`. It is a
 polarization fraction, so the value is constrained to `[0, 1]` and
 **defaults to `0.0`** (no correction — the pure opt-in default of
 Decision 2):
@@ -261,8 +261,8 @@ Backend adapters convert the public angle to the backend value:
 cthm = cos(radians(setup_monochromator_twotheta)) ** 2
 ```
 
-because the public value is the monochromator `2θ` angle and the
-backend wants `cos²(2θm)`. This mirrors the established public→backend
+because the public value is the monochromator `2θ` angle and the backend
+wants `cos²(2θm)`. This mirrors the established public→backend
 conversion pattern (`_march_r_to_cryspy_g1` in
 `analysis/calculators/cryspy.py`, where the public March coefficient is
 inverted before it reaches Cryspy).
@@ -290,19 +290,20 @@ adapter only needs to inject values for `CwlPdXrayInstrument`:
   minimizer iterations do not recompute against stale values;
 - include these fields in the cache-invalidation surface.
 
-Cryspy thus applies the LP factor **internally**, on its own
-`two_theta` grid — it does **not** consume the EasyDiffraction `hh`
-multiplier at runtime. The only EasyDiffraction code on the Cryspy path
-is the angle→`cthm` conversion (the input it is fed). See Decision 5 for
+Cryspy thus applies the LP factor **internally**, on its own `two_theta`
+grid — it does **not** consume the EasyDiffraction `hh` multiplier at
+runtime. The only EasyDiffraction code on the Cryspy path is the
+angle→`cthm` conversion (the input it is fed). See Decision 5 for
 exactly what is shared and what is not.
 
 ### 5. Bind CrysFML through the CFL path or a shared adapter correction
 
-The current CrysFML Python wrapper exposes `patterns_simulation(strings)`
-around a CFL parser, and the adapter maps instrument scalars through
-`_INSTRUMENT_ATTRIBUTE_MAP` in `analysis/calculators/crysfml.py`. The
-bundled CFL examples document `LAMBDA`, `UVWXY`, `ASYM`, `WDT`, and
-`Zero_Sy`, but they do not show `Cthm` or `Rpolarz` condition lines.
+The current CrysFML Python wrapper exposes
+`patterns_simulation(strings)` around a CFL parser, and the adapter maps
+instrument scalars through `_INSTRUMENT_ATTRIBUTE_MAP` in
+`analysis/calculators/crysfml.py`. The bundled CFL examples document
+`LAMBDA`, `UVWXY`, `ASYM`, `WDT`, and `Zero_Sy`, but they do not show
+`Cthm` or `Rpolarz` condition lines.
 
 Implementation must first verify whether the active CrysFML CFL grammar
 accepts a native polarization/monochromator line. If it does, the
@@ -317,8 +318,8 @@ hh = 1 - k + k * cthm * cos(two_theta) ** 2
 y_corrected = hh * y_crysfml
 ```
 
-This fallback is acceptable because it is a smooth
-Lorentz-polarization envelope on the calculated CW powder pattern.
+This fallback is acceptable because it is a smooth Lorentz-polarization
+envelope on the calculated CW powder pattern.
 
 **What is shared vs. what is not.** Cryspy binds natively (Decision 4)
 and CrysFML uses the fallback multiplier, so the two engines do **not**
@@ -367,8 +368,8 @@ deferral is tracked rather than lost.
 - `src/easydiffraction/analysis/calculators/cryspy.py` — emit `_setup_K`
   / `_setup_cthm` (via the shared angle→`cthm` helper), patch cached
   dicts; native LP, no runtime envelope.
-- `src/easydiffraction/analysis/calculators/crysfml.py` — CFL line or the
-  shared `lp_factor` post-pattern multiplier.
+- `src/easydiffraction/analysis/calculators/crysfml.py` — CFL line or
+  the shared `lp_factor` post-pattern multiplier.
 - A new shared module (alongside the existing calculator helpers)
   holding the two pieces from Decision 5: `monochromator_cthm` (angle→
   `cthm`, used by both adapters) and `lp_factor` (the `hh` envelope; the
@@ -411,8 +412,8 @@ deferral is tracked rather than lost.
 
 ### Expose `setup_k` and `setup_cthm`
 
-Rejected. These names are backend/PCR implementation details and are
-not discoverable for non-programmer users.
+Rejected. These names are backend/PCR implementation details and are not
+discoverable for non-programmer users.
 
 ### Keep one `CwlPdInstrument` with neutron-neutral defaults
 
@@ -420,7 +421,7 @@ Seriously considered — it is the smaller change and mirrors the
 single-shared-category mechanism of
 [`model-sample-absorption.md`](../accepted/model-sample-absorption.md)
 (fields present everywhere, inert by default). Rejected as the primary
-decision because the polarization coefficient is physically *zero* for
+decision because the polarization coefficient is physically _zero_ for
 neutrons, not merely defaulted-off (sample absorption, by contrast, is
 real for neutrons), so showing the knob on neutron experiments invites
 meaningless tuning. Recorded as an Open Question because it avoids the
@@ -432,9 +433,9 @@ fallback.
 
 Rejected for now. There are only two fields and one concrete use case;
 `experiment.instrument` is the natural category, and introducing an
-optics abstraction before a second use case violates the
-"don't introduce abstractions before a concrete second use case"
-guidance in [`AGENTS.md`](../../../../AGENTS.md).
+optics abstraction before a second use case violates the "don't
+introduce abstractions before a concrete second use case" guidance in
+[`AGENTS.md`](../../../../AGENTS.md).
 
 ## Deferred Work
 

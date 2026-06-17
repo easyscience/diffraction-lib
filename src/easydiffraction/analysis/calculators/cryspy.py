@@ -1182,8 +1182,7 @@ def _cif_polarization_section(
         return
     coefficient, monochromator_twotheta = settings
     cthm = polarization_correction.monochromator_cthm(monochromator_twotheta)
-    cif_lines.append(f'_setup_K {coefficient}')
-    cif_lines.append(f'_setup_cthm {cthm}')
+    cif_lines.extend((f'_setup_K {coefficient}', f'_setup_cthm {cthm}'))
 
 
 def _polarization_settings(experiment: object) -> tuple[float, float] | None:
@@ -1228,7 +1227,9 @@ def _set_cryspy_scalar(
     key: str,
     value: float,
 ) -> None:
-    """Set a Cryspy scalar stored either directly or in a 1-item array."""
+    """
+    Set a Cryspy scalar stored either directly or in a 1-item array.
+    """
     target = cryspy_expt_dict[key]
     if isinstance(target, (np.ndarray, list)):
         target[0] = value

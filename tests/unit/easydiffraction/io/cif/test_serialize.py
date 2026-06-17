@@ -318,7 +318,9 @@ def test_beta_atom_round_trips_through_cif():
 def test_cwl_second_wavelength_round_trips_through_cif():
     import gemmi
 
-    from easydiffraction.datablocks.experiment.categories.instrument.cwl import CwlPdNeutronInstrument
+    from easydiffraction.datablocks.experiment.categories.instrument.cwl import (
+        CwlPdNeutronInstrument,
+    )
 
     instr = CwlPdNeutronInstrument()
     instr.setup_wavelength = 1.5406
@@ -336,7 +338,9 @@ def test_cwl_second_wavelength_round_trips_through_cif():
 def test_cwl_disabled_second_wavelength_preserves_value_through_cif():
     import gemmi
 
-    from easydiffraction.datablocks.experiment.categories.instrument.cwl import CwlPdNeutronInstrument
+    from easydiffraction.datablocks.experiment.categories.instrument.cwl import (
+        CwlPdNeutronInstrument,
+    )
 
     # Disabled state (ratio == 0) still persists the recorded λ₂.
     instr = CwlPdNeutronInstrument()

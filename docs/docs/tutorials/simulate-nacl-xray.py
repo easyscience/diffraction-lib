@@ -14,8 +14,9 @@
 # ## 🛠️ Import Library
 
 # %%
-import easydiffraction as edi
 import numpy as np
+
+import easydiffraction as edi
 
 # %% [markdown]
 # ## 📦 Define Project
