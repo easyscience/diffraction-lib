@@ -275,7 +275,7 @@ Notes:
 - [x] P1.7 — Update tutorials relying on `single`-with-N
 - [x] P1.8 — Close issue 85 and promote the ADR
 - [x] P1.9 — Phase 1 review gate
-- [ ] Phase 2 — tests added and full verification suite green
+- [x] Phase 2 — tests added and full verification suite green
 
 ## Suggested Pull Request
 
