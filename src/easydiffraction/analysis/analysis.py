@@ -2726,6 +2726,67 @@ class Analysis(
 
         return project_path / data_dir
 
+    def _resolve_sequential_source(self) -> str:
+        """
+        Resolve the sequential data directory, applying ``copy_data``.
+
+        Raises a clear error when no data directory is configured. When
+        ``copy_data`` is set, the matched files are copied into the
+        project's ``data/sequential/`` folder and the persisted
+        ``data_dir`` is rewritten to that project-relative destination so
+        the saved project stays self-contained. The copy is idempotent:
+        when the resolved source is already the copy destination (the
+        post-reload case), the copy is skipped.
+
+        Returns
+        -------
+        str
+            The directory to read sequential data files from.
+
+        Raises
+        ------
+        ValueError
+            If ``data_dir`` is unset, or (with ``copy_data``) the project
+            is unsaved.
+        """
+        from easydiffraction.io.ascii import extract_data_paths_from_dir  # noqa: PLC0415
+
+        if not str(self._sequential_fit.data_dir.value).strip():
+            msg = (
+                'Sequential fitting needs a data folder. Set '
+                'analysis.sequential_fit.data_dir to the directory containing '
+                'your sequential data files (and analysis.sequential_fit.file_pattern '
+                'to match them).'
+            )
+            raise ValueError(msg)
+
+        source = self._resolve_sequential_data_dir()
+        if not self._sequential_fit.copy_data.value:
+            return str(source)
+
+        project_path = self.project.metadata.path
+        if project_path is None:
+            msg = (
+                'Sequential fitting with copy_data requires a saved project; '
+                'call save_as() first.'
+            )
+            raise ValueError(msg)
+
+        destination = project_path / 'data' / 'sequential'
+        if source.resolve() == destination.resolve():
+            return str(source)
+
+        import shutil  # noqa: PLC0415
+
+        file_pattern = self._sequential_fit.file_pattern.value
+        matched = extract_data_paths_from_dir(source, file_pattern=file_pattern)
+        destination.mkdir(parents=True, exist_ok=True)
+        for path in matched:
+            shutil.copy2(path, destination / Path(path).name)
+
+        self._sequential_fit.data_dir = str(Path('data') / 'sequential')
+        return str(destination)
+
     def _prepare_fit_run(
         self,
         *,
@@ -2829,7 +2890,7 @@ class Analysis(
         try:
             _fit_seq(
                 analysis=self,
-                data_dir=str(self._resolve_sequential_data_dir()),
+                data_dir=self._resolve_sequential_source(),
                 max_workers=max_workers,
                 chunk_size=chunk_size,
                 file_pattern=self._sequential_fit.file_pattern.value,

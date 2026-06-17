@@ -185,7 +185,7 @@ locally (atomic, single-purpose) before moving on. Mark each `- [ ]` as
   `display/plotting.py`.
   Commit: `Remove single-mode parameter snapshot fallback`
 
-- [ ] **P1.5 — Sequential data source: no-files error, `copy_data`.**
+- [x] **P1.5 — Sequential data source: no-files error, `copy_data`.**
   Add `copy_data` `BoolDescriptor` (+ property, default `False`) to
   `SequentialFit` (mirror `reverse`). In sequential resolution: raise a
   clear `ValueError` when `data_dir` is unset/unresolvable or matches no
