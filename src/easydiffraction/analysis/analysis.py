@@ -2792,6 +2792,11 @@ class Analysis(
 
         import shutil  # noqa: PLC0415
 
+        # Refresh the archive so it holds exactly the current matched set
+        # (the self-copy case returned above, so this never wipes the
+        # archive while reading from it).
+        if destination.exists():
+            shutil.rmtree(destination)
         destination.mkdir(parents=True, exist_ok=True)
         for path in matched:
             shutil.copy2(path, destination / Path(path).name)
