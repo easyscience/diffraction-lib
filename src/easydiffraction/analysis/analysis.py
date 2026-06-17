@@ -2916,7 +2916,7 @@ class Analysis(
         fit_options: FitterFitOptions,
     ) -> None:
         """
-        Run single-mode fitting for each experiment independently.
+        Run single-mode fitting for the one loaded experiment.
 
         Parameters
         ----------
@@ -2925,28 +2925,20 @@ class Analysis(
         structures : object
             Project structures collection.
         experiments : object
-            Project experiments collection.
+            Project experiments collection (exactly one experiment in
+            single mode).
         fit_options : FitterFitOptions
             Execution options controlling limits, randomness and resume.
-
-        Raises
-        ------
-        ValueError
-            If resume is requested for more than one single-fit
-            experiment.
         """
         mode = FitModeEnum.SINGLE
         expt_names = experiments.names
-        if fit_options.resume and len(expt_names) != 1:
-            msg = 'Resume is supported for one single-fit experiment at a time.'
-            raise ValueError(msg)
 
         short_display_handle = self._fit_single_print_header(verb, expt_names, mode)
         short_rows: list[list[str]] = []
         self.fitter.minimizer.tracker._set_shared_display_handle(short_display_handle)
 
         try:
-            self._fit_single_experiments(
+            self._fit_single_experiment(
                 verb,
                 structures,
                 experiments,
@@ -2961,7 +2953,7 @@ class Analysis(
                 with suppress(Exception):
                     short_display_handle.close()
 
-    def _fit_single_experiments(
+    def _fit_single_experiment(
         self,
         verb: VerbosityEnum,
         structures: object,
@@ -2970,40 +2962,39 @@ class Analysis(
         fit_options: FitterFitOptions,
         short_state: tuple[list[list[str]], object],
     ) -> None:
-        """Run the per-experiment loop for single-fit mode."""
+        """Fit the single loaded experiment in single-fit mode."""
         short_rows, short_display_handle = short_state
-        for expt_name in experiments.names:
-            if verb is VerbosityEnum.FULL:
-                console.print(
-                    f"📋 Using experiment 🔬 '{expt_name}' for "
-                    f"'{FitModeEnum.SINGLE.value}' fitting"
-                )
-
-            experiment = experiments[expt_name]
-            self.fitter.fit(
-                structures,
-                [experiment],
-                analysis=self,
-                verbosity=verb,
-                options=FitterFitOptions(
-                    use_physical_limits=fit_options.use_physical_limits,
-                    random_seed=self._resolved_fit_random_seed(fit_options.random_seed),
-                    resume=fit_options.resume,
-                    extra_steps=fit_options.extra_steps,
-                ),
+        expt_name = next(iter(experiments.names))
+        if verb is VerbosityEnum.FULL:
+            console.print(
+                f"📋 Using experiment 🔬 '{expt_name}' for "
+                f"'{FitModeEnum.SINGLE.value}' fitting"
             )
 
-            results = self.fitter.results
-            self._snapshot_params(expt_name, results)
-            self.fit_results = results
+        experiment = experiments[expt_name]
+        self.fitter.fit(
+            structures,
+            [experiment],
+            analysis=self,
+            verbosity=verb,
+            options=FitterFitOptions(
+                use_physical_limits=fit_options.use_physical_limits,
+                random_seed=self._resolved_fit_random_seed(fit_options.random_seed),
+                resume=fit_options.resume,
+                extra_steps=fit_options.extra_steps,
+            ),
+        )
 
-            if verb is VerbosityEnum.SHORT:
-                self._fit_single_update_short_table(
-                    short_rows,
-                    expt_name,
-                    results,
-                    short_display_handle,
-                )
+        results = self.fitter.results
+        self.fit_results = results
+
+        if verb is VerbosityEnum.SHORT:
+            self._fit_single_update_short_table(
+                short_rows,
+                expt_name,
+                results,
+                short_display_handle,
+            )
 
     @staticmethod
     def _fit_single_print_header(

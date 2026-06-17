@@ -169,7 +169,7 @@ locally (atomic, single-purpose) before moving on. Mark each `- [ ]` as
   `analysis.py`.
   Commit: `Validate fit mode against loaded experiments`
 
-- [ ] **P1.3 — Restrict `single` to exactly one experiment.**
+- [x] **P1.3 — Restrict `single` to exactly one experiment.**
   With P1.2 guaranteeing exactly one loaded experiment for `single`,
   collapse `_fit_single_experiments` to fit that one experiment (no
   loop); drop the per-experiment `_snapshot_params` call. Files:
@@ -261,7 +261,7 @@ Notes:
 
 - [x] P1.1 — Applicability-based `show_supported()`
 - [x] P1.2 — Enforce mode preconditions at fit time
-- [ ] P1.3 — Restrict `single` to exactly one experiment
+- [x] P1.3 — Restrict `single` to exactly one experiment
 - [ ] P1.4 — Remove the `single`-with-N snapshot machinery
 - [ ] P1.5 — Sequential data source: default, no-files error, `copy_data`
 - [ ] P1.6 — Reconcile display/serialization filters
