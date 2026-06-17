@@ -5,9 +5,9 @@ to those instructions are taken in this plan.
 
 Implements ADR
 [`dataset-driven-fit-modes`](../adrs/accepted/dataset-driven-fit-modes.md)
-(promoted from a suggestion to `accepted/` in P1.8, per
-§Change Discipline). Closes issue **85 — Retain
-Per-Experiment Fitted Parameters for Plotting**
+(promoted from a suggestion to `accepted/` in P1.8, per §Change
+Discipline). Closes issue **85 — Retain Per-Experiment Fitted Parameters
+for Plotting**
 ([`closed/retain-per-experiment-fitted-parameters-for-plotting.md`](../issues/closed/retain-per-experiment-fitted-parameters-for-plotting.md))
 by removing the `single`-with-N path that caused it.
 
@@ -30,12 +30,13 @@ does not modify it.
 - `single` is restricted to exactly one experiment; the multi-experiment
   loop (`single`-with-N) is removed, which **closes issue 85** by
   construction.
-- The now-orphaned `_parameter_snapshots` / `plot_param_series_from_snapshots`
-  fallback is deleted; parameter-evolution plotting stays on the
-  `sequential` `results.csv` path.
+- The now-orphaned `_parameter_snapshots` /
+  `plot_param_series_from_snapshots` fallback is deleted;
+  parameter-evolution plotting stays on the `sequential` `results.csv`
+  path.
 - `sequential` keeps its folder-sweep behaviour; its data-source config
-  gains a clear "no files" fit-time error and a `copy_data` flag (default
-  off) with a defined, idempotent round-trip contract. (The
+  gains a clear "no files" fit-time error and a `copy_data` flag
+  (default off) with a defined, idempotent round-trip contract. (The
   template-derived `file_pattern` default from the ADR is deferred — see
   Decision 4.)
 
@@ -66,8 +67,8 @@ does not modify it.
    the run uses the archived files.
 4. `data_dir` has no smart default. **`file_pattern` keeps its current
    `'*'` default for the first step**; the ADR's "derive the glob from
-   the template experiment's data-file extension" is deferred because the
-   experiment model does not retain its source data-file path today
+   the template experiment's data-file extension" is deferred because
+   the experiment model does not retain its source data-file path today
    (deriving it requires new experiment source-path metadata + its
    persistence and tests). The ADR's stated `'*'` fallback is therefore
    the shipped first-step behaviour; the derived default is a tracked
@@ -94,10 +95,10 @@ Phase 1 (implementation):
 
 - `src/easydiffraction/analysis/categories/fitting_mode/default.py` —
   `_supported_types(filters)` returns applicable modes.
-- `src/easydiffraction/analysis/analysis.py` —
-  `_supported_filters_for` context for `fitting_mode` (loaded-experiment
-  count); fit-time applicability validation in `_validate_fit_request`;
-  collapse `_fit_single_experiments` to one experiment; remove
+- `src/easydiffraction/analysis/analysis.py` — `_supported_filters_for`
+  context for `fitting_mode` (loaded-experiment count); fit-time
+  applicability validation in `_validate_fit_request`; collapse
+  `_fit_single_experiments` to one experiment; remove
   `_parameter_snapshots` (line ~602) and `_snapshot_params` (~3009);
   sequential data-source resolution + `copy_data` handling; check
   `_help_filter` / `_serializable_categories`.
@@ -122,9 +123,10 @@ Phase 2 (verification — tests):
   `test_fitting*` — applicability predicates given experiment counts.
 - `tests/unit/easydiffraction/analysis/test_analysis*` — fit-time
   validation errors; single-exactly-one.
-- `tests/.../sequential_fit` + `tests/integration/fitting/test_sequential.py`
-  — `copy_data` round-trip, idempotent self-copy (source == destination
-  skips), no-files error.
+- `tests/.../sequential_fit` +
+  `tests/integration/fitting/test_sequential.py` — `copy_data`
+  round-trip, idempotent self-copy (source == destination skips),
+  no-files error.
 - `tests/unit/easydiffraction/display/test_plotting_coverage.py`,
   `tests/.../test_analysis_coverage.py`,
   `tests/integration/fitting/test_analysis_and_fit_category_support.py`
@@ -142,102 +144,104 @@ completed Phase 1 step is staged with **explicit paths** and committed
 locally (atomic, single-purpose) before moving on. Mark each `- [ ]` as
 `- [x]` in the same commit that completes it.
 
-  Applicability/readiness contract used across P1.1–P1.3 (Decision 2):
-  applicability counts **total loaded experiments**; the
-  measured-data requirement is a **readiness** check left to the
-  existing `Fitter._require_measured_data` guard at `fit()`. No
-  "schedule only the measured subset" filtering is introduced.
+Applicability/readiness contract used across P1.1–P1.3 (Decision 2):
+applicability counts **total loaded experiments**; the measured-data
+requirement is a **readiness** check left to the existing
+`Fitter._require_measured_data` guard at `fit()`. No "schedule only the
+measured subset" filtering is introduced.
 
-- [x] **P1.1 — Applicability-based `show_supported()`.**
-  Add an Analysis helper that returns the loaded-experiment count
-  (`len(project.experiments)`); have `_supported_filters_for` pass that
-  count to the `fitting_mode` category; implement
-  `FittingMode._supported_types(filters)` to return `single`
-  (count == 1), `joint` (count ≥ 2), `sequential` (count == 1).
-  Files: `analysis.py`, `fitting_mode/default.py`.
-  Commit: `Offer fit modes by project applicability`
+- [x] **P1.1 — Applicability-based `show_supported()`.** Add an Analysis
+      helper that returns the loaded-experiment count
+      (`len(project.experiments)`); have `_supported_filters_for` pass
+      that count to the `fitting_mode` category; implement
+      `FittingMode._supported_types(filters)` to return `single` (count
+      == 1), `joint` (count ≥ 2), `sequential` (count == 1). Files:
+      `analysis.py`, `fitting_mode/default.py`. Commit:
+      `Offer fit modes by project applicability`
 
-- [x] **P1.2 — Enforce mode preconditions at fit time.**
-  In `_validate_fit_request`, reject a selected mode whose applicability
-  predicate the project does not meet — `single`/`sequential` unless
-  exactly one experiment is loaded, `joint` unless ≥2 — with a clear
-  `ValueError` naming the valid modes. Keep the `.type` setter permissive
-  so CIF restore is not rejected. Measured-data readiness stays with
-  `Fitter._require_measured_data` (no change needed there). Files:
-  `analysis.py`.
-  Commit: `Validate fit mode against loaded experiments`
+- [x] **P1.2 — Enforce mode preconditions at fit time.** In
+      `_validate_fit_request`, reject a selected mode whose
+      applicability predicate the project does not meet —
+      `single`/`sequential` unless exactly one experiment is loaded,
+      `joint` unless ≥2 — with a clear `ValueError` naming the valid
+      modes. Keep the `.type` setter permissive so CIF restore is not
+      rejected. Measured-data readiness stays with
+      `Fitter._require_measured_data` (no change needed there). Files:
+      `analysis.py`. Commit:
+      `Validate fit mode against loaded experiments`
 
-- [x] **P1.3 — Restrict `single` to exactly one experiment.**
-  With P1.2 guaranteeing exactly one loaded experiment for `single`,
-  collapse `_fit_single_experiments` to fit that one experiment (no
-  loop); drop the per-experiment `_snapshot_params` call. Files:
-  `analysis.py`.
-  Commit: `Fit a single experiment in single mode`
+- [x] **P1.3 — Restrict `single` to exactly one experiment.** With P1.2
+      guaranteeing exactly one loaded experiment for `single`, collapse
+      `_fit_single_experiments` to fit that one experiment (no loop);
+      drop the per-experiment `_snapshot_params` call. Files:
+      `analysis.py`. Commit: `Fit a single experiment in single mode`
 
-- [x] **P1.4 — Remove the `single`-with-N snapshot machinery.**
-  Delete `_parameter_snapshots` and `_snapshot_params`; remove
-  `plot_param_series_from_snapshots` and the snapshot fallback branches
-  in `plot_param_series`, `plot_all_param_series`, and
-  `_collect_fitted_parameter_unique_names`; when no `results.csv`
-  exists, log a clear warning and return. Files: `analysis.py`,
-  `display/plotting.py`.
-  Commit: `Remove single-mode parameter snapshot fallback`
+- [x] **P1.4 — Remove the `single`-with-N snapshot machinery.** Delete
+      `_parameter_snapshots` and `_snapshot_params`; remove
+      `plot_param_series_from_snapshots` and the snapshot fallback
+      branches in `plot_param_series`, `plot_all_param_series`, and
+      `_collect_fitted_parameter_unique_names`; when no `results.csv`
+      exists, log a clear warning and return. Files: `analysis.py`,
+      `display/plotting.py`. Commit:
+      `Remove single-mode parameter snapshot fallback`
 
 - [x] **P1.5 — Sequential data source: no-files error, `copy_data`.**
-  Add `copy_data` `BoolDescriptor` (+ property, default `False`) to
-  `SequentialFit` (mirror `reverse`). In sequential resolution: raise a
-  clear `ValueError` when `data_dir` is unset/unresolvable or matches no
-  files (keeping the current `'*'` `file_pattern` default — the
-  template-extension derivation is deferred, Decision 4). When
-  `copy_data` is set, apply the **idempotent** copy: if the resolved
-  source directory is already the copy destination
-  (`<project>/data/sequential/`, the post-reload case), skip the copy and
-  run from the archived files; otherwise copy matched files there
-  (overwrite on name conflict) and rewrite the persisted `data_dir` to
-  that relative destination. Files: `sequential_fit/default.py`,
-  `sequential.py`, `analysis.py`.
-  Commit: `Add copy_data and clearer sequential data resolution`
+      Add `copy_data` `BoolDescriptor` (+ property, default `False`) to
+      `SequentialFit` (mirror `reverse`). In sequential resolution:
+      raise a clear `ValueError` when `data_dir` is unset/unresolvable
+      or matches no files (keeping the current `'*'` `file_pattern`
+      default — the template-extension derivation is deferred, Decision
+      4). When `copy_data` is set, apply the **idempotent** copy: if the
+      resolved source directory is already the copy destination
+      (`<project>/data/sequential/`, the post-reload case), skip the
+      copy and run from the archived files; otherwise copy matched files
+      there (overwrite on name conflict) and rewrite the persisted
+      `data_dir` to that relative destination. Files:
+      `sequential_fit/default.py`, `sequential.py`, `analysis.py`.
+      Commit: `Add copy_data and clearer sequential data resolution`
 
-- [x] **P1.6 — Reconcile display/serialization filters.**
-  Verify `_help_filter` and `_serializable_categories` reflect the
-  active mode under the new model (sequential config hidden in `single`,
-  etc.); adjust only if needed. Files: `analysis.py`.
-  Commit: `Align analysis category visibility with fit modes`
+- [x] **P1.6 — Reconcile display/serialization filters.** Verify
+      `_help_filter` and `_serializable_categories` reflect the active
+      mode under the new model (sequential config hidden in `single`,
+      etc.); adjust only if needed. Files: `analysis.py`. Commit:
+      `Align analysis category visibility with fit modes`
 
 - [x] **P1.7 — Audit tutorials for `single`-with-N (no change needed).**
-  An audit of every `docs/docs/tutorials/*.py` found **no** tutorial
-  fits ≥2 experiments in `single`/default mode:
-  `fitting-exercise-si-lbco.py` uses two *separate* projects with one
-  experiment each (`sim_si`, `sim_lbco`) — its repeated `fit()` calls are
-  progressive single-experiment refinements, not `single`-with-N; the
-  multi-experiment tutorials (`calibrate-beer-ess`, `joint-si-bragg-pdf`,
-  `refine-ncaf-wish`) all set `joint`/`sequential` before fitting. So the
-  earlier premise that the Si/LBCO exercise relied on `single`-with-N was
-  incorrect, and no tutorial edit (or `notebook-prepare`) is required.
-  Commit: `Confirm no tutorial relies on single-with-N`
+      An audit of every `docs/docs/tutorials/*.py` found **no** tutorial
+      fits ≥2 experiments in `single`/default mode:
+      `fitting-exercise-si-lbco.py` uses two _separate_ projects with
+      one experiment each (`sim_si`, `sim_lbco`) — its repeated `fit()`
+      calls are progressive single-experiment refinements, not
+      `single`-with-N; the multi-experiment tutorials
+      (`calibrate-beer-ess`, `joint-si-bragg-pdf`, `refine-ncaf-wish`)
+      all set `joint`/`sequential` before fitting. So the earlier
+      premise that the Si/LBCO exercise relied on `single`-with-N was
+      incorrect, and no tutorial edit (or `notebook-prepare`) is
+      required. Commit: `Confirm no tutorial relies on single-with-N`
 
-- [x] **P1.8 — Close issue 85 and promote the ADR.**
-  `git mv` issue 85 to `closed/retain-per-experiment-fitted-parameters-for-plotting.md`,
-  rewrite its body to describe the resolution (single restricted to one
-  dataset; snapshot fallback removed), and update
-  `docs/dev/issues/index.md`. Promote the ADR: `git mv`
-  `docs/dev/adrs/suggestions/dataset-driven-fit-modes.md` →
-  `accepted/`, set its `## Status` to `Accepted`, flip its
-  `docs/dev/adrs/index.md` row to `Accepted` with the `accepted/...`
-  link, fix any links that pointed at `suggestions/...`
-  (`git grep -n`), and remove the `_review-*`/`_reply-*` siblings if
-  still present. **Align the ADR text to the refinements made during
-  plan review:** Decision 1/applicability wording → loaded-experiment
-  count with measured-data as readiness (plan Decision 2); Decision 4 →
-  move the template-derived `file_pattern` default to Deferred Work and
-  state `'*'` as the shipped default (plan Decision 4); Decision 3 → note
-  the idempotent self-copy skip. Files: `docs/dev/issues/...`,
-  `docs/dev/adrs/...`.
-  Commit: `Close issue 85 and accept dataset-driven fit modes ADR`
+- [x] **P1.8 — Close issue 85 and promote the ADR.** `git mv` issue 85
+      to
+      `closed/retain-per-experiment-fitted-parameters-for-plotting.md`,
+      rewrite its body to describe the resolution (single restricted to
+      one dataset; snapshot fallback removed), and update
+      `docs/dev/issues/index.md`. Promote the ADR: `git mv`
+      `docs/dev/adrs/suggestions/dataset-driven-fit-modes.md` →
+      `accepted/`, set its `## Status` to `Accepted`, flip its
+      `docs/dev/adrs/index.md` row to `Accepted` with the `accepted/...`
+      link, fix any links that pointed at `suggestions/...`
+      (`git grep -n`), and remove the `_review-*`/`_reply-*` siblings if
+      still present. **Align the ADR text to the refinements made during
+      plan review:** Decision 1/applicability wording →
+      loaded-experiment count with measured-data as readiness (plan
+      Decision 2); Decision 4 → move the template-derived `file_pattern`
+      default to Deferred Work and state `'*'` as the shipped default
+      (plan Decision 4); Decision 3 → note the idempotent self-copy
+      skip. Files: `docs/dev/issues/...`, `docs/dev/adrs/...`. Commit:
+      `Close issue 85 and accept dataset-driven fit modes ADR`
 
 - [x] **P1.9 — Phase 1 review gate.** No-code step. Mark `[x]`, commit
-  the checklist update alone with message `Reach Phase 1 review gate`,
-  then stop for Phase 1 review.
+      the checklist update alone with message
+      `Reach Phase 1 review gate`, then stop for Phase 1 review.
 
 ## Verification (Phase 2)
 

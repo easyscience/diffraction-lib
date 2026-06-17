@@ -167,7 +167,7 @@ individual issue files** — not here.
 | 77  | [Add Help Methods to Public Discovery Facades](closed/add-help-methods-to-public-discovery-facades.md)                                                       |
 | 78  | [Add `SEQUENTIAL` to `FitModeEnum` and Show Methods to Analysis](closed/add-sequential-to-fitmodeenum-and-show-methods-to-analysis.md)                       |
 | 84  | [Serialise `None` as `.` in CIF Output](closed/serialise-none-as-in-cif-output.md)                                                                           |
-| 85  | [Retain Per-Experiment Fitted Parameters for Plotting](closed/retain-per-experiment-fitted-parameters-for-plotting.md)                                        |
+| 85  | [Retain Per-Experiment Fitted Parameters for Plotting](closed/retain-per-experiment-fitted-parameters-for-plotting.md)                                       |
 | 100 | [Collapse Duplicate Predictive-Cache-Key Helpers](closed/collapse-duplicate-predictive-cache-key-helpers.md)                                                 |
 | 101 | [Remove Dead Branch in `_fit_state_categories`](closed/remove-dead-branch-in-fit-state-categories.md)                                                        |
 | 103 | [Make `_sync_engine_from_minimizer_category` Skip-Keys Declarative](closed/make-sync-engine-from-minimizer-category-skip-keys-declarative.md)                |

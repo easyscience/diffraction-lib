@@ -16,9 +16,9 @@ Analysis and fitting.
 
 The analysis layer offers three fit modes through the `fitting_mode`
 switchable category established by
-[`fit-mode-categories`](fit-mode-categories.md): `single`,
-`joint`, and `sequential`. Two problems make the current surface
-confusing and partly incorrect.
+[`fit-mode-categories`](fit-mode-categories.md): `single`, `joint`, and
+`sequential`. Two problems make the current surface confusing and partly
+incorrect.
 
 **`single` is overloaded.** It is the friendly name for the one-dataset
 case, but it _also_ silently loops over multiple loaded experiments,
@@ -89,19 +89,19 @@ loaded-experiment count**:
 - `sequential` → exactly one loaded experiment (the template). It
   deliberately does **not** require a configured data source, so
   `sequential` is offered as soon as one dataset is loaded — preserving
-  the intended workflow of switching to it and *then* pointing it at a
+  the intended workflow of switching to it and _then_ pointing it at a
   folder.
 
 **Readiness** (checked at `fit()` time, see Decisions 4 and 6) covers
-everything beyond the count: each scheduled experiment must have measured
-data (enforced by the existing `Fitter._require_measured_data` guard — a
-calculated-only experiment yields a clear fit-time error, not a hidden
-mode), and `sequential` additionally needs a resolvable `data_dir` that
-matches at least one file. An unconfigured or empty source is a clear
-fit-time error, **not** a reason to hide the mode. Counting *loaded* (not
-*measured*) experiments for applicability keeps `show_supported()` and
-`fit()` consistent for mixed measured/calculated projects without any
-"schedule only the measured subset" filtering.
+everything beyond the count: each scheduled experiment must have
+measured data (enforced by the existing `Fitter._require_measured_data`
+guard — a calculated-only experiment yields a clear fit-time error, not
+a hidden mode), and `sequential` additionally needs a resolvable
+`data_dir` that matches at least one file. An unconfigured or empty
+source is a clear fit-time error, **not** a reason to hide the mode.
+Counting _loaded_ (not _measured_) experiments for applicability keeps
+`show_supported()` and `fit()` consistent for mixed measured/calculated
+projects without any "schedule only the measured subset" filtering.
 
 The availability table is a **consequence** of the applicability
 predicates, not a hard-coded rule:
@@ -159,9 +159,9 @@ The `sequential_fit` category keeps `data_dir`, `file_pattern`,
   shipping a decided field with an undefined contract, the **minimal
   first-step behaviour is fully specified here**:
   - **Timing.** The copy happens at `fit()` time, during `sequential`
-    readiness resolution, *before* the sweep begins — not at config
-    time (so it always reflects the `data_dir`/`file_pattern` in effect
-    for that run).
+    readiness resolution, _before_ the sweep begins — not at config time
+    (so it always reflects the `data_dir`/`file_pattern` in effect for
+    that run).
   - **Destination.** A fixed project-relative folder
     (`<project>/data/sequential/`); the run then reads its inputs from
     there. The destination is derived, not separately configurable.
