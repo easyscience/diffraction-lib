@@ -219,7 +219,7 @@ run until Phase 2).
       (`git grep -n verification-software-version-labels`). Commit:
       `Promote verification-software-version-labels ADR to accepted`
 
-- [ ] **P1.5 — Phase 1 review gate.** No-code; mark `[x]` and commit the
+- [x] **P1.5 — Phase 1 review gate.** No-code; mark `[x]` and commit the
       checklist update alone. Commit: `Reach Phase 1 review gate`
 
 ## Status checklist
@@ -228,7 +228,7 @@ run until Phase 2).
 - [x] P1.2 engine_label + bare fullprof_label
 - [x] P1.3 migrate 15 verification pages
 - [x] P1.4 promote ADR
-- [ ] P1.5 Phase 1 review gate
+- [x] P1.5 Phase 1 review gate
 - [ ] Phase 2 verification green
 
 ## Phase 2 — Verification
