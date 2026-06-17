@@ -352,6 +352,58 @@ def test_write_iucr_cif_emits_powder_cwl_blocks(tmp_path):
     assert '_pd_meas.info_author_' not in text
 
 
+def test_write_iucr_cif_disabled_second_wavelength_stays_scalar(tmp_path):
+    from easydiffraction.io.cif.iucr_writer import write_iucr_cif
+
+    # Second wavelength recorded but disabled (ratio == 0): the report
+    # keeps the single-row scalar wavelength and omits the disabled λ₂.
+    experiment = _powder_experiment('disabled')
+    experiment.instrument.setup_wavelength_2 = _descriptor(1.5444)
+    experiment.instrument.setup_wavelength_2_to_1_ratio = _descriptor(0.0)
+
+    project = _project(
+        'disabled',
+        tmp_path,
+        _collection(_structure()),
+        _collection(experiment),
+    )
+
+    text = write_iucr_cif(project).read_text(encoding='utf-8')
+
+    assert '_diffrn_radiation_wavelength.value' in text
+    assert '_diffrn_radiation_wavelength.wt' in text
+    assert '1.5444' not in text
+
+
+def test_write_iucr_cif_active_doublet_emits_wavelength_loop(tmp_path):
+    from easydiffraction.io.cif.iucr_writer import write_iucr_cif
+
+    # Active doublet: the report emits the two-row
+    # _diffrn_radiation_wavelength loop with both wavelengths.
+    experiment = _powder_experiment('doublet')
+    experiment.instrument.setup_wavelength_2 = _descriptor(1.5444)
+    experiment.instrument.setup_wavelength_2_to_1_ratio = _descriptor(0.5)
+
+    project = _project(
+        'doublet',
+        tmp_path,
+        _collection(_structure()),
+        _collection(experiment),
+    )
+
+    text = write_iucr_cif(project).read_text(encoding='utf-8')
+
+    assert (
+        'loop_\n'
+        '_diffrn_radiation_wavelength.id\n'
+        '_diffrn_radiation_wavelength.value\n'
+        '_diffrn_radiation_wavelength.wt\n'
+    ) in text
+    # Both components present: id 1 at λ1 and id 2 at λ2.
+    assert '1.5406' in text
+    assert '1.5444' in text
+
+
 def test_write_iucr_cif_emits_joint_tof_pattern_blocks(tmp_path):
     from easydiffraction.io.cif.iucr_writer import write_iucr_cif
 
