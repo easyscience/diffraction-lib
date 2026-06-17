@@ -65,6 +65,7 @@ from easydiffraction.io.cif.serialize import analysis_to_cif
 from easydiffraction.utils.enums import VerbosityEnum
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
+from easydiffraction.utils.utils import SOFTWARE_PACKAGE_BY_ENGINE
 from easydiffraction.utils.utils import _help_method_rows
 from easydiffraction.utils.utils import _help_property_rows
 from easydiffraction.utils.utils import format_bulleted_warning
@@ -72,7 +73,6 @@ from easydiffraction.utils.utils import package_version
 from easydiffraction.utils.utils import render_cif
 from easydiffraction.utils.utils import render_object_help
 from easydiffraction.utils.utils import render_table
-from easydiffraction.utils.utils import SOFTWARE_PACKAGE_BY_ENGINE
 
 if TYPE_CHECKING:
     from collections.abc import Callable
