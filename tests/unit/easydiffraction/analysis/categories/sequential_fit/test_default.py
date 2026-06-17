@@ -13,6 +13,7 @@ def test_sequential_fit_defaults():
     assert sequential_fit.max_workers.value == '1'
     assert sequential_fit.chunk_size.value == '.'
     assert sequential_fit.reverse.value is False
+    assert sequential_fit.copy_data.value is False
     assert sequential_fit._identity.category_code == 'sequential_fit'
 
 
@@ -25,6 +26,7 @@ def test_sequential_fit_as_cif_serializes_all_fields():
     sequential_fit.max_workers = 'auto'
     sequential_fit.chunk_size = '4'
     sequential_fit.reverse = True
+    sequential_fit.copy_data = True
 
     as_cif = sequential_fit.as_cif
 
@@ -33,3 +35,4 @@ def test_sequential_fit_as_cif_serializes_all_fields():
     assert '_sequential_fit.max_workers auto' in as_cif
     assert '_sequential_fit.chunk_size 4' in as_cif
     assert '_sequential_fit.reverse true' in as_cif.lower()
+    assert '_sequential_fit.copy_data true' in as_cif.lower()

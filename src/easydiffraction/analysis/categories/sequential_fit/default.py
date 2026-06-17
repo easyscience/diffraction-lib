@@ -84,6 +84,15 @@ class SequentialFit(CategoryItem):
                 cif_names=['_easydiffraction_sequential_fit.reverse'],
             ),
         )
+        self._copy_data = BoolDescriptor(
+            name='copy_data',
+            description='Whether to copy matched data files into the project.',
+            value_spec=AttributeSpec(default=False),
+            tags=TagSpec(
+                edi_names=['_sequential_fit.copy_data'],
+                cif_names=['_easydiffraction_sequential_fit.copy_data'],
+            ),
+        )
 
     @property
     def data_dir(self) -> StringDescriptor:
@@ -134,6 +143,16 @@ class SequentialFit(CategoryItem):
     def reverse(self, value: bool) -> None:
         """Set whether to process sequential-fit files in reverse."""
         self._reverse.value = value
+
+    @property
+    def copy_data(self) -> BoolDescriptor:
+        """Whether to copy matched data files into the project."""
+        return self._copy_data
+
+    @copy_data.setter
+    def copy_data(self, value: bool) -> None:
+        """Set whether to copy matched data files into the project."""
+        self._copy_data.value = value
 
     @property
     def as_cif(self) -> str:

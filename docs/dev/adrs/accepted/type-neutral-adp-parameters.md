@@ -83,5 +83,3 @@ from `beta`. Implications specific to β:
   (`U_ij = β_ij/(2π²·a*_i·a*_j)`) during structure-CIF generation, then
   β is restored. The round-trip is mathematically exact, so the net
   behaviour is β-in/β-out.
-
-Plan: [`adp-beta-tensor.md`](../../plans/adp-beta-tensor.md).

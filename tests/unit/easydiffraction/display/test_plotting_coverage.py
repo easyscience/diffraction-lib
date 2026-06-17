@@ -419,73 +419,6 @@ class TestPlotParamSeriesFromCsv:
 
 
 # ------------------------------------------------------------------
-# Plotter.plot_param_series_from_snapshots (public method)
-# ------------------------------------------------------------------
-
-
-class TestPlotParamSeriesFromSnapshots:
-    def test_snapshot_plot(self):
-        from easydiffraction.display.plotting import Plotter
-
-        plot_calls = []
-
-        class FakeBackend:
-            def plot_scatter(self, **kwargs):
-                plot_calls.append(kwargs)
-
-        class Diffrn:
-            ambient_temperature = type(
-                'T', (), {'value': 300, 'description': 'Temp', 'name': 'ambient_temperature'}
-            )()
-
-        class Expt:
-            diffrn = Diffrn()
-
-        p = Plotter()
-        p._backend = FakeBackend()
-        experiments = {'expt1': Expt()}
-        snapshots = {
-            'expt1': {
-                'param_a': {'value': 1.23, 'uncertainty': 0.01, 'units': 'Å'},
-            },
-        }
-        p.plot_param_series_from_snapshots(
-            'param_a', 'diffrn.ambient_temperature', experiments, snapshots
-        )
-        assert len(plot_calls) == 1
-        assert plot_calls[0]['y'] == [1.23]
-        assert plot_calls[0]['x'] == [300]
-
-    def test_snapshot_plot_no_versus(self):
-        from easydiffraction.display.plotting import Plotter
-
-        plot_calls = []
-
-        class FakeBackend:
-            def plot_scatter(self, **kwargs):
-                plot_calls.append(kwargs)
-
-        class Diffrn:
-            pass
-
-        class Expt:
-            diffrn = Diffrn()
-
-        p = Plotter()
-        p._backend = FakeBackend()
-        experiments = {'expt1': Expt()}
-        snapshots = {
-            'expt1': {
-                'param_a': {'value': 2.0, 'uncertainty': 0.05, 'units': 'Å'},
-            },
-        }
-        p.plot_param_series_from_snapshots('param_a', None, experiments, snapshots)
-        assert len(plot_calls) == 1
-        assert plot_calls[0]['x'] == [1]  # fallback to index
-        assert 'Experiment No.' in plot_calls[0]['axes_labels']
-
-
-# ------------------------------------------------------------------
 # Plotter public methods (plot_meas, plot_calc, plot_meas_vs_calc)
 # ------------------------------------------------------------------
 
@@ -680,35 +613,25 @@ class TestPlotParamSeriesRouting:
         out = capsys.readouterr().out
         assert 'does not expose a CSV column name' in out
 
-    def test_falls_back_to_snapshots_without_csv(self, monkeypatch):
+    def test_warns_when_no_csv(self, monkeypatch, capsys):
         from types import SimpleNamespace
 
         from easydiffraction.display.plotting import Plotter
+        from easydiffraction.utils.logging import Logger
 
-        captured = {}
-
-        class FakeAnalysis:
-            _parameter_snapshots = {'expt1': {'param_a': {}}}
+        monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.WARN, raising=True)
 
         class FakeProject:
             metadata = SimpleNamespace(path=None)
             experiments = {'expt1': object()}
-            analysis = FakeAnalysis()
+            analysis = SimpleNamespace()
 
         p = Plotter()
         p._set_project(FakeProject())
-
-        def fake_snapshots(unique_name, versus, experiments, snapshots):
-            captured['unique_name'] = unique_name
-            captured['versus'] = versus
-            captured['snapshots'] = snapshots
-
-        p.plot_param_series_from_snapshots = fake_snapshots
         p.plot_param_series(SimpleNamespace(unique_name='param_a', name='param_a'), versus='v')
 
-        assert captured['unique_name'] == 'param_a'
-        assert captured['versus'] == 'v'
-        assert captured['snapshots'] == {'expt1': {'param_a': {}}}
+        out = capsys.readouterr().out
+        assert 'No sequential results found' in out
 
     def test_uses_csv_when_results_file_present(self, monkeypatch, tmp_path):
         from types import SimpleNamespace
@@ -821,19 +744,6 @@ class TestCollectFittedParamUniqueNames:
         p = Plotter()
         p._set_project(FakeProject())
         assert p._collect_fitted_parameter_unique_names() == ['param_a']
-
-    def test_from_snapshots_when_no_csv(self):
-        from types import SimpleNamespace
-
-        from easydiffraction.display.plotting import Plotter
-
-        class FakeProject:
-            metadata = SimpleNamespace(path=None)
-            analysis = SimpleNamespace(_parameter_snapshots={'e1': {'param_a': {}, 'param_b': {}}})
-
-        p = Plotter()
-        p._set_project(FakeProject())
-        assert p._collect_fitted_parameter_unique_names() == ['param_a', 'param_b']
 
     def test_empty_when_no_csv_and_no_snapshots(self):
         from types import SimpleNamespace

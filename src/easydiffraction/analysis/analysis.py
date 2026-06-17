@@ -599,7 +599,6 @@ class Analysis(
         self._persisted_fit_state_sidecar: dict[str, object] = {}
         self._fitter = Fitter(self.minimizer.type)
         self._fit_results = None
-        self._parameter_snapshots: dict[str, dict[str, dict]] = {}
         self._display = AnalysisDisplay(self)
         self._attach_category_parents()
 
@@ -617,17 +616,21 @@ class Analysis(
         self._fit_parameter_correlations._parent = self
         self._software._parent = self
 
-    @staticmethod
-    def _supported_filters_for(category: object) -> dict[str, object]:
+    def _loaded_experiment_count(self) -> int:
+        """Return the number of experiments loaded in the project."""
+        return len(self.project.experiments.names)
+
+    def _supported_filters_for(self, category: object) -> dict[str, object]:
         """
         Return owner context filters for a switchable category.
 
-        Analysis-level switchables (minimizer, fitting_mode) have no
-        owner-supplied context today; their supported-types lookups read
-        only the registered factory entries. The empty dict is therefore
-        intentional and applies uniformly across both categories.
+        The ``fitting_mode`` selector is applicability-driven: it needs
+        the loaded-experiment count to decide which modes apply. Other
+        analysis-level switchables (minimizer) have no owner-supplied
+        context and receive an empty dict.
         """
-        del category
+        if category is self._fitting_mode:
+            return {'experiment_count': self._loaded_experiment_count()}
         return {}
 
     @staticmethod
@@ -1490,6 +1493,36 @@ class Analysis(
 
         return True, self._resolved_resume_extra_steps(extra_steps)
 
+    def _require_mode_applicable(self, mode: FitModeEnum) -> None:
+        """
+        Reject a fit mode that does not apply to the loaded project.
+
+        Applicability is by loaded-experiment count and uses the same
+        predicate as ``fitting_mode.show_supported()``. Whether each
+        scheduled experiment has measured data is a separate readiness
+        check enforced later by the fitter.
+
+        Parameters
+        ----------
+        mode : FitModeEnum
+            The selected fitting mode.
+
+        Raises
+        ------
+        ValueError
+            If the mode does not apply to the current experiment count.
+        """
+        count = self._loaded_experiment_count()
+        valid = [tag for tag, _ in FittingMode._supported_types({'experiment_count': count})]
+        if mode.value in valid:
+            return
+        valid_text = ', '.join(repr(tag) for tag in valid) if valid else 'none'
+        msg = (
+            f'Fit mode {mode.value!r} does not apply to a project with '
+            f'{count} loaded experiment(s). Applicable mode(s): {valid_text}.'
+        )
+        raise ValueError(msg)
+
     def _validate_fit_request(
         self,
         *,
@@ -1531,6 +1564,7 @@ class Analysis(
             raise ValueError(msg)
         if resume and extra_steps is not None:
             self._validate_resume_extra_steps(extra_steps)
+        self._require_mode_applicable(mode)
 
     @staticmethod
     def _validate_resume_extra_steps(extra_steps: object) -> int:
@@ -2692,6 +2726,99 @@ class Analysis(
 
         return project_path / data_dir
 
+    def _resolve_sequential_source(self) -> str:
+        """
+        Resolve the sequential data directory, applying ``copy_data``.
+
+        Raises a clear error when no data directory is configured. When
+        ``copy_data`` is set, the matched files are copied into the
+        project's ``data/sequential/`` folder and the persisted
+        ``data_dir`` is rewritten to that project-relative destination
+        so the saved project stays self-contained. The copy is
+        idempotent: when the resolved source is already the copy
+        destination (the post-reload case), the copy is skipped.
+
+        Returns
+        -------
+        str
+            The directory to read sequential data files from.
+
+        Raises
+        ------
+        ValueError
+            If ``data_dir`` is unset, does not resolve to a directory
+            with matching files, or (with ``copy_data``) the project is
+            unsaved or ``data_dir`` overlaps the managed archive folder.
+        """
+        from easydiffraction.io.ascii import extract_data_paths_from_dir  # noqa: PLC0415
+
+        if not str(self._sequential_fit.data_dir.value).strip():
+            msg = (
+                'Sequential fitting needs a data folder. Set '
+                'analysis.sequential_fit.data_dir to the directory containing '
+                'your sequential data files (and analysis.sequential_fit.file_pattern '
+                'to match them).'
+            )
+            raise ValueError(msg)
+
+        source = self._resolve_sequential_data_dir()
+
+        file_pattern = self._sequential_fit.file_pattern.value
+        try:
+            matched = extract_data_paths_from_dir(source, file_pattern=file_pattern)
+        except (FileNotFoundError, ValueError) as error:
+            msg = (
+                'No sequential data files found. Check that '
+                f'analysis.sequential_fit.data_dir ({source}) exists and that '
+                f'analysis.sequential_fit.file_pattern ({file_pattern!r}) matches '
+                'your data files.'
+            )
+            raise ValueError(msg) from error
+
+        if not self._sequential_fit.copy_data.value:
+            return str(source)
+
+        project_path = self.project.metadata.path
+        if project_path is None:
+            msg = (
+                'Sequential fitting with copy_data requires a saved project; call save_as() first.'
+            )
+            raise ValueError(msg)
+
+        destination = project_path / 'data' / 'sequential'
+        source_resolved = source.resolve()
+        destination_resolved = destination.resolve()
+        if source_resolved == destination_resolved:
+            return str(source)
+
+        # Refusing overlapping source/destination keeps the refresh
+        # rmtree below from ever deleting the user's source files: a
+        # data_dir nested in (or containing) the managed archive would
+        # otherwise be wiped before it is copied.
+        nested = source_resolved.is_relative_to(destination_resolved)
+        contains = destination_resolved.is_relative_to(source_resolved)
+        if nested or contains:
+            msg = (
+                'With copy_data=True, analysis.sequential_fit.data_dir must be a '
+                f'folder separate from the managed archive at {destination}; got a '
+                f'nested or containing path ({source}).'
+            )
+            raise ValueError(msg)
+
+        import shutil  # noqa: PLC0415
+
+        # Refresh the archive to hold exactly the current matched set.
+        # The self-copy case returned above and overlapping paths were
+        # rejected, so this never deletes the source while reading it.
+        if destination.exists():
+            shutil.rmtree(destination)
+        destination.mkdir(parents=True, exist_ok=True)
+        for path in matched:
+            shutil.copy2(path, destination / Path(path).name)
+
+        self._sequential_fit.data_dir = str(Path('data') / 'sequential')
+        return str(destination)
+
     def _prepare_fit_run(
         self,
         *,
@@ -2795,7 +2922,7 @@ class Analysis(
         try:
             _fit_seq(
                 analysis=self,
-                data_dir=str(self._resolve_sequential_data_dir()),
+                data_dir=self._resolve_sequential_source(),
                 max_workers=max_workers,
                 chunk_size=chunk_size,
                 file_pattern=self._sequential_fit.file_pattern.value,
@@ -2881,7 +3008,7 @@ class Analysis(
         fit_options: FitterFitOptions,
     ) -> None:
         """
-        Run single-mode fitting for each experiment independently.
+        Run single-mode fitting for the one loaded experiment.
 
         Parameters
         ----------
@@ -2890,28 +3017,20 @@ class Analysis(
         structures : object
             Project structures collection.
         experiments : object
-            Project experiments collection.
+            Project experiments collection (exactly one experiment in
+            single mode).
         fit_options : FitterFitOptions
             Execution options controlling limits, randomness and resume.
-
-        Raises
-        ------
-        ValueError
-            If resume is requested for more than one single-fit
-            experiment.
         """
         mode = FitModeEnum.SINGLE
         expt_names = experiments.names
-        if fit_options.resume and len(expt_names) != 1:
-            msg = 'Resume is supported for one single-fit experiment at a time.'
-            raise ValueError(msg)
 
         short_display_handle = self._fit_single_print_header(verb, expt_names, mode)
         short_rows: list[list[str]] = []
         self.fitter.minimizer.tracker._set_shared_display_handle(short_display_handle)
 
         try:
-            self._fit_single_experiments(
+            self._fit_single_experiment(
                 verb,
                 structures,
                 experiments,
@@ -2926,7 +3045,7 @@ class Analysis(
                 with suppress(Exception):
                     short_display_handle.close()
 
-    def _fit_single_experiments(
+    def _fit_single_experiment(
         self,
         verb: VerbosityEnum,
         structures: object,
@@ -2935,40 +3054,38 @@ class Analysis(
         fit_options: FitterFitOptions,
         short_state: tuple[list[list[str]], object],
     ) -> None:
-        """Run the per-experiment loop for single-fit mode."""
+        """Fit the single loaded experiment in single-fit mode."""
         short_rows, short_display_handle = short_state
-        for expt_name in experiments.names:
-            if verb is VerbosityEnum.FULL:
-                console.print(
-                    f"📋 Using experiment 🔬 '{expt_name}' for "
-                    f"'{FitModeEnum.SINGLE.value}' fitting"
-                )
-
-            experiment = experiments[expt_name]
-            self.fitter.fit(
-                structures,
-                [experiment],
-                analysis=self,
-                verbosity=verb,
-                options=FitterFitOptions(
-                    use_physical_limits=fit_options.use_physical_limits,
-                    random_seed=self._resolved_fit_random_seed(fit_options.random_seed),
-                    resume=fit_options.resume,
-                    extra_steps=fit_options.extra_steps,
-                ),
+        expt_name = next(iter(experiments.names))
+        if verb is VerbosityEnum.FULL:
+            console.print(
+                f"📋 Using experiment 🔬 '{expt_name}' for '{FitModeEnum.SINGLE.value}' fitting"
             )
 
-            results = self.fitter.results
-            self._snapshot_params(expt_name, results)
-            self.fit_results = results
+        experiment = experiments[expt_name]
+        self.fitter.fit(
+            structures,
+            [experiment],
+            analysis=self,
+            verbosity=verb,
+            options=FitterFitOptions(
+                use_physical_limits=fit_options.use_physical_limits,
+                random_seed=self._resolved_fit_random_seed(fit_options.random_seed),
+                resume=fit_options.resume,
+                extra_steps=fit_options.extra_steps,
+            ),
+        )
 
-            if verb is VerbosityEnum.SHORT:
-                self._fit_single_update_short_table(
-                    short_rows,
-                    expt_name,
-                    results,
-                    short_display_handle,
-                )
+        results = self.fitter.results
+        self.fit_results = results
+
+        if verb is VerbosityEnum.SHORT:
+            self._fit_single_update_short_table(
+                short_rows,
+                expt_name,
+                results,
+                short_display_handle,
+            )
 
     @staticmethod
     def _fit_single_print_header(
@@ -3005,26 +3122,6 @@ class Analysis(
         console.print("🚀 Starting fit process with 'lmfit'...")
         console.print('📈 Goodness-of-fit (reduced χ²) per experiment:')
         return make_display_handle()
-
-    def _snapshot_params(self, expt_name: str, results: object) -> None:
-        """
-        Snapshot parameter values for a single experiment.
-
-        Parameters
-        ----------
-        expt_name : str
-            Experiment name key for the snapshot dict.
-        results : object
-            Fit results with ``.parameters`` list.
-        """
-        snapshot: dict[str, dict] = {}
-        for param in results.parameters:
-            snapshot[param.unique_name] = {
-                'value': param.value,
-                'uncertainty': param.uncertainty,
-                'units': _parameter_display_units(param),
-            }
-        self._parameter_snapshots[expt_name] = snapshot
 
     def _fit_single_update_short_table(
         self,
