@@ -17,5 +17,4 @@ ADR — which deliberately chose type-neutral storage to keep parameter
 identity stable across switches — so it needs its own ADR + plan and is
 independent of the β-tensor work that surfaced it.
 
-**Depends on:** the β-tensor ADP support
-([adp-beta-tensor plan](docs/dev/plans/adp-beta-tensor.md)).
+**Depends on:** the β-tensor ADP support (shipped in #199).

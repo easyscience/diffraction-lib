@@ -13,5 +13,4 @@ conversion in the renderer (using the reciprocal cell), analogous to the
 existing B→U step. The model-layer β↔U conversion already exists
 (`AtomSite._convert_adp_values_beta`) and could be reused.
 
-**Depends on:** the β-tensor ADP support
-([adp-beta-tensor plan](docs/dev/plans/adp-beta-tensor.md)).
+**Depends on:** the β-tensor ADP support (shipped in #199).
