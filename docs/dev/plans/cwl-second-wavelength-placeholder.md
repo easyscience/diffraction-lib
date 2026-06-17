@@ -262,7 +262,7 @@ follow-up starts informed:
       adjust the guard only if required. Commit:
       `Emit diffrn_radiation_wavelength loop for CWL doublet`
 
-- [ ] **P1.3 — Update the Edi persistence inventory ADR.** In
+- [x] **P1.3 — Update the Edi persistence inventory ADR.** In
       `docs/dev/adrs/accepted/edstar-project-persistence.md`, add the
       two new fields to the CWL-instrument inventory row (~line 633) and
       the per-attribute Edi-name table (~line 847), with their
@@ -302,7 +302,7 @@ Phase 2 adds the tests listed under _Concrete files_:
 - [x] P1.1 — placeholder fields added (non-refinable
       `NumericDescriptor`s)
 - [x] P1.2 — IUCr loop emitted when active; mixed states guarded
-- [ ] P1.3 — Edi persistence inventory ADR updated
+- [x] P1.3 — Edi persistence inventory ADR updated
 - [ ] P1.4 — Phase 1 review gate
 - [ ] Phase 2 — tests added and all five `pixi run` tasks clean
 
