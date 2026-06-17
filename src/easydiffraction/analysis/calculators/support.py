@@ -33,7 +33,7 @@ class SupportEntry:
     Attributes
     ----------
     instrument_tag : str
-        The instrument category tag (for example ``'cwl-pd'``).
+        The instrument category tag (for example ``'cwl-pd-neutron'``).
     description : str
         One-line human-readable description of the instrument.
     compatibility : Compatibility
