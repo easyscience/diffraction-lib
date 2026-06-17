@@ -270,7 +270,7 @@ include them only in the `pixi run fix` commit. Leave generated
 - [x] P1.5 — Bind crysfml (verify native line first, then fall back)
 - [x] P1.6 — Demonstrate the new fields in docs
 - [x] P1.7 — Phase 1 review gate
-- [ ] Phase 2 — tests added/updated and all five tasks pass
+- [x] Phase 2 — tests added/updated and all five tasks pass
 
 ## Suggested Pull Request
 
