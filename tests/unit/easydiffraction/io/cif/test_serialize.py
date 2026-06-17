@@ -313,3 +313,39 @@ def test_beta_atom_round_trips_through_cif():
     expected_b_eq = 8.0 * math.pi**2 * u_eq
     assert structure.atom_sites['Fe'].adp_iso_as_b == pytest.approx(expected_b_eq, rel=1e-9)
     assert reloaded.atom_sites['Fe'].adp_iso_as_b == pytest.approx(expected_b_eq, rel=1e-9)
+
+
+def test_cwl_second_wavelength_round_trips_through_cif():
+    import gemmi
+
+    from easydiffraction.datablocks.experiment.categories.instrument.cwl import CwlPdInstrument
+
+    instr = CwlPdInstrument()
+    instr.setup_wavelength = 1.5406
+    instr.setup_wavelength_2 = 1.5444
+    instr.setup_wavelength_2_to_1_ratio = 0.5
+
+    block = gemmi.cif.read_string('data_x\n' + instr.as_cif + '\n').sole_block()
+    restored = CwlPdInstrument()
+    restored.from_cif(block)
+
+    assert restored.setup_wavelength_2.value == 1.5444
+    assert restored.setup_wavelength_2_to_1_ratio.value == 0.5
+
+
+def test_cwl_disabled_second_wavelength_preserves_value_through_cif():
+    import gemmi
+
+    from easydiffraction.datablocks.experiment.categories.instrument.cwl import CwlPdInstrument
+
+    # Disabled state (ratio == 0) still persists the recorded λ₂.
+    instr = CwlPdInstrument()
+    instr.setup_wavelength = 1.5406
+    instr.setup_wavelength_2 = 1.5444
+
+    block = gemmi.cif.read_string('data_x\n' + instr.as_cif + '\n').sole_block()
+    restored = CwlPdInstrument()
+    restored.from_cif(block)
+
+    assert restored.setup_wavelength_2.value == 1.5444
+    assert restored.setup_wavelength_2_to_1_ratio.value == 0.0
