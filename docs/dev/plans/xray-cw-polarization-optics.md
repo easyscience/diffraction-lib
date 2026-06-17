@@ -91,17 +91,11 @@ injection, not a backend extension. No `pyproject.toml` / `pixi.toml` /
 
 ## Open questions
 
-1. **Verification reference data (P1.6).** The ADR Context references
-   `docs/docs/verification/pd-xray-pbso4-single-polarized-wdt48.py`
-   (does not exist yet) generated from
-   `pbsox_single_polarized_wdt48.pcr`. Producing a FullProf reference
-   needs FullProf output data committed under the verification data set.
-   **Question for the user:** is that reference data already available
-   to add, or should P1.6 instead demonstrate the new fields on the
-   existing `docs/docs/verification/pd-xray-pbso4.py` /
-   `docs/docs/tutorials/simulate-nacl-xray.py` (setting the coefficient
-   and showing the pattern responds) without a new FullProf page? The
-   plan defaults to the lighter demonstration if the data is not on hand.
+1. **Verification reference data (P1.6).** Resolved in P1.6: no new
+   FullProf polarized reference data was present, so the implementation
+   used the plan's lighter demonstration path in
+   `docs/docs/tutorials/simulate-nacl-xray.py` and regenerated the
+   matching notebook.
 2. **cryspy cached-dict keys (P1.4).** Resolved in P1.4: the CIF-build
    path emits `_setup_K` and `_setup_cthm`, the cached working dict is
    patched when `k`/`cthm` keys are exposed, and polarization settings
@@ -210,7 +204,7 @@ Phase 2 (tests + verification):
   inspection result in the commit body.
   Commit: `Apply Lorentz-polarization envelope on crysfml CW powder`
 
-- [ ] **P1.6 — Demonstrate the new fields in docs.**
+- [x] **P1.6 — Demonstrate the new fields in docs.**
   Per open question 1: either add the
   `pd-xray-pbso4-single-polarized-wdt48.py` verification source (if the
   FullProf reference data is available) or set
@@ -269,7 +263,7 @@ include them only in the `pixi run fix` commit. Leave generated
 - [x] P1.3 — Add the shared Lorentz-polarization helper
 - [x] P1.4 — Bind cryspy natively
 - [x] P1.5 — Bind crysfml (verify native line first, then fall back)
-- [ ] P1.6 — Demonstrate the new fields in docs
+- [x] P1.6 — Demonstrate the new fields in docs
 - [ ] P1.7 — Phase 1 review gate
 - [ ] Phase 2 — tests added/updated and all five tasks pass
 
