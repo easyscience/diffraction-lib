@@ -200,7 +200,7 @@ locally (atomic, single-purpose) before moving on. Mark each `- [ ]` as
   `sequential.py`, `analysis.py`.
   Commit: `Add copy_data and clearer sequential data resolution`
 
-- [ ] **P1.6 — Reconcile display/serialization filters.**
+- [x] **P1.6 — Reconcile display/serialization filters.**
   Verify `_help_filter` and `_serializable_categories` reflect the
   active mode under the new model (sequential config hidden in `single`,
   etc.); adjust only if needed. Files: `analysis.py`.
@@ -264,7 +264,7 @@ Notes:
 - [x] P1.3 — Restrict `single` to exactly one experiment
 - [x] P1.4 — Remove the `single`-with-N snapshot machinery
 - [ ] P1.5 — Sequential data source: default, no-files error, `copy_data`
-- [ ] P1.6 — Reconcile display/serialization filters
+- [x] P1.6 — Reconcile display/serialization filters
 - [ ] P1.7 — Update tutorials relying on `single`-with-N
 - [ ] P1.8 — Close issue 85 and promote the ADR
 - [ ] P1.9 — Phase 1 review gate
