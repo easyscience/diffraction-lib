@@ -112,12 +112,14 @@ predicates, not a hard-coded rule:
 | 1                  | `single`, `sequential` |
 | ≥ 2                | `joint`                |
 
-Predicate-based applicability is preferred over a central `if count >= 2`
-switch because it is **honest** (it can also reflect, e.g., an
-experiment with no measured data, not just a count), **extensible** (a
-future remote data source becomes another way `sequential`'s readiness
-is satisfied — see Deferred Work), and keeps the selector contract
-clean.
+Per-mode predicates are preferred over a central `if count >= 2` switch
+because they keep each mode's rule next to the mode and are
+**extensible** (a future remote data source becomes another way
+`sequential`'s readiness is satisfied — see Deferred Work) without
+touching a shared branch. Measured-data presence is deliberately **not**
+an applicability input — it is a fit-time readiness check — so
+`show_supported()` never hides a mode because an experiment lacks
+measured data.
 
 ### 2. Restrict `single` to exactly one loaded experiment
 
