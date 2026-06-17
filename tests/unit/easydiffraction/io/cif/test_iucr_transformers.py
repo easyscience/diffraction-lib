@@ -96,7 +96,7 @@ def test_wavelength_transformer_rejects_incomplete_pair(monkeypatch):
     )
     experiment = SimpleNamespace(instrument=instrument)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match='second wavelength'):
         WavelengthTransformer().items(experiment)
 
 

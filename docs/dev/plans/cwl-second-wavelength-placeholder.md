@@ -152,10 +152,10 @@ not silently dropped.
 Engine binding is out of scope here, but recording the trade-off so the
 follow-up starts informed:
 
-- **Two ways to compute the doublet.** (a) *Calculator-independent* —
+- **Two ways to compute the doublet.** (a) _Calculator-independent_ —
   edi calls the engine once at λ₁ and once at λ₂ and weight-sums the two
   patterns; works for any engine (and is the only option for cryspy,
-  which has no native doublet). (b) *Native crysfml* — a future build
+  which has no native doublet). (b) _Native crysfml_ — a future build
   computes both lines in one pass via the `LAMBDA λ₁ λ₂ ratio` CFL
   directive.
 - **(a) is expected to be slower, bounded by ~2× the single-wavelength

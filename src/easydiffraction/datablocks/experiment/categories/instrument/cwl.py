@@ -46,14 +46,14 @@ class CwlInstrumentBase(InstrumentBase):
             ),
         )
 
-        # Placeholder for a second incident wavelength (e.g. the X-ray
-        # Cu Kα₁/Kα₂ doublet). Non-refinable NumericDescriptors: no
-        # calculation engine consumes them yet, so a refinable Parameter
-        # would let a fit silently move a value with no effect. Defaults
-        # of 0.0 mean "no second component" (monochromatic, as today).
+        # Placeholder for a second incident wavelength (the X-ray Cu
+        # K-alpha1/K-alpha2 doublet). These are non-refinable
+        # NumericDescriptors: no engine consumes them yet, so a
+        # refinable Parameter would let a fit silently move a value
+        # with no effect. Defaults of 0.0 mean monochromatic, as today.
         self._setup_wavelength_2: NumericDescriptor = NumericDescriptor(
             name='wavelength_2',
-            description='Second incident wavelength (e.g. X-ray Kα₂)',
+            description='Second incident wavelength (e.g. X-ray K-alpha2)',
             units='angstroms',
             display_handler=DisplayHandler(
                 display_name='Wavelength 2',
@@ -108,7 +108,7 @@ class CwlInstrumentBase(InstrumentBase):
     @property
     def setup_wavelength_2(self) -> NumericDescriptor:
         """
-        Second incident wavelength λ₂ (Å), e.g. the X-ray Kα₂ line.
+        Second incident wavelength λ₂ (Å), e.g. the X-ray K-alpha2 line.
 
         Reading returns the underlying ``NumericDescriptor``; assigning
         a number updates its value. Default ``0.0`` means no second
@@ -136,7 +136,9 @@ class CwlInstrumentBase(InstrumentBase):
 
     @setup_wavelength_2_to_1_ratio.setter
     def setup_wavelength_2_to_1_ratio(self, value: float) -> None:
-        """Set the wavelength_2-to-wavelength intensity ratio (I₂/I₁)."""
+        """
+        Set the wavelength_2-to-wavelength intensity ratio (I₂/I₁).
+        """
         self._setup_wavelength_2_to_1_ratio.value = value
 
 

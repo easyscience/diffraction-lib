@@ -118,10 +118,10 @@ class WavelengthTransformer(IucrCategoryTransformer):
         Return a two-row wavelength loop for an active doublet.
 
         Emits the ``_diffrn_radiation_wavelength`` loop with the primary
-        wavelength (``wt`` 1.0) and the second component
-        (``wt`` = ``setup_wavelength_2_to_1_ratio``) when the doublet is
-        active; ``None`` otherwise. The incomplete pair (a positive
-        ratio with no second wavelength) is rejected by
+        wavelength (``wt`` 1.0) and the second component (``wt`` =
+        ``setup_wavelength_2_to_1_ratio``) when the doublet is active;
+        ``None`` otherwise. The incomplete pair (a positive ratio with
+        no second wavelength) is rejected by
         :func:`_wavelength_doublet_active`.
 
         Parameters
@@ -497,11 +497,6 @@ def _wavelength_doublet_active(instrument: object) -> bool:
     -------
     bool
         ``True`` when an active doublet should be emitted as a loop.
-
-    Raises
-    ------
-    ValueError
-        If the ratio is positive but no second wavelength is set.
     """
     wavelength_2 = _finite_number(_attribute_value(instrument, 'setup_wavelength_2')) or 0.0
     ratio = _finite_number(_attribute_value(instrument, 'setup_wavelength_2_to_1_ratio')) or 0.0
