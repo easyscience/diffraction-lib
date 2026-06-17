@@ -66,7 +66,56 @@ def test_fullprof_label_formats_version(ref_dir):
         '        ** PROGRAM FullProf.2k (Version 8.40 - Feb2026-ILL JRC) **\n',
         encoding='utf-8',
     )
-    assert verify.fullprof_label('', 'ref.sum') == 'FullProf v8.40'
+    assert verify.fullprof_label('', 'ref.sum') == 'FullProf 8.40'
+
+
+def test_engine_label_formats_candidate_versions(monkeypatch):
+    versions = {
+        'easydiffraction': '1.2.3',
+        'cryspy': '2.4.6',
+    }
+    monkeypatch.setattr(verify, 'package_version', lambda name: versions[name])
+    assert verify.engine_label('cryspy') == 'edi 1.2.3 (cryspy 2.4.6)'
+
+
+def test_engine_label_appends_note(monkeypatch):
+    versions = {
+        'easydiffraction': '1.2.3',
+        'cryspy': '2.4.6',
+    }
+    monkeypatch.setattr(verify, 'package_version', lambda name: versions[name])
+    assert verify.engine_label('cryspy', note='refined') == 'edi 1.2.3 (cryspy 2.4.6, refined)'
+
+
+def test_engine_label_marks_unresolvable_engine_version(monkeypatch):
+    def fake_package_version(name):
+        if name == 'easydiffraction':
+            return '1.2.3'
+        return None
+
+    monkeypatch.setattr(verify, 'package_version', fake_package_version)
+    assert verify.engine_label('cryspy') == 'edi 1.2.3 (cryspy ?)'
+
+
+@pytest.mark.parametrize(
+    ('raw_version', 'expected_version'),
+    [
+        ('1.2.3+dev3', '1.2.3+dev3'),
+        ('0.5.8+dirty3', '0.5.8+dirty3'),
+        ('0.5.8+devdirty3', '0.5.8+devdirty3'),
+        ('1.2.3+g1a2b3c', '1.2.3'),
+        ('1.2.3+abcdef', '1.2.3+abcdef'),
+    ],
+)
+def test_engine_label_preserves_dev_markers(monkeypatch, raw_version, expected_version):
+    monkeypatch.setattr(verify, 'package_version', lambda _name: raw_version)
+    expected = f'edi {expected_version} (cryspy {expected_version})'
+    assert verify.engine_label('cryspy') == expected
+
+
+def test_engine_label_rejects_unknown_engine():
+    with pytest.raises(ValueError, match="Unknown engine 'crysfmi'"):
+        verify.engine_label('crysfmi')
 
 
 class _FakeCategory:
