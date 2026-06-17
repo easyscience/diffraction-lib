@@ -242,7 +242,6 @@ nav:
           - NCAF pd-neut-tof: tutorials/refine-ncaf-wish.ipynb
           - Si Bragg+PDF: tutorials/joint-si-bragg-pdf.ipynb
           - Co2SiO4 T-scan: tutorials/refine-cosio-d20-tscan.ipynb
-          - YAlO3+Al2O3 T-scan: tutorials/refine-yap-tscan.ipynb
       - Simulated Data:
           - LBCO+Si McStas: tutorials/refine-lbco-si-mcstas.ipynb
           - BEER McStas: tutorials/calibrate-beer-ess.ipynb
