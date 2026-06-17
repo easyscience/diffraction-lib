@@ -280,27 +280,39 @@ def test_fit_sequential_requires_saved_project(tmp_path) -> None:
     project.structures.add(model)
     project.experiments.add(expt)
 
+    # A matching data file so source resolution passes and the
+    # unsaved-project precondition is reached.
+    (tmp_path / 'scan.xye').write_text('1 2 3\n')
+
     with pytest.raises(ValueError, match='must be saved'):
         _run_sequential_fit(project, str(tmp_path))
 
 
 def test_fit_sequential_requires_at_least_one_structure(tmp_path) -> None:
     """fit_sequential raises if no structures exist."""
+    data_path = download_data('meas-lbco-hrpt', destination=TEMP_DIR)
+    expt = ExperimentFactory.from_data_path(name='e', data_path=data_path)
     project = Project(name='no_struct')
+    project.experiments.add(expt)
     project.save_as(str(tmp_path / 'proj'))
+
+    # One loaded experiment (so sequential applies) and a matching data
+    # file (so source resolution passes) make the missing structure the
+    # first precondition to fail.
+    (tmp_path / 'scan.xye').write_text('1 2 3\n')
 
     with pytest.raises(ValueError, match='at least 1 structure'):
         _run_sequential_fit(project, str(tmp_path))
 
 
 def test_fit_sequential_requires_one_experiment(tmp_path) -> None:
-    """fit_sequential raises if no experiments exist."""
+    """Sequential mode does not apply with zero loaded experiments."""
     model = StructureFactory.from_scratch(name='s')
     project = Project(name='no_expt')
     project.structures.add(model)
     project.save_as(str(tmp_path / 'proj'))
 
-    with pytest.raises(ValueError, match='exactly 1 experiment'):
+    with pytest.raises(ValueError, match="Fit mode 'sequential' does not apply"):
         _run_sequential_fit(project, str(tmp_path))
 
 

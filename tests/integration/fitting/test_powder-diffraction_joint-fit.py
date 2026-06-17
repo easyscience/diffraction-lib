@@ -262,21 +262,10 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     expt1.linked_structures['pbso4'].scale.free = True
     expt2.linked_structures['pbso4'].scale.free = True
 
-    # ------------ 1st fitting ------------
+    # ------------ 1st fitting (joint, default weights) ------------
 
-    # Perform fit
-    project.analysis.fit()
-
-    # Compare fit quality
-    assert_almost_equal(
-        project.analysis.fit_results.reduced_chi_square,
-        desired=26.05,
-        decimal=1,
-    )
-
-    # ------------ 2nd fitting ------------
-
-    # Perform fit
+    # Perform fit. With two loaded experiments only joint fitting
+    # applies (single is restricted to one experiment).
     project.analysis.fitting_mode.type = 'joint'
     project.analysis.fit()
 
@@ -287,7 +276,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
         decimal=1,
     )
 
-    # ------------ 3rd fitting ------------
+    # ------------ 2nd fitting (joint, explicit equal weights) ------------
 
     # Perform fit
     project.analysis.joint_fit['xrd'].weight = 0.5  # Default
@@ -301,7 +290,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
         decimal=1,
     )
 
-    # ------------ 4th fitting ------------
+    # ------------ 3rd fitting (joint, asymmetric weights) ------------
 
     # Perform fit
     project.analysis.joint_fit['xrd'].weight = 0.3
