@@ -398,10 +398,9 @@ def test_write_iucr_cif_active_doublet_emits_wavelength_loop(tmp_path):
         '_diffrn_radiation_wavelength.id\n'
         '_diffrn_radiation_wavelength.value\n'
         '_diffrn_radiation_wavelength.wt\n'
+        '  1 1.5406 1.\n'
+        '  2 1.5444 0.5\n'
     ) in text
-    # Both components present: id 1 at λ1 and id 2 at λ2.
-    assert '1.5406' in text
-    assert '1.5444' in text
 
 
 def test_write_iucr_cif_emits_joint_tof_pattern_blocks(tmp_path):
