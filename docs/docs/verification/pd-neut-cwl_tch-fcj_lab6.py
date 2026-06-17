@@ -116,13 +116,14 @@ experiment.instrument.calib_sample_transparency = FULLPROF_SYSIN
 
 project.analysis.calculate()
 calc_ed_cryspy = experiment.data.intensity_calc
+LABEL_ED_CRYSPY = verify.engine_label('cryspy')
 
 project.display.pattern_comparison(
     'lab6',
     reference=calc_fullprof,
     candidate=calc_ed_cryspy,
     reference_label=FULLPROF_LABEL,
-    candidate_label=verify.engine_label('cryspy'),
+    candidate_label=LABEL_ED_CRYSPY,
 )
 
 # %% [markdown]
@@ -139,13 +140,14 @@ project.display.fit.results()
 
 project.analysis.calculate()
 calc_ed_cryspy_refined = experiment.data.intensity_calc
+LABEL_ED_CRYSPY_REFINED = verify.engine_label('cryspy', note='refined')
 
 project.display.pattern_comparison(
     'lab6',
     reference=calc_fullprof,
     candidate=calc_ed_cryspy_refined,
     reference_label=FULLPROF_LABEL,
-    candidate_label=verify.engine_label('cryspy', note='refined'),
+    candidate_label=LABEL_ED_CRYSPY_REFINED,
 )
 
 # %% [markdown]
@@ -168,13 +170,14 @@ experiment.peak.asym_fcj_2 = FULLPROF_D_L
 
 project.analysis.calculate()
 calc_ed_crysfml = experiment.data.intensity_calc
+LABEL_ED_CRYSFML = verify.engine_label('crysfml')
 
 project.display.pattern_comparison(
     'lab6',
     reference=calc_fullprof,
     candidate=calc_ed_crysfml,
     reference_label=FULLPROF_LABEL,
-    candidate_label=verify.engine_label('crysfml'),
+    candidate_label=LABEL_ED_CRYSFML,
 )
 
 # %% [markdown]
@@ -192,13 +195,14 @@ project.display.fit.results()
 
 project.analysis.calculate()
 calc_ed_crysfml_refined = experiment.data.intensity_calc
+LABEL_ED_CRYSFML_REFINED = verify.engine_label('crysfml', note='refined')
 
 project.display.pattern_comparison(
     'lab6',
     reference=calc_fullprof,
     candidate=calc_ed_crysfml_refined,
     reference_label=FULLPROF_LABEL,
-    candidate_label=verify.engine_label('crysfml', note='refined'),
+    candidate_label=LABEL_ED_CRYSFML_REFINED,
 )
 
 # %% [markdown]
@@ -207,8 +211,8 @@ project.display.pattern_comparison(
 # %%
 verify.assert_patterns_agree(
     [
-        (f'{verify.engine_label("cryspy")} vs {FULLPROF_LABEL}', calc_fullprof, calc_ed_cryspy),
-        (f'{verify.engine_label("crysfml")} vs {FULLPROF_LABEL}', calc_fullprof, calc_ed_crysfml),
+        (f'{LABEL_ED_CRYSPY} vs {FULLPROF_LABEL}', calc_fullprof, calc_ed_cryspy),
+        (f'{LABEL_ED_CRYSFML} vs {FULLPROF_LABEL}', calc_fullprof, calc_ed_crysfml),
     ],
     raise_on_failure=False,
 )

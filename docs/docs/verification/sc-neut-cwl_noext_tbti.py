@@ -119,6 +119,7 @@ project.experiments.add(experiment)
 
 # %%
 calc_ed_cryspy = verify.calculate_reflections(project, experiment, 'cryspy')
+LABEL_ED_CRYSPY = verify.engine_label('cryspy')
 reference, candidate = verify.align_reflections(f2calc, calc_ed_cryspy)
 
 project.display.reflection_comparison(
@@ -126,7 +127,7 @@ project.display.reflection_comparison(
     reference=reference,
     candidate=candidate,
     reference_label=FULLPROF_LABEL,
-    candidate_label=verify.engine_label('cryspy'),
+    candidate_label=LABEL_ED_CRYSPY,
 )
 
 # %% [markdown]
@@ -141,6 +142,7 @@ project.analysis.fit()
 project.display.fit.results()
 
 calc_ed_cryspy_refined = verify.calculate_reflections(project, experiment, 'cryspy')
+LABEL_ED_CRYSPY_REFINED = verify.engine_label('cryspy', note='scale only')
 reference_refined, candidate_refined = verify.align_reflections(f2calc, calc_ed_cryspy_refined)
 
 project.display.reflection_comparison(
@@ -148,7 +150,7 @@ project.display.reflection_comparison(
     reference=reference_refined,
     candidate=candidate_refined,
     reference_label=FULLPROF_LABEL,
-    candidate_label=verify.engine_label('cryspy', note='scale only'),
+    candidate_label=LABEL_ED_CRYSPY_REFINED,
 )
 
 verify.report_refinement_closeness(
@@ -163,7 +165,7 @@ verify.report_refinement_closeness(
 # %%
 verify.assert_patterns_agree(
     [
-        (f'{verify.engine_label("cryspy", note="scale only")} vs {FULLPROF_LABEL}', reference_refined, candidate_refined),
+        (f'{LABEL_ED_CRYSPY_REFINED} vs {FULLPROF_LABEL}', reference_refined, candidate_refined),
     ],
     raise_on_failure=False,
 )
