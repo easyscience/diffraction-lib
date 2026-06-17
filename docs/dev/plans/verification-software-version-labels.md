@@ -170,7 +170,7 @@ run until Phase 2).
       unchanged. Pure refactor, no behavior change. Commit:
       `Share engine-to-package map from utils`
 
-- [ ] **P1.2 — Add `engine_label`; make `fullprof_label` bare.** In
+- [x] **P1.2 — Add `engine_label`; make `fullprof_label` bare.** In
       `verification.py`: add a `_label_version(pkg)` formatter (raw
       `package_version`, keep `+dev*`/`+dirty*`/`+devdirty*`, trim only
       a `+g<hex>` VCS-hash tail — see the dev-marker decision above) and
@@ -225,7 +225,7 @@ run until Phase 2).
 ## Status checklist
 
 - [x] P1.1 share engine→package map
-- [ ] P1.2 engine_label + bare fullprof_label
+- [x] P1.2 engine_label + bare fullprof_label
 - [ ] P1.3 migrate 15 verification pages
 - [ ] P1.4 promote ADR
 - [ ] P1.5 Phase 1 review gate

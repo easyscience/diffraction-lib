@@ -22,7 +22,9 @@ from pathlib import Path
 import numpy as np
 
 from easydiffraction.datablocks.experiment.item.base import intensity_category_for
+from easydiffraction.utils.utils import package_version
 from easydiffraction.utils.utils import render_table
+from easydiffraction.utils.utils import SOFTWARE_PACKAGE_BY_ENGINE
 
 # Closeness metrics are computed on absolute intensities: each page
 # seeds the FullProf scale (from its .pcr) so the calculated patterns
@@ -385,7 +387,7 @@ def fullprof_version(project_dir: str, summary_file: str) -> str:
     of its ``.sum`` (or ``.out``) output — the line ``** PROGRAM
     FullProf.2k (Version 8.40 - Feb2026-ILL JRC) **`` — and returns just
     the version number (for example ``'8.40'``), suited to a plot legend
-    such as ``f'FullProf v{version}'``.
+    such as ``f'FullProf {version}'``.
 
     Resolved inside the bundled reference directory, so the caller
     passes the project sub-folder and the summary file name.
@@ -419,11 +421,11 @@ def fullprof_version(project_dir: str, summary_file: str) -> str:
 
 def fullprof_label(project_dir: str, summary_file: str) -> str:
     """
-    Return a FullProf plot-legend label, e.g. ``'FullProf v8.40'``.
+    Return a FullProf plot-legend label, e.g. ``'FullProf 8.40'``.
 
     Convenience wrapper over :func:`fullprof_version` so verification
     pages set ``reference_label`` in one line rather than repeating the
-    ``f'FullProf v{...}'`` formatting.
+    ``f'FullProf {...}'`` formatting.
 
     Parameters
     ----------
@@ -436,9 +438,75 @@ def fullprof_label(project_dir: str, summary_file: str) -> str:
     Returns
     -------
     str
-        The legend label ``f'FullProf v{version}'``.
+        The legend label ``f'FullProf {version}'``.
     """
-    return f'FullProf v{fullprof_version(project_dir, summary_file)}'
+    return f'FullProf {fullprof_version(project_dir, summary_file)}'
+
+
+_VCS_HASH_LOCAL_RE = re.compile(r'^g?[0-9a-f]{6,40}$')
+
+
+def _label_version(package_name: str) -> str | None:
+    """
+    Return an installed package version formatted for a page label.
+
+    Keeps this project's versioningit dev markers
+    (``+dev{N}`` / ``+dirty{N}`` / ``+devdirty{N}``) and any PEP 440
+    public dev/pre-release segment, but trims a pure VCS-hash local part
+    (for example ``+g1a2b3c``) so the label stays readable.
+
+    Parameters
+    ----------
+    package_name : str
+        Distribution name to query (for example ``'easydiffraction'``).
+
+    Returns
+    -------
+    str | None
+        The display version string, or ``None`` if the package is not
+        installed.
+    """
+    raw = package_version(package_name)
+    if raw is None:
+        return None
+    base, separator, local = raw.partition('+')
+    if separator and _VCS_HASH_LOCAL_RE.match(local):
+        return base
+    return raw
+
+
+def engine_label(engine: str, note: str | None = None) -> str:
+    """
+    Return the candidate label for a verification comparison.
+
+    Builds the EasyDiffraction-plus-engine candidate string with live
+    versions, for example ``'edi 1.2.3 (cryspy 2.4.1)'`` or, with a
+    ``note``, ``'edi 1.2.3 (cryspy 2.4.1, refined)'``. The engine is
+    named explicitly (not read from the active calculator) so a stored
+    result keeps the version of the engine that produced it. An
+    unresolvable version renders a visible ``?`` marker rather than being
+    omitted.
+
+    Parameters
+    ----------
+    engine : str
+        Calculation engine tag, for example ``'cryspy'`` or
+        ``'crysfml'``.
+    note : str | None, default=None
+        Optional annotation appended inside the parentheses, for example
+        ``'refined'`` or ``'scale only'``.
+
+    Returns
+    -------
+    str
+        The candidate label string.
+    """
+    edi_version = _label_version('easydiffraction')
+    engine_version = _label_version(SOFTWARE_PACKAGE_BY_ENGINE.get(engine, engine))
+    edi_text = f'edi {edi_version}' if edi_version is not None else 'edi ?'
+    engine_text = f'{engine} {engine_version}' if engine_version is not None else f'{engine} ?'
+    inner = engine_text if note is None else f'{engine_text}, {note}'
+    return f'{edi_text} ({inner})'
 
 
 def load_fullprof_sc_f2calc(project_dir: str, out_file: str) -> dict[tuple[int, int, int], float]:
