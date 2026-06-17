@@ -8,6 +8,7 @@ from easydiffraction.core.metadata import Compatibility
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
+from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import Parameter
 from easydiffraction.datablocks.experiment.categories.instrument.base import InstrumentBase
 from easydiffraction.datablocks.experiment.categories.instrument.factory import InstrumentFactory
@@ -45,6 +46,50 @@ class CwlInstrumentBase(InstrumentBase):
             ),
         )
 
+        # Placeholder for a second incident wavelength (e.g. the X-ray
+        # Cu Kα₁/Kα₂ doublet). Non-refinable NumericDescriptors: no
+        # calculation engine consumes them yet, so a refinable Parameter
+        # would let a fit silently move a value with no effect. Defaults
+        # of 0.0 mean "no second component" (monochromatic, as today).
+        self._setup_wavelength_2: NumericDescriptor = NumericDescriptor(
+            name='wavelength_2',
+            description='Second incident wavelength (e.g. X-ray Kα₂)',
+            units='angstroms',
+            display_handler=DisplayHandler(
+                display_name='Wavelength 2',
+                display_units='Å',
+                latex_name='Wavelength 2',
+                latex_units=r'\AA',
+            ),
+            value_spec=AttributeSpec(
+                default=0.0,
+                validator=RangeValidator(ge=0.0),
+            ),
+            tags=TagSpec(
+                edi_names=['_instrument.setup_wavelength_2'],
+                cif_names=['_instr.wavelength_2'],
+            ),
+        )
+        self._setup_wavelength_2_to_1_ratio: NumericDescriptor = NumericDescriptor(
+            name='wavelength_2_to_1_ratio',
+            description='Relative intensity of wavelength_2 to wavelength (I₂/I₁)',
+            units='',
+            display_handler=DisplayHandler(
+                display_name='Wavelength 2/1 ratio',
+                display_units='',
+                latex_name='Wavelength 2/1 ratio',
+                latex_units='',
+            ),
+            value_spec=AttributeSpec(
+                default=0.0,
+                validator=RangeValidator(ge=0.0, le=1.0),
+            ),
+            tags=TagSpec(
+                edi_names=['_instrument.setup_wavelength_2_to_1_ratio'],
+                cif_names=['_instr.wavelength_2_to_1_ratio'],
+            ),
+        )
+
     @property
     def setup_wavelength(self) -> Parameter:
         """
@@ -59,6 +104,40 @@ class CwlInstrumentBase(InstrumentBase):
     def setup_wavelength(self, value: float) -> None:
         """Set the incident neutron or X-ray wavelength (Å)."""
         self._setup_wavelength.value = value
+
+    @property
+    def setup_wavelength_2(self) -> NumericDescriptor:
+        """
+        Second incident wavelength λ₂ (Å), e.g. the X-ray Kα₂ line.
+
+        Reading returns the underlying ``NumericDescriptor``; assigning
+        a number updates its value. Default ``0.0`` means no second
+        component (monochromatic). Non-refinable placeholder: no engine
+        consumes it yet.
+        """
+        return self._setup_wavelength_2
+
+    @setup_wavelength_2.setter
+    def setup_wavelength_2(self, value: float) -> None:
+        """Set the second incident wavelength λ₂ (Å)."""
+        self._setup_wavelength_2.value = value
+
+    @property
+    def setup_wavelength_2_to_1_ratio(self) -> NumericDescriptor:
+        """
+        Relative intensity of wavelength_2 to wavelength (I₂/I₁).
+
+        The ``_2_to_1_`` ordering names the direction: numerator is the
+        second component, denominator the first. Range ``[0, 1]``;
+        default ``0.0`` disables the second component. Non-refinable
+        placeholder.
+        """
+        return self._setup_wavelength_2_to_1_ratio
+
+    @setup_wavelength_2_to_1_ratio.setter
+    def setup_wavelength_2_to_1_ratio(self, value: float) -> None:
+        """Set the wavelength_2-to-wavelength intensity ratio (I₂/I₁)."""
+        self._setup_wavelength_2_to_1_ratio.value = value
 
 
 @InstrumentFactory.register

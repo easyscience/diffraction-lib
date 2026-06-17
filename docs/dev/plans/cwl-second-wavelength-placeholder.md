@@ -234,7 +234,7 @@ follow-up starts informed:
 
 ## Implementation steps (Phase 1)
 
-- [ ] **P1.1 — Add the two placeholder fields to `CwlInstrumentBase`.**
+- [x] **P1.1 — Add the two placeholder fields to `CwlInstrumentBase`.**
       In `instrument/cwl.py`, add `_setup_wavelength_2`
       (`NumericDescriptor`, default `0.0`, `RangeValidator(ge=0.0)`,
       units `angstroms`) and `_setup_wavelength_2_to_1_ratio`
@@ -299,7 +299,7 @@ Phase 2 adds the tests listed under _Concrete files_:
 
 ## Status checklist
 
-- [ ] P1.1 — placeholder fields added (non-refinable
+- [x] P1.1 — placeholder fields added (non-refinable
       `NumericDescriptor`s)
 - [ ] P1.2 — IUCr loop emitted when active; mixed states guarded
 - [ ] P1.3 — Edi persistence inventory ADR updated
