@@ -100,6 +100,16 @@ and so on. The list below notes only what is specific to each page.
   aluminium fluoride (Na₂Ca₃Al₂F₁₄, _I2₁3_); Jorgensen–Von Dreele. Both
   engines agree with the FullProf reference within tolerance.
 
+## Powder, X-ray, constant wavelength
+
+- [PbSO₄ `pd-xray`](pd-xray-pbso4.ipynb) – Anglesite (PbSO₄, _Pnma_);
+  laboratory Cu-source X-ray Rietveld Round Robin data; pseudo-Voigt.
+  Known discrepancy: FullProf models the full Cu Kα₁/Kα₂ doublet and its
+  X-ray Lorentz–polarization correction, whereas cryspy and crysfml
+  calculate from a single wavelength and a different polarization
+  convention, so neither engine yet reproduces the FullProf X-ray
+  profile.
+
 ## Single crystal, neutron, constant wavelength
 
 - [Pr₂NiO₄ `sc-neut-cwl` (no extinction)](sc-neut-cwl_pr2nio4.ipynb) –
