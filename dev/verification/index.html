@@ -2477,6 +2477,8 @@
       
         
       
+        
+      
     
     
     
@@ -2608,14 +2610,14 @@
   
   
     <li class="md-nav__item">
-      <a href="pd-neut-cwl_pv-asym_empir_pbso4/" class="md-nav__link">
+      <a href="pd-neut-cwl_pv-beba_pbso4/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    PbSO4 (empirical asymmetry)
+    PbSO4 (Bérar–Baldinozzi asymmetry)
   
 
     
@@ -2728,6 +2730,34 @@
     
   
     LaB6 (absorption, no FCJ)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="pd-neut-cwl_pv-beta_y2o3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Y2O3 (anisotropic β-tensor ADPs)
   
 
     
@@ -3730,11 +3760,11 @@ and so on. The list below notes only what is specific to each page.</p>
   reciprocal, non-normalised texture convention.</li>
 <li><a href="pd-neut-cwl_pv_pbso4/">PbSO₄ <code>pd-neut-cwl</code> (pseudo-Voigt)</a> –
   Anglesite (PbSO₄, <em>Pnma</em>); pseudo-Voigt, no asymmetry.</li>
-<li><a href="pd-neut-cwl_pv-asym_empir_pbso4/">PbSO₄ <code>pd-neut-cwl</code> (empirical asymmetry)</a>
-  – Anglesite (PbSO₄, <em>Pnma</em>); pseudo-Voigt with empirical
-  (FullProf-style) axial-divergence asymmetry. Skipped in CI: cryspy and
-  FullProf parameterise the empirical asymmetry differently, and crysfml
-  has no empirical-asymmetry model.</li>
+<li><a href="pd-neut-cwl_pv-beba_pbso4/">PbSO₄ <code>pd-neut-cwl</code> (Bérar–Baldinozzi asymmetry)</a>
+  – Anglesite (PbSO₄, <em>Pnma</em>); pseudo-Voigt with Bérar–Baldinozzi
+  (FullProf-style) axial-divergence asymmetry (<code>asym_beba_*</code>). Skipped
+  in CI: cryspy and FullProf implement this asymmetry with different
+  conventions (issue 166), and crysfml has no empirical-asymmetry model.</li>
 <li><a href="pd-neut-cwl_tch-fcj-noabs-nosldl_lab6/">LaB₆ <code>pd-neut-cwl</code> (SyCos/SySin)</a>
   – Lanthanum hexaboride (LaB₆, <em>Pm-3m</em>); pseudo-Voigt with SyCos/SySin
   sample-displacement and transparency corrections. Skipped in CI:
@@ -3752,6 +3782,15 @@ and so on. The list below notes only what is specific to each page.</p>
   absorption (μR = 0.7) with FCJ asymmetry switched off, isolating the
   absorption correction. ed-cryspy matches FullProf (enabling the
   correction removes a ≈ 2.9× intensity mismatch).</li>
+<li><a href="pd-neut-cwl_pv-beta_y2o3/">Y₂O₃ <code>pd-neut-cwl</code> (anisotropic β-tensor ADPs)</a>
+  – Yttria (Y₂O₃, bixbyite, <em>Ia-3</em>); dimensionless β-tensor anisotropic
+  ADPs (<code>adp_type='beta'</code>) on the three sites, with cylindrical
+  Debye–Scherrer absorption (μR = 1.5) and the Thompson–Cox–Hastings
+  profile. cryspy only. Refining every parameter recovers the FullProf
+  values; the Bérar–Baldinozzi asymmetry (<code>asym_beba_*</code>) is implemented
+  with different conventions in cryspy and FullProf (issue 166), so
+  those coefficients do not transfer one-to-one, but all closeness
+  metrics stay within tolerance.</li>
 </ul>
 <h2 id="powder-neutron-time-of-flight">Powder, neutron, time-of-flight</h2>
 <ul>

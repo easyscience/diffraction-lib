@@ -14,7 +14,7 @@
         <link rel="prev" href="../pd-neut-cwl_tch-fcj_lab6/">
       
       
-        <link rel="next" href="../pd-neut-tof_j_si/">
+        <link rel="next" href="../pd-neut-cwl_pv-beta_y2o3/">
       
       
         
@@ -2479,6 +2479,8 @@
       
         
       
+        
+      
     
     
     
@@ -2610,14 +2612,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../pd-neut-cwl_pv-asym_empir_pbso4/" class="md-nav__link">
+      <a href="../pd-neut-cwl_pv-beba_pbso4/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    PbSO4 (empirical asymmetry)
+    PbSO4 (Bérar–Baldinozzi asymmetry)
   
 
     
@@ -2862,6 +2864,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pd-neut-cwl_pv-beta_y2o3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Y2O3 (anisotropic β-tensor ADPs)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -4741,8 +4771,8 @@ from easydiffraction.analysis import verification as verify</div>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
-<div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=7">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=7">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -4764,7 +4794,7 @@ from easydiffraction.analysis import verification as verify</div>
 <span class="n">structure</span><span class="o">.</span><span class="n">space_group</span><span class="o">.</span><span class="n">name_h_m</span> <span class="o">=</span> <span class="s1">'P m -3 m'</span>  <span class="c1"># FullProf Space group symbol</span>
 <span class="n">structure</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">length_a</span> <span class="o">=</span> <span class="mf">4.156885</span>  <span class="c1"># FullProf a</span>
 <span class="n">structure</span><span class="o">.</span><span class="n">atom_sites</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
-    <span class="n">label</span><span class="o">=</span><span class="s1">'La'</span><span class="p">,</span>  <span class="c1"># FullProf Atom</span>
+    <span class="nb">id</span><span class="o">=</span><span class="s1">'La'</span><span class="p">,</span>  <span class="c1"># FullProf Atom</span>
     <span class="n">type_symbol</span><span class="o">=</span><span class="s1">'La'</span><span class="p">,</span>  <span class="c1"># FullProf Typ</span>
     <span class="n">fract_x</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>  <span class="c1"># FullProf X</span>
     <span class="n">fract_y</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>  <span class="c1"># FullProf Y</span>
@@ -4773,7 +4803,7 @@ from easydiffraction.analysis import verification as verify</div>
     <span class="n">adp_iso</span><span class="o">=</span><span class="mf">0.59951</span><span class="p">,</span>  <span class="c1"># FullProf Biso</span>
 <span class="p">)</span>
 <span class="n">structure</span><span class="o">.</span><span class="n">atom_sites</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
-    <span class="n">label</span><span class="o">=</span><span class="s1">'B'</span><span class="p">,</span>  <span class="c1"># FullProf Atom</span>
+    <span class="nb">id</span><span class="o">=</span><span class="s1">'B'</span><span class="p">,</span>  <span class="c1"># FullProf Atom</span>
     <span class="n">type_symbol</span><span class="o">=</span><span class="s1">'11B'</span><span class="p">,</span>  <span class="c1"># FullProf "B11"</span>
     <span class="n">fract_x</span><span class="o">=</span><span class="mf">0.19978</span><span class="p">,</span>  <span class="c1"># FullProf X</span>
     <span class="n">fract_y</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>  <span class="c1"># FullProf Y</span>
@@ -4788,7 +4818,7 @@ from easydiffraction.analysis import verification as verify</div>
 structure.space_group.name_h_m = 'P m -3 m'  # FullProf Space group symbol
 structure.cell.length_a = 4.156885  # FullProf a
 structure.atom_sites.create(
-    label='La',  # FullProf Atom
+    id='La',  # FullProf Atom
     type_symbol='La',  # FullProf Typ
     fract_x=0.0,  # FullProf X
     fract_y=0.0,  # FullProf Y
@@ -4797,7 +4827,7 @@ structure.atom_sites.create(
     adp_iso=0.59951,  # FullProf Biso
 )
 structure.atom_sites.create(
-    label='B',  # FullProf Atom
+    id='B',  # FullProf Atom
     type_symbol='11B',  # FullProf "B11"
     fract_x=0.19978,  # FullProf X
     fract_y=0.5,  # FullProf Y
@@ -4807,20 +4837,6 @@ structure.atom_sites.create(
 )
 
 project.structures.add(structure)</div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell-outputWrapper">
-<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
-</div>
-<div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>❌ Unknown attribute 'label' of &lt;atom_site.Si&gt;. Allowed writable: 'adp_iso', 'adp_type', 'fract_x', 'fract_y', 'fract_z', 'id',   
-   'occupancy', 'type_symbol', 'wyckoff_letter'.                                                                                  
-</pre>
 </div>
 </div>
 </div>
@@ -4843,7 +4859,7 @@ project.structures.add(structure)</div>
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [5]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="CodeMirror cm-s-jupyter">
 <div class="zeroclipboard-container">
 <clipboard-copy ,="" aria-label="Copy to Clipboard" for="cell-4">
@@ -4915,13 +4931,13 @@ x, calc_fullprof = verify.load_fullprof_calc_profile(
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
-<div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=11">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=11">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [6]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="CodeMirror cm-s-jupyter">
 <div class="zeroclipboard-container">
 <clipboard-copy ,="" aria-label="Copy to Clipboard" for="cell-5">
@@ -4989,6 +5005,19 @@ experiment.absorption.type = 'cylinder-hewat'
 experiment.absorption.mu_r = FULLPROF_MU_R
 
 project.experiments.add(experiment)</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>❌ Unknown attribute 'linked_phases' of &lt;lab6&gt;. Did you mean 'linked_structures'?                                                 
+</pre>
 </div>
 </div>
 </div>
@@ -5247,13 +5276,13 @@ absorption-corrected FullProf reference.</p>
         
         
           
-          <a href="../pd-neut-tof_j_si/" class="md-footer__link md-footer__link--next" aria-label="Next: Si (Jorgensen)">
+          <a href="../pd-neut-cwl_pv-beta_y2o3/" class="md-footer__link md-footer__link--next" aria-label="Next: Y2O3 (anisotropic β-tensor ADPs)">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Si (Jorgensen)
+                Y2O3 (anisotropic β-tensor ADPs)
               </div>
             </div>
             <div class="md-footer__button md-icon">

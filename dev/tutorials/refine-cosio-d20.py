@@ -127,7 +127,7 @@ expt.instrument.calib_twotheta_offset = 0.1
 expt.peak.show_supported()
 
 # %%
-expt.peak.type = 'pseudo-voigt + empirical asymmetry'
+expt.peak.type = 'pseudo-voigt + berar-baldinozzi asymmetry'
 
 # %%
 expt.peak.broad_gauss_u = 0.3
@@ -237,7 +237,7 @@ expt.peak.broad_gauss_v.free = True
 expt.peak.broad_gauss_w.free = True
 expt.peak.broad_lorentz_y.free = True
 
-expt.peak.asym_empir_2.free = True
+expt.peak.asym_beba_b0.free = True
 
 for point in expt.background:
     point.intensity.free = True

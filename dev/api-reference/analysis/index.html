@@ -2475,6 +2475,8 @@
       
         
       
+        
+      
     
     
     
@@ -2606,14 +2608,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../verification/pd-neut-cwl_pv-asym_empir_pbso4/" class="md-nav__link">
+      <a href="../../verification/pd-neut-cwl_pv-beba_pbso4/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    PbSO4 (empirical asymmetry)
+    PbSO4 (Bérar–Baldinozzi asymmetry)
   
 
     
@@ -2726,6 +2728,34 @@
     
   
     LaB6 (absorption, no FCJ)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../verification/pd-neut-cwl_pv-beta_y2o3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Y2O3 (anisotropic β-tensor ADPs)
   
 
     
@@ -59375,7 +59405,7 @@ it.</p>
             </td>
           </tr>
           <tr class="doc-section-item">
-            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;SequentialFitTemplate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;structure_cif&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;experiment_cif&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;initial_params&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;free_parameter_unique_names&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;alias_defs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;constraint_defs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;constraints_enabled&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;minimizer_tag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;calculator_tag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;diffrn_extract_rules&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;diffrn_field_names&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;SequentialFitTemplate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;structure_cifs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;experiment_cif&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;initial_params&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;free_parameter_unique_names&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;alias_defs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;constraint_defs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;constraints_enabled&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;minimizer_tag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;calculator_tag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;diffrn_extract_rules&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;diffrn_field_names&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;
 
   &lt;span class=&quot;doc doc-labels&quot;&gt;
       &lt;small class=&quot;doc doc-label doc-label-dataclass&quot;&gt;&lt;code&gt;dataclass&lt;/code&gt;&lt;/small&gt;
@@ -59539,7 +59569,7 @@ it.</p>
 
 
 <h5 id="easydiffraction.analysis.sequential.SequentialFitTemplate" class="doc doc-heading">
-              <code class="highlight language-python"><span class="n">SequentialFitTemplate</span><span class="p">(</span><span class="n">structure_cif</span><span class="p">,</span> <span class="n">experiment_cif</span><span class="p">,</span> <span class="n">initial_params</span><span class="p">,</span> <span class="n">free_parameter_unique_names</span><span class="p">,</span> <span class="n">alias_defs</span><span class="p">,</span> <span class="n">constraint_defs</span><span class="p">,</span> <span class="n">constraints_enabled</span><span class="p">,</span> <span class="n">minimizer_tag</span><span class="p">,</span> <span class="n">calculator_tag</span><span class="p">,</span> <span class="n">diffrn_extract_rules</span><span class="p">,</span> <span class="n">diffrn_field_names</span><span class="p">)</span></code>
+              <code class="highlight language-python"><span class="n">SequentialFitTemplate</span><span class="p">(</span><span class="n">structure_cifs</span><span class="p">,</span> <span class="n">experiment_cif</span><span class="p">,</span> <span class="n">initial_params</span><span class="p">,</span> <span class="n">free_parameter_unique_names</span><span class="p">,</span> <span class="n">alias_defs</span><span class="p">,</span> <span class="n">constraint_defs</span><span class="p">,</span> <span class="n">constraints_enabled</span><span class="p">,</span> <span class="n">minimizer_tag</span><span class="p">,</span> <span class="n">calculator_tag</span><span class="p">,</span> <span class="n">diffrn_extract_rules</span><span class="p">,</span> <span class="n">diffrn_field_names</span><span class="p">)</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
