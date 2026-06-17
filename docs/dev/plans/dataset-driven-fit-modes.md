@@ -235,7 +235,7 @@ locally (atomic, single-purpose) before moving on. Mark each `- [ ]` as
   `docs/dev/adrs/...`.
   Commit: `Close issue 85 and accept dataset-driven fit modes ADR`
 
-- [ ] **P1.9 — Phase 1 review gate.** No-code step. Mark `[x]`, commit
+- [x] **P1.9 — Phase 1 review gate.** No-code step. Mark `[x]`, commit
   the checklist update alone with message `Reach Phase 1 review gate`,
   then stop for Phase 1 review.
 
@@ -270,7 +270,7 @@ Notes:
 - [x] P1.6 — Reconcile display/serialization filters
 - [x] P1.7 — Update tutorials relying on `single`-with-N
 - [x] P1.8 — Close issue 85 and promote the ADR
-- [ ] P1.9 — Phase 1 review gate
+- [x] P1.9 — Phase 1 review gate
 - [ ] Phase 2 — tests added and full verification suite green
 
 ## Suggested Pull Request
