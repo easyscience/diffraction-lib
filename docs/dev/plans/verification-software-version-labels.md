@@ -7,8 +7,8 @@ authoring), Phase 2 does all test work and runs the verification suite.
 ## ADR
 
 Implements
-[`verification-software-version-labels`](../adrs/suggestions/verification-software-version-labels.md)
-(Proposed). Per §Change Discipline it is **promoted to `accepted/`** as
+[`verification-software-version-labels`](../adrs/accepted/verification-software-version-labels.md)
+(Accepted). Per §Change Discipline it is **promoted to `accepted/`** as
 part of this PR (P1.4). No new dependency is required — every version is
 read through `easydiffraction.utils.utils.package_version` and formatted
 for display by a small `verify` helper (`_label_version`, see
@@ -197,7 +197,7 @@ run until Phase 2).
       `pixi run notebook-prepare`; stage the `.py` + regenerated
       `.ipynb`. Commit: `Show software versions on verification pages`
 
-- [ ] **P1.4 — Promote the ADR.** First reconcile the ADR text with what
+- [x] **P1.4 — Promote the ADR.** First reconcile the ADR text with what
       was implemented: (a) update Decision 3/4 wording from
       `refined=False` to `note=None` (Open Question 3); (b) update
       **Decision 3a** and its matching resolved Open Question so they
@@ -227,7 +227,7 @@ run until Phase 2).
 - [x] P1.1 share engine→package map
 - [x] P1.2 engine_label + bare fullprof_label
 - [x] P1.3 migrate 15 verification pages
-- [ ] P1.4 promote ADR
+- [x] P1.4 promote ADR
 - [ ] P1.5 Phase 1 review gate
 - [ ] Phase 2 verification green
 

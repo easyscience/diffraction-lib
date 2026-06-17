@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed.
+Accepted.
 
 ## Date
 
@@ -15,7 +15,7 @@ Quality.
 ## Context
 
 The cross-engine **Verification** pages (established by
-[`test-suite-and-validation`](../accepted/test-suite-and-validation.md)
+[`test-suite-and-validation`](test-suite-and-validation.md)
 §6) overlay an EasyDiffraction calculator on a frozen FullProf reference
 and score the agreement. A scientist reading such a page — or revisiting
 it after an engine update — needs to know **which versions of software
@@ -91,20 +91,30 @@ across all three components so the labels read uniformly:
 
 ### 2a. Pre-release / dev builds
 
-A dev or pre-release install is shown as **release plus the short dev
-marker**, dropping the local `+g<sha>` segment: a `0.11.0.dev3+g1a2b3c`
-install renders as `edi 0.11.0.dev3`. This keeps the "this is a
-pre-release build" signal visible (so a dev-build comparison is not
-mistaken for a released one) while keeping the label free of the noisy
-commit hash. The same rule applies to any engine package reporting a PEP
-440 dev/pre-release version.
+A dev or pre-release install keeps its **dev marker** visible (so a
+dev-build comparison is not mistaken for a released one) while dropping
+only a **pure VCS-hash local segment** (`+g<hex>`) to keep the label
+readable. Concretely, this project's versioningit emits the dev signal
+in the *local* segment — `{base}+dev{N}`, `{base}+dirty{N}`,
+`{base}+devdirty{N}` (see `pyproject.toml`
+`[tool.versioningit.format]`) — so those markers are **preserved
+verbatim**: an `edi` install of `1.2.3+dev3` renders `edi 1.2.3+dev3`.
+A pure git-hash local part such as `0.11.0.dev3+g1a2b3c` is trimmed to
+`edi 0.11.0.dev3`. The same rule applies to any engine package. (A
+public-segment-only formatter such as `stripped_package_version` is
+deliberately **not** used here: it would discard the `+dev*`/`+dirty*`
+local markers and make a dev build look released.)
 
 ### 3. A `verify` helper builds the candidate label from an explicit engine tag
 
-A single helper — `verify.engine_label(engine, refined=False)` — returns
+A single helper — `verify.engine_label(engine, note=None)` — returns
 the **candidate** string only (the reference side stays the existing
 `verify.fullprof_label`, so the two single-purpose helpers mirror each
-other). It builds the candidate string from:
+other). The optional free-text `note` annotates the candidate inside the
+parentheses (for example `note='refined'`, `note='scale only'`,
+`note='scale + ext radius'`), generalising what would otherwise be a
+boolean `refined` flag so the real pages' varied annotations are all
+expressible. It builds the candidate string from:
 
 - the **EasyDiffraction** package version
   (`importlib.metadata.version('easydiffraction')`), and
@@ -133,16 +143,18 @@ drives the calculation and the label, so they cannot diverge.
 
 ### 3a. Engine version source: the existing engine→package map
 
-Each engine's version is resolved through the project's **existing**
-engine-to-package mapping and metadata lookup
-(`_SOFTWARE_PACKAGE_BY_ENGINE` and `_software_version` in
-`src/easydiffraction/analysis/analysis.py`), which already maps
-`'cryspy' → 'cryspy'` and `'crysfml' → 'crysfml'` and reads the
-installed version via `importlib.metadata.version`. The `verify` helper
-reuses this single resolution path rather than calling
-`cryspy.__version__` or an engine-specific banner parse, so all engine
-provenance comes from one place and a new engine is covered by adding
-one map entry.
+Each engine's version is resolved through the project's shared
+engine-to-package map `SOFTWARE_PACKAGE_BY_ENGINE` in
+`src/easydiffraction/utils/utils.py`, which maps `'cryspy' → 'cryspy'`
+and `'crysfml' → 'crysfml'` and is read with `importlib.metadata`
+(`package_version`). The map lives in `utils.utils` so both the fit
+provenance path (`analysis.py`, which stamps the **raw** version into
+CIF) and the `verify` label helper draw from one place without `verify`
+importing heavy `analysis.py`; a new engine is covered by adding one map
+entry. The per-caller difference is purely formatting: `analysis.py`
+records the raw version, while `verify.engine_label` renders the display
+form (Decision 2a — keep dev markers, trim a `+g<hex>` tail) via a small
+`_label_version` helper.
 
 **Unknown-version behaviour.** If an engine's package version cannot be
 resolved (no installed metadata), the helper renders an **explicit,
@@ -223,28 +235,33 @@ All questions are now **resolved** (owner decision); recorded here so
 the rationale is not lost:
 
 - **Engine version source — resolved (Decision 3a).** Versions come from
-  the existing `_SOFTWARE_PACKAGE_BY_ENGINE` / `_software_version` path
-  in `analysis.py` (`importlib.metadata.version`), with a visible
+  the shared `SOFTWARE_PACKAGE_BY_ENGINE` map in `utils.utils`
+  (`importlib.metadata` via `package_version`), with a visible
   `crysfml ?`-style marker when a version is unresolvable — no
-  engine-specific API, no silent omission, no page hard-fail.
+  engine-specific API, no silent omission, no page hard-fail. The fit
+  provenance path in `analysis.py` reads the same map (raw version for
+  CIF); `verify` renders the display form.
 - **Label binding — resolved (Decision 3).** The helper takes an
   explicit engine tag, not `experiment.calculator.type`, so a stored
   result keeps the version of the engine that produced it.
 - **Helper name — resolved:
-  `verify.engine_label(engine, refined=False)`, candidate only (Decision
+  `verify.engine_label(engine, note=None)`, candidate only (Decision
   3).** The reference side stays `verify.fullprof_label`; the two small
   single-purpose helpers mirror each other and the page composes the
   combined table label from both. No single dual-return call (it would
-  couple engine-version logic to `.sum` parsing).
+  couple engine-version logic to `.sum` parsing). The free-text `note`
+  generalises a boolean `refined` so annotations like `scale only` are
+  expressible.
 - **Render location — resolved: legend + agreement-table label only
   (Decision 1).** No separate provenance caption/row; the versions live
   on the two label surfaces a page already has, reusing existing label
   plumbing.
 - **Format — resolved: bare `X.Y.Z`, no `v` prefix (Decision 2), applied
   to all three components.** `fullprof_label` drops its `v` to match
-  (Compatibility). Pre-release/dev builds render as release plus the
-  short dev marker (`0.11.0.dev3`), dropping the `+g<sha>` local segment
-  (Decision 2a).
+  (Compatibility). Pre-release/dev builds **keep** this repo's local dev
+  markers (`+dev*`/`+dirty*`/`+devdirty*`) and trim only a pure `+g<hex>`
+  VCS-hash tail (Decision 2a); `stripped_package_version` is not used
+  because it would drop those markers.
 
 ## Deferred Work
 
@@ -252,5 +269,5 @@ the rationale is not lost:
   notebooks belongs to the implementation plan, not this ADR.
 - Relationship to the verification regression-gating change is only
   adjacent: see
-  [`verification-regression-flag`](../accepted/verification-regression-flag.md),
+  [`verification-regression-flag`](verification-regression-flag.md),
   which flagged this provenance gap; the two can ship independently.
