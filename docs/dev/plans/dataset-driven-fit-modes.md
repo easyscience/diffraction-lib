@@ -8,7 +8,7 @@ Implements ADR
 (promoted from a suggestion to `accepted/` in P1.8, per
 §Change Discipline). Closes issue **85 — Retain
 Per-Experiment Fitted Parameters for Plotting**
-([`open/highest_retain-per-experiment-fitted-parameters-for-plotting.md`](../issues/open/highest_retain-per-experiment-fitted-parameters-for-plotting.md))
+([`closed/retain-per-experiment-fitted-parameters-for-plotting.md`](../issues/closed/retain-per-experiment-fitted-parameters-for-plotting.md))
 by removing the `single`-with-N path that caused it.
 
 ## ADR
@@ -266,7 +266,7 @@ Notes:
 - [x] P1.2 — Enforce mode preconditions at fit time
 - [x] P1.3 — Restrict `single` to exactly one experiment
 - [x] P1.4 — Remove the `single`-with-N snapshot machinery
-- [ ] P1.5 — Sequential data source: default, no-files error, `copy_data`
+- [x] P1.5 — Sequential data source: no-files error, `copy_data`
 - [x] P1.6 — Reconcile display/serialization filters
 - [x] P1.7 — Update tutorials relying on `single`-with-N
 - [x] P1.8 — Close issue 85 and promote the ADR
