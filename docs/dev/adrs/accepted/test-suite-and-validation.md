@@ -241,6 +241,16 @@ source → notebook via `pixi run notebook-prepare`, built with
   compare them pairwise (`ed-cryspy`, `ed-crysfml`, … and later
   `fullprof`). This is far faster than fitting, so the same pages double
   as **fast regression scripts** under `script-tests`.
+- **Known-discrepancy gating (in-source, no external list).** A page
+  whose engine cannot yet reproduce a modelled effect marks the
+  difference **in the notebook itself** by calling the agreement check
+  with `known_discrepancy=True` and a `reason` (rendered on the page).
+  This is a two-sided assertion: the page passes while it stays
+  discrepant and **hard-fails** if it later starts agreeing, forcing a
+  manual re-gate. `script-tests` statically detects the flag (or a
+  `raises-exception` cell tag for pages that error before the check) and
+  **skips** those pages, while `nbmake` still executes and renders every
+  page. There is no external skip list.
 - **Metrics.** Report clear, documented closeness metrics per pair — a
   profile-difference metric (Rwp-style), maximum point-wise deviation,
   and an integrated-intensity ratio — with explicit tolerances.

@@ -230,7 +230,8 @@ notebook-tweak = 'python tools/tweak_notebooks.py docs/docs/tutorials/ docs/docs
 notebook-exec = { cmd = 'python -m pytest --nbmake docs/docs/tutorials/ docs/docs/verification/ --overwrite --color=yes -n auto -v', env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials', EASYDIFFRACTION_FIGURE_EMBED_MODE = 'shared' } }
 notebook-exec-ci = { cmd = 'python -m pytest --nbmake docs/docs/tutorials/ docs/docs/verification/ --nbmake-timeout=1200 --overwrite --color=yes -n auto -v', env = { EASYDIFFRACTION_ARTIFACT_ROOT = '.', EASYDIFFRACTION_FIGURE_EMBED_MODE = 'shared' } }
 # Execute and overwrite outputs for the verification notebooks only (the
-# verification-page subset of notebook-exec); honours ci_skip.txt.
+# verification-page subset of notebook-exec); nbmake runs every page, and
+# a known-bad page is gated by its in-notebook known_discrepancy flag.
 verification-exec = { cmd = 'python -m pytest --nbmake docs/docs/verification/ --overwrite --color=yes -n auto -v', env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials', EASYDIFFRACTION_FIGURE_EMBED_MODE = 'shared' } }
 
 notebook-prepare = { depends-on = [

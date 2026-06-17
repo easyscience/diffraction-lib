@@ -37,7 +37,7 @@ keeps paying:
    transparency (FullProf `SyCos`/`SySin`) corrections are wired on the
    EasyDiffraction side but cannot be verified or shipped because they
    depend on the unreleased `cryspy` PR #46 (open issue 131; the
-   verification page is in `ci_skip.txt`).
+   verification page is gated as known-bad in-notebook).
 2. **Corrections with no clean home.** Sample absorption (Debye–Scherrer
    `μR`, open issue 119) is a small, well-specified, angle-dependent
    intensity factor. Investigation shows **both** `cryspy` and `crysfml`

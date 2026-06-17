@@ -92,6 +92,7 @@ FULLPROF_SCALE = 0.28749475  # FullProf Scale
 FULLPROF_WAVELENGTH = 0.7930  # FullProf Lambda
 
 f2calc = verify.load_fullprof_sc_f2calc(FULLPROF_PROJECT_DIR, FULLPROF_OUT_FILE)
+FULLPROF_LABEL = verify.fullprof_label(FULLPROF_PROJECT_DIR, FULLPROF_OUT_FILE)
 
 # %% [markdown]
 # ## Create the experiment
@@ -118,14 +119,15 @@ project.experiments.add(experiment)
 
 # %%
 calc_ed_cryspy = verify.calculate_reflections(project, experiment, 'cryspy')
+LABEL_ED_CRYSPY = verify.engine_label('cryspy')
 reference, candidate = verify.align_reflections(f2calc, calc_ed_cryspy)
 
 project.display.reflection_comparison(
     'tbti',
     reference=reference,
     candidate=candidate,
-    reference_label='FullProf',
-    candidate_label='edi-cryspy',
+    reference_label=FULLPROF_LABEL,
+    candidate_label=LABEL_ED_CRYSPY,
 )
 
 # %% [markdown]
@@ -140,14 +142,15 @@ project.analysis.fit()
 project.display.fit.results()
 
 calc_ed_cryspy_refined = verify.calculate_reflections(project, experiment, 'cryspy')
+LABEL_ED_CRYSPY_REFINED = verify.engine_label('cryspy', note='scale only')
 reference_refined, candidate_refined = verify.align_reflections(f2calc, calc_ed_cryspy_refined)
 
 project.display.reflection_comparison(
     'tbti',
     reference=reference_refined,
     candidate=candidate_refined,
-    reference_label='FullProf',
-    candidate_label='edi-cryspy (scale only)',
+    reference_label=FULLPROF_LABEL,
+    candidate_label=LABEL_ED_CRYSPY_REFINED,
 )
 
 verify.report_refinement_closeness(
@@ -160,9 +163,6 @@ verify.report_refinement_closeness(
 # ## Agreement check
 
 # %%
-verify.assert_patterns_agree(
-    [
-        ('cryspy vs FullProf', reference_refined, candidate_refined),
-    ],
-    raise_on_failure=False,
-)
+verify.assert_patterns_agree([
+    (f'{LABEL_ED_CRYSPY_REFINED} vs {FULLPROF_LABEL}', reference_refined, candidate_refined),
+])

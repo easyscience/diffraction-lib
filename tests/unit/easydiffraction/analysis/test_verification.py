@@ -66,7 +66,56 @@ def test_fullprof_label_formats_version(ref_dir):
         '        ** PROGRAM FullProf.2k (Version 8.40 - Feb2026-ILL JRC) **\n',
         encoding='utf-8',
     )
-    assert verify.fullprof_label('', 'ref.sum') == 'FullProf v8.40'
+    assert verify.fullprof_label('', 'ref.sum') == 'FullProf 8.40'
+
+
+def test_engine_label_formats_candidate_versions(monkeypatch):
+    versions = {
+        'easydiffraction': '1.2.3',
+        'cryspy': '2.4.6',
+    }
+    monkeypatch.setattr(verify, 'package_version', lambda name: versions[name])
+    assert verify.engine_label('cryspy') == 'edi 1.2.3 (cryspy 2.4.6)'
+
+
+def test_engine_label_appends_note(monkeypatch):
+    versions = {
+        'easydiffraction': '1.2.3',
+        'cryspy': '2.4.6',
+    }
+    monkeypatch.setattr(verify, 'package_version', lambda name: versions[name])
+    assert verify.engine_label('cryspy', note='refined') == 'edi 1.2.3 (cryspy 2.4.6, refined)'
+
+
+def test_engine_label_marks_unresolvable_engine_version(monkeypatch):
+    def fake_package_version(name):
+        if name == 'easydiffraction':
+            return '1.2.3'
+        return None
+
+    monkeypatch.setattr(verify, 'package_version', fake_package_version)
+    assert verify.engine_label('cryspy') == 'edi 1.2.3 (cryspy ?)'
+
+
+@pytest.mark.parametrize(
+    ('raw_version', 'expected_version'),
+    [
+        ('1.2.3+dev3', '1.2.3+dev3'),
+        ('0.5.8+dirty3', '0.5.8+dirty3'),
+        ('0.5.8+devdirty3', '0.5.8+devdirty3'),
+        ('1.2.3+g1a2b3c', '1.2.3'),
+        ('1.2.3+abcdef', '1.2.3+abcdef'),
+    ],
+)
+def test_engine_label_preserves_dev_markers(monkeypatch, raw_version, expected_version):
+    monkeypatch.setattr(verify, 'package_version', lambda _name: raw_version)
+    expected = f'edi {expected_version} (cryspy {expected_version})'
+    assert verify.engine_label('cryspy') == expected
+
+
+def test_engine_label_rejects_unknown_engine():
+    with pytest.raises(ValueError, match="Unknown engine 'crysfmi'"):
+        verify.engine_label('crysfmi')
 
 
 class _FakeCategory:
@@ -236,15 +285,97 @@ def test_assert_patterns_agree_raises_for_divergent_patterns():
         verify.assert_patterns_agree([('a vs b', reference, candidate)])
 
 
-def test_assert_patterns_agree_can_report_without_raising():
+def test_assert_patterns_agree_known_discrepancy_passes_while_divergent():
     x = np.linspace(0.0, 10.0, 200)
     reference = _gaussian(x, 5.0, 0.4) * 100.0
     candidate = _gaussian(x, 6.5, 0.4) * 100.0
     result = verify.assert_patterns_agree(
         [('a vs b', reference, candidate)],
-        raise_on_failure=False,
+        known_discrepancy=True,
+        reason='documented engine gap',
     )
-    assert result is False
+    assert result is True
+
+
+def test_assert_patterns_agree_known_discrepancy_passes_when_all_disagree():
+    x = np.linspace(0.0, 10.0, 200)
+    reference = _gaussian(x, 5.0, 0.4) * 100.0
+    bad_one = _gaussian(x, 6.5, 0.4) * 100.0
+    bad_two = _gaussian(x, 3.5, 0.4) * 100.0
+    result = verify.assert_patterns_agree(
+        [('one', reference, bad_one), ('two', reference, bad_two)],
+        known_discrepancy=True,
+        reason='both engines known-bad',
+    )
+    assert result is True
+
+
+def test_assert_patterns_agree_known_discrepancy_regates_when_one_comparison_agrees():
+    # A known-bad comparison must not mask a regression in an
+    # expected-good comparison sharing the same call.
+    x = np.linspace(0.0, 10.0, 200)
+    reference = _gaussian(x, 5.0, 0.4) * 100.0
+    agreeing = reference * 1.0001
+    divergent = _gaussian(x, 6.5, 0.4) * 100.0
+    with pytest.raises(AssertionError, match='now agree within tolerance'):
+        verify.assert_patterns_agree(
+            [('good', reference, agreeing), ('bad', reference, divergent)],
+            known_discrepancy=True,
+            reason='only one engine is known-bad',
+        )
+
+
+def test_assert_patterns_agree_known_discrepancy_regates_when_agreeing():
+    x = np.linspace(0.0, 10.0, 200)
+    reference = _gaussian(x, 5.0, 0.4) * 100.0
+    candidate = reference * 1.0001
+    with pytest.raises(AssertionError, match='now agree within tolerance'):
+        verify.assert_patterns_agree(
+            [('a vs b', reference, candidate)],
+            known_discrepancy=True,
+            reason='documented engine gap',
+        )
+
+
+def test_assert_patterns_agree_known_discrepancy_requires_reason():
+    x = np.linspace(0.0, 10.0, 200)
+    reference = _gaussian(x, 5.0, 0.4) * 100.0
+    candidate = _gaussian(x, 6.5, 0.4) * 100.0
+    with pytest.raises(ValueError, match='requires a non-empty `reason`'):
+        verify.assert_patterns_agree(
+            [('a vs b', reference, candidate)],
+            known_discrepancy=True,
+        )
+    with pytest.raises(ValueError, match='requires a non-empty `reason`'):
+        verify.assert_patterns_agree(
+            [('a vs b', reference, candidate)],
+            known_discrepancy=True,
+            reason='   ',
+        )
+
+
+def test_assert_patterns_agree_renders_known_discrepancy_reason(monkeypatch):
+    captured = []
+    monkeypatch.setattr(verify, 'print_table_footnote', captured.append)
+    x = np.linspace(0.0, 10.0, 200)
+    reference = _gaussian(x, 5.0, 0.4) * 100.0
+    candidate = _gaussian(x, 6.5, 0.4) * 100.0
+    verify.assert_patterns_agree(
+        [('a vs b', reference, candidate)],
+        known_discrepancy=True,
+        reason='engine gap X',
+    )
+    assert [('Known discrepancy', 'engine gap X')] in captured
+
+
+def test_assert_patterns_agree_does_not_render_reason_for_default_page(monkeypatch):
+    captured = []
+    monkeypatch.setattr(verify, 'print_table_footnote', captured.append)
+    x = np.linspace(0.0, 10.0, 200)
+    reference = _gaussian(x, 5.0, 0.4) * 100.0
+    candidate = reference * 1.0001
+    verify.assert_patterns_agree([('a vs b', reference, candidate)])
+    assert captured == []
 
 
 def test_agreement_tolerances_defaults():

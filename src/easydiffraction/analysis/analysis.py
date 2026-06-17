@@ -65,6 +65,7 @@ from easydiffraction.io.cif.serialize import analysis_to_cif
 from easydiffraction.utils.enums import VerbosityEnum
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
+from easydiffraction.utils.utils import SOFTWARE_PACKAGE_BY_ENGINE
 from easydiffraction.utils.utils import _help_method_rows
 from easydiffraction.utils.utils import _help_property_rows
 from easydiffraction.utils.utils import format_bulleted_warning
@@ -109,15 +110,6 @@ _UNDO_ABS_TOL = 0.0
 _GT_REFLECTION_THRESHOLD_SIGMA = 3.0
 _GT_REFLECTION_THRESHOLD_EXPRESSION = r'I>3\s(I)'
 _EASYDIFFRACTION_URL = 'https://github.com/easyscience/diffraction-lib'
-_SOFTWARE_PACKAGE_BY_ENGINE = {
-    'cryspy': 'cryspy',
-    'crysfml': 'crysfml',
-    'pdffit': 'diffpy.pdffit2',
-    'lmfit': 'lmfit',
-    'dfols': 'dfols',
-    'bumps': 'bumps',
-    'emcee': 'emcee',
-}
 
 
 @dataclass(frozen=True)
@@ -642,7 +634,7 @@ class Analysis(
     @staticmethod
     def _software_version(name: str) -> str | None:
         """Return the installed package version for one engine name."""
-        package_name = _SOFTWARE_PACKAGE_BY_ENGINE.get(name)
+        package_name = SOFTWARE_PACKAGE_BY_ENGINE.get(name)
         if package_name is None:
             return None
         return package_version(package_name)
@@ -2816,7 +2808,7 @@ class Analysis(
         for path in matched:
             shutil.copy2(path, destination / Path(path).name)
 
-        self._sequential_fit.data_dir = str(Path('data') / 'sequential')
+        self._sequential_fit.data_dir = Path('data', 'sequential').as_posix()
         return str(destination)
 
     def _prepare_fit_run(

@@ -19,10 +19,8 @@ crysfml/FullProf.
 
 **Visible on:** the Si TOF Verification page (`pd-neut-tof_jvd_si`),
 whose closeness table flags the `cryspy` rows in red — reported via a
-non-raising agreement check, not enforced, so CI stays green.
-Re-introduce a strict check, or skip the page via
-`docs/docs/verification/ci_skip.txt`, once work on the cryspy backend
-begins.
+`known_discrepancy=True` agreement check, so CI fails once the page
+starts agreeing and must be re-gated manually.
 
 **Depends on:** nothing.
 

@@ -22,6 +22,9 @@ from pathlib import Path
 import numpy as np
 
 from easydiffraction.datablocks.experiment.item.base import intensity_category_for
+from easydiffraction.utils.utils import SOFTWARE_PACKAGE_BY_ENGINE
+from easydiffraction.utils.utils import package_version
+from easydiffraction.utils.utils import print_table_footnote
 from easydiffraction.utils.utils import render_table
 
 # Closeness metrics are computed on absolute intensities: each page
@@ -385,7 +388,7 @@ def fullprof_version(project_dir: str, summary_file: str) -> str:
     of its ``.sum`` (or ``.out``) output — the line ``** PROGRAM
     FullProf.2k (Version 8.40 - Feb2026-ILL JRC) **`` — and returns just
     the version number (for example ``'8.40'``), suited to a plot legend
-    such as ``f'FullProf v{version}'``.
+    such as ``f'FullProf {version}'``.
 
     Resolved inside the bundled reference directory, so the caller
     passes the project sub-folder and the summary file name.
@@ -419,11 +422,11 @@ def fullprof_version(project_dir: str, summary_file: str) -> str:
 
 def fullprof_label(project_dir: str, summary_file: str) -> str:
     """
-    Return a FullProf plot-legend label, e.g. ``'FullProf v8.40'``.
+    Return a FullProf plot-legend label, e.g. ``'FullProf 8.40'``.
 
     Convenience wrapper over :func:`fullprof_version` so verification
     pages set ``reference_label`` in one line rather than repeating the
-    ``f'FullProf v{...}'`` formatting.
+    ``f'FullProf {...}'`` formatting.
 
     Parameters
     ----------
@@ -436,9 +439,85 @@ def fullprof_label(project_dir: str, summary_file: str) -> str:
     Returns
     -------
     str
-        The legend label ``f'FullProf v{version}'``.
+        The legend label ``f'FullProf {version}'``.
     """
-    return f'FullProf v{fullprof_version(project_dir, summary_file)}'
+    return f'FullProf {fullprof_version(project_dir, summary_file)}'
+
+
+_VCS_HASH_LOCAL_RE = re.compile(r'^g[0-9a-f]{6,40}$')
+
+
+def _label_version(package_name: str) -> str | None:
+    """
+    Return an installed package version formatted for a page label.
+
+    Keeps this project's versioningit dev markers (``+dev{N}`` /
+    ``+dirty{N}`` / ``+devdirty{N}``) and any PEP 440 public
+    dev/pre-release segment, but trims a g-prefixed VCS-hash local part
+    (for example ``+g1a2b3c``) so the label stays readable.
+
+    Parameters
+    ----------
+    package_name : str
+        Distribution name to query (for example ``'easydiffraction'``).
+
+    Returns
+    -------
+    str | None
+        The display version string, or ``None`` if the package is not
+        installed.
+    """
+    raw = package_version(package_name)
+    if raw is None:
+        return None
+    base, separator, local = raw.partition('+')
+    if separator and _VCS_HASH_LOCAL_RE.match(local):
+        return base
+    return raw
+
+
+def engine_label(engine: str, note: str | None = None) -> str:
+    """
+    Return the candidate label for a verification comparison.
+
+    Builds the EasyDiffraction-plus-engine candidate string with live
+    versions, for example ``'edi 1.2.3 (cryspy 2.4.1)'`` or, with a
+    ``note``, ``'edi 1.2.3 (cryspy 2.4.1, refined)'``. The engine is
+    named explicitly (not read from the active calculator) so a stored
+    result keeps the version of the engine that produced it. An
+    unresolvable version renders a visible ``?`` marker rather than
+    being omitted.
+
+    Parameters
+    ----------
+    engine : str
+        Calculation engine tag, for example ``'cryspy'`` or
+        ``'crysfml'``.
+    note : str | None, default=None
+        Optional annotation appended inside the parentheses, for example
+        ``'refined'`` or ``'scale only'``.
+
+    Returns
+    -------
+    str
+        The candidate label string.
+
+    Raises
+    ------
+    ValueError
+        If ``engine`` is not in the shared engine-to-package map.
+    """
+    if engine not in SOFTWARE_PACKAGE_BY_ENGINE:
+        supported = ', '.join(sorted(SOFTWARE_PACKAGE_BY_ENGINE))
+        msg = f'Unknown engine {engine!r}; expected one of: {supported}.'
+        raise ValueError(msg)
+
+    edi_version = _label_version('easydiffraction')
+    engine_version = _label_version(SOFTWARE_PACKAGE_BY_ENGINE[engine])
+    edi_text = f'edi {edi_version}' if edi_version is not None else 'edi ?'
+    engine_text = f'{engine} ?' if engine_version is None else f'{engine} {engine_version}'
+    inner = engine_text if note is None else f'{engine_text}, {note}'
+    return f'{edi_text} ({inner})'
 
 
 def load_fullprof_sc_f2calc(project_dir: str, out_file: str) -> dict[tuple[int, int, int], float]:
@@ -895,14 +974,30 @@ def assert_patterns_agree(
     comparisons: list[tuple[str, np.ndarray, np.ndarray]],
     *,
     tolerances: AgreementTolerances | None = None,
-    raise_on_failure: bool = True,
+    known_discrepancy: bool = False,
+    reason: str | None = None,
 ) -> bool:
     """
-    Render a pass/fail agreement table for one or more pattern pairs.
+    Assert one or more pattern pairs meet their documented expectation.
 
     Each comparison is scored with :func:`pattern_closeness` and checked
     against ``tolerances``. A single table summarises every metric with
     a check/cross icon; an out-of-bounds actual value is shown in red.
+
+    The assertion is two-sided and driven by ``known_discrepancy``:
+
+    * ``known_discrepancy=False`` (default) asserts the patterns
+      **agree** — the page is a regression test, and any
+      out-of-tolerance metric raises ``AssertionError``.
+    * ``known_discrepancy=True`` asserts that **every** listed
+      comparison **still disagrees** — the documented known-bad state.
+      The expected out-of-tolerance result passes (the discrepancy
+      stays visible); if **any** comparison has started agreeing
+      within tolerance it raises ``AssertionError`` so the now-fixed
+      comparison fails CI and must be re-gated by hand. A known-bad
+      comparison cannot mask a regression in an expected-good one:
+      keep expected-good comparisons in their own default (gated)
+      call.
 
     Parameters
     ----------
@@ -910,25 +1005,43 @@ def assert_patterns_agree(
         ``(label, reference, candidate)`` triples to compare.
     tolerances : AgreementTolerances | None, default=None
         Tolerance bounds; the documented defaults are used when omitted.
-    raise_on_failure : bool, default=True
-        Whether to raise ``AssertionError`` when any metric is out of
-        bounds, so the verification notebooks stay regression-checked.
+    known_discrepancy : bool, default=False
+        When True, assert the documented disagreement persists instead
+        of asserting agreement (see above).
+    reason : str | None, default=None
+        Required when ``known_discrepancy=True``: a short explanation of
+        the known-bad state, shown on the published page.
 
     Returns
     -------
     bool
-        ``True`` when every metric is within tolerance.
+        ``True`` when the page met its expectation (a default page that
+        agrees, or a ``known_discrepancy`` page that still disagrees).
 
     Raises
     ------
+    ValueError
+        If ``known_discrepancy=True`` is given without a non-empty
+        ``reason``.
     AssertionError
-        If any metric is out of bounds and ``raise_on_failure`` is True.
+        If the expectation is not met: a default page whose patterns
+        disagree, or a ``known_discrepancy`` call in which any
+        comparison now agrees within tolerance.
     """
+    if known_discrepancy and not (reason and reason.strip()):
+        msg = (
+            '`known_discrepancy=True` requires a non-empty `reason` '
+            'explaining the known-bad state (shown on the page).'
+        )
+        raise ValueError(msg)
+
     tolerances = tolerances or AgreementTolerances()
     rows: list[list[str]] = []
     failures: list[str] = []
+    agreeing: list[str] = []
     for label, reference, candidate in comparisons:
         checks = _agreement_checks(pattern_closeness(reference, candidate), tolerances)
+        comparison_failed = False
         for index, check in enumerate(checks):
             actual = check.actual if check.passed else f'[red]{check.actual}[/red]'
             rows.append([
@@ -940,6 +1053,9 @@ def assert_patterns_agree(
             ])
             if not check.passed:
                 failures.append(f'{label} · {check.metric} = {check.actual}')
+                comparison_failed = True
+        if not comparison_failed:
+            agreeing.append(label)
 
     render_table(
         columns_headers=['Comparison', 'Metric', 'Expected', 'Actual', 'OK'],
@@ -947,11 +1063,30 @@ def assert_patterns_agree(
         columns_data=rows,
     )
 
-    if failures and raise_on_failure:
+    if known_discrepancy:
+        print_table_footnote([('Known discrepancy', reason)])
+        # A known_discrepancy call asserts that *every* listed
+        # comparison still disagrees, so a known-bad comparison cannot
+        # mask a regression in an expected-good one. Any comparison that
+        # now agrees within tolerance must be re-gated on its own.
+        if agreeing:
+            joined = ', '.join(agreeing)
+            msg = (
+                f'These comparisons now agree within tolerance: {joined}. '
+                'A `known_discrepancy=True` call asserts that every listed '
+                'comparison still disagrees; move each agreeing comparison '
+                'into its own gated `assert_patterns_agree(...)` call '
+                '(without `known_discrepancy`), or tighten the tolerance if '
+                'the match is spurious.'
+            )
+            raise AssertionError(msg)
+        return True
+
+    if failures:
         joined = '; '.join(failures)
         msg = f'Pattern agreement check failed: {joined}.'
         raise AssertionError(msg)
-    return not failures
+    return True
 
 
 # ----------------------------------------------------------------------

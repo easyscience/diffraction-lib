@@ -73,13 +73,24 @@ fall back on) invalid values. Use `hypothesis` (deterministic profile)
 for generative coverage and explicit parametrised tables for the
 known-critical boundaries.
 
-## Skipping a verification page in CI
+## Marking a known-bad verification page
 
 A known-failing verification page (for example one waiting on an engine
-fix) can be excluded from the two runners that execute it —
-`pixi run script-tests` and `pixi run notebook-tests` — without removing
-it from the documentation. Add its notebook stem to
-`docs/docs/verification/ci_skip.txt`, one per line with a `# reason`.
-Both runners read that single file (`tools/test_scripts.py` and the
-nbmake `conftest.py` at `docs/docs/`). The page is still committed and
-rendered in the docs; remove the entry once the issue is fixed.
+fix) is marked **in the notebook itself**, not in an external list. At
+the end of the page, call the agreement check with
+`known_discrepancy=True` and a `reason` explaining the known-bad state:
+
+```python
+verify.assert_patterns_agree(
+    [('cryspy vs FullProf', reference, candidate)],
+    known_discrepancy=True,
+    reason='FCJ S_L/D_L not implemented in cryspy yet (issue 166)',
+)
+```
+
+This asserts the documented disagreement **still holds**: the page
+passes while it stays out of tolerance, and **fails CI** the moment it
+starts agreeing, so its mark must be removed and the page re-gated by
+hand. `pixi run script-tests` (the fast regression runner) statically
+detects the flag and skips the page, while `pixi run notebook-tests`
+executes the page for rendering and the re-gate check.
