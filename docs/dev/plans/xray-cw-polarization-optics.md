@@ -82,6 +82,10 @@ injection, not a backend extension. No `pyproject.toml` / `pixi.toml` /
    `monochromator_cthm(angle)` (used by both adapters to produce the
    backend `cthm`) and `lp_factor(two_theta, k, cthm)` (crysfml runtime
    multiplier + the oracle that verifies cryspy's native output).
+   P1.5 inspection found lower-level CrysFML Lorentz routines with
+   optional `cthm`/`rkk` arguments, but the Python
+   `cw_powder_pattern_from_dict` wrapper reads no dictionary keys for
+   them, so the planned fallback multiplier is used.
 6. Defaults are neutron-neutral: with the coefficient at `0.0`,
    `hh = 1` and results are unchanged until a user opts in.
 
@@ -194,7 +198,7 @@ Phase 2 (tests + verification):
   on the CIF-build path + cache rebuild (open question 2).
   Commit: `Emit cryspy polarization setup for X-ray CW powder`
 
-- [ ] **P1.5 — Bind crysfml (verify native line first, then fall back).**
+- [x] **P1.5 — Bind crysfml (verify native line first, then fall back).**
   Satisfy the ADR Decision 5 gate explicitly: statically inspect the
   active CrysFML CFL grammar / bundled examples for a native
   polarization or monochromator line. **If one exists**, emit that native
@@ -264,7 +268,7 @@ include them only in the `pixi run fix` commit. Leave generated
 - [x] P1.2 — Split the CW powder instrument by radiation probe
 - [x] P1.3 — Add the shared Lorentz-polarization helper
 - [x] P1.4 — Bind cryspy natively
-- [ ] P1.5 — Bind crysfml (verify native line first, then fall back)
+- [x] P1.5 — Bind crysfml (verify native line first, then fall back)
 - [ ] P1.6 — Demonstrate the new fields in docs
 - [ ] P1.7 — Phase 1 review gate
 - [ ] Phase 2 — tests added/updated and all five tasks pass
