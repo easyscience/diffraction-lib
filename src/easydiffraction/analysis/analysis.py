@@ -2746,8 +2746,9 @@ class Analysis(
         Raises
         ------
         ValueError
-            If ``data_dir`` is unset, or (with ``copy_data``) the project
-            is unsaved.
+            If ``data_dir`` is unset, does not resolve to a directory
+            with matching files, or (with ``copy_data``) the project is
+            unsaved.
         """
         from easydiffraction.io.ascii import extract_data_paths_from_dir  # noqa: PLC0415
 
@@ -2761,6 +2762,19 @@ class Analysis(
             raise ValueError(msg)
 
         source = self._resolve_sequential_data_dir()
+
+        file_pattern = self._sequential_fit.file_pattern.value
+        try:
+            matched = extract_data_paths_from_dir(source, file_pattern=file_pattern)
+        except (FileNotFoundError, ValueError) as error:
+            msg = (
+                'No sequential data files found. Check that '
+                f'analysis.sequential_fit.data_dir ({source}) exists and that '
+                f'analysis.sequential_fit.file_pattern ({file_pattern!r}) matches '
+                'your data files.'
+            )
+            raise ValueError(msg) from error
+
         if not self._sequential_fit.copy_data.value:
             return str(source)
 
@@ -2778,8 +2792,6 @@ class Analysis(
 
         import shutil  # noqa: PLC0415
 
-        file_pattern = self._sequential_fit.file_pattern.value
-        matched = extract_data_paths_from_dir(source, file_pattern=file_pattern)
         destination.mkdir(parents=True, exist_ok=True)
         for path in matched:
             shutil.copy2(path, destination / Path(path).name)
