@@ -270,7 +270,7 @@ follow-up starts informed:
       Inventory amendment only; the decision is unchanged. Commit:
       `Record CWL second-wavelength fields in persistence ADR`
 
-- [ ] **P1.4 — Phase 1 review gate.** No-code step. Mark complete and
+- [x] **P1.4 — Phase 1 review gate.** No-code step. Mark complete and
       commit the checklist update alone. Commit:
       `Reach Phase 1 review gate`
 
@@ -303,7 +303,7 @@ Phase 2 adds the tests listed under _Concrete files_:
       `NumericDescriptor`s)
 - [x] P1.2 — IUCr loop emitted when active; mixed states guarded
 - [x] P1.3 — Edi persistence inventory ADR updated
-- [ ] P1.4 — Phase 1 review gate
+- [x] P1.4 — Phase 1 review gate
 - [ ] Phase 2 — tests added and all five `pixi run` tasks clean
 
 ## Suggested Pull Request
