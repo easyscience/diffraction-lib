@@ -87,6 +87,8 @@ project.structures.add(structure)
 # %%
 FULLPROF_PROJECT_DIR = 'pd-neut-cwl_pv-march_lbco'
 FULLPROF_PRF_FILE = 'lbco.prf'
+FULLPROF_SUM_FILE = 'lbco.sum'
+FULLPROF_LABEL = verify.fullprof_label(FULLPROF_PROJECT_DIR, FULLPROF_SUM_FILE)
 FULLPROF_BAC_FILE = 'lbco.bac'
 FULLPROF_ZERO = 0.62040  # FullProf Zero
 FULLPROF_SCALE = 9.405870  # FullProf Scale
@@ -153,13 +155,14 @@ experiment.calculator.type = 'cryspy'
 
 project.analysis.calculate()
 calc_ed_cryspy = experiment.data.intensity_calc
+LABEL_ED_CRYSPY = verify.engine_label('cryspy')
 
 project.display.pattern_comparison(
     'lbco',
     reference=calc_fullprof,
     candidate=calc_ed_cryspy,
-    reference_label='FullProf',
-    candidate_label='edi-cryspy',
+    reference_label=FULLPROF_LABEL,
+    candidate_label=LABEL_ED_CRYSPY,
 )
 
 # %% [markdown]
@@ -180,13 +183,14 @@ project.display.fit.results()
 
 project.analysis.calculate()
 calc_ed_cryspy_refined = experiment.data.intensity_calc
+LABEL_ED_CRYSPY_REFINED = verify.engine_label('cryspy', note='refined')
 
 project.display.pattern_comparison(
     'lbco',
     reference=calc_fullprof,
     candidate=calc_ed_cryspy_refined,
-    reference_label='FullProf',
-    candidate_label='edi-cryspy (refined)',
+    reference_label=FULLPROF_LABEL,
+    candidate_label=LABEL_ED_CRYSPY_REFINED,
 )
 
 # %% [markdown]
@@ -195,7 +199,7 @@ project.display.pattern_comparison(
 # %%
 verify.assert_patterns_agree(
     [
-        ('cryspy refined vs FullProf', calc_fullprof, calc_ed_cryspy_refined),
+        (f'{LABEL_ED_CRYSPY_REFINED} vs {FULLPROF_LABEL}', calc_fullprof, calc_ed_cryspy_refined),
     ],
 )
 

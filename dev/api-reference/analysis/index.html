@@ -60137,7 +60137,18 @@ those pages stay short and readable.</p>
               <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;fullprof_label&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;project_dir&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;summary_file&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.analysis.verification.fullprof_label&lt;/code&gt;)" href="#easydiffraction.analysis.verification.fullprof_label">fullprof_label</a></code></td>
               <td>
                 <div class="doc-md-description">
-                  <p>Return a FullProf plot-legend label, e.g. <code>'FullProf v8.40'</code>.</p>
+                  <p>Return a FullProf plot-legend label, e.g. <code>'FullProf 8.40'</code>.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;engine_label&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;engine&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;note&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.analysis.verification.engine_label&lt;/code&gt;)" href="#easydiffraction.analysis.verification.engine_label">engine_label</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Return the candidate label for a verification comparison.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -60244,10 +60255,10 @@ those pages stay short and readable.</p>
               </td>
             </tr>
             <tr class="doc-section-item">
-              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;assert_patterns_agree&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;comparisons&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tolerances&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;raise_on_failure&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;True&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.analysis.verification.assert_patterns_agree&lt;/code&gt;)" href="#easydiffraction.analysis.verification.assert_patterns_agree">assert_patterns_agree</a></code></td>
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;assert_patterns_agree&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;comparisons&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tolerances&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;known_discrepancy&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;False&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;reason&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.analysis.verification.assert_patterns_agree&lt;/code&gt;)" href="#easydiffraction.analysis.verification.assert_patterns_agree">assert_patterns_agree</a></code></td>
               <td>
                 <div class="doc-md-description">
-                  <p>Render a pass/fail agreement table for one or more pattern pairs.</p>
+                  <p>Assert one or more pattern pairs meet their documented expectation.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -60766,7 +60777,7 @@ directory) holding the FullProf project files.</p>
 of its <code>.sum</code> (or <code>.out</code>) output — the line <code>** PROGRAM
 FullProf.2k (Version 8.40 - Feb2026-ILL JRC) **</code> — and returns just
 the version number (for example <code>'8.40'</code>), suited to a plot legend
-such as <code>f'FullProf v{version}'</code>.</p>
+such as <code>f'FullProf {version}'</code>.</p>
 <p>Resolved inside the bundled reference directory, so the caller
 passes the project sub-folder and the summary file name.</p>
 <!-- prettier-ignore-start -->
@@ -60895,10 +60906,10 @@ directory) holding the FullProf project files.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return a FullProf plot-legend label, e.g. <code>'FullProf v8.40'</code>.</p>
+        <p>Return a FullProf plot-legend label, e.g. <code>'FullProf 8.40'</code>.</p>
 <p>Convenience wrapper over :func:<code>fullprof_version</code> so verification
 pages set <code>reference_label</code> in one line rather than repeating the
-<code>f'FullProf v{...}'</code> formatting.</p>
+<code>f'FullProf {...}'</code> formatting.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -60973,7 +60984,142 @@ directory) holding the FullProf project files.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The legend label <code>f'FullProf v{version}'</code>.</p>
+                <p>The legend label <code>f'FullProf {version}'</code>.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h5 id="easydiffraction.analysis.verification.engine_label" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">engine_label</span><span class="p">(</span><span class="n">engine</span><span class="p">,</span> <span class="n">note</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+</h5>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return the candidate label for a verification comparison.</p>
+<p>Builds the EasyDiffraction-plus-engine candidate string with live
+versions, for example <code>'edi 1.2.3 (cryspy 2.4.1)'</code> or, with a
+<code>note</code>, <code>'edi 1.2.3 (cryspy 2.4.1, refined)'</code>. The engine is
+named explicitly (not read from the active calculator) so a stored
+result keeps the version of the engine that produced it. An
+unresolvable version renders a visible <code>?</code> marker rather than
+being omitted.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>engine</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Calculation engine tag, for example <code>'cryspy'</code> or
+<code>'crysfml'</code>.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>note</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Optional annotation appended inside the parentheses, for example
+<code>'refined'</code> or <code>'scale only'</code>.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The candidate label string.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If <code>engine</code> is not in the shared engine-to-package map.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -61983,17 +62129,32 @@ text uses the limited HTML that Plotly annotations support.</p>
 
 
 <h5 id="easydiffraction.analysis.verification.assert_patterns_agree" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">assert_patterns_agree</span><span class="p">(</span><span class="n">comparisons</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">tolerances</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">raise_on_failure</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">assert_patterns_agree</span><span class="p">(</span><span class="n">comparisons</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">tolerances</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">known_discrepancy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h5>
 
 
     <div class="doc doc-contents ">
 
-        <p>Render a pass/fail agreement table for one or more pattern pairs.</p>
+        <p>Assert one or more pattern pairs meet their documented expectation.</p>
 <p>Each comparison is scored with :func:<code>pattern_closeness</code> and checked
 against <code>tolerances</code>. A single table summarises every metric with
 a check/cross icon; an out-of-bounds actual value is shown in red.</p>
+<p>The assertion is two-sided and driven by <code>known_discrepancy</code>:</p>
+<ul>
+<li><code>known_discrepancy=False</code> (default) asserts the patterns
+  <strong>agree</strong> — the page is a regression test, and any
+  out-of-tolerance metric raises <code>AssertionError</code>.</li>
+<li><code>known_discrepancy=True</code> asserts that <strong>every</strong> listed
+  comparison <strong>still disagrees</strong> — the documented known-bad state.
+  The expected out-of-tolerance result passes (the discrepancy
+  stays visible); if <strong>any</strong> comparison has started agreeing
+  within tolerance it raises <code>AssertionError</code> so the now-fixed
+  comparison fails CI and must be re-gated by hand. A known-bad
+  comparison cannot mask a regression in an expected-good one:
+  keep expected-good comparisons in their own default (gated)
+  call.</li>
+</ul>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -62054,22 +62215,42 @@ a check/cross icon; an out-of-bounds actual value is shown in red.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>raise_on_failure</code>
+                <code>known_discrepancy</code>
             </td>
             <td>
                   <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Whether to raise <code>AssertionError</code> when any metric is out of
-bounds, so the verification notebooks stay regression-checked.</p>
+                <p>When True, assert the documented disagreement persists instead
+of asserting agreement (see above).</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
               </div>
             </td>
             <td>
-                  <code>True</code>
+                  <code>False</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>reason</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Required when <code>known_discrepancy=True</code>: a short explanation of
+the known-bad state, shown on the published page.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
             </td>
           </tr>
       </tbody>
@@ -62091,7 +62272,8 @@ bounds, so the verification notebooks stay regression-checked.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p><code>True</code> when every metric is within tolerance.</p>
+                <p><code>True</code> when the page met its expectation (a default page that
+agrees, or a <code>known_discrepancy</code> page that still disagrees).</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -62113,11 +62295,27 @@ bounds, so the verification notebooks stay regression-checked.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If <code>known_discrepancy=True</code> is given without a non-empty
+<code>reason</code>.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
                   <code><span title="AssertionError">AssertionError</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>If any metric is out of bounds and <code>raise_on_failure</code> is True.</p>
+                <p>If the expectation is not met: a default page whose patterns
+disagree, or a <code>known_discrepancy</code> call in which any
+comparison now agrees within tolerance.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->

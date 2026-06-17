@@ -156,13 +156,14 @@ experiment.linked_structures['ncaf'].scale = FULLPROF_SCALE
 
 project.analysis.calculate()
 calc_ed_cryspy = experiment.data.intensity_calc
+LABEL_ED_CRYSPY = verify.engine_label('cryspy')
 
 project.display.pattern_comparison(
     'ncaf',
     reference=calc_fullprof,
     candidate=calc_ed_cryspy,
     reference_label=FULLPROF_LABEL,
-    candidate_label='edi-cryspy',
+    candidate_label=LABEL_ED_CRYSPY,
 )
 
 # %% [markdown]
@@ -177,13 +178,14 @@ project.display.fit.results()
 
 project.analysis.calculate()
 calc_ed_cryspy_refined = experiment.data.intensity_calc
+LABEL_ED_CRYSPY_REFINED = verify.engine_label('cryspy', note='refined')
 
 project.display.pattern_comparison(
     'ncaf',
     reference=calc_fullprof,
     candidate=calc_ed_cryspy_refined,
     reference_label=FULLPROF_LABEL,
-    candidate_label='edi-cryspy (refined)',
+    candidate_label=LABEL_ED_CRYSPY_REFINED,
 )
 
 # %%
@@ -199,13 +201,14 @@ experiment.linked_structures['ncaf'].scale = FULLPROF_SCALE
 
 project.analysis.calculate()
 calc_ed_crysfml = experiment.data.intensity_calc
+LABEL_ED_CRYSFML = verify.engine_label('crysfml')
 
 project.display.pattern_comparison(
     'ncaf',
     reference=calc_fullprof,
     candidate=calc_ed_crysfml,
     reference_label=FULLPROF_LABEL,
-    candidate_label='edi-crysfml',
+    candidate_label=LABEL_ED_CRYSFML,
 )
 
 # %% [markdown]
@@ -220,13 +223,14 @@ project.display.fit.results()
 
 project.analysis.calculate()
 calc_ed_crysfml_refined = experiment.data.intensity_calc
+LABEL_ED_CRYSFML_REFINED = verify.engine_label('crysfml', note='refined')
 
 project.display.pattern_comparison(
     'ncaf',
     reference=calc_fullprof,
     candidate=calc_ed_crysfml_refined,
     reference_label=FULLPROF_LABEL,
-    candidate_label='edi-crysfml (refined)',
+    candidate_label=LABEL_ED_CRYSFML_REFINED,
 )
 
 # %%
@@ -236,18 +240,15 @@ experiment.linked_structures['ncaf'].scale
 # ## Agreement check
 
 # %%
-verify.assert_patterns_agree(
-    [
-        (
-            'cryspy vs FullProf',
-            verify.restrict_to_included(experiment, calc_fullprof),
-            calc_ed_cryspy_refined,
-        ),
-        (
-            'crysfml vs FullProf',
-            verify.restrict_to_included(experiment, calc_fullprof),
-            calc_ed_crysfml_refined,
-        ),
-    ],
-    raise_on_failure=False,
-)
+verify.assert_patterns_agree([
+    (
+        f'{LABEL_ED_CRYSPY_REFINED} vs {FULLPROF_LABEL}',
+        verify.restrict_to_included(experiment, calc_fullprof),
+        calc_ed_cryspy_refined,
+    ),
+    (
+        f'{LABEL_ED_CRYSFML_REFINED} vs {FULLPROF_LABEL}',
+        verify.restrict_to_included(experiment, calc_fullprof),
+        calc_ed_crysfml_refined,
+    ),
+])

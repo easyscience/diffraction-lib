@@ -96,6 +96,7 @@ EXTINCTION_RADIUS = 10.0
 EXTINCTION_MOSAICITY = 35000.0
 
 f2calc = verify.load_fullprof_sc_f2calc(FULLPROF_PROJECT_DIR, FULLPROF_OUT_FILE)
+FULLPROF_LABEL = verify.fullprof_label(FULLPROF_PROJECT_DIR, FULLPROF_OUT_FILE)
 
 # %% [markdown]
 # ## Create the experiment
@@ -125,14 +126,15 @@ project.experiments.add(experiment)
 
 # %%
 calc_ed_cryspy = verify.calculate_reflections(project, experiment, 'cryspy')
+LABEL_ED_CRYSPY = verify.engine_label('cryspy')
 reference, candidate = verify.align_reflections(f2calc, calc_ed_cryspy)
 
 project.display.reflection_comparison(
     'tbti',
     reference=reference,
     candidate=candidate,
-    reference_label='FullProf',
-    candidate_label='edi-cryspy',
+    reference_label=FULLPROF_LABEL,
+    candidate_label=LABEL_ED_CRYSPY,
 )
 
 # %% [markdown]
@@ -148,14 +150,15 @@ project.analysis.fit()
 project.display.fit.results()
 
 calc_ed_cryspy_refined = verify.calculate_reflections(project, experiment, 'cryspy')
+LABEL_ED_CRYSPY_REFINED = verify.engine_label('cryspy', note='scale + ext radius')
 reference_refined, candidate_refined = verify.align_reflections(f2calc, calc_ed_cryspy_refined)
 
 project.display.reflection_comparison(
     'tbti',
     reference=reference_refined,
     candidate=candidate_refined,
-    reference_label='FullProf',
-    candidate_label='edi-cryspy (scale + ext radius)',
+    reference_label=FULLPROF_LABEL,
+    candidate_label=LABEL_ED_CRYSPY_REFINED,
 )
 
 verify.report_refinement_closeness(
@@ -170,7 +173,8 @@ verify.report_refinement_closeness(
 # %%
 verify.assert_patterns_agree(
     [
-        ('cryspy vs FullProf', reference_refined, candidate_refined),
+        (f'{LABEL_ED_CRYSPY_REFINED} vs {FULLPROF_LABEL}', reference_refined, candidate_refined),
     ],
-    raise_on_failure=False,
+    known_discrepancy=True,
+    reason='cryspy and FullProf use different extinction conventions.',
 )

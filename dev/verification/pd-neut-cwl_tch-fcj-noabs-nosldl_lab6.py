@@ -47,6 +47,8 @@ project.structures.add(structure)
 # %%
 FULLPROF_PROJECT_DIR = 'pd-neut-cwl_tch-fcj_lab6'
 FULLPROF_PRF_FILE = 'ECH0030684_LaB6_1p622A_noAbs_noSLDL.prf'
+FULLPROF_SUM_FILE = 'ECH0030684_LaB6_1p622A_noAbs_noSLDL.sum'
+FULLPROF_LABEL = verify.fullprof_label(FULLPROF_PROJECT_DIR, FULLPROF_SUM_FILE)
 FULLPROF_BAC_FILE = 'ECH0030684_LaB6_1p622A_noAbs_noSLDL.bac'
 FULLPROF_ZERO = -0.45778  # FullProf Zero
 FULLPROF_SCALE = 42.98374  # FullProf Scale
@@ -104,13 +106,14 @@ experiment.instrument.calib_sample_transparency = FULLPROF_SYSIN
 
 project.analysis.calculate()
 calc_ed_cryspy = experiment.data.intensity_calc
+LABEL_ED_CRYSPY = verify.engine_label('cryspy')
 
 project.display.pattern_comparison(
     'lab6',
     reference=calc_fullprof,
     candidate=calc_ed_cryspy,
-    reference_label='FullProf',
-    candidate_label='edi-cryspy',
+    reference_label=FULLPROF_LABEL,
+    candidate_label=LABEL_ED_CRYSPY,
 )
 
 # %% [markdown]
@@ -121,13 +124,14 @@ experiment.calculator.type = 'crysfml'
 
 project.analysis.calculate()
 calc_ed_crysfml = experiment.data.intensity_calc
+LABEL_ED_CRYSFML = verify.engine_label('crysfml')
 
 project.display.pattern_comparison(
     'lab6',
     reference=calc_fullprof,
     candidate=calc_ed_crysfml,
-    reference_label='FullProf',
-    candidate_label='edi-crysfml',
+    reference_label=FULLPROF_LABEL,
+    candidate_label=LABEL_ED_CRYSFML,
 )
 
 # %% [markdown]
@@ -142,13 +146,14 @@ project.display.fit.results()
 
 project.analysis.calculate()
 calc_ed_crysfml_refined = experiment.data.intensity_calc
+LABEL_ED_CRYSFML_REFINED = verify.engine_label('crysfml', note='refined')
 
 project.display.pattern_comparison(
     'lab6',
     reference=calc_fullprof,
     candidate=calc_ed_crysfml_refined,
-    reference_label='FullProf',
-    candidate_label='edi-crysfml (refined)',
+    reference_label=FULLPROF_LABEL,
+    candidate_label=LABEL_ED_CRYSFML_REFINED,
 )
 
 # %% [markdown]
@@ -157,8 +162,9 @@ project.display.pattern_comparison(
 # %%
 verify.assert_patterns_agree(
     [
-        ('cryspy vs FullProf', calc_fullprof, calc_ed_cryspy),
-        ('crysfml vs FullProf', calc_fullprof, calc_ed_crysfml),
+        (f'{LABEL_ED_CRYSPY} vs {FULLPROF_LABEL}', calc_fullprof, calc_ed_cryspy),
+        (f'{LABEL_ED_CRYSFML} vs {FULLPROF_LABEL}', calc_fullprof, calc_ed_crysfml),
     ],
-    raise_on_failure=False,
+    known_discrepancy=True,
+    reason=('needs unreleased cryspy PR #46 (SyCos/SySin, cos2theta convention)'),
 )

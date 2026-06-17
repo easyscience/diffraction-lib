@@ -3691,6 +3691,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#powder-x-ray-constant-wavelength" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Powder, X-ray, constant wavelength
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#single-crystal-neutron-constant-wavelength" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3742,9 +3753,13 @@ not from a disagreement about the structure.</p>
 y=x scatter instead of a profile overlay, and use <code>cryspy</code> only — the
 sole engine with single-crystal Bragg support.</p>
 <p>Most pages also run as a fast regression check (<code>pixi run script-tests</code>
-and <code>pixi run notebook-tests</code>), so agreement is monitored over time. A
-few are excluded from CI where an engine cannot yet reproduce a modelled
-effect; each such page states the reason below.</p>
+and <code>pixi run notebook-tests</code>), so agreement is monitored over time.
+Where an engine cannot yet reproduce a modelled effect, the page marks
+the difference <strong>in the notebook itself</strong> with <code>known_discrepancy=True</code>
+and a short reason: it still renders in the docs and is verified to
+<strong>stay</strong> discrepant — failing CI if it unexpectedly starts agreeing, so
+the mark must then be removed — while the fast regression run skips it.
+Such pages are flagged <strong>Known discrepancy</strong> below.</p>
 <p>Pages are grouped by <strong>experiment type</strong> (sample form, radiation probe,
 and beam mode). Coverage grows to span every supported combination —
 <code>pd-neut-cwl</code>, <code>pd-neut-tof</code>, <code>pd-xray</code>, <code>sc-neut-cwl</code>, <code>sc-neut-tof</code>,
@@ -3762,26 +3777,32 @@ and so on. The list below notes only what is specific to each page.</p>
   Anglesite (PbSO₄, <em>Pnma</em>); pseudo-Voigt, no asymmetry.</li>
 <li><a href="pd-neut-cwl_pv-beba_pbso4/">PbSO₄ <code>pd-neut-cwl</code> (Bérar–Baldinozzi asymmetry)</a>
   – Anglesite (PbSO₄, <em>Pnma</em>); pseudo-Voigt with Bérar–Baldinozzi
-  (FullProf-style) axial-divergence asymmetry (<code>asym_beba_*</code>). Skipped
-  in CI: cryspy and FullProf implement this asymmetry with different
-  conventions (issue 166), and crysfml has no empirical-asymmetry model.</li>
+  (FullProf-style) axial-divergence asymmetry (<code>asym_beba_*</code>). cryspy
+  and FullProf implement this asymmetry with different conventions
+  (issue 166), so the FullProf coefficients do not transfer one-to-one;
+  freeing cryspy's own coefficients recovers the FullProf profile, so
+  the page agrees. crysfml has no empirical-asymmetry model.</li>
 <li><a href="pd-neut-cwl_tch-fcj-noabs-nosldl_lab6/">LaB₆ <code>pd-neut-cwl</code> (SyCos/SySin)</a>
   – Lanthanum hexaboride (LaB₆, <em>Pm-3m</em>); pseudo-Voigt with SyCos/SySin
-  sample-displacement and transparency corrections. Skipped in CI:
-  pending the unreleased cryspy build that adds these corrections.</li>
+  sample-displacement and transparency corrections. Known discrepancy:
+  pending the unreleased cryspy build (PR #46) that adds these
+  corrections.</li>
 <li><a href="pd-neut-cwl_tch-fcj-noabs_lab6/">LaB₆ <code>pd-neut-cwl</code> (FCJ asymmetry)</a>
   – Lanthanum hexaboride (LaB₆, <em>Pm-3m</em>); Thompson–Cox–Hastings with
-  Finger–Cox– Jephcoat axial-divergence asymmetry. Skipped in CI: FCJ
-  asymmetry is crysfml-only.</li>
+  Finger–Cox– Jephcoat axial-divergence asymmetry. Known discrepancy:
+  FCJ asymmetry is not implemented in cryspy (crysfml-only).</li>
 <li><a href="pd-neut-cwl_tch-fcj_lab6/">LaB₆ <code>pd-neut-cwl</code> (absorption)</a> –
   Lanthanum hexaboride (LaB₆, <em>Pm-3m</em>); adds Debye–Scherrer sample
   absorption (μR = 0.7), now modelled by both engines, on top of FCJ
-  asymmetry. Skipped in CI: FCJ asymmetry is crysfml-only.</li>
+  asymmetry. Known discrepancy: FCJ asymmetry is not implemented in
+  cryspy (crysfml-only).</li>
 <li><a href="pd-neut-cwl_tch-fcj-nosldl_lab6/">LaB₆ <code>pd-neut-cwl</code> (absorption, no FCJ)</a>
   – Lanthanum hexaboride (LaB₆, <em>Pm-3m</em>); Debye–Scherrer sample
   absorption (μR = 0.7) with FCJ asymmetry switched off, isolating the
-  absorption correction. ed-cryspy matches FullProf (enabling the
-  correction removes a ≈ 2.9× intensity mismatch).</li>
+  absorption correction. Enabling the correction removes a ≈ 2.9×
+  intensity mismatch. Known discrepancy: a residual peak-position
+  difference remains on the released cryspy (needs PR #46); it agrees on
+  a develop cryspy build.</li>
 <li><a href="pd-neut-cwl_pv-beta_y2o3/">Y₂O₃ <code>pd-neut-cwl</code> (anisotropic β-tensor ADPs)</a>
   – Yttria (Y₂O₃, bixbyite, <em>Ia-3</em>); dimensionless β-tensor anisotropic
   ADPs (<code>adp_type='beta'</code>) on the three sites, with cylindrical
@@ -3795,16 +3816,26 @@ and so on. The list below notes only what is specific to each page.</p>
 <h2 id="powder-neutron-time-of-flight">Powder, neutron, time-of-flight</h2>
 <ul>
 <li><a href="pd-neut-tof_j_si/">Si <code>pd-neut-tof</code> (Jorgensen)</a> – Silicon (Si,
-  <em>Fd-3m</em>); Jorgensen (back-to-back exponentials with a Gaussian).</li>
+  <em>Fd-3m</em>); Jorgensen (back-to-back exponentials with a Gaussian). Known
+  discrepancy: the ed-crysfml profile is ~8.5% off after fitting the
+  scale; cryspy matches FullProf (issue 130).</li>
 <li><a href="pd-neut-tof_jvd_si/">Si <code>pd-neut-tof</code> (Jorgensen–Von Dreele)</a> –
   Silicon (Si, <em>Fd-3m</em>); Jorgensen–Von Dreele (back-to-back exponentials
-  with a pseudo-Voigt). Skipped in CI: residual cryspy TOF Lorentzian
-  discrepancy.</li>
+  with a pseudo-Voigt). Known discrepancy: residual cryspy TOF
+  Lorentzian discrepancy.</li>
 <li><a href="pd-neut-tof_jvd_ncaf/">NaCaAlF <code>pd-neut-tof</code></a> – Sodium calcium
-  aluminium fluoride (Na₂Ca₃Al₂F₁₄, <em>I2₁3</em>); Jorgensen–Von Dreele.
-  Skipped in CI: the FullProf reference uses a tabulated
-  instrument-resolution file that the polynomial profile cannot
-  reproduce.</li>
+  aluminium fluoride (Na₂Ca₃Al₂F₁₄, <em>I2₁3</em>); Jorgensen–Von Dreele. Both
+  engines agree with the FullProf reference within tolerance.</li>
+</ul>
+<h2 id="powder-x-ray-constant-wavelength">Powder, X-ray, constant wavelength</h2>
+<ul>
+<li><a href="pd-xray-pbso4/">PbSO₄ <code>pd-xray</code></a> – Anglesite (PbSO₄, <em>Pnma</em>);
+  laboratory Cu-source X-ray Rietveld Round Robin data; pseudo-Voigt.
+  Known discrepancy: FullProf models the full Cu Kα₁/Kα₂ doublet and its
+  X-ray Lorentz–polarization correction, whereas cryspy and crysfml
+  calculate from a single wavelength and a different polarization
+  convention, so neither engine yet reproduces the FullProf X-ray
+  profile.</li>
 </ul>
 <h2 id="single-crystal-neutron-constant-wavelength">Single crystal, neutron, constant wavelength</h2>
 <ul>
@@ -3821,7 +3852,8 @@ and so on. The list below notes only what is specific to each page.</p>
   FullProf reference with anisotropic ADPs and empirical extinction.
   Cryspy extinction (<code>becker-coppens</code>, <code>gauss</code>) uses two parameters,
   <code>radius</code> and <code>mosaicity</code>. Only <code>scale</code> and <code>radius</code> are refined
-  against FullProf.</li>
+  against FullProf. Known discrepancy: cryspy and FullProf use different
+  asymmetry conventions.</li>
 </ul>
 <!-- prettier-ignore-start -->
 
