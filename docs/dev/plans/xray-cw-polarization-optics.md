@@ -175,7 +175,7 @@ Phase 2 (tests + verification):
   the data-range `cwl-pd` tag untouched.
   Commit: `Split CW powder instrument by radiation probe`
 
-- [ ] **P1.3 — Add the shared Lorentz-polarization helper.**
+- [x] **P1.3 — Add the shared Lorentz-polarization helper.**
   New module `analysis/calculators/polarization.py` mirroring
   `absorption.py`: `monochromator_cthm(twotheta_deg) -> float`
   (`cos²(radians(twotheta))`), `lp_factor(two_theta, k, cthm) ->
@@ -265,7 +265,7 @@ include them only in the `pixi run fix` commit. Leave generated
 
 - [x] P1.1 — Promote the ADR to `accepted/` and update `index.md`
 - [x] P1.2 — Split the CW powder instrument by radiation probe
-- [ ] P1.3 — Add the shared Lorentz-polarization helper
+- [x] P1.3 — Add the shared Lorentz-polarization helper
 - [ ] P1.4 — Bind cryspy natively
 - [ ] P1.5 — Bind crysfml (verify native line first, then fall back)
 - [ ] P1.6 — Demonstrate the new fields in docs
