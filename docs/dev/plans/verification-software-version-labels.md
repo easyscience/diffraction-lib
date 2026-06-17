@@ -24,10 +24,8 @@ ordering.
 ## Branch + PR
 
 - Branch: `verification-software-version-labels` (flat slug off
-  `develop`). **Not yet created** — `/draft-impl-1` creates and checks
-  it out off `develop` before its first commit. The current working
-  branch is `verification-regression-flag`; the uncommitted ADR/plan
-  edits travel onto the new branch when it is created.
+  `develop`). Created and checked out during the Phase 1 review-fix
+  cycle; the software-version-labels commits now live on this branch.
 - PR targets `develop`, not `master`. Do not push unless asked.
 
 ## Decisions (from the ADR)
@@ -111,11 +109,11 @@ ordering.
 
 1. **Ordering vs `verification-regression-flag`.** Both edit all 15
    `docs/docs/verification/*.py` pages and regenerate the same
-   notebooks, and both are in flight. Recommendation: land this
-   **after** `verification-regression-flag` merges to `develop`, then
-   branch this off the updated `develop`, so the label edits layer
-   cleanly on the migrated pages instead of colliding. Confirm with the
-   owner before `/draft-impl-1`.
+   notebooks, and both are in flight. The Phase 1 review-fix cycle moved
+   this work onto its own `verification-software-version-labels` branch
+   from `develop`, so the PR can be reviewed independently. If the
+   regression-flag branch lands first, rebase this branch onto updated
+   `develop` and resolve the expected verification-page conflicts there.
 2. **ADR Decision 4 wording.** The `refined`→`note` generalization above
    edits the ADR at promotion (P1.4). Flagged so the owner can veto the
    signature if a strict boolean is preferred.
