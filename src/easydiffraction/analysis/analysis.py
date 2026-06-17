@@ -2733,10 +2733,10 @@ class Analysis(
         Raises a clear error when no data directory is configured. When
         ``copy_data`` is set, the matched files are copied into the
         project's ``data/sequential/`` folder and the persisted
-        ``data_dir`` is rewritten to that project-relative destination so
-        the saved project stays self-contained. The copy is idempotent:
-        when the resolved source is already the copy destination (the
-        post-reload case), the copy is skipped.
+        ``data_dir`` is rewritten to that project-relative destination
+        so the saved project stays self-contained. The copy is
+        idempotent: when the resolved source is already the copy
+        destination (the post-reload case), the copy is skipped.
 
         Returns
         -------
@@ -2781,8 +2781,7 @@ class Analysis(
         project_path = self.project.metadata.path
         if project_path is None:
             msg = (
-                'Sequential fitting with copy_data requires a saved project; '
-                'call save_as() first.'
+                'Sequential fitting with copy_data requires a saved project; call save_as() first.'
             )
             raise ValueError(msg)
 
@@ -2808,9 +2807,9 @@ class Analysis(
 
         import shutil  # noqa: PLC0415
 
-        # Refresh the archive so it holds exactly the current matched set
-        # (the self-copy case returned above, and overlapping paths were
-        # rejected, so this never deletes the source while reading it).
+        # Refresh the archive to hold exactly the current matched set.
+        # The self-copy case returned above and overlapping paths were
+        # rejected, so this never deletes the source while reading it.
         if destination.exists():
             shutil.rmtree(destination)
         destination.mkdir(parents=True, exist_ok=True)
@@ -3060,8 +3059,7 @@ class Analysis(
         expt_name = next(iter(experiments.names))
         if verb is VerbosityEnum.FULL:
             console.print(
-                f"📋 Using experiment 🔬 '{expt_name}' for "
-                f"'{FitModeEnum.SINGLE.value}' fitting"
+                f"📋 Using experiment 🔬 '{expt_name}' for '{FitModeEnum.SINGLE.value}' fitting"
             )
 
         experiment = experiments[expt_name]

@@ -15,6 +15,9 @@ from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.io.cif.handler import TagSpec
 
+# Minimum loaded experiments for which joint fitting applies.
+_MINIMUM_JOINT_EXPERIMENTS = 2
+
 
 @FittingModeFactory.register
 class FittingMode(CategoryItem, SwitchableCategoryBase):
@@ -58,10 +61,7 @@ class FittingMode(CategoryItem, SwitchableCategoryBase):
             return [(mode.value, mode.description()) for mode in FitModeEnum]
         applicable = []
         for mode in FitModeEnum:
-            if mode is FitModeEnum.JOINT:
-                ok = count >= 2
-            else:  # SINGLE or SEQUENTIAL
-                ok = count == 1
+            ok = count >= _MINIMUM_JOINT_EXPERIMENTS if mode is FitModeEnum.JOINT else count == 1
             if ok:
                 applicable.append((mode.value, mode.description()))
         return applicable
