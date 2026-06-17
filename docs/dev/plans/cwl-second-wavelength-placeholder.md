@@ -249,7 +249,7 @@ follow-up starts informed:
       range. No tests yet (Phase 1 is code + docstrings only). Commit:
       `Add second-wavelength placeholder fields to CWL instrument`
 
-- [ ] **P1.2 — Emit the IUCr wavelength loop and guard mixed states.**
+- [x] **P1.2 — Emit the IUCr wavelength loop and guard mixed states.**
       In `iucr_transformers.py`, update `WavelengthTransformer.items()`
       to return the single-row items when monochromatic **or disabled**
       (`ratio == 0`, any λ₂) and `None` when the doublet is active;
@@ -301,7 +301,7 @@ Phase 2 adds the tests listed under _Concrete files_:
 
 - [x] P1.1 — placeholder fields added (non-refinable
       `NumericDescriptor`s)
-- [ ] P1.2 — IUCr loop emitted when active; mixed states guarded
+- [x] P1.2 — IUCr loop emitted when active; mixed states guarded
 - [ ] P1.3 — Edi persistence inventory ADR updated
 - [ ] P1.4 — Phase 1 review gate
 - [ ] Phase 2 — tests added and all five `pixi run` tasks clean

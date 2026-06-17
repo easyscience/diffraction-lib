@@ -9,6 +9,8 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import ClassVar
 
+from easydiffraction.utils.logging import log
+
 
 @dataclass(frozen=True)
 class IucrItem:
@@ -80,7 +82,13 @@ class WavelengthTransformer(IucrCategoryTransformer):
     @staticmethod
     def items(experiment: object) -> tuple[IucrItem, ...] | None:
         """
-        Return wavelength items for a monochromatic experiment.
+        Return single-row wavelength items for a monochromatic beam.
+
+        Emits the single ``_diffrn_radiation_wavelength`` row when the
+        beam is monochromatic, or when a second wavelength is recorded
+        but disabled (``setup_wavelength_2_to_1_ratio == 0``). Returns
+        ``None`` when no wavelength exists, or when an active doublet is
+        present so the writer falls through to :meth:`loop`.
 
         Parameters
         ----------
@@ -90,13 +98,13 @@ class WavelengthTransformer(IucrCategoryTransformer):
         Returns
         -------
         tuple[IucrItem, ...] | None
-            Wavelength items, or ``None`` when no wavelength exists.
+            Single-row wavelength items, or ``None``.
         """
-        wavelength = _attribute_value(
-            getattr(experiment, 'instrument', None),
-            'setup_wavelength',
-        )
+        instrument = getattr(experiment, 'instrument', None)
+        wavelength = _attribute_value(instrument, 'setup_wavelength')
         if wavelength is None:
+            return None
+        if _wavelength_doublet_active(instrument):
             return None
         return (
             IucrItem('_diffrn_radiation_wavelength.id', '1'),
@@ -107,7 +115,14 @@ class WavelengthTransformer(IucrCategoryTransformer):
     @staticmethod
     def loop(experiment: object) -> IucrLoop | None:
         """
-        Return a wavelength loop for multi-wavelength experiments.
+        Return a two-row wavelength loop for an active doublet.
+
+        Emits the ``_diffrn_radiation_wavelength`` loop with the primary
+        wavelength (``wt`` 1.0) and the second component
+        (``wt`` = ``setup_wavelength_2_to_1_ratio``) when the doublet is
+        active; ``None`` otherwise. The incomplete pair (a positive
+        ratio with no second wavelength) is rejected by
+        :func:`_wavelength_doublet_active`.
 
         Parameters
         ----------
@@ -117,10 +132,25 @@ class WavelengthTransformer(IucrCategoryTransformer):
         Returns
         -------
         IucrLoop | None
-            Wavelength loop, or ``None`` for monochromatic experiments.
+            Wavelength loop, or ``None`` when not an active doublet.
         """
-        del experiment
-        return None
+        instrument = getattr(experiment, 'instrument', None)
+        wavelength = _attribute_value(instrument, 'setup_wavelength')
+        if wavelength is None or not _wavelength_doublet_active(instrument):
+            return None
+        wavelength_2 = _attribute_value(instrument, 'setup_wavelength_2')
+        ratio = _attribute_value(instrument, 'setup_wavelength_2_to_1_ratio')
+        return IucrLoop(
+            tags=(
+                '_diffrn_radiation_wavelength.id',
+                '_diffrn_radiation_wavelength.value',
+                '_diffrn_radiation_wavelength.wt',
+            ),
+            rows=(
+                ('1', wavelength, 1.0),
+                ('2', wavelength_2, ratio),
+            ),
+        )
 
 
 @IucrCategoryTransformer.register
@@ -445,3 +475,41 @@ def _finite_number(value: object) -> float | None:
         return None
     number = float(value)
     return number if math.isfinite(number) else None
+
+
+def _wavelength_doublet_active(instrument: object) -> bool:
+    """
+    Return whether an active second-wavelength doublet is present.
+
+    A doublet is active only when both ``setup_wavelength_2`` and
+    ``setup_wavelength_2_to_1_ratio`` are positive. A positive ratio
+    with no second wavelength is an incomplete user-input pair and
+    raises ``ValueError`` rather than silently dropping the ratio. Every
+    other state — both zero (monochromatic), or a recorded-but-disabled
+    second wavelength with a zero ratio — is not active.
+
+    Parameters
+    ----------
+    instrument : object
+        Instrument that may expose the doublet placeholder fields.
+
+    Returns
+    -------
+    bool
+        ``True`` when an active doublet should be emitted as a loop.
+
+    Raises
+    ------
+    ValueError
+        If the ratio is positive but no second wavelength is set.
+    """
+    wavelength_2 = _finite_number(_attribute_value(instrument, 'setup_wavelength_2')) or 0.0
+    ratio = _finite_number(_attribute_value(instrument, 'setup_wavelength_2_to_1_ratio')) or 0.0
+    if ratio > 0.0 and wavelength_2 <= 0.0:
+        log.error(
+            'setup_wavelength_2_to_1_ratio is positive but '
+            'setup_wavelength_2 is not set: a relative intensity needs a '
+            'second wavelength.',
+            exc_type=ValueError,
+        )
+    return wavelength_2 > 0.0 and ratio > 0.0
