@@ -25,7 +25,6 @@ from easydiffraction.analysis.categories.fitting_mode import FittingMode
 from easydiffraction.analysis.categories.fitting_mode import FittingModeFactory
 from easydiffraction.analysis.categories.joint_fit import JointFitCollection
 from easydiffraction.analysis.categories.minimizer import MinimizerCategoryFactory
-from easydiffraction.analysis.categories.minimizer.base import MinimizerCategoryBase
 from easydiffraction.analysis.categories.minimizer.bayesian_base import BayesianMinimizerBase
 from easydiffraction.analysis.categories.sequential_fit import SequentialFit
 from easydiffraction.analysis.categories.sequential_fit import SequentialFitFactory
@@ -78,6 +77,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from easydiffraction.analysis.categories.fit_result import FitResultBase
+    from easydiffraction.analysis.categories.minimizer.base import MinimizerCategoryBase
     from easydiffraction.core.posterior import PosteriorParameterSummary
     from easydiffraction.core.variable import GenericDescriptorBase
 

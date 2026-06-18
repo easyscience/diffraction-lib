@@ -50,14 +50,14 @@ keeps paying:
    ever apply an _approximate_ point-wise correction; the exact
    per-reflection form requires owning the convolution, i.e. owning an
    engine. This point-wise pattern has since materialised as a small but
-   growing backend-agnostic correction layer in
-   `analysis/corrections/`: `absorption.py` (issue 119) and now
-   `polarization.py` (the X-ray CW Lorentz–polarization factor), each an
-   `apply(y, experiment)` multiplier applied _after_ the backend returns
-   its convolved profile and shared by both `cryspy` and `crysfml`. Two
-   such corrections now accrete next to the backends, both necessarily
-   approximate for the reason above — concrete, shipped evidence of the
-   symptom this ADR addresses.
+   growing backend-agnostic correction layer in `analysis/corrections/`:
+   `absorption.py` (issue 119) and now `polarization.py` (the X-ray CW
+   Lorentz–polarization factor), each an `apply(y, experiment)`
+   multiplier applied _after_ the backend returns its convolved profile
+   and shared by both `cryspy` and `crysfml`. Two such corrections now
+   accrete next to the backends, both necessarily approximate for the
+   reason above — concrete, shipped evidence of the symptom this ADR
+   addresses.
 3. **Divergence and opacity.** Cross-engine verification already records
    places where `cryspy` and `crysfml` disagree with FullProf and each
    other (open issues 130, 134). Debugging a black-box backend is harder
@@ -180,12 +180,12 @@ deliberately bounded initial scope.
 
 ## Alternatives Considered
 
-| #   | Alternative                                                               | Verdict                                                                                                                                                                                                          |
-| --- | ------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| A   | **Status quo** — depend entirely on `cryspy`/`crysfml`/`pdffit2`.         | Rejected. Perpetuates upstream blocking (issue 131) and leaves corrections like absorption (issue 119) without an exact home.                                                                                    |
-| B   | **Fork or vendor an existing engine** (e.g. a `cryspy`/`crysfml` subset). | Rejected. Inherits the backend's complexity, build system, and licensing while still not being code we understand end to end.                                                                                    |
-| C   | **In-house engine targeting full parity** with the external backends.     | Rejected. Multi-year effort; the long tail (magnetic, polarized, extinction, total scattering) has poor cost/benefit and is well served by the backends.                                                         |
-| D   | **In-house core + keep backends for the frontier** (this ADR).            | **Chosen.** Owns the common 80% (neutron powder Rietveld), keeps backends for the rest, reuses all existing framework.                                                                                           |
+| #   | Alternative                                                               | Verdict                                                                                                                                                                                                                                                                                                                                                                                   |
+| --- | ------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A   | **Status quo** — depend entirely on `cryspy`/`crysfml`/`pdffit2`.         | Rejected. Perpetuates upstream blocking (issue 131) and leaves corrections like absorption (issue 119) without an exact home.                                                                                                                                                                                                                                                             |
+| B   | **Fork or vendor an existing engine** (e.g. a `cryspy`/`crysfml` subset). | Rejected. Inherits the backend's complexity, build system, and licensing while still not being code we understand end to end.                                                                                                                                                                                                                                                             |
+| C   | **In-house engine targeting full parity** with the external backends.     | Rejected. Multi-year effort; the long tail (magnetic, polarized, extinction, total scattering) has poor cost/benefit and is well served by the backends.                                                                                                                                                                                                                                  |
+| D   | **In-house core + keep backends for the frontier** (this ADR).            | **Chosen.** Owns the common 80% (neutron powder Rietveld), keeps backends for the rest, reuses all existing framework.                                                                                                                                                                                                                                                                    |
 | E   | **Only point-wise corrections in the data layer**, no real engine.        | Partially realised, complementary, not a substitute. `analysis/corrections/absorption.py` and `polarization.py` already ship this layer for the external backends, but each case is solved only approximately, it does not generalize to structure factors or profiles, and it does not remove upstream blocking. The native engine is still required for the exact per-reflection forms. |
 
 ## Deferred Work / Open Questions

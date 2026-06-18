@@ -178,8 +178,8 @@ def test_update_experiment_in_cryspy_dict_tolerates_missing_sycos_keys():
 
 
 def test_update_experiment_in_cryspy_dict_sets_polarization_keys():
-    from easydiffraction.analysis.corrections import polarization
     from easydiffraction.analysis.calculators.cryspy import CryspyCalculator
+    from easydiffraction.analysis.corrections import polarization
     from easydiffraction.datablocks.experiment.categories.instrument.cwl import CwlPdXrayInstrument
     from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
     from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
@@ -634,8 +634,8 @@ def _stub_cryspy_engine(monkeypatch, calc, block_payload):
 
 
 def test_cryspy_calculate_pattern_applies_absorption(monkeypatch):
-    from easydiffraction.analysis.corrections import absorption
     from easydiffraction.analysis.calculators.cryspy import CryspyCalculator
+    from easydiffraction.analysis.corrections import absorption
 
     calc = CryspyCalculator()
     x = np.array([10.0, 90.0, 150.0])

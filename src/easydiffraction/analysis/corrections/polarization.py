@@ -81,7 +81,7 @@ def apply(y: object, experiment: object) -> object:
         applies.
     """
     instrument = getattr(experiment, 'instrument', None)
-    if not hasattr(instrument, 'setup_polarization_coefficient'):
+    if not _instrument_exposes_polarization(instrument):
         return y
 
     coefficient = instrument.setup_polarization_coefficient.value
@@ -95,3 +95,16 @@ def apply(y: object, experiment: object) -> object:
 
     cthm = monochromator_cthm(instrument.setup_monochromator_twotheta.value)
     return y_values * lp_factor(two_theta, coefficient, cthm)
+
+
+def _instrument_exposes_polarization(instrument: object | None) -> bool:
+    """Return whether an instrument has polarization attributes."""
+    if instrument is None:
+        return False
+    if hasattr(type(instrument), 'setup_polarization_coefficient'):
+        return True
+    try:
+        attrs = vars(instrument)
+    except TypeError:
+        return False
+    return 'setup_polarization_coefficient' in attrs

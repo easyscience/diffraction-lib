@@ -12,24 +12,24 @@ Accepted.
 
 Analysis and fitting.
 
-> This ADR follows [`AGENTS.md`](../../../../AGENTS.md). It defines where
-> calculator-independent corrections live, separate from the calculation
-> backends. It does not change any public API or any correction's
-> behaviour; it is a placement and naming decision.
+> This ADR follows [`AGENTS.md`](../../../../AGENTS.md). It defines
+> where calculator-independent corrections live, separate from the
+> calculation backends. It does not change any public API or any
+> correction's behaviour; it is a placement and naming decision.
 
 ## Context
 
 `analysis/calculators/` holds the diffraction calculation backends —
 `crysfml`, `cryspy`, `pdffit` — each a `CalculatorBase` subclass that
 computes a pattern from a structure and experiment. Its own package
-docstring describes it as the home of the calculation *backends*.
+docstring describes it as the home of the calculation _backends_.
 
 Two modules accumulated in that same package that are **not** backends:
 
 - `absorption.py` — Debye–Scherrer `μR` intensity factor (issue 119).
 - `polarization.py` — X-ray CW Lorentz–polarization factor.
 
-Both *adjust an already-calculated pattern* rather than computing one.
+Both _adjust an already-calculated pattern_ rather than computing one.
 Each exposes a module-level `apply(y, experiment) -> y` (plus internal
 `factor(...)` helpers) and is called by `crysfml.py` and `cryspy.py`
 **after** the backend returns its convolved profile, so the two backends
@@ -66,7 +66,7 @@ anticipates (per-reflection `SyCos`/`SySin`, preferred orientation).
 4. **Corrections stay backend-agnostic; they are not relocated into a
    future native engine.** External backends still need the point-wise
    forms, so `analysis/corrections/` is their permanent home. The native
-   engine reimplements the *exact per-reflection* forms on its own code
+   engine reimplements the _exact per-reflection_ forms on its own code
    path rather than moving these modules (see the in-house engine ADR).
 
 ## Consequences
@@ -87,9 +87,9 @@ anticipates (per-reflection `SyCos`/`SySin`, preferred orientation).
 
 ## Alternatives Considered
 
-| #   | Alternative                                              | Verdict                                                                                                                  |
-| --- | -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| A   | **`analysis/corrections/` sibling package** (this ADR).  | **Chosen.** Clean split between compute and adjust; scalable home for the growing correction family.                    |
-| B   | **Nested `analysis/calculators/corrections/`.**          | Rejected. Keeps corrections under the `calculators` name they do not belong to; the conceptual conflation remains.       |
-| C   | **Keep them in `analysis/calculators/`.**                | Rejected. Mixes non-engine modules into the backends package; no home for further corrections.                          |
-| D   | **Introduce a `CorrectionBase` class now.**              | Deferred. Premature abstraction for two plain `apply()` functions; revisit when a third correction lands.               |
+| #   | Alternative                                             | Verdict                                                                                                            |
+| --- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| A   | **`analysis/corrections/` sibling package** (this ADR). | **Chosen.** Clean split between compute and adjust; scalable home for the growing correction family.               |
+| B   | **Nested `analysis/calculators/corrections/`.**         | Rejected. Keeps corrections under the `calculators` name they do not belong to; the conceptual conflation remains. |
+| C   | **Keep them in `analysis/calculators/`.**               | Rejected. Mixes non-engine modules into the backends package; no home for further corrections.                     |
+| D   | **Introduce a `CorrectionBase` class now.**             | Deferred. Premature abstraction for two plain `apply()` functions; revisit when a third correction lands.          |

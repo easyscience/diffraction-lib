@@ -143,11 +143,24 @@ project.display.pattern_comparison(
 # ## Agreement check
 
 # %%
+# cryspy matches FullProf, so it is gated as a regression test.
 verify.assert_patterns_agree(
     [
         (f'{LABEL_ED_CRYSPY} vs {FULLPROF_LABEL}', calc_fullprof, calc_ed_cryspy),
+    ],
+)
+
+# ed-crysfml is the known-bad comparison, asserted separately so it
+# cannot mask a cryspy regression in the gated call above.
+verify.assert_patterns_agree(
+    [
         (f'{LABEL_ED_CRYSFML} vs {FULLPROF_LABEL}', calc_fullprof, calc_ed_crysfml),
     ],
+    known_discrepancy=True,
+    reason=(
+        'ed-crysfml CW doublet uses two single-wavelength CFL '
+        'simulations because native CrysFML CW doublet is disabled.'
+    ),
 )
 
 # %%

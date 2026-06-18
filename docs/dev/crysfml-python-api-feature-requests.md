@@ -74,10 +74,10 @@ Related script and screenshot:
 
 - Script:
   `docs/dev/crysfml-python-api-requests/request_01_preferred_orientation.py`
-- Screenshot caption:
-  "LBCO powder CW control agrees when preferred orientation is off; the
-  same CFL calculation disagrees with the FullProf `.pcr` when
-  `Pref1=1.2`, `Pref2=0.3`, axis `[0 0 1]` is enabled."
+- Screenshot caption: "LBCO powder CW control agrees when preferred
+  orientation is off; the same CFL calculation disagrees with the
+  FullProf `.pcr` when `Pref1=1.2`, `Pref2=0.3`, axis `[0 0 1]` is
+  enabled."
 
 ## Request 2: absorption and polarization parameters
 
@@ -116,11 +116,10 @@ Related script and screenshot:
 
 - Script:
   `docs/dev/crysfml-python-api-requests/request_02_absorption_polarization.py`
-- Screenshot caption:
-  "LiF X-ray CW control agrees without absorption/polarization; the same
-  CFL calculation disagrees when FullProf enables `Rpolarz=0.5`,
-  `Cthm=0.8`, or `muR=0.9` because those parameters are not exposed in
-  pycrysfml."
+- Screenshot caption: "LiF X-ray CW control agrees without
+  absorption/polarization; the same CFL calculation disagrees when
+  FullProf enables `Rpolarz=0.5`, `Cthm=0.8`, or `muR=0.9` because those
+  parameters are not exposed in pycrysfml."
 
 ## Request 3: SyCos and SySin CW peak-position shifts
 
@@ -150,10 +149,9 @@ Related script and screenshot:
 
 - Script:
   `docs/dev/crysfml-python-api-requests/request_03_sycos_sysin.py`
-- Screenshot caption:
-  "LaB6 powder CW control agrees for `SyCos=0`, `SySin=0`; after FullProf
-  enables `SyCos=0.01153`, `SySin=0.24334`, pycrysfml still follows the
-  unshifted CFL positions."
+- Screenshot caption: "LaB6 powder CW control agrees for `SyCos=0`,
+  `SySin=0`; after FullProf enables `SyCos=0.01153`, `SySin=0.24334`,
+  pycrysfml still follows the unshifted CFL positions."
 
 ## Request 4: single-crystal extinction corrections
 
@@ -164,9 +162,9 @@ Short description:
 
 EasyDiffraction single-crystal verification uses extinction parameters
 such as radius/mosaicity or an equivalent model parameter. CrysFML
-Fortran contains extinction correction modules under `Src/CFML_ExtinCorr`,
-but the inspected Python wrapper does not register Python-callable
-extinction routines.
+Fortran contains extinction correction modules under
+`Src/CFML_ExtinCorr`, but the inspected Python wrapper does not register
+Python-callable extinction routines.
 
 FullProf `.pcr` setting used in the feature-on reference:
 
@@ -189,11 +187,10 @@ Related script and screenshot:
 
 - Script:
   `docs/dev/crysfml-python-api-requests/request_04_single_crystal_extinction.py`
-- Screenshot caption:
-  "The script first shows a powder-CFL control agreement. It then shows
-  FullProf single-crystal integrated intensities before and after
-  extinction is enabled; pycrysfml has no callable extinction API to
-  reproduce the feature-on table."
+- Screenshot caption: "The script first shows a powder-CFL control
+  agreement. It then shows FullProf single-crystal integrated
+  intensities before and after extinction is enabled; pycrysfml has no
+  callable extinction API to reproduce the feature-on table."
 
 ## Request 5: in-memory structure-factor calculation
 
@@ -227,10 +224,10 @@ Related script and screenshot:
 
 - Script:
   `docs/dev/crysfml-python-api-requests/request_05_in_memory_structure_factors.py`
-- Screenshot caption:
-  "The script first shows a powder-CFL control agreement. It then shows
-  the FullProf hkl/intensity window that should be calculable from
-  in-memory Python objects; pycrysfml currently has no equivalent API."
+- Screenshot caption: "The script first shows a powder-CFL control
+  agreement. It then shows the FullProf hkl/intensity window that should
+  be calculable from in-memory Python objects; pycrysfml currently has
+  no equivalent API."
 
 ## Request 6: anisotropic and beta ADPs in Python inputs
 
@@ -263,11 +260,10 @@ BETA  0.00303  0.00272  0.00295  0.0  0.0  -0.00025
 Related script and screenshot:
 
 - Script: `docs/dev/crysfml-python-api-requests/request_06_beta_adps.py`
-- Screenshot caption:
-  "Y2O3 powder CW control uses isotropic atom records; the feature-on
-  reference sets FullProf `N_t=2` beta tensors and the CFL `BETA` lines.
-  The remaining request is to expose equivalent tensor input through the
-  non-CFL Python API."
+- Screenshot caption: "Y2O3 powder CW control uses isotropic atom
+  records; the feature-on reference sets FullProf `N_t=2` beta tensors
+  and the CFL `BETA` lines. The remaining request is to expose
+  equivalent tensor input through the non-CFL Python API."
 
 ## Request 7: TOF support in `patterns_simulation`
 
@@ -312,10 +308,10 @@ Related script and screenshot:
 
 - Script:
   `docs/dev/crysfml-python-api-requests/request_07_tof_patterns_simulation.py`
-- Screenshot caption:
-  "The script first shows a CW powder control agreement. The TOF FullProf
-  `.pcr` enables D2TOF/profile parameters, while the pycrysfml CFL TOF
-  block raises/returns no matching TOF intensities."
+- Screenshot caption: "The script first shows a CW powder control
+  agreement. The TOF FullProf `.pcr` enables D2TOF/profile parameters,
+  while the pycrysfml CFL TOF block raises/returns no matching TOF
+  intensities."
 
 ## Request 8: TOF profile selection
 
@@ -326,8 +322,8 @@ Short description:
 
 EasyDiffraction verification distinguishes Jorgensen and
 Jorgensen-von-Dreele TOF profiles. The inspected dict-style Python TOF
-path is fixed to one profile, and CFL TOF profile selection cannot yet be
-validated until request 7 makes TOF CFL intensities work.
+path is fixed to one profile, and CFL TOF profile selection cannot yet
+be validated until request 7 makes TOF CFL intensities work.
 
 FullProf `.pcr` setting used in the feature-on reference:
 
@@ -350,11 +346,11 @@ Related script and screenshot:
 
 - Script:
   `docs/dev/crysfml-python-api-requests/request_08_tof_profile_selection.py`
-- Screenshot caption:
-  "The script first shows a CW powder control agreement. It then compares
-  FullProf Jorgensen-von-Dreele and Jorgensen TOF references with CFL
-  `Profile_function` settings; pycrysfml cannot yet demonstrate profile
-  selection because TOF CFL intensities are missing."
+- Screenshot caption: "The script first shows a CW powder control
+  agreement. It then compares FullProf Jorgensen-von-Dreele and
+  Jorgensen TOF references with CFL `Profile_function` settings;
+  pycrysfml cannot yet demonstrate profile selection because TOF CFL
+  intensities are missing."
 
 ## Request 9: CW doublet support in dict APIs
 
@@ -383,12 +379,13 @@ LAMBDA  1.54056  1.5444  0.5
 
 Related script and screenshot:
 
-- Script: `docs/dev/crysfml-python-api-requests/request_09_cw_doublet_dict_api.py`
-- Screenshot caption:
-  "LiF X-ray CW control agrees for a single wavelength. The FullProf
-  `.pcr` enables the doublet with `Lambda2=1.5444`, `Ratio=0.5`; the CFL
-  string can express `LAMBDA lambda1 lambda2 ratio`, but the dict API has
-  no equivalent input fields."
+- Script:
+  `docs/dev/crysfml-python-api-requests/request_09_cw_doublet_dict_api.py`
+- Screenshot caption: "LiF X-ray CW control agrees for a single
+  wavelength. The FullProf `.pcr` enables the doublet with
+  `Lambda2=1.5444`, `Ratio=0.5`; the CFL string can express
+  `LAMBDA lambda1 lambda2 ratio`, but the dict API has no equivalent
+  input fields."
 
 ## Out of scope for this request list
 

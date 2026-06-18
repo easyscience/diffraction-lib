@@ -261,9 +261,9 @@ At minimum, run:
 pixi run python -m py_compile docs/docs/verification/*.py
 ```
 
-Run the new page as a script when it is expected to agree. If the page is
-known-discrepant, run enough of the page locally to confirm the expected
-known-bad behavior and issue-linked reason.
+Run the new page as a script when it is expected to agree. If the page
+is known-discrepant, run enough of the page locally to confirm the
+expected known-bad behavior and issue-linked reason.
 
 ## Consequences
 

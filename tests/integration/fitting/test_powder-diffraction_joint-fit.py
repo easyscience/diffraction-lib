@@ -272,7 +272,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     # Compare fit quality
     assert_almost_equal(
         project.analysis.fit_results.reduced_chi_square,
-        desired=21.09,
+        desired=18.78,
         decimal=1,
     )
 
@@ -286,7 +286,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     # Compare fit quality
     assert_almost_equal(
         project.analysis.fit_results.reduced_chi_square,
-        desired=21.09,
+        desired=18.78,
         decimal=1,
     )
 
@@ -300,7 +300,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     # Compare fit quality
     assert_almost_equal(
         project.analysis.fit_results.reduced_chi_square,
-        desired=14.39,
+        desired=12.67,
         decimal=1,
     )
 

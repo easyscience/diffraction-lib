@@ -19,22 +19,23 @@ import pytest
 
 from easydiffraction.utils.logging import Logger
 
+_STATE_ATTR = '_easydiffraction_saved_global_state'
 
-@pytest.fixture(autouse=True)
-def _reset_global_state():
-    """Restore process-global state mutated by a unit test.
 
-    Snapshots the logger error reaction/mode and the full environment
-    before the test and restores them afterwards, neutralising leaks
-    that would otherwise cause order-dependent failures.
-    """
-    saved_reaction = Logger._reaction
-    saved_mode = Logger._mode
-    saved_environ = dict(os.environ)
-    try:
-        yield
-    finally:
-        Logger._reaction = saved_reaction
-        Logger._mode = saved_mode
+@pytest.hookimpl(tryfirst=True)
+def pytest_runtest_setup(item: pytest.Item) -> None:
+    """Snapshot process-global state before each unit test."""
+    setattr(item, _STATE_ATTR, dict(os.environ))
+    Logger._reaction = Logger.Reaction.RAISE
+    Logger._mode = Logger.Mode.COMPACT
+
+
+@pytest.hookimpl(trylast=True)
+def pytest_runtest_teardown(item: pytest.Item) -> None:
+    """Restore process-global state after each unit test."""
+    saved_environ = getattr(item, _STATE_ATTR, None)
+    Logger._reaction = Logger.Reaction.RAISE
+    Logger._mode = Logger.Mode.COMPACT
+    if saved_environ is not None:
         os.environ.clear()
         os.environ.update(saved_environ)

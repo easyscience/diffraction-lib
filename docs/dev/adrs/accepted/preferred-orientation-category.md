@@ -555,21 +555,22 @@ that also exercises both March–Dollase parameters. It is built on the
 existing **`pd-neut-cwl_lbco_basic`** case (La₀.₅Ba₀.₅CoO₃, neutron CW,
 pseudo-Voigt — chosen as the base on request):
 
-1. Copy `docs/docs/verification/fullprof/pd-neut-cwl_lbco_basic/lbco.pcr`,
+1. Copy
+   `docs/docs/verification/fullprof/pd-neut-cwl_lbco_basic/lbco.pcr`,
    enable the March–Dollase model (`Nor=1`) along the phase
    `Pr1 Pr2 Pr3` direction with a non-zero `Pref1` **and** `Pref2`, and
    re-run FullProf locally (`~/Applications/fullprof`) to regenerate
    `.prf`/`.bac`/`.sum` (the reference uses `Pref1=1.2`, `Pref2=0.3`,
    axis `[0 0 1]`).
-2. Add `pd-neut-cwl_lbco_preferred-orientation` (paired `.py`/`.ipynb`) that builds
-   the same LBCO model, sets `expt.preferred_orientation` with `r=Pref1`
-   and `fraction=Pref2`, then **refines `march_r`, `march_random_fract`,
-   and scale**. ed-cryspy recovers `r≈Pref1` and `fraction≈Pref2`, and
-   `verify.assert_patterns_agree` passes (Profile diff ≈ 0.7%, area and
-   shape within tolerance). The as-calculated step shows the constant
-   scale offset from CrysPy's non-normalisation (Decision 6), reconciled
-   by the fit. PO is CrysPy-only, so the case compares CrysPy vs
-   FullProf only (no CrysFML column).
+2. Add `pd-neut-cwl_lbco_preferred-orientation` (paired `.py`/`.ipynb`)
+   that builds the same LBCO model, sets `expt.preferred_orientation`
+   with `r=Pref1` and `fraction=Pref2`, then **refines `march_r`,
+   `march_random_fract`, and scale**. ed-cryspy recovers `r≈Pref1` and
+   `fraction≈Pref2`, and `verify.assert_patterns_agree` passes (Profile
+   diff ≈ 0.7%, area and shape within tolerance). The as-calculated step
+   shows the constant scale offset from CrysPy's non-normalisation
+   (Decision 6), reconciled by the fit. PO is CrysPy-only, so the case
+   compares CrysPy vs FullProf only (no CrysFML column).
 
 This verification notebook is built **before any user tutorial**, so the
 tutorial can cite a validated, well-understood workflow. Producing the

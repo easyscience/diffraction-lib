@@ -34,16 +34,17 @@ pattern:
 - attach a minimal script and screenshot so upstream developers can
   reproduce the issue without running the full EasyDiffraction stack.
 
-Without a convention, future requests risk becoming too narrative,
-too broad, or too hard for upstream developers to reproduce. They may
-also accumulate untracked scratch files, generated FullProf byproducts,
-or unclear "known discrepancy" examples that are difficult to maintain.
+Without a convention, future requests risk becoming too narrative, too
+broad, or too hard for upstream developers to reproduce. They may also
+accumulate untracked scratch files, generated FullProf byproducts, or
+unclear "known discrepancy" examples that are difficult to maintain.
 
 This ADR complements
-[Verification Example Lifecycle](verification-example-lifecycle.md). That
-ADR governs public Verification pages. This ADR governs development-only
-request packets prepared for upstream projects such as CrysFML, CrySPY,
-FullProf-related tooling, or other calculation backends.
+[Verification Example Lifecycle](verification-example-lifecycle.md).
+That ADR governs public Verification pages. This ADR governs
+development-only request packets prepared for upstream projects such as
+CrysFML, CrySPY, FullProf-related tooling, or other calculation
+backends.
 
 ## Decision
 
@@ -79,9 +80,9 @@ Before writing requests, inspect all relevant sources:
 Record the upstream repository, branch, commit, Python package name, and
 Python package version in the request document.
 
-If the feature is not present in the upstream lower-level implementation,
-do not include it in this request packet. Put it in "Out of scope" or a
-separate issue instead.
+If the feature is not present in the upstream lower-level
+implementation, do not include it in this request packet. Put it in "Out
+of scope" or a separate issue instead.
 
 ### 3. Phrase every item as a concrete upstream API request
 
@@ -108,7 +109,8 @@ Every request section includes the smallest relevant parameter snippets:
 - **FullProf `.pcr` setting** or other reference-code setting that
   enables the feature;
 - **CFL string**, Python dictionary fields, or desired API call shape
-  that should represent the same feature through the upstream Python API.
+  that should represent the same feature through the upstream Python
+  API.
 
 When no CFL string can represent the feature, say that explicitly and
 show the desired Python API shape instead.
@@ -190,7 +192,8 @@ Running FullProf may create `.new`, `.out`, `.fst`, `.sub`, `.cif`,
 document or script consumes them as evidence.
 
 If a FullProf reference must be regenerated for a durable verification
-page, follow [Verification Example Lifecycle](verification-example-lifecycle.md)
+page, follow
+[Verification Example Lifecycle](verification-example-lifecycle.md)
 instead. Upstream request packets should prefer hardcoded minimal
 windows and temporary `/tmp` generation during investigation.
 
@@ -233,11 +236,11 @@ output.
 
 ## Alternatives Considered
 
-| #   | Alternative                                             | Verdict                                                                                                      |
-| --- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| #   | Alternative                                             | Verdict                                                                                                       |
+| --- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
 | A   | Write upstream issues directly from prose notes.        | Rejected. Too hard to reproduce and too easy to omit the exact parameter mapping.                             |
-| B   | Promote every request into public Verification pages.   | Rejected. Request packets are development evidence; public Verification pages need stronger lifecycle rules. |
-| C   | Commit full FullProf output profiles for every request. | Rejected. Full profiles are large and noisy; small hardcoded windows are enough for issue evidence.          |
+| B   | Promote every request into public Verification pages.   | Rejected. Request packets are development evidence; public Verification pages need stronger lifecycle rules.  |
+| C   | Commit full FullProf output profiles for every request. | Rejected. Full profiles are large and noisy; small hardcoded windows are enough for issue evidence.           |
 | D   | Use one notebook for all requests.                      | Rejected. One script per request keeps attachments small and lets upstream developers run only their feature. |
 
 ## Open Questions

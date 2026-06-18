@@ -19,6 +19,8 @@ by the unit tests in
 ``tests/unit/.../categories/background/test_estimate.py``.
 """
 
+import tempfile
+
 import numpy as np
 
 import easydiffraction as edi
@@ -30,11 +32,12 @@ import easydiffraction as edi
 # or garbage estimate fails.
 _MEDIAN_TOL = 0.15
 _MAX_TOL = 0.45
+TEMP_DIR = tempfile.gettempdir()
 
 
-def _assert_tracks_reference(tmp_path, name, data_id, beam_mode, probe, excluded, ref_points):
+def _assert_tracks_reference(name, data_id, beam_mode, probe, excluded, ref_points):
     project = edi.Project()
-    data_path = edi.download_data(data_id, destination=str(tmp_path))
+    data_path = edi.download_data(data_id, destination=TEMP_DIR)
     project.experiments.add_from_data_path(
         name=name,
         data_path=data_path,
@@ -77,10 +80,9 @@ def _assert_tracks_reference(tmp_path, name, data_id, beam_mode, probe, excluded
     assert np.max(np.abs(estimate - reference)) < _MAX_TOL * signal_scale
 
 
-def test_auto_estimate_tracks_cwl_tutorial_background(tmp_path):
+def test_auto_estimate_tracks_cwl_tutorial_background():
     # ed-2: constant-wavelength neutron HRPT/LBCO, flat background ~170.
     _assert_tracks_reference(
-        tmp_path,
         'hrpt',
         'meas-lbco-hrpt',
         'constant wavelength',
@@ -90,10 +92,9 @@ def test_auto_estimate_tracks_cwl_tutorial_background(tmp_path):
     )
 
 
-def test_auto_estimate_tracks_tof_tutorial_background(tmp_path):
+def test_auto_estimate_tracks_tof_tutorial_background():
     # ed-13: time-of-flight neutron Si, flat background ~0.01.
     _assert_tracks_reference(
-        tmp_path,
         'sim_si',
         'meas-si-mcstas-dmsc2025',
         'time-of-flight',

@@ -26,15 +26,20 @@ from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import RegexValidator
+from easydiffraction.utils.logging import Logger
 from easydiffraction.utils.logging import log
 
+pytestmark = pytest.mark.usefixtures('_restore_logger_reaction')
 
-@pytest.fixture(autouse=True)
+
+@pytest.fixture
 def _restore_logger_reaction():
     """Restore the global logger reaction so WARN does not leak out."""
-    saved = log._reaction
+    saved_reaction = Logger._reaction
+    saved_mode = Logger._mode
     yield
-    log._reaction = saved
+    Logger._reaction = saved_reaction
+    Logger._mode = saved_mode
 
 
 def _warn() -> None:

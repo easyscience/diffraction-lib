@@ -1306,12 +1306,31 @@ def _polarization_settings_from_instrument(
     instrument: object | None,
 ) -> tuple[float, float] | None:
     """Return polarization settings from an instrument, if present."""
-    if not hasattr(instrument, 'setup_polarization_coefficient'):
+    if not _instrument_exposes_polarization(instrument):
+        return None
+    if instrument is None:
+        return None
+    coefficient = instrument.setup_polarization_coefficient
+    monochromator_twotheta = instrument.setup_monochromator_twotheta
+    if coefficient is None or monochromator_twotheta is None:
         return None
     return (
-        instrument.setup_polarization_coefficient.value,
-        instrument.setup_monochromator_twotheta.value,
+        coefficient.value,
+        monochromator_twotheta.value,
     )
+
+
+def _instrument_exposes_polarization(instrument: object | None) -> bool:
+    """Return whether an instrument has polarization attributes."""
+    if instrument is None:
+        return False
+    if hasattr(type(instrument), 'setup_polarization_coefficient'):
+        return True
+    try:
+        attrs = vars(instrument)
+    except TypeError:
+        return False
+    return 'setup_polarization_coefficient' in attrs
 
 
 def _update_polarization_in_cryspy_dict(
@@ -1420,7 +1439,8 @@ def _cif_peak_section(
             'broad_lorentz_gamma_2': '_tof_profile_gamma2',
         }
 
-        if peak.type_info.tag == PeakProfileTypeEnum.TOF_DOUBLE_JORGENSEN_VON_DREELE:
+        peak_tag = peak.type_info.tag
+        if peak_tag == PeakProfileTypeEnum.TOF_DOUBLE_JORGENSEN_VON_DREELE:
             cif_lines.append('_tof_profile_peak_shape type0m')
             peak_mapping.update({
                 'dexp_rise_alpha_1': '_tof_profile_alpha1',
@@ -1432,19 +1452,19 @@ def _cif_peak_section(
                 'dexp_switch_r_02': '_tof_profile_r02',
                 'dexp_switch_r_03': '_tof_profile_r03',
             })
-        elif hasattr(peak, 'decay_beta_0') and hasattr(peak, 'rise_alpha_0'):
+        elif peak_tag == PeakProfileTypeEnum.TOF_PSEUDO_VOIGT:
+            cif_lines.append('_tof_profile_peak_shape non-conv-pseudo-Voigt')
+        else:
             peak_mapping.update({
                 'decay_beta_0': '_tof_profile_beta0',
                 'decay_beta_1': '_tof_profile_beta1',
                 'rise_alpha_0': '_tof_profile_alpha0',
                 'rise_alpha_1': '_tof_profile_alpha1',
             })
-            if peak.type_info.tag == PeakProfileTypeEnum.TOF_JORGENSEN_VON_DREELE:
+            if peak_tag == PeakProfileTypeEnum.TOF_JORGENSEN_VON_DREELE:
                 cif_lines.append('_tof_profile_peak_shape pseudo-Voigt')
             else:
                 cif_lines.append('_tof_profile_peak_shape Gauss')
-        else:
-            cif_lines.append('_tof_profile_peak_shape non-conv-pseudo-Voigt')
 
     cif_lines.append('')
     for local_attr_name, engine_key_name in peak_mapping.items():

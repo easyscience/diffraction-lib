@@ -14,9 +14,9 @@ complementary to the `cryspy` Jorgensen–Von Dreele Lorentzian divergence
 tracked in issue 130.
 
 **Visible on:** the Si TOF Jorgensen Verification page
-(`pd-neut-tof_si_jorgensen`), currently marked with `known_discrepancy=True`.
-Re-gate the page (or tighten its agreement check) once the crysfml
-profile is reconciled.
+(`pd-neut-tof_si_jorgensen`), currently marked with
+`known_discrepancy=True`. Re-gate the page (or tighten its agreement
+check) once the crysfml profile is reconciled.
 
 **Depends on:** nothing.
 

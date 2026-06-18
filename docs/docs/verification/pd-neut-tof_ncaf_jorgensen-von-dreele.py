@@ -244,15 +244,26 @@ experiment.linked_structures['ncaf'].scale
 # ## Agreement check
 
 # %%
+# cryspy matches FullProf after refining scale, so it is gated as a
+# regression test.
 verify.assert_patterns_agree([
     (
         f'{LABEL_ED_CRYSPY_REFINED} vs {FULLPROF_LABEL}',
         verify.restrict_to_included(experiment, calc_fullprof),
         calc_ed_cryspy_refined,
     ),
-    (
-        f'{LABEL_ED_CRYSFML_REFINED} vs {FULLPROF_LABEL}',
-        verify.restrict_to_included(experiment, calc_fullprof),
-        calc_ed_crysfml_refined,
-    ),
 ])
+
+# ed-crysfml is the known-bad comparison, asserted separately so it
+# cannot mask a cryspy regression in the gated call above.
+verify.assert_patterns_agree(
+    [
+        (
+            f'{LABEL_ED_CRYSFML_REFINED} vs {FULLPROF_LABEL}',
+            verify.restrict_to_included(experiment, calc_fullprof),
+            calc_ed_crysfml_refined,
+        ),
+    ],
+    known_discrepancy=True,
+    reason='ed-crysfml TOF patterns are unsupported by the CFL backend.',
+)

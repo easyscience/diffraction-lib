@@ -30,6 +30,8 @@ PNG_MAGIC = b'\x89PNG\r\n\x1a\n'
 # A simple orthogonal 5x5x5 cell shared by most scenes.
 CUBIC_BASIS = ((5.0, 0.0, 0.0), (0.0, 5.0, 0.0), (0.0, 0.0, 5.0))
 
+pytestmark = pytest.mark.usefixtures('_fast_canvas')
+
 
 def _open(png: bytes) -> Image.Image:
     """Decode rendered PNG bytes into a Pillow image."""
@@ -117,7 +119,7 @@ def _full_scene() -> StructureScene:
     )
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture
 def _fast_canvas(request, monkeypatch):
     """Render at a small canvas to keep these renderer tests fast.
 

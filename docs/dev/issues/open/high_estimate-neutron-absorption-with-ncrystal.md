@@ -27,14 +27,15 @@ absorption and transport cross sections.
 - Absorption-sensitive isotope mixes (`H/D`, `B`, `Li`, `Cd`, `Gd`,
   rare-earths) can be difficult to estimate safely by hand.
 - A diagnostic helper could explain when a dataset is absorption
-  sensitive and suggest a starting value for `experiment.absorption.mu_r`.
+  sensitive and suggest a starting value for
+  `experiment.absorption.mu_r`.
 
 **Proposed scope:**
 
 - Keep NCrystal optional; do not make it a required dependency of the
   core calculator path.
-- Provide an explicit helper or future category mode that estimates
-  `μR` from:
+- Provide an explicit helper or future category mode that estimates `μR`
+  from:
   - wavelength,
   - composition / isotope composition,
   - density,

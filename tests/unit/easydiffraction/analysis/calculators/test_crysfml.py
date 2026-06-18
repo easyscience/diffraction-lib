@@ -78,8 +78,8 @@ def test_module_import():
 
 
 def test_crysfml_calculate_pattern_applies_absorption(monkeypatch):
-    from easydiffraction.analysis.corrections import absorption
     from easydiffraction.analysis.calculators.crysfml import CrysfmlCalculator
+    from easydiffraction.analysis.corrections import absorption
 
     calc = CrysfmlCalculator()
     x = np.array([10.0, 90.0, 150.0])
@@ -97,8 +97,8 @@ def test_crysfml_calculate_pattern_applies_absorption(monkeypatch):
 
 
 def test_crysfml_calculate_pattern_applies_polarization(monkeypatch):
-    from easydiffraction.analysis.corrections import polarization
     from easydiffraction.analysis.calculators.crysfml import CrysfmlCalculator
+    from easydiffraction.analysis.corrections import polarization
     from easydiffraction.datablocks.experiment.categories.instrument.cwl import CwlPdXrayInstrument
 
     calc = CrysfmlCalculator()

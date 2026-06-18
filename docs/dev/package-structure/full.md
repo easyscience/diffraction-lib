@@ -5,7 +5,6 @@
 ├── 📁 analysis
 │   ├── 📁 calculators
 │   │   ├── 📄 __init__.py
-│   │   ├── 📄 absorption.py
 │   │   ├── 📄 base.py
 │   │   │   ├── 🏷️ class PowderReflnRecord
 │   │   │   └── 🏷️ class CalculatorBase
@@ -17,7 +16,6 @@
 │   │   │   └── 🏷️ class CalculatorFactory
 │   │   ├── 📄 pdffit.py
 │   │   │   └── 🏷️ class PdffitCalculator
-│   │   ├── 📄 polarization.py
 │   │   └── 📄 support.py
 │   │       └── 🏷️ class SupportEntry
 │   ├── 📁 categories
@@ -128,6 +126,10 @@
 │   │   │   └── 📄 factory.py
 │   │   │       └── 🏷️ class SoftwareFactory
 │   │   └── 📄 __init__.py
+│   ├── 📁 corrections
+│   │   ├── 📄 __init__.py
+│   │   ├── 📄 absorption.py
+│   │   └── 📄 polarization.py
 │   ├── 📁 fit_helpers
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 _diagnostics.py
