@@ -78,7 +78,7 @@ def test_module_import():
 
 
 def test_crysfml_calculate_pattern_applies_absorption(monkeypatch):
-    from easydiffraction.analysis.calculators import absorption
+    from easydiffraction.analysis.corrections import absorption
     from easydiffraction.analysis.calculators.crysfml import CrysfmlCalculator
 
     calc = CrysfmlCalculator()
@@ -97,7 +97,7 @@ def test_crysfml_calculate_pattern_applies_absorption(monkeypatch):
 
 
 def test_crysfml_calculate_pattern_applies_polarization(monkeypatch):
-    from easydiffraction.analysis.calculators import polarization
+    from easydiffraction.analysis.corrections import polarization
     from easydiffraction.analysis.calculators.crysfml import CrysfmlCalculator
     from easydiffraction.datablocks.experiment.categories.instrument.cwl import CwlPdXrayInstrument
 
@@ -112,7 +112,7 @@ def test_crysfml_calculate_pattern_applies_polarization(monkeypatch):
         data=SimpleNamespace(x=x),
     )
     raw = [100.0, 100.0, 100.0]
-    monkeypatch.setattr(calc, '_crysfml_dict', lambda s, e: {})
+    monkeypatch.setattr(calc, '_crysfml_cfl', lambda s, e: [])
     monkeypatch.setattr(calc, '_calculate_adjusted_pattern', lambda d, e: list(raw))
 
     out = calc.calculate_pattern(None, experiment)
