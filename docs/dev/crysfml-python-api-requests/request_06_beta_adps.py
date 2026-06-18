@@ -139,7 +139,6 @@ def main() -> None:
     if should_plot(sys.argv):
         plot_comparisons(
             'Request 6: beta ADPs',
-            FULLPROF_ISOTROPIC_CONTROL[:, 0],
             [control, requested],
         )
 

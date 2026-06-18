@@ -22,8 +22,10 @@ Evidence scripts:
 - Directory: `docs/dev/crysfml-python-api-requests/`
 - Run one example with
   `pixi run python docs/dev/crysfml-python-api-requests/request_01_preferred_orientation.py`.
-- Add `--plot` to display the hardcoded FullProf reference window and
-  the CrysFML CFL result on the same axes.
+- Add `--plot` to display a vertical grid of comparison panels. Each
+  panel overlays the hardcoded FullProf reference, the CrysFML result,
+  and the residual for either the feature-off control or a feature-on
+  request case.
 
 Each script is intended to be attached to the upstream request together
 with a screenshot. The screenshot should show two cases:

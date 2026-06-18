@@ -117,8 +117,7 @@ def main() -> None:
     if should_plot(sys.argv):
         plot_comparisons(
             'Request 7: TOF patterns_simulation',
-            FULLPROF_TOF_JORGENSEN_VON_DREELE[:, 0],
-            [requested],
+            [control, requested],
         )
 
 

@@ -140,7 +140,6 @@ def main() -> None:
     if should_plot(sys.argv):
         plot_comparisons(
             'Request 4: single-crystal extinction',
-            FULLPROF_WITHOUT_EXTINCTION[:, 0],
             [control, requested],
         )
 

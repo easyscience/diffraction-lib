@@ -136,7 +136,6 @@ def main() -> None:
     if should_plot(sys.argv):
         plot_comparisons(
             'Request 1: preferred orientation',
-            FULLPROF_WITHOUT_PREFERRED_ORIENTATION[:, 0],
             [control, requested],
         )
 

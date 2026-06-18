@@ -133,7 +133,6 @@ def main() -> None:
     if should_plot(sys.argv):
         plot_comparisons(
             'Request 9: CW doublet dict API',
-            FULLPROF_SINGLE_WAVELENGTH[:, 0],
             [control, requested],
         )
 

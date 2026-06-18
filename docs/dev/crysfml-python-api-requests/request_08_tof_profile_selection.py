@@ -177,8 +177,7 @@ def main() -> None:
     if should_plot(sys.argv):
         plot_comparisons(
             'Request 8: TOF profile selection',
-            FULLPROF_JORGENSEN[:, 0],
-            [jvd, jorgensen],
+            [control, jvd, jorgensen],
         )
 
 

@@ -18,6 +18,7 @@ except ImportError:
 @dataclass(frozen=True)
 class Comparison:
     label: str
+    x_values: np.ndarray
     reference: np.ndarray
     calculated: np.ndarray
     scaled: np.ndarray
@@ -65,6 +66,7 @@ def compare_to_fullprof(
     relative_rms = rms / max(float(np.max(np.abs(y_ref))), 1.0)
     return Comparison(
         label=label,
+        x_values=x_ref,
         reference=y_ref,
         calculated=y_interp,
         scaled=y_scaled,
@@ -77,12 +79,14 @@ def compare_to_fullprof(
 
 
 def compare_unavailable(label: str, reference: np.ndarray, reason: str) -> Comparison:
+    x_ref = reference[:, 0]
     y_ref = reference[:, 1]
     zeros = np.zeros_like(y_ref)
     rms = float(np.sqrt(np.mean(y_ref * y_ref)))
     reference_norm = max(float(np.max(np.abs(y_ref))), 1.0)
     return Comparison(
         label=label,
+        x_values=x_ref,
         reference=y_ref,
         calculated=zeros,
         scaled=zeros,
@@ -121,16 +125,51 @@ def print_reference_window(name: str, reference: np.ndarray) -> None:
         print(f'{x_value:12.6g} {y_value:14.8g}')
 
 
-def plot_comparisons(title: str, x_values: np.ndarray, comparisons: Iterable[Comparison]) -> None:
+def plot_comparisons(title: str, comparisons: Iterable[Comparison]) -> None:
     plt = importlib.import_module('matplotlib.pyplot')
-    for comparison in comparisons:
-        plt.plot(x_values, comparison.reference, 'o', label=f'{comparison.label} FullProf')
-        plt.plot(x_values, comparison.scaled, '-', label=f'{comparison.label} CrysFML')
-    plt.title(title)
-    plt.xlabel('2theta, TOF, or reflection index')
-    plt.ylabel('calculated intensity')
-    plt.legend()
-    plt.tight_layout()
+    comparisons = list(comparisons)
+    figure_height = max(3.5, 3.0 * len(comparisons))
+    _, axes = plt.subplots(len(comparisons), 1, figsize=(9.5, figure_height))
+    if len(comparisons) == 1:
+        axes = [axes]
+
+    for axis, comparison in zip(axes, comparisons, strict=True):
+        residual = comparison.reference - comparison.scaled
+        axis.plot(
+            comparison.x_values,
+            comparison.reference,
+            color='tab:blue',
+            linestyle='-',
+            linewidth=2.2,
+            label='FullProf',
+            zorder=2,
+        )
+        axis.plot(
+            comparison.x_values,
+            comparison.scaled,
+            color='tab:red',
+            linestyle='--',
+            linewidth=2.0,
+            label='CrysFML',
+            zorder=3,
+        )
+        axis.plot(
+            comparison.x_values,
+            residual,
+            color='tab:green',
+            linestyle='-',
+            linewidth=1.5,
+            label='residual',
+            zorder=1,
+        )
+        axis.axhline(0.0, color='0.65', linewidth=0.8)
+        axis.set_title(comparison.label)
+        axis.set_xlabel('2theta, TOF, or reflection index')
+        axis.set_ylabel('intensity / residual')
+        axis.legend()
+
+    plt.suptitle(title)
+    plt.tight_layout(rect=(0.0, 0.0, 1.0, 0.97))
     plt.show()
 
 

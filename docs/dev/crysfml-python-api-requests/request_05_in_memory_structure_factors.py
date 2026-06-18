@@ -91,8 +91,7 @@ def main() -> None:
     if should_plot(sys.argv):
         plot_comparisons(
             'Request 5: in-memory structure factors',
-            FULLPROF_POWDER_CFL_CONTROL[:, 0],
-            [control],
+            [control, requested],
         )
 
 

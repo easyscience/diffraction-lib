@@ -166,7 +166,6 @@ def main() -> None:
     if should_plot(sys.argv):
         plot_comparisons(
             'Request 2: absorption and polarization',
-            FULLPROF_UNPOLARIZED_NO_ABSORPTION[:, 0],
             comparisons,
         )
 

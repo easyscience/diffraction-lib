@@ -130,7 +130,6 @@ def main() -> None:
     if should_plot(sys.argv):
         plot_comparisons(
             'Request 3: SyCos and SySin',
-            FULLPROF_WITHOUT_SYCOS_SYSIN[:, 0],
             [control, requested],
         )
 
