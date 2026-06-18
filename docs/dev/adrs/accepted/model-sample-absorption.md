@@ -55,13 +55,14 @@ implements the CW formulas in Fortran:
   and `cabs ∈ {HEWAT, LOBANOV}`.
 - `Powder_Lorentz_IntegInt_CW(…, muR, …)` — the bare Hewat form.
 
-**However**, these routines are **not wrapped** in CrysFML's
-`PythonAPI/`, and the high-level entry our backend actually calls
-(`cw_powder_pattern_from_dict`) computes a plain Lorentz factor
-`0.5/(sin²θ·cosθ)` with no absorption term. So the issue's claim that
-absorption is "reachable via `Lorentz_abs_CW` through pycrysfml" is
-**not true today** — it would require upstream wrapping or an upstream
-call-site change we do not control.
+**However**, the standalone absorption routines are **not wrapped** in
+CrysFML's `PythonAPI/`. The high-level CFL entry our backend calls
+(`patterns_simulation`) prepares the reflection corrections inside
+CrysFML and does not expose a model-level μR input through our binding.
+So the issue's claim that absorption is "reachable via `Lorentz_abs_CW`
+through pycrysfml" is **not true today** — using it as an internal
+correction would require an upstream wrapper or a broader upstream
+call-site binding we do not control.
 
 **cryspy** has **no absorption code at all** (only Debye–Waller and
 sphere _extinction_, which are different physics). CW intensity is
