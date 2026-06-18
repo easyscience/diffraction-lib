@@ -331,7 +331,7 @@ class CwlPdXrayInstrument(CwlPdInstrumentBase):
         """Initialize the CW X-ray powder diffractometer."""
         super().__init__()
 
-        self._setup_polarization_coefficient: NumericDescriptor = NumericDescriptor(
+        self._setup_polarization_coefficient: Parameter = Parameter(
             name='polarization_coefficient',
             description='CW Lorentz-polarization coefficient',
             units='',
@@ -351,7 +351,7 @@ class CwlPdXrayInstrument(CwlPdInstrumentBase):
             ),
         )
 
-        self._setup_monochromator_twotheta: NumericDescriptor = NumericDescriptor(
+        self._setup_monochromator_twotheta: Parameter = Parameter(
             name='monochromator_twotheta',
             description='Pre-specimen monochromator 2theta angle',
             units='degrees',

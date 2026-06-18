@@ -74,9 +74,8 @@ the model this ADR follows for declaration style.
 
 ### Diagnostic evidence
 
-`docs/docs/verification/pd-xray-pbso4-single-polarized-wdt48.py` adds a
-focused diagnostic reference generated from
-`pbsox_single_polarized_wdt48.pcr`:
+A focused PbSO₄ diagnostic reference was generated from
+`pbsox_single_polarized_wdt48.pcr` during the polarization design work:
 
 - `Lambda1 = Lambda2 = 1.540560`
 - `Ratio = 0`

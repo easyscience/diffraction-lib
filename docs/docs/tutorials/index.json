@@ -183,6 +183,14 @@
     "description": "Advanced Rietveld refinement of PbSO4 using a joint fit of constant wavelength neutron and X-ray powder diffraction data",
     "level": "advanced"
   },
+  "refine-pbso4-xray": {
+    "order": 27,
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/refine-pbso4-xray/refine-pbso4-xray.ipynb",
+    "original_name": "",
+    "title": "Crystal Structure: PbSO4, XRD",
+    "description": "Rietveld refinement of PbSO4 using laboratory X-ray powder diffraction data with a Cu Kalpha doublet",
+    "level": "intermediate"
+  },
   "refine-si-sepd": {
     "order": 8,
     "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/refine-si-sepd/refine-si-sepd.ipynb",

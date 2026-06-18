@@ -7,9 +7,9 @@
 The calculators (`cryspy`, `crysfml`) apply no sample-absorption
 correction. For a cylindrical sample in Debye–Scherrer geometry this is
 an angle-dependent intensity factor that boosts high-angle peaks. The
-LaB₆ verification reference (`pd-neut-cwl_tch-fcj_lab6`) was refined in
+LaB₆ verification reference (`pd-neut-cwl_lab6`) was refined in
 FullProf with `μR = 0.7`; the unmodelled correction is the _entire_
-intensity residual on the companion `pd-neut-cwl_tch-fcj_abs_lab6` page
+intensity residual on the companion `pd-neut-cwl_lab6_absorption` page
 (≈5% profile difference), while the `μR = 0` page passes to corr 0.9999.
 
 **Correction (Hewat, Debye–Scherrer), validated to 4 decimals against

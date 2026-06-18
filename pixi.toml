@@ -72,20 +72,6 @@ pixi-kernel = '*' # Pixi Jupyter kernel
 pip = '*'
 easydiffraction = '*'
 
-# Local CrysFML build exposing the new CFL-based `patterns_simulation`
-# API. Overrides the released `crysfml` wheel (pulled in transitively via
-# `easydiffraction`) with a locally built one. Scoped to osx-arm64
-# because the wheel is platform/Python specific (cp314 / macOS 26 arm64);
-# the macOS system requirement is raised to match the wheel tag. Other
-# platforms and the CI Python environments keep the released wheel.
-# NOTE: the absolute path and macOS 26 tag are machine specific — this
-# override is for local testing and is not meant for the shared lock.
-[feature.crysfml-local.system-requirements]
-macos = '26.0'
-
-[feature.crysfml-local.target.osx-arm64.pypi-dependencies]
-crysfml = { path = '/Users/andrewsazonov/Development/github.com/easyscience/deps-pycrysfml/dist/pyCFML/wheel/crysfml-0.6.2+devdirty4-cp314-cp314-macosx_26_0_arm64.whl' }
-
 ##############
 # ENVIRONMENTS
 ##############
@@ -100,9 +86,8 @@ py-312-env = { features = ['py-min', 'dev'] }
 py-314-env = { features = ['py-max', 'dev'] }
 
 # The `default` environment is developer-oriented for local development
-# and testing with editable installation of the current package. It also
-# pulls in the locally built CrysFML wheel (CFL `patterns_simulation`).
-default = { features = ['py-max', 'dev', 'crysfml-local'] }
+# and testing with editable installation of the current package.
+default = { features = ['py-max', 'dev'] }
 
 # The `user` environment allows testing with pip-installed dependencies
 # instead of editable installation of the current package.

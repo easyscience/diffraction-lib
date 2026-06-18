@@ -16,9 +16,8 @@ exactly **two** independent causes, and — checked against the original
 paper — shows that **cryspy is faithful to the published
 Bérar–Baldinozzi functions while FullProf's executable departs from
 them**. This is the root cause behind the long-standing "asymmetry
-parameters don't agree" observation (the CI-skipped
-`pd-neut-cwl_pv-beba_pbso4` Verification page) and the "refines to
-opposite sign" note on the new `pd-neut-cwl_pv-beta_y2o3` page.
+parameters don't agree" observation on the
+`pd-neut-cwl_pbso4_beba-asymmetry` Verification page.
 
 This issue documents the finding and the evidence. It is primarily a
 **document-and-report-upstream** item: no cryspy code lives in this
@@ -58,15 +57,14 @@ is FullProf's `(P1, P2, P3, P4)` and our
 ## How it was established
 
 FullProf 8.40 (`/home/andrewsazonov/Applications/fullprof/fp2k`) was run
-on the Y₂O₃ structure used by the `pd-neut-cwl_pv-beta_y2o3`
-Verification page, profile NPROF = 7 (TCH), with the empirical asymmetry
-parameters set in five configurations: each of `Asy1…Asy4` isolated (=
-0.2, others 0) and one combined set. Each FullProf **calculated**
-profile (`.prf`, background-subtracted) was then reproduced in cryspy,
-comparing calculate-vs-calculate (no experimental data, no fitting
-noise). cryspy's profile machinery was reproduced inline and verified
-**byte-identical** to the installed cryspy (max abs diff 0.0), so the
-inline knobs faithfully represent real cryspy edits.
+on a Y₂O₃ diagnostic structure, profile NPROF = 7 (TCH), with the
+empirical asymmetry parameters set in five configurations: each of
+`Asy1…Asy4` isolated (= 0.2, others 0) and one combined set. Each
+FullProf **calculated** profile (`.prf`, background-subtracted) was then
+reproduced in cryspy, comparing calculate-vs-calculate (no experimental
+data, no fitting noise). cryspy's profile machinery was reproduced
+inline and verified **byte-identical** to the installed cryspy (max abs
+diff 0.0), so the inline knobs faithfully represent real cryspy edits.
 
 Metric below is `profdiff% = 100·Σ|ref−calc| / Σ|ref|`; `0.27%` is the
 numerical floor (`.prf` precision + background interpolation).
@@ -155,9 +153,9 @@ exactly `−6z` vs, say, `−6.1z`.
    appears to deviate from both eq. (13) and FullProf's own manual in
    the `Fb` linear term. If confirmed, this affects every FullProf user,
    not just cross-engine comparisons.
-3. **Keep our docs honest**: the `pd-neut-cwl_pv-beta_y2o3` page's
-   asymmetry note and the CI-skip on `pd-neut-cwl_pv-beba_pbso4` remain
-   correct and cite this issue.
+3. **Keep our docs honest**: the note and CI-skip on
+   `pd-neut-cwl_pbso4_beba-asymmetry` remain correct and cite this
+   issue.
 4. **Done:** the rename tracked by issue 133 landed — the parameters are
    now `asym_beba_{a0,b0,a1,b1}` (the `beba` model tag mirrors
    `asym_fcj_*`).
@@ -166,8 +164,8 @@ exactly `−6z` vs, say, `−6.1z`.
 
 - **Relates to** issue 133 (rename `asym_empir_*`; add physical FCJ
   model) — this issue supplies the confirmed physics/naming basis.
-- **Relates to** the Verification pages `pd-neut-cwl_pv-beba_pbso4`
-  (CI-skipped) and `pd-neut-cwl_pv-beta_y2o3` (documents the convention
-  difference).
+- **Relates to** the Verification page
+  `pd-neut-cwl_pbso4_beba-asymmetry` (CI-skipped; documents the
+  convention difference).
 - **Upstream:** cryspy issue
   [#50](https://github.com/ikibalin/cryspy/issues/50).

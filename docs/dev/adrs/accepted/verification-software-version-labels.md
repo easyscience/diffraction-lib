@@ -125,7 +125,7 @@ The engine is passed **explicitly as a tag** (`'cryspy'`, `'crysfml'`),
 deliberate contract choice: a verification page computes one engine's
 curve, stores it, **switches the calculator**, computes the next, then
 compares the **stored** arrays together (e.g.
-`docs/docs/verification/pd-neut-cwl_pv_lbco.py` calculates with
+`docs/docs/verification/pd-neut-cwl_lbco_basic.py` calculates with
 `cryspy`, switches to `crysfml`, then renders both stored results). A
 helper that read the _active_ engine at render time would label a stored
 `cryspy` result with whichever engine happened to be active later —
