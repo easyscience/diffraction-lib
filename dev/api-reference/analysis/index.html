@@ -6057,6 +6057,17 @@ calculated pattern without running a minimization.</p>
             </td>
           </tr>
           <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code&gt;polarization&lt;/code&gt; (&lt;code&gt;easydiffraction.analysis.calculators.polarization&lt;/code&gt;)" href="#easydiffraction.analysis.calculators.polarization">polarization</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Calculator-independent CW Lorentz-polarization correction factor.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
             <td><code><a class="autorefs autorefs-internal" title="&lt;code&gt;support&lt;/code&gt; (&lt;code&gt;easydiffraction.analysis.calculators.support&lt;/code&gt;)" href="#easydiffraction.analysis.calculators.support">support</a></code></td>
             <td>
               <div class="doc-md-description">
@@ -9282,6 +9293,411 @@ parameters.</p>
 
 
 
+<h5 id="easydiffraction.analysis.calculators.polarization" class="doc doc-heading">
+            <code>polarization</code>
+
+
+</h5>
+
+    <div class="doc doc-contents ">
+
+        <p>Calculator-independent CW Lorentz-polarization correction factor.</p>
+<p>The public instrument stores the physical monochromator angle in
+degrees. Backends that expose the FullProf/Cryspy form consume <code>cthm =
+cos^2(2theta_m)</code>, while backends without a native field use the same
+value in the pointwise multiplier here.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Functions:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;monochromator_cthm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;two_theta_m&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.analysis.calculators.polarization.monochromator_cthm&lt;/code&gt;)" href="#easydiffraction.analysis.calculators.polarization.monochromator_cthm">monochromator_cthm</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Return the backend monochromator <code>cthm</code> value.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;lp_factor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;two_theta&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;polarization_coefficient&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cthm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.analysis.calculators.polarization.lp_factor&lt;/code&gt;)" href="#easydiffraction.analysis.calculators.polarization.lp_factor">lp_factor</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Return the CW Lorentz-polarization multiplier.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;apply&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;experiment&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.analysis.calculators.polarization.apply&lt;/code&gt;)" href="#easydiffraction.analysis.calculators.polarization.apply">apply</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Apply the CW Lorentz-polarization factor to calculated intensities.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+<h6 id="easydiffraction.analysis.calculators.polarization-functions">Functions</h6>
+
+<div class="doc doc-object doc-function">
+
+
+<h7 id="easydiffraction.analysis.calculators.polarization.monochromator_cthm" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">monochromator_cthm</span><span class="p">(</span><span class="n">two_theta_m</span><span class="p">)</span></code>
+
+</h7>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return the backend monochromator <code>cthm</code> value.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>two_theta_m</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Pre-specimen monochromator 2-theta angle in degrees.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>cos^2(two_theta_m)</code> with the angle interpreted in degrees.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h7 id="easydiffraction.analysis.calculators.polarization.lp_factor" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">lp_factor</span><span class="p">(</span><span class="n">two_theta</span><span class="p">,</span> <span class="n">polarization_coefficient</span><span class="p">,</span> <span class="n">cthm</span><span class="p">)</span></code>
+
+</h7>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return the CW Lorentz-polarization multiplier.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>two_theta</code>
+            </td>
+            <td>
+                  <code><span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Scattering angle 2-theta grid in degrees.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>polarization_coefficient</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Dimensionless polarization coefficient, <code>0</code> to <code>1</code>.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>cthm</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Monochromator factor <code>cos^2(two_theta_m)</code>.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Multiplicative Lorentz-polarization factor.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h7 id="easydiffraction.analysis.calculators.polarization.apply" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">apply</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span></code>
+
+</h7>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Apply the CW Lorentz-polarization factor to calculated intensities.</p>
+<p>The pattern is returned unchanged unless the experiment has an X-ray
+CW powder instrument with a nonzero polarization coefficient. Empty
+arrays and backend no-data paths whose shape does not match the
+experiment 2-theta grid are also left unchanged.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>y</code>
+            </td>
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Calculated intensities (NumPy array or list).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>experiment</code>
+            </td>
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Experiment providing <code>instrument</code> and <code>data.x</code>.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Corrected intensities, or <code>y</code> unchanged when no correction
+applies.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
 <h5 id="easydiffraction.analysis.calculators.support" class="doc doc-heading">
             <code>support</code>
 
@@ -9417,7 +9833,7 @@ documentation to enumerate comparable engine x condition combinations.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The instrument category tag (for example <code>'cwl-pd'</code>).</p>
+                <p>The instrument category tag (for example <code>'cwl-pd-neutron'</code>).</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->

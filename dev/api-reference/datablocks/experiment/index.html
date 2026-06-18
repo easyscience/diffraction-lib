@@ -40542,10 +40542,32 @@ for concrete CWL/TOF instrument definitions.</p>
             </td>
           </tr>
           <tr class="doc-section-item">
-            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;CwlPdInstrument&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument">CwlPdInstrument</a></code></td>
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;CwlPdInstrumentBase&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase">CwlPdInstrumentBase</a></code></td>
             <td>
               <div class="doc-md-description">
-                <p>CW powder diffractometer.</p>
+                <p>Base class for CW powder diffractometers.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;CwlPdNeutronInstrument&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument">CwlPdNeutronInstrument</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>CW neutron powder diffractometer.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;CwlPdXrayInstrument&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument">CwlPdXrayInstrument</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>CW X-ray powder diffractometer.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -41667,8 +41689,8 @@ placeholder.</p>
 
 
 
-<h9 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument" class="doc doc-heading">
-              <code class="highlight language-python"><span class="n">CwlPdInstrument</span><span class="p">()</span></code>
+<h9 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase" class="doc doc-heading">
+              <code class="highlight language-python"><span class="n">CwlPdInstrumentBase</span><span class="p">()</span></code>
 
 </h9>
 
@@ -41677,7 +41699,7 @@ placeholder.</p>
 
 
 
-        <p>CW powder diffractometer.</p>
+        <p>Base class for CW powder diffractometers.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -41703,7 +41725,7 @@ placeholder.</p>
       </thead>
       <tbody>
             <tr class="doc-section-item">
-              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;fm&quot;&gt;__str__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.__str__&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.__str__">__str__</a></code></td>
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;fm&quot;&gt;__str__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.__str__&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.__str__">__str__</a></code></td>
               <td>
                 <div class="doc-md-description">
                   <p>Human-readable representation of this component.</p>
@@ -41714,7 +41736,7 @@ placeholder.</p>
               </td>
             </tr>
             <tr class="doc-section-item">
-              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;fm&quot;&gt;__repr__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.__repr__&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.__repr__">__repr__</a></code></td>
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;fm&quot;&gt;__repr__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.__repr__&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.__repr__">__repr__</a></code></td>
               <td>
                 <div class="doc-md-description">
                   <p>Return the developer representation of this object.</p>
@@ -41725,7 +41747,7 @@ placeholder.</p>
               </td>
             </tr>
             <tr class="doc-section-item">
-              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;fm&quot;&gt;__getattr__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.__getattr__&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.__getattr__">__getattr__</a></code></td>
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;fm&quot;&gt;__getattr__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.__getattr__&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.__getattr__">__getattr__</a></code></td>
               <td>
                 <div class="doc-md-description">
                   <p>Raise a descriptive error for unknown attribute access.</p>
@@ -41736,7 +41758,7 @@ placeholder.</p>
               </td>
             </tr>
             <tr class="doc-section-item">
-              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;fm&quot;&gt;__setattr__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.__setattr__&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.__setattr__">__setattr__</a></code></td>
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;fm&quot;&gt;__setattr__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.__setattr__&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.__setattr__">__setattr__</a></code></td>
               <td>
                 <div class="doc-md-description">
                   <p>Set an attribute with access-control diagnostics.</p>
@@ -41747,7 +41769,7 @@ placeholder.</p>
               </td>
             </tr>
             <tr class="doc-section-item">
-              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;help&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.help&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.help">help</a></code></td>
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;help&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.help&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.help">help</a></code></td>
               <td>
                 <div class="doc-md-description">
                   <p>Print parameters, other properties, and methods.</p>
@@ -41758,7 +41780,7 @@ placeholder.</p>
               </td>
             </tr>
             <tr class="doc-section-item">
-              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;from_cif&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;block&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;idx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.from_cif&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.from_cif">from_cif</a></code></td>
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;from_cif&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;block&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;idx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.from_cif&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.from_cif">from_cif</a></code></td>
               <td>
                 <div class="doc-md-description">
                   <p>Populate this item from a <abbr title="Crystallographic Information File.">CIF</abbr> block.</p>
@@ -41790,7 +41812,7 @@ placeholder.</p>
   &lt;span class=&quot;doc doc-labels&quot;&gt;
       &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
       &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.calib_twotheta_offset&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.calib_twotheta_offset">calib_twotheta_offset</a></code></td>
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.calib_twotheta_offset&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.calib_twotheta_offset">calib_twotheta_offset</a></code></td>
             <td>
                   <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;Parameter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.Parameter&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.Parameter">Parameter</a></code>
             </td>
@@ -41809,7 +41831,7 @@ placeholder.</p>
   &lt;span class=&quot;doc doc-labels&quot;&gt;
       &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
       &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.calib_sample_displacement&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.calib_sample_displacement">calib_sample_displacement</a></code></td>
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.calib_sample_displacement&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.calib_sample_displacement">calib_sample_displacement</a></code></td>
             <td>
                   <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;Parameter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.Parameter&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.Parameter">Parameter</a></code>
             </td>
@@ -41828,7 +41850,7 @@ placeholder.</p>
   &lt;span class=&quot;doc doc-labels&quot;&gt;
       &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
       &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.calib_sample_transparency&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.calib_sample_transparency">calib_sample_transparency</a></code></td>
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.calib_sample_transparency&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.calib_sample_transparency">calib_sample_transparency</a></code></td>
             <td>
                   <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;Parameter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.Parameter&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.Parameter">Parameter</a></code>
             </td>
@@ -41846,7 +41868,7 @@ placeholder.</p>
 
   &lt;span class=&quot;doc doc-labels&quot;&gt;
       &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.unique_name&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.unique_name">unique_name</a></code></td>
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.unique_name&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.unique_name">unique_name</a></code></td>
             <td>
                   <code><span title="str">str</span></code>
             </td>
@@ -41864,7 +41886,7 @@ placeholder.</p>
 
   &lt;span class=&quot;doc doc-labels&quot;&gt;
       &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.parameters&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.parameters">parameters</a></code></td>
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.parameters&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.parameters">parameters</a></code></td>
             <td>
                   <code><span title="list">list</span></code>
             </td>
@@ -41882,7 +41904,7 @@ placeholder.</p>
 
   &lt;span class=&quot;doc doc-labels&quot;&gt;
       &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.as_cif&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.as_cif">as_cif</a></code></td>
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.as_cif&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.as_cif">as_cif</a></code></td>
             <td>
                   <code><span title="str">str</span></code>
             </td>
@@ -41901,7 +41923,7 @@ placeholder.</p>
   &lt;span class=&quot;doc doc-labels&quot;&gt;
       &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
       &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.setup_wavelength&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.setup_wavelength">setup_wavelength</a></code></td>
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.setup_wavelength&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.setup_wavelength">setup_wavelength</a></code></td>
             <td>
                   <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;Parameter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.Parameter&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.Parameter">Parameter</a></code>
             </td>
@@ -41920,7 +41942,7 @@ placeholder.</p>
   &lt;span class=&quot;doc doc-labels&quot;&gt;
       &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
       &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.setup_wavelength_2&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.setup_wavelength_2">setup_wavelength_2</a></code></td>
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.setup_wavelength_2&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.setup_wavelength_2">setup_wavelength_2</a></code></td>
             <td>
                   <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;NumericDescriptor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.NumericDescriptor&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.NumericDescriptor">NumericDescriptor</a></code>
             </td>
@@ -41939,7 +41961,7 @@ placeholder.</p>
   &lt;span class=&quot;doc doc-labels&quot;&gt;
       &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
       &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.setup_wavelength_2_to_1_ratio&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.setup_wavelength_2_to_1_ratio">setup_wavelength_2_to_1_ratio</a></code></td>
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.setup_wavelength_2_to_1_ratio&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.setup_wavelength_2_to_1_ratio">setup_wavelength_2_to_1_ratio</a></code></td>
             <td>
                   <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;NumericDescriptor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.NumericDescriptor&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.NumericDescriptor">NumericDescriptor</a></code>
             </td>
@@ -41964,13 +41986,13 @@ placeholder.</p>
 
 
 
-<h10 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument-attributes">Attributes</h10>
+<h10 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase-attributes">Attributes</h10>
 
 <div class="doc doc-object doc-attribute">
 
 
 
-<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.calib_twotheta_offset" class="doc doc-heading">
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.calib_twotheta_offset" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">calib_twotheta_offset</span></code>
 
   <span class="doc doc-labels">
@@ -41998,7 +42020,7 @@ object. Assigning to it updates the parameter value.</p>
 
 
 
-<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.calib_sample_displacement" class="doc doc-heading">
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.calib_sample_displacement" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">calib_sample_displacement</span></code>
 
   <span class="doc doc-labels">
@@ -42026,7 +42048,7 @@ object. Assigning to it updates the parameter value.</p>
 
 
 
-<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.calib_sample_transparency" class="doc doc-heading">
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.calib_sample_transparency" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">calib_sample_transparency</span></code>
 
   <span class="doc doc-labels">
@@ -42054,7 +42076,7 @@ object. Assigning to it updates the parameter value.</p>
 
 
 
-<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.unique_name" class="doc doc-heading">
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.unique_name" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">unique_name</span></code>
 
   <span class="doc doc-labels">
@@ -42079,7 +42101,7 @@ object. Assigning to it updates the parameter value.</p>
 
 
 
-<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.parameters" class="doc doc-heading">
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.parameters" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">parameters</span></code>
 
   <span class="doc doc-labels">
@@ -42104,7 +42126,7 @@ object. Assigning to it updates the parameter value.</p>
 
 
 
-<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.as_cif" class="doc doc-heading">
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.as_cif" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">as_cif</span></code>
 
   <span class="doc doc-labels">
@@ -42129,7 +42151,7 @@ object. Assigning to it updates the parameter value.</p>
 
 
 
-<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.setup_wavelength" class="doc doc-heading">
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.setup_wavelength" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">setup_wavelength</span></code>
 
   <span class="doc doc-labels">
@@ -42157,7 +42179,7 @@ object. Assigning to it updates the parameter value.</p>
 
 
 
-<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.setup_wavelength_2" class="doc doc-heading">
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.setup_wavelength_2" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">setup_wavelength_2</span></code>
 
   <span class="doc doc-labels">
@@ -42187,7 +42209,7 @@ consumes it yet.</p>
 
 
 
-<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.setup_wavelength_2_to_1_ratio" class="doc doc-heading">
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.setup_wavelength_2_to_1_ratio" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">setup_wavelength_2_to_1_ratio</span></code>
 
   <span class="doc doc-labels">
@@ -42214,12 +42236,12 @@ placeholder.</p>
 </div>
 
 
-<h10 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument-functions">Functions</h10>
+<h10 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase-functions">Functions</h10>
 
 <div class="doc doc-object doc-function">
 
 
-<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.__str__" class="doc doc-heading">
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.__str__" class="doc doc-heading">
             <code class="highlight language-python"><span class="fm">__str__</span><span class="p">()</span></code>
 
 </h11>
@@ -42240,7 +42262,7 @@ placeholder.</p>
 <div class="doc doc-object doc-function">
 
 
-<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.__repr__" class="doc doc-heading">
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.__repr__" class="doc doc-heading">
             <code class="highlight language-python"><span class="fm">__repr__</span><span class="p">()</span></code>
 
 </h11>
@@ -42261,7 +42283,7 @@ placeholder.</p>
 <div class="doc doc-object doc-function">
 
 
-<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.__getattr__" class="doc doc-heading">
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.__getattr__" class="doc doc-heading">
             <code class="highlight language-python"><span class="fm">__getattr__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span></code>
 
 </h11>
@@ -42282,7 +42304,7 @@ placeholder.</p>
 <div class="doc doc-object doc-function">
 
 
-<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.__setattr__" class="doc doc-heading">
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.__setattr__" class="doc doc-heading">
             <code class="highlight language-python"><span class="fm">__setattr__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></code>
 
 </h11>
@@ -42303,7 +42325,7 @@ placeholder.</p>
 <div class="doc doc-object doc-function">
 
 
-<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.help" class="doc doc-heading">
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.help" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">help</span><span class="p">()</span></code>
 
 </h11>
@@ -42324,7 +42346,1477 @@ placeholder.</p>
 <div class="doc doc-object doc-function">
 
 
-<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrument.from_cif" class="doc doc-heading">
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdInstrumentBase.from_cif" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">from_cif</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">idx</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Populate this item from a <abbr title="Crystallographic Information File.">CIF</abbr> block.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h9 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument" class="doc doc-heading">
+              <code class="highlight language-python"><span class="n">CwlPdNeutronInstrument</span><span class="p">()</span></code>
+
+</h9>
+
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>CW neutron powder diffractometer.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Methods:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;fm&quot;&gt;__str__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.__str__&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.__str__">__str__</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Human-readable representation of this component.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;fm&quot;&gt;__repr__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.__repr__&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.__repr__">__repr__</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Return the developer representation of this object.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;fm&quot;&gt;__getattr__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.__getattr__&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.__getattr__">__getattr__</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Raise a descriptive error for unknown attribute access.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;fm&quot;&gt;__setattr__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.__setattr__&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.__setattr__">__setattr__</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Set an attribute with access-control diagnostics.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;help&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.help&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.help">help</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Print parameters, other properties, and methods.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;from_cif&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;block&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;idx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.from_cif&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.from_cif">from_cif</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Populate this item from a <abbr title="Crystallographic Information File.">CIF</abbr> block.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+      </tbody>
+    </table>
+
+
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;unique_name&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.unique_name&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.unique_name">unique_name</a></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Fully qualified name: datablock, category, entry.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;parameters&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.parameters&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.parameters">parameters</a></code></td>
+            <td>
+                  <code><span title="list">list</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>All GenericDescriptorBase instances on this item.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;as_cif&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.as_cif&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.as_cif">as_cif</a></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;setup_wavelength&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.setup_wavelength&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.setup_wavelength">setup_wavelength</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;Parameter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.Parameter&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.Parameter">Parameter</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Incident neutron or X-ray wavelength (Å).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;setup_wavelength_2&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.setup_wavelength_2&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.setup_wavelength_2">setup_wavelength_2</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;NumericDescriptor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.NumericDescriptor&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.NumericDescriptor">NumericDescriptor</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Second incident wavelength λ₂ (Å), e.g. the X-ray K-alpha2 line.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;setup_wavelength_2_to_1_ratio&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.setup_wavelength_2_to_1_ratio&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.setup_wavelength_2_to_1_ratio">setup_wavelength_2_to_1_ratio</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;NumericDescriptor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.NumericDescriptor&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.NumericDescriptor">NumericDescriptor</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Relative intensity of wavelength_2 to wavelength (I₂/I₁).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;calib_twotheta_offset&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.calib_twotheta_offset&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.calib_twotheta_offset">calib_twotheta_offset</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;Parameter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.Parameter&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.Parameter">Parameter</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Instrument misalignment offset (deg).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;calib_sample_displacement&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.calib_sample_displacement&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.calib_sample_displacement">calib_sample_displacement</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;Parameter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.Parameter&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.Parameter">Parameter</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Specimen-displacement peak-position correction (deg).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;calib_sample_transparency&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.calib_sample_transparency&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.calib_sample_transparency">calib_sample_transparency</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;Parameter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.Parameter&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.Parameter">Parameter</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Sample-transparency peak-position correction (deg).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+<h10 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument-attributes">Attributes</h10>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.unique_name" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">unique_name</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Fully qualified name: datablock, category, entry.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.parameters" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">parameters</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>All GenericDescriptorBase instances on this item.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.as_cif" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">as_cif</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.setup_wavelength" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">setup_wavelength</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Incident neutron or X-ray wavelength (Å).</p>
+<p>Reading this property returns the underlying <code>Parameter</code>
+object. Assigning to it updates the parameter value.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.setup_wavelength_2" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">setup_wavelength_2</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Second incident wavelength λ₂ (Å), e.g. the X-ray K-alpha2 line.</p>
+<p>Reading returns the underlying <code>NumericDescriptor</code>; assigning
+a number updates its value. Default <code>0.0</code> means no second
+component (monochromatic). Non-refinable placeholder: no engine
+consumes it yet.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.setup_wavelength_2_to_1_ratio" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">setup_wavelength_2_to_1_ratio</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Relative intensity of wavelength_2 to wavelength (I₂/I₁).</p>
+<p>The <code>_2_to_1_</code> ordering names the direction: numerator is the
+second component, denominator the first. Range <code>[0, 1]</code>;
+default <code>0.0</code> disables the second component. Non-refinable
+placeholder.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.calib_twotheta_offset" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">calib_twotheta_offset</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Instrument misalignment offset (deg).</p>
+<p>Reading this property returns the underlying <code>Parameter</code>
+object. Assigning to it updates the parameter value.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.calib_sample_displacement" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">calib_sample_displacement</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Specimen-displacement peak-position correction (deg).</p>
+<p>Reading this property returns the underlying <code>Parameter</code>
+object. Assigning to it updates the parameter value.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.calib_sample_transparency" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">calib_sample_transparency</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Sample-transparency peak-position correction (deg).</p>
+<p>Reading this property returns the underlying <code>Parameter</code>
+object. Assigning to it updates the parameter value.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+
+<h10 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument-functions">Functions</h10>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.__str__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__str__</span><span class="p">()</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Human-readable representation of this component.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.__repr__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__repr__</span><span class="p">()</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return the developer representation of this object.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.__getattr__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__getattr__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Raise a descriptive error for unknown attribute access.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.__setattr__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__setattr__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Set an attribute with access-control diagnostics.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.help" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">help</span><span class="p">()</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Print parameters, other properties, and methods.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdNeutronInstrument.from_cif" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">from_cif</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">idx</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Populate this item from a <abbr title="Crystallographic Information File.">CIF</abbr> block.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h9 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument" class="doc doc-heading">
+              <code class="highlight language-python"><span class="n">CwlPdXrayInstrument</span><span class="p">()</span></code>
+
+</h9>
+
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>CW X-ray powder diffractometer.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Methods:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;fm&quot;&gt;__str__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.__str__&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.__str__">__str__</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Human-readable representation of this component.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;fm&quot;&gt;__repr__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.__repr__&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.__repr__">__repr__</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Return the developer representation of this object.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;fm&quot;&gt;__getattr__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.__getattr__&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.__getattr__">__getattr__</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Raise a descriptive error for unknown attribute access.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;fm&quot;&gt;__setattr__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.__setattr__&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.__setattr__">__setattr__</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Set an attribute with access-control diagnostics.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;help&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.help&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.help">help</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Print parameters, other properties, and methods.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;from_cif&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;block&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;idx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.from_cif&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.from_cif">from_cif</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Populate this item from a <abbr title="Crystallographic Information File.">CIF</abbr> block.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+      </tbody>
+    </table>
+
+
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;setup_polarization_coefficient&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.setup_polarization_coefficient&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.setup_polarization_coefficient">setup_polarization_coefficient</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;NumericDescriptor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.NumericDescriptor&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.NumericDescriptor">NumericDescriptor</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>CW Lorentz-polarization coefficient.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;setup_monochromator_twotheta&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.setup_monochromator_twotheta&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.setup_monochromator_twotheta">setup_monochromator_twotheta</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;NumericDescriptor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.NumericDescriptor&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.NumericDescriptor">NumericDescriptor</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Pre-specimen monochromator 2theta angle (deg).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;unique_name&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.unique_name&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.unique_name">unique_name</a></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Fully qualified name: datablock, category, entry.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;parameters&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.parameters&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.parameters">parameters</a></code></td>
+            <td>
+                  <code><span title="list">list</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>All GenericDescriptorBase instances on this item.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;as_cif&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.as_cif&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.as_cif">as_cif</a></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;setup_wavelength&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.setup_wavelength&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.setup_wavelength">setup_wavelength</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;Parameter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.Parameter&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.Parameter">Parameter</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Incident neutron or X-ray wavelength (Å).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;setup_wavelength_2&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.setup_wavelength_2&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.setup_wavelength_2">setup_wavelength_2</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;NumericDescriptor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.NumericDescriptor&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.NumericDescriptor">NumericDescriptor</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Second incident wavelength λ₂ (Å), e.g. the X-ray K-alpha2 line.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;setup_wavelength_2_to_1_ratio&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.setup_wavelength_2_to_1_ratio&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.setup_wavelength_2_to_1_ratio">setup_wavelength_2_to_1_ratio</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;NumericDescriptor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.NumericDescriptor&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.NumericDescriptor">NumericDescriptor</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Relative intensity of wavelength_2 to wavelength (I₂/I₁).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;calib_twotheta_offset&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.calib_twotheta_offset&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.calib_twotheta_offset">calib_twotheta_offset</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;Parameter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.Parameter&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.Parameter">Parameter</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Instrument misalignment offset (deg).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;calib_sample_displacement&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.calib_sample_displacement&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.calib_sample_displacement">calib_sample_displacement</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;Parameter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.Parameter&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.Parameter">Parameter</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Specimen-displacement peak-position correction (deg).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;calib_sample_transparency&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.calib_sample_transparency&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.calib_sample_transparency">calib_sample_transparency</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;Parameter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.Parameter&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.Parameter">Parameter</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Sample-transparency peak-position correction (deg).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+<h10 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument-attributes">Attributes</h10>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.setup_polarization_coefficient" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">setup_polarization_coefficient</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>CW Lorentz-polarization coefficient.</p>
+<p>Reading returns the underlying <code>NumericDescriptor</code>; assigning
+a number updates its value. Default <code>0.0</code> disables the
+polarization correction.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.setup_monochromator_twotheta" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">setup_monochromator_twotheta</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Pre-specimen monochromator 2theta angle (deg).</p>
+<p>Reading returns the underlying <code>NumericDescriptor</code>; assigning
+a number updates its value. Default <code>0.0</code> means no
+monochromator.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.unique_name" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">unique_name</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Fully qualified name: datablock, category, entry.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.parameters" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">parameters</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>All GenericDescriptorBase instances on this item.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.as_cif" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">as_cif</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.setup_wavelength" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">setup_wavelength</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Incident neutron or X-ray wavelength (Å).</p>
+<p>Reading this property returns the underlying <code>Parameter</code>
+object. Assigning to it updates the parameter value.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.setup_wavelength_2" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">setup_wavelength_2</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Second incident wavelength λ₂ (Å), e.g. the X-ray K-alpha2 line.</p>
+<p>Reading returns the underlying <code>NumericDescriptor</code>; assigning
+a number updates its value. Default <code>0.0</code> means no second
+component (monochromatic). Non-refinable placeholder: no engine
+consumes it yet.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.setup_wavelength_2_to_1_ratio" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">setup_wavelength_2_to_1_ratio</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Relative intensity of wavelength_2 to wavelength (I₂/I₁).</p>
+<p>The <code>_2_to_1_</code> ordering names the direction: numerator is the
+second component, denominator the first. Range <code>[0, 1]</code>;
+default <code>0.0</code> disables the second component. Non-refinable
+placeholder.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.calib_twotheta_offset" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">calib_twotheta_offset</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Instrument misalignment offset (deg).</p>
+<p>Reading this property returns the underlying <code>Parameter</code>
+object. Assigning to it updates the parameter value.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.calib_sample_displacement" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">calib_sample_displacement</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Specimen-displacement peak-position correction (deg).</p>
+<p>Reading this property returns the underlying <code>Parameter</code>
+object. Assigning to it updates the parameter value.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.calib_sample_transparency" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">calib_sample_transparency</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Sample-transparency peak-position correction (deg).</p>
+<p>Reading this property returns the underlying <code>Parameter</code>
+object. Assigning to it updates the parameter value.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+
+<h10 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument-functions">Functions</h10>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.__str__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__str__</span><span class="p">()</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Human-readable representation of this component.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.__repr__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__repr__</span><span class="p">()</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return the developer representation of this object.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.__getattr__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__getattr__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Raise a descriptive error for unknown attribute access.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.__setattr__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__setattr__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Set an attribute with access-control diagnostics.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.help" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">help</span><span class="p">()</span></code>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Print parameters, other properties, and methods.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.instrument.cwl.CwlPdXrayInstrument.from_cif" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">from_cif</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">idx</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></code>
 
 </h11>
