@@ -78,7 +78,6 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from easydiffraction.analysis.categories.fit_result import FitResultBase
-    from easydiffraction.analysis.categories.minimizer.base import MinimizerCategoryBase
     from easydiffraction.core.posterior import PosteriorParameterSummary
     from easydiffraction.core.variable import GenericDescriptorBase
 

@@ -362,8 +362,7 @@ class CryspyCalculator(CalculatorBase):
         if beam_mode in prefixes:
             return f'{prefixes[beam_mode]}_{experiment.name}'
         log.warning(
-            f'[CryspyCalculator] Unknown beam mode '
-            f'{experiment.experiment_type.beam_mode.value}'
+            f'[CryspyCalculator] Unknown beam mode {experiment.experiment_type.beam_mode.value}'
         )
         return None
 

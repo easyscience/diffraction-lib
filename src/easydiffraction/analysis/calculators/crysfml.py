@@ -285,12 +285,10 @@ class CrysfmlCalculator(CalculatorBase):
     ) -> list[str]:
         """Return CFL lines with a replacement ``LAMBDA`` directive."""
         lambda_line = (
-            f'  LAMBDA  {_fmt(wavelength_1)}  {_fmt(wavelength_2)}  '
-            f'{_fmt(wavelength_ratio)}'
+            f'  LAMBDA  {_fmt(wavelength_1)}  {_fmt(wavelength_2)}  {_fmt(wavelength_ratio)}'
         )
         return [
-            lambda_line if line.lstrip().upper().startswith('LAMBDA') else line
-            for line in cfl
+            lambda_line if line.lstrip().upper().startswith('LAMBDA') else line for line in cfl
         ]
 
     @staticmethod
@@ -411,10 +409,7 @@ class CrysfmlCalculator(CalculatorBase):
             f'  WDT  {_fmt(_CW_BRAGG_WINDOW_FWHM)}',
             '  Profile_function  TCH_pVoigt',
             f'  ASYM  {_fmt(asym1)}  {_fmt(asym2)}',
-            (
-                f'  LAMBDA  {_fmt(wavelength_1)}  {_fmt(wavelength_2)}  '
-                f'{_fmt(wavelength_ratio)}'
-            ),
+            (f'  LAMBDA  {_fmt(wavelength_1)}  {_fmt(wavelength_2)}  {_fmt(wavelength_ratio)}'),
             f'  UVWXY  {_fmt(u)}  {_fmt(v)}  {_fmt(w)}  {_fmt(x)}  {_fmt(y)}',
         ]
 
@@ -523,7 +518,7 @@ class CrysfmlCalculator(CalculatorBase):
         factor = self._occupancy_multiplicity_factor(atom, structure)
         if factor is None:
             log.warning(
-                f"[CrysfmlCalculator] Could not resolve site multiplicity for "
+                f'[CrysfmlCalculator] Could not resolve site multiplicity for '
                 f"atom '{atom.id.value}' in space group "
                 f"'{structure.space_group.name_h_m.value}'; using unnormalized "
                 f'occupancy, which may scale this phase incorrectly.'

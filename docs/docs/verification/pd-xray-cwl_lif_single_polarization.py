@@ -65,8 +65,8 @@ FULLPROF_W = 0.040000  # FullProf W
 FULLPROF_X = 0.0  # FullProf X
 FULLPROF_Y = 0.049268  # FullProf Y
 FULLPROF_POLARIZATION_COEFFICIENT = 0.5  # FullProf Rpolarz
-FULLPROF_CTHM = 0.8 # FullProf Cthm
-FULLPROF_MONOCHROMATOR_TWOTHETA = 26.5650511771 # acos(sqrt(Cthm)) in degrees
+FULLPROF_CTHM = 0.8  # FullProf Cthm
+FULLPROF_MONOCHROMATOR_TWOTHETA = 26.5650511771  # acos(sqrt(Cthm)) in degrees
 
 x, calc_fullprof = verify.load_fullprof_calc_profile(
     FULLPROF_PROJECT_DIR,
@@ -92,12 +92,8 @@ experiment.linked_structures.create(structure_id='lif', scale=FULLPROF_SCALE)
 
 experiment.instrument.setup_wavelength = FULLPROF_WAVELENGTH
 experiment.instrument.calib_twotheta_offset = FULLPROF_ZERO
-experiment.instrument.setup_polarization_coefficient = (
-    FULLPROF_POLARIZATION_COEFFICIENT
-)
-experiment.instrument.setup_monochromator_twotheta = (
-    FULLPROF_MONOCHROMATOR_TWOTHETA
-)
+experiment.instrument.setup_polarization_coefficient = FULLPROF_POLARIZATION_COEFFICIENT
+experiment.instrument.setup_monochromator_twotheta = FULLPROF_MONOCHROMATOR_TWOTHETA
 
 experiment.peak.type = 'pseudo-voigt'
 experiment.peak.broad_gauss_u = FULLPROF_U
@@ -192,17 +188,15 @@ project.display.pattern_comparison(
 # ## Agreement check
 
 # %%
-verify.assert_patterns_agree(
-    [
-        (
-            f'{LABEL_ED_CRYSPY_REFINED} vs {FULLPROF_LABEL}',
-            calc_fullprof,
-            calc_ed_cryspy_refined,
-        ),
-        (
-            f'{LABEL_ED_CRYSFML_REFINED} vs {FULLPROF_LABEL}',
-            calc_fullprof,
-            calc_ed_crysfml_refined,
-        ),
-    ]
-)
+verify.assert_patterns_agree([
+    (
+        f'{LABEL_ED_CRYSPY_REFINED} vs {FULLPROF_LABEL}',
+        calc_fullprof,
+        calc_ed_cryspy_refined,
+    ),
+    (
+        f'{LABEL_ED_CRYSFML_REFINED} vs {FULLPROF_LABEL}',
+        calc_fullprof,
+        calc_ed_crysfml_refined,
+    ),
+])
