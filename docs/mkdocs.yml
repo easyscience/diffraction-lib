@@ -259,6 +259,7 @@ nav:
           - LBCO: verification/pd-neut-cwl_pv_lbco.ipynb
           - LBCO (preferred orientation): verification/pd-neut-cwl_pv-march_lbco.ipynb
           - PbSO4 (pseudo-Voigt): verification/pd-neut-cwl_pv_pbso4.ipynb
+          - PbSO4 (X-ray geometry as neutron): verification/pd-neut-cwl_pv-xray-geometry_pbso4.ipynb
           - PbSO4 (Bérar–Baldinozzi asymmetry): verification/pd-neut-cwl_pv-beba_pbso4.ipynb
           - LaB6 (SyCos/SySin): verification/pd-neut-cwl_tch-fcj-noabs-nosldl_lab6.ipynb
           - LaB6 (FCJ asymmetry): verification/pd-neut-cwl_tch-fcj-noabs_lab6.ipynb
@@ -269,6 +270,10 @@ nav:
           - Si (Jorgensen): verification/pd-neut-tof_j_si.ipynb
           - Si (Jorgensen–Von Dreele): verification/pd-neut-tof_jvd_si.ipynb
           - NaCaAlF: verification/pd-neut-tof_jvd_ncaf.ipynb
+      - Powder, X-ray, constant wavelength:
+          - PbSO4: verification/pd-xray-pbso4.ipynb
+          - PbSO4 (single wavelength): verification/pd-xray-pbso4-single.ipynb
+          - PbSO4 (single wavelength, aligned): verification/pd-xray-pbso4-single-unpolarized-wdt48-aligned.ipynb
       - Single crystal, neutron, constant wavelength:
           - Pr2NiO4 (no extinction): verification/sc-neut-cwl_pr2nio4.ipynb
           - Tb2Ti2O7 (no extinction): verification/sc-neut-cwl_noext_tbti.ipynb

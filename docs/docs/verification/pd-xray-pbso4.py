@@ -7,11 +7,13 @@
 # a laboratory Cu source. FullProf models the full Cu Kα₁/Kα₂ doublet
 # (two wavelengths with a fixed intensity ratio) and applies its X-ray
 # Lorentz–polarization and monochromator-polarization corrections.
-# `cryspy` and `crysfml` currently calculate this pattern from a single
-# wavelength and a different polarization convention, so neither engine
-# reproduces the FullProf X-ray profile. The page is kept as a published
+# `cryspy` and `crysfml` calculate the Cu Kα₁/Kα₂ doublet as two
+# single-wavelength simulations combined with the FullProf intensity
+# ratio. Both engines still use polarization handling that does not
+# reproduce the FullProf X-ray profile. The page is kept as a published
 # comparison and gated as a *known discrepancy* so it is verified to stay
-# discrepant; the X-ray doublet/polarization handling is left for later.
+# discrepant; the remaining X-ray polarization handling is left for
+# later.
 
 # %%
 import easydiffraction as edi
@@ -96,7 +98,9 @@ FULLPROF_LABEL = verify.fullprof_label(FULLPROF_PROJECT_DIR, FULLPROF_SUM_FILE)
 FULLPROF_BAC_FILE = 'pbsox.bac'
 FULLPROF_ZERO = -0.04816  # FullProf Zero
 FULLPROF_SCALE = 0.0004693346  # FullProf Scale
-FULLPROF_WAVELENGTH = 1.540560  # FullProf Lambda1
+FULLPROF_WAVELENGTH_1 = 1.540560  # FullProf Lambda1
+FULLPROF_WAVELENGTH_2 = 1.544400  # FullProf Lambda2
+FULLPROF_WAVELENGTH_2_TO_1_RATIO = 0.50000  # FullProf Ratio
 FULLPROF_U = 0.048457  # FullProf U
 FULLPROF_V = -0.083053  # FullProf V
 FULLPROF_W = 0.035188  # FullProf W
@@ -125,7 +129,9 @@ verify.set_reference_as_measured(experiment, x, calc_fullprof)
 
 experiment.linked_structures.create(structure_id='pbso4', scale=FULLPROF_SCALE)
 
-experiment.instrument.setup_wavelength = FULLPROF_WAVELENGTH
+experiment.instrument.setup_wavelength = FULLPROF_WAVELENGTH_1
+experiment.instrument.setup_wavelength_2 = FULLPROF_WAVELENGTH_2
+experiment.instrument.setup_wavelength_2_to_1_ratio = FULLPROF_WAVELENGTH_2_TO_1_RATIO
 experiment.instrument.calib_twotheta_offset = FULLPROF_ZERO
 
 experiment.peak.type = 'pseudo-voigt'
@@ -156,10 +162,36 @@ project.display.pattern_comparison(
 )
 
 # %% [markdown]
+# ## Fit edi-cryspy to FullProf
+
+# %%
+experiment.linked_structures['pbso4'].scale.free = True
+
+project.analysis.fit()
+project.display.fit.results()
+
+project.analysis.calculate()
+calc_ed_cryspy_refined = experiment.data.intensity_calc
+LABEL_ED_CRYSPY_REFINED = verify.engine_label('cryspy', note='refined')
+
+project.display.pattern_comparison(
+    'pbso4',
+    reference=calc_fullprof,
+    candidate=calc_ed_cryspy_refined,
+    reference_label=FULLPROF_LABEL,
+    candidate_label=LABEL_ED_CRYSPY_REFINED,
+)
+
+# %%
+experiment.linked_structures['pbso4'].scale
+
+# %% [markdown]
 # ## edi-crysfml VS FullProf
 
 # %%
 experiment.calculator.type = 'crysfml'
+
+experiment.linked_structures['pbso4'].scale = FULLPROF_SCALE
 
 project.analysis.calculate()
 calc_ed_crysfml = experiment.data.intensity_calc
@@ -174,21 +206,57 @@ project.display.pattern_comparison(
 )
 
 # %% [markdown]
+# ## Fit edi-crysfml to FullProf
+
+# %%
+experiment.linked_structures['pbso4'].scale.free = True
+
+project.analysis.fit()
+project.display.fit.results()
+
+project.analysis.calculate()
+calc_ed_crysfml_refined = experiment.data.intensity_calc
+LABEL_ED_CRYSFML_REFINED = verify.engine_label('crysfml', note='refined')
+
+project.display.pattern_comparison(
+    'pbso4',
+    reference=calc_fullprof,
+    candidate=calc_ed_crysfml_refined,
+    reference_label=FULLPROF_LABEL,
+    candidate_label=LABEL_ED_CRYSFML_REFINED,
+)
+
+# %%
+experiment.linked_structures['pbso4'].scale
+
+# %% [markdown]
 # ## Agreement check
 
 # %%
 verify.assert_patterns_agree(
     [
         (f'{LABEL_ED_CRYSPY} vs {FULLPROF_LABEL}', calc_fullprof, calc_ed_cryspy),
+        (
+            f'{LABEL_ED_CRYSPY_REFINED} vs {FULLPROF_LABEL}',
+            calc_fullprof,
+            calc_ed_cryspy_refined,
+        ),
         (f'{LABEL_ED_CRYSFML} vs {FULLPROF_LABEL}', calc_fullprof, calc_ed_crysfml),
+        (
+            f'{LABEL_ED_CRYSFML_REFINED} vs {FULLPROF_LABEL}',
+            calc_fullprof,
+            calc_ed_crysfml_refined,
+        ),
     ],
     known_discrepancy=True,
     reason=(
-        'Laboratory X-ray PbSO4: FullProf models the full Cu Ka1/Ka2 '
-        'doublet and its X-ray Lorentz-polarization correction, while '
-        'cryspy and crysfml calculate from a single wavelength and a '
-        'different polarization convention, so neither engine yet '
-        'reproduces the FullProf X-ray profile.'
+        'Laboratory X-ray PbSO4: the remaining strict-tolerance '
+        'difference is traced primarily to FullProf/Cryspy Cu Kalpha '
+        'anomalous-dispersion tables, especially Pb f-prime, with an '
+        'additional contribution from FullProf Wdt peak-tail '
+        'truncation. The Cu Ka1/Ka2 doublet is calculated as two '
+        'single-wavelength simulations because the available native '
+        'doublet paths are not yet reliable for this case.'
     ),
 )
 

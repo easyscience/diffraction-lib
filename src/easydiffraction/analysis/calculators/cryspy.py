@@ -264,13 +264,70 @@ class CryspyCalculator(CalculatorBase):
 
         self._cryspy_dicts[combined_name] = copy.deepcopy(cryspy_dict)
 
-        cryspy_in_out_dict: dict[str, Any] = {}
+        y_calc = self._calculate_powder_pattern_from_dict(
+            cryspy_dict,
+            structure,
+            experiment,
+            combined_name,
+        )
+        if y_calc is None:
+            return []
 
+        return absorption_correction.apply(y_calc, experiment)
+
+    def _calculate_powder_pattern_from_dict(
+        self,
+        cryspy_dict: dict[str, Any],
+        structure: Structure,
+        experiment: ExperimentBase,
+        combined_name: str,
+    ) -> np.ndarray | None:
+        """Calculate one powder pattern from a Cryspy dictionary."""
         # TODO: This is temporary solution to mark all structures as
         #  nuclear-only. Once magnetic structure is implemented, we
         #  would need to auto-detect it.
         cryspy_dict[f'crystal_{structure.name}']['flag_only_nuclear'] = True
 
+        doublet_dict = None
+        if self._cw_doublet_is_active(experiment):
+            doublet_dict = copy.deepcopy(cryspy_dict)
+
+        powder_block, y_calc = self._calculate_single_powder_pattern(
+            cryspy_dict,
+            experiment,
+        )
+        if y_calc is None or powder_block is None:
+            return None
+
+        self._last_powder_phase_blocks[combined_name] = powder_block.get(
+            f'dict_in_out_{structure.name}'
+        )
+        if doublet_dict is None:
+            return y_calc
+
+        _wavelength_1, wavelength_2, wavelength_ratio = self._cw_wavelengths(
+            getattr(experiment, 'instrument', None)
+        )
+        self._set_cw_wavelength(doublet_dict, experiment, wavelength_2)
+        _doublet_block, doublet_y = self._calculate_single_powder_pattern(
+            doublet_dict,
+            experiment,
+        )
+        if doublet_y is None:
+            return None
+        return y_calc + wavelength_ratio * doublet_y
+
+    def _calculate_single_powder_pattern(
+        self,
+        cryspy_dict: dict[str, Any],
+        experiment: ExperimentBase,
+    ) -> tuple[dict[str, Any] | None, np.ndarray | None]:
+        """Calculate one single-wavelength powder pattern."""
+        cryspy_block_name = self._powder_block_name(experiment)
+        if cryspy_block_name is None:
+            return None, None
+
+        cryspy_in_out_dict: dict[str, Any] = {}
         # Calculate the pattern using Cryspy
         # TODO: Redirect stderr to suppress Cryspy warnings.
         #  This is a temporary solution to avoid cluttering the output.
@@ -285,33 +342,88 @@ class CryspyCalculator(CalculatorBase):
                 flag_calc_analytical_derivatives=False,
             )
 
+        try:
+            powder_block = cryspy_in_out_dict[cryspy_block_name]
+            signal_plus = np.asarray(powder_block['signal_plus'], dtype=float)
+            signal_minus = np.asarray(powder_block['signal_minus'], dtype=float)
+        except KeyError:
+            log.warning(f'[CryspyCalculator] No calculated data for {cryspy_block_name}')
+            return None, None
+        return powder_block, signal_plus + signal_minus
+
+    @staticmethod
+    def _powder_block_name(experiment: ExperimentBase) -> str | None:
+        """Return the Cryspy powder output block name."""
         prefixes = {
             BeamModeEnum.CONSTANT_WAVELENGTH: 'pd',
             BeamModeEnum.TIME_OF_FLIGHT: 'tof',
         }
         beam_mode = experiment.experiment_type.beam_mode.value
         if beam_mode in prefixes:
-            cryspy_block_name = f'{prefixes[beam_mode]}_{experiment.name}'
-        else:
-            log.warning(
-                f'[CryspyCalculator] Unknown beam mode '
-                f'{experiment.experiment_type.beam_mode.value}'
-            )
-            return []
+            return f'{prefixes[beam_mode]}_{experiment.name}'
+        log.warning(
+            f'[CryspyCalculator] Unknown beam mode '
+            f'{experiment.experiment_type.beam_mode.value}'
+        )
+        return None
 
-        try:
-            powder_block = cryspy_in_out_dict[cryspy_block_name]
-            signal_plus = powder_block['signal_plus']
-            signal_minus = powder_block['signal_minus']
-            y_calc = signal_plus + signal_minus
-            self._last_powder_phase_blocks[combined_name] = powder_block.get(
-                f'dict_in_out_{structure.name}'
-            )
-        except KeyError:
-            log.warning(f'[CryspyCalculator] No calculated data for {cryspy_block_name}')
-            return []
+    def _cw_doublet_is_active(self, experiment: ExperimentBase) -> bool:
+        """Return whether a CW doublet is active."""
+        beam_mode = experiment.experiment_type.beam_mode.value
+        if beam_mode != BeamModeEnum.CONSTANT_WAVELENGTH:
+            return False
+        _wavelength_1, wavelength_2, wavelength_ratio = self._cw_wavelengths(
+            getattr(experiment, 'instrument', None)
+        )
+        return wavelength_2 > 0.0 and wavelength_ratio > 0.0
 
-        return absorption_correction.apply(y_calc, experiment)
+    @staticmethod
+    def _cw_wavelengths(instrument: object | None) -> tuple[float, float, float]:
+        """Return primary and secondary CW wavelengths."""
+        wavelength_1 = CryspyCalculator._parameter_value(
+            instrument,
+            'setup_wavelength',
+            0.0,
+        )
+        wavelength_2 = CryspyCalculator._parameter_value(
+            instrument,
+            'setup_wavelength_2',
+            0.0,
+        )
+        wavelength_ratio = CryspyCalculator._parameter_value(
+            instrument,
+            'setup_wavelength_2_to_1_ratio',
+            0.0,
+        )
+        if wavelength_2 > 0.0:
+            return wavelength_1, wavelength_2, wavelength_ratio
+        if wavelength_ratio > 0.0:
+            msg = (
+                'setup_wavelength_2_to_1_ratio requires a positive '
+                'setup_wavelength_2 value for Cryspy CW patterns.'
+            )
+            raise ValueError(msg)
+        return wavelength_1, wavelength_1, 0.0
+
+    @staticmethod
+    def _set_cw_wavelength(
+        cryspy_dict: dict[str, Any],
+        experiment: ExperimentBase,
+        wavelength: float,
+    ) -> None:
+        """Set the active CW wavelength in a Cryspy dictionary."""
+        cryspy_dict[f'pd_{experiment.name}']['wavelength'][0] = wavelength
+
+    @staticmethod
+    def _parameter_value(
+        source: object | None,
+        attribute_name: str,
+        default: float,
+    ) -> float:
+        """Return a category parameter value or fallback."""
+        if source is None or not hasattr(source, attribute_name):
+            return default
+        return float(getattr(source, attribute_name).value)
 
     def last_powder_refln_records(
         self,

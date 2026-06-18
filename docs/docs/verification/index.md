@@ -48,6 +48,10 @@ and so on. The list below notes only what is specific to each page.
   reciprocal, non-normalised texture convention.
 - [PbSO₄ `pd-neut-cwl` (pseudo-Voigt)](pd-neut-cwl_pv_pbso4.ipynb) –
   Anglesite (PbSO₄, _Pnma_); pseudo-Voigt, no asymmetry.
+- [PbSO₄ `pd-neut-cwl` from X-ray geometry](pd-neut-cwl_pv-xray-geometry_pbso4.ipynb)
+  – Diagnostic neutron conversion of the X-ray single-wavelength PCR.
+  Known discrepancy: changing only the FullProf radiation mode to
+  neutron does not reproduce the expected Cryspy agreement.
 - [PbSO₄ `pd-neut-cwl` (Bérar–Baldinozzi asymmetry)](pd-neut-cwl_pv-beba_pbso4.ipynb)
   – Anglesite (PbSO₄, _Pnma_); pseudo-Voigt with Bérar–Baldinozzi
   (FullProf-style) axial-divergence asymmetry (`asym_beba_*`). cryspy
@@ -104,11 +108,18 @@ and so on. The list below notes only what is specific to each page.
 
 - [PbSO₄ `pd-xray`](pd-xray-pbso4.ipynb) – Anglesite (PbSO₄, _Pnma_);
   laboratory Cu-source X-ray Rietveld Round Robin data; pseudo-Voigt.
-  Known discrepancy: FullProf models the full Cu Kα₁/Kα₂ doublet and its
-  X-ray Lorentz–polarization correction, whereas cryspy and crysfml
-  calculate from a single wavelength and a different polarization
-  convention, so neither engine yet reproduces the FullProf X-ray
-  profile.
+  Known discrepancy: FullProf and Cryspy use different Cu Kα anomalous
+  dispersion values, especially Pb f′, and FullProf truncates peak
+  tails with Wdt.
+- [PbSO₄ `pd-xray` single wavelength](pd-xray-pbso4-single.ipynb) –
+  diagnostic single-wavelength FullProf reference for the same
+  anglesite model. Known discrepancy: removing the Cu Kα₁/Kα₂ doublet
+  leaves the anomalous-dispersion and Wdt tail-truncation mismatch.
+- [PbSO₄ `pd-xray` single wavelength, Wdt 48, aligned f′](pd-xray-pbso4-single-unpolarized-wdt48-aligned.ipynb) –
+  diagnostic single-wavelength FullProf reference with `Rpolarz = 0`,
+  `Cthm = 0`, and `Wdt = 48`. Cryspy's Cu Kα anomalous-dispersion table
+  and scale are locally aligned to FullProf, and the profile agrees
+  within tolerance.
 
 ## Single crystal, neutron, constant wavelength
 
