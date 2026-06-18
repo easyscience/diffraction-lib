@@ -1,8 +1,6 @@
 # %% [markdown]
 # # PbSO₄ — neutron powder, constant wavelength, Bérar–Baldinozzi asymmetry
 #
-# **Note — cryspy vs FullProf.**
-#
 # cryspy and FullProf implement the
 # Bérar–Baldinozzi empirical asymmetry with different conventions: an
 # overall sign and a coefficient inside the `F_b` term differ between the
@@ -91,8 +89,8 @@ project.structures.add(structure)
 FULLPROF_PROJECT_DIR = 'pd-neut-cwl_pv-beba_pbso4'
 FULLPROF_PRF_FILE = 'pbso4.prf'
 FULLPROF_SUM_FILE = 'pbso4.sum'
-FULLPROF_LABEL = verify.fullprof_label(FULLPROF_PROJECT_DIR, FULLPROF_SUM_FILE)
 FULLPROF_BAC_FILE = 'pbso4.bac'
+FULLPROF_LABEL = verify.fullprof_label(FULLPROF_PROJECT_DIR, FULLPROF_SUM_FILE)
 FULLPROF_ZERO = -0.08424  # FullProf Zero
 FULLPROF_SCALE = 1.463815  # FullProf Scale
 FULLPROF_WAVELENGTH = 1.912000  # FullProf Lambda
@@ -137,8 +135,6 @@ experiment.peak.broad_gauss_v = FULLPROF_V
 experiment.peak.broad_gauss_w = FULLPROF_W
 experiment.peak.broad_lorentz_x = FULLPROF_X
 experiment.peak.broad_lorentz_y = FULLPROF_Y
-# The Berar-Baldinozzi asymmetry coefficients (cryspy only) are set in
-# the cryspy section below; crysfml has no empirical-asymmetry model.
 
 project.experiments.add(experiment)
 
@@ -152,6 +148,7 @@ experiment.peak.broad_gauss_v = FULLPROF_V
 experiment.peak.broad_gauss_w = FULLPROF_W
 experiment.peak.broad_lorentz_x = FULLPROF_X
 experiment.peak.broad_lorentz_y = FULLPROF_Y
+# crysfml has no Berar-Baldinozzi empirical asymmetry model.
 experiment.peak.asym_beba_a0 = FULLPROF_ASY_1
 experiment.peak.asym_beba_b0 = FULLPROF_ASY_2
 experiment.peak.asym_beba_a1 = FULLPROF_ASY_3

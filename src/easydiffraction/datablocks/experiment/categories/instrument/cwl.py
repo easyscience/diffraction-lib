@@ -2,6 +2,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
 """Constant-wavelength powder and single-crystal instruments."""
 
+from __future__ import annotations
+
 from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.metadata import CalculatorSupport
 from easydiffraction.core.metadata import Compatibility
@@ -14,6 +16,7 @@ from easydiffraction.datablocks.experiment.categories.instrument.base import Ins
 from easydiffraction.datablocks.experiment.categories.instrument.factory import InstrumentFactory
 from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
+from easydiffraction.datablocks.experiment.item.enums import RadiationProbeEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 from easydiffraction.io.cif.handler import TagSpec
@@ -164,29 +167,11 @@ class CwlScInstrument(CwlInstrumentBase):
         super().__init__()
 
 
-@InstrumentFactory.register
-class CwlPdInstrument(CwlInstrumentBase):
-    """CW powder diffractometer."""
-
-    type_info = TypeInfo(
-        tag='cwl-pd',
-        description='CW powder diffractometer',
-    )
-    compatibility = Compatibility(
-        scattering_type=frozenset({ScatteringTypeEnum.BRAGG, ScatteringTypeEnum.TOTAL}),
-        beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH}),
-        sample_form=frozenset({SampleFormEnum.POWDER}),
-    )
-    calculator_support = CalculatorSupport(
-        calculators=frozenset({
-            CalculatorEnum.CRYSPY,
-            CalculatorEnum.CRYSFML,
-            CalculatorEnum.PDFFIT,
-        }),
-    )
+class CwlPdInstrumentBase(CwlInstrumentBase):
+    """Base class for CW powder diffractometers."""
 
     def __init__(self) -> None:
-        """Initialize the CW powder diffractometer."""
+        """Initialize the CW powder diffractometer base."""
         super().__init__()
 
         self._calib_twotheta_offset: Parameter = Parameter(
@@ -293,3 +278,127 @@ class CwlPdInstrument(CwlInstrumentBase):
     def calib_sample_transparency(self, value: float) -> None:
         """Set the sample-transparency correction (deg)."""
         self._calib_sample_transparency.value = value
+
+
+@InstrumentFactory.register
+class CwlPdNeutronInstrument(CwlPdInstrumentBase):
+    """CW neutron powder diffractometer."""
+
+    type_info = TypeInfo(
+        tag='cwl-pd-neutron',
+        description='CW neutron powder diffractometer',
+    )
+    compatibility = Compatibility(
+        scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
+        beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH}),
+        sample_form=frozenset({SampleFormEnum.POWDER}),
+        radiation_probe=frozenset({RadiationProbeEnum.NEUTRON}),
+    )
+    calculator_support = CalculatorSupport(
+        calculators=frozenset({
+            CalculatorEnum.CRYSPY,
+            CalculatorEnum.CRYSFML,
+        }),
+    )
+
+    def __init__(self) -> None:
+        """Initialize the CW neutron powder diffractometer."""
+        super().__init__()
+
+
+@InstrumentFactory.register
+class CwlPdXrayInstrument(CwlPdInstrumentBase):
+    """CW X-ray powder diffractometer."""
+
+    type_info = TypeInfo(
+        tag='cwl-pd-xray',
+        description='CW X-ray powder diffractometer',
+    )
+    compatibility = Compatibility(
+        scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
+        beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH}),
+        sample_form=frozenset({SampleFormEnum.POWDER}),
+        radiation_probe=frozenset({RadiationProbeEnum.XRAY}),
+    )
+    calculator_support = CalculatorSupport(
+        calculators=frozenset({
+            CalculatorEnum.CRYSPY,
+            CalculatorEnum.CRYSFML,
+        }),
+    )
+
+    def __init__(self) -> None:
+        """Initialize the CW X-ray powder diffractometer."""
+        super().__init__()
+
+        self._setup_polarization_coefficient: NumericDescriptor = NumericDescriptor(
+            name='polarization_coefficient',
+            description='CW Lorentz-polarization coefficient',
+            units='',
+            display_handler=DisplayHandler(
+                display_name='Polarization coefficient',
+                display_units='',
+                latex_name='Polarization coefficient',
+                latex_units='',
+            ),
+            value_spec=AttributeSpec(
+                default=0.0,
+                validator=RangeValidator(ge=0.0, le=1.0),
+            ),
+            tags=TagSpec(
+                edi_names=['_instrument.setup_polarization_coefficient'],
+                cif_names=['_instr.polarization_coefficient'],
+            ),
+        )
+
+        self._setup_monochromator_twotheta: NumericDescriptor = NumericDescriptor(
+            name='monochromator_twotheta',
+            description='Pre-specimen monochromator 2theta angle',
+            units='degrees',
+            display_handler=DisplayHandler(
+                display_name='Monochromator 2θ',
+                display_units='deg',
+                latex_name=r'Monochromator $2\theta$',
+                latex_units=r'\mathrm{deg}',
+            ),
+            value_spec=AttributeSpec(
+                default=0.0,
+                validator=RangeValidator(ge=0.0, lt=180.0),
+            ),
+            tags=TagSpec(
+                edi_names=['_instrument.setup_monochromator_twotheta'],
+                cif_names=['_instr.monochromator_twotheta'],
+            ),
+        )
+
+    @property
+    def setup_polarization_coefficient(self) -> NumericDescriptor:
+        """
+        CW Lorentz-polarization coefficient.
+
+        Reading returns the underlying ``NumericDescriptor``; assigning
+        a number updates its value. Default ``0.0`` disables the
+        polarization correction.
+        """
+        return self._setup_polarization_coefficient
+
+    @setup_polarization_coefficient.setter
+    def setup_polarization_coefficient(self, value: float) -> None:
+        """Set the CW Lorentz-polarization coefficient."""
+        self._setup_polarization_coefficient.value = value
+
+    @property
+    def setup_monochromator_twotheta(self) -> NumericDescriptor:
+        """
+        Pre-specimen monochromator 2theta angle (deg).
+
+        Reading returns the underlying ``NumericDescriptor``; assigning
+        a number updates its value. Default ``0.0`` means no
+        monochromator.
+        """
+        return self._setup_monochromator_twotheta
+
+    @setup_monochromator_twotheta.setter
+    def setup_monochromator_twotheta(self, value: float) -> None:
+        """Set the pre-specimen monochromator 2theta angle (deg)."""
+        self._setup_monochromator_twotheta.value = value

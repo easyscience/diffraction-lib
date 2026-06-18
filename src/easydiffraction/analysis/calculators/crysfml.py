@@ -11,6 +11,7 @@ from typing import Any
 import numpy as np
 
 from easydiffraction.analysis.calculators import absorption as absorption_correction
+from easydiffraction.analysis.calculators import polarization as polarization_correction
 from easydiffraction.analysis.calculators.base import CalculatorBase
 from easydiffraction.analysis.calculators.factory import CalculatorFactory
 from easydiffraction.core.metadata import TypeInfo
@@ -167,7 +168,9 @@ class CrysfmlCalculator(CalculatorBase):
         except KeyError:
             log.warning('[CrysfmlCalculator] No calculated data')
             y = []
-        return np.asarray(absorption_correction.apply(y, experiment))
+        y = absorption_correction.apply(y, experiment)
+        y = polarization_correction.apply(y, experiment)
+        return np.asarray(y)
 
     def _calculate_adjusted_pattern(
         self,

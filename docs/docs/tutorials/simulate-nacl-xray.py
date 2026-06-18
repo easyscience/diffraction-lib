@@ -14,6 +14,8 @@
 # ## 🛠️ Import Library
 
 # %%
+import numpy as np
+
 import easydiffraction as edi
 
 # %% [markdown]
@@ -102,6 +104,28 @@ experiment.linked_structures.create(structure_id='nacl', scale=1.0)
 print('min:', experiment.data_range.two_theta_min.value)
 print('max:', experiment.data_range.two_theta_max.value)
 print('inc:', experiment.data_range.two_theta_inc.value)
+
+# %% [markdown]
+# ### Set X-ray Polarization Optics
+#
+# The polarization coefficient defaults to `0.0`. Setting it to a
+# nonzero value includes the Lorentz-polarization optics in the
+# calculated X-ray intensities.
+
+# %%
+project.analysis.calculate()
+unpolarized_intensity = np.asarray(experiment.data.intensity_calc).copy()
+
+# %%
+experiment.instrument.setup_polarization_coefficient = 0.5
+experiment.instrument.setup_monochromator_twotheta = 26.5650511771
+
+# %%
+project.analysis.calculate()
+polarized_intensity = np.asarray(experiment.data.intensity_calc).copy()
+
+# %%
+print('max intensity change:', np.max(np.abs(polarized_intensity - unpolarized_intensity)))
 
 # %% [markdown]
 # ## 🚀 Perform Calculation
