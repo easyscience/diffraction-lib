@@ -69,9 +69,6 @@ FULLPROF_V = -0.083053  # FullProf V
 FULLPROF_W = 0.040000  # FullProf W
 FULLPROF_X = 0.0  # FullProf X
 FULLPROF_Y = 0.049268  # FullProf Y
-FULLPROF_WDT = 48.0  # FullProf Wdt
-FULLPROF_POLARIZATION_COEFFICIENT = 0.0  # FullProf Rpolarz
-FULLPROF_CTHM = 0.0  # FullProf Cthm
 FULLPROF_MU_R = 0.9  # FullProf muR
 
 x, calc_fullprof = verify.load_fullprof_calc_profile(
@@ -159,4 +156,3 @@ verify.assert_patterns_agree(
 )
 
 # %%
-

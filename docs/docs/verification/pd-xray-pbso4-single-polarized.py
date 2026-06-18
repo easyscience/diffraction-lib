@@ -101,7 +101,6 @@ FULLPROF_V = -0.083053  # FullProf V
 FULLPROF_W = 0.035188  # FullProf W
 FULLPROF_X = 0.0  # FullProf X
 FULLPROF_Y = 0.049268  # FullProf Y
-FULLPROF_WDT = 48.0  # FullProf Wdt
 FULLPROF_POLARIZATION_COEFFICIENT = 0.5  # FullProf Rpolarz
 FULLPROF_CTHM = 0.8  # FullProf Cthm
 

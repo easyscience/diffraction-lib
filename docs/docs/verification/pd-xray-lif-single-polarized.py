@@ -68,11 +68,9 @@ FULLPROF_V = -0.083053  # FullProf V
 FULLPROF_W = 0.040000  # FullProf W
 FULLPROF_X = 0.0  # FullProf X
 FULLPROF_Y = 0.049268  # FullProf Y
-FULLPROF_WDT = 48.0  # FullProf Wdt
 FULLPROF_POLARIZATION_COEFFICIENT = 0.5  # FullProf Rpolarz
 FULLPROF_CTHM = 0.8  # FullProf Cthm
 FULLPROF_MONOCHROMATOR_TWOTHETA = 26.5650511771
-FULLPROF_MU_R = 0.0  # FullProf muR
 
 x, calc_fullprof = verify.load_fullprof_calc_profile(
     FULLPROF_PROJECT_DIR,
