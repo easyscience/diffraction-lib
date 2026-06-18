@@ -73,8 +73,8 @@ project.structures.add(structure)
 FULLPROF_PROJECT_DIR = 'pd-neut-cwl_pv_lbco'
 FULLPROF_PRF_FILE = 'lbco.prf'
 FULLPROF_SUM_FILE = 'lbco.sum'
-FULLPROF_LABEL = verify.fullprof_label(FULLPROF_PROJECT_DIR, FULLPROF_SUM_FILE)
 FULLPROF_BAC_FILE = 'lbco.bac'
+FULLPROF_LABEL = verify.fullprof_label(FULLPROF_PROJECT_DIR, FULLPROF_SUM_FILE)
 FULLPROF_ZERO = 0.62040  # FullProf Zero
 FULLPROF_SCALE = 9.405870  # FullProf Scale
 FULLPROF_WAVELENGTH = 1.494000  # FullProf Lambda

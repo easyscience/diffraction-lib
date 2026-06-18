@@ -17,6 +17,7 @@
 │   │   │   └── 🏷️ class CalculatorFactory
 │   │   ├── 📄 pdffit.py
 │   │   │   └── 🏷️ class PdffitCalculator
+│   │   ├── 📄 polarization.py
 │   │   └── 📄 support.py
 │   │       └── 🏷️ class SupportEntry
 │   ├── 📁 categories
@@ -373,7 +374,9 @@
 │   │   │   │   ├── 📄 cwl.py
 │   │   │   │   │   ├── 🏷️ class CwlInstrumentBase
 │   │   │   │   │   ├── 🏷️ class CwlScInstrument
-│   │   │   │   │   └── 🏷️ class CwlPdInstrument
+│   │   │   │   │   ├── 🏷️ class CwlPdInstrumentBase
+│   │   │   │   │   ├── 🏷️ class CwlPdNeutronInstrument
+│   │   │   │   │   └── 🏷️ class CwlPdXrayInstrument
 │   │   │   │   ├── 📄 factory.py
 │   │   │   │   │   └── 🏷️ class InstrumentFactory
 │   │   │   │   └── 📄 tof.py

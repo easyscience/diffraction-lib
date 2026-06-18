@@ -318,15 +318,17 @@ def test_beta_atom_round_trips_through_cif():
 def test_cwl_second_wavelength_round_trips_through_cif():
     import gemmi
 
-    from easydiffraction.datablocks.experiment.categories.instrument.cwl import CwlPdInstrument
+    from easydiffraction.datablocks.experiment.categories.instrument.cwl import (
+        CwlPdNeutronInstrument,
+    )
 
-    instr = CwlPdInstrument()
+    instr = CwlPdNeutronInstrument()
     instr.setup_wavelength = 1.5406
     instr.setup_wavelength_2 = 1.5444
     instr.setup_wavelength_2_to_1_ratio = 0.5
 
     block = gemmi.cif.read_string('data_x\n' + instr.as_cif + '\n').sole_block()
-    restored = CwlPdInstrument()
+    restored = CwlPdNeutronInstrument()
     restored.from_cif(block)
 
     assert restored.setup_wavelength_2.value == 1.5444
@@ -336,15 +338,17 @@ def test_cwl_second_wavelength_round_trips_through_cif():
 def test_cwl_disabled_second_wavelength_preserves_value_through_cif():
     import gemmi
 
-    from easydiffraction.datablocks.experiment.categories.instrument.cwl import CwlPdInstrument
+    from easydiffraction.datablocks.experiment.categories.instrument.cwl import (
+        CwlPdNeutronInstrument,
+    )
 
     # Disabled state (ratio == 0) still persists the recorded λ₂.
-    instr = CwlPdInstrument()
+    instr = CwlPdNeutronInstrument()
     instr.setup_wavelength = 1.5406
     instr.setup_wavelength_2 = 1.5444
 
     block = gemmi.cif.read_string('data_x\n' + instr.as_cif + '\n').sole_block()
-    restored = CwlPdInstrument()
+    restored = CwlPdNeutronInstrument()
     restored.from_cif(block)
 
     assert restored.setup_wavelength_2.value == 1.5444

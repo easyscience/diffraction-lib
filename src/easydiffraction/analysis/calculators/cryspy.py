@@ -13,6 +13,7 @@ from typing import Any
 import numpy as np
 
 from easydiffraction.analysis.calculators import absorption as absorption_correction
+from easydiffraction.analysis.calculators import polarization as polarization_correction
 from easydiffraction.analysis.calculators.base import CalculatorBase
 from easydiffraction.analysis.calculators.base import PowderReflnRecord
 from easydiffraction.analysis.calculators.factory import CalculatorFactory
@@ -72,6 +73,7 @@ class CryspyCalculator(CalculatorBase):
         self._cached_peak_types: dict[str, str] = {}
         self._cached_adp_types: dict[str, tuple[str, ...]] = {}
         self._cached_pref_orient: dict[str, tuple] = {}
+        self._cached_polarization_settings: dict[str, tuple[float, float] | None] = {}
         self._last_powder_phase_blocks: dict[str, dict[str, Any] | None] = {}
 
     def _invalidate_stale_cache(
@@ -83,10 +85,10 @@ class CryspyCalculator(CalculatorBase):
         """
         Drop cached dict when experiment or structure config changed.
 
-        Checks the peak profile type, the per-atom ADP types, and the
-        preferred-orientation row identities. When any changes the
-        cached dictionary is stale and must be rebuilt from a fresh
-        cryspy object.
+        Checks the peak profile type, per-atom ADP types,
+        preferred-orientation row identities, and polarization optics.
+        When any changes the cached dictionary is stale and must be
+        rebuilt from a fresh cryspy object.
         """
         if 'peak' in type(experiment)._public_attrs():
             current_type = experiment.peak.type_info.tag
@@ -118,6 +120,11 @@ class CryspyCalculator(CalculatorBase):
             if self._cached_pref_orient.get(combined_name) != current_pref_orient:
                 self._cryspy_dicts.pop(combined_name, None)
             self._cached_pref_orient[combined_name] = current_pref_orient
+
+        current_polarization = _polarization_settings(experiment)
+        if self._cached_polarization_settings.get(combined_name) != current_polarization:
+            self._cryspy_dicts.pop(combined_name, None)
+        self._cached_polarization_settings[combined_name] = current_polarization
 
         if structure is not None:
             current_adp = tuple(atom.adp_type.value for atom in structure.atom_sites)
@@ -711,6 +718,10 @@ class CryspyCalculator(CalculatorBase):
                     cryspy_expt_dict['offset_sysin'][0] = (
                         experiment.instrument.calib_sample_transparency.value
                     )
+                _update_polarization_in_cryspy_dict(
+                    cryspy_expt_dict,
+                    experiment.instrument,
+                )
 
                 # Peak
                 cryspy_resolution = cryspy_expt_dict['resolution_parameters']
@@ -1157,6 +1168,73 @@ def _cif_instrument_section(
         attr_obj = getattr(instrument, local_attr_name)
         if attr_obj is not None:
             cif_lines.append(f'{engine_key_name} {attr_obj.value}')
+
+    _cif_polarization_section(cif_lines, instrument)
+
+
+def _cif_polarization_section(
+    cif_lines: list[str],
+    instrument: object,
+) -> None:
+    """Append native Cryspy polarization setup lines when available."""
+    settings = _polarization_settings_from_instrument(instrument)
+    if settings is None:
+        return
+    coefficient, monochromator_twotheta = settings
+    cthm = polarization_correction.monochromator_cthm(monochromator_twotheta)
+    cif_lines.extend((f'_setup_K {coefficient}', f'_setup_cthm {cthm}'))
+
+
+def _polarization_settings(experiment: object) -> tuple[float, float] | None:
+    """Return polarization settings from an experiment, if present."""
+    instrument = getattr(experiment, 'instrument', None)
+    return _polarization_settings_from_instrument(instrument)
+
+
+def _polarization_settings_from_instrument(
+    instrument: object | None,
+) -> tuple[float, float] | None:
+    """Return polarization settings from an instrument, if present."""
+    if not hasattr(instrument, 'setup_polarization_coefficient'):
+        return None
+    return (
+        instrument.setup_polarization_coefficient.value,
+        instrument.setup_monochromator_twotheta.value,
+    )
+
+
+def _update_polarization_in_cryspy_dict(
+    cryspy_expt_dict: dict[str, Any],
+    instrument: object,
+) -> None:
+    """Patch native Cryspy polarization setup keys when exposed."""
+    settings = _polarization_settings_from_instrument(instrument)
+    if settings is None:
+        return
+    coefficient, monochromator_twotheta = settings
+    if 'k' in cryspy_expt_dict:
+        _set_cryspy_scalar(cryspy_expt_dict, 'k', coefficient)
+    if 'cthm' in cryspy_expt_dict:
+        _set_cryspy_scalar(
+            cryspy_expt_dict,
+            'cthm',
+            polarization_correction.monochromator_cthm(monochromator_twotheta),
+        )
+
+
+def _set_cryspy_scalar(
+    cryspy_expt_dict: dict[str, Any],
+    key: str,
+    value: float,
+) -> None:
+    """
+    Set a Cryspy scalar stored either directly or in a 1-item array.
+    """
+    target = cryspy_expt_dict[key]
+    if isinstance(target, (np.ndarray, list)):
+        target[0] = value
+        return
+    cryspy_expt_dict[key] = value
 
 
 def _update_tof_peak_in_cryspy_dict(

@@ -8,7 +8,9 @@ from typing import ClassVar
 
 from easydiffraction.core.factory import FactoryBase
 from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+from easydiffraction.datablocks.experiment.item.enums import RadiationProbeEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
+from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 
 
 class InstrumentFactory(FactoryBase):
@@ -18,7 +20,15 @@ class InstrumentFactory(FactoryBase):
         frozenset({
             ('beam_mode', BeamModeEnum.CONSTANT_WAVELENGTH),
             ('sample_form', SampleFormEnum.POWDER),
-        }): 'cwl-pd',
+            ('scattering_type', ScatteringTypeEnum.BRAGG),
+            ('radiation_probe', RadiationProbeEnum.NEUTRON),
+        }): 'cwl-pd-neutron',
+        frozenset({
+            ('beam_mode', BeamModeEnum.CONSTANT_WAVELENGTH),
+            ('sample_form', SampleFormEnum.POWDER),
+            ('scattering_type', ScatteringTypeEnum.BRAGG),
+            ('radiation_probe', RadiationProbeEnum.XRAY),
+        }): 'cwl-pd-xray',
         frozenset({
             ('beam_mode', BeamModeEnum.CONSTANT_WAVELENGTH),
             ('sample_form', SampleFormEnum.SINGLE_CRYSTAL),
