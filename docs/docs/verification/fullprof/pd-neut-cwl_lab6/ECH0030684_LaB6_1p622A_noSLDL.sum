@@ -8,7 +8,7 @@
                  Refinement of X-ray and/or Neutron Data
 
 
-    Date: 12/06/2026  Time: 14:15:20.812                              
+    Date: 18/06/2026  Time: 16:40:54.005                              
 
  => PCR file code: ECH0030684_LaB6_1p622A_noSLDL
  => DAT file code: ECH0030684_LaB6_1p62 -> Relative contribution: 1.0000                                                            
@@ -31,7 +31,7 @@
  =>-------> Pattern#  1
  => Crystal Structure Refinement for phase: 1
  => The density (volumic mass) of phase 1 is:    4.711 g/cm3
- => Scor: 4.0979
+ => Scor: 3.6218
 
  ==> RESULTS OF REFINEMENT:
 
@@ -100,44 +100,44 @@
                               -329.24      0.0000    
                                0.0000      0.0000    
  
- => Cos(2theta)-shift parameter :   0.0528  0.0000
- => Sin(2theta)-shift parameter :   0.0907  0.0000
+ => Cos(2theta)-shift parameter :   0.0000  0.0000
+ => Sin(2theta)-shift parameter :   0.0000  0.0000
 
  ==> RELIABILITY FACTORS WITH ALL NON-EXCLUDED POINTS FOR PATTERN:  1
 
   => Cycle:  1 => MaxCycle:200
  => N-P+C:  3076
  =>  R-factors (not corrected for background) for Pattern:  1
- => Rp:  16.7     Rwp:  23.6     Rexp:    2.76 Chi2:  73.0      L.S. refinement
+ => Rp:  17.5     Rwp:  27.5     Rexp:    2.76 Chi2:  99.6      L.S. refinement
  => Conventional Rietveld R-factors for Pattern:  1
- => Rp:  33.1     Rwp:  40.1     Rexp:    4.69 Chi2:  73.0    
- => Deviance:  0.335E+06     Dev*  :   108.8    
- => DW-Stat.:    0.0683     DW-exp:     1.8880
- => N-sigma of the GoF:     2823.015
+ => Rp:  34.8     Rwp:  46.8     Rexp:    4.69 Chi2:  99.6    
+ => Deviance:  0.407E+06     Dev*  :   132.3    
+ => DW-Stat.:    0.0754     DW-exp:     1.8880
+ => N-sigma of the GoF:     3866.437
 
  ==> RELIABILITY FACTORS FOR POINTS WITH BRAGG CONTRIBUTIONS FOR PATTERN:  1
 
- => N-P+C:  2989
+ => N-P+C:  2991
  =>  R-factors (not corrected for background) for Pattern:  1
- => Rp:  16.8     Rwp:  23.7     Rexp:    2.74 Chi2:  75.1      L.S. refinement
+ => Rp:  17.7     Rwp:  27.7     Rexp:    2.74 Chi2:  102.      L.S. refinement
  => Conventional Rietveld R-factors for Pattern:  1
- => Rp:  33.0     Rwp:  40.1     Rexp:    4.62 Chi2:  75.1    
- => Deviance:  0.335E+06     Dev*  :   111.9    
- => DW-Stat.:    0.0683     DW-exp:     1.8863
- => N-sigma of the GoF:     2863.702
+ => Rp:  34.7     Rwp:  46.8     Rexp:    4.62 Chi2:  102.    
+ => Deviance:  0.407E+06     Dev*  :   136.1    
+ => DW-Stat.:    0.0754     DW-exp:     1.8864
+ => N-sigma of the GoF:     3920.902
 
- => Global user-weigthed Chi2 (Bragg contrib.):   75.1    
+ => Global user-weigthed Chi2 (Bragg contrib.):   102.    
 
      -----------------------------------------------------
      BRAGG R-Factors and weight fractions for Pattern #  1
      -----------------------------------------------------
 
  => Phase:  1     nuclear
- => Bragg R-factor:   3.57       Vol:   71.830( 0.000)  Fract(%):  100.00( 0.00)
- => Rf-factor=  2.15             ATZ:         203.711   Brindley:  1.0000
+ => Bragg R-factor:   3.56       Vol:   71.830( 0.000)  Fract(%):  100.00( 0.00)
+ => Rf-factor=  2.16             ATZ:         203.711   Brindley:  1.0000
 
  
-              CPU Time:     0.859 seconds
-                            0.014 minutes
+              CPU Time:     0.170 seconds
+                            0.003 minutes
 
- => Run finished at:     Date: 12/06/2026  Time: 14:15:21.675                              
+ => Run finished at:     Date: 18/06/2026  Time: 16:40:54.175                              

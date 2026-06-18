@@ -264,7 +264,7 @@ nav:
           - LaB6 SyCos/SySin shifts: verification/pd-neut-cwl_lab6_sycos-sysin.ipynb
           - LaB6 FCJ asymmetry: verification/pd-neut-cwl_lab6_fcj-asymmetry.ipynb
           - LaB6 absorption: verification/pd-neut-cwl_lab6_absorption.ipynb
-          - LaB6 absorption + FCJ asymmetry: verification/pd-neut-cwl_lab6_absorption_fcj-asymmetry.ipynb
+          - LaB6 FCJ asymmetry isolated: verification/pd-neut-cwl_lab6_absorption_fcj-asymmetry.ipynb
           - Y2O3 beta ADPs: verification/pd-neut-cwl_y2o3_beta-adp.ipynb
       - Powder, neutron, time-of-flight:
           - Si Jorgensen profile: verification/pd-neut-tof_si_jorgensen.ipynb

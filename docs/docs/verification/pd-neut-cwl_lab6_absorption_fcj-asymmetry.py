@@ -1,8 +1,8 @@
 # %% [markdown]
-# # LaB₆ — powder neutron CW — absorption + FCJ asymmetry
+# # LaB₆ — powder neutron CW — FCJ asymmetry
 #
-# Verifies the combined Debye-Scherrer absorption and
-# Finger-Cox-Jephcoat asymmetry reference for LaB₆.
+# Verifies the Finger-Cox-Jephcoat axial-divergence asymmetry reference
+# for LaB₆ with absorption and sample-shift corrections disabled.
 
 # %%
 import easydiffraction as edi
@@ -62,11 +62,8 @@ FULLPROF_V = -0.375792  # FullProf V
 FULLPROF_W = 0.476524  # FullProf W
 FULLPROF_X = 0.0  # FullProf X
 FULLPROF_Y = 0.052425  # FullProf Y
-FULLPROF_SYCOS = 0.05281  # FullProf SyCos
-FULLPROF_SYSIN = 0.09068  # FullProf SySin
 FULLPROF_S_L = 0.08000  # FullProf S_L
 FULLPROF_D_L = 0.08000  # FullProf D_L
-FULLPROF_MU_R = 0.7  # FullProf muR (cylindrical absorption)
 
 x, calc_fullprof = verify.load_fullprof_calc_profile(
     FULLPROF_PROJECT_DIR,
@@ -98,14 +95,7 @@ experiment.peak.broad_gauss_v = FULLPROF_V
 experiment.peak.broad_gauss_w = FULLPROF_W
 experiment.peak.broad_lorentz_x = FULLPROF_X
 experiment.peak.broad_lorentz_y = FULLPROF_Y
-# Engine-specific corrections are applied in each engine's section below:
-# SyCos/SySin (cryspy only) and the FCJ S_L/D_L asymmetry (crysfml only).
-
-# Sample absorption (Debye-Scherrer cylinder, muR = 0.7) is modelled by
-# both engines via the calculator-independent A(theta) envelope, so it is
-# set once here and applies to every calculation below.
-experiment.absorption.type = 'cylinder-hewat'
-experiment.absorption.mu_r = FULLPROF_MU_R
+# The FCJ S_L/D_L asymmetry is applied in the crysfml section below.
 
 project.experiments.add(experiment)
 
@@ -114,9 +104,6 @@ project.experiments.add(experiment)
 
 # %%
 experiment.calculator.type = 'cryspy'
-
-experiment.instrument.calib_sample_displacement = FULLPROF_SYCOS
-experiment.instrument.calib_sample_transparency = FULLPROF_SYSIN
 
 project.analysis.calculate()
 calc_ed_cryspy = experiment.data.intensity_calc
@@ -136,8 +123,6 @@ project.display.pattern_comparison(
 # %%
 experiment.linked_structures['lab6'].scale.free = True
 experiment.instrument.calib_twotheta_offset.free = True
-experiment.instrument.calib_sample_displacement.free = True
-experiment.instrument.calib_sample_transparency.free = True
 
 project.analysis.fit()
 project.display.fit.results()
@@ -191,9 +176,6 @@ project.display.pattern_comparison(
 experiment.linked_structures['lab6'].scale.free = True
 experiment.instrument.calib_twotheta_offset.free = True
 
-experiment.instrument.calib_sample_displacement.free = False
-experiment.instrument.calib_sample_transparency.free = False
-
 project.analysis.fit()
 project.display.fit.results()
 
@@ -219,8 +201,5 @@ verify.assert_patterns_agree(
         (f'{LABEL_ED_CRYSFML} vs {FULLPROF_LABEL}', calc_fullprof, calc_ed_crysfml),
     ],
     known_discrepancy=True,
-    reason=(
-        'FCJ asymmetry (S_L/D_L) is not implemented in cryspy; '
-        'absorption is modelled by both engines.'
-    ),
+    reason='FCJ asymmetry (S_L/D_L) does not yet match FullProf for these backends.',
 )

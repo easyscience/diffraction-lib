@@ -62,8 +62,6 @@ FULLPROF_V = -0.375792  # FullProf V
 FULLPROF_W = 0.476524  # FullProf W
 FULLPROF_X = 0.0  # FullProf X
 FULLPROF_Y = 0.052425  # FullProf Y
-FULLPROF_SYCOS = 0.05281  # FullProf SyCos
-FULLPROF_SYSIN = 0.09068  # FullProf SySin
 FULLPROF_MU_R = 0.7  # FullProf muR (cylindrical absorption)
 
 x, calc_fullprof = verify.load_fullprof_calc_profile(
@@ -98,8 +96,7 @@ experiment.peak.broad_lorentz_x = FULLPROF_X
 experiment.peak.broad_lorentz_y = FULLPROF_Y
 
 # Sample absorption (Debye-Scherrer cylinder, muR = 0.7) is modelled by
-# both engines via the calculator-independent A(theta) envelope. No FCJ
-# asymmetry is applied (the reference has S_L = D_L = 0).
+# both engines via the calculator-independent A(theta) envelope.
 experiment.absorption.type = 'cylinder-hewat'
 experiment.absorption.mu_r = FULLPROF_MU_R
 
@@ -110,9 +107,6 @@ project.experiments.add(experiment)
 
 # %%
 experiment.calculator.type = 'cryspy'
-
-experiment.instrument.calib_sample_displacement = FULLPROF_SYCOS
-experiment.instrument.calib_sample_transparency = FULLPROF_SYSIN
 
 project.analysis.calculate()
 calc_ed_cryspy = experiment.data.intensity_calc
@@ -155,18 +149,10 @@ project.display.pattern_comparison(
 # %% [markdown]
 # ## Agreement check
 #
-# Only ed-cryspy is asserted (see the note at the top): enabling the
-# `cylinder-hewat` absorption restores the intensity scale, but a residual
-# peak-position discrepancy persists on the released cryspy (needs PR #46),
-# so the page is marked `known_discrepancy=True`.
+# Only ed-cryspy is asserted here; this page isolates cylindrical
+# absorption without sample-shift or FCJ asymmetry corrections.
 
 # %%
-verify.assert_patterns_agree(
-    [
-        (f'{LABEL_ED_CRYSPY} vs {FULLPROF_LABEL}', calc_fullprof, calc_ed_cryspy),
-    ],
-    known_discrepancy=True,
-    reason=(
-        'absorption demo passes on develop cryspy; released cryspy needs PR #46 (SyCos/SySin)'
-    ),
-)
+verify.assert_patterns_agree([
+    (f'{LABEL_ED_CRYSPY} vs {FULLPROF_LABEL}', calc_fullprof, calc_ed_cryspy),
+])

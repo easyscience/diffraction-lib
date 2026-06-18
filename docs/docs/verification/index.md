@@ -26,8 +26,8 @@ inside the notebook.
   Finger-Cox-Jephcoat axial-divergence asymmetry reference.
 - [pd-neut-cwl LaB₆ absorption](pd-neut-cwl_lab6_absorption.ipynb) – verifies
   Debye-Scherrer absorption with FCJ asymmetry disabled.
-- [pd-neut-cwl LaB₆ absorption + FCJ asymmetry](pd-neut-cwl_lab6_absorption_fcj-asymmetry.ipynb)
-  – verifies the combined absorption and FCJ reference.
+- [pd-neut-cwl LaB₆ FCJ asymmetry isolated](pd-neut-cwl_lab6_absorption_fcj-asymmetry.ipynb)
+  – verifies the isolated FCJ reference with absorption disabled.
 - [pd-neut-cwl Y₂O₃ beta ADPs](pd-neut-cwl_y2o3_beta-adp.ipynb) – verifies
   beta-tensor anisotropic ADPs with other correction models disabled.
 
