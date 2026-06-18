@@ -116,7 +116,7 @@ def test_cwl_cif_instrument_section_emits_sycos_sysin():
 
 def test_cwl_cif_instrument_section_emits_xray_polarization_setup():
     import easydiffraction.analysis.calculators.cryspy as MUT
-    from easydiffraction.analysis.calculators import polarization
+    from easydiffraction.analysis.corrections import polarization
     from easydiffraction.datablocks.experiment.categories.instrument.cwl import CwlPdXrayInstrument
     from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
     from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
@@ -178,7 +178,7 @@ def test_update_experiment_in_cryspy_dict_tolerates_missing_sycos_keys():
 
 
 def test_update_experiment_in_cryspy_dict_sets_polarization_keys():
-    from easydiffraction.analysis.calculators import polarization
+    from easydiffraction.analysis.corrections import polarization
     from easydiffraction.analysis.calculators.cryspy import CryspyCalculator
     from easydiffraction.datablocks.experiment.categories.instrument.cwl import CwlPdXrayInstrument
     from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
@@ -634,7 +634,7 @@ def _stub_cryspy_engine(monkeypatch, calc, block_payload):
 
 
 def test_cryspy_calculate_pattern_applies_absorption(monkeypatch):
-    from easydiffraction.analysis.calculators import absorption
+    from easydiffraction.analysis.corrections import absorption
     from easydiffraction.analysis.calculators.cryspy import CryspyCalculator
 
     calc = CryspyCalculator()

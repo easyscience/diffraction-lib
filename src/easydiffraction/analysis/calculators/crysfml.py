@@ -27,10 +27,10 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from easydiffraction.analysis.calculators import absorption as absorption_correction
-from easydiffraction.analysis.calculators import polarization as polarization_correction
 from easydiffraction.analysis.calculators.base import CalculatorBase
 from easydiffraction.analysis.calculators.factory import CalculatorFactory
+from easydiffraction.analysis.corrections import absorption as absorption_correction
+from easydiffraction.analysis.corrections import polarization as polarization_correction
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.crystallography import crystallography as ecr
 from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum

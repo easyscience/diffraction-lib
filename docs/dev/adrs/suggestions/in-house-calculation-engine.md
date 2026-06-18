@@ -49,7 +49,15 @@ keeps paying:
    never receives per-reflection integrated intensities, so it can only
    ever apply an _approximate_ point-wise correction; the exact
    per-reflection form requires owning the convolution, i.e. owning an
-   engine.
+   engine. This point-wise pattern has since materialised as a small but
+   growing backend-agnostic correction layer in
+   `analysis/corrections/`: `absorption.py` (issue 119) and now
+   `polarization.py` (the X-ray CW Lorentz–polarization factor), each an
+   `apply(y, experiment)` multiplier applied _after_ the backend returns
+   its convolved profile and shared by both `cryspy` and `crysfml`. Two
+   such corrections now accrete next to the backends, both necessarily
+   approximate for the reason above — concrete, shipped evidence of the
+   symptom this ADR addresses.
 3. **Divergence and opacity.** Cross-engine verification already records
    places where `cryspy` and `crysfml` disagree with FullProf and each
    other (open issues 130, 134). Debugging a black-box backend is harder
@@ -127,13 +135,17 @@ deliberately bounded initial scope.
 
 6. **The engine is the right home for owned corrections.** Corrections
    currently blocked on or awkward in the backends — sample absorption
-   (`μR`, issue 119), the exact per-reflection `SyCos`/`SySin` (issue
-   131), and basic preferred orientation — are implemented **inside**
-   the native engine with the physically exact per-reflection math,
-   since the engine owns the integrated intensities before convolution.
-   (A backend-agnostic _point-wise_ absorption approximation in the data
-   layer remains available for the external backends and is orthogonal
-   to this ADR.)
+   (`μR`, issue 119), the X-ray CW Lorentz–polarization factor
+   (currently the point-wise `polarization.apply` multiplier), the exact
+   per-reflection `SyCos`/`SySin` (issue 131), and basic preferred
+   orientation — are implemented **inside** the native engine with the
+   physically exact per-reflection math, since the engine owns the
+   integrated intensities before convolution. (The backend-agnostic
+   _point-wise_ approximations now living in `analysis/corrections/` —
+   `absorption.py` and `polarization.py` — remain available for the
+   external backends and are orthogonal to this ADR; the native engine
+   supersedes them with exact per-reflection math only on its own code
+   path, and does not relocate or remove them.)
 
 ## Consequences
 
@@ -174,7 +186,7 @@ deliberately bounded initial scope.
 | B   | **Fork or vendor an existing engine** (e.g. a `cryspy`/`crysfml` subset). | Rejected. Inherits the backend's complexity, build system, and licensing while still not being code we understand end to end.                                                                                    |
 | C   | **In-house engine targeting full parity** with the external backends.     | Rejected. Multi-year effort; the long tail (magnetic, polarized, extinction, total scattering) has poor cost/benefit and is well served by the backends.                                                         |
 | D   | **In-house core + keep backends for the frontier** (this ADR).            | **Chosen.** Owns the common 80% (neutron powder Rietveld), keeps backends for the rest, reuses all existing framework.                                                                                           |
-| E   | **Only point-wise corrections in the data layer**, no real engine.        | Insufficient as a strategy. Solves the immediate absorption case approximately but does not generalize to structure factors or profiles, and does not remove upstream blocking. Complementary, not a substitute. |
+| E   | **Only point-wise corrections in the data layer**, no real engine.        | Partially realised, complementary, not a substitute. `analysis/corrections/absorption.py` and `polarization.py` already ship this layer for the external backends, but each case is solved only approximately, it does not generalize to structure factors or profiles, and it does not remove upstream blocking. The native engine is still required for the exact per-reflection forms. |
 
 ## Deferred Work / Open Questions
 
@@ -198,7 +210,12 @@ deliberately bounded initial scope.
 6. **Explicitly out of initial scope.** Magnetic and polarized neutron
    scattering, single-crystal extinction/twinning, and total scattering
    (PDF) remain backend-only until separately revisited.
-7. **Relationship to the point-wise absorption correction.** Whether to
-   ship the backend-agnostic point-wise `A(2θ)` correction (issue 119)
-   first as an independent change, and let the native engine later
-   supersede it with the exact per-reflection form.
+7. **Relationship to the point-wise correction layer.** The
+   backend-agnostic point-wise corrections have now shipped —
+   `absorption.py` (`A(2θ)`, issue 119) and `polarization.py` (X-ray CW
+   Lorentz–polarization). Open: which of these the native engine
+   supersedes with the exact per-reflection form, and in what order. The
+   point-wise modules are expected to **stay** as the permanent
+   correction path for the external backends (`cryspy`/`crysfml` still
+   need them), so the native engine reimplements the exact forms on its
+   own path rather than relocating the modules.

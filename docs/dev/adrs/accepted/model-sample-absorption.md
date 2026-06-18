@@ -170,7 +170,7 @@ y_corrected(2θ_i) = A(θ_i) · y_calc(2θ_i)
 ```
 
 This is a single shared helper
-(`analysis/calculators/absorption.py::factor(two_theta, params)`) called
+(`analysis/corrections/absorption.py::factor(two_theta, params)`) called
 from the post-calculation step of both `cryspy.py` and `crysfml.py`. The
 two backends thus stay bit-for-bit consistent on the absorption term,
 and the helper is unit-testable in isolation against FullProf output

@@ -9,7 +9,7 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from easydiffraction.analysis.calculators import polarization
+from easydiffraction.analysis.corrections import polarization
 from easydiffraction.datablocks.experiment.categories.instrument.cwl import CwlPdNeutronInstrument
 from easydiffraction.datablocks.experiment.categories.instrument.cwl import CwlPdXrayInstrument
 

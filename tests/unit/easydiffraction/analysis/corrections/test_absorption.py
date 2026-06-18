@@ -35,13 +35,13 @@ def _hewat(mu_r):
 
 
 def test_module_import():
-    import easydiffraction.analysis.calculators.absorption as MUT
+    import easydiffraction.analysis.corrections.absorption as MUT
 
-    assert MUT.__name__.endswith('calculators.absorption')
+    assert MUT.__name__.endswith('corrections.absorption')
 
 
 def test_factor_none_is_unity():
-    from easydiffraction.analysis.calculators import absorption
+    from easydiffraction.analysis.corrections import absorption
 
     two_theta = np.array([10.0, 50.0, 120.0])
     result = absorption.factor(two_theta, _none())
@@ -51,14 +51,14 @@ def test_factor_none_is_unity():
 def test_factor_hewat_matches_fullprof_to_four_decimals():
     # A(2theta=90, muR=0.7): theta=45deg, sin^2=0.5
     #   exp(-(1.7133-0.0368*0.5)*0.7 + (0.0927+0.375*0.5)*0.49) ~ 0.35024
-    from easydiffraction.analysis.calculators import absorption
+    from easydiffraction.analysis.corrections import absorption
 
     result = absorption.factor(np.array([90.0]), _hewat(0.7))
     assert result[0] == pytest.approx(0.35024, abs=1e-4)
 
 
 def test_factor_hewat_is_unity_at_zero_mu_r():
-    from easydiffraction.analysis.calculators import absorption
+    from easydiffraction.analysis.corrections import absorption
 
     result = absorption.factor(np.array([10.0, 90.0, 150.0]), _hewat(0.0))
     assert np.allclose(result, 1.0)
@@ -66,14 +66,14 @@ def test_factor_hewat_is_unity_at_zero_mu_r():
 
 def test_factor_hewat_attenuates_low_angle_more():
     # The cylindrical correction is monotonically increasing in 2theta.
-    from easydiffraction.analysis.calculators import absorption
+    from easydiffraction.analysis.corrections import absorption
 
     result = absorption.factor(np.array([10.0, 90.0, 160.0]), _hewat(0.7))
     assert result[0] < result[1] < result[2]
 
 
 def test_factor_warns_once_for_large_mu_r(monkeypatch):
-    from easydiffraction.analysis.calculators import absorption
+    from easydiffraction.analysis.corrections import absorption
 
     monkeypatch.setattr(absorption, '_WARNED_MU_R', set())
     calls = []
@@ -86,7 +86,7 @@ def test_factor_warns_once_for_large_mu_r(monkeypatch):
 
 
 def test_apply_multiplies_pattern():
-    from easydiffraction.analysis.calculators import absorption
+    from easydiffraction.analysis.corrections import absorption
 
     x = np.array([10.0, 90.0, 150.0])
     y = np.array([100.0, 100.0, 100.0])
@@ -96,7 +96,7 @@ def test_apply_multiplies_pattern():
 
 
 def test_apply_returns_unchanged_without_absorption():
-    from easydiffraction.analysis.calculators import absorption
+    from easydiffraction.analysis.corrections import absorption
 
     class _NoAttr:
         data = _FakeData(np.array([10.0, 20.0]))
@@ -106,7 +106,7 @@ def test_apply_returns_unchanged_without_absorption():
 
 
 def test_apply_returns_unchanged_for_empty_pattern():
-    from easydiffraction.analysis.calculators import absorption
+    from easydiffraction.analysis.corrections import absorption
 
     experiment = _FakeExperiment(_hewat(0.7), np.array([10.0, 20.0]))
     y = []
@@ -114,7 +114,7 @@ def test_apply_returns_unchanged_for_empty_pattern():
 
 
 def test_apply_returns_unchanged_on_length_mismatch():
-    from easydiffraction.analysis.calculators import absorption
+    from easydiffraction.analysis.corrections import absorption
 
     experiment = _FakeExperiment(_hewat(0.7), np.array([10.0, 20.0, 30.0]))
     y = np.array([1.0, 2.0])  # shorter than the 2-theta grid
