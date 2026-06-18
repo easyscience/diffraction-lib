@@ -1,9 +1,10 @@
 # CrysFML Python API feature requests
 
-This document lists CrysFML capabilities that are present in the
-Fortran code on `jrc_branch` but are missing, incomplete, or not wired
-through the Python API surface needed by EasyDiffraction tutorials and
-verification notebooks.
+This is a request to add the following functionality into the CrysFML
+Python API (`pycrysfml`). The goal is to expose through Python the
+CrysFML/Fortran functionality that EasyDiffraction already needs in its
+tutorials and verification notebooks, and to make the Python results
+match FullProf for the same physical model.
 
 Reference checkout:
 
@@ -21,202 +22,371 @@ Evidence scripts:
 - Directory: `docs/dev/crysfml-python-api-requests/`
 - Run one example with
   `pixi run python docs/dev/crysfml-python-api-requests/request_01_preferred_orientation.py`.
-- Add `--plot` to show the hardcoded FullProf reference window and the
-  CrysFML CFL result on the same axes.
+- Add `--plot` to display the hardcoded FullProf reference window and
+  the CrysFML CFL result on the same axes.
 
-All scripts use the pycrysfml CFL entry point,
-`cfml_py_utilities.patterns_simulation`. Some requests are not fully
-representable through a CFL powder-profile call. In particular,
-single-crystal extinction and in-memory structure factors need APIs
-outside `patterns_simulation`; beta ADPs and CW doublets can be carried
-by CFL syntax, so their scripts separate CFL behavior from the remaining
-request for equivalent non-CFL Python input paths.
+Each script is intended to be attached to the upstream request together
+with a screenshot. The screenshot should show two cases:
 
-## Request 1: expose preferred orientation in powder patterns
+- Agreement before the requested feature is enabled.
+- Disagreement after the feature is enabled in the FullProf `.pcr` and
+  represented, or attempted, through the CrysFML Python/CFL path.
 
-EasyDiffraction uses preferred orientation corrections in powder
-verification notebooks, including March-Dollase-style corrections.
-CrysFML Fortran contains `Preferred_orientation` in
-`Src/CFML_Diffraction.f90` and
-`Src/CFML_Diffraction/Pow_Preferred_Orientation.f90`. The CFL phase
-data structures also carry preferred-orientation fields.
+Some requests are not fully representable by the current powder CFL
+`patterns_simulation` entry point. For those cases, the related script
+shows a working powder-CFL control first and then documents the missing
+Python API surface explicitly.
 
-The Python API does not expose a usable way to set preferred-orientation
-parameters for powder pattern simulation. In the latest Fortran pattern
-path, the preferred-orientation calls in
-`Src/CFML_Utilities/Utilities_Reflections.f90` are still commented out,
-so parsed preferred-orientation data is not applied to calculated
-reflection corrections.
+## Request 1: preferred orientation in powder patterns
 
-Requested Python support:
+Please add preferred-orientation support to the CrysFML Python powder
+pattern API. Python callers should be able to set the preferred
+orientation model, direction, correction value, random fraction, and any
+model-specific integration parameters.
 
-- Accept preferred-orientation model, axes, values, fractions, and
-  integration steps in `patterns_simulation` and/or
-  `cw_powder_pattern_from_dict`.
-- Apply the correction when building reflection correction factors.
-- Return clear errors for unsupported preferred-orientation models.
+Short description:
 
-## Request 2: expose absorption and polarization parameters
+EasyDiffraction uses March-Dollase-style preferred orientation in powder
+verification notebooks. The CrysFML Fortran source contains preferred
+orientation routines, but the inspected Python CFL pattern path does not
+apply preferred-orientation correction factors during reflection setup.
 
-EasyDiffraction uses sample absorption and X-ray polarization /
-monochromator corrections in constant-wavelength powder tutorials and
-verification notebooks.
+FullProf `.pcr` setting used in the feature-on reference:
 
-CrysFML Fortran provides the relevant machinery through
-`Powder_Lorentz_IntegInt_CW` and `Lorentz_abs_CW` in
-`Src/CFML_Diffraction.f90` and
-`Src/CFML_Diffraction/Pow_Lorentz_Absorption.f90`. The latest
-`patterns_simulation` reflection setup calls `Lorentz_abs_CW`, but with
-fixed arguments rather than user-controlled absorption and polarization
-inputs.
+```text
+!  Pref1    Pref2      Asy1     Asy2     Asy3     Asy4      S_L      D_L
+  1.20000  0.30000  0.00000  0.00000  0.00000  0.00000  0.00000  0.00000
+```
 
-The registered Python API does not expose direct callables for these
-Fortran routines, and the high-level pattern APIs do not let Python
-users set the absorption model, `muR`/sample absorption parameter,
-monochromator coefficient, monochromator angle, or Lorentz convention.
+CFL-side functionality requested:
 
-Requested Python support:
+```text
+! Desired pycrysfml/CFL support:
+! preferred-orientation model = March-Dollase
+! preferred-orientation axis  = 0 0 1
+! preferred-orientation value = 1.2
+! random fraction             = 0.3
+```
 
-- Expose absorption and polarization controls in the powder pattern API.
-- Allow users to choose supported absorption and Lorentz/polarization
-  conventions.
-- Make the parameters available through both CFL-style and dict-style
-  high-level pattern calls where practical.
+Related script and screenshot:
 
-## Request 3: apply SyCos and SySin in CW pattern simulation
+- Script:
+  `docs/dev/crysfml-python-api-requests/request_01_preferred_orientation.py`
+- Screenshot caption:
+  "LBCO powder CW control agrees when preferred orientation is off; the
+  same CFL calculation disagrees with the FullProf `.pcr` when
+  `Pref1=1.2`, `Pref2=0.3`, axis `[0 0 1]` is enabled."
 
-EasyDiffraction verification notebooks cover sample displacement and
-transparency terms represented by SyCos and SySin.
+## Request 2: absorption and polarization parameters
 
-CrysFML Fortran parses `ZERO_SY`, `SYCOS`, and `SYSIN` in
-`Src/CFML_IOForm/Format_CFL.f90`, and the condition type stores these
-values. However, the latest inspected pattern calculation path does not
-use `sycos` or `sysin` when placing CW reflections.
+Please add user-controlled absorption and X-ray polarization parameters
+to the CrysFML Python powder pattern API.
 
-Requested Python support:
+Short description:
 
-- Apply parsed `ZERO_SY`, `SYCOS`, and `SYSIN` values in CW reflection
-  positions.
-- Expose equivalent fields through the dict-style Python API.
-- Document the convention and units used for these terms.
+EasyDiffraction uses cylindrical sample absorption and X-ray
+polarization/monochromator corrections. CrysFML Fortran provides the
+Lorentz/absorption machinery, but the inspected Python high-level
+pattern APIs do not expose `muR`, polarization coefficient,
+monochromator angle, or convention selection.
 
-## Request 4: expose single-crystal extinction corrections
+FullProf `.pcr` settings used in the feature-on references:
 
-EasyDiffraction single-crystal tutorials use extinction parameters such
-as mosaicity and radius.
+```text
+! Lambda1  Lambda2    Ratio    Bkpos    Wdt    Cthm     muR   AsyLim   Rpolarz
+ 1.540560 1.540560  0.00000   50.000 48.0000  0.8000  0.0000  160.00    0.5000
 
-CrysFML Fortran contains extinction correction modules under
-`Src/CFML_ExtinCorr`, including Becker-Coppens and SHELX-style
-corrections. In the Python wrapper source, `Wraps_ExtinCorr.f90` is
-empty, and no extinction methods are registered in
-`PythonAPI/Fortran/crysfml08lib.f90`.
+! Lambda1  Lambda2    Ratio    Bkpos    Wdt    Cthm     muR   AsyLim   Rpolarz
+ 1.540560 1.540560  0.00000   50.000 48.0000  0.0000  0.9000  160.00    0.0000
+```
 
-Requested Python support:
+CFL-side functionality requested:
 
-- Provide Python-callable extinction correction routines.
-- Support the extinction models already implemented in Fortran.
-- Accept reflection data, wavelength/radiation information, and model
-  parameters such as mosaicity and radius.
-- Return corrected intensities or correction factors with documented
-  units and conventions.
+```text
+! Desired pycrysfml/CFL support:
+! polarization coefficient = 0.5
+! monochromator Cthm       = 0.8
+! absorption model         = Debye-Scherrer cylinder / Hewat
+! muR                      = 0.9
+```
 
-## Request 5: expose in-memory structure-factor calculation
+Related script and screenshot:
 
-EasyDiffraction has in-memory structure and experiment objects and needs
-single-crystal and powder structure factors without first writing a CIF
-file.
+- Script:
+  `docs/dev/crysfml-python-api-requests/request_02_absorption_polarization.py`
+- Screenshot caption:
+  "LiF X-ray CW control agrees without absorption/polarization; the same
+  CFL calculation disagrees when FullProf enables `Rpolarz=0.5`,
+  `Cthm=0.8`, or `muR=0.9` because those parameters are not exposed in
+  pycrysfml."
 
-CrysFML Fortran exposes structure-factor machinery through routines such
-as `init_structure_factors` and `structure_factors`. The Python API
-currently exposes `structure_factors_from_cif`, which requires a CIF or
-MCIF file path, but does not expose an equivalent high-level API for an
-already constructed Python dictionary, wrapped crystal object, cell,
-space group, atom list, and reflection list.
+## Request 3: SyCos and SySin CW peak-position shifts
 
-Requested Python support:
+Please make the CrysFML Python CW pattern API apply `Zero_Sy`, `SyCos`,
+and `SySin` when calculating reflection positions.
 
-- Add a high-level `structure_factors_from_dict` or equivalent
-  in-memory API.
-- Accept radiation type, wavelength, reflection range, uniqueness, and
-  Friedel options.
-- Return reflection indices, multiplicity, structure factors, and
-  intensities in a stable Python data shape.
+Short description:
 
-## Request 6: carry anisotropic and beta ADPs through Python APIs
+CrysFML parses `ZERO_SY`, `SYCOS`, and `SYSIN` from CFL text, but the
+inspected `patterns_simulation` path does not use the `SyCos`/`SySin`
+values when placing CW reflections.
 
-EasyDiffraction verification includes anisotropic displacement
-parameters, including beta-style ADPs.
+FullProf `.pcr` setting used in the feature-on reference:
 
-CrysFML Fortran atom types support anisotropic displacement parameters
-through `UType` values such as `U_ij`, `B_ij`, and `beta`; CIF and CFL
-readers parse anisotropic displacement data. The dict-style Python
-powder path in `Src/CFML_Py_Utilities/Py_Utilities_Patterns.f90`
-currently reads only `_B_iso_or_equiv` for atoms.
+```text
+!  Zero    Code    SyCos    Code   SySin    Code  Lambda     Code MORE
+ -0.45778    0.0  0.01153    0.0  0.24334    0.0 1.623899    0.00   0
+```
 
-Requested Python support:
+CFL string with the requested functionality set:
 
-- Accept anisotropic ADP tensors in dict-style structure input.
-- Preserve the ADP convention (`U_ij`, `B_ij`, or `beta`) explicitly.
-- Use anisotropic ADPs in structure-factor and powder-pattern
-  calculations where the Fortran code already supports them.
+```text
+Zero_Sy  0.0  0.01153  0.24334
+```
 
-## Request 7: complete TOF support in `patterns_simulation`
+Related script and screenshot:
 
-EasyDiffraction tutorials and verification notebooks use TOF powder
-patterns with calibration terms and Jorgensen/Jorgensen-von-Dreele peak
-parameters.
+- Script:
+  `docs/dev/crysfml-python-api-requests/request_03_sycos_sysin.py`
+- Screenshot caption:
+  "LaB6 powder CW control agrees for `SyCos=0`, `SySin=0`; after FullProf
+  enables `SyCos=0.01153`, `SySin=0.24334`, pycrysfml still follows the
+  unshifted CFL positions."
 
-CrysFML Fortran parses TOF CFL fields such as `D2TOF`, `ALPHA`, `BETA`,
-`SIGMA`, `GAMMA`, and `TOF_RANGE`. The dict API exposes
-`tof_powder_pattern_from_dict`, and the Fortran utility code implements a
-TOF powder profile calculation. However, the CFL
-`patterns_simulation` path still lacks the TOF profile contribution in
-`compute_patterns`, so Python callers using CFL-style pattern simulation
-cannot obtain TOF intensities through that path.
+## Request 4: single-crystal extinction corrections
 
-Requested Python support:
+Please expose single-crystal extinction corrections through the CrysFML
+Python API.
 
-- Make `patterns_simulation` calculate TOF powder intensities from CFL
-  pattern blocks.
-- Use the parsed TOF profile/calibration parameters.
-- Keep behavior consistent with `tof_powder_pattern_from_dict`.
+Short description:
 
-## Request 8: expose TOF profile selection
+EasyDiffraction single-crystal verification uses extinction parameters
+such as radius/mosaicity or an equivalent model parameter. CrysFML
+Fortran contains extinction correction modules under `Src/CFML_ExtinCorr`,
+but the inspected Python wrapper does not register Python-callable
+extinction routines.
 
-EasyDiffraction distinguishes Jorgensen and Jorgensen-von-Dreele TOF
-profile models in tutorials and verification notebooks.
+FullProf `.pcr` setting used in the feature-on reference:
 
-CrysFML Fortran profile code includes multiple TOF profile functions,
-including Jorgensen, Jorgensen-von-Dreele, and Carpenter-style profiles.
-The dict-style Python TOF utility path is currently fixed to
-`tof_Jorgensen_VonDreele`.
+```text
+!  Extinction Parameters
+!   Ext1        Ext2        Ext3        Ext4        Ext5        Ext6        Ext7   Ext-Model
+  0.1834       0.000       0.000       0.000       0.000       0.000       0.000       1
+```
 
-Requested Python support:
+CFL/Python functionality requested:
 
-- Allow Python callers to select the TOF profile function.
-- Validate that the required parameters for the selected profile are
-  present.
-- Document how the profile names map to Fortran routines and CFL
-  `PROFILE_FUNCTION` values.
+```text
+! No powder CFL setting can represent this request today.
+! Desired pycrysfml support:
+! extinction model parameters + hkl/intensity input -> corrected
+! intensities or correction factors
+```
 
-## Request 9: expose native CW doublet support in dict APIs
+Related script and screenshot:
 
-EasyDiffraction X-ray tutorials and verification notebooks use
-two-wavelength constant-wavelength patterns.
+- Script:
+  `docs/dev/crysfml-python-api-requests/request_04_single_crystal_extinction.py`
+- Screenshot caption:
+  "The script first shows a powder-CFL control agreement. It then shows
+  FullProf single-crystal integrated intensities before and after
+  extinction is enabled; pycrysfml has no callable extinction API to
+  reproduce the feature-on table."
 
-The latest inspected Fortran CFL pattern path supports two wavelengths:
-reflection contributions are duplicated when `twowaves` is set, and the
-second wavelength ratio is applied. The dict-style Python CW pattern path
-currently reads only `_diffrn_radiation_wavelength` and does not expose
-second-wavelength and ratio inputs.
+## Request 5: in-memory structure-factor calculation
 
-Requested Python support:
+Please add a Python API that calculates structure factors from in-memory
+Python data, without requiring an intermediate CIF or MCIF file.
 
-- Add second wavelength and wavelength-ratio fields to
-  `cw_powder_pattern_from_dict`.
-- Align dict-style behavior with the CFL `LAMBDA lambda1 lambda2 ratio`
-  behavior.
-- Document whether the ratio is interpreted as `I2/I1`.
+Short description:
+
+EasyDiffraction already has in-memory cells, space groups, atom lists,
+experiments, and reflection lists. The Python API exposes
+`structure_factors_from_cif`, but not an equivalent
+`structure_factors_from_dict` or object-based function.
+
+FullProf reference used by the evidence script:
+
+```text
+! FullProf integrated intensities are used as the reference hkl window.
+! This is not a FullProf feature toggle; it is an API transport gap.
+```
+
+CFL/Python functionality requested:
+
+```text
+! No CFL string should be required.
+! Desired pycrysfml support:
+! cell + space group + atom list + hkl list + radiation settings
+! -> h, k, l, multiplicity, F, F^2, intensity
+```
+
+Related script and screenshot:
+
+- Script:
+  `docs/dev/crysfml-python-api-requests/request_05_in_memory_structure_factors.py`
+- Screenshot caption:
+  "The script first shows a powder-CFL control agreement. It then shows
+  the FullProf hkl/intensity window that should be calculable from
+  in-memory Python objects; pycrysfml currently has no equivalent API."
+
+## Request 6: anisotropic and beta ADPs in Python inputs
+
+Please make anisotropic ADP tensors, including beta-style ADPs,
+available through CrysFML Python high-level inputs.
+
+Short description:
+
+CrysFML CFL atom records can carry `BETA`, `U_IJ`, and `B_IJ` tensor
+records, but the inspected dict-style Python powder path reads only
+`_B_iso_or_equiv`. EasyDiffraction needs the non-CFL Python API to carry
+the ADP convention and tensor components explicitly.
+
+FullProf `.pcr` setting used in the feature-on reference:
+
+```text
+!Atom   Typ       X        Y        Z     Biso       Occ     In Fin N_t Spc
+Y1     Y      -0.03236  0.00000  0.25000  0.00000   0.50000   0   0   2    0
+!    beta11   beta22   beta33   beta12   beta13   beta23
+      0.00303  0.00272  0.00295  0.00000  0.00000  -0.00025
+```
+
+CFL string with the requested functionality set:
+
+```text
+Atom  Y1  Y  -0.03236  0.0  0.25  0.0  0.5
+BETA  0.00303  0.00272  0.00295  0.0  0.0  -0.00025
+```
+
+Related script and screenshot:
+
+- Script: `docs/dev/crysfml-python-api-requests/request_06_beta_adps.py`
+- Screenshot caption:
+  "Y2O3 powder CW control uses isotropic atom records; the feature-on
+  reference sets FullProf `N_t=2` beta tensors and the CFL `BETA` lines.
+  The remaining request is to expose equivalent tensor input through the
+  non-CFL Python API."
+
+## Request 7: TOF support in `patterns_simulation`
+
+Please complete TOF powder-pattern support in the CrysFML Python CFL
+entry point `cfml_py_utilities.patterns_simulation`.
+
+Short description:
+
+CrysFML parses TOF CFL fields such as `D2TOF`, `ALPHA`, `BETA`, `SIGMA`,
+`GAMMA`, and `TOF_RANGE`, and the Fortran code contains TOF profile
+machinery. The inspected Python CFL `patterns_simulation` path does not
+produce TOF intensities from a TOF CFL block.
+
+FullProf `.pcr` settings used in the feature-on reference:
+
+```text
+!    Zero       Code      Dtt1      Code       Dtt2     Code  Dtt_1overd
+    -9.18766    0.00  7476.91016    0.00    -1.54000    0.00     0.00000
+
+!      Sigma-2       Sigma-1       Sigma-0       Sigma-Q
+        0.0000       33.0419        3.5544        0.0000
+!      Gamma-2       Gamma-1       Gamma-0
+        0.0000        2.5430        0.0000
+!      Pref1      Pref2        alph0       beta0       alph1       beta1
+    0.000000    0.000000    0.000000    0.042210    0.597100    0.009460
+```
+
+CFL string with the requested functionality set:
+
+```text
+Patt_Type  Neutrons Powder TOF
+Profile_function  tof_Jorgensen_VonDreele
+D2TOF  -9.18766  7476.91016  -1.54  0.0
+ALPHA  0.0  0.5971  0.0
+BETA  0.04221  0.00946  0.0
+SIGMA  0.0  33.0419  3.5544  0.0
+GAMMA  0.0  2.543  0.0
+TOF_RANGE  12000.0  14600.0  5.0
+```
+
+Related script and screenshot:
+
+- Script:
+  `docs/dev/crysfml-python-api-requests/request_07_tof_patterns_simulation.py`
+- Screenshot caption:
+  "The script first shows a CW powder control agreement. The TOF FullProf
+  `.pcr` enables D2TOF/profile parameters, while the pycrysfml CFL TOF
+  block raises/returns no matching TOF intensities."
+
+## Request 8: TOF profile selection
+
+Please expose TOF profile-function selection through the CrysFML Python
+API.
+
+Short description:
+
+EasyDiffraction verification distinguishes Jorgensen and
+Jorgensen-von-Dreele TOF profiles. The inspected dict-style Python TOF
+path is fixed to one profile, and CFL TOF profile selection cannot yet be
+validated until request 7 makes TOF CFL intensities work.
+
+FullProf `.pcr` setting used in the feature-on reference:
+
+```text
+! Jorgensen FullProf reference uses the Jorgensen profile parameter set:
+! Sigma-2 Sigma-1 Sigma-0 and alph0 beta0 alph1 beta1.
+```
+
+CFL string with the requested functionality set:
+
+```text
+Profile_function  tof_Jorgensen
+D2TOF  -8.56733  7476.91016  -1.54  0.0
+ALPHA  0.0  0.235422  0.0
+BETA  0.03802  0.010902  0.0
+SIGMA  0.0  29.6492  5.079  0.0
+```
+
+Related script and screenshot:
+
+- Script:
+  `docs/dev/crysfml-python-api-requests/request_08_tof_profile_selection.py`
+- Screenshot caption:
+  "The script first shows a CW powder control agreement. It then compares
+  FullProf Jorgensen-von-Dreele and Jorgensen TOF references with CFL
+  `Profile_function` settings; pycrysfml cannot yet demonstrate profile
+  selection because TOF CFL intensities are missing."
+
+## Request 9: CW doublet support in dict APIs
+
+Please expose native CW two-wavelength/doublet input through
+`cw_powder_pattern_from_dict` and any equivalent high-level Python API.
+
+Short description:
+
+The CFL path has `LAMBDA lambda1 lambda2 ratio` syntax, while the
+dict-style Python CW path reads only one wavelength. EasyDiffraction
+needs the Python dict API to accept the second wavelength and the
+relative intensity ratio.
+
+FullProf `.pcr` setting used in the feature-on reference:
+
+```text
+! Lambda1  Lambda2    Ratio
+ 1.540560 1.544400  0.50000
+```
+
+CFL string with the requested functionality set:
+
+```text
+LAMBDA  1.54056  1.5444  0.5
+```
+
+Related script and screenshot:
+
+- Script: `docs/dev/crysfml-python-api-requests/request_09_cw_doublet_dict_api.py`
+- Screenshot caption:
+  "LiF X-ray CW control agrees for a single wavelength. The FullProf
+  `.pcr` enables the doublet with `Lambda2=1.5444`, `Ratio=0.5`; the CFL
+  string can express `LAMBDA lambda1 lambda2 ratio`, but the dict API has
+  no equivalent input fields."
 
 ## Out of scope for this request list
 
