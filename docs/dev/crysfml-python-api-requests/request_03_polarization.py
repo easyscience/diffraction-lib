@@ -9,31 +9,31 @@ from cfl_common import compare_to_fullprof
 from cfl_common import plot_comparisons
 from cfl_common import print_summary
 from cfl_common import should_plot
-from y2o3_common import FULLPROF_Y2O3_BETA_CONTROL
-from y2o3_common import FULLPROF_Y2O3_PREFERRED_ORIENTATION
-from y2o3_common import Y2O3_CFL_NEUTRON_BETA
-from y2o3_common import Y2O3_CFL_NEUTRON_PREFERRED_ORIENTATION
+from y2o3_common import FULLPROF_Y2O3_POLARIZATION
+from y2o3_common import FULLPROF_Y2O3_XRAY_SINGLE
+from y2o3_common import Y2O3_CFL_XRAY_POLARIZATION
+from y2o3_common import Y2O3_CFL_XRAY_SINGLE
 from y2o3_common import Y2O3_X_SHIFT
 
 
 def main() -> None:
     control = compare_to_fullprof(
-        'without preferred orientation',
-        Y2O3_CFL_NEUTRON_BETA,
-        FULLPROF_Y2O3_BETA_CONTROL,
+        'without X-ray polarization',
+        Y2O3_CFL_XRAY_SINGLE,
+        FULLPROF_Y2O3_XRAY_SINGLE,
         x_shift=Y2O3_X_SHIFT,
     )
     requested = compare_to_fullprof(
-        'with preferred orientation in FullProf',
-        Y2O3_CFL_NEUTRON_PREFERRED_ORIENTATION,
-        FULLPROF_Y2O3_PREFERRED_ORIENTATION,
+        'with X-ray polarization in FullProf',
+        Y2O3_CFL_XRAY_POLARIZATION,
+        FULLPROF_Y2O3_POLARIZATION,
         x_shift=Y2O3_X_SHIFT,
         scale_override=control.scale,
     )
     comparisons = [control, requested]
-    print_summary('Request 1: preferred orientation', comparisons)
+    print_summary('Request 3: X-ray polarization', comparisons)
     if should_plot(sys.argv):
-        plot_comparisons('Request 1: preferred orientation', comparisons)
+        plot_comparisons('Request 3: X-ray polarization', comparisons)
 
 
 if __name__ == '__main__':

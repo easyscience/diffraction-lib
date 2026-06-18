@@ -128,7 +128,7 @@ def print_reference_window(name: str, reference: np.ndarray) -> None:
 def plot_comparisons(title: str, comparisons: Iterable[Comparison]) -> None:
     plt = importlib.import_module('matplotlib.pyplot')
     comparisons = list(comparisons)
-    figure_height = max(3.5, 3.0 * len(comparisons))
+    figure_height = max(5.25, 4.5 * len(comparisons))
     _, axes = plt.subplots(len(comparisons), 1, figsize=(9.5, figure_height))
     if len(comparisons) == 1:
         axes = [axes]

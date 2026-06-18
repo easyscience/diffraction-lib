@@ -76,11 +76,17 @@ class _DummyStructure:
 
 
 class _FakePdf:
+    instances = []
+
+    def __init__(self):
+        self.setvars = []
+        self.__class__.instances.append(self)
+
     def add_structure(self, s):
         pass
 
-    def setvar(self, *a, **k):
-        pass
+    def setvar(self, *args):
+        self.setvars.append(args)
 
     def read_data_lists(self, *a, **k):
         pass
@@ -118,6 +124,7 @@ def test_pdffit_cif_v2_to_v1_regex_behavior(monkeypatch):
     )
     assert isinstance(pattern, np.ndarray)
     assert pattern.shape[0] == 5
+    assert ('pscale', 1.0) in _FakePdf.instances[-1].setvars
 
 
 def test_structure_cif_for_pdffit_uses_legacy_iucr_tags():

@@ -216,7 +216,9 @@ class PdffitCalculator(CalculatorBase):
         # -------------------------
 
         # Set some peak-related parameters
-        calculator.setvar('pscale', experiment.linked_structures[structure.name].scale.value)
+        # Linked-structure scale is applied by TotalData._update after
+        # this per-structure pattern is returned.
+        calculator.setvar('pscale', 1.0)
         calculator.setvar('delta1', experiment.peak.sharp_delta_1.value)
         calculator.setvar('delta2', experiment.peak.sharp_delta_2.value)
         calculator.setvar('spdiameter', experiment.peak.damp_particle_diameter.value)

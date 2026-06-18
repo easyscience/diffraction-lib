@@ -57,6 +57,12 @@ inside the notebook.
   verifies the anglesite X-ray round-robin case with empirical
   asymmetry.
 
+## Powder, X-Ray, Constant Wavelength, Total Scattering
+
+- [pd-xray-cwl-total NaCl gaussian-damped sinc](pd-xray-cwl-total_nacl_gaussian-damped-sinc.ipynb)
+  – verifies the PDF gaussian-damped sinc profile against direct
+  diffpy.pdffit2.
+
 ## Single Crystal, Neutron, Constant Wavelength
 
 - [sc-neut-cwl Pr₂NiO₄ basic](sc-neut-cwl_pr2nio4_basic.ipynb) –
