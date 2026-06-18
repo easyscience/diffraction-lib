@@ -20,6 +20,9 @@ Installed Python package inspected locally:
 Evidence scripts:
 
 - Directory: `docs/dev/crysfml-python-api-requests/`
+- Each request script contains its own editable CFL blocks and embedded
+  FullProf reference arrays. `cfl_common.py` only provides shared
+  simulation, comparison, and plotting helpers.
 - Run one example with
   `pixi run python docs/dev/crysfml-python-api-requests/request_01_preferred_orientation.py`.
 - Add `--plot` to display the request screenshot.
@@ -32,7 +35,7 @@ All screenshots follow the same evidence contract:
 - Every profile panel uses the Y2O3 verification sample from
   `docs/docs/verification/fullprof/pd-neut-cwl_y2o3_beta-adp/`.
 - Every embedded FullProf profile is the Bragg-only calculated
-  intensity from 56.00 to 60.00 degrees 2theta, step 0.05.
+  intensity from 55.50 to 59.50 degrees 2theta, step 0.05.
 - The plotting helper uses panels 1.5x taller than the previous
   evidence scripts.
 
@@ -43,10 +46,11 @@ from the bundled Y2O3 verification PCR. To rerun one manually, copy the
 verification `y2o3.dat` beside the PCR using the same basename, then run
 `fp2k <basename>`.
 
-Some requests are Python API transport gaps rather than FullProf powder
-feature toggles. Those scripts still use the common Y2O3 two-panel
-chart: the first panel is the powder-CFL control, and the second panel
-records the missing API surface explicitly.
+For CFL-driven requests, feature-on scripts keep the requested values
+inside the editable CFL block. When pycrysfml starts parsing and
+applying one of these CrysFML Fortran-backed inputs, the corresponding
+script should show the changed CrysFML curve without any Python logic
+change. The beta-ADP PCR is used only by request 7.
 
 ## Request 1: preferred orientation in powder patterns
 
@@ -69,15 +73,21 @@ FullProf `.pcr` setting used in the feature-on reference:
   1.20000  0.30000  0.00000  0.00000  0.00000  0.00000  0.00000  0.00000
 ```
 
+CFL input requested in the feature-on script:
+
+```text
+Preferred_Orientation  0.0  0.0  1.0  1.0  1.2  0.3
+```
+
 Evidence:
 
-- PCRs: `fullprof/y2o3_control_beta.pcr`,
+- PCRs: `fullprof/y2o3_isotropic_adp.pcr`,
   `fullprof/y2o3_preferred_orientation.pcr`
 - Script:
   `docs/dev/crysfml-python-api-requests/request_01_preferred_orientation.py`
 - Screenshot caption: "Y2O3 powder CW control agrees without preferred
-  orientation; with FullProf `Pref1=1.2`, `Pref2=0.3`, pycrysfml has no
-  equivalent Python/CFL knob to reproduce the feature-on panel."
+  orientation; the feature-on CFL requests March-Dollase orientation
+  with axis `(0,0,1)`, value `1.2`, and random fraction `0.3`."
 
 ## Request 2: cylindrical absorption
 
@@ -97,14 +107,22 @@ FullProf `.pcr` setting used in the feature-on reference:
  1.548220 1.548220  0.00000   10.000 20.0000  0.0000  0.9000  160.00    0.0000
 ```
 
+CFL input requested in the feature-on script:
+
+```text
+GEOM  DBS
+CABS  HEWAT
+MUR  0.9
+```
+
 Evidence:
 
-- PCRs: `fullprof/y2o3_control_beta.pcr`,
+- PCRs: `fullprof/y2o3_isotropic_adp.pcr`,
   `fullprof/y2o3_absorption.pcr`
 - Script: `docs/dev/crysfml-python-api-requests/request_02_absorption.py`
 - Screenshot caption: "Y2O3 powder CW control agrees without
-  cylindrical absorption; with FullProf `muR=0.9`, pycrysfml has no
-  exposed user-controlled absorption parameter."
+  cylindrical absorption; the feature-on CFL requests Debye-Scherrer
+  Hewat cylindrical absorption with `muR=0.9`."
 
 ## Request 3: X-ray polarization
 
@@ -125,6 +143,13 @@ FullProf `.pcr` setting used in the feature-on reference:
  1.540560 1.540560  0.00000   50.000 20.0000  0.8000  0.0000  160.00    0.5000
 ```
 
+CFL input requested in the feature-on script:
+
+```text
+CTHM  0.8
+RKK  0.5
+```
+
 Evidence:
 
 - PCRs: `fullprof/y2o3_xray_single.pcr`,
@@ -132,8 +157,8 @@ Evidence:
 - Script:
   `docs/dev/crysfml-python-api-requests/request_03_polarization.py`
 - Screenshot caption: "Y2O3 X-ray CW control agrees without
-  polarization; with FullProf `Cthm=0.8`, `Rpolarz=0.5`, pycrysfml has
-  no equivalent Python/CFL inputs."
+  polarization; the feature-on CFL requests CrysFML-style `CTHM=0.8`
+  and `RKK=0.5` polarization input."
 
 ## Request 4: SyCos and SySin CW peak-position shifts
 
@@ -155,7 +180,7 @@ FullProf `.pcr` setting used in the feature-on reference:
 
 Evidence:
 
-- PCRs: `fullprof/y2o3_control_beta.pcr`,
+- PCRs: `fullprof/y2o3_isotropic_adp.pcr`,
   `fullprof/y2o3_sycos_sysin.pcr`
 - Script:
   `docs/dev/crysfml-python-api-requests/request_04_sycos_sysin.py`
@@ -185,7 +210,7 @@ extinction model parameters + hkl/intensity input
 
 Evidence:
 
-- Common control PCR: `fullprof/y2o3_control_beta.pcr`
+- Common control PCR: `fullprof/y2o3_isotropic_adp.pcr`
 - Script:
   `docs/dev/crysfml-python-api-requests/request_05_single_crystal_extinction.py`
 - Screenshot caption: "The first Y2O3 powder CW panel is the common
@@ -214,7 +239,7 @@ cell + space group + atom list + hkl list + radiation settings
 
 Evidence:
 
-- Common control PCR: `fullprof/y2o3_control_beta.pcr`
+- Common control PCR: `fullprof/y2o3_isotropic_adp.pcr`
 - Script:
   `docs/dev/crysfml-python-api-requests/request_06_in_memory_structure_factors.py`
 - Screenshot caption: "The first Y2O3 powder CW panel is the common
@@ -274,7 +299,7 @@ D2TOF / ALPHA / BETA / SIGMA / GAMMA / TOF_RANGE parameters
 
 Evidence:
 
-- Common control PCR: `fullprof/y2o3_control_beta.pcr`
+- Common control PCR: `fullprof/y2o3_isotropic_adp.pcr`
 - Script:
   `docs/dev/crysfml-python-api-requests/request_08_tof_patterns_simulation.py`
 - Screenshot caption: "The first Y2O3 powder CW panel is the common
@@ -302,7 +327,7 @@ Profile_function  tof_Jorgensen_VonDreele
 
 Evidence:
 
-- Common control PCR: `fullprof/y2o3_control_beta.pcr`
+- Common control PCR: `fullprof/y2o3_isotropic_adp.pcr`
 - Script:
   `docs/dev/crysfml-python-api-requests/request_09_tof_profile_selection.py`
 - Screenshot caption: "The first Y2O3 powder CW panel is the common

@@ -185,7 +185,21 @@ def _interpolate_cfl(
     x_calc, y_calc = simulate_cfl(cfl)
     x_calc += x_shift
     y_interp = np.interp(x_ref, x_calc, y_calc, left=0.0, right=0.0)
+    _restore_close_endpoint_values(x_ref, x_calc, y_calc, y_interp)
     if np.all(np.isfinite(y_interp)):
         return y_interp, None
     error = 'patterns_simulation returned non-finite intensities.'
     return np.nan_to_num(y_interp, nan=0.0, posinf=0.0, neginf=0.0), error
+
+
+def _restore_close_endpoint_values(
+    x_ref: np.ndarray,
+    x_calc: np.ndarray,
+    y_calc: np.ndarray,
+    y_interp: np.ndarray,
+) -> None:
+    tolerance = 1e-5
+    if x_ref[0] < x_calc[0] and np.isclose(x_ref[0], x_calc[0], atol=tolerance, rtol=0.0):
+        y_interp[0] = y_calc[0]
+    if x_ref[-1] > x_calc[-1] and np.isclose(x_ref[-1], x_calc[-1], atol=tolerance, rtol=0.0):
+        y_interp[-1] = y_calc[-1]
