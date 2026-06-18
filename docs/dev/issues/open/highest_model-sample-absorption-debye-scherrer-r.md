@@ -30,11 +30,11 @@ with a calculator-independent A(θ) envelope.
 
 - `cryspy`: **no** absorption code at all (only Debye–Waller and sphere
   _extinction_); its CW intensity loop has no slot to multiply A(θ).
-- `crysfml`: CrysFML08 implements `Lorentz_abs_CW` in Fortran, but it is
-  **not** wrapped in `PythonAPI/`, and the high-level
-  `cw_powder_pattern_from_dict` path we call applies a plain Lorentz
-  factor with no absorption. So it is **not** reachable through
-  pycrysfml today without upstream changes.
+- `crysfml`: CrysFML08 implements `Lorentz_abs_CW` in Fortran, but the
+  standalone absorption routine is **not** wrapped in `PythonAPI/`. The
+  high-level CFL `patterns_simulation` path we call does not expose a
+  model-level μR input through our binding, so it is **not** reachable
+  through pycrysfml today without upstream changes.
 
 **Implication:** neither backend can apply the correction internally
 without changes we do not own. The chosen approach computes A(θ) in
