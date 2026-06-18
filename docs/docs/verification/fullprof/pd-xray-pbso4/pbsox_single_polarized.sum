@@ -1,0 +1,147 @@
+
+
+        **********************************************************
+        ** PROGRAM FullProf.2k (Version 7.95 - Jan2023-ILL JRC) **
+        **********************************************************
+                       M U L T I -- P A T T E R N                 
+            Rietveld, Profile Matching & Integrated Intensity     
+                 Refinement of X-ray and/or Neutron Data
+
+
+    Date: 17/06/2026  Time: 22:34:35.817                              
+
+ => PCR file code: pbsox_single_polarized
+ => DAT file code: pbsox_single_polariz -> Relative contribution: 1.0000                                                            
+ => Title: PbSO4 XrayDif single wavelength polarized Wdt48
+
+ ==> CONDITIONS OF THIS RUN FOR PATTERN No.:  1
+
+ => Global Refinement of X-ray powder diffraction data                                                                              
+ => Global Refinement of X-ray powder diffraction data                                                                              
+    Bragg-Brentano(X-rays) or Debye-Scherrer geometry(Neutrons)
+ => The    7th default profile function was selected
+
+ => Data supplied in free format for pattern:  1
+ => Analysis of refinement at the end
+ => Wavelengths:  1.54056 1.54056
+ => Cos(Monochromator angle)=   0.8000
+ => Absorption correction (AC), muR-eff =   0.0000  0.0000
+ => Base of peaks: 2.0*HW*   48.00
+ ==> Angular range, step and number of points:
+     2Thmin:      10.000000  2Thmax:     160.000000  Step:       0.025000  No. of points:   6001
+ =>-------> Pattern#  1
+ => Crystal Structure Refinement for phase: 1
+ => The density (volumic mass) of phase 1 is:    6.324 g/cm3
+ => Scor: 4.4881
+
+ ==> RESULTS OF REFINEMENT:
+
+
+ => No. of fitted parameters:    0
+
+
+------------------------------------------------------------------------------
+ => Phase No.  1 PbSO4                                   P n m a             
+------------------------------------------------------------------------------
+
+ =>  No. of reflections for pattern#:   1:   394  
+
+
+ ==> ATOM PARAMETERS:
+
+  Name      x     sx       y     sy       z      sz      B   sB   occ. socc.  Mult
+ Pb      0.18788(   0)  0.25000(   0)  0.16749(   0)  1.785(  0)  0.500(  0)    4
+ S       0.06302(   0)  0.25000(   0)  0.68446(   0)  0.854(  0)  0.500(  0)    4
+ O1      0.91235(   0)  0.25000(   0)  0.59346(   0)  1.334(  0)  0.500(  0)    4
+ O2      0.18443(   0)  0.25000(   0)  0.53434(   0)  1.575(  0)  0.500(  0)    4
+ O3      0.07573(   0)  0.01951(   0)  0.81594(   0)  1.328(  0)  1.000(  0)    8
+
+ ==> PROFILE PARAMETERS FOR PATTERN#  1
+
+ => Cell parameters      :
+                              8.47983   0.00000
+                              5.39776   0.00000
+                              6.95932   0.00000
+                             90.00000   0.00000
+                             90.00000   0.00000
+                             90.00000   0.00000
+ 
+ => overall scale factor :      0.000469335     0.000000000
+ => Eta(p-v) or m(p-vii) :    0.00000   0.00000
+ => Overall tem. factor  :    0.00000   0.00000
+ => Halfwidth parameters :    0.04846   0.00000
+                             -0.08305   0.00000
+                              0.03519   0.00000
+ => Preferred orientation:    0.00000   0.00000
+                              0.00000   0.00000
+ => Asymmetry parameters :    0.00000   0.00000
+                              0.00000   0.00000
+                              0.00000   0.00000
+                              0.00000   0.00000
+ => X and y parameters   :    0.00000   0.00000
+                              0.04927   0.00000
+ => Strain parameters    :    0.00000   0.00000
+                              0.00000   0.00000
+                              0.00000   0.00000
+ => Size parameters (G,L):    0.00000   0.00000
+                              0.00000   0.00000
+
+ => Add. shape parameters: 
+                              0.00000   0.00000
+                              0.00000   0.00000
+
+
+
+ ==> GLOBAL PARAMETERS FOR PATTERN#  1
+
+
+ => Zero-point:    -0.0482    0.0000
+ => Background Polynomial Parameters ==>
+                               154.32      0.0000    
+                               100.00      0.0000    
+                              -92.329      0.0000    
+                              -95.599      0.0000    
+                               126.68      0.0000    
+                              -31.804      0.0000    
+ 
+ => Cos( theta)-shift parameter :   0.0000  0.0000
+ => Sin(2theta)-shift parameter :   0.0000  0.0000
+
+ ==> RELIABILITY FACTORS WITH ALL NON-EXCLUDED POINTS FOR PATTERN:  1
+
+  => Cycle:  1 => MaxCycle: 30
+ => N-P+C:  5760
+ =>  R-factors (not corrected for background) for Pattern:  1
+ => Rp:  25.9     Rwp:  32.3     Rexp:    4.92 Chi2:  43.0      L.S. refinement
+ => Conventional Rietveld R-factors for Pattern:  1
+ => Rp:  42.6     Rwp:  45.8     Rexp:    6.98 Chi2:  43.0    
+ => Deviance:  0.398E+06     Dev*  :   69.02    
+ => DW-Stat.:    0.1472     DW-exp:     1.9182
+ => N-sigma of the GoF:     2255.192
+
+ ==> RELIABILITY FACTORS FOR POINTS WITH BRAGG CONTRIBUTIONS FOR PATTERN:  1
+
+ => N-P+C:  5760
+ =>  R-factors (not corrected for background) for Pattern:  1
+ => Rp:  25.9     Rwp:  32.3     Rexp:    4.92 Chi2:  43.0      L.S. refinement
+ => Conventional Rietveld R-factors for Pattern:  1
+ => Rp:  42.6     Rwp:  45.8     Rexp:    6.98 Chi2:  43.0    
+ => Deviance:  0.398E+06     Dev*  :   69.02    
+ => DW-Stat.:    0.1472     DW-exp:     1.9182
+ => N-sigma of the GoF:     2255.192
+
+ => Global user-weigthed Chi2 (Bragg contrib.):   43.0    
+
+     -----------------------------------------------------
+     BRAGG R-Factors and weight fractions for Pattern #  1
+     -----------------------------------------------------
+
+ => Phase:  1     PbSO4
+ => Bragg R-factor:   34.6       Vol:  318.543( 0.000)  Fract(%):  100.00( 0.00)
+ => Rf-factor=  21.4             ATZ:        1213.030   Brindley:  1.0000
+
+ 
+              CPU Time:     0.328 seconds
+                            0.005 minutes
+
+ => Run finished at:     Date: 17/06/2026  Time: 22:34:36.148                              
