@@ -24,8 +24,9 @@ Here, we focus on the Python library. For the graphical user interface
 [GUI resources](https://easyscience.github.io/diffraction-app).
 
 For a full overview of what EasyDiffraction can do today and what is
-planned — across powder and single-crystal diffraction, total scattering,
-and analysis — see the [Features](../features/index.md) page.
+planned — across powder and single-crystal diffraction, total
+scattering, and analysis — see the [Features](../features/index.md)
+page.
 
 <!--
 **EasyDiffraction** is developed using the
