@@ -358,7 +358,7 @@ a Gaussian or Lorentzian mosaicity distribution.
 | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
 | Isotropic Becker-Coppens, Gaussian model: _radius, mosaicity_<br/>- :white_check_mark: `cryspy` [:material-check-decagram:](../verification/sc-neut-cwl_Tb2Ti2O7_isotropic-extinction.ipynb) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | Isotropic Becker-Coppens, Lorentzian model: _radius, mosaicity_<br/>- :white_check_mark: `cryspy`                                                                                            | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Anisotropic extinction correction<br/>- :material-cancel: `cryspy`<br/>- :material-help-circle: `crysfml`<br/>- :material-link-variant: `FullProf` "Ext (Line 29)"                           | :date:             | :date:             | :date:             |
+| Anisotropic extinction correction<br/>- :material-cancel: `cryspy`<br/>- :material-help-circle: `crysfml`<br/>- :material-link-variant: `FullProf` "Ext-Model=4 (anisotropic)"               | :date:             | :date:             | :date:             |
 
 </div>
 
@@ -425,11 +425,11 @@ Polarized-neutron diffraction is an epic; all parts are :date: planned
 
 <div class="ed-matrix" markdown="1">
 
-| Feature                                                                                                                                                        | LIB                     | CLI                | APP                |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ------------------ | ------------------ |
-| Calculate diffraction pattern (for fitting/comparison)<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :white_check_mark: `pdffit2` | :white_check_mark:      | :white_check_mark: | :white_check_mark: |
-| Calculate diffraction pattern (simple view, no data)<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :white_check_mark: `pdffit2`   | :white_check_mark:      | :white_check_mark: | :white_check_mark: |
-| Calculate structure factors<br/>- :white_check_mark: `cryspy`<br/>- :date: `crysfml`                                                                           | :ballot_box_with_check: | :white_check_mark: | :white_check_mark: |
+| Feature                                                                                                                                                        | LIB                     | CLI                     | APP                     |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ----------------------- | ----------------------- |
+| Calculate diffraction pattern (for fitting/comparison)<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :white_check_mark: `pdffit2` | :white_check_mark:      | :white_check_mark:      | :white_check_mark:      |
+| Calculate diffraction pattern (simple view, no data)<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :date: `pdffit2`               | :ballot_box_with_check: | :ballot_box_with_check: | :ballot_box_with_check: |
+| Calculate structure factors<br/>- :white_check_mark: `cryspy`<br/>- :date: `crysfml`                                                                           | :ballot_box_with_check: | :white_check_mark:      | :white_check_mark:      |
 
 </div>
 
@@ -593,7 +593,7 @@ model, experimental data, fit settings, results).
 | Visualize atoms occupied same position    | :white_check_mark: | :date: | :date:                  |
 | Visualize bonds                           | :white_check_mark: | :date: | :date:                  |
 | Visualize polyhedra                       | :date:             | :date: | :date:                  |
-| Interactive mode<br/>3D rotation, zooming | :white_check_mark: | :date: | :white_check_mark:      |
+| Interactive mode: _3D rotation, zooming_ | :white_check_mark: | :date: | :white_check_mark:      |
 
 </div>
 
@@ -620,7 +620,7 @@ model, experimental data, fit settings, results).
 | Plot calculated curve                 | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | Plot residual curve                   | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | Plot Bragg peaks                      | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Interactive mode<br/>zooming, panning | :white_check_mark: | :heavy_minus_sign: | :white_check_mark: |
+| Interactive mode: _zooming, panning_ | :white_check_mark: | :heavy_minus_sign: | :white_check_mark: |
 
 </div>
 
@@ -631,7 +631,7 @@ model, experimental data, fit settings, results).
 | Feature                               | LIB                | CLI                | APP                |
 | ------------------------------------- | ------------------ | ------------------ | ------------------ |
 | Plot obs vs calc for reflections      | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Interactive mode<br/>zooming, panning | :white_check_mark: | :heavy_minus_sign: | :white_check_mark: |
+| Interactive mode: _zooming, panning_ | :white_check_mark: | :heavy_minus_sign: | :white_check_mark: |
 
 </div>
 
