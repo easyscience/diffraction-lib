@@ -585,10 +585,10 @@ model, experimental data, fit settings, results).
 
 <div class="ed-matrix" markdown="1">
 
-| Feature                           | LIB                | CLI                | APP               |
-| --------------------------------- | ------------------ | ------------------ | ----------------- |
-| List available tutorial notebooks | :white_check_mark: | :white_check_mark: | :material-cancel: |
-| Download tutorial notebooks       | :white_check_mark: | :white_check_mark: | :material-cancel: |
+| Feature                                   | LIB                | CLI                | APP               |
+| ----------------------------------------- | ------------------ | ------------------ | ----------------- |
+| List available tutorial Jupyter notebooks | :white_check_mark: | :white_check_mark: | :material-cancel: |
+| Download tutorial Jupyter notebooks       | :white_check_mark: | :white_check_mark: | :material-cancel: |
 
 </div>
 
@@ -700,16 +700,18 @@ that will be split into detailed rows once work begins).
 
 <div class="ed-matrix" markdown="1">
 
-| Feature                                                                   | LIB    | CLI               | APP               |
-| ------------------------------------------------------------------------- | ------ | ----------------- | ----------------- |
-| Set free parameters by category<br/>(e.g. all atomic positions, all ADPs) | :date: | :date:            | :date:            |
-| Add category with fit quality metrics<br/>(e.g. chi2, R-factors)          | :date: | :date:            | :date:            |
-| Restraints (soft constraints, e.g. bond lengths, angles)                  | :date: | :date:            | :date:            |
-| Refinement using analytical derivatives                                   | :date: | :date:            | :date:            |
-| Global optimization algorithms (e.g. simulated annealing)                 | :date: | :date:            | :date:            |
-| Incommensurate structures — EPIC                                          | :date: | :date:            | :date:            |
-| 2D Rietveld refinement — EPIC                                             | :date: | :date:            | :date:            |
-| Built-in refinement strategies for common workflows                       | :date: | :date:            | :date:            |
-| Chatbot for natural-language requests during analysis                     | :date: | :material-cancel: | :material-cancel: |
+| Feature                                                                                                               | LIB    | CLI               | APP               |
+| --------------------------------------------------------------------------------------------------------------------- | ------ | ----------------- | ----------------- |
+| Incommensurate structures — EPIC                                                                                      | :date: | :date:            | :date:            |
+| 2D Rietveld refinement — EPIC                                                                                         | :date: | :date:            | :date:            |
+| Chatbot for natural-language requests during analysis                                                                 | :date: | :material-cancel: | :material-cancel: |
+| Refinement using analytical derivatives                                                                               | :date: | :date:            | :date:            |
+| Global optimization algorithms (e.g. simulated annealing)                                                             | :date: | :date:            | :date:            |
+| Built-in refinement strategies for common workflows                                                                   | :date: | :date:            | :date:            |
+| Restraints (soft constraints, e.g. bond lengths, angles)                                                              | :date: | :date:            | :date:            |
+| Search and download structure from Crystallography Open Database (COD)                                                | :date: | :material-cancel: | :date:            |
+| Read instrument resolution parameters from file<br/>- :material-link-variant: `FullProf` "Irf" (.irf resolution file) | :date: | :date:            | :date:            |
+| Add category with fit quality metrics<br/>(e.g. chi2, R-factors)                                                      | :date: | :date:            | :date:            |
+| Set free parameters by category<br/>(e.g. all atomic positions, all ADPs)                                             | :date: | :date:            | :date:            |
 
 </div>
