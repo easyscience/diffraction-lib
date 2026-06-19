@@ -109,7 +109,7 @@ constraints directly.
 | Feature                                                                                                                                    | LIB                     | CLI                | APP                |
 | ------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------- | ------------------ | ------------------ |
 | Hermann-Mauguin space-group symbol<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :white_check_mark: `pdffit2` | :white_check_mark:      | :white_check_mark: | :white_check_mark: |
-| Space group IT number<br/>- :date: `cryspy`<br/>- :date: `crysfml`                                                                         | :date:                  | :date:             | :date:             |
+| Space group IT number<br/>- :date: `cryspy`<br/>- :date: `crysfml`<br/>- :date: `pdffit2`                                                  | :date:                  | :date:             | :date:             |
 | IT coordinate system code<br/>- :white_check_mark: `cryspy`<br/>- :date: `crysfml`                                                         | :ballot_box_with_check: | :white_check_mark: | :white_check_mark: |
 
 </div>
