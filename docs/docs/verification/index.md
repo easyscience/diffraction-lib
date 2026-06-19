@@ -13,9 +13,9 @@ library EasyDiffraction wraps, so those pages check wrapper fidelity
 (correct parameter hand-off) rather than cross-validating the PDF
 physics against an independent implementation. Each page focuses on one
 experiment type or one additional model term, and feature names match
-the [Features](../features/index.md) page. Some pages document a
-**known difference** (EasyDiffraction does not yet match the reference
-for that term); these are marked below and inside the notebook.
+the [Features](../features/index.md) page. Some pages document a **known
+difference** (EasyDiffraction does not yet match the reference for that
+term); these are marked below and inside the notebook.
 
 ## Powder, Neutron, Constant Wavelength
 
