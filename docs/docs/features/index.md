@@ -59,17 +59,19 @@ Each capability is tracked across the three ways to use EasyDiffraction:
 - :date: Planned (no priority assigned yet)
   - :date: 5/5 `highest` · 4/5 `high` · 3/5 `medium` · 2/5 `low` · 1/5
     `lowest`
-- :heavy_minus_sign: Not applicable — the engine/interface does not
-  provide this and is not expected to (e.g. a PDF-only engine for a
+- :material-cancel: Not available / not applicable — the
+  engine/interface does not provide this (e.g. a PDF-only engine for a
   Bragg-only term)
+- :material-help-circle: Unknown — support not yet confirmed for this
+  engine/interface
 
 The **LIB column** summarises the per-engine lines listed in the Feature
 cell, because the engines are the library backends: :white_check_mark:
 when every relevant engine is done (engines that simply don't apply are
-marked :heavy_minus_sign:), and :ballot_box_with_check: when at least
-one engine is done but others are in progress or planned. The **CLI**
-and **APP** columns instead show whether the feature is available in
-those two interfaces.
+marked :material-cancel:), and :ballot_box_with_check: when at least one
+engine is done but others are in progress or planned. The **CLI** and
+**APP** columns instead show whether the feature is available in those
+two interfaces.
 
 Inside the **Feature** cell, each line carries its own icon:
 
@@ -495,9 +497,9 @@ Minimizers are EasyDiffraction's optimizers and run with any engine.
 
 | Feature                                       | LIB                | CLI                     | APP                |
 | --------------------------------------------- | ------------------ | ----------------------- | ------------------ |
-| GUI-driven refinement workflow                | :heavy_minus_sign: | :heavy_minus_sign:      | :white_check_mark: |
-| Command-line refinement execution             | :heavy_minus_sign: | :white_check_mark:      | :heavy_minus_sign: |
-| Scripted refinement workflow                  | :white_check_mark: | :heavy_minus_sign:      | :heavy_minus_sign: |
+| GUI-driven refinement workflow                | :material-cancel:  | :material-cancel:       | :white_check_mark: |
+| Command-line refinement execution             | :material-cancel:  | :white_check_mark:      | :material-cancel:  |
+| Scripted refinement workflow                  | :white_check_mark: | :material-cancel:       | :material-cancel:  |
 | Parameter modification                        | :white_check_mark: | :ballot_box_with_check: | :white_check_mark: |
 | Load individual structure or experiment files | :white_check_mark: | :ballot_box_with_check: | :white_check_mark: |
 | Project-based refinement                      | :white_check_mark: | :white_check_mark:      | :white_check_mark: |
@@ -568,10 +570,10 @@ model, experimental data, fit settings, results).
 
 <div class="ed-matrix" markdown="1">
 
-| Feature                           | LIB                | CLI                | APP                |
-| --------------------------------- | ------------------ | ------------------ | ------------------ |
-| List available tutorial notebooks | :white_check_mark: | :white_check_mark: | :heavy_minus_sign: |
-| Download tutorial notebooks       | :white_check_mark: | :white_check_mark: | :heavy_minus_sign: |
+| Feature                           | LIB                | CLI                | APP               |
+| --------------------------------- | ------------------ | ------------------ | ----------------- |
+| List available tutorial notebooks | :white_check_mark: | :white_check_mark: | :material-cancel: |
+| Download tutorial notebooks       | :white_check_mark: | :white_check_mark: | :material-cancel: |
 
 </div>
 
@@ -585,14 +587,14 @@ model, experimental data, fit settings, results).
 
 <div class="ed-matrix" markdown="1">
 
-| Feature                                   | LIB                | CLI    | APP                     |
-| ----------------------------------------- | ------------------ | ------ | ----------------------- |
-| Visualize unit cell                       | :white_check_mark: | :date: | :ballot_box_with_check: |
-| Visualize multiple unit cells             | :date:             | :date: | :date:                  |
-| Visualize atom sites as spheres           | :white_check_mark: | :date: | :white_check_mark:      |
-| Visualize atoms occupied same position    | :white_check_mark: | :date: | :date:                  |
-| Visualize bonds                           | :white_check_mark: | :date: | :date:                  |
-| Visualize polyhedra                       | :date:             | :date: | :date:                  |
+| Feature                                  | LIB                | CLI    | APP                     |
+| ---------------------------------------- | ------------------ | ------ | ----------------------- |
+| Visualize unit cell                      | :white_check_mark: | :date: | :ballot_box_with_check: |
+| Visualize multiple unit cells            | :date:             | :date: | :date:                  |
+| Visualize atom sites as spheres          | :white_check_mark: | :date: | :white_check_mark:      |
+| Visualize atoms occupied same position   | :white_check_mark: | :date: | :date:                  |
+| Visualize bonds                          | :white_check_mark: | :date: | :date:                  |
+| Visualize polyhedra                      | :date:             | :date: | :date:                  |
 | Interactive mode: _3D rotation, zooming_ | :white_check_mark: | :date: | :white_check_mark:      |
 
 </div>
@@ -614,13 +616,13 @@ model, experimental data, fit settings, results).
 
 <div class="ed-matrix" markdown="1">
 
-| Feature                               | LIB                | CLI                | APP                |
-| ------------------------------------- | ------------------ | ------------------ | ------------------ |
-| Plot experimental curve               | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Plot calculated curve                 | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Plot residual curve                   | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Plot Bragg peaks                      | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Interactive mode: _zooming, panning_ | :white_check_mark: | :heavy_minus_sign: | :white_check_mark: |
+| Feature                              | LIB                | CLI                | APP                |
+| ------------------------------------ | ------------------ | ------------------ | ------------------ |
+| Plot experimental curve              | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Plot calculated curve                | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Plot residual curve                  | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Plot Bragg peaks                     | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Interactive mode: _zooming, panning_ | :white_check_mark: | :material-cancel:  | :white_check_mark: |
 
 </div>
 
@@ -628,10 +630,10 @@ model, experimental data, fit settings, results).
 
 <div class="ed-matrix" markdown="1">
 
-| Feature                               | LIB                | CLI                | APP                |
-| ------------------------------------- | ------------------ | ------------------ | ------------------ |
-| Plot obs vs calc for reflections      | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Interactive mode: _zooming, panning_ | :white_check_mark: | :heavy_minus_sign: | :white_check_mark: |
+| Feature                              | LIB                | CLI                | APP                |
+| ------------------------------------ | ------------------ | ------------------ | ------------------ |
+| Plot obs vs calc for reflections     | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Interactive mode: _zooming, panning_ | :white_check_mark: | :material-cancel:  | :white_check_mark: |
 
 </div>
 
@@ -641,10 +643,10 @@ model, experimental data, fit settings, results).
 
 | Feature                                              | LIB                | CLI                | APP                |
 | ---------------------------------------------------- | ------------------ | ------------------ | ------------------ |
-| Live update of plots on parameter change with slider | :heavy_minus_sign: | :heavy_minus_sign: | :white_check_mark: |
-| Live update of plots during refinement               | :heavy_minus_sign: | :heavy_minus_sign: | :white_check_mark: |
-| Live update of fit quality (change in χ²) — _table_  | :white_check_mark: | :white_check_mark: | :heavy_minus_sign: |
-| Live update of fit quality (change in χ²) — _chart_  | :date:             | :heavy_minus_sign: | :date:             |
+| Live update of plots on parameter change with slider | :material-cancel:  | :material-cancel:  | :white_check_mark: |
+| Live update of plots during refinement               | :material-cancel:  | :material-cancel:  | :white_check_mark: |
+| Live update of fit quality (change in χ²) — _table_  | :white_check_mark: | :white_check_mark: | :material-cancel:  |
+| Live update of fit quality (change in χ²) — _chart_  | :date:             | :material-cancel:  | :date:             |
 | Parameter evolution (sequential refinement)          | :white_check_mark: | :white_check_mark: | :date:             |
 | Correlation between parameters                       | :white_check_mark: | :white_check_mark: | :date:             |
 
@@ -665,9 +667,9 @@ model, experimental data, fit settings, results).
 | User guide                          | :white_check_mark: | :white_check_mark: | :ballot_box_with_check: |
 | Tutorials                           | :white_check_mark: | :date:             | :date:                  |
 | Verification                        | :white_check_mark: | :white_check_mark: | :date:                  |
-| Command-line interface              | :heavy_minus_sign: | :white_check_mark: | :heavy_minus_sign:      |
+| Command-line interface              | :material-cancel:  | :white_check_mark: | :material-cancel:       |
 | Quick Reference                     | :white_check_mark: | :white_check_mark: | :date:                  |
-| API reference                       | :white_check_mark: | :heavy_minus_sign: | :heavy_minus_sign:      |
+| API reference                       | :white_check_mark: | :material-cancel:  | :material-cancel:       |
 
 </div>
 
@@ -680,16 +682,16 @@ that will be split into detailed rows once work begins).
 
 <div class="ed-matrix" markdown="1">
 
-| Feature                                                                   | LIB    | CLI                | APP                |
-| ------------------------------------------------------------------------- | ------ | ------------------ | ------------------ |
-| Set free parameters by category<br/>(e.g. all atomic positions, all ADPs) | :date: | :date:             | :date:             |
-| Add category with fit quality metrics<br/>(e.g. chi2, R-factors)          | :date: | :date:             | :date:             |
-| Restraints (soft constraints, e.g. bond lengths, angles)                  | :date: | :date:             | :date:             |
-| Refinement using analytical derivatives                                   | :date: | :date:             | :date:             |
-| Global optimization algorithms (e.g. simulated annealing)                 | :date: | :date:             | :date:             |
-| Incommensurate structures — EPIC                                          | :date: | :date:             | :date:             |
-| 2D Rietveld refinement — EPIC                                             | :date: | :date:             | :date:             |
-| Built-in refinement strategies for common workflows                       | :date: | :date:             | :date:             |
-| Chatbot for natural-language requests during analysis                     | :date: | :heavy_minus_sign: | :heavy_minus_sign: |
+| Feature                                                                   | LIB    | CLI               | APP               |
+| ------------------------------------------------------------------------- | ------ | ----------------- | ----------------- |
+| Set free parameters by category<br/>(e.g. all atomic positions, all ADPs) | :date: | :date:            | :date:            |
+| Add category with fit quality metrics<br/>(e.g. chi2, R-factors)          | :date: | :date:            | :date:            |
+| Restraints (soft constraints, e.g. bond lengths, angles)                  | :date: | :date:            | :date:            |
+| Refinement using analytical derivatives                                   | :date: | :date:            | :date:            |
+| Global optimization algorithms (e.g. simulated annealing)                 | :date: | :date:            | :date:            |
+| Incommensurate structures — EPIC                                          | :date: | :date:            | :date:            |
+| 2D Rietveld refinement — EPIC                                             | :date: | :date:            | :date:            |
+| Built-in refinement strategies for common workflows                       | :date: | :date:            | :date:            |
+| Chatbot for natural-language requests during analysis                     | :date: | :material-cancel: | :material-cancel: |
 
 </div>
