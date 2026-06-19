@@ -5,200 +5,320 @@ icon: material/clipboard-check-outline
 
 # :material-clipboard-check-outline: Features
 
-This page is the single source of truth for what EasyDiffraction can do
-today and what is planned. Each capability is tracked across the three
-ways you can use EasyDiffraction:
+EasyDiffraction calculates diffraction patterns from a structural model
+and instrument settings, and refines that model against measured data.
+This page is the single source of truth for **what it can do today and
+what is planned**, across powder and single-crystal diffraction, total
+scattering (PDF), and the analysis tools around them.
 
-- **LIB** – Python library API
-- **CLI** – command-line interface (text-based input and output)
-- **APP** – graphical application
+Jump to a section:
 
-Implementation status:
+- [Structure model](#1-structure-model) — crystal and (planned) magnetic
+  structures.
+- [Experiment model](#2-experiment-model) — powder/single-crystal Bragg,
+  total scattering, peak profiles, instrument terms.
+- [Multi-dataset support](#3-multi-dataset-support),
+  [Analysis & fitting](#4-analysis-fitting),
+  [Refinement execution](#5-refinement-execution),
+  [Constraints](#6-constraints).
+- [Data management](#7-data-management),
+  [Visualization](#8-visualization),
+  [Documentation](#9-user-documentation),
+  [Backlog](#10-backlog).
+
+## Calculation engines
+
+Most physics is computed by a pluggable **calculation engine**; some
+terms are applied by EasyDiffraction itself around the engine. You choose
+the engine per experiment (see
+[`calculator.type`](../user-guide/parameters/experiment/calculator.md)).
+
+- `cryspy` — Python crystallographic engine for powder/single-crystal
+  Bragg diffraction (neutron & X-ray). Project:
+  [CrysPy](https://github.com/ikibalin/cryspy).
+- `crysfml` — the Crystallographic Fortran Modules Library, accessed
+  through its CFL Python API; used for constant-wavelength Bragg
+  diffraction. Project:
+  [CrysFML](https://code.ill.fr/scientific-software/crysfml).
+- `pdffit2` — pair-distribution-function engine (total scattering), via
+  diffpy. Project:
+  [diffpy.pdffit2](https://github.com/diffpy/diffpy.pdffit2).
+- `easydiffraction` — applied directly by EasyDiffraction, independent of
+  the engine (e.g. background, scale, absorption, the Kα₁/Kα₂ doublet).
+
+## How to read this page
+
+Each capability is tracked across the three ways to use EasyDiffraction:
+**LIB** (Python library), **CLI** (command-line interface), **APP**
+(graphical application). The status icons:
 
 - :white_check_mark: Done
-- :ballot_box_with_check: Partially done
+- :ballot_box_with_check: Partially done — available with at least one
+  engine/interface, while others are still planned or in progress
 - :construction: Work in progress
-- :date: Planned
-  - :date: 5/5 – `highest` Urgent. Needs attention ASAP
-  - :date: 4/5 – `high` Should be prioritized soon
-  - :date: 3/5 – `medium` Normal/default priority
-  - :date: 2/5 – `low` Low importance
-  - :date: 1/5 – `lowest` Very low urgency
-- — Not applicable
+- :date: Planned (no priority assigned yet)
+    - :date: 5/5 `highest` · 4/5 `high` · 3/5 `medium` · 2/5 `low` ·
+      1/5 `lowest`
+- :heavy_minus_sign: Not applicable — the engine/interface does not
+  provide this and is not expected to (e.g. a PDF-only engine for a
+  Bragg-only term)
 
-Each implemented capability lists the calculation engine(s) that provide
-it (`cryspy`, `crysfml`, `pdffit2`), or `easydiffraction` where
-EasyDiffraction performs it directly rather than through a calculation
-engine. Structure-model inputs are shared and consumed by every active
-engine. Where the backend uses a specific profile keyword it is shown in
-quotes (e.g. `cryspy` "Gauss"). We also include `FullProf`
-cross-references to the equivalent `.pcr` entry where applicable, to
-help users familiar with `FullProf` understand how their existing
-knowledge and workflows map to EasyDiffraction.
+The **LIB column** shows the overall status: :white_check_mark: when every
+relevant engine is done (engines that simply don't apply are marked
+:heavy_minus_sign:), and :ballot_box_with_check: when at least one engine
+is done but others are in progress or planned.
 
-In the CLI column, :ballot_box_with_check: marks a capability that is
-supported but set up by editing the project's text files (`.edi`/CIF) in
-a separate editor — the command-line interface runs refinements (`fit`,
-`display`, `undo`) but has no command to edit models, parameters, or
-constraints directly.
+Inside the **Feature** cell, each line carries its own icon:
 
----
+- The **engine** lines show per-engine status, e.g. `- :white_check_mark:
+  cryspy`, `- :date: crysfml`. A backend keyword is shown in quotes
+  (e.g. `cryspy` "Gauss").
+- :material-link-variant: cross-references the equivalent FullProf
+  `.pcr` entry, to help users coming from FullProf.
+- `- :material-check-decagram:` links to the
+  [Verification](../verification/index.md) page where the calculation is
+  cross-checked against an independent reference.
 
-# 1. Structure Model
+In the **CLI column**, :ballot_box_with_check: marks a capability that is
+supported but configured by editing the project text files (`.edi`/CIF)
+in a separate editor — the CLI runs refinements (`fit`, `display`,
+`undo`) but has no command to edit models, parameters, or constraints
+directly.
 
-## 1.1 Crystal Structure
+!!! note "Epics shown as single rows"
 
-### Space Group
-
-| Feature<img width=450/>                                                           | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
-| --------------------------------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
-| Hermann-Mauguin space-group symbol<br/>- `cryspy`<br/>- `crysfml`<br/>- `pdffit2` | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Space group IT number                                                             | :date:             | :date:             | :date:             |
-| IT coordinate system code<br/>- `cryspy`                                          | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-
-### Cell
-
-| Feature<img width=450/>                                          | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
-| ---------------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
-| Lengths _a, b, c_<br/>- `cryspy`<br/>- `crysfml`<br/>- `pdffit2` | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Angles _α, β, γ_<br/>- `cryspy`<br/>- `crysfml`<br/>- `pdffit2`  | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-
-### Atom Sites
-
-| Feature<img width=450/>                                                                                     | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
-| ----------------------------------------------------------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
-| X-ray scattering factors (tabulated)<br/>- `cryspy`<br/>- `crysfml`<br/>- `pdffit2`                         | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Neutron scattering lengths (tabulated, natural element)<br/>- `cryspy`<br/>- `crysfml`<br/>- `pdffit2`      | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Isotope-specific neutron scattering length<br/>_(e.g. ¹¹B, ²H — beyond the natural element)_<br/>- `cryspy` | :white_check_mark: | :white_check_mark: | :date:             |
-| Custom neutron scattering length<br/>- `FullProf` (cross-ref) "Nsc (user-defined scattering)"               | :date:             | :date:             | :date:             |
-| Fractional coordinates _x, y, z_<br/>- `cryspy`<br/>- `crysfml`<br/>- `pdffit2`                             | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Occupancy<br/>- `cryspy`<br/>- `crysfml`<br/>- `pdffit2`                                                    | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Symmetry _wyckoff_letter_<br/>- `easydiffraction`                                                           | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-
-### Atomic Displacement (ADP)
-
-| Feature<img width=450/>                                                            | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
-| ---------------------------------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
-| Isotropic _Biso_<br/>- `cryspy`<br/>- `crysfml`<br/>- `pdffit2`                    | :white_check_mark: | :white_check_mark: | :date:             |
-| Isotropic _Uiso_<br/>- `cryspy`<br/>- `crysfml`<br/>- `pdffit2`                    | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Anisotropic _Bani_ (_B11, B22, B33, B12, B13, B23_)<br/>- `cryspy`<br/>- `pdffit2` | :white_check_mark: | :white_check_mark: | :date:             |
-| Anisotropic _Uani_ (_U11, U22, U33, U12, U13, U23_)<br/>- `cryspy`<br/>- `pdffit2` | :white_check_mark: | :white_check_mark: | :date:             |
-| Anisotropic _β_ (_β11, β22, β33, β12, β13, β23_)<br/>- `cryspy`                    | :white_check_mark: | :white_check_mark: | :date:             |
+    Large areas still on the roadmap — magnetic structures, polarized
+    neutron diffraction, 2D Rietveld, incommensurate structures — are
+    listed as one top-level row each. They are **epics** that will be
+    broken into detailed rows once work starts. Already-implemented areas
+    are shown in full detail.
 
 ---
 
-## 1.2 Magnetic Structure - EPIC
+## 1. Structure Model
 
-| Feature<img width=450/>                                                                             | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
+### 1.1 Crystal Structure
+
+#### Space Group
+
+<div class="ed-matrix" markdown="1">
+
+| Feature                                                                             | LIB      | CLI | APP |
+| --------------------------------------------------------------------------------------------------- | ----------------------- | ------------------ | ------------------ |
+| Hermann-Mauguin space-group symbol<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :white_check_mark: `pdffit2` | :white_check_mark:      | :white_check_mark: | :white_check_mark: |
+| Space group IT number<br/>- :date: `cryspy`<br/>- :date: `crysfml`                                  | :date:                  | :date:             | :date:             |
+| IT coordinate system code<br/>- :white_check_mark: `cryspy`<br/>- :date: `crysfml`                  | :ballot_box_with_check: | :white_check_mark: | :white_check_mark: |
+
+</div>
+
+#### Cell
+
+<div class="ed-matrix" markdown="1">
+
+| Feature                                                                            | LIB | CLI | APP |
+| ------------------------------------------------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
+| Lengths _a, b, c_<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :white_check_mark: `pdffit2` | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Angles _α, β, γ_<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :white_check_mark: `pdffit2`  | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+
+</div>
+
+#### Atom Sites
+
+<div class="ed-matrix" markdown="1">
+
+| Feature                                                                                                                          | LIB      | CLI | APP |
+| ---------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ------------------ | ------------------ |
+| X-ray scattering factors (tabulated)<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :white_check_mark: `pdffit2`   | :white_check_mark:      | :white_check_mark: | :white_check_mark: |
+| Neutron scattering lengths (tabulated, natural element)<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :white_check_mark: `pdffit2` | :white_check_mark:      | :white_check_mark: | :white_check_mark: |
+| Isotope-specific neutron scattering length<br/>_(e.g. ¹¹B, ²H — beyond the natural element)_<br/>- :white_check_mark: `cryspy` [:material-check-decagram:](../verification/pd-neut-cwl_LaB6_11B.ipynb)<br/>- :date: `crysfml`<br/>- :heavy_minus_sign: `pdffit2`| :ballot_box_with_check: | :white_check_mark: | :date:             |
+| Custom neutron scattering length<br/>- :date: `cryspy`<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "Nsc (user-defined scattering)"     | :date:                  | :date:             | :date:             |
+| Fractional coordinates _x, y, z_<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :white_check_mark: `pdffit2`        | :white_check_mark:      | :white_check_mark: | :white_check_mark: |
+| Occupancy<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :white_check_mark: `pdffit2`                              | :white_check_mark:      | :white_check_mark: | :white_check_mark: |
+| Symmetry _wyckoff_letter_<br/>- :white_check_mark: `easydiffraction`                                                                          | :white_check_mark:      | :white_check_mark: | :white_check_mark: |
+
+</div>
+
+#### Atomic Displacement (ADP)
+
+<div class="ed-matrix" markdown="1">
+
+| Feature                                                                                                                       | LIB      | CLI | APP |
+| ------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ------------------ | ------------------ |
+| Isotropic _Biso_<br/>- :white_check_mark: `cryspy` [:material-check-decagram:](../verification/pd-neut-cwl_Y2O3_isotropic-adp.ipynb)<br/>- :white_check_mark: `crysfml`<br/>- :white_check_mark: `pdffit2`| :white_check_mark:      | :white_check_mark: | :date:             |
+| Isotropic _Uiso_<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :white_check_mark: `pdffit2`                      | :white_check_mark:      | :white_check_mark: | :white_check_mark: |
+| Anisotropic _Bani_ (_B11…B23_)<br/>- :white_check_mark: `cryspy`<br/>- :date: `crysfml`<br/>- :white_check_mark: `pdffit2`                    | :ballot_box_with_check: | :white_check_mark: | :date:             |
+| Anisotropic _Uani_ (_U11…U23_)<br/>- :white_check_mark: `cryspy`<br/>- :date: `crysfml`<br/>- :white_check_mark: `pdffit2`                    | :ballot_box_with_check: | :white_check_mark: | :date:             |
+| Anisotropic _β_ (_β11…β23_)<br/>- :white_check_mark: `cryspy` [:material-check-decagram:](../verification/pd-neut-cwl_Y2O3_beta-adp.ipynb)<br/>- :date: `crysfml`<br/>- :date: `pdffit2`| :ballot_box_with_check: | :white_check_mark: | :date:             |
+
+</div>
+
+!!! note
+
+    CrysFML refines only isotropic ADPs today; for anisotropic atoms it
+    uses the isotropic-equivalent _B_, hence the :date: for `crysfml` on
+    the anisotropic rows.
+
+---
+
+### 1.2 Magnetic Structure — EPIC
+
+Magnetic structure refinement is an **epic** (one row per area for now).
+
+<div class="ed-matrix" markdown="1">
+
+| Feature                                                                             | LIB | CLI | APP |
 | --------------------------------------------------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
 | Irreducible representations                                                                         | :date:             | :date:             | :date:             |
 | Magnetic Space Groups                                                                               | :date:             | :date:             | :date:             |
 | Symmetry-adapted modes                                                                              | :date:             | :date:             | :date:             |
-| Magnetic propagation vector (_kx, ky, kz_)<br/>- `FullProf` (cross-ref) "Nvk (propagation vectors)" | :date:             | :date:             | :date:             |
-| Magnetic moments (_mx, my, mz_)<br/>- `FullProf` (cross-ref) "Rx, Ry, Rz"                           | :date:             | :date:             | :date:             |
-| Local Susceptibility (_𝜒11, 𝜒22, 𝜒33, 𝜒12, 𝜒13, 𝜒23_)                                               | :date:             | :date:             | :date:             |
+| Magnetic propagation vector (_kx, ky, kz_)<br/>- :material-link-variant: `FullProf` "Nvk (propagation vectors)" | :date:             | :date:             | :date:             |
+| Magnetic moments (_mx, my, mz_)<br/>- :material-link-variant: `FullProf` "Rx, Ry, Rz"                           | :date:             | :date:             | :date:             |
+| Local Susceptibility (_𝜒11…𝜒23_)                                                                    | :date:             | :date:             | :date:             |
+
+</div>
 
 ---
 
-# 2. Experiment Model
+## 2. Experiment Model
 
-| Feature<img width=450/>                              | LIB<img width=40/>      | CLI<img width=39/>      | APP<img width=33/>      |
+<div class="ed-matrix" markdown="1">
+
+| Technique                            | LIB      | CLI      | APP      |
 | ---------------------------------------------------- | ----------------------- | ----------------------- | ----------------------- |
-| 2.1. Powder Diffraction                              | :ballot_box_with_check: | :ballot_box_with_check: | :ballot_box_with_check: |
-| 2.1.1. Common features                               | :ballot_box_with_check: | :ballot_box_with_check: | :ballot_box_with_check: |
-| 2.1.2. Standard Bragg diffraction (CWL)              | :ballot_box_with_check: | :ballot_box_with_check: | :ballot_box_with_check: |
-| 2.1.2. Standard Bragg diffraction (TOF)              | :ballot_box_with_check: | :ballot_box_with_check: | :ballot_box_with_check: |
-| 2.1.3. Total Scattering (Pair Distribution Function) | :ballot_box_with_check: | :ballot_box_with_check: | :date:                  |
-| 2.2. Single-Crystal Diffraction                      | :ballot_box_with_check: | :ballot_box_with_check: | :ballot_box_with_check: |
-| 2.2.1. Single-Crystal Diffraction (CWL)              | :ballot_box_with_check: | :ballot_box_with_check: | :ballot_box_with_check: |
-| 2.2.2. Single-Crystal Diffraction (TOF)              | :ballot_box_with_check: | :ballot_box_with_check: | :ballot_box_with_check: |
-| 2.3. Polarized Powder Diffraction                    | :date:                  | :date:                  | :date:                  |
-| 2.3.1. Flipping-ratio method (TOF)                   | :date:                  | :date:                  | :date:                  |
-| 2.3.2. Flipping-ratio method (CWL)                   | :date:                  | :date:                  | :date:                  |
-| 2.4. Polarized Single-Crystal Diffraction            | :date:                  | :date:                  | :date:                  |
-| 2.4.1. Flipping-ratio method (CWL)                   | :date:                  | :date:                  | :date:                  |
-| 2.4.2. Flipping-ratio method (TOF)                   | :date:                  | :date:                  | :date:                  |
-| 2.4.3. XYZ Polarisation                              | :date:                  | :date:                  | :date:                  |
-| 2.4.4. Spherical neutron polarimetry                 | :date:                  | :date:                  | :date:                  |
+| [2.1. Powder Diffraction](#21-powder-diffraction)    | :ballot_box_with_check: | :ballot_box_with_check: | :ballot_box_with_check: |
+| [2.2. Single-Crystal Diffraction](#22-single-crystal-diffraction) | :ballot_box_with_check: | :ballot_box_with_check: | :ballot_box_with_check: |
+| 2.3. Polarized Powder Diffraction — EPIC             | :date:                  | :date:                  | :date:                  |
+| 2.4. Polarized Single-Crystal Diffraction — EPIC     | :date:                  | :date:                  | :date:                  |
+
+</div>
 
 ---
 
-## 2.1. Powder Diffraction
+### 2.1. Powder Diffraction
 
-## 2.1.1. Common features
+#### 2.1.1. Common features
 
-### Linked Phases
+##### Linked Phases
 
-| Feature<img width=450/>              | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
-| ------------------------------------ | ------------------ | ------------------ | ------------------ |
-| Scale factor<br/>- `easydiffraction` | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+<div class="ed-matrix" markdown="1">
 
-### Excluded Regions
+| Feature                                | LIB | CLI | APP |
+| ------------------------------------------------------ | ------------------ | ------------------ | ------------------ |
+| Scale factor<br/>- :white_check_mark: `easydiffraction` | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 
-| Feature<img width=450/>                                            | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
-| ------------------------------------------------------------------ | ------------------ | ------------------ | ------------------ |
-| Multiple regions<br/>_start/end positions_<br/>- `easydiffraction` | :white_check_mark: | :white_check_mark: | :date:             |
+</div>
 
-## 2.1.2. Standard Bragg diffraction
+##### Excluded Regions
 
-### Fitting Methods
+<div class="ed-matrix" markdown="1">
 
-| Feature<img width=450/>                                                                       | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
-| --------------------------------------------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
-| Rietveld refinement (full pattern)<br/>- `cryspy`<br/>- `crysfml`                             | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Le Bail refinement (profile matching)<br/>- `FullProf` (cross-ref) "Jbt=2 (profile matching)" | :date:             | :date:             | :date:             |
+| Feature                                                              | LIB | CLI | APP |
+| ----------------------------------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
+| Multiple regions<br/>_start/end positions_<br/>- :white_check_mark: `easydiffraction` | :white_check_mark: | :white_check_mark: | :date:             |
 
-### Background
+</div>
 
-| Feature<img width=450/>                                                                                                             | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
-| ----------------------------------------------------------------------------------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
-| Line segments type _x, y_<br/>- `easydiffraction`<br/>- `FullProf` (cross-ref) "Nba" (linear interpolation points)                  | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Chebyshev polynomial type _order, coefficient_<br/>- `easydiffraction`<br/>- `FullProf` (cross-ref) "Nba=0 (polynomial background)" | :white_check_mark: | :white_check_mark: | :date:             |
-| Automatic background estimation<br/>_auto, arPLS, FABC, SNIP_<br/>- `easydiffraction`                                               | :white_check_mark: | :white_check_mark: | :date:             |
+#### 2.1.2. Standard Bragg diffraction
 
-### Preferred Orientation
+##### Fitting Methods
 
-| Feature<img width=450/>                                                                                                         | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
-| ------------------------------------------------------------------------------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
-| March–Dollase<br/> _march_r, random fraction, hkl axis_<br/>- `cryspy`<br/>- `FullProf` (cross-ref) "Nor=1", "Pref1/2, Pr1/2/3" | :white_check_mark: | :white_check_mark: | :date:             |
+<div class="ed-matrix" markdown="1">
 
-### Instrument — Constant Wavelength
+| Feature                                                                                              | LIB | CLI | APP |
+| ------------------------------------------------------------------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
+| Rietveld refinement (full pattern)<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`             | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Le Bail refinement (profile matching)<br/>- :date: `cryspy`<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "Jbt=2 (profile matching)" | :date:             | :date:             | :date:             |
 
-| Feature<img width=450/>                                                                                                                                                                    | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------ | ------------------ | ------------------ |
-| Wavelength<br/>- `cryspy`<br/>- `crysfml`<br/>- `FullProf` (cross-ref) "Lambda1"                                                                                                           | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Second wavelength _λ₂, I₂/I₁ ratio_<br/>- `easydiffraction`<br/>- `FullProf` (cross-ref) "Lambda2, Ratio"                                                                                  | :white_check_mark: | :white_check_mark: | :date:             |
-| 2θ offset<br/>- `cryspy`<br/>- `crysfml`<br/>- `FullProf` (cross-ref) "Zero"                                                                                                               | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Sample displacement correction<br/>- `cryspy`<br/>- `FullProf` (cross-ref) "SyCos, SySin"                                                                                                  | :white_check_mark: | :white_check_mark: | :date:             |
-| Sample transparency correction<br/>- `cryspy`                                                                                                                                              | :white_check_mark: | :white_check_mark: | :date:             |
-| Absorption correction (cylinder, Hewat)<br/>- `easydiffraction`<br/>- `FullProf` (cross-ref) "muR"                                                                                         | :white_check_mark: | :white_check_mark: | :date:             |
-| X-ray Lorentz-polarization correction<br/>_polarization coefficient, monochromator 2θ_<br/>- `cryspy`<br/>- `easydiffraction` (for `crysfml`)<br/>- `FullProf` (cross-ref) "Cthm, Rpolarz" | :white_check_mark: | :white_check_mark: | :date:             |
+</div>
 
-### Instrument — Time-of-Flight
+##### Background
 
-| Feature<img width=450/>                                                                                                                                                                         | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
-| 2θ bank<br/>- `cryspy`<br/>- `FullProf` (cross-ref) "2-theta bank"                                                                                                                              | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| d → TOF conversion<br/>_offset, linear, quadratic_<br/>_(reciprocal defined but not yet wired)_<br/>- `cryspy`<br/>- `FullProf` (cross-ref) "Dtt1, Dtt2, Zero;<br/>reciprocal = Dtt2t (Npr=10)" | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+Background curves are evaluated by EasyDiffraction and added to the
+calculated pattern; the engine is not involved.
 
-### Peak Profile — Constant Wavelength
+<div class="ed-matrix" markdown="1">
 
-| Feature<img width=450/>                                                                                                                                                                                                                                          | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
-| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
-| Thompson-Cox-Hastings pseudo-Voigt<br/>_Gaussian broadening U, V, W._<br/>_Lorentzian broadening X, Y_<br/>- `cryspy`<br/>- `crysfml`<br/>- `FullProf` (cross-ref) "Npr=7"                                                                                       | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Thompson-Cox-Hastings pseudo-Voigt<br/>+ Bérar-Baldinozzi asymmetry<br/>_Gaussian broadening U, V, W._<br/>_Lorentzian broadening X, Y_<br/>_Bérar-Baldinozzi empirical asymmetry a₀, b₀, a₁, b₁_<br/>- `cryspy`<br/>- `FullProf` (cross-ref) "Npr=7" + "Asy1-4" | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Thompson-Cox-Hastings pseudo-Voigt<br/>+ Finger-Cox-Jephcoat asymmetry<br/>_Gaussian broadening U, V, W._<br/>_Lorentzian broadening X, Y_<br/>_Finger-Cox-Jephcoat asymmetry 1, 2_<br/>- `crysfml`<br/>- `FullProf` (cross-ref) "Npr=7" + "S_L/D_L"             | :white_check_mark: | :white_check_mark: | :date:             |
+| Feature                                                                                                                                | LIB | CLI | APP |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
+| Line segments type _x, y_<br/>- :white_check_mark: `easydiffraction`<br/>- :material-link-variant: `FullProf` "Nba" (linear interpolation points)               | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Chebyshev polynomial type _order, coefficient_<br/>- :white_check_mark: `easydiffraction`<br/>- :material-link-variant: `FullProf` "Nba=0 (polynomial background)" | :white_check_mark: | :white_check_mark: | :date:             |
+| Automatic background estimation<br/>_auto, arPLS, FABC, SNIP_<br/>- :white_check_mark: `easydiffraction`                                             | :white_check_mark: | :white_check_mark: | :date:             |
 
-### Peak Profile — Time-of-Flight
+</div>
 
-| Feature<img width=450/>                                                                                                                                                                                                                                                                                                                   | LIB<img width=40/>      | CLI<img width=39/>      | APP<img width=33/> |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ----------------------- | ------------------ |
-| Pseudo-Voigt (non-convoluted)<br/>_Gaussian broadening σ₀, σ₁, σ₂._<br/>_Lorentzian broadening γ₀, γ₁, γ₂_<br/>- `cryspy` "non-conv-pseudo-Voigt"<br/>- `FullProf` (cross-ref) "Npr=7" (TOF)                                                                                                                                              | :white_check_mark:      | :white_check_mark:      | :date:             |
-| Jorgensen (back-to-back exponentials ⊗ Gaussian)<br/>_Gaussian broadening σ₀, σ₁, σ₂_<br/>_Back-to-back exponential rise α₀, α₁ and decay β₀, β₁_<br/>- `cryspy` "Gauss"<br/>- `FullProf` (cross-ref) "Npr=9" (Gaussian limit)                                                                                                            | :white_check_mark:      | :white_check_mark:      | :white_check_mark: |
-| Jorgensen-Von Dreele<br/>(back-to-back exponentials ⊗ pseudo-Voigt)<br/>_Gaussian broadening σ₀, σ₁, σ₂._<br/>_Lorentzian broadening γ₀, γ₁, γ₂_<br/>_Back-to-back exponential rise α₀, α₁ and decay β₀, β₁_<br/>- `cryspy` "pseudo-Voigt"<br/>- `FullProf` (cross-ref) "Npr=9"                                                           | :white_check_mark:      | :white_check_mark:      | :white_check_mark: |
-| Double back-to-back exponentials ⊗ pseudo-Voigt<br/>_Gaussian broadening σ₀, σ₁, σ₂._<br/>_Lorentzian broadening γ₀, γ₁, γ₂_<br/>_Rise α₁, α₂. Fast decay β₀₀, β₀₁._<br/>_Slow decay β₁₀. Switching r₀₁, r₀₂, r₀₃_<br/>- `cryspy` "type0m"<br/>- Z-Rietveld (cross-ref) "type0m"<br/>(no direct `FullProf` Npr; cf. Npr=10 two-component) | :ballot_box_with_check: | :ballot_box_with_check: | :date:             |
-| Ikeda-Carpenter ⊗ pseudo-Voigt<br/>_Moderator pulse α₀, α₁, β₀, κ_<br/>_Gaussian broadening σ₀, σ₁, σ₂._<br/>_Lorentzian broadening γ₀, γ₁, γ₂_<br/>- `FullProf` (cross-ref) "Npr=13"                                                                                                                                                     | :date:                  | :date:                  | :date:             |
-| Microstructural size/strain broadening<br/>_extends Jorgensen (Gaussian size_g, strain_g)_<br/>_and Jorgensen-Von Dreele (+ Lorentzian size_l, strain_l)_<br/>- available in `cryspy` backend;<br/>not yet exposed in `easydiffraction`<br/>- `FullProf` (cross-ref) "Iso-GSize, Iso-GStrain,<br/>Iso-LorSize, Iso-LorStrain"             | :date:                  | :date:                  | :date:             |
+##### Preferred Orientation
+
+<div class="ed-matrix" markdown="1">
+
+| Feature                                                                                                                                                                              | LIB | CLI | APP |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
+| March–Dollase<br/>_march_r, random fraction, hkl axis_<br/>- :construction: `cryspy` [:material-check-decagram:](../verification/pd-neut-cwl_LBCO_preferred-orientation.ipynb)<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "Nor=1", "Pref1/2, Pr1/2/3"| :construction:     | :construction:     | :date:             |
+
+</div>
+
+##### Instrument — Constant Wavelength
+
+<div class="ed-matrix" markdown="1">
+
+| Feature                                                                                                                                                                                                | LIB | CLI | APP |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
+| Wavelength<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :material-link-variant: `FullProf` "Lambda1"                                                                                              | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Second wavelength _λ₂, I₂/I₁ ratio_<br/>- :construction: `easydiffraction` (Kα₁/Kα₂ doublet; engine run twice) [:material-check-decagram:](../verification/pd-xray-cwl_LiF_doublet.ipynb)<br/>- :material-link-variant: `FullProf` "Lambda2, Ratio"| :construction:     | :construction:     | :date:             |
+| 2θ offset<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :material-link-variant: `FullProf` "Zero"                                                                                                  | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Sample displacement correction<br/>- :white_check_mark: `cryspy` [:material-check-decagram:](../verification/pd-neut-cwl_LaB6_sycos-sysin.ipynb)<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "SyCos, SySin"| :ballot_box_with_check: | :white_check_mark: | :date:             |
+| Sample transparency correction<br/>- :white_check_mark: `cryspy`<br/>- :date: `crysfml`                                                                                                                            | :ballot_box_with_check: | :white_check_mark: | :date:             |
+| Absorption correction (cylinder, Hewat)<br/>- :white_check_mark: `easydiffraction` [:material-check-decagram:](../verification/pd-neut-cwl_LaB6_absorption.ipynb)<br/>- :material-link-variant: `FullProf` "muR"| :white_check_mark: | :white_check_mark: | :date:             |
+| X-ray Lorentz-polarization correction<br/>_polarization coefficient, monochromator 2θ_<br/>- :white_check_mark: `cryspy` [:material-check-decagram:](../verification/pd-xray-cwl_LiF_single_polarization.ipynb)<br/>- :white_check_mark: `easydiffraction` (for `crysfml`)<br/>- :material-link-variant: `FullProf` "Cthm, Rpolarz"| :white_check_mark: | :white_check_mark: | :date:             |
+
+</div>
+
+##### Instrument — Time-of-Flight
+
+<div class="ed-matrix" markdown="1">
+
+| Feature                                                                                                                                                                                       | LIB | CLI | APP |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------ | ------------------ | ------------------ |
+| 2θ bank<br/>- :white_check_mark: `cryspy`<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "2-theta bank"                                                                                                | :ballot_box_with_check: | :white_check_mark: | :white_check_mark: |
+| d → TOF conversion<br/>_offset, linear, quadratic_<br/>_(reciprocal defined but not yet wired)_<br/>- :white_check_mark: `cryspy`<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "Dtt1, Dtt2, Zero;<br/>reciprocal = Dtt2t (Npr=10)" | :ballot_box_with_check: | :white_check_mark: | :white_check_mark: |
+
+</div>
+
+!!! note
+
+    CrysFML's TOF branch is not yet functional (it parses TOF input but
+    returns zero intensities), so TOF profiles and TOF instrument terms
+    are `cryspy`-only today; `crysfml` is marked :date:.
+
+##### Peak Profile — Constant Wavelength
+
+All three CWL profiles share the same **Thompson-Cox-Hastings
+pseudo-Voigt** peak shape (η derived from the Gaussian H_G(U, V, W) and
+Lorentzian H_L(X, Y) widths); they differ only in the asymmetry model.
+
+<div class="ed-matrix" markdown="1">
+
+| Feature                                                                                                                                                                                                                                                                       | LIB | CLI | APP |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
+| Thompson-Cox-Hastings pseudo-Voigt<br/>_Gaussian broadening U, V, W. Lorentzian broadening X, Y_<br/>- :white_check_mark: `cryspy` [:material-check-decagram:](../verification/pd-neut-cwl_LaB6_basic.ipynb)<br/>- :white_check_mark: `crysfml` [:material-check-decagram:](../verification/pd-xray-cwl_LiF_single.ipynb)<br/>- :material-link-variant: `FullProf` "Npr=7"| :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Thompson-Cox-Hastings pseudo-Voigt<br/>+ Bérar-Baldinozzi asymmetry<br/>_Bérar-Baldinozzi asymmetry a₀, b₀, a₁, b₁_<br/>- :white_check_mark: `cryspy` [:material-check-decagram:](../verification/pd-neut-cwl_PbSO4_beba-asymmetry.ipynb)<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "Npr=7" + "Asy1-4"| :ballot_box_with_check: | :white_check_mark: | :white_check_mark: |
+| Thompson-Cox-Hastings pseudo-Voigt<br/>+ Finger-Cox-Jephcoat asymmetry<br/>_Finger-Cox-Jephcoat asymmetry 1, 2_<br/>- :white_check_mark: `crysfml` [:material-check-decagram:](../verification/pd-neut-cwl_LaB6_fcj-asymmetry.ipynb)<br/>- :date: `cryspy`<br/>- :material-link-variant: `FullProf` "Npr=7" + "S_L/D_L"| :ballot_box_with_check: | :white_check_mark: | :date:             |
+
+</div>
+
+##### Peak Profile — Time-of-Flight
+
+<div class="ed-matrix" markdown="1">
+
+| Feature                                                                                                                                                                                                                                                                                                                          | LIB      | CLI      | APP |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------- | ----------------------- | ------------------ |
+| Pseudo-Voigt (non-convoluted)<br/>_Gaussian σ₀, σ₁, σ₂. Lorentzian γ₀, γ₁, γ₂_<br/>- :construction: `cryspy` "non-conv-pseudo-Voigt" [:material-check-decagram:](../verification/pd-neut-tof_Fe_pseudo-voigt.ipynb)<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "Npr=7" (TOF)| :construction:          | :construction:          | :date:             |
+| Jorgensen (back-to-back exp ⊗ Gaussian)<br/>_σ₀, σ₁, σ₂; rise α₀, α₁; decay β₀, β₁_<br/>- :construction: `cryspy` "Gauss" [:material-check-decagram:](../verification/pd-neut-tof_Si_jorgensen.ipynb)<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "Npr=9" (Gaussian limit)| :construction:          | :construction:          | :white_check_mark: |
+| Jorgensen-Von Dreele (back-to-back exp ⊗ pseudo-Voigt)<br/>_σ₀, σ₁, σ₂; γ₀, γ₁, γ₂; rise α₀, α₁; decay β₀, β₁_<br/>- :construction: `cryspy` "pseudo-Voigt" [:material-check-decagram:](../verification/pd-neut-tof_Si_jorgensen-von-dreele.ipynb)<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "Npr=9"| :construction:          | :construction:          | :white_check_mark: |
+| Double back-to-back exp ⊗ pseudo-Voigt<br/>_σ₀, σ₁, σ₂; γ₀, γ₁, γ₂; rise α₁, α₂; fast decay β₀₀, β₀₁; slow decay β₁₀; switching r₀₁, r₀₂, r₀₃_<br/>- :construction: `cryspy` "type0m"<br/>- :material-link-variant: Z-Rietveld "type0m" (no direct `FullProf` Npr; cf. Npr=10)                                                                                | :construction:          | :construction:          | :date:             |
+| Ikeda-Carpenter ⊗ pseudo-Voigt<br/>_Moderator pulse α₀, α₁, β₀, κ; σ₀…; γ₀…_<br/>- :date: `cryspy`<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "Npr=13"                                                                                                                                                                                  | :date:                  | :date:                  | :date:             |
+| Microstructural size/strain broadening<br/>_extends Jorgensen (size_g, strain_g) and JvD (+ size_l, strain_l)_<br/>- :construction: `cryspy` (in backend, not yet exposed)<br/>- :material-link-variant: `FullProf` "Iso-GSize, Iso-GStrain, Iso-LorSize, Iso-LorStrain"                                                                                       | :construction:          | :construction:          | :date:             |
+
+</div>
 
 TOF profiles by source type and relative performance:
 
@@ -210,132 +330,171 @@ TOF profiles by source type and relative performance:
 | Double back-to-back exponentials ⊗ pseudo-Voigt (Z-Rietveld type0m) | Spallation-source TOF; more elaborate asymmetric profile          | Slowest     |
 | Ikeda-Carpenter ⊗ pseudo-Voigt                                      | Spallation-source TOF; moderator pulse shape model                | Moderate    |
 
-## 2.1.3. Total Scattering (Pair Distribution Function)
+#### 2.1.3. Total Scattering (Pair Distribution Function)
 
-### Peak Profile
+<div class="ed-matrix" markdown="1">
 
-| Feature<img width=450/>                                                                                                                                                       | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
-| Gaussian-damped sinc termination function<br/>_cutoff q (Qmax), broadening (Qbroad), sharpening δ₁, δ₂_<br/>_damping (Qdamp), particle diameter (spdiameter)_<br/>- `pdffit2` | :white_check_mark: | :white_check_mark: | :date:             |
+| Feature                                                                                                                                                                                                                              | LIB | CLI | APP |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
+| Gaussian-damped sinc termination<br/>_cutoff Qmax, broadening Qbroad, sharpening δ₁, δ₂, damping Qdamp, particle diameter spdiameter_<br/>- :white_check_mark: `pdffit2` [:material-check-decagram:](../verification/total-neut-cwl_Ni_gaussian-damped-sinc.ipynb)| :white_check_mark: | :white_check_mark: | :date:             |
+
+</div>
 
 ---
 
-## 2.2. Single Crystal Diffraction
+### 2.2. Single Crystal Diffraction
 
-### Extinction
+#### Extinction
 
 CrysPy's extinction is an analytical Becker-Coppens spherical model with
 a Gaussian or Lorentzian mosaicity distribution.
 
-| Feature<img width=450/>                                                            | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
-| ---------------------------------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
-| Isotropic Becker-Coppens, Gaussian model:<br/>_radius, mosaicity_<br/>- `cryspy`   | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Isotropic Becker-Coppens, Lorentzian model:<br/>_radius, mosaicity_<br/>- `cryspy` | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Anisotropic extinction correction<br/>- `FullProf` (cross-ref) "Ext (Line 29)"     | :date:             | :date:             | :date:             |
+<div class="ed-matrix" markdown="1">
 
-### Twinning / domains
+| Feature                                                                                                                                                  | LIB | CLI | APP |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
+| Isotropic Becker-Coppens, Gaussian model<br/>_radius, mosaicity_<br/>- :white_check_mark: `cryspy` [:material-check-decagram:](../verification/sc-neut-cwl_Tb2Ti2O7_isotropic-extinction.ipynb)| :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Isotropic Becker-Coppens, Lorentzian model<br/>_radius, mosaicity_<br/>- :white_check_mark: `cryspy`                                                                  | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Anisotropic extinction correction<br/>- :date: `cryspy`<br/>- :material-link-variant: `FullProf` "Ext (Line 29)"                                                                 | :date:             | :date:             | :date:             |
 
-| Feature<img width=450/>                           | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
+</div>
+
+#### Twinning / domains
+
+<div class="ed-matrix" markdown="1">
+
+| Feature                           | LIB | CLI | APP |
 | ------------------------------------------------- | ------------------ | ------------------ | ------------------ |
 | Twinning / domains for single-crystal diffraction | :date:             | :date:             | :date:             |
 
-### Instrument — Constant Wavelength
+</div>
 
-| Feature<img width=450/>                                          | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
-| ---------------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
-| Wavelength<br/>- `cryspy`<br/>- `FullProf` (cross-ref) "Lambda1" | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Half wavelength (λ/2)<br/>- `FullProf` (cross-ref) "x-Lambda/2"  | :date:             | :date:             | :date:             |
+#### Instrument — Constant Wavelength
 
-### Instrument — Time-of-Flight
+<div class="ed-matrix" markdown="1">
 
-| Feature<img width=450/>                             | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
-| --------------------------------------------------- | ------------------ | ------------------ | ------------------ |
-| Individual wavelength per reflection<br/>- `cryspy` | :white_check_mark: | :white_check_mark: | :date:             |
+| Feature                                                                  | LIB | CLI | APP |
+| -------------------------------------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
+| Wavelength<br/>- :white_check_mark: `cryspy`<br/>- :material-link-variant: `FullProf` "Lambda1"     | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Half wavelength (λ/2)<br/>- :date: `cryspy`<br/>- :material-link-variant: `FullProf` "x-Lambda/2"   | :date:             | :date:             | :date:             |
 
----
+</div>
 
-## 2.3. Polarized Neutron Powder Diffraction - EPIC
+#### Instrument — Time-of-Flight
 
-| Feature<img width=450/>     | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
-| --------------------------- | ------------------ | ------------------ | ------------------ |
-| Flipping-ratio method (TOF) | :date:             | :date:             | :date:             |
-| Flipping-ratio method (CWL) | :date:             | :date:             | :date:             |
+<div class="ed-matrix" markdown="1">
 
-## 2.4. Polarized Neutron Single-Crystal Diffraction - EPIC
+| Feature                                               | LIB | CLI | APP |
+| ------------------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
+| Individual wavelength per reflection<br/>- :white_check_mark: `cryspy` | :white_check_mark: | :white_check_mark: | :date:             |
 
-| Feature<img width=450/>       | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
-| ----------------------------- | ------------------ | ------------------ | ------------------ |
-| Flipping-ratio method (TOF)   | :date:             | :date:             | :date:             |
-| Flipping-ratio method (CWL)   | :date:             | :date:             | :date:             |
-| XYZ Polarisation              | :date:             | :date:             | :date:             |
-| Spherical neutron polarimetry | :date:             | :date:             | :date:             |
+</div>
 
 ---
 
-# 3. Multi-Dataset Support
+### 2.3 / 2.4. Polarized Neutron Diffraction — EPIC
 
-| Feature<img width=450/>           | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
+Polarized-neutron diffraction is an epic; all parts are :date: planned
+(LIB / CLI / APP). Planned sub-parts:
+
+- **Powder** (2.3) — flipping-ratio method (TOF and CWL)
+- **Single crystal** (2.4) — flipping-ratio method (CWL and TOF), XYZ
+  polarisation analysis, spherical neutron polarimetry
+
+---
+
+## 3. Multi-Dataset Support
+
+<div class="ed-matrix" markdown="1">
+
+| Feature           | LIB | CLI | APP |
 | --------------------------------- | ------------------ | ------------------ | ------------------ |
 | Multiple structural data blocks   | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | Multiple experimental data blocks | :white_check_mark: | :white_check_mark: | :date:             |
 
+</div>
+
 ---
 
-# 4. Analysis (Fitting)
+## 4. Analysis (Fitting)
 
-### Calculation Modes
+#### Calculation Modes
 
-| Feature<img width=450/>                                                                                                                                            | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------ | ------------------ | ------------------ |
-| Calculate diffraction pattern for fitting/comparison<br/>against simulated or measured data<br/>- `cryspy`<br/>- `crysfml`<br/>- `pdffit2`                         | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Calculate diffraction pattern for simple view<br/>without fitting/comparison against<br/>simulated or measured data<br/>- `cryspy`<br/>- `crysfml`<br/>- `pdffit2` | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Calculate structure factors<br/>- `cryspy`                                                                                                                         | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+<div class="ed-matrix" markdown="1">
 
-### Refinement Algorithms (numerical derivatives)
+| Feature                                                                                                                                                | LIB | CLI | APP |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
+| Calculate diffraction pattern (for fitting/comparison)<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :white_check_mark: `pdffit2`        | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Calculate diffraction pattern (simple view, no data)<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :white_check_mark: `pdffit2`          | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Calculate structure factors<br/>- :white_check_mark: `cryspy`<br/>- :date: `crysfml`                                                                                 | :ballot_box_with_check: | :white_check_mark: | :white_check_mark: |
 
-| Feature<img width=450/>                               | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
+</div>
+
+#### Refinement Algorithms (numerical derivatives)
+
+Minimizers are EasyDiffraction's optimizers and run with any engine.
+
+<div class="ed-matrix" markdown="1">
+
+| Feature                               | LIB | CLI | APP |
 | ----------------------------------------------------- | ------------------ | ------------------ | ------------------ |
-| Levenberg–Marquardt<br/>LMFIT minimizer               | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Levenberg–Marquardt<br/>LMFIT minimizer (scipy-based) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Levenberg–Marquardt<br/>BUMPS minimizer               | :white_check_mark: | :white_check_mark: | :date:             |
-| Derivative-free minimization<br/>DFO-LS minimizer     | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Nelder-Mead<br/>BUMPS Amoeba minimizer                | :white_check_mark: | :white_check_mark: | :date:             |
-| Differential evolution<br/>BUMPS DE minimizer         | :white_check_mark: | :white_check_mark: | :date:             |
+| Levenberg–Marquardt — LMFIT minimizer                 | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Levenberg–Marquardt — LMFIT minimizer (scipy-based)   | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Levenberg–Marquardt — BUMPS minimizer                 | :white_check_mark: | :white_check_mark: | :date:             |
+| Derivative-free minimization — DFO-LS minimizer       | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Nelder-Mead — BUMPS Amoeba minimizer                  | :white_check_mark: | :white_check_mark: | :date:             |
+| Differential evolution — BUMPS DE minimizer           | :white_check_mark: | :white_check_mark: | :date:             |
 
-### Bayesian Analysis (sampling)
+</div>
 
-| Feature<img width=450/>                      | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
+#### Bayesian Analysis (sampling)
+
+<div class="ed-matrix" markdown="1">
+
+| Feature                      | LIB | CLI | APP |
 | -------------------------------------------- | ------------------ | ------------------ | ------------------ |
-| MCMC sampling<br/>BUMPS DREAM minimizer      | :white_check_mark: | :white_check_mark: | :date:             |
-| Affine-invariant ensemble sampling<br/>emcee | :white_check_mark: | :white_check_mark: | :date:             |
-| Resume sampling<br/>BUMPS DREAM minimizer    | :white_check_mark: | :white_check_mark: | :date:             |
-| Resume sampling<br/>emcee                    | :white_check_mark: | :white_check_mark: | :date:             |
+| MCMC sampling — BUMPS DREAM minimizer        | :white_check_mark: | :white_check_mark: | :date:             |
+| Affine-invariant ensemble sampling — emcee   | :white_check_mark: | :white_check_mark: | :date:             |
+| Resume sampling — BUMPS DREAM minimizer      | :white_check_mark: | :white_check_mark: | :date:             |
+| Resume sampling — emcee                      | :white_check_mark: | :white_check_mark: | :date:             |
 
-### Fit Strategies
+</div>
 
-| Feature<img width=450/>                                                                               | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
+#### Fit Strategies
+
+<div class="ed-matrix" markdown="1">
+
+| Feature                                                                               | LIB | CLI | APP |
 | ----------------------------------------------------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
-| Single fit of one experimental data block<br/>to one or more structural data blocks                   | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Single fit of one experiment to one or more structures                                                | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | Sequential fit of experimental data blocks                                                            | :white_check_mark: | :white_check_mark: | :date:             |
-| Joint fit of experimental data blocks<br/>within the same calculation engine                          | :white_check_mark: | :white_check_mark: | :date:             |
-| Joint fit of experimental data blocks using<br/>different calculation engines (e.g. CrysPy + Pdffit2) | :white_check_mark: | :white_check_mark: | :date:             |
+| Joint fit within the same calculation engine                                                          | :white_check_mark: | :white_check_mark: | :date:             |
+| Joint fit using different engines (e.g. CrysPy + Pdffit2)                                             | :white_check_mark: | :white_check_mark: | :date:             |
 | Custom weighting for joint fit: _weight per dataset_                                                  | :white_check_mark: | :white_check_mark: | :date:             |
 
-### Live Fitting
+</div>
 
-| Feature<img width=450/>                        | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
+#### Live Fitting
+
+<div class="ed-matrix" markdown="1">
+
+| Feature                        | LIB | CLI | APP |
 | ---------------------------------------------- | ------------------ | ------------------ | ------------------ |
 | Live fitting during real-time data acquisition | :date:             | :date:             | :date:             |
 
+</div>
+
 ---
 
-# 5. Refinement Execution
+## 5. Refinement Execution
 
-| Feature<img width=450/>                       | LIB<img width=40/> | CLI<img width=39/>      | APP<img width=33/> |
+<div class="ed-matrix" markdown="1">
+
+| Feature                       | LIB | CLI      | APP |
 | --------------------------------------------- | ------------------ | ----------------------- | ------------------ |
-| GUI-driven refinement workflow                | —                  | —                       | :white_check_mark: |
-| Command-line refinement execution             | —                  | :white_check_mark:      | —                  |
-| Scripted refinement workflow                  | :white_check_mark: | —                       | —                  |
+| GUI-driven refinement workflow                | :heavy_minus_sign: | :heavy_minus_sign:      | :white_check_mark: |
+| Command-line refinement execution             | :heavy_minus_sign: | :white_check_mark:      | :heavy_minus_sign: |
+| Scripted refinement workflow                  | :white_check_mark: | :heavy_minus_sign:      | :heavy_minus_sign: |
 | Parameter modification                        | :white_check_mark: | :ballot_box_with_check: | :white_check_mark: |
 | Load individual structure or experiment files | :white_check_mark: | :ballot_box_with_check: | :white_check_mark: |
 | Project-based refinement                      | :white_check_mark: | :white_check_mark:      | :white_check_mark: |
@@ -343,33 +502,44 @@ a Gaussian or Lorentzian mosaicity distribution.
 | Save refinement results to project            | :white_check_mark: | :white_check_mark:      | :white_check_mark: |
 | Undo last fit                                 | :white_check_mark: | :white_check_mark:      | :date:             |
 
+</div>
+
 ---
 
-# 6. Constraints
+## 6. Constraints
 
-| Feature<img width=450/>                                                                           | LIB<img width=40/> | CLI<img width=39/>      | APP<img width=33/>      |
+<div class="ed-matrix" markdown="1">
+
+| Feature                                                                           | LIB | CLI      | APP      |
 | ------------------------------------------------------------------------------------------------- | ------------------ | ----------------------- | ----------------------- |
 | Automatic symmetry constraints                                                                    | :white_check_mark: | :white_check_mark:      | :ballot_box_with_check: |
-| User-defined constraints<br/>Basic types, e.g.:<br/>"biso_Ba = biso_La"<br/>"occ_Ba = 1 - occ_La" | :white_check_mark: | :ballot_box_with_check: | :date:                  |
+| User-defined constraints<br/>e.g. "biso_Ba = biso_La", "occ_Ba = 1 - occ_La"                      | :white_check_mark: | :ballot_box_with_check: | :date:                  |
+
+</div>
 
 ---
 
-# 7. Data Management
+## 7. Data Management
 
-### Project Files
+#### Project Files
 
-Project files are a way to save and load the full state of a refinement,
-including the structure model, experimental data, fit settings, and
-results.
+A project file saves and loads the full refinement state (structure
+model, experimental data, fit settings, results).
 
-| Feature<img width=450/>     | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
+<div class="ed-matrix" markdown="1">
+
+| Feature     | LIB | CLI | APP |
 | --------------------------- | ------------------ | ------------------ | ------------------ |
 | Load full project from disk | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | Save full project to disk   | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 
-### Data Loading
+</div>
 
-| Feature<img width=450/>                     | LIB<img width=40/> | CLI<img width=39/>      | APP<img width=33/> |
+#### Data Loading
+
+<div class="ed-matrix" markdown="1">
+
+| Feature                     | LIB | CLI      | APP |
 | ------------------------------------------- | ------------------ | ----------------------- | ------------------ |
 | Add structure (to project) from CIF         | :white_check_mark: | :ballot_box_with_check: | :white_check_mark: |
 | Add structure (to project) from edi         | :white_check_mark: | :ballot_box_with_check: | :white_check_mark: |
@@ -378,29 +548,41 @@ results.
 | Add experiment data (to project) from ASCII | :white_check_mark: | :ballot_box_with_check: | :white_check_mark: |
 | Add experiment data (to project) from NeXus | :date:             | :date:                  | :date:             |
 
-### SciCat Integration
+</div>
 
-| Feature<img width=450/>       | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
+#### SciCat Integration
+
+<div class="ed-matrix" markdown="1">
+
+| Feature       | LIB | CLI | APP |
 | ----------------------------- | ------------------ | ------------------ | ------------------ |
 | Load full project from SciCat | :date:             | :date:             | :date:             |
 | Save full project to SciCat   | :date:             | :date:             | :date:             |
 
-### External Resources
+</div>
 
-| Feature<img width=450/>           | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
+#### External Resources
+
+<div class="ed-matrix" markdown="1">
+
+| Feature           | LIB | CLI | APP |
 | --------------------------------- | ------------------ | ------------------ | ------------------ |
-| List available tutorial notebooks | :white_check_mark: | :white_check_mark: | —                  |
-| Download tutorial notebooks       | :white_check_mark: | :white_check_mark: | —                  |
+| List available tutorial notebooks | :white_check_mark: | :white_check_mark: | :heavy_minus_sign: |
+| Download tutorial notebooks       | :white_check_mark: | :white_check_mark: | :heavy_minus_sign: |
+
+</div>
 
 ---
 
-# 8. Visualization
+## 8. Visualization
 
-## 8.1. Structure
+### 8.1. Structure
 
-### Crystal Structure
+#### Crystal Structure
 
-| Feature<img width=450/>                   | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/>      |
+<div class="ed-matrix" markdown="1">
+
+| Feature                   | LIB | CLI | APP      |
 | ----------------------------------------- | ------------------ | ------------------ | ----------------------- |
 | Visualize unit cell                       | :white_check_mark: | :date:             | :ballot_box_with_check: |
 | Visualize multiple unit cells             | :date:             | :date:             | :date:                  |
@@ -410,52 +592,68 @@ results.
 | Visualize polyhedra                       | :date:             | :date:             | :date:                  |
 | Interactive mode<br/>3D rotation, zooming | :white_check_mark: | :date:             | :white_check_mark:      |
 
-### Magnetic Structure
+</div>
 
-| Feature<img width=450/>           | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
+#### Magnetic Structure
+
+<div class="ed-matrix" markdown="1">
+
+| Feature           | LIB | CLI | APP |
 | --------------------------------- | ------------------ | ------------------ | ------------------ |
 | Visualize magnetic moments        | :date:             | :date:             | :date:             |
 | Visualize magnetization densities | :date:             | :date:             | :date:             |
 
----
+</div>
 
-## 8.2. Experiment
+### 8.2. Experiment
 
-### Powder Diffraction
+#### Powder Diffraction
 
-| Feature<img width=450/>               | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
+<div class="ed-matrix" markdown="1">
+
+| Feature               | LIB | CLI | APP |
 | ------------------------------------- | ------------------ | ------------------ | ------------------ |
 | Plot experimental curve               | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | Plot calculated curve                 | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | Plot residual curve                   | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | Plot Bragg peaks                      | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Interactive mode<br/>zooming, panning | :white_check_mark: | —                  | :white_check_mark: |
+| Interactive mode<br/>zooming, panning | :white_check_mark: | :heavy_minus_sign: | :white_check_mark: |
 
-### Single Crystal Diffraction
+</div>
 
-| Feature<img width=450/>               | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
+#### Single Crystal Diffraction
+
+<div class="ed-matrix" markdown="1">
+
+| Feature               | LIB | CLI | APP |
 | ------------------------------------- | ------------------ | ------------------ | ------------------ |
 | Plot obs vs calc for reflections      | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Interactive mode<br/>zooming, panning | :white_check_mark: | —                  | :white_check_mark: |
+| Interactive mode<br/>zooming, panning | :white_check_mark: | :heavy_minus_sign: | :white_check_mark: |
 
----
+</div>
 
-## 8.3. Analysis
+### 8.3. Analysis
 
-| Feature<img width=450/>                               | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
+<div class="ed-matrix" markdown="1">
+
+| Feature                               | LIB | CLI | APP |
 | ----------------------------------------------------- | ------------------ | ------------------ | ------------------ |
-| Live update of plots on parameter change with slider  | —                  | —                  | :white_check_mark: |
-| Live update of plots during refinement                | —                  | —                  | :white_check_mark: |
-| Live update of fit quality (change in χ²)<br/>_table_ | :white_check_mark: | :white_check_mark: | —                  |
-| Live update of fit quality (change in χ²)<br/>_chart_ | :date:             | —                  | :date:             |
+| Live update of plots on parameter change with slider  | :heavy_minus_sign: | :heavy_minus_sign: | :white_check_mark: |
+| Live update of plots during refinement                | :heavy_minus_sign: | :heavy_minus_sign: | :white_check_mark: |
+| Live update of fit quality (change in χ²) — _table_    | :white_check_mark: | :white_check_mark: | :heavy_minus_sign: |
+| Live update of fit quality (change in χ²) — _chart_    | :date:             | :heavy_minus_sign: | :date:             |
 | Parameter evolution (sequential refinement)           | :white_check_mark: | :white_check_mark: | :date:             |
 | Correlation between parameters                        | :white_check_mark: | :white_check_mark: | :date:             |
 
+</div>
+
 ---
 
-# 9. User documentation
+## 9. User documentation
 
-| Feature<img width=450/>             | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/>      |
+<div class="ed-matrix" markdown="1">
+
+| Feature             | LIB | CLI | APP      |
 | ----------------------------------- | ------------------ | ------------------ | ----------------------- |
 | New unified documentation structure | :white_check_mark: | :white_check_mark: | :date:                  |
 | Introduction                        | :white_check_mark: | :white_check_mark: | :ballot_box_with_check: |
@@ -464,22 +662,31 @@ results.
 | User guide                          | :white_check_mark: | :white_check_mark: | :ballot_box_with_check: |
 | Tutorials                           | :white_check_mark: | :date:             | :date:                  |
 | Verification                        | :white_check_mark: | :white_check_mark: | :date:                  |
-| Command-line interface              | —                  | :white_check_mark: | —                       |
+| Command-line interface              | :heavy_minus_sign: | :white_check_mark: | :heavy_minus_sign:      |
 | Quick Reference                     | :white_check_mark: | :white_check_mark: | :date:                  |
-| API reference                       | :white_check_mark: | —                  | —                       |
+| API reference                       | :white_check_mark: | :heavy_minus_sign: | :heavy_minus_sign:      |
+
+</div>
 
 ---
 
-# 10. Unsorted features
+## 10. Backlog
 
-| Feature<img width=450/>                                                      | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
+Items not yet scheduled or detailed. Several are **epics** (large areas
+that will be split into detailed rows once work begins).
+
+<div class="ed-matrix" markdown="1">
+
+| Feature                                                      | LIB | CLI | APP |
 | ---------------------------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
 | Set free parameters by category<br/>(e.g. all atomic positions, all ADPs)    | :date:             | :date:             | :date:             |
 | Add category with fit quality metrics<br/>(e.g. chi2, R-factors)             | :date:             | :date:             | :date:             |
 | Restraints (soft constraints, e.g. bond lengths, angles)                     | :date:             | :date:             | :date:             |
 | Refinement using analytical derivatives                                      | :date:             | :date:             | :date:             |
 | Global optimization algorithms (e.g. simulated annealing)                    | :date:             | :date:             | :date:             |
-| Incommensurate structures                                                    | :date:             | :date:             | :date:             |
-| 2D Rietveld refinement                                                       | :date:             | :date:             | :date:             |
-| Built-in refinement strategies<br/>for common refinement workflows           | :date:             | :date:             | :date:             |
-| Chatbot window for natural-language requests<br/>during the analysis process | :date:             | —                  | —                  |
+| Incommensurate structures — EPIC                                             | :date:             | :date:             | :date:             |
+| 2D Rietveld refinement — EPIC                                                | :date:             | :date:             | :date:             |
+| Built-in refinement strategies for common workflows                          | :date:             | :date:             | :date:             |
+| Chatbot for natural-language requests during analysis                        | :date:             | :heavy_minus_sign: | :heavy_minus_sign: |
+
+</div>
