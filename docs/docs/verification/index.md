@@ -19,7 +19,7 @@ term); these are marked below and inside the notebook.
 
 ## Powder, Neutron, Constant Wavelength
 
-### LaB6
+### LaB6 structure
 
 - [pd-neut-cwl LaB6 basic](pd-neut-cwl_LaB6_basic.ipynb) – baseline
   **Pseudo-Voigt** powder pattern (cryspy).
@@ -34,21 +34,21 @@ term); these are marked below and inside the notebook.
 - [pd-neut-cwl LaB6 absorption](pd-neut-cwl_LaB6_absorption.ipynb) –
   **absorption correction (cylinder, Hewat)** (FullProf "muR").
 
-### LBCO
+### La0.5Ba0.5CoO3 structure
 
 - [pd-neut-cwl LBCO basic](pd-neut-cwl_LBCO_basic.ipynb) – baseline
   **Pseudo-Voigt** powder pattern (cryspy).
 - [pd-neut-cwl LBCO preferred orientation](pd-neut-cwl_LBCO_preferred-orientation.ipynb)
   – **March–Dollase preferred orientation** (FullProf "Nor=1").
 
-### PbSO4
+### PbSO4 structure
 
 - [pd-neut-cwl PbSO4 basic](pd-neut-cwl_PbSO4_basic.ipynb) – baseline
   **Pseudo-Voigt** powder pattern (cryspy).
 - [pd-neut-cwl PbSO4 Bérar-Baldinozzi asymmetry](pd-neut-cwl_PbSO4_beba-asymmetry.ipynb)
   – **Pseudo-Voigt + Bérar-Baldinozzi asymmetry** (FullProf "Asy1-4").
 
-### Y2O3
+### Y2O3 structure
 
 - [pd-neut-cwl Y2O3 isotropic ADPs](pd-neut-cwl_Y2O3_isotropic-adp.ipynb)
   – baseline **isotropic ADPs** (Biso/Uiso).
@@ -57,20 +57,20 @@ term); these are marked below and inside the notebook.
 
 ## Powder, Neutron, Time-Of-Flight
 
-### Fe
+### Fe structure
 
 - [pd-neut-tof Fe Pseudo-Voigt](pd-neut-tof_Fe_pseudo-voigt.ipynb) –
   baseline **Pseudo-Voigt (non-convoluted)** TOF profile (FullProf
   "Npr=7" TOF).
 
-### NCAF
+### NCAF structure
 
 - [pd-neut-tof NCAF Jorgensen-Von Dreele (Gaussian)](pd-neut-tof_NCAF_jorgensen-von-dreele.ipynb)
   – **Jorgensen-Von Dreele (back-to-back exponentials ⊗ pseudo-Voigt)**
   profile with the Lorentzian terms (γ₀, γ₁, γ₂) forced to zero, i.e.
   the Gaussian case (FullProf "Npr=9").
 
-### Si
+### Si structure
 
 - [pd-neut-tof Si Jorgensen](pd-neut-tof_Si_jorgensen.ipynb) –
   **Jorgensen (back-to-back exponentials ⊗ Gaussian)** profile (FullProf
@@ -82,7 +82,7 @@ term); these are marked below and inside the notebook.
 
 ## Powder, X-Ray, Constant Wavelength
 
-### LiF
+### LiF structure
 
 - [pd-xray-cwl LiF single wavelength](pd-xray-cwl_LiF_single.ipynb) –
   baseline Cu Kα₁ **Pseudo-Voigt** pattern (cryspy and **crysfml**).
@@ -96,7 +96,7 @@ term); these are marked below and inside the notebook.
   The doublet is an EasyDiffraction-level implementation (the engine is
   run twice and summed by the intensity ratio).
 
-### PbSO4
+### PbSO4 structure
 
 - [pd-xray-cwl PbSO4 round robin](pd-xray-cwl_PbSO4_round-robin.ipynb) –
   anglesite X-ray round-robin case (**Pseudo-Voigt + Bérar-Baldinozzi
@@ -104,12 +104,12 @@ term); these are marked below and inside the notebook.
 
 ## Single Crystal, Neutron, Constant Wavelength
 
-### Pr2NiO4
+### Pr2NiO4 structure
 
 - [sc-neut-cwl Pr2NiO4 basic](sc-neut-cwl_Pr2NiO4_basic.ipynb) –
   calculated F² with **anisotropic β-tensor ADPs**.
 
-### Tb2Ti2O7
+### Tb2Ti2O7 structure
 
 - [sc-neut-cwl Tb2Ti2O7 basic](sc-neut-cwl_Tb2Ti2O7_basic.ipynb) –
   baseline with **isotropic ADPs**.
@@ -121,19 +121,19 @@ term); these are marked below and inside the notebook.
 
 ## Powder, Total Scattering (Pair Distribution Function)
 
-### Ni
+### Ni structure
 
 - [total-neut-cwl Ni Gaussian-damped sinc](total-neut-cwl_Ni_gaussian-damped-sinc.ipynb)
   – **Gaussian-damped sinc termination** PDF, neutron constant
   wavelength (pdffit2).
 
-### Si
+### Si structure
 
 - [total-neut-tof Si Gaussian-damped sinc](total-neut-tof_Si_gaussian-damped-sinc.ipynb)
   – **Gaussian-damped sinc termination** PDF, neutron time-of-flight
   (pdffit2).
 
-### NaCl
+### NaCl structure
 
 - [total-xray NaCl Gaussian-damped sinc](total-xray_NaCl_gaussian-damped-sinc.ipynb)
   – **Gaussian-damped sinc termination** PDF, X-ray (pdffit2).
