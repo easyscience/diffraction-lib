@@ -106,11 +106,11 @@ constraints directly.
 
 <div class="ed-matrix" markdown="1">
 
-| Feature                                                                                                                                                                            | LIB                     | CLI                | APP                |
-| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ------------------ | ------------------ |
-| Hermann-Mauguin space-group symbol<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :white_check_mark: `pdffit2`                                         | :white_check_mark:      | :white_check_mark: | :white_check_mark: |
-| Space group IT number<br/>- :date: `cryspy`<br/>- :date: `crysfml`<br/>- :date: `pdffit2`                                                                                          | :date:                  | :date:             | :date:             |
-| IT coordinate system code<br/>- :white_check_mark: `cryspy`<br/>- :date: `crysfml`<br/>- :material-cancel: `pdffit2`<br/>- :material-link-variant: `FullProf` ":1" (origin choice) | :ballot_box_with_check: | :white_check_mark: | :white_check_mark: |
+| Feature                                                                                                                                                                                            | LIB                     | CLI                | APP                |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ------------------ | ------------------ |
+| Hermann-Mauguin space-group symbol<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :white_check_mark: `pdffit2`                                                         | :white_check_mark:      | :white_check_mark: | :white_check_mark: |
+| Space group IT number<br/>- :date: `easydiffraction`                                                                                                                                               | :date:                  | :date:             | :date:             |
+| IT coordinate system code<br/>- :white_check_mark: `cryspy`<br/>- :material-help-circle: `crysfml`<br/>- :material-cancel: `pdffit2`<br/>- :material-link-variant: `FullProf` ":1" (origin choice) | :ballot_box_with_check: | :white_check_mark: | :white_check_mark: |
 
 </div>
 
@@ -129,15 +129,15 @@ constraints directly.
 
 <div class="ed-matrix" markdown="1">
 
-| Feature                                                                                                                                                                                                                             | LIB                     | CLI                | APP                |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ------------------ | ------------------ |
-| X-ray scattering factors (tabulated)<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :white_check_mark: `pdffit2`                                                                                        | :white_check_mark:      | :white_check_mark: | :white_check_mark: |
-| Neutron scattering lengths for natural elements (tabulated)<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :white_check_mark: `pdffit2`                                                                 | :white_check_mark:      | :white_check_mark: | :white_check_mark: |
-| Isotope-specific neutron scattering length<br/>_(e.g. ¹¹B, ²H)_<br/>- :white_check_mark: `cryspy` [:material-check-decagram:](../verification/pd-neut-cwl_LaB6_11B.ipynb)<br/>- :date: `crysfml`<br/>- :heavy_minus_sign: `pdffit2` | :ballot_box_with_check: | :white_check_mark: | :date:             |
-| Custom neutron scattering length<br/>- :heavy_minus_sign: `cryspy`<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "Nsc (user-defined scattering)"                                                                  | :date:                  | :date:             | :date:             |
-| Fractional coordinates _x, y, z_<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :white_check_mark: `pdffit2`                                                                                            | :white_check_mark:      | :white_check_mark: | :white_check_mark: |
-| Occupancy<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :white_check_mark: `pdffit2`                                                                                                                   | :white_check_mark:      | :white_check_mark: | :white_check_mark: |
-| Symmetry _wyckoff_letter_<br/>- :white_check_mark: `easydiffraction`                                                                                                                                                                | :white_check_mark:      | :white_check_mark: | :white_check_mark: |
+| Feature                                                                                                                                                                                                                                             | LIB                     | CLI                | APP                |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ------------------ | ------------------ |
+| X-ray scattering factors (tabulated)<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :white_check_mark: `pdffit2`                                                                                                        | :white_check_mark:      | :white_check_mark: | :white_check_mark: |
+| Neutron scattering lengths for natural elements (tabulated)<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :white_check_mark: `pdffit2`                                                                                 | :white_check_mark:      | :white_check_mark: | :white_check_mark: |
+| Isotope-specific neutron scattering length _(e.g. ¹¹B, ²H)_<br/>- :white_check_mark: `cryspy` [:material-check-decagram:](../verification/pd-neut-cwl_LaB6_11B.ipynb)<br/>- :material-help-circle: `crysfml`<br/>- :material-help-circle: `pdffit2` | :ballot_box_with_check: | :white_check_mark: | :date:             |
+| Custom neutron scattering length<br/>- :material-cancel: `cryspy`<br/>- :material-help-circle: `crysfml`<br/>- :material-help-circle: `pdffit2`<br/>- :material-link-variant: `FullProf` "Nsc (user-defined scattering)"                            | :date:                  | :date:             | :date:             |
+| Fractional coordinates _x, y, z_<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :white_check_mark: `pdffit2`                                                                                                            | :white_check_mark:      | :white_check_mark: | :white_check_mark: |
+| Occupancy<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :white_check_mark: `pdffit2`                                                                                                                                   | :white_check_mark:      | :white_check_mark: | :white_check_mark: |
+| Symmetry _wyckoff_letter_<br/>- :white_check_mark: `easydiffraction`                                                                                                                                                                                | :white_check_mark:      | :white_check_mark: | :white_check_mark: |
 
 </div>
 
@@ -216,9 +216,9 @@ Magnetic structure refinement is an **epic** (one row per area for now).
 
 <div class="ed-matrix" markdown="1">
 
-| Feature                                                                           | LIB                | CLI                | APP    |
-| --------------------------------------------------------------------------------- | ------------------ | ------------------ | ------ |
-| Multiple regions _start/end positions_<br/>- :white_check_mark: `easydiffraction` | :white_check_mark: | :white_check_mark: | :date: |
+| Feature                                                                            | LIB                | CLI                | APP    |
+| ---------------------------------------------------------------------------------- | ------------------ | ------------------ | ------ |
+| Multiple regions: _start/end positions_<br/>- :white_check_mark: `easydiffraction` | :white_check_mark: | :white_check_mark: | :date: |
 
 </div>
 
@@ -228,10 +228,10 @@ Magnetic structure refinement is an **epic** (one row per area for now).
 
 <div class="ed-matrix" markdown="1">
 
-| Feature                                                                                                                                                | LIB                | CLI                | APP                |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------ | ------------------ | ------------------ |
-| Rietveld refinement (full pattern)<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`                                                | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Le Bail refinement (profile matching)<br/>- :date: `cryspy`<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "Jbt=2 (profile matching)" | :date:             | :date:             | :date:             |
+| Feature                                                                                                                                                                           | LIB                | CLI                | APP                |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
+| Rietveld refinement (full pattern)<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`                                                                           | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Le Bail refinement (profile matching)<br/>- :material-cancel: `cryspy`<br/>- :material-help-circle: `crysfml`<br/>- :material-link-variant: `FullProf` "Jbt=2 (profile matching)" | :date:             | :date:             | :date:             |
 
 </div>
 
@@ -246,7 +246,7 @@ calculated pattern; the engine is not involved.
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
 | Line segments type: _position, intensity_<br/>- :white_check_mark: `easydiffraction`<br/>- :material-link-variant: `FullProf` "Nba" (linear interpolation points)   | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | Chebyshev polynomial type: _order, coefficient_<br/>- :white_check_mark: `easydiffraction`<br/>- :material-link-variant: `FullProf` "Nba=0 (polynomial background)" | :white_check_mark: | :white_check_mark: | :date:             |
-| Automatic background estimation: _auto, arPLS, FABC, SNIP_<br/>- :white_check_mark: `easydiffraction`                                                               | :white_check_mark: | :white_check_mark: | :date:             |
+| Automatic background estimation: _auto_ or _arPLS, FABC, SNIP_<br/>- :white_check_mark: `easydiffraction`                                                           | :white_check_mark: | :white_check_mark: | :date:             |
 
 </div>
 
