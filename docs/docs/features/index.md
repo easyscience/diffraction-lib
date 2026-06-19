@@ -63,19 +63,22 @@ Each capability is tracked across the three ways to use EasyDiffraction:
   provide this and is not expected to (e.g. a PDF-only engine for a
   Bragg-only term)
 
-The **LIB column** shows the overall status: :white_check_mark: when
-every relevant engine is done (engines that simply don't apply are
+The **LIB column** summarises the per-engine lines listed in the Feature
+cell, because the engines are the library backends: :white_check_mark:
+when every relevant engine is done (engines that simply don't apply are
 marked :heavy_minus_sign:), and :ballot_box_with_check: when at least
-one engine is done but others are in progress or planned.
+one engine is done but others are in progress or planned. The **CLI**
+and **APP** columns instead show whether the feature is available in
+those two interfaces.
 
 Inside the **Feature** cell, each line carries its own icon:
 
-- The **engine** lines show per-engine status, e.g.
-  `- :white_check_mark: cryspy`, `- :date: crysfml`. A backend keyword
-  is shown in quotes (e.g. `cryspy` "Gauss").
+- The **engine** lines show per-engine status, e.g. :white_check_mark:
+  `cryspy` (done) or :date: `crysfml` (planned). A backend keyword is
+  shown in quotes (e.g. `cryspy` "Gauss").
 - :material-link-variant: cross-references the equivalent FullProf
   `.pcr` entry, to help users coming from FullProf.
-- `- :material-check-decagram:` links to the
+- :material-check-decagram: links to the
   [Verification](../verification/index.md) page where the calculation is
   cross-checked against an independent reference.
 
