@@ -207,11 +207,19 @@ label.md-nav__title[for="__drawer"] {
   max-width: 125em;
 }
 
-/* Keep prose line length stable when sidebars are hidden at narrower widths */
+/* Keep prose line length stable when sidebars are hidden at narrower
+   widths. The auto margins replace Material's default `.8rem` side
+   margins (which provide the mobile gutter), so add equivalent padding
+   to restore the gutter — otherwise text touches the screen edges on
+   phones, where the width resolves to 100% and the auto margins
+   collapse to zero. `border-box` keeps the padding inside the capped
+   width. */
 .md-main .md-content > .md-content__inner {
   width: min(100%, 47em);
   margin-left: auto !important;
   margin-right: auto !important;
+  padding-left: 0.8rem;
+  padding-right: 0.8rem;
 }
 
 /* Notebook action buttons (Open in Colab, Download). The page title is the

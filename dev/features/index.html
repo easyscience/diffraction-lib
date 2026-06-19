@@ -4522,13 +4522,12 @@ scattering (PDF), and the analysis tools around them.</p>
   <a href="#6-constraints">Constraints</a>.</li>
 <li><a href="#7-data-management">Data management</a>,
   <a href="#8-visualization">Visualization</a>,
-  <a href="#9-user-documentation">Documentation</a>,
-  <a href="#10-backlog">Backlog</a>.</li>
+  <a href="#9-user-documentation">Documentation</a>, <a href="#10-backlog">Backlog</a>.</li>
 </ul>
 <h2 id="calculation-engines">Calculation engines</h2>
 <p>Most physics is computed by a pluggable <strong>calculation engine</strong>; some
-terms are applied by EasyDiffraction itself around the engine. You choose
-the engine per experiment (see
+terms are applied by EasyDiffraction itself around the engine. You
+choose the engine per experiment (see
 <a href="../user-guide/parameters/experiment/calculator/"><code>calculator.type</code></a>).</p>
 <ul>
 <li><code>cryspy</code> — Python crystallographic engine for powder/single-crystal
@@ -4541,8 +4540,9 @@ the engine per experiment (see
 <li><code>pdffit2</code> — pair-distribution-function engine (total scattering), via
   diffpy. Project:
   <a href="https://github.com/diffpy/diffpy.pdffit2">diffpy.pdffit2</a>.</li>
-<li><code>easydiffraction</code> — applied directly by EasyDiffraction, independent of
-  the engine (e.g. background, scale, absorption, the Kα₁/Kα₂ doublet).</li>
+<li><code>easydiffraction</code> — applied directly by EasyDiffraction, independent
+  of the engine (e.g. background, scale, absorption, the Kα₁/Kα₂
+  doublet).</li>
 </ul>
 <h2 id="how-to-read-this-page">How to read this page</h2>
 <p>Each capability is tracked across the three ways to use EasyDiffraction:
@@ -4553,35 +4553,33 @@ the engine per experiment (see
 <li><img alt="☑" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2611.svg" title=":ballot_box_with_check:" /> Partially done — available with at least one
   engine/interface, while others are still planned or in progress</li>
 <li><img alt="🚧" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/1f6a7.svg" title=":construction:" /> Work in progress</li>
-<li><img alt="📅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/1f4c5.svg" title=":date:" /> Planned (no priority assigned yet)<ul>
-<li><img alt="📅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/1f4c5.svg" title=":date:" /> 5/5 <code>highest</code> · 4/5 <code>high</code> · 3/5 <code>medium</code> · 2/5 <code>low</code> ·
-  1/5 <code>lowest</code></li>
-</ul>
-</li>
+<li><img alt="📅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/1f4c5.svg" title=":date:" /> Planned (no priority assigned yet)</li>
+<li><img alt="📅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/1f4c5.svg" title=":date:" /> 5/5 <code>highest</code> · 4/5 <code>high</code> · 3/5 <code>medium</code> · 2/5 <code>low</code> · 1/5
+    <code>lowest</code></li>
 <li><img alt="➖" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2796.svg" title=":heavy_minus_sign:" /> Not applicable — the engine/interface does not
   provide this and is not expected to (e.g. a PDF-only engine for a
   Bragg-only term)</li>
 </ul>
-<p>The <strong>LIB column</strong> shows the overall status: <img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" /> when every
-relevant engine is done (engines that simply don't apply are marked
-<img alt="➖" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2796.svg" title=":heavy_minus_sign:" />), and <img alt="☑" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2611.svg" title=":ballot_box_with_check:" /> when at least one engine
-is done but others are in progress or planned.</p>
+<p>The <strong>LIB column</strong> shows the overall status: <img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" /> when
+every relevant engine is done (engines that simply don't apply are
+marked <img alt="➖" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2796.svg" title=":heavy_minus_sign:" />), and <img alt="☑" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2611.svg" title=":ballot_box_with_check:" /> when at least
+one engine is done but others are in progress or planned.</p>
 <p>Inside the <strong>Feature</strong> cell, each line carries its own icon:</p>
 <ul>
-<li>The <strong>engine</strong> lines show per-engine status, e.g. <code>- :white_check_mark:
-  cryspy</code>, <code>- :date: crysfml</code>. A backend keyword is shown in quotes
-  (e.g. <code>cryspy</code> "Gauss").</li>
+<li>The <strong>engine</strong> lines show per-engine status, e.g.
+  <code>- :white_check_mark: cryspy</code>, <code>- :date: crysfml</code>. A backend keyword
+  is shown in quotes (e.g. <code>cryspy</code> "Gauss").</li>
 <li><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10.59 13.41c.41.39.41 1.03 0 1.42-.39.39-1.03.39-1.42 0a5.003 5.003 0 0 1 0-7.07l3.54-3.54a5.003 5.003 0 0 1 7.07 0 5.003 5.003 0 0 1 0 7.07l-1.49 1.49c.01-.82-.12-1.64-.4-2.42l.47-.48a2.98 2.98 0 0 0 0-4.24 2.98 2.98 0 0 0-4.24 0l-3.53 3.53a2.98 2.98 0 0 0 0 4.24m2.82-4.24c.39-.39 1.03-.39 1.42 0a5.003 5.003 0 0 1 0 7.07l-3.54 3.54a5.003 5.003 0 0 1-7.07 0 5.003 5.003 0 0 1 0-7.07l1.49-1.49c-.01.82.12 1.64.4 2.43l-.47.47a2.98 2.98 0 0 0 0 4.24 2.98 2.98 0 0 0 4.24 0l3.53-3.53a2.98 2.98 0 0 0 0-4.24.973.973 0 0 1 0-1.42"/></svg></span> cross-references the equivalent FullProf
   <code>.pcr</code> entry, to help users coming from FullProf.</li>
 <li><code>- :material-check-decagram:</code> links to the
   <a href="../verification/">Verification</a> page where the calculation is
   cross-checked against an independent reference.</li>
 </ul>
-<p>In the <strong>CLI column</strong>, <img alt="☑" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2611.svg" title=":ballot_box_with_check:" /> marks a capability that is
-supported but configured by editing the project text files (<code>.edi</code>/<abbr title="Crystallographic Information File.">CIF</abbr>)
-in a separate editor — the CLI runs refinements (<code>fit</code>, <code>display</code>,
-<code>undo</code>) but has no command to edit models, parameters, or constraints
-directly.</p>
+<p>In the <strong>CLI column</strong>, <img alt="☑" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2611.svg" title=":ballot_box_with_check:" /> marks a capability that
+is supported but configured by editing the project text files
+(<code>.edi</code>/<abbr title="Crystallographic Information File.">CIF</abbr>) in a separate editor — the CLI runs refinements (<code>fit</code>,
+<code>display</code>, <code>undo</code>) but has no command to edit models, parameters, or
+constraints directly.</p>
 <div class="admonition note">
 <p class="admonition-title">Epics shown as single rows</p>
 <p>Large areas still on the roadmap — magnetic structures, polarized
