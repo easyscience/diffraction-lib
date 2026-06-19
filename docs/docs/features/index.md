@@ -177,6 +177,7 @@ Magnetic structure refinement is an **epic** (one row per area for now).
 | Magnetic propagation vector (_kx, ky, kz_)<br/>- :material-link-variant: `FullProf` "Nvk (propagation vectors)" | :date: | :date: | :date: |
 | Magnetic moments (_mx, my, mz_)<br/>- :material-link-variant: `FullProf` "Rx, Ry, Rz"                           | :date: | :date: | :date: |
 | Local Susceptibility (_𝜒11…𝜒23_)                                                                                | :date: | :date: | :date: |
+| Magnetic domains                                                                                                | :date: | :date: | :date: |
 
 </div>
 
@@ -279,10 +280,10 @@ calculated pattern; the engine is not involved.
 
 <div class="ed-matrix" markdown="1">
 
-| Feature                                                                                                                                                                                                                                            | LIB                     | CLI                | APP                |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ------------------ | ------------------ |
-| 2θ bank<br/>- :white_check_mark: `cryspy`<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "2-theta bank"                                                                                                                           | :ballot_box_with_check: | :white_check_mark: | :white_check_mark: |
-| d → TOF conversion: _offset, linear, quadratic_<br/>_(reciprocal defined but not yet wired)_<br/>- :white_check_mark: `cryspy`<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "Dtt1, Dtt2, Zero;<br/>reciprocal = Dtt2t (Npr=10)" | :ballot_box_with_check: | :white_check_mark: | :white_check_mark: |
+| Feature                                                                                                                                                                                                                       | LIB                     | CLI                | APP                |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ------------------ | ------------------ |
+| 2θ bank<br/>- :white_check_mark: `cryspy`<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "2-theta bank"                                                                                                      | :ballot_box_with_check: | :white_check_mark: | :white_check_mark: |
+| d → TOF conversion: _offset, linear, quadratic_<br/>_(reciprocal defined but not yet wired)_<br/>- :white_check_mark: `cryspy`<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "Zero, Dtt1, Dtt2, Dtt_1overd" | :ballot_box_with_check: | :white_check_mark: | :white_check_mark: |
 
 </div>
 
@@ -300,11 +301,11 @@ Lorentzian H_L(X, Y) widths); they differ only in the asymmetry model.
 
 <div class="ed-matrix" markdown="1">
 
-| Feature                                                                                                                                                                                                                                                                                                                                                                    | LIB                     | CLI                | APP                |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ------------------ | ------------------ |
-| Thompson-Cox-Hastings pseudo-Voigt<br/>_Gaussian broadening U, V, W. Lorentzian broadening X, Y_<br/>- :white_check_mark: `cryspy` [:material-check-decagram:](../verification/pd-neut-cwl_LaB6_basic.ipynb)<br/>- :white_check_mark: `crysfml` [:material-check-decagram:](../verification/pd-xray-cwl_LiF_single.ipynb)<br/>- :material-link-variant: `FullProf` "Npr=7" | :white_check_mark:      | :white_check_mark: | :white_check_mark: |
-| Thompson-Cox-Hastings pseudo-Voigt<br/>+ Bérar-Baldinozzi asymmetry<br/>_Bérar-Baldinozzi asymmetry a₀, b₀, a₁, b₁_<br/>- :white_check_mark: `cryspy` [:material-check-decagram:](../verification/pd-neut-cwl_PbSO4_beba-asymmetry.ipynb)<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "Npr=7" + "Asy1-4"                                               | :ballot_box_with_check: | :white_check_mark: | :white_check_mark: |
-| Thompson-Cox-Hastings pseudo-Voigt<br/>+ Finger-Cox-Jephcoat asymmetry<br/>_Finger-Cox-Jephcoat asymmetry 1, 2_<br/>- :white_check_mark: `crysfml` [:material-check-decagram:](../verification/pd-neut-cwl_LaB6_fcj-asymmetry.ipynb)<br/>- :date: `cryspy`<br/>- :material-link-variant: `FullProf` "Npr=7" + "S_L/D_L"                                                    | :ballot_box_with_check: | :white_check_mark: | :date:             |
+| Feature                                                                                                                                                                                                                                                                                                                                                          | LIB                     | CLI                | APP                |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ------------------ | ------------------ |
+| Thompson-Cox-Hastings pseudo-Voigt<br/>_Gaussian U, V, W. Lorentzian X, Y_<br/>- :white_check_mark: `cryspy` [:material-check-decagram:](../verification/pd-neut-cwl_LaB6_basic.ipynb)<br/>- :white_check_mark: `crysfml` [:material-check-decagram:](../verification/pd-xray-cwl_LiF_single.ipynb)<br/>- :material-link-variant: `FullProf` "Npr=7"             | :white_check_mark:      | :white_check_mark: | :white_check_mark: |
+| Thompson-Cox-Hastings pseudo-Voigt + Bérar-Baldinozzi asymmetry<br/>_Gaussian U, V, W. Lorentzian X, Y_<br/>_Bérar-Baldinozzi asymmetry a₀, b₀, a₁, b₁_<br/>- :white_check_mark: `cryspy` [:material-check-decagram:](../verification/pd-neut-cwl_PbSO4_beba-asymmetry.ipynb)<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "Npr=7" + "Asy1-4" | :ballot_box_with_check: | :white_check_mark: | :white_check_mark: |
+| Thompson-Cox-Hastings pseudo-Voigt + Finger-Cox-Jephcoat asymmetry<br/>_Gaussian U, V, W. Lorentzian X, Y_<br/>_Finger-Cox-Jephcoat asymmetry 1, 2_<br/>- :white_check_mark: `crysfml` [:material-check-decagram:](../verification/pd-neut-cwl_LaB6_fcj-asymmetry.ipynb)<br/>- :date: `cryspy`<br/>- :material-link-variant: `FullProf` "Npr=7" + "S_L/D_L"      | :ballot_box_with_check: | :white_check_mark: | :date:             |
 
 </div>
 
@@ -354,21 +355,21 @@ a Gaussian or Lorentzian mosaicity distribution.
 
 <div class="ed-matrix" markdown="1">
 
-| Feature                                                                                                                                                                                         | LIB                | CLI                | APP                |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
-| Isotropic Becker-Coppens, Gaussian model<br/>_radius, mosaicity_<br/>- :white_check_mark: `cryspy` [:material-check-decagram:](../verification/sc-neut-cwl_Tb2Ti2O7_isotropic-extinction.ipynb) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Isotropic Becker-Coppens, Lorentzian model<br/>_radius, mosaicity_<br/>- :white_check_mark: `cryspy`                                                                                            | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Anisotropic extinction correction<br/>- :date: `cryspy`<br/>- :material-link-variant: `FullProf` "Ext (Line 29)"                                                                                | :date:             | :date:             | :date:             |
+| Feature                                                                                                                                                                                      | LIB                | CLI                | APP                |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
+| Isotropic Becker-Coppens, Gaussian model: _radius, mosaicity_<br/>- :white_check_mark: `cryspy` [:material-check-decagram:](../verification/sc-neut-cwl_Tb2Ti2O7_isotropic-extinction.ipynb) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Isotropic Becker-Coppens, Lorentzian model: _radius, mosaicity_<br/>- :white_check_mark: `cryspy`                                                                                            | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Anisotropic extinction correction<br/>- :material-cancel: `cryspy`<br/>- :grey_question: `crysfml`<br/>- :material-link-variant: `FullProf` "Ext (Line 29)"                                  | :date:             | :date:             | :date:             |
 
 </div>
 
-#### Twinning / domains
+#### Structural twinning
 
 <div class="ed-matrix" markdown="1">
 
-| Feature                                           | LIB    | CLI    | APP    |
-| ------------------------------------------------- | ------ | ------ | ------ |
-| Twinning / domains for single-crystal diffraction | :date: | :date: | :date: |
+| Feature                                                          | LIB    | CLI    | APP    |
+| ---------------------------------------------------------------- | ------ | ------ | ------ |
+| Structural twinning<br/>- :date: `cryspy`<br/>- :date: `crysfml` | :date: | :date: | :date: |
 
 </div>
 
