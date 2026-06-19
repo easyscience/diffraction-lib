@@ -3,6 +3,9 @@
 #
 # Verifies the X-ray polarization correction on the same single-wavelength
 # LiF reference.
+#
+# **Refinement:** the overall scale only; all other parameters are
+# taken from the FullProf reference.
 
 # %%
 import easydiffraction as edi

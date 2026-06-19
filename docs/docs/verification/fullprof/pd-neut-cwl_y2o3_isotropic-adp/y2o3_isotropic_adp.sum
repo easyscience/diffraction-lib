@@ -8,7 +8,7 @@
                  Refinement of X-ray and/or Neutron Data
 
 
-    Date: 18/06/2026  Time: 23:03:42.979                              
+    Date: 19/06/2026  Time: 13:42:41.734                              
 
  => PCR file code: y2o3_isotropic_adp
  => DAT file code: y2o3_isotropic_adp   -> Relative contribution: 1.0000                                                            
@@ -30,7 +30,7 @@
  =>-------> Pattern#  1
  => Crystal Structure Refinement for phase: 1
  => The density (volumic mass) of phase 1 is:    5.029 g/cm3
- => Scor: 3.3234
+ => Scor: 3.2519
 
  ==> RESULTS OF REFINEMENT:
 
@@ -48,9 +48,9 @@
  ==> ATOM PARAMETERS:
 
   Name      x     sx       y     sy       z      sz      B   sB   occ. socc.  Mult
- Y1     -0.03236(   0)  0.00000(   0)  0.25000(   0)  0.000(  0)  0.500(  0)   24
- Y2      0.25000(   0)  0.25000(   0)  0.25000(   0)  0.000(  0)  0.167(  0)    8
- O1      0.39072(   0)  0.15204(   0)  0.38030(   0)  0.000(  0)  1.000(  0)   48
+ Y1     -0.03236(   0)  0.00000(   0)  0.25000(   0)  0.300(  0)  0.500(  0)   24
+ Y2      0.25000(   0)  0.25000(   0)  0.25000(   0)  0.300(  0)  0.167(  0)    8
+ O1      0.39072(   0)  0.15204(   0)  0.38030(   0)  0.500(  0)  1.000(  0)   48
 
  ==> PROFILE PARAMETERS FOR PATTERN#  1
 
@@ -100,26 +100,26 @@
   => Cycle:  1 => MaxCycle:  1
  => N-P+C:  2509
  =>  R-factors (not corrected for background) for Pattern:  1
- => Rp:  57.0     Rwp:  139.     Rexp:    1.24 Chi2: 0.126E+05  L.S. refinement
+ => Rp:  49.0     Rwp:  121.     Rexp:    1.24 Chi2: 0.950E+04  L.S. refinement
  => Conventional Rietveld R-factors for Pattern:  1
- => Rp: 0.107E+04 Rwp: 0.108E+04 Rexp:    9.60 Chi2: 0.126E+05
- => Deviance:  0.108E+08     Dev*  :   4315.    
- => DW-Stat.:    0.0538     DW-exp:     1.8759
- => N-sigma of the GoF:   447493.656
+ => Rp:  915.     Rwp:  935.     Rexp:    9.60 Chi2: 0.950E+04
+ => Deviance:  0.876E+07     Dev*  :   3493.    
+ => DW-Stat.:    0.0539     DW-exp:     1.8759
+ => N-sigma of the GoF:   336454.938
 
  ==> RELIABILITY FACTORS FOR POINTS WITH BRAGG CONTRIBUTIONS FOR PATTERN:  1
 
  => N-P+C:  2509
  =>  R-factors (not corrected for background) for Pattern:  1
- => Rp:  57.0     Rwp:  139.     Rexp:    1.24 Chi2: 0.126E+05  L.S. refinement
+ => Rp:  49.0     Rwp:  121.     Rexp:    1.24 Chi2: 0.950E+04  L.S. refinement
  => Conventional Rietveld R-factors for Pattern:  1
- => Rp: 0.107E+04 Rwp: 0.108E+04 Rexp:    9.60 Chi2: 0.126E+05
- => Deviance:  0.108E+08     Dev*  :   4315.    
- => DW-Stat.:    0.0538     DW-exp:     1.8759
- => N-sigma of the GoF:   447493.656
+ => Rp:  915.     Rwp:  935.     Rexp:    9.60 Chi2: 0.950E+04
+ => Deviance:  0.876E+07     Dev*  :   3493.    
+ => DW-Stat.:    0.0539     DW-exp:     1.8759
+ => N-sigma of the GoF:   336454.938
 
- => Global user-weigthed Chi2 (Bragg contrib.):  0.126E+05
- => Scor: 3.3234
+ => Global user-weigthed Chi2 (Bragg contrib.):  0.950E+04
+ => Scor: 3.2519
 
  ==> RESULTS OF REFINEMENT:
 
@@ -137,9 +137,9 @@
  ==> ATOM PARAMETERS:
 
   Name      x     sx       y     sy       z      sz      B   sB   occ. socc.  Mult
- Y1     -0.03236(   0)  0.00000(   0)  0.25000(   0)  0.000(  0)  0.500(  0)   24
- Y2      0.25000(   0)  0.25000(   0)  0.25000(   0)  0.000(  0)  0.167(  0)    8
- O1      0.39072(   0)  0.15204(   0)  0.38030(   0)  0.000(  0)  1.000(  0)   48
+ Y1     -0.03236(   0)  0.00000(   0)  0.25000(   0)  0.300(  0)  0.500(  0)   24
+ Y2      0.25000(   0)  0.25000(   0)  0.25000(   0)  0.300(  0)  0.167(  0)    8
+ O1      0.39072(   0)  0.15204(   0)  0.38030(   0)  0.500(  0)  1.000(  0)   48
 
  ==> PROFILE PARAMETERS FOR PATTERN#  1
 
@@ -189,36 +189,36 @@
   => Cycle:  1 => MaxCycle:  1
  => N-P+C:  2509
  =>  R-factors (not corrected for background) for Pattern:  1
- => Rp:  57.0     Rwp:  139.     Rexp:    1.24 Chi2: 0.126E+05  L.S. refinement
+ => Rp:  49.0     Rwp:  121.     Rexp:    1.24 Chi2: 0.950E+04  L.S. refinement
  => Conventional Rietveld R-factors for Pattern:  1
- => Rp: 0.107E+04 Rwp: 0.108E+04 Rexp:    9.60 Chi2: 0.126E+05
- => Deviance:  0.108E+08     Dev*  :   4315.    
- => DW-Stat.:    0.0538     DW-exp:     1.8759
- => N-sigma of the GoF:   447493.656
+ => Rp:  915.     Rwp:  935.     Rexp:    9.60 Chi2: 0.950E+04
+ => Deviance:  0.876E+07     Dev*  :   3493.    
+ => DW-Stat.:    0.0539     DW-exp:     1.8759
+ => N-sigma of the GoF:   336454.938
 
  ==> RELIABILITY FACTORS FOR POINTS WITH BRAGG CONTRIBUTIONS FOR PATTERN:  1
 
  => N-P+C:  2509
  =>  R-factors (not corrected for background) for Pattern:  1
- => Rp:  57.0     Rwp:  139.     Rexp:    1.24 Chi2: 0.126E+05  L.S. refinement
+ => Rp:  49.0     Rwp:  121.     Rexp:    1.24 Chi2: 0.950E+04  L.S. refinement
  => Conventional Rietveld R-factors for Pattern:  1
- => Rp: 0.107E+04 Rwp: 0.108E+04 Rexp:    9.60 Chi2: 0.126E+05
- => Deviance:  0.108E+08     Dev*  :   4315.    
- => DW-Stat.:    0.0538     DW-exp:     1.8759
- => N-sigma of the GoF:   447493.656
+ => Rp:  915.     Rwp:  935.     Rexp:    9.60 Chi2: 0.950E+04
+ => Deviance:  0.876E+07     Dev*  :   3493.    
+ => DW-Stat.:    0.0539     DW-exp:     1.8759
+ => N-sigma of the GoF:   336454.938
 
- => Global user-weigthed Chi2 (Bragg contrib.):  0.126E+05
+ => Global user-weigthed Chi2 (Bragg contrib.):  0.950E+04
 
      -----------------------------------------------------
      BRAGG R-Factors and weight fractions for Pattern #  1
      -----------------------------------------------------
 
  => Phase:  1     Y2O3
- => Bragg R-factor:  0.106E+04   Vol: 1192.953( 0.000)  Fract(%):  100.00( 0.00)
- => Rf-factor=  245.             ATZ:        3612.974   Brindley:  1.0000
+ => Bragg R-factor:   909.       Vol: 1192.953( 0.000)  Fract(%):  100.00( 0.00)
+ => Rf-factor=  218.             ATZ:        3612.974   Brindley:  1.0000
 
  
-              CPU Time:     0.152 seconds
+              CPU Time:     0.180 seconds
                             0.003 minutes
 
- => Run finished at:     Date: 18/06/2026  Time: 23:03:43.134                              
+ => Run finished at:     Date: 19/06/2026  Time: 13:42:41.914                              

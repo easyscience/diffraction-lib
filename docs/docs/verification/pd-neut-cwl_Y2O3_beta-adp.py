@@ -3,6 +3,9 @@
 #
 # Verifies dimensionless beta-tensor anisotropic ADPs on a pseudo-Voigt
 # neutron powder pattern with other correction models disabled.
+#
+# **Refinement:** none — every parameter is taken from the FullProf
+# reference; only the calculated patterns are compared.
 
 # %%
 import easydiffraction as edi

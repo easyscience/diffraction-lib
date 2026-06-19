@@ -3,6 +3,15 @@
 #
 # Verifies Cu Kα₁/Kα₂ doublet handling on the LiF pseudo-Voigt
 # reference.
+#
+# **Note:** the Kα₁/Kα₂ doublet is produced by an EasyDiffraction-level
+# implementation on top of the calculation engine — the engine is run
+# twice (at λ₁ and λ₂) and the two patterns are summed by the intensity
+# ratio — because neither cryspy nor the CFL-based crysfml API computes
+# the doublet natively.
+#
+# **Refinement:** none — every parameter is taken from the FullProf
+# reference; only the calculated patterns are compared.
 
 # %%
 import easydiffraction as edi

@@ -3,6 +3,9 @@
 #
 # Verifies the baseline LiF Cu Kα₁ pattern with a pseudo-Voigt profile
 # and no polarization or absorption correction.
+#
+# **Refinement:** the overall scale only; all other parameters are
+# taken from the FullProf reference.
 
 # %%
 import easydiffraction as edi

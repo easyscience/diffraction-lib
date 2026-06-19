@@ -3,6 +3,9 @@
 #
 # Verifies the Jorgensen-Von Dreele pseudo-Voigt profile for a silicon
 # time-of-flight powder pattern.
+#
+# **Refinement:** the overall scale and the Lorentzian γ₁. Known
+# difference: cryspy's TOF Lorentzian does not fully match FullProf.
 
 # %%
 import easydiffraction as edi
@@ -161,9 +164,11 @@ experiment.peak.broad_lorentz_gamma_1
 
 # %% [markdown]
 # ## Agreement check
-
+#
 # cryspy is the known-bad comparison, asserted separately so it cannot
 # mask the gated comparison above.
+
+# %%
 verify.assert_patterns_agree(
     [
         (

@@ -3,6 +3,9 @@
 #
 # Verifies the baseline LaB6 constant-wavelength neutron powder pattern
 # with natural boron and no SyCos/SySin, FCJ asymmetry, or absorption.
+#
+# **Refinement:** none — every parameter is taken from the FullProf
+# reference; only the calculated patterns are compared.
 
 # %%
 import easydiffraction as edi

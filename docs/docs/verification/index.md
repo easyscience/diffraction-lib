@@ -5,116 +5,135 @@ icon: material/check-decagram
 
 # :material-check-decagram: Verification
 
-These pages compare EasyDiffraction calculations with FullProf reference
-calculations. Each page focuses on one experiment type or one additional
-model term, and pages with known calculator differences mark that status
-inside the notebook.
+These pages compare EasyDiffraction calculations with reference
+calculations. Bragg pages (powder/single-crystal) compare against
+**FullProf**, an independent program. Pair-distribution-function pages
+compare against a **direct `diffpy.pdffit2`** calculation — the same
+library EasyDiffraction wraps, so those pages check wrapper fidelity
+(correct parameter hand-off) rather than cross-validating the PDF
+physics against an independent implementation. Each page focuses on one
+experiment type or one additional model term, and feature names match
+the [Features](../features/index.md) page. Some pages document a
+**known difference** (EasyDiffraction does not yet match the reference
+for that term); these are marked below and inside the notebook.
 
 ## Powder, Neutron, Constant Wavelength
 
 ### LaB6
 
-- [pd-neut-cwl LaB6 basic](pd-neut-cwl_LaB6_basic.ipynb) – verifies the
-  _baseline_ LaB6 powder pattern.
-- [pd-neut-cwl LaB6 11B isotope](pd-neut-cwl_LaB6_11B.ipynb) – verifies
-  the **11B isotope** contribution.
-- [pd-neut-cwl LaB6 SyCos/SySin shifts](pd-neut-cwl_LaB6_sycos-sysin.ipynb)
-  – verifies the **SyCos/SySin** peak-position corrections.
+- [pd-neut-cwl LaB6 basic](pd-neut-cwl_LaB6_basic.ipynb) – baseline
+  **Pseudo-Voigt** powder pattern (cryspy).
+- [pd-neut-cwl LaB6 isotope](pd-neut-cwl_LaB6_11B.ipynb) –
+  **isotope-specific neutron scattering length** (¹¹B).
+- [pd-neut-cwl LaB6 sample displacement](pd-neut-cwl_LaB6_sycos-sysin.ipynb)
+  – **sample displacement correction** (FullProf "SyCos, SySin"). _Known
+  difference: cryspy's convention does not yet match FullProf._
 - [pd-neut-cwl LaB6 FCJ asymmetry](pd-neut-cwl_LaB6_fcj-asymmetry.ipynb)
-  – verifies the **Finger-Cox-Jephcoat asymmetry** correction.
+  – **Finger-Cox-Jephcoat asymmetry** (FullProf "Npr=7"). _Known
+  difference: the cryspy CW profile has no FCJ term._
 - [pd-neut-cwl LaB6 absorption](pd-neut-cwl_LaB6_absorption.ipynb) –
-  verifies **Debye-Scherrer absorption** correction.
+  **absorption correction (cylinder, Hewat)** (FullProf "muR").
 
 ### LBCO
 
-- [pd-neut-cwl LBCO basic pseudo-Voigt](pd-neut-cwl_LBCO_basic.ipynb) –
-  verifies a _baseline_ pseudo-Voigt powder pattern.
+- [pd-neut-cwl LBCO basic](pd-neut-cwl_LBCO_basic.ipynb) – baseline
+  **Pseudo-Voigt** powder pattern (cryspy).
 - [pd-neut-cwl LBCO preferred orientation](pd-neut-cwl_LBCO_preferred-orientation.ipynb)
-  – verifies the **preferred-orientation** correction.
+  – **March–Dollase preferred orientation** (FullProf "Nor=1").
 
 ### PbSO4
 
-- [pd-neut-cwl PbSO4 basic pseudo-Voigt](pd-neut-cwl_PbSO4_basic.ipynb)
-  – verifies a _baseline_ pseudo-Voigt powder pattern.
-- [pd-neut-cwl PbSO4 Berar-Baldinozzi asymmetry](pd-neut-cwl_PbSO4_beba-asymmetry.ipynb)
-  – verifies the **empirical asymmetry** correction.
+- [pd-neut-cwl PbSO4 basic](pd-neut-cwl_PbSO4_basic.ipynb) – baseline
+  **Pseudo-Voigt** powder pattern (cryspy).
+- [pd-neut-cwl PbSO4 Bérar-Baldinozzi asymmetry](pd-neut-cwl_PbSO4_beba-asymmetry.ipynb)
+  – **Pseudo-Voigt + Bérar-Baldinozzi asymmetry** (FullProf "Asy1-4").
 
 ### Y2O3
 
 - [pd-neut-cwl Y2O3 isotropic ADPs](pd-neut-cwl_Y2O3_isotropic-adp.ipynb)
-  – verifies the isotropic-ADP _baseline_.
-- [pd-neut-cwl Y2O3 beta ADPs](pd-neut-cwl_Y2O3_beta-adp.ipynb) –
-  verifies **beta-tensor anisotropic ADPs**.
+  – baseline **isotropic ADPs** (Biso/Uiso).
+- [pd-neut-cwl Y2O3 anisotropic β ADPs](pd-neut-cwl_Y2O3_beta-adp.ipynb)
+  – **anisotropic β-tensor ADPs**.
 
 ## Powder, Neutron, Time-Of-Flight
 
 ### Fe
 
-- [pd-neut-tof Fe pseudo-Voigt profile](pd-neut-tof_Fe_pseudo-voigt.ipynb)
-  – verifies the _baseline_ **non-convoluted pseudo-Voigt** profile.
+- [pd-neut-tof Fe Pseudo-Voigt](pd-neut-tof_Fe_pseudo-voigt.ipynb) –
+  baseline **Pseudo-Voigt (non-convoluted)** TOF profile (FullProf
+  "Npr=7" TOF).
 
 ### NCAF
 
-- [pd-neut-tof NCAF Jorgensen-Von Dreele profile](pd-neut-tof_NCAF_jorgensen-von-dreele.ipynb)
-  – verifies the **Jorgensen-Von Dreele pseudo-Voigt** profile without
-  Lorentzian broadening terms.
+- [pd-neut-tof NCAF Jorgensen-Von Dreele (Gaussian)](pd-neut-tof_NCAF_jorgensen-von-dreele.ipynb)
+  – **Jorgensen-Von Dreele (back-to-back exponentials ⊗ pseudo-Voigt)**
+  profile with the Lorentzian terms (γ₀, γ₁, γ₂) forced to zero, i.e.
+  the Gaussian case (FullProf "Npr=9").
 
 ### Si
 
-- [pd-neut-tof Si Jorgensen profile](pd-neut-tof_Si_jorgensen.ipynb) –
-  verifies the **Jorgensen back-to-back exponential** profile.
-- [pd-neut-tof Si Jorgensen-Von Dreele profile](pd-neut-tof_Si_jorgensen-von-dreele.ipynb)
-  – verifies the **Jorgensen-Von Dreele pseudo-Voigt** profile with
-  Lorentzian broadening terms.
+- [pd-neut-tof Si Jorgensen](pd-neut-tof_Si_jorgensen.ipynb) –
+  **Jorgensen (back-to-back exponentials ⊗ Gaussian)** profile (FullProf
+  "Npr=9", Gaussian limit).
+- [pd-neut-tof Si Jorgensen-Von Dreele](pd-neut-tof_Si_jorgensen-von-dreele.ipynb)
+  – **Jorgensen-Von Dreele (back-to-back exponentials ⊗ pseudo-Voigt)**
+  profile with Lorentzian terms (FullProf "Npr=9"). _Known difference:
+  cryspy TOF Lorentzian discrepancy._
 
 ## Powder, X-Ray, Constant Wavelength
 
 ### LiF
 
 - [pd-xray-cwl LiF single wavelength](pd-xray-cwl_LiF_single.ipynb) –
-  verifies the _baseline_ Cu K-alpha1 pseudo-Voigt pattern.
+  baseline Cu Kα₁ **Pseudo-Voigt** pattern (cryspy and **crysfml**).
 - [pd-xray-cwl LiF polarization](pd-xray-cwl_LiF_single_polarization.ipynb)
-  – verifies the **X-ray polarization** correction.
+  – **X-ray Lorentz-polarization correction** (FullProf "Cthm,
+  Rpolarz").
 - [pd-xray-cwl LiF absorption](pd-xray-cwl_LiF_single_absorption.ipynb)
-  – verifies **Debye-Scherrer absorption** correction.
-- [pd-xray-cwl LiF doublet](pd-xray-cwl_LiF_doublet.ipynb) – verifies Cu
-  **K-alpha1/K-alpha2 doublet** handling.
+  – **absorption correction (cylinder, Hewat)** (FullProf "muR").
+- [pd-xray-cwl LiF second wavelength](pd-xray-cwl_LiF_doublet.ipynb) –
+  **second wavelength** (Cu Kα₁/Kα₂ doublet, FullProf "Lambda2, Ratio").
+  The doublet is an EasyDiffraction-level implementation (the engine is
+  run twice and summed by the intensity ratio).
 
 ### PbSO4
 
 - [pd-xray-cwl PbSO4 round robin](pd-xray-cwl_PbSO4_round-robin.ipynb) –
-  verifies the anglesite X-ray round-robin case with empirical
-  asymmetry.
+  anglesite X-ray round-robin case (**Pseudo-Voigt + Bérar-Baldinozzi
+  asymmetry**).
 
 ## Single Crystal, Neutron, Constant Wavelength
 
 ### Pr2NiO4
 
 - [sc-neut-cwl Pr2NiO4 basic](sc-neut-cwl_Pr2NiO4_basic.ipynb) –
-  verifies calculated F2 values with **anisotropic ADPs**.
+  calculated F² with **anisotropic β-tensor ADPs**.
 
 ### Tb2Ti2O7
 
 - [sc-neut-cwl Tb2Ti2O7 basic](sc-neut-cwl_Tb2Ti2O7_basic.ipynb) –
-  verifies the _baseline_ with isotropic ADPs.
+  baseline with **isotropic ADPs**.
 - [sc-neut-cwl Tb2Ti2O7 isotropic extinction](sc-neut-cwl_Tb2Ti2O7_isotropic-extinction.ipynb)
-  – verifies the **isotropic extinction** model.
-- [sc-neut-cwl Tb2Ti2O7 anisotropic ADPs](sc-neut-cwl_Tb2Ti2O7_anisotropic-adp.ipynb)
-  – verifies **beta-tensor anisotropic ADPs**.
+  – **isotropic Becker-Coppens extinction** (Gaussian model). _Known
+  difference: cryspy and FullProf use different extinction conventions._
+- [sc-neut-cwl Tb2Ti2O7 anisotropic β ADPs](sc-neut-cwl_Tb2Ti2O7_anisotropic-adp.ipynb)
+  – **anisotropic β-tensor ADPs**.
 
-## Powder, Total Scattering
+## Powder, Total Scattering (Pair Distribution Function)
 
 ### Ni
 
-- [total-neut-cwl Ni gaussian-damped sinc](total-neut-cwl_Ni_gaussian-damped-sinc.ipynb)
-  – verifies the **neutron constant wavelength PDF** calculations.
+- [total-neut-cwl Ni Gaussian-damped sinc](total-neut-cwl_Ni_gaussian-damped-sinc.ipynb)
+  – **Gaussian-damped sinc termination** PDF, neutron constant
+  wavelength (pdffit2).
 
 ### Si
 
-- [total-neut-tof Si gaussian-damped sinc](total-neut-tof_Si_gaussian-damped-sinc.ipynb)
-  – verifies the **neutron time-of-flight PDF** calculations.
+- [total-neut-tof Si Gaussian-damped sinc](total-neut-tof_Si_gaussian-damped-sinc.ipynb)
+  – **Gaussian-damped sinc termination** PDF, neutron time-of-flight
+  (pdffit2).
 
 ### NaCl
 
-- [total-xray NaCl gaussian-damped sinc](total-xray_NaCl_gaussian-damped-sinc.ipynb)
-  – verifies the **X-ray PDF** calculations.
+- [total-xray NaCl Gaussian-damped sinc](total-xray_NaCl_gaussian-damped-sinc.ipynb)
+  – **Gaussian-damped sinc termination** PDF, X-ray (pdffit2).

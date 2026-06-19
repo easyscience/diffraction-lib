@@ -3,6 +3,10 @@
 #
 # Verifies the LaB6 baseline with only the Finger-Cox-Jephcoat
 # axial-divergence asymmetry enabled.
+#
+# **Refinement:** none. Known difference: the cryspy CW profile has no
+# Finger-Cox-Jephcoat term, so it cannot reproduce the FullProf FCJ
+# reference.
 
 # %%
 import easydiffraction as edi
@@ -125,5 +129,5 @@ verify.assert_patterns_agree(
         (f'{LABEL_ED_CRYSPY} vs {FULLPROF_LABEL}', calc_fullprof, calc_ed_cryspy),
     ],
     known_discrepancy=True,
-    reason='FCJ asymmetry is not implemented in the cryspy CW profile.',
+    reason='FCJ asymmetry is not implemented in the cryspy.',
 )

@@ -2,7 +2,10 @@
 # # LBCO — powder neutron CW — preferred orientation
 #
 # Verifies the March-Dollase preferred-orientation correction against a
-# FullProf reference with orientation along [0 0 1].
+# FullProf reference with orientation along [0 0 1]. The page refines
+# the scale because cryspy's Modified March correction is not
+# volume-normalised, so it differs from FullProf by a constant per-phase
+# scale factor (the orientation coefficient itself transfers).
 
 # %%
 import easydiffraction as edi
@@ -156,6 +159,11 @@ project.display.pattern_comparison(
 
 # %% [markdown]
 # ## Fit edi-cryspy to FullProf
+#
+# cryspy uses the reciprocal March coefficient (g₁ = 1/r, converted
+# automatically) and does not volume-normalise the correction, so it
+# differs from FullProf by a constant per-phase scale factor. Refining
+# the scale absorbs that factor and recovers the FullProf profile.
 
 # %%
 experiment.linked_structures['lbco'].scale.free = True

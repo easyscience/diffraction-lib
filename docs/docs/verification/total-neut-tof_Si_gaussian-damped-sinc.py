@@ -4,6 +4,9 @@
 # Verifies the total-scattering gaussian-damped sinc profile by comparing
 # EasyDiffraction's pdffit calculator with a direct diffpy.pdffit2
 # calculation on the same synthetic r-grid.
+#
+# **Refinement:** none — every parameter is taken from the direct
+# diffpy.pdffit2 reference; only the calculated patterns are compared.
 
 # %%
 from importlib import metadata

@@ -3,6 +3,9 @@
 #
 # Verifies the baseline Y2O3 constant-wavelength neutron powder pattern
 # with isotropic ADPs.
+#
+# **Refinement:** none — every parameter is taken from the FullProf
+# reference; only the calculated patterns are compared.
 
 # %%
 import easydiffraction as edi
@@ -39,7 +42,7 @@ structure.atom_sites.create(
     fract_z=0.25,  # FullProf Z
     occupancy=1.0,  # FullProf Occ 0.50000 (24d site)
     adp_type='Biso',  # FullProf N_t = 0
-    adp_iso=0.0,  # FullProf Biso
+    adp_iso=0.3,  # FullProf Biso
 )
 structure.atom_sites.create(
     id='Y2',  # FullProf Atom
@@ -49,7 +52,7 @@ structure.atom_sites.create(
     fract_z=0.25,  # FullProf Z
     occupancy=1.0,  # FullProf Occ 0.16667 (8b site)
     adp_type='Biso',  # FullProf N_t = 0
-    adp_iso=0.0,  # FullProf Biso
+    adp_iso=0.3,  # FullProf Biso
 )
 structure.atom_sites.create(
     id='O1',  # FullProf Atom
@@ -59,7 +62,7 @@ structure.atom_sites.create(
     fract_z=0.38030,  # FullProf Z
     occupancy=1.0,  # FullProf Occ 1.00000 (48e site)
     adp_type='Biso',  # FullProf N_t = 0
-    adp_iso=0.0,  # FullProf Biso
+    adp_iso=0.5,  # FullProf Biso
 )
 
 project.structures.add(structure)

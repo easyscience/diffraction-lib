@@ -3,6 +3,9 @@
 #
 # Verifies the LaB6 baseline with only the SyCos/SySin sample-displacement
 # and transparency peak-position corrections enabled.
+#
+# **Refinement:** none. Known difference: SyCos/SySin sample
+# displacement is not implemented in cryspy's CW profile.
 
 # %%
 import easydiffraction as edi
@@ -127,5 +130,5 @@ verify.assert_patterns_agree(
         (f'{LABEL_ED_CRYSPY} vs {FULLPROF_LABEL}', calc_fullprof, calc_ed_cryspy),
     ],
     known_discrepancy=True,
-    reason='SyCos/SySin do not yet match the FullProf convention in cryspy.',
+    reason='SyCos/SySin are not implemented in the cryspy.',
 )

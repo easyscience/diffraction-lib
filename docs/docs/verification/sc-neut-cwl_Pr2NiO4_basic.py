@@ -3,6 +3,9 @@
 #
 # Verifies calculated F² values for a constant-wavelength neutron
 # single-crystal reference with anisotropic ADPs.
+#
+# **Refinement:** the overall scale only; all other parameters are
+# taken from the FullProf reference.
 
 # %%
 import easydiffraction as edi

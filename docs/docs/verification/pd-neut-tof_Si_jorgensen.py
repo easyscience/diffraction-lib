@@ -3,6 +3,9 @@
 #
 # Verifies the Jorgensen back-to-back exponential profile for a silicon
 # time-of-flight powder pattern.
+#
+# **Refinement:** the overall scale only; all other parameters are
+# taken from the FullProf reference.
 
 # %%
 import easydiffraction as edi

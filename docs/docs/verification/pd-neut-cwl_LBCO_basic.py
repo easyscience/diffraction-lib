@@ -3,6 +3,9 @@
 #
 # Verifies the baseline constant-wavelength neutron powder pattern for
 # LBCO with a pseudo-Voigt peak shape and no correction models.
+#
+# **Refinement:** none — every parameter is taken from the FullProf
+# reference; only the calculated patterns are compared.
 
 # %%
 import easydiffraction as edi

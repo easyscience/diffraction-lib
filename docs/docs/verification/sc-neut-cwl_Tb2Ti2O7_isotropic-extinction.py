@@ -3,6 +3,9 @@
 #
 # Verifies the cryspy isotropic extinction model against a FullProf
 # single-crystal reference with isotropic ADPs.
+#
+# **Refinement:** the overall scale and the extinction radius. Known
+# difference: cryspy and FullProf use different extinction conventions.
 
 # %%
 import easydiffraction as edi

@@ -1,8 +1,12 @@
 # %% [markdown]
-# # Na₂Ca₃Al₂F₁₄ — powder neutron TOF — Jorgensen-Von Dreele profile
+# # Na₂Ca₃Al₂F₁₄ — powder neutron TOF — Jorgensen-Von Dreele (Gaussian)
 #
 # Verifies the Jorgensen-Von Dreele pseudo-Voigt profile for the NCAF
-# time-of-flight powder reference.
+# time-of-flight powder reference, with the Lorentzian terms (γ₀, γ₁,
+# γ₂) forced to zero so it reduces to the Gaussian case.
+#
+# **Refinement:** the overall scale only; all other parameters are
+# taken from the FullProf reference.
 
 # %%
 import easydiffraction as edi

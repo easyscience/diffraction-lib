@@ -2,8 +2,10 @@
 # # Fe - powder neutron TOF - pseudo-Voigt profile
 #
 # Verifies the simple non-convoluted pseudo-Voigt time-of-flight peak
-# profile on a one-phase Fe ferrite reference simplified from the BEER
-# instrument simulation/fitting tutorial.
+# profile.
+#
+# **Refinement:** the overall scale only; all other parameters are
+# taken from the FullProf reference.
 
 # %%
 import easydiffraction as edi

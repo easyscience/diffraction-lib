@@ -3,6 +3,9 @@
 #
 # Verifies the isotope-only LaB6 reference, where the baseline pattern
 # uses 11B instead of natural boron.
+#
+# **Refinement:** none — every parameter is taken from the FullProf
+# reference; only the calculated patterns are compared.
 
 # %%
 import easydiffraction as edi
@@ -34,7 +37,7 @@ structure.atom_sites.create(
 )
 structure.atom_sites.create(
     id='B',  # FullProf Atom
-    type_symbol='11B',  # FullProf Typ B11
+    type_symbol='11B',  # FullProf Additional B11 0.665 0.0 0
     fract_x=0.19972,  # FullProf X
     fract_y=0.5,  # FullProf Y
     fract_z=0.5,  # FullProf Z

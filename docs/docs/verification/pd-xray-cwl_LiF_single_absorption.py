@@ -3,6 +3,9 @@
 #
 # Verifies the Debye-Scherrer cylindrical absorption correction on the
 # same single-wavelength LiF reference.
+#
+# **Refinement:** none — every parameter is taken from the FullProf
+# reference; only the calculated patterns are compared.
 
 # %%
 import easydiffraction as edi

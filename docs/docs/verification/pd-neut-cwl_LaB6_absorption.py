@@ -3,6 +3,9 @@
 #
 # Verifies the LaB6 baseline with only Debye-Scherrer cylindrical
 # absorption enabled.
+#
+# **Refinement:** none — every parameter is taken from the FullProf
+# reference; only the calculated patterns are compared.
 
 # %%
 import easydiffraction as edi

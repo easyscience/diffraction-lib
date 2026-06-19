@@ -3,6 +3,9 @@
 #
 # Verifies the anglesite X-ray round-robin case with the Cu Kα doublet
 # and FullProf empirical asymmetry.
+#
+# **Refinement:** atomic ADPs, the overall scale, and Bérar-Baldinozzi
+# coefficients (round-robin case); see the known difference below.
 
 # %%
 import easydiffraction as edi

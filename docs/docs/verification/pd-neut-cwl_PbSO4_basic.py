@@ -3,6 +3,9 @@
 #
 # Verifies the baseline constant-wavelength neutron powder pattern for
 # anglesite with a pseudo-Voigt peak shape and no asymmetry correction.
+#
+# **Refinement:** none — every parameter is taken from the FullProf
+# reference; only the calculated patterns are compared.
 
 # %%
 import easydiffraction as edi
