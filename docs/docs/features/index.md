@@ -7,8 +7,8 @@ icon: material/clipboard-check-outline
 
 EasyDiffraction calculates diffraction patterns from a structural model
 and instrument settings, and refines that model against measured data.
-This page is the single source of truth for **what it can do today and
-what is planned**, across powder and single-crystal diffraction, total
+This page gives a complete overview of **what it can do today and what
+is planned**, across powder and single-crystal diffraction, total
 scattering (PDF), and the analysis tools around them.
 
 Jump to a section:
