@@ -11,25 +11,12 @@ This page gives a complete overview of **what it can do today and what
 is planned**, across powder and single-crystal diffraction, total
 scattering (PDF), and the analysis tools around them.
 
-Jump to a section:
-
-- [Structure model](#1-structure-model) — crystal and (planned) magnetic
-  structures.
-- [Experiment model](#2-experiment-model) — powder/single-crystal Bragg,
-  total scattering, peak profiles, instrument terms.
-- [Multi-dataset support](#3-multi-dataset-support),
-  [Analysis & fitting](#4-analysis-fitting),
-  [Refinement execution](#5-refinement-execution),
-  [Constraints](#6-constraints).
-- [Data management](#7-data-management),
-  [Visualization](#8-visualization),
-  [Documentation](#9-user-documentation), [Backlog](#10-backlog).
-
 ## Calculation engines
 
-Most physics is computed by a pluggable **calculation engine**; some
-terms are applied by EasyDiffraction itself around the engine. You
-choose the engine per experiment (see
+Most of the calculation is done by a pluggable **calculation engine**. A
+few extra corrections — such as the background and overall scale — are
+added by EasyDiffraction itself, on top of what the engine produces. You
+choose the engine for each experiment (see
 [`calculator.type`](../user-guide/parameters/experiment/calculator.md)).
 
 - `cryspy` — Python crystallographic engine for powder/single-crystal
@@ -61,7 +48,7 @@ Each capability is tracked across the three ways to use EasyDiffraction:
     `lowest`
 - :material-cancel: Not available / not applicable — the
   engine/interface does not provide this (e.g. a PDF-only engine for a
-  Bragg-only term)
+  Bragg-only feature)
 - :material-help-circle: Unknown — support not yet confirmed for this
   engine/interface
 
@@ -291,14 +278,10 @@ calculated pattern; the engine is not involved.
 !!! note
 
     CrysFML's TOF branch is not yet functional (it parses TOF input but
-    returns zero intensities), so TOF profiles and TOF instrument terms
+    returns zero intensities), so TOF profiles and TOF instrument parameters
     are `cryspy`-only today; `crysfml` is marked :date:.
 
 ##### Peak Profile — Constant Wavelength
-
-All three CWL profiles share the same **Thompson-Cox-Hastings
-pseudo-Voigt** peak shape (η derived from the Gaussian H_G(U, V, W) and
-Lorentzian H_L(X, Y) widths); they differ only in the asymmetry model.
 
 <div class="ed-matrix" markdown="1">
 
@@ -712,6 +695,6 @@ that will be split into detailed rows once work begins).
 | Search and download structure from Crystallography Open Database (COD)                                                | :date: | :material-cancel: | :date:            |
 | Read instrument resolution parameters from file<br/>- :material-link-variant: `FullProf` "Irf" (.irf resolution file) | :date: | :date:            | :date:            |
 | Add category with fit quality metrics<br/>(e.g. chi2, R-factors)                                                      | :date: | :date:            | :date:            |
-| Set free parameters by category<br/>(e.g. all atomic positions, all ADPs)                                             | :date: | :date:            | :date:            |
+| Set free parameters by category (e.g. all atomic positions, all ADPs)                                                 | :date: | :date:            | :date:            |
 
 </div>
