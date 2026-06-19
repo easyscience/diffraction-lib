@@ -540,6 +540,19 @@ model, experimental data, fit settings, results).
 
 </div>
 
+#### Reports
+
+<div class="ed-matrix" markdown="1">
+
+| Feature                                                                            | LIB                | CLI                     | APP                    |
+| ---------------------------------------------------------------------------------- | ------------------ | ----------------------- | ---------------------- |
+| Interactive HTML report (Plotly fit plots, Three.js 3D structures; offline option) | :white_check_mark: | :ballot_box_with_check: | :material-cancel: |
+| CIF report (IUCr-style)                                                            | :white_check_mark: | :ballot_box_with_check: | :material-cancel: |
+| LaTeX (TeX) report                                                                 | :white_check_mark: | :ballot_box_with_check: | :material-cancel: |
+| PDF report (compiled from the TeX bundle; requires a LaTeX engine)                 | :white_check_mark: | :ballot_box_with_check: | :material-cancel: |
+
+</div>
+
 #### Data Loading
 
 <div class="ed-matrix" markdown="1">
@@ -641,14 +654,17 @@ model, experimental data, fit settings, results).
 
 <div class="ed-matrix" markdown="1">
 
-| Feature                                              | LIB                | CLI                | APP                |
-| ---------------------------------------------------- | ------------------ | ------------------ | ------------------ |
-| Live update of plots on parameter change with slider | :material-cancel:  | :material-cancel:  | :white_check_mark: |
-| Live update of plots during refinement               | :material-cancel:  | :material-cancel:  | :white_check_mark: |
-| Live update of fit quality (change in χ²) — _table_  | :white_check_mark: | :white_check_mark: | :material-cancel:  |
-| Live update of fit quality (change in χ²) — _chart_  | :date:             | :material-cancel:  | :date:             |
-| Parameter evolution (sequential refinement)          | :white_check_mark: | :white_check_mark: | :date:             |
-| Correlation between parameters                       | :white_check_mark: | :white_check_mark: | :date:             |
+| Feature                                                         | LIB                | CLI                | APP                |
+| --------------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
+| Live update of plots on parameter change with slider            | :material-cancel:  | :material-cancel:  | :white_check_mark: |
+| Live update of plots during refinement                          | :material-cancel:  | :material-cancel:  | :white_check_mark: |
+| Live update of fit quality (change in χ²) — _table_/_statusbar_ | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Live update of fit quality (change in χ²) — _chart_             | :date:             | :material-cancel:  | :date:             |
+| Parameter evolution (sequential refinement)                     | :white_check_mark: | :white_check_mark: | :date:             |
+| Correlation between parameters                                  | :white_check_mark: | :white_check_mark: | :date:             |
+| Posterior pair (corner) plot                                    | :white_check_mark: | :white_check_mark: | :date:             |
+| Posterior marginal distributions                                | :white_check_mark: | :white_check_mark: | :date:             |
+| Posterior predictive bands                                      | :white_check_mark: | :white_check_mark: | :date:             |
 
 </div>
 
