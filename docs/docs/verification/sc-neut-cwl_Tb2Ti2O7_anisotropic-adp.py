@@ -1,8 +1,8 @@
 # %% [markdown]
-# # Tb2Ti2O7 - single-crystal neutron CW - isotropic extinction
+# # Tb2Ti2O7 - single-crystal neutron CW - anisotropic ADPs
 #
-# Verifies the cryspy isotropic extinction model against a FullProf
-# single-crystal reference with isotropic ADPs.
+# Verifies calculated F2 values for a no-extinction neutron
+# single-crystal reference with anisotropic ADPs.
 
 # %%
 import easydiffraction as edi
@@ -26,42 +26,59 @@ structure.space_group.name_h_m = 'F d -3 m'  # FullProf Space group symbol
 
 structure.cell.length_a = 10.130  # FullProf a
 
+# Anisotropic sites carry the FullProf beta tensor directly: ``adp_type``
+# is set to ``'beta'`` and the dimensionless beta components are assigned
+# verbatim. F d -3 m is cubic, so site symmetry links the remaining beta
+# components and only the independent ones are set. FullProf occupancy is
+# the site multiplicity over the general multiplicity; CIF/EasyDiffraction
+# use 1.0 for a fully occupied site.
 structure.atom_sites.create(
     id='Tb',  # FullProf Atom
     type_symbol='Tb',  # FullProf Typ
     fract_x=0.5,  # FullProf X
     fract_y=0.5,  # FullProf Y
     fract_z=0.5,  # FullProf Z
-    adp_type='Biso',  # FullProf Biso
-    adp_iso=0.0,  # FullProf Biso
+    adp_type='beta',  # FullProf beta tensor
 )
+aniso = structure.atom_site_aniso['Tb']
+aniso.adp_11 = 0.00098991673  # FullProf beta11
+aniso.adp_12 = -0.00047650724  # FullProf beta12
+
 structure.atom_sites.create(
     id='Ti',  # FullProf Atom
     type_symbol='Ti',  # FullProf Typ
     fract_x=0.0,  # FullProf X
     fract_y=0.0,  # FullProf Y
     fract_z=0.0,  # FullProf Z
-    adp_type='Biso',  # FullProf Biso
-    adp_iso=0.0,  # FullProf Biso
+    adp_type='beta',  # FullProf beta tensor
 )
+aniso = structure.atom_site_aniso['Ti']
+aniso.adp_11 = 0.00090989727  # FullProf beta11
+aniso.adp_12 = -0.00016990340  # FullProf beta12
+
 structure.atom_sites.create(
     id='O1',  # FullProf Atom
     type_symbol='O',  # FullProf Typ
     fract_x=0.32804,  # FullProf X
     fract_y=0.125,  # FullProf Y
     fract_z=0.125,  # FullProf Z
-    adp_type='Biso',  # FullProf Biso
-    adp_iso=0.0,  # FullProf Biso
+    adp_type='beta',  # FullProf beta tensor
 )
+aniso = structure.atom_site_aniso['O1']
+aniso.adp_11 = 0.0012294180  # FullProf beta11
+aniso.adp_22 = 0.00078215479  # FullProf beta22
+aniso.adp_23 = 0.00041246481  # FullProf beta23
+
 structure.atom_sites.create(
     id='O2',  # FullProf Atom
     type_symbol='O',  # FullProf Typ
     fract_x=0.375,  # FullProf X
     fract_y=0.375,  # FullProf Y
     fract_z=0.375,  # FullProf Z
-    adp_type='Biso',  # FullProf Biso
-    adp_iso=0.0,  # FullProf Biso
+    adp_type='beta',  # FullProf beta tensor
 )
+aniso = structure.atom_site_aniso['O2']
+aniso.adp_11 = 0.00060762477  # FullProf beta11
 
 project.structures.add(structure)
 
@@ -72,14 +89,10 @@ structure.show_as_text()
 # ## Load the FullProf reference
 
 # %%
-FULLPROF_PROJECT_DIR = 'sc-neut-cwl_tbti_isotropic-extinction'
+FULLPROF_PROJECT_DIR = 'sc-neut-cwl_tbti_anisotropic-adp'
 FULLPROF_OUT_FILE = 'tbti.out'
-FULLPROF_SCALE = 0.2609  # FullProf Scale
+FULLPROF_SCALE = 0.28749475  # FullProf Scale
 FULLPROF_WAVELENGTH = 0.7930  # FullProf Lambda
-# cryspy uses Becker-Coppens isotropic extinction, not the one from
-# FullProf.
-EXTINCTION_RADIUS = 10.0
-EXTINCTION_MOSAICITY = 35000.0
 
 f2calc = verify.load_fullprof_sc_f2calc(FULLPROF_PROJECT_DIR, FULLPROF_OUT_FILE)
 FULLPROF_LABEL = verify.fullprof_label(FULLPROF_PROJECT_DIR, FULLPROF_OUT_FILE)
@@ -95,13 +108,10 @@ experiment = ExperimentFactory.from_scratch(
     radiation_probe='neutron',
     scattering_type='bragg',
 )
+
 experiment.linked_structure.structure_id = 'tbti'
 experiment.linked_structure.scale = FULLPROF_SCALE
 experiment.instrument.setup_wavelength = FULLPROF_WAVELENGTH
-experiment.extinction.type = 'becker-coppens'
-experiment.extinction.model = 'gauss'
-experiment.extinction.radius.value = EXTINCTION_RADIUS
-experiment.extinction.mosaicity.value = EXTINCTION_MOSAICITY
 
 verify.set_reference_reflections(experiment, f2calc)
 
@@ -130,13 +140,12 @@ project.display.reflection_comparison(
 experiment.calculator.type = 'cryspy'
 
 experiment.linked_structure.scale.free = True
-experiment.extinction.radius.free = True
 
 project.analysis.fit()
 project.display.fit.results()
 
 calc_ed_cryspy_refined = verify.calculate_reflections(project, experiment, 'cryspy')
-LABEL_ED_CRYSPY_REFINED = verify.engine_label('cryspy', note='scale + ext radius')
+LABEL_ED_CRYSPY_REFINED = verify.engine_label('cryspy', note='scale only')
 reference_refined, candidate_refined = verify.align_reflections(f2calc, calc_ed_cryspy_refined)
 
 project.display.reflection_comparison(
@@ -157,10 +166,6 @@ verify.report_refinement_closeness(
 # ## Agreement check
 
 # %%
-verify.assert_patterns_agree(
-    [
-        (f'{LABEL_ED_CRYSPY_REFINED} vs {FULLPROF_LABEL}', reference_refined, candidate_refined),
-    ],
-    known_discrepancy=True,
-    reason='cryspy and FullProf use different extinction conventions.',
-)
+verify.assert_patterns_agree([
+    (f'{LABEL_ED_CRYSPY_REFINED} vs {FULLPROF_LABEL}', reference_refined, candidate_refined),
+])

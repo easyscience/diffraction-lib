@@ -8,11 +8,11 @@
                  Refinement of X-ray and/or Neutron Data
 
 
-    Date: 19/06/2026  Time: 08:16:35.868                              
+    Date: 10/06/2026  Time: 23:04:13.334                              
 
  => PCR file code: tbti
  => DAT file code: tbti                 -> Relative contribution: 1.0000                                                            
- => Title: Tb2Ti2O7, Neutrons, HEiDi@FRMII, isotropic ADP + extinction
+ => Title: Tb2Ti2O7, Neutrons, HEiDi@FRMII
 
  ==> CONDITIONS OF THIS RUN FOR PATTERN No.:  1
 
@@ -25,7 +25,7 @@
  ==> RESULTS OF REFINEMENT:
 
 
- => No. of fitted parameters:    0
+ => No. of fitted parameters:    9
 
 
 ------------------------------------------------------------------------------
@@ -43,53 +43,19 @@
  O1      0.32804(   0)  0.12500(   0)  0.12500(   0)  0.000(  0)  1.000(  0)   48
  O2      0.37500(   0)  0.37500(   0)  0.37500(   0)  0.000(  0)  0.167(  0)    8
 
- ==> SCALE, EXTINCTION, CELL PARAMETERS FOR PATTERN#  1
+ =>   Anisotropic Betas*1E04
 
- ==> OVERALL PARAMETERS:
+ Name        B11     B22     B33     B12     B13     B23  
+            sB11    sB22    sB33    sB12    sB13    sB23  
 
-
-
- => Scale factors ( 1: 6): 
-             0.260900        0.000000
-             0.000000        0.000000
-             0.000000        0.000000
-             0.000000        0.000000
-             0.000000        0.000000
-             0.000000        0.000000
-
-
- => Extinction parameters: 
-             0.082080        0.000000
-             0.000000        0.000000
-             0.000000        0.000000
-             0.000000        0.000000
-             0.000000        0.000000
-             0.000000        0.000000
-             0.000000        0.000000
-
-
- => Global user-weigthed Chi2 (Bragg contrib.):   110.    
-
- ==> RESULTS OF REFINEMENT:
-
-
- => No. of fitted parameters:    0
-
-
-------------------------------------------------------------------------------
- => Phase No.  1 Tb2Ti2O7                                F d -3 m            
-------------------------------------------------------------------------------
-
- =>  No. of reflections for pattern#:   1:   220  
-
-
- ==> ATOM PARAMETERS:
-
-  Name      x     sx       y     sy       z      sz      B   sB   occ. socc.  Mult
- Tb      0.50000(   0)  0.50000(   0)  0.50000(   0)  0.000(  0)  0.333(  0)   16
- Ti      0.00000(   0)  0.00000(   0)  0.00000(   0)  0.000(  0)  0.333(  0)   16
- O1      0.32804(   0)  0.12500(   0)  0.12500(   0)  0.000(  0)  1.000(  0)   48
- O2      0.37500(   0)  0.37500(   0)  0.37500(   0)  0.000(  0)  0.167(  0)    8
+ Tb          9.9     9.9     9.9    -4.8    -4.8    -4.8
+             0.6     0.6     0.6     0.5     0.5     0.5
+ Ti          9.1     9.1     9.1    -1.7    -1.7    -1.7
+             1.0     1.0     1.0     1.2     1.2     1.2
+ O1         12.3     7.8     7.8     0.0     0.0     4.1
+             0.9     0.6     0.6     0.0     0.0     0.7
+ O2          6.1     6.1     6.1     0.0     0.0     0.0
+             0.8     0.8     0.8     0.0     0.0     0.0
 
  ==> SCALE, EXTINCTION, CELL PARAMETERS FOR PATTERN#  1
 
@@ -98,7 +64,7 @@
 
 
  => Scale factors ( 1: 6): 
-             0.260900        0.000000
+             0.287495        0.004339
              0.000000        0.000000
              0.000000        0.000000
              0.000000        0.000000
@@ -107,7 +73,7 @@
 
 
  => Extinction parameters: 
-             0.082080        0.000000
+             0.000000        0.000000
              0.000000        0.000000
              0.000000        0.000000
              0.000000        0.000000
@@ -116,20 +82,20 @@
              0.000000        0.000000
 
 
- => Global user-weigthed Chi2 (Bragg contrib.):   110.    
+ => Global user-weigthed Chi2 (Bragg contrib.):   21.8    
 
      -----------------------------------------------------
      R-Factors and Chi2 for Integrated Intensity Pattern #  1
      -----------------------------------------------------
  => Phase:  1
- =>    RF2 -factor :   24.6    
- =>    RF2w-factor :   26.8    
- =>    RF  -factor :   15.2    
- =>    Chi2(Intens):   110.    
+ =>    RF2 -factor :   11.3    
+ =>    RF2w-factor :   11.7    
+ =>    RF  -factor :   6.61    
+ =>    Chi2(Intens):   21.8    
  =>  N_eff Reflect.:    220 with I >  0.00 sigma
 
  
-              CPU Time:     0.188 seconds
-                            0.003 minutes
+              CPU Time:     0.263 seconds
+                            0.004 minutes
 
- => Run finished at:     Date: 19/06/2026  Time: 08:16:36.048                              
+ => Run finished at:     Date: 10/06/2026  Time: 23:04:13.596                              

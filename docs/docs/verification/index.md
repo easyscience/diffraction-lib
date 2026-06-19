@@ -44,18 +44,25 @@ inside the notebook.
 - [pd-neut-cwl Y2O3 isotropic ADPs](pd-neut-cwl_Y2O3_isotropic-adp.ipynb)
   – verifies the isotropic-ADP _baseline_.
 - [pd-neut-cwl Y2O3 beta ADPs](pd-neut-cwl_Y2O3_beta-adp.ipynb) –
-  verifies **beta-tensor anisotropic ADPs**...
+  verifies **beta-tensor anisotropic ADPs**.
 
 ## Powder, Neutron, Time-Of-Flight
+
+### Fe
+
+- [pd-neut-tof Fe pseudo-Voigt profile](pd-neut-tof_Fe_pseudo-voigt.ipynb)
+  – verifies the _baseline_ non-convoluted pseudo-Voigt profile.
+
+### Si
 
 - [pd-neut-tof Si Jorgensen profile](pd-neut-tof_Si_jorgensen.ipynb) –
   verifies the **Jorgensen back-to-back exponential** profile.
 - [pd-neut-tof Si Jorgensen-Von Dreele profile](pd-neut-tof_Si_jorgensen-von-dreele.ipynb)
-  – verifies the **Jorgensen-Von Dreele pseudo-Voigt** ... with
-  Lorentzian terms.
+  – verifies the **Jorgensen-Von Dreele pseudo-Voigt** profile with
+  Lorentzian broadening terms.
 - [pd-neut-tof NCAF Jorgensen-Von Dreele profile](pd-neut-tof_NCAF_jorgensen-von-dreele.ipynb)
-  – verifies the **Jorgensen-Von Dreele pseudo-Voigt** ... without
-  Lorentzian terms.
+  – verifies the **Jorgensen-Von Dreele pseudo-Voigt** profile without
+  Lorentzian broadening terms.
 
 ## Powder, X-Ray, Constant Wavelength
 
@@ -98,11 +105,13 @@ inside the notebook.
 ### Pr2NiO4
 
 - [sc-neut-cwl Pr2NiO4 basic](sc-neut-cwl_Pr2NiO4_basic.ipynb) –
-  verifies calculated F2 values with anisotropic ADPs.
+  verifies calculated F2 values with **anisotropic ADPs**.
 
 ### Tb2Ti2O7
 
 - [sc-neut-cwl Tb2Ti2O7 basic](sc-neut-cwl_Tb2Ti2O7_basic.ipynb) –
-  verifies no-extinction calculated F2 values with anisotropic ADPs.
+  verifies the _baseline_ with isotropic ADPs.
 - [sc-neut-cwl Tb2Ti2O7 isotropic extinction](sc-neut-cwl_Tb2Ti2O7_isotropic-extinction.ipynb)
-  – verifies the isotropic extinction model.
+  – verifies the **isotropic extinction** model.
+- [sc-neut-cwl Tb2Ti2O7 anisotropic ADPs](sc-neut-cwl_Tb2Ti2O7_anisotropic-adp.ipynb)
+  – verifies **beta-tensor anisotropic ADPs**.
