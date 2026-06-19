@@ -37,6 +37,7 @@ PATTERN_Y2O3  1
   ASYM  0.0  0.0
   LAMBDA  1.54056  1.54056  0.0
   UVWXY  0.036631  -0.068345  0.131426  0.0  0.0
+  IRF_File  y2o3_xray_control.irf
   GEN_PATT  55.51625  0.05  59.51625
 END_PATTERN_Y2O3
 
@@ -60,8 +61,7 @@ PATTERN_Y2O3  1
   ASYM  0.0  0.0
   LAMBDA  1.54056  1.54056  0.0
   UVWXY  0.036631  -0.068345  0.131426  0.0  0.0
-  CTHM  0.8
-  RKK  0.5
+  IRF_File  y2o3_xray_polarization.irf
   GEN_PATT  55.51625  0.05  59.51625
 END_PATTERN_Y2O3
 
@@ -74,6 +74,27 @@ PHASE_Y2O3  1
   Contributes_to_patterns  1
   Scale_Factors  1.0
 END_PHASE_Y2O3
+"""
+
+CONTROL_IRF = """
+TITLE Y2O3 X-ray CW control
+JOBT CW X-rays
+WAVE  1.540560  1.540560  0.0
+PROF  7  0.0  0.0  0.0
+CTHM  0.0
+THRG  55.51625  0.05  59.51625
+UVWXYZ  0.036631  -0.068345  0.131426  0.0  0.0  0.0
+"""
+
+REQUESTED_IRF = """
+TITLE Y2O3 X-ray CW polarization request
+JOBT CW X-rays
+WAVE  1.540560  1.540560  0.0
+PROF  7  0.0  0.0  0.0
+CTHM  0.8
+RKK  0.5
+THRG  55.51625  0.05  59.51625
+UVWXYZ  0.036631  -0.068345  0.131426  0.0  0.0  0.0
 """
 
 # Generated with FullProf 8.40 from the PCR files in fullprof/.
@@ -132,13 +153,15 @@ def main() -> None:
         CONTROL_CFL,
         FULLPROF_CONTROL,
         x_shift=Y2O3_X_SHIFT,
+        sidecar_files={'y2o3_xray_control.irf': CONTROL_IRF},
     )
     requested = compare_to_fullprof(
-        'with X-ray polarization requested in CFL',
+        'with X-ray polarization requested via IRF_File',
         REQUESTED_CFL,
         FULLPROF_REQUESTED,
         x_shift=Y2O3_X_SHIFT,
         scale_override=control.scale,
+        sidecar_files={'y2o3_xray_polarization.irf': REQUESTED_IRF},
     )
     comparisons = [control, requested]
     print_summary('Request 3: X-ray polarization', comparisons)

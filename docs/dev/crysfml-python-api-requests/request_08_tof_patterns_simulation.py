@@ -9,7 +9,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 
 from cfl_common import compare_to_fullprof
-from cfl_common import compare_unavailable
 from cfl_common import fullprof_array
 from cfl_common import plot_comparisons
 from cfl_common import print_summary
@@ -52,6 +51,15 @@ PHASE_Y2O3  1
 END_PHASE_Y2O3
 """
 
+REQUESTED_CFL = CONTROL_CFL.replace(
+    '  GEN_PATT  55.51625  0.05  59.51625',
+    (
+        '  ! API unknown for this Y2O3 CW oracle: CrysFML Fortran has '
+        'TOF CFL keys D2TOF, ALPHA, BETA, SIGMA, GAMMA, and TOF_RANGE.\n'
+        '  GEN_PATT  55.51625  0.05  59.51625'
+    ),
+)
+
 # Generated with FullProf 8.40 from fullprof/y2o3_isotropic_adp.pcr.
 FULLPROF_CONTROL = _window_array([
     1.8614706, 0.4336294, 0.0930261477, 0.0191738523,
@@ -77,12 +85,6 @@ FULLPROF_CONTROL = _window_array([
     15697.1762,
 ])
 
-NO_TOF_PATTERN_API = (
-    'The inspected patterns_simulation CFL path does not produce a '
-    'matching TOF powder profile. This evidence keeps the common Y2O3 '
-    '55.5-59.5 degree window for the chart and records the TOF API gap.'
-)
-
 
 def main() -> None:
     control = compare_to_fullprof(
@@ -91,10 +93,12 @@ def main() -> None:
         FULLPROF_CONTROL,
         x_shift=Y2O3_X_SHIFT,
     )
-    requested = compare_unavailable(
-        'with TOF patterns_simulation requested',
+    requested = compare_to_fullprof(
+        'with TOF patterns_simulation API unknown',
+        REQUESTED_CFL,
         FULLPROF_CONTROL,
-        NO_TOF_PATTERN_API,
+        x_shift=Y2O3_X_SHIFT,
+        scale_override=control.scale,
     )
     comparisons = [control, requested]
     print_summary('Request 8: TOF patterns_simulation', comparisons)

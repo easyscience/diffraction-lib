@@ -132,7 +132,7 @@ def main() -> None:
         x_shift=Y2O3_X_SHIFT,
     )
     requested = compare_to_fullprof(
-        'with SyCos/SySin shifts in FullProf',
+        'with SyCos/SySin shifts requested in CFL',
         REQUESTED_CFL,
         FULLPROF_REQUESTED,
         x_shift=Y2O3_X_SHIFT,

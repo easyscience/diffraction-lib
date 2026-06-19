@@ -34,10 +34,10 @@ All screenshots follow the same evidence contract:
   feature and with the requested feature.
 - Every profile panel uses the Y2O3 verification sample from
   `docs/docs/verification/fullprof/pd-neut-cwl_y2o3_beta-adp/`.
-- Every embedded FullProf profile is the Bragg-only calculated
-  intensity from 55.50 to 59.50 degrees 2theta, step 0.05.
-- The plotting helper uses panels 1.5x taller than the previous
-  evidence scripts.
+- Every embedded FullProf profile is the Bragg-only calculated intensity
+  from 55.50 to 59.50 degrees 2theta, step 0.05.
+- The plotting helper uses panels 1.5x taller than the previous evidence
+  scripts.
 
 Generated FullProf PCR inputs for the requests that have a meaningful
 powder-pattern toggle are stored in
@@ -47,10 +47,25 @@ verification `y2o3.dat` beside the PCR using the same basename, then run
 `fp2k <basename>`.
 
 For CFL-driven requests, feature-on scripts keep the requested values
-inside the editable CFL block. When pycrysfml starts parsing and
-applying one of these CrysFML Fortran-backed inputs, the corresponding
-script should show the changed CrysFML curve without any Python logic
-change. The beta-ADP PCR is used only by request 7.
+inside the editable CFL block or the sidecar IRF referenced by
+`IRF_File`. When pycrysfml starts parsing and applying one of these
+CrysFML Fortran-backed inputs, the corresponding script should show the
+changed CrysFML curve without any Python logic change. The beta-ADP PCR
+is used only by request 7.
+
+Confirmed CrysFML/nFP input surfaces:
+
+- `Testing/nFP/Examples` contains real `.cfl` examples for `Zero_Sy`,
+  `WDT`, `ASYM`, `LAMBDA`, `UVWXY`, `IRF_File`, `PH_Pattern`,
+  `Calc_Type`, `Pref_OR`, `Pref_axis_val`, `BETA`, `Aniso_STRAIN`, and
+  related phase/pattern structure.
+- nFP's Fortran CFL reader additionally accepts `Absorption` inside a
+  `PH_Pattern` block.
+- CrysFML's IRF reader accepts `CTHM` and `RKK`, but those are IRF-file
+  keys referenced through the CFL `IRF_File` key, not inline CFL pattern
+  keys.
+- No CrysFML/nFP CFL or IRF example/key was found for `MUR`, `CABS`, or
+  `Preferred_Orientation`; those spellings are not used below.
 
 ## Request 1: preferred orientation in powder patterns
 
@@ -76,7 +91,11 @@ FullProf `.pcr` setting used in the feature-on reference:
 CFL input requested in the feature-on script:
 
 ```text
-Preferred_Orientation  0.0  0.0  1.0  1.0  1.2  0.3
+PH_Pattern  1
+  Calc_Type  Nuclear
+  Pref_OR  multiaxial_MD  1
+  Pref_axis_val  0 0 1  1.2  0.3
+END_PH_Pattern
 ```
 
 Evidence:
@@ -110,19 +129,21 @@ FullProf `.pcr` setting used in the feature-on reference:
 CFL input requested in the feature-on script:
 
 ```text
-GEOM  DBS
-CABS  HEWAT
-MUR  0.9
+PH_Pattern  1
+  Calc_Type  Nuclear
+  Absorption  0.9
+END_PH_Pattern
 ```
 
 Evidence:
 
 - PCRs: `fullprof/y2o3_isotropic_adp.pcr`,
   `fullprof/y2o3_absorption.pcr`
-- Script: `docs/dev/crysfml-python-api-requests/request_02_absorption.py`
-- Screenshot caption: "Y2O3 powder CW control agrees without
-  cylindrical absorption; the feature-on CFL requests Debye-Scherrer
-  Hewat cylindrical absorption with `muR=0.9`."
+- Script:
+  `docs/dev/crysfml-python-api-requests/request_02_absorption.py`
+- Screenshot caption: "Y2O3 powder CW control agrees without cylindrical
+  absorption; the feature-on CFL requests Debye-Scherrer Hewat
+  cylindrical absorption with `muR=0.9`."
 
 ## Request 3: X-ray polarization
 
@@ -143,9 +164,12 @@ FullProf `.pcr` setting used in the feature-on reference:
  1.540560 1.540560  0.00000   50.000 20.0000  0.8000  0.0000  160.00    0.5000
 ```
 
-CFL input requested in the feature-on script:
+CFL and IRF input requested in the feature-on script:
 
 ```text
+IRF_File  y2o3_xray_polarization.irf
+
+# in y2o3_xray_polarization.irf
 CTHM  0.8
 RKK  0.5
 ```
@@ -157,8 +181,8 @@ Evidence:
 - Script:
   `docs/dev/crysfml-python-api-requests/request_03_polarization.py`
 - Screenshot caption: "Y2O3 X-ray CW control agrees without
-  polarization; the feature-on CFL requests CrysFML-style `CTHM=0.8`
-  and `RKK=0.5` polarization input."
+  polarization; the feature-on CFL references an IRF file carrying
+  CrysFML-style `CTHM=0.8` and `RKK=0.5` polarization input."
 
 ## Request 4: SyCos and SySin CW peak-position shifts
 
@@ -184,9 +208,9 @@ Evidence:
   `fullprof/y2o3_sycos_sysin.pcr`
 - Script:
   `docs/dev/crysfml-python-api-requests/request_04_sycos_sysin.py`
-- Screenshot caption: "Y2O3 powder CW control agrees with
-  `SyCos=0`, `SySin=0`; after FullProf enables `SyCos=0.01153`,
-  `SySin=0.24334`, pycrysfml still follows the unshifted positions."
+- Screenshot caption: "Y2O3 powder CW control agrees with `SyCos=0`,
+  `SySin=0`; after FullProf enables `SyCos=0.01153`, `SySin=0.24334`,
+  pycrysfml still follows the unshifted positions."
 
 ## Request 5: single-crystal extinction corrections
 
@@ -355,8 +379,7 @@ FullProf `.pcr` setting used in the feature-on reference:
 
 Evidence:
 
-- PCRs: `fullprof/y2o3_xray_single.pcr`,
-  `fullprof/y2o3_doublet.pcr`
+- PCRs: `fullprof/y2o3_xray_single.pcr`, `fullprof/y2o3_doublet.pcr`
 - Script:
   `docs/dev/crysfml-python-api-requests/request_10_cw_doublet_dict_api.py`
 - Screenshot caption: "Y2O3 X-ray CW control agrees for a single

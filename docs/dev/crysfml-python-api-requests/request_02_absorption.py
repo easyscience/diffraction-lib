@@ -48,6 +48,9 @@ PHASE_Y2O3  1
   Atom  O1  O   0.39072  0.15204  0.38030  0.0  1.0
   Contributes_to_patterns  1
   Scale_Factors  1.0
+  PH_Pattern  1
+    Calc_Type  Nuclear
+  END_PH_Pattern
 END_PHASE_Y2O3
 """
 
@@ -60,9 +63,6 @@ PATTERN_Y2O3  1
   ASYM  0.0  0.0
   LAMBDA  1.54822  1.54822  0.0
   UVWXY  0.036631  -0.068345  0.131426  0.0  0.0
-  GEOM  DBS
-  CABS  HEWAT
-  MUR  0.9
   GEN_PATT  55.51625  0.05  59.51625
 END_PATTERN_Y2O3
 
@@ -74,6 +74,10 @@ PHASE_Y2O3  1
   Atom  O1  O   0.39072  0.15204  0.38030  0.0  1.0
   Contributes_to_patterns  1
   Scale_Factors  1.0
+  PH_Pattern  1
+    Calc_Type  Nuclear
+    Absorption  0.9
+  END_PH_Pattern
 END_PHASE_Y2O3
 """
 

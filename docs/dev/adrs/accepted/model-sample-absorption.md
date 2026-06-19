@@ -24,10 +24,10 @@ factor that attenuates low-angle peaks more than high-angle peaks;
 omitting it leaves an angle-dependent intensity residual that scales
 with the sample's μR (linear absorption coefficient × radius).
 
-This is not hypothetical. The verification reference `pd-neut-cwl_lab6`
-was refined in FullProf with **μR = 0.7**; the unmodelled correction is
-the _entire_ intensity residual on the companion
-`pd-neut-cwl_lab6_absorption` page (≈5 % profile difference), while the
+This is not hypothetical. The FullProf reference directory
+`pd-neut-cwl_lab6` was refined with **μR = 0.7**; the unmodelled
+correction is the _entire_ intensity residual on the companion
+`pd-neut-cwl_LaB6_absorption` page (≈5 % profile difference), while the
 μR = 0 page passes to corr 0.9999. See
 [issue #119](../../issues/open/highest_model-sample-absorption-debye-scherrer-r.md).
 
@@ -369,7 +369,7 @@ backend round-trip.
 ## Consequences
 
 - **Closes the LaB₆ absorption residual.** The
-  `pd-neut-cwl_lab6_absorption` verification page becomes the acceptance
+  `pd-neut-cwl_LaB6_absorption` verification page becomes the acceptance
   test: with `cylinder-hewat`, `mu_r = 0.7` it should reach the same
   corr as the μR = 0 page.
 - **Calculator-consistent by construction.** Both backends call the same

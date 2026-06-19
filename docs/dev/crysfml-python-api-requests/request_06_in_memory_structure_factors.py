@@ -9,7 +9,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 
 from cfl_common import compare_to_fullprof
-from cfl_common import compare_unavailable
 from cfl_common import fullprof_array
 from cfl_common import plot_comparisons
 from cfl_common import print_summary
@@ -52,6 +51,15 @@ PHASE_Y2O3  1
 END_PHASE_Y2O3
 """
 
+REQUESTED_CFL = CONTROL_CFL.replace(
+    '  Contributes_to_patterns  1',
+    (
+        '  ! API unknown: CrysFML Fortran has structure-factor code, '
+        'but no in-memory Python input equivalent was found.\n'
+        '  Contributes_to_patterns  1'
+    ),
+)
+
 # Generated with FullProf 8.40 from fullprof/y2o3_isotropic_adp.pcr.
 FULLPROF_CONTROL = _window_array([
     1.8614706, 0.4336294, 0.0930261477, 0.0191738523,
@@ -77,12 +85,6 @@ FULLPROF_CONTROL = _window_array([
     15697.1762,
 ])
 
-NO_IN_MEMORY_STRUCTURE_FACTOR_API = (
-    'The inspected pycrysfml APIs require CIF, MCIF, or CFL text. No '
-    'call accepts in-memory cell, space group, atom, radiation, and hkl '
-    'objects and returns structure factors.'
-)
-
 
 def main() -> None:
     control = compare_to_fullprof(
@@ -91,10 +93,12 @@ def main() -> None:
         FULLPROF_CONTROL,
         x_shift=Y2O3_X_SHIFT,
     )
-    requested = compare_unavailable(
-        'with in-memory structure-factor API requested',
+    requested = compare_to_fullprof(
+        'with in-memory structure-factor API unknown',
+        REQUESTED_CFL,
         FULLPROF_CONTROL,
-        NO_IN_MEMORY_STRUCTURE_FACTOR_API,
+        x_shift=Y2O3_X_SHIFT,
+        scale_override=control.scale,
     )
     comparisons = [control, requested]
     print_summary('Request 6: in-memory structure factors', comparisons)

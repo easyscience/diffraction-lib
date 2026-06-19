@@ -12,62 +12,103 @@ inside the notebook.
 
 ## Powder, Neutron, Constant Wavelength
 
-- [pd-neut-cwl LBCO basic pseudo-Voigt](pd-neut-cwl_lbco_basic.ipynb) –
+### LBCO
+
+- [pd-neut-cwl LBCO basic pseudo-Voigt](pd-neut-cwl_LBCO_basic.ipynb) –
   verifies a baseline pseudo-Voigt powder pattern.
-- [pd-neut-cwl LBCO preferred orientation](pd-neut-cwl_lbco_preferred-orientation.ipynb)
-  – verifies the March-Dollase preferred-orientation correction.
-- [pd-neut-cwl PbSO₄ basic pseudo-Voigt](pd-neut-cwl_pbso4_basic.ipynb)
+- [pd-neut-cwl LBCO preferred orientation](pd-neut-cwl_LBCO_preferred-orientation.ipynb)
+  – verifies the **preferred-orientation** correction.
+
+### PbSO4
+
+- [pd-neut-cwl PbSO4 basic pseudo-Voigt](pd-neut-cwl_PbSO4_basic.ipynb)
   – verifies a baseline pseudo-Voigt powder pattern.
-- [pd-neut-cwl PbSO₄ Bérar-Baldinozzi asymmetry](pd-neut-cwl_pbso4_beba-asymmetry.ipynb)
-  – verifies the empirical asymmetry workflow.
-- [pd-neut-cwl LaB₆ SyCos/SySin shifts](pd-neut-cwl_lab6_sycos-sysin.ipynb)
-  – verifies sample-displacement and transparency peak-position
-  corrections.
-- [pd-neut-cwl LaB₆ FCJ asymmetry](pd-neut-cwl_lab6_fcj-asymmetry.ipynb)
-  – verifies the Finger-Cox-Jephcoat axial-divergence asymmetry
-  reference.
-- [pd-neut-cwl LaB₆ absorption](pd-neut-cwl_lab6_absorption.ipynb) –
-  verifies Debye-Scherrer absorption with FCJ asymmetry disabled.
-- [pd-neut-cwl LaB₆ FCJ asymmetry isolated](pd-neut-cwl_lab6_absorption_fcj-asymmetry.ipynb)
-  – verifies the isolated FCJ reference with absorption disabled.
-- [pd-neut-cwl Y₂O₃ beta ADPs](pd-neut-cwl_y2o3_beta-adp.ipynb) –
+- [pd-neut-cwl PbSO4 Berar-Baldinozzi asymmetry](pd-neut-cwl_PbSO4_beba-asymmetry.ipynb)
+  – verifies the **empirical asymmetry** correction.
+
+### LaB6
+
+- [pd-neut-cwl LaB6 basic](pd-neut-cwl_LaB6_basic.ipynb) – verifies the
+  baseline LaB6 powder pattern.
+- [pd-neut-cwl LaB6 11B isotope](pd-neut-cwl_LaB6_11B.ipynb) – verifies
+  the **11B isotope** contribution.
+- [pd-neut-cwl LaB6 SyCos/SySin shifts](pd-neut-cwl_LaB6_sycos-sysin.ipynb)
+  – verifies the **SyCos/SySin** peak-position corrections.
+- [pd-neut-cwl LaB6 FCJ asymmetry](pd-neut-cwl_LaB6_fcj-asymmetry.ipynb)
+  – verifies the **Finger-Cox-Jephcoat asymmetry** correction.
+- [pd-neut-cwl LaB6 absorption](pd-neut-cwl_LaB6_absorption.ipynb) –
+  verifies **Debye-Scherrer absorption**.
+
+### Y2O3
+
+- [pd-neut-cwl Y2O3 isotropic ADPs](pd-neut-cwl_Y2O3_isotropic-adp.ipynb)
+  – verifies the isotropic-ADP baseline.
+- [pd-neut-cwl Y2O3 beta ADPs](pd-neut-cwl_Y2O3_beta-adp.ipynb) –
   verifies beta-tensor anisotropic ADPs with other correction models
   disabled.
 
 ## Powder, Neutron, Time-Of-Flight
 
-- [pd-neut-tof Si Jorgensen profile](pd-neut-tof_si_jorgensen.ipynb) –
+- [pd-neut-tof Si Jorgensen profile](pd-neut-tof_Si_jorgensen.ipynb) –
   verifies the Jorgensen back-to-back exponential profile.
-- [pd-neut-tof Si Jorgensen-Von Dreele profile](pd-neut-tof_si_jorgensen-von-dreele.ipynb)
+- [pd-neut-tof Si Jorgensen-Von Dreele profile](pd-neut-tof_Si_jorgensen-von-dreele.ipynb)
   – verifies the Jorgensen-Von Dreele pseudo-Voigt profile.
-- [pd-neut-tof Na₂Ca₃Al₂F₁₄ Jorgensen-Von Dreele profile](pd-neut-tof_ncaf_jorgensen-von-dreele.ipynb)
-  – verifies the NCAF time-of-flight pseudo-Voigt profile.
+- [pd-neut-tof NCAF Jorgensen-Von Dreele profile](pd-neut-tof_NCAF_jorgensen-von-dreele.ipynb)
+  – verifies the Na2Ca3Al2F14 time-of-flight pseudo-Voigt profile.
 
 ## Powder, X-Ray, Constant Wavelength
 
-- [pd-xray-cwl LiF single wavelength](pd-xray-cwl_lif_single.ipynb) –
-  verifies the baseline Cu Kα₁ pseudo-Voigt pattern.
-- [pd-xray-cwl LiF polarization](pd-xray-cwl_lif_single_polarization.ipynb)
+### LiF
+
+- [pd-xray-cwl LiF single wavelength](pd-xray-cwl_LiF_single.ipynb) –
+  verifies the baseline Cu K-alpha1 pseudo-Voigt pattern.
+- [pd-xray-cwl LiF polarization](pd-xray-cwl_LiF_single_polarization.ipynb)
   – verifies the X-ray polarization correction.
-- [pd-xray-cwl LiF absorption](pd-xray-cwl_lif_single_absorption.ipynb)
+- [pd-xray-cwl LiF absorption](pd-xray-cwl_LiF_single_absorption.ipynb)
   – verifies Debye-Scherrer absorption.
-- [pd-xray-cwl LiF doublet](pd-xray-cwl_lif_doublet.ipynb) – verifies Cu
-  Kα₁/Kα₂ doublet handling.
-- [pd-xray-cwl PbSO₄ round robin](pd-xray-cwl_pbso4_round-robin.ipynb) –
+- [pd-xray-cwl LiF doublet](pd-xray-cwl_LiF_doublet.ipynb) – verifies Cu
+  K-alpha1/K-alpha2 doublet handling.
+
+### PbSO4
+
+- [pd-xray-cwl PbSO4 round robin](pd-xray-cwl_PbSO4_round-robin.ipynb) –
   verifies the anglesite X-ray round-robin case with empirical
   asymmetry.
 
 ## Powder, X-Ray, Constant Wavelength, Total Scattering
 
-- [pd-xray-cwl-total NaCl gaussian-damped sinc](pd-xray-cwl-total_nacl_gaussian-damped-sinc.ipynb)
+### NaCl
+
+- [pd-xray-cwl-total NaCl gaussian-damped sinc](pd-xray-cwl-total_NaCl_gaussian-damped-sinc.ipynb)
+  – verifies the PDF gaussian-damped sinc profile against direct
+  diffpy.pdffit2.
+
+## Powder, Neutron, Constant Wavelength, Total Scattering
+
+### Ni
+
+- [pd-neut-cwl-total Ni gaussian-damped sinc](pd-neut-cwl-total_Ni_gaussian-damped-sinc.ipynb)
+  – verifies the PDF gaussian-damped sinc profile against direct
+  diffpy.pdffit2.
+
+## Powder, Neutron, Time-Of-Flight, Total Scattering
+
+### Si
+
+- [pd-neut-tof-total Si gaussian-damped sinc](pd-neut-tof-total_Si_gaussian-damped-sinc.ipynb)
   – verifies the PDF gaussian-damped sinc profile against direct
   diffpy.pdffit2.
 
 ## Single Crystal, Neutron, Constant Wavelength
 
-- [sc-neut-cwl Pr₂NiO₄ basic](sc-neut-cwl_pr2nio4_basic.ipynb) –
-  verifies calculated F² values with anisotropic ADPs.
-- [sc-neut-cwl Tb₂Ti₂O₇ basic](sc-neut-cwl_tbti_basic.ipynb) – verifies
-  no-extinction calculated F² values with anisotropic ADPs.
-- [sc-neut-cwl Tb₂Ti₂O₇ isotropic extinction](sc-neut-cwl_tbti_isotropic-extinction.ipynb)
+### Pr2NiO4
+
+- [sc-neut-cwl Pr2NiO4 basic](sc-neut-cwl_Pr2NiO4_basic.ipynb) –
+  verifies calculated F2 values with anisotropic ADPs.
+
+### Tb2Ti2O7
+
+- [sc-neut-cwl Tb2Ti2O7 basic](sc-neut-cwl_Tb2Ti2O7_basic.ipynb) –
+  verifies no-extinction calculated F2 values with anisotropic ADPs.
+- [sc-neut-cwl Tb2Ti2O7 isotropic extinction](sc-neut-cwl_Tb2Ti2O7_isotropic-extinction.ipynb)
   – verifies the isotropic extinction model.

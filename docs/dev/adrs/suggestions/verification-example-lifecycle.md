@@ -56,11 +56,11 @@ model term relative to a baseline.
 
 Good examples:
 
-- `pd-neut-cwl_lbco_basic` — baseline pseudo-Voigt powder neutron CW.
-- `pd-neut-cwl_lbco_preferred-orientation` — the same class of example
+- `pd-neut-cwl_LBCO_basic` — baseline pseudo-Voigt powder neutron CW.
+- `pd-neut-cwl_LBCO_preferred-orientation` — the same class of example
   with March-Dollase preferred orientation activated.
-- `pd-xray-cwl_lif_single` — baseline single-wavelength X-ray CW.
-- `pd-xray-cwl_lif_single_polarization` — the same X-ray case with
+- `pd-xray-cwl_LiF_single` — baseline single-wavelength X-ray CW.
+- `pd-xray-cwl_LiF_single_polarization` — the same X-ray case with
   polarization activated.
 
 Combined-feature pages are allowed only when the interaction is itself
@@ -107,17 +107,18 @@ Use this file stem:
 Add new prefixes only when the corresponding experiment type is
 supported and the first example lands.
 
-`<sample>` is a lowercase ASCII sample or compound slug such as `lbco`,
-`pbso4`, `lif`, `si`, `ncaf`, `tbti`, or `pr2nio4`.
+`<sample>` is an ASCII sample or compound token with conventional
+capitalization, such as `LBCO`, `PbSO4`, `LiF`, `Si`, `NCAF`,
+`Tb2Ti2O7`, or `Pr2NiO4`.
 
 `<feature>` is lowercase ASCII. Use underscores between filename blocks
 and hyphens inside multi-word feature names:
 
 ```text
-pd-neut-cwl_pbso4_beba-asymmetry.py
-pd-neut-cwl_lab6_absorption_fcj-asymmetry.py
-pd-neut-tof_si_jorgensen-von-dreele.py
-pd-xray-cwl_lif_single_polarization.py
+pd-neut-cwl_PbSO4_beba-asymmetry.py
+pd-neut-cwl_LaB6_absorption.py
+pd-neut-tof_Si_jorgensen-von-dreele.py
+pd-xray-cwl_LiF_single_polarization.py
 ```
 
 The `.py` source, generated `.ipynb`, and public docs links use the same

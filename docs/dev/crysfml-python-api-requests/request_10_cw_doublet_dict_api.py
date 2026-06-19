@@ -132,7 +132,7 @@ def main() -> None:
         x_shift=Y2O3_X_SHIFT,
     )
     requested = compare_to_fullprof(
-        'with CW doublet in FullProf',
+        'with CW doublet requested in CFL',
         REQUESTED_CFL,
         FULLPROF_REQUESTED,
         x_shift=Y2O3_X_SHIFT,

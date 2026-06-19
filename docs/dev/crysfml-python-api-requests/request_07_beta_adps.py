@@ -135,7 +135,7 @@ def main() -> None:
         x_shift=Y2O3_X_SHIFT,
     )
     requested = compare_to_fullprof(
-        'with beta ADPs in FullProf',
+        'with beta ADPs requested in CFL',
         REQUESTED_CFL,
         FULLPROF_REQUESTED,
         x_shift=Y2O3_X_SHIFT,

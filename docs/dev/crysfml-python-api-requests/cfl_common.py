@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import importlib
+import os
+import tempfile
 from dataclasses import dataclass
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -33,9 +36,15 @@ def fullprof_array(values: list[list[float]]) -> np.ndarray:
     return np.asarray(values, dtype=float)
 
 
-def simulate_cfl(cfl: str) -> tuple[np.ndarray, np.ndarray]:
+def simulate_cfl(
+    cfl: str,
+    sidecar_files: dict[str, str] | None = None,
+) -> tuple[np.ndarray, np.ndarray]:
     lines = [line.rstrip() for line in cfl.strip().splitlines()]
-    patterns = cfml_py_utilities.patterns_simulation(lines)
+    if sidecar_files is None:
+        patterns = cfml_py_utilities.patterns_simulation(lines)
+    else:
+        patterns = _simulate_cfl_with_sidecars(lines, sidecar_files)
     if not patterns:
         msg = 'patterns_simulation returned no patterns.'
         raise RuntimeError(msg)
@@ -50,12 +59,13 @@ def compare_to_fullprof(
     *,
     x_shift: float = 0.0,
     scale_override: float | None = None,
+    sidecar_files: dict[str, str] | None = None,
 ) -> Comparison:
     x_ref = reference[:, 0]
     y_ref = reference[:, 1]
     error = None
     try:
-        y_interp, error = _interpolate_cfl(cfl, x_ref, x_shift)
+        y_interp, error = _interpolate_cfl(cfl, x_ref, x_shift, sidecar_files)
     except Exception as exc:  # noqa: BLE001 - diagnostic scripts must keep running.
         error = f'{type(exc).__name__}: {exc}'
         y_interp = np.zeros_like(y_ref)
@@ -75,26 +85,6 @@ def compare_to_fullprof(
         relative_rms=relative_rms,
         max_abs_delta=float(np.max(np.abs(delta))),
         error=error,
-    )
-
-
-def compare_unavailable(label: str, reference: np.ndarray, reason: str) -> Comparison:
-    x_ref = reference[:, 0]
-    y_ref = reference[:, 1]
-    zeros = np.zeros_like(y_ref)
-    rms = float(np.sqrt(np.mean(y_ref * y_ref)))
-    reference_norm = max(float(np.max(np.abs(y_ref))), 1.0)
-    return Comparison(
-        label=label,
-        x_values=x_ref,
-        reference=y_ref,
-        calculated=zeros,
-        scaled=zeros,
-        scale=0.0,
-        rms=rms,
-        relative_rms=rms / reference_norm,
-        max_abs_delta=float(np.max(np.abs(y_ref))),
-        error=reason,
     )
 
 
@@ -181,8 +171,9 @@ def _interpolate_cfl(
     cfl: str,
     x_ref: np.ndarray,
     x_shift: float,
+    sidecar_files: dict[str, str] | None,
 ) -> tuple[np.ndarray, str | None]:
-    x_calc, y_calc = simulate_cfl(cfl)
+    x_calc, y_calc = simulate_cfl(cfl, sidecar_files)
     x_calc += x_shift
     y_interp = np.interp(x_ref, x_calc, y_calc, left=0.0, right=0.0)
     _restore_close_endpoint_values(x_ref, x_calc, y_calc, y_interp)
@@ -190,6 +181,23 @@ def _interpolate_cfl(
         return y_interp, None
     error = 'patterns_simulation returned non-finite intensities.'
     return np.nan_to_num(y_interp, nan=0.0, posinf=0.0, neginf=0.0), error
+
+
+def _simulate_cfl_with_sidecars(
+    lines: list[str],
+    sidecar_files: dict[str, str],
+) -> list[dict[str, object]]:
+    old_cwd = os.getcwd()
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        for name, content in sidecar_files.items():
+            path = Path(tmp_dir, name)
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(content.strip() + '\n', encoding='utf-8')
+        try:
+            os.chdir(tmp_dir)
+            return cfml_py_utilities.patterns_simulation(lines)
+        finally:
+            os.chdir(old_cwd)
 
 
 def _restore_close_endpoint_values(

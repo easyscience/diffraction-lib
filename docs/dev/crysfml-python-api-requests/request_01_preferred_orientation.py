@@ -48,6 +48,9 @@ PHASE_Y2O3  1
   Atom  O1  O   0.39072  0.15204  0.38030  0.0  1.0
   Contributes_to_patterns  1
   Scale_Factors  1.0
+  PH_Pattern  1
+    Calc_Type  Nuclear
+  END_PH_Pattern
 END_PHASE_Y2O3
 """
 
@@ -69,9 +72,13 @@ PHASE_Y2O3  1
   Atom  Y1  Y  -0.03236  0.0  0.25  0.0  0.5
   Atom  Y2  Y   0.25     0.25 0.25  0.0  0.16667
   Atom  O1  O   0.39072  0.15204  0.38030  0.0  1.0
-  Preferred_Orientation  0.0  0.0  1.0  1.0  1.2  0.3
   Contributes_to_patterns  1
   Scale_Factors  1.0
+  PH_Pattern  1
+    Calc_Type  Nuclear
+    Pref_OR  multiaxial_MD  1
+    Pref_axis_val  0 0 1  1.2  0.3
+  END_PH_Pattern
 END_PHASE_Y2O3
 """
 

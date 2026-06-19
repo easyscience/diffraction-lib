@@ -18,7 +18,7 @@ the pseudo-Voigt (Gaussian ⊗ Lorentzian) mixing for TOF.
 crysfml/FullProf.
 
 **Visible on:** the Si TOF Verification page
-(`pd-neut-tof_si_jorgensen-von-dreele`), whose closeness table flags the
+(`pd-neut-tof_Si_jorgensen-von-dreele`), whose closeness table flags the
 `cryspy` rows in red — reported via a `known_discrepancy=True` agreement
 check, so CI fails once the page starts agreeing and must be re-gated
 manually.

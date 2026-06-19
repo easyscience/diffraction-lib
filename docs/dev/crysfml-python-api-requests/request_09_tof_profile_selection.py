@@ -9,7 +9,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 
 from cfl_common import compare_to_fullprof
-from cfl_common import compare_unavailable
 from cfl_common import fullprof_array
 from cfl_common import plot_comparisons
 from cfl_common import print_summary
@@ -52,6 +51,15 @@ PHASE_Y2O3  1
 END_PHASE_Y2O3
 """
 
+REQUESTED_CFL = CONTROL_CFL.replace(
+    '  Profile_function  TCH_pVoigt',
+    (
+        '  ! API unknown for this Y2O3 CW oracle: CrysFML Fortran has '
+        'TOF Profile_function selection.\n'
+        '  Profile_function  TCH_pVoigt'
+    ),
+)
+
 # Generated with FullProf 8.40 from fullprof/y2o3_isotropic_adp.pcr.
 FULLPROF_CONTROL = _window_array([
     1.8614706, 0.4336294, 0.0930261477, 0.0191738523,
@@ -77,12 +85,6 @@ FULLPROF_CONTROL = _window_array([
     15697.1762,
 ])
 
-NO_TOF_PROFILE_SELECTION_API = (
-    'The inspected Python TOF path does not expose selectable '
-    'Jorgensen versus Jorgensen-von-Dreele profile functions, and CFL '
-    'profile selection cannot be validated until TOF CFL intensities work.'
-)
-
 
 def main() -> None:
     control = compare_to_fullprof(
@@ -91,10 +93,12 @@ def main() -> None:
         FULLPROF_CONTROL,
         x_shift=Y2O3_X_SHIFT,
     )
-    requested = compare_unavailable(
-        'with TOF profile selection requested',
+    requested = compare_to_fullprof(
+        'with TOF profile-selection API unknown',
+        REQUESTED_CFL,
         FULLPROF_CONTROL,
-        NO_TOF_PROFILE_SELECTION_API,
+        x_shift=Y2O3_X_SHIFT,
+        scale_override=control.scale,
     )
     comparisons = [control, requested]
     print_summary('Request 9: TOF profile selection', comparisons)

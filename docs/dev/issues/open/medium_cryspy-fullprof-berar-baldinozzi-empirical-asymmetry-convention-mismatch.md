@@ -17,7 +17,7 @@ paper — shows that **cryspy is faithful to the published
 Bérar–Baldinozzi functions while FullProf's executable departs from
 them**. This is the root cause behind the long-standing "asymmetry
 parameters don't agree" observation on the
-`pd-neut-cwl_pbso4_beba-asymmetry` Verification page.
+`pd-neut-cwl_PbSO4_beba-asymmetry` Verification page.
 
 This issue documents the finding and the evidence. It is primarily a
 **document-and-report-upstream** item: no cryspy code lives in this
@@ -154,7 +154,7 @@ exactly `−6z` vs, say, `−6.1z`.
    the `Fb` linear term. If confirmed, this affects every FullProf user,
    not just cross-engine comparisons.
 3. **Keep our docs honest**: the note and CI-skip on
-   `pd-neut-cwl_pbso4_beba-asymmetry` remain correct and cite this
+   `pd-neut-cwl_PbSO4_beba-asymmetry` remain correct and cite this
    issue.
 4. **Done:** the rename tracked by issue 133 landed — the parameters are
    now `asym_beba_{a0,b0,a1,b1}` (the `beba` model tag mirrors
@@ -165,7 +165,7 @@ exactly `−6z` vs, say, `−6.1z`.
 - **Relates to** issue 133 (rename `asym_empir_*`; add physical FCJ
   model) — this issue supplies the confirmed physics/naming basis.
 - **Relates to** the Verification page
-  `pd-neut-cwl_pbso4_beba-asymmetry` (CI-skipped; documents the
+  `pd-neut-cwl_PbSO4_beba-asymmetry` (CI-skipped; documents the
   convention difference).
 - **Upstream:** cryspy issue
   [#50](https://github.com/ikibalin/cryspy/issues/50).
