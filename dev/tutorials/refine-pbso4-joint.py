@@ -29,67 +29,71 @@ from easydiffraction import download_data
 # ### Create Structure
 
 # %%
-structure = StructureFactory.from_scratch(name='pbso4')
+struct = StructureFactory.from_scratch(name='pbso4')
 
 # %% [markdown]
 # ### Set Space Group
 
 # %%
-structure.space_group.name_h_m = 'P n m a'
+struct.space_group.name_h_m = 'P n m a'
 
 # %% [markdown]
 # ### Set Unit Cell
 
 # %%
-structure.cell.length_a = 8.47
-structure.cell.length_b = 5.39
-structure.cell.length_c = 6.95
+struct.cell.length_a = 8.47
+struct.cell.length_b = 5.39
+struct.cell.length_c = 6.95
 
 # %% [markdown]
 # ### Set Atom Sites
 
 # %%
-structure.atom_sites.create(
+struct.atom_sites.create(
     id='Pb',
     type_symbol='Pb',
     fract_x=0.1876,
     fract_y=0.25,
     fract_z=0.167,
+    adp_type='Biso',
     adp_iso=1.37,
 )
-structure.atom_sites.create(
+struct.atom_sites.create(
     id='S',
     type_symbol='S',
     fract_x=0.0654,
     fract_y=0.25,
     fract_z=0.684,
-    adp_iso=0.3777,
+    adp_type='Biso',
+    adp_iso=0.3796,
 )
-structure.atom_sites.create(
+struct.atom_sites.create(
     id='O1',
     type_symbol='O',
     fract_x=0.9082,
     fract_y=0.25,
     fract_z=0.5954,
-    adp_iso=1.9764,
+    adp_type='Biso',
+    adp_iso=1.9840,
 )
-structure.atom_sites.create(
+struct.atom_sites.create(
     id='O2',
     type_symbol='O',
     fract_x=0.1935,
     fract_y=0.25,
     fract_z=0.5432,
-    adp_iso=1.4456,
+    adp_type='Biso',
+    adp_iso=1.4383,
 )
-structure.atom_sites.create(
+struct.atom_sites.create(
     id='O3',
     type_symbol='O',
     fract_x=0.0811,
     fract_y=0.0272,
     fract_z=0.8086,
-    adp_iso=1.2822,
+    adp_type='Biso',
+    adp_iso=1.2808,
 )
-
 
 # %% [markdown]
 # ## 🔬 Define Experiments
@@ -119,17 +123,25 @@ expt1 = ExperimentFactory.from_data_path(
 
 # %%
 expt1.instrument.setup_wavelength = 1.91
-expt1.instrument.calib_twotheta_offset = -0.1406
+expt1.instrument.calib_twotheta_offset = -0.1018
 
 # %% [markdown]
 # #### Set Peak Profile
 
 # %%
-expt1.peak.broad_gauss_u = 0.139
-expt1.peak.broad_gauss_v = -0.412
-expt1.peak.broad_gauss_w = 0.386
+expt1.peak.type = 'pseudo-voigt + berar-baldinozzi asymmetry'
+
+# %%
+expt1.peak.broad_gauss_u = 0.1678
+expt1.peak.broad_gauss_v = -0.4636
+expt1.peak.broad_gauss_w = 0.4168
 expt1.peak.broad_lorentz_x = 0
-expt1.peak.broad_lorentz_y = 0.088
+expt1.peak.broad_lorentz_y = 0.0879
+
+expt1.peak.asym_beba_a0 = -0.4327
+expt1.peak.asym_beba_b0 = -0.0182
+expt1.peak.asym_beba_a1 = 0.1976
+expt1.peak.asym_beba_b1 = -0.0575
 
 # %% [markdown]
 # #### Set Background
@@ -145,14 +157,14 @@ expt1.background.type = 'line-segment'
 
 # %%
 for id, x, y in [
-    ('1', 11.0, 206.1624),
-    ('2', 15.0, 194.75),
-    ('3', 20.0, 194.505),
-    ('4', 30.0, 188.4375),
-    ('5', 50.0, 207.7633),
-    ('6', 70.0, 201.7002),
-    ('7', 120.0, 244.4525),
-    ('8', 153.0, 226.0595),
+    ('1', 11.0, 206.4940),
+    ('2', 15.0, 194.7316),
+    ('3', 20.0, 194.5190),
+    ('4', 30.0, 188.3431),
+    ('5', 50.0, 207.7130),
+    ('6', 70.0, 201.6635),
+    ('7', 120.0, 244.1902),
+    ('8', 153.0, 226.3376),
 ]:
     expt1.background.create(id=id, position=x, intensity=y)
 
@@ -184,18 +196,37 @@ expt2 = ExperimentFactory.from_data_path(
 # #### Set Instrument
 
 # %%
-expt2.instrument.setup_wavelength = 1.540567
-expt2.instrument.calib_twotheta_offset = -0.05181
+expt2.instrument.setup_wavelength = 1.540560
+expt2.instrument.setup_wavelength_2 = 1.544400
+expt2.instrument.setup_wavelength_2_to_1_ratio = 0.5
+
+expt2.instrument.setup_polarization_coefficient = 0.58
+expt2.instrument.setup_monochromator_twotheta = 28
+
+expt2.instrument.calib_twotheta_offset = -0.0292
 
 # %% [markdown]
 # #### Set Peak Profile
 
 # %%
-expt2.peak.broad_gauss_u = 0.304138
-expt2.peak.broad_gauss_v = -0.112622
-expt2.peak.broad_gauss_w = 0.021272
+expt2.peak.type = 'pseudo-voigt + berar-baldinozzi asymmetry'
+
+# %%
+expt2.peak.broad_gauss_u = 0.0187
+expt2.peak.broad_gauss_v = -0.0175
+expt2.peak.broad_gauss_w = 0.0075
 expt2.peak.broad_lorentz_x = 0
-expt2.peak.broad_lorentz_y = 0.057691
+expt2.peak.broad_lorentz_y = 0.0655
+
+expt2.peak.asym_beba_a0 = -0.2176
+expt2.peak.asym_beba_b0 = -0.0301
+
+# %% [markdown]
+# #### Set Excluded Regions
+
+# %%
+expt2.excluded_regions.create(id='1', start=0, end=15)
+expt2.excluded_regions.create(id='2', start=160, end=180)
 
 # %% [markdown]
 # #### Set Background
@@ -207,16 +238,16 @@ expt2.peak.broad_lorentz_y = 0.057691
 expt2.background.type = 'chebyshev'
 
 # %% [markdown]
-# Add background points.
+# Add Chebyshev background terms.
 
 # %%
 for id, x, y in [
-    ('1', 0, 119.195),
-    ('2', 1, 6.221),
-    ('3', 2, -45.725),
-    ('4', 3, 8.119),
-    ('5', 4, 54.552),
-    ('6', 5, -20.661),
+    ('1', 0, 143.9591),
+    ('2', 1, 67.1718),
+    ('3', 2, 13.7879),
+    ('4', 3, -1.2264),
+    ('5', 4, 4.4514),
+    ('6', 5, -17.7450),
 ]:
     expt2.background.create(id=id, order=x, coef=y)
 
@@ -241,7 +272,7 @@ project = Project(name='pbso4_joint')
 # ### Add Structure
 
 # %%
-project.structures.add(structure)
+project.structures.add(struct)
 
 # %% [markdown]
 # ### Add Experiments
@@ -262,64 +293,60 @@ project.experiments.add(expt2)
 project.analysis.fitting_mode.type = 'joint'
 
 # %% [markdown]
-# ### Set Minimizer
-
-# %%
-project.analysis.minimizer.type = 'lmfit'
-
-# %% [markdown]
 # ### Set Free Parameters
 #
 # Set structure parameters to be optimized.
 
 # %%
-structure.cell.length_a.free = True
-structure.cell.length_b.free = True
-structure.cell.length_c.free = True
+struct.cell.length_a.free = True
+struct.cell.length_b.free = True
+struct.cell.length_c.free = True
+
+for atom_id in ('Pb', 'S', 'O1', 'O2', 'O3'):
+    atom = struct.atom_sites[atom_id]
+    atom.adp_iso.free = True
 
 # %% [markdown]
 # Set experiment parameters to be optimized.
 
 # %%
 expt1.linked_structures['pbso4'].scale.free = True
-
 expt1.instrument.calib_twotheta_offset.free = True
-
-expt1.peak.broad_gauss_u.free = True
-expt1.peak.broad_gauss_v.free = True
-expt1.peak.broad_gauss_w.free = True
-expt1.peak.broad_lorentz_y.free = True
+expt1.instrument.setup_wavelength.free = True
 
 # %%
 expt2.linked_structures['pbso4'].scale.free = True
-
 expt2.instrument.calib_twotheta_offset.free = True
-
-expt2.peak.broad_gauss_u.free = True
-expt2.peak.broad_gauss_v.free = True
-expt2.peak.broad_gauss_w.free = True
-expt2.peak.broad_lorentz_y.free = True
-
-for term in expt2.background:
-    term.coef.free = True
 
 # %% [markdown]
 # ### Run Fitting
+
+# %%
+project.analysis.fit()
+
+# %%
+project.display.fit.results()
+
+# %% [markdown]
+# #### Display Correlations
+
+# %%
+project.display.fit.correlations()
+
+# %% [markdown]
+# ### Display Pattern
+
+# %%
+project.display.pattern(expt_name='npd')
+
+# %%
+project.display.pattern(expt_name='xrd')
 
 # %% [markdown]
 # ### Display Structure
 
 # %%
 project.display.structure(struct_name='pbso4')
-
-# %% [markdown]
-# ### Display Pattern
-
-# %%
-project.display.pattern(expt_name='npd', x_min=35.5, x_max=38.3)
-
-# %%
-project.display.pattern(expt_name='xrd', x_min=29.0, x_max=30.4)
 
 # %% [markdown]
 # ## 💾 Save Project
