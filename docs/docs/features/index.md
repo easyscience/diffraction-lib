@@ -440,27 +440,27 @@ Minimizers are EasyDiffraction's optimizers and run with any engine.
 
 <div class="ed-matrix" markdown="1">
 
-| Feature                                             | LIB                | CLI                | APP                |
-| --------------------------------------------------- | ------------------ | ------------------ | ------------------ |
-| Levenberg–Marquardt — LMFIT minimizer               | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Levenberg–Marquardt — LMFIT minimizer (scipy-based) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Levenberg–Marquardt — BUMPS minimizer               | :white_check_mark: | :white_check_mark: | :date:             |
-| Derivative-free minimization — DFO-LS minimizer     | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Nelder-Mead — BUMPS Amoeba minimizer                | :white_check_mark: | :white_check_mark: | :date:             |
-| Differential evolution — BUMPS DE minimizer         | :white_check_mark: | :white_check_mark: | :date:             |
+| Feature                                                   | LIB                | CLI                | APP                |
+| --------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
+| Levenberg–Marquardt — LMFIT (leastsq) minimizer           | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Trust Region Reflective — LMFIT (least_squares) minimizer | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Levenberg–Marquardt — BUMPS (LM) minimizer                | :white_check_mark: | :white_check_mark: | :date:             |
+| Derivative-free minimization — DFO-LS minimizer           | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Nelder-Mead — BUMPS (AMOEBA) minimizer                    | :white_check_mark: | :white_check_mark: | :date:             |
+| Differential evolution — BUMPS (DE) minimizer             | :white_check_mark: | :white_check_mark: | :date:             |
 
 </div>
 
-#### Bayesian Analysis (sampling)
+#### Bayesian Analysis (Markov Chain Monte Carlo sampling)
 
 <div class="ed-matrix" markdown="1">
 
-| Feature                                    | LIB                | CLI                | APP    |
-| ------------------------------------------ | ------------------ | ------------------ | ------ |
-| MCMC sampling — BUMPS DREAM minimizer      | :white_check_mark: | :white_check_mark: | :date: |
-| Affine-invariant ensemble sampling — emcee | :white_check_mark: | :white_check_mark: | :date: |
-| Resume sampling — BUMPS DREAM minimizer    | :white_check_mark: | :white_check_mark: | :date: |
-| Resume sampling — emcee                    | :white_check_mark: | :white_check_mark: | :date: |
+| Feature                                                              | LIB                | CLI                | APP    |
+| -------------------------------------------------------------------- | ------------------ | ------------------ | ------ |
+| DiffeRential Evolution Adaptive Metropolis — BUMPS (DREAM) minimizer | :white_check_mark: | :white_check_mark: | :date: |
+| Affine-invariant ensemble sampling — EMCEE minimizer                 | :white_check_mark: | :white_check_mark: | :date: |
+| Resume sampling — BUMPS (DREAM) minimizer                            | :white_check_mark: | :white_check_mark: | :date: |
+| Resume sampling — EMCEE minimizer                                    | :white_check_mark: | :white_check_mark: | :date: |
 
 </div>
 
