@@ -41,24 +41,31 @@ Each capability is tracked across the three ways to use EasyDiffraction:
 
 - :white_check_mark: Done
 - :ballot_box_with_check: Partially done — available with at least one
-  engine/interface, while others are still planned or in progress
+  engine/interface
 - :construction: Work in progress
-- :date: Planned (no priority assigned yet)
-  - :date: 5/5 `highest` · 4/5 `high` · 3/5 `medium` · 2/5 `low` · 1/5
-    `lowest`
+- :date: Planned (no priority yet) · 5/5 `highest` · 4/5 `high` · 3/5
+  `medium` · 2/5 `low` · 1/5 `lowest`
 - :material-cancel: Not available / not applicable — the
-  engine/interface does not provide this (e.g. a PDF-only engine for a
-  Bragg-only feature)
+  engine/interface does not provide this
 - :material-help-circle: Unknown — support not yet confirmed for this
   engine/interface
 
-The **LIB column** summarises the per-engine lines listed in the Feature
-cell, because the engines are the library backends: :white_check_mark:
-when every relevant engine is done (engines that simply don't apply are
-marked :material-cancel:), and :ballot_box_with_check: when at least one
-engine is done but others are in progress or planned. The **CLI** and
-**APP** columns instead show whether the feature is available in those
-two interfaces.
+The **LIB**, **CLI** and **APP** columns summarise the per-engine lines
+listed in the Feature cell, because the engines are the library
+backends: :white_check_mark: when every relevant engine is done (engines
+that simply don't apply are marked :material-cancel:), and
+:ballot_box_with_check: when at least one engine is done but others are
+in progress or planned. The **CLI** and **APP** columns instead show
+whether the feature is available in those two interfaces.
+
+!!! note "Using the command-line interface"
+
+    The CLI runs the refinement workflow — `fit`, `display`, `undo`.
+    Models, parameters, constraints, and report options are set by
+    editing the project text files (`.edi`/CIF) in your own editor,
+    rather than through dedicated CLI commands. A :white_check_mark: in
+    the CLI column means the capability is reachable through this
+    edit-then-run workflow.
 
 Inside the **Feature** cell, each line carries its own icon:
 
@@ -70,12 +77,6 @@ Inside the **Feature** cell, each line carries its own icon:
 - :material-check-decagram: links to the
   [Verification](../verification/index.md) page where the calculation is
   cross-checked against an independent reference.
-
-In the **CLI column**, :ballot_box_with_check: marks a capability that
-is supported but configured by editing the project text files
-(`.edi`/CIF) in a separate editor — the CLI runs refinements (`fit`,
-`display`, `undo`) but has no command to edit models, parameters, or
-constraints directly.
 
 !!! note "Epics shown as single rows"
 
@@ -322,9 +323,9 @@ TOF profiles by source type and relative performance:
 
 <div class="ed-matrix" markdown="1">
 
-| Feature                                                                                                                                                                                                                                                            | LIB                | CLI                | APP    |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------ | ------------------ | ------ |
-| Gaussian-damped sinc termination<br/>_cutoff Qmax, broadening Qbroad, sharpening δ₁, δ₂, damping Qdamp, particle diameter spdiameter_<br/>- :white_check_mark: `pdffit2` [:material-check-decagram:](../verification/total-neut-cwl_Ni_gaussian-damped-sinc.ipynb) | :white_check_mark: | :white_check_mark: | :date: |
+| Feature                                                                                                                                                                                                                                                                 | LIB                | CLI                | APP    |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ | ------------------ | ------ |
+| Gaussian-damped sinc termination<br/>_cutoff Qmax, broadening Qbroad, sharpening δ₁, δ₂,<br/> damping Qdamp, particle diameter spdiameter_<br/>- :white_check_mark: `pdffit2` [:material-check-decagram:](../verification/total-neut-cwl_Ni_gaussian-damped-sinc.ipynb) | :white_check_mark: | :white_check_mark: | :date: |
 
 </div>
 
@@ -431,9 +432,9 @@ Minimizers are EasyDiffraction's optimizers and run with any engine.
 | Levenberg–Marquardt — LMFIT (leastsq) minimizer           | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | Trust Region Reflective — LMFIT (least_squares) minimizer | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | Levenberg–Marquardt — BUMPS (LM) minimizer                | :white_check_mark: | :white_check_mark: | :date:             |
-| Derivative-free minimization — DFO-LS minimizer           | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | Nelder-Mead — BUMPS (AMOEBA) minimizer                    | :white_check_mark: | :white_check_mark: | :date:             |
 | Differential evolution — BUMPS (DE) minimizer             | :white_check_mark: | :white_check_mark: | :date:             |
+| Derivative-free minimization — DFO-LS minimizer           | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 
 </div>
 
@@ -480,17 +481,17 @@ Minimizers are EasyDiffraction's optimizers and run with any engine.
 
 <div class="ed-matrix" markdown="1">
 
-| Feature                                       | LIB                | CLI                     | APP                |
-| --------------------------------------------- | ------------------ | ----------------------- | ------------------ |
-| GUI-driven refinement workflow                | :material-cancel:  | :material-cancel:       | :white_check_mark: |
-| Command-line refinement execution             | :material-cancel:  | :white_check_mark:      | :material-cancel:  |
-| Scripted refinement workflow                  | :white_check_mark: | :material-cancel:       | :material-cancel:  |
-| Parameter modification                        | :white_check_mark: | :ballot_box_with_check: | :white_check_mark: |
-| Load individual structure or experiment files | :white_check_mark: | :ballot_box_with_check: | :white_check_mark: |
-| Project-based refinement                      | :white_check_mark: | :white_check_mark:      | :white_check_mark: |
-| Sequential refinement                         | :white_check_mark: | :white_check_mark:      | :date:             |
-| Save refinement results to project            | :white_check_mark: | :white_check_mark:      | :white_check_mark: |
-| Undo last fit                                 | :white_check_mark: | :white_check_mark:      | :date:             |
+| Feature                                       | LIB                | CLI                | APP                |
+| --------------------------------------------- | ------------------ | ------------------ | ------------------ |
+| GUI-driven refinement workflow                | :material-cancel:  | :material-cancel:  | :white_check_mark: |
+| Command-line refinement execution             | :material-cancel:  | :white_check_mark: | :material-cancel:  |
+| Scripted refinement workflow                  | :white_check_mark: | :material-cancel:  | :material-cancel:  |
+| Parameter modification                        | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Load individual structure or experiment files | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Project-based refinement                      | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Sequential refinement                         | :white_check_mark: | :white_check_mark: | :date:             |
+| Save refinement results to project            | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Undo last fit                                 | :white_check_mark: | :white_check_mark: | :date:             |
 
 </div>
 
@@ -500,10 +501,10 @@ Minimizers are EasyDiffraction's optimizers and run with any engine.
 
 <div class="ed-matrix" markdown="1">
 
-| Feature                                                                      | LIB                | CLI                     | APP                     |
-| ---------------------------------------------------------------------------- | ------------------ | ----------------------- | ----------------------- |
-| Automatic symmetry constraints                                               | :white_check_mark: | :white_check_mark:      | :ballot_box_with_check: |
-| User-defined constraints<br/>e.g. "biso_Ba = biso_La", "occ_Ba = 1 - occ_La" | :white_check_mark: | :ballot_box_with_check: | :date:                  |
+| Feature                                                                      | LIB                | CLI                | APP                     |
+| ---------------------------------------------------------------------------- | ------------------ | ------------------ | ----------------------- |
+| Automatic symmetry constraints                                               | :white_check_mark: | :white_check_mark: | :ballot_box_with_check: |
+| User-defined constraints<br/>e.g. "biso_Ba = biso_La", "occ_Ba = 1 - occ_La" | :white_check_mark: | :white_check_mark: | :date:                  |
 
 </div>
 
@@ -529,12 +530,12 @@ model, experimental data, fit settings, results).
 
 <div class="ed-matrix" markdown="1">
 
-| Feature                                                                            | LIB                | CLI                     | APP    |
-| ---------------------------------------------------------------------------------- | ------------------ | ----------------------- | ------ |
-| Interactive HTML report (Plotly fit plots, Three.js 3D structures; offline option) | :white_check_mark: | :ballot_box_with_check: | :date: |
-| LaTeX (TeX) report                                                                 | :white_check_mark: | :ballot_box_with_check: | :date: |
-| PDF report (compiled from the TeX bundle; requires a LaTeX engine)                 | :white_check_mark: | :ballot_box_with_check: | :date: |
-| CIF report (IUCr-style)                                                            | :white_check_mark: | :ballot_box_with_check: | :date: |
+| Feature                                                                            | LIB                | CLI                | APP    |
+| ---------------------------------------------------------------------------------- | ------------------ | ------------------ | ------ |
+| Interactive HTML report (Plotly fit plots, Three.js 3D structures; offline option) | :white_check_mark: | :white_check_mark: | :date: |
+| LaTeX (TeX) report                                                                 | :white_check_mark: | :white_check_mark: | :date: |
+| PDF report (compiled from the TeX bundle; requires a LaTeX engine)                 | :white_check_mark: | :white_check_mark: | :date: |
+| CIF report (IUCr-style)                                                            | :white_check_mark: | :white_check_mark: | :date: |
 
 </div>
 
@@ -542,14 +543,14 @@ model, experimental data, fit settings, results).
 
 <div class="ed-matrix" markdown="1">
 
-| Feature                                     | LIB                | CLI                     | APP                |
-| ------------------------------------------- | ------------------ | ----------------------- | ------------------ |
-| Add structure (to project) from CIF         | :white_check_mark: | :ballot_box_with_check: | :white_check_mark: |
-| Add structure (to project) from edi         | :white_check_mark: | :ballot_box_with_check: | :white_check_mark: |
-| Add experiment data (to project) from CIF   | :white_check_mark: | :ballot_box_with_check: | :white_check_mark: |
-| Add experiment data (to project) from edi   | :white_check_mark: | :ballot_box_with_check: | :white_check_mark: |
-| Add experiment data (to project) from ASCII | :white_check_mark: | :ballot_box_with_check: | :white_check_mark: |
-| Add experiment data (to project) from NeXus | :date:             | :date:                  | :date:             |
+| Feature                                     | LIB                | CLI                | APP                |
+| ------------------------------------------- | ------------------ | ------------------ | ------------------ |
+| Add structure (to project) from CIF         | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Add structure (to project) from edi         | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Add experiment data (to project) from CIF   | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Add experiment data (to project) from edi   | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Add experiment data (to project) from ASCII | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Add experiment data (to project) from NeXus | :date:             | :date:             | :date:             |
 
 </div>
 
