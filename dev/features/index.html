@@ -4507,8 +4507,8 @@
 <h1 id="features"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1s-2.4.84-2.82 2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2m-7 0a1 1 0 0 1 1 1 1 1 0 0 1-1 1 1 1 0 0 1-1-1 1 1 0 0 1 1-1M7 7h10V5h2v14H5V5h2zm.5 6.5L9 12l2 2 4.5-4.5L17 11l-6 6z"/></svg></span> Features</h1>
 <p>EasyDiffraction calculates diffraction patterns from a structural model
 and instrument settings, and refines that model against measured data.
-This page is the single source of truth for <strong>what it can do today and
-what is planned</strong>, across powder and single-crystal diffraction, total
+This page gives a complete overview of <strong>what it can do today and what
+is planned</strong>, across powder and single-crystal diffraction, total
 scattering (PDF), and the analysis tools around them.</p>
 <p>Jump to a section:</p>
 <ul>
@@ -4560,18 +4560,21 @@ choose the engine per experiment (see
   provide this and is not expected to (e.g. a PDF-only engine for a
   Bragg-only term)</li>
 </ul>
-<p>The <strong>LIB column</strong> shows the overall status: <img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" /> when
-every relevant engine is done (engines that simply don't apply are
+<p>The <strong>LIB column</strong> summarises the per-engine lines listed in the Feature
+cell, because the engines are the library backends: <img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" />
+when every relevant engine is done (engines that simply don't apply are
 marked <img alt="➖" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2796.svg" title=":heavy_minus_sign:" />), and <img alt="☑" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2611.svg" title=":ballot_box_with_check:" /> when at least
-one engine is done but others are in progress or planned.</p>
+one engine is done but others are in progress or planned. The <strong>CLI</strong>
+and <strong>APP</strong> columns instead show whether the feature is available in
+those two interfaces.</p>
 <p>Inside the <strong>Feature</strong> cell, each line carries its own icon:</p>
 <ul>
-<li>The <strong>engine</strong> lines show per-engine status, e.g.
-  <code>- :white_check_mark: cryspy</code>, <code>- :date: crysfml</code>. A backend keyword
-  is shown in quotes (e.g. <code>cryspy</code> "Gauss").</li>
+<li>The <strong>engine</strong> lines show per-engine status, e.g. <img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" />
+  <code>cryspy</code> (done) or <img alt="📅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/1f4c5.svg" title=":date:" /> <code>crysfml</code> (planned). A backend keyword is
+  shown in quotes (e.g. <code>cryspy</code> "Gauss").</li>
 <li><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10.59 13.41c.41.39.41 1.03 0 1.42-.39.39-1.03.39-1.42 0a5.003 5.003 0 0 1 0-7.07l3.54-3.54a5.003 5.003 0 0 1 7.07 0 5.003 5.003 0 0 1 0 7.07l-1.49 1.49c.01-.82-.12-1.64-.4-2.42l.47-.48a2.98 2.98 0 0 0 0-4.24 2.98 2.98 0 0 0-4.24 0l-3.53 3.53a2.98 2.98 0 0 0 0 4.24m2.82-4.24c.39-.39 1.03-.39 1.42 0a5.003 5.003 0 0 1 0 7.07l-3.54 3.54a5.003 5.003 0 0 1-7.07 0 5.003 5.003 0 0 1 0-7.07l1.49-1.49c-.01.82.12 1.64.4 2.43l-.47.47a2.98 2.98 0 0 0 0 4.24 2.98 2.98 0 0 0 4.24 0l3.53-3.53a2.98 2.98 0 0 0 0-4.24.973.973 0 0 1 0-1.42"/></svg></span> cross-references the equivalent FullProf
   <code>.pcr</code> entry, to help users coming from FullProf.</li>
-<li><code>- :material-check-decagram:</code> links to the
+<li><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m23 12-2.44-2.78.34-3.68-3.61-.82-1.89-3.18L12 3 8.6 1.54 6.71 4.72l-3.61.81.34 3.68L1 12l2.44 2.78-.34 3.69 3.61.82 1.89 3.18L12 21l3.4 1.46 1.89-3.18 3.61-.82-.34-3.68zm-13 5-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9z"/></svg></span> links to the
   <a href="../verification/">Verification</a> page where the calculation is
   cross-checked against an independent reference.</li>
 </ul>
