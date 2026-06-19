@@ -122,55 +122,11 @@ project.display.pattern_comparison(
 )
 
 # %% [markdown]
-# ## edi-crysfml VS FullProf
-
-# %%
-experiment.calculator.type = 'crysfml'
-
-project.analysis.calculate()
-calc_ed_crysfml = experiment.data.intensity_calc
-LABEL_ED_CRYSFML = verify.engine_label('crysfml')
-
-project.display.pattern_comparison(
-    'lif',
-    reference=calc_fullprof,
-    candidate=calc_ed_crysfml,
-    reference_label=FULLPROF_LABEL,
-    candidate_label=LABEL_ED_CRYSFML,
-)
-
-# %% [markdown]
-# ## Fit edi-crysfml to FullProf
-
-# %%
-experiment.linked_structures['lif'].scale.free = True
-
-project.analysis.fit()
-project.display.fit.results()
-
-project.analysis.calculate()
-calc_ed_crysfml_refined = experiment.data.intensity_calc
-LABEL_ED_CRYSFML_REFINED = verify.engine_label('crysfml', note='refined')
-
-project.display.pattern_comparison(
-    'lif',
-    reference=calc_fullprof,
-    candidate=calc_ed_crysfml_refined,
-    reference_label=FULLPROF_LABEL,
-    candidate_label=LABEL_ED_CRYSFML_REFINED,
-)
-
-# %% [markdown]
 # ## Agreement check
 
 # %%
 verify.assert_patterns_agree(
     [
         (f'{LABEL_ED_CRYSPY} vs {FULLPROF_LABEL}', calc_fullprof, calc_ed_cryspy),
-        (
-            f'{LABEL_ED_CRYSFML_REFINED} vs {FULLPROF_LABEL}',
-            calc_fullprof,
-            calc_ed_crysfml_refined,
-        ),
     ],
 )

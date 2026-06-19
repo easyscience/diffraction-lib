@@ -2,8 +2,7 @@
 # # PbSO₄ — powder X-ray CW — round robin
 #
 # Verifies the anglesite X-ray round-robin case with the Cu Kα doublet
-# and FullProf empirical asymmetry. The page compares cryspy only because
-# crysfml does not provide that asymmetry model.
+# and FullProf empirical asymmetry.
 
 # %%
 import easydiffraction as edi
@@ -222,8 +221,6 @@ verify.assert_patterns_agree(
         'anomalous-dispersion table mismatch in f-prime/f-double-prime, '
         'especially for Pb. The Berar-Baldinozzi asymmetry terms are '
         'refined separately because cryspy and FullProf use different '
-        'conventions. The crysfml calculator is not included because '
-        'CrysFML has no Berar-Baldinozzi empirical asymmetry model in '
-        'the CFL path.'
+        'conventions.'
     ),
 )

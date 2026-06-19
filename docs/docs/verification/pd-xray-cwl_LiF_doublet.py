@@ -122,24 +122,6 @@ project.display.pattern_comparison(
 )
 
 # %% [markdown]
-# ## edi-crysfml VS FullProf
-
-# %%
-experiment.calculator.type = 'crysfml'
-
-project.analysis.calculate()
-calc_ed_crysfml = experiment.data.intensity_calc
-LABEL_ED_CRYSFML = verify.engine_label('crysfml')
-
-project.display.pattern_comparison(
-    'lif',
-    reference=calc_fullprof,
-    candidate=calc_ed_crysfml,
-    reference_label=FULLPROF_LABEL,
-    candidate_label=LABEL_ED_CRYSFML,
-)
-
-# %% [markdown]
 # ## Agreement check
 
 # %%
@@ -148,19 +130,6 @@ verify.assert_patterns_agree(
     [
         (f'{LABEL_ED_CRYSPY} vs {FULLPROF_LABEL}', calc_fullprof, calc_ed_cryspy),
     ],
-)
-
-# ed-crysfml is the known-bad comparison, asserted separately so it
-# cannot mask a cryspy regression in the gated call above.
-verify.assert_patterns_agree(
-    [
-        (f'{LABEL_ED_CRYSFML} vs {FULLPROF_LABEL}', calc_fullprof, calc_ed_crysfml),
-    ],
-    known_discrepancy=True,
-    reason=(
-        'ed-crysfml CW doublet uses two single-wavelength CFL '
-        'simulations because native CrysFML CW doublet is disabled.'
-    ),
 )
 
 # %%

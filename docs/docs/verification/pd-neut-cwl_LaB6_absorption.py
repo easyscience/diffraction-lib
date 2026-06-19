@@ -119,42 +119,9 @@ project.display.pattern_comparison(
 )
 
 # %% [markdown]
-# ## edi-crysfml VS FullProf
-
-# %%
-experiment.calculator.type = 'crysfml'
-
-experiment.peak.type = 'thompson-cox-hastings'
-experiment.peak.broad_gauss_u = FULLPROF_U
-experiment.peak.broad_gauss_v = FULLPROF_V
-experiment.peak.broad_gauss_w = FULLPROF_W
-experiment.peak.broad_lorentz_x = FULLPROF_X
-experiment.peak.broad_lorentz_y = FULLPROF_Y
-
-project.analysis.calculate()
-calc_ed_crysfml = experiment.data.intensity_calc
-LABEL_ED_CRYSFML = verify.engine_label('crysfml')
-
-project.display.pattern_comparison(
-    'lab6',
-    reference=calc_fullprof,
-    candidate=calc_ed_crysfml,
-    reference_label=FULLPROF_LABEL,
-    candidate_label=LABEL_ED_CRYSFML,
-)
-
-# %% [markdown]
 # ## Agreement check
 
 # %%
 verify.assert_patterns_agree([
     (f'{LABEL_ED_CRYSPY} vs {FULLPROF_LABEL}', calc_fullprof, calc_ed_cryspy),
 ])
-
-verify.assert_patterns_agree(
-    [
-        (f'{LABEL_ED_CRYSFML} vs {FULLPROF_LABEL}', calc_fullprof, calc_ed_crysfml),
-    ],
-    known_discrepancy=True,
-    reason='crysfml does not yet match the FullProf LaB6 absorption reference.',
-)

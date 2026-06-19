@@ -163,7 +163,7 @@ experiment.peak.broad_lorentz_gamma_1
 # ## Agreement check
 
 # cryspy is the known-bad comparison, asserted separately so it cannot
-# mask a crysfml regression in the gated call above.
+# mask the gated comparison above.
 verify.assert_patterns_agree(
     [
         (
