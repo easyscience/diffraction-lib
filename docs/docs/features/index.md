@@ -397,14 +397,16 @@ a Gaussian or Lorentzian mosaicity distribution.
 
 ---
 
-### 2.3 / 2.4. Polarized Neutron Diffraction — EPIC
+### 2.3. Polarized Powder Diffraction — EPIC
 
-Polarized-neutron diffraction is an epic; all parts are :date: planned
-(LIB / CLI / APP). Planned sub-parts:
+Polarized-neutron powder diffraction is an epic; all parts are :date:
+planned (LIB / CLI / APP). Planned: flipping-ratio method (TOF and CWL).
 
-- **Powder** (2.3) — flipping-ratio method (TOF and CWL)
-- **Single crystal** (2.4) — flipping-ratio method (CWL and TOF), XYZ
-  polarisation analysis, spherical neutron polarimetry
+### 2.4. Polarized Single-Crystal Diffraction — EPIC
+
+Polarized-neutron single-crystal diffraction is an epic; all parts are
+:date: planned (LIB / CLI / APP). Planned: flipping-ratio method (CWL
+and TOF), XYZ polarisation analysis, spherical neutron polarimetry.
 
 ---
 
@@ -544,12 +546,12 @@ model, experimental data, fit settings, results).
 
 <div class="ed-matrix" markdown="1">
 
-| Feature                                                                            | LIB                | CLI                     | APP                    |
-| ---------------------------------------------------------------------------------- | ------------------ | ----------------------- | ---------------------- |
-| Interactive HTML report (Plotly fit plots, Three.js 3D structures; offline option) | :white_check_mark: | :ballot_box_with_check: | :material-cancel: |
-| CIF report (IUCr-style)                                                            | :white_check_mark: | :ballot_box_with_check: | :material-cancel: |
-| LaTeX (TeX) report                                                                 | :white_check_mark: | :ballot_box_with_check: | :material-cancel: |
-| PDF report (compiled from the TeX bundle; requires a LaTeX engine)                 | :white_check_mark: | :ballot_box_with_check: | :material-cancel: |
+| Feature                                                                            | LIB                | CLI                     | APP    |
+| ---------------------------------------------------------------------------------- | ------------------ | ----------------------- | ------ |
+| Interactive HTML report (Plotly fit plots, Three.js 3D structures; offline option) | :white_check_mark: | :ballot_box_with_check: | :date: |
+| LaTeX (TeX) report                                                                 | :white_check_mark: | :ballot_box_with_check: | :date: |
+| PDF report (compiled from the TeX bundle; requires a LaTeX engine)                 | :white_check_mark: | :ballot_box_with_check: | :date: |
+| CIF report (IUCr-style)                                                            | :white_check_mark: | :ballot_box_with_check: | :date: |
 
 </div>
 
