@@ -13,31 +13,30 @@ scattering (PDF), and the analysis tools around them.
 
 ## Calculation engines
 
-Most of the calculation is done by a pluggable **calculation engine**. A
-few extra corrections — such as the background and overall scale — are
-added by EasyDiffraction itself, on top of what the engine produces. You
-choose the engine for each experiment (see
+Most of the physics is computed by a pluggable **calculation engine**,
+chosen per experiment (see
 [`calculator.type`](../user-guide/parameters/experiment/calculator.md)).
+Each engine is described in detail on the
+[Analysis](../user-guide/analysis-workflow/analysis.md) page.
 
-- `cryspy` — Python crystallographic engine for powder/single-crystal
-  Bragg diffraction (neutron & X-ray). Project:
-  [CrysPy](https://github.com/ikibalin/cryspy).
-- `crysfml` — the Crystallographic Fortran Modules Library, accessed
-  through its CFL Python API; used for constant-wavelength Bragg
-  diffraction. Project:
-  [CrysFML](https://code.ill.fr/scientific-software/crysfml).
-- `pdffit2` — pair-distribution-function engine (total scattering), via
-  diffpy. Project:
-  [diffpy.pdffit2](https://github.com/diffpy/diffpy.pdffit2).
-- `easydiffraction` — applied directly by EasyDiffraction, independent
-  of the engine (e.g. background, scale, absorption, the Kα₁/Kα₂
-  doublet).
+- [`cryspy`](../user-guide/analysis-workflow/analysis.md#cryspy-calculator)
+  — Bragg diffraction, powder & single crystal (neutron & X-ray).
+- [`crysfml`](../user-guide/analysis-workflow/analysis.md#crysfml-calculator)
+  — constant-wavelength Bragg diffraction.
+- [`pdffit2`](../user-guide/analysis-workflow/analysis.md#pdffit2-calculator)
+  — pair distribution function (total scattering).
+- `easydiffraction` — corrections applied by the library itself, around
+  the engine (e.g. background, scale, the Kα₁/Kα₂ doublet).
 
 ## How to read this page
 
 Each capability is tracked across the three ways to use EasyDiffraction:
-**LIB** (Python library), **CLI** (command-line interface), **APP**
-(graphical application). The status icons:
+
+- **LIB** — Python library
+- **CLI** — command-line interface
+- **APP** — graphical application
+
+The status icons:
 
 - :white_check_mark: Done
 - :ballot_box_with_check: Partially done — available with at least one
@@ -304,7 +303,7 @@ calculated pattern; the engine is not involved.
 | Jorgensen (back-to-back exp ⊗ Gaussian)<br/>_σ₀, σ₁, σ₂; rise α₀, α₁; decay β₀, β₁_<br/>- :white_check_mark: `cryspy` "Gauss" [:material-check-decagram:](../verification/pd-neut-tof_Si_jorgensen.ipynb)<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "Npr=9" (Gaussian limit)                             | :ballot_box_with_check: | :white_check_mark: | :white_check_mark: |
 | Jorgensen-Von Dreele (back-to-back exp ⊗ pseudo-Voigt)<br/>_σ₀, σ₁, σ₂; γ₀, γ₁, γ₂; rise α₀, α₁; decay β₀, β₁_<br/>- :white_check_mark: `cryspy` "pseudo-Voigt" [:material-check-decagram:](../verification/pd-neut-tof_Si_jorgensen-von-dreele.ipynb)<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "Npr=9" | :ballot_box_with_check: | :white_check_mark: | :white_check_mark: |
 | Double back-to-back exp ⊗ pseudo-Voigt<br/>_σ₀, σ₁, σ₂; γ₀, γ₁, γ₂; rise α₁, α₂; fast decay β₀₀, β₀₁; slow decay β₁₀; switching r₀₁, r₀₂, r₀₃_<br/>- :white_check_mark: `cryspy` "type0m"<br/>- :material-link-variant: Z-Rietveld "type0m" (no direct `FullProf` Npr; cf. Npr=10)                                             | :white_check_mark:      | :white_check_mark: | :date:             |
-| Ikeda-Carpenter ⊗ pseudo-Voigt<br/>_Moderator pulse α₀, α₁, β₀, κ; σ₀, σ₁, σ₂; γ₀, γ₁, γ₂_<br/>- :date: `cryspy`<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "Npr=13"                                                                                                                                      | :date:                  | :date:             | :date:             |
+| Ikeda-Carpenter ⊗ pseudo-Voigt<br/>_σ₀, σ₁, σ₂; γ₀, γ₁, γ₂; Moderator pulse α₀, α₁, β₀, κ_<br/>- :date: `cryspy`<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "Npr=13"                                                                                                                                      | :date:                  | :date:             | :date:             |
 | Microstructural size/strain broadening<br/>_extends Jorgensen (size_g, strain_g) and JvD (+ size_l, strain_l)_<br/>- :construction: `cryspy` (in backend, not yet exposed)<br/>- :material-link-variant: `FullProf` "Iso-GSize, Iso-GStrain, Iso-LorSize, Iso-LorStrain"                                                       | :construction:          | :construction:     | :date:             |
 
 </div>
