@@ -694,7 +694,6 @@ that will be split into detailed rows once work begins).
 | Restraints (soft constraints, e.g. bond lengths, angles)                                                              | :date: | :date:            | :date:            |
 | Search and download structure from Crystallography Open Database (COD)                                                | :date: | :material-cancel: | :date:            |
 | Read instrument resolution parameters from file<br/>- :material-link-variant: `FullProf` "Irf" (.irf resolution file) | :date: | :date:            | :date:            |
-| Add category with fit quality metrics<br/>(e.g. chi2, R-factors)                                                      | :date: | :date:            | :date:            |
 | Set free parameters by category (e.g. all atomic positions, all ADPs)                                                 | :date: | :date:            | :date:            |
 
 </div>
