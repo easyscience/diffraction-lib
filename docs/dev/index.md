@@ -16,7 +16,7 @@ remains isolated under `docs/docs`.
 | [`package-structure/short.md`](package-structure/short.md) | Generated compact package tree.                                                                   |
 | [`package-structure/full.md`](package-structure/full.md)   | Generated package tree with top-level classes.                                                    |
 | [`plans/`](plans/)                                         | Implementation plans for larger migrations.                                                       |
-| [`roadmap/ROADMAP.md`](roadmap/ROADMAP.md)                 | Development roadmap. This may later be copied into `docs/docs` during the published-docs build.   |
+| [`../docs/features/index.md`](../docs/features/index.md)   | Feature & roadmap matrix, published as a user-facing page (single source of truth).               |
 
 ## Rules
 

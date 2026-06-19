@@ -197,6 +197,8 @@ exclude_docs: |
 nav:
   - Introduction:
       - Introduction: introduction/index.md
+  - Features:
+      - Features: features/index.md
   - Installation & Setup:
       - Installation & Setup: installation-and-setup/index.md
   - User Guide:

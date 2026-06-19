@@ -1,8 +1,17 @@
-User interface components:
+---
+title: Features
+icon: material/clipboard-check-outline
+---
 
-- LIB – Python library API
-- CLI – Command-line interface (with text-based input and output)
-- APP – Graphical application
+# :material-clipboard-check-outline: Features
+
+This page is the single source of truth for what EasyDiffraction can do
+today and what is planned. Each capability is tracked across the three
+ways you can use EasyDiffraction:
+
+- **LIB** – Python library API
+- **CLI** – command-line interface (text-based input and output)
+- **APP** – graphical application
 
 Implementation status:
 
@@ -16,6 +25,11 @@ Implementation status:
   - :date: 2/5 – `low` Low importance
   - :date: 1/5 – `lowest` Very low urgency
 - — Not applicable
+
+Where a capability comes from a calculation backend, the backend is
+named in parentheses (CrysPy, CrysFML, Pdffit2). For peak profiles, the
+EasyDiffraction profile name is given first, with FullProf / CrysPy
+equivalents as cross-references.
 
 ---
 
@@ -44,6 +58,7 @@ Implementation status:
 | ---------------------------------------------- | ------------------ | ------------------ | ------------------ |
 | X-ray scattering factors (tabulated, CrysPy)   | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | Neutron scattering lengths (tabulated, CrysPy) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Per-isotope neutron scattering length          | :white_check_mark: | :white_check_mark: | :date:             |
 | Custom neutron scattering length               | :date:             | :date:             | :date:             |
 | Fractional coordinates _x, y, z_               | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | Occupancy                                      | :white_check_mark: | :white_check_mark: | :white_check_mark: |
@@ -54,9 +69,10 @@ Implementation status:
 | Feature<img width=450/>                             | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
 | --------------------------------------------------- | ------------------ | ------------------ | ------------------ |
 | Isotropic _Biso_                                    | :white_check_mark: | :white_check_mark: | :date:             |
-| Isotropic _Uiso_                                    | :construction:     | :construction:     | :white_check_mark: |
-| Anisotropic _Bani_ (_B11, B22, B33, B12, B13, B23_) | :construction:     | :construction:     | :date:             |
-| Anisotropic _Uani_ (_U11, U22, U33, U12, U13, U23_) | :construction:     | :construction:     | :date:             |
+| Isotropic _Uiso_                                    | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Anisotropic _Bani_ (_B11, B22, B33, B12, B13, B23_) | :white_check_mark: | :white_check_mark: | :date:             |
+| Anisotropic _Uani_ (_U11, U22, U33, U12, U13, U23_) | :white_check_mark: | :white_check_mark: | :date:             |
+| Anisotropic _β_ (_β11, β22, β33, β12, β13, β23_)    | :white_check_mark: | :white_check_mark: | :date:             |
 
 ---
 
@@ -91,7 +107,7 @@ Implementation status:
 | 2.4. Polarized Single-Crystal Diffraction            | :date:                  | :date:                  | :date:                  |
 | 2.4.1. Flipping-ratio method (CWL)                   | :date:                  | :date:                  | :date:                  |
 | 2.4.2. Flipping-ratio method (TOF)                   | :date:                  | :date:                  | :date:                  |
-| 2.4.3. XYZ Polarisation                 | :date:                  | :date:                  | :date:                  |
+| 2.4.3. XYZ Polarisation                              | :date:                  | :date:                  | :date:                  |
 | 2.4.4. Spherical neutron polarimetry                 | :date:                  | :date:                  | :date:                  |
 
 ---
@@ -123,27 +139,28 @@ Implementation status:
 
 ### Background
 
-| Feature<img width=450/>                        | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
-| ---------------------------------------------- | ------------------ | ------------------ | ------------------ |
-| Chebyshev polynomial type _order, coefficient_ | :white_check_mark: | :white_check_mark: | :date:             |
-| Line segments type _x, y_                      | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Line segments type _x, y_ (auto-detection)     | :date:             | :date:             | :date:             |
+| Feature<img width=450/>                                                           | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
+| --------------------------------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
+| Line segments type _x, y_                                                         | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Chebyshev polynomial type _order, coefficient_                                    | :white_check_mark: | :white_check_mark: | :date:             |
+| Automatic background estimation<br/>_one-call baseline (auto, arPLS, FABC, SNIP)_ | :white_check_mark: | :white_check_mark: | :date:             |
 
 ### Preferred Orientation
 
-| Feature<img width=450/>                             | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
-| --------------------------------------------------- | ------------------ | ------------------ | ------------------ |
-| Exponential function (FullProf "Nor=0": _G1, G2_) | :date:         | :date:         | :date:             |
-| Modified March's function (FullProf "Nor=1": _G1, G2_, CrysPy) | :date: 4/5         | :date: 4/5         | :date:             |
+| Feature<img width=450/>                                     | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
+| ----------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
+| March–Dollase _march_r, hkl axis, random fraction_ (CrysPy) | :white_check_mark: | :white_check_mark: | :date:             |
 
 ### Instrument — Constant Wavelength
 
 | Feature<img width=450/>                                  | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
 | -------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
 | Wavelength                                               | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Second wavelength                                        | :date:             | :date:             | :date:             |
+| Second wavelength _λ₂, I₂/I₁ ratio_                      | :white_check_mark: | :white_check_mark: | :date:             |
 | 2θ offset                                                | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Sample displacement correction (FullProf: _SyCos, SySin_) | :date:             | :date:             | :date:             |
+| Sample displacement correction (FullProf _SyCos, SySin_) | :white_check_mark: | :white_check_mark: | :date:             |
+| Sample transparency correction                           | :white_check_mark: | :white_check_mark: | :date:             |
+| Absorption correction                                    | :white_check_mark: | :white_check_mark: | :date:             |
 
 ### Instrument — Time-of-Flight
 
@@ -154,35 +171,49 @@ Implementation status:
 
 ### Peak Profile — Constant Wavelength
 
-| Feature<img width=450/>                                                                                                                                                                           | LIB<img width=40/>      | CLI<img width=39/>      | APP<img width=33/> |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ----------------------- | ------------------ |
-| pseudo-Voigt + Bérar-Baldinozzi empirical asymmetry<br/>_Broadening U, V, W. Mixing X, eta0<br/>(FullProf "Npr=5", "UVWX, Shape1") <br/>Bérar-Baldinozzi empirical asymmetry_<br/>(FullProf "Asy1-4")                                              |  :date:    |  :date:   | :date: |
-| Thompson-Cox-Hastings pseudo-Voigt + Bérar-Baldinozzi empirical asymmetry<br/>_Gaussian broadening U, V, W. Lorentzian broadening X, Y<br/>(FullProf "Npr 7", CrysPy)<br/>Bérar-Baldinozzi empirical asymmetry_<br/>(FullProf "Asy1-4", CrysPy)                                              | :white_check_mark:      | :white_check_mark:      | :white_check_mark: |
-| Thompson-Cox-Hastings pseudo-Voigt + Finger-Cox-Jephcoat asymmetry<br/>_Gaussian broadening U, V, W. Lorentzian broadening X, Y<br/>(FullProf "Npr 7")<br/>Finger-Cox-Jephcoat asymmetry_<br/>(FullProf "S_L/D_L") | :ballot_box_with_check: | :ballot_box_with_check: | :date:             |
+| Feature<img width=450/>                                                                                                                                                                                                      | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
+| Pseudo-Voigt<br/>_Gaussian broadening U, V, W. Lorentzian broadening X, Y_<br/>(CrysPy, CrysFML; cross-ref FullProf "Npr=7" shape)                                                                                           | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Pseudo-Voigt + Bérar-Baldinozzi asymmetry<br/>_Gaussian broadening U, V, W. Lorentzian broadening X, Y_<br/>_Bérar-Baldinozzi empirical asymmetry a₀, b₀, a₁, b₁_<br/>(CrysPy; cross-ref FullProf "Asy1-4")                  | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Thompson-Cox-Hastings pseudo-Voigt + Finger-Cox-Jephcoat asymmetry<br/>_Gaussian broadening U, V, W. Lorentzian broadening X, Y_<br/>_Finger-Cox-Jephcoat asymmetry 1, 2_<br/>(CrysFML; cross-ref FullProf "Npr=7", S_L/D_L) | :white_check_mark: | :white_check_mark: | :date:             |
 
 ### Peak Profile — Time-of-Flight
 
-| Feature<img width=450/>                                                                                                                                                                                                                         | LIB<img width=40/>      | CLI<img width=39/>      | APP<img width=33/> |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ----------------------- | ------------------ |
-| pseudo-Voigt<br/>_Gaussian broadening σ₀, σ₁, σ₂. Lorentzian broadening γ₀, γ₁, γ₂_<br/>(FullProf "Npr 7", CrysPy "non-conv-pseudo-Voigt")                                                                                                   | :date:                  | :date:                  | :date:             |
-| Ikeda-Carpenter ⊗ pseudo-Voigt<br/>_Moderator pulse α₀, α₁, β₀, κ<br/>Gaussian broadening σ₀, σ₁, σ₂. Lorentzian broadening γ₀, γ₁, γ₂_<br/>(FullProf "Npr 13")                                                                                                   | :date:                  | :date:                  | :date:             |
-| Jorgensen (back-to-back exponentials ⊗ Gaussian)<br/>_Gaussian broadening σ₀, σ₁, σ₂<br/>Back-to-back exponential rise α₀, α₁ and decay β₀, β₁_<br/>(CrysPy "Gauss")                                                                            | :white_check_mark:      | :white_check_mark:      | :white_check_mark: |
-| Jorgensen-Von Dreele (back-to-back exponentials ⊗ pseudo-Voigt)<br/>_Gaussian broadening σ₀, σ₁, σ₂. Lorentzian broadening γ₀, γ₁, γ₂<br/>Back-to-back exponential rise α₀, α₁ and decay β₀, β₁_<br/>(CrysPy "pseudo-Voigt")                    | :white_check_mark:      | :white_check_mark:      | :white_check_mark: |
-| Double back-to-back exponentials ⊗ pseudo-Voigt<br/>_Gaussian broadening σ₀, σ₁, σ₂. Lorentzian broadening γ₀, γ₁, γ₂<br/>Rise α₁, α₂. Fast decay β₀₀, β₀₁. Slow decay β₁₀. Switching r₀₁, r₀₂, r₀₃_<br/>(CrysPy "type0m", Z-Rietveld "type0m") | :ballot_box_with_check: | :ballot_box_with_check: | :date:             |
+| Feature<img width=450/>                                                                                                                                                                                                                           | LIB<img width=40/>      | CLI<img width=39/>      | APP<img width=33/> |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ----------------------- | ------------------ |
+| Pseudo-Voigt (non-convoluted)<br/>_Gaussian broadening σ₀, σ₁, σ₂. Lorentzian broadening γ₀, γ₁, γ₂_<br/>(CrysPy "non-conv-pseudo-Voigt"; cross-ref FullProf "Npr=7" TOF)                                                                         | :white_check_mark:      | :white_check_mark:      | :date:             |
+| Jorgensen (back-to-back exponentials ⊗ Gaussian)<br/>_Gaussian broadening σ₀, σ₁, σ₂_<br/>_Back-to-back exponential rise α₀, α₁ and decay β₀, β₁_<br/>(CrysPy "Gauss")                                                                            | :white_check_mark:      | :white_check_mark:      | :white_check_mark: |
+| Jorgensen-Von Dreele (back-to-back exponentials ⊗ pseudo-Voigt)<br/>_Gaussian broadening σ₀, σ₁, σ₂. Lorentzian broadening γ₀, γ₁, γ₂_<br/>_Back-to-back exponential rise α₀, α₁ and decay β₀, β₁_<br/>(CrysPy "pseudo-Voigt")                    | :white_check_mark:      | :white_check_mark:      | :white_check_mark: |
+| Double back-to-back exponentials ⊗ pseudo-Voigt<br/>_Gaussian broadening σ₀, σ₁, σ₂. Lorentzian broadening γ₀, γ₁, γ₂_<br/>_Rise α₁, α₂. Fast decay β₀₀, β₀₁. Slow decay β₁₀. Switching r₀₁, r₀₂, r₀₃_<br/>(CrysPy "type0m", Z-Rietveld "type0m") | :ballot_box_with_check: | :ballot_box_with_check: | :date:             |
+| Ikeda-Carpenter ⊗ pseudo-Voigt<br/>_Moderator pulse α₀, α₁, β₀, κ_<br/>_Gaussian broadening σ₀, σ₁, σ₂. Lorentzian broadening γ₀, γ₁, γ₂_<br/>(FullProf "Npr=13")                                                                                 | :date:                  | :date:                  | :date:             |
+| Microstructural size/strain broadening<br/>_Gaussian size_g, strain_g. Lorentzian size_l, strain_l_<br/>(available in CrysPy backend; not yet exposed in EasyDiffraction)                                                                         | :date:                  | :date:                  | :date:             |
+
+TOF profiles by source type and relative performance:
+
+| TOF profile                                                         | TOF source                                                        | Performance |
+| ------------------------------------------------------------------- | ----------------------------------------------------------------- | ----------- |
+| Pseudo-Voigt (non-convoluted)                                       | Symmetric profile; simplest TOF case                              | Fastest     |
+| Jorgensen (back-to-back exponentials ⊗ Gaussian)                    | Simpler TOF profile, including reactor-source TOF implementations | Fast        |
+| Jorgensen-Von Dreele (back-to-back exponentials ⊗ pseudo-Voigt)     | Spallation-source TOF                                             | Slower      |
+| Double back-to-back exponentials ⊗ pseudo-Voigt (Z-Rietveld type0m) | Spallation-source TOF; more elaborate asymmetric profile          | Slowest     |
+| Ikeda-Carpenter ⊗ pseudo-Voigt                                      | Spallation-source TOF; moderator pulse shape model                | Moderate    |
 
 ## 2.1.3. Total Scattering (Pair Distribution Function)
 
 ### Peak Profile
 
-| Feature<img width=450/>                                                                                                              | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
-| ------------------------------------------------------------------------------------------------------------------------------------ | ------------------ | ------------------ | ------------------ |
-| Gaussian-damped sinc termination function<br/>_cutoff q. broadening q. sharpening δ₁, δ₂<br/>damping q, particle diameter_ (Pdffit2) | :white_check_mark: | :white_check_mark: | :date:             |
+| Feature<img width=450/>                                                                                                                | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
+| -------------------------------------------------------------------------------------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
+| Gaussian-damped sinc termination function<br/>_cutoff q, broadening q, sharpening δ₁, δ₂_<br/>_damping q, particle diameter_ (Pdffit2) | :white_check_mark: | :white_check_mark: | :date:             |
 
 ---
 
 ## 2.2. Single Crystal Diffraction
 
 ### Extinction
+
+CrysPy's extinction is an analytical Becker-Coppens spherical model with
+a Gaussian or Lorentzian mosaicity distribution.
 
 | Feature<img width=450/>                                                  | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
 | ------------------------------------------------------------------------ | ------------------ | ------------------ | ------------------ |
@@ -224,7 +255,7 @@ Implementation status:
 | ----------------------------- | ------------------ | ------------------ | ------------------ |
 | Flipping-ratio method (TOF)   | :date:             | :date:             | :date:             |
 | Flipping-ratio method (CWL)   | :date:             | :date:             | :date:             |
-| XYZ Polarisation   | :date:             | :date:             | :date:             |
+| XYZ Polarisation              | :date:             | :date:             | :date:             |
 | Spherical neutron polarimetry | :date:             | :date:             | :date:             |
 
 ---
@@ -242,21 +273,28 @@ Implementation status:
 
 ### Calculation Modes
 
-| Feature<img width=450/>                               | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
-| ----------------------------------------------------- | ------------------ | ------------------ | ------------------ |
-| Calculate diffraction pattern for fitting/comparison against simulated or measured data              | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Calculate diffraction pattern for simple view without fitting/comparison against simulated or measured data             | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Calculate structure factors              | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Feature<img width=450/>                                                                                     | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
+| ----------------------------------------------------------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
+| Calculate diffraction pattern for fitting/comparison against simulated or measured data                     | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Calculate diffraction pattern for simple view without fitting/comparison against simulated or measured data | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Calculate structure factors                                                                                 | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 
 ### Refinement Algorithms (numerical derivatives)
 
-| Feature<img width=450/>                               | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
-| ----------------------------------------------------- | ------------------ | ------------------ | ------------------ |
-| Levenberg–Marquardt<br/>LMFIT minimizer               | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Levenberg–Marquardt<br/>LMFIT minimizer (scipy-based) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Levenberg–Marquardt<br/>BUMPS minimizer               | :construction:     | :construction:     | :date:             |
-| Derivative-free minimization<br/>DFO-LS minimizer     | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Bayesian analysis<br/>BUMPS minimizer                 | :date:             | :date:             | :date:             |
+| Feature<img width=450/>                                     | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
+| ----------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
+| Levenberg–Marquardt<br/>LMFIT minimizer                     | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Levenberg–Marquardt<br/>LMFIT minimizer (scipy-based)       | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Levenberg–Marquardt<br/>BUMPS minimizer                     | :white_check_mark: | :white_check_mark: | :date:             |
+| Derivative-free minimization<br/>DFO-LS minimizer           | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Nelder-Mead / differential evolution<br/>BUMPS (Amoeba, DE) | :white_check_mark: | :white_check_mark: | :date:             |
+
+### Bayesian Analysis (sampling)
+
+| Feature<img width=450/>                      | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
+| -------------------------------------------- | ------------------ | ------------------ | ------------------ |
+| MCMC sampling<br/>BUMPS DREAM minimizer      | :white_check_mark: | :white_check_mark: | :date:             |
+| Affine-invariant ensemble sampling<br/>emcee | :white_check_mark: | :white_check_mark: | :date:             |
 
 ### Fit Strategies
 
@@ -304,12 +342,14 @@ Implementation status:
 
 ### Project Files
 
-Project files are a way to save and load the full state of a refinement, including the structure model, experimental data, fit settings, and results.
+Project files are a way to save and load the full state of a refinement,
+including the structure model, experimental data, fit settings, and
+results.
 
-| Feature<img width=450/> | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
-| ----------------------- | ------------------ | ------------------ | ------------------ |
-| Load full project from disk  | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Save full project to disk    | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Feature<img width=450/>     | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
+| --------------------------- | ------------------ | ------------------ | ------------------ |
+| Load full project from disk | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Save full project to disk   | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 
 ### Data Loading
 
@@ -410,14 +450,14 @@ Project files are a way to save and load the full state of a refinement, includi
 
 # 10. Unsorted features
 
-| Feature<img width=450/>                                               | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
-| --------------------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
-| Set free parameters by category (e.g. all atomic positions, all ADPs) |                    |                    |                    |
-| Add category with fit quality metrics (e.g. chi2, R-factors)          |                    |                    |                    |
-| Restraints (soft constraints, e.g. bond lengths, angles)              |                    |                    |                    |
-| Refinement using analytical derivatives                               |                    |                    |                    |
-| Global optimization algorithms (e.g. simulated annealing)             |                    |                    |                    |
-| Incommensurate structures                                             |                    |                    |                    |
-| 2D Rietveld refinement                                                |                    |                    |                    |
-| Built-in refinement strategies for common refinement workflows                                               |                    |                    |                    |
-| Chatbot window for natural-language requests during the analysis process                                             |                    | —                   |    —                |
+| Feature<img width=450/>                                                  | LIB<img width=40/> | CLI<img width=39/> | APP<img width=33/> |
+| ------------------------------------------------------------------------ | ------------------ | ------------------ | ------------------ |
+| Set free parameters by category (e.g. all atomic positions, all ADPs)    | :date:             | :date:             | :date:             |
+| Add category with fit quality metrics (e.g. chi2, R-factors)             | :date:             | :date:             | :date:             |
+| Restraints (soft constraints, e.g. bond lengths, angles)                 | :date:             | :date:             | :date:             |
+| Refinement using analytical derivatives                                  | :date:             | :date:             | :date:             |
+| Global optimization algorithms (e.g. simulated annealing)                | :date:             | :date:             | :date:             |
+| Incommensurate structures                                                | :date:             | :date:             | :date:             |
+| 2D Rietveld refinement                                                   | :date:             | :date:             | :date:             |
+| Built-in refinement strategies for common refinement workflows           | :date:             | :date:             | :date:             |
+| Chatbot window for natural-language requests during the analysis process | :date:             | —                  | —                  |
