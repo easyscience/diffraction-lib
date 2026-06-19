@@ -12,6 +12,19 @@ inside the notebook.
 
 ## Powder, Neutron, Constant Wavelength
 
+### LaB6
+
+- [pd-neut-cwl LaB6 basic](pd-neut-cwl_LaB6_basic.ipynb) – verifies the
+  _baseline_ LaB6 powder pattern.
+- [pd-neut-cwl LaB6 11B isotope](pd-neut-cwl_LaB6_11B.ipynb) – verifies
+  the **11B isotope** contribution.
+- [pd-neut-cwl LaB6 SyCos/SySin shifts](pd-neut-cwl_LaB6_sycos-sysin.ipynb)
+  – verifies the **SyCos/SySin** peak-position corrections.
+- [pd-neut-cwl LaB6 FCJ asymmetry](pd-neut-cwl_LaB6_fcj-asymmetry.ipynb)
+  – verifies the **Finger-Cox-Jephcoat asymmetry** correction.
+- [pd-neut-cwl LaB6 absorption](pd-neut-cwl_LaB6_absorption.ipynb) –
+  verifies **Debye-Scherrer absorption** correction.
+
 ### LBCO
 
 - [pd-neut-cwl LBCO basic pseudo-Voigt](pd-neut-cwl_LBCO_basic.ipynb) –
@@ -26,19 +39,6 @@ inside the notebook.
 - [pd-neut-cwl PbSO4 Berar-Baldinozzi asymmetry](pd-neut-cwl_PbSO4_beba-asymmetry.ipynb)
   – verifies the **empirical asymmetry** correction.
 
-### LaB6
-
-- [pd-neut-cwl LaB6 basic](pd-neut-cwl_LaB6_basic.ipynb) – verifies the
-  _baseline_ LaB6 powder pattern.
-- [pd-neut-cwl LaB6 11B isotope](pd-neut-cwl_LaB6_11B.ipynb) – verifies
-  the **11B isotope** contribution.
-- [pd-neut-cwl LaB6 SyCos/SySin shifts](pd-neut-cwl_LaB6_sycos-sysin.ipynb)
-  – verifies the **SyCos/SySin** peak-position corrections.
-- [pd-neut-cwl LaB6 FCJ asymmetry](pd-neut-cwl_LaB6_fcj-asymmetry.ipynb)
-  – verifies the **Finger-Cox-Jephcoat asymmetry** correction.
-- [pd-neut-cwl LaB6 absorption](pd-neut-cwl_LaB6_absorption.ipynb) –
-  verifies **Debye-Scherrer absorption** correction.
-
 ### Y2O3
 
 - [pd-neut-cwl Y2O3 isotropic ADPs](pd-neut-cwl_Y2O3_isotropic-adp.ipynb)
@@ -51,7 +51,13 @@ inside the notebook.
 ### Fe
 
 - [pd-neut-tof Fe pseudo-Voigt profile](pd-neut-tof_Fe_pseudo-voigt.ipynb)
-  – verifies the _baseline_ non-convoluted pseudo-Voigt profile.
+  – verifies the _baseline_ **non-convoluted pseudo-Voigt** profile.
+
+### NCAF
+
+- [pd-neut-tof NCAF Jorgensen-Von Dreele profile](pd-neut-tof_NCAF_jorgensen-von-dreele.ipynb)
+  – verifies the **Jorgensen-Von Dreele pseudo-Voigt** profile without
+  Lorentzian broadening terms.
 
 ### Si
 
@@ -59,9 +65,6 @@ inside the notebook.
   verifies the **Jorgensen back-to-back exponential** profile.
 - [pd-neut-tof Si Jorgensen-Von Dreele profile](pd-neut-tof_Si_jorgensen-von-dreele.ipynb)
   – verifies the **Jorgensen-Von Dreele pseudo-Voigt** profile with
-  Lorentzian broadening terms.
-- [pd-neut-tof NCAF Jorgensen-Von Dreele profile](pd-neut-tof_NCAF_jorgensen-von-dreele.ipynb)
-  – verifies the **Jorgensen-Von Dreele pseudo-Voigt** profile without
   Lorentzian broadening terms.
 
 ## Powder, X-Ray, Constant Wavelength
@@ -83,23 +86,6 @@ inside the notebook.
   verifies the anglesite X-ray round-robin case with empirical
   asymmetry.
 
-## Powder, Total Scattering
-
-### NaCl
-
-- [pd-xray-cwl-total NaCl gaussian-damped sinc](pd-xray-cwl-total_NaCl_gaussian-damped-sinc.ipynb)
-  – verifies the **X-ray PDF** calculations.
-
-### Ni
-
-- [pd-neut-cwl-total Ni gaussian-damped sinc](pd-neut-cwl-total_Ni_gaussian-damped-sinc.ipynb)
-  – verifies the **neutron constant wavelength PDF** calculations.
-
-### Si
-
-- [pd-neut-tof-total Si gaussian-damped sinc](pd-neut-tof-total_Si_gaussian-damped-sinc.ipynb)
-  – verifies the **neutron time-of-flight PDF** calculations.
-
 ## Single Crystal, Neutron, Constant Wavelength
 
 ### Pr2NiO4
@@ -115,3 +101,20 @@ inside the notebook.
   – verifies the **isotropic extinction** model.
 - [sc-neut-cwl Tb2Ti2O7 anisotropic ADPs](sc-neut-cwl_Tb2Ti2O7_anisotropic-adp.ipynb)
   – verifies **beta-tensor anisotropic ADPs**.
+
+## Powder, Total Scattering
+
+### Ni
+
+- [total-neut-cwl Ni gaussian-damped sinc](total-neut-cwl_Ni_gaussian-damped-sinc.ipynb)
+  – verifies the **neutron constant wavelength PDF** calculations.
+
+### Si
+
+- [total-neut-tof Si gaussian-damped sinc](total-neut-tof_Si_gaussian-damped-sinc.ipynb)
+  – verifies the **neutron time-of-flight PDF** calculations.
+
+### NaCl
+
+- [total-xray NaCl gaussian-damped sinc](total-xray_NaCl_gaussian-damped-sinc.ipynb)
+  – verifies the **X-ray PDF** calculations.
