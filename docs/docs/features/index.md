@@ -49,13 +49,15 @@ The status icons:
 - :material-help-circle: Unknown — support not yet confirmed for this
   engine/interface
 
-The **LIB**, **CLI** and **APP** columns summarise the per-engine lines
-listed in the Feature cell, because the engines are the library
-backends: :white_check_mark: when every relevant engine is done (engines
-that simply don't apply are marked :material-cancel:), and
-:ballot_box_with_check: when at least one engine is done but others are
-in progress or planned. The **CLI** and **APP** columns instead show
-whether the feature is available in those two interfaces.
+!!! note "How the columns are scored"
+
+    The **LIB** column aggregates the per-engine lines in the Feature
+    cell (the engines are the library backends): :white_check_mark: when
+    every relevant engine is done (engines that do not apply are marked
+    :material-cancel:), and :ballot_box_with_check: when at least one
+    engine is done but others are in progress or planned. The **CLI**
+    and **APP** columns show whether the feature is available in those
+    two interfaces.
 
 !!! note "Using the command-line interface"
 
@@ -66,16 +68,18 @@ whether the feature is available in those two interfaces.
     the CLI column means the capability is reachable through this
     edit-then-run workflow.
 
-Inside the **Feature** cell, each line carries its own icon:
+!!! note "Icons inside the Feature cell"
 
-- The **engine** lines show per-engine status, e.g. :white_check_mark:
-  `cryspy` (done) or :date: `crysfml` (planned). A backend keyword is
-  shown in quotes (e.g. `cryspy` "Gauss").
-- :material-link-variant: cross-references the equivalent FullProf
-  `.pcr` entry, to help users coming from FullProf.
-- :material-check-decagram: links to the
-  [Verification](../verification/index.md) page where the calculation is
-  cross-checked against an independent reference.
+    Each line in the Feature cell carries its own icon:
+
+    - The **engine** lines show per-engine status, e.g.
+      :white_check_mark: `cryspy` (done) or :date: `crysfml` (planned).
+      A backend keyword is shown in quotes (e.g. `cryspy` "Gauss").
+    - :material-link-variant: cross-references the equivalent FullProf
+      `.pcr` entry, to help users coming from FullProf.
+    - :material-check-decagram: links to the
+      [Verification](../verification/index.md) page where the
+      calculation is cross-checked against an independent reference.
 
 !!! note "Epics shown as single rows"
 
