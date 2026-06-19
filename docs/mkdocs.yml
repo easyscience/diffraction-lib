@@ -280,12 +280,12 @@ nav:
           - LiF absorption: verification/pd-xray-cwl_LiF_single_absorption.ipynb
           - LiF doublet: verification/pd-xray-cwl_LiF_doublet.ipynb
           - PbSO4 round robin: verification/pd-xray-cwl_PbSO4_round-robin.ipynb
-      - Powder, X-ray, constant wavelength, total scattering:
-          - NaCl gaussian-damped sinc: verification/pd-xray-cwl-total_NaCl_gaussian-damped-sinc.ipynb
-      - Powder, neutron, constant wavelength, total scattering:
-          - Ni gaussian-damped sinc: verification/pd-neut-cwl-total_Ni_gaussian-damped-sinc.ipynb
-      - Powder, neutron, time-of-flight, total scattering:
-          - Si gaussian-damped sinc: verification/pd-neut-tof-total_Si_gaussian-damped-sinc.ipynb
+      - Total scattering, X-ray:
+          - NaCl gaussian-damped sinc: verification/total-xray_NaCl_gaussian-damped-sinc.ipynb
+      - Total scattering, neutron, constant wavelength:
+          - Ni gaussian-damped sinc: verification/total-neut-cwl_Ni_gaussian-damped-sinc.ipynb
+      - Total scattering, neutron, time-of-flight:
+          - Si gaussian-damped sinc: verification/total-neut-tof_Si_gaussian-damped-sinc.ipynb
       - Single crystal, neutron, constant wavelength:
           - Pr2NiO4 basic: verification/sc-neut-cwl_Pr2NiO4_basic.ipynb
           - Tb2Ti2O7 basic: verification/sc-neut-cwl_Tb2Ti2O7_basic.ipynb
