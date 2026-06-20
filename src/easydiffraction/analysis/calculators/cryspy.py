@@ -1382,6 +1382,16 @@ def _update_tof_peak_in_cryspy_dict(
     # both the recreate-object and minimizer fast paths.
     if hasattr(peak, 'cutoff_fwhm'):
         cryspy_expt_dict['profile_wdt'] = peak.cutoff_fwhm.value
+    # Microstructural isotropic size/strain (additive to sigma/gamma).
+    # The CIF/object-recreate path emits these, but the minimizer
+    # fast-dict path must refresh them too, otherwise refining them is a
+    # silent no-op once the cryspy dict is cached.
+    if hasattr(peak, 'broad_gauss_size_g'):
+        cryspy_expt_dict['profile_size_g'] = peak.broad_gauss_size_g.value
+        cryspy_expt_dict['profile_strain_g'] = peak.broad_gauss_strain_g.value
+    if hasattr(peak, 'broad_lorentz_size_l'):
+        cryspy_expt_dict['profile_size_l'] = peak.broad_lorentz_size_l.value
+        cryspy_expt_dict['profile_strain_l'] = peak.broad_lorentz_strain_l.value
     # TODO: Need to improve this logic to be more robust and extensible
     #  for future profiles
     if not hasattr(peak, 'decay_beta_0') and not hasattr(peak, 'dexp_decay_beta_00'):

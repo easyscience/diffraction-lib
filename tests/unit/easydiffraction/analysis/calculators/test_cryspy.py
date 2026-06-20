@@ -694,3 +694,35 @@ def test_cryspy_calculate_pattern_combines_cw_doublet(monkeypatch):
 
     assert calls == [1.5, 1.54]
     assert np.allclose(out, [11.0, 22.0])
+
+
+def test_tof_fast_dict_update_refreshes_size_strain():
+    # Review F1: the minimizer fast-dict path must refresh the TOF
+    # size/strain keys, otherwise refining them is a silent no-op once
+    # the cryspy dict is cached.
+    import easydiffraction.analysis.calculators.cryspy as MUT
+    from easydiffraction.datablocks.experiment.categories.peak.tof import (
+        TofJorgensenVonDreele,
+    )
+
+    peak = TofJorgensenVonDreele()
+    peak.broad_gauss_size_g = 12.0
+    peak.broad_gauss_strain_g = 3.0
+    peak.broad_lorentz_size_l = 2.0
+    peak.broad_lorentz_strain_l = 1.0
+
+    cryspy_expt_dict = {
+        'profile_gammas': [0.0, 0.0, 0.0],
+        'profile_alphas': [0.0, 0.0],
+        'profile_betas': [0.0, 0.0],
+        'profile_size_g': 0.0,
+        'profile_strain_g': 0.0,
+        'profile_size_l': 0.0,
+        'profile_strain_l': 0.0,
+    }
+    MUT._update_tof_peak_in_cryspy_dict(cryspy_expt_dict, peak)
+
+    assert cryspy_expt_dict['profile_size_g'] == 12.0
+    assert cryspy_expt_dict['profile_strain_g'] == 3.0
+    assert cryspy_expt_dict['profile_size_l'] == 2.0
+    assert cryspy_expt_dict['profile_strain_l'] == 1.0
