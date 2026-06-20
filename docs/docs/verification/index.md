@@ -81,10 +81,10 @@ term); these are marked below and inside the notebook.
   cryspy TOF Lorentzian discrepancy._
 - [pd-neut-tof Si Jorgensen-Von Dreele + size/strain](pd-neut-tof_Si_jorgensen-von-dreele-size-strain.ipynb)
   – **isotropic microstructural size/strain broadening** on the
-  Jorgensen-Von Dreele profile (size*g/strain_g, size_l/strain_l).
-  \_Known difference: requires the updated cryspy backend (TOF
-  size/strain wiring + Jorgensen-Von Dreele fix, cryspy issue #49) and
-  TOF scale.*
+  Jorgensen-Von Dreele profile (`size_g`/`strain_g`,
+  `size_l`/`strain_l`). _Known difference: requires the updated cryspy
+  backend (TOF size/strain wiring + Jorgensen-Von Dreele fix, cryspy
+  issue #49) and TOF scale._
 
 ## Powder, X-Ray, Constant Wavelength
 
