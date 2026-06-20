@@ -55,6 +55,12 @@ class AtomSite(CategoryItem):
         # compared in the update flow to decide whether to re-detect.
         self._wyckoff_coord_baseline: tuple[float, float, float] | None = None
         self._wyckoff_key_baseline: tuple[str, str | None] | None = None
+        # Resolved orbit-representative template, cached from the last
+        # detection. During a fit the letter and space group are fixed,
+        # so minimizer iterations reuse this and skip the lstsq orbit
+        # search (only the cheap per-iteration snap runs). None until
+        # first detection; invalidated when detection clears the site.
+        self._wyckoff_template_cache: str | None = None
 
         self._id = StringDescriptor(
             name='id',
@@ -956,6 +962,7 @@ class AtomSites(CategoryCollection):
         )
         key_changed = atom._wyckoff_key_baseline is not None and atom._wyckoff_key_baseline != key
         detect = (not called_by_minimizer) and (not letter_before or coords_changed or key_changed)
+        position = None
         if detect:
             position = ecr.detect_wyckoff_position(name_hm, coord_code, coords)
             if position is not None and letter_before and position.letter != letter_before:
@@ -965,22 +972,37 @@ class AtomSites(CategoryCollection):
                 )
             if position is not None:
                 atom._set_wyckoff_letter_detected(position.letter)
+            coord_template = position.coord_template if position is not None else None
+            multiplicity = position.multiplicity if position is not None else None
+            atom._wyckoff_template_cache = coord_template
+        elif called_by_minimizer and letter_before and atom._wyckoff_template_cache is not None:
+            # Fast refinement path: letter and space group are fixed for
+            # the duration of a fit, so the resolved orbit template is
+            # stable. Reuse it and only re-snap, skipping the per-template
+            # lstsq orbit search in ``wyckoff_position_info``.
+            coord_template = atom._wyckoff_template_cache
+            multiplicity = atom._multiplicity.value
         elif letter_before:
             position = ecr.wyckoff_position_info(
                 name_hm, coord_code, letter_before, fract_xyz=coords
             )
+            coord_template = position.coord_template if position is not None else None
+            multiplicity = position.multiplicity if position is not None else None
+            atom._wyckoff_template_cache = coord_template
         else:
-            position = None
+            coord_template = None
+            multiplicity = None
 
-        if position is None or position.coord_template is None:
+        if coord_template is None:
             atom._multiplicity.value = None
             self._clear_fract_symmetry_constrained(atom)
             atom._wyckoff_coord_baseline = coords
             atom._wyckoff_key_baseline = key
+            atom._wyckoff_template_cache = None
             return
 
-        atom._multiplicity.value = position.multiplicity
-        snapped, flags = ecr.snap_to_wyckoff_template(position.coord_template, coords)
+        atom._multiplicity.value = multiplicity
+        snapped, flags = ecr.snap_to_wyckoff_template(coord_template, coords)
         atom.fract_x.value = snapped[0]
         atom.fract_y.value = snapped[1]
         atom.fract_z.value = snapped[2]

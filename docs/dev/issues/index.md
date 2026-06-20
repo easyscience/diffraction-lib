@@ -179,3 +179,4 @@ individual issue files** — not here.
 | 105 | [Remove Orphaned Fit-Result Reset Helper](closed/remove-orphaned-fit-result-reset-helper.md)                                                                 |
 | 137 | [CLI `fit` Command Never Saves Results to Disk](closed/cli-fit-command-never-saves-results-to-disk.md)                                                       |
 | 164 | [Reconcile Git-Ignored `AGENTS.md` / `CLAUDE.md` With Their Checked-In Role](closed/reconcile-git-ignored-agents-md-claude-md-with-their-checked-in-role.md) |
+| 172 | [Cache Wyckoff Orbit Templates to Speed Up Refinement](closed/cache-wyckoff-orbit-templates-to-speed-up-refinement.md)                                        |
