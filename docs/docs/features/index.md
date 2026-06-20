@@ -13,20 +13,16 @@ scattering (PDF), and the analysis tools around them.
 
 ## Calculation engines
 
-Most of the physics is computed by a pluggable **calculation engine**,
-chosen per experiment (see
-[`calculator.type`](../user-guide/parameters/experiment/calculator.md)).
-Each engine is described in detail on the
+Most of the physics is computed by a pluggable **calculation engine**. Each engine is described on the
 [Analysis](../user-guide/analysis-workflow/analysis.md) page.
 
 - [`cryspy`](../user-guide/analysis-workflow/analysis.md#cryspy-calculator)
-  — Bragg diffraction, powder & single crystal (neutron & X-ray).
+  — Bragg diffraction, Python library.
 - [`crysfml`](../user-guide/analysis-workflow/analysis.md#crysfml-calculator)
-  — constant-wavelength Bragg diffraction.
+  — Bragg diffraction, Fortran library with Python bindings.
 - [`pdffit2`](../user-guide/analysis-workflow/analysis.md#pdffit2-calculator)
-  — pair distribution function (total scattering).
-- `easydiffraction` — corrections applied by the library itself, around
-  the engine (e.g. background, scale, the Kα₁/Kα₂ doublet).
+  — Total scattering (Pair Distribution Function), Python library.
+- `easydiffraction` — extra corrections around the engine (e.g. background, scale).
 
 ## How to read this page
 
@@ -49,7 +45,7 @@ The status icons:
 - :material-help-circle: Unknown — support not yet confirmed for this
   engine/interface
 
-!!! note "How the columns are scored"
+??? note "How the columns are scored"
 
     The **LIB** column aggregates the per-engine lines in the Feature
     cell (the engines are the library backends): :white_check_mark: when
@@ -59,7 +55,7 @@ The status icons:
     and **APP** columns show whether the feature is available in those
     two interfaces.
 
-!!! note "Using the command-line interface"
+??? note "Using the command-line interface"
 
     The CLI runs the refinement workflow — `fit`, `display`, `undo`.
     Models, parameters, constraints, and report options are set by
@@ -68,7 +64,7 @@ The status icons:
     the CLI column means the capability is reachable through this
     edit-then-run workflow.
 
-!!! note "Icons inside the Feature cell"
+??? note "Icons inside the Feature cell"
 
     Each line in the Feature cell carries its own icon:
 
@@ -81,7 +77,7 @@ The status icons:
       [Verification](../verification/index.md) page where the
       calculation is cross-checked against an independent reference.
 
-!!! note "Epics shown as single rows"
+??? note "Epics shown as single rows"
 
     Large areas still on the roadmap — magnetic structures, polarized
     neutron diffraction, 2D Rietveld, incommensurate structures — are
