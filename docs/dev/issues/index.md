@@ -180,3 +180,4 @@ individual issue files** — not here.
 | 137 | [CLI `fit` Command Never Saves Results to Disk](closed/cli-fit-command-never-saves-results-to-disk.md)                                                       |
 | 164 | [Reconcile Git-Ignored `AGENTS.md` / `CLAUDE.md` With Their Checked-In Role](closed/reconcile-git-ignored-agents-md-claude-md-with-their-checked-in-role.md) |
 | 172 | [Cache Wyckoff Orbit Templates to Speed Up Refinement](closed/cache-wyckoff-orbit-templates-to-speed-up-refinement.md)                                        |
+| 173 | [Avoid Rebuilding the Included-Point Mask Every Fit Iteration](closed/avoid-rebuilding-included-point-mask-every-fit-iteration.md)                             |

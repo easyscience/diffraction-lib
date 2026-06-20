@@ -144,15 +144,31 @@ class ExcludedRegions(CategoryCollection):
 
     def __init__(self) -> None:
         super().__init__(item_type=ExcludedRegion)
+        # Signature of the last applied mask: (point count, region bounds).
+        # Used to skip the per-iteration re-apply during refinement, where
+        # the grid and region bounds are invariant.
+        self._last_applied_signature: tuple | None = None
 
     def _update(
         self,
         *,
         called_by_minimizer: bool = False,
     ) -> None:
-        del called_by_minimizer
-
         data = self._parent.data
+
+        # The included/excluded split depends only on the x-grid and the
+        # region bounds, both fixed during a fit. Skip the full re-apply
+        # (an unfiltered_x build plus an all-point calc_status write) on
+        # minimizer iterations when neither has changed. A non-minimizer
+        # update (e.g. a public calculate, a data reload, or a region
+        # edit) always re-applies, so changes are never missed.
+        regions_signature = tuple(
+            (region.start.value, region.end.value) for region in self.values()
+        )
+        signature = (len(data._items), regions_signature)
+        if called_by_minimizer and signature == self._last_applied_signature:
+            return
+
         x = data.unfiltered_x
 
         # Start with a mask of all False (nothing excluded yet)
@@ -170,6 +186,7 @@ class ExcludedRegions(CategoryCollection):
 
         # Set refinement status in the data object
         data._set_calc_status(inverted_mask)
+        self._last_applied_signature = signature
 
     def show(self) -> None:
         """Print a table of excluded [start, end] intervals."""
