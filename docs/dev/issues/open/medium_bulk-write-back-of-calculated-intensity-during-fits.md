@@ -7,10 +7,11 @@
 After the Wyckoff (issue 172) and included-point-mask (issue 173)
 caches, profiling of a minimizer iteration shows the remaining cost is
 the per-point data model. One large piece is writing the calculator
-result back into the data: `_set_intensity_calc` (and `_set_intensity_bkg`)
-loop over the included points and assign through each point's guarded
-`NumericDescriptor` (`p.intensity_calc._value = v`), so every iteration
-pays hundreds of thousands of guarded `__setattr__` / `value` calls
+result back into the data: `_set_intensity_calc` (and
+`_set_intensity_bkg`) loop over the included points and assign through
+each point's guarded `NumericDescriptor`
+(`p.intensity_calc._value = v`), so every iteration pays hundreds of
+thousands of guarded `__setattr__` / `value` calls
 (`core/guard.py:__setattr__` and `core/variable.py:value` dominate the
 post-cache profile).
 
@@ -20,8 +21,8 @@ need per-point validation on the hot path.
 **Fix:** provide a bulk write path for the calculated arrays
 (`intensity_calc`, `intensity_bkg`) that assigns the numpy array once
 (or writes `_value` in a tight loop bypassing guard machinery) instead
-of going through the guarded descriptor per point. Keep the public
-read API (`data.intensity_calc`) unchanged.
+of going through the guarded descriptor per point. Keep the public read
+API (`data.intensity_calc`) unchanged.
 
 **TODOs / locations:**
 

@@ -976,10 +976,10 @@ class AtomSites(CategoryCollection):
             multiplicity = position.multiplicity if position is not None else None
             atom._wyckoff_template_cache = coord_template
         elif called_by_minimizer and letter_before and atom._wyckoff_template_cache is not None:
-            # Fast refinement path: letter and space group are fixed for
-            # the duration of a fit, so the resolved orbit template is
-            # stable. Reuse it and only re-snap, skipping the per-template
-            # lstsq orbit search in ``wyckoff_position_info``.
+            # Fast refinement path: letter and space group are fixed
+            # for the duration of a fit, so the resolved orbit template
+            # is stable. Reuse it and only re-snap, skipping the
+            # per-template lstsq orbit search in wyckoff_position_info.
             coord_template = atom._wyckoff_template_cache
             multiplicity = atom._multiplicity.value
         elif letter_before:

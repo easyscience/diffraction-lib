@@ -397,11 +397,12 @@ class PdDataBase(CategoryCollection):
             p.intensity_bkg._value = v
 
     def _invalidate_calc_cache(self) -> None:
-        """Drop the cached included-point mask/list.
+        """
+        Drop the cached included-point mask/list.
 
-        Called whenever the calc-status flags or the point set change, so
-        the cached ``_calc_mask`` / ``_calc_items`` are rebuilt on next
-        access.
+        Called whenever the calc-status flags or the point set change,
+        so the cached ``_calc_mask`` / ``_calc_items`` are rebuilt on
+        next access.
         """
         self._calc_mask_cache = None
         self._calc_items_cache = None

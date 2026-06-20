@@ -144,9 +144,9 @@ class ExcludedRegions(CategoryCollection):
 
     def __init__(self) -> None:
         super().__init__(item_type=ExcludedRegion)
-        # Signature of the last applied mask: (point count, region bounds).
-        # Used to skip the per-iteration re-apply during refinement, where
-        # the grid and region bounds are invariant.
+        # Signature of the last applied mask (point count + region
+        # bounds): lets minimizer iterations skip the re-apply during a
+        # fit, where the grid and region bounds are invariant.
         self._last_applied_signature: tuple | None = None
 
     def _update(

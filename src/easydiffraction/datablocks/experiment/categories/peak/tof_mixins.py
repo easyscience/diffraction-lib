@@ -203,22 +203,30 @@ class TofGaussianBroadeningMixin:
 
     @property
     def broad_gauss_size_g(self) -> Parameter:
-        """Gaussian isotropic size broadening, additive to σ₂ (μs²/Å²)."""
+        """
+        Gaussian isotropic size broadening, additive to σ₂ (μs²/Å²).
+        """
         return self._broad_gauss_size_g
 
     @broad_gauss_size_g.setter
     def broad_gauss_size_g(self, value: float) -> None:
-        """Set Gaussian isotropic size broadening, additive to σ₂ (μs²/Å²)."""
+        """
+        Set Gaussian isotropic size broadening, additive to σ₂ (μs²/Å²).
+        """
         self._broad_gauss_size_g.value = value
 
     @property
     def broad_gauss_strain_g(self) -> Parameter:
-        """Gaussian isotropic strain broadening, additive to σ₁ (μs/Å)."""
+        """
+        Gaussian isotropic strain broadening, additive to σ₁ (μs/Å).
+        """
         return self._broad_gauss_strain_g
 
     @broad_gauss_strain_g.setter
     def broad_gauss_strain_g(self, value: float) -> None:
-        """Set Gaussian isotropic strain broadening, additive to σ₁ (μs/Å)."""
+        """
+        Set Gaussian isotropic strain broadening, additive to σ₁ (μs/Å).
+        """
         self._broad_gauss_strain_g.value = value
 
 
@@ -366,22 +374,28 @@ class TofLorentzianBroadeningMixin:
 
     @property
     def broad_lorentz_size_l(self) -> Parameter:
-        """Lorentzian isotropic size broadening, additive to γ₂ (μs²/Å²)."""
+        """
+        Lorentzian isotropic size broadening, additive to γ₂ (μs²/Å²).
+        """
         return self._broad_lorentz_size_l
 
     @broad_lorentz_size_l.setter
     def broad_lorentz_size_l(self, value: float) -> None:
-        """Set Lorentzian isotropic size broadening, additive to γ₂ (μs²/Å²)."""
+        """Set Lorentzian isotropic size broadening (adds to γ₂)."""
         self._broad_lorentz_size_l.value = value
 
     @property
     def broad_lorentz_strain_l(self) -> Parameter:
-        """Lorentzian isotropic strain broadening, additive to γ₁ (μs/Å)."""
+        """
+        Lorentzian isotropic strain broadening, additive to γ₁ (μs/Å).
+        """
         return self._broad_lorentz_strain_l
 
     @broad_lorentz_strain_l.setter
     def broad_lorentz_strain_l(self, value: float) -> None:
-        """Set Lorentzian isotropic strain broadening, additive to γ₁ (μs/Å)."""
+        """
+        Set Lorentzian isotropic strain broadening (adds to γ₁).
+        """
         self._broad_lorentz_strain_l.value = value
 
 

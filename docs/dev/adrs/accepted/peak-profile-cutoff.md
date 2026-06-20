@@ -18,13 +18,13 @@ For powder data the cryspy backend evaluates each reflection's peak
 profile at **every** point of the pattern. Concretely the TOF
 back-to-back-exponential profile (`tof_Jorgensen`,
 `tof_Jorgensen_VonDreele`) and the constant-wavelength pseudo-Voigt
-(`calc_profile_pseudo_voight`) each build a dense
-`(n_points × n_hkl)` matrix and run the transcendental kernels
-(`erfc`, `exp`, the complex exponential integral `exp1`, Lorentzian and
-Finger-Cox-Jephcoat asymmetry) over all of it — including the vast
-region far from each peak where the contribution is numerically
-negligible. The cost grows with `n_points × n_hkl`, which is large for
-wide constant-wavelength scans with many reflections.
+(`calc_profile_pseudo_voight`) each build a dense `(n_points × n_hkl)`
+matrix and run the transcendental kernels (`erfc`, `exp`, the complex
+exponential integral `exp1`, Lorentzian and Finger-Cox-Jephcoat
+asymmetry) over all of it — including the vast region far from each peak
+where the contribution is numerically negligible. The cost grows with
+`n_points × n_hkl`, which is large for wide constant-wavelength scans
+with many reflections.
 
 FullProf solves this with its `WDT` parameter: each peak is only
 calculated within a window of a few FWHMs around its centre. cryspy has
@@ -57,11 +57,11 @@ Expose a per-experiment peak-profile range cutoff and feed it to cryspy.
 
 1. **Public API.** Add `experiment.peak.cutoff_fwhm` to the TOF and CWL
    peak categories as a non-refinable `NumericDescriptor` (a calculation
-   control, not a fittable quantity). The value is the cutoff measured in
-   **FWHMs**, which is what the name states; it equals FullProf's `WDT`.
-   The name `cutoff_fwhm` is preferred over `cutoff_lorentz` (the cutoff
-   trims the whole pseudo-Voigt window, not only the Lorentzian part) and
-   over `cutoff_wdt` (cryptic outside FullProf).
+   control, not a fittable quantity). The value is the cutoff measured
+   in **FWHMs**, which is what the name states; it equals FullProf's
+   `WDT`. The name `cutoff_fwhm` is preferred over `cutoff_lorentz` (the
+   cutoff trims the whole pseudo-Voigt window, not only the Lorentzian
+   part) and over `cutoff_wdt` (cryptic outside FullProf).
 
 2. **η-adaptive window.** Per evaluated point the half-width is
 
@@ -70,14 +70,14 @@ Expose a per-experiment peak-profile range cutoff and feed it to cryspy.
    ```
 
    with `WDT_GAUSS_FLOOR = 4`. Thus `cutoff_fwhm` is the window for a
-   *pure Lorentzian* (η = 1); Gaussian-dominated points (η → 0) collapse
-   to the ~4-FWHM floor. Scaling the window **linearly with η** keeps the
-   absolute truncated tail-area bounded; a naive
+   _pure Lorentzian_ (η = 1); Gaussian-dominated points (η → 0) collapse
+   to the ~4-FWHM floor. Scaling the window **linearly with η** keeps
+   the absolute truncated tail-area bounded; a naive
    `floor + (cutoff_fwhm − floor)·η` interpolation under-windows the
    moderate-η peaks that dominate CWL and breaks the area-ratio
    invariant (verified against LBCO). For TOF the back-to-back
-   exponential e-folding tails (`1/α`, `1/β`) are added inside the window
-   so the asymmetric tails are retained.
+   exponential e-folding tails (`1/α`, `1/β`) are added inside the
+   window so the asymmetric tails are retained.
 
 3. **Backend hand-off (no cryspy CIF-schema change).** The cryspy
    profile functions take a `wdt` argument that defaults to a module
@@ -90,19 +90,19 @@ Expose a per-experiment peak-profile range cutoff and feed it to cryspy.
    without serialising a new CIF item.
 
 4. **Defaults.** `cutoff_fwhm = 10` (TOF), `cutoff_fwhm = 80` (CWL) —
-   the smallest values that keep every FullProf verification's area ratio
-   within `0.99–1.01`. CWL is binding via LBCO (passes at ≥ 64; 80 gives
-   margin). The large CWL default looks big but, because the window is
-   η-adaptive, only pure-Lorentzian peaks pay it; low-η peaks use far
-   tighter windows.
+   the smallest values that keep every FullProf verification's area
+   ratio within `0.99–1.01`. CWL is binding via LBCO (passes at ≥ 64; 80
+   gives margin). The large CWL default looks big but, because the
+   window is η-adaptive, only pure-Lorentzian peaks pay it; low-η peaks
+   use far tighter windows.
 
 ## Consequences
 
 - The peak-profile function is markedly cheaper: TOF Jorgensen-Von
   Dreele ≈ 10× and CWL pseudo-Voigt ≈ 4–7× faster at the safe defaults,
   with the FullProf area ratio and Rwp unchanged. On a mixed-η CWL
-  pattern the η-adaptive window is ≈ 1.6× faster than a uniform window at
-  equal accuracy.
+  pattern the η-adaptive window is ≈ 1.6× faster than a uniform window
+  at equal accuracy.
 - The speed-up is realised on profile-re-evaluating refinement
   iterations and on single `calculate()` calls. It is **not** the
   current minimization bottleneck: profiling shows refinement time is
@@ -121,8 +121,8 @@ Expose a per-experiment peak-profile range cutoff and feed it to cryspy.
 ## Alternatives Considered
 
 - **Fixed module constant, no user control.** Simplest, but cannot be
-  both safe and fast across data with different Lorentzian content; gives
-  users no lever. Rejected.
+  both safe and fast across data with different Lorentzian content;
+  gives users no lever. Rejected.
 - **Uniform (non-adaptive) window.** Safe but pays the worst-case
   Lorentzian width on every peak; ≈ 1.6× slower than η-adaptive on mixed
   patterns. Kept as the conceptual baseline, not the implementation.
@@ -138,10 +138,10 @@ Expose a per-experiment peak-profile range cutoff and feed it to cryspy.
 
 - The dominant **minimization** cost is EasyDiffraction-side, not the
   profile: `crystallography._orbit_template_residual` re-solves
-  `numpy.linalg.lstsq` over 27 lattice shifts per orbit template per atom
-  site on every iteration (~45 % of a fit iteration in profiling), even
-  though the Wyckoff orbit assignment is fixed for the duration of a fit.
-  Caching the per-site orbit template at fit setup is the larger
+  `numpy.linalg.lstsq` over 27 lattice shifts per orbit template per
+  atom site on every iteration (~45 % of a fit iteration in profiling),
+  even though the Wyckoff orbit assignment is fixed for the duration of
+  a fit. Caching the per-site orbit template at fit setup is the larger
   refinement-speed win and is out of scope for this ADR.
 - Upstream cryspy PR adding `profile_wdt` support (peak-range cutoff for
   the TOF and CWL profiles) so the local patch can be dropped.

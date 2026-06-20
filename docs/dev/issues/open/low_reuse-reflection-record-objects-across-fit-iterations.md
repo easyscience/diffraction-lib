@@ -16,8 +16,8 @@ quantities, instead of constructing new record objects each step.
 
 **TODOs / locations:**
 
-- `experiment.refln` replacement path
-  (`_replace_from_records`) and the record `__init__`s in
+- `experiment.refln` replacement path (`_replace_from_records`) and the
+  record `__init__`s in
   `src/easydiffraction/datablocks/experiment/categories/refln/`.
 - Invalidate the reused table when the unit cell or space group changes.
 - Add a test that the reused-table path matches a fresh rebuild.

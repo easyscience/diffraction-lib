@@ -701,9 +701,7 @@ def test_tof_fast_dict_update_refreshes_size_strain():
     # size/strain keys, otherwise refining them is a silent no-op once
     # the cryspy dict is cached.
     import easydiffraction.analysis.calculators.cryspy as MUT
-    from easydiffraction.datablocks.experiment.categories.peak.tof import (
-        TofJorgensenVonDreele,
-    )
+    from easydiffraction.datablocks.experiment.categories.peak.tof import TofJorgensenVonDreele
 
     peak = TofJorgensenVonDreele()
     peak.broad_gauss_size_g = 12.0
