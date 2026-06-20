@@ -562,8 +562,10 @@ h1 .label-experiment {
 
 .md-typeset .ed-matrix table:not([class]) th:not(:first-child),
 .md-typeset .ed-matrix table:not([class]) td:not(:first-child) {
-  width: 2.4rem; /* just fits the LIB/CLI/APP header + status icon */
+  width: 2.1rem; /* just fits the LIB/CLI/APP header + status icon */
   min-width: 0; /* override Material's 5rem `th` floor that clamps width */
+  padding-left: 0.25rem !important; /* tight: column holds a centred icon */
+  padding-right: 0.25rem !important;
   text-align: center;
 }
 
@@ -576,8 +578,9 @@ h1 .label-experiment {
 .md-typeset .ed-matrix td,
 .md-typeset .ed-matrix th {
   line-height: 1.5 !important;
-  /* Uniform padding so the horizontal gap reads about the same as the
-     vertical one (the global rule zeroes vertical padding and Material
-     gives cells a wider ~0.8rem horizontal default). */
-  padding: 0.4rem !important;
+  /* Horizontal padding is a touch larger than vertical so the two read as
+     about equal: line-height adds apparent space above/below, so equal
+     numeric padding would look smaller left/right. Status columns narrow
+     this back down via the rule above. */
+  padding: 0.4rem 0.55rem !important;
 }
