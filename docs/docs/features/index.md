@@ -85,7 +85,7 @@ The status icons:
     neutron diffraction, 2D Rietveld, incommensurate structures — are
     listed as one top-level row each. They are **epics** that will be
     broken into detailed rows once work starts. Already-implemented areas
-    are shown in more details.
+    are shown in full detail.
 
 ---
 
