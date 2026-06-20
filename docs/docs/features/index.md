@@ -91,7 +91,7 @@ The status icons:
 
 ## 1. Structure Model
 
-### 1.1 Crystal Structure
+### 1.1. Crystal Structure
 
 #### Space Group
 
@@ -154,7 +154,7 @@ The status icons:
 
 ---
 
-### 1.2 Magnetic Structure
+### 1.2. Magnetic Structure
 
 Magnetic structure refinement is an **epic** (one row per area for now).
 
@@ -191,7 +191,7 @@ Magnetic structure refinement is an **epic** (one row per area for now).
 
 ### 2.1. Powder Diffraction
 
-#### 2.1.1. Common features
+#### Common features
 
 ##### Linked Phases
 
@@ -213,7 +213,7 @@ Magnetic structure refinement is an **epic** (one row per area for now).
 
 </div>
 
-#### 2.1.2. Standard Bragg diffraction
+#### Standard Bragg diffraction
 
 ##### Fitting Methods
 
@@ -255,14 +255,14 @@ calculated pattern; the engine is not involved.
 
 <div class="ed-matrix" markdown="1">
 
-| Feature                                                                                                                                                                                                                                                                                                                          | LIB                     | CLI                | APP                |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ------------------ | ------------------ |
-| Wavelength: _λ_<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :material-link-variant: `FullProf` "Lambda1"                                                                                                                                                                                          | :white_check_mark:      | :white_check_mark: | :white_check_mark: |
-| Second wavelength: _λ₂, I₂/I₁ ratio_<br/>- :white_check_mark: `easydiffraction` (Kα₁/Kα₂ doublet; engine run twice) [:material-check-decagram:](../verification/pd-xray-cwl_LiF_doublet.ipynb)<br/>- :material-cancel: `cryspy`<br/>- :construction: `crysfml`<br/>- :material-link-variant: `FullProf` "Lambda2, Ratio"         | :construction:          | :construction:     | :date:             |
-| 2θ offset<br/>- :white_check_mark: `easydiffraction`<br/>- :material-link-variant: `FullProf` "Zero"                                                                                                                                                                                                                             | :white_check_mark:      | :white_check_mark: | :white_check_mark: |
-| Sample displacement and transparency corrections<br/>- :white_check_mark: `cryspy` [:material-check-decagram:](../verification/pd-neut-cwl_LaB6_sycos-sysin.ipynb)<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "SyCos, SySin"                                                                                | :ballot_box_with_check: | :white_check_mark: | :date:             |
-| Absorption correction (cylinder, Hewat)<br/>- :white_check_mark: `easydiffraction` [:material-check-decagram:](../verification/pd-neut-cwl_LaB6_absorption.ipynb)<br/>- :material-link-variant: `FullProf` "muR"                                                                                                                 | :white_check_mark:      | :white_check_mark: | :date:             |
-| X-ray Lorentz-polarization correction: _polarization coefficient, monochromator 2θ_<br/>- :white_check_mark: `cryspy` [:material-check-decagram:](../verification/pd-xray-cwl_LiF_single_polarization.ipynb)<br/>- :white_check_mark: `easydiffraction` (for `crysfml`)<br/>- :material-link-variant: `FullProf` "Cthm, Rpolarz" | :white_check_mark:      | :white_check_mark: | :date:             |
+| Feature                                                                                                                                                                                                                                                                                                                          | LIB                     | CLI                     | APP                |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ----------------------- | ------------------ |
+| Wavelength: _λ_<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :material-link-variant: `FullProf` "Lambda1"                                                                                                                                                                                          | :white_check_mark:      | :white_check_mark:      | :white_check_mark: |
+| Second wavelength: _λ₂, I₂/I₁ ratio_<br/>- :white_check_mark: `easydiffraction` (Kα₁/Kα₂ doublet; engine run twice) [:material-check-decagram:](../verification/pd-xray-cwl_LiF_doublet.ipynb)<br/>- :material-cancel: `cryspy`<br/>- :construction: `crysfml`<br/>- :material-link-variant: `FullProf` "Lambda2, Ratio"         | :ballot_box_with_check: | :ballot_box_with_check: | :date:             |
+| 2θ offset<br/>- :white_check_mark: `easydiffraction`<br/>- :material-link-variant: `FullProf` "Zero"                                                                                                                                                                                                                             | :white_check_mark:      | :white_check_mark:      | :white_check_mark: |
+| Sample displacement and transparency corrections<br/>- :white_check_mark: `cryspy` [:material-check-decagram:](../verification/pd-neut-cwl_LaB6_sycos-sysin.ipynb)<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "SyCos, SySin"                                                                                | :ballot_box_with_check: | :white_check_mark:      | :date:             |
+| Absorption correction (cylinder, Hewat)<br/>- :white_check_mark: `easydiffraction` [:material-check-decagram:](../verification/pd-neut-cwl_LaB6_absorption.ipynb)<br/>- :material-link-variant: `FullProf` "muR"                                                                                                                 | :white_check_mark:      | :white_check_mark:      | :date:             |
+| X-ray Lorentz-polarization correction: _polarization coefficient, monochromator 2θ_<br/>- :white_check_mark: `cryspy` [:material-check-decagram:](../verification/pd-xray-cwl_LiF_single_polarization.ipynb)<br/>- :white_check_mark: `easydiffraction` (for `crysfml`)<br/>- :material-link-variant: `FullProf` "Cthm, Rpolarz" | :white_check_mark:      | :white_check_mark:      | :date:             |
 
 </div>
 
@@ -290,8 +290,8 @@ calculated pattern; the engine is not involved.
 | Feature                                                                                                                                                                                                                                                                                                                                                                | LIB                     | CLI                | APP                |
 | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ------------------ | ------------------ |
 | Thompson-Cox-Hastings pseudo-Voigt<br/>_Gaussian U, V, W. Lorentzian X, Y_<br/>- :white_check_mark: `cryspy` [:material-check-decagram:](../verification/pd-neut-cwl_LaB6_basic.ipynb)<br/>- :white_check_mark: `crysfml` [:material-check-decagram:](../verification/pd-xray-cwl_LiF_single.ipynb)<br/>- :material-link-variant: `FullProf` "Npr=7"                   | :white_check_mark:      | :white_check_mark: | :white_check_mark: |
-| Thompson-Cox-Hastings pseudo-Voigt + Bérar-Baldinozzi asymmetry<br/>_Gaussian U, V, W. Lorentzian X, Y_<br/>_Bérar-Baldinozzi asymmetry a₀, b₀, a₁, b₁_<br/>- :white_check_mark: `cryspy` [:material-check-decagram:](../verification/pd-neut-cwl_PbSO4_beba-asymmetry.ipynb)<br/>- :date: `crysfml`<br/>- :material-cancel: `FullProf` "Npr=7" + "Asy1-4"             | :ballot_box_with_check: | :white_check_mark: | :white_check_mark: |
-| Thompson-Cox-Hastings pseudo-Voigt + Finger-Cox-Jephcoat asymmetry<br/>_Gaussian U, V, W. Lorentzian X, Y_<br/>_Finger-Cox-Jephcoat asymmetry 1, 2_<br/>- :material-cancel: `cryspy`<br/>- :white_check_mark: `crysfml` [:material-check-decagram:](../verification/pd-neut-cwl_LaB6_fcj-asymmetry.ipynb)<br/>- :material-link-variant: `FullProf` "Npr=7" + "S_L/D_L" | :ballot_box_with_check: | :white_check_mark: | :date:             |
+| Thompson-Cox-Hastings pseudo-Voigt + Bérar-Baldinozzi asymmetry<br/>_Gaussian U, V, W. Lorentzian X, Y_<br/>_Bérar-Baldinozzi asymmetry a₀, b₀, a₁, b₁_<br/>- :white_check_mark: `cryspy` [:material-check-decagram:](../verification/pd-neut-cwl_PbSO4_beba-asymmetry.ipynb)<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "Npr=7" + "Asy1-4"       | :ballot_box_with_check: | :white_check_mark: | :white_check_mark: |
+| Thompson-Cox-Hastings pseudo-Voigt + Finger-Cox-Jephcoat asymmetry<br/>_Gaussian U, V, W. Lorentzian X, Y_<br/>_Finger-Cox-Jephcoat asymmetry 1, 2_<br/>- :material-cancel: `cryspy`<br/>- :white_check_mark: `crysfml` [:material-check-decagram:](../verification/pd-neut-cwl_LaB6_fcj-asymmetry.ipynb)<br/>- :material-link-variant: `FullProf` "Npr=7" + "S_L/D_L" | :white_check_mark:      | :white_check_mark: | :date:             |
 
 </div>
 
@@ -320,7 +320,7 @@ TOF profiles by source type and relative performance:
 | Double back-to-back exponentials ⊗ pseudo-Voigt (Z-Rietveld type0m) | Spallation-source TOF; more elaborate asymmetric profile          | Slowest     |
 | Ikeda-Carpenter ⊗ pseudo-Voigt                                      | Spallation-source TOF; moderator pulse shape model                | Moderate    |
 
-#### 2.1.3. Total Scattering (Pair Distribution Function)
+#### Total Scattering (Pair Distribution Function)
 
 <div class="ed-matrix" markdown="1">
 
@@ -410,7 +410,7 @@ polarimetry.
 
 ## 4. Analysis (Fitting)
 
-#### Calculation Modes
+### 4.1. Calculation Modes
 
 <div class="ed-matrix" markdown="1">
 
@@ -422,7 +422,7 @@ polarimetry.
 
 </div>
 
-#### Refinement Algorithms (numerical derivatives)
+### 4.2. Refinement Algorithms (numerical derivatives)
 
 Minimizers are EasyDiffraction's optimizers and run with any engine.
 
@@ -439,7 +439,7 @@ Minimizers are EasyDiffraction's optimizers and run with any engine.
 
 </div>
 
-#### Bayesian Analysis (Markov Chain Monte Carlo sampling)
+### 4.3. Bayesian Analysis (Markov Chain Monte Carlo sampling)
 
 <div class="ed-matrix" markdown="1">
 
@@ -452,7 +452,7 @@ Minimizers are EasyDiffraction's optimizers and run with any engine.
 
 </div>
 
-#### Fit Strategies
+### 4.4. Fit Strategies
 
 <div class="ed-matrix" markdown="1">
 
@@ -466,7 +466,7 @@ Minimizers are EasyDiffraction's optimizers and run with any engine.
 
 </div>
 
-#### Live Fitting
+### 4.5. Live Fitting
 
 <div class="ed-matrix" markdown="1">
 
@@ -513,7 +513,7 @@ Minimizers are EasyDiffraction's optimizers and run with any engine.
 
 ## 7. Data Management
 
-#### Project Files
+### 7.1. Project Files
 
 <div class="ed-matrix" markdown="1">
 
@@ -524,7 +524,7 @@ Minimizers are EasyDiffraction's optimizers and run with any engine.
 
 </div>
 
-#### Reports
+### 7.2. Reports
 
 <div class="ed-matrix" markdown="1">
 
@@ -537,7 +537,7 @@ Minimizers are EasyDiffraction's optimizers and run with any engine.
 
 </div>
 
-#### Data Loading
+### 7.3. Data Loading
 
 <div class="ed-matrix" markdown="1">
 
@@ -552,7 +552,7 @@ Minimizers are EasyDiffraction's optimizers and run with any engine.
 
 </div>
 
-#### SciCat Integration
+### 7.4. SciCat Integration
 
 <div class="ed-matrix" markdown="1">
 
@@ -563,7 +563,7 @@ Minimizers are EasyDiffraction's optimizers and run with any engine.
 
 </div>
 
-#### External Resources
+### 7.5. External Resources
 
 <div class="ed-matrix" markdown="1">
 
