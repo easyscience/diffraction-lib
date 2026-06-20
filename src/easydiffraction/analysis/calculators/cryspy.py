@@ -1437,6 +1437,10 @@ def _cif_peak_section(
             'broad_lorentz_gamma_0': '_tof_profile_gamma0',
             'broad_lorentz_gamma_1': '_tof_profile_gamma1',
             'broad_lorentz_gamma_2': '_tof_profile_gamma2',
+            'broad_gauss_size_g': '_tof_profile_size_g',
+            'broad_gauss_strain_g': '_tof_profile_strain_g',
+            'broad_lorentz_size_l': '_tof_profile_size_l',
+            'broad_lorentz_strain_l': '_tof_profile_strain_l',
         }
 
         peak_tag = peak.type_info.tag
