@@ -131,7 +131,7 @@ class TofGaussianBroadeningMixin:
             ),
             value_spec=AttributeSpec(
                 default=10.0,
-                validator=RangeValidator(),
+                validator=RangeValidator(gt=0.0),
             ),
             tags=TagSpec(
                 edi_names=['_peak.cutoff_fwhm'],

@@ -51,3 +51,17 @@ def test_tof_jorgensen_descriptions_match_peak_profile_enum():
         TofDoubleJorgensenVonDreele.type_info.description
         == PeakProfileTypeEnum.TOF_DOUBLE_JORGENSEN_VON_DREELE.description()
     )
+
+
+def test_tof_cutoff_fwhm_rejects_non_positive():
+    # Review F3: cutoff_fwhm is a number of FWHMs; non-positive is invalid
+    # boundary input and must be rejected, while positive values are kept.
+    import pytest
+
+    peak = TofJorgensenVonDreele()
+    assert peak.cutoff_fwhm.value > 0  # safe default
+    for bad in (0.0, -1.0):
+        with pytest.raises(TypeError, match='outside'):
+            peak.cutoff_fwhm = bad
+    peak.cutoff_fwhm = 7.5
+    assert peak.cutoff_fwhm.value == 7.5
