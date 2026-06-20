@@ -842,6 +842,10 @@ class CryspyCalculator(CalculatorBase):
                 cryspy_resolution[3] = experiment.peak.broad_lorentz_x.value
                 cryspy_resolution[4] = experiment.peak.broad_lorentz_y.value
 
+                # Peak-range cutoff (FullProf "WDT"): speed vs accuracy.
+                if hasattr(experiment.peak, 'cutoff_fwhm'):
+                    cryspy_expt_dict['profile_wdt'] = experiment.peak.cutoff_fwhm.value
+
                 if 'asymmetry_parameters' in cryspy_expt_dict:
                     cryspy_asymmetry = cryspy_expt_dict['asymmetry_parameters']
                     cryspy_asymmetry[0] = experiment.peak.asym_beba_a0.value
@@ -1373,6 +1377,11 @@ def _update_tof_peak_in_cryspy_dict(
 ) -> None:
     """Update TOF peak profile-specific arrays in the cached dict."""
     peak_tag = peak.type_info.tag
+    # Peak-range cutoff (FullProf "WDT"): speed vs accuracy of the TOF
+    # profile in cryspy. Injected straight into the dict so it reaches
+    # both the recreate-object and minimizer fast paths.
+    if hasattr(peak, 'cutoff_fwhm'):
+        cryspy_expt_dict['profile_wdt'] = peak.cutoff_fwhm.value
     # TODO: Need to improve this logic to be more robust and extensible
     #  for future profiles
     if not hasattr(peak, 'decay_beta_0') and not hasattr(peak, 'dexp_decay_beta_00'):

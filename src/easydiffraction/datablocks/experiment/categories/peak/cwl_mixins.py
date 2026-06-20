@@ -11,6 +11,7 @@ multiple inheritance.
 from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
+from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import Parameter
 from easydiffraction.io.cif.handler import TagSpec
 
@@ -117,10 +118,45 @@ class CwlBroadeningMixin:
                 cif_names=['_easydiffraction_peak.broad_lorentz_y'],
             ),
         )
+        self._cutoff_fwhm = NumericDescriptor(
+            name='cutoff_fwhm',
+            description='Peak-range cutoff in FWHMs (speed vs accuracy; '
+            'FullProf "WDT"). Larger is more accurate but slower.',
+            units='',
+            display_handler=DisplayHandler(
+                display_name='Cutoff (FWHM)',
+                latex_name='WDT',
+            ),
+            value_spec=AttributeSpec(
+                default=80.0,
+                validator=RangeValidator(),
+            ),
+            tags=TagSpec(
+                edi_names=['_peak.cutoff_fwhm'],
+                cif_names=['_easydiffraction_peak.cutoff_fwhm'],
+            ),
+        )
 
     # ------------------------------------------------------------------
     #  Public properties
     # ------------------------------------------------------------------
+
+    @property
+    def cutoff_fwhm(self) -> NumericDescriptor:
+        """
+        Peak-range cutoff in FWHMs (speed vs accuracy).
+
+        The profile is evaluated only within this many FWHMs of each
+        peak; larger values are more accurate but slower. Mirrors
+        FullProf's ``WDT``. Reading returns the underlying descriptor;
+        assigning updates its value.
+        """
+        return self._cutoff_fwhm
+
+    @cutoff_fwhm.setter
+    def cutoff_fwhm(self, value: float) -> None:
+        """Set the peak-range cutoff (FWHMs)."""
+        self._cutoff_fwhm.value = value
 
     @property
     def broad_gauss_u(self) -> Parameter:
