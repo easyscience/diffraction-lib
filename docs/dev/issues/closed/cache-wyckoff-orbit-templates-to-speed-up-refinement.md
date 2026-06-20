@@ -31,5 +31,5 @@ verification suite (including special-position structures LBCO, Y2O3, and
 the Pr2NiO4 single crystal) is unchanged.
 
 Independent of the peak-profile cutoff work
-([`peak-profile-cutoff` ADR](../../adrs/suggestions/peak-profile-cutoff.md)),
+([`peak-profile-cutoff` ADR](../../adrs/accepted/peak-profile-cutoff.md)),
 which speeds the backend profile rather than the symmetry snap.
