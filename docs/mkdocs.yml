@@ -276,6 +276,7 @@ nav:
           - NCAF Jorgensen-Von Dreele (Gaussian): verification/pd-neut-tof_NCAF_jorgensen-von-dreele.ipynb
           - Si Jorgensen profile: verification/pd-neut-tof_Si_jorgensen.ipynb
           - Si Jorgensen-Von Dreele profile: verification/pd-neut-tof_Si_jorgensen-von-dreele.ipynb
+          - Si Jorgensen-Von Dreele + size/strain: verification/pd-neut-tof_Si_jorgensen-von-dreele-size-strain.ipynb
       - Powder, X-ray, constant wavelength:
           - LiF single wavelength: verification/pd-xray-cwl_LiF_single.ipynb
           - LiF polarization: verification/pd-xray-cwl_LiF_single_polarization.ipynb

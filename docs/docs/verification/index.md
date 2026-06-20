@@ -79,6 +79,12 @@ term); these are marked below and inside the notebook.
   – **Jorgensen-Von Dreele (back-to-back exponentials ⊗ pseudo-Voigt)**
   profile with Lorentzian terms (FullProf "Npr=9"). _Known difference:
   cryspy TOF Lorentzian discrepancy._
+- [pd-neut-tof Si Jorgensen-Von Dreele + size/strain](pd-neut-tof_Si_jorgensen-von-dreele-size-strain.ipynb)
+  – **isotropic microstructural size/strain broadening** on the
+  Jorgensen-Von Dreele profile (size*g/strain_g, size_l/strain_l).
+  \_Known difference: requires the updated cryspy backend (TOF
+  size/strain wiring + Jorgensen-Von Dreele fix, cryspy issue #49) and
+  TOF scale.*
 
 ## Powder, X-Ray, Constant Wavelength
 
