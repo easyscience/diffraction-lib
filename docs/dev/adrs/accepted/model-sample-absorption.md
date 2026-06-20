@@ -24,11 +24,11 @@ factor that attenuates low-angle peaks more than high-angle peaks;
 omitting it leaves an angle-dependent intensity residual that scales
 with the sample's μR (linear absorption coefficient × radius).
 
-This is not hypothetical. The verification reference
-`pd-neut-cwl_tch-fcj_lab6` was refined in FullProf with **μR = 0.7**;
-the unmodelled correction is the _entire_ intensity residual on the
-companion `pd-neut-cwl_tch-fcj_abs_lab6` page (≈5 % profile difference),
-while the μR = 0 page passes to corr 0.9999. See
+This is not hypothetical. The FullProf reference directory
+`pd-neut-cwl_lab6` was refined with **μR = 0.7**; the unmodelled
+correction is the _entire_ intensity residual on the companion
+`pd-neut-cwl_LaB6_absorption` page (≈5 % profile difference), while the
+μR = 0 page passes to corr 0.9999. See
 [issue #119](../../issues/open/highest_model-sample-absorption-debye-scherrer-r.md).
 
 ### What the three reference sources provide
@@ -55,13 +55,14 @@ implements the CW formulas in Fortran:
   and `cabs ∈ {HEWAT, LOBANOV}`.
 - `Powder_Lorentz_IntegInt_CW(…, muR, …)` — the bare Hewat form.
 
-**However**, these routines are **not wrapped** in CrysFML's
-`PythonAPI/`, and the high-level entry our backend actually calls
-(`cw_powder_pattern_from_dict`) computes a plain Lorentz factor
-`0.5/(sin²θ·cosθ)` with no absorption term. So the issue's claim that
-absorption is "reachable via `Lorentz_abs_CW` through pycrysfml" is
-**not true today** — it would require upstream wrapping or an upstream
-call-site change we do not control.
+**However**, the standalone absorption routines are **not wrapped** in
+CrysFML's `PythonAPI/`. The high-level CFL entry our backend calls
+(`patterns_simulation`) prepares the reflection corrections inside
+CrysFML and does not expose a model-level μR input through our binding.
+So the issue's claim that absorption is "reachable via `Lorentz_abs_CW`
+through pycrysfml" is **not true today** — using it as an internal
+correction would require an upstream wrapper or a broader upstream
+call-site binding we do not control.
 
 **cryspy** has **no absorption code at all** (only Debye–Waller and
 sphere _extinction_, which are different physics). CW intensity is
@@ -169,7 +170,7 @@ y_corrected(2θ_i) = A(θ_i) · y_calc(2θ_i)
 ```
 
 This is a single shared helper
-(`analysis/calculators/absorption.py::factor(two_theta, params)`) called
+(`analysis/corrections/absorption.py::factor(two_theta, params)`) called
 from the post-calculation step of both `cryspy.py` and `crysfml.py`. The
 two backends thus stay bit-for-bit consistent on the absorption term,
 and the helper is unit-testable in isolation against FullProf output
@@ -368,9 +369,9 @@ backend round-trip.
 ## Consequences
 
 - **Closes the LaB₆ absorption residual.** The
-  `pd-neut-cwl_tch-fcj_abs_lab6` verification page becomes the
-  acceptance test: with `cylinder-hewat`, `mu_r = 0.7` it should reach
-  the same corr as the μR = 0 page.
+  `pd-neut-cwl_LaB6_absorption` verification page becomes the acceptance
+  test: with `cylinder-hewat`, `mu_r = 0.7` it should reach the same
+  corr as the μR = 0 page.
 - **Calculator-consistent by construction.** Both backends call the same
   helper, so the absorption term can never drift between `cryspy` and
   `crysfml`. New backends inherit it for free.

@@ -5,13 +5,11 @@
 ├── 📁 analysis
 │   ├── 📁 calculators
 │   │   ├── 📄 __init__.py
-│   │   ├── 📄 absorption.py
 │   │   ├── 📄 base.py
 │   │   ├── 📄 crysfml.py
 │   │   ├── 📄 cryspy.py
 │   │   ├── 📄 factory.py
 │   │   ├── 📄 pdffit.py
-│   │   ├── 📄 polarization.py
 │   │   └── 📄 support.py
 │   ├── 📁 categories
 │   │   ├── 📁 aliases
@@ -75,6 +73,10 @@
 │   │   │   ├── 📄 default.py
 │   │   │   └── 📄 factory.py
 │   │   └── 📄 __init__.py
+│   ├── 📁 corrections
+│   │   ├── 📄 __init__.py
+│   │   ├── 📄 absorption.py
+│   │   └── 📄 polarization.py
 │   ├── 📁 fit_helpers
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 _diagnostics.py

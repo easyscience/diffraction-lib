@@ -207,11 +207,19 @@ label.md-nav__title[for="__drawer"] {
   max-width: 125em;
 }
 
-/* Keep prose line length stable when sidebars are hidden at narrower widths */
+/* Keep prose line length stable when sidebars are hidden at narrower
+   widths. The auto margins replace Material's default `.8rem` side
+   margins (which provide the mobile gutter), so add equivalent padding
+   to restore the gutter — otherwise text touches the screen edges on
+   phones, where the width resolves to 100% and the auto margins
+   collapse to zero. `border-box` keeps the padding inside the capped
+   width. */
 .md-main .md-content > .md-content__inner {
   width: min(100%, 47em);
   margin-left: auto !important;
   margin-right: auto !important;
+  padding-left: 0.8rem;
+  padding-right: 0.8rem;
 }
 
 /* Notebook action buttons (Open in Colab, Download). The page title is the
@@ -526,4 +534,53 @@ h1 .label-experiment {
 
 .ed-figure-target {
   width: 100%;
+}
+
+/* Capability tables (Features / Verification): the engine/cross-ref/
+   verification lists inside a cell are br-separated lines. Tighten their
+   spacing so each reads as one line rather than ~1.5. Scoped to plain
+   markdown tables, so prose tables on other pages are unaffected. */
+.md-typeset table:not([class]) td {
+  line-height: 1.35;
+}
+
+/* Capability matrix tables on the Features page. Each table is wrapped in
+   a `.ed-matrix` div (md_in_html) so these rules apply only there and do
+   not affect prose tables elsewhere. The LIB / CLI / APP status columns
+   are made equally narrow and centred; the Feature column takes all the
+   remaining width, giving every matrix table identical column geometry.
+   `table-layout: fixed` keeps the fixed column widths from being pulled
+   wide by long cell content, which also removes the tall header rows the
+   old inline `<img width>` sizing hacks produced. `display: table`
+   overrides Material's default `inline-block` on unwrapped tables, which
+   otherwise shrinks each table to its own content width. */
+.md-typeset .ed-matrix table:not([class]) {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.md-typeset .ed-matrix table:not([class]) th:not(:first-child),
+.md-typeset .ed-matrix table:not([class]) td:not(:first-child) {
+  width: 2.1rem; /* just fits the LIB/CLI/APP header + status icon */
+  min-width: 0; /* override Material's 5rem `th` floor that clamps width */
+  padding-left: 0.25rem !important; /* tight: column holds a centred icon */
+  padding-right: 0.25rem !important;
+  text-align: center;
+}
+
+/* Tighten the multi-line engine lists inside matrix cells and restore a
+   little vertical breathing room. The global rule above sets
+   `line-height: 2.35 !important` and `padding-top/bottom: 0 !important`
+   for every table cell; scope a tighter line-height plus a small top and
+   bottom padding to the matrix tables so the br-separated engine lines
+   read as compact lines while each row keeps clear separation. */
+.md-typeset .ed-matrix td,
+.md-typeset .ed-matrix th {
+  line-height: 1.5 !important;
+  /* Horizontal padding is a touch larger than vertical so the two read as
+     about equal: line-height adds apparent space above/below, so equal
+     numeric padding would look smaller left/right. Status columns narrow
+     this back down via the rule above. */
+  padding: 0.4rem 0.55rem !important;
 }

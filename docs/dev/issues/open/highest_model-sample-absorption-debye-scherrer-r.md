@@ -7,10 +7,10 @@
 The calculators (`cryspy`, `crysfml`) apply no sample-absorption
 correction. For a cylindrical sample in Debye–Scherrer geometry this is
 an angle-dependent intensity factor that boosts high-angle peaks. The
-LaB₆ verification reference (`pd-neut-cwl_tch-fcj_lab6`) was refined in
-FullProf with `μR = 0.7`; the unmodelled correction is the _entire_
-intensity residual on the companion `pd-neut-cwl_tch-fcj_abs_lab6` page
-(≈5% profile difference), while the `μR = 0` page passes to corr 0.9999.
+LaB₆ FullProf reference directory (`pd-neut-cwl_lab6`) was refined with
+`μR = 0.7`; the unmodelled correction is the _entire_ intensity residual
+on the companion `pd-neut-cwl_LaB6_absorption` page (≈5% profile
+difference), while the `μR = 0` page passes to corr 0.9999.
 
 **Correction (Hewat, Debye–Scherrer), validated to 4 decimals against
 FullProf output:**
@@ -30,11 +30,11 @@ with a calculator-independent A(θ) envelope.
 
 - `cryspy`: **no** absorption code at all (only Debye–Waller and sphere
   _extinction_); its CW intensity loop has no slot to multiply A(θ).
-- `crysfml`: CrysFML08 implements `Lorentz_abs_CW` in Fortran, but it is
-  **not** wrapped in `PythonAPI/`, and the high-level
-  `cw_powder_pattern_from_dict` path we call applies a plain Lorentz
-  factor with no absorption. So it is **not** reachable through
-  pycrysfml today without upstream changes.
+- `crysfml`: CrysFML08 implements `Lorentz_abs_CW` in Fortran, but the
+  standalone absorption routine is **not** wrapped in `PythonAPI/`. The
+  high-level CFL `patterns_simulation` path we call does not expose a
+  model-level μR input through our binding, so it is **not** reachable
+  through pycrysfml today without upstream changes.
 
 **Implication:** neither backend can apply the correction internally
 without changes we do not own. The chosen approach computes A(θ) in

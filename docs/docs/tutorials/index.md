@@ -66,6 +66,9 @@ and
 - [Si `pd-neut-tof`](refine-si-sepd.ipynb) – Demonstrates a Rietveld
   refinement of the Si crystal structure using time-of-flight neutron
   powder diffraction data from SEPD at Argonne.
+- [PbSO4 `pd-xray-cwl`](refine-pbso4-xray.ipynb) – Demonstrates a
+  Rietveld refinement of PbSO4 using laboratory X-ray powder diffraction
+  data with a Cu Kalpha doublet.
 
 ## Without Measured Data
 

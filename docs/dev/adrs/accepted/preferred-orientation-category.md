@@ -116,7 +116,7 @@ Three independent sources confirm the same simple, widely used model —
    direction); it is **not** the verification reference. Both shipped
    FullProf PO examples are simulated-annealing demos on _calculated_
    data, so the verification case is constructed separately (see the
-   §Verification section, which builds on `pd-neut-cwl_pv_lbco`).
+   §Verification section, which builds on `pd-neut-cwl_LBCO_basic`).
 
 The three models agree on the **category shape** — a single scalar March
 coefficient plus an integer direction (and an optional random fraction)
@@ -487,7 +487,7 @@ preferred orientation, so PO stays CrysPy-only for now.)
   small, discoverable API and standards-aligned CIF.
 - One new category package plus experiment wiring and a CrysPy
   serialization branch; no changes to the structure model.
-- A new cross-engine verification case (on the `pd-neut-cwl_pv_lbco`
+- A new cross-engine verification case (on the `pd-neut-cwl_LBCO_basic`
   base, two-parameter March–Dollase) extends the existing FullProf suite
   (consistent with the cross-engine work in commits #195–#199): refining
   `march_r`, `march_random_fract`, and scale recovers FullProf's
@@ -552,24 +552,25 @@ against measured data — unsuitable as a verification reference.
 
 The verification notebook is a **positive cross-engine agreement check**
 that also exercises both March–Dollase parameters. It is built on the
-existing **`pd-neut-cwl_pv_lbco`** case (La₀.₅Ba₀.₅CoO₃, neutron CW,
+existing **`pd-neut-cwl_LBCO_basic`** case (La₀.₅Ba₀.₅CoO₃, neutron CW,
 pseudo-Voigt — chosen as the base on request):
 
-1. Copy `docs/docs/verification/fullprof/pd-neut-cwl_pv_lbco/lbco.pcr`,
+1. Copy
+   `docs/docs/verification/fullprof/pd-neut-cwl_lbco_basic/lbco.pcr`,
    enable the March–Dollase model (`Nor=1`) along the phase
    `Pr1 Pr2 Pr3` direction with a non-zero `Pref1` **and** `Pref2`, and
    re-run FullProf locally (`~/Applications/fullprof`) to regenerate
    `.prf`/`.bac`/`.sum` (the reference uses `Pref1=1.2`, `Pref2=0.3`,
    axis `[0 0 1]`).
-2. Add `pd-neut-cwl_pv-march_lbco` (paired `.py`/`.ipynb`) that builds
-   the same LBCO model, sets `expt.preferred_orientation` with `r=Pref1`
-   and `fraction=Pref2`, then **refines `march_r`, `march_random_fract`,
-   and scale**. ed-cryspy recovers `r≈Pref1` and `fraction≈Pref2`, and
-   `verify.assert_patterns_agree` passes (Profile diff ≈ 0.7%, area and
-   shape within tolerance). The as-calculated step shows the constant
-   scale offset from CrysPy's non-normalisation (Decision 6), reconciled
-   by the fit. PO is CrysPy-only, so the case compares CrysPy vs
-   FullProf only (no CrysFML column).
+2. Add `pd-neut-cwl_LBCO_preferred-orientation` (paired `.py`/`.ipynb`)
+   that builds the same LBCO model, sets `expt.preferred_orientation`
+   with `r=Pref1` and `fraction=Pref2`, then **refines `march_r`,
+   `march_random_fract`, and scale**. ed-cryspy recovers `r≈Pref1` and
+   `fraction≈Pref2`, and `verify.assert_patterns_agree` passes (Profile
+   diff ≈ 0.7%, area and shape within tolerance). The as-calculated step
+   shows the constant scale offset from CrysPy's non-normalisation
+   (Decision 6), reconciled by the fit. PO is CrysPy-only, so the case
+   compares CrysPy vs FullProf only (no CrysFML column).
 
 This verification notebook is built **before any user tutorial**, so the
 tutorial can cite a validated, well-understood workflow. Producing the

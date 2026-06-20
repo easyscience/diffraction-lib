@@ -42,14 +42,14 @@ docs/dev/
 |-- package-structure/
 |   |-- full.md
 |   `-- short.md
-|-- plans/
-`-- roadmap/
-    `-- ROADMAP.md
+`-- plans/
 ```
 
-Use lowercase directory names for new development-doc folders. Keep
-`ROADMAP.md` uppercase because it may later be copied into published
-user documentation where the conventional filename is useful.
+Use lowercase directory names for new development-doc folders. The
+feature/roadmap matrix is published directly in the user documentation
+at `docs/docs/features/index.md` (single source of truth for both
+current capabilities and planned work); there is no separate
+`docs/dev/roadmap/` copy.
 
 Use `docs/dev/adrs/index.md` as the architecture and decision navigation
 surface. Do not keep a separate architecture overview that duplicates
@@ -62,5 +62,5 @@ ADR content.
 - ADRs have one entry point for architecture navigation and separate
   accepted and proposed areas.
 - Package-structure snapshots have stable, script-friendly paths.
-- Roadmap publication can later be implemented as a build-time copy from
-  `docs/dev/roadmap/ROADMAP.md` into `docs/docs`.
+- The roadmap is published directly as a user-facing page at
+  `docs/docs/features/index.md`, kept in sync with the codebase.

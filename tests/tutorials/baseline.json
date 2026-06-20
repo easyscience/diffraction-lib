@@ -87,7 +87,7 @@
     "parameters": {
       "si.cell.length_a": 5.430637,
       "sepd.linked_structure.si.scale": 16.05,
-      "nomad.linked_structure.si.scale": 1.2712
+      "nomad.linked_structure.si.scale": 1.6162
     }
   },
   "load-and-fit-lbco-hrpt": {
@@ -109,7 +109,7 @@
     "wr_factor_all": 0.113817,
     "parameters": {
       "nacl.cell.length_a": 5.6018,
-      "xray_pdf.linked_structure.nacl.scale": 0.42537
+      "xray_pdf.linked_structure.nacl.scale": 0.18094
     }
   },
   "pdf-ni-npd": {
@@ -131,7 +131,7 @@
     "wr_factor_all": 0.082977,
     "parameters": {
       "si.cell.length_a": 5.430592,
-      "nomad.linked_structure.si.scale": 1.2728
+      "nomad.linked_structure.si.scale": 1.6199
     }
   },
   "refine-cosio-d20": {

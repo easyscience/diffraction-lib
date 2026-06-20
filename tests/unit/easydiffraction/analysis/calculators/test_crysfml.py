@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
+from __future__ import annotations
+
 from types import SimpleNamespace
 
 import numpy as np
@@ -24,6 +26,51 @@ def _absorption_experiment_stub(x, mu_r):
     )
 
 
+def _parameter(value):
+    """Minimal category parameter stub."""
+    return SimpleNamespace(value=value)
+
+
+def _cw_cfl_experiment_stub(
+    x,
+    zero,
+    *,
+    radiation_probe=None,
+    wavelength_2=0.0,
+    wavelength_2_to_1_ratio=0.0,
+):
+    """Minimal CWL experiment stub for CFL assembly."""
+    from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+    from easydiffraction.datablocks.experiment.item.enums import RadiationProbeEnum
+
+    if radiation_probe is None:
+        radiation_probe = RadiationProbeEnum.NEUTRON
+
+    return SimpleNamespace(
+        name='offset test',
+        experiment_type=SimpleNamespace(
+            beam_mode=SimpleNamespace(value=BeamModeEnum.CONSTANT_WAVELENGTH),
+            radiation_probe=SimpleNamespace(value=radiation_probe),
+        ),
+        data=SimpleNamespace(x=np.asarray(x, dtype=float)),
+        instrument=SimpleNamespace(
+            calib_twotheta_offset=_parameter(zero),
+            setup_wavelength=_parameter(1.494),
+            setup_wavelength_2=_parameter(wavelength_2),
+            setup_wavelength_2_to_1_ratio=_parameter(wavelength_2_to_1_ratio),
+        ),
+        peak=SimpleNamespace(
+            broad_gauss_u=_parameter(0.081547),
+            broad_gauss_v=_parameter(-0.115345),
+            broad_gauss_w=_parameter(0.121125),
+            broad_lorentz_x=_parameter(0.0),
+            broad_lorentz_y=_parameter(0.083038),
+            asym_fcj_1=_parameter(0.0),
+            asym_fcj_2=_parameter(0.0),
+        ),
+    )
+
+
 def test_module_import():
     import easydiffraction.analysis.calculators.crysfml as MUT
 
@@ -31,14 +78,14 @@ def test_module_import():
 
 
 def test_crysfml_calculate_pattern_applies_absorption(monkeypatch):
-    from easydiffraction.analysis.calculators import absorption
     from easydiffraction.analysis.calculators.crysfml import CrysfmlCalculator
+    from easydiffraction.analysis.corrections import absorption
 
     calc = CrysfmlCalculator()
     x = np.array([10.0, 90.0, 150.0])
     experiment = _absorption_experiment_stub(x, mu_r=0.7)
     raw = [100.0, 100.0, 100.0]
-    monkeypatch.setattr(calc, '_crysfml_dict', lambda s, e: {})
+    monkeypatch.setattr(calc, '_crysfml_cfl', lambda s, e: [])
     monkeypatch.setattr(calc, '_calculate_adjusted_pattern', lambda d, e: list(raw))
 
     out = calc.calculate_pattern(None, experiment)
@@ -50,8 +97,8 @@ def test_crysfml_calculate_pattern_applies_absorption(monkeypatch):
 
 
 def test_crysfml_calculate_pattern_applies_polarization(monkeypatch):
-    from easydiffraction.analysis.calculators import polarization
     from easydiffraction.analysis.calculators.crysfml import CrysfmlCalculator
+    from easydiffraction.analysis.corrections import polarization
     from easydiffraction.datablocks.experiment.categories.instrument.cwl import CwlPdXrayInstrument
 
     calc = CrysfmlCalculator()
@@ -65,7 +112,7 @@ def test_crysfml_calculate_pattern_applies_polarization(monkeypatch):
         data=SimpleNamespace(x=x),
     )
     raw = [100.0, 100.0, 100.0]
-    monkeypatch.setattr(calc, '_crysfml_dict', lambda s, e: {})
+    monkeypatch.setattr(calc, '_crysfml_cfl', lambda s, e: [])
     monkeypatch.setattr(calc, '_calculate_adjusted_pattern', lambda d, e: list(raw))
 
     out = calc.calculate_pattern(None, experiment)
@@ -80,7 +127,7 @@ def test_crysfml_calculate_pattern_preserves_empty_no_data(monkeypatch):
 
     calc = CrysfmlCalculator()
     experiment = _absorption_experiment_stub([10.0, 20.0], mu_r=0.7)
-    monkeypatch.setattr(calc, '_crysfml_dict', lambda s, e: {})
+    monkeypatch.setattr(calc, '_crysfml_cfl', lambda s, e: [])
 
     def _raise(_dict, _experiment):
         msg = 'no calculated data'
@@ -100,6 +147,95 @@ def test_crysfml_engine_flag_and_structure_factors_raises():
     assert isinstance(calc.engine_imported, bool)
     with pytest.raises(NotImplementedError):
         calc.calculate_structure_factors(structures=None, experiments=None)
+
+
+def test_crysfml_cw_pattern_block_encodes_zero_in_grid():
+    from easydiffraction.analysis.calculators.crysfml import CrysfmlCalculator
+
+    calc = CrysfmlCalculator()
+    experiment = _cw_cfl_experiment_stub([10.0, 11.0, 12.0], zero=0.5)
+
+    block = calc._pattern_block(experiment)
+
+    assert '  Zero_Sy  0.0  0.0  0.0' in block
+    assert '  WDT  30' in block
+    assert '  GEN_PATT  9.5  1  11.5' in block
+
+
+def test_crysfml_cw_pattern_block_uses_xray_patt_type():
+    from easydiffraction.analysis.calculators.crysfml import CrysfmlCalculator
+    from easydiffraction.datablocks.experiment.item.enums import RadiationProbeEnum
+
+    calc = CrysfmlCalculator()
+    experiment = _cw_cfl_experiment_stub(
+        [10.0, 11.0],
+        zero=0.0,
+        radiation_probe=RadiationProbeEnum.XRAY,
+    )
+
+    block = calc._pattern_block(experiment)
+
+    assert '  Patt_Type  X-rays Powder CW' in block
+
+
+def test_crysfml_cw_pattern_block_encodes_wavelength_doublet():
+    from easydiffraction.analysis.calculators.crysfml import CrysfmlCalculator
+
+    calc = CrysfmlCalculator()
+    experiment = _cw_cfl_experiment_stub(
+        [10.0, 11.0],
+        zero=0.0,
+        wavelength_2=1.5444,
+        wavelength_2_to_1_ratio=0.5,
+    )
+
+    block = calc._pattern_block(experiment)
+
+    assert '  LAMBDA  1.494  1.5444  0.5' in block
+
+
+def test_crysfml_cw_pattern_block_rejects_ratio_without_wavelength_2():
+    from easydiffraction.analysis.calculators.crysfml import CrysfmlCalculator
+
+    calc = CrysfmlCalculator()
+    experiment = _cw_cfl_experiment_stub(
+        [10.0, 11.0],
+        zero=0.0,
+        wavelength_2_to_1_ratio=0.5,
+    )
+
+    with pytest.raises(ValueError, match='setup_wavelength_2'):
+        calc._pattern_block(experiment)
+
+
+def test_crysfml_cw_doublet_uses_single_wavelength_runs(monkeypatch):
+    from easydiffraction.analysis.calculators.crysfml import CrysfmlCalculator
+
+    calc = CrysfmlCalculator()
+    experiment = _cw_cfl_experiment_stub(
+        [10.0, 11.0],
+        zero=0.0,
+        wavelength_2=1.5444,
+        wavelength_2_to_1_ratio=0.5,
+    )
+    cfl = calc._pattern_block(experiment)
+    calls = []
+
+    def _raw_pattern(lines):
+        lambda_line = next(line for line in lines if line.lstrip().startswith('LAMBDA'))
+        calls.append(lambda_line)
+        if lambda_line == '  LAMBDA  1.494  1.494  0':
+            return [10.0, 20.0]
+        if lambda_line == '  LAMBDA  1.5444  1.5444  0':
+            return [2.0, 4.0]
+        return None
+
+    monkeypatch.setattr(calc, '_calculate_raw_pattern', _raw_pattern)
+
+    out = calc._calculate_adjusted_pattern(cfl, experiment)
+
+    assert calls == ['  LAMBDA  1.494  1.494  0', '  LAMBDA  1.5444  1.5444  0']
+    assert out == [11.0, 22.0]
 
 
 def test_crysfml_adjust_pattern_length_truncates():

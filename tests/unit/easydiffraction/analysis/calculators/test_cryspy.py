@@ -116,7 +116,7 @@ def test_cwl_cif_instrument_section_emits_sycos_sysin():
 
 def test_cwl_cif_instrument_section_emits_xray_polarization_setup():
     import easydiffraction.analysis.calculators.cryspy as MUT
-    from easydiffraction.analysis.calculators import polarization
+    from easydiffraction.analysis.corrections import polarization
     from easydiffraction.datablocks.experiment.categories.instrument.cwl import CwlPdXrayInstrument
     from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
     from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
@@ -178,8 +178,8 @@ def test_update_experiment_in_cryspy_dict_tolerates_missing_sycos_keys():
 
 
 def test_update_experiment_in_cryspy_dict_sets_polarization_keys():
-    from easydiffraction.analysis.calculators import polarization
     from easydiffraction.analysis.calculators.cryspy import CryspyCalculator
+    from easydiffraction.analysis.corrections import polarization
     from easydiffraction.datablocks.experiment.categories.instrument.cwl import CwlPdXrayInstrument
     from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
     from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
@@ -576,7 +576,14 @@ def test_relabel_cif_tags_for_cryspy_maps_edi_tags_to_legacy():
     assert '_space_group.name_h_m' not in out
 
 
-def _absorption_cwl_experiment_stub(x, mu_r):
+def _absorption_cwl_experiment_stub(
+    x,
+    mu_r,
+    *,
+    wavelength=1.5,
+    wavelength_2=0.0,
+    wavelength_2_to_1_ratio=0.0,
+):
     """Minimal CWL experiment stub carrying a cylindrical absorption."""
     from easydiffraction.datablocks.experiment.categories.absorption.cylinder_hewat import (
         CylinderHewatAbsorption,
@@ -589,6 +596,11 @@ def _absorption_cwl_experiment_stub(x, mu_r):
         name='exp',
         experiment_type=SimpleNamespace(
             beam_mode=SimpleNamespace(value=BeamModeEnum.CONSTANT_WAVELENGTH)
+        ),
+        instrument=SimpleNamespace(
+            setup_wavelength=SimpleNamespace(value=wavelength),
+            setup_wavelength_2=SimpleNamespace(value=wavelength_2),
+            setup_wavelength_2_to_1_ratio=SimpleNamespace(value=wavelength_2_to_1_ratio),
         ),
         absorption=absorption,
         data=SimpleNamespace(x=np.asarray(x, dtype=float)),
@@ -603,21 +615,27 @@ def _stub_cryspy_engine(monkeypatch, calc, block_payload):
     monkeypatch.setattr(
         calc,
         '_recreate_cryspy_obj',
-        lambda s, e: SimpleNamespace(get_dictionary=lambda: {f'crystal_{s.name}': {}}),
+        lambda s, e: SimpleNamespace(
+            get_dictionary=lambda: {
+                f'crystal_{s.name}': {},
+                f'pd_{e.name}': {'wavelength': [e.instrument.setup_wavelength.value]},
+            }
+        ),
     )
     monkeypatch.setattr(calc, '_update_structure_in_cryspy_dict', lambda *a, **k: None)
     monkeypatch.setattr(calc, '_update_experiment_in_cryspy_dict', lambda *a, **k: None)
 
-    def _fake_rhochi(_dict, *, dict_in_out, **kwargs):
+    def _fake_rhochi(cryspy_dict, *, dict_in_out, **kwargs):
         if block_payload is not None:
-            dict_in_out['pd_exp'] = block_payload
+            payload = block_payload(cryspy_dict) if callable(block_payload) else block_payload
+            dict_in_out['pd_exp'] = payload
 
     monkeypatch.setattr(cryspy_mod, 'rhochi_calc_chi_sq_by_dictionary', _fake_rhochi)
 
 
 def test_cryspy_calculate_pattern_applies_absorption(monkeypatch):
-    from easydiffraction.analysis.calculators import absorption
     from easydiffraction.analysis.calculators.cryspy import CryspyCalculator
+    from easydiffraction.analysis.corrections import absorption
 
     calc = CryspyCalculator()
     x = np.array([10.0, 90.0, 150.0])
@@ -644,3 +662,35 @@ def test_cryspy_calculate_pattern_no_data_returns_empty(monkeypatch):
 
     out = calc.calculate_pattern(structure, experiment)
     assert list(out) == []
+
+
+def test_cryspy_calculate_pattern_combines_cw_doublet(monkeypatch):
+    from easydiffraction.analysis.calculators.cryspy import CryspyCalculator
+
+    calc = CryspyCalculator()
+    structure = SimpleNamespace(name='s')
+    experiment = _absorption_cwl_experiment_stub(
+        np.array([10.0, 20.0]),
+        mu_r=0.0,
+        wavelength=1.5,
+        wavelength_2=1.54,
+        wavelength_2_to_1_ratio=0.5,
+    )
+    raw_by_wavelength = {
+        1.5: np.array([10.0, 20.0]),
+        1.54: np.array([2.0, 4.0]),
+    }
+    calls = []
+
+    def _block_for_wavelength(cryspy_dict):
+        wavelength = cryspy_dict['pd_exp']['wavelength'][0]
+        calls.append(wavelength)
+        raw = raw_by_wavelength[wavelength]
+        return {'signal_plus': raw / 2.0, 'signal_minus': raw / 2.0}
+
+    _stub_cryspy_engine(monkeypatch, calc, _block_for_wavelength)
+
+    out = calc.calculate_pattern(structure, experiment)
+
+    assert calls == [1.5, 1.54]
+    assert np.allclose(out, [11.0, 22.0])

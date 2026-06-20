@@ -14,10 +14,8 @@ class VerbosityEnum(StrEnum):
     Controls how much information is printed during operations such as
     data loading, fitting, and saving.
 
-    Members
-    -------
-    FULL Multi-line output with headers, tables, and details. SHORT
-    Single-line status messages per action. SILENT No console output.
+    ``FULL`` prints headers, tables, and details. ``SHORT`` prints one
+    status line per action. ``SILENT`` suppresses console output.
     """
 
     FULL = 'full'

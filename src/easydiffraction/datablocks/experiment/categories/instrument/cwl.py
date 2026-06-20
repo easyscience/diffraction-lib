@@ -49,9 +49,9 @@ class CwlInstrumentBase(InstrumentBase):
             ),
         )
 
-        # Placeholder for a second incident wavelength (the X-ray Cu
-        # K-alpha1/K-alpha2 doublet). These are non-refinable
-        # NumericDescriptors: no engine consumes them yet, so a
+        # Second incident wavelength (the X-ray Cu K-alpha1/K-alpha2
+        # doublet). These are non-refinable NumericDescriptors: only
+        # fixed doublet values are currently consumed by CrysFML, so a
         # refinable Parameter would let a fit silently move a value
         # with no effect. Defaults of 0.0 mean monochromatic, as today.
         self._setup_wavelength_2: NumericDescriptor = NumericDescriptor(
@@ -115,8 +115,8 @@ class CwlInstrumentBase(InstrumentBase):
 
         Reading returns the underlying ``NumericDescriptor``; assigning
         a number updates its value. Default ``0.0`` means no second
-        component (monochromatic). Non-refinable placeholder: no engine
-        consumes it yet.
+        component (monochromatic). Non-refinable; CrysFML consumes it
+        when ``setup_wavelength_2_to_1_ratio`` is positive.
         """
         return self._setup_wavelength_2
 
@@ -132,8 +132,8 @@ class CwlInstrumentBase(InstrumentBase):
 
         The ``_2_to_1_`` ordering names the direction: numerator is the
         second component, denominator the first. Range ``[0, 1]``;
-        default ``0.0`` disables the second component. Non-refinable
-        placeholder.
+        default ``0.0`` disables the second component. Non-refinable;
+        CrysFML consumes it together with ``setup_wavelength_2``.
         """
         return self._setup_wavelength_2_to_1_ratio
 

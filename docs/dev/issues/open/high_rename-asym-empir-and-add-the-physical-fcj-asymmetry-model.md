@@ -8,16 +8,16 @@
 are now `asym_beba_a0`, `asym_beba_b0`, `asym_beba_a1`, `asym_beba_b1`
 (class `CwlPseudoVoigtBerarBaldinozziAsymmetry`, type string
 `pseudo-voigt + berar-baldinozzi asymmetry`, page renamed to
-`pd-neut-cwl_pv-beba_pbso4`). This issue stays open for **item 2** (add
-the physical FCJ model). The cryspy/FullProf implementation difference
-is characterised in issue 166.
+`pd-neut-cwl_PbSO4_beba-asymmetry`). This issue stays open for **item
+2** (add the physical FCJ model). The cryspy/FullProf implementation
+difference is characterised in issue 166.
 
 The four empirical peak-asymmetry parameters (`asym_beba_*`, formerly
-`asym_empir_1`…`4`, on the `pd-neut-cwl_pv-beba_pbso4` Verification
-page) are the **Bérar–Baldinozzi** correction — FullProf's `P1`–`P4` — a
-phenomenological sum of functions in `1/tan θ` and `1/tan 2θ`. It can
-fit an asymmetric peak, but the parameters carry **no physical
-meaning**, are strongly correlated, do **not** transfer between
+`asym_empir_1`…`4`, on the `pd-neut-cwl_PbSO4_beba-asymmetry`
+Verification page) are the **Bérar–Baldinozzi** correction — FullProf's
+`P1`–`P4` — a phenomenological sum of functions in `1/tan θ` and
+`1/tan 2θ`. It can fit an asymmetric peak, but the parameters carry **no
+physical meaning**, are strongly correlated, do **not** transfer between
 datasets, and can misbehave (over-correction, unphysical profile
 shapes).
 
@@ -42,9 +42,9 @@ instrument-meaningful.
    known and fall back to the empirical correction otherwise.
 
 **Relates to:** the asymmetry discrepancy tracked in issue 166 and on
-the `pd-neut-cwl_pv-beba_pbso4` Verification page (currently marked
-`known_discrepancy=True`), and the TCH/FCJ work noted on the
-`pd-neut-cwl_tch-fcj_lab6` page.
+the `pd-neut-cwl_PbSO4_beba-asymmetry` Verification page (currently
+marked `known_discrepancy=True`), and the TCH/FCJ work noted on the
+`pd-neut-cwl_LaB6_fcj-asymmetry` page.
 
 **Depends on:** calculator-backend support for the FCJ asymmetry
 parameters (cryspy/crysfml) before the second item can be wired through.

@@ -5,125 +5,135 @@ icon: material/check-decagram
 
 # :material-check-decagram: Verification
 
-Every page recreates the **same** diffraction pattern in EasyDiffraction
-and compares it against a reference calculated by external software
-(FullProf) on identical input parameters. Each supported engine —
-`cryspy` and `crysfml` — is overlaid on the FullProf reference in turn,
-with a residual panel and closeness metrics, and the page ends with a
-single agreement table.
+These pages compare EasyDiffraction calculations with reference
+calculations. Bragg pages (powder/single-crystal) compare against
+**FullProf**, an independent program. Pair-distribution-function pages
+compare against a **direct `diffpy.pdffit2`** calculation — the same
+library EasyDiffraction wraps, so those pages check wrapper fidelity
+(correct parameter hand-off) rather than cross-validating the PDF
+physics against an independent implementation. Each page focuses on one
+experiment type or one additional model term, and feature names match
+the [Features](../features/index.md) page. Some pages document a **known
+difference** (EasyDiffraction does not yet match the reference for that
+term); these are marked below and inside the notebook.
 
-The structure is defined in code, with every experimental parameter
-taken verbatim from the frozen FullProf `.pcr` files. Each engine first
-calculates with those parameters **without fitting**; where a difference
-remains, a short refinement frees only the disputed parameters to show
-it comes from how an experiment parameter is defined between the codes,
-not from a disagreement about the structure.
+## Powder, Neutron, Constant Wavelength
 
-Single-crystal pages compare the calculated F² of each reflection on a
-y=x scatter instead of a profile overlay, and use `cryspy` only — the
-sole engine with single-crystal Bragg support.
+### LaB6 structure
 
-Most pages also run as a fast regression check (`pixi run script-tests`
-and `pixi run notebook-tests`), so agreement is monitored over time.
-Where an engine cannot yet reproduce a modelled effect, the page marks
-the difference **in the notebook itself** with `known_discrepancy=True`
-and a short reason: it still renders in the docs and is verified to
-**stay** discrepant — failing CI if it unexpectedly starts agreeing, so
-the mark must then be removed — while the fast regression run skips it.
-Such pages are flagged **Known discrepancy** below.
+- [pd-neut-cwl LaB6 basic](pd-neut-cwl_LaB6_basic.ipynb) – baseline
+  **Pseudo-Voigt** powder pattern (cryspy).
+- [pd-neut-cwl LaB6 isotope](pd-neut-cwl_LaB6_11B.ipynb) –
+  **isotope-specific neutron scattering length** (¹¹B).
+- [pd-neut-cwl LaB6 sample displacement](pd-neut-cwl_LaB6_sycos-sysin.ipynb)
+  – **sample displacement correction** (FullProf "SyCos, SySin"). _Known
+  difference: cryspy's convention does not yet match FullProf._
+- [pd-neut-cwl LaB6 FCJ asymmetry](pd-neut-cwl_LaB6_fcj-asymmetry.ipynb)
+  – **Finger-Cox-Jephcoat asymmetry** (FullProf "Npr=7"). _Known
+  difference: the cryspy CW profile has no FCJ term._
+- [pd-neut-cwl LaB6 absorption](pd-neut-cwl_LaB6_absorption.ipynb) –
+  **absorption correction (cylinder, Hewat)** (FullProf "muR").
 
-Pages are grouped by **experiment type** (sample form, radiation probe,
-and beam mode). Coverage grows to span every supported combination —
-`pd-neut-cwl`, `pd-neut-tof`, `pd-xray`, `sc-neut-cwl`, `sc-neut-tof`,
-and so on. The list below notes only what is specific to each page.
+### La0.5Ba0.5CoO3 structure
 
-## Powder, neutron, constant wavelength
+- [pd-neut-cwl LBCO basic](pd-neut-cwl_LBCO_basic.ipynb) – baseline
+  **Pseudo-Voigt** powder pattern (cryspy).
+- [pd-neut-cwl LBCO preferred orientation](pd-neut-cwl_LBCO_preferred-orientation.ipynb)
+  – **March–Dollase preferred orientation** (FullProf "Nor=1").
 
-- [LBCO `pd-neut-cwl`](pd-neut-cwl_pv_lbco.ipynb) – Lanthanum barium
-  cobaltate (La₀.₅Ba₀.₅CoO₃, _Pm-3m_); pseudo-Voigt, no asymmetry.
-- [LBCO `pd-neut-cwl` (preferred orientation)](pd-neut-cwl_pv-march_lbco.ipynb)
-  – Lanthanum barium cobaltate (La₀.₅Ba₀.₅CoO₃, _Pm-3m_); two-parameter
-  March–Dollase preferred orientation (`march_r`, `march_random_fract`)
-  along [0 0 1]. cryspy only; refines the scale to absorb cryspy's
-  reciprocal, non-normalised texture convention.
-- [PbSO₄ `pd-neut-cwl` (pseudo-Voigt)](pd-neut-cwl_pv_pbso4.ipynb) –
-  Anglesite (PbSO₄, _Pnma_); pseudo-Voigt, no asymmetry.
-- [PbSO₄ `pd-neut-cwl` (Bérar–Baldinozzi asymmetry)](pd-neut-cwl_pv-beba_pbso4.ipynb)
-  – Anglesite (PbSO₄, _Pnma_); pseudo-Voigt with Bérar–Baldinozzi
-  (FullProf-style) axial-divergence asymmetry (`asym_beba_*`). cryspy
-  and FullProf implement this asymmetry with different conventions
-  (issue 166), so the FullProf coefficients do not transfer one-to-one;
-  freeing cryspy's own coefficients recovers the FullProf profile, so
-  the page agrees. crysfml has no empirical-asymmetry model.
-- [LaB₆ `pd-neut-cwl` (SyCos/SySin)](pd-neut-cwl_tch-fcj-noabs-nosldl_lab6.ipynb)
-  – Lanthanum hexaboride (LaB₆, _Pm-3m_); pseudo-Voigt with SyCos/SySin
-  sample-displacement and transparency corrections. Known discrepancy:
-  pending the unreleased cryspy build (PR #46) that adds these
-  corrections.
-- [LaB₆ `pd-neut-cwl` (FCJ asymmetry)](pd-neut-cwl_tch-fcj-noabs_lab6.ipynb)
-  – Lanthanum hexaboride (LaB₆, _Pm-3m_); Thompson–Cox–Hastings with
-  Finger–Cox– Jephcoat axial-divergence asymmetry. Known discrepancy:
-  FCJ asymmetry is not implemented in cryspy (crysfml-only).
-- [LaB₆ `pd-neut-cwl` (absorption)](pd-neut-cwl_tch-fcj_lab6.ipynb) –
-  Lanthanum hexaboride (LaB₆, _Pm-3m_); adds Debye–Scherrer sample
-  absorption (μR = 0.7), now modelled by both engines, on top of FCJ
-  asymmetry. Known discrepancy: FCJ asymmetry is not implemented in
-  cryspy (crysfml-only).
-- [LaB₆ `pd-neut-cwl` (absorption, no FCJ)](pd-neut-cwl_tch-fcj-nosldl_lab6.ipynb)
-  – Lanthanum hexaboride (LaB₆, _Pm-3m_); Debye–Scherrer sample
-  absorption (μR = 0.7) with FCJ asymmetry switched off, isolating the
-  absorption correction. Enabling the correction removes a ≈ 2.9×
-  intensity mismatch. Known discrepancy: a residual peak-position
-  difference remains on the released cryspy (needs PR #46); it agrees on
-  a develop cryspy build.
-- [Y₂O₃ `pd-neut-cwl` (anisotropic β-tensor ADPs)](pd-neut-cwl_pv-beta_y2o3.ipynb)
-  – Yttria (Y₂O₃, bixbyite, _Ia-3_); dimensionless β-tensor anisotropic
-  ADPs (`adp_type='beta'`) on the three sites, with cylindrical
-  Debye–Scherrer absorption (μR = 1.5) and the Thompson–Cox–Hastings
-  profile. cryspy only. Refining every parameter recovers the FullProf
-  values; the Bérar–Baldinozzi asymmetry (`asym_beba_*`) is implemented
-  with different conventions in cryspy and FullProf (issue 166), so
-  those coefficients do not transfer one-to-one, but all closeness
-  metrics stay within tolerance.
+### PbSO4 structure
 
-## Powder, neutron, time-of-flight
+- [pd-neut-cwl PbSO4 basic](pd-neut-cwl_PbSO4_basic.ipynb) – baseline
+  **Pseudo-Voigt** powder pattern (cryspy).
+- [pd-neut-cwl PbSO4 Bérar-Baldinozzi asymmetry](pd-neut-cwl_PbSO4_beba-asymmetry.ipynb)
+  – **Pseudo-Voigt + Bérar-Baldinozzi asymmetry** (FullProf "Asy1-4").
 
-- [Si `pd-neut-tof` (Jorgensen)](pd-neut-tof_j_si.ipynb) – Silicon (Si,
-  _Fd-3m_); Jorgensen (back-to-back exponentials with a Gaussian). Known
-  discrepancy: the ed-crysfml profile is ~8.5% off after fitting the
-  scale; cryspy matches FullProf (issue 130).
-- [Si `pd-neut-tof` (Jorgensen–Von Dreele)](pd-neut-tof_jvd_si.ipynb) –
-  Silicon (Si, _Fd-3m_); Jorgensen–Von Dreele (back-to-back exponentials
-  with a pseudo-Voigt). Known discrepancy: residual cryspy TOF
-  Lorentzian discrepancy.
-- [NaCaAlF `pd-neut-tof`](pd-neut-tof_jvd_ncaf.ipynb) – Sodium calcium
-  aluminium fluoride (Na₂Ca₃Al₂F₁₄, _I2₁3_); Jorgensen–Von Dreele. Both
-  engines agree with the FullProf reference within tolerance.
+### Y2O3 structure
 
-## Powder, X-ray, constant wavelength
+- [pd-neut-cwl Y2O3 isotropic ADPs](pd-neut-cwl_Y2O3_isotropic-adp.ipynb)
+  – baseline **isotropic ADPs** (Biso/Uiso).
+- [pd-neut-cwl Y2O3 anisotropic β ADPs](pd-neut-cwl_Y2O3_beta-adp.ipynb)
+  – **anisotropic β-tensor ADPs**.
 
-- [PbSO₄ `pd-xray`](pd-xray-pbso4.ipynb) – Anglesite (PbSO₄, _Pnma_);
-  laboratory Cu-source X-ray Rietveld Round Robin data; pseudo-Voigt.
-  Known discrepancy: FullProf models the full Cu Kα₁/Kα₂ doublet and its
-  X-ray Lorentz–polarization correction, whereas cryspy and crysfml
-  calculate from a single wavelength and a different polarization
-  convention, so neither engine yet reproduces the FullProf X-ray
-  profile.
+## Powder, Neutron, Time-Of-Flight
 
-## Single crystal, neutron, constant wavelength
+### Fe structure
 
-- [Pr₂NiO₄ `sc-neut-cwl` (no extinction)](sc-neut-cwl_pr2nio4.ipynb) –
-  Strontium-doped praseodymium nickelate (Pr₂NiO₄:Sr, K₂NiF₄-type,
-  _Fmmm_); per-reflection F² against FullProf reference with anisotropic
-  ADPs.
-- [Tb₂Ti₂O₇ `sc-neut-cwl` (no extinction)](sc-neut-cwl_noext_tbti.ipynb)
-  – Terbium titanate (Tb₂Ti₂O₇, _F d -3 m_); per-reflection F² against a
-  FullProf-no-extinction reference with anisotropic ADPs. Scale is
-  initialized from the FullProf and refined.
-- [Tb₂Ti₂O₇ `sc-neut-cwl` (isotropic extinction)](sc-neut-cwl_ext-iso_tbti.ipynb)
-  – Terbium titanate (Tb₂Ti₂O₇, _F d -3 m_); per-reflection F² against
-  FullProf reference with anisotropic ADPs and empirical extinction.
-  Cryspy extinction (`becker-coppens`, `gauss`) uses two parameters,
-  `radius` and `mosaicity`. Only `scale` and `radius` are refined
-  against FullProf. Known discrepancy: cryspy and FullProf use different
-  asymmetry conventions.
+- [pd-neut-tof Fe Pseudo-Voigt](pd-neut-tof_Fe_pseudo-voigt.ipynb) –
+  baseline **Pseudo-Voigt (non-convoluted)** TOF profile (FullProf
+  "Npr=7" TOF).
+
+### NCAF structure
+
+- [pd-neut-tof NCAF Jorgensen-Von Dreele (Gaussian)](pd-neut-tof_NCAF_jorgensen-von-dreele.ipynb)
+  – **Jorgensen-Von Dreele (back-to-back exponentials ⊗ pseudo-Voigt)**
+  profile with the Lorentzian terms (γ₀, γ₁, γ₂) forced to zero, i.e.
+  the Gaussian case (FullProf "Npr=9").
+
+### Si structure
+
+- [pd-neut-tof Si Jorgensen](pd-neut-tof_Si_jorgensen.ipynb) –
+  **Jorgensen (back-to-back exponentials ⊗ Gaussian)** profile (FullProf
+  "Npr=9", Gaussian limit).
+- [pd-neut-tof Si Jorgensen-Von Dreele](pd-neut-tof_Si_jorgensen-von-dreele.ipynb)
+  – **Jorgensen-Von Dreele (back-to-back exponentials ⊗ pseudo-Voigt)**
+  profile with Lorentzian terms (FullProf "Npr=9"). _Known difference:
+  cryspy TOF Lorentzian discrepancy._
+
+## Powder, X-Ray, Constant Wavelength
+
+### LiF structure
+
+- [pd-xray-cwl LiF single wavelength](pd-xray-cwl_LiF_single.ipynb) –
+  baseline Cu Kα₁ **Pseudo-Voigt** pattern (cryspy and **crysfml**).
+- [pd-xray-cwl LiF polarization](pd-xray-cwl_LiF_single_polarization.ipynb)
+  – **X-ray Lorentz-polarization correction** (FullProf "Cthm,
+  Rpolarz").
+- [pd-xray-cwl LiF absorption](pd-xray-cwl_LiF_single_absorption.ipynb)
+  – **absorption correction (cylinder, Hewat)** (FullProf "muR").
+- [pd-xray-cwl LiF second wavelength](pd-xray-cwl_LiF_doublet.ipynb) –
+  **second wavelength** (Cu Kα₁/Kα₂ doublet, FullProf "Lambda2, Ratio").
+  The doublet is an EasyDiffraction-level implementation (the engine is
+  run twice and summed by the intensity ratio).
+
+### PbSO4 structure
+
+- [pd-xray-cwl PbSO4 round robin](pd-xray-cwl_PbSO4_round-robin.ipynb) –
+  anglesite X-ray round-robin case (**Pseudo-Voigt + Bérar-Baldinozzi
+  asymmetry**).
+
+## Single Crystal, Neutron, Constant Wavelength
+
+### Pr2NiO4 structure
+
+- [sc-neut-cwl Pr2NiO4 basic](sc-neut-cwl_Pr2NiO4_basic.ipynb) –
+  calculated F² with **anisotropic β-tensor ADPs**.
+
+### Tb2Ti2O7 structure
+
+- [sc-neut-cwl Tb2Ti2O7 basic](sc-neut-cwl_Tb2Ti2O7_basic.ipynb) –
+  baseline with **isotropic ADPs**.
+- [sc-neut-cwl Tb2Ti2O7 isotropic extinction](sc-neut-cwl_Tb2Ti2O7_isotropic-extinction.ipynb)
+  – **isotropic Becker-Coppens extinction** (Gaussian model). _Known
+  difference: cryspy and FullProf use different extinction conventions._
+- [sc-neut-cwl Tb2Ti2O7 anisotropic β ADPs](sc-neut-cwl_Tb2Ti2O7_anisotropic-adp.ipynb)
+  – **anisotropic β-tensor ADPs**.
+
+## Powder, Total Scattering (Pair Distribution Function)
+
+### Ni structure
+
+- [total-neut-cwl Ni Gaussian-damped sinc](total-neut-cwl_Ni_gaussian-damped-sinc.ipynb)
+  – **Gaussian-damped sinc termination** PDF, neutron constant
+  wavelength (pdffit2).
+
+### Si structure
+
+- [total-neut-tof Si Gaussian-damped sinc](total-neut-tof_Si_gaussian-damped-sinc.ipynb)
+  – **Gaussian-damped sinc termination** PDF, neutron time-of-flight
+  (pdffit2).
+
+### NaCl structure
+
+- [total-xray NaCl Gaussian-damped sinc](total-xray_NaCl_gaussian-damped-sinc.ipynb)
+  – **Gaussian-damped sinc termination** PDF, X-ray (pdffit2).

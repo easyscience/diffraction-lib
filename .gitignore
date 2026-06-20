@@ -62,3 +62,6 @@ CLAUDE.md
 /data/
 /projects/
 /tmp/
+
+# FullProf/CrysFML Fortran scratch unit files
+fort.*
