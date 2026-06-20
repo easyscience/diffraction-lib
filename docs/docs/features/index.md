@@ -13,7 +13,8 @@ scattering (PDF), and the analysis tools around them.
 
 ## Calculation engines
 
-Most of the physics is computed by a pluggable **calculation engine**. Each engine is described on the
+Most of the physics is computed by a pluggable **calculation engine**.
+Each engine is described on the
 [Analysis](../user-guide/analysis-workflow/analysis.md) page.
 
 - [`cryspy`](../user-guide/analysis-workflow/analysis.md#cryspy-calculator)
@@ -22,7 +23,8 @@ Most of the physics is computed by a pluggable **calculation engine**. Each engi
   — Bragg diffraction, Fortran library with Python bindings.
 - [`pdffit2`](../user-guide/analysis-workflow/analysis.md#pdffit2-calculator)
   — Total scattering (Pair Distribution Function), Python library.
-- `easydiffraction` — extra corrections around the engine (e.g. background, scale).
+- `easydiffraction` — extra corrections around the engine (e.g.
+  background, scale).
 
 ## How to read this page
 
@@ -152,7 +154,7 @@ The status icons:
 
 ---
 
-### 1.2 Magnetic Structure — EPIC
+### 1.2 Magnetic Structure
 
 Magnetic structure refinement is an **epic** (one row per area for now).
 
@@ -380,16 +382,16 @@ a Gaussian or Lorentzian mosaicity distribution.
 
 ---
 
-### 2.3. Polarized Powder Diffraction — EPIC
+### 2.3. Polarized Powder Diffraction
 
-Polarized-neutron powder diffraction is an epic; all parts are :date:
-planned (LIB / CLI / APP). Planned: flipping-ratio method (TOF and CWL).
+Polarized-neutron powder diffraction is an epic. Planned: flipping-ratio
+method.
 
-### 2.4. Polarized Single-Crystal Diffraction — EPIC
+### 2.4. Polarized Single-Crystal Diffraction
 
-Polarized-neutron single-crystal diffraction is an epic; all parts are
-:date: planned (LIB / CLI / APP). Planned: flipping-ratio method (CWL
-and TOF), XYZ polarisation analysis, spherical neutron polarimetry.
+Polarized-neutron single-crystal diffraction is an epic. Planned:
+flipping-ratio method, XYZ polarisation analysis, spherical neutron
+polarimetry.
 
 ---
 
@@ -512,9 +514,6 @@ Minimizers are EasyDiffraction's optimizers and run with any engine.
 ## 7. Data Management
 
 #### Project Files
-
-A project file saves and loads the full refinement state (structure
-model, experimental data, fit settings, results).
 
 <div class="ed-matrix" markdown="1">
 
