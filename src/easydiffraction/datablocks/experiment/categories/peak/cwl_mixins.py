@@ -121,15 +121,16 @@ class CwlBroadeningMixin:
         self._cutoff_fwhm = NumericDescriptor(
             name='cutoff_fwhm',
             description='Peak-range cutoff in FWHMs (speed vs accuracy; '
-            'FullProf "WDT"). Larger is more accurate but slower.',
+            'FullProf "WDT"). 0 = automatic (safe, tail-aware); a positive '
+            'value is a literal cutoff and is faster but truncates more.',
             units='',
             display_handler=DisplayHandler(
                 display_name='Cutoff (FWHM)',
                 latex_name='WDT',
             ),
             value_spec=AttributeSpec(
-                default=80.0,
-                validator=RangeValidator(gt=0.0),
+                default=0.0,
+                validator=RangeValidator(ge=0.0),
             ),
             tags=TagSpec(
                 edi_names=['_peak.cutoff_fwhm'],
@@ -147,7 +148,10 @@ class CwlBroadeningMixin:
         Peak-range cutoff in FWHMs (speed vs accuracy).
 
         The profile is evaluated only within this many FWHMs of each
-        peak; larger values are more accurate but slower. Mirrors
+        peak. ``0`` (default) selects an automatic, tail-aware window
+        that is effectively untruncated for broad/Lorentzian patterns
+        (safe for refinement) yet tight for sharp ones; a positive value
+        is a literal cutoff (faster, truncates more) and mirrors
         FullProf's ``WDT``. Reading returns the underlying descriptor;
         assigning updates its value.
         """

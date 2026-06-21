@@ -37,16 +37,18 @@ def test_cwl_peak_classes_expose_expected_parameters_and_category():
     assert {'asym_fcj_1', 'asym_fcj_2'}.issubset(names_tch)
 
 
-def test_cwl_cutoff_fwhm_rejects_non_positive():
-    # Review F3: non-positive cutoff_fwhm is invalid boundary input.
+def test_cwl_cutoff_fwhm_default_auto_rejects_negative():
+    # cutoff_fwhm defaults to 0 (automatic, tail-aware window); 0 and
+    # positive (literal cutoff) values are valid, negatives are not.
     import pytest
 
     from easydiffraction.datablocks.experiment.categories.peak.cwl import CwlPseudoVoigt
 
     peak = CwlPseudoVoigt()
-    assert peak.cutoff_fwhm.value > 0
-    for bad in (0.0, -3.0):
-        with pytest.raises(TypeError, match='outside'):
-            peak.cutoff_fwhm = bad
-    peak.cutoff_fwhm = 25.0
+    assert peak.cutoff_fwhm.value == 0.0  # automatic by default
+    with pytest.raises(TypeError, match='outside'):
+        peak.cutoff_fwhm = -3.0
+    peak.cutoff_fwhm = 0.0  # auto stays valid
+    assert peak.cutoff_fwhm.value == 0.0
+    peak.cutoff_fwhm = 25.0  # explicit literal cutoff
     assert peak.cutoff_fwhm.value == 25.0
