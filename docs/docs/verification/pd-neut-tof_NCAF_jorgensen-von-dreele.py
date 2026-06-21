@@ -152,6 +152,10 @@ experiment.peak.decay_beta_1 = FULLPROF_BETA_1
 experiment.excluded_regions.create(id='1', start=0, end=30000)
 experiment.excluded_regions.create(id='2', start=50000, end=200000)
 
+# Match cryspy's peak-range cutoff to the FullProf Wdt used for
+# this reference (40.0 FWHM) so both engines truncate identically.
+experiment.peak.cutoff_fwhm = 40.0
+
 project.experiments.add(experiment)
 
 # %% [markdown]

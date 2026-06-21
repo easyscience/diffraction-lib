@@ -77,14 +77,13 @@ term); these are marked below and inside the notebook.
   "Npr=9", Gaussian limit).
 - [pd-neut-tof Si Jorgensen-Von Dreele](pd-neut-tof_Si_jorgensen-von-dreele.ipynb)
   – **Jorgensen-Von Dreele (back-to-back exponentials ⊗ pseudo-Voigt)**
-  profile with Lorentzian terms (FullProf "Npr=9"). _Known difference:
-  cryspy TOF Lorentzian discrepancy._
+  profile with Lorentzian terms (FullProf "Npr=9"). Agrees with FullProf
+  after the cryspy single-FWHM and TOF Lorentz-factor fixes (issue #49).
 - [pd-neut-tof Si Jorgensen-Von Dreele + size/strain](pd-neut-tof_Si_jorgensen-von-dreele-size-strain.ipynb)
   – **isotropic microstructural size/strain broadening** on the
   Jorgensen-Von Dreele profile (`size_g`/`strain_g`,
-  `size_l`/`strain_l`). _Known difference: requires the updated cryspy
-  backend (TOF size/strain wiring + Jorgensen-Von Dreele fix, cryspy
-  issue #49) and TOF scale._
+  `size_l`/`strain_l`). Agrees with FullProf after the cryspy TOF
+  size/strain wiring and Jorgensen-Von Dreele fix (issue #49).
 
 ## Powder, X-Ray, Constant Wavelength
 

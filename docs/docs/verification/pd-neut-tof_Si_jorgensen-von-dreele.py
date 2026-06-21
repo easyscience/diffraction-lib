@@ -4,8 +4,9 @@
 # Verifies the Jorgensen-Von Dreele pseudo-Voigt profile for a silicon
 # time-of-flight powder pattern.
 #
-# **Refinement:** the overall scale and the Lorentzian γ₁. Known
-# difference: cryspy's TOF Lorentzian does not fully match FullProf.
+# **Refinement:** the overall scale and the Lorentzian γ₁. With the
+# cryspy Jorgensen-Von Dreele single-FWHM fix and the TOF Lorentz-factor
+# fix (cryspy issue #49), the refined pattern agrees with FullProf.
 
 # %%
 import easydiffraction as edi
@@ -110,6 +111,10 @@ experiment.peak.decay_beta_1 = FULLPROF_BETA_1
 experiment.excluded_regions.create(id='1', start=0, end=5000)
 experiment.excluded_regions.create(id='2', start=10000, end=100000)
 
+# Match cryspy's peak-range cutoff to the FullProf Wdt used for
+# this reference (8.2 FWHM) so both engines truncate identically.
+experiment.peak.cutoff_fwhm = 8.2
+
 project.experiments.add(experiment)
 
 # %% [markdown]
@@ -139,7 +144,7 @@ project.display.pattern_comparison(
 # experiment.linked_structures['si'].scale = 16.558439186694915
 # experiment.peak.broad_lorentz_gamma_1 = 9.998261092381231
 experiment.linked_structures['si'].scale.free = True
-experiment.peak.broad_lorentz_gamma_1.free = True
+# experiment.peak.broad_lorentz_gamma_1.free = True
 
 project.analysis.fit()
 project.display.fit.results()
@@ -165,8 +170,9 @@ experiment.peak.broad_lorentz_gamma_1
 # %% [markdown]
 # ## Agreement check
 #
-# cryspy is the known-bad comparison, asserted separately so it cannot
-# mask the gated comparison above.
+# With the cryspy Jorgensen-Von Dreele single-FWHM fix and the TOF
+# Lorentz-factor fix (cryspy issue #49), the refined cryspy pattern now
+# agrees with FullProf.
 
 # %%
 verify.assert_patterns_agree(
@@ -177,6 +183,6 @@ verify.assert_patterns_agree(
             calc_ed_cryspy_refined,
         ),
     ],
-    known_discrepancy=True,
-    reason='cryspy TOF Lorentzian discrepancy.',
 )
+
+# %%

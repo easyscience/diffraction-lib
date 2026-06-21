@@ -146,6 +146,10 @@ experiment.peak.asym_beba_b1 = FULLPROF_ASY_4
 experiment.excluded_regions.create(id='1', start=0.0, end=10.0)
 experiment.excluded_regions.create(id='2', start=154.0, end=180.0)
 
+# Match cryspy's peak-range cutoff to the FullProf Wdt used for
+# this reference (48.0 FWHM) so both engines truncate identically.
+experiment.peak.cutoff_fwhm = 48.0
+
 project.experiments.add(experiment)
 
 # %% [markdown]

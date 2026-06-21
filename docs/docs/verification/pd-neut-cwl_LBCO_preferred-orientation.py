@@ -137,6 +137,10 @@ experiment.preferred_orientation.create(
     index_l=FULLPROF_PR_3,
 )
 
+# Match cryspy's peak-range cutoff to the FullProf Wdt used for
+# this reference (30.0 FWHM) so both engines truncate identically.
+experiment.peak.cutoff_fwhm = 30.0
+
 project.experiments.add(experiment)
 
 # %% [markdown]

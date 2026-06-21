@@ -131,6 +131,10 @@ experiment.peak.broad_gauss_w = FULLPROF_W
 experiment.excluded_regions.create(id='1', start=0.0, end=12.0)
 experiment.excluded_regions.create(id='2', start=137.5, end=180.0)
 
+# Match cryspy's peak-range cutoff to the FullProf Wdt used for
+# this reference (20.0 FWHM) so both engines truncate identically.
+experiment.peak.cutoff_fwhm = 20.0
+
 project.experiments.add(experiment)
 
 # %% [markdown]

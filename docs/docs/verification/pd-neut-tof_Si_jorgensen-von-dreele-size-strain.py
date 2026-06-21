@@ -5,11 +5,9 @@
 # the Jorgensen-Von Dreele pseudo-Voigt profile for a silicon
 # time-of-flight powder pattern.
 #
-# **Refinement:** only the overall scale. Known difference: requires the
-# updated cryspy backend (TOF size/strain wiring + Jorgensen-Von Dreele
-# pseudo-Voigt fix, cryspy issue #49) which is not yet released, plus the
-# separate TOF intensity-scale convention. Until then this page is a
-# known issue.
+# **Refinement:** only the overall scale. With the cryspy TOF size/strain
+# wiring and the Jorgensen-Von Dreele pseudo-Voigt fix (cryspy issue
+# #49), the refined pattern agrees with FullProf.
 #
 # cryspy's size/strain are raw additive coefficients
 # (`size_g`→σ₂, `strain_g`→σ₁, `size_l`→γ₂, `strain_l`→γ₁), so the
@@ -132,6 +130,10 @@ experiment.peak.decay_beta_1 = FULLPROF_BETA_1
 experiment.excluded_regions.create(id='1', start=0, end=5000)
 experiment.excluded_regions.create(id='2', start=10000, end=100000)
 
+# Match cryspy's peak-range cutoff to the FullProf Wdt used for
+# this reference (8.2 FWHM) so both engines truncate identically.
+experiment.peak.cutoff_fwhm = 8.2
+
 project.experiments.add(experiment)
 
 # %% [markdown]
@@ -178,11 +180,9 @@ project.display.pattern_comparison(
 # %% [markdown]
 # ## Agreement check
 #
-# Marked as a known difference: the agreement needs the updated cryspy
-# backend (TOF size/strain wiring + Jorgensen-Von Dreele fix, cryspy
-# issue #49) and the TOF intensity-scale convention, none of which are in
-# the released cryspy yet. The check is asserted separately so it cannot
-# mask the other verification pages.
+# With the cryspy TOF size/strain wiring and Jorgensen-Von Dreele fix
+# (cryspy issue #49), the refined cryspy pattern now agrees with
+# FullProf.
 
 # %%
 verify.assert_patterns_agree(
@@ -193,7 +193,4 @@ verify.assert_patterns_agree(
             calc_ed_cryspy_refined,
         ),
     ],
-    known_discrepancy=True,
-    reason='Needs released cryspy with TOF size/strain wiring, '
-    'Jorgensen-Von Dreele fix (cryspy issue #49), and TOF scale.',
 )

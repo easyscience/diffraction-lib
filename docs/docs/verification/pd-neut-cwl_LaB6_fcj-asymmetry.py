@@ -100,6 +100,10 @@ experiment.peak.broad_gauss_w = FULLPROF_W
 experiment.peak.broad_lorentz_x = FULLPROF_X
 experiment.peak.broad_lorentz_y = FULLPROF_Y
 
+# Match cryspy's peak-range cutoff to the FullProf Wdt used for
+# this reference (12.0 FWHM) so both engines truncate identically.
+experiment.peak.cutoff_fwhm = 12.0
+
 project.experiments.add(experiment)
 
 # %% [markdown]

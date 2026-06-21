@@ -98,6 +98,10 @@ experiment.peak.broad_lorentz_gamma_2 = FULLPROF_GAMMA_2
 experiment.excluded_regions.create(id='1', start=0.0, end=40000.0)
 experiment.excluded_regions.create(id='2', start=130000.0, end=180000.0)
 
+# Match cryspy's peak-range cutoff to the FullProf Wdt used for
+# this reference (12.0 FWHM) so both engines truncate identically.
+experiment.peak.cutoff_fwhm = 12.0
+
 project.experiments.add(experiment)
 
 # %% [markdown]
