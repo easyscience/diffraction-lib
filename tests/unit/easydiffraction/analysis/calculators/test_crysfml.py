@@ -31,6 +31,13 @@ def _parameter(value):
     return SimpleNamespace(value=value)
 
 
+def _structure_stub(name_hm='P m -3 m'):
+    """Minimal structure stub carrying only a space-group symbol."""
+    return SimpleNamespace(
+        space_group=SimpleNamespace(name_h_m=_parameter(name_hm)),
+    )
+
+
 def _cw_cfl_experiment_stub(
     x,
     zero,
@@ -88,7 +95,7 @@ def test_crysfml_calculate_pattern_applies_absorption(monkeypatch):
     monkeypatch.setattr(calc, '_crysfml_cfl', lambda s, e: [])
     monkeypatch.setattr(calc, '_calculate_adjusted_pattern', lambda d, e: list(raw))
 
-    out = calc.calculate_pattern(None, experiment)
+    out = calc.calculate_pattern(_structure_stub(), experiment)
 
     expected = np.asarray(raw) * absorption.factor(x, experiment.absorption)
     assert np.allclose(out, expected)
@@ -115,7 +122,7 @@ def test_crysfml_calculate_pattern_applies_polarization(monkeypatch):
     monkeypatch.setattr(calc, '_crysfml_cfl', lambda s, e: [])
     monkeypatch.setattr(calc, '_calculate_adjusted_pattern', lambda d, e: list(raw))
 
-    out = calc.calculate_pattern(None, experiment)
+    out = calc.calculate_pattern(_structure_stub(), experiment)
 
     expected = polarization.apply(raw, experiment)
     assert np.allclose(out, expected)
@@ -245,3 +252,54 @@ def test_crysfml_adjust_pattern_length_truncates():
     long = list(range(10))
     out = calc._adjust_pattern_length(long, target_length=4)
     assert out == [0, 1, 2, 3]
+
+
+def test_crysfml_lattice_centering_points():
+    from easydiffraction.analysis.calculators.crysfml import CrysfmlCalculator
+
+    calc = CrysfmlCalculator()
+    cases = {
+        'P m -3 m': 1,
+        'A m m 2': 2,
+        'B b m m': 2,
+        'C m c m': 2,
+        'I a -3': 2,
+        'R -3 m': 3,
+        'F m -3 m': 4,
+    }
+    for name_hm, expected in cases.items():
+        assert calc._lattice_centering_points(_structure_stub(name_hm)) == expected
+
+
+def test_crysfml_centering_intensity_factor():
+    from easydiffraction.analysis.calculators.crysfml import CrysfmlCalculator
+
+    calc = CrysfmlCalculator()
+    # factor = (n / (n - 1))**2 for centered lattices, 1.0 for primitive.
+    assert calc._centering_intensity_factor(_structure_stub('P m -3 m')) == 1.0
+    assert calc._centering_intensity_factor(_structure_stub('I a -3')) == 4.0
+    assert calc._centering_intensity_factor(_structure_stub('R -3 m')) == pytest.approx(2.25)
+    assert calc._centering_intensity_factor(_structure_stub('F m -3 m')) == pytest.approx(16 / 9)
+
+
+def test_crysfml_unknown_centering_is_no_op():
+    from easydiffraction.analysis.calculators.crysfml import CrysfmlCalculator
+
+    calc = CrysfmlCalculator()
+    assert calc._lattice_centering_points(_structure_stub('Z weird')) == 1
+    assert calc._centering_intensity_factor(_structure_stub('Z weird')) == 1.0
+
+
+def test_crysfml_apply_centering_intensity_correction_scales():
+    from easydiffraction.analysis.calculators.crysfml import CrysfmlCalculator
+
+    calc = CrysfmlCalculator()
+    raw = [1.0, 2.0, 3.0]
+    # I-centered -> x4
+    out_i = calc._apply_centering_intensity_correction(list(raw), _structure_stub('I a -3'))
+    assert out_i == [4.0, 8.0, 12.0]
+    # Primitive -> unchanged (same list, no-op)
+    out_p = calc._apply_centering_intensity_correction(list(raw), _structure_stub('P m -3 m'))
+    assert out_p == raw
+    # Empty pattern (e.g. unsupported TOF) -> unchanged, no structure access
+    assert calc._apply_centering_intensity_correction([], None) == []

@@ -215,6 +215,7 @@ class CrysfmlCalculator(CalculatorBase):
                 f'the CFL backend. Details: {exc}'
             )
             y = [0.0] * int(x.size)
+        y = self._apply_centering_intensity_correction(y, structure)
         y = absorption_correction.apply(y, experiment)
         y = polarization_correction.apply(y, experiment)
         return np.asarray(y)
@@ -558,6 +559,62 @@ class CrysfmlCalculator(CalculatorBase):
         if site_mult is None:
             return None
         return site_mult / general_mult
+
+    def _apply_centering_intensity_correction(
+        self,
+        y: list[float],
+        structure: Structure,
+    ) -> list[float]:
+        """
+        Scale a CrysFML phase pattern to cryspy's intensity convention.
+
+        The CrysFML Python API (both the dict and the CFL backend)
+        under- counts the lattice-centering contribution to the
+        structure factor: it applies only ``n - 1`` of the ``n`` lattice
+        translations, so for a centered lattice ``|F|_crysfml =
+        (n-1)*f`` while the standard ``|F|_cryspy = n*f`` (cryspy
+        reproduces FullProf to <1% across a 16x cell-volume range). The
+        intensity (``|F|^2``) therefore needs a factor of ``(n /
+        (n-1))**2`` to match cryspy/FullProf. ``n`` is the number of
+        lattice points of the Bravais centering: P=1, A/B/C/I=2, R=3
+        (hexagonal axes), F=4. For P (``n=1``) no correction is applied.
+        See issue on the CrysFML centering scale.
+        """
+        if not y or self._lattice_centering_points(structure) <= 1:
+            return y
+        factor = self._centering_intensity_factor(structure)
+        return [value * factor for value in y]
+
+    @staticmethod
+    def _centering_intensity_factor(structure: Structure) -> float:
+        """
+        Return ``(n/(n-1))**2`` for the structure's lattice centering.
+        """
+        n = CrysfmlCalculator._lattice_centering_points(structure)
+        if n <= 1:
+            return 1.0
+        return (n / (n - 1)) ** 2
+
+    @staticmethod
+    def _lattice_centering_points(structure: Structure) -> int:
+        """
+        Return the number of lattice points for the Bravais centering.
+
+        Derived from the leading letter of the Hermann-Mauguin symbol
+        (P/A/B/C/I/R/F). Unknown letters fall back to 1 (no correction)
+        with a warning.
+        """
+        name_hm = structure.space_group.name_h_m.value
+        letter = name_hm.strip()[:1].upper() if name_hm else 'P'
+        points = {'P': 1, 'A': 2, 'B': 2, 'C': 2, 'I': 2, 'R': 3, 'F': 4}
+        if letter not in points:
+            log.warning(
+                f'[CrysfmlCalculator] Unknown lattice centering '
+                f"'{letter}' in space group '{name_hm}'; applying no "
+                f'intensity-centering correction.'
+            )
+            return 1
+        return points[letter]
 
     @staticmethod
     def _param(source: object, attribute_name: str, default: float) -> float:
