@@ -52,3 +52,20 @@ def test_cwl_cutoff_fwhm_default_auto_rejects_negative():
     assert peak.cutoff_fwhm.value == 0.0
     peak.cutoff_fwhm = 25.0  # explicit literal cutoff
     assert peak.cutoff_fwhm.value == 25.0
+
+
+def test_cwl_cutoff_fwhm_auto_floor_default_and_bounds():
+    # cutoff_fwhm_auto_floor is the peak-height fraction the automatic
+    # window retains; defaults to 1e-6 and must lie in (0, 1).
+    import pytest
+
+    from easydiffraction.datablocks.experiment.categories.peak.cwl import CwlPseudoVoigt
+
+    peak = CwlPseudoVoigt()
+    assert peak.cutoff_fwhm_auto_floor.value == 1.0e-6  # default
+    with pytest.raises(TypeError, match='outside'):
+        peak.cutoff_fwhm_auto_floor = 0.0  # must be > 0
+    with pytest.raises(TypeError, match='outside'):
+        peak.cutoff_fwhm_auto_floor = 1.0  # must be < 1
+    peak.cutoff_fwhm_auto_floor = 1.0e-5  # looser (faster, broad-Lorentzian)
+    assert peak.cutoff_fwhm_auto_floor.value == 1.0e-5
