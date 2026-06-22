@@ -411,12 +411,12 @@ class PdDataBase(CategoryCollection):
         """
         Invalidate the calc cache and wire per-point status callbacks.
 
-        Runs after every point add, replace, remove, and bulk-adopt
-        (via the base collection hook). It drops the cached
-        included-point view and (re)wires each point's ``calc_status``
-        descriptor so a later public ``point.calc_status.value = ...``
-        write also invalidates the cache, keeping ``_calc_mask`` /
-        ``_calc_items`` correct after any public mutation.
+        Runs after every point add, replace, remove, and bulk-adopt (via
+        the base collection hook). It drops the cached included-point
+        view and (re)wires each point's ``calc_status`` descriptor so a
+        later public ``point.calc_status.value = ...`` write also
+        invalidates the cache, keeping ``_calc_mask`` / ``_calc_items``
+        correct after any public mutation.
         """
         self._invalidate_calc_cache()
         for point in self._items:
