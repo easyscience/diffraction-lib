@@ -4,9 +4,10 @@
 # Verifies the Jorgensen-Von Dreele pseudo-Voigt profile for a silicon
 # time-of-flight powder pattern.
 #
-# **Refinement:** the overall scale and the Lorentzian γ₁. With the
-# cryspy Jorgensen-Von Dreele single-FWHM fix and the TOF Lorentz-factor
-# fix (cryspy issue #49), the refined pattern agrees with FullProf.
+# **Refinement:** the overall scale only; the Lorentzian γ₁ is held at
+# its FullProf value. With the cryspy Jorgensen-Von Dreele single-FWHM
+# fix and the TOF Lorentz-factor fix (cryspy issue #49), the refined
+# pattern agrees with FullProf.
 
 # %%
 import easydiffraction as edi
