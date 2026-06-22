@@ -99,6 +99,7 @@ FULLPROF_V = -0.083053  # FullProf V
 FULLPROF_W = 0.035188  # FullProf W
 FULLPROF_X = 0.0  # FullProf X
 FULLPROF_Y = 0.058360  # FullProf Y
+FULLPROF_WDT = 48.0  # FullProf Wdt
 FULLPROF_ASY_1 = -0.41356  # FullProf Asy1
 FULLPROF_ASY_2 = 0.0  # FullProf Asy2
 FULLPROF_ASY_3 = 1.26777  # FullProf Asy3
@@ -146,9 +147,7 @@ experiment.peak.asym_beba_b1 = FULLPROF_ASY_4
 experiment.excluded_regions.create(id='1', start=0.0, end=10.0)
 experiment.excluded_regions.create(id='2', start=154.0, end=180.0)
 
-# Match cryspy's peak-range cutoff to the FullProf Wdt used for
-# this reference (48.0 FWHM) so both engines truncate identically.
-experiment.peak.cutoff_fwhm = 48.0
+experiment.peak.cutoff_fwhm = FULLPROF_WDT
 
 project.experiments.add(experiment)
 

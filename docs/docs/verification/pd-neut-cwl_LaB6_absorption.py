@@ -65,6 +65,7 @@ FULLPROF_V = -0.523140  # FullProf V
 FULLPROF_W = 0.590412  # FullProf W
 FULLPROF_X = 0.0  # FullProf X
 FULLPROF_Y = 0.054515  # FullProf Y
+FULLPROF_WDT = 12.0  # FullProf Wdt
 FULLPROF_MU_R = 0.7  # FullProf muR
 
 x, calc_fullprof = verify.load_fullprof_calc_profile(
@@ -101,9 +102,7 @@ experiment.peak.broad_lorentz_y = FULLPROF_Y
 experiment.absorption.type = 'cylinder-hewat'
 experiment.absorption.mu_r = FULLPROF_MU_R
 
-# Match cryspy's peak-range cutoff to the FullProf Wdt used for
-# this reference (12.0 FWHM) so both engines truncate identically.
-experiment.peak.cutoff_fwhm = 12.0
+experiment.peak.cutoff_fwhm = FULLPROF_WDT
 
 project.experiments.add(experiment)
 

@@ -64,6 +64,7 @@ FULLPROF_ALPHA_0 = 0.0  # FullProf alph0
 FULLPROF_ALPHA_1 = 0.235422  # FullProf alph1
 FULLPROF_BETA_0 = 0.038020  # FullProf beta0
 FULLPROF_BETA_1 = 0.010902  # FullProf beta1
+FULLPROF_WDT = 30.0  # FullProf Wdt
 
 x, calc_fullprof = verify.load_fullprof_calc_profile(
     FULLPROF_PROJECT_DIR,
@@ -104,9 +105,7 @@ experiment.peak.decay_beta_1 = FULLPROF_BETA_1
 experiment.excluded_regions.create(id='1', start=0, end=5000)
 experiment.excluded_regions.create(id='2', start=10000, end=100000)
 
-# Match cryspy's peak-range cutoff to the FullProf Wdt used for
-# this reference (30.0 FWHM) so both engines truncate identically.
-experiment.peak.cutoff_fwhm = 30.0
+experiment.peak.cutoff_fwhm = FULLPROF_WDT
 
 project.experiments.add(experiment)
 
@@ -134,7 +133,6 @@ project.display.pattern_comparison(
 # ## Fit edi-cryspy to FullProf
 
 # %%
-# experiment.linked_structures['si'].scale = 15.102255770454704
 experiment.linked_structures['si'].scale.free = True
 
 project.analysis.fit()

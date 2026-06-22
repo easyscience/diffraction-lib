@@ -4,10 +4,8 @@
 # Verifies the Jorgensen-Von Dreele pseudo-Voigt profile for a silicon
 # time-of-flight powder pattern.
 #
-# **Refinement:** the overall scale only; the Lorentzian γ₁ is held at
-# its FullProf value. With the cryspy Jorgensen-Von Dreele single-FWHM
-# fix and the TOF Lorentz-factor fix (cryspy issue #49), the refined
-# pattern agrees with FullProf.
+# **Refinement:** the overall scale only; all other parameters are
+# taken from the FullProf reference.
 
 # %%
 import easydiffraction as edi
@@ -69,6 +67,7 @@ FULLPROF_ALPHA_0 = 0.0  # FullProf alph0
 FULLPROF_ALPHA_1 = 0.597100  # FullProf alph1
 FULLPROF_BETA_0 = 0.042210  # FullProf beta0
 FULLPROF_BETA_1 = 0.009460  # FullProf beta1
+FULLPROF_WDT = 8.2  # FullProf Wdt
 
 x, calc_fullprof = verify.load_fullprof_calc_profile(
     FULLPROF_PROJECT_DIR,
@@ -112,9 +111,7 @@ experiment.peak.decay_beta_1 = FULLPROF_BETA_1
 experiment.excluded_regions.create(id='1', start=0, end=5000)
 experiment.excluded_regions.create(id='2', start=10000, end=100000)
 
-# Match cryspy's peak-range cutoff to the FullProf Wdt used for
-# this reference (8.2 FWHM) so both engines truncate identically.
-experiment.peak.cutoff_fwhm = 8.2
+experiment.peak.cutoff_fwhm = FULLPROF_WDT
 
 project.experiments.add(experiment)
 
@@ -142,10 +139,7 @@ project.display.pattern_comparison(
 # ## Fit edi-cryspy to FullProf
 
 # %%
-# experiment.linked_structures['si'].scale = 16.558439186694915
-# experiment.peak.broad_lorentz_gamma_1 = 9.998261092381231
 experiment.linked_structures['si'].scale.free = True
-# experiment.peak.broad_lorentz_gamma_1.free = True
 
 project.analysis.fit()
 project.display.fit.results()
@@ -170,10 +164,6 @@ experiment.peak.broad_lorentz_gamma_1
 
 # %% [markdown]
 # ## Agreement check
-#
-# With the cryspy Jorgensen-Von Dreele single-FWHM fix and the TOF
-# Lorentz-factor fix (cryspy issue #49), the refined cryspy pattern now
-# agrees with FullProf.
 
 # %%
 verify.assert_patterns_agree(

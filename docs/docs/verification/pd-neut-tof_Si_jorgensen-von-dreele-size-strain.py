@@ -5,13 +5,8 @@
 # the Jorgensen-Von Dreele pseudo-Voigt profile for a silicon
 # time-of-flight powder pattern.
 #
-# **Refinement:** only the overall scale. With the cryspy TOF size/strain
-# wiring and the Jorgensen-Von Dreele pseudo-Voigt fix (cryspy issue
-# #49), the refined pattern agrees with FullProf.
-#
-# cryspy's size/strain are raw additive coefficients
-# (`size_g`→σ₂, `strain_g`→σ₁, `size_l`→γ₂, `strain_l`→γ₁), so the
-# FullProf reference here folds them into Sigma-2/Sigma-1/Gamma-2/Gamma-1.
+# **Refinement:** the overall scale only; all other parameters are
+# taken from the FullProf reference.
 
 # %%
 import easydiffraction as edi
@@ -75,6 +70,7 @@ FULLPROF_ALPHA_0 = 0.0  # FullProf alph0
 FULLPROF_ALPHA_1 = 0.597100  # FullProf alph1
 FULLPROF_BETA_0 = 0.042210  # FullProf beta0
 FULLPROF_BETA_1 = 0.009460  # FullProf beta1
+FULLPROF_WDT = 8.2  # FullProf Wdt
 
 # cryspy raw size/strain coefficients (additive to the base sigma/gamma)
 SIZE_G = 20.0  # adds to sigma_2 (Gaussian size, d⁴)
@@ -130,9 +126,7 @@ experiment.peak.decay_beta_1 = FULLPROF_BETA_1
 experiment.excluded_regions.create(id='1', start=0, end=5000)
 experiment.excluded_regions.create(id='2', start=10000, end=100000)
 
-# Match cryspy's peak-range cutoff to the FullProf Wdt used for
-# this reference (8.2 FWHM) so both engines truncate identically.
-experiment.peak.cutoff_fwhm = 8.2
+experiment.peak.cutoff_fwhm = FULLPROF_WDT
 
 project.experiments.add(experiment)
 
