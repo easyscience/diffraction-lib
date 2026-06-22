@@ -4,26 +4,33 @@
 
 ## Problem
 
-The automatic peak-range cutoff (`cutoff_fwhm = 0`, the default) picks
-the window from a single heuristic: keep the profile down to a fixed
-fraction `WDT_AUTO_FLOOR` (1e-6) of the peak height, with the Lorentzian
-reach `0.5*sqrt(eta / WDT_AUTO_FLOOR)` FWHMs and a Gaussian floor
-(`WDT_AUTO_GAUSS`). This depends only on the pseudo-Voigt mixing `eta`,
-not on the actual data. A sweep across the Bragg-leastsq tutorials shows
-this does **not** work equally well for all examples: the window is far
-larger than needed for most patterns yet barely adequate for the most
-demanding ones, and tuning a single global floor cannot satisfy both.
+There is currently **no** automatic peak-range cutoff. `cutoff_fwhm`
+defaults to `0`, which cryspy (≥ 0.12.0) treats as "no cutoff" — the
+full range is computed (maximally accurate, slowest). A positive
+`cutoff_fwhm` is a literal window in FWHMs that mirrors FullProf's `WDT`
+(see [`peak-profile-cutoff.md`](../../adrs/accepted/peak-profile-cutoff.md)).
+To get the speed-up a user must pick that value by hand.
 
-The current workaround is manual: a user re-runs a notebook at several
-`cutoff_fwhm` (or `cutoff_fwhm_auto_floor`) values to find the smallest
-window that does not move the refined parameters. That is exactly what
-an "automatic" mode should remove.
+The right value is data-dependent, so picking it by hand means re-running
+a notebook at several `cutoff_fwhm` values to find the smallest window
+that does not move the refined parameters. We want an **automatic**
+mechanism that, with no user input, computes a safe per-experiment
+literal `cutoff_fwhm` (a single injected scalar; per-point adaptivity
+would need upstream cryspy support, see the ADR's Deferred Work).
+
+An earlier η-adaptive prototype (a window
+`max(4·FWHM, cutoff_fwhm·η)` driven by a `WDT_AUTO_FLOOR` peak-height
+fraction) was measured but not shipped: it keyed only on the
+pseudo-Voigt mixing `eta`, not on the data, and a single global floor
+could not serve both the wide-tail and buried-tail cases. Its
+measurements are kept below as the design target.
 
 ## Evidence
 
-Each tutorial was run with the AUTO window and with literal cutoffs down
-to where a **physical** refined parameter first shifted by 1σ
-(background `intensity`/`coef` points excluded as degenerate). Profiles
+Each tutorial was run with the earlier η-adaptive prototype window and
+with literal cutoffs down to where a **physical** refined parameter
+first shifted by 1σ (background `intensity`/`coef` points excluded as
+degenerate). Profiles
 affected: TOF Jorgensen/JvD and CWL pseudo-Voigt(+berar). Cutoff-inert:
 single crystal, PDF (pdffit2), and the TOF non-convoluted pseudo-Voigt
 (Npr=7).
@@ -57,23 +64,26 @@ Key observations:
    per-iteration window cost against convergence robustness, not just
    window size.
 
-The default floor is therefore kept conservative at 1e-6 (safe, robust,
-max accuracy), with a per-experiment escape hatch
-(`cutoff_fwhm_auto_floor`, and the literal `cutoff_fwhm`) for the rare
-slow case — but that still requires the user to know which case they
-have.
+Today the user falls back to the literal `cutoff_fwhm` (default `0` = no
+cutoff) and must know which case they have to choose a safe value.
 
 ## Candidate mechanisms to investigate
 
+All EasyDiffraction-side options compute a single per-experiment scalar
+that is injected as the literal `cutoff_fwhm`; per-point adaptivity is
+out of reach without upstream cryspy support.
+
+- **One-shot pre-fit calibration.** Before the first fit, evaluate the
+  pattern once at a generous (or no) cutoff, measure where each peak's
+  modelled contribution drops below the data noise, and set the
+  per-experiment window from that — no re-running the whole refinement.
+  This is the most promising in-project route.
 - **Noise-aware floor.** Truncate where the profile falls below a
   multiple of the local data esd / peak height, instead of a fixed
   fraction of the peak. Self-adapts to S/N: PbSO4 keeps its wide window,
-  CoSiO shrinks. Needs the per-point esd at cutoff-evaluation time
-  inside cryspy.
-- **One-shot pre-fit calibration.** Before the first fit, evaluate the
-  pattern once at a generous window, measure where each peak's modelled
-  contribution drops below the data noise, and set the per-experiment
-  window from that — no re-running the whole refinement.
+  CoSiO shrinks. Per-point would need the esd at cutoff-evaluation time
+  inside cryspy; a per-experiment approximation can be derived in the
+  pre-fit calibration above.
 - **Adaptive during fit.** Start generous and tighten once converged, or
   monitor whether shrinking the window changes the residual above noise.
 - **Cap + floor combination.** Cap the η-derived ratio (e.g. at
@@ -83,19 +93,22 @@ have.
 ## Acceptance criteria
 
 - A mechanism that, with no user input, selects a per-experiment window
-  within ~1σ of the untruncated fit on every tutorial in the table above
-  **and** is no slower than the current 1e-6 default on the fast cases.
+  within ~1σ of the untruncated (`cutoff_fwhm = 0`) fit on every
+  tutorial in the table above **and** is no slower than that untruncated
+  baseline on the fast cases.
 - No reliance on re-running the notebook at multiple settings.
-- Keep `cutoff_fwhm` (literal) and `cutoff_fwhm_auto_floor` as manual
-  overrides.
+- Keep the literal `cutoff_fwhm` as the manual override.
 
 ## Related
 
-- Auto/literal WDT cutoff and `cutoff_fwhm_auto_floor` live in the
-  cryspy profile functions and are exposed on the TOF/CWL peak
-  categories.
+- The literal `WDT`/`cutoff_fwhm` cutoff lives in the cryspy profile
+  functions (released in cryspy 0.12.0) and is exposed on the TOF/CWL
+  peak categories; see
+  [`peak-profile-cutoff.md`](../../adrs/accepted/peak-profile-cutoff.md)
+  (Deferred Work covers this automatic mechanism and the upstream
+  per-point η-adaptive window).
 - Issue 167 (Add CrysFML `WDT` Parameter to Peak Shapes) — the crysfml
-  backend has no cutoff yet; any cross-backend AUTO mechanism should
+  backend has no cutoff yet; any cross-backend auto mechanism should
   consider both.
 - Issue 130 (cryspy diverges on TOF JvD Lorentzian) — the robustness
-  guard that motivated the conservative AUTO default.
+  guard motivating a conservative window.
