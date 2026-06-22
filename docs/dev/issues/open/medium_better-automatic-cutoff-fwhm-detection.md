@@ -8,32 +8,32 @@ There is currently **no** automatic peak-range cutoff. `cutoff_fwhm`
 defaults to `0`, which cryspy (≥ 0.12.0) treats as "no cutoff" — the
 full range is computed (maximally accurate, slowest). A positive
 `cutoff_fwhm` is a literal window in FWHMs that mirrors FullProf's `WDT`
-(see [`peak-profile-cutoff.md`](../../adrs/accepted/peak-profile-cutoff.md)).
+(see
+[`peak-profile-cutoff.md`](../../adrs/accepted/peak-profile-cutoff.md)).
 To get the speed-up a user must pick that value by hand.
 
-The right value is data-dependent, so picking it by hand means re-running
-a notebook at several `cutoff_fwhm` values to find the smallest window
-that does not move the refined parameters. We want an **automatic**
-mechanism that, with no user input, computes a safe per-experiment
-literal `cutoff_fwhm` (a single injected scalar; per-point adaptivity
-would need upstream cryspy support, see the ADR's Deferred Work).
+The right value is data-dependent, so picking it by hand means
+re-running a notebook at several `cutoff_fwhm` values to find the
+smallest window that does not move the refined parameters. We want an
+**automatic** mechanism that, with no user input, computes a safe
+per-experiment literal `cutoff_fwhm` (a single injected scalar;
+per-point adaptivity would need upstream cryspy support, see the ADR's
+Deferred Work).
 
-An earlier η-adaptive prototype (a window
-`max(4·FWHM, cutoff_fwhm·η)` driven by a `WDT_AUTO_FLOOR` peak-height
-fraction) was measured but not shipped: it keyed only on the
-pseudo-Voigt mixing `eta`, not on the data, and a single global floor
-could not serve both the wide-tail and buried-tail cases. Its
-measurements are kept below as the design target.
+An earlier η-adaptive prototype (a window `max(4·FWHM, cutoff_fwhm·η)`
+driven by a `WDT_AUTO_FLOOR` peak-height fraction) was measured but not
+shipped: it keyed only on the pseudo-Voigt mixing `eta`, not on the
+data, and a single global floor could not serve both the wide-tail and
+buried-tail cases. Its measurements are kept below as the design target.
 
 ## Evidence
 
 Each tutorial was run with the earlier η-adaptive prototype window and
 with literal cutoffs down to where a **physical** refined parameter
 first shifted by 1σ (background `intensity`/`coef` points excluded as
-degenerate). Profiles
-affected: TOF Jorgensen/JvD and CWL pseudo-Voigt(+berar). Cutoff-inert:
-single crystal, PDF (pdffit2), and the TOF non-convoluted pseudo-Voigt
-(Npr=7).
+degenerate). Profiles affected: TOF Jorgensen/JvD and CWL
+pseudo-Voigt(+berar). Cutoff-inert: single crystal, PDF (pdffit2), and
+the TOF non-convoluted pseudo-Voigt (Npr=7).
 
 | Example                     | beam / profile      | AUTO ratio (1e-6) | empirical safe (≤1σ) |
 | --------------------------- | ------------------- | ----------------- | -------------------- |
