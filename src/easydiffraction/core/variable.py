@@ -96,9 +96,9 @@ class GenericDescriptorBase(GuardedBase):
         self._display_handler = display_handler
 
         # Optional zero-argument callback invoked after the value
-        # actually changes through the public setter. Owners (e.g. a data
-        # collection caching a derived view) wire this to drop caches
-        # that depend on this descriptor's value. Defaults to no
+        # actually changes through the public setter. Owners (e.g. a
+        # data collection caching a derived view) wire this to drop
+        # caches that depend on this descriptor's value. Defaults to no
         # notification.
         self._on_change = None
 

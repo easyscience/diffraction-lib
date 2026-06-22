@@ -159,7 +159,7 @@ class CollectionBase(GuardedBase):
 
     def _on_items_changed(self) -> None:
         """
-        Hook called after the item set is mutated.
+        Run after the item set is mutated.
 
         The base implementation does nothing. Subclasses that cache a
         view derived from the items (or from per-item descriptors)
