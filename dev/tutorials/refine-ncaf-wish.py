@@ -152,6 +152,7 @@ expt56.peak.decay_beta_0 = 0.007
 expt56.peak.decay_beta_1 = 0.01
 expt56.peak.rise_alpha_0 = -0.0094
 expt56.peak.rise_alpha_1 = 0.1
+expt56.peak.cutoff_fwhm = 20
 
 # %%
 expt47.peak.broad_gauss_sigma_0 = 0.0
@@ -161,6 +162,7 @@ expt47.peak.decay_beta_0 = 0.006
 expt47.peak.decay_beta_1 = 0.015
 expt47.peak.rise_alpha_0 = -0.0115
 expt47.peak.rise_alpha_1 = 0.1
+expt47.peak.cutoff_fwhm = 20
 
 # %% [markdown]
 # ### Set Background
@@ -243,10 +245,10 @@ for idx, (x, y) in enumerate(
 # ### Set Linked Structures
 
 # %%
-expt56.linked_structures.create(structure_id='ncaf', scale=1.0)
+expt56.linked_structures.create(structure_id='ncaf', scale=78.0)
 
 # %%
-expt47.linked_structures.create(structure_id='ncaf', scale=2.0)
+expt47.linked_structures.create(structure_id='ncaf', scale=37.0)
 
 # %% [markdown]
 # ### Set Excluded Regions

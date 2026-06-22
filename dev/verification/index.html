@@ -2956,6 +2956,8 @@
       
         
       
+        
+      
     
     
     
@@ -3095,6 +3097,34 @@
     
   
     Si Jorgensen-Von Dreele profile
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="pd-neut-tof_Si_jorgensen-von-dreele-size-strain/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Si Jorgensen-Von Dreele + size/strain
   
 
     
@@ -4525,8 +4555,9 @@ term); these are marked below and inside the notebook.</p>
 <li><a href="pd-neut-cwl_LaB6_11B/">pd-neut-cwl LaB6 isotope</a> –
   <strong>isotope-specific neutron scattering length</strong> (¹¹B).</li>
 <li><a href="pd-neut-cwl_LaB6_sycos-sysin/">pd-neut-cwl LaB6 sample displacement</a>
-  – <strong>sample displacement correction</strong> (FullProf "SyCos, SySin"). <em>Known
-  difference: cryspy's convention does not yet match FullProf.</em></li>
+  – <strong>sample displacement and transparency correction</strong> (FullProf
+  "SyCos, SySin"); agrees with FullProf since cryspy 0.12.0 implements
+  <code>offset_SyCos</code>/<code>offset_SySin</code>.</li>
 <li><a href="pd-neut-cwl_LaB6_fcj-asymmetry/">pd-neut-cwl LaB6 FCJ asymmetry</a>
   – <strong>Finger-Cox-Jephcoat asymmetry</strong> (FullProf "Npr=7"). <em>Known
   difference: the cryspy CW profile has no FCJ term.</em></li>
@@ -4575,8 +4606,13 @@ term); these are marked below and inside the notebook.</p>
   "Npr=9", Gaussian limit).</li>
 <li><a href="pd-neut-tof_Si_jorgensen-von-dreele/">pd-neut-tof Si Jorgensen-Von Dreele</a>
   – <strong>Jorgensen-Von Dreele (back-to-back exponentials ⊗ pseudo-Voigt)</strong>
-  profile with Lorentzian terms (FullProf "Npr=9"). <em>Known difference:
-  cryspy TOF Lorentzian discrepancy.</em></li>
+  profile with Lorentzian terms (FullProf "Npr=9"). Agrees with FullProf
+  after the cryspy single-FWHM and TOF Lorentz-factor fixes (issue #49).</li>
+<li><a href="pd-neut-tof_Si_jorgensen-von-dreele-size-strain/">pd-neut-tof Si Jorgensen-Von Dreele + size/strain</a>
+  – <strong>isotropic microstructural size/strain broadening</strong> on the
+  Jorgensen-Von Dreele profile (<code>size_g</code>/<code>strain_g</code>,
+  <code>size_l</code>/<code>strain_l</code>). Agrees with FullProf after the cryspy TOF
+  size/strain wiring and Jorgensen-Von Dreele fix (issue #49).</li>
 </ul>
 <h2 id="powder-x-ray-constant-wavelength">Powder, X-Ray, Constant Wavelength</h2>
 <h3 id="lif-structure">LiF structure</h3>

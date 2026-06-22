@@ -109,6 +109,7 @@ FULLPROF_ALPHA_0 = -0.009276  # FullProf alph0
 FULLPROF_ALPHA_1 = 0.109622  # FullProf alph1
 FULLPROF_BETA_0 = 0.006705  # FullProf beta0
 FULLPROF_BETA_1 = 0.009708  # FullProf beta1
+FULLPROF_WDT = 40.0  # FullProf Wdt
 
 x, calc_fullprof = verify.load_fullprof_calc_profile(
     FULLPROF_PROJECT_DIR,
@@ -151,6 +152,8 @@ experiment.peak.decay_beta_1 = FULLPROF_BETA_1
 
 experiment.excluded_regions.create(id='1', start=0, end=30000)
 experiment.excluded_regions.create(id='2', start=50000, end=200000)
+
+experiment.peak.cutoff_fwhm = FULLPROF_WDT
 
 project.experiments.add(experiment)
 

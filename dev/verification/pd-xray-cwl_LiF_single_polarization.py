@@ -67,6 +67,7 @@ FULLPROF_V = -0.083053  # FullProf V
 FULLPROF_W = 0.040000  # FullProf W
 FULLPROF_X = 0.0  # FullProf X
 FULLPROF_Y = 0.049268  # FullProf Y
+FULLPROF_WDT = 48.0  # FullProf Wdt
 FULLPROF_POLARIZATION_COEFFICIENT = 0.5  # FullProf Rpolarz
 FULLPROF_CTHM = 0.8  # FullProf Cthm
 FULLPROF_MONOCHROMATOR_TWOTHETA = 26.5650511771  # acos(sqrt(Cthm)) in degrees
@@ -104,6 +105,8 @@ experiment.peak.broad_gauss_v = FULLPROF_V
 experiment.peak.broad_gauss_w = FULLPROF_W
 experiment.peak.broad_lorentz_x = FULLPROF_X
 experiment.peak.broad_lorentz_y = FULLPROF_Y
+
+experiment.peak.cutoff_fwhm = FULLPROF_WDT
 
 project.experiments.add(experiment)
 

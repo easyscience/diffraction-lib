@@ -2954,6 +2954,8 @@
       
         
       
+        
+      
     
     
     
@@ -3093,6 +3095,34 @@
     
   
     Si Jorgensen-Von Dreele profile
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../verification/pd-neut-tof_Si_jorgensen-von-dreele-size-strain/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Si Jorgensen-Von Dreele + size/strain
   
 
     
@@ -51763,6 +51793,25 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
       </thead>
       <tbody>
           <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;cutoff_fwhm&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.peak.cwl.CwlPseudoVoigt.cutoff_fwhm&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.peak.cwl.CwlPseudoVoigt.cutoff_fwhm">cutoff_fwhm</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;NumericDescriptor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.NumericDescriptor&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.NumericDescriptor">NumericDescriptor</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Peak-range cutoff in FWHMs (speed vs accuracy).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
             <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;broad_gauss_u&lt;/span&gt;&lt;/code&gt;
 
   &lt;span class=&quot;doc doc-labels&quot;&gt;
@@ -51943,6 +51992,38 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
 
 
 <h10 id="easydiffraction.datablocks.experiment.categories.peak.cwl.CwlPseudoVoigt-attributes">Attributes</h10>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.peak.cwl.CwlPseudoVoigt.cutoff_fwhm" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">cutoff_fwhm</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Peak-range cutoff in FWHMs (speed vs accuracy).</p>
+<p>The profile is evaluated only within this many FWHMs of each
+peak. <code>0</code> (default) means no cutoff (the full range is
+computed); a positive value is a literal cutoff in FWHMs that
+mirrors FullProf's <code>WDT</code> (faster, truncates the peak tails).
+Reading returns the underlying descriptor; assigning updates its
+value.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
 
 <div class="doc doc-object doc-attribute">
 
@@ -52552,6 +52633,25 @@ object. Assigning to it updates the parameter value.</p>
             </td>
           </tr>
           <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;cutoff_fwhm&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.peak.cwl.CwlPseudoVoigtBerarBaldinozziAsymmetry.cutoff_fwhm&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.peak.cwl.CwlPseudoVoigtBerarBaldinozziAsymmetry.cutoff_fwhm">cutoff_fwhm</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;NumericDescriptor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.NumericDescriptor&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.NumericDescriptor">NumericDescriptor</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Peak-range cutoff in FWHMs (speed vs accuracy).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
             <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;broad_gauss_u&lt;/span&gt;&lt;/code&gt;
 
   &lt;span class=&quot;doc doc-labels&quot;&gt;
@@ -52837,6 +52937,38 @@ object. Assigning to it updates the parameter value.</p>
         <p>Berar-Baldinozzi asymmetry coefficient B1 (Fb/tan 2theta).</p>
 <p>Reading this property returns the underlying <code>Parameter</code>
 object. Assigning to it updates the parameter value.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.peak.cwl.CwlPseudoVoigtBerarBaldinozziAsymmetry.cutoff_fwhm" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">cutoff_fwhm</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Peak-range cutoff in FWHMs (speed vs accuracy).</p>
+<p>The profile is evaluated only within this many FWHMs of each
+peak. <code>0</code> (default) means no cutoff (the full range is
+computed); a positive value is a literal cutoff in FWHMs that
+mirrors FullProf's <code>WDT</code> (faster, truncates the peak tails).
+Reading returns the underlying descriptor; assigning updates its
+value.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -53415,6 +53547,25 @@ object. Assigning to it updates the parameter value.</p>
             </td>
           </tr>
           <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;cutoff_fwhm&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.peak.cwl.CwlThompsonCoxHastings.cutoff_fwhm&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.peak.cwl.CwlThompsonCoxHastings.cutoff_fwhm">cutoff_fwhm</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;NumericDescriptor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.NumericDescriptor&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.NumericDescriptor">NumericDescriptor</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Peak-range cutoff in FWHMs (speed vs accuracy).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
             <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;broad_gauss_u&lt;/span&gt;&lt;/code&gt;
 
   &lt;span class=&quot;doc doc-labels&quot;&gt;
@@ -53644,6 +53795,38 @@ object. Assigning to it updates the parameter value.</p>
         <p>Finger-Cox-Jephcoat asymmetry parameter 2.</p>
 <p>Reading this property returns the underlying <code>Parameter</code>
 object. Assigning to it updates the parameter value.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.peak.cwl.CwlThompsonCoxHastings.cutoff_fwhm" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">cutoff_fwhm</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Peak-range cutoff in FWHMs (speed vs accuracy).</p>
+<p>The profile is evaluated only within this many FWHMs of each
+peak. <code>0</code> (default) means no cutoff (the full range is
+computed); a positive value is a literal cutoff in FWHMs that
+mirrors FullProf's <code>WDT</code> (faster, truncates the peak tails).
+Reading returns the underlying descriptor; assigning updates its
+value.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -54193,6 +54376,25 @@ multiple inheritance.</p>
       </thead>
       <tbody>
           <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;cutoff_fwhm&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.peak.cwl_mixins.CwlBroadeningMixin.cutoff_fwhm&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.peak.cwl_mixins.CwlBroadeningMixin.cutoff_fwhm">cutoff_fwhm</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;NumericDescriptor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.NumericDescriptor&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.NumericDescriptor">NumericDescriptor</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Peak-range cutoff in FWHMs (speed vs accuracy).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
             <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;broad_gauss_u&lt;/span&gt;&lt;/code&gt;
 
   &lt;span class=&quot;doc doc-labels&quot;&gt;
@@ -54300,6 +54502,38 @@ multiple inheritance.</p>
 
 
 <h10 id="easydiffraction.datablocks.experiment.categories.peak.cwl_mixins.CwlBroadeningMixin-attributes">Attributes</h10>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.peak.cwl_mixins.CwlBroadeningMixin.cutoff_fwhm" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">cutoff_fwhm</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Peak-range cutoff in FWHMs (speed vs accuracy).</p>
+<p>The profile is evaluated only within this many FWHMs of each
+peak. <code>0</code> (default) means no cutoff (the full range is
+computed); a positive value is a literal cutoff in FWHMs that
+mirrors FullProf's <code>WDT</code> (faster, truncates the peak tails).
+Reading returns the underlying descriptor; assigning updates its
+value.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
 
 <div class="doc doc-object doc-attribute">
 
@@ -56129,6 +56363,63 @@ pseudo-Voigt (CrysPy <code>peak_shape="type0m"</code>, Z-Rietveld).</p>
             </td>
           </tr>
           <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;broad_lorentz_size_l&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.peak.tof.TofPseudoVoigt.broad_lorentz_size_l&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.peak.tof.TofPseudoVoigt.broad_lorentz_size_l">broad_lorentz_size_l</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;Parameter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.Parameter&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.Parameter">Parameter</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Lorentzian isotropic size broadening, additive to γ₂ (μs²/Å²).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;broad_lorentz_strain_l&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.peak.tof.TofPseudoVoigt.broad_lorentz_strain_l&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.peak.tof.TofPseudoVoigt.broad_lorentz_strain_l">broad_lorentz_strain_l</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;Parameter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.Parameter&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.Parameter">Parameter</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Lorentzian isotropic strain broadening, additive to γ₁ (μs/Å).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;cutoff_fwhm&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.peak.tof.TofPseudoVoigt.cutoff_fwhm&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.peak.tof.TofPseudoVoigt.cutoff_fwhm">cutoff_fwhm</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;NumericDescriptor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.NumericDescriptor&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.NumericDescriptor">NumericDescriptor</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Peak-range cutoff in FWHMs (speed vs accuracy).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
             <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;broad_gauss_sigma_0&lt;/span&gt;&lt;/code&gt;
 
   &lt;span class=&quot;doc doc-labels&quot;&gt;
@@ -56179,6 +56470,44 @@ pseudo-Voigt (CrysPy <code>peak_shape="type0m"</code>, Z-Rietveld).</p>
             <td>
               <div class="doc-md-description">
                 <p>Gaussian broadening (instrument-dependent term) (μs²/Å²).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;broad_gauss_size_g&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.peak.tof.TofPseudoVoigt.broad_gauss_size_g&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.peak.tof.TofPseudoVoigt.broad_gauss_size_g">broad_gauss_size_g</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;Parameter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.Parameter&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.Parameter">Parameter</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Gaussian isotropic size broadening, additive to σ₂ (μs²/Å²).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;broad_gauss_strain_g&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.peak.tof.TofPseudoVoigt.broad_gauss_strain_g&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.peak.tof.TofPseudoVoigt.broad_gauss_strain_g">broad_gauss_strain_g</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;Parameter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.Parameter&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.Parameter">Parameter</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Gaussian isotropic strain broadening, additive to σ₁ (μs/Å).</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -56360,6 +56689,90 @@ object. Assigning to it updates the parameter value.</p>
 
 
 
+<h11 id="easydiffraction.datablocks.experiment.categories.peak.tof.TofPseudoVoigt.broad_lorentz_size_l" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">broad_lorentz_size_l</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Lorentzian isotropic size broadening, additive to γ₂ (μs²/Å²).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.peak.tof.TofPseudoVoigt.broad_lorentz_strain_l" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">broad_lorentz_strain_l</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Lorentzian isotropic strain broadening, additive to γ₁ (μs/Å).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.peak.tof.TofPseudoVoigt.cutoff_fwhm" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">cutoff_fwhm</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Peak-range cutoff in FWHMs (speed vs accuracy).</p>
+<p>The profile is evaluated only within this many FWHMs of each
+peak. <code>0</code> (default) means no cutoff (the full range is
+computed); a positive value is a literal cutoff in FWHMs that
+mirrors FullProf's <code>WDT</code> (faster, truncates the peak tails).
+Reading returns the underlying descriptor; assigning updates its
+value.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
 <h11 id="easydiffraction.datablocks.experiment.categories.peak.tof.TofPseudoVoigt.broad_gauss_sigma_0" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">broad_gauss_sigma_0</span></code>
 
@@ -56432,6 +56845,58 @@ object. Assigning to it updates the parameter value.</p>
         <p>Gaussian broadening (instrument-dependent term) (μs²/Å²).</p>
 <p>Reading this property returns the underlying <code>Parameter</code>
 object. Assigning to it updates the parameter value.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.peak.tof.TofPseudoVoigt.broad_gauss_size_g" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">broad_gauss_size_g</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Gaussian isotropic size broadening, additive to σ₂ (μs²/Å²).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.peak.tof.TofPseudoVoigt.broad_gauss_strain_g" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">broad_gauss_strain_g</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Gaussian isotropic strain broadening, additive to σ₁ (μs/Å).</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -56908,6 +57373,25 @@ object. Assigning to it updates the parameter value.</p>
             </td>
           </tr>
           <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;cutoff_fwhm&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.peak.tof.TofJorgensen.cutoff_fwhm&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.peak.tof.TofJorgensen.cutoff_fwhm">cutoff_fwhm</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;NumericDescriptor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.NumericDescriptor&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.NumericDescriptor">NumericDescriptor</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Peak-range cutoff in FWHMs (speed vs accuracy).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
             <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;broad_gauss_sigma_0&lt;/span&gt;&lt;/code&gt;
 
   &lt;span class=&quot;doc doc-labels&quot;&gt;
@@ -56958,6 +57442,44 @@ object. Assigning to it updates the parameter value.</p>
             <td>
               <div class="doc-md-description">
                 <p>Gaussian broadening (instrument-dependent term) (μs²/Å²).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;broad_gauss_size_g&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.peak.tof.TofJorgensen.broad_gauss_size_g&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.peak.tof.TofJorgensen.broad_gauss_size_g">broad_gauss_size_g</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;Parameter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.Parameter&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.Parameter">Parameter</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Gaussian isotropic size broadening, additive to σ₂ (μs²/Å²).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;broad_gauss_strain_g&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.peak.tof.TofJorgensen.broad_gauss_strain_g&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.peak.tof.TofJorgensen.broad_gauss_strain_g">broad_gauss_strain_g</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;Parameter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.Parameter&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.Parameter">Parameter</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Gaussian isotropic strain broadening, additive to σ₁ (μs/Å).</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -57167,6 +57689,38 @@ object. Assigning to it updates the parameter value.</p>
 
 
 
+<h11 id="easydiffraction.datablocks.experiment.categories.peak.tof.TofJorgensen.cutoff_fwhm" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">cutoff_fwhm</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Peak-range cutoff in FWHMs (speed vs accuracy).</p>
+<p>The profile is evaluated only within this many FWHMs of each
+peak. <code>0</code> (default) means no cutoff (the full range is
+computed); a positive value is a literal cutoff in FWHMs that
+mirrors FullProf's <code>WDT</code> (faster, truncates the peak tails).
+Reading returns the underlying descriptor; assigning updates its
+value.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
 <h11 id="easydiffraction.datablocks.experiment.categories.peak.tof.TofJorgensen.broad_gauss_sigma_0" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">broad_gauss_sigma_0</span></code>
 
@@ -57239,6 +57793,58 @@ object. Assigning to it updates the parameter value.</p>
         <p>Gaussian broadening (instrument-dependent term) (μs²/Å²).</p>
 <p>Reading this property returns the underlying <code>Parameter</code>
 object. Assigning to it updates the parameter value.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.peak.tof.TofJorgensen.broad_gauss_size_g" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">broad_gauss_size_g</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Gaussian isotropic size broadening, additive to σ₂ (μs²/Å²).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.peak.tof.TofJorgensen.broad_gauss_strain_g" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">broad_gauss_strain_g</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Gaussian isotropic strain broadening, additive to σ₁ (μs/Å).</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -57772,6 +58378,63 @@ object. Assigning to it updates the parameter value.</p>
             </td>
           </tr>
           <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;broad_lorentz_size_l&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.peak.tof.TofJorgensenVonDreele.broad_lorentz_size_l&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.peak.tof.TofJorgensenVonDreele.broad_lorentz_size_l">broad_lorentz_size_l</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;Parameter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.Parameter&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.Parameter">Parameter</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Lorentzian isotropic size broadening, additive to γ₂ (μs²/Å²).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;broad_lorentz_strain_l&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.peak.tof.TofJorgensenVonDreele.broad_lorentz_strain_l&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.peak.tof.TofJorgensenVonDreele.broad_lorentz_strain_l">broad_lorentz_strain_l</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;Parameter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.Parameter&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.Parameter">Parameter</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Lorentzian isotropic strain broadening, additive to γ₁ (μs/Å).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;cutoff_fwhm&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.peak.tof.TofJorgensenVonDreele.cutoff_fwhm&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.peak.tof.TofJorgensenVonDreele.cutoff_fwhm">cutoff_fwhm</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;NumericDescriptor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.NumericDescriptor&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.NumericDescriptor">NumericDescriptor</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Peak-range cutoff in FWHMs (speed vs accuracy).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
             <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;broad_gauss_sigma_0&lt;/span&gt;&lt;/code&gt;
 
   &lt;span class=&quot;doc doc-labels&quot;&gt;
@@ -57822,6 +58485,44 @@ object. Assigning to it updates the parameter value.</p>
             <td>
               <div class="doc-md-description">
                 <p>Gaussian broadening (instrument-dependent term) (μs²/Å²).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;broad_gauss_size_g&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.peak.tof.TofJorgensenVonDreele.broad_gauss_size_g&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.peak.tof.TofJorgensenVonDreele.broad_gauss_size_g">broad_gauss_size_g</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;Parameter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.Parameter&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.Parameter">Parameter</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Gaussian isotropic size broadening, additive to σ₂ (μs²/Å²).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;broad_gauss_strain_g&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.peak.tof.TofJorgensenVonDreele.broad_gauss_strain_g&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.peak.tof.TofJorgensenVonDreele.broad_gauss_strain_g">broad_gauss_strain_g</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;Parameter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.Parameter&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.Parameter">Parameter</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Gaussian isotropic strain broadening, additive to σ₁ (μs/Å).</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -58115,6 +58816,90 @@ object. Assigning to it updates the parameter value.</p>
 
 
 
+<h11 id="easydiffraction.datablocks.experiment.categories.peak.tof.TofJorgensenVonDreele.broad_lorentz_size_l" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">broad_lorentz_size_l</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Lorentzian isotropic size broadening, additive to γ₂ (μs²/Å²).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.peak.tof.TofJorgensenVonDreele.broad_lorentz_strain_l" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">broad_lorentz_strain_l</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Lorentzian isotropic strain broadening, additive to γ₁ (μs/Å).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.peak.tof.TofJorgensenVonDreele.cutoff_fwhm" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">cutoff_fwhm</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Peak-range cutoff in FWHMs (speed vs accuracy).</p>
+<p>The profile is evaluated only within this many FWHMs of each
+peak. <code>0</code> (default) means no cutoff (the full range is
+computed); a positive value is a literal cutoff in FWHMs that
+mirrors FullProf's <code>WDT</code> (faster, truncates the peak tails).
+Reading returns the underlying descriptor; assigning updates its
+value.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
 <h11 id="easydiffraction.datablocks.experiment.categories.peak.tof.TofJorgensenVonDreele.broad_gauss_sigma_0" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">broad_gauss_sigma_0</span></code>
 
@@ -58187,6 +58972,58 @@ object. Assigning to it updates the parameter value.</p>
         <p>Gaussian broadening (instrument-dependent term) (μs²/Å²).</p>
 <p>Reading this property returns the underlying <code>Parameter</code>
 object. Assigning to it updates the parameter value.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.peak.tof.TofJorgensenVonDreele.broad_gauss_size_g" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">broad_gauss_size_g</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Gaussian isotropic size broadening, additive to σ₂ (μs²/Å²).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.peak.tof.TofJorgensenVonDreele.broad_gauss_strain_g" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">broad_gauss_strain_g</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Gaussian isotropic strain broadening, additive to σ₁ (μs/Å).</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -58796,6 +59633,63 @@ object. Assigning to it updates the parameter value.</p>
             </td>
           </tr>
           <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;broad_lorentz_size_l&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.peak.tof.TofDoubleJorgensenVonDreele.broad_lorentz_size_l&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.peak.tof.TofDoubleJorgensenVonDreele.broad_lorentz_size_l">broad_lorentz_size_l</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;Parameter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.Parameter&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.Parameter">Parameter</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Lorentzian isotropic size broadening, additive to γ₂ (μs²/Å²).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;broad_lorentz_strain_l&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.peak.tof.TofDoubleJorgensenVonDreele.broad_lorentz_strain_l&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.peak.tof.TofDoubleJorgensenVonDreele.broad_lorentz_strain_l">broad_lorentz_strain_l</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;Parameter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.Parameter&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.Parameter">Parameter</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Lorentzian isotropic strain broadening, additive to γ₁ (μs/Å).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;cutoff_fwhm&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.peak.tof.TofDoubleJorgensenVonDreele.cutoff_fwhm&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.peak.tof.TofDoubleJorgensenVonDreele.cutoff_fwhm">cutoff_fwhm</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;NumericDescriptor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.NumericDescriptor&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.NumericDescriptor">NumericDescriptor</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Peak-range cutoff in FWHMs (speed vs accuracy).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
             <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;broad_gauss_sigma_0&lt;/span&gt;&lt;/code&gt;
 
   &lt;span class=&quot;doc doc-labels&quot;&gt;
@@ -58846,6 +59740,44 @@ object. Assigning to it updates the parameter value.</p>
             <td>
               <div class="doc-md-description">
                 <p>Gaussian broadening (instrument-dependent term) (μs²/Å²).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;broad_gauss_size_g&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.peak.tof.TofDoubleJorgensenVonDreele.broad_gauss_size_g&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.peak.tof.TofDoubleJorgensenVonDreele.broad_gauss_size_g">broad_gauss_size_g</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;Parameter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.Parameter&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.Parameter">Parameter</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Gaussian isotropic size broadening, additive to σ₂ (μs²/Å²).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;broad_gauss_strain_g&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.peak.tof.TofDoubleJorgensenVonDreele.broad_gauss_strain_g&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.peak.tof.TofDoubleJorgensenVonDreele.broad_gauss_strain_g">broad_gauss_strain_g</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;Parameter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.Parameter&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.Parameter">Parameter</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Gaussian isotropic strain broadening, additive to σ₁ (μs/Å).</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -59251,6 +60183,90 @@ object. Assigning to it updates the parameter value.</p>
 
 
 
+<h11 id="easydiffraction.datablocks.experiment.categories.peak.tof.TofDoubleJorgensenVonDreele.broad_lorentz_size_l" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">broad_lorentz_size_l</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Lorentzian isotropic size broadening, additive to γ₂ (μs²/Å²).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.peak.tof.TofDoubleJorgensenVonDreele.broad_lorentz_strain_l" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">broad_lorentz_strain_l</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Lorentzian isotropic strain broadening, additive to γ₁ (μs/Å).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.peak.tof.TofDoubleJorgensenVonDreele.cutoff_fwhm" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">cutoff_fwhm</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Peak-range cutoff in FWHMs (speed vs accuracy).</p>
+<p>The profile is evaluated only within this many FWHMs of each
+peak. <code>0</code> (default) means no cutoff (the full range is
+computed); a positive value is a literal cutoff in FWHMs that
+mirrors FullProf's <code>WDT</code> (faster, truncates the peak tails).
+Reading returns the underlying descriptor; assigning updates its
+value.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
 <h11 id="easydiffraction.datablocks.experiment.categories.peak.tof.TofDoubleJorgensenVonDreele.broad_gauss_sigma_0" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">broad_gauss_sigma_0</span></code>
 
@@ -59323,6 +60339,58 @@ object. Assigning to it updates the parameter value.</p>
         <p>Gaussian broadening (instrument-dependent term) (μs²/Å²).</p>
 <p>Reading this property returns the underlying <code>Parameter</code>
 object. Assigning to it updates the parameter value.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.peak.tof.TofDoubleJorgensenVonDreele.broad_gauss_size_g" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">broad_gauss_size_g</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Gaussian isotropic size broadening, additive to σ₂ (μs²/Å²).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.peak.tof.TofDoubleJorgensenVonDreele.broad_gauss_strain_g" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">broad_gauss_strain_g</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Gaussian isotropic strain broadening, additive to σ₁ (μs/Å).</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -59752,6 +60820,25 @@ finite peak width out of the box; σ₁ and σ₂ default to 0.</p>
       </thead>
       <tbody>
           <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;cutoff_fwhm&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.peak.tof_mixins.TofGaussianBroadeningMixin.cutoff_fwhm&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.peak.tof_mixins.TofGaussianBroadeningMixin.cutoff_fwhm">cutoff_fwhm</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;NumericDescriptor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.NumericDescriptor&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.NumericDescriptor">NumericDescriptor</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Peak-range cutoff in FWHMs (speed vs accuracy).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
             <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;broad_gauss_sigma_0&lt;/span&gt;&lt;/code&gt;
 
   &lt;span class=&quot;doc doc-labels&quot;&gt;
@@ -59808,6 +60895,44 @@ finite peak width out of the box; σ₁ and σ₂ default to 0.</p>
               </div>
             </td>
           </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;broad_gauss_size_g&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.peak.tof_mixins.TofGaussianBroadeningMixin.broad_gauss_size_g&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.peak.tof_mixins.TofGaussianBroadeningMixin.broad_gauss_size_g">broad_gauss_size_g</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;Parameter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.Parameter&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.Parameter">Parameter</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Gaussian isotropic size broadening, additive to σ₂ (μs²/Å²).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;broad_gauss_strain_g&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.peak.tof_mixins.TofGaussianBroadeningMixin.broad_gauss_strain_g&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.peak.tof_mixins.TofGaussianBroadeningMixin.broad_gauss_strain_g">broad_gauss_strain_g</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;Parameter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.Parameter&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.Parameter">Parameter</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Gaussian isotropic strain broadening, additive to σ₁ (μs/Å).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
       </tbody>
     </table>
 
@@ -59821,6 +60946,38 @@ finite peak width out of the box; σ₁ and σ₂ default to 0.</p>
 
 
 <h10 id="easydiffraction.datablocks.experiment.categories.peak.tof_mixins.TofGaussianBroadeningMixin-attributes">Attributes</h10>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.peak.tof_mixins.TofGaussianBroadeningMixin.cutoff_fwhm" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">cutoff_fwhm</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Peak-range cutoff in FWHMs (speed vs accuracy).</p>
+<p>The profile is evaluated only within this many FWHMs of each
+peak. <code>0</code> (default) means no cutoff (the full range is
+computed); a positive value is a literal cutoff in FWHMs that
+mirrors FullProf's <code>WDT</code> (faster, truncates the peak tails).
+Reading returns the underlying descriptor; assigning updates its
+value.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
 
 <div class="doc doc-object doc-attribute">
 
@@ -59898,6 +61055,58 @@ object. Assigning to it updates the parameter value.</p>
         <p>Gaussian broadening (instrument-dependent term) (μs²/Å²).</p>
 <p>Reading this property returns the underlying <code>Parameter</code>
 object. Assigning to it updates the parameter value.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.peak.tof_mixins.TofGaussianBroadeningMixin.broad_gauss_size_g" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">broad_gauss_size_g</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Gaussian isotropic size broadening, additive to σ₂ (μs²/Å²).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.peak.tof_mixins.TofGaussianBroadeningMixin.broad_gauss_strain_g" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">broad_gauss_strain_g</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Gaussian isotropic strain broadening, additive to σ₁ (μs/Å).</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -60016,6 +61225,44 @@ object. Assigning to it updates the parameter value.</p>
               </div>
             </td>
           </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;broad_lorentz_size_l&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.peak.tof_mixins.TofLorentzianBroadeningMixin.broad_lorentz_size_l&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.peak.tof_mixins.TofLorentzianBroadeningMixin.broad_lorentz_size_l">broad_lorentz_size_l</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;Parameter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.Parameter&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.Parameter">Parameter</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Lorentzian isotropic size broadening, additive to γ₂ (μs²/Å²).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;broad_lorentz_strain_l&lt;/span&gt;&lt;/code&gt;
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-property&quot;&gt;&lt;code&gt;property&lt;/code&gt;&lt;/small&gt;
+      &lt;small class=&quot;doc doc-label doc-label-writable&quot;&gt;&lt;code&gt;writable&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.categories.peak.tof_mixins.TofLorentzianBroadeningMixin.broad_lorentz_strain_l&lt;/code&gt;)" href="#easydiffraction.datablocks.experiment.categories.peak.tof_mixins.TofLorentzianBroadeningMixin.broad_lorentz_strain_l">broad_lorentz_strain_l</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;Parameter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.core.variable.Parameter&lt;/code&gt;)" href="../../core/#easydiffraction.core.variable.Parameter">Parameter</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Lorentzian isotropic strain broadening, additive to γ₁ (μs/Å).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
       </tbody>
     </table>
 
@@ -60106,6 +61353,58 @@ object. Assigning to it updates the parameter value.</p>
         <p>Lorentzian broadening (instrument-dependent term) (μs²/Å²).</p>
 <p>Reading this property returns the underlying <code>Parameter</code>
 object. Assigning to it updates the parameter value.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.peak.tof_mixins.TofLorentzianBroadeningMixin.broad_lorentz_size_l" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">broad_lorentz_size_l</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Lorentzian isotropic size broadening, additive to γ₂ (μs²/Å²).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h11 id="easydiffraction.datablocks.experiment.categories.peak.tof_mixins.TofLorentzianBroadeningMixin.broad_lorentz_strain_l" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">broad_lorentz_strain_l</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h11>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Lorentzian isotropic strain broadening, additive to γ₁ (μs/Å).</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->

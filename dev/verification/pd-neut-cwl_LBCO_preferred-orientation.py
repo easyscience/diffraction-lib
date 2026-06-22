@@ -90,6 +90,7 @@ FULLPROF_V = -0.115345  # FullProf V
 FULLPROF_W = 0.121125  # FullProf W
 FULLPROF_X = 0.0  # FullProf X
 FULLPROF_Y = 0.083038  # FullProf Y
+FULLPROF_WDT = 30.0  # FullProf Wdt
 FULLPROF_PREF_1 = 1.2  # FullProf Pref1
 FULLPROF_PREF_2 = 0.3  # FullProf Pref2
 FULLPROF_PR_1 = 0  # FullProf Pr1
@@ -136,6 +137,8 @@ experiment.preferred_orientation.create(
     index_k=FULLPROF_PR_2,
     index_l=FULLPROF_PR_3,
 )
+
+experiment.peak.cutoff_fwhm = FULLPROF_WDT
 
 project.experiments.add(experiment)
 

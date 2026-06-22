@@ -4,8 +4,8 @@
 # Verifies the Jorgensen-Von Dreele pseudo-Voigt profile for a silicon
 # time-of-flight powder pattern.
 #
-# **Refinement:** the overall scale and the Lorentzian γ₁. Known
-# difference: cryspy's TOF Lorentzian does not fully match FullProf.
+# **Refinement:** the overall scale only; all other parameters are
+# taken from the FullProf reference.
 
 # %%
 import easydiffraction as edi
@@ -67,6 +67,7 @@ FULLPROF_ALPHA_0 = 0.0  # FullProf alph0
 FULLPROF_ALPHA_1 = 0.597100  # FullProf alph1
 FULLPROF_BETA_0 = 0.042210  # FullProf beta0
 FULLPROF_BETA_1 = 0.009460  # FullProf beta1
+FULLPROF_WDT = 8.2  # FullProf Wdt
 
 x, calc_fullprof = verify.load_fullprof_calc_profile(
     FULLPROF_PROJECT_DIR,
@@ -110,6 +111,8 @@ experiment.peak.decay_beta_1 = FULLPROF_BETA_1
 experiment.excluded_regions.create(id='1', start=0, end=5000)
 experiment.excluded_regions.create(id='2', start=10000, end=100000)
 
+experiment.peak.cutoff_fwhm = FULLPROF_WDT
+
 project.experiments.add(experiment)
 
 # %% [markdown]
@@ -136,10 +139,7 @@ project.display.pattern_comparison(
 # ## Fit edi-cryspy to FullProf
 
 # %%
-# experiment.linked_structures['si'].scale = 16.558439186694915
-# experiment.peak.broad_lorentz_gamma_1 = 9.998261092381231
 experiment.linked_structures['si'].scale.free = True
-experiment.peak.broad_lorentz_gamma_1.free = True
 
 project.analysis.fit()
 project.display.fit.results()
@@ -164,9 +164,6 @@ experiment.peak.broad_lorentz_gamma_1
 
 # %% [markdown]
 # ## Agreement check
-#
-# cryspy is the known-bad comparison, asserted separately so it cannot
-# mask the gated comparison above.
 
 # %%
 verify.assert_patterns_agree(
@@ -177,6 +174,6 @@ verify.assert_patterns_agree(
             calc_ed_cryspy_refined,
         ),
     ],
-    known_discrepancy=True,
-    reason='cryspy TOF Lorentzian discrepancy.',
 )
+
+# %%

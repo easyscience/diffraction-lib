@@ -83,6 +83,7 @@ FULLPROF_WAVELENGTH = 1.54822  # FullProf Lambda
 FULLPROF_U = 0.036631  # FullProf U
 FULLPROF_V = -0.068345  # FullProf V
 FULLPROF_W = 0.131426  # FullProf W
+FULLPROF_WDT = 20.0  # FullProf Wdt
 
 x, calc_fullprof = verify.load_fullprof_calc_profile(
     FULLPROF_PROJECT_DIR,
@@ -117,6 +118,8 @@ experiment.peak.broad_gauss_w = FULLPROF_W
 # FullProf excluded the 0-12 deg and 137.5-180 deg regions (.pcr).
 experiment.excluded_regions.create(id='1', start=0.0, end=12.0)
 experiment.excluded_regions.create(id='2', start=137.5, end=180.0)
+
+experiment.peak.cutoff_fwhm = FULLPROF_WDT
 
 project.experiments.add(experiment)
 
