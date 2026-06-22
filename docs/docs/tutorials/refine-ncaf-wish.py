@@ -245,10 +245,10 @@ for idx, (x, y) in enumerate(
 # ### Set Linked Structures
 
 # %%
-expt56.linked_structures.create(structure_id='ncaf', scale=1.0)
+expt56.linked_structures.create(structure_id='ncaf', scale=78.0)
 
 # %%
-expt47.linked_structures.create(structure_id='ncaf', scale=2.0)
+expt47.linked_structures.create(structure_id='ncaf', scale=37.0)
 
 # %% [markdown]
 # ### Set Excluded Regions
