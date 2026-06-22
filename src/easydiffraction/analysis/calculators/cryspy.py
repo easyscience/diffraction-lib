@@ -844,11 +844,7 @@ class CryspyCalculator(CalculatorBase):
 
                 # Peak-range cutoff (FullProf "WDT"): speed vs accuracy.
                 if hasattr(experiment.peak, 'cutoff_fwhm'):
-                    cryspy_expt_dict['profile_wdt'] = experiment.peak.cutoff_fwhm.value
-                if hasattr(experiment.peak, 'cutoff_fwhm_auto_floor'):
-                    cryspy_expt_dict['profile_wdt_auto_floor'] = (
-                        experiment.peak.cutoff_fwhm_auto_floor.value
-                    )
+                    cryspy_expt_dict['profile_cutoff_fwhm'] = experiment.peak.cutoff_fwhm.value
 
                 if 'asymmetry_parameters' in cryspy_expt_dict:
                     cryspy_asymmetry = cryspy_expt_dict['asymmetry_parameters']
@@ -1385,9 +1381,7 @@ def _update_tof_peak_in_cryspy_dict(
     # profile in cryspy. Injected straight into the dict so it reaches
     # both the recreate-object and minimizer fast paths.
     if hasattr(peak, 'cutoff_fwhm'):
-        cryspy_expt_dict['profile_wdt'] = peak.cutoff_fwhm.value
-    if hasattr(peak, 'cutoff_fwhm_auto_floor'):
-        cryspy_expt_dict['profile_wdt_auto_floor'] = peak.cutoff_fwhm_auto_floor.value
+        cryspy_expt_dict['profile_cutoff_fwhm'] = peak.cutoff_fwhm.value
     # Microstructural isotropic size/strain (additive to sigma/gamma).
     # The CIF/object-recreate path emits these, but the minimizer
     # fast-dict path must refresh them too, otherwise refining them is a

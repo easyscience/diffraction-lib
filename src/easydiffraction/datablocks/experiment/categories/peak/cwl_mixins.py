@@ -121,8 +121,8 @@ class CwlBroadeningMixin:
         self._cutoff_fwhm = NumericDescriptor(
             name='cutoff_fwhm',
             description='Peak-range cutoff in FWHMs (speed vs accuracy; '
-            'FullProf "WDT"). 0 = automatic (safe, tail-aware); a positive '
-            'value is a literal cutoff and is faster but truncates more.',
+            'FullProf "WDT"). 0 = no cutoff (full range); a positive value '
+            'is a literal cutoff and is faster but truncates more.',
             units='',
             display_handler=DisplayHandler(
                 display_name='Cutoff (FWHM)',
@@ -137,26 +137,6 @@ class CwlBroadeningMixin:
                 cif_names=['_easydiffraction_peak.cutoff_fwhm'],
             ),
         )
-        self._cutoff_fwhm_auto_floor = NumericDescriptor(
-            name='cutoff_fwhm_auto_floor',
-            description='Automatic-cutoff floor: the fraction of the peak '
-            'height the auto window retains. Only used when cutoff_fwhm = 0 '
-            '(automatic). Smaller keeps more of the tail (slower, safer); '
-            'larger truncates earlier (faster).',
-            units='',
-            display_handler=DisplayHandler(
-                display_name='Auto-cutoff floor',
-                latex_name=r'WDT_{\mathrm{floor}}',
-            ),
-            value_spec=AttributeSpec(
-                default=1.0e-6,
-                validator=RangeValidator(gt=0.0, lt=1.0),
-            ),
-            tags=TagSpec(
-                edi_names=['_peak.cutoff_fwhm_auto_floor'],
-                cif_names=['_easydiffraction_peak.cutoff_fwhm_auto_floor'],
-            ),
-        )
 
     # ------------------------------------------------------------------
     #  Public properties
@@ -168,12 +148,11 @@ class CwlBroadeningMixin:
         Peak-range cutoff in FWHMs (speed vs accuracy).
 
         The profile is evaluated only within this many FWHMs of each
-        peak. ``0`` (default) selects an automatic, tail-aware window
-        that is effectively untruncated for broad/Lorentzian patterns
-        (safe for refinement) yet tight for sharp ones; a positive value
-        is a literal cutoff (faster, truncates more) and mirrors
-        FullProf's ``WDT``. Reading returns the underlying descriptor;
-        assigning updates its value.
+        peak. ``0`` (default) means no cutoff (the full range is
+        computed); a positive value is a literal cutoff in FWHMs that
+        mirrors FullProf's ``WDT`` (faster, truncates the peak tails).
+        Reading returns the underlying descriptor; assigning updates its
+        value.
         """
         return self._cutoff_fwhm
 
@@ -181,27 +160,6 @@ class CwlBroadeningMixin:
     def cutoff_fwhm(self, value: float) -> None:
         """Set the peak-range cutoff (FWHMs)."""
         self._cutoff_fwhm.value = value
-
-    @property
-    def cutoff_fwhm_auto_floor(self) -> NumericDescriptor:
-        """
-        Automatic-cutoff floor as a fraction of peak height.
-
-        Only used when :attr:`cutoff_fwhm` is ``0`` (automatic). The auto
-        window extends until the profile falls to this fraction of the
-        peak height, so a smaller value keeps more of the (Lorentzian)
-        tail — slower but safer — and a larger value truncates earlier
-        (faster). The default ``1e-6`` is effectively untruncated;
-        raising it (e.g. ``1e-5``) speeds up broad/Lorentzian fits while
-        staying within ~0.4σ of the untruncated result. Reading returns
-        the underlying descriptor; assigning updates its value.
-        """
-        return self._cutoff_fwhm_auto_floor
-
-    @cutoff_fwhm_auto_floor.setter
-    def cutoff_fwhm_auto_floor(self, value: float) -> None:
-        """Set the automatic-cutoff floor (fraction of peak height)."""
-        self._cutoff_fwhm_auto_floor.value = value
 
     @property
     def broad_gauss_u(self) -> Parameter:
