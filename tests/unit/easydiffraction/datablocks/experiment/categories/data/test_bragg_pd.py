@@ -143,6 +143,47 @@ def test_pd_data_calc_status_exclusion():
     np.testing.assert_array_almost_equal(coll.intensity_meas, np.array([100.0, 400.0]))
 
 
+def test_pd_data_calc_cache_invalidated_on_public_calc_status_write():
+    # Warming the included-point cache and then flipping a single
+    # point's status through the public descriptor must not leave the
+    # cache stale.
+    from easydiffraction.datablocks.experiment.categories.data.bragg_pd import PdCwlData
+
+    coll = PdCwlData()
+    x_vals = np.array([10.0, 20.0, 30.0, 40.0])
+    coll._create_items_set_xcoord_and_id(x_vals)
+    coll._set_intensity_meas(np.array([100.0, 200.0, 300.0, 400.0]))
+
+    # Warm the cached mask/list.
+    np.testing.assert_array_almost_equal(coll.x, x_vals)
+
+    # Public per-point descriptor write.
+    coll['2'].calc_status.value = 'excl'
+
+    np.testing.assert_array_almost_equal(coll.x, np.array([10.0, 30.0, 40.0]))
+    np.testing.assert_array_almost_equal(coll.intensity_meas, np.array([100.0, 300.0, 400.0]))
+
+
+def test_pd_data_calc_cache_invalidated_on_public_point_mutation():
+    # Warming the cache and then mutating the point set through public
+    # collection APIs (remove, clear) must rebuild the cache.
+    from easydiffraction.datablocks.experiment.categories.data.bragg_pd import PdCwlData
+
+    coll = PdCwlData()
+    coll._create_items_set_xcoord_and_id(np.array([10.0, 20.0, 30.0]))
+
+    # Warm the cached mask/list.
+    np.testing.assert_array_almost_equal(coll.x, np.array([10.0, 20.0, 30.0]))
+
+    # Public point removal.
+    del coll['1']
+    np.testing.assert_array_almost_equal(coll.x, np.array([20.0, 30.0]))
+
+    # Public clear.
+    coll.clear()
+    assert coll.x.size == 0
+
+
 def test_pd_cwl_data_type_info():
     from easydiffraction.datablocks.experiment.categories.data.bragg_pd import PdCwlData
     from easydiffraction.datablocks.experiment.categories.data.bragg_pd import PdTofData

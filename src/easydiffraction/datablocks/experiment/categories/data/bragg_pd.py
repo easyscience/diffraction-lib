@@ -407,6 +407,21 @@ class PdDataBase(CategoryCollection):
         self._calc_mask_cache = None
         self._calc_items_cache = None
 
+    def _on_items_changed(self) -> None:
+        """
+        Invalidate the calc cache and wire per-point status callbacks.
+
+        Runs after every point add, replace, remove, and bulk-adopt
+        (via the base collection hook). It drops the cached
+        included-point view and (re)wires each point's ``calc_status``
+        descriptor so a later public ``point.calc_status.value = ...``
+        write also invalidates the cache, keeping ``_calc_mask`` /
+        ``_calc_items`` correct after any public mutation.
+        """
+        self._invalidate_calc_cache()
+        for point in self._items:
+            point.calc_status._on_change = self._invalidate_calc_cache
+
     def _set_calc_status(self, values: object) -> None:
         """Set refinement status."""
         for p, v in zip(self._items, values, strict=True):
