@@ -82,12 +82,12 @@ Expose a per-experiment peak-profile range cutoff and feed it to cryspy.
 3. **Backend hand-off (no cryspy CIF-schema change).** The cryspy
    profile functions take a `wdt` argument that defaults to a module
    constant; the cryspy `rhochi` drivers read it from the experiment
-   dictionary key `profile_cutoff_fwhm`, falling back to the constant when
-   absent. The EasyDiffraction cryspy calculator injects
-   `cryspy_dict[<expt>]["profile_cutoff_fwhm"] = peak.cutoff_fwhm.value` in the
-   peak-update step, which runs on **both** the object-recreate path and
-   the minimizer fast-dict path, so the value reaches every calculation
-   without serialising a new CIF item.
+   dictionary key `profile_cutoff_fwhm`, falling back to the constant
+   when absent. The EasyDiffraction cryspy calculator injects
+   `cryspy_dict[<expt>]["profile_cutoff_fwhm"] = peak.cutoff_fwhm.value`
+   in the peak-update step, which runs on **both** the object-recreate
+   path and the minimizer fast-dict path, so the value reaches every
+   calculation without serialising a new CIF item.
 
 4. **Defaults.** `cutoff_fwhm = 10` (TOF), `cutoff_fwhm = 80` (CWL) —
    the smallest values that keep every FullProf verification's area
@@ -111,10 +111,11 @@ Expose a per-experiment peak-profile range cutoff and feed it to cryspy.
 - `cutoff_fwhm` persists in the experiment CIF
   (`_easydiffraction_peak.cutoff_fwhm`) like other peak settings; it is
   never refined.
-- Correct results require a cryspy build that honours `profile_cutoff_fwhm`.
-  Until the upstream cryspy PR is released this is supplied by the local
-  patch; a stock cryspy ignores the key and computes the full profile
-  (slower but identical numerically), so the parameter degrades safely.
+- Correct results require a cryspy build that honours
+  `profile_cutoff_fwhm`. Until the upstream cryspy PR is released this
+  is supplied by the local patch; a stock cryspy ignores the key and
+  computes the full profile (slower but identical numerically), so the
+  parameter degrades safely.
 - The accuracy contract is stated in area-ratio terms, giving a clear
   rule for choosing or validating any future default.
 
@@ -143,5 +144,6 @@ Expose a per-experiment peak-profile range cutoff and feed it to cryspy.
   even though the Wyckoff orbit assignment is fixed for the duration of
   a fit. Caching the per-site orbit template at fit setup is the larger
   refinement-speed win and is out of scope for this ADR.
-- Upstream cryspy PR adding `profile_cutoff_fwhm` support (peak-range cutoff for
-  the TOF and CWL profiles) so the local patch can be dropped.
+- Upstream cryspy PR adding `profile_cutoff_fwhm` support (peak-range
+  cutoff for the TOF and CWL profiles) so the local patch can be
+  dropped.
