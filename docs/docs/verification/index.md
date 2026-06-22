@@ -26,8 +26,9 @@ term); these are marked below and inside the notebook.
 - [pd-neut-cwl LaB6 isotope](pd-neut-cwl_LaB6_11B.ipynb) –
   **isotope-specific neutron scattering length** (¹¹B).
 - [pd-neut-cwl LaB6 sample displacement](pd-neut-cwl_LaB6_sycos-sysin.ipynb)
-  – **sample displacement correction** (FullProf "SyCos, SySin"). _Known
-  difference: cryspy's convention does not yet match FullProf._
+  – **sample displacement and transparency correction** (FullProf
+  "SyCos, SySin"); agrees with FullProf since cryspy 0.12.0 implements
+  `offset_SyCos`/`offset_SySin`.
 - [pd-neut-cwl LaB6 FCJ asymmetry](pd-neut-cwl_LaB6_fcj-asymmetry.ipynb)
   – **Finger-Cox-Jephcoat asymmetry** (FullProf "Npr=7"). _Known
   difference: the cryspy CW profile has no FCJ term._
