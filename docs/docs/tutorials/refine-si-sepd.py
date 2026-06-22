@@ -69,7 +69,9 @@ data_path = download_data('meas-si-sepd', destination='data')
 
 # %%
 expt = ExperimentFactory.from_data_path(
-    name='sepd', data_path=data_path, beam_mode='time-of-flight'
+    name='sepd',
+    data_path=data_path,
+    beam_mode='time-of-flight',
 )
 
 # %% [markdown]
@@ -86,27 +88,32 @@ expt.instrument.calib_d_to_tof_quadratic = -1.54
 
 # %%
 expt.peak.show_supported()
-expt.peak.broad_gauss_sigma_0 = 3.0
-expt.peak.broad_gauss_sigma_1 = 40.0
-expt.peak.broad_gauss_sigma_2 = 2.0
+
+# %%
+expt.peak.type = 'jorgensen-von-dreele'
+
+# %%
+expt.peak.broad_gauss_sigma_0 = 3.0148
+expt.peak.broad_gauss_sigma_1 = 33.3451
+expt.peak.broad_lorentz_gamma_1 = 2.5489
 expt.peak.decay_beta_0 = 0.04221
 expt.peak.decay_beta_1 = 0.00946
-expt.peak.rise_alpha_0 = 0.0
 expt.peak.rise_alpha_1 = 0.5971
+
+# %%
+expt.peak.cutoff_fwhm = 10
 
 # %% [markdown]
 # ### Set Background
 
 # %%
-expt.background.type = 'line-segment'
-for x in range(0, 35000, 5000):
-    expt.background.create(id=str(x), position=x, intensity=200)
+expt.background.auto_estimate()
 
 # %% [markdown]
 # ### Set Linked Structures
 
 # %%
-expt.linked_structures.create(structure_id='si', scale=10.0)
+expt.linked_structures.create(structure_id='si', scale=600.0)
 
 # %% [markdown]
 # ## 📦 Define Project
@@ -150,7 +157,7 @@ project.display.pattern(expt_name='sepd')
 project.display.pattern(expt_name='sepd', x_min=23200, x_max=23700)
 
 # %% [markdown]
-# ### Perform Fit 1/5
+# ### Perform Fit 1/4
 #
 # Set parameters to be refined.
 
@@ -170,6 +177,9 @@ project.display.parameters.free()
 # #### Run Fitting
 
 # %%
+project.analysis.minimizer.type = 'bumps (lm)'
+
+# %%
 project.analysis.fit()
 project.display.fit.results()
 
@@ -183,7 +193,7 @@ project.display.pattern(expt_name='sepd')
 project.display.pattern(expt_name='sepd', x_min=23200, x_max=23700)
 
 # %% [markdown]
-# ### Perform Fit 2/5
+# ### Perform Fit 2/4
 #
 # Set more parameters to be refined.
 
@@ -214,7 +224,7 @@ project.display.pattern(expt_name='sepd')
 project.display.pattern(expt_name='sepd', x_min=23200, x_max=23700)
 
 # %% [markdown]
-# ### Perform Fit 3/5
+# ### Perform Fit 3/4
 #
 # Fix background points.
 
@@ -228,7 +238,7 @@ for point in expt.background:
 # %%
 expt.peak.broad_gauss_sigma_0.free = True
 expt.peak.broad_gauss_sigma_1.free = True
-expt.peak.broad_gauss_sigma_2.free = True
+expt.peak.broad_lorentz_gamma_1.free = True
 
 # %% [markdown]
 # Show free parameters after selection.
@@ -253,7 +263,7 @@ project.display.pattern(expt_name='sepd')
 project.display.pattern(expt_name='sepd', x_min=23200, x_max=23700)
 
 # %% [markdown]
-# ### Perform Fit 4/5
+# ### Perform Fit 4/4
 #
 # Set more parameters to be refined.
 
@@ -288,68 +298,6 @@ project.display.fit.correlations()
 
 # %%
 project.display.pattern(expt_name='sepd')
-
-# %%
-project.display.pattern(expt_name='sepd', x_min=23200, x_max=23700)
-
-# %%
-project.display.pattern(expt_name='sepd', x='d_spacing')
-
-
-# %% [markdown]
-# ### Perform Fit 5/5
-#
-# #### Switch calculator engine
-
-# %%
-expt.calculator.show_supported()
-
-# %%
-expt.calculator.type = 'crysfml'
-
-# %% [markdown]
-# #### Change peak profile type
-
-# %%
-expt.peak.show_supported()
-
-# %%
-expt.peak.type = 'jorgensen-von-dreele'
-
-# %%
-expt.peak.broad_gauss_sigma_0 = 3.0148
-expt.peak.broad_gauss_sigma_1 = 33.3451
-expt.peak.broad_lorentz_gamma_1 = 2.5489
-expt.peak.decay_beta_0 = 0.04221
-expt.peak.decay_beta_1 = 0.00946
-expt.peak.rise_alpha_1 = 0.5971
-
-# %% [markdown]
-# #### Add new free parameters
-
-# %%
-expt.peak.broad_gauss_sigma_0.free = True
-expt.peak.broad_gauss_sigma_1.free = True
-expt.peak.broad_lorentz_gamma_1.free = True
-expt.peak.decay_beta_0.free = True
-expt.peak.decay_beta_1.free = True
-expt.peak.rise_alpha_1.free = True
-
-# %% [markdown]
-# #### Run Fitting
-
-# %%
-project.analysis.fit()
-project.display.fit.results()
-
-# %% [markdown]
-# #### Display Correlations
-
-# %%
-project.display.fit.correlations()
-
-# %% [markdown]
-# #### Display Pattern
 
 # %%
 project.display.pattern(expt_name='sepd', x_min=23200, x_max=23700)
