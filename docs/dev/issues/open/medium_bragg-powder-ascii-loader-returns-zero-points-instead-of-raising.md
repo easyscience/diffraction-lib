@@ -21,3 +21,11 @@ families.
   — the consistent (raising) reference
 
 **Depends on:** related to issue 66 (`log.error` vs `raise` strategy).
+
+**Audit note (2026-06-23):** the same loader has a second boundary bug.
+`io/ascii.py:270` returns `np.loadtxt(...)`, which is **1-D** for a
+single-row file, so the caller's `data.shape[1]` (`bragg_pd.py:141`)
+raises an opaque `IndexError: tuple index out of range` instead of the
+clear "needs ≥2 columns" message. Fix both together — normalise with
+`np.atleast_2d(...)` in the loader, and raise (not `return 0`) on
+too-few columns.

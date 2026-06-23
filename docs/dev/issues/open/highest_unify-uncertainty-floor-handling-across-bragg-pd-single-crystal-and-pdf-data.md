@@ -38,3 +38,10 @@ uncertainty). Related to issue 15 (joint-fit weights).
 audit: inconsistent uncertainty-floor handling yields silent NaN/inf
 residuals — the same residual-safety class as the Tier 1 joint-fit
 weight issues (#3 / #15).
+
+**Audit note (2026-06-23):** within Bragg PD the near-zero clamp itself
+is duplicated — the CIF-read `intensity_meas_su` property and the ASCII
+loader (`bragg_pd.py:163`) each apply their own
+`np.where(su < _MIN_UNCERTAINTY, 1.0, …)`. Centralising the floor on
+`NumericDescriptor` (the planned fix) removes this duplication too, so
+CIF and ASCII inputs cannot diverge.

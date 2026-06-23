@@ -27,3 +27,10 @@ the pattern from `bragg_sc.py`.
 **Recommended-priority note:** Part of the data `_update` refactor
 cluster (with #32 / #33): decompose `_update`. **Tier 4
 (maintainability).**
+
+**Audit note (2026-06-23):** concrete duplication to target — the
+structure-accumulation loop ("for each linked structure: fetch
+calculator, add `scale * calculate_pattern`, set result") is copy-pasted
+across `bragg_pd.py:781-793` and `total_pd.py:240-267` (the latter's own
+TODO at `total_pd.py:252` flags the divergence). Extracting it into a
+shared base-class helper is the decomposition this issue asks for.
