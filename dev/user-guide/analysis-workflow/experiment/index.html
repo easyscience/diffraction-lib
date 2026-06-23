@@ -4942,6 +4942,45 @@ aspects of the experiment:</p>
 <span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="p">[</span><span class="s1">&#39;hrpt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">peak</span><span class="o">.</span><span class="n">broad_lorentz_x</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="p">[</span><span class="s1">&#39;hrpt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">peak</span><span class="o">.</span><span class="n">broad_lorentz_y</span> <span class="o">=</span> <span class="mf">0.1</span>
 </code></pre></div>
+<p>For time-of-flight data, the peak profiles by source type and relative
+performance (fastest to slowest):</p>
+<table>
+<thead>
+<tr>
+<th>TOF profile</th>
+<th>TOF source</th>
+<th>Performance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pseudo-Voigt (non-convoluted)</td>
+<td>Symmetric profile; simplest TOF case</td>
+<td>Fastest</td>
+</tr>
+<tr>
+<td>Jorgensen (back-to-back exponentials ⊗ Gaussian)</td>
+<td>Simpler TOF profile, including reactor-source TOF implementations</td>
+<td>Fast</td>
+</tr>
+<tr>
+<td>Ikeda-Carpenter ⊗ pseudo-Voigt <img alt="🚧" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/1f6a7.svg" title=":construction:" /></td>
+<td>Spallation-source TOF; moderator pulse shape model</td>
+<td>Moderate</td>
+</tr>
+<tr>
+<td>Jorgensen-Von Dreele (back-to-back exponentials ⊗ pseudo-Voigt)</td>
+<td>Spallation-source TOF</td>
+<td>Slower</td>
+</tr>
+<tr>
+<td>Double back-to-back exponentials ⊗ pseudo-Voigt (Z-Rietveld type0m)</td>
+<td>Spallation-source TOF; more elaborate asymmetric profile</td>
+<td>Slowest</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="🚧" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/1f6a7.svg" title=":construction:" /> = work in progress (not yet available for selection).</p>
 <h3 id="background-category">4. Background Category</h3>
 <div class="language-python highlight"><pre><span></span><code><span class="c1"># Select the desired background type</span>
 <span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="p">[</span><span class="s1">&#39;hrpt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">background</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s1">&#39;line-segment&#39;</span>
