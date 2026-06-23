@@ -231,15 +231,18 @@ project.experiments['hrpt'].peak.broad_lorentz_x = 0
 project.experiments['hrpt'].peak.broad_lorentz_y = 0.1
 ```
 
-For time-of-flight data, the available peak profiles by source type and
-relative performance (fastest to slowest):
+For time-of-flight data, the peak profiles by source type and relative
+performance (fastest to slowest):
 
 | TOF profile                                                         | TOF source                                                        | Performance |
 | ------------------------------------------------------------------- | ----------------------------------------------------------------- | ----------- |
 | Pseudo-Voigt (non-convoluted)                                       | Symmetric profile; simplest TOF case                              | Fastest     |
 | Jorgensen (back-to-back exponentials ⊗ Gaussian)                    | Simpler TOF profile, including reactor-source TOF implementations | Fast        |
+| Ikeda-Carpenter ⊗ pseudo-Voigt :construction:                       | Spallation-source TOF; moderator pulse shape model                | Moderate    |
 | Jorgensen-Von Dreele (back-to-back exponentials ⊗ pseudo-Voigt)     | Spallation-source TOF                                             | Slower      |
 | Double back-to-back exponentials ⊗ pseudo-Voigt (Z-Rietveld type0m) | Spallation-source TOF; more elaborate asymmetric profile          | Slowest     |
+
+:construction: = work in progress (not yet available for selection).
 
 ### 4. Background Category { #background-category }
 
