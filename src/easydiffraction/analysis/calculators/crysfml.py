@@ -199,8 +199,8 @@ class CrysfmlCalculator(CalculatorBase):
             return np.asarray([])
 
         # CrysFML's CFL backend has no time-of-flight branch and would
-        # otherwise produce a silent zero pattern. Fail clearly so the
-        # unsupported engine/beam-mode combination is never mistaken for a
+        # otherwise return a silent zero pattern. Fail clearly so an
+        # unsupported engine/beam-mode pair is never mistaken for a
         # real calculation.
         if experiment.experiment_type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
             msg = (
@@ -217,9 +217,9 @@ class CrysfmlCalculator(CalculatorBase):
             log.warning('[CrysfmlCalculator] No calculated data')
             y = []
         except RuntimeError as exc:
-            # Time-of-flight is rejected above; this catches an unexpected
-            # CrysFML simulation failure on a constant-wavelength pattern and
-            # returns zeros rather than crashing the caller's pattern sum.
+            # TOF is rejected above; this catches an unexpected CrysFML
+            # CW simulation failure and returns zeros instead of
+            # crashing the caller's pattern sum.
             log.warning(
                 f'[CrysfmlCalculator] CrysFML could not simulate this pattern '
                 f'(returning zeros). Details: {exc}'
