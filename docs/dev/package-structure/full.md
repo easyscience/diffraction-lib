@@ -666,6 +666,8 @@
 │   │   │   │   └── 🏷️ class ProjectMetadata
 │   │   │   └── 📄 factory.py
 │   │   │       └── 🏷️ class ProjectMetadataFactory
+│   │   ├── 📁 publication
+│   │   ├── 📁 rendering
 │   │   ├── 📁 rendering_plot
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
@@ -725,6 +727,7 @@
 │   ├── 📁 templates
 │   │   ├── 📁 html
 │   │   └── 📁 tex
+│   │       └── 📁 styles
 │   ├── 📄 __init__.py
 │   ├── 📄 data_context.py
 │   │   └── 🏷️ class ReportDataContext
