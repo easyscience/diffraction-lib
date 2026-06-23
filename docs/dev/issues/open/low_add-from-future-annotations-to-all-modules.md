@@ -4,8 +4,8 @@
 
 **Type:** Hygiene / Consistency
 
-`AGENTS.md` (Code Style) requires `from __future__ import annotations` in
-**every** module, but many source files lack it. The linter does not
+`AGENTS.md` (Code Style) requires `from __future__ import annotations`
+in **every** module, but many source files lack it. The linter does not
 enforce it universally, so the convention has drifted.
 
 No count is quoted here on purpose: the number is highly sensitive to
@@ -17,12 +17,10 @@ misleading without its exact command and scope.
 
 1. Fix the counting scope first — exclude vendored paths
    (`report/templates/.../vendor/`, `report/templates/tex/styles/`,
-   `utils/_vendored/...`), and decide whether package `__init__.py` files
-   must carry the import.
+   `utils/_vendored/...`), and decide whether package `__init__.py`
+   files must carry the import.
 2. Generate the exact list with a recorded command, e.g.
-   `grep -L "from __future__ import annotations" $(find src/easydiffraction
-   -name '*.py' -not -path '*/vendor/*' -not -path '*/_vendored/*' -not
-   -path '*/styles/*')`.
+   `grep -L "from __future__ import annotations" $(find src/easydiffraction -name '*.py' -not -path '*/vendor/*' -not -path '*/_vendored/*' -not -path '*/styles/*')`.
 3. Add the import as the first import line of each listed module in one
    mechanical pass.
 

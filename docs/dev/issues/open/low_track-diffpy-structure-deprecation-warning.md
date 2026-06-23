@@ -24,7 +24,8 @@ The risk is real but external: when diffpy 4.0 removes
 
 **Fix:**
 
-1. Identify which installed package imports `diffpy.Structure` (capital).
+1. Identify which installed package imports `diffpy.Structure`
+   (capital).
 2. If it is a pinned dependency we control, bump/track it; otherwise
    record the upstream-tracking dependency and watch for the diffpy 4.0
    migration.

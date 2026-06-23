@@ -21,9 +21,9 @@ mapping and the hardcoded defaults need verification.
 **Audit note (2026-06-23):** `_cif_background_section`
 (`cryspy.py:1718-1725`) writes, for both CWL and TOF, two background
 points at `twotheta_min`/`twotheta_max` with hardcoded `0.0` intensity;
-for TOF the tag is `_tof_backgroundpoint_time` but the values are 2θ, not
-TOF times. This is **not** a wrong-science risk: the user's real
+for TOF the tag is `_tof_backgroundpoint_time` but the values are 2θ,
+not TOF times. This is **not** a wrong-science risk: the user's real
 background is added at the model layer — `data/bragg_pd.py:578` writes
-`calc + self.intensity_bkg` — so this dummy CIF section is dead/cosmetic.
-Fix = remove it (or populate it correctly, with TOF times for TOF) and
-drop the mislabeled tags.
+`calc + self.intensity_bkg` — so this dummy CIF section is
+dead/cosmetic. Fix = remove it (or populate it correctly, with TOF times
+for TOF) and drop the mislabeled tags.

@@ -6,10 +6,10 @@ committed repository artifacts. The `.gitignore` `# Agents` block keeps
 both files ignored, and a note at the top of `AGENTS.md` (plus a clause
 in §Change Discipline) records that they are deliberately local-only.
 The `.gitignore` block ignores only `AGENTS.md` / `CLAUDE.md` themselves
-— **not** their `AGENTS_review-N.md` / `AGENTS_reply-N.md` artifacts — so
-those review/reply files stay visible in `git status` by design, a
-deliberate reminder that they are temporary and must be cleaned up once a
-review cycle closes (the agent never `git add`s them). This removes the
-earlier contradiction (the document described itself as checked-in while
-being ignored) by adopting the local-only branch rather than committing
-the files.
+— **not** their `AGENTS_review-N.md` / `AGENTS_reply-N.md` artifacts —
+so those review/reply files stay visible in `git status` by design, a
+deliberate reminder that they are temporary and must be cleaned up once
+a review cycle closes (the agent never `git add`s them). This removes
+the earlier contradiction (the document described itself as checked-in
+while being ignored) by adopting the local-only branch rather than
+committing the files.

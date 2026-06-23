@@ -466,9 +466,9 @@ category's class-level `_engine_metadata` dict.
 
 ### Suggestions superseded or absorbed
 
-- [`parameter-posterior-summary.md`](parameter-posterior-summary.md)
-  — absorbed by §3 of this ADR. When this ADR is accepted, that
-  suggestion can be closed and a pointer added.
+- [`parameter-posterior-summary.md`](parameter-posterior-summary.md) —
+  absorbed by §3 of this ADR. When this ADR is accepted, that suggestion
+  can be closed and a pointer added.
 
 ## Alternatives Considered
 
