@@ -41,9 +41,9 @@ struct.space_group.name_h_m = 'P n m a'
 # ### Set Unit Cell
 
 # %%
-struct.cell.length_a = 8.47
-struct.cell.length_b = 5.39
-struct.cell.length_c = 6.95
+struct.cell.length_a = 8.48
+struct.cell.length_b = 5.40
+struct.cell.length_c = 6.96
 
 # %% [markdown]
 # ### Set Atom Sites
@@ -130,7 +130,7 @@ expt.instrument.setup_wavelength_2_to_1_ratio = 0.5
 expt.instrument.setup_polarization_coefficient = 0.58
 expt.instrument.setup_monochromator_twotheta = 28
 
-expt.instrument.calib_twotheta_offset = -0.0292
+expt.instrument.calib_twotheta_offset = -0.02
 
 # %% [markdown]
 # #### Set Peak Profile
@@ -139,14 +139,15 @@ expt.instrument.calib_twotheta_offset = -0.0292
 expt.peak.type = 'pseudo-voigt + berar-baldinozzi asymmetry'
 
 # %%
-expt.peak.broad_gauss_u = 0.0187
-expt.peak.broad_gauss_v = -0.0175
-expt.peak.broad_gauss_w = 0.0075
-expt.peak.broad_lorentz_x = 0
-expt.peak.broad_lorentz_y = 0.0655
+expt.peak.broad_gauss_u = 0.03
+expt.peak.broad_gauss_v = -0.04
+expt.peak.broad_gauss_w = 0.01
+expt.peak.broad_lorentz_y = 0.06
 
-expt.peak.asym_beba_a0 = -0.2176
-expt.peak.asym_beba_b0 = -0.0301
+expt.peak.asym_beba_a0 = -0.23
+expt.peak.asym_beba_b0 = -0.03
+
+expt.peak.cutoff_fwhm = 6
 
 # %% [markdown]
 # #### Set Excluded Regions
@@ -169,12 +170,12 @@ expt.background.type = 'chebyshev'
 
 # %%
 for id, x, y in [
-    ('1', 0, 143.9591),
-    ('2', 1, 67.1718),
-    ('3', 2, 13.7879),
-    ('4', 3, -1.2264),
-    ('5', 4, 4.4514),
-    ('6', 5, -17.7450),
+    ('1', 0, 149.0),
+    ('2', 1, 67.0),
+    ('3', 2, 9.0),
+    ('4', 3, 10.0),
+    ('5', 4, -5.0),
+    ('6', 5, -9.0),
 ]:
     expt.background.create(id=id, order=x, coef=y)
 
@@ -212,11 +213,6 @@ project.experiments.add(expt)
 #
 # This section outlines the analysis process, including how to configure
 # calculation and fitting engines.
-#
-# ### Set Minimizer
-
-# %%
-project.analysis.minimizer.type = 'bumps (lm)'
 
 # %% [markdown]
 # ### Set Free Parameters
@@ -227,10 +223,6 @@ project.analysis.minimizer.type = 'bumps (lm)'
 struct.cell.length_a.free = True
 struct.cell.length_b.free = True
 struct.cell.length_c.free = True
-
-# for atom_id in ('Pb', 'S', 'O1', 'O2', 'O3'):
-#     atom = struct.atom_sites[atom_id]
-#     atom.adp_iso.free = True
 
 # %% [markdown]
 # Set experiment parameters to be optimized.

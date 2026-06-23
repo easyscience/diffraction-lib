@@ -79,7 +79,7 @@ expt = ExperimentFactory.from_data_path(
 
 # %%
 expt.instrument.setup_twotheta_bank = 144.845
-expt.instrument.calib_d_to_tof_offset = 0.0
+expt.instrument.calib_d_to_tof_offset = -10.0
 expt.instrument.calib_d_to_tof_linear = 7476.91
 expt.instrument.calib_d_to_tof_quadratic = -1.54
 
@@ -95,13 +95,17 @@ expt.peak.type = 'jorgensen-von-dreele'
 # %%
 expt.peak.broad_gauss_sigma_0 = 3.0148
 expt.peak.broad_gauss_sigma_1 = 33.3451
+expt.peak.broad_gauss_sigma_2 = 0.0
+expt.peak.broad_lorentz_gamma_0 = 0.0
 expt.peak.broad_lorentz_gamma_1 = 2.5489
-expt.peak.decay_beta_0 = 0.04221
-expt.peak.decay_beta_1 = 0.00946
+expt.peak.broad_lorentz_gamma_2 = 0.0
+expt.peak.rise_alpha_0 = 0.0
 expt.peak.rise_alpha_1 = 0.5971
+expt.peak.decay_beta_0 = 0.0408
+expt.peak.decay_beta_1 = 0.0123
 
 # %%
-expt.peak.cutoff_fwhm = 10
+expt.peak.cutoff_fwhm = 8.2
 
 # %% [markdown]
 # ### Set Background
@@ -272,7 +276,6 @@ structure.atom_sites['Si'].adp_iso.free = True
 
 expt.peak.decay_beta_0.free = True
 expt.peak.decay_beta_1.free = True
-expt.peak.rise_alpha_1.free = True
 
 # %% [markdown]
 # Show free parameters after selection.
