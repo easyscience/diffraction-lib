@@ -181,7 +181,10 @@ class CryspyCalculator(CalculatorBase):
         # TODO: This is temporary solution to mark all structures as
         #  nuclear-only. Once magnetic structure is implemented, we
         #  would need to auto-detect it.
-        cryspy_dict[f'crystal_{structure.name}']['flag_only_nuclear'] = True
+        # TODO: = True fails for hs-hrpt example with:
+        #  structure.space_group.name_h_m = 'R -3 m'
+        #  structure.space_group.coord_system_code = 'h'
+        cryspy_dict[f'crystal_{structure.name}']['flag_only_nuclear'] = False
 
         # Calculate the pattern using Cryspy
         # TODO: Redirect stderr to suppress Cryspy warnings.
@@ -286,7 +289,10 @@ class CryspyCalculator(CalculatorBase):
         # TODO: This is temporary solution to mark all structures as
         #  nuclear-only. Once magnetic structure is implemented, we
         #  would need to auto-detect it.
-        cryspy_dict[f'crystal_{structure.name}']['flag_only_nuclear'] = True
+        # TODO: = True fails for hs-hrpt example with:
+        #  structure.space_group.name_h_m = 'R -3 m'
+        #  structure.space_group.coord_system_code = 'h'
+        cryspy_dict[f'crystal_{structure.name}']['flag_only_nuclear'] = False
 
         doublet_dict = None
         if self._cw_doublet_is_active(experiment):
@@ -842,6 +848,10 @@ class CryspyCalculator(CalculatorBase):
                 cryspy_resolution[3] = experiment.peak.broad_lorentz_x.value
                 cryspy_resolution[4] = experiment.peak.broad_lorentz_y.value
 
+                # Peak-range cutoff (FullProf "WDT"): speed vs accuracy.
+                if hasattr(experiment.peak, 'cutoff_fwhm'):
+                    cryspy_expt_dict['profile_cutoff_fwhm'] = experiment.peak.cutoff_fwhm.value
+
                 if 'asymmetry_parameters' in cryspy_expt_dict:
                     cryspy_asymmetry = cryspy_expt_dict['asymmetry_parameters']
                     cryspy_asymmetry[0] = experiment.peak.asym_beba_a0.value
@@ -1373,6 +1383,21 @@ def _update_tof_peak_in_cryspy_dict(
 ) -> None:
     """Update TOF peak profile-specific arrays in the cached dict."""
     peak_tag = peak.type_info.tag
+    # Peak-range cutoff (FullProf "WDT"): speed vs accuracy of the TOF
+    # profile in cryspy. Injected straight into the dict so it reaches
+    # both the recreate-object and minimizer fast paths.
+    if hasattr(peak, 'cutoff_fwhm'):
+        cryspy_expt_dict['profile_cutoff_fwhm'] = peak.cutoff_fwhm.value
+    # Microstructural isotropic size/strain (additive to sigma/gamma).
+    # The CIF/object-recreate path emits these, but the minimizer
+    # fast-dict path must refresh them too, otherwise refining them is a
+    # silent no-op once the cryspy dict is cached.
+    if hasattr(peak, 'broad_gauss_size_g'):
+        cryspy_expt_dict['profile_size_g'] = peak.broad_gauss_size_g.value
+        cryspy_expt_dict['profile_strain_g'] = peak.broad_gauss_strain_g.value
+    if hasattr(peak, 'broad_lorentz_size_l'):
+        cryspy_expt_dict['profile_size_l'] = peak.broad_lorentz_size_l.value
+        cryspy_expt_dict['profile_strain_l'] = peak.broad_lorentz_strain_l.value
     # TODO: Need to improve this logic to be more robust and extensible
     #  for future profiles
     if not hasattr(peak, 'decay_beta_0') and not hasattr(peak, 'dexp_decay_beta_00'):
@@ -1437,6 +1462,10 @@ def _cif_peak_section(
             'broad_lorentz_gamma_0': '_tof_profile_gamma0',
             'broad_lorentz_gamma_1': '_tof_profile_gamma1',
             'broad_lorentz_gamma_2': '_tof_profile_gamma2',
+            'broad_gauss_size_g': '_tof_profile_size_g',
+            'broad_gauss_strain_g': '_tof_profile_strain_g',
+            'broad_lorentz_size_l': '_tof_profile_size_l',
+            'broad_lorentz_strain_l': '_tof_profile_strain_l',
         }
 
         peak_tag = peak.type_info.tag

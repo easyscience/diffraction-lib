@@ -166,6 +166,7 @@ expt.peak.broad_gauss_u = 0.24
 expt.peak.broad_gauss_v = -0.53
 expt.peak.broad_gauss_w = 0.38
 expt.peak.broad_lorentz_y = 0.02
+expt.peak.cutoff_fwhm = 8
 
 # %% [markdown]
 # ### Set Excluded Regions

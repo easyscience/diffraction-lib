@@ -134,6 +134,9 @@ expt.peak.broad_gauss_u = 0.3
 expt.peak.broad_gauss_v = -0.5
 expt.peak.broad_gauss_w = 0.4
 
+# %%
+expt.peak.cutoff_fwhm = 8
+
 # %% [markdown]
 # ### Set Background
 

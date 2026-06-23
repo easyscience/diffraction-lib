@@ -255,13 +255,14 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
     # Perform fit
     project.analysis.fit()
 
-    # Compare parameter values after fit
-    assert_almost_equal(atom_sites['La'].adp_iso.value, desired=15.0945, decimal=2)
-    assert_almost_equal(atom_sites['Ba'].adp_iso.value, desired=0.5226, decimal=2)
+    # Compare parameter values after fit. La and Ba share one site with
+    # both occupancy and Biso free, so their individual values are
+    # degenerate here (uncertainty ~80) and are not a meaningful
+    # regression target. Assert only the well-constrained Co/O Biso and
+    # the reduced chi-square; the degeneracy is removed by the
+    # constraints in the 2nd fitting below.
     assert_almost_equal(atom_sites['Co'].adp_iso.value, desired=0.2398, decimal=2)
     assert_almost_equal(atom_sites['O'].adp_iso.value, desired=1.4049, decimal=2)
-    assert_almost_equal(atom_sites['La'].occupancy.value, desired=0.011, decimal=2)
-    assert_almost_equal(atom_sites['Ba'].occupancy.value, desired=1.3206, decimal=2)
 
     # Compare fit quality
     assert_almost_equal(

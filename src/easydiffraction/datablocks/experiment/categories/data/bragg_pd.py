@@ -396,6 +396,32 @@ class PdDataBase(CategoryCollection):
         for p, v in zip(self._calc_items, values, strict=True):
             p.intensity_bkg._value = v
 
+    def _invalidate_calc_cache(self) -> None:
+        """
+        Drop the cached included-point mask/list.
+
+        Called whenever the calc-status flags or the point set change,
+        so the cached ``_calc_mask`` / ``_calc_items`` are rebuilt on
+        next access.
+        """
+        self._calc_mask_cache = None
+        self._calc_items_cache = None
+
+    def _on_items_changed(self) -> None:
+        """
+        Invalidate the calc cache and wire per-point status callbacks.
+
+        Runs after every point add, replace, remove, and bulk-adopt (via
+        the base collection hook). It drops the cached included-point
+        view and (re)wires each point's ``calc_status`` descriptor so a
+        later public ``point.calc_status.value = ...`` write also
+        invalidates the cache, keeping ``_calc_mask`` / ``_calc_items``
+        correct after any public mutation.
+        """
+        self._invalidate_calc_cache()
+        for point in self._items:
+            point.calc_status._on_change = self._invalidate_calc_cache
+
     def _set_calc_status(self, values: object) -> None:
         """Set refinement status."""
         for p, v in zip(self._items, values, strict=True):
@@ -406,15 +432,30 @@ class PdDataBase(CategoryCollection):
             else:
                 msg = f'Invalid refinement status value: {v}. Expected boolean True/False.'
                 raise ValueError(msg)
+        self._invalidate_calc_cache()
 
     @property
     def _calc_mask(self) -> np.ndarray:
-        return self.calc_status == 'incl'
+        # Cached: depends only on calc_status (changed only via
+        # _set_calc_status) and the point set (rebuilt on creation) —
+        # both invalidate the cache. Stable during a fit, so this avoids
+        # rebuilding the full calc_status array on every iteration.
+        cache = getattr(self, '_calc_mask_cache', None)
+        if cache is None:
+            cache = self.calc_status == 'incl'
+            self._calc_mask_cache = cache
+        return cache
 
     @property
     def _calc_items(self) -> list:
         """Get only the items included in calculations."""
-        return [item for item, mask in zip(self._items, self._calc_mask, strict=False) if mask]
+        cache = getattr(self, '_calc_items_cache', None)
+        if cache is None:
+            cache = [
+                item for item, mask in zip(self._items, self._calc_mask, strict=False) if mask
+            ]
+            self._calc_items_cache = cache
+        return cache
 
     # Grid generation when no measured scan exists
 
@@ -726,6 +767,7 @@ class PdCwlData(PdDataBase):
 
         # Create items
         self._adopt_items([self._item_type() for _ in range(values.size)])
+        self._invalidate_calc_cache()  # point set changed
 
         # Set two-theta values
         for p, v in zip(self._items, values, strict=True):
@@ -812,6 +854,7 @@ class PdTofData(PdDataBase):
 
         # Create items
         self._adopt_items([self._item_type() for _ in range(values.size)])
+        self._invalidate_calc_cache()  # point set changed
 
         # Set time-of-flight values
         for p, v in zip(self._items, values, strict=True):

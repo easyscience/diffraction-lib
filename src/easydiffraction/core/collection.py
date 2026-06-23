@@ -73,11 +73,13 @@ class CollectionBase(GuardedBase):
             if self._key_for(existing_item) == name:
                 self._items[i] = item
                 self._rebuild_index()
+                self._on_items_changed()
                 return
         # Otherwise append new item
         item._parent = self  # Explicitly set the parent for the item
         self._items.append(item)
         self._rebuild_index()
+        self._on_items_changed()
 
     def _adopt_items(self, items: list[GuardedBase]) -> None:
         """
@@ -91,6 +93,7 @@ class CollectionBase(GuardedBase):
 
         self._items = items
         self._rebuild_index()
+        self._on_items_changed()
 
     def __delitem__(self, name: str) -> None:
         """Delete an item by key or raise ``KeyError`` if missing."""
@@ -99,6 +102,7 @@ class CollectionBase(GuardedBase):
                 object.__setattr__(item, '_parent', None)  # Unlink the parent before removal
                 del self._items[i]
                 self._rebuild_index()
+                self._on_items_changed()
                 return
         raise KeyError(name)
 
@@ -152,6 +156,16 @@ class CollectionBase(GuardedBase):
             key = self._key_for(item)
             if key:
                 self._index[key] = item
+
+    def _on_items_changed(self) -> None:
+        """
+        Run after the item set is mutated.
+
+        The base implementation does nothing. Subclasses that cache a
+        view derived from the items (or from per-item descriptors)
+        override this to invalidate that cache on every add, replace,
+        remove, and bulk-adopt path.
+        """
 
     def keys(self) -> Generator[str | None, None, None]:
         """Yield keys for all items in insertion order."""

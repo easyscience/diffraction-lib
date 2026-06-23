@@ -35,3 +35,21 @@ def test_cwl_peak_classes_expose_expected_parameters_and_category():
     # FCJ asymmetry for TCH
     names_tch = {p.name for p in tch.parameters}
     assert {'asym_fcj_1', 'asym_fcj_2'}.issubset(names_tch)
+
+
+def test_cwl_cutoff_fwhm_default_no_cutoff_rejects_negative():
+    # cutoff_fwhm defaults to 0 (no cutoff: the full range is computed);
+    # 0 and positive (literal cutoff in FWHMs, mirroring FullProf WDT)
+    # are valid, negatives are not.
+    import pytest
+
+    from easydiffraction.datablocks.experiment.categories.peak.cwl import CwlPseudoVoigt
+
+    peak = CwlPseudoVoigt()
+    assert peak.cutoff_fwhm.value == 0.0  # no cutoff by default
+    with pytest.raises(TypeError, match='outside'):
+        peak.cutoff_fwhm = -3.0
+    peak.cutoff_fwhm = 0.0  # no-cutoff stays valid
+    assert peak.cutoff_fwhm.value == 0.0
+    peak.cutoff_fwhm = 25.0  # explicit literal cutoff
+    assert peak.cutoff_fwhm.value == 25.0

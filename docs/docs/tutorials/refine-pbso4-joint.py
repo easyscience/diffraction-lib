@@ -143,6 +143,8 @@ expt1.peak.asym_beba_b0 = -0.0182
 expt1.peak.asym_beba_a1 = 0.1976
 expt1.peak.asym_beba_b1 = -0.0575
 
+expt1.peak.cutoff_fwhm = 6
+
 # %% [markdown]
 # #### Set Background
 
@@ -212,14 +214,15 @@ expt2.instrument.calib_twotheta_offset = -0.0292
 expt2.peak.type = 'pseudo-voigt + berar-baldinozzi asymmetry'
 
 # %%
-expt2.peak.broad_gauss_u = 0.0187
-expt2.peak.broad_gauss_v = -0.0175
-expt2.peak.broad_gauss_w = 0.0075
-expt2.peak.broad_lorentz_x = 0
-expt2.peak.broad_lorentz_y = 0.0655
+expt2.peak.broad_gauss_u = 0.0197
+expt2.peak.broad_gauss_v = -0.0185
+expt2.peak.broad_gauss_w = 0.0079
+expt2.peak.broad_lorentz_y = 0.0645
 
-expt2.peak.asym_beba_a0 = -0.2176
+expt2.peak.asym_beba_a0 = -0.2188
 expt2.peak.asym_beba_b0 = -0.0301
+
+expt2.peak.cutoff_fwhm = 6
 
 # %% [markdown]
 # #### Set Excluded Regions
@@ -242,12 +245,12 @@ expt2.background.type = 'chebyshev'
 
 # %%
 for id, x, y in [
-    ('1', 0, 143.9591),
-    ('2', 1, 67.1718),
-    ('3', 2, 13.7879),
-    ('4', 3, -1.2264),
-    ('5', 4, 4.4514),
-    ('6', 5, -17.7450),
+    ('1', 0, 153.17),
+    ('2', 1, 62.93),
+    ('3', 2, 9.86),
+    ('4', 3, 10.81),
+    ('5', 4, -6.61),
+    ('6', 5, -7.12),
 ]:
     expt2.background.create(id=id, order=x, coef=y)
 

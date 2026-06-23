@@ -65,6 +65,7 @@ FULLPROF_V = -0.523140  # FullProf V
 FULLPROF_W = 0.590412  # FullProf W
 FULLPROF_X = 0.0  # FullProf X
 FULLPROF_Y = 0.054515  # FullProf Y
+FULLPROF_WDT = 12.0  # FullProf Wdt
 
 x, calc_fullprof = verify.load_fullprof_calc_profile(
     FULLPROF_PROJECT_DIR,
@@ -96,6 +97,8 @@ experiment.peak.broad_gauss_v = FULLPROF_V
 experiment.peak.broad_gauss_w = FULLPROF_W
 experiment.peak.broad_lorentz_x = FULLPROF_X
 experiment.peak.broad_lorentz_y = FULLPROF_Y
+
+experiment.peak.cutoff_fwhm = FULLPROF_WDT
 
 project.experiments.add(experiment)
 

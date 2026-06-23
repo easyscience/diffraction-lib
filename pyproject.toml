@@ -37,7 +37,7 @@ dependencies = [
   'emcee',            # Affine-invariant MCMC sampler
   'dfo-ls',           # Non-linear optimization and curve fitting
   'gemmi',            # Crystallography library
-  'cryspy',           # Calculations of diffraction patterns
+  'cryspy>=0.12.1',   # Calculations of diffraction patterns
   'crysfml>=0.7.0',   # Calculations of diffraction patterns
   'diffpy.pdffit2',   # Calculations of Pair Distribution Function (PDF)
   'diffpy.utils',     # Utilities for PDF calculations

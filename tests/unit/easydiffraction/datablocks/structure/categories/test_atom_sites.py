@@ -658,3 +658,72 @@ class TestAdpSymmetryConstraintMinimizerBypass:
         monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.RAISE, raising=True)
         with pytest.raises(TypeError, match='outside'):
             structure.atom_sites._apply_adp_symmetry_constraints(called_by_minimizer=False)
+
+
+# ------------------------------------------------------------------
+#  Wyckoff orbit-template cache (issue 172)
+# ------------------------------------------------------------------
+
+
+class TestAtomSiteWyckoffTemplateCache:
+    """Minimizer fast path reuses the cached orbit template (issue 172)."""
+
+    @staticmethod
+    def _structure(name_hm='P m -3 m'):
+        from easydiffraction.datablocks.structure.item.base import Structure
+
+        structure = Structure(name='s')
+        structure.space_group.name_h_m = name_hm
+        return structure
+
+    def test_cache_populated_on_detection(self):
+        structure = self._structure()
+        structure.atom_sites.create(id='A', type_symbol='O', adp_iso=0.5)
+        structure._update_categories()
+        assert structure.atom_sites['A']._wyckoff_template_cache is not None
+
+    def test_minimizer_snap_matches_full_path(self):
+        # 'e' = (x,0,0): the cached fast path and the cache-cleared full
+        # path (wyckoff_position_info) must give identical snap output.
+        def make():
+            s = self._structure()
+            s.atom_sites.create(
+                id='E', type_symbol='O', fract_x=0.3, fract_y=0.0, fract_z=0.0, adp_iso=0.5
+            )
+            s._update_categories()
+            return s
+
+        fast = make()
+        full = make()
+        fast.atom_sites['E'].fract_x = 0.31
+        fast._update_categories(called_by_minimizer=True)
+        a = fast.atom_sites['E']
+
+        full.atom_sites['E'].fract_x = 0.31
+        full.atom_sites['E']._wyckoff_template_cache = None  # force full path
+        full._update_categories(called_by_minimizer=True)
+        b = full.atom_sites['E']
+
+        assert (a.fract_x.value, a.fract_y.value, a.fract_z.value) == (
+            b.fract_x.value,
+            b.fract_y.value,
+            b.fract_z.value,
+        )
+        assert a.multiplicity.value == b.multiplicity.value
+        assert a.fract_x._symmetry_constrained == b.fract_x._symmetry_constrained
+        assert a.fract_y._symmetry_constrained == b.fract_y._symmetry_constrained
+
+    def test_cache_refreshed_on_redetection(self):
+        # A non-minimizer coordinate edit that moves the atom to a
+        # different Wyckoff letter must refresh the cached template.
+        structure = self._structure()
+        structure.atom_sites.create(id='A', type_symbol='O', adp_iso=0.5)  # (0,0,0) -> 'a'
+        structure._update_categories()
+        atom = structure.atom_sites['A']
+        template_a = atom._wyckoff_template_cache
+        assert template_a is not None
+
+        atom.fract_x = 0.3  # -> 'e' = (x,0,0)
+        structure._update_categories()
+        assert atom.wyckoff_letter.value == 'e'
+        assert atom._wyckoff_template_cache != template_a

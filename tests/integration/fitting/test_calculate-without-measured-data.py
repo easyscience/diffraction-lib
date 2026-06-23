@@ -6,9 +6,8 @@
 Covers the calculation-without-measured-data plan across both engines
 and beam modes. Constant-wavelength cases and the Cryspy time-of-flight
 case confirm a positive calculated curve. CrysFML time-of-flight is a
-known upstream CFL gap; that case verifies the documented zero-pattern
-fallback while the measured loop stays absent and the calc-only display
-path auto-includes the calculated content.
+known upstream CFL gap, so that case verifies the calculator raises a
+clear error instead of silently returning a zero pattern.
 """
 
 import numpy as np
@@ -216,12 +215,19 @@ def test_calc_only_powder_tof(engine) -> None:
     project.experiments['sim'].calculator.type = engine
     assert project.experiments['sim'].calculator.type == engine
 
+    if engine == 'crysfml':
+        # CrysFML has no CFL time-of-flight branch; calculating must fail
+        # clearly instead of silently returning a zero pattern.
+        with pytest.raises(ValueError, match='time-of-flight'):
+            project.analysis.calculate()
+        return
+
     _assert_calc_only(
         project,
         expt_name='sim',
         axis_min=5000.0,
         axis_max=15000.0,
-        expect_positive_curve=engine != 'crysfml',
+        expect_positive_curve=True,
     )
 
 

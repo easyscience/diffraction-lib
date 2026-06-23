@@ -95,6 +95,13 @@ class GenericDescriptorBase(GuardedBase):
         self._description = description
         self._display_handler = display_handler
 
+        # Optional zero-argument callback invoked after the value
+        # actually changes through the public setter. Owners (e.g. a
+        # data collection caching a derived view) wire this to drop
+        # caches that depend on this descriptor's value. Defaults to no
+        # notification.
+        self._on_change = None
+
         # Initial validated states
         # self._value = self._value_spec.validated(
         #    value_spec.value,
@@ -168,6 +175,11 @@ class GenericDescriptorBase(GuardedBase):
         parent_owner = self._category_owner()
         if parent_owner is not None:
             parent_owner._need_categories_update = True
+
+        # Notify an owner that wired a change callback (e.g. a data
+        # collection invalidating a cache keyed on this value).
+        if self._on_change is not None:
+            self._on_change()
 
     def _set_value_from_minimizer(self, v: object) -> None:
         """

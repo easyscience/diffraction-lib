@@ -59,6 +59,7 @@ FULLPROF_SIGMA_2 = 311.7041  # FullProf Sigma-2
 FULLPROF_GAMMA_0 = 5.0330  # FullProf Gamma-0
 FULLPROF_GAMMA_1 = 0.0  # FullProf Gamma-1
 FULLPROF_GAMMA_2 = 0.0  # FullProf Gamma-2
+FULLPROF_WDT = 12.0  # FullProf Wdt
 
 x, calc_fullprof = verify.load_fullprof_calc_profile(
     FULLPROF_PROJECT_DIR,
@@ -97,6 +98,8 @@ experiment.peak.broad_lorentz_gamma_2 = FULLPROF_GAMMA_2
 
 experiment.excluded_regions.create(id='1', start=0.0, end=40000.0)
 experiment.excluded_regions.create(id='2', start=130000.0, end=180000.0)
+
+experiment.peak.cutoff_fwhm = FULLPROF_WDT
 
 project.experiments.add(experiment)
 

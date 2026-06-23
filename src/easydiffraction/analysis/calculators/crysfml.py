@@ -190,6 +190,12 @@ class CrysfmlCalculator(CalculatorBase):
         np.ndarray | list[float]
             The calculated diffraction pattern as a NumPy array or a
             list of floats.
+
+        Raises
+        ------
+        ValueError
+            If *experiment* is time-of-flight; CrysFML's CFL backend has
+            no time-of-flight branch.
         """
         # Intentionally unused, required by public API/signature
         del called_by_minimizer
@@ -198,6 +204,18 @@ class CrysfmlCalculator(CalculatorBase):
         if x.size == 0:
             return np.asarray([])
 
+        # CrysFML's CFL backend has no time-of-flight branch and would
+        # otherwise return a silent zero pattern. Fail clearly so an
+        # unsupported engine/beam-mode pair is never mistaken for a
+        # real calculation.
+        if experiment.experiment_type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
+            msg = (
+                'CrysFML does not support time-of-flight calculations; the CFL '
+                'backend has no TOF branch. Use the cryspy calculator for '
+                'time-of-flight experiments.'
+            )
+            raise ValueError(msg)
+
         cfl = self._crysfml_cfl(structure, experiment)
         try:
             y = self._calculate_adjusted_pattern(cfl, experiment)
@@ -205,16 +223,15 @@ class CrysfmlCalculator(CalculatorBase):
             log.warning('[CrysfmlCalculator] No calculated data')
             y = []
         except RuntimeError as exc:
-            # CrysFML signals an unsupported calculation by raising. The
-            # CFL simulation cannot generate time-of-flight reflections,
-            # so return a flat zero pattern (matching the experiment
-            # length) instead of crashing the caller's pattern sum.
+            # TOF is rejected above; this catches an unexpected CrysFML
+            # CW simulation failure and returns zeros instead of
+            # crashing the caller's pattern sum.
             log.warning(
                 f'[CrysfmlCalculator] CrysFML could not simulate this pattern '
-                f'(returning zeros). Time-of-flight data is not supported by '
-                f'the CFL backend. Details: {exc}'
+                f'(returning zeros). Details: {exc}'
             )
             y = [0.0] * int(x.size)
+        y = self._apply_centering_intensity_correction(y, structure)
         y = absorption_correction.apply(y, experiment)
         y = polarization_correction.apply(y, experiment)
         return np.asarray(y)
@@ -404,6 +421,12 @@ class CrysfmlCalculator(CalculatorBase):
         y = self._param(peak, 'broad_lorentz_y', 0.0)
         asym1 = self._param(peak, 'asym_fcj_1', 0.0)
         asym2 = self._param(peak, 'asym_fcj_2', 0.0)
+        if self._param(peak, 'cutoff_fwhm', 0.0):
+            log.warning(
+                '[CrysfmlCalculator] peak.cutoff_fwhm is not applied by the '
+                'CrysFML backend (it uses a fixed CFL peak window); the value '
+                'is ignored.'
+            )
         return [
             '  Zero_Sy  0.0  0.0  0.0',
             f'  WDT  {_fmt(_CW_BRAGG_WINDOW_FWHM)}',
@@ -558,6 +581,62 @@ class CrysfmlCalculator(CalculatorBase):
         if site_mult is None:
             return None
         return site_mult / general_mult
+
+    def _apply_centering_intensity_correction(
+        self,
+        y: list[float],
+        structure: Structure,
+    ) -> list[float]:
+        """
+        Scale a CrysFML phase pattern to cryspy's intensity convention.
+
+        The CrysFML Python API (both the dict and the CFL backend)
+        under- counts the lattice-centering contribution to the
+        structure factor: it applies only ``n - 1`` of the ``n`` lattice
+        translations, so for a centered lattice ``|F|_crysfml =
+        (n-1)*f`` while the standard ``|F|_cryspy = n*f`` (cryspy
+        reproduces FullProf to <1% across a 16x cell-volume range). The
+        intensity (``|F|^2``) therefore needs a factor of ``(n /
+        (n-1))**2`` to match cryspy/FullProf. ``n`` is the number of
+        lattice points of the Bravais centering: P=1, A/B/C/I=2, R=3
+        (hexagonal axes), F=4. For P (``n=1``) no correction is applied.
+        See issue on the CrysFML centering scale.
+        """
+        if not y or self._lattice_centering_points(structure) <= 1:
+            return y
+        factor = self._centering_intensity_factor(structure)
+        return [value * factor for value in y]
+
+    @staticmethod
+    def _centering_intensity_factor(structure: Structure) -> float:
+        """
+        Return ``(n/(n-1))**2`` for the structure's lattice centering.
+        """
+        n = CrysfmlCalculator._lattice_centering_points(structure)
+        if n <= 1:
+            return 1.0
+        return (n / (n - 1)) ** 2
+
+    @staticmethod
+    def _lattice_centering_points(structure: Structure) -> int:
+        """
+        Return the number of lattice points for the Bravais centering.
+
+        Derived from the leading letter of the Hermann-Mauguin symbol
+        (P/A/B/C/I/R/F). Unknown letters fall back to 1 (no correction)
+        with a warning.
+        """
+        name_hm = structure.space_group.name_h_m.value
+        letter = name_hm.strip()[:1].upper() if name_hm else 'P'
+        points = {'P': 1, 'A': 2, 'B': 2, 'C': 2, 'I': 2, 'R': 3, 'F': 4}
+        if letter not in points:
+            log.warning(
+                f'[CrysfmlCalculator] Unknown lattice centering '
+                f"'{letter}' in space group '{name_hm}'; applying no "
+                f'intensity-centering correction.'
+            )
+            return 1
+        return points[letter]
 
     @staticmethod
     def _param(source: object, attribute_name: str, default: float) -> float:

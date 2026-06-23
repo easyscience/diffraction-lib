@@ -51,3 +51,19 @@ def test_tof_jorgensen_descriptions_match_peak_profile_enum():
         TofDoubleJorgensenVonDreele.type_info.description
         == PeakProfileTypeEnum.TOF_DOUBLE_JORGENSEN_VON_DREELE.description()
     )
+
+
+def test_tof_cutoff_fwhm_default_no_cutoff_rejects_negative():
+    # cutoff_fwhm defaults to 0 (no cutoff: the full range is computed);
+    # 0 and positive (literal cutoff in FWHMs, mirroring FullProf WDT)
+    # are valid, negatives are not.
+    import pytest
+
+    peak = TofJorgensenVonDreele()
+    assert peak.cutoff_fwhm.value == 0.0  # no cutoff by default
+    with pytest.raises(TypeError, match='outside'):
+        peak.cutoff_fwhm = -1.0
+    peak.cutoff_fwhm = 0.0  # no-cutoff stays valid
+    assert peak.cutoff_fwhm.value == 0.0
+    peak.cutoff_fwhm = 7.5  # explicit literal cutoff
+    assert peak.cutoff_fwhm.value == 7.5

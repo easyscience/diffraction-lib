@@ -161,12 +161,12 @@ for point in expt_s2.background:
 # ### Set Linked Structures
 
 # %%
-expt_s2.linked_structures.create(structure_id='ferrite', scale=10)
-expt_s2.linked_structures.create(structure_id='austenite', scale=10)
+expt_s2.linked_structures.create(structure_id='ferrite', scale=285)
+expt_s2.linked_structures.create(structure_id='austenite', scale=68)
 
 # %%
-expt_n2.linked_structures.create(structure_id='ferrite', scale=10)
-expt_n2.linked_structures.create(structure_id='austenite', scale=10)
+expt_n2.linked_structures.create(structure_id='ferrite', scale=285)
+expt_n2.linked_structures.create(structure_id='austenite', scale=68)
 
 # %% [markdown]
 # ### Set Excluded Regions

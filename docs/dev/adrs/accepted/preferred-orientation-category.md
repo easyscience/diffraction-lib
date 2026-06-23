@@ -90,7 +90,6 @@ Three independent sources confirm the same simple, widely used model —
    `r`, and the exported `.r` is portable across engines.
 
    Two names are deliberately **excluded**:
-
    - **`.hkl`** stores the direction as a bracketed array `[ 1 0 4 ]`.
      gemmi's loop reader does not reliably round-trip this array syntax,
      so we use the three scalar integer columns `.index_h/_k/_l`
@@ -315,7 +314,6 @@ Alternatives Considered.
 
 - **CrysPy** (`analysis/calculators/cryspy.py`). Two paths, matching how
   every other experiment parameter is handled:
-
   1. **CIF construction** (`_convert_experiment_to_cryspy_cif`): after
      `_cif_phase_section`, emit a `_texture_*` loop for the matching
      `pref_orient` row. **Constant-wavelength only** for now — TOF is
@@ -389,7 +387,6 @@ Alternatives Considered.
   has a March–Dollase routine,
   `CFML_Powder/Pow_Preferred_Orientation.f90`), the mapping differs from
   CrysPy and **must not reuse `_march_r_to_cryspy_g1`**:
-
   - **`march_r` passes through unchanged** — CrysFML uses the _standard_
     March coefficient (`r²cos²α + sin²α/r`, `par(1) = r`). The `1/r`
     inversion is CrysPy-specific; do **not** apply it for CrysFML.
