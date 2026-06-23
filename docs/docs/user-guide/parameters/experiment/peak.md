@@ -92,6 +92,26 @@ Gaussian broadening (dependent on d-spacing).
 
 Gaussian broadening (instrument-dependent term).
 
+### :material-arrow-expand-horizontal: broad_gauss_size_g { #peak-broad-gauss-size-g }
+
+| Access                                    | Source                    |
+| ----------------------------------------- | ------------------------- |
+| peak.broad_gauss_size_g                   | [code][0]{:.label-cif}    |
+| \_peak.broad_gauss_size_g                 | [Edi][0]{:.label-cif}     |
+| \_easydiffraction_peak.broad_gauss_size_g | [coreCIF][0]{:.label-cif} |
+
+Gaussian isotropic size broadening (adds to sigma2).
+
+### :material-arrow-expand-horizontal: broad_gauss_strain_g { #peak-broad-gauss-strain-g }
+
+| Access                                      | Source                    |
+| ------------------------------------------- | ------------------------- |
+| peak.broad_gauss_strain_g                   | [code][0]{:.label-cif}    |
+| \_peak.broad_gauss_strain_g                 | [Edi][0]{:.label-cif}     |
+| \_easydiffraction_peak.broad_gauss_strain_g | [coreCIF][0]{:.label-cif} |
+
+Gaussian isotropic strain broadening (adds to sigma1).
+
 ### :material-arrow-expand-horizontal: broad_lorentz_gamma_0 { #peak-broad-lorentz-gamma-0 }
 
 | Access                                       | Source                    |
@@ -121,6 +141,26 @@ Lorentzian broadening (dependent on d-spacing).
 | \_easydiffraction_peak.broad_lorentz_gamma_2 | [coreCIF][0]{:.label-cif} |
 
 Lorentzian broadening (instrument-dependent term).
+
+### :material-arrow-expand-horizontal: broad_lorentz_size_l { #peak-broad-lorentz-size-l }
+
+| Access                                      | Source                    |
+| ------------------------------------------- | ------------------------- |
+| peak.broad_lorentz_size_l                   | [code][0]{:.label-cif}    |
+| \_peak.broad_lorentz_size_l                 | [Edi][0]{:.label-cif}     |
+| \_easydiffraction_peak.broad_lorentz_size_l | [coreCIF][0]{:.label-cif} |
+
+Lorentzian isotropic size broadening (adds to gamma2).
+
+### :material-arrow-expand-horizontal: broad_lorentz_strain_l { #peak-broad-lorentz-strain-l }
+
+| Access                                        | Source                    |
+| --------------------------------------------- | ------------------------- |
+| peak.broad_lorentz_strain_l                   | [code][0]{:.label-cif}    |
+| \_peak.broad_lorentz_strain_l                 | [Edi][0]{:.label-cif}     |
+| \_easydiffraction_peak.broad_lorentz_strain_l | [coreCIF][0]{:.label-cif} |
+
+Lorentzian isotropic strain broadening (adds to gamma1).
 
 ### :material-arrow-bottom-right: decay_beta_0 { #peak-decay-beta-0 }
 
@@ -231,6 +271,17 @@ Particle diameter for spherical envelope damping correction.
 
 [pd-neut-cwl][3]{:.label-experiment}
 [pd-neut-tof][3]{:.label-experiment} [pd-xray][3]{:.label-experiment}
+
+### :material-content-cut: cutoff_fwhm { #peak-cutoff-fwhm }
+
+| Access                             | Source                    |
+| ---------------------------------- | ------------------------- |
+| peak.cutoff_fwhm                   | [code][0]{:.label-cif}    |
+| \_peak.cutoff_fwhm                 | [Edi][0]{:.label-cif}     |
+| \_easydiffraction_peak.cutoff_fwhm | [coreCIF][0]{:.label-cif} |
+
+Peak-range cutoff in FWHMs (speed vs accuracy; FullProf "WDT"); 0
+disables the cutoff (full range).
 
 ### :material-tag: asym_beba_a0 { #peak-asym-beba-a0 }
 
