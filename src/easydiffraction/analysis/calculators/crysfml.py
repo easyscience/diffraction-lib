@@ -190,6 +190,12 @@ class CrysfmlCalculator(CalculatorBase):
         np.ndarray | list[float]
             The calculated diffraction pattern as a NumPy array or a
             list of floats.
+
+        Raises
+        ------
+        ValueError
+            If *experiment* is time-of-flight; CrysFML's CFL backend has
+            no time-of-flight branch.
         """
         # Intentionally unused, required by public API/signature
         del called_by_minimizer
