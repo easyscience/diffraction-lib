@@ -37,13 +37,18 @@ docs/dev/
 |   |-- accepted/
 |   `-- suggestions/
 |-- issues/
-|   |-- open.md
-|   `-- closed.md
+|   |-- index.md
+|   |-- open/
+|   `-- closed/
 |-- package-structure/
 |   |-- full.md
 |   `-- short.md
 `-- plans/
 ```
+
+Issues are one Markdown file per issue under `issues/open/` and
+`issues/closed/`, with `issues/index.md` as the table of contents (not
+flat `open.md` / `closed.md` files).
 
 Use lowercase directory names for new development-doc folders. The
 feature/roadmap matrix is published directly in the user documentation
