@@ -181,7 +181,10 @@ class CryspyCalculator(CalculatorBase):
         # TODO: This is temporary solution to mark all structures as
         #  nuclear-only. Once magnetic structure is implemented, we
         #  would need to auto-detect it.
-        cryspy_dict[f'crystal_{structure.name}']['flag_only_nuclear'] = True
+        # TODO: = True fails for hs-hrpt example with:
+        #  structure.space_group.name_h_m = 'R -3 m'
+        #  structure.space_group.coord_system_code = 'h'
+        cryspy_dict[f'crystal_{structure.name}']['flag_only_nuclear'] = False
 
         # Calculate the pattern using Cryspy
         # TODO: Redirect stderr to suppress Cryspy warnings.
@@ -286,7 +289,10 @@ class CryspyCalculator(CalculatorBase):
         # TODO: This is temporary solution to mark all structures as
         #  nuclear-only. Once magnetic structure is implemented, we
         #  would need to auto-detect it.
-        cryspy_dict[f'crystal_{structure.name}']['flag_only_nuclear'] = True
+        # TODO: = True fails for hs-hrpt example with:
+        #  structure.space_group.name_h_m = 'R -3 m'
+        #  structure.space_group.coord_system_code = 'h'
+        cryspy_dict[f'crystal_{structure.name}']['flag_only_nuclear'] = False
 
         doublet_dict = None
         if self._cw_doublet_is_active(experiment):
