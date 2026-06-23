@@ -101,10 +101,10 @@ out of reach without upstream cryspy support.
 
 ## Recommendation
 
-Start with **one-shot pre-fit calibration**: evaluate the pattern once at
-no cutoff, then set a single per-experiment `cutoff_fwhm` from where each
-peak's modelled contribution falls below the local data noise — keeping
-the literal `cutoff_fwhm` as the manual override (satisfies the
+Start with **one-shot pre-fit calibration**: evaluate the pattern once
+at no cutoff, then set a single per-experiment `cutoff_fwhm` from where
+each peak's modelled contribution falls below the local data noise —
+keeping the literal `cutoff_fwhm` as the manual override (satisfies the
 acceptance criteria, no cryspy change). The per-point η-adaptive window
 is the longer-term ideal but needs upstream cryspy support, since
 per-point η is not visible to the EasyDiffraction calculator.
