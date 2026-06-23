@@ -437,6 +437,13 @@ For type-neutral ADPs, `edi_names` stays the neutral
 `_atom_site.adp_iso` (so the Edi save is always type-neutral) while the
 type-specific B/U order is applied to `cif_names` for export.
 
+The "generated inventory" referenced throughout this ADR (the full set
+of `TagSpec`/`CifHandler` entries used as the migration and
+parameter-docs audit) is produced by
+[`tools/edi_handler_inventory.py`](../../../../tools/edi_handler_inventory.py)
+and written to the sidecar `handler-inventory.json` next to this file.
+Regenerate it with that tool rather than hand-editing the JSON.
+
 ## Consequences
 
 ### Positive
