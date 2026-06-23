@@ -37,7 +37,7 @@ structure.space_group.coord_system_code = 'h'
 
 
 # %%
-structure.cell.length_a = 6.9
+structure.cell.length_a = 6.85
 structure.cell.length_c = 14.1
 
 # %% [markdown]
@@ -114,12 +114,18 @@ expt.instrument.calib_twotheta_offset = 0.0
 
 # %%
 expt.peak.show_supported()
+
+# %%
 expt.peak.type = 'pseudo-voigt + berar-baldinozzi asymmetry'
+
+# %%
 expt.peak.broad_gauss_u = 0.1
 expt.peak.broad_gauss_v = -0.2
 expt.peak.broad_gauss_w = 0.2
-expt.peak.broad_lorentz_x = 0.0
 expt.peak.broad_lorentz_y = 0
+
+# %%
+expt.peak.cutoff_fwhm = 8
 
 # %% [markdown]
 # ### Set Background

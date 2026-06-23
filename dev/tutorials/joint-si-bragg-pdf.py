@@ -52,7 +52,7 @@ structure.atom_sites.create(
     fract_x=0,
     fract_y=0,
     fract_z=0,
-    adp_iso=0.2,
+    adp_iso=0.5223,
 )
 
 # %% [markdown]
@@ -81,7 +81,7 @@ bragg_expt = ExperimentFactory.from_data_path(
 
 # %%
 bragg_expt.instrument.setup_twotheta_bank = 144.845
-bragg_expt.instrument.calib_d_to_tof_offset = -9.2
+bragg_expt.instrument.calib_d_to_tof_offset = -8.4
 bragg_expt.instrument.calib_d_to_tof_linear = 7476.91
 bragg_expt.instrument.calib_d_to_tof_quadratic = -1.54
 
@@ -89,28 +89,45 @@ bragg_expt.instrument.calib_d_to_tof_quadratic = -1.54
 # #### Set Peak Profile
 
 # %%
-bragg_expt.peak.type = 'jorgensen'
-bragg_expt.peak.broad_gauss_sigma_0 = 5.0
-bragg_expt.peak.broad_gauss_sigma_1 = 45.0
-bragg_expt.peak.broad_gauss_sigma_2 = 1.0
-bragg_expt.peak.decay_beta_0 = 0.04221
-bragg_expt.peak.decay_beta_1 = 0.00946
-bragg_expt.peak.rise_alpha_0 = 0.0
+bragg_expt.peak.type = 'jorgensen-von-dreele'
+bragg_expt.peak.broad_gauss_sigma_0 = 5.61
+bragg_expt.peak.broad_gauss_sigma_1 = 33.19
+bragg_expt.peak.broad_lorentz_gamma_1 = 2.21
+bragg_expt.peak.decay_beta_0 = 0.0406
+bragg_expt.peak.decay_beta_1 = 0.0124
 bragg_expt.peak.rise_alpha_1 = 0.5971
+bragg_expt.peak.cutoff_fwhm = 8.2
 
 # %% [markdown]
 # #### Set Background
 
 # %%
-bragg_expt.background.type = 'line-segment'
-for x in range(0, 35000, 5000):
-    bragg_expt.background.create(id=str(x), position=x, intensity=200)
+for idx, (x, y) in enumerate(
+    [
+        (2000.0, 203.79),
+        (9035.0, 103.74),
+        (9335.0, 125.12),
+        (11915.0, 119.81),
+        (12315.0, 127.52),
+        (12695.0, 123.16),
+        (13745.0, 121.72),
+        (14410.0, 140.39),
+        (14875.0, 135.11),
+        (15660.0, 129.95),
+        (23075.0, 143.23),
+        (23515.0, 175.48),
+        (28100.0, 166.48),
+        (29995.0, 203.98),
+    ],
+    start=1,
+):
+    bragg_expt.background.create(id=str(idx), position=x, intensity=y)
 
 # %% [markdown]
 # #### Set Linked Structures
 
 # %%
-bragg_expt.linked_structures.create(structure_id='si', scale=13.0)
+bragg_expt.linked_structures.create(structure_id='si', scale=634.3132)
 
 # %% [markdown]
 # ### Experiment 2: PDF (NOMAD, TOF)
@@ -136,17 +153,17 @@ pdf_expt = ExperimentFactory.from_data_path(
 
 # %%
 pdf_expt.peak.damp_q = 0.02
-pdf_expt.peak.broad_q = 0.02
+pdf_expt.peak.broad_q = 0.03
 pdf_expt.peak.cutoff_q = 35.0
-pdf_expt.peak.sharp_delta_1 = 0.001
-pdf_expt.peak.sharp_delta_2 = 4.0
+pdf_expt.peak.sharp_delta_1 = 0.4
+pdf_expt.peak.sharp_delta_2 = 3.0
 pdf_expt.peak.damp_particle_diameter = 0
 
 # %% [markdown]
 # #### Set Linked Structures
 
 # %%
-pdf_expt.linked_structures.create(structure_id='si', scale=1.0)
+pdf_expt.linked_structures.create(structure_id='si', scale=1.6)
 
 # %% [markdown]
 # ## 📦 Define Project
@@ -182,8 +199,8 @@ project.experiments.add(pdf_expt)
 
 # %%
 project.analysis.fitting_mode.type = 'joint'
-project.analysis.joint_fit.create(experiment_id='sepd', weight=0.7)
-project.analysis.joint_fit.create(experiment_id='nomad', weight=0.3)
+project.analysis.joint_fit.create(experiment_id='sepd', weight=0.75)
+project.analysis.joint_fit.create(experiment_id='nomad', weight=0.25)
 
 # %% [markdown]
 # ### Display Structure
@@ -208,7 +225,6 @@ project.display.pattern(expt_name='nomad')
 
 # %%
 structure.cell.length_a.free = True
-structure.atom_sites['Si'].adp_iso.free = True
 
 # %% [markdown]
 # Bragg experiment parameters.
@@ -216,11 +232,8 @@ structure.atom_sites['Si'].adp_iso.free = True
 # %%
 bragg_expt.linked_structures['si'].scale.free = True
 bragg_expt.instrument.calib_d_to_tof_offset.free = True
-bragg_expt.peak.broad_gauss_sigma_0.free = True
 bragg_expt.peak.broad_gauss_sigma_1.free = True
-bragg_expt.peak.broad_gauss_sigma_2.free = True
-for point in bragg_expt.background:
-    point.intensity.free = True
+bragg_expt.peak.broad_lorentz_gamma_1.free = True
 
 # %% [markdown]
 # PDF experiment parameters.
@@ -240,6 +253,9 @@ project.display.parameters.free()
 
 # %% [markdown]
 # ### Run Fitting
+
+# %%
+project.analysis.minimizer.type = 'bumps (lm)'
 
 # %%
 project.analysis.fit()

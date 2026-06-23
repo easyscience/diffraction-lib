@@ -67,10 +67,10 @@ project.experiments.add_from_data_path(
 # %%
 project.experiments['pdf'].linked_structures.create(structure_id='ni', scale=1.0)
 project.experiments['pdf'].peak.damp_q = 0
-project.experiments['pdf'].peak.broad_q = 0.03
+project.experiments['pdf'].peak.broad_q = 0.02
 project.experiments['pdf'].peak.cutoff_q = 27.0
 project.experiments['pdf'].peak.sharp_delta_1 = 0.0
-project.experiments['pdf'].peak.sharp_delta_2 = 2.0
+project.experiments['pdf'].peak.sharp_delta_2 = 2.8
 project.experiments['pdf'].peak.damp_particle_diameter = 0
 
 # %% [markdown]
