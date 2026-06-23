@@ -30,4 +30,13 @@ existing behavior for import-safe module entry points such as
 unavailable. Document the tradeoff clearly because `fork` on macOS is
 less conservative than `spawn`.
 
-**Depends on:** related to issue 89, but independent.
+**Caveat — reconcile with issue 187.** Preferring a `fork` context here
+conflicts with the fork-while-threaded `DeprecationWarning` tracked in
+issue 187: Python 3.12+ warns that `fork()` in a multi-threaded process
+can deadlock the child, and is hardening the default start method. Any
+start-method policy chosen here must be safe under that deprecation
+(e.g. `forkserver`, or `spawn` with import-safe worker entry points),
+not simply default to `fork`.
+
+**Depends on:** related to issue 89, but independent. See issue 187 for
+the fork-while-threaded deprecation constraint.
