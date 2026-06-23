@@ -323,6 +323,8 @@ in that section).
   tests targeting these exact files. Thoroughness gap, not an untested path.
 - **Action:** Optionally add a mixin-level getter/setter assertion; otherwise no
   action (already covered).
+- **Disposition (2026-06-23):** not filed as a tracked issue — "just-do" item
+  (already covered at the concrete-class level).
 
 ### 26. `AdpTypeEnum.description()` is never exercised
 - **Area:** Tests · **Ref:** NEW
@@ -342,6 +344,8 @@ in that section).
   `pd-neut-tof_Si_jorgensen-von-dreele-size-strain.ipynb` exists.
 - **Action:** Add a second decagram link (or sub-note) to the size/strain
   verification page so the claim is backed.
+- **Disposition (2026-06-23):** not filed as a tracked issue — "just-do"
+  one-line doc fix.
 
 ### 28. Stray local artifacts in the verification tree (already gitignored — cleanup only)
 - **Area:** Tutorials · **Ref:** NEW (local cleanup)
@@ -355,6 +359,8 @@ in that section).
   the local copies so they stop confusing readers grepping the dir.
 - **Action:** Local cleanup only — `rm` the stray files; **no `.gitignore` change
   needed** (coverage already exists).
+- **Disposition (2026-06-23):** not filed as a tracked issue — "just-do" local
+  cleanup.
 
 ### 29. No-op `assert True` in `test_logging.py`
 - **Area:** Tests · **Ref:** TRACKED `low_replace-no-op-assert-true-in-test-logging-py.md`
