@@ -46,7 +46,7 @@ unsafe (too aggressive for some data). Users therefore need a per-
 experiment knob, mirroring FullProf's `.pcr` `WDT`.
 
 This relates to the upstream capability-request workflow
-([`upstream-capability-request-evidence.md`](../suggestions/upstream-capability-request-evidence.md)):
+([`upstream-capability-request-evidence.md`](upstream-capability-request-evidence.md)):
 the literal cutoff was proposed upstream and released in cryspy 0.12.0,
 so EasyDiffraction drives it through the released `profile_cutoff_fwhm`
 key without requiring a cryspy CIF-schema change.
