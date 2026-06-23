@@ -20,7 +20,9 @@ def _absorption_experiment_stub(x, mu_r):
     absorption.mu_r = mu_r
     return SimpleNamespace(
         name='exp',
-        type=SimpleNamespace(beam_mode=SimpleNamespace(value=BeamModeEnum.CONSTANT_WAVELENGTH)),
+        experiment_type=SimpleNamespace(
+            beam_mode=SimpleNamespace(value=BeamModeEnum.CONSTANT_WAVELENGTH)
+        ),
         absorption=absorption,
         data=SimpleNamespace(x=np.asarray(x, dtype=float)),
     )
@@ -107,6 +109,7 @@ def test_crysfml_calculate_pattern_applies_polarization(monkeypatch):
     from easydiffraction.analysis.calculators.crysfml import CrysfmlCalculator
     from easydiffraction.analysis.corrections import polarization
     from easydiffraction.datablocks.experiment.categories.instrument.cwl import CwlPdXrayInstrument
+    from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 
     calc = CrysfmlCalculator()
     x = np.array([0.0, 45.0, 90.0])
@@ -115,6 +118,9 @@ def test_crysfml_calculate_pattern_applies_polarization(monkeypatch):
     instrument.setup_monochromator_twotheta = 60.0
     experiment = SimpleNamespace(
         name='exp',
+        experiment_type=SimpleNamespace(
+            beam_mode=SimpleNamespace(value=BeamModeEnum.CONSTANT_WAVELENGTH)
+        ),
         instrument=instrument,
         data=SimpleNamespace(x=x),
     )
