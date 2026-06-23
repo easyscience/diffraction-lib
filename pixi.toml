@@ -57,7 +57,7 @@ lychee = '*'      # Link checker for documentation
 [feature.dev.pypi-dependencies]
 pip = '*'
 #pycrysfml = { version = ">=0.4.0", index = "https://easyscience.github.io/pypi/" }
-cryspy = { git = "https://github.com/ikibalin/cryspy.git", branch = "hotfix-3-cutoff-performance" }
+#cryspy = { git = "https://github.com/ikibalin/cryspy.git", branch = "hotfix-3-cutoff-performance" }
 easydiffraction = { path = '.', editable = true, extras = ['dev'] }
 
 # User-like behavior for testing with pip-installed dependencies instead
