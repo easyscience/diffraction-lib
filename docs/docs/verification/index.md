@@ -27,8 +27,7 @@ term); these are marked below and inside the notebook.
   **isotope-specific neutron scattering length** (¹¹B).
 - [pd-neut-cwl LaB6 sample displacement](pd-neut-cwl_LaB6_sycos-sysin.ipynb)
   – **sample displacement and transparency correction** (FullProf
-  "SyCos, SySin"); agrees with FullProf since cryspy 0.12.0 implements
-  `offset_SyCos`/`offset_SySin`.
+  "SyCos, SySin").
 - [pd-neut-cwl LaB6 FCJ asymmetry](pd-neut-cwl_LaB6_fcj-asymmetry.ipynb)
   – **Finger-Cox-Jephcoat asymmetry** (FullProf "Npr=7"). _Known
   difference: the cryspy CW profile has no FCJ term._
@@ -78,13 +77,11 @@ term); these are marked below and inside the notebook.
   "Npr=9", Gaussian limit).
 - [pd-neut-tof Si Jorgensen-Von Dreele](pd-neut-tof_Si_jorgensen-von-dreele.ipynb)
   – **Jorgensen-Von Dreele (back-to-back exponentials ⊗ pseudo-Voigt)**
-  profile with Lorentzian terms (FullProf "Npr=9"). Agrees with FullProf
-  after the cryspy single-FWHM and TOF Lorentz-factor fixes (issue #49).
+  profile with Lorentzian terms (FullProf "Npr=9").
 - [pd-neut-tof Si Jorgensen-Von Dreele + size/strain](pd-neut-tof_Si_jorgensen-von-dreele-size-strain.ipynb)
   – **isotropic microstructural size/strain broadening** on the
   Jorgensen-Von Dreele profile (`size_g`/`strain_g`,
-  `size_l`/`strain_l`). Agrees with FullProf after the cryspy TOF
-  size/strain wiring and Jorgensen-Von Dreele fix (issue #49).
+  `size_l`/`strain_l`).
 
 ## Powder, X-Ray, Constant Wavelength
 
