@@ -99,6 +99,24 @@ out of reach without upstream cryspy support.
 - No reliance on re-running the notebook at multiple settings.
 - Keep the literal `cutoff_fwhm` as the manual override.
 
+## Recommendation
+
+Start with **one-shot pre-fit calibration**: evaluate the pattern once at
+no cutoff, then set a single per-experiment `cutoff_fwhm` from where each
+peak's modelled contribution falls below the local data noise — keeping
+the literal `cutoff_fwhm` as the manual override (satisfies the
+acceptance criteria, no cryspy change). The per-point η-adaptive window
+is the longer-term ideal but needs upstream cryspy support, since
+per-point η is not visible to the EasyDiffraction calculator.
+
+History: an automatic window did ship on the custom/hotfix cryspy
+(`cutoff_fwhm` defaulted to a tail-aware window in commit `8996e5bd3`,
+with a `cutoff_fwhm_auto_floor` knob in `5ba71617c`). It was removed in
+`9a5660973` ("Use cryspy 0.12.0; … drop inert auto-floor param") when
+adopting stock cryspy 0.12.0, which exposes only the single literal
+scalar — so EasyDiffraction now passes the user's fixed value with no
+automatic selection.
+
 ## Related
 
 - The literal `WDT`/`cutoff_fwhm` cutoff lives in the cryspy profile
