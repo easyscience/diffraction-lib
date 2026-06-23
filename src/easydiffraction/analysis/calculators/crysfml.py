@@ -415,6 +415,12 @@ class CrysfmlCalculator(CalculatorBase):
         y = self._param(peak, 'broad_lorentz_y', 0.0)
         asym1 = self._param(peak, 'asym_fcj_1', 0.0)
         asym2 = self._param(peak, 'asym_fcj_2', 0.0)
+        if self._param(peak, 'cutoff_fwhm', 0.0):
+            log.warning(
+                '[CrysfmlCalculator] peak.cutoff_fwhm is not applied by the '
+                'CrysFML backend (it uses a fixed CFL peak window); the value '
+                'is ignored.'
+            )
         return [
             '  Zero_Sy  0.0  0.0  0.0',
             f'  WDT  {_fmt(_CW_BRAGG_WINDOW_FWHM)}',
