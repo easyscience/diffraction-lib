@@ -238,7 +238,6 @@ relative performance (fastest to slowest):
 | ------------------------------------------------------------------- | ----------------------------------------------------------------- | ----------- |
 | Pseudo-Voigt (non-convoluted)                                       | Symmetric profile; simplest TOF case                              | Fastest     |
 | Jorgensen (back-to-back exponentials ⊗ Gaussian)                    | Simpler TOF profile, including reactor-source TOF implementations | Fast        |
-| Ikeda-Carpenter ⊗ pseudo-Voigt (planned)                            | Spallation-source TOF; moderator pulse shape model                | Moderate    |
 | Jorgensen-Von Dreele (back-to-back exponentials ⊗ pseudo-Voigt)     | Spallation-source TOF                                             | Slower      |
 | Double back-to-back exponentials ⊗ pseudo-Voigt (Z-Rietveld type0m) | Spallation-source TOF; more elaborate asymmetric profile          | Slowest     |
 
