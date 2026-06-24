@@ -1,0 +1,165 @@
+
+
+        **********************************************************
+        ** PROGRAM FullProf.2k (Version 8.40 - Feb2026-ILL JRC) **
+        **********************************************************
+                       M U L T I -- P A T T E R N                 
+            Rietveld, Profile Matching & Integrated Intensity     
+                 Refinement of X-ray and/or Neutron Data
+
+
+    Date: 24/06/2026  Time: 12:52:10.863                              
+
+ => PCR file code: diamond
+ => DAT file code: diamond              -> Relative contribution: 1.0000                                                            
+ => Title:  Diamond - DREAM (ESS) McStas-simulated reduced TOF data
+
+ ==> CONDITIONS OF THIS RUN FOR PATTERN No.:  1
+
+ => Global Refinement of neutron powder data                                                                                        
+ => Neutron Time-Of-Flight data                                                                                                     
+ => Abcisa variable is T.O.F. in microsecs
+ => The    9th default profile function was selected
+
+ => X-Y type of data: 2theta/TOF/E(Kev) Intens sigma for pattern:  1
+ => Absorption correction type: 0
+ => Base of peaks: 2.0*HW*   30.00
+ ==> T.O.F. range, and number of points:
+    TOFmin:    8675.107422  TOFmax:   66503.687500
+    No. of points:   1995
+ =>-------> Pattern#  1
+ => Crystal Structure Refinement for phase: 1
+ => The density (volumic mass) of phase 1 is:    7.032 g/cm3
+ => Scor: 4.8708
+
+ ==> RESULTS OF REFINEMENT:
+
+
+ => No. of fitted parameters:   15
+
+
+------------------------------------------------------------------------------
+ => Phase No.  1 Diamond                                 F d -3 m:1          
+------------------------------------------------------------------------------
+
+ =>  No. of reflections for pattern#:   1:    60  
+
+
+ ==> ATOM PARAMETERS:
+
+  Name      x     sx       y     sy       z      sz      B   sB   occ. socc.  Mult
+ C       0.12500(   0)  0.12500(   0)  0.12500(   0)  0.893( 30)  1.000(  0)   16
+
+ ==> PROFILE PARAMETERS FOR PATTERN#  1
+
+ => Cell parameters      :
+                              3.56700   0.00000
+                              3.56700   0.00000
+                              3.56700   0.00000
+                             90.00000   0.00000
+                             90.00000   0.00000
+                             90.00000   0.00000
+ 
+
+ => Overall scale factor       :      0.101177976     0.000754629
+ => T.O.F. Extinction parameter:     0.000000    0.000000
+ => Overall temperature  factor:     0.000000    0.000000
+ => T.O.F. Gaussian variances Sig-2, Sig-1, Sig-0: 
+         0.000000    0.000000
+      4887.917969  530.093811
+     46937.718750 1715.570068
+
+ => T.O.F. Gaussian variance Sig-Q:     0.000000    0.000000
+ => T.O.F. Isotropic Gaussian Strain parameter (G-strain):      0.00000     0.00000
+ => T.O.F. Isotropic Gaussian Size   parameter (G-size)  :      0.00000     0.00000
+ => T.O.F. Anisotropic Lorentzian  Size  parameter (Ani-LorSize):      0.00000     0.00000
+ => T.O.F. Lorentzian FWHM Gam-2, Gam-1, Gam-0: 
+         0.000000    0.000000
+         0.000000    0.000000
+         0.000000    0.000000
+
+ => T.O.F. Lorentzian strain and size parameters (LStr,LSiz): 
+         0.000000    0.000000
+         0.000000    0.000000
+
+ => Direct cell parameters: 
+        3.567000    0.000000
+        3.567000    0.000000
+        3.567000    0.000000
+       90.000000    0.000000
+       90.000000    0.000000
+       90.000000    0.000000
+
+ => Preferred orientation parameters: 
+         0.000000    0.000000
+         0.000000    0.000000
+
+ => T.O.F. Peak shape parameter alpha0,beta0,beta1,alphaQ,betaQ: 
+        0.000000    0.000000    0.014330
+        0.001266    0.022544    0.002287
+        0.000000    0.000000    0.000000
+        0.000000    0.000000    0.000000
+
+
+ => Absorption parameters: 
+                              0.00000       0.00000    
+                              0.00000       0.00000    
+
+
+
+ ==> GLOBAL PARAMETERS FOR PATTERN#  1
+
+
+ => Zero-point:     0.0000    0.0000
+ => Background Parameters (linear interpolation)  ==>
+                               -0.228404       0.366523E-01
+                                0.391510       0.314979E-01
+                                0.695746       0.230111E-01
+                                0.569209       0.178506E-01
+                                0.302807       0.961624E-02
+                                0.613633       0.109574E-01
+                                0.737472       0.132017E-01
+                                0.614094       0.389527E-01
+
+ => T.O.F.- dtt1       (    TOFo=dtt1*dsp     ):  28385.86      4.50
+ => T.O.F.- dtt2       (TOF=TOFo+dtt2*dsp*dsp ):      0.00      0.00
+ => T.O.F.- dtt_1OverD (TOF=TOF+dtt_1overD/dsp):      0.00      0.00
+
+ ==> RELIABILITY FACTORS WITH ALL NON-EXCLUDED POINTS FOR PATTERN:  1
+
+  => Cycle:100 => MaxCycle:100
+ => N-P+C:  1933
+ =>  R-factors (not corrected for background) for Pattern:  1
+ => Rp:  15.6     Rwp:  16.9     Rexp:    3.96 Chi2:  18.1      L.S. refinement
+ => Conventional Rietveld R-factors for Pattern:  1
+ => Rp:  22.8     Rwp:  20.6     Rexp:    4.83 Chi2:  18.1    
+ => Deviance:   257.         Dev*  :  0.9772E-01
+ => DW-Stat.:    0.3186     DW-exp:     1.8745
+ => N-sigma of the GoF:      532.760
+
+ ==> RELIABILITY FACTORS FOR POINTS WITH BRAGG CONTRIBUTIONS FOR PATTERN:  1
+
+ => N-P+C:  1933
+ =>  R-factors (not corrected for background) for Pattern:  1
+ => Rp:  15.6     Rwp:  16.9     Rexp:    3.96 Chi2:  18.1      L.S. refinement
+ => Conventional Rietveld R-factors for Pattern:  1
+ => Rp:  22.8     Rwp:  20.6     Rexp:    4.83 Chi2:  18.1    
+ => Deviance:   257.         Dev*  :  0.9772E-01
+ => DW-Stat.:    0.3186     DW-exp:     1.8745
+ => N-sigma of the GoF:      532.760
+
+ => Global user-weigthed Chi2 (Bragg contrib.):   18.1    
+
+     -----------------------------------------------------
+     BRAGG R-Factors and weight fractions for Pattern #  1
+     -----------------------------------------------------
+
+ => Phase:  1     Diamond
+ => Bragg R-factor:   16.4       Vol:   45.385( 0.000)  Fract(%):  100.00( 1.05)
+ => Rf-factor=  30.6             ATZ:       27673.344   Brindley:  1.0000
+
+ 
+              CPU Time:     2.289 seconds
+                            0.038 minutes
+
+ => Run finished at:     Date: 24/06/2026  Time: 12:52:13.144                              

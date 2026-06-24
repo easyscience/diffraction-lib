@@ -277,17 +277,19 @@ nav:
           - Si Jorgensen profile: verification/pd-neut-tof_Si_jorgensen.ipynb
           - Si Jorgensen-Von Dreele profile: verification/pd-neut-tof_Si_jorgensen-von-dreele.ipynb
           - Si Jorgensen-Von Dreele + size/strain: verification/pd-neut-tof_Si_jorgensen-von-dreele-size-strain.ipynb
+          - Diamond DREAM (ESS, McStas): verification/pd-neut-tof_diamond_dream.ipynb
       - Powder, X-ray, constant wavelength:
           - LiF single wavelength: verification/pd-xray-cwl_LiF_single.ipynb
           - LiF polarization: verification/pd-xray-cwl_LiF_single_polarization.ipynb
           - LiF absorption: verification/pd-xray-cwl_LiF_single_absorption.ipynb
           - LiF doublet: verification/pd-xray-cwl_LiF_doublet.ipynb
           - PbSO4 round robin: verification/pd-xray-cwl_PbSO4_round-robin.ipynb
-      - Single crystal, neutron, constant wavelength:
-          - Pr2NiO4 basic: verification/sc-neut-cwl_Pr2NiO4_basic.ipynb
-          - Tb2Ti2O7 basic: verification/sc-neut-cwl_Tb2Ti2O7_basic.ipynb
-          - Tb2Ti2O7 isotropic extinction: verification/sc-neut-cwl_Tb2Ti2O7_isotropic-extinction.ipynb
-          - Tb2Ti2O7 anisotropic ADPs: verification/sc-neut-cwl_Tb2Ti2O7_anisotropic-adp.ipynb
+      - Single crystal:
+          - Pr2NiO4 basic (CWL): verification/sc-neut-cwl_Pr2NiO4_basic.ipynb
+          - Tb2Ti2O7 basic (CWL): verification/sc-neut-cwl_Tb2Ti2O7_basic.ipynb
+          - Tb2Ti2O7 isotropic extinction (CWL): verification/sc-neut-cwl_Tb2Ti2O7_isotropic-extinction.ipynb
+          - Tb2Ti2O7 anisotropic ADPs (CWL): verification/sc-neut-cwl_Tb2Ti2O7_anisotropic-adp.ipynb
+          - Taurine basic (TOF): verification/sc-neut-tof_taurine_basic.ipynb
       - Total scattering:
           - Ni gaussian-damped sinc: verification/total-neut-cwl_Ni_gaussian-damped-sinc.ipynb
           - Si gaussian-damped sinc: verification/total-neut-tof_Si_gaussian-damped-sinc.ipynb

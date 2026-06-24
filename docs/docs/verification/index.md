@@ -83,6 +83,13 @@ term); these are marked below and inside the notebook.
   Jorgensen-Von Dreele profile (`size_g`/`strain_g`,
   `size_l`/`strain_l`).
 
+### Diamond structure
+
+- [pd-neut-tof Diamond DREAM](pd-neut-tof_diamond_dream.ipynb) –
+  **Jorgensen (back-to-back exponentials ⊗ Gaussian)** profile fitted to
+  **McStas-simulated reduced data from the DREAM diffractometer at ESS**
+  (scale-only adjustment between cryspy and FullProf).
+
 ## Powder, X-Ray, Constant Wavelength
 
 ### LiF structure
