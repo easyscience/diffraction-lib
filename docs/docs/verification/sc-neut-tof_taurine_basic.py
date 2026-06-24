@@ -30,7 +30,7 @@ structure = StructureFactory.from_scratch(name='taurine')
 structure.space_group.name_h_m = 'P 21/c'  # FullProf Space group symbol
 
 structure.cell.length_a = 5.272901  # FullProf a
-structure.cell.length_b = 11.656491  # FullProf b
+structure.cell.length_b = 11.656488  # FullProf b
 structure.cell.length_c = 7.838297  # FullProf c
 structure.cell.angle_beta = 94.010994  # FullProf beta
 
