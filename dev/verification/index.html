@@ -2958,6 +2958,8 @@
       
         
       
+        
+      
     
     
     
@@ -3125,6 +3127,34 @@
     
   
     Si Jorgensen-Von Dreele + size/strain
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="pd-neut-tof_diamond_dream/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diamond DREAM (ESS, McStas)
   
 
     
@@ -3370,6 +3400,8 @@
       
         
       
+        
+      
     
     
     
@@ -3388,7 +3420,7 @@
   <span class="md-ellipsis">
     
   
-    Single crystal, neutron, constant wavelength
+    Single crystal
   
 
     
@@ -3404,7 +3436,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Single crystal, neutron, constant wavelength
+    Single crystal
   
 
           </label>
@@ -3424,7 +3456,7 @@
   <span class="md-ellipsis">
     
   
-    Pr2NiO4 basic
+    Pr2NiO4 basic (CWL)
   
 
     
@@ -3452,7 +3484,7 @@
   <span class="md-ellipsis">
     
   
-    Tb2Ti2O7 basic
+    Tb2Ti2O7 basic (CWL)
   
 
     
@@ -3480,7 +3512,7 @@
   <span class="md-ellipsis">
     
   
-    Tb2Ti2O7 isotropic extinction
+    Tb2Ti2O7 isotropic extinction (CWL)
   
 
     
@@ -3508,7 +3540,35 @@
   <span class="md-ellipsis">
     
   
-    Tb2Ti2O7 anisotropic ADPs
+    Tb2Ti2O7 anisotropic ADPs (CWL)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sc-neut-tof_taurine_basic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Taurine basic (TOF)
   
 
     
@@ -4378,6 +4438,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#diamond-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Diamond structure
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -4423,15 +4494,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#single-crystal-neutron-constant-wavelength" class="md-nav__link">
+  <a href="#single-crystal" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Single Crystal, Neutron, Constant Wavelength
+        Single Crystal
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Single Crystal, Neutron, Constant Wavelength">
+    <nav class="md-nav" aria-label="Single Crystal">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -4450,6 +4521,17 @@
     <span class="md-ellipsis">
       
         Tb2Ti2O7 structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#taurine-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Taurine structure
       
     </span>
   </a>
@@ -4611,6 +4693,13 @@ term); these are marked below and inside the notebook.</p>
   Jorgensen-Von Dreele profile (<code>size_g</code>/<code>strain_g</code>,
   <code>size_l</code>/<code>strain_l</code>).</li>
 </ul>
+<h3 id="diamond-structure">Diamond structure</h3>
+<ul>
+<li><a href="pd-neut-tof_diamond_dream/">pd-neut-tof Diamond DREAM</a> –
+  <strong>Jorgensen (back-to-back exponentials ⊗ Gaussian)</strong> profile fitted to
+  <strong>McStas-simulated reduced data from the DREAM diffractometer at ESS</strong>
+  (scale-only adjustment between cryspy and FullProf).</li>
+</ul>
 <h2 id="powder-x-ray-constant-wavelength">Powder, X-Ray, Constant Wavelength</h2>
 <h3 id="lif-structure">LiF structure</h3>
 <ul>
@@ -4632,21 +4721,28 @@ term); these are marked below and inside the notebook.</p>
   anglesite X-ray round-robin case (<strong>Pseudo-Voigt + Bérar-Baldinozzi
   asymmetry</strong>).</li>
 </ul>
-<h2 id="single-crystal-neutron-constant-wavelength">Single Crystal, Neutron, Constant Wavelength</h2>
+<h2 id="single-crystal">Single Crystal</h2>
 <h3 id="pr2nio4-structure">Pr2NiO4 structure</h3>
 <ul>
 <li><a href="sc-neut-cwl_Pr2NiO4_basic/">sc-neut-cwl Pr2NiO4 basic</a> –
-  calculated F² with <strong>anisotropic β-tensor ADPs</strong>.</li>
+  <strong>neutron, constant wavelength</strong>; <strong>anisotropic β-tensor ADPs</strong>.</li>
 </ul>
 <h3 id="tb2ti2o7-structure">Tb2Ti2O7 structure</h3>
 <ul>
 <li><a href="sc-neut-cwl_Tb2Ti2O7_basic/">sc-neut-cwl Tb2Ti2O7 basic</a> –
-  baseline with <strong>isotropic ADPs</strong>.</li>
+  <strong>neutron, constant wavelength</strong>; baseline with <strong>isotropic ADPs</strong>.</li>
 <li><a href="sc-neut-cwl_Tb2Ti2O7_isotropic-extinction/">sc-neut-cwl Tb2Ti2O7 isotropic extinction</a>
-  – <strong>isotropic Becker-Coppens extinction</strong> (Gaussian model). <em>Known
-  difference: cryspy and FullProf use different extinction conventions.</em></li>
+  – <strong>neutron, constant wavelength</strong>; <strong>isotropic Becker-Coppens
+  extinction</strong> (Gaussian model). <em>Known difference: cryspy and FullProf
+  use different extinction conventions.</em></li>
 <li><a href="sc-neut-cwl_Tb2Ti2O7_anisotropic-adp/">sc-neut-cwl Tb2Ti2O7 anisotropic β ADPs</a>
-  – <strong>anisotropic β-tensor ADPs</strong>.</li>
+  – <strong>neutron, constant wavelength</strong>; <strong>anisotropic β-tensor ADPs</strong>.</li>
+</ul>
+<h3 id="taurine-structure">Taurine structure</h3>
+<ul>
+<li><a href="sc-neut-tof_taurine_basic/">sc-neut-tof Taurine basic</a> –
+  <strong>neutron, time-of-flight</strong>; <strong>isotropic ADPs</strong> (without extinction
+  correction).</li>
 </ul>
 <h2 id="powder-total-scattering-pair-distribution-function">Powder, Total Scattering (Pair Distribution Function)</h2>
 <h3 id="ni-structure">Ni structure</h3>
