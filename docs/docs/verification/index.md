@@ -110,8 +110,7 @@ term); these are marked below and inside the notebook.
 ### Pr2NiO4 structure
 
 - [sc-neut-cwl Pr2NiO4 basic](sc-neut-cwl_Pr2NiO4_basic.ipynb) –
-  **neutron, constant wavelength**; calculated F² with **anisotropic
-  β-tensor ADPs**.
+  **neutron, constant wavelength**; **anisotropic β-tensor ADPs**.
 
 ### Tb2Ti2O7 structure
 
@@ -127,9 +126,8 @@ term); these are marked below and inside the notebook.
 ### Taurine structure
 
 - [sc-neut-tof Taurine basic](sc-neut-tof_taurine_basic.ipynb) –
-  **neutron, time-of-flight**; calculated F² baseline with **isotropic
-  ADPs** (extinction set to zero in the FullProf model; scale-only
-  refinement).
+  **neutron, time-of-flight**; **isotropic ADPs** (without extinction
+  correction).
 
 ## Powder, Total Scattering (Pair Distribution Function)
 
