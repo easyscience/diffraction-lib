@@ -88,6 +88,13 @@ jobs:
       # Note: The gh-pages branch is fetched separately later for mike deployment.
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          # Full history with tags so versioningit derives the real
+          # version (e.g. 0.18.0+dev40) instead of the v999.0.0 fallback
+          # (tool.versioningit.vcs default-tag), which would otherwise
+          # appear as "edi 999" in the executed notebook outputs rendered
+          # to HTML.
+          fetch-depth: 0
 
       # Activate dark mode to create documentation with Plotly charts in dark mode
       # Need a better solution to automatically switch the chart colour theme based on the mkdocs material switcher

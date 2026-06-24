@@ -27,6 +27,10 @@ jobs:
     steps:
       - name: Check-out repository
         uses: actions/checkout@v6
+        with:
+          # Full history with tags so versioningit derives the real
+          # version instead of the v999.0.0 fallback in notebook output.
+          fetch-depth: 0
 
       - name: Set up pixi
         uses: ./.github/actions/setup-pixi
